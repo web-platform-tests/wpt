@@ -42,6 +42,7 @@ assumptions:
  * The initial value of 'color' is black.
  * The canvas background is white.
  * The user stylesheet is empty (except where indicated by the tests).
+ * The device is interactive and uses scroll bars.
 
 The tests that need these assumptions to be true have not yet been
 marked, but it is likely that we will add a way to identify these

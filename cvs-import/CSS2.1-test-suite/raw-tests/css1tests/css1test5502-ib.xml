@@ -10,7 +10,7 @@
   ]]></style>
  </head>
  <body>
-  <p>There should be a green bar below:</p>
+  <p>There should be a green horizontal bar below:</p>
   <div class="two">
    <p>x <span>xxxxx xxxxx</span> x</p>
   </div>

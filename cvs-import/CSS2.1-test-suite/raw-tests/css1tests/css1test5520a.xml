@@ -10,7 +10,7 @@
  </head>
  <body>
   <p class="one">
-   This paragraph should have a two blue lines directly under it.
+   This paragraph should have two blue lines directly under it.
   </p>
   <p class="two">
    This paragraph should have a single thin blue line directly under it.

@@ -1,0 +1,19 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>CSS 2.1 Test Suite: float</title>
+  <style type="text/css"><![CDATA[
+   div { background: url(support/swatch-red.png) bottom left no-repeat; font-size: 10px; }
+   div p { float: left; width: 100%; margin: 0; font-size: 2em; }
+   div img { float: none; color: red; vertical-align: top; }
+  ]]></style>
+ </head>
+ <body>
+  <div>
+   <p>
+    There should be a green block on the next line:
+   </p>
+   <img src="support/swatch-green.png" alt="FAIL: Image didn't display." />
+  </div>
+ </body>
+</html>

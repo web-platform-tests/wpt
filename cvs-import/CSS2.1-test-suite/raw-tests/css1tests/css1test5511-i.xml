@@ -1,0 +1,18 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>CSS 2.1 Test Suite: border-top-width</title>
+  <style type="text/css"><![CDATA[
+   .two {border-top-width: thin; border-style: solid;}
+   .three {border-top-width: 25px; color: red;}
+  ]]></style>
+ </head>
+ <body>
+  <p class="one">
+   <span class="two"> This box should have a thin top border.</span>
+  </p>
+  <p class="one">
+   There should be no red on this line. <span class="three">&#x00A0;&#x00A0;&#x00A0;</span>
+  </p>
+ </body>
+</html>

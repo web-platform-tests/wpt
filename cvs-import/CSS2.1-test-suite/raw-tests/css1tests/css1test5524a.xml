@@ -1,0 +1,14 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>CSS 2.1 Test Suite: height</title>
+  <style type="text/css"><![CDATA[
+   div { font-size: 20px; background: url(support/ruler-v-50px.png) top left no-repeat; padding: 0 0 100px 45px; }
+   .one { height: 50px; }
+  ]]></style>
+ </head>
+ <body>
+  <p>The square below should be exactly 50 pixels high on the ruler.</p>
+  <div><img src="support/swatch-blue.png" class="one" alt="FAIL: Image support required."/></div>
+ </body>
+</html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>CSS 2.1 Test Suite: text-decoration</title>
+  <style type="text/css"><![CDATA[
+   p { color: navy; }
+   .one {text-decoration: underline;}
+   .two {text-decoration: overline;}
+   .three {text-decoration: line-through;}
+   .four {text-decoration: blink;}
+   b.five {text-decoration: none;}
+   .six {text-decoration: underline overline;}
+   .seven {text-decoration: underline overline line-through;}
+   strong { color: red; }
+   span { color: white; }
+  ]]></style>
+ </head>
+ <body>
+  <p class="one"> This sentence should be underlined. </p>
+  <p class="two"> This sentence should be overlined. </p>
+  <p class="three"> This sentence should be stricken out. </p>
+  <p class="four"> This sentence should be blinking (if the UA supports that). </p>
+  <p class="one"> The sentence should be underlined. <b class="five">This sentence should be underlined</b>. </p>
+  <p class="six"> This sentence should be underlined and overlined. </p>
+  <p class="seven"> This sentence should be underlined, overlined, and stricken. </p>
+  <p> There should be no red at the end of this line.<strong class="one"> </strong>&#xA0;</p> <!-- the NBSP makes the span element's space not be collapsed -->
+  <p> There should be no red at the end of this line.<img src="support/swatch-white.png" alt="FAIL: Images required." class="one"/>&#xA0;</p>
+  <p class="one">
+   This sentence and all its images
+   <img src="support/square-teal.png" alt="FAIL: Images required."/>
+   <img src="support/square-purple.png" alt="FAIL: Images required."/>
+   should be underlined.
+  </p>
+  <p class="one">
+   There should be a long blue underline between here: <span> FAIL FAIL FAIL FAIL </span> :and here.
+  </p>
+ </body>
+</html>

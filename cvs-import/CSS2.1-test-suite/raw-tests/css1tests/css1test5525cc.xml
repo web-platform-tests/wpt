@@ -1,0 +1,17 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>CSS 2.1 Test Suite: float</title>
+  <style type="text/css"><![CDATA[
+   div { background: url(support/pattern-tr.png) top center no-repeat; font-size: 10px; }
+   p { float: left; width: 50%; margin: 0; font-size: 2em; }
+   img { float: none; color: red; }
+  ]]></style>
+ </head>
+ <body>
+  <div>
+   <p>There should be a green square to the right, roughly in the middle, horizontally. &#x21E8;</p>
+   <img src="support/swatch-green.png" alt="FAIL" />
+  </div>
+ </body>
+</html>

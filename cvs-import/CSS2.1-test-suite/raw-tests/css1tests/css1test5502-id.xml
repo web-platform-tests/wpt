@@ -1,0 +1,17 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>CSS 2.1 Test Suite: margin-right</title>
+  <style type="text/css"><![CDATA[
+   div { font: 15px/1 Ahem; margin: 1em; background: yellow; }
+   .four { width: 11em; color: white; background: navy; }
+   .four span { margin-right: 3em; }
+  ]]></style>
+ </head>
+ <body>
+  <p>It should say "HI" below:</p>
+  <div class="four">
+   xx xx xx <span>xx xx xx xx xx xx</span> xx xx xx xx xx xx xx xx xx xx
+  </div>
+ </body>
+</html>

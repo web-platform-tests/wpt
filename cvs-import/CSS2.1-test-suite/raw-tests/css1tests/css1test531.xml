@@ -1,0 +1,17 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>CSS 2.1 Test Suite: color</title>
+  <style type="text/css"><![CDATA[
+   .one {color: green;}
+  ]]></style>
+ </head>
+ <body>
+  <p class="one">
+   This line should be green.
+  </p>
+  <p style="color: green;">
+   This line should be green.
+  </p>
+ </body>
+</html>

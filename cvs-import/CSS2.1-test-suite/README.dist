@@ -1,0 +1,50 @@
+CSS2.1 TEST SUITE
+=================
+
+This is the first draft of the CSS2.1 Test Suite.
+
+It is woefully incomplete. At the moment it only contains the tests
+that the CSS1 Test Suite contained, converted to comply with the
+CSS2.1 Test Case Guidelines:
+
+   http://www.w3.org/Style/CSS/Test/guidelines.html
+
+In time we hope to extend this test suite to cover all of CSS2.1. Your
+help is welcome in this effort. The appropriate mailing list is
+
+   public-css-testsuite@w3.org
+
+...archived at:
+
+   http://lists.w3.org/Archives/Public/public-css-testsuite/
+
+Tests are currently available in two formats:
+
+   .xht -- XHTML 1.1 tests sent as application/xhtml+xml
+   .htm -- HTML 4 tests sent as text/html
+
+Note that many of the tests require the Ahem font to be installed.
+(The tests that require this are marked with an 'a' at the end of the
+filename, after the test type classification.) The Ahem font can be
+found here:
+
+   http://www.hixie.ch/resources/fonts/
+
+Without the Ahem font installed, these tests are of no value.
+
+In addition, some of the tests make one or more of the following
+assumptions:
+
+ * The device is a full-color device.
+ * The device has a viewport width of at least 640px (approx).
+ * The resolution of the device is 96 CSS pixels per inch.
+ * The 'medium' font-size computes to 16px.
+ * The initial value of 'color' is black.
+ * The canvas background is white.
+ * The user stylesheet is empty (except where indicated by the tests).
+
+The tests that need these assumptions to be true have not yet been
+marked, but it is likely that we will add a way to identify these
+tests in due course.
+
+------------------------------------------------------------------------

@@ -1,0 +1,14 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>CSS 2.1 Test Suite: margin-right</title>
+  <style type="text/css"><![CDATA[
+   html { margin: 0; padding: 8px; }
+   body { margin: 0; padding: 0; }
+   .five { margin-right: -10px; color: navy; }
+  ]]></style>
+ </head>
+ <body>
+  <p class="five"> This page should have a horizontal scroll bar. </p>
+ </body>
+</html>

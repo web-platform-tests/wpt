@@ -1,0 +1,23 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>CSS 2.1 Test Suite: The Height of Lines</title>
+  <style type="text/css"><![CDATA[
+   div { font: 20px/40px Ahem; color: white; background: red url(support/css1test44c.png) no-repeat;
+         width: 14em; padding: 0.5em 1em; border: 1em solid green; }
+   img.twoc { vertical-align: middle; width: 2em; height: 2em; padding: 0.4em 0.5em 0.6em; border: solid 1em; margin: -1.5em -0.5em; }
+  ]]></style>
+ </head>
+ <body>
+  <p>There should be no red below, just the outline of an empty green box.</p>
+  <div>
+   xxxx xxxx xxxx
+   xxxx xxxx xxxx
+   xxxx 
+   <img src="support/swatch-white.png" alt="" class="twoc" />
+             xxxx
+   xxxx xxxx xxxx
+   xxxx xxxx xxxx
+  </div>
+ </body>
+</html>

@@ -1,0 +1,14 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>CSS 2.1 Test Suite: width</title>
+  <style type="text/css"><![CDATA[
+   div { font-size: 20px; background: url(support/ruler-h-50px.png) bottom left no-repeat; padding-bottom: 40px; }
+   .one { width: 50px; }
+  ]]></style>
+ </head>
+ <body>
+  <p>The square below should be exactly 50 pixels wide on the ruler.</p>
+  <div><img src="support/swatch-blue.png" class="one" alt="FAIL: Image support required."/></div>
+ </body>
+</html>

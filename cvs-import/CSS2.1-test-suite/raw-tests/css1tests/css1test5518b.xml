@@ -1,0 +1,48 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>CSS 2.1 Test Suite: border-top</title>
+  <style type="text/css"><![CDATA[
+   body { color: blue; }
+   td { text-align: center; }
+   td, span, .three { border-top: blue 2px solid; }
+  ]]></style>
+ </head>
+ <body>
+  <p>There should be a solid blue line directly over every occurance of the word "<span>HERE &#x21E7;</span>". (So there should be 8 blue lines on this page.)</p>
+  <table>
+   <tr>
+    <td colspan="2">
+     HERE &#x21E7;
+    </td>
+   </tr>
+   <tr>
+    <td>
+     HERE &#x21E7;
+    </td>
+    <td>
+     HERE &#x21E7;
+     <table>
+      <tr>
+       <td>
+        HERE &#x21E7;
+       </td>
+      </tr>
+     </table>
+    </td>
+   </tr>
+  </table>
+  <ul>
+   <li class="three">
+    HERE &#x21E7;
+    <ul>
+     <li>dummy text</li>
+     <li>dummy text</li>
+     <li>dummy text</li>
+    </ul>
+   </li>
+   <li class="three">HERE &#x21E7;</li>
+   <li class="three">HERE &#x21E7;</li>
+  </ul>
+ </body>
+</html>

@@ -1,0 +1,34 @@
+CSS2.1 Test Suite
+=================
+
+Existing tests from the Web are converted to XHTML1.1 by conversion
+scripts in the convertors/ directory. These tests are then placed in
+the incoming-tests/ directory, where the test bodies and stylesheets
+are examined one by one and made to fit the CSS2.1 guidelines by hand.
+After this stage, tests are placed in a raw-tests/.../ directory.
+Support files are placed in raw-tests/.../support/ at this stage.
+These raw tests should all be fully valid XHTML1.1, but need not have
+the right <link rel="help"> lines or the right filenames.
+
+Raw tests are then examined and a file is made giving each raw test's
+right filename and metadata. This is put into raw-tests/.../FILENAMES.
+Then, the make-proper-tests.pl script is pointed at raw-tests/.../,
+and puts the resulting tests in the tests/ directory. Support files
+are also copied to tests/support/.
+
+   rm -rf tests/*.xht
+   find raw-tests -name FILENAMES | xargs -n 1 perl make-proper-tests.pl
+   rm -rf tests/support/.unused
+
+The generate.pl script takes the tests in the tests/ directory and
+creates the various final tests, which it outputs in the dist/
+directory, along with navigation files and the support files. It uses
+routines in the lib/ directory.
+
+   rm -rf dist/
+   mkdir dist
+   perl generate.pl tests/*.xht
+   cp -Lrv tests/support dist/support
+
+Then all the tests are in dist/ and ready.
+------------------------------------------------------------------------

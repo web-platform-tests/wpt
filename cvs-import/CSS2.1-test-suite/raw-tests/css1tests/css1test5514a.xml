@@ -1,0 +1,23 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>CSS 2.1 Test Suite: border-left-width</title>
+  <style type="text/css"><![CDATA[
+   .two {border-left-width: thick; border-style: solid;}
+   .three {border-left-width: medium; border-style: solid;}
+   .four {border-left-width: thin; border-style: solid;}
+  ]]></style>
+ </head>
+ <body>
+  <p>The three boxes below should have progressively thinner left borders.</p>
+  <p class="two">
+   A
+  </p>
+  <p class="three">
+   B
+  </p>
+  <p class="four">
+   C
+  </p>
+ </body>
+</html>

@@ -1,0 +1,13 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>CSS 2.1 Test Suite: Contextual selectors</title>
+  <style type="text/css"><![CDATA[
+   p {color: green;}
+   html body div {color: red;}
+  ]]></style>
+ </head>
+ <body>
+  <div><p> This line should be green. </p></div>
+ </body>
+</html>

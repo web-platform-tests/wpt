@@ -1,0 +1,31 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>CSS 2.1 Test Suite: letter-spacing</title>
+  <style type="text/css"><![CDATA[
+   div { font: 24px/1 Ahem; width: 18em; background: yellow; color: aqua; }
+   .one {letter-spacing: 0.25in;}
+   .two {letter-spacing: 0.635cm;}
+   .three {letter-spacing: 6.35mm;}
+   .four {letter-spacing: 18pt;}
+   .five {letter-spacing: 1.5pc;}
+   .six {letter-spacing: 1em;}
+   .seven {letter-spacing: 1.25ex;}
+   .eight {letter-spacing: 24px;}
+  ]]></style>
+ </head>
+ <body>
+  <p>There should be a stripy pattern of yellow and aqua below (each vertical stripe should be straight and unbroken).</p>
+  <div class="test">x&#xA0;x&#xA0;&#xA0;&#xA0;x&#xA0;x&#xA0;&#xA0;&#xA0;x&#xA0;x </div>
+  <div class="test">x&#xA0;x&#xA0;&#xA0;&#xA0;x&#xA0;x&#xA0;&#xA0;&#xA0;x&#xA0;x </div>
+  <div class="test">x&#xA0;x&#xA0;&#xA0;&#xA0;x&#xA0;x&#xA0;&#xA0;&#xA0;x&#xA0;x </div>
+  <div class="one"> xx xx xx </div>
+  <div class="two"> xx xx xx </div>
+  <div class="three"> xx xx xx </div>
+  <div class="four"> xx xx xx </div>
+  <div class="five"> xx xx xx </div>
+  <div class="six"> xx xx xx </div>
+  <div class="seven"> xx xx xx </div>
+  <div class="eight"> xx xx xx </div>
+ </body>
+</html>

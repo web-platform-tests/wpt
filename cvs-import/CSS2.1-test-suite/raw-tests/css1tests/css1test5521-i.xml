@@ -1,0 +1,40 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>CSS 2.1 Test Suite: border-left</title>
+  <style type="text/css"><![CDATA[
+   p, span span { color: silver; }
+   span { color: blue; }
+   .one { border-left: blue double 10px; }
+   .two { border-left: blue thin solid; }
+  ]]></style>
+ </head>
+ <body>
+  <div>The blue bits of text should be decorated as described.</div>
+  <p>
+   dummy text dummy text dummy text dummy text dummy text dummy text
+   dummy text dummy text dummy text dummy text dummy text dummy text
+   dummy text dummy text dummy text dummy text dummy text dummy text
+   dummy text dummy text dummy text dummy text dummy text dummy text
+   <span class="one">&#x21E6; two blue lines to the left <span>dummy
+   text dummy text dummy text dummy text dummy text dummy text dummy
+   text dummy text dummy text dummy text dummy text dummy text</span>
+   </span> dummy text dummy text dummy text dummy text dummy text
+   dummy text dummy text dummy text dummy text dummy text dummy text
+   dummy text dummy text dummy text dummy text dummy text dummy text
+   dummy text dummy text dummy text dummy text dummy text dummy text
+   dummy text dummy text dummy text dummy text dummy text dummy text
+   dummy text dummy text dummy text dummy text dummy text dummy text
+   dummy text dummy text dummy text dummy text dummy text <span
+   class="two">&#x21E6; one thin blue line to the left </span> dummy
+   text dummy text dummy text dummy text dummy text dummy text dummy
+   text dummy text dummy text dummy text dummy text dummy text dummy
+   text dummy text dummy text dummy text dummy text dummy text dummy
+   text dummy text dummy text dummy text dummy text dummy text dummy
+   text dummy text dummy text dummy text dummy text dummy text dummy
+   text dummy text dummy text dummy text dummy text dummy text dummy
+   text dummy text dummy text
+  </p>
+  <div>(All the lines of text should be equally spaced.)</div>
+ </body>
+</html>

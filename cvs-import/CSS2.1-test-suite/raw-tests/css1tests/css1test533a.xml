@@ -1,0 +1,14 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>CSS 2.1 Test Suite: background-image</title>
+  <style type="text/css"><![CDATA[
+   p {background-image: url(support/1x1-lime.png);}
+   .one {background-image: none;}
+  ]]></style>
+ </head>
+ <body>
+  <p> This line should be green. </p>
+  <p> This line <span class="one">should be green</span> too.</p>
+ </body>
+</html>

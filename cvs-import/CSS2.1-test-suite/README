@@ -1,6 +1,20 @@
 CSS2.1 Test Suite
 =================
 
+QUICK START
+
+ - The source of tests are in one of these:
+
+       raw-tests/ -- tests that have a special file that is then used
+       to create the tests, adding <link> elements and fixing the
+       filename.
+
+       cooked-tests/ -- tests that already have appropriate filenames
+       and <link> elements.
+
+
+DETAILS
+
 Existing tests from the Web are converted to XHTML1.1 by conversion
 scripts in the convertors/ directory. These tests are then placed in
 the incoming-tests/ directory, where the test bodies and stylesheets

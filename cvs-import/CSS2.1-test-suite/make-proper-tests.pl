@@ -120,4 +120,4 @@ while (defined($_ = <FILENAMES>)) {
     close(OUTPUT);
 }
 
-system("cp -Lrv $directory/support tests");
+system("cp -Lrvu $directory/support tests");

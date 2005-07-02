@@ -12,7 +12,7 @@
   ]]></style>
  </head>
  <body>
-  <p class="pc">There should be eight numbered lines below, all identical except for the numbering. </p>
+  <p class="pc">There should be eight numbered lines below, all identical except for the numbering, which should match the description. </p>
   <div class="three"> This should be line one. </div>
   <div class="one"> 2. This should be line two. </div>
   <div class="two"> 3. This should </div>

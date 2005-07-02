@@ -240,8 +240,8 @@ css1test5525cg.xml t0905-c5525-fltblck-01-d.xht 100603
 css1test5525ch.xml t0905-c5525-fltwrap-00-b.xht
 css1test5525ci.xml t0905-c5525-fltcont-00-d-g.xht 10066 090501
 css1test5525d.xml t0905-c5525-fltmult-00-d-g.xht 090501
-css1test5526.xml t0905-c5525-fltclr-00-c-ag.xht 090502
-css1test5526b.xml t0905-c5525-flthw-00-c-g.xht 140201
+css1test5526.xml t0905-c5526-fltclr-00-c-ag.xht 090502
+css1test5526b.xml t0905-c5526-flthw-00-c-g.xht 140201
 css1test5526c.xml t09-c5526c-display-00-e.xht
 css1test561.xml t1205-c561-list-displ-00-b.xht 090204
 css1test562.xml t1606-c562-white-sp-00-b-ag.xht

@@ -4,7 +4,7 @@
   <title>CSS 2.1 Test Suite: Comments</title>
   <style type="text/css"><![CDATA[
    body { color: green; }
-   /* This is a CSS1 comment. */
+   /* This is a CSS comment. */
    .one {color: green;} /* Another comment */
    /* The following should not be used:
    .two {color: red;} */

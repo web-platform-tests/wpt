@@ -1,0 +1,40 @@
+#!/usr/bin/perl
+
+# Configuration ########################################################
+
+$schema = '../html5core.rng';
+@testdirs = ('html5core/valid',
+             'html5core/invalid');
+$testFilenamePattern = '\.xhtml$';
+
+########################################################################
+
+if ('verify' eq $ARGV[0]) {
+  $outfile = 'VERIFY';
+}
+elsif ('baseline' eq $ARGV[0]) {
+  $outfile = 'BASELINE';
+}
+else {
+  print "Usage: $0 [baseline|verify]\nA successful run will print nothing.\nNote: This program will create and/or modify the files BASELINE\nand VERIFY in the current directory.\n";
+  exit;
+}
+
+open OUTFILE, ">$outfile" or die "Could not open output file $outfile:$!";
+
+foreach $dir (@testdirs) {
+  opendir DIR, "$dir" or die "Could not open test directory $dir: $!";
+  @testfiles = grep { /$testFilenamePattern/ } readdir(DIR);
+  close DIR;
+  foreach $test (@testfiles) {
+    print OUTFILE "*** Test $dir/$test ***\n";
+    print OUTFILE `rnv -q $schema $dir/$test 2>&1`;
+  }
+
+}
+
+close OUTFILE;
+
+if ('verify' eq $ARGV[0]) {
+  print `diff -u BASELINE VERIFY`;
+}

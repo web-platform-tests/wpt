@@ -2,7 +2,7 @@
 
 # Configuration ########################################################
 
-$schema = '../html5core.rng';
+$schema = '../html5core.rnc';
 @testdirs = ('html5core/valid',
              'html5core/invalid');
 $testFilenamePattern = '\.xhtml$';
@@ -16,7 +16,7 @@ elsif ('baseline' eq $ARGV[0]) {
   $outfile = 'BASELINE';
 }
 else {
-  print "Usage: $0 [baseline|verify]\nA successful run will print nothing.\nNote: This program will create and/or modify the files BASELINE\nand VERIFY in the current directory.\n";
+  print "Usage: $0 [baseline|verify]\nA successful run will print nothing.\n\nNote: This program requires rnv to be installed.\nNote: This program will create and/or modify the files BASELINE\nand VERIFY in the current directory.\n";
   exit;
 }
 

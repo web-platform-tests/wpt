@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>&lt;samp&gt;</title>
+</head>
+<body>
+  <!-- not a block -->
+  <samp>text</samp>
+
+  <!-- cannot contain structured inline if parent is strictly inline -->
+  <p><dfn><samp><ul><li>text</li></ul></samp></dfn></p>
+
+  <!-- cannot contain interactive if parent forbids interactive -->
+  <p><a><samp><a>text</a></samp></a></p>
+  <p><a><dfn><samp><a>text</a></samp></dfn></a></p>
+</body>
+</html>

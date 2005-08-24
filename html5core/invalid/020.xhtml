@@ -1,0 +1,16 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>&lt;sub&gt;</title>
+</head>
+<body>
+  <!-- not a block -->
+  <sub>text</sub>
+
+  <!-- cannot contain structured inline -->
+  <p><sub><ul><li>text</li></ul></sub></p>
+
+  <!-- cannot contain interactive if parent forbids interactive -->
+  <p><a><sub><a>text</a></sub></a></p>
+  <p><a><dfn><sub><a>text</a></sub></dfn></a></p>
+</body>
+</html>

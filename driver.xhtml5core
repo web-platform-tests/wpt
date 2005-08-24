@@ -2,10 +2,10 @@
 
 # Configuration ########################################################
 
-$schema = '../html5core.rnc';
+$schema = '../xhtml5core.rnc';
 @testdirs = ('html5core/valid',
              'html5core/invalid');
-$testFilenamePattern = '\.html$';
+$testFilenamePattern = '\.xhtml$';
 
 ########################################################################
 

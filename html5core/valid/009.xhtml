@@ -1,0 +1,23 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>&lt;m&gt;</title>
+</head>
+<body>
+  <!-- is structured inline -->
+  <p><m class="class" xml:lang="en">text</m></p>
+
+  <!-- is strictly inline -->
+  <p><dfn><m class="class" xml:lang="en">text</m></dfn></p>
+
+  <!-- can be empty -->
+  <p>text <m></m></p>
+  <p>text <dfn><m></m></dfn></p>
+
+  <!-- can contain interactive -->
+  <p><m><a>text</a></m></p>
+  <p><dfn><m><a>text</a></m></dfn></p>
+
+  <!-- can contain structured inline -->
+  <p><m>text <ul><li>list</li></ul> <em>elem</em></m></p>
+</body>
+</html>

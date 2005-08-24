@@ -1,0 +1,22 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>&lt;cite&gt;</title>
+</head>
+<body>
+  <!-- is structured inline -->
+  <p><cite class="class" xml:lang="en">text</cite></p>
+
+  <!-- is strictly inline -->
+  <p><dfn><cite class="class" xml:lang="en">text</cite></dfn></p>
+
+  <!-- can be empty -->
+  <p>text <cite></cite></p>
+  <p>text <dfn><cite></cite></dfn></p>
+
+  <!-- can contain interactive -->
+  <p><cite><a>text</a></cite></p>
+  <p><dfn><cite><a>text</a></cite></dfn></p>
+
+  <!-- cannot contain structured inline -->
+</body>
+</html>

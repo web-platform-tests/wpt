@@ -1,5 +1,5 @@
 This directory contains tests for the RelaxNG (x)HTML 5 Core schema.
-Systematic tests should be numbered and given a .xhtml suffix.
+Simplified tests should be numbered and given a .html or .xhtml suffix.
 Random files may also be introduced as regression tests: these
 should also be numbered, but prefixed with an 'r'.
 

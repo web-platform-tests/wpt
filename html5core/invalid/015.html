@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>&lt;abbr&gt;</title>
+</head>
+<body>
+  <!-- not a block -->
+  <abbr>text</abbr>
+
+  <!-- cannot contain structured inline -->
+  <p><abbr><ul><li>text</li></ul></abbr></p>
+
+  <!-- cannot contain interactive if parent forbids interactive -->
+  <p><a><abbr><a>text</a></abbr></a></p>
+  <p><a><dfn><abbr><a>text</a></abbr></dfn></a></p>
+</body>
+</html>

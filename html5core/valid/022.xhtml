@@ -1,0 +1,27 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>&lt;bdo&gt;</title>
+</head>
+<body>
+  <!-- is structured inline; requires 'dir', test all attrs -->
+  <p><bdo dir="ltr"
+          xml:lang="en"
+          style=""
+          class="class"
+          id="foo"
+          xml:base="">text</bdo></p>
+
+  <!-- is strictly inline -->
+  <p><dfn><bdo dir="ltr" class="class" xml:lang="en">text</bdo></dfn></p>
+
+  <!-- can be empty -->
+  <p>text <bdo dir="ltr"></bdo></p>
+  <p>text <dfn><bdo dir="ltr"></bdo></dfn></p>
+
+  <!-- can contain interactive -->
+  <p><bdo dir="ltr"><a>text</a></bdo></p>
+  <p><dfn><bdo dir="ltr"><a>text</a></bdo></dfn></p>
+
+  <!-- cannot contain structured inline -->
+</body>
+</html>

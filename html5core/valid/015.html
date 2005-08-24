@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>&lt;abbr&gt;</title>
+</head>
+<body>
+  <!-- is structured inline -->
+  <p><abbr class="class" lang="en">text</abbr></p>
+
+  <!-- is strictly inline -->
+  <p><dfn><abbr title="text1" class="class" lang="en">text</abbr></dfn></p>
+
+  <!-- can be empty -->
+  <p>text <abbr></abbr></p>
+  <p>text <dfn><abbr></abbr></dfn></p>
+
+  <!-- can contain interactive -->
+  <p><abbr><a>text</a></abbr></p>
+  <p><dfn><abbr><a>text</a></abbr></dfn></p>
+
+  <!-- cannot contain structured inline -->
+</body>
+</html>

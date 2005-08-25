@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>&lt;pre&gt;</title>
+</head>
+<body>
+  <!-- is not strictly inline -->
+  <p><dfn>text 
+    <pre>more text</pre>
+  </dfn></p>
+
+  <!-- cannot contain blocks -->
+  <pre>
+    <p>p1</p>
+    <p>p2</p>
+  </pre>
+
+  <!-- cannot contain structured inline -->
+  <pre>text
+    <ul><li>text</li></ul>
+  </pre>
+
+  <!-- cannot contain interactive if ancestor forbids it -->
+  <p><a>
+    <pre>
+      <a>link</a>
+    </pre>
+  </a></p>
+</body>
+</html>

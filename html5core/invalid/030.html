@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Unordered List: &lt;ul&gt; &lt;li&gt;</title>
+</head>
+<body>
+  <!-- li has no value attribute -->
+  <ul>
+    <li value="2">text</li>
+  </ul>
+  <ol><li>
+    <ul>
+      <li value="2">text</li>
+    </ul>
+  </li></ol>
+
+  <!-- is not strictly inline -->
+  <p><dfn>
+    <ul>
+      <li>text</li>
+    </ul>
+  </dfn></p>
+
+  <!-- <ul> cannot contain other than <li> -->
+  <ul>
+    <ul><li></li></ul>
+    <p>something</p>
+    <em>elem</em>
+    text
+  </ul>
+
+  <!-- cannot contain mixed block & inline content -->
+  <ul>
+    <li><p>para</p> <em>inline</em> content</li>
+  </ul>
+
+  <!-- cannot contain blocks while in inline context -->
+  <p>paragraph
+    <ul>
+      <li>
+        <p>para</p>
+      </li>
+    </ul>
+  </p>
+
+  <!-- cannot contain interactive if ancestor forbids it -->
+  <p><a>text
+    <ul><li><a>text</a></li></ul>
+  </a></p>
+</body>
+</html>

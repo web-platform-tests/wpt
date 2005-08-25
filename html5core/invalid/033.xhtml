@@ -1,0 +1,25 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>&lt;div&gt;</title>
+</head>
+<body>
+  <!-- is not strictly inline -->
+  <p><dfn>text 
+    <div>
+      <p>text</p>
+    </div>
+  </dfn></p>
+
+  <!-- is not structured inline -->
+  <p>text 
+    <div>
+      <p>text</p>
+    </div>
+  </p>
+
+  <!-- cannot contain inline -->
+  <div>
+    some <em>text</em>
+  </div>
+</body>
+</html>

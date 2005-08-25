@@ -1,0 +1,60 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>Ordered List: &lt;ol&gt; &lt;li&gt;</title>
+</head>
+<body>
+  <!-- value, start attributes must be integer -->
+  <ol start="">
+    <li value="">text</li>
+  </ol>
+  <ol start="+2">
+    <li value="+1">text</li>
+  </ol>
+  <ol start="9.24">
+    <li value="0.8">text</li>
+  </ol>
+  <ol start="1e2">
+    <li value="2e1">text</li>
+  </ol>
+  <ol start="5cm">
+    <li value="2in">text</li>
+  </ol>
+  <ol start="NaN">
+    <li value="NaN">text</li>
+  </ol>
+
+  <!-- is not strictly inline -->
+  <p><dfn>
+    <ol>
+      <li>text</li>
+    </ol>
+  </dfn></p>
+
+  <!-- <ul> cannot contain other than <li> -->
+  <ol>
+    <ul><li></li></ul>
+    <p>something</p>
+    <em>elem</em>
+    text
+  </ol>
+
+  <!-- cannot contain mixed block & inline content -->
+  <ol>
+    <li><p>para</p> <em>inline</em> content</li>
+  </ol>
+
+  <!-- cannot contain blocks while in inline context -->
+  <p>paragraph
+    <ol>
+      <li>
+        <p>para</p>
+      </li>
+    </ol>
+  </p>
+
+  <!-- cannot contain interactive if ancestor forbids it -->
+  <p><a>text
+    <ol><li><a>text</a></li></ol>
+  </a></p>
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Definition List: &lt;dl&gt; &lt;dt&gt; &lt;dd&gt;</title>
+</head>
+<body>
+  <!-- is not strictly inline -->
+  <p><dfn>
+    <dl></dl>
+  </dfn></p>
+
+  <!-- <dl> cannot contain other than (dt+,dd+)* -->
+  <dl>
+    <ul><li></li></ul>
+    <p>something</p>
+    <em>elem</em>
+    text
+  </dl>
+  <dl>
+    <dt>text</dt>
+  </dl>
+  <dl>
+    <dd>more text</dd>
+  </dl>
+  <dl>
+    <dd>more text</dd>
+    <dt>text</dt>
+  </dl>
+  <dl>
+    <dd>more text</dd>
+    <dt>text</dt>
+    <dd>more text</dd>
+  </dl>
+  <dl>
+    <dt>text</dt>
+    <dd>more text</dd>
+    <dt>text</dt>
+  </dl>
+
+  <!-- dt cannot contain structured inline or blocks -->
+  <dl>
+    <dt>some <pre>text</pre></dt>
+    <dd>more text</dd>
+    <dt><p>para</p></dt>
+    <dd>text</dd>
+  </dl>
+  <p>paragraph
+    <dl>
+      <dt>some <pre>text</pre></dt>
+      <dd>more <pre>text</pre></dd>
+    </dl>
+  </p>
+
+  <!-- dd cannot contain mixed block and inline content -->
+  <dl>
+    <dt>text</dt>
+    <dd><p>para</p> <em>inline</em> content</dd>
+  </dl>
+
+  <!-- dt, dd cannot contain blocks while in inline context -->
+  <p>paragraph
+    <dl>
+      <dt><p>para</p></dt>
+      <dd><p>para</p></dd>
+    </dl>
+  </p>
+
+  <!-- cannot contain interactive if ancestor forbids it -->
+  <p><a>text
+    <dl>
+      <dt><a>text</a></dt>
+      <dd><a>text</a></dd>
+    </dl>
+  </a></p>
+</body>
+</html>

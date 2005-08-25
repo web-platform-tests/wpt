@@ -1,0 +1,26 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>&lt;hr&gt;</title>
+</head>
+<body>
+  <!-- is not structured inline -->
+  <p>
+    <ul>
+      <li>
+        <hr></hr>
+      </li>
+    </ul>
+  </p>
+
+  <!-- is not strictly inline -->
+  <p><dfn>text
+    <hr></hr>
+  </dfn></p>
+
+  <!-- must be empty -->
+  <hr>
+    <p>p1</p>
+  </hr>
+  <hr><em>text</em></hr>
+</body>
+</html>

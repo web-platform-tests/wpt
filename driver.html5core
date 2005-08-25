@@ -6,17 +6,22 @@ $schema = '../html5core.rnc';
 @testdirs = ('html5core/valid',
              'html5core/invalid');
 $testFilenamePattern = '\.html$';
+$driverID = $0;
+if ($driverID =~ /^.*driver\.([^\/]+)$/) { $driverID = $1 };
+
+# Note: This program will create and/or modify the files BASELINE.$driverID
+# and VERIFY.$driverID in the current directory.
 
 ########################################################################
 
 if ('verify' eq $ARGV[0]) {
-  $outfile = 'VERIFY';
+  $outfile = "VERIFY.$driverID";
 }
 elsif ('baseline' eq $ARGV[0]) {
-  $outfile = 'BASELINE';
+  $outfile = "BASELINE.$driverID";
 }
 else {
-  print "Usage: $0 [baseline|verify]\nA successful run will print nothing.\n\nNote: This program requires rnv to be installed.\nNote: This program will create and/or modify the files BASELINE\nand VERIFY in the current directory.\n";
+  print "Usage: $0 [baseline|verify]\nA successful run will print nothing.\n\nNote: This program requires rnv to be installed.\n";
   exit;
 }
 
@@ -36,5 +41,5 @@ foreach $dir (@testdirs) {
 close OUTFILE;
 
 if ('verify' eq $ARGV[0]) {
-  print `diff -u BASELINE VERIFY`;
+  print `diff -u BASELINE.$driverID VERIFY.$driverID`;
 }

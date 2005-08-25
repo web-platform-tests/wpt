@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>&lt;address&gt;</title>
+</head>
+<body>
+  <!-- is not structured inline -->
+  <p>
+    <ul>
+      <li>
+        <address>text</address>
+      </li>
+    </ul>
+  </p>
+
+  <!-- is not strictly inline -->
+  <p><dfn>
+    <address>text</address>
+  </dfn></p>
+
+  <!-- cannot contain blocks -->
+  <address>
+    <p>p1</p>
+    <p>p2</p>
+  </address>
+
+  <!-- cannot contain interactive if ancestor forbids it -->
+  <p><a>
+    <blockquote>
+      <address><a>link</a></address>
+    </blockquote>
+  </a></p>
+</body>
+</html>

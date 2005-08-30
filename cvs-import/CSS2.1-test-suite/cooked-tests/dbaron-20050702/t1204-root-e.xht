@@ -7,6 +7,8 @@
   <link rel="help" href="http://www.w3.org/TR/CSS21/syndata.html#counter"/>
   <style type="text/css">
 
+  body { white-space: nowrap; }
+
   html { counter-reset: c 0 c 4 c 0; counter-increment: c 1 c 3; }
   html:before { content: " "; counter-reset: c 9999; counter-increment: c 9999; }
   body { counter-reset: c 3; counter-increment: c 5; }

@@ -8,6 +8,9 @@
   <link rel="help" href="http://www.w3.org/TR/CSS21/syndata.html#counter"/>
   <style type="text/css">
 
+  body { white-space: nowrap; }
+
+
   .scope { counter-reset: c 1; }
   .scope:before, .scope:after { content: counter(c); }
   .c:before { content: counter(c); }

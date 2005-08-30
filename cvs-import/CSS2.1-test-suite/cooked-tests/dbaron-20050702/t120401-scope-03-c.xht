@@ -8,6 +8,9 @@
   <link rel="help" href="http://www.w3.org/TR/CSS21/syndata.html#counter"/>
   <style type="text/css">
 
+  body { white-space: nowrap; }
+
+
   span:before { counter-increment: c 1; content: "B" counters(c,".") "-" }
   span:after  { counter-increment: c 1; content: "A" counters(c,".") "-" }
 

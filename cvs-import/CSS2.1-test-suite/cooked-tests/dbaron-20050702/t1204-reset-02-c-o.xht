@@ -8,6 +8,9 @@
   <meta http-equiv="Content-Script-Type" content="text/javascript"/>
   <style type="text/css">
 
+  body { white-space: nowrap; }
+
+
   #test, .reset { counter-reset: c; }
   .increment:before { content: counters(c, ".") "-"; }
   .increment { counter-increment: c; }

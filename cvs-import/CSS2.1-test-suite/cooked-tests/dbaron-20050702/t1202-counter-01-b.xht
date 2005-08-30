@@ -7,6 +7,9 @@
   <link rel="help" href="http://www.w3.org/TR/CSS21/generate.html#counter-styles"/>
   <style type="text/css">
 
+  body { white-space: nowrap; }
+
+
   #test { counter-reset: c; }
   #test span { counter-increment: c; }
   #test span:before { content: counter(c, none) "z"; }

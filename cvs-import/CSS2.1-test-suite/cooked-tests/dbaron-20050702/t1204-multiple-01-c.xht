@@ -7,6 +7,9 @@
   <link rel="help" href="http://www.w3.org/TR/CSS21/syndata.html#counter"/>
   <style type="text/css">
 
+  body { white-space: nowrap; }
+
+
   body { counter-reset: one 7 two -2; }
   #one:before { counter-increment: one -6; content: counter(one) }
   #two:before { counter-increment: dummy two 7 two two -4 silly 7; content: counter(two) }

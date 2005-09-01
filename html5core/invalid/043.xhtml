@@ -1,0 +1,40 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>&lt;img&gt;</title>
+</head>
+<body>
+  <!-- not a block -->
+  <img src="url" alt="text"></img>
+
+  <!-- must be empty -->
+  <p><img src="url" alt="text"><p>para</p></img></p>
+  <p><img src="url" alt="text"><em>inline</em></img></p>
+  <p><img src="url" alt="text">text</img></p>
+
+  <!-- src and alt required -->
+  <p><img></img></p>
+  <p><img src="url"></img></p>
+  <p><img alt="text"></img></p>
+
+  <!-- src, usemap are uris -->
+  <p><img src="&lt;" alt="text"></img></p>
+  <p><img src="url" alt="text" usemap="&lt;"></img></p>
+  <!-- alt is anything -->
+  <p><img src="url" alt="!#$#&amp; a*ASF)\\&gt;"></img></p>
+  <!-- width, height are positive integers -->
+  <p><img src="url" alt="text" width="0.3"></img></p>
+  <p><img src="url" alt="text" height="8.9"></img></p>
+  <p><img src="url" alt="text" width="+9"></img></p>
+  <p><img src="url" alt="text" height="+3"></img></p>
+  <p><img src="url" alt="text" width="0"></img></p>
+  <p><img src="url" alt="text" height="0"></img></p>
+  <p><img src="url" alt="text" width="-9"></img></p>
+  <p><img src="url" alt="text" height="-2"></img></p>
+  <p><img src="url" alt="text" width="2%"></img></p>
+  <p><img src="url" alt="text" height="40%"></img></p>
+  <p><img src="url" alt="text" width="40px"></img></p>
+  <p><img src="url" alt="text" height="2em"></img></p>
+  <!-- ismap is "ismap" -->
+  <p><img src="url" alt="text" ismap="sth"></img></p>
+</body>
+</html>

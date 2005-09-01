@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>&lt;del&gt;</title>
+</head>
+<body>
+  <!-- cannot contain blocks while in inline context -->
+  <p>paragraph
+    <del>
+        <p>para</p>
+    </del>
+  </p>
+
+  <!-- cannot contain blocks while in strictly inline context -->
+  <p><dfn>strictly inline
+    <del>
+        <p>para</p>
+    </del>
+  </dfn></p>
+
+  <!-- cannot contain structured inline while in strictly inline context -->
+  <p><dfn>strictly inline
+    <del>
+        <ul><li>para</li></ul>
+    </del>
+  </dfn></p>
+
+  <!-- cannot contain inline while in block context -->
+  <del>
+    <em>inline</em> text
+  </del>
+
+  <!-- cannot contain interactive if ancestor forbids it -->
+  <p><a>paragraph
+    <del>
+        <a>para</a>
+    </del>
+  </a></p>
+  <p><dfn><a>strictly inline
+    <del>
+        <a>para</a>
+    </del>
+  </a></dfn></p>
+</body>
+</html>

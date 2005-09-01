@@ -1,0 +1,44 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>&lt;ins&gt;</title>
+</head>
+<body>
+  <!-- cannot contain blocks while in inline context -->
+  <p>paragraph
+    <ins>
+      <p>para</p>
+    </ins>
+  </p>
+
+  <!-- cannot contain blocks while in strictly inline context -->
+  <p><dfn>strictly inline
+    <ins>
+      <p>para</p>
+    </ins>
+  </dfn></p>
+
+  <!-- cannot contain structured inline while in strictly inline context -->
+  <p><dfn>strictly inline
+    <ins>
+      <ul><li>para</li></ul>
+    </ins>
+  </dfn></p>
+
+  <!-- cannot contain inline while in block context -->
+  <ins>
+    <em>inline</em> text
+  </ins>
+
+  <!-- cannot contain interactive if ancestor forbids it -->
+  <p><a>paragraph
+    <ins>
+      <a>para</a>
+    </ins>
+  </a></p>
+  <p><dfn><a>strictly inline
+    <ins>
+      <a>para</a>
+    </ins>
+  </a></dfn></p>
+</body>
+</html>

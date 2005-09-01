@@ -1,0 +1,22 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>&lt;param&gt;</title>
+</head>
+<body>
+  <!-- param no value -->
+  <obj><param name="foo"></param></obj>
+
+  <!-- param data value -->
+  <obj><param name="foo" value="!@#$%$ ^&amp;)"></param></obj>
+  <obj><param name="foo" valuetype="data" value="!@#$%$ ^&amp;)"></param></obj>
+
+  <!-- param ref value -->
+  <obj><param name="foo" valuetype="ref" value="uri"></param></obj>
+  <obj><param name="foo" valuetype="ref" value="uri"
+              type="application/octet-stream"></param></obj>
+
+  <!-- param object value -->
+  <obj><param name="foo" valuetype="object" value="myID"></param></obj>
+  <obj id="myID"></obj>
+</body>
+</html>

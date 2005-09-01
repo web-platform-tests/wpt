@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>&lt;obj&gt;</title>
+</head>
+<body>
+  <!-- classid, codebase, data, usemap are uris; archive is uri list
+       width and height are positive integers
+       type and codetype are MIME types -->
+  <p><obj archive="&lt;"></obj></p>
+  <p><obj classid="&lt;"></obj></p>
+  <p><obj codebase="&lt;"></obj></p>
+  <p><obj codetype="//"></obj></p>
+  <p><obj data="&lt;"></obj></p>
+  <p><obj height="4.2"></obj></p>
+  <p><obj type="//"></obj></p>
+  <p><obj usemap="&lt;"></obj></p>
+  <p><obj width="0"></obj></p>
+
+  <!-- cannot contain blocks while in inline context -->
+  <p>paragraph
+    <obj>
+        <p>para</p>
+    </obj>
+  </p>
+
+  <!-- cannot contain blocks while in strictly inline context -->
+  <p><dfn>strictly inline
+    <obj>
+        <p>para</p>
+    </obj>
+  </dfn></p>
+
+  <!-- cannot contain structured inline while in strictly inline context -->
+  <p><dfn>strictly inline
+    <obj>
+        <ul><li>para</li></ul>
+    </obj>
+  </dfn></p>
+
+  <!-- cannot contain inline while in block context -->
+  <obj>
+    <em>inline</em> text
+  </obj>
+
+  <!-- param must be first -->
+  <p>paragraph
+    <obj>
+      <em>text</em>
+      <param name="foo"></param>
+    </obj>
+  </p>
+  <p><dfn>strictly inline
+    <obj>
+      text
+      <param name="foo"></param>
+    </obj>
+  </dfn></p>
+  <obj>
+    <p>para</p>
+    <param name="foo"></param>
+  </obj>
+
+  <!-- cannot contain interactive if ancestor forbids it -->
+  <p><a>paragraph
+    <obj>
+      <a>para</a>
+    </obj>
+  </a></p>
+  <p><dfn><a>strictly inline
+    <obj>
+      <a>para</a>
+    </obj>
+  </a></dfn></p>
+</body>
+</html>

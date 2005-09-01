@@ -1,0 +1,74 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>&lt;applet&gt;</title>
+</head>
+<body>
+  <!-- codebase is uri; archive is comma-separated(!) uri list
+       width and height are positive integers -->
+  <p><applet code="foo" width="10" height="10" archive="uri1 uri2"></applet></p>
+  <p><applet code="foo" width="10" height="10" codebase="&lt;"></applet></p>
+  <p><applet code="foo" width="10"             height="4.2"></applet></p>
+  <p><applet code="foo"            height="10" width="0"></applet></p>
+
+  <!-- code, width, and height are required -->
+  <p><applet            width="10" height="10"></applet></p>
+  <p><applet code="foo"            height="10"></applet></p>
+  <p><applet code="foo" width="10"            ></applet></p>
+
+  <!-- cannot contain blocks while in inline context -->
+  <p>paragraph
+    <applet code="foo" height="10" width="10">
+        <p>para</p>
+    </applet>
+  </p>
+
+  <!-- cannot contain blocks while in strictly inline context -->
+  <p><dfn>strictly inline
+    <applet code="foo" height="10" width="10">
+        <p>para</p>
+    </applet>
+  </dfn></p>
+
+  <!-- cannot contain structured inline while in strictly inline context -->
+  <p><dfn>strictly inline
+    <applet code="foo" height="10" width="10">
+        <ul><li>para</li></ul>
+    </applet>
+  </dfn></p>
+
+  <!-- cannot contain inline while in block context -->
+  <applet code="foo" height="10" width="10">
+    <em>inline</em> text
+  </applet>
+
+  <!-- param must be first -->
+  <p>paragraph
+    <applet code="foo" height="10" width="10">
+      <em>text</em>
+      <param name="foo"></param>
+    </applet>
+  </p>
+  <p><dfn>strictly inline
+    <applet code="foo" height="10" width="10">
+      text
+      <param name="foo"></param>
+    </applet>
+  </dfn></p>
+  <applet code="foo" height="10" width="10">
+    <p>para</p>
+    <param name="foo"></param>
+  </applet>
+
+  <!-- cannot contain interactive if ancestor forbids it -->
+  <p><a>paragraph
+    <applet code="foo" height="10" width="10">
+      <a>para</a>
+    </applet>
+  </a></p>
+  <p><dfn><a>strictly inline
+    <applet code="foo" height="10" width="10">
+      <a>para</a>
+    </applet>
+  </a></dfn></p>
+</body>
+</html>

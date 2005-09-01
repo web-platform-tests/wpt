@@ -1,0 +1,32 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>&lt;map&gt;</title>
+</head>
+<body>
+  <!-- name is required -->
+  <map><area alt="text" coords="1,2,3,4"></area></map>
+
+  <!-- at least one <area> is required -->
+  <map name="map1"></map>
+
+  <!-- is not strictly inline -->
+  <p><dfn>text 
+    <map name="map2">
+      <area alt="text" coords="1,2,3,4"></area>
+    </map>
+  </dfn></p>
+
+  <!-- is not structured inline -->
+  <p>text 
+    <map name="map3">
+      <area alt="text" coords="1,2,3,4"></area>
+    </map>
+  </p>
+
+  <!-- cannot contain inline -->
+  <map name="map4">
+    <em>some</em> text
+    <area alt="text" coords="1,2,3,4"></area>
+  </map>
+</body>
+</html>

@@ -1,0 +1,54 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>&lt;iframe&gt;</title>
+</head>
+<body>
+  <!-- src is uri
+       frameborder is 1 or 0
+       scrolling is 'yes' or 'no' or 'auto'
+       width and height are positive integers -->
+  <p><iframe name="foo1" width="10" height="10" src="&lt;"></iframe></p>
+  <p><iframe name="foo2" width="10" height="10" frameborder="2"></iframe></p>
+  <p><iframe name="foo2" width="10" height="10" scrolling="sth"></iframe></p>
+  <p><iframe name="foo3" width="10"             height="4.2"></iframe></p>
+  <p><iframe name="foo4"            height="10" width="0"></iframe></p>
+
+  <!-- cannot contain blocks while in inline context -->
+  <p>paragraph
+    <iframe>
+        <p>para</p>
+    </iframe>
+  </p>
+
+  <!-- cannot contain blocks while in strictly inline context -->
+  <p><dfn>strictly inline
+    <iframe>
+        <p>para</p>
+    </iframe>
+  </dfn></p>
+
+  <!-- cannot contain structured inline while in strictly inline context -->
+  <p><dfn>strictly inline
+    <iframe>
+        <ul><li>para</li></ul>
+    </iframe>
+  </dfn></p>
+
+  <!-- cannot contain inline while in block context -->
+  <iframe>
+    <em>inline</em> text
+  </iframe>
+
+  <!-- cannot contain interactive if ancestor forbids it -->
+  <p><a>paragraph
+    <iframe>
+      <a>para</a>
+    </iframe>
+  </a></p>
+  <p><dfn><a>strictly inline
+    <iframe>
+      <a>para</a>
+    </iframe>
+  </a></dfn></p>
+</body>
+</html>

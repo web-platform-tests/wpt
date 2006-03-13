@@ -5,7 +5,7 @@
 </head>
 <body>
   <!-- name is required -->
-  <map><area alt="text" coords="1,2,3,4"></area></map>
+  <map><area alt="text" coords="1,2,3,4"></map>
 
   <!-- at least one <area> is required -->
   <map name="map1"></map>
@@ -13,21 +13,21 @@
   <!-- is not strictly inline -->
   <p><dfn>text 
     <map name="map2">
-      <area alt="text" coords="1,2,3,4"></area>
+      <area alt="text" coords="1,2,3,4">
     </map>
   </dfn></p>
 
   <!-- is not structured inline -->
   <p>text 
     <map name="map3">
-      <area alt="text" coords="1,2,3,4"></area>
+      <area alt="text" coords="1,2,3,4">
     </map>
   </p>
 
   <!-- cannot contain inline -->
   <map name="map4">
     some <em>text</em>
-    <area alt="text" coords="1,2,3,4"></area>
+    <area alt="text" coords="1,2,3,4">
   </map>
 </body>
 </html>

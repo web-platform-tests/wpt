@@ -113,7 +113,7 @@ public class Driver {
         if(file.getName().endsWith(".html")) {
             is.setEncoding("UTF-8");
             htmlParser.parse(is);
-        } else {
+        } else if(file.getName().endsWith(".xhtml")) {
             xmlParser.parse(is);
         }
     }

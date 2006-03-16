@@ -5,35 +5,35 @@
 </head>
 <body>
   <!-- param is not block or inline -->
-  <param name="foo"></param>
-  <p>para<param name="foo"></param></p>
-  <p><dfn>strictly<param name="foo"></param></dfn></p>
+  <param name="foo">
+  <p>para<param name="foo"></p>
+  <p><dfn>strictly<param name="foo"></dfn></p>
 
   <!-- param must be empty -->
-  <obj><param name="foo"><p>yo</p></param></obj>
-  <p><obj><param name="foo"><em>some</em> text</param></obj></p>
+  <obj><param name="foo"><p>yo</p></obj>
+  <p><obj><param name="foo"><em>some</em> text</obj></p>
 
   <!-- name is required -->
-  <obj><param></param></obj>
+  <obj><param></obj>
 
   <!-- param data value cannot have type attr -->
   <obj><param name="foo" value="!@#$%$ ^&amp;)"
-              type="application/octet-stream"></param></obj>
+              type="application/octet-stream"></obj>
   <obj><param name="foo" valuetype="data" value="!@#$%$ ^&amp;)"
-              type="application/octet-stream"></param></obj>
+              type="application/octet-stream"></obj>
 
   <!-- param ref value must be URI -->
-  <obj><param name="foo" valuetype="ref" value="&lt;"></param></obj>
+  <obj><param name="foo" valuetype="ref" value="&lt;"></obj>
   <obj><param name="foo" valuetype="ref" value="&lt;"
-              type="application/octet-stream"></param></obj>
+              type="application/octet-stream"></obj>
 
   <!-- param object value must be IDREF, cannot have type attr -->
-  <obj><param name="foo" valuetype="object" value="sth"></param></obj>
-  <obj><param name="foo" valuetype="object" value="#"></param></obj>
+  <obj><param name="foo" valuetype="object" value="sth"></obj>
+  <obj><param name="foo" valuetype="object" value="#"></obj>
   <obj><param name="foo" valuetype="object" value="#"
-              type="application/octet-stream"></param></obj>
+              type="application/octet-stream"></obj>
 
   <!-- valuetype can't take any other values -->
-  <obj><param name="foo" valuetype="sth"></param></obj>
+  <obj><param name="foo" valuetype="sth"></obj>
 </body>
 </html>

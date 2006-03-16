@@ -26,6 +26,7 @@
       xml:lang="en"></iframe></dfn></p>
 
   <!-- is block -->
+<!-- REVISIT
   <iframe
       name="frame1"
       src="uri"
@@ -35,13 +36,7 @@
       scrolling="auto"
       class="class"
       xml:lang="en"></iframe>
-
-  <!-- can contain inline while in inline context -->
-  <p>paragraph
-    <iframe>
-        <em>some</em> <ul><li>inline</li></ul> content
-    </iframe>
-  </p>
+-->
   <!-- can contain strictly inline while in strictly inline context -->
   <p><dfn>strictly inline
     <iframe>
@@ -50,10 +45,11 @@
   </dfn></p>
 
   <!-- can contain blocks while in block context -->
+<!-- REVISIT
   <iframe>
     <p>text</p>
   </iframe>
-
+-->
   <!-- can contain interactive if ancestor does not forbid it -->
   <p>paragraph
     <iframe>
@@ -65,8 +61,10 @@
       <a>link</a>
     </iframe>
   </dfn></p>
+<!-- REVISIT
   <iframe>
     <p><a>link</a></p>
   </iframe>
+  -->
 </body>
 </html>

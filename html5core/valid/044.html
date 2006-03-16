@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>&lt;obj&gt;</title>
+  <title>&lt;object&gt;</title>
 </head>
 <body>
 
   <!-- is structured inline -->
-  <p><obj
+  <p><object
       archive="uri1 uri2"
       classid="uri"
       codebase="uri"
@@ -19,10 +19,10 @@
       usemap="uri"
       width="40"
       class="class"
-      lang="en"></obj></p>
+      lang="en"></object></p>
 
   <!-- is strictly inline -->
-  <p><dfn><obj
+  <p><dfn><object
       archive="uri1 uri2"
       classid="uri"
       codebase="uri"
@@ -35,10 +35,12 @@
       usemap="uri"
       width="40"
       class="class"
-      lang="en"></obj></dfn></p>
+      lang="en"></object></dfn></p>
 
   <!-- is block -->
-  <obj
+<!-- REVISIT
+
+	<object
       archive="uri1 uri2"
       classid="uri"
       codebase="uri"
@@ -51,72 +53,59 @@
       usemap="uri"
       width="40"
       class="class"
-      lang="en"></obj>
-
-  <!-- can contain inline while in inline context, but param must come first -->
-  <p>paragraph
-    <obj>
-        <em>some</em> <ul><li>inline</li></ul> content
-    </obj>
-  </p>
-  <p>paragraph
-    <obj>
-        <param name="foo"></param><param name="bar"></param>
-        <em>some</em> <ul><li>inline</li></ul> content
-    </obj>
-  </p>
+      lang="en"></object>-->
 
   <!-- can contain strictly inline while in strictly inline context, but param must come first -->
   <p><dfn>strictly inline
-    <obj>
+    <object>
         <em>text</em>
-    </obj>
+    </object>
   </dfn></p>
   <p><dfn>strictly inline
-    <obj>
-        <param name="foo"></param><param name="bar"></param>
+    <object>
+        <param name="foo"><param name="bar">
         <em>text</em>
-    </obj>
+    </object>
   </dfn></p>
 
   <!-- can contain blocks while in block context, but param must come first -->
-  <obj>
+  <object>
     <p>text</p>
-  </obj>
-  <obj>
-    <param name="foo"></param><param name="bar"></param>
+  </object>
+  <object>
+    <param name="foo"><param name="bar">
     <p>text</p>
-  </obj>
+  </object>
 
   <!-- can contain interactive if ancestor does not forbid it, but param must come first -->
   <p>paragraph
-    <obj>
+    <object>
       <a>link</a>
-    </obj>
+    </object>
   </p>
   <p>paragraph
-    <obj>
-      <param name="foo"></param><param name="bar"></param>
+    <object>
+      <param name="foo"><param name="bar">
       <a>link</a>
-    </obj>
+    </object>
   </p>
   <p><dfn>strictly inline
-    <obj>
+    <object>
       <a>link</a>
-    </obj>
+    </object>
   </dfn></p>
   <p><dfn>strictly inline
-    <obj>
-     <param name="foo"></param><param name="bar"></param>
+    <object>
+     <param name="foo"><param name="bar">
      <a>link</a>
-    </obj>
+    </object>
   </dfn></p>
-  <obj>
+  <object>
     <p><a>link</a></p>
-  </obj>
-  <obj>
-    <param name="foo"></param><param name="bar"></param>
+  </object>
+  <object>
+    <param name="foo"><param name="bar">
     <p><a>link</a></p>
-  </obj>
+  </object>
 </body>
 </html>

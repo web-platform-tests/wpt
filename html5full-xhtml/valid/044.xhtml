@@ -1,107 +1,120 @@
-<!DOCTYPE html>
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-  <title>&lt;applet&gt;</title>
+  <title>&lt;obj&gt;</title>
 </head>
 <body>
-
   <!-- is structured inline -->
-  <p><applet
-      archive="uri1,uri2"
-      code="foo"
+  <p><obj
+      archive="uri1 uri2"
+      classid="uri"
       codebase="uri"
+      codetype="application/octet-stream"
+      data="uri"
       height="40"
-      width="40"
       name="sth"
+      standby="text"
+      type="application/octet-stream"
+      usemap="uri"
+      width="40"
       class="class"
-      lang="en"></applet></p>
+      xml:lang="en"></obj></p>
 
   <!-- is strictly inline -->
-  <p><dfn><applet
-      archive="uri1,uri2"
-      code="foo"
+  <p><dfn><obj
+      archive="uri1 uri2"
+      classid="uri"
       codebase="uri"
+      codetype="application/octet-stream"
+      data="uri"
       height="40"
-      width="40"
       name="sth"
+      standby="text"
+      type="application/octet-stream"
+      usemap="uri"
+      width="40"
       class="class"
-      lang="en"></applet></dfn></p>
+      xml:lang="en"></obj></dfn></p>
 
   <!-- is block -->
-  <applet
-    archive="uri1,uri2"
-    code="foo"
-    codebase="uri"
-    height="40"
-    width="40"
-    name="sth"
-    class="class"
-    lang="en"></applet>
+  <obj
+      archive="uri1 uri2"
+      classid="uri"
+      codebase="uri"
+      codetype="application/octet-stream"
+      data="uri"
+      height="40"
+      name="sth"
+      standby="text"
+      type="application/octet-stream"
+      usemap="uri"
+      width="40"
+      class="class"
+      xml:lang="en"></obj>
 
   <!-- can contain inline while in inline context, but param must come first -->
   <p>paragraph
-    <applet code="foo" width="10" height="10">
+    <obj>
         <em>some</em> <ul><li>inline</li></ul> content
-    </applet>
+    </obj>
   </p>
   <p>paragraph
-    <applet code="foo" width="10" height="10">
+    <obj>
         <param name="foo"></param><param name="bar"></param>
         <em>some</em> <ul><li>inline</li></ul> content
-    </applet>
+    </obj>
   </p>
 
   <!-- can contain strictly inline while in strictly inline context, but param must come first -->
   <p><dfn>strictly inline
-    <applet code="foo" width="10" height="10">
+    <obj>
         <em>text</em>
-    </applet>
+    </obj>
   </dfn></p>
   <p><dfn>strictly inline
-    <applet code="foo" width="10" height="10">
+    <obj>
         <param name="foo"></param><param name="bar"></param>
         <em>text</em>
-    </applet>
+    </obj>
   </dfn></p>
 
   <!-- can contain blocks while in block context, but param must come first -->
-  <applet code="foo" width="10" height="10">
+  <obj>
     <p>text</p>
-  </applet>
-  <applet code="foo" width="10" height="10">
+  </obj>
+  <obj>
     <param name="foo"></param><param name="bar"></param>
     <p>text</p>
-  </applet>
+  </obj>
 
   <!-- can contain interactive if ancestor does not forbid it, but param must come first -->
   <p>paragraph
-    <applet code="foo" width="10" height="10">
+    <obj>
       <a>link</a>
-    </applet>
+    </obj>
   </p>
   <p>paragraph
-    <applet code="foo" width="10" height="10">
+    <obj>
       <param name="foo"></param><param name="bar"></param>
       <a>link</a>
-    </applet>
+    </obj>
   </p>
   <p><dfn>strictly inline
-    <applet code="foo" width="10" height="10">
+    <obj>
       <a>link</a>
-    </applet>
+    </obj>
   </dfn></p>
   <p><dfn>strictly inline
-    <applet code="foo" width="10" height="10">
+    <obj>
      <param name="foo"></param><param name="bar"></param>
      <a>link</a>
-    </applet>
+    </obj>
   </dfn></p>
-  <applet code="foo" width="10" height="10">
+  <obj>
     <p><a>link</a></p>
-  </applet>
-  <applet code="foo" width="10" height="10">
+  </obj>
+  <obj>
     <param name="foo"></param><param name="bar"></param>
     <p><a>link</a></p>
-  </applet>
+  </obj>
 </body>
 </html>

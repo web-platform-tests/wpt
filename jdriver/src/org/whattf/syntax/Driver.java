@@ -8,9 +8,7 @@
  * To compile and run, you need at least:
  * http://hsivonen.iki.fi/code/fi.iki.hsivonen.io-util-xml.jar
  * http://hsivonen.iki.fi/validator-about/htmlpalser.jar
- * http://hsivonen.iki.fi/code/hs-aelfred2.jar
  * Jing http://thaiopensource.com/relaxng/jing.html
- * GNU JAXP http://www.gnu.org/software/classpathx/jaxp/
  */
 
 package org.whattf.syntax;
@@ -20,8 +18,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
+
+import javax.xml.parsers.SAXParserFactory;
 
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
@@ -38,7 +37,6 @@ import com.thaiopensource.validate.rng.CompactSchemaReader;
 import com.thaiopensource.xml.sax.CountingErrorHandler;
 import com.thaiopensource.xml.sax.XMLReaderCreator;
 
-import fi.iki.hsivonen.gnu.xml.aelfred2.SAXDriver;
 import fi.iki.hsivonen.htmlparser.HtmlParser;
 import fi.iki.hsivonen.xml.NullEntityResolver;
 import fi.iki.hsivonen.xml.SystemErrErrorHandler;
@@ -64,7 +62,7 @@ public class Driver {
     
     private XMLReader htmlParser = new HtmlParser();
     
-    private XMLReader xmlParser = new SAXDriver();
+    private XMLReader xmlParser;
     
     private boolean failed = false;
 
@@ -74,7 +72,13 @@ public class Driver {
     public Driver() {  
         try {
             this.err = new PrintWriter(new OutputStreamWriter(System.err, "UTF-8"));
-        } catch (UnsupportedEncodingException e) {
+
+            SAXParserFactory factory = SAXParserFactory.newInstance();
+            factory.setNamespaceAware(true);
+            factory.setValidating(false);
+            this.xmlParser = factory.newSAXParser().getXMLReader();
+        } catch (Exception e) {
+            // If this happens, the JDK is too broken anyway
             throw new RuntimeException(e);
         }
     }

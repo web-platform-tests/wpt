@@ -1,0 +1,69 @@
+#!/usr/bin/python
+
+import os.path
+import os
+import sys
+import urllib
+
+if len(sys.argv) != 1:
+	print "Usage: ./run-jdriver\n"
+	print "Must be run as the tests/ directory as the working directory."
+	print "On success prints nothing and exits with zero."
+	print "On failure prints errors to stderr and exits with a non-zero value."
+	print "If libraries are missing, offers to install them."
+	print "Expects to find unzip, java and javac in PATH\n"
+	print "Note: Tested with JDK 1.4.2. Some releases of 1.5.0 are known to "
+	print "have a broken GregorianCalendar."
+	sys.exit()
+
+src = 'jdriver/src/org/whattf/syntax/Driver.java'
+bin = 'jdriver/bin/org/whattf/syntax/Driver.class'
+classpath = "jdriver/lib/fi.iki.hsivonen.io-util-xml.jar:" \
+	"jdriver/lib/htmlparser.jar:jdriver/lib/jing-20030619/bin/jing.jar:" \
+	"jdriver/lib/jing-20030619/bin/isorelax.jar:" \
+	"jdriver/lib/jing-20030619/bin/saxon.jar:" \
+	"jdriver/lib/jing-20030619/bin/xercesImpl.jar:" \
+	"jdriver/lib/jing-20030619/bin/xml-apis.jar"
+
+#check that important paths exist
+if not os.path.exists(src):
+	print "Cannot find source at %s" % src
+	sys.exit()
+if not os.path.exists('jdriver/lib/'):
+	print "Cannot find directory at jdriver/lib/"
+	sys.exit()
+
+#check dependencies
+def checkAndDownload(jarname, url, extractJing = 0):
+	if not os.path.exists(jarname):
+		print "%s does not exist." % jarname
+		print "Do you want to install it now from"
+		print url
+		print "? (Y/n)"
+		
+		response = raw_input()
+		if response == 'Y' or response == 'y' or response == '':
+			filename = jarname
+			if extractJing:
+				filename = 'jdriver/lib/jing-20030619.zip'
+				if os.path.exists(filename):
+					os.unlink(filename)
+			urllib.urlretrieve(url, filename)
+		else:
+			sys.exit()
+			
+		if extractJing:
+			os.system("unzip -qq jdriver/lib/jing-20030619.zip -d jdriver/lib/")
+
+checkAndDownload('jdriver/lib/fi.iki.hsivonen.io-util-xml.jar', 'http://hsivonen.iki.fi/code/fi.iki.hsivonen.io-util-xml.jar')
+checkAndDownload('jdriver/lib/htmlparser.jar', 'http://hsivonen.iki.fi/validator-about/htmlparser.jar')
+checkAndDownload('jdriver/lib/jing-20030619/bin/jing.jar', 'http://www.thaiopensource.com/download/jing-20030619.zip', 1)
+
+#compile if necessary
+if (not os.path.exists(bin)) or (os.path.getmtime(src) > os.path.getmtime(bin)):
+	os.system("javac -classpath %s -sourcepath jdriver/src/ -d jdriver/bin/ %s"\
+		% (classpath, src))
+
+#run
+os.execvp("java", ("java", "-classpath", "jdriver/bin/:%s" % classpath, \
+	"org.whattf.syntax.Driver"))

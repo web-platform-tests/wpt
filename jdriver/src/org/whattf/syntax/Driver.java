@@ -203,6 +203,7 @@ public class Driver {
     public boolean check() {
         // exclusionSchema = rncSchemaByFilename(new File("html5exclusions.rnc"));
         checkDirectory(new File("html5core/"), new File("../xhtml5core.rnc"));
+        checkDirectory(new File("html5core-plus-web-forms2/"), new File("../xhtml5core-plus-web-forms2.rnc"));
         
         return !failed;
     }

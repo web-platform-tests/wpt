@@ -49,7 +49,7 @@ import fi.iki.hsivonen.xml.SystemErrErrorHandler;
 public class Driver {
 
     private PrintWriter err;
-    
+
     private Schema mainSchema;
 
     private Schema exclusionSchema;
@@ -57,21 +57,22 @@ public class Driver {
     private Validator validator;
 
     private SystemErrErrorHandler errorHandler = new SystemErrErrorHandler();
-    
+
     private CountingErrorHandler countingErrorHandler = new CountingErrorHandler();
-    
+
     private XMLReader htmlParser = new HtmlParser();
-    
+
     private XMLReader xmlParser;
-    
+
     private boolean failed = false;
 
     /**
      * @param basePath
      */
-    public Driver() {  
+    public Driver() {
         try {
-            this.err = new PrintWriter(new OutputStreamWriter(System.err, "UTF-8"));
+            this.err = new PrintWriter(new OutputStreamWriter(System.err,
+                    "UTF-8"));
 
             SAXParserFactory factory = SAXParserFactory.newInstance();
             factory.setNamespaceAware(true);
@@ -114,20 +115,20 @@ public class Driver {
         validator.reset();
         InputSource is = new InputSource(new FileInputStream(file));
         is.setSystemId(file.toURL().toString());
-        if(file.getName().endsWith(".html")) {
+        String name = file.getName();
+        if (name.endsWith(".html") || name.endsWith(".htm")) {
             is.setEncoding("UTF-8");
             htmlParser.parse(is);
-        } else if(file.getName().endsWith(".xhtml")) {
+        } else if (name.endsWith(".xhtml") || name.endsWith(".xht")) {
             xmlParser.parse(is);
         }
     }
 
     private void checkValidFiles(File directory) {
-        setup(errorHandler);
         File[] files = directory.listFiles();
         for (int i = 0; i < files.length; i++) {
             File file = files[i];
-            if(file.isFile()) {
+            if (file.isFile()) {
                 errorHandler.reset();
                 try {
                     checkFile(file);
@@ -137,16 +138,17 @@ public class Driver {
                 if (errorHandler.isInError()) {
                     failed = true;
                 }
+            } else if (file.isDirectory()) {
+                checkValidFiles(file);
             }
         }
     }
 
     private void checkInvalidFiles(File directory) {
-        setup(countingErrorHandler);
         File[] files = directory.listFiles();
         for (int i = 0; i < files.length; i++) {
             File file = files[i];
-            if(file.isFile()) {
+            if (file.isFile()) {
                 countingErrorHandler.reset();
                 try {
                     checkFile(file);
@@ -156,10 +158,12 @@ public class Driver {
                 if (!countingErrorHandler.getHadErrorOrFatalError()) {
                     failed = true;
                 }
+            } else if (file.isDirectory()) {
+                checkInvalidFiles(file);
             }
         }
     }
-    
+
     private void checkDirectory(File directory, File schema) {
         mainSchema = rncSchemaByFilename(schema);
         if (failed) {
@@ -169,14 +173,16 @@ public class Driver {
         for (int i = 0; i < files.length; i++) {
             File file = files[i];
             if ("valid".equals(file.getName())) {
+                setup(errorHandler);
                 checkValidFiles(file);
             }
             if ("invalid".equals(file.getName())) {
+                setup(countingErrorHandler);
                 checkInvalidFiles(file);
             }
         }
     }
-    
+
     /**
      * 
      */
@@ -187,24 +193,23 @@ public class Driver {
         pmb.put(ValidateProperty.XML_READER_CREATOR,
                 new DriverXMLReaderCreator());
         PropertyMap jingPropertyMap = pmb.toPropertyMap();
-        
+
         validator = mainSchema.createValidator(jingPropertyMap);
         // Validator exclusionValidator = exclusionSchema.createValidator(jingPropertyMap);
         // validator = new CombineValidator(validator, exclusionValidator);
-        
+
         htmlParser.setContentHandler(validator.getContentHandler());
         htmlParser.setErrorHandler(eh);
         xmlParser.setContentHandler(validator.getContentHandler());
         xmlParser.setErrorHandler(eh);
     }
-    
-    
-    
+
     public boolean check() {
         // exclusionSchema = rncSchemaByFilename(new File("html5exclusions.rnc"));
         checkDirectory(new File("html5core/"), new File("../xhtml5core.rnc"));
-        checkDirectory(new File("html5core-plus-web-forms2/"), new File("../xhtml5core-plus-web-forms2.rnc"));
-        
+        checkDirectory(new File("html5core-plus-web-forms2/"), new File(
+                "../xhtml5core-plus-web-forms2.rnc"));
+
         return !failed;
     }
 

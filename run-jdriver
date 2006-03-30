@@ -5,8 +5,10 @@ import os
 import sys
 import urllib
 
-if len(sys.argv) != 1:
-	print "Usage: ./run-jdriver\n"
+javaArgs = sys.argv[1:]
+
+if not (len(javaArgs) == 0 or (len(javaArgs) == 1 and javaArgs[0] == "-v")):
+	print "Usage: ./run-jdriver [-v]\n"
 	print "Must be run as the tests/ directory as the working directory."
 	print "On success prints nothing and exits with zero."
 	print "On failure prints errors to stderr and exits with a non-zero value."
@@ -65,5 +67,5 @@ if (not os.path.exists(bin)) or (os.path.getmtime(src) > os.path.getmtime(bin)):
 		% (classpath, src))
 
 #run
-os.execvp("java", ("java", "-classpath", "jdriver/bin/:%s" % classpath, \
-	"org.whattf.syntax.Driver"))
+os.execvp("java", ["java", "-classpath", "jdriver/bin/:%s" % classpath, \
+	"org.whattf.syntax.Driver"] + javaArgs)

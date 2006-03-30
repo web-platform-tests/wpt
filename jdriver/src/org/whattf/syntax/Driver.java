@@ -50,6 +50,8 @@ public class Driver {
 
     private PrintWriter err;
 
+    private PrintWriter out;
+
     private Schema mainSchema;
 
     private Schema exclusionSchema;
@@ -66,12 +68,17 @@ public class Driver {
 
     private boolean failed = false;
 
+    private boolean verbose;
+
     /**
      * @param basePath
      */
-    public Driver() {
+    public Driver(boolean verbose) {
+        this.verbose = verbose;
         try {
             this.err = new PrintWriter(new OutputStreamWriter(System.err,
+                    "UTF-8"));
+            this.out = new PrintWriter(new OutputStreamWriter(System.out,
                     "UTF-8"));
 
             SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -84,7 +91,7 @@ public class Driver {
         }
     }
 
-    private Schema rncSchemaByFilename(File name) {
+    private Schema rncSchemaByFilename(File name) throws Exception {
         PropertyMapBuilder pmb = new PropertyMapBuilder();
         pmb.put(ValidateProperty.ERROR_HANDLER, errorHandler);
         pmb.put(ValidateProperty.ENTITY_RESOLVER, new NullEntityResolver());
@@ -102,13 +109,7 @@ public class Driver {
             return null;
         }
         SchemaReader sr = CompactSchemaReader.getInstance();
-        Schema sch = null;
-        try {
-            sch = sr.createSchema(schemaInput, jingPropertyMap);
-        } catch (Exception e) {
-            failed = true;
-        }
-        return sch;
+        return sr.createSchema(schemaInput, jingPropertyMap);
     }
 
     private void checkFile(File file) throws IOException, SAXException {
@@ -118,17 +119,32 @@ public class Driver {
         String name = file.getName();
         if (name.endsWith(".html") || name.endsWith(".htm")) {
             is.setEncoding("UTF-8");
+            if (verbose) {
+                out.println(file);
+                out.flush();
+            }
             htmlParser.parse(is);
         } else if (name.endsWith(".xhtml") || name.endsWith(".xht")) {
+            if (verbose) {
+                out.println(file);
+                out.flush();
+            }
             xmlParser.parse(is);
         }
     }
 
+    private boolean isCheckableFile(File file) {
+        String name = file.getName();
+        return file.isFile()
+                && (name.endsWith(".html") || name.endsWith(".htm")
+                        || name.endsWith(".xhtml") || name.endsWith(".xht"));
+    }
+    
     private void checkValidFiles(File directory) {
         File[] files = directory.listFiles();
         for (int i = 0; i < files.length; i++) {
             File file = files[i];
-            if (file.isFile()) {
+            if (isCheckableFile(file)) {
                 errorHandler.reset();
                 try {
                     checkFile(file);
@@ -148,7 +164,7 @@ public class Driver {
         File[] files = directory.listFiles();
         for (int i = 0; i < files.length; i++) {
             File file = files[i];
-            if (file.isFile()) {
+            if (isCheckableFile(file)) {
                 countingErrorHandler.reset();
                 try {
                     checkFile(file);
@@ -157,6 +173,12 @@ public class Driver {
                 }
                 if (!countingErrorHandler.getHadErrorOrFatalError()) {
                     failed = true;
+                    try {
+                        err.println(file.toURL().toString() + "was supposed to be invalid but was not.");
+                        err.flush();
+                    } catch (MalformedURLException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
             } else if (file.isDirectory()) {
                 checkInvalidFiles(file);
@@ -165,8 +187,11 @@ public class Driver {
     }
 
     private void checkDirectory(File directory, File schema) {
-        mainSchema = rncSchemaByFilename(schema);
-        if (failed) {
+        try {
+            mainSchema = rncSchemaByFilename(schema);
+        } catch (Exception e) {
+            err.print("Reading schema failed. Skipping test directory.");
+            err.flush();
             return;
         }
         File[] files = directory.listFiles();
@@ -175,8 +200,7 @@ public class Driver {
             if ("valid".equals(file.getName())) {
                 setup(errorHandler);
                 checkValidFiles(file);
-            }
-            if ("invalid".equals(file.getName())) {
+            } else if ("invalid".equals(file.getName())) {
                 setup(countingErrorHandler);
                 checkInvalidFiles(file);
             }
@@ -209,7 +233,15 @@ public class Driver {
         checkDirectory(new File("html5core/"), new File("../xhtml5core.rnc"));
         checkDirectory(new File("html5core-plus-web-forms2/"), new File(
                 "../xhtml5core-plus-web-forms2.rnc"));
-
+        if (verbose) {
+            if (failed) {
+                out.println("Failure!");
+            } else {
+                out.println("Success!");
+            }
+        }
+        err.flush();
+        out.flush();
         return !failed;
     }
 
@@ -217,7 +249,8 @@ public class Driver {
      * @param args
      */
     public static void main(String[] args) {
-        Driver d = new Driver();
+        boolean verbose = ((args.length == 1) && "-v".equals(args[0]));
+        Driver d = new Driver(verbose);
         if (d.check()) {
             System.exit(0);
         } else {

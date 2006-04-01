@@ -7,70 +7,70 @@
   <!-- classid, codebase, data, usemap are uris; archive is uri list
        width and height are positive integers
        type and codetype are MIME types -->
-  <p><obj archive="&lt;"></obj></p>
-  <p><obj classid="&lt;"></obj></p>
-  <p><obj codebase="&lt;"></obj></p>
-  <p><obj codetype="//"></obj></p>
-  <p><obj data="&lt;"></obj></p>
-  <p><obj height="4.2"></obj></p>
-  <p><obj type="//"></obj></p>
-  <p><obj usemap="&lt;"></obj></p>
-  <p><obj width="0"></obj></p>
+  <p><object archive="&lt;"></object></p>
+  <p><object classid="&lt;"></object></p>
+  <p><object codebase="&lt;"></object></p>
+  <p><object codetype="//"></object></p>
+  <p><object data="&lt;"></object></p>
+  <p><object height="4.2"></object></p>
+  <p><object type="//"></object></p>
+  <p><object usemap="&lt;"></object></p>
+  <p><object width="0"></object></p>
 
   <!-- cannot contain blocks while in inline context -->
   <p>paragraph
-    <obj>
+    <object>
         <p>para</p>
-    </obj>
+    </object>
   </p>
 
   <!-- cannot contain blocks while in strictly inline context -->
   <p><dfn>strictly inline
-    <obj>
+    <object>
         <p>para</p>
-    </obj>
+    </object>
   </dfn></p>
 
   <!-- cannot contain structured inline while in strictly inline context -->
   <p><dfn>strictly inline
-    <obj>
+    <object>
         <ul><li>para</li></ul>
-    </obj>
+    </object>
   </dfn></p>
 
   <!-- cannot contain inline while in block context -->
-  <obj>
+  <object>
     <em>inline</em> text
-  </obj>
+  </object>
 
   <!-- param must be first -->
   <p>paragraph
-    <obj>
+    <object>
       <em>text</em>
       <param name="foo">
-    </obj>
+    </object>
   </p>
   <p><dfn>strictly inline
-    <obj>
+    <object>
       text
       <param name="foo">
-    </obj>
+    </object>
   </dfn></p>
-  <obj>
+  <object>
     <p>para</p>
     <param name="foo">
-  </obj>
+  </object>
 
   <!-- cannot contain interactive if ancestor forbids it -->
   <p><a>paragraph
-    <obj>
+    <object>
       <a>para</a>
-    </obj>
+    </object>
   </a></p>
   <p><dfn><a>strictly inline
-    <obj>
+    <object>
       <a>para</a>
-    </obj>
+    </object>
   </a></dfn></p>
 </body>
 </html>

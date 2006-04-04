@@ -21,7 +21,9 @@ if not (len(javaArgs) == 0 or (len(javaArgs) == 1 and javaArgs[0] == "-v")):
 src = 'jdriver/src/org/whattf/syntax/Driver.java'
 bin = 'jdriver/bin/org/whattf/syntax/Driver.class'
 classpath = "jdriver/lib/fi.iki.hsivonen.io-util-xml.jar:" \
-	"jdriver/lib/htmlparser.jar:jdriver/lib/jing-20030619/bin/jing.jar:" \
+	"jdriver/lib/permissive-ids.jar:" \
+	"jdriver/lib/htmlparser.jar:" \
+	"jdriver/lib/jing-20030619/bin/jing.jar:" \
 	"jdriver/lib/jing-20030619/bin/isorelax.jar:" \
 	"jdriver/lib/jing-20030619/bin/saxon.jar:" \
 	"jdriver/lib/jing-20030619/bin/xercesImpl.jar:" \
@@ -57,9 +59,14 @@ def checkAndDownload(jarname, url, extractJing = 0):
 		if extractJing:
 			os.system("unzip -qq jdriver/lib/jing-20030619.zip -d jdriver/lib/")
 
-checkAndDownload('jdriver/lib/fi.iki.hsivonen.io-util-xml.jar', 'http://hsivonen.iki.fi/code/fi.iki.hsivonen.io-util-xml.jar')
-checkAndDownload('jdriver/lib/htmlparser.jar', 'http://hsivonen.iki.fi/validator-about/htmlparser.jar')
-checkAndDownload('jdriver/lib/jing-20030619/bin/jing.jar', 'http://www.thaiopensource.com/download/jing-20030619.zip', 1)
+checkAndDownload('jdriver/lib/permissive-ids.jar', \
+	'http://hsivonen.iki.fi/test/permissive-ids.jar')
+checkAndDownload('jdriver/lib/fi.iki.hsivonen.io-util-xml.jar', \
+	'http://hsivonen.iki.fi/code/fi.iki.hsivonen.io-util-xml.jar')
+checkAndDownload('jdriver/lib/htmlparser.jar', \
+	'http://hsivonen.iki.fi/validator-about/htmlparser.jar')
+checkAndDownload('jdriver/lib/jing-20030619/bin/jing.jar', \
+	'http://www.thaiopensource.com/download/jing-20030619.zip', 1)
 
 #compile if necessary
 if (not os.path.exists(bin)) or (os.path.getmtime(src) > os.path.getmtime(bin)):

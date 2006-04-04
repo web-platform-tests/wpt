@@ -34,6 +34,7 @@ import com.thaiopensource.validate.SchemaReader;
 import com.thaiopensource.validate.ValidateProperty;
 import com.thaiopensource.validate.Validator;
 import com.thaiopensource.validate.rng.CompactSchemaReader;
+import com.thaiopensource.validate.rng.RngProperty;
 import com.thaiopensource.xml.sax.CountingErrorHandler;
 import com.thaiopensource.xml.sax.XMLReaderCreator;
 
@@ -97,6 +98,7 @@ public class Driver {
         pmb.put(ValidateProperty.ENTITY_RESOLVER, new NullEntityResolver());
         pmb.put(ValidateProperty.XML_READER_CREATOR,
                 new DriverXMLReaderCreator());
+        RngProperty.CHECK_ID_IDREF.add(pmb);
         PropertyMap jingPropertyMap = pmb.toPropertyMap();
 
         InputSource schemaInput;
@@ -124,7 +126,8 @@ public class Driver {
                 out.flush();
             }
             htmlParser.parse(is);
-        } else if (name.endsWith(".xhtml") || name.endsWith(".xht")) {
+        } else if (name.endsWith(".xhtml") || name.endsWith(".xht")
+                || name.endsWith(".xml")) {
             if (verbose) {
                 out.println(file);
                 out.flush();
@@ -137,9 +140,9 @@ public class Driver {
         String name = file.getName();
         return file.isFile()
                 && (name.endsWith(".html") || name.endsWith(".htm")
-                        || name.endsWith(".xhtml") || name.endsWith(".xht"));
+                        || name.endsWith(".xhtml") || name.endsWith(".xht") || name.endsWith(".xml"));
     }
-    
+
     private void checkValidFiles(File directory) {
         File[] files = directory.listFiles();
         for (int i = 0; i < files.length; i++) {
@@ -174,7 +177,8 @@ public class Driver {
                 if (!countingErrorHandler.getHadErrorOrFatalError()) {
                     failed = true;
                     try {
-                        err.println(file.toURL().toString() + "was supposed to be invalid but was not.");
+                        err.println(file.toURL().toString()
+                                + "was supposed to be invalid but was not.");
                         err.flush();
                     } catch (MalformedURLException e) {
                         throw new RuntimeException(e);
@@ -216,10 +220,12 @@ public class Driver {
         pmb.put(ValidateProperty.ENTITY_RESOLVER, new NullEntityResolver());
         pmb.put(ValidateProperty.XML_READER_CREATOR,
                 new DriverXMLReaderCreator());
+        RngProperty.CHECK_ID_IDREF.add(pmb);
         PropertyMap jingPropertyMap = pmb.toPropertyMap();
 
         validator = mainSchema.createValidator(jingPropertyMap);
-        // Validator exclusionValidator = exclusionSchema.createValidator(jingPropertyMap);
+        // Validator exclusionValidator =
+        // exclusionSchema.createValidator(jingPropertyMap);
         // validator = new CombineValidator(validator, exclusionValidator);
 
         htmlParser.setContentHandler(validator.getContentHandler());
@@ -229,10 +235,12 @@ public class Driver {
     }
 
     public boolean check() {
-        // exclusionSchema = rncSchemaByFilename(new File("html5exclusions.rnc"));
+        // exclusionSchema = rncSchemaByFilename(new
+        // File("html5exclusions.rnc"));
         checkDirectory(new File("html5core/"), new File("../xhtml5core.rnc"));
         checkDirectory(new File("html5core-plus-web-forms2/"), new File(
                 "../xhtml5core-plus-web-forms2.rnc"));
+        checkDirectory(new File("id/"), new File("id.rnc"));
         if (verbose) {
             if (failed) {
                 out.println("Failure!");

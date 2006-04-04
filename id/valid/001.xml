@@ -1,0 +1,5 @@
+<foo xmlns='http://hsivonen.iki.fi/FooML'>
+	<foo id=','/>
+	<foo id='  .  '/>
+	<foo idrefs=',	.'/>
+</foo>

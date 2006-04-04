@@ -1,0 +1,26 @@
+default namespace = "http://hsivonen.iki.fi/FooML"
+datatypes i = "http://hsivonen.iki.fi/datatype/permissive-id"
+
+	start = foo.elem
+	
+	foo.elem = 
+		element foo { foo.inner & foo.attrs }
+	foo.attrs =
+		(	foo.attrs.id?
+		&	foo.attrs.idref?
+		&	foo.attrs.idrefs?
+		)
+	foo.attrs.id =
+		attribute id {
+			i:ID
+		}
+	foo.attrs.idref =
+		attribute idref {
+			i:IDREF
+		}
+	foo.attrs.idrefs =
+		attribute idrefs {
+			i:IDREFS
+		}
+	foo.inner =
+		( foo.elem* )

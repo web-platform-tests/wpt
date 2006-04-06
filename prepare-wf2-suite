@@ -1,0 +1,26 @@
+#!/usr/bin/python
+
+import os.path
+
+files = [
+	"webforms2.testsuite.org/controls/common-attributes/list/009.htm",
+	"webforms2.testsuite.org/controls/common-attributes/pattern/009.htm",
+	"webforms2.testsuite.org/controls/common-attributes/readonly/001.htm",
+	"webforms2.testsuite.org/controls/common-attributes/readonly/003.htm",
+	"webforms2.testsuite.org/controls/common-attributes/readonly/005.htm",
+	"webforms2.testsuite.org/controls/common-attributes/required/002.htm",
+	"webforms2.testsuite.org/controls/common-attributes/required/004.xht",
+	"webforms2.testsuite.org/controls/common-attributes/required/006.htm",
+	"webforms2.testsuite.org/controls/common-attributes/required/007.htm",
+	"webforms2.testsuite.org/controls/radio/004.htm",
+	"webforms2.testsuite.org/controls/url/001.htm",
+	"webforms2.testsuite.org/elements/datalist/005.xht",
+	"webforms2.testsuite.org/elements/datalist/006.xht",
+	"webforms2.testsuite.org/elements/datalist/008.xht"
+]
+
+for file in files:
+	source = "html5core-plus-web-forms2/valid/" + file
+	destination = "html5core-plus-web-forms2/invalid/" + file
+	if os.path.exists(source):
+		os.renames(source, destination)

@@ -126,8 +126,7 @@ public class Driver {
                 out.flush();
             }
             htmlParser.parse(is);
-        } else if (name.endsWith(".xhtml") || name.endsWith(".xht")
-                || name.endsWith(".xml")) {
+        } else if (name.endsWith(".xhtml") || name.endsWith(".xht")) {
             if (verbose) {
                 out.println(file);
                 out.flush();
@@ -140,7 +139,7 @@ public class Driver {
         String name = file.getName();
         return file.isFile()
                 && (name.endsWith(".html") || name.endsWith(".htm")
-                        || name.endsWith(".xhtml") || name.endsWith(".xht") || name.endsWith(".xml"));
+                        || name.endsWith(".xhtml") || name.endsWith(".xht"));
     }
 
     private void checkValidFiles(File directory) {
@@ -240,7 +239,6 @@ public class Driver {
         checkDirectory(new File("html5core/"), new File("../xhtml5core.rnc"));
         checkDirectory(new File("html5core-plus-web-forms2/"), new File(
                 "../xhtml5core-plus-web-forms2.rnc"));
-        checkDirectory(new File("id/"), new File("id.rnc"));
         if (verbose) {
             if (failed) {
                 out.println("Failure!");

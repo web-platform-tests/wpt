@@ -17,7 +17,8 @@ files = [
 	"webforms2.testsuite.org/elements/datalist/005.xht",
 	"webforms2.testsuite.org/elements/datalist/006.xht",
 	"webforms2.testsuite.org/elements/datalist/008.xht",
-	"webforms2.testsuite.org/events/invalid/001.htm"
+	"webforms2.testsuite.org/events/invalid/001.htm",
+	"webforms2.testsuite.org/repetition/attributes/repeat/001.htm"
 ]
 
 for file in files:

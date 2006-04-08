@@ -1,6 +1,12 @@
 #!/usr/bin/python
 
 import os.path
+import sys
+
+reverse = 0
+
+if len(sys.argv) == 2 and sys.argv[1] == "--reverse":
+	reverse = 1
 
 files = [
 	"webforms2.testsuite.org/controls/common-attributes/list/009.htm",
@@ -31,7 +37,12 @@ files = [
 ]
 
 for file in files:
-	source = "html5core-plus-web-forms2/valid/" + file
-	destination = "html5core-plus-web-forms2/invalid/" + file
+	if reverse:
+		destination = "html5core-plus-web-forms2/valid/" + file
+		source = "html5core-plus-web-forms2/invalid/" + file
+	else:
+		source = "html5core-plus-web-forms2/valid/" + file
+		destination = "html5core-plus-web-forms2/invalid/" + file
+		
 	if os.path.exists(source):
 		os.renames(source, destination)

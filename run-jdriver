@@ -20,14 +20,20 @@ if not (len(javaArgs) == 0 or (len(javaArgs) == 1 and javaArgs[0] == "-v")):
 
 src = 'jdriver/src/org/whattf/syntax/Driver.java'
 bin = 'jdriver/bin/org/whattf/syntax/Driver.class'
-classpath = "jdriver/lib/fi.iki.hsivonen.io-util-xml.jar:" \
+classpath = "../datatype/java/html5-datatypes.jar:" \
+	"jdriver/lib/fi.iki.hsivonen.io-util-xml.jar:" \
 	"jdriver/lib/permissive-ids.jar:" \
 	"jdriver/lib/htmlparser.jar:" \
+	"jdriver/lib/rhino1_6R2/js.jar:" \
 	"jdriver/lib/jing-20030619/bin/jing.jar:" \
 	"jdriver/lib/jing-20030619/bin/isorelax.jar:" \
 	"jdriver/lib/jing-20030619/bin/saxon.jar:" \
 	"jdriver/lib/jing-20030619/bin/xercesImpl.jar:" \
 	"jdriver/lib/jing-20030619/bin/xml-apis.jar"
+datatypeJar = "../datatype/java/html5-datatypes.jar"
+datatypeClasspath = "jdriver/lib/rhino1_6R2/js.jar:" \
+	"jdriver/lib/jing-20030619/bin/jing.jar" 
+datatypePackageDir = '../datatype/java/src/org/whattf/datatype/'
 
 #check that important paths exist
 if not os.path.exists(src):
@@ -36,9 +42,12 @@ if not os.path.exists(src):
 if not os.path.exists('jdriver/lib/'):
 	print "Cannot find directory at jdriver/lib/"
 	sys.exit()
+if not os.path.exists(datatypePackageDir):
+	print "Cannot find directory at %s" % datatypePackageDir
+	sys.exit()
 
 #check dependencies
-def checkAndDownload(jarname, url, extractJing = 0):
+def checkAndDownload(jarname, url, zipname = None):
 	if not os.path.exists(jarname):
 		print "%s does not exist." % jarname
 		print "Do you want to install it now from"
@@ -48,16 +57,16 @@ def checkAndDownload(jarname, url, extractJing = 0):
 		response = raw_input()
 		if response == 'Y' or response == 'y' or response == '':
 			filename = jarname
-			if extractJing:
-				filename = 'jdriver/lib/jing-20030619.zip'
-				if os.path.exists(filename):
-					os.unlink(filename)
+			if zipname != None:
+				filename = zipname
+				if os.path.exists(zipname):
+					os.unlink(zipname)
 			urllib.urlretrieve(url, filename)
 		else:
 			sys.exit()
 			
-		if extractJing:
-			os.system("unzip -qq jdriver/lib/jing-20030619.zip -d jdriver/lib/")
+		if zipname != None:
+			os.system("unzip -qq %s -d jdriver/lib/" % zipname)
 
 checkAndDownload('jdriver/lib/permissive-ids.jar', \
 	'http://hsivonen.iki.fi/test/permissive-ids.jar')
@@ -66,9 +75,34 @@ checkAndDownload('jdriver/lib/fi.iki.hsivonen.io-util-xml.jar', \
 checkAndDownload('jdriver/lib/htmlparser.jar', \
 	'http://hsivonen.iki.fi/validator-about/htmlparser.jar')
 checkAndDownload('jdriver/lib/jing-20030619/bin/jing.jar', \
-	'http://www.thaiopensource.com/download/jing-20030619.zip', 1)
+	'http://www.thaiopensource.com/download/jing-20030619.zip', 'jdriver/lib/jing-20030619.zip')
+checkAndDownload('jdriver/lib/rhino1_6R2/js.jar', \
+	'http://ftp.mozilla.org/pub/mozilla.org/js/rhino1_6R2.zip', 'jdriver/lib/rhino1_6R2.zip')
 
-#compile if necessary
+#reinvent Ant and make in order to avoid depending on them
+srcList = os.listdir(datatypePackageDir)
+pathSrcList = [];
+mtime = 0
+for file in srcList:
+	if file != 'CVS':
+		pathSrcList.append(datatypePackageDir + file)
+		fileMtime = os.path.getmtime(datatypePackageDir + file)
+		if fileMtime > mtime:
+			mtime = fileMtime
+
+if (not os.path.exists(datatypeJar)) or (mtime > os.path.getmtime(datatypeJar)):
+	os.system("javac -classpath %s -sourcepath ../datatype/java/src/ "\
+		"-d ../datatype/java/bin/ %s"\
+		% (datatypeClasspath, " ".join(pathSrcList)))
+	if not os.path.exists('../datatype/java/bin/META-INF/services/'):
+		os.makedirs('../datatype/java/bin/META-INF/services/')
+	os.system("cp "\
+		"../datatype/java/src/META-INF/services/org.relaxng.datatype.DatatypeLibraryFactory "\
+		"../datatype/java/bin/META-INF/services/org.relaxng.datatype.DatatypeLibraryFactory")
+	os.system("jar cf ../datatype/java/html5-datatypes.jar "\
+		"-C ../datatype/java/bin/ META-INF -C ../datatype/java/bin/ org")
+
+#compile driver if necessary
 if (not os.path.exists(bin)) or (os.path.getmtime(src) > os.path.getmtime(bin)):
 	os.system("javac -classpath %s -sourcepath jdriver/src/ -d jdriver/bin/ %s"\
 		% (classpath, src))

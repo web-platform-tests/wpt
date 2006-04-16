@@ -239,6 +239,7 @@ public class Driver {
         checkDirectory(new File("html5core/"), new File("../xhtml5core.rnc"));
         checkDirectory(new File("html5core-plus-web-forms2/"), new File(
                 "../xhtml5core-plus-web-forms2.rnc"));
+        checkDirectory(new File("html5full-xhtml/"), new File("../xhtml5full-xhtml.rnc"));
         if (verbose) {
             if (failed) {
                 out.println("Failure!");

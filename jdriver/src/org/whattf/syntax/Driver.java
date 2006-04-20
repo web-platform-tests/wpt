@@ -27,16 +27,18 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
+import com.thaiopensource.relaxng.impl.CombineValidator;
 import com.thaiopensource.util.PropertyMap;
 import com.thaiopensource.util.PropertyMapBuilder;
 import com.thaiopensource.validate.Schema;
 import com.thaiopensource.validate.SchemaReader;
 import com.thaiopensource.validate.ValidateProperty;
 import com.thaiopensource.validate.Validator;
+import com.thaiopensource.validate.auto.AutoSchemaReader;
 import com.thaiopensource.validate.rng.CompactSchemaReader;
 import com.thaiopensource.validate.rng.RngProperty;
 import com.thaiopensource.xml.sax.CountingErrorHandler;
-import com.thaiopensource.xml.sax.XMLReaderCreator;
+import com.thaiopensource.xml.sax.Jaxp11XMLReaderCreator;
 
 import fi.iki.hsivonen.htmlparser.HtmlParser;
 import fi.iki.hsivonen.xml.NullEntityResolver;
@@ -55,7 +57,7 @@ public class Driver {
 
     private Schema mainSchema;
 
-    private Schema exclusionSchema;
+    private Schema assertionSchema;
 
     private Validator validator;
 
@@ -92,12 +94,12 @@ public class Driver {
         }
     }
 
-    private Schema rncSchemaByFilename(File name) throws Exception {
+    private Schema schemaByFilename(File name) throws Exception {
         PropertyMapBuilder pmb = new PropertyMapBuilder();
         pmb.put(ValidateProperty.ERROR_HANDLER, errorHandler);
         pmb.put(ValidateProperty.ENTITY_RESOLVER, new NullEntityResolver());
         pmb.put(ValidateProperty.XML_READER_CREATOR,
-                new DriverXMLReaderCreator());
+                new Jaxp11XMLReaderCreator());
         RngProperty.CHECK_ID_IDREF.add(pmb);
         PropertyMap jingPropertyMap = pmb.toPropertyMap();
 
@@ -110,7 +112,12 @@ public class Driver {
             failed = true;
             return null;
         }
-        SchemaReader sr = CompactSchemaReader.getInstance();
+        SchemaReader sr;
+        if (name.getName().endsWith(".rnc")) {
+            sr = CompactSchemaReader.getInstance();
+        } else {
+            sr = new AutoSchemaReader();
+        }
         return sr.createSchema(schemaInput, jingPropertyMap);
     }
 
@@ -191,7 +198,7 @@ public class Driver {
 
     private void checkDirectory(File directory, File schema) {
         try {
-            mainSchema = rncSchemaByFilename(schema);
+            mainSchema = schemaByFilename(schema);
         } catch (Exception e) {
             err.print("Reading schema failed. Skipping test directory.");
             err.flush();
@@ -218,14 +225,13 @@ public class Driver {
         pmb.put(ValidateProperty.ERROR_HANDLER, eh);
         pmb.put(ValidateProperty.ENTITY_RESOLVER, new NullEntityResolver());
         pmb.put(ValidateProperty.XML_READER_CREATOR,
-                new DriverXMLReaderCreator());
+                new Jaxp11XMLReaderCreator());
         RngProperty.CHECK_ID_IDREF.add(pmb);
         PropertyMap jingPropertyMap = pmb.toPropertyMap();
 
         validator = mainSchema.createValidator(jingPropertyMap);
-        // Validator exclusionValidator =
-        // exclusionSchema.createValidator(jingPropertyMap);
-        // validator = new CombineValidator(validator, exclusionValidator);
+        Validator assertionValidator = assertionSchema.createValidator(jingPropertyMap);
+        validator = new CombineValidator(validator, assertionValidator);
 
         htmlParser.setContentHandler(validator.getContentHandler());
         htmlParser.setErrorHandler(eh);
@@ -234,12 +240,21 @@ public class Driver {
     }
 
     public boolean check() {
-        // exclusionSchema = rncSchemaByFilename(new
-        // File("html5exclusions.rnc"));
+        try {
+            assertionSchema = schemaByFilename(new File("../assertions.sch"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            err.print("Reading schema failed. Terminating.");
+            err.flush();
+            return false;
+        }
         checkDirectory(new File("html5core/"), new File("../xhtml5core.rnc"));
         checkDirectory(new File("html5core-plus-web-forms2/"), new File(
                 "../xhtml5core-plus-web-forms2.rnc"));
-        checkDirectory(new File("html5full-xhtml/"), new File("../xhtml5full-xhtml.rnc"));
+        checkDirectory(new File("html5full-xhtml/"), new File(
+        "../xhtml5full-xhtml.rnc"));
+        checkDirectory(new File("assertions/"), new File(
+        "../xhtml5full-xhtml.rnc"));
         if (verbose) {
             if (failed) {
                 out.println("Failure!");
@@ -262,15 +277,6 @@ public class Driver {
             System.exit(0);
         } else {
             System.exit(-1);
-        }
-    }
-
-    public class DriverXMLReaderCreator implements XMLReaderCreator {
-        /**
-         * @see com.thaiopensource.xml.sax.XMLReaderCreator#createXMLReader()
-         */
-        public XMLReader createXMLReader() throws SAXException {
-            throw new SAXException("Jing tried to create an XMLReader.");
         }
     }
 }

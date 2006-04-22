@@ -200,7 +200,7 @@ public class Driver {
         try {
             mainSchema = schemaByFilename(schema);
         } catch (Exception e) {
-            err.print("Reading schema failed. Skipping test directory.");
+            err.println("Reading schema failed. Skipping test directory.");
             err.flush();
             return;
         }
@@ -243,8 +243,7 @@ public class Driver {
         try {
             assertionSchema = schemaByFilename(new File("../assertions.sch"));
         } catch (Exception e) {
-            e.printStackTrace();
-            err.print("Reading schema failed. Terminating.");
+            err.println("Reading schema failed. Terminating.");
             err.flush();
             return false;
         }

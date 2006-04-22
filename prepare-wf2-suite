@@ -33,7 +33,15 @@ files = [
 	"webforms2.testsuite.org/repetition/buttons/remove/002.htm",
 	"webforms2.testsuite.org/submission/validation/willValidate/003.htm",
 	"webforms2.testsuite.org/submission/validation/willValidate/007.xht",
-	"webforms2.testsuite.org/submission/validation/willValidate/010.xht"
+	"webforms2.testsuite.org/submission/validation/willValidate/010.xht",
+	"webforms2.testsuite.org/repetition/buttons/add/001.htm",
+	"webforms2.testsuite.org/repetition/buttons/add/005.htm",
+	"webforms2.testsuite.org/controls/date/001.htm",
+	"webforms2.testsuite.org/controls/date/002.htm",
+	"webforms2.testsuite.org/controls/date/003.htm",
+	"webforms2.testsuite.org/controls/datetime/002.htm",
+	"webforms2.testsuite.org/controls/datetime-local/001.htm",
+	"webforms2.testsuite.org/controls/month/001.htm"
 ]
 
 for file in files:

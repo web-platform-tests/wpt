@@ -22,6 +22,7 @@ src = 'jdriver/src/org/whattf/syntax/Driver.java'
 bin = 'jdriver/bin/org/whattf/syntax/Driver.class'
 classpath = "../datatype/java/html5-datatypes.jar:" \
 	"jdriver/lib/fi.iki.hsivonen.io-util-xml.jar:" \
+	"jdriver/lib/icu4j_3_4_4.jar:" \
 	"jdriver/lib/permissive-ids.jar:" \
 	"jdriver/lib/htmlparser.jar:" \
 	"jdriver/lib/rhino1_6R2/js.jar:" \
@@ -32,6 +33,7 @@ classpath = "../datatype/java/html5-datatypes.jar:" \
 	"jdriver/lib/jing-20030619/bin/xml-apis.jar"
 datatypeJar = "../datatype/java/html5-datatypes.jar"
 datatypeClasspath = "jdriver/lib/rhino1_6R2/js.jar:" \
+	"jdriver/lib/icu4j_3_4_4.jar:" \
 	"jdriver/lib/jing-20030619/bin/jing.jar" 
 datatypePackageDir = '../datatype/java/src/org/whattf/datatype/'
 
@@ -68,6 +70,8 @@ def checkAndDownload(jarname, url, zipname = None):
 		if zipname != None:
 			os.system("unzip -qq %s -d jdriver/lib/" % zipname)
 
+checkAndDownload('jdriver/lib/icu4j_3_4_4.jar', \
+	'ftp://ftp.software.ibm.com/software/globalization/icu/icu4j/3.4.4/icu4j_3_4_4.jar')
 checkAndDownload('jdriver/lib/permissive-ids.jar', \
 	'http://hsivonen.iki.fi/test/permissive-ids.jar')
 checkAndDownload('jdriver/lib/fi.iki.hsivonen.io-util-xml.jar', \

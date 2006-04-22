@@ -24,6 +24,7 @@ classpath = "../datatype/java/html5-datatypes.jar:" \
 	"jdriver/lib/fi.iki.hsivonen.io-util-xml.jar:" \
 	"jdriver/lib/icu4j_3_4_4.jar:" \
 	"jdriver/lib/permissive-ids.jar:" \
+	"jdriver/lib/jena-iri.jar:" \
 	"jdriver/lib/htmlparser.jar:" \
 	"jdriver/lib/rhino1_6R2/js.jar:" \
 	"jdriver/lib/jing-20030619/bin/jing.jar:" \
@@ -33,6 +34,7 @@ classpath = "../datatype/java/html5-datatypes.jar:" \
 	"jdriver/lib/jing-20030619/bin/xml-apis.jar"
 datatypeJar = "../datatype/java/html5-datatypes.jar"
 datatypeClasspath = "jdriver/lib/rhino1_6R2/js.jar:" \
+	"jdriver/lib/jena-iri.jar:" \
 	"jdriver/lib/icu4j_3_4_4.jar:" \
 	"jdriver/lib/jing-20030619/bin/jing.jar" 
 datatypePackageDir = '../datatype/java/src/org/whattf/datatype/'
@@ -78,6 +80,8 @@ checkAndDownload('jdriver/lib/fi.iki.hsivonen.io-util-xml.jar', \
 	'http://hsivonen.iki.fi/code/fi.iki.hsivonen.io-util-xml.jar')
 checkAndDownload('jdriver/lib/htmlparser.jar', \
 	'http://hsivonen.iki.fi/validator-about/htmlparser.jar')
+checkAndDownload('jdriver/lib/jena-iri.jar', \
+	'http://hsivonen.iki.fi/validator-about/jena-iri.jar')
 checkAndDownload('jdriver/lib/jing-20030619/bin/jing.jar', \
 	'http://www.thaiopensource.com/download/jing-20030619.zip', 'jdriver/lib/jing-20030619.zip')
 checkAndDownload('jdriver/lib/rhino1_6R2/js.jar', \

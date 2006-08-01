@@ -48,4 +48,16 @@ The tests that need these assumptions to be true have not yet been
 marked, but it is likely that we will add a way to identify these
 tests in due course.
 
+
+ACKNOWLEDGMENTS
+
+Many thanks to the following for their contributions:
+
+  Alan Harder
+  Bert Bos
+  Boris Zbarsky
+  David Baron
+  Lachlan Hunt
+  ...and all the contributors to the CSS1 test suite.
+
 ------------------------------------------------------------------------

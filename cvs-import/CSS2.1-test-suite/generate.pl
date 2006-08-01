@@ -50,7 +50,7 @@ sub save {
     my($filename, $data) = @_;
     return unless defined $data;
     print "$filename\n";
-    open(FILE, '>', $filename) or die "$filename: $!\n";
+    open(FILE, '>:utf8', $filename) or die "$filename: $!\n";
     print FILE $data;
     close(FILE);
 }

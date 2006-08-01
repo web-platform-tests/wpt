@@ -31,7 +31,7 @@ die "$0: syntax: make-proper-tests.pl FILENAMES, e.g. 'make-proper-tests.pl raw-
 my $filenames = $ARGV[0];
 die "$0: $filenames doesn't exist or is not a file\n" unless -f $filenames;
 unless ($filenames =~ m/^(raw-tests\/.+)\/FILENAMES$/os) {
-    die "$0: must be invoked from sources/ directory, on tests in the raw-tests directory, with file called FILENAMES\n";
+    die "$0: must be invoked from source/ directory, on tests in the raw-tests directory, with file called FILENAMES\n";
 }
 my $directory = $1;
 die "$0: $directory doesn't exist or not a directory\n" unless -d $directory;
@@ -76,7 +76,7 @@ while (defined($_ = <FILENAMES>)) {
 
     my @lines;
     { local $.; # so that $. is not changed in the outer block
-    open(INPUT, '<', $input) or die "$0: failed to open $input: $!\n";
+    open(INPUT, '<', $input) or die "$0: failed to open for input $input: $!\n";
     @lines = <INPUT>;
     close(INPUT); }
 
@@ -113,7 +113,7 @@ while (defined($_ = <FILENAMES>)) {
     @lines = (@lines[0..$line-2], @extraHelp, @lines[$line-1..$#lines]);
 
     print "$output\n";
-    open(OUTPUT, '>', $output) or die "$0: failed to open $output: $!\n";
+    open(OUTPUT, '>', $output) or die "$0: failed to open for output $output: $!\n";
     foreach (@lines) {
         print OUTPUT $_;
     }

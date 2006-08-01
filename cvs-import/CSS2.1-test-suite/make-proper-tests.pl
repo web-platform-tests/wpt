@@ -27,7 +27,7 @@
 use strict;
 use utf8;
 
-die "$0: syntax: rename.pl FILENAMES, e.g. 'rename.pl raw-tests/css1tests/FILENAMES'\n" if @ARGV != 1;
+die "$0: syntax: make-proper-tests.pl FILENAMES, e.g. 'make-proper-tests.pl raw-tests/css1tests/FILENAMES'\n" if @ARGV != 1;
 my $filenames = $ARGV[0];
 die "$0: $filenames doesn't exist or is not a file\n" unless -f $filenames;
 unless ($filenames =~ m/^(raw-tests\/.+)\/FILENAMES$/os) {

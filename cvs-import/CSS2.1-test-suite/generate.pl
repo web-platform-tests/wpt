@@ -31,7 +31,7 @@ use format::html4;
 foreach my $file (@ARGV) {
     $file =~ m/^tests\/(.+)\.xht$/os;
     my $root = $1;
-    my $tree = parser::parse($file);
+    my $tree = parser::parsefile($file);
     save("dist/$root.xht", format::xhtml1::output($tree));
     save("dist/$root.htm", format::html4::output($tree));
     # XXX remember something about the tests

@@ -4,12 +4,25 @@ use utf8;
 use XML::Parser;
 1;
 
-sub parse {
+# returns a DOM that is a hash
+# each node in the DOM is a hash or a scalar
+# the hashes have childNodes as an array of DOM nodes
+# text nodes are scalars
+
+sub parsefile {
     my($filename) = @_;
     my $parser = XML::Parser->new(Namespaces => 1,
                                   ErrorContext => 0,
                                   Style => 'parser::internal');
     return $parser->parsefile($filename);
+}
+
+sub parse {
+    my($content) = @_;
+    my $parser = XML::Parser->new(Namespaces => 1,
+                                  ErrorContext => 0,
+                                  Style => 'parser::internal');
+    return $parser->parse($content);
 }
 
 

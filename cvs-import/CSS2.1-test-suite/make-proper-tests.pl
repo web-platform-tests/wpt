@@ -26,6 +26,8 @@
 
 use strict;
 use utf8;
+use lib 'lib';
+use sections;
 
 die "$0: syntax: make-proper-tests.pl FILENAMES, e.g. 'make-proper-tests.pl raw-tests/css1tests/FILENAMES'\n" if @ARGV != 1;
 my $filenames = $ARGV[0];
@@ -35,18 +37,6 @@ unless ($filenames =~ m/^(raw-tests\/.+)\/FILENAMES$/os) {
 }
 my $directory = $1;
 die "$0: $directory doesn't exist or not a directory\n" unless -d $directory;
-
-my %sectionURIs;
-my %sectionTitles;
-my %sectionCodes;
-open(SECTIONS, '<', 'sections.dat') or die "$0: sections.dat: $!\n";
-while (defined($_ = <SECTIONS>)) {
-    my($code, $uri, $title) = m/^([^ ]+) ([^ ]+) (.+)\n$/gos or die "$0: sections.dat: invalid format\n";
-    $sectionURIs{$code} = $uri;
-    $sectionTitles{$code} = $title;
-    $sectionCodes{$uri} = $title;
-}
-close(SECTIONS);
 
 my %groups;
 open(FILENAMES, '<', "$filenames") or die "$0: $filenames: $!\n";
@@ -90,7 +80,7 @@ while (defined($_ = <FILENAMES>)) {
         if ($lines[$line-1] =~ m/  <link rel="help" href="(.+)" title=".*"\/>\n/os) {
             my $uri = $1;
             my $title = $2;
-            my $code = $sectionCodes{$uri};
+            my $code = $sectionTitles{$sectionCodes{$uri}};
             if (defined $code) {
                 $lines[$line-1] = "  <link rel=\"help\" href=\"$uri\" title=\"$sectionTitles{$code}\"/>\n";
                 foreach (@sections) {

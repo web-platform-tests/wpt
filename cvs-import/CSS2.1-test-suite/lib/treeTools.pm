@@ -81,3 +81,64 @@ sub namespacesUsedInternal {
     }
     return $namespaces;
 }
+
+sub getElementsByTagNameNS {
+    my($node, $tagName, $namespace) = @_;
+    my $nodes = [];
+    if (ref $node) {
+        if ($node->{nodeType} eq 'element' and
+            $node->{localName} eq $tagName and
+            $node->{namespace} eq $namespace) {
+            push(@$nodes, $node);
+        }
+        foreach my $child (@{$node->{childNodes}}) {
+            if (ref $child and $child->{nodeType} eq 'element') {
+                push(@$nodes, @{getElementsByTagNameNS($child, $tagName, $namespace)});
+            }
+        }
+    }
+    return $nodes;
+}
+
+sub getComments {
+    my($node) = @_;
+    if (ref $node) {
+        if ($node->{nodeType} eq 'comment') {
+            return [$node];
+        } elsif ($node->{nodeType} eq 'element' or
+                 $node->{nodeType} eq 'document') {
+            my $nodes = [];
+            foreach my $child (@{$node->{childNodes}}) {
+                if (ref $child) {
+                    if ($child->{nodeType} eq 'comment') {
+                        push(@$nodes, $child);
+                    } elsif ($child->{nodeType} eq 'element') {
+                        push(@$nodes, @{getComments($child)});
+                    }
+                }
+            }
+            return $nodes;
+        }
+    }
+    return [];
+}
+
+sub textContent {
+    my($node) = @_;
+    if (ref $node) {
+        my $text = '';
+        if ($node->{nodeType} eq 'element' or
+            $node->{nodeType} eq 'CDATA') {
+            foreach my $child (@{$node->{childNodes}}) {
+                if (ref $child) {
+                    $text .= textContent($child);
+                } else {
+                    $text .= $child;
+                }
+            }
+        }
+        return $text;
+    } else {
+        return $node;
+    }
+}

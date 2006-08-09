@@ -9,7 +9,7 @@ all:
 	#
 	find raw-tests -name FILENAMES | xargs -n 1 perl make-proper-tests.pl
 	find cooked-tests -name '*.xht' | xargs -n 1 --replace cp -Lv {} tests
-	find cooked-tests/* -maxdepth 0 -type d -not -name CVS | xargs -n 1 perl -e 'if (-d "$ARGV[0]/support") { print `cp -Lrvu "$ARGV[0]/support" tests` }'
+	find cooked-tests/* -maxdepth 0 -type d -not -name CVS | xargs -n 1 perl -e 'if (-d "$$ARGV[0]/support") { print `cp -Lrvu "$$ARGV[0]/support" tests` }'
 	#
 	# nuke unused support files and CVS directories
 	#

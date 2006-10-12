@@ -51,6 +51,7 @@ AddType image/png .png
 AddDefaultCharset utf-8
 
 # Indexing Options
+Options +Indexes
 IndexOptions DescriptionWidth=* NameWidth=* FancyIndexing FoldersFirst ScanHTMLTitles
 IndexIgnore .htaccess *~ .#* #*# CVS README
 ReadmeName README

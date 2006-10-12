@@ -25,6 +25,7 @@ all:
 	#
 	perl generate.pl tests/*.xht
 	cp -Lrv tests/support dist/support
+	cp README.dist dist/README
 	#
 	# empty staging area again
 	#

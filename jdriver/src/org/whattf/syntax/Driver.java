@@ -20,12 +20,14 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.MalformedURLException;
 
-import javax.xml.parsers.SAXParserFactory;
+import net.java.dev.xmlidfilter.XMLIdFilter;
 
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXNotSupportedException;
 import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.DefaultHandler;
 
 import com.thaiopensource.relaxng.impl.CombineValidator;
 import com.thaiopensource.util.PropertyMap;
@@ -40,9 +42,16 @@ import com.thaiopensource.validate.rng.RngProperty;
 import com.thaiopensource.xml.sax.CountingErrorHandler;
 import com.thaiopensource.xml.sax.Jaxp11XMLReaderCreator;
 
+import fi.iki.hsivonen.gnu.xml.aelfred2.SAXDriver;
 import fi.iki.hsivonen.htmlparser.HtmlParser;
 import fi.iki.hsivonen.xml.NullEntityResolver;
 import fi.iki.hsivonen.xml.SystemErrErrorHandler;
+import fi.iki.hsivonen.xml.XhtmlIdFilter;
+import fi.iki.hsivonen.xml.checker.NormalizationChecker;
+import fi.iki.hsivonen.xml.checker.SignificantInlineChecker;
+import fi.iki.hsivonen.xml.checker.TextContentChecker;
+import fi.iki.hsivonen.xml.checker.jing.CheckerValidator;
+import fi.iki.hsivonen.xml.checker.table.TableChecker;
 
 /**
  * 
@@ -83,11 +92,12 @@ public class Driver {
                     "UTF-8"));
             this.out = new PrintWriter(new OutputStreamWriter(System.out,
                     "UTF-8"));
-
-            SAXParserFactory factory = SAXParserFactory.newInstance();
-            factory.setNamespaceAware(true);
-            factory.setValidating(false);
-            this.xmlParser = factory.newSAXParser().getXMLReader();
+            /*
+             * SAXParserFactory factory = SAXParserFactory.newInstance();
+             * factory.setNamespaceAware(true); factory.setValidating(false);
+             * XMLReader parser = factory.newSAXParser().getXMLReader();
+             */
+            this.xmlParser = new XhtmlIdFilter(new XMLIdFilter(new SAXDriver()));
         } catch (Exception e) {
             // If this happens, the JDK is too broken anyway
             throw new RuntimeException(e);
@@ -97,7 +107,6 @@ public class Driver {
     private Schema schemaByFilename(File name) throws Exception {
         PropertyMapBuilder pmb = new PropertyMapBuilder();
         pmb.put(ValidateProperty.ERROR_HANDLER, errorHandler);
-        pmb.put(ValidateProperty.ENTITY_RESOLVER, new NullEntityResolver());
         pmb.put(ValidateProperty.XML_READER_CREATOR,
                 new Jaxp11XMLReaderCreator());
         RngProperty.CHECK_ID_IDREF.add(pmb);
@@ -196,11 +205,12 @@ public class Driver {
         }
     }
 
-    private void checkDirectory(File directory, File schema) {
+    private void checkDirectory(File directory, File schema) throws SAXException {
         try {
             mainSchema = schemaByFilename(schema);
         } catch (Exception e) {
             err.println("Reading schema failed. Skipping test directory.");
+            e.printStackTrace();
             err.flush();
             return;
         }
@@ -218,12 +228,13 @@ public class Driver {
     }
 
     /**
+     * @throws SAXNotSupportedException 
+     * @throws SAXdException 
      * 
      */
-    private void setup(ErrorHandler eh) {
+    private void setup(ErrorHandler eh) throws SAXException {
         PropertyMapBuilder pmb = new PropertyMapBuilder();
         pmb.put(ValidateProperty.ERROR_HANDLER, eh);
-        pmb.put(ValidateProperty.ENTITY_RESOLVER, new NullEntityResolver());
         pmb.put(ValidateProperty.XML_READER_CREATOR,
                 new Jaxp11XMLReaderCreator());
         RngProperty.CHECK_ID_IDREF.add(pmb);
@@ -232,28 +243,44 @@ public class Driver {
         validator = mainSchema.createValidator(jingPropertyMap);
         Validator assertionValidator = assertionSchema.createValidator(jingPropertyMap);
         validator = new CombineValidator(validator, assertionValidator);
+        validator = new CombineValidator(validator, new CheckerValidator(
+                new TableChecker(), jingPropertyMap));
+        validator = new CombineValidator(validator, new CheckerValidator(
+                new NormalizationChecker(), jingPropertyMap));
+        validator = new CombineValidator(validator, new CheckerValidator(
+                new SignificantInlineChecker(), jingPropertyMap));
+        validator = new CombineValidator(validator, new CheckerValidator(
+                new TextContentChecker(), jingPropertyMap));
 
         htmlParser.setContentHandler(validator.getContentHandler());
         htmlParser.setErrorHandler(eh);
+        htmlParser.setFeature("http://hsivonen.iki.fi/checkers/nfc/", true);
         xmlParser.setContentHandler(validator.getContentHandler());
         xmlParser.setErrorHandler(eh);
+        htmlParser.setFeature("http://hsivonen.iki.fi/checkers/nfc/", true);
     }
 
-    public boolean check() {
+    public boolean check() throws SAXException {
         try {
             assertionSchema = schemaByFilename(new File("../assertions.sch"));
         } catch (Exception e) {
             err.println("Reading schema failed. Terminating.");
+            e.printStackTrace();
             err.flush();
             return false;
         }
+
         checkDirectory(new File("html5core/"), new File("../xhtml5core.rnc"));
         checkDirectory(new File("html5core-plus-web-forms2/"), new File(
                 "../xhtml5core-plus-web-forms2.rnc"));
+        checkDirectory(new File("html5full-html/"), new File(
+        "../xhtml5full-html.rnc"));
         checkDirectory(new File("html5full-xhtml/"), new File(
-        "../xhtml5full-xhtml.rnc"));
+                "../xhtml5full-xhtml.rnc"));
         checkDirectory(new File("assertions/"), new File(
-        "../xhtml5full-xhtml.rnc"));
+                "../xhtml5full-xhtml.rnc"));
+
+        checkDirectory(new File("tables/"), new File("../xhtml5full-xhtml.rnc"));
         if (verbose) {
             if (failed) {
                 out.println("Failure!");
@@ -268,8 +295,9 @@ public class Driver {
 
     /**
      * @param args
+     * @throws SAXException 
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws SAXException {
         boolean verbose = ((args.length == 1) && "-v".equals(args[0]));
         Driver d = new Driver(verbose);
         if (d.check()) {

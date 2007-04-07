@@ -41,7 +41,10 @@ files = [
 	"webforms2.testsuite.org/controls/date/003.htm",
 	"webforms2.testsuite.org/controls/datetime/002.htm",
 	"webforms2.testsuite.org/controls/datetime-local/001.htm",
-	"webforms2.testsuite.org/controls/month/001.htm"
+	"webforms2.testsuite.org/controls/month/001.htm",
+	"webforms2.testsuite.org/controls/number/004.htm",
+	"webforms2.testsuite.org/events/invalid/003.xht",
+	"webforms2.testsuite.org/controls/number/003.htm"
 ]
 
 for file in files:

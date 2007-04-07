@@ -4,20 +4,14 @@
   <title>&lt;param&gt;</title>
 </head>
 <body>
-  <!-- param no value -->
-  <object><param name="foo"></object>
+<p>
+  <object data='foo'><param name="foo" value='bar'></object>
 
-  <!-- param data value -->
-  <object><param name="foo" value="!@#$%$ ^&amp;)"></object>
-  <object><param name="foo" valuetype="data" value="!@#$%$ ^&amp;)"></object>
+  <object data='foo'><param name="foo" value="!@#$%$ ^&amp;)"></object>
+  <object data='foo'><param name="foo" value="!@#$%$ ^&amp;)"></object>
 
-  <!-- param ref value -->
-  <object><param name="foo" valuetype="ref" value="uri"></object>
-  <object><param name="foo" valuetype="ref" value="uri"
-              type="application/octet-stream"></object>
-
-  <!-- param objectect value -->
-  <!--<object><param name="foo" valuetype="object" value="myID"></object>
-  <object id="myID"></object>-->
+  <object data='foo'><param name="foo" value="uri"></object>
+  <object data='foo'><param name="foo" value="uri"></object>
+</p>
 </body>
 </html>

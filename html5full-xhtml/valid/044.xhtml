@@ -6,14 +6,8 @@
   <!-- is structured inline -->
   <p><object
       archive="uri1 uri2"
-      classid="uri"
-      codebase="uri"
-      codetype="application/octet-stream"
       data="uri"
       height="40"
-      name="sth"
-      standby="text"
-      type="application/octet-stream"
       usemap="uri"
       width="40"
       class="class"
@@ -22,99 +16,61 @@
   <!-- is strictly inline -->
   <p><dfn><object
       archive="uri1 uri2"
-      classid="uri"
-      codebase="uri"
-      codetype="application/octet-stream"
       data="uri"
       height="40"
-      name="sth"
-      standby="text"
-      type="application/octet-stream"
       usemap="uri"
       width="40"
       class="class"
       xml:lang="en"></object></dfn></p>
 
-  <!-- is block -->
-  <object
-      archive="uri1 uri2"
-      classid="uri"
-      codebase="uri"
-      codetype="application/octet-stream"
-      data="uri"
-      height="40"
-      name="sth"
-      standby="text"
-      type="application/octet-stream"
-      usemap="uri"
-      width="40"
-      class="class"
-      xml:lang="en"></object>
-
   <!-- can contain inline while in inline context, but param must come first -->
   <p>paragraph
-    <object>
+    <object data='bar.ogg'>
         <em>some</em> <ul><li>inline</li></ul> content
     </object>
   </p>
   <p>paragraph
-    <object>
-        <param name="foo"></param><param name="bar"></param>
+    <object data='bar.ogg'>
+        <param name="foo" value='bar'></param><param name="bar" value='foo'></param>
         <em>some</em> <ul><li>inline</li></ul> content
     </object>
   </p>
 
   <!-- can contain strictly inline while in strictly inline context, but param must come first -->
   <p><dfn>strictly inline
-    <object>
+    <object data='bar.ogg'>
         <em>text</em>
     </object>
   </dfn></p>
   <p><dfn>strictly inline
-    <object>
-        <param name="foo"></param><param name="bar"></param>
+    <object data='bar.ogg'>
+        <param name="foo" value='bar'></param><param name="bar" value='foo'></param>
         <em>text</em>
     </object>
   </dfn></p>
-
-  <!-- can contain blocks while in block context, but param must come first -->
-  <object>
-    <p>text</p>
-  </object>
-  <object>
-    <param name="foo"></param><param name="bar"></param>
-    <p>text</p>
-  </object>
 
   <!-- can contain interactive if ancestor does not forbid it, but param must come first -->
   <p>paragraph
-    <object>
+    <object data='bar.ogg'>
       <a>link</a>
     </object>
   </p>
   <p>paragraph
-    <object>
-      <param name="foo"></param><param name="bar"></param>
+    <object data='bar.ogg'>
+     <param name="foo" value='bar'></param><param name="bar" value='foo'></param>
       <a>link</a>
     </object>
   </p>
   <p><dfn>strictly inline
-    <object>
+    <object data='foo.mov'>
       <a>link</a>
     </object>
   </dfn></p>
   <p><dfn>strictly inline
-    <object>
-     <param name="foo"></param><param name="bar"></param>
+    <object type='text/plain'>
+     <param name="foo" value='bar'></param><param name="bar" value='foo'></param>
      <a>link</a>
     </object>
   </dfn></p>
-  <object>
-    <p><a>link</a></p>
-  </object>
-  <object>
-    <param name="foo"></param><param name="bar"></param>
-    <p><a>link</a></p>
-  </object>
 </body>
 </html>

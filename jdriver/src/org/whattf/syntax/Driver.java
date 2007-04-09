@@ -274,7 +274,7 @@ public class Driver {
         checkDirectory(new File("html5core-plus-web-forms2/"), new File(
                 "../xhtml5core-plus-web-forms2.rnc"));
         checkDirectory(new File("html5full-html/"), new File(
-        "../xhtml5full-html.rnc"));
+        "../html5full.rnc"));
         checkDirectory(new File("html5full-xhtml/"), new File(
                 "../xhtml5full-xhtml.rnc"));
         checkDirectory(new File("assertions/"), new File(

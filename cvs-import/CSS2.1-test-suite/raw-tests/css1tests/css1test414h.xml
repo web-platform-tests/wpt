@@ -13,7 +13,7 @@
  <body>
   <p>The word "fail" should not appear below, just a green block.</p>
   <div class="test">
-   <img src="support/1x1-transparent.png" alt="FAIL: You need image support for this test." class="left"/>
+   <img src="support/1x1-white.png" alt="FAIL: You need image support for this test." class="left"/>
    <img src="support/1x1-green.png" alt="FAIL: You need image support for this test." class="right"/>
    <span> FAIL </span>
   </div>

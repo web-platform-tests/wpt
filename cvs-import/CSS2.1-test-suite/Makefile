@@ -20,11 +20,20 @@ all:
 	#
 	rm -rf dist/
 	mkdir dist
+	mkdir dist/html4
+	mkdir dist/xhtml1
+	mkdir dist/xhtml1print
 	#
 	# generate the tests in all supported formats, along with support files
 	#
 	perl generate.pl tests/*.xht
-	cp -Lrv tests/support dist/support
+	cp -Lrv tests/support dist/html4/support
+	cp -Lrv tests/support dist/xhtml1/support
+	cp -Lrv tests/support dist/xhtml1print/support
+	find dist/xhtml1print/support -iname '*.png' | xargs -I FILENAME convert FILENAME -background white -flatten -quality 90 FILENAME.jpg
+	find dist/xhtml1print/support -iname '*.png.jpg' | xargs rename s/png.jpg/jpg/
+	find dist/xhtml1print/support -iname '*.png' | xargs rm -rf
+	find dist/xhtml1print -iname '*.xht' -o -iname '*.css' | xargs perl -pi -e 's/\.png/\.jpg/g'
 	cp README.dist dist/README
 	#
 	# empty staging area again
@@ -33,4 +42,4 @@ all:
 	#
 	# report number of tests now included (XHTML1.1 variants only)
 	#
-	ls dist/*.xht | wc -l
+	ls dist/xhtml1/*.xht | wc -l

@@ -6,11 +6,11 @@
    body { color: navy; }
    div { font: 10px/1 Ahem; width: 200px; color: orange; }
    img { vertical-align: bottom; }
-   .zero {margin: 0; background-color: brown;}
-   .one {margin: 0.25in; background-color: brown;}
-   .two {margin: 24px; background-color: brown;}
-   .three {margin: 2.4em; background-color: brown;}
-   .four {margin: 12%; background-color: brown;}
+   .zero {margin: 0; background-color: maroon;}
+   .one {margin: 0.25in; background-color: maroon;}
+   .two {margin: 24px; background-color: maroon;}
+   .three {margin: 2.4em; background-color: maroon;}
+   .four {margin: 12%; background-color: maroon;}
   ]]></style>
  </head>
  <body>
@@ -18,7 +18,7 @@
   <div>
    <p class="zero">
        <img src="support/swatch-white.png" alt="" height="10" width="24"
-    />x<img src="support/1x1-transparent.png" alt="" height="10" width="142"
+    />x<img src="support/1x1-maroon.png" alt="" height="10" width="142"
      /><img src="support/swatch-white.png" alt="" height="10" width="24"/>
    </p>
    <p class="one">
@@ -35,7 +35,7 @@
    </p>
    <p class="zero">
        <img src="support/swatch-white.png" alt="" height="10" width="24"
-    />x<img src="support/1x1-transparent.png" alt="" height="10" width="142"
+    />x<img src="support/1x1-maroon.png" alt="" height="10" width="142"
      /><img src="support/swatch-white.png" alt="" height="10" width="24"/>
    </p>
   </div>

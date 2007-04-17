@@ -12,6 +12,6 @@
  <body>
   <p>The next two bars should be identical:</p>
   <div class="test"> TEST </div>
-  <div class="control"> <img src="support/1x1-transparent.png" alt=""/>TEST </div>
+  <div class="control"> <img src="support/1x1-navy.png" alt=""/>TEST </div>
  </body>
 </html>

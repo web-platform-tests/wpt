@@ -6,11 +6,11 @@
    body { color: navy; }
    div { font: 10px/1 Ahem; width: 200px; color: orange; }
    img { vertical-align: bottom; }
-   .zero {margin-left: 0; text-align: left; background-color: brown;}
-   .one {margin-left: 0.5in; text-align: left; background-color: brown;}
-   .two {margin-left: 48px; text-align: left; background-color: brown;}
-   .three {margin-left: 4.8em; text-align: left; background-color: brown;}
-   .four {margin-left: 24%; text-align: left; background-color: brown;}
+   .zero {margin-left: 0; text-align: left; background-color: maroon;}
+   .one {margin-left: 0.5in; text-align: left; background-color: maroon;}
+   .two {margin-left: 48px; text-align: left; background-color: maroon;}
+   .three {margin-left: 4.8em; text-align: left; background-color: maroon;}
+   .four {margin-left: 24%; text-align: left; background-color: maroon;}
   ]]></style>
  </head>
  <body>

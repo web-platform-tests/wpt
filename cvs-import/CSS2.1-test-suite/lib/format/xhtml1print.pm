@@ -16,7 +16,8 @@ sub output {
     $output .= "\n";
     $output .= xml::treeAsXML($tree);
 
-    $printCSS =~ s/%%TESTID%%/$id/;
-    $output =~ s/<\/title>/<\/title>\n  <style type="text\/css">$printCSS  <\/style>/;
+    $_ = $printCSS;
+    s/%%TESTID%%/$id/g;
+    $output =~ s/<\/title>/<\/title>\n  <style type="text\/css">$_  <\/style>/;
     return $output;
 }

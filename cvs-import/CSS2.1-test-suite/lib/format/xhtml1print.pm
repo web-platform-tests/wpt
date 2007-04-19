@@ -6,8 +6,12 @@ use xml;
 
 my $printCSS = q^
     @page { counter-increment: page;
-            @top-left { content: "CSS2.1 Test %%TESTID%%";
-                        content: "CSS2.1 Test %%TESTID%% page " counter(page); } }
+            font: italic 8pt sans-serif;
+            color: gray;
+            @top-left { content: "CSS 2.1 Conformance Test Suite"; }
+            @top-right { content: "Test %%TESTID%%"; }
+            @bottom-right { content: counter(page); }
+          }
 ^;
 
 sub output {

@@ -24,9 +24,15 @@ all:
 	mkdir dist/xhtml1
 	mkdir dist/xhtml1print
 	#
+	# index the tests
+	#
+	perl catalog.pl tests/*.xht
+	cp data/indices.css dist/indices.css
+	#
 	# generate the tests in all supported formats, along with support files
 	#
 	perl generate.pl tests/*.xht
+	perl -pi -e 's/\.xht/\.htm/g' dist/html4/by-section.htm
 	cp -Lrv tests/support dist/html4/support
 	cp -Lrv tests/support dist/xhtml1/support
 	cp -Lrv tests/support dist/xhtml1print/support

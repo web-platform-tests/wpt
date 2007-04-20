@@ -42,7 +42,7 @@ my %groups;
 open(FILENAMES, '<', "$filenames") or die "$0: $filenames: $!\n";
 while (defined($_ = <FILENAMES>)) {
     next if m/^#/os;
-    die "$0:$filenames:$.: invalid syntax\n" unless m/^([^ ]+) ([^ ]+)( [^ ]+)*[\n\r]+$/os;
+    die "$0:$filenames:$.: invalid syntax\n" unless m/^([^ ]+) ([^ ]+)(?: (.+))?[\n\r]+$/os;
     my $input = "$directory/$1";
     my $filename = $2;
     my $extraSections = $3;

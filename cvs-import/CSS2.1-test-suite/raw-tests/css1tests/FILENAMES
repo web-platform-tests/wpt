@@ -18,17 +18,17 @@ css1test21cc.xml t0511-c21-pseud-link-03-e.xht
 css1test21d.xml t051103-c21-activ-ln-00-e-i.xht
 css1test21e.xml t051103-c21-hover-ln-00-e-i.xht
 css1test21f.xml t051103-c21-focus-ln-00-e-i.xht
-css1test21g.xml t060403-c21-pseu-id-00-e-i.xht 064 0511
-css1test21h.xml t060403-c21-pseu-cls-00-e-i.xht 064 0511
+css1test21g.xml t060403-c21-pseu-id-00-e-i.xht 0604 0511
+css1test21h.xml t060403-c21-pseu-cls-00-e-i.xht 0604 0511
 css1test23.xml t051201-c23-first-line-00-b.xht
 css1test24.xml t051202-c24-first-lttr-00-b.xht
 css1test25.xml t0510-c25-pseudo-elmnt-00-c.xht 051201
 css1test26.xml t051202-c26-psudo-nest-00-c.xht 051201
 css1test31.xml t060402-c31-important-00-b.xht 060401
 css1test32.xml t060401-c32-cascading-00-b.xht 060403
-css1test411.xml t080301-c411-vt-mrgn-00-b.xht 083 0804
-css1test412a.xml t0801-c412-hz-box-00-b-a.xht 085 084 0803
-css1test412b.xml t100303-c412-blockw-00-d-ag.xht 102 0803
+css1test411.xml t080301-c411-vt-mrgn-00-b.xht 0803 0804
+css1test412a.xml t0801-c412-hz-box-00-b-a.xht 0805 0804 0803
+css1test412b.xml t100303-c412-blockw-00-d-ag.xht 1002 0803
 css1test414a.xml t090501-c414-flt-00-d.xht
 css1test414b.xml t090501-c414-flt-01-b.xht
 css1test414c.xml t0905-c414-flt-00-d.xht 1602
@@ -50,9 +50,9 @@ css1test42a.xml t090402-c42-ibx-pad-00-d-ag.xht
 css1test42b.xml t100801-c42-ibx-ht-00-d-a.xht 100601
 css1test43a.xml t1004-c43-rpl-ibx-00-d-ag.xht 100602
 css1test43b.xml t1004-c43-rpl-bbx-00-d-ag.xht 100602
-css1test43c.xml t1602-c43-center-00-d-ag.xht 10034 108 140201
-css1test43d.xml t100304-c43-rpl-bbx-00-d-g.xht 104 100602
-css1test43e.xml t100304-c43-rpl-bbx-01-d-g.xht 104 100602
+css1test43c.xml t1602-c43-center-00-d-ag.xht 100304 1008 140201
+css1test43d.xml t100304-c43-rpl-bbx-00-d-g.xht 100602
+css1test43e.xml t100304-c43-rpl-bbx-01-d-g.xht 100602
 css1test44a.xml t1008-c44-ln-box-00-d-ag.xht
 css1test44b.xml t1008-c44-ln-box-01-d-ag.xht
 css1test44c.xml t1008-c44-ln-box-02-d-ag.xht
@@ -66,17 +66,17 @@ css1test526a.xml t1507-c526-font-sz-00-b.xht
 css1test526b.xml t1507-c526-font-sz-01-b-a.xht
 css1test526c.xml t1507-c526-font-sz-02-b-a.xht
 css1test526d.xml t1507-c526-font-sz-03-f-a.xht
-css1test527a.xml t1508-c527-font-00-b.xht 153 154 155 1507
-css1test527b.xml t1508-c527-font-01-b.xht 157 100801
-css1test527c.xml t1508-c527-font-02-b.xht 153 157 100801
-css1test527d.xml t1508-c527-font-03-b.xht 153 157 100801
-css1test527e.xml t1508-c527-font-04-b.xht 153 154 155 156 157 100801
-css1test527f.xml t1508-c527-font-05-b.xht 153 154 155 156 157 100801
-css1test527g.xml t1508-c527-font-06-b.xht 153 154 155 156 157 100801
-css1test527h.xml t1508-c527-font-07-b.xht 153 154 155 157 100801
-css1test527i.xml t1508-c527-font-08-b.xht 153 154 155 156 157 100801
-css1test527j.xml t1508-c527-font-09-b.xht 153 156 157 100801
-css1test527k.xml t1508-c527-font-10-c.xht 153 154 155 156 157 100801
+css1test527a.xml t1508-c527-font-00-b.xht 1503 1504 1505 1507
+css1test527b.xml t1508-c527-font-01-b.xht 1507 100801
+css1test527c.xml t1508-c527-font-02-b.xht 1503 1507 100801
+css1test527d.xml t1508-c527-font-03-b.xht 1503 1507 100801
+css1test527e.xml t1508-c527-font-04-b.xht 1503 1504 1505 1506 1507 100801
+css1test527f.xml t1508-c527-font-05-b.xht 1503 1504 1505 1506 1507 100801
+css1test527g.xml t1508-c527-font-06-b.xht 1503 1504 1505 1506 1507 100801
+css1test527h.xml t1508-c527-font-07-b.xht 1503 1504 1505 1507 100801
+css1test527i.xml t1508-c527-font-08-b.xht 1503 1504 1505 1506 1507 100801
+css1test527j.xml t1508-c527-font-09-b.xht 1503 1506 1507 100801
+css1test527k.xml t1508-c527-font-10-c.xht 1503 1504 1505 1506 1507 100801
 css1test531.xml t1401-c531-color-00-a.xht
 css1test532a.xml t140201-c532-bgcolor-00-a.xht
 css1test532b.xml t140201-c532-bgcolor-01-b.xht
@@ -155,7 +155,7 @@ css1test5507-ic.xml t0804-c5507-ipadn-r-02-b-ag.xht
 css1test5507-id.xml t0804-c5507-ipadn-r-03-b-a.xht
 css1test5507-ie.xml t0804-c5507-ipadn-r-04-b-ag.xht
 css1test5507a.xml t0804-c5507-padn-r-00-c-ag.xht 1602
-css1test5507b.xml t0804-c5507-padn-r-01-c-a.xht 162 0805
+css1test5507b.xml t0804-c5507-padn-r-01-c-a.xht 1602 0805
 css1test5507c.xml t0804-c5507-padn-r-02-f.xht
 css1test5507d.xml t0804-c5507-padn-r-03-f.xht 1002
 css1test5508-ia.xml t0804-c5508-ipadn-b-00-b-a.xht
@@ -167,7 +167,7 @@ css1test5509-ib.xml t0804-c5509-ipadn-l-01-b-ag.xht
 css1test5509-ic.xml t0804-c5509-ipadn-l-02-b-ag.xht
 css1test5509-id.xml t0804-c5509-ipadn-l-03-b-a.xht
 css1test5509-ie.xml t0804-c5509-ipadn-l-04-f-ag.xht
-css1test5509a.xml t0804-c5509-padn-l-00-b-ag.xht 04032 1602
+css1test5509a.xml t0804-c5509-padn-l-00-b-ag.xht 040302 1602
 css1test5509b.xml t0804-c5509-padn-l-01-b-a.xht 1602
 css1test5509c.xml t0804-c5509-padn-l-02-f.xht
 css1test5509d.xml t0804-c5509-padn-l-03-f-g.xht
@@ -238,7 +238,7 @@ css1test5525ce.xml t0905-c5525-fltinln-00-c-ag.xht
 css1test5525cf.xml t0905-c5525-fltblck-00-d-ag.xht 100603
 css1test5525cg.xml t0905-c5525-fltblck-01-d.xht 100603
 css1test5525ch.xml t0905-c5525-fltwrap-00-b.xht
-css1test5525ci.xml t0905-c5525-fltcont-00-d-g.xht 10066 090501
+css1test5525ci.xml t0905-c5525-fltcont-00-d-g.xht 100606 090501
 css1test5525d.xml t0905-c5525-fltmult-00-d-g.xht 090501
 css1test5526.xml t0905-c5526-fltclr-00-c-ag.xht 090502
 css1test5526b.xml t0905-c5526-flthw-00-c-g.xht 140201

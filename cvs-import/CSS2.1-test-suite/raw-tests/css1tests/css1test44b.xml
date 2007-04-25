@@ -2,6 +2,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
   <title>CSS 2.1 Test Suite: The Height of Lines</title>
+  <link rel="author" title="CSS1 Test Suite Contributors" href="http://www.w3.org/Style/CSS/Test/CSS1/current/tsack.html"/>
+  <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
   <style type="text/css"><![CDATA[
    div { font: 10px/20px Ahem; color: white; background: red url(support/css1test44b.png) no-repeat;
          width: 39em; padding: 0.5em 1em; border: 1em solid green; }

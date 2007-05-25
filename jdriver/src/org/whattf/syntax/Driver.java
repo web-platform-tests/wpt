@@ -22,12 +22,16 @@ import java.net.MalformedURLException;
 
 import net.java.dev.xmlidfilter.XMLIdFilter;
 
+import org.whattf.checker.NormalizationChecker;
+import org.whattf.checker.SignificantInlineChecker;
+import org.whattf.checker.TextContentChecker;
+import org.whattf.checker.jing.CheckerValidator;
+import org.whattf.checker.table.TableChecker;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXNotSupportedException;
 import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.DefaultHandler;
 
 import com.thaiopensource.relaxng.impl.CombineValidator;
 import com.thaiopensource.util.PropertyMap;
@@ -44,14 +48,8 @@ import com.thaiopensource.xml.sax.Jaxp11XMLReaderCreator;
 
 import fi.iki.hsivonen.gnu.xml.aelfred2.SAXDriver;
 import fi.iki.hsivonen.htmlparser.HtmlParser;
-import fi.iki.hsivonen.xml.NullEntityResolver;
 import fi.iki.hsivonen.xml.SystemErrErrorHandler;
 import fi.iki.hsivonen.xml.XhtmlIdFilter;
-import fi.iki.hsivonen.xml.checker.NormalizationChecker;
-import fi.iki.hsivonen.xml.checker.SignificantInlineChecker;
-import fi.iki.hsivonen.xml.checker.TextContentChecker;
-import fi.iki.hsivonen.xml.checker.jing.CheckerValidator;
-import fi.iki.hsivonen.xml.checker.table.TableChecker;
 
 /**
  * 

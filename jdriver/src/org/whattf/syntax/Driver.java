@@ -58,6 +58,8 @@ import fi.iki.hsivonen.xml.XhtmlIdFilter;
  */
 public class Driver {
 
+    private static final String PATH = "syntax/relaxng/tests/";
+    
     private PrintWriter err;
 
     private PrintWriter out;
@@ -260,7 +262,7 @@ public class Driver {
 
     public boolean check() throws SAXException {
         try {
-            assertionSchema = schemaByFilename(new File("../assertions.sch"));
+            assertionSchema = schemaByFilename(new File(PATH + "../assertions.sch"));
         } catch (Exception e) {
             err.println("Reading schema failed. Terminating.");
             e.printStackTrace();
@@ -268,17 +270,17 @@ public class Driver {
             return false;
         }
 
-        checkDirectory(new File("html5core/"), new File("../xhtml5core.rnc"));
-        checkDirectory(new File("html5core-plus-web-forms2/"), new File(
-                "../xhtml5core-plus-web-forms2.rnc"));
-        checkDirectory(new File("html5full-html/"), new File(
-        "../html5full.rnc"));
-        checkDirectory(new File("html5full-xhtml/"), new File(
-                "../xhtml5full-xhtml.rnc"));
-        checkDirectory(new File("assertions/"), new File(
-                "../xhtml5full-xhtml.rnc"));
+        checkDirectory(new File(PATH + "html5core/"), new File(PATH + "../xhtml5core.rnc"));
+        checkDirectory(new File(PATH + "html5core-plus-web-forms2/"), new File(
+                PATH + "../xhtml5core-plus-web-forms2.rnc"));
+        checkDirectory(new File(PATH + "html5full-html/"), new File(
+                PATH + "../html5full.rnc"));
+        checkDirectory(new File(PATH + "html5full-xhtml/"), new File(
+                PATH + "../xhtml5full-xhtml.rnc"));
+        checkDirectory(new File(PATH + "assertions/"), new File(
+                PATH + "../xhtml5full-xhtml.rnc"));
 
-        checkDirectory(new File("tables/"), new File("../xhtml5full-xhtml.rnc"));
+        checkDirectory(new File(PATH + "tables/"), new File(PATH + "../xhtml5full-xhtml.rnc"));
         if (verbose) {
             if (failed) {
                 out.println("Failure!");

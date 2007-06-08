@@ -4,13 +4,6 @@
  * license details.
  */
 
-/*
- * To compile and run, you need at least:
- * http://hsivonen.iki.fi/code/fi.iki.hsivonen.io-util-xml.jar
- * http://hsivonen.iki.fi/validator-about/htmlparser.jar
- * Jing http://thaiopensource.com/relaxng/jing.html
- */
-
 package org.whattf.syntax;
 
 import java.io.File;

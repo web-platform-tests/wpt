@@ -12,7 +12,8 @@
  </head>
  <body>
   <p class="three">
-   This text should be 18px sans-serif. There should be a 9px gap between each line.
+   This text should be 18px sans-serif. There should be 27px between baselines
+   (9px gap between lines).
    <span class="dummy"> dummy text dummy text dummy text dummy text dummy text dummy
    text dummy text dummy text dummy text dummy text dummy text dummy
    text dummy text dummy text dummy text dummy text dummy text dummy

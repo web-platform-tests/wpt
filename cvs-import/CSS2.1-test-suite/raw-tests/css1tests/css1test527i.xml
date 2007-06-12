@@ -12,7 +12,8 @@
  </head>
  <body>
   <p class="nine">
-   This text should be 18px sans-serif, in small-caps, oblique, and bold. There should be a 9px gap between each line.
+   This text should be 18px sans-serif, in small-caps, oblique, and bold.
+   There should be 36px between baselines (18px gap between lines).
    <span class="dummy"> dummy text dummy text dummy text dummy text dummy text dummy
    text dummy text dummy text dummy text dummy text dummy text dummy
    text dummy text dummy text dummy text dummy text dummy text dummy

@@ -15,8 +15,9 @@
   <p class="eleven">
    <span class="color">
     This text should be 18px sans-serif, in small-caps, italicized,
-    and very light. There should be a 36px gap betwen each line. The
-    text should have a blue background, the gap should not.
+    and very light. There should be 54px between baselines, with a
+    36px gap between lines. The text should have a blue background,
+    the gap should not.
     <span class="dummy"> dummy text dummy text dummy text dummy text dummy text dummy
     text dummy text dummy text dummy text dummy text dummy text dummy
     text dummy text dummy text dummy text dummy text dummy text dummy

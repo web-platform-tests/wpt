@@ -5,14 +5,15 @@
   <link rel="author" title="CSS1 Test Suite Contributors" href="http://www.w3.org/Style/CSS/Test/CSS1/current/tsack.html"/>
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
   <style type="text/css"><![CDATA[
-   body {font-size: 12px; color: navy;}
-   .ten {font: normal 400 80%/2.5 sans-serif;}
+   body {font-size: 16px; color: navy;}
+   .ten {font: normal 400 75%/2.5 sans-serif;}
    span.dummy {color: silver;}
   ]]></style>
  </head>
  <body>
   <p class="ten">
-   This test should be about 10px, sans-serif, and light. There should be about 15px between each line.
+   This test should be 12px, sans-serif, and light.
+   There should be 30px between baselines (18px gap between lines).
    <span class="dummy"> dummy text dummy text dummy text dummy text dummy text dummy
    text dummy text dummy text dummy text dummy text dummy text dummy
    text dummy text dummy text dummy text dummy text dummy text dummy

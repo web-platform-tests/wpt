@@ -14,8 +14,9 @@
  </head>
  <body>
   <p class="six">
-   This text should be 18px sans-serif, in small-caps, italicized, and very light. There should be a 36px gap between each line.
-   <span class="dummy"> dummy text dummy text dummy text dummy text dummy text dummy
+   This text should be 18px sans-serif, in small-caps, italicized, and very light.
+   There should be 54px between baselines (36px gap between lines).
+  <span class="dummy"> dummy text dummy text dummy text dummy text dummy text dummy
    text dummy text dummy text dummy text dummy text dummy text dummy
    text dummy text dummy text dummy text dummy text dummy text dummy
    text dummy text dummy text dummy text dummy text dummy text dummy

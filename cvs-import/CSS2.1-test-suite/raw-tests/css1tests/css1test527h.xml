@@ -12,7 +12,8 @@
  </head>
  <body>
   <p class="eight">
-   This text should be 18px sans-serif, in small-caps and italicized. The lines should be one inch apart.
+   This text should be 18px sans-serif, in small-caps and italicized.
+   The baselines should be one inch apart.
    <span class="dummy"> dummy text dummy text dummy text dummy text dummy text dummy
    text dummy text dummy text dummy text dummy text dummy text dummy
    text dummy text dummy text dummy text dummy text dummy text dummy

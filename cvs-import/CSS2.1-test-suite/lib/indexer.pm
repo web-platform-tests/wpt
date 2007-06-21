@@ -21,7 +21,7 @@ my %types = ( 'a' => 'atomic',
               'e' => 'evil',
               'f' => 'failure' );
 
-my %flags = (  'a' => '<abbr title="Requires Ahem Font">A</abbr>',
+my %flags = ( 'a' => '<abbr title="Requires Ahem Font">A</abbr>',
               'f' => '<abbr title="Requires HTML Framese Support">F</abbr>',
               'g' => '<abbr title="Requires Bitmap Graphics Support">G</abbr>',
               'h' => '<abbr title="Requires Session History">H</abbr>',

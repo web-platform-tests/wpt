@@ -51,17 +51,13 @@ sub index {
   if ($id =~ m/^t(\d\d)(\d\d)?(\d\d)?-[a-z0-9\-]+-([a-f])(?:-([a-z]+))?$/) {
 
     # Collect Metadata
-    local $_ = $1;
-    $_ .= '.'.$2 if $2;
-    $_ .= '.'.$3 if $3;
-    my %data = ( 'primary' => $_,
-                 'type'    => $4,
+    my %data = ( 'type'    => $4,
                  'flags'   => $5 || '' );
-    $data{'primary'} =~ s/0(\d)/$1/g;
 
     my @links = getHeadData($file, $id);
     $data{'title'} = shift @links;
     $data{'links'} = \@links;
+    $data{'primary'} = @links[0];
 
     # Build Test Database
     $testdata{$id} = \%data;
@@ -99,7 +95,7 @@ sub getHeadData {
     $title =~ s/$titlestr//;
 
     # Collect rel="help" URLs
-    @links = /<link\s.*?rel="\s*help\s*".*?>/g;
+    @links = /<link\s.*?rel="\s*help\s*".*?>/gsm;
     foreach (@links) {
       /href="$specroot(.+?)"/;
       $_ = $1;
@@ -116,8 +112,8 @@ sub save {
   open OUT, ">$output" or die "index::sections could not open output file $output: $!";
 
   while (<TMPL>) {
-    if (/(\s*)<!-- TESTS ([A-Z\d\.]+) <(.+)> -->/) {
-      my ($indent, $primary, $section) = ($1, $2, $3);
+    if (/(\s*)<!-- TESTS [A-Z\d\.]+ <(.+)> -->/) {
+      my ($indent, $section) = ($1, $2);
 
       next if (!defined $linkindex{$section}); # no tests for this section
       foreach my $test (@{$linkindex{$section}}) {
@@ -125,7 +121,7 @@ sub save {
 
         # highlight and ID test if this is its primary section
         my ($hlstart, $hlend, $idstr) = ('', '', '');
-        if ($data{'primary'} eq $primary) {
+        if ($data{'primary'} eq $section) {
           $hlstart = '<strong>';
           $hlend = '</strong>';
           $idstr = qq' id="$test"';

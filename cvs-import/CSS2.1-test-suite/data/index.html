@@ -1,0 +1,85 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html lang="en">
+ <head>
+  <title>CSS 2.1 Conformance Test Suite</title>
+  <style type="text/css">
+    @import "http://www.w3.org/StyleSheets/TR/base.css";
+    @import "indices.css";
+  </style>
+ </head>
+ <body>
+
+  <!-- Please keep this file in sync with the XHTML version -->
+
+ <h1>CSS2.1 Conformance Test Suite</h1>
+
+ <p>This is a development version of the CSS2.1 Conformance Test Suite.</p>
+
+ <p>It is woefully incomplete and contains many incorrect tests. Please
+   check the latest version of the <a href="http://www.w3.org/TR/CSS21/">CSS2.1
+   specification</a> before assuming a failure is due to an implementation
+   bug and not a test suite bug.</p>
+
+ <p>In time we hope to correct all errors and extend this test suite to
+  cover all of CSS2.1. Your help is welcome in this effort. The appropriate
+  mailing list for submitting tests and bug reports is
+  <a href="http://lists.w3.org/Archives/Public/public-css-testsuite/">public-css-testsuite@w3.org</a>.
+  More information on the contribution process and test guidelines is
+  available on the <a href="http://csswg.inkedblade.net/test/css2.1">wiki
+  page</a>.</p>
+
+ <p>Tests are currently available in three formats:</p>
+
+ <dl>
+   <dt><a href="xhtml1/">XHTML 1.1</a></dt>
+     <dd>XHTML 1.1 tests sent as <code>application/xhtml+xml</code></dd>
+   <dt><a href="html4/">HTML 4.01</a></dt>
+     <dd>HTML 4.01 tests sent as <code>text/html</code></dd>
+   <dt><a href="xhtml1print/">XHTML 1.1 for Printers</a></dt>
+     <dd>XHTML 1.1 tests with all images converted from PNG to JPEG
+       and formatted with headers and footers to ease testing of
+       embedded printer software. This is not a canonical format,
+       and some tests may fail due to the format conversion that
+       would otherwise pass in the above XHTML 1.1 format.</dd>
+  </dl>
+
+  <p>Note that many of the tests require the
+   <a href="http://www.hixie.ch/resources/fonts/">Ahem font to be installed</a>.
+   The tests that require this are marked with an 'a' at the end of the
+   filename, after the test type classification. Without the Ahem font
+   installed, these tests are of no value.</p>
+
+  <p>In addition, some of the tests make one or more of the following
+   assumptions:</p>
+
+  <ul>
+    <li>The device is a full-color device.</li>
+    <li>The device has a viewport width of at least 640px (approx).</li>
+    <li>The resolution of the device is 96 CSS pixels per inch.</li>
+    <li>The 'medium' font-size computes to 16px.</li>
+    <li>The initial value of 'color' is black.</li>
+    <li>The canvas background is white.</li>
+    <li>The user stylesheet is empty (except where indicated by the tests).</li>
+    <li>The device is interactive and uses scroll bars.</li>
+  </ul>
+
+  <p>The tests that need these assumptions to be true have not yet been
+  marked, but it is likely that we will add a way to identify these
+  tests in due course.</p>
+
+
+<h2>Acknowledgements</h2>
+
+  <p>Many thanks to the following for their contributions:</p>
+  <ul>
+    <li>Alan Harder</li>
+    <li>Bert Bos</li>
+    <li>Boris Zbarsky</li>
+    <li>David Baron</li>
+    <li>Ian Hickson</li>
+    <li>Lachlan Hunt</li>
+  </ul>
+  <p>...and all the <a href="http://www.w3.org/Style/CSS/Test/CSS1/current/tsack.html">contributors
+  to the CSS1 test suite</a>.</p>
+</body>
+</html>

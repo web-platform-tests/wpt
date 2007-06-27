@@ -24,10 +24,12 @@ all:
 	mkdir dist/xhtml1
 	mkdir dist/xhtml1print
 	#
-	# index the tests
+	# indexes
 	#
 	perl catalog.pl tests/*.xht
 	cp data/indices.css dist/indices.css
+	cp data/index.xht dist/index.xht
+	cp data/index.html dist/index.html
 	#
 	# generate the tests in all supported formats, along with support files
 	#
@@ -40,7 +42,6 @@ all:
 	find dist/xhtml1print/support -iname '*.png.jpg' | xargs rename s/png.jpg/jpg/
 	find dist/xhtml1print/support -iname '*.png' | xargs rm -rf
 	find dist/xhtml1print -iname '*.xht' -o -iname '*.css' | xargs perl -pi -e 's/\.png/\.jpg/g'
-	cp README.dist dist/README
 	#
 	# empty staging area again
 	#

@@ -38,7 +38,8 @@ all:
 	cp -Lrv tests/support dist/html4/support
 	cp -Lrv tests/support dist/xhtml1/support
 	cp -Lrv tests/support dist/xhtml1print/support
-	find dist/xhtml1print/support -iname '*.png' | xargs -I FILENAME convert FILENAME -background white -flatten -quality 90 FILENAME.jpg
+        # PNG->JPEG conversion requires ImageMagick's 'convert' tool
+	find dist/xhtml1print/support -iname '*.png' | xargs -I FILENAME convert FILENAME -background white -flatten -quality 90 -interlace none FILENAME.jpg
 	find dist/xhtml1print/support -iname '*.png.jpg' | xargs rename s/png.jpg/jpg/
 	find dist/xhtml1print/support -iname '*.png' | xargs rm -rf
 	find dist/xhtml1print -iname '*.xht' -o -iname '*.css' | xargs perl -pi -e 's/\.png/\.jpg/g'

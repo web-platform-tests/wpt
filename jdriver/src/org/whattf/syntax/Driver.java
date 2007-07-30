@@ -67,7 +67,7 @@ public class Driver {
 
     private CountingErrorHandler countingErrorHandler = new CountingErrorHandler();
 
-    private XMLReader htmlParser = new HtmlParser();
+    private HtmlParser htmlParser = new HtmlParser();
 
     private XMLReader xmlParser;
 
@@ -251,6 +251,7 @@ public class Driver {
         xmlParser.setContentHandler(validator.getContentHandler());
         xmlParser.setErrorHandler(eh);
         htmlParser.setFeature("http://hsivonen.iki.fi/checkers/nfc/", true);
+        htmlParser.setMappingLangToXmlLang(true);
     }
 
     public boolean check() throws SAXException {

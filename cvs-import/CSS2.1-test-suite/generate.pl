@@ -39,37 +39,6 @@ foreach my $file (@ARGV) {
     # XXX remember something about the tests
 }
 
-print "dist/.htaccess\n";
-open(FILE, '>', 'dist/.htaccess') or die "dist/.htaccess: $!\n";
-
-print FILE <<END;
-# Define some types
-AddType application/xhtml+xml .xht
-AddType text/html .htm
-AddType text/css .css
-AddType image/png .png
-
-# Set the default character set
-AddDefaultCharset utf-8
-
-# Indexing Options
-Options +Indexes
-IndexOptions DescriptionWidth=* NameWidth=* FancyIndexing FoldersFirst ScanHTMLTitles
-IndexIgnore .htaccess *~ .#* #*# CVS README
-ReadmeName README
-
-# Set up the README files to be plain text
-<files README>
-   ForceType text/plain
-   SetHandler default-handler
-</files>
-
-# Add some default descriptions
-AddDescription "Information about the files in this directory" README
-END
-close(FILE);
-
-
 sub save {
     my($filename, $data) = @_;
     return unless defined $data;

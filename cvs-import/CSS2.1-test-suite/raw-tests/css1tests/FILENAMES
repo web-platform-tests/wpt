@@ -248,7 +248,8 @@ css1test562.xml t1606-c562-white-sp-00-b-ag.xht
 css1test563a.xml t1205-c563-list-type-00-b.xht
 css1test563b.xml t1205-c563-list-type-01-b.xht
 css1test564.xml t1205-c564-list-img-00-b-g.xht
-css1test565.xml t1205-c565-list-pos-00-b.xht
+css1test565a.xml t1205-c565-list-pos-00-b.xht
+css1test565b.xml t1205-c565-list-pos-01-b.xht
 css1test566a.xml t1205-c566-list-stl-00-e-ag.xht
 css1test566b.xml t1205-c566-list-stl-01-c-g.xht
 css1test61a.xml t040302-c61-rel-len-00-b-ag.xht

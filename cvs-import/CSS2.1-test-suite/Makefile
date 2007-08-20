@@ -24,12 +24,13 @@ all:
 	mkdir dist/xhtml1
 	mkdir dist/xhtml1print
 	#
-	# indexes
+	# indexes and htaccess
 	#
 	perl catalog.pl tests/*.xht
 	cp data/indices.css dist/indices.css
 	cp data/index.xht dist/index.xht
 	cp data/index.html dist/index.html
+	cp data/htaccess dist/.htaccess
 	#
 	# generate the tests in all supported formats, along with support files
 	#

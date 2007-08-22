@@ -5,7 +5,7 @@ use utf8;
 
 # Usage:
 # init('Spec Root URL', 'path/to/template.xht', 'Test Suite Title: ')
-# foreach test {
+# foreach test
 #   index('path/to/test.xht','testid')
 # save('path/to/save/index.xht')
 
@@ -13,23 +13,26 @@ use utf8;
 # The template must have lines of the form <!-- TESTS 3.2 <third.html#sec2> -->
 # where third.html#sec2 matches the rel="help" links
 
-
-my %types = ( 'a' => 'atomic',
-              'b' => 'basic',
-              'c' => 'composite',
-              'd' => 'detailed',
-              'e' => 'evil',
-              'f' => 'failure' );
-
 my %flags = ( 'a' => '<abbr title="Requires Ahem Font">A</abbr>',
-              'f' => '<abbr title="Requires HTML Framese Support">F</abbr>',
+              'f' => '<abbr title="Requires HTML Frames Support">F</abbr>',
               'g' => '<abbr title="Requires Bitmap Graphics Support">G</abbr>',
               'h' => '<abbr title="Requires Session History">H</abbr>',
               'i' => '<abbr title="Requires User Interaction">I</abbr>',
               'm' => '<abbr title="Requires MathML Support">M</abbr>',
               'n' => '<abbr title="Requires XML Namespaces Support">N</abbr>',
               'o' => '<abbr title="Requires DOM (Document Object Model) Support">O</abbr>',
-              'v' => '<abbr title="Requires SVG Support">V</abbr>' );
+              'v' => '<abbr title="Requires SVG Support">V</abbr>',
+              'ahem' => '<abbr title="Requires Ahem Font">A</abbr>',
+              'dom' => '<abbr title="Requires DOM (Document Object Model) Support">O</abbr>',
+              'font' => '<abbr title="Requires Special Font">font</abbr>',
+              'history' => '<abbr title="Requires Session History">H</abbr>',
+              'image' => '<abbr title="Requires Bitmap Graphics Support">G</abbr>',
+              'interact' => '<abbr title="Requires User Interaction">I</abbr>',
+              'invalid' => '<abbr title="Tests Invalid CSS">invalid</abbr>',
+              'namespace' => '<abbr title="Requires XML Namespaces Support">N</abbr>',
+              'paged' => '<abbr title="Test Only Valid for Paged Media">P</abbr>',
+              'scroll' => '<abbr title="Test Only Valid for Continuous Media">S</abbr>',
+              'svg' => '<abbr title="Requires SVG Support">V</abbr>');
 
 my %testdata = ();
 my %linkindex = ();
@@ -48,31 +51,41 @@ sub index {
   my $file = shift @_;
   my $id = shift @_;
 
+  my $title = '';
+  my $flags = '';
+  my $links = [];
+  my %data = ();
+
   if ($id =~ m/^t(\d\d)(\d\d)?(\d\d)?-[a-z0-9\-]+-([a-f])(?:-([a-z]+))?$/) {
 
     # Collect Metadata
-    my %data = ( 'type'    => $4,
-                 'flags'   => $5 || '' );
+    $data{'flags'} = $5 || '';
 
-    my @links = getHeadData($file, $id);
-    $data{'title'} = shift @links;
-    $data{'links'} = \@links;
-    $data{'primary'} = $links[0];
-
-    # Build Test Database
-    $testdata{$id} = \%data;
-
-    # Build Section-based Index
-    foreach (@links) {
-      $linkindex{$_} = [] if (!defined $linkindex{$_});
-      push(@{$linkindex{$_}}, $id);
-    }
-
+    ($title, $links, $flags) = getHeadData($file, $id);
+    $data{'title'} = $title;
+    $data{'links'} = $links;
+    $data{'primary'} = ${$links}[0];
+  }
+  elsif ($id =~ m/^[a-z\-]+-\d\d\d$/) {
+    ($title, $links, $flags) = getHeadData($file, $id);
+    $data{'title'} = $title;
+    $data{'links'} = $links;
+    $data{'primary'} = ${$links}[0];
+    $data{'flags'} = $flags;
   }
   else {
     print "!! Filename fails format test: $id\n";
+    return;
   }
 
+  # Build Test Database
+  $testdata{$id} = \%data;
+
+  # Build Section-based Index
+  foreach (@{$links}) {
+    $linkindex{$_} = [] if (!exists($linkindex{$_}));
+    push(@{$linkindex{$_}}, $id);
+  }
 }
 
 sub getHeadData {
@@ -86,6 +99,7 @@ sub getHeadData {
 
   my @links = ();
   my $title = $id;
+  my $flags = '';
   if ($contents =~ /<head.*?>(.*)<\/head\s*>/sm) {
     local $_ = $1;
 
@@ -95,13 +109,21 @@ sub getHeadData {
     $title =~ s/$titlestr//;
 
     # Collect rel="help" URLs
-    @links = /<link\s.*?rel="\s*help\s*".*?>/gsm;
+    @links = /<link\s[^>]*?rel="\s*help\s*"[^>]*?>/gsm;
     foreach (@links) {
-      /href="$specroot(.+?)"/;
-      $_ = $1;
+      if (/href="$specroot(.+?)"/) {
+        $_ = $1;
+      }
+      else {
+        print "!! Mismatched \$specroot: $_\n";
+      }
     }
+
+    # Get flags
+    $flags = /<meta\s.*?name="\s*flags\s*".*?>/sm;
+    $flags =~ s/\s*content="([a-zA-Z\-\s]*)"\s*/$1/sm;
   }
-  return ($title, @links);
+  return ($title, \@links, '');
 }
 
 
@@ -130,7 +152,6 @@ sub save {
         # Print test info table row
         print OUT "$indent<tr$idstr>\n";
         print OUT "$indent  <td>$hlstart<a href=\"$test.xht\">$data{'title'}</a>$hlend</td>\n";
-        print OUT "$indent  <td>$types{$data{'type'}}</td>\n";
         print OUT "$indent  <td>";
         foreach my $flag (sort keys %flags) {
           print OUT $flags{$flag}." " if ($data{'flags'} =~ /$flag/);

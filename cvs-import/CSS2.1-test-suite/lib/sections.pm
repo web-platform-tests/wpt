@@ -6,7 +6,7 @@ require Exporter;
 @EXPORT = qw(%sectionURIs %sectionTitles %sectionCodes);
 1;
 
-open(SECTIONS, '<', 'sections.dat') or die "$0: sections.dat: $!\n";
+open(SECTIONS, '<', 'data/sections.dat') or die "$0: sections.dat: $!\n";
 while (defined($_ = <SECTIONS>)) {
     my($code, $uri, $title) = m/^([^ ]+) ([^ ]+) (.+)\n$/gos or die "$0: sections.dat: invalid format\n";
     $sectionURIs{$code} = $uri;

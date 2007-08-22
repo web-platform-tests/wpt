@@ -57,7 +57,7 @@ sub index {
     my @links = getHeadData($file, $id);
     $data{'title'} = shift @links;
     $data{'links'} = \@links;
-    $data{'primary'} = @links[0];
+    $data{'primary'} = $links[0];
 
     # Build Test Database
     $testdata{$id} = \%data;

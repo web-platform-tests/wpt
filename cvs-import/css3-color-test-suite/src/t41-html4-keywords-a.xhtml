@@ -9,13 +9,16 @@
 		<meta name="assert" content="Test that the HTML4 color keywords have the correct values." />
 		<style type="text/css"><![CDATA[
 		html, body { background: #dddddd; color: #000000; }
+		table { border-spacing: 0; padding: 0; border: none; }
+		td { border: none; padding: 0; }
 		]]></style>
 	</head>
 	<body>
 
-	<p>Each row in the following table should have two cells with the same background color.  None of them should match the background of the page.</p>
+	<p>Each row in the following table (except the first and last, to show where the columns are) should have two cells with the same background color.  None of them should match the background of the page.</p>
 
-	<table border="border">
+	<table>
+		<tr><td style="background: black">&nbsp;&nbsp;&nbsp;</td><td style="background: white">&nbsp;&nbsp;&nbsp;</td></tr>
 		<tr><td style="background: black">&nbsp;&nbsp;&nbsp;</td><td style="background: #000000">&nbsp;&nbsp;&nbsp;</td></tr>
 		<tr><td style="background: green">&nbsp;&nbsp;&nbsp;</td><td style="background: #008000">&nbsp;&nbsp;&nbsp;</td></tr>
 		<tr><td style="background: silver">&nbsp;&nbsp;&nbsp;</td><td style="background: #C0C0C0">&nbsp;&nbsp;&nbsp;</td></tr>
@@ -32,6 +35,7 @@
 		<tr><td style="background: teal">&nbsp;&nbsp;&nbsp;</td><td style="background: #008080">&nbsp;&nbsp;&nbsp;</td></tr>
 		<tr><td style="background: fuchsia">&nbsp;&nbsp;&nbsp;</td><td style="background: #FF00FF">&nbsp;&nbsp;&nbsp;</td></tr>
 		<tr><td style="background: aqua">&nbsp;&nbsp;&nbsp;</td><td style="background: #00FFFF">&nbsp;&nbsp;&nbsp;</td></tr>
+		<tr><td style="background: white">&nbsp;&nbsp;&nbsp;</td><td style="background: black">&nbsp;&nbsp;&nbsp;</td></tr>
 	</table>
 
 	</body>

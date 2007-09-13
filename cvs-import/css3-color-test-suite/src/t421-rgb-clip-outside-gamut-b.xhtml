@@ -1,0 +1,28 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<title>css3-color Test Suite: </title>
+		<link rel="author" title="L. David Baron" href="http://dbaron.org/" />
+		<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+		<link rel="help" href="http://www.w3.org/TR/2003/CR-css3-color-20030514#" />
+		<meta name="flags" content="" />
+		<meta name="assert" content="" />
+		<style type="text/css"><![CDATA[
+		html, body { background: black; }
+		#one { color: rgb(-30, 500, -1); }
+		#two { color: rgb(-260, 300, -254); }
+		#three { color: rgb(-254, 256, 0); }
+		#four { color: rgb(-10%, 200%, -1%); }
+		#five { color: rgb(-110%, 130%, -99%); }
+		#six { color: rgb(-99%, 101%, 0%); }
+		]]></style>
+	</head>
+	<body>
+		<p id="one">This text should be green (although on non-screen devices it may differ slightly from the other green lines).</p>
+		<p id="two">This text should be green (although on non-screen devices it may differ slightly from the other green lines).</p>
+		<p id="three">This text should be green (although on non-screen devices it may differ slightly from the other green lines).</p>
+		<p id="four">This text should be green (although on non-screen devices it may differ slightly from the other green lines).</p>
+		<p id="five">This text should be green (although on non-screen devices it may differ slightly from the other green lines).</p>
+		<p id="six">This text should be green (although on non-screen devices it may differ slightly from the other green lines).</p>
+	</body>
+</html>

@@ -31,7 +31,7 @@ all:
 	#
 	# indexes and htaccess
 	#
-	perl catalog.pl tests/*.xht
+	#perl catalog.pl tests/*.xht  # don't have section-index.xht
 	cp data/indices.css dist/indices.css
 	cp data/index.xht dist/index.xht
 	cp data/index.html dist/index.html

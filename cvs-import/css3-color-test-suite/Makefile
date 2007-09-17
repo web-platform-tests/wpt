@@ -7,7 +7,7 @@ all:
 	#
 	# empty staging area
 	#
-	rm -rf $(STAGING_DIR)/
+	rm -rf $(STAGING_DIR)
 	mkdir $(STAGING_DIR)
 	#
 	# take the tests and place them in staging area
@@ -27,7 +27,7 @@ all:
 	#
 	# empty staging area again
 	#
-	rm -rf $(STAGING_DIR)/
+	rm -rf $(STAGING_DIR)
 	#
 	# report number of tests now included (XHTML1.1 variants only)
 	#

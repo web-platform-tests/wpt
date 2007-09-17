@@ -29,6 +29,14 @@ all:
 	mkdir $(OUTPUT_DIR)/html4
 	mkdir $(OUTPUT_DIR)/xhtml1
 	#
+	# indexes and htaccess
+	#
+	perl catalog.pl tests/*.xht
+	cp data/indices.css dist/indices.css
+	cp data/index.xht dist/index.xht
+	cp data/index.html dist/index.html
+	cp data/htaccess dist/.htaccess
+	#
 	# generate the tests in all supported formats
 	#
 	$(PERL) generate.pl $(STAGING_DIR)/*.xht

@@ -1,0 +1,21 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<title>css3-color Test Suite: flavor</title>
+		<link rel="author" title="L. David Baron" href="http://dbaron.org/" />
+		<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+		<link rel="help" href="http://www.w3.org/TR/2003/CR-css3-color-20030514#flavor" />
+		<meta name="flags" content="" />
+		<meta name="assert" content="The flavor system color should use the system color of the machine." />
+		<style type="text/css"><![CDATA[
+			p { color: red; }
+			span { color: black; }
+			p, span { color: flavor; }
+		]]></style>
+	</head>
+	<body>
+		<p>This text should all be <span>in the dominant accent color
+		used on the physical machine that the user</span> is interacting
+		with.</p>
+	</body>
+</html>

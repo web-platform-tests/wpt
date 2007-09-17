@@ -10,9 +10,17 @@ all:
 	rm -rf $(STAGING_DIR)
 	mkdir $(STAGING_DIR)
 	#
-	# take the tests and place them in staging area
+	# take the tests and place them in staging area, and rename them
+	# so that match the expected naming format
 	#
-	find src -name '*.xhtml' | sed 's/\.xhtml$$/.xht/;s/^src\///' |  xargs -n 1 --replace cp -Lv src/{}ml $(STAGING_DIR)/{}
+	find src -name '*.xhtml' | while read SRCFILE;                        \
+	do                                                                    \
+		DESTFILE=`echo $$SRCFILE | sed 's/\.xhtml$$/.xht/;s/^src\///'`;\
+		DESTFILE=`echo $$DESTFILE | sed 's/\./-/g;s/-xht$$/.xht/'`;   \
+		DESTFILE=`echo $$DESTFILE | tr A-Z a-z`;                      \
+		DESTFILE=`echo -n $$DESTFILE | cut -d- -f1 | sed 's/\([1-9]\)/0\1/g'`-`echo $$DESTFILE | cut -d- -f2-`; \
+		cp -Lv $$SRCFILE $(STAGING_DIR)/$$DESTFILE;                   \
+	done
 	#
 	# empty distribution area
 	#

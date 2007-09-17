@@ -5,6 +5,7 @@
 # Version 1.0
 #
 # Copyright (c) 2003, 2004 by Ian Hickson
+# Modified for css3-color by L. David Baron
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

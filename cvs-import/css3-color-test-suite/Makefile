@@ -1,5 +1,5 @@
 STAGING_DIR = tests
-OUTPUT_DIR = dist
+OUTPUT_DIR = dist # assumed by generate.pl
 PERL = perl
 
 all:

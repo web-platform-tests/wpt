@@ -16,7 +16,7 @@ all:
 	#
 	# empty distribution area
 	#
-	rm -rf $(OUTPUT_DIR)/
+	rm -rf $(OUTPUT_DIR)
 	mkdir $(OUTPUT_DIR)
 	mkdir $(OUTPUT_DIR)/html4
 	mkdir $(OUTPUT_DIR)/xhtml1

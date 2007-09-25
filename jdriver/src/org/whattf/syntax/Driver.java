@@ -247,10 +247,9 @@ public class Driver {
 
         htmlParser.setContentHandler(validator.getContentHandler());
         htmlParser.setErrorHandler(eh);
-        htmlParser.setFeature("http://hsivonen.iki.fi/checkers/nfc/", true);
+        htmlParser.setFeature("http://xml.org/sax/features/unicode-normalization-checking", true);
         xmlParser.setContentHandler(validator.getContentHandler());
         xmlParser.setErrorHandler(eh);
-        htmlParser.setFeature("http://hsivonen.iki.fi/checkers/nfc/", true);
         htmlParser.setMappingLangToXmlLang(true);
     }
 

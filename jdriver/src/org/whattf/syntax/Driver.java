@@ -250,6 +250,7 @@ public class Driver {
         htmlParser.setFeature("http://xml.org/sax/features/unicode-normalization-checking", true);
         xmlParser.setContentHandler(validator.getContentHandler());
         xmlParser.setErrorHandler(eh);
+        xmlParser.setFeature("http://xml.org/sax/features/unicode-normalization-checking", true);
         htmlParser.setMappingLangToXmlLang(true);
     }
 

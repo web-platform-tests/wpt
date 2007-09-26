@@ -67,6 +67,13 @@
       <code>purple</code>, <code>yellow</code>, <code>orange</code>, <code>teal</code>,
       <code>fuchsia</code>, <code>maroon</code>, <code>navy</code>, <code>aqua</code>,
       and <code>lime</code> as distinct colors.</li>
+    <li>The UA implements reasonable page-breaking behavior; e.g., it is assumed
+      that UAs will not break at every opportunity, but only near the end of
+      a page unless a page break is forced.</li>
+    <li>The UA implements reasonable line-breaking behavior; e.g., it is assumed
+      that spaces between alphanumeric characters provide line breaking
+      opportunities and that UAs will not break at every opportunity, but only
+      near the end of a line unless a line break is forced.</li>
   </ul>
 
   <p>In addition, some of the tests make one or more of the following
@@ -76,6 +83,7 @@
     <li>The device is a full-color device.</li>
     <li>The device has a viewport width of at least 640px (approx).</li>
     <li>The resolution of the device is 96 CSS pixels per inch.</li>
+    <li>The UA imposes no minimum font size.</li>
     <li>The 'medium' font-size computes to 16px.</li>
     <li>The initial value of 'color' is black.</li>
     <li>The canvas background is white.</li>

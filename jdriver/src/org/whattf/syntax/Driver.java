@@ -14,6 +14,7 @@ import java.io.PrintWriter;
 import java.net.MalformedURLException;
 
 import net.java.dev.xmlidfilter.XMLIdFilter;
+import nu.validator.gnu.xml.aelfred2.SAXDriver;
 import nu.validator.htmlparser.sax.HtmlParser;
 import nu.validator.xml.SystemErrErrorHandler;
 import nu.validator.xml.XhtmlIdFilter;
@@ -42,7 +43,6 @@ import com.thaiopensource.validate.rng.RngProperty;
 import com.thaiopensource.xml.sax.CountingErrorHandler;
 import com.thaiopensource.xml.sax.Jaxp11XMLReaderCreator;
 
-import fi.iki.hsivonen.gnu.xml.aelfred2.SAXDriver;
 
 /**
  * 

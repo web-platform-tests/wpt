@@ -13,9 +13,9 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.MalformedURLException;
 
-import net.java.dev.xmlidfilter.XMLIdFilter;
 import nu.validator.gnu.xml.aelfred2.SAXDriver;
 import nu.validator.htmlparser.sax.HtmlParser;
+import nu.validator.xml.IdFilter;
 import nu.validator.xml.SystemErrErrorHandler;
 import nu.validator.xml.XhtmlIdFilter;
 
@@ -90,7 +90,7 @@ public class Driver {
              * factory.setNamespaceAware(true); factory.setValidating(false);
              * XMLReader parser = factory.newSAXParser().getXMLReader();
              */
-            this.xmlParser = new XhtmlIdFilter(new XMLIdFilter(new SAXDriver()));
+            this.xmlParser = new IdFilter(new SAXDriver());
         } catch (Exception e) {
             // If this happens, the JDK is too broken anyway
             throw new RuntimeException(e);

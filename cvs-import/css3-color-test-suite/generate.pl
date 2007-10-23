@@ -36,6 +36,7 @@ foreach my $file (@ARGV) {
     my $tree = parser::parsefile($file);
     save("dist/xhtml1/$root.xht", format::xhtml1::output($tree));
     save("dist/html4/$root.htm", format::html4::output($tree));
+    save("dist/xhtml1print/$root.xht", format::xhtml1print::output($tree,$root));
     # XXX remember something about the tests
 }
 

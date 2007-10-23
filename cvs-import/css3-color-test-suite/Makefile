@@ -28,6 +28,7 @@ all:
 	mkdir $(OUTPUT_DIR)
 	mkdir $(OUTPUT_DIR)/html4
 	mkdir $(OUTPUT_DIR)/xhtml1
+	mkdir $(OUTPUT_DIR)/xhtml1print
 	#
 	# indexes and htaccess
 	#

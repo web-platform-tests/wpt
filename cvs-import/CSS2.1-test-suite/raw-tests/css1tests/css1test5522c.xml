@@ -7,6 +7,7 @@
   <style type="text/css"><![CDATA[
    body { color: blue; }
    td, span {border: 2px solid blue;}
+   table { border-collapse: separate; border-spacing: 6px; }
   ]]></style>
  </head>
  <body>

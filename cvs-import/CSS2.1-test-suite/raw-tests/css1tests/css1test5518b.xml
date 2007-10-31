@@ -8,10 +8,11 @@
    body { color: blue; }
    td { text-align: center; }
    td, span, .three { border-top: blue 2px solid; }
+   .skip { border-top: none; }
   ]]></style>
  </head>
  <body>
-  <p>There should be a solid blue line directly over every occurance of the word "<span>HERE &#x21E7;</span>". (So there should be 8 blue lines on this page.)</p>
+  <p>There should be a solid blue line directly over every occurance of the word "<span>HERE &#x21E7;</span>". (So there should be 7 blue lines on this page.)</p>
   <table>
    <tr>
     <td colspan="2">
@@ -22,8 +23,8 @@
     <td>
      HERE &#x21E7;
     </td>
-    <td>
-     HERE &#x21E7;
+    <td class="skip">
+     dummy text
      <table>
       <tr>
        <td>

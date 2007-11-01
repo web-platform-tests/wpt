@@ -8,7 +8,8 @@
    p { margin: 3em; }
    .one {border-color: green; border-style: solid;}
    .two {border-color: green; border-width: medium; border-style: solid;}
-   .three {border-color: purple green blue yellow; border-width: 2em; border-style: solid;}
+   .three {border-color: purple green blue yellow; border-width: 2em; border-style: solid;
+           line-height: 6em;}
   ]]></style>
  </head>
  <body>
@@ -19,7 +20,9 @@
    <span class="two">This box should have a green border.</span>
   </p>
   <p>
-   <span class="three">Clockwise from top, the borders should be: PURPLE, GREEN, BLUE, YELLOW.</span>
+    Clockwise from top, the borders around
+   <span class="three">THIS&nbsp;PHRASE</span>
+    should be: PURPLE, GREEN, BLUE, YELLOW.
   </p>
  </body>
 </html>

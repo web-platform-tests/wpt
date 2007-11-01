@@ -26,11 +26,9 @@
 </style>
 </head>
 <body>
-	<div class="noBreakAuto">There <strong>must</strong> be a page break after this line of text.</div>
-	<div class="noBreakLeft">There must <strong>not</strong> be a page break after this line of text.</div>
-	<div class="noBreakAlways">There must <strong>not</strong> be a page break after this line of text.</div>
-	<div class="dummy">
-		Lorem ipsum dolor sit amet, consectetuer adipiscing elit.
-	</div>
+	<div class="noBreakAuto">This test must produce two pages of output. This sentence must be on the first page.</div>
+	<div class="noBreakLeft">This sentence must be at the top of the second page.</div>
+	<div class="noBreakAlways dummy">Lorem ipsum dolor sit amet, consectetuer adipiscing elit.</div>
+	<p>This must be the last sentence on the second and final page.</p>
 </body>
 </html>

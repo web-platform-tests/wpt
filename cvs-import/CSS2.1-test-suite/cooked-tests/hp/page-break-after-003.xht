@@ -11,19 +11,16 @@
 	div {
 		page-break-after:always;
 	}
-	.dummy {
-		color:gray;
-	}
 
 </style>
 </head>
 <body>
 	<div>
 		<p>There must <strong>not</strong> be a page break after this line of text.</p>
-		<span class="dummy">Lorem ipsum dolor sit amet, consectetuer adipiscing elit.</span>
+		<span>This test should produce two pages of output.</span>
 	</div>
 	<div>
-		This text should be at the top of the second page.
+		This text should be at the top of the second and final page.
 	</div>
 </body>
 </html>

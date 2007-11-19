@@ -14,7 +14,7 @@ template = """<!DOCTYPE html>
 i = 1
 f = open("source.txt", 'r')
 for line in f:
-  line = line.rstrip()
+  line = line.rstrip('\n')
   o = open("%03d.html" % i, 'wb')
   o.write(template % (line, line, line))
   o.close()

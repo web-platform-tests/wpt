@@ -275,6 +275,7 @@ public class Driver {
                 PATH + "../xhtml5full-xhtml.rnc"));
 
         checkDirectory(new File(PATH + "tables/"), new File(PATH + "../xhtml5full-xhtml.rnc"));
+        checkDirectory(new File(PATH + "media-queries/"), new File(PATH + "../html5full.rnc"));
         if (verbose) {
             if (failed) {
                 out.println("Failure!");

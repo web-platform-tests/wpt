@@ -108,6 +108,19 @@ sub stringAsXML {
     $string =~ s/>/&gt;/gos;
     $string =~ s/"/&quot;/gos;
     $string =~ s/'/&apos;/gos;
+
+    # also escape invisible chars so ppl can see them
+    $string =~ s/([\x00-\x08\x0B\x0C\x0E-\x1F])/sprintf('&#x%X;',ord($1))/eg; # control chars except \t\n
+    $string =~ s/\xA0/&nbsp;/g;
+    $string =~ s/\x2002/&ensp;/g;
+    $string =~ s/\x2003/&emsp;/g;
+    $string =~ s/\x2009/&thinsp;/g;
+    $string =~ s/\x200B/&#x200B;/g;
+    $string =~ s/\x200C/&zwnj;/g;
+    $string =~ s/\x200D/&zwj;/g;
+    $string =~ s/\x200E/&lrm;/g;
+    $string =~ s/\x200F/&rlm;/g;
+
     return $string;
 }
 

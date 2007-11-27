@@ -22,6 +22,10 @@ all:
 		cp -Lv $$SRCFILE $(STAGING_DIR)/$$DESTFILE;                   \
 	done
 	#
+	# preprocess tests as necessary
+	#
+	egrep -l '&\w+;' tests/*.xht | xargs perl -pi -e 'use HTML::Entities::Numbered;' -e '$$_ = name2decimal_xml($$_)'
+	#
 	# empty distribution area
 	#
 	rm -rf $(OUTPUT_DIR)

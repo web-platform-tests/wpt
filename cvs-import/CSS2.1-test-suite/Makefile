@@ -16,6 +16,10 @@ all:
 	rm -rf tests/support/.unused
 	find tests -type d -name CVS | xargs rm -rf
 	#
+	# preprocess tests as necessary
+	#
+	egrep -l '&\w+;' tests/*.xht | xargs perl -pi -e 'use HTML::Entities::Numbered;' -e '$$_ = name2decimal_xml($$_)'
+	#
 	# empty distribution area
 	#
 	rm -rf dist/

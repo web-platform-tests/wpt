@@ -29,10 +29,10 @@
   <p> There should be no red at the end of this line.<strong class="one"> </strong>&#xA0;</p> <!-- the NBSP (there is one after the strong end tag) makes the strong element's space not be collapsed -->
   <p> There should be no red at the end of this line.<img src="support/swatch-white.png" alt="FAIL: Images required." class="one"/>&#xA0;</p>
   <p class="one">
-   This sentence and all its images
+   The text of this sentence and all its spaces (including the space between the images)
    <img src="support/square-teal.png" alt="FAIL: Images required."/>
    <img src="support/square-purple.png" alt="FAIL: Images required."/>
-   should be underlined.
+   should be underlined, but the images themselves should <em>not</em> be underlined.
   </p>
   <p class="one">
    There should be a long blue underline between here: <span> FAIL FAIL FAIL FAIL </span> :and here.

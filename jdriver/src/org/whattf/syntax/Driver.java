@@ -17,10 +17,8 @@ import nu.validator.gnu.xml.aelfred2.SAXDriver;
 import nu.validator.htmlparser.sax.HtmlParser;
 import nu.validator.xml.IdFilter;
 import nu.validator.xml.SystemErrErrorHandler;
-import nu.validator.xml.XhtmlIdFilter;
 
 import org.whattf.checker.NormalizationChecker;
-import org.whattf.checker.SignificantInlineChecker;
 import org.whattf.checker.TextContentChecker;
 import org.whattf.checker.jing.CheckerValidator;
 import org.whattf.checker.table.TableChecker;
@@ -240,8 +238,6 @@ public class Driver {
                 new TableChecker(), jingPropertyMap));
         validator = new CombineValidator(validator, new CheckerValidator(
                 new NormalizationChecker(), jingPropertyMap));
-        validator = new CombineValidator(validator, new CheckerValidator(
-                new SignificantInlineChecker(), jingPropertyMap));
         validator = new CombineValidator(validator, new CheckerValidator(
                 new TextContentChecker(), jingPropertyMap));
 

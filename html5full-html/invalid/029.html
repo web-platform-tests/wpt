@@ -10,7 +10,7 @@
   <!-- can contain interactive -->
   <address><a>text</a></address>
 
-  <!-- cannot contain structured inline -->
-  <address>text <ul><li>list</li></ul> <em>elem</em></address>
+  <!-- cannot contain address inline -->
+  <address>text <address>elem</address></address>
 </body>
 </html>

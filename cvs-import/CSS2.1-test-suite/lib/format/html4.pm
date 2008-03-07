@@ -13,5 +13,6 @@ sub output {
     my $output = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">';
     $output .= "\n";
     $output .= html::treeAsHTML($tree);
+    $output =~ s/([ \t]?)<head>/$1<head>\n$1<meta http-equiv="Content-Type" content="text\/html;charset=UTF-8">/m;
     return $output;
 }

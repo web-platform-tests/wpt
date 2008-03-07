@@ -32,6 +32,7 @@ sub elementAsHTML {
         $node->{tagName} eq '{http://www.w3.org/1999/xhtml}br' or
         $node->{tagName} eq '{http://www.w3.org/1999/xhtml}link' or
         $node->{tagName} eq '{http://www.w3.org/1999/xhtml}col' or
+        $node->{tagName} eq '{http://www.w3.org/1999/xhtml}meta' or
         $node->{tagName} eq '{http://www.w3.org/1999/xhtml}input') { # XXX any others?
         $output .= startTagAsHTML($node);
         if (@{$node->{childNodes}}) {

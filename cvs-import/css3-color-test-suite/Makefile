@@ -53,3 +53,6 @@ all:
 	# report number of tests now included (XHTML1.1 variants only)
 	#
 	ls $(OUTPUT_DIR)/xhtml1/*.xht | wc -l
+
+clean:
+	rm -rf $(STAGING_DIR) $(OUTPUT_DIR)

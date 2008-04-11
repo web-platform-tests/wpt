@@ -1,4 +1,9 @@
-all:
+OFFICIAL =
+# Set to true to build for w3.org's official copy
+
+all: stage process generate clean
+
+stage:
 	#
 	# empty staging area
 	#
@@ -15,10 +20,14 @@ all:
 	#
 	rm -rf tests/support/.unused
 	find tests -type d -name CVS | xargs rm -rf
+
+process:
 	#
 	# preprocess tests as necessary
 	#
 	egrep -l '&\w+;' tests/*.xht | xargs perl -pi -e 'use HTML::Entities::Numbered;' -e '$$_ = name2decimal_xml($$_)'
+
+generate:
 	#
 	# empty distribution area
 	#
@@ -35,6 +44,11 @@ all:
 	cp data/index.xht dist/index.xht
 	cp data/index.html dist/index.html
 	cp data/htaccess dist/.htaccess
+ifdef OFFICIAL
+	cp data/LICENSE-W3CD dist/LICENSE-W3CD
+else
+	cp data/LICENSE-BSD dist/LICENSE-BSD
+endif
 	#
 	# generate the tests in all supported formats, along with support files
 	#
@@ -49,10 +63,20 @@ all:
 	find dist/xhtml1print/support -iname '*.png' | xargs rm -rf
 	find dist/xhtml1print -iname '*.xht' -o -iname '*.css' | xargs perl -pi -e 's/\.png/\.jpg/g'
 	#
-	# empty staging area again
-	#
-	rm -rf tests/
-	#
 	# report number of tests now included (XHTML1.1 variants only)
 	#
 	ls dist/xhtml1/*.xht | wc -l
+ifdef OFFICIAL
+	@echo "Built as official copy"
+endif
+
+
+clean:
+	#
+	# empty staging area again
+	#
+	rm -rf tests/
+
+official:
+	# For lazy typists
+	make OFFICIAL=true

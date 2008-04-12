@@ -26,6 +26,10 @@ process:
 	# preprocess tests as necessary
 	#
 	egrep -l '&\w+;' tests/*.xht | xargs perl -pi -e 'use HTML::Entities::Numbered;' -e '$$_ = name2decimal_xml($$_)'
+	#
+	# now catalog them
+	#
+	perl catalog.pl tests/*.xht
 
 generate:
 	#
@@ -37,9 +41,8 @@ generate:
 	mkdir dist/xhtml1
 	mkdir dist/xhtml1print
 	#
-	# indexes and htaccess
+	# documentation and htaccess
 	#
-	perl catalog.pl tests/*.xht
 	cp data/indices.css dist/indices.css
 	tpage --relative --define path=data/ data/index.xht > dist/index.xht
 	tpage --relative --define path=data/ data/index.html > dist/index.html

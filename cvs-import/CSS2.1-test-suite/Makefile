@@ -41,8 +41,8 @@ generate:
 	#
 	perl catalog.pl tests/*.xht
 	cp data/indices.css dist/indices.css
-	cp data/index.xht dist/index.xht
-	cp data/index.html dist/index.html
+	tpage --relative --define path=data/ data/index.xht > dist/index.xht
+	tpage --relative --define path=data/ data/index.html > dist/index.html
 	cp data/htaccess dist/.htaccess
 ifdef OFFICIAL
 	cp data/LICENSE-W3CD dist/LICENSE-W3CD

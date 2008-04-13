@@ -15,12 +15,10 @@
 
   <p>Many thanks to the following for their contributions:</p>
   <ul>
-    <li>Alan Harder</li>
-    <li>Bert Bos</li>
-    <li>Boris Zbarsky</li>
-    <li>David Baron</li>
-    <li>Ian Hickson</li>
-    <li>Lachlan Hunt</li>
+[%- USE contributors = datafile("${path}contributors.data", delim = '	') %]
+[%- FOREACH person = contributors %]
+    <li>[% person.name %]</li>
+[%- END %]
   </ul>
   <p>...and all the <a href="http://www.w3.org/Style/CSS/Test/CSS1/current/tsack.html">contributors
   to the CSS1 test suite</a>.</p>

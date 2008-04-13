@@ -2,6 +2,7 @@
 package indexer;
 use strict;
 use utf8;
+use Template;
 
 # Usage:
 # init('Spec Root URL', 'path/to/template.xht', 'Test Suite Title: ')
@@ -34,6 +35,14 @@ my %flags = ( 'a' => '<abbr title="Requires Ahem Font">A</abbr>',
               'scroll' => '<abbr title="Test Only Valid for Continuous Media">S</abbr>',
               'svg' => '<abbr title="Requires SVG Support">V</abbr>');
 
+# Template Engine
+
+my $libroot = $INC{'indexer.pm'};
+$libroot =~ s/indexer.pm//;
+my $tt = Template->new({ INCLUDE_PATH => $libroot . 'templates/' }) || die "$Template::ERROR\n";
+
+# Local Data
+
 my %testdata = ();
 my %linkindex = ();
 
@@ -54,24 +63,21 @@ sub index {
   my $title = '';
   my $flags = '';
   my $links = [];
+  my $credits = [];
   my %data = ();
 
+  # Collect Metadata
+
+  ($title, $links, $flags, $credits) = getHeadData($file, $id);
+  $data{'title'} = $title;
+  $data{'links'} = $links;
+  $data{'primary'} = $links->[0];
+  $data{'flags'} = $flags;
+  $data{'credits'} = $credits;
   if ($id =~ m/^t(\d\d)(\d\d)?(\d\d)?-[a-z0-9\-]+-([a-f])(?:-([a-z]+))?$/) {
-
-    # Collect Metadata
     $data{'flags'} = $5 || '';
-
-    ($title, $links, $flags) = getHeadData($file, $id);
-    $data{'title'} = $title;
-    $data{'links'} = $links;
-    $data{'primary'} = ${$links}[0];
   }
   elsif ($id =~ m/^[a-z\-]+-\d\d\d$/) {
-    ($title, $links, $flags) = getHeadData($file, $id);
-    $data{'title'} = $title;
-    $data{'links'} = $links;
-    $data{'primary'} = ${$links}[0];
-    $data{'flags'} = $flags;
   }
   else {
     print "!! Filename fails format test: $id\n";
@@ -98,6 +104,7 @@ sub getHeadData {
   close FILE;
 
   my @links = ();
+  my %credits = ();
   my $title = $id;
   my $flags = '';
   if ($contents =~ /<head.*?>(.*)<\/head\s*>/sm) {
@@ -119,15 +126,46 @@ sub getHeadData {
       }
     }
 
+    # Collect rel="author" information
+    my @credits = /<link\s[^>]*?rel="\s*author\s*"[^>]*?>/gsm;
+    foreach (@credits) {
+      my $url;
+      if (/href="\s*(.+?)\s*"/) {
+        $url = $1;
+      }
+      if (/title="\s*(.+?)\s*"/) {
+        $credits{$1} = $url;
+      }
+      else {
+        print "!! Missing Author Name: $_\n";
+      }
+    }
+
     # Get flags
     $flags = /<meta\s.*?name="\s*flags\s*".*?>/sm;
     $flags =~ s/\s*content="([a-zA-Z\-\s]*)"\s*/$1/sm;
   }
-  return ($title, \@links, '');
+  return ($title, \@links, $flags, \%credits);
 }
 
+sub saveCreditsData {
+  my $output = shift @_;
 
-sub save {
+  my %credits;
+  foreach my $test (values %testdata) {
+    foreach my $name (keys %{$test->{'credits'}}) {
+      $credits{$name} ||= $test->{'credits'}->{$name}
+        if ($name ne 'CSS1 Test Suite Contributors');
+    } 
+  }
+
+  $tt->process('contributors.data.tmpl',
+               { contributors => \%credits },
+               $output)
+  || die $tt->error(), "\n";
+}
+
+sub saveSectionIndex {
   my $output = shift @_;
 
   open TMPL, $template or die "index::sections could not open template $template: $!";

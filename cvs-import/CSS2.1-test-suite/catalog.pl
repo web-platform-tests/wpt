@@ -13,4 +13,6 @@ foreach my $file (@ARGV) {
     indexer::index($file, $root);
 }
 
-indexer::save("tests/by-section.xht");
+indexer::saveCreditsData("data/contributors.data");
+
+indexer::saveSectionIndex("tests/by-section.xht");

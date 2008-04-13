@@ -44,13 +44,15 @@ generate:
 	# documentation and htaccess
 	#
 	cp data/indices.css dist/indices.css
-	tpage --relative --define path=data/ data/index.xht > dist/index.xht
-	tpage --relative --define path=data/ data/index.html > dist/index.html
 	cp data/htaccess dist/.htaccess
 ifdef OFFICIAL
 	cp data/LICENSE-W3CD dist/LICENSE-W3CD
+	tpage --relative --define path=data/ --define official=true data/index.xht > dist/index.xht
+	tpage --relative --define path=data/ --define official=true data/index.html > dist/index.html
 else
 	cp data/LICENSE-BSD dist/LICENSE-BSD
+	tpage --relative --define path=data/ data/index.xht > dist/index.xht
+	tpage --relative --define path=data/ data/index.html > dist/index.html
 endif
 	#
 	# generate the tests in all supported formats, along with support files

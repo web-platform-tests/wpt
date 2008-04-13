@@ -1,7 +1,11 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
  <head>
+[% IF official %]
   <title>CSS 2.1 Conformance Test Suite</title>
+[% ELSE %]
+  <title>CSS 2.1 Tests</title>
+[% END %]
   <style type="text/css">
     @import "http://www.w3.org/StyleSheets/TR/base.css";
     @import "indices.css";
@@ -9,18 +13,7 @@
  </head>
  <body>
 
-[% INSERT "${path}index.content" %]
+[% INCLUDE "${path}index.content" %]
 
-<h2>Acknowledgements</h2>
-
-  <p>Many thanks to the following for their contributions:</p>
-  <ul>
-[%- USE contributors = datafile("${path}contributors.data", delim = '	') %]
-[%- FOREACH person = contributors %]
-    <li>[% person.name %]</li>
-[%- END %]
-  </ul>
-  <p>...and all the <a href="http://www.w3.org/Style/CSS/Test/CSS1/current/tsack.html">contributors
-  to the CSS1 test suite</a>.</p>
 </body>
 </html>

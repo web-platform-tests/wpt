@@ -1,5 +1,8 @@
- <h1>CSS2.1 Conformance Test Suite</h1>
-
+[% IF official %]
+  <h1>CSS 2.1 Conformance Test Suite</h1>
+[% ELSE %]
+  <h1>CSS 2.1 Tests</h1>
+[% END %]
  <p>This is a development version of the CSS2.1 Conformance Test Suite.</p>
 
  <p>It is woefully incomplete and contains many incorrect tests. Please
@@ -85,3 +88,32 @@
   <p>The tests that need these assumptions to be true have not yet been
   marked, but it is likely that we will add a way to identify these
   tests in due course.</p>
+
+
+<h2>License</h2>
+
+[% IF official %]
+<p>These tests are licensed under the
+<a href="http://www.w3.org/Consortium/Legal/2002/copyright-documents-20021231">W3C
+Document License</a>.</p>
+[% ELSE %]
+<p>These tests are licensed under the <a href="LICENSE-BSD">BSD 3-clause
+License</a>. You may modify and distribute them under those terms. Aside
+from their titles, documentation, and location they are identical to the
+official tests of the same date. However, only the
+<a href="http://www.w3.org/Style/Test/CSS2.1/current/">official CSS2.1
+Conformance Test Suite</a> may be used as the basis for CSS conformance
+claims.</p>
+[% END %]
+
+<h2>Acknowledgements</h2>
+
+  <p>Many thanks to the following for their contributions:</p>
+  <ul>
+[%- USE contributors = datafile("${path}contributors.data", delim = '	') %]
+[%- FOREACH person = contributors %]
+    <li>[% person.name %]</li>
+[%- END %]
+  </ul>
+  <p>...and all the <a href="http://www.w3.org/Style/CSS/Test/CSS1/current/tsack.html">contributors
+  to the CSS1 test suite</a>.</p>

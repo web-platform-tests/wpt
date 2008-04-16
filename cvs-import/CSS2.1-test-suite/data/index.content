@@ -1,7 +1,7 @@
 [% IF official %]
   <h1>CSS 2.1 Conformance Test Suite</h1>
 [% ELSE %]
-  <h1>CSS 2.1 Tests</h1>
+  <h1>CSS 2.1 Test Collection</h1>
 [% END %]
  <p>This is a development version of the CSS2.1 Conformance Test Suite.</p>
 

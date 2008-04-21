@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <title>CSS 2.1 Test Suite: Updating layout on display changes</title>
+    <title>CSS Test: Updating layout on display changes</title>
   <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu"/>
     <link rel="help"
           href="http://www.w3.org/TR/CSS21/visuren.html#display-prop" />

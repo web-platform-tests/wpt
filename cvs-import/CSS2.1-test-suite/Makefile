@@ -1,7 +1,11 @@
 OFFICIAL =
-# Set to true to build for w3.org's official copy
+# Call `make OFFICIAL=true` to build for w3.org's official copy
+
+# Please keep any changes in sync with other CSS test suite Makefiles as appropriate, thanks.
 
 all: stage process generate clean
+
+build: stage process generate
 
 stage:
 	#

@@ -14,16 +14,7 @@ use Template;
 # The template must have lines of the form <!-- TESTS 3.2 <third.html#sec2> -->
 # where third.html#sec2 matches the rel="help" links
 
-my %flags = ( 'a' => '<abbr title="Requires Ahem Font">A</abbr>',
-              'f' => '<abbr title="Requires HTML Frames Support">F</abbr>',
-              'g' => '<abbr title="Requires Bitmap Graphics Support">G</abbr>',
-              'h' => '<abbr title="Requires Session History">H</abbr>',
-              'i' => '<abbr title="Requires User Interaction">I</abbr>',
-              'm' => '<abbr title="Requires MathML Support">M</abbr>',
-              'n' => '<abbr title="Requires XML Namespaces Support">N</abbr>',
-              'o' => '<abbr title="Requires DOM (Document Object Model) Support">O</abbr>',
-              'v' => '<abbr title="Requires SVG Support">V</abbr>',
-              'ahem' => '<abbr title="Requires Ahem Font">A</abbr>',
+my %flags = ( 'ahem' => '<abbr title="Requires Ahem Font">A</abbr>',
               'dom' => '<abbr title="Requires DOM (Document Object Model) Support">O</abbr>',
               'font' => '<abbr title="Requires Special Font">font</abbr>',
               'history' => '<abbr title="Requires Session History">H</abbr>',
@@ -34,6 +25,16 @@ my %flags = ( 'a' => '<abbr title="Requires Ahem Font">A</abbr>',
               'paged' => '<abbr title="Test Only Valid for Paged Media">P</abbr>',
               'scroll' => '<abbr title="Test Only Valid for Continuous Media">S</abbr>',
               'svg' => '<abbr title="Requires SVG Support">V</abbr>');
+
+my %filenameflags = ( 'a' => 'ahem',
+                      'f' => 'frames',
+                      'g' => 'image',
+                      'h' => 'history',
+                      'i' => 'interact',
+                      'm' => 'mathml',
+                      'n' => 'namespace',
+                      'o' => 'dom',
+                      'v' => 'svg');
 
 # Template Engine
 
@@ -75,7 +76,12 @@ sub index {
   $data{'flags'} = $flags;
   $data{'credits'} = $credits;
   if ($id =~ m/^t(\d\d)(\d\d)?(\d\d)?-[a-z0-9\-]+-([a-f])(?:-([a-z]+))?$/) {
-    $data{'flags'} = $5 || '';
+    my @flags;
+    my @letters = sort split //, $5 || '';
+    foreach (@letters) {
+      push @flags, $filenameflags{$_};
+    }
+    $data{'flags'} = \@flags;
   }
   elsif ($id =~ m/^[a-z\-]+-\d\d\d$/) {
   }
@@ -106,7 +112,7 @@ sub getHeadData {
   my @links = ();
   my %credits = ();
   my $title = $id;
-  my $flags = '';
+  my @flags = ();
   if ($contents =~ /<head.*?>(.*)<\/head\s*>/sm) {
     local $_ = $1;
 
@@ -142,10 +148,13 @@ sub getHeadData {
     }
 
     # Get flags
-    $flags = /<meta\s.*?name="\s*flags\s*".*?>/sm;
-    $flags =~ s/\s*content="([a-zA-Z\-\s]*)"\s*/$1/sm;
+    if (/(<meta\s.*?name="\s*flags\s*".*?>)/sm) {
+      my $flags = $1;
+      $flags =~ /\s*content="\s*([a-zA-Z\-\s]*?)\s*"\s*/sm;
+      @flags = sort split /\s/sm, $1;
+    }
   }
-  return ($title, \@links, $flags, \%credits);
+  return ($title, \@links, \@flags, \%credits);
 }
 
 sub saveCreditsData {
@@ -191,8 +200,8 @@ sub saveSectionIndex {
         print OUT "$indent<tr$idstr>\n";
         print OUT "$indent  <td>$hlstart<a href=\"$test.xht\">$data{'title'}</a>$hlend</td>\n";
         print OUT "$indent  <td>";
-        foreach my $flag (sort keys %flags) {
-          print OUT $flags{$flag}." " if ($data{'flags'} =~ /$flag/);
+        foreach my $flag (@{$data{'flags'}}) {
+          print OUT $flags{$flag}." ";
         }
         print OUT "</td>\n";
         print OUT "$indent</tr>\n";

@@ -49,6 +49,7 @@ generate:
 	#
 	cp data/indices.css dist/indices.css
 	cp data/htaccess dist/.htaccess
+	cp data/testinfo.data dist/testinfo.data
 ifdef OFFICIAL
 	cp data/LICENSE-W3CD dist/LICENSE-W3CD
 	tpage --relative --define path=data/ --define official=true data/index.xht > dist/index.xht
@@ -82,9 +83,11 @@ endif
 
 clean:
 	#
-	# empty staging area again
+	# empty staging area and remove generated data files
 	#
 	rm -rf tests/
+	rm data/contributors.data
+	rm data/testinfo.data
 
 official:
 	# For lazy typists

@@ -38,3 +38,5 @@ foreach my $file (@ARGV) {
 indexer::saveCreditsData("data/contributors.data");
 
 indexer::saveSectionIndex("tests/by-section.xht");
+
+indexer::saveTestData("data/testinfo.data");

@@ -60,21 +60,17 @@ sub init {
 sub index {
   my $file = shift @_;
   my $id = shift @_;
-
-  my $title = '';
-  my $flags = '';
-  my $links = [];
-  my $credits = [];
   my %data = ();
 
   # Collect Metadata
 
-  ($title, $links, $flags, $credits) = getHeadData($file, $id);
+  my ($title, $links, $flags, $credits, $assert) = getHeadData($file, $id);
   $data{'title'} = $title;
   $data{'links'} = $links;
   $data{'primary'} = $links->[0];
   $data{'flags'} = $flags;
   $data{'credits'} = $credits;
+  $data{'assert'} = $assert;
   if ($id =~ m/^t(\d\d)(\d\d)?(\d\d)?-[a-z0-9\-]+-([a-f])(?:-([a-z]+))?$/) {
     my @flags;
     my @letters = sort split //, $5 || '';
@@ -113,6 +109,7 @@ sub getHeadData {
   my %credits = ();
   my $title = $id;
   my @flags = ();
+  my $assert = '';
   if ($contents =~ /<head.*?>(.*)<\/head\s*>/sm) {
     local $_ = $1;
 
@@ -148,13 +145,21 @@ sub getHeadData {
     }
 
     # Get flags
-    if (/(<meta\s.*?name="\s*flags\s*".*?>)/sm) {
+    if (/(<meta\s[^>]*?name="\s*flags\s*".*?>)/sm) {
       my $flags = $1;
       $flags =~ /\s*content="\s*([a-zA-Z\-\s]*?)\s*"\s*/sm;
       @flags = sort split /\s/sm, $1;
     }
+
+    # Get test assertion
+    if (/(<meta\s[^>]*?name="\s*assert\s*".*?>)/sm) {
+      $assert = $1;
+      $assert =~ /\s*content="\s*(.*?)\s*"\s*/sm;
+      $assert = $1;
+    }
+
   }
-  return ($title, \@links, \@flags, \%credits);
+  return ($title, \@links, \@flags, \%credits, $assert);
 }
 
 sub saveCreditsData {
@@ -170,6 +175,15 @@ sub saveCreditsData {
 
   $tt->process('contributors.data.tmpl',
                { contributors => \%credits },
+               $output)
+  || die $tt->error(), "\n";
+}
+
+sub saveTestData {
+  my $output = shift @_;
+
+  $tt->process('testinfo.data.tmpl',
+               { testdata => \%testdata },
                $output)
   || die $tt->error(), "\n";
 }

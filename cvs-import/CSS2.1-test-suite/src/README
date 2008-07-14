@@ -1,0 +1,8 @@
+These are test files that already have <link rel="help"> lines and the
+proper filenames. The files are moved to the ../tests/ directory
+during generation where another script takes them and creates the
+final versions in ../dist/.
+
+Support files for these tests (such as images and external style sheets)
+should go in the support/ directory.
+

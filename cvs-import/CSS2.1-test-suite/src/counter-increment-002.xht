@@ -6,6 +6,8 @@
   <link rel="help" href="http://www.w3.org/TR/CSS21/generate.html#counters"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/generate.html#propdef-content"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/syndata.html#counter"/>
+  <meta name="flags" content="dom"/>
+  <meta http-equiv="Content-Style-Type" content="text/css"/>
   <meta http-equiv="Content-Script-Type" content="text/javascript"/>
   <style type="text/css">
 
@@ -13,15 +15,16 @@
 
 
   #test, .reset { counter-reset: c; }
-  .increment:before { content: counters(c, ".") "-"; }
+  .increment:before, .use:before { content: counters(c, ".") "-"; }
   .increment { counter-increment: c; }
 
   </style>
   <script type="text/javascript">
 
   function run() {
-	var t = document.getElementById("test");
-	t.removeChild(t.childNodes.item(1));
+    document.getElementById("one").removeAttribute("class");
+	document.getElementById("two").setAttribute("class", "increment");
+	document.getElementById("three").setAttribute("style", "counter-increment: c");
   }
 
   </script>
@@ -30,9 +33,9 @@
 
  <p>The following two lines should be the same:</p>
 
- <div id="test"><span class="increment"></span><span class="reset"></span><span class="increment"></span><span class="increment"></span></div>
+ <div id="test"><span id="one" class="increment"></span><span><span class="reset"><span class="increment"></span><span id="two" class="increment"></span></span></span><span id="three" class="use"></span><span class="increment"></span></div>
 
- <div id="reference">1-2-3-</div>
+ <div id="reference">0.1-0.2-1-2-</div>
 
  </body>
 </html>

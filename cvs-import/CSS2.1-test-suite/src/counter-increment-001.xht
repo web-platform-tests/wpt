@@ -6,6 +6,7 @@
   <link rel="help" href="http://www.w3.org/TR/CSS21/generate.html#counters"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/generate.html#propdef-content"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/syndata.html#counter"/>
+  <meta name="flags" content="dom"/>
   <meta http-equiv="Content-Script-Type" content="text/javascript"/>
   <style type="text/css">
 
@@ -21,9 +22,7 @@
 
   function run() {
 	var t = document.getElementById("test");
-	var s = document.createElement("span");
-	s.setAttribute("class", "reset");
-	t.insertBefore(s, t.childNodes.item(1));
+	t.removeChild(t.childNodes.item(1));
   }
 
   </script>
@@ -32,9 +31,9 @@
 
  <p>The following two lines should be the same:</p>
 
- <div id="test"><span class="increment"></span><span class="increment"></span><span class="increment"></span></div>
+ <div id="test"><span class="increment"></span><span class="increment">FAIL-</span><span class="increment"></span><span class="increment"></span></div>
 
- <div id="reference">1-1.1-1.2-</div>
+ <div id="reference">1-2-3-</div>
 
  </body>
 </html>

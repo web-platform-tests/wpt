@@ -1,4 +1,4 @@
-These are test files that already have <link rel="help"> lines and the
-proper filenames. The files are moved to the ../tests/ directory
-during generation where another script takes them and creates the
-final versions in ../dist/.
+The tests that were here have all been moved to the ../src
+directory. The mapping from the old filenames to the new
+ones is given in MAP.
+

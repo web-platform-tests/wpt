@@ -93,7 +93,7 @@
 <h2>License</h2>
 
 [% IF official %]
-<p>These tests are licensed under both the
+<p>This test suite is licensed under both the
 <a href="http://www.w3.org/Consortium/Legal/2008/04-testsuite-license">W3C
 Test Suite License</a> and the <a href="http://www.w3.org/Consortium/Legal/2008/03-bsd-license">W3C
 3-clause BSD License</a>. See W3C Legal's <a href="http://www.w3.org/Consortium/Legal/2008/04-testsuite-copyright">explanation

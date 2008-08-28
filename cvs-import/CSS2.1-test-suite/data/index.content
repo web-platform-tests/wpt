@@ -93,9 +93,11 @@
 <h2>License</h2>
 
 [% IF official %]
-<p>These tests are licensed under the
-<a href="http://www.w3.org/Consortium/Legal/2002/copyright-documents-20021231">W3C
-Document License</a>.</p>
+<p>These tests are licensed under both the
+<a href="http://www.w3.org/Consortium/Legal/2008/04-testsuite-license">W3C
+Test Suite License</a> and the <a href="http://www.w3.org/Consortium/Legal/2008/03-bsd-license">W3C
+3-clause BSD License</a>. See W3C Legal's <a href="http://www.w3.org/Consortium/Legal/2008/04-testsuite-copyright">explanation
+of the licenses</a>.</p>
 [% ELSE %]
 <p>These tests are licensed under the <a href="LICENSE-BSD">BSD 3-clause
 License</a>. You may modify and distribute them under those terms. Aside

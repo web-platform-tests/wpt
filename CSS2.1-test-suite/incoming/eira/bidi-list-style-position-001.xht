@@ -1,0 +1,24 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>CSS Test: list-style-position in rtl context</title>
+    <link rel="author" title="Eira Monstad, Opera Software ASA" href="mailto:public-testsuites@opera.com"/>
+    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#propdef-direction"/>
+    <link rel="help" href="http://www.w3.org/TR/CSS21/generate.html#propdef-list-style-position"/>
+    <meta name="flags" content=""/>
+    <meta name="assert" content="list-style-position should be correctly applied in rtl context"/>
+    <style type="text/css"><![CDATA[
+      body {direction:rtl;}
+      ul {
+      list-style-position: inside;
+      }
+    ]]></style>
+  </head>
+  
+  <body>
+    <ul>
+      <li>The x on the next line should have a bullet directly above it<br />x</li>
+    </ul>
+    
+  </body>
+</html>

@@ -18,4 +18,9 @@ t1204-reset-0#-o.xht	counter-reset-00#.xht
 t1204-root-e.xht	counters-root-000.xht
 t040105-atkeyw-0#-b.xht	atkeywords-00#.xht
 t040105-atrule-0#-b.xht	atrules-00#.xht
-t040105-import-0#b.xht import-00#.xht
+t040105-import-0#b.xht	import-00#.xht
+t0402-syntax-0#-f.xht	declaration-00#.xht
+t040307-syntax-01-b.xht	strings-000.xht
+t040306-syntax-01-f.xht	color-000.xht
+t1001-abs-pos-cb-0#-b.xht	abspos-containing-block-00#.xht
+t090502-mrgn-colaps-flt-##-d.xht	margin-collapse-clear-0##.xht

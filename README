@@ -1,2 +1,20 @@
-Just testing.
+These tests Copyright by W3C and/or the author listed in the test
+file. The tests are dual-licensed under the W3C Test Suite License:
+  http://www.w3.org/Consortium/Legal/2008/04-testsuite-license
+and the BSD 3-clause License:
+  http://www.w3.org/Consortium/Legal/2008/03-bsd-license
+under W3C's test suite licensing policy:
+  http://www.w3.org/Consortium/Legal/2008/04-testsuite-copyright
 
+Contributions to this repository are governed by the W3C's Policies
+for Contribution of Testcases to W3C:
+  http://www.w3.org/2004/10/27-testcases
+
+Contributors who are not members of the CSS Working Group must agree
+to the terms of Grant II by filling out this form:
+  http://www.w3.org/2002/09/wbs/1/testgrants2-200409/
+
+Since we don't have an automated sign-up system yet, to get write
+access to this repository, email fantasai
+  http://fantasai.inkedblade.net/contact
+with the username you want. That's it!

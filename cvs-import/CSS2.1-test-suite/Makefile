@@ -1,11 +1,26 @@
 OFFICIAL =
-# Call `make OFFICIAL=true` to build for w3.org's official copy
+# Call `make OFFICIAL=true` or `make official` to build for w3.org's official copy
+DEVEL =
+# Call `make DEVEL=true` or `make devel` to build including unreviewed tests in the SVN repository
 
 # Please keep any changes in sync with other CSS test suite Makefiles as appropriate, thanks.
 
-all: stage process generate clean
+all: pull build clobber
+
+update: pull build clean
 
 build: stage process generate
+
+clobber: clean
+	rm -rf incoming
+
+pull:
+ifdef DEVEL
+	#
+	# grab incoming (unreviewed) tests from svn
+	#
+	svn co http://test.csswg.org/svn/CSS2.1-test-suite/incoming/ incoming
+endif
 
 stage:
 	#
@@ -18,6 +33,10 @@ stage:
 	# take raw and cooked tests and place them in staging area, along with support files
 	#
 	find raw-tests -name FILENAMES | xargs -n 1 perl make-proper-tests.pl
+ifdef DEVEL
+	find incoming -name '*.xht' | xargs -n 1 --replace cp -Lv {} tests
+	find incoming/* -type d -not -name .svn -not -name support  | xargs -n 1 perl -e 'if (-d "$$ARGV[0]/support") { print `cp -Lrvu "$$ARGV[0]/support" tests` }'
+endif
 	find cooked-tests -name '*.xht' | xargs -n 1 --replace cp -Lv {} tests
 	find cooked-tests/* -maxdepth 0 -type d -not -name CVS | xargs -n 1 perl -e 'if (-d "$$ARGV[0]/support") { print `cp -Lrvu "$$ARGV[0]/support" tests` }'
 	cp -Lv src/*.xht tests
@@ -57,11 +76,14 @@ ifdef OFFICIAL
 	cp data/LICENSE-W3CD dist/LICENSE-W3CD
 	tpage --relative --define path=data/ --define official=true data/index.xht > dist/index.xht
 	tpage --relative --define path=data/ --define official=true data/index.html > dist/index.html
+else ifdef DEVEL
+	tpage --relative --define path=data/ --define devel=true data/index.xht > dist/index.xht
+	tpage --relative --define path=data/ --define devel=true data/index.html > dist/index.html
 else
-	cp data/LICENSE-BSD dist/LICENSE-BSD
 	tpage --relative --define path=data/ data/index.xht > dist/index.xht
 	tpage --relative --define path=data/ data/index.html > dist/index.html
 endif
+	cp data/LICENSE-BSD dist/LICENSE-BSD
 	#
 	# generate the tests in all supported formats, along with support files
 	#
@@ -82,7 +104,9 @@ endif
 ifdef OFFICIAL
 	@echo "Built as official copy"
 endif
-
+ifdef DEVEL
+	@echo "Built including unreviewed tests"
+endif
 
 clean:
 	#
@@ -95,3 +119,6 @@ clean:
 official:
 	# For lazy typists
 	make OFFICIAL=true
+devel:
+	# For lazy typists
+	make DEVEL=true

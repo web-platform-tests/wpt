@@ -3,14 +3,26 @@
 [% ELSE %]
   <h1>CSS 2.1 Test Collection</h1>
 [% END %]
- <p>This is a development version of the CSS2.1 Conformance Test Suite.</p>
 
- <p>It is woefully incomplete and contains many incorrect tests. Please
-   check the latest version of the <a href="http://www.w3.org/TR/CSS21/">CSS2.1
-   specification</a> and the
+ <p>This is a development version of the CSS&nbsp;2.1 Test Suite.</p>
+
+[% IF devel %]
+ <p>It contains unreviewed tests and <strong>should not be used for testing
+   CSS conformance</strong>. This build exists to aid in test development
+   <strong>only</strong>.
+[% ELSE %]
+ <p>It is woefully incomplete and may contain incorrect tests.
+[% END %]
+   Please check the latest version of the
+   <a href="http://www.w3.org/TR/CSS21/">CSS2.1 specification</a> and the
    <a href="http://www.w3.org/Style/css2-updates/CR-CSS21-20070719-errata.html">errata
    list</a> before assuming a failure is due to an implementation bug and
    not a test suite bug.</p>
+
+[% UNLESS official %]
+ <p>You can find the <a href="http://www.w3.org/Style/CSS/Test/CSS2.1/current/">official
+  build</a> of the CSS 2.1 Test Suite on W3C's web site.</p>
+[% END %]
 
  <p>In time we hope to correct all errors and extend this test suite to
   cover all of CSS2.1. Your help is welcome in this effort. The appropriate

@@ -77,7 +77,8 @@ ifdef OFFICIAL
 	cp data/LICENSE-W3CD dist/LICENSE-W3CTS
 	tpage --relative --define path=data/ --define official=true data/index.xht > dist/index.xht
 	tpage --relative --define path=data/ --define official=true data/index.html > dist/index.html
-else ifdef DEVEL
+else
+ifdef DEVEL
 	tpage --relative --define path=data/ --define devel=true data/index.xht > dist/index.xht
 	tpage --relative --define path=data/ --define devel=true data/index.html > dist/index.html
 else

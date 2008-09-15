@@ -85,6 +85,7 @@ else
 	tpage --relative --define path=data/ data/index.xht > dist/index.xht
 	tpage --relative --define path=data/ data/index.html > dist/index.html
 endif
+endif
 	#
 	# generate the tests in all supported formats, along with support files
 	#

@@ -69,7 +69,9 @@ sub startTagAsHTML {
     my $output = '<';
     $output .= $node->{localName};
     foreach my $attribute (keys %{$node->{attributesPrefixed}}) {
-        $output .= " $attribute=\"" . stringAsHTML($node->{attributesPrefixed}->{$attribute}) . '"';
+        my $name = $attribute;
+        $name =~ s/^xml://;
+        $output .= " $name=\"" . stringAsHTML($node->{attributesPrefixed}->{$attribute}) . '"';
     }
     $output .= '>';
     return $output;

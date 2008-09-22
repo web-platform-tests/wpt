@@ -72,15 +72,22 @@ sub Start {
         my $value = shift @attrData;
         my $namePrefixed = $name;
         if ($expat->namespace($name)) {
-            prefix: foreach my $prefix ($expat->current_ns_prefixes) {
-                if ($expat->expand_ns_prefix($prefix) eq $expat->namespace($name)) {
-                    $namePrefixed = "$prefix:$namePrefixed";
-                    $prefixesUsed->{$prefix} = $expat->namespace($name);
-                    last prefix;
-                }
+            if ('http://www.w3.org/XML/1998/namespace' eq $expat->namespace($name)) {
+                $namePrefixed = 'xml:' . $namePrefixed;
+                $name = '{http://www.w3.org/XML/1998/namespace}' . $name;
             }
-            $namespacesUsed->{$expat->namespace($name)} += 1;
-            $name = '{' . $expat->namespace($name) . '}' . $name;
+            else {
+                prefix: foreach my $prefix ($expat->current_ns_prefixes) {
+                    if ($expat->expand_ns_prefix($prefix) eq $expat->namespace($name)) {
+                        $namePrefixed = "$prefix:$namePrefixed";
+                        $prefixesUsed->{$prefix} = $expat->namespace($name);
+                        print $prefix;
+                        last prefix;
+                    }
+                }
+                $namespacesUsed->{$expat->namespace($name)} += 1;
+                $name = '{' . $expat->namespace($name) . '}' . $name;
+            }
         }
         $attributes->{$name} = $value;
         $attributesPrefixed->{$namePrefixed} = $value;

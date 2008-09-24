@@ -1,0 +1,21 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>CSS Test Suite: User stylesheet rules using !important and normal author rules</title>
+        <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="help" href="http://www.w3.org/TR/CSS21/cascade.html#cascade" />
+        <meta name="flags" content="" />
+        <meta name="assert" content="User stylesheet rules using !important override normal author rules." />
+        <style type="text/css">
+            .userimportantgreen
+            {
+                color: red;
+            }
+        </style>
+    </head>
+    <body>
+        <p>PREREQUISITE: <a href="support/cascade.css">This style sheet</a> is added to the user agent's user style sheet setting.</p>
+        <p>Test passes if the 'Filler Text' below is green.</p>
+        <p class="userimportantgreen">Filler Text</p>
+    </body>
+</html>

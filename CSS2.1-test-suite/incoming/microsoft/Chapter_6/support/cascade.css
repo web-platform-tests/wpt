@@ -1,0 +1,29 @@
+.usernormalred
+{
+    color: red;
+}
+.userimportantred
+{
+    color: red !important;
+}
+.usernormalgreen
+{
+    color: green;
+}
+.userimportantgreen
+{
+    color: green !important;
+}
+.usermulti
+{
+    color: red;
+    color: green;
+}
+.useroverride
+{
+    color: red;
+}
+.useroverride
+{
+    color: green;
+}

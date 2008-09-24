@@ -1,0 +1,33 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>CSS Test Suite: Attribute 'nowrap' vs CSS 'white-space' specificity</title>
+        <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="help" href="http://www.w3.org/TR/CSS21/cascade.html" />
+        <meta name="flags" content="" />
+        <meta name="assert" content="Attribute 'nowrap' has a specificity of zero and is overridden by CSS." />
+        <style type="text/css">
+            td
+            {
+                border: solid thin black;
+            }
+            .test
+            {
+                white-space: normal;
+            }
+            table
+            {
+                width: 100px;
+            }
+        </style>
+    </head>
+    <body>
+        <p>Test passes if, in the table below, the first column does not wrap the text but the second column does wrap the text.</p>
+        <table>
+            <tr>
+                <td nowrap="nowrap">Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text</td>
+                <td nowrap="nowrap" class="test">Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text</td>
+            </tr>
+        </table>
+    </body>
+</html>

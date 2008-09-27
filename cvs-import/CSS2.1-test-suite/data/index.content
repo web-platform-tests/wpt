@@ -53,6 +53,8 @@
    filename, after the test type classification. Without the Ahem font
    installed, these tests are of no value.</p>
 
+<h2 id="common">Common Assumptions</h2>
+
   <p>Most of the test suite makes the following assumptions:</p>
   <ul>
     <li>The X/HTML <code>div</code> element is assigned <code>display: block;</code>
@@ -82,6 +84,8 @@
       near the end of a line unless a line break is forced.</li>
   </ul>
 
+<h2 id="uncommon">Uncommon Assumptions</h2>
+
   <p>In addition, some of the tests make one or more of the following
    assumptions:</p>
 
@@ -105,19 +109,19 @@
 <h2>License</h2>
 
 [% IF official %]
-<p>This test suite is licensed under both the
-<a href="http://www.w3.org/Consortium/Legal/2008/04-testsuite-license">W3C
-Test Suite License</a> and the <a href="http://www.w3.org/Consortium/Legal/2008/03-bsd-license">W3C
-3-clause BSD License</a>. See W3C Legal's <a href="http://www.w3.org/Consortium/Legal/2008/04-testsuite-copyright">explanation
-of the licenses</a>.</p>
+  <p>This test suite is licensed under both the
+  <a href="http://www.w3.org/Consortium/Legal/2008/04-testsuite-license">W3C
+  Test Suite License</a> and the <a href="http://www.w3.org/Consortium/Legal/2008/03-bsd-license">W3C
+  3-clause BSD License</a>. See W3C Legal's <a href="http://www.w3.org/Consortium/Legal/2008/04-testsuite-copyright">explanation
+  of the licenses</a>.</p>
 [% ELSE %]
-<p>These tests are licensed under the <a href="LICENSE-BSD">BSD 3-clause
-License</a>. You may modify and distribute them under those terms. Aside
-from their titles, documentation, and location they are identical to the
-official tests of the same date. However, only the
-<a href="http://www.w3.org/Style/Test/CSS2.1/current/">official CSS2.1
-Conformance Test Suite</a> may be used as the basis for CSS conformance
-claims.</p>
+  <p>These tests are licensed under the <a href="LICENSE-BSD">BSD 3-clause
+  License</a>. You may modify and distribute them under those terms. Aside
+  from their titles, documentation, and location they are identical to the
+  official tests of the same date. However, only the
+  <a href="http://www.w3.org/Style/Test/CSS2.1/current/">official CSS2.1
+  Conformance Test Suite</a> may be used as the basis for CSS conformance
+  claims.</p>
 [% END %]
 
 <h2>Acknowledgements</h2>

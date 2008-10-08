@@ -4,6 +4,7 @@
     <title>CSS Test: direction:rtl - nested unordered list</title>
     <link rel="author" title="Eira Monstad, Opera Software ASA" href="mailto:public-testsuites@opera.com"/>
     <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#propdef-direction"/>
+    <link rel="help" href="http://www.w3.org/TR/CSS21/generate.html#lists"/>
     <meta name="flags" content=""/>
     <meta name="assert" content="direction:rtl should apply to nested unordered lists, putting bullets on the right and offset leftwards"/>
     <style type="text/css"><![CDATA[
@@ -18,9 +19,9 @@
       <li>And should be right-aligned</li>
       <li>With bullets to the right
 	<ul>
-	  <li>This list is nested</li>
-	  <li>And should be offset to the left</li>
-	  <li>with respect to the first list</li>
+	  <li>This list should be indented from the right</li>
+	  <li>And should be right-aligned</li>
+	  <li>With bullets to the right</li>
 	</ul>
       </li>
     </ul>

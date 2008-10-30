@@ -1,3 +1,15 @@
+Since the 7 March 2006 release, the following tests have changed:
+
+New tests:
+   css3-modsel-184a - Ends-wth attribute selector with empty value
+   css3-modsel-184b - Starts-with attribute selector with empty value
+   css3-modsel-184c - Contains attribute selector with empty value
+   css3-modsel-184d - NEGATED ends-with attribute selector with empty value
+   css3-modsel-184e - NEGATED starts-with attribute selector with empty value
+   css3-modsel-184f - NEGATED contains attribute selector with empty value
+     Tests to verify that attribute selectors with empty values don't match
+
+------------------------------------------------------------------------
 Since the 19 October 2005 release, the following tests have changed:
 
 Modified tests:

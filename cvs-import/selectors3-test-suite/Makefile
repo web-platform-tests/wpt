@@ -18,7 +18,7 @@ all: directories cache $(STYLESHEETS) dist/.htaccess dist/CHANGES
 directories: Makefile generate.pl utils/*
 	-rm -rf dist/
 	-rm cache
-	mkdir -p `perl -e 'foreach $$a (qw($(DESTINATION_TYPES))) { print "dist/$$a/tests\n"; foreach $$b (qw($(TEST_TYPES))) { print "dist/$$a/$$b/flat\n"; foreach $$c (qw($(SHELL_TYPES))) { print "dist/$$a/$$b/$$c\n"; } } }'`
+	perl -e 'foreach $$a (qw($(DESTINATION_TYPES))) { print `mkdir -p dist/$$a/tests\n`; foreach $$b (qw($(TEST_TYPES))) { print `mkdir -p dist/$$a/$$b/flat\n`; foreach $$c (qw($(SHELL_TYPES))) { print `mkdir -p dist/$$a/$$b/$$c\n`; } } }'
 	mkdir -p dist/style
 	touch directories
 

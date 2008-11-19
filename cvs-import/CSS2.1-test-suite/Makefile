@@ -12,14 +12,14 @@ update: pull build clean
 build: stage process generate
 
 clobber: clean
-	rm -rf incoming
+	rm -rf devel
 
 pull:
 ifdef DEVEL
 	#
-	# grab incoming (unreviewed) tests from svn
+	# grab devel (unreviewed) tests from svn
 	#
-	svn co http://test.csswg.org/svn/CSS2.1-test-suite/incoming/ incoming
+	svn co http://test.csswg.org/svn/submitted/css2.1/ devel
 endif
 
 stage:
@@ -34,8 +34,8 @@ stage:
 	#
 	find raw-tests -name FILENAMES | xargs -n 1 perl make-proper-tests.pl
 ifdef DEVEL
-	find incoming -name '*.xht' | xargs -n 1 --replace cp -Lv {} tests
-	find incoming/* -type d -not -name .svn -not -name support  | xargs -n 1 perl -e 'if (-d "$$ARGV[0]/support") { print `cp -Lrvu "$$ARGV[0]/support" tests` }'
+	find devel -name '*.xht' | xargs -n 1 --replace cp -Lv {} tests
+	find devel/* -type d -not -name .svn -not -name support  | xargs -n 1 perl -e 'if (-d "$$ARGV[0]/support") { print `cp -Lrvu "$$ARGV[0]/support" tests` }'
 endif
 	find cooked-tests -name '*.xht' | xargs -n 1 --replace cp -Lv {} tests
 	find cooked-tests/* -maxdepth 0 -type d -not -name CVS | xargs -n 1 perl -e 'if (-d "$$ARGV[0]/support") { print `cp -Lrvu "$$ARGV[0]/support" tests` }'

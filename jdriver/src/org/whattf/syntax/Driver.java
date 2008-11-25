@@ -20,6 +20,7 @@ import nu.validator.xml.SystemErrErrorHandler;
 
 import org.whattf.checker.NormalizationChecker;
 import org.whattf.checker.TextContentChecker;
+import org.whattf.checker.jing.CheckerSchema;
 import org.whattf.checker.jing.CheckerValidator;
 import org.whattf.checker.table.TableChecker;
 import org.xml.sax.ErrorHandler;
@@ -252,7 +253,7 @@ public class Driver {
 
     public boolean check() throws SAXException {
         try {
-            assertionSchema = schemaByFilename(new File(PATH + "../assertions.sch"));
+            assertionSchema = CheckerSchema.ASSERTION_SCH;
         } catch (Exception e) {
             err.println("Reading schema failed. Terminating.");
             e.printStackTrace();

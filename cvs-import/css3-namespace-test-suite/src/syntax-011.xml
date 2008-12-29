@@ -1,0 +1,34 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <link rel="author" title="Anne van Kesteren" href="http://annevankesteren.nl/"/>
+  <link rel="author" title="Opera Software ASA" href="http://opera.com/"/>
+  <link rel="help" href="http://www.w3.org/TR/css3-namespace/#syntax"/>
+  <title>CSS Namespaces Test Suite: string comparison (no URI resolving)</title>
+  <style>
+   @namespace "http://example.com/";
+   *|t { background:lime }
+   t { background:red }
+  </style>
+  <style>
+   @namespace "http://example.com/";
+   *|t2 { background:lime }
+   t2 { background:red }
+  </style>
+  <style>
+   @namespace "%41";
+   *|t3 { background:lime }
+   t3 { background:red }
+  </style>
+  <style>
+   @namespace "A";
+   *|t4 { background:lime }
+   t4 { background:red }
+  </style>
+ </head>
+ <body>
+  <p><t xmlns="HTTP://example.com/">This sentence should have a green background.</t></p>
+  <p><t2 xmlns="http://example.COM/">This sentence should have a green background.</t2></p>
+  <p><t3 xmlns="A">This sentence should have a green background.</t3></p>
+  <p><t4 xmlns="%41">This sentence should have a green background.</t4></p>
+ </body>
+</html>

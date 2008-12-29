@@ -5,12 +5,16 @@
   <link rel="help" href="http://www.w3.org/TR/css3-namespace/#scope"/>
   <title>CSS Namespaces Test Suite: scope @import</title>
   <style>
-   @import url("support/scope.css");
    test { background:lime }
+  </style>
+  <style>
+   @import url("support/scope.css");
+   @import url("support/scope-b.css");
+   @namespace w "test";
    x|test { background:red }
   </style>
  </head>
  <body>
-  <p><test xmlns="test">This line should have a green background.</test></p>
+  <p><test xmlns="test">This sentence should have a green background.</test></p>
  </body>
 </html>

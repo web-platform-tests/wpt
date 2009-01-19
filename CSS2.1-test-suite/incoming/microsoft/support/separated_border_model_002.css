@@ -1,0 +1,66 @@
+title
+{
+    display: none;
+}
+
+link
+{
+    display: none;
+}
+
+meta
+{
+    display: none;
+}
+
+verify
+{
+    display: block;
+}
+
+tableReference
+{
+    display: table;
+    background: purple;
+    width: 400px;
+    padding: 0px;
+}
+
+tableTest
+{
+    display: table;
+    background: blue;
+    border-collapse: separate;
+    border-spacing: 100px 5px;
+    padding: 0px;
+}
+
+tr
+{
+    display: table-row;
+}
+
+tdReference
+{
+    display: table-cell;
+    color: purple;
+    width: 50px;
+    padding: 0px;
+}
+
+tdTest
+{
+    display: table-cell;
+    color: blue;
+    width: 50px;
+    padding: 0px;
+}
+
+ruler
+{
+    display: block;
+    background-image: url("./Ruler_px.png");
+    background-repeat :no-repeat;
+    width: 400px;
+    height: 100px;
+}

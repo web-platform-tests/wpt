@@ -1,0 +1,30 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>CSS Test: Font-size, Negative values</title>
+        <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="help" href="http://www.w3.org/TR/CSS21/fonts.html#font-size-props" />
+        <meta name="flags" content="ahem" />
+        <meta name="assert" content="The 'font-size' does not allow for a negative value. it will fallback to default value medium." />
+        <style type="text/css">
+            span
+            {
+                font-family: ahem;
+            }
+            #span1
+            {
+                font-size: medium;
+            }
+            #span2
+            {
+                font-size: -1in;
+            }
+        </style>
+    </head>
+    <body>
+        <p>Test passes if there is a single box below and the top edge is not jagged.</p>
+        <div>
+            <span id="span1">X</span><span id="span2">X</span>
+        </div>
+    </body>
+</html>

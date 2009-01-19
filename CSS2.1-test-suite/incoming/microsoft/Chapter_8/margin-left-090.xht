@@ -1,0 +1,33 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>CSS Test: Margin-left using 'ex' units with a positive zero value, +0ex</title>
+        <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#propdef-margin-left" />
+        <meta name="flags" content="ahem" />
+        <meta name="assert" content="The 'margin-left' property sets a positive zero length value in 'ex' units." />
+        <style type="text/css">
+            div
+            {
+                font: 12pt ahem;
+                height: 1in;
+                width: 0;
+            }
+            #div1
+            {
+                border-left: 2px solid blue;
+                margin-left: +0ex;
+            }
+            #div2
+            {
+                border-left: 2px solid orange;
+            }
+        </style>
+    </head>
+    <body>
+        <p>Test passes if there is no space between the blue and orange lines.</p>
+        <div id="div1">
+            <div id="div2"></div>
+        </div>
+    </body>
+</html>

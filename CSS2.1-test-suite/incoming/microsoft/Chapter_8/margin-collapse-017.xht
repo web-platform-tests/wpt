@@ -1,0 +1,38 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>CSS Test: Margin collapsing - parent edge and element edge are the same when margins collapse</title>
+        <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#collapsing-margins" />
+        <meta name="flags" content="" />
+        <meta name="assert" content="When the margin top of a box collapses with the top margin of its parent the top edge is the same as the parent's." />
+        <style type="text/css">
+            #div1
+            {
+                border-bottom: solid;
+            }
+            div div
+            {
+                height: 20px;
+                margin-top: 60px;
+                width: 60px;
+            }
+            #div2
+            {
+                background: red;
+            }
+            #div3
+            {
+                background: blue;
+            }
+        </style>
+    </head>
+    <body>
+        <p>Test passes if the blue box is touching the line and there is no red visible on the page.</p>
+        <div id="div1">
+            <div id="div2">
+                <div id="div3"></div>
+            </div>
+        </div>
+    </body>
+</html>

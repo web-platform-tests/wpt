@@ -1,0 +1,35 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>CSS Test: Background-position using 'ex' units with a nominal value, 7.5ex</title>
+        <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="help" href="http://www.w3.org/TR/CSS21/colors.html#propdef-background-position" />
+        <meta name="flags" content="ahem image" />
+        <meta name="assert" content="The 'background-position' property correctly applies a nominal length value in 'ex' units." />
+        <style type="text/css">
+            div
+            {
+                font: 12pt ahem;
+                height: 1in;
+            }
+            #div1
+            {
+                border: 3px solid orange;
+                width: 1.16in;
+            }
+            #div2
+            {
+                background-image: url("../support/blue15x15.png");
+                background-position: 7.5ex;
+                background-repeat: no-repeat;
+                width: 2in;
+            }
+        </style>
+    </head>
+    <body>
+        <p>Test passes if there is a box, vertically centered, and on the right inner edge of the orange box.</p>
+        <div id="div1">
+            <div id="div2"></div>
+        </div>
+    </body>
+</html>

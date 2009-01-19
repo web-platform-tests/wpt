@@ -1,0 +1,27 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>CSS Test: Background over margin</title>
+        <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="help" href="http://www.w3.org/TR/CSS21/colors.html#background-properties" />
+        <meta name="flags" content="" />
+        <meta name="assert" content="Background does not color the margin." />
+        <style type="text/css">
+            #div1
+            {
+                border: solid black;
+            }
+            div div
+            {
+                background: orange;
+                margin: 30px;
+            }
+        </style>
+    </head>
+    <body>
+        <p>Test passes if there is an orange box within a white box within a black box.</p>
+        <div id="div1">
+            <div>Filler Text</div>
+        </div>
+    </body>
+</html>

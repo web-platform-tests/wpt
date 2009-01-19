@@ -1,0 +1,23 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>CSS Test: Background with (repeat image position)</title>
+        <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="help" href="http://www.w3.org/TR/CSS21/colors.html#propdef-background" />
+        <meta name="flags" content="image" />
+        <meta name="assert" content="Background with (repeat image position) sets the background to the image specified, repeated across the x axis, and the image is positioned at the bottom." />
+        <style type="text/css">
+            div
+            {
+                background: repeat-x url("../support/blue15x15.png") bottom;
+                border: 3px solid black;
+                height: 200px;
+                width: 200px;
+            }
+        </style>
+    </head>
+    <body>
+        <p>Test passes if there is a blue box inside the black box below, positioned at the bottom of the black box.</p>
+        <div></div>
+    </body>
+</html>

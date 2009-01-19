@@ -1,0 +1,44 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>CSS Test: Settting a 'border-spacing' width on a table</title>
+        <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#separated-borders" />
+        <meta name="flags" content="image" />
+        <meta name="assert" content="The border-spacing width can be specified for a table (example from spec section 17.6.1)." />
+        <style type="text/css">
+            table
+            {
+                border: outset 10pt;
+                border-collapse: separate;
+                border-spacing: 15pt;
+            }
+            td
+            {
+                border: inset 5pt;
+            }
+            td.special
+            {
+                border: inset 10pt;
+            }
+        </style>
+    </head>
+    <body>
+        <table>
+            <tr>
+                <td class="special">&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+            </tr>
+            <tr>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+            </tr>
+        </table>
+        <p>Test passes if the table above is similar to the table below (cell widths have similar relative proportions).</p>
+        <div>
+            <img alt="Illustration of border spacing" src="../support/separated_border_model_005.png" />
+        </div>
+    </body>
+</html>

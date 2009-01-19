@@ -1,0 +1,50 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>CSS Test: Spanning cell that intersects a 'visibility: collapse' column</title>
+        <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#q4" />
+        <meta name="flags" content="" />
+        <meta name="assert" content="Contents of a cell which spans through a collapsed column are clipped." />
+        <style type="text/css">
+            #col
+            {
+                visibility: collapse;
+            }
+            td
+            {
+                background: black;
+                height: 1em;
+                width: 5em;
+            }
+            #cell1
+            {
+                background: white;
+            }
+            #red
+            {
+                background: red;
+            }
+        </style>
+    </head>
+    <body>
+        <p>Test passes if there is no red visible on the page.</p>
+        <table>
+            <col />
+            <col id="col" />
+            <col />
+            <col />
+            <tr>
+                <td></td>
+                <td colspan="2" id="cell1">Filler Text&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;FAIL FAIL</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td id="red"></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </table>
+    </body>
+</html>

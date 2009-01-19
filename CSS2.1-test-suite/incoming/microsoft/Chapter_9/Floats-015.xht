@@ -1,0 +1,42 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>CSS Test: Right floated elements margins do not collapse</title>
+        <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#floats" />
+        <meta name="flags" content="" />
+        <meta name="assert" content="Right floating boxes never collapse with margins of adjacent boxes or other floats." />
+        <style type="text/css">
+            #div1
+            {
+                border: solid 5px black;
+                height: 232px;
+                width: 232px;
+            }
+            div div
+            {
+                background: blue;
+                height: 96px;
+                margin: 10px;
+                width: 96px;
+            }
+            #div2, #div4
+            {
+                float: right;
+            }
+            #div3
+            {
+                float: left;
+            }
+        </style>
+    </head>
+    <body>
+        <p>Test passes if there is twice as much space between the blue boxes as there is between the blue boxes and the black container edge.</p>
+        <div id="div1">
+            <div id="div2"></div>
+            <div></div>
+            <div id="div3"></div>
+            <div id="div4"></div>
+        </div>
+    </body>
+</html>

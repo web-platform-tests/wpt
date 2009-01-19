@@ -1,0 +1,38 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>CSS Test: Relative positioning with top and bottom do not change element dimensions</title>
+        <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#positioning-scheme" />
+        <meta name="flags" content="" />
+        <meta name="assert" content="Relatively positioned element dimensions are not changed with top/bottom applied." />
+        <style type="text/css">
+            div
+            {
+                height: 1in;
+                position: relative;
+                width: 1in;
+            }
+            #div1
+            {
+                background-color: red;
+            }
+            #div2
+            {
+                background-color: red;
+                bottom: 1in;
+            }
+            #div3
+            {
+                background-color: green;
+                top: -2in;
+            }
+        </style>
+    </head>
+    <body>
+        <p>Test passes if there is no red visible on the page.</p>
+        <div id="div1"></div>
+        <div id="div2"></div>
+        <div id="div3"></div>
+    </body>
+</html>

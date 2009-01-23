@@ -1,0 +1,34 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>CSS Test: Solving for 'left' on absolutely positioned non-replaced elements</title>
+        <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#the-width-property" />
+        <meta name="flags" content="" />
+        <meta name="assert" content="When direction is 'rtl' and 'width' and 'left' are 'auto' and 'right' is not 'auto', the 'width' becomes shrink-to-fit and then solve for 'left'." />
+        <style type="text/css">
+            #div1
+            {
+                border: solid;
+                direction: rtl;
+                height: 3in;
+                position: relative;
+                width: 3in;
+            }
+            div div
+            {
+                background-color: orange;
+                left: auto;
+                position: absolute;
+                right: 0;
+                width: auto;
+            }
+        </style>
+    </head>
+    <body>
+        <p>Test passes if the "Filler Text" below is contained within an orange box of the same width as the text and the orange box is in the top-right corner of the black box.</p>
+        <div id="div1">
+            <div>Filler Text</div>
+        </div>
+    </body>
+</html>

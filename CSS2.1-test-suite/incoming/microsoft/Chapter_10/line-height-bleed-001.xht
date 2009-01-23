@@ -1,0 +1,29 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>CSS Test: Glyphs overflow line box</title>
+        <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#propdef-line-height" />
+        <meta name="flags" content="internal" />
+        <meta name="assert" content="Verify that glyphs bleed out of the box when 'line-height' is less than the content height." />
+        <style type="text/css">
+            #d1
+            {
+                width: 200px;
+                font-size: 2em;
+            }
+            #d2
+            {
+                margin-top: 20px;
+                line-height: 0;
+                background: green;
+            }
+        </style>
+    </head>
+    <body>
+        <p>Test passes if the "Filler Text" content is completely visible without any clipping.</p>
+        <div id="d1">
+            <div id="d2">Filler Text</div>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>CSS Test: Complicated cases with height dependency on decendants</title>
+        <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#block-root-margin" />
+        <meta name="flags" content="" />
+        <meta name="assert" content="If ’margin-top’, or ’margin-bottom’ are ’auto’, their used value is 0. If ’height’ is ’auto’, the height depends on the element’s descendants." />
+        <style type="text/css">
+            #d1
+            {
+                height: auto;
+                width: 1in;
+                background: green;
+                float: left;
+            }
+            #d2
+            {
+                margin-top: 0;
+                margin-bottom: 0;
+                height: auto;
+                background: red;
+                float: left;
+            }
+            #d3
+            {
+                height: 1in;
+                background: green;
+            }
+        </style>
+    </head>
+    <body>
+        <p>Test passes if there is no red visible on the page.</p>
+        <div id="d1">
+            <div id="d2">
+                <div id="d3"></div>
+            </div>
+        </div>
+    </body>
+</html>

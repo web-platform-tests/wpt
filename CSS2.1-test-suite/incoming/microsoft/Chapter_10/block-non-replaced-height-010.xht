@@ -1,0 +1,38 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>CSS Test: No collapsing margins with padding/border</title>
+        <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#normal-block" />
+        <meta name="flags" content="" />
+        <meta name="assert" content="The presence of the padding/border prevents the top margins from collapsing." />
+        <style type="text/css">
+            #d1
+            {
+                height: auto;
+                width: .75in;
+                background: green;
+                padding: 1px;
+            }
+            #d2
+            {
+                margin: 20px;
+                height: 20px;
+                background: white;
+            }
+            #d3
+            {
+                margin: 20px;
+                height: 20px;
+                background: white;
+            }
+        </style>
+    </head>
+    <body>
+        <p>Test passes if the elements on the page form a green '8'.</p>
+        <div id="d1">
+            <div id="d2"></div>
+            <div id="d3"></div>
+        </div>
+    </body>
+</html>

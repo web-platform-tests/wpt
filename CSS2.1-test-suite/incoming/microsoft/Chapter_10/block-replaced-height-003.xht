@@ -1,0 +1,29 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>CSS Test: Block-level replaced elements with intrinsic ratios when computed height is auto</title>
+        <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#inline-replaced-height" />
+        <meta name="flags" content="image" />
+        <meta name="assert" content="When computed height is auto and element has an intrinsic ratio, the height becomes the used width and is divided by the ratio." />
+        <style type="text/css">
+            div
+            {
+                border: 3px solid green;
+                height: 33px;
+            }
+            img
+            {
+                display: block;
+                height: auto;
+                width: 100px;
+            }
+        </style>
+    </head>
+    <body>
+        <p>Test passes if blue box is contained by the green borders and no white space is in between the top and bottom edges of the blue box and the green borders.</p>
+        <div>
+            <img src="../../../Support/blue100x33.png" alt="Test Image" />
+        </div>
+    </body>
+</html>

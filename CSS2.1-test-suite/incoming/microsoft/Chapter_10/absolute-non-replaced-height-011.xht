@@ -1,0 +1,36 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>CSS Test: Absolutely positioned, non-replaced elements, 'height' based on 'top' and 'bottom' positions</title>
+        <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#abs-replaced-height" />
+        <meta name="flags" content="" />
+        <meta name="assert" content="Verify that the 'auto' values on 'margin-top', 'margin-bottom' are set to '0' and the 'height' is the remaining space between the 'top' and 'bottom' positions, when 'height' is 'auto' and 'top' and 'bottom' are both not 'auto'." />
+        <style type="text/css">
+            #d1
+            {
+                position: relative;
+                border: 3px solid black;
+                height: 5in;
+                width: 5in;
+            }
+            #d2
+            {
+                position: absolute;
+                top: 2in;
+                bottom: 2in;
+                height: auto;
+                margin-top: auto;
+                margin-bottom: auto;
+                background: green;
+                width: 100%;
+            }
+        </style>
+    </head>
+    <body>
+        <p>Test passes if the green box is vertically centered in the black bordered box.</p>
+        <div id="d1">
+            <div id="d2"></div>
+        </div>
+    </body>
+</html>

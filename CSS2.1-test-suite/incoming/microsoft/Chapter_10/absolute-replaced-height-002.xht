@@ -1,0 +1,33 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>CSS Test: Absolutely positioned, replaced elements using intrinsic height</title>
+        <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#abs-replaced-height" />
+        <meta name="flags" content="image" />
+        <meta name="assert" content="Verify that the height is the intrinsic height, when an absolutely positioned replaced elements height and width both compute to auto and the element has intrinsic height." />
+        <style type="text/css">
+            #d1
+            {
+                position: absolute;
+                left: 30px;
+                background: green;
+                height: 15px;
+                width: 15px;
+            }
+            img
+            {
+                position: absolute;
+                height: auto;
+                width: auto;
+            }
+        </style>
+    </head>
+    <body>
+        <p>Test passes if blue box and the green box are the same size.</p>
+        <div>
+            <img alt="blue 15 x 15" src="../../../Support/blue15x15.png" />
+            <div id="d1"></div>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,33 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>CSS Test: Percentage based value for max-width contained by box with a negative width</title>
+        <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#min-max-widths" />
+        <meta name="flags" content="" />
+        <meta name="assert" content="If the containing block's width is negative, the used value is zero." />
+        <style type="text/css">
+            #d1
+            {
+                margin-left: 0px;
+                border-left-width: 0;
+                padding-left: 0 ;
+                width: 0;
+                padding-right: 0;
+                border-right-width: 0;
+                margin-right: -10px;
+            }
+            #d2
+            {
+                max-width: 100%;
+                background-color: red;
+            }
+        </style>
+    </head>
+    <body>
+        <p>Test passes if there is no red visible on the page.</p>
+        <div id="d1">
+            <div id="d2">Filler Text Filler Text</div>
+        </div>
+    </body>
+</html>

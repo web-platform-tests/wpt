@@ -1,0 +1,32 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>CSS Test: Block-level non-replaced elements in normal flow when overflow does not compute to visible</title>
+        <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#normal-block" />
+        <meta name="flags" content="" />
+        <meta name="assert" content="Verify top and bottom margins are '0' when a block-level non-replaced element is in normal flow and overflow does not compute to visible but has been propagated to the viewport." />
+        <style type="text/css">
+            #d1
+            {
+                border: 3px solid green;
+            }
+            #d2
+            {
+                background: blue;
+                margin-top: auto;
+                margin-bottom: auto;
+            }
+            html, body
+            {
+                overflow: scroll;
+            }
+        </style>
+    </head>
+    <body>
+        <p>Test passes if the top and bottom edges of the blue box touch the inner edges of the green border.</p>
+        <div id="d1">
+            <div id="d2">Filler Text</div>
+        </div>
+    </body>
+</html>

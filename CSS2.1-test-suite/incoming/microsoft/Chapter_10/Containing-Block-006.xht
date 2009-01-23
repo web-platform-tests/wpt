@@ -1,0 +1,48 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>CSS Test: Containing block for absolute positioned elements is nearest positioned (relative) ancestor.</title>
+        <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#containing-block-details" />
+        <meta name="flags" content="" />
+        <meta name="assert" content="If the element has 'position: absolute', the containing block is established by the nearest positioned ancestor." />
+        <style type="text/css">
+            #d1
+            {
+                margin: 50px;
+            }
+            #d2
+            {
+                position: relative;
+                height: 23px;
+                width: 360px;
+                top: 20px;
+                left: 20px;
+                border: solid green 2px;
+            }
+            #d3
+            {
+                height: 10px;
+                width: 10px;
+                float: right;
+            }
+            #d4
+            {
+                position: absolute;
+                width: 100%;
+                top: 2px;
+                left: 10px;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="d1">
+            <div id="d2">
+                <div id="d3">
+                    <div id="d4">Filler Text Filler Text Filler Text Filler Text Filler Text</div>
+                </div>
+            </div>
+        </div>
+        <p>Test passes if the "Filler Text" is contained within the green box.</p>
+    </body>
+</html>

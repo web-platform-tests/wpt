@@ -1,0 +1,43 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>CSS Test: Floating non-replaced elements with auto margins</title>
+        <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#the-width-property" />
+        <meta name="flags" content="" />
+        <meta name="assert" content="If margin left or right are computed as auto their used value is 0." />
+        <style type="text/css">
+            #d1
+            {
+                float: left;
+                width: 96px;
+                height: 96px;
+                margin: 0 auto;
+                background-color: green;
+                border: solid 1px black;
+            }
+            .c1
+            {
+                float: left;
+                border: solid 1px black;
+                width: 96px;
+                height: 96px;
+                background: blue;
+            }
+            p
+            {
+                clear: left;
+            }
+            body
+            {
+                margin: 0;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="c1"></div>
+        <div id="d1"></div>
+        <div class="c1"></div>
+        <p>Test passes if no visible white space is between the blue boxes and the green box.</p>
+    </body>
+</html>

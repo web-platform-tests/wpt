@@ -1,0 +1,35 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>CSS Test: Absolutely positioned, non-replaced elements, shrink-to-fit solve for top</title>
+        <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#abs-replaced-height" />
+        <meta name="flags" content="" />
+        <meta name="assert" content="Verify that height is based on the overall height of the content, 'margin-top', 'auto' is set to '0' and solve for 'top', when 'top' and 'height' are both 'auto' and 'bottom' is not 'auto'." />
+        <style type="text/css">
+            #d1
+            {
+                position: relative;
+                height: 5in;
+                width: 5in;
+            }
+            #d2
+            {
+                position: absolute;
+                top: auto;
+                bottom: 5in;
+                height: auto;
+                margin-top: auto;
+                margin-bottom: auto;
+                background: blue;
+                width: 100%;
+            }
+        </style>
+    </head>
+    <body>
+        <p>Test passes if the blue box has the same height as its content.</p>
+        <div id="d1">
+            <div id="d2">Filler Text</div>
+        </div>
+    </body>
+</html>

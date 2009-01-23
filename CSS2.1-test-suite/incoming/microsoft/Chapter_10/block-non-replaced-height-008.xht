@@ -1,0 +1,50 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>CSS Test: Offsets for relatively position children are ignored for block-level non-replaced elements in normal flow when overflow does not compute to visible</title>
+        <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#normal-block" />
+        <meta name="flags" content="" />
+        <meta name="assert" content="Verify that relatively positioned children are considered without their offsets. When a block-level non-replaced element is in normal flow and overflow does not compute to visible but has been propagated to the viewport." />
+        <style type="text/css">
+            html, body
+            {
+                overflow: scroll;
+            }
+            #d1
+            {
+                position: relative;
+            }
+            #d2
+            {
+                border: 3px solid red;
+                width: 300px;
+            }
+            #d3
+            {
+                position: relative;
+                top: 50px;
+                left: 150px;
+                height: 100px;
+            }
+            #d4
+            {
+                position: absolute;
+                top: 0;
+                border: 3px solid green;
+                height: 100px;
+                width: 300px;
+            }
+        </style>
+    </head>
+    <body>
+        <p>Test passes if there is no red visible on the page.</p>
+        <div id="d1">
+            <div id="d2">
+                <div id="d3">
+                </div>
+            </div>
+            <div id="d4"></div>
+        </div>
+    </body>
+</html>

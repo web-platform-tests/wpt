@@ -1,0 +1,45 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>CSS Test: Auto heights with inline boxes</title>
+        <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#block-root-margin" />
+        <meta name="flags" content="ahem" />
+        <meta name="assert" content="Line height of block box is based on inline box top and bottom edges." />
+        <style type="text/css">
+            div
+            {
+                font: 20px/1em ahem;
+            }
+            #div1
+            {
+                background-color: blue;
+                color: blue;
+            }
+            .c1
+            {
+                display: inline;
+            }
+            #div1
+            {
+                float: left;
+                height: auto;
+                width: 4em;
+            }
+            #div2
+            {
+                background: green;
+                height: 1em;
+                width: 6em;
+            }
+        </style>
+    </head>
+    <body>
+        <p>Test passes if the blue box has the same height as the green box.</p>
+        <div id="div1">
+            <span class="c1">X</span>
+            <span class="c1">X</span>
+        </div>
+        <div id="div2"></div>
+    </body>
+</html>

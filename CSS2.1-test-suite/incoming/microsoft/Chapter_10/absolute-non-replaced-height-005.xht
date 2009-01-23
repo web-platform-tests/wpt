@@ -1,0 +1,36 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>CSS Test: Absolutely positioned, non-replaced elements, 'margin-bottom' set to 'auto'</title>
+        <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#abs-replaced-height" />
+        <meta name="flags" content="" />
+        <meta name="assert" content="Verify 'margin-bottom' becomes the remainder of the height of the containing box, when 'top', 'bottom' and 'height' are all are not 'auto', 'margin-top' is not 'auto' and 'margin-bottom' is 'auto'." />
+        <style type="text/css">
+            #d1
+            {
+                position: relative;
+                border: 3px solid black;
+                height: 5in;
+                width: 5in;
+            }
+            #d2
+            {
+                position: absolute;
+                top: 1in;
+                bottom: 1in;
+                height: 1in;
+                margin-top: 1in;
+                margin-bottom: auto;
+                background: blue;
+                width: 100%;
+            }
+        </style>
+    </head>
+    <body>
+        <p>Test passes if the blue box is vertically centered in the black bordered box.</p>
+        <div id="d1">
+            <div id="d2"></div>
+        </div>
+    </body>
+</html>

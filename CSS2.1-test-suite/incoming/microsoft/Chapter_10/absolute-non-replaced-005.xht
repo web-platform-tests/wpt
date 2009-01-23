@@ -1,0 +1,36 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>CSS Test: Solving for auto margins on absolutely positioned non-replaced elements</title>
+        <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#the-width-property" />
+        <meta name="flags" content="" />
+        <meta name="assert" content="When left, right and width are all not auto and both margin left and right are auto, the margins get equal values when the equation is calculated." />
+        <style type="text/css">
+            body
+            {
+                margin: 0;
+            }
+            div
+            {
+                position: absolute;
+                left: 0;
+                width: 100%;
+                right: 0;
+                margin: 0 auto;
+                height: 20px;
+                background-color: green;
+                border: solid 1px black;
+            }
+            p
+            {
+                position: absolute;
+                top: 116px;
+            }
+        </style>
+    </head>
+    <body>
+        <div></div>
+        <p>The green box should be the same width as the page and no white space should be visible to the left or right of the box regardless of scrolling.</p>
+    </body>
+</html>

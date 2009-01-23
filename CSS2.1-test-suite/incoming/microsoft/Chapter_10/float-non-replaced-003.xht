@@ -1,0 +1,41 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>CSS Test: Floating non-replaced-block elements with auto width</title>
+        <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#the-width-property" />
+        <meta name="flags" content="" />
+        <meta name="assert" content="Verify non-replaced-block level element uses correct auto width in floated container with auto width." />
+        <style type="text/css">
+            #d1
+            {
+                background-color: red;
+                float: left;
+            }
+            #d2
+            {
+                height: 2em;
+                width: 200px;
+                background-color: green;
+            }
+            #d3
+            {
+                height: 2em;
+                background-color: green;
+            }
+            #d4
+            {
+                height: 2em;
+                background-color: green;
+            }
+        </style>
+    </head>
+    <body>
+        <p>Test passes if a big green box is on the page and there is no red visible on the page.</p>
+        <div id="d1">
+            <div id="d2"></div>
+            <div id="d3"></div>
+            <div id="d4"></div>
+        </div>
+    </body>
+</html>

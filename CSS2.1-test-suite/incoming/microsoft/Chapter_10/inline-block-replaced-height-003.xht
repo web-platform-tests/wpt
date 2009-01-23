@@ -1,0 +1,29 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>CSS Test: Inline-block replaced elements with intrinsic ratio and auto height</title>
+        <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#inline-replaced-height" />
+        <meta name="flags" content="image" />
+        <meta name="assert" content="Verify height is the used width divided by the ratio when inline-block replaced element has an intrinsic ratio and a height set to auto." />
+        <style type="text/css">
+            div
+            {
+                border: 3px solid green;
+                height: 33px;
+            }
+            img
+            {
+                display: inline-block;
+                height: auto;
+                width: 100px;
+            }
+        </style>
+    </head>
+    <body>
+        <p>Test passes if the top and bottom edges of the blue box touch the inner edges of the green border and no overlap occurs.</p>
+        <div>
+            <img alt="Test Image" src="../../../Support/blue100x33.png" />
+        </div>
+    </body>
+</html>

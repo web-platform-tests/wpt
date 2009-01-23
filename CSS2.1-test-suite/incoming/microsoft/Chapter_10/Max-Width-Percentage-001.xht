@@ -1,0 +1,38 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>CSS Test: Minimum and maximum widths with percentage based values</title>
+        <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#min-max-widths" />
+        <meta name="flags" content="" />
+        <meta name="assert" content="Verify percentage is calculated in relation to the containing block." />
+        <style type="text/css">
+            #d1
+            {
+                width: 300px;
+                height: 110px;
+                background-color: blue;
+                color: Blue;
+            }
+            #d2
+            {
+                width: 300px;
+                max-width: 50%;
+                height: 100px;
+                background-color: green;
+                color: green;
+            }
+            body
+            {
+                margin: 0;
+                padding: 0;
+            }
+        </style>
+    </head>
+    <body>
+        <p>Test passes if the blue box has twice the width as the green box.</p>
+        <div id="d1">
+            <div id="d2">Filler Text</div>
+        </div>
+    </body>
+</html>

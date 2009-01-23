@@ -1,0 +1,30 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>CSS Test: Percentage height and width on replaced content</title>
+        <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#the-width-property" />
+        <meta name="flags" content="HTMLonly invalid" />
+        <meta name="assert" content="Verify percentage based width and height on replaced content." />
+        <style type="text/css">
+            #d1
+            {
+                width: 200px;
+                height: 200px;
+                border: solid 1px black;
+            }
+            iframe
+            {
+                width: 50%;
+                height: 50%;
+                border: solid 1px blue;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="d1">
+            <iframe></iframe>
+        </div>
+        <p>Test passes if a blue bordered box is in the top/left corner of the container.</p>
+    </body>
+</html>

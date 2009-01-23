@@ -1,0 +1,24 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>CSS Test: Resolving constraint violations when width is greater than max-width and height is greater than max-height, where max-width/width is greater than max-height/height</title>
+        <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#min-max-widths" />
+        <meta name="flags" content="" />
+        <meta name="assert" content="Resolved width is max(min-width, max-height * width/height) and resolved height is max-height when width greater than max-width and height is greater than max-height, where max-width/width is greater than max-height/height." />
+        <style type="text/css">
+            div
+            {
+                width: 3in;
+                max-width: 2in;
+                height: 2in;
+                max-height: 1in;
+                background-color: green;
+            }
+        </style>
+    </head>
+    <body>
+        <p>Test passes if it has a green rectangle which has a width which is two times its height.</p>
+        <div></div>
+    </body>
+</html>

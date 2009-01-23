@@ -1,0 +1,31 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>CSS Test: Auto heights with block boxes and relatively positioned elements</title>
+        <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#block-root-margin" />
+        <meta name="flags" content="" />
+        <meta name="assert" content="The auto height of an element is computed by considering relatively positioned children without their offset." />
+        <style type="text/css">
+            #d1
+            {
+                width: 100px;
+                height: auto;
+                background: green;
+            }
+            #d2
+            {
+                position: relative;
+                top: 110px;
+                height: 100px;
+                background: blue;
+            }
+        </style>
+    </head>
+    <body>
+        <p>Test passes if a green box is above a blue box and both are the same size.</p>
+        <div id="d1">
+            <div id="d2">&nbsp;</div>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>CSS Test: Solving for width of block-level non-replaced elements in normal flow</title>
+        <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#the-width-property" />
+        <meta name="flags" content="" />
+        <meta name="assert" content="The equation; 'margin-left' + 'border-left-width' + 'padding-left' + 'width' + 'padding-right' + 'border-right-width' + 'margin-right' + scrollbar width (if any) is equal the width of containing block." />
+        <style type="text/css">
+            #d1
+            {
+                display: inline-block;
+                margin-top: 20px;
+                margin-left: 20px;
+                border: solid 5px green;
+                background-color: green;
+            }
+            #d2
+            {
+                background-color: green;
+                border-left: solid green;
+                border-right: solid green;
+                height: 20px;
+                display: inline-block;
+                margin-left: 10px;
+                border-left-width: 10px;
+                padding-left: 10px;
+                width: 80px;
+                padding-right: 10px;
+                border-right-width: 10px;
+                margin-right: 10px;
+            }
+            #d3
+            {
+                width: 140px;
+                border: solid 5px blue;
+                position: absolute;
+                left: 28px;
+                top: 50px;
+                text-align: center;
+                background-color: blue;
+                color: blue;
+            }
+            p
+            {
+                position: absolute;
+                top: 80px;
+                left: 10px;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="d1">
+            <div id="d2"></div>
+        </div>
+        <div id="d3">Filler Text</div>
+        <p>Test passes if the green box and blue box have identical widths including borders.</p>
+    </body>
+</html>

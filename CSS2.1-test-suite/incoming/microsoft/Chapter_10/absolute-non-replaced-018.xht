@@ -1,0 +1,35 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>CSS Test: Solving width when left and right are not auto on absolutely positioned non-replaced elements</title>
+        <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#the-width-property" />
+        <meta name="flags" content="" />
+        <meta name="assert" content="When width is auto and left and right are not auto, solve for width." />
+        <style type="text/css">
+            body
+            {
+                margin: 0;
+            }
+            div
+            {
+                position: absolute;
+                left: 0;
+                right: 0;
+                width: auto;
+                height: 20px;
+                border: solid black 1px;
+                background-color: green;
+            }
+            p
+            {
+                position: absolute;
+                top: 116px;
+            }
+        </style>
+    </head>
+    <body>
+        <div></div>
+        <p>The green box should be the same width as the page.</p>
+    </body>
+</html>

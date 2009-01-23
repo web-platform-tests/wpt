@@ -1,0 +1,35 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>CSS Test: Leading and half leading line heights leads to space above and below</title>
+        <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#line-height" />
+        <meta name="flags" content="internal" />
+        <meta name="assert" content="Line-height can be different from the content area so there is space above and below." />
+        <style type="text/css">
+            #d1
+            {
+                width: 0;
+                background: red;
+            }
+            #s1
+            {
+                background: red;
+                color: red;
+            }
+            #s2
+            {
+                background-color: green;
+                line-height: 0;
+                font-size: 36pt;
+            }
+        </style>
+    </head>
+    <body>
+        <p>Test passes if the "FillerText" below does not extend beyond the green box and there is no red visible on the page.</p>
+        <div id="d1">
+            <div><span id="s1">FillerText</span></div>
+            <div><span id="s2">FillerText</span></div>
+        </div>
+    </body>
+</html>

@@ -12,19 +12,19 @@
    test { background:lime }
   </style>
   <style>
-   @namespace b url('test-b');
+   @namespace url('test-b');
    test { background:lime }
   </style>
   <style>
-   @namespace c url("test-c");
+   @namespace url("test-c");
    test { background:lime }
   </style>
   <style>
-   @namespace d 'test-d';
+   @namespace 'test-d';
    test { background:lime }
   </style>
   <style>
-   @namespace e "test-e";
+   @namespace "test-e";
    test { background:lime }
   </style>
  </head>

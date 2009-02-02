@@ -6,11 +6,12 @@
   <title>CSS Namespaces Test Suite: @namespace and invalid at-rules</title>
   <style>
    t, t2 { background:red }
+   t3 { display:none }
   </style>
   <style>
    @import x {}
-   @namespace "test";
-   t { background:lime }
+   @namespace x "test";
+   x|t { background:lime }
   </style>
   <style>
    @namespace "test-wrong";
@@ -18,10 +19,12 @@
    @namespace "test";
    @foobar this is funner;
    t2 { background:lime }
+   t3 { display:block; background:red; font-size:5em }
    </style>
  </head>
  <body>
   <p><t xmlns="test">This sentence should have a green background.</t></p>
   <p><t2 xmlns="test">This sentence should have a green background.</t2></p>
+  <p><t3 xmlns="test-wrong">FAIL</t3></p>
  </body>
 </html>

@@ -5,22 +5,22 @@
   <link rel="help" href="http://www.w3.org/TR/css3-namespace/#syntax"/>
   <title>CSS Namespaces Test Suite: string comparison (no URI resolving)</title>
   <style>
-   @namespace "http://example.com/";
+   @namespace url("http://example.com/");
    *|t { background:lime }
    t { background:red }
   </style>
   <style>
-   @namespace "http://example.com/";
+   @namespace url("http://example.com/");
    *|t2 { background:lime }
    t2 { background:red }
   </style>
   <style>
-   @namespace "%41";
+   @namespace url("%41");
    *|t3 { background:lime }
    t3 { background:red }
   </style>
   <style>
-   @namespace "A";
+   @namespace url("A");
    *|t4 { background:lime }
    t4 { background:red }
   </style>

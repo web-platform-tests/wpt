@@ -6,10 +6,10 @@
   <meta name="flags" content="invalid"/>
   <title>CSS Namespaces Test Suite: invalid ordering of @namespace and @import</title>
   <style>
-   @namespace u\00072l("test");
+   @namespace x u\00072l("test");
    @import url("support/fail.css");
    @namespace url("test2");
-   *|test { background:lime }
+   x|test { background:lime }
    test { background:red }
   </style>
  </head>

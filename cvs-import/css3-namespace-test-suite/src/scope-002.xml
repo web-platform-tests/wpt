@@ -8,8 +8,8 @@
    test { background:lime }
   </style>
   <style>
-   @import url("support/scope.css");
-   @import url("support/scope-b.css");
+   @import url("support/scope-002a.css");
+   @import url("support/scope-002b.css");
    @namespace w "test";
    x|test { background:red }
   </style>

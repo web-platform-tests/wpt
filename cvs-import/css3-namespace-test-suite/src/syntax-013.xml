@@ -2,6 +2,7 @@
  <head>
   <link rel="author" title="Anne van Kesteren" href="http://annevankesteren.nl/"/>
   <link rel="author" title="Opera Software ASA" href="http://opera.com/"/>
+  <link rel="author" title="Elika J. Etemad" href="http://fantasai.inkedblade.net/contact"/>
   <link rel="help" href="http://www.w3.org/TR/css3-namespace/#syntax"/>
   <meta name="flags" content="invalid"/>
   <title>CSS Namespaces Test Suite: @namespace error handling</title>

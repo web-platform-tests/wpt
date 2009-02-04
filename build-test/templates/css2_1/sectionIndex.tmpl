@@ -1,0 +1,22 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>CSS 2.1 Conformance Test Suite</title>
+  <style type="text/css">
+    @import "http://www.w3.org/StyleSheets/TR/base.css";
+    @import "../indices.css";
+  </style>
+ </head>
+<body>
+  <h1>CSS2.1 Conformance Test Suite By Chapter</h1>
+  <table summary="Chapters">
+    <col id="flags-column"/>
+
+[% FOREACH chapter IN chapters %]
+    <tbody id="s[% chapter.chapter %]">
+      <tr><th scope="rowgroup"><a href="chapter-[% chapter.chapter %].[% extension %]">Chapter [% chapter.chapter %] - [% chapter.title %] [% IF chapter.testCount > 0 %]([% chapter.testCount %] Tests)[% ELSE %](0 Tests)[% END %]</a></th></tr>
+    </tbody>
+[% END %]
+  </table>
+</body>
+</html>

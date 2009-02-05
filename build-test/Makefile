@@ -61,12 +61,10 @@ OFFICIAL =
 DEVDIR = $(SUITE)
 SPECROOT = http://www.w3.org/TR/$(SUITE)
 EXT = xht
-COMMONSUITE = css3_common
 
 # special case - css2_1 version name does not match version used
 # on csswg.org for submitted subdir
 ifeq ($(SUITE),css2_1)
-COMMONSUITE = $(SUITE)
 DEVDIR = css2.1
 SPECROOT = http://www.w3.org/TR/CSS21
 endif
@@ -135,8 +133,6 @@ else
 	cp -R $(SUITE)/src tests/$(SUITE)
 endif
 
-	cp -R $(COMMONSUITE)/src/support tests/$(SUITE)/support
-
 ifeq ($(SUITE),css2_1)
 	find css1 -name FILENAMES | xargs -n 1 perl tools/$(SUITE)/make-proper-tests.pl
 endif
@@ -182,8 +178,8 @@ generate:
 	cp $(SUITE)/data/testinfo.data dist/$(SUITE)/testinfo.data
 
 
-	tpage --relative --define path=$(SUITE)/data/ --define $(SETTRUE)=true --define specVersionString=$(SUITE) --define specRoot=$(SPECROOT) --include_path=templates/$(SUITE) --include_path=templates/$(COMMONSUITE)/ index.xht.tmpl > dist/$(SUITE)/index.xht
-	tpage --relative --define path=$(SUITE)/data/ --define $(SETTRUE)=true --define specVersionString=$(SUITE) --define specRoot=$(SPECROOT) --include_path=templates/$(SUITE) --include_path=templates/$(COMMONSUITE)/ index.html.tmpl > dist/$(SUITE)/index.html
+	tpage --relative --define path=$(SUITE)/data/ --define $(SETTRUE)=true --define specVersionString=$(SUITE) --define specRoot=$(SPECROOT) --include_path=templates/$(SUITE) --include_path=templates/common/ index.xht.tmpl > dist/$(SUITE)/index.xht
+	tpage --relative --define path=$(SUITE)/data/ --define $(SETTRUE)=true --define specVersionString=$(SUITE) --define specRoot=$(SPECROOT) --include_path=templates/$(SUITE) --include_path=templates/common/ index.html.tmpl > dist/$(SUITE)/index.html
 
 
 

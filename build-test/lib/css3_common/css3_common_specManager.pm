@@ -150,7 +150,7 @@ sub writeIndexFiles {
     # Now we create an index file 
     my $pwd = $ENV{'PWD'};
     my $tmpl_dir1 = $pwd . "/templates/$specVersion";
-    my $tmpl_dir2 = $pwd . "/templates/css3_common";
+    my $tmpl_dir2 = $pwd . "/templates/common";
     my $tmpl_dir = $tmpl_dir1 . ':' . $tmpl_dir2;
     my $tt2 = Template->new({ INCLUDE_PATH => $tmpl_dir }) || die "$Template::ERROR\n";
     

@@ -1,3 +1,39 @@
+# CSS Test Suite Common Makefile
+# ==============================
+#
+# Authors: Elika J Etemad
+#          Tom Harms
+#          Ian Hickson
+# 
+# ==============================
+# QUICK START
+# ==============================
+# run make VERSION={VERSION_NAME}
+# e.g. 
+# 	make VERSION=css2_1
+# 	make VERSION=css3-color
+# 
+# ==============================
+# BASIC PROCESS
+# ==============================
+# 1.  Test source files are copied from src directories (and possibly others 
+# 	depending on make options and version. e.g. calling devel copies
+# 	some unreviewed tests from the css svn repository to be included)
+# 
+# 2.  The relevant CSS spec is accessed via HTTP (or a saved copy of the 
+# 	spec data is used if DATASOURCE=file is passed to the makefile)
+# 
+# 3.  Tests are converted to xhtml, html and xhtml1print formats using
+# 	modules in lib/common/format
+# 
+# 4.  the specManager (lib/common/specManager.pm and 
+# 	lib/{VERSION_NAME}/{VERSION_NAME}_specManager.pm) creates appropriate 
+# 	HTML output files to index the tests and organize according
+# 	to chapter wherer appropriate.  
+# 
+# 5.  Output is saved in dist/{VERSION_NAME}
+
+
 # version should be css2_1 or css3_MODULE (e.g. css3_color or css3_page) 
 VERSION =
 DEVVERSION = $(VERSION)

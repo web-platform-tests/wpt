@@ -42,8 +42,8 @@
 ###############################################################################
 # Params
 
-# Suite to build (css2_1 or css3-foo)
-SUITE =
+# Suite to build (css2_1 or css3-foo) This param is required.
+SUITE = ERROR
 # Source of TOC data (web or file)
 DATASOURCE = web
 # Whether to print assertions in the TOC
@@ -67,14 +67,17 @@ EXT = xht
 ifeq ($(SUITE),css2_1)
 DEVDIR = css2.1
 SPECROOT = http://www.w3.org/TR/CSS21
+SPECNAME = CSS 2.1
 endif
 
 ifeq ($(SUITE),css3-color)
 EXT = xhtml
+SPECNAME = CSS Color Level 3
 endif
 
 ifeq ($(SUITE),css3-namespace)
 EXT = xml
+SPECNAME = CSS Namespaces
 endif 
 
 ###############################################################################
@@ -82,12 +85,13 @@ endif
 
 DEVELPATH = http://test.csswg.org/svn/submitted/$(DEVDIR)
 
-SETTRUE=foo
-ifdef OFFICIAL
-SETTRUE=devel
-else
+INTROPARAMS =
 ifdef DEVEL
-SETTRUE=devel
+INTROPARAMS = --define devel=true
+override OFFICIAL = 
+else
+ifdef OFFICIAL
+INTROPARAMS = --define official=true
 endif
 endif
 
@@ -95,10 +99,6 @@ endif
 # Targets
 
 all: pull build clobber
-ifndef SUITE
-	# Suite param is required
-	false
-endif
 
 update: pull build clean
 
@@ -178,8 +178,8 @@ generate:
 	cp $(SUITE)/data/testinfo.data dist/$(SUITE)/testinfo.data
 
 
-	tpage --relative --define path=$(SUITE)/data/ --define $(SETTRUE)=true --define specVersionString=$(SUITE) --define specRoot=$(SPECROOT) --include_path=templates/$(SUITE) --include_path=templates/common/ index.xht.tmpl > dist/$(SUITE)/index.xht
-	tpage --relative --define path=$(SUITE)/data/ --define $(SETTRUE)=true --define specVersionString=$(SUITE) --define specRoot=$(SPECROOT) --include_path=templates/$(SUITE) --include_path=templates/common/ index.html.tmpl > dist/$(SUITE)/index.html
+	tpage --relative --define path=$(SUITE)/data/ $(INTROPARAMS) --define specName='$(SPECNAME)' --define specRoot=$(SPECROOT) --include_path=templates/$(SUITE) --include_path=templates/common/ index.xht.tmpl > dist/$(SUITE)/index.xht
+	tpage --relative --define path=$(SUITE)/data/ $(INTROPARAMS) --define specName='$(SPECNAME)' --define specRoot=$(SPECROOT) --include_path=templates/$(SUITE) --include_path=templates/common/ index.html.tmpl > dist/$(SUITE)/index.html
 
 
 

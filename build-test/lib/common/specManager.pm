@@ -112,10 +112,10 @@ sub saveTOCDataToFile {
     my $self = shift;
     my $outPath = $self->{tocDataFile};
 
-    open OUTFILE, ">$outPath" || 
-	die "could not open path for TOC data file $outPath\n";
     my $tocData = $self->{tocData};
     die "No data to save - TOC might be unavailable.\n" unless $tocData;
+    open OUTFILE, ">$outPath" || 
+	die "could not open path for TOC data file $outPath\n";
     foreach my $entry (@$tocData) {
 
 	my $section = $entry->{section};

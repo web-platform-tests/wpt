@@ -1,0 +1,33 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>CSS Test: widows property syntax - integer</title>
+<link rel="author" title="Tom Clancy" href="mailto:tclancy@revenution.com"/>
+<link rel="help" href="http://www.w3.org/TR/CSS21/page.html#break-inside"/>
+<link rel="help" href="http://www.w3.org/TR/css3-page/#breaks-inside"/>
+<meta name="flags" content="paged" />
+<meta name="assert" content="The syntax of the 'widows' property is integer."/>
+<style type="text/css">
+	html, body {
+		height:100%;
+		line-height:1;
+	}
+	* {
+		margin:0;
+		padding:0;
+	}
+	div {
+		height: 100%;
+		margin-bottom: -3em;
+	}
+	p {
+		width: 1em;
+		widows: 4;
+	}
+</style>
+</head>
+<body>
+	<div>This test requires two pages. The letters 'a', 'b', 'c', 'd' and 'e' should appear on the next page.</div>
+	<p>a b c d e</p>
+</body>
+</html>

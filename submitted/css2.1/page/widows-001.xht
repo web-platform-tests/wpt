@@ -1,0 +1,38 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>CSS Test: breaks inside elements: widows - initial value</title>
+<link rel="author" title="Tom Clancy" href="mailto:tclancy@revenution.com"/>
+<link rel="help" href="http://www.w3.org/TR/CSS21/page.html#break-inside"/>
+<meta name="flags" content="paged" />
+<meta name="assert" content="The initial value of the 'widows' property is 2."/>
+<style type="text/css">
+	html, body {
+		height:100%;
+		line-height:1;
+		font-size:16px;
+	}
+	* {
+		margin:0;
+		padding:0;
+	}
+	div {
+		height:50%;
+		color:black;
+	}
+	div#bottom {
+		margin-top:-2em;
+	}
+
+</style>
+</head>
+<body>
+	<div>
+		There must be at least two lines of text on the second page. This test produces two pages of output.
+	</div>
+	<div id="bottom"></div>
+	<p>
+		This is dummy text<br />This is dummy text<br />This is dummy text<br />
+	</p>
+</body>
+</html>

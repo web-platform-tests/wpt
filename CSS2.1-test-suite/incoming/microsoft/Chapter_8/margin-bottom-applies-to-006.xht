@@ -1,0 +1,48 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>CSS Test: Margin-bottom applied to element with display table-column</title>
+        <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#propdef-margin-bottom" />
+        <meta name="flags" content="" />
+        <meta name="assert" content="The 'margin-bottom' property does not apply to elements with a display of table-column." />
+        <style type="text/css">
+            #wrapper
+            {
+                border-bottom: 10px solid blue;
+            }
+            #test
+            {
+                display: table-column;
+                margin-bottom: 50px;
+            }
+            #table
+            {
+                border-collapse: collapse;
+                display: table;
+            }
+            #row
+            {
+                display: table-row;
+            }
+            #cell
+            {
+                border-bottom: 10px solid orange;
+                display: table-cell;
+                height: 200px;
+                width: 200px;
+            }
+        </style>
+    </head>
+    <body>
+        <p>Test passes if there is no space between the blue and orange lines below.</p>
+        <div id="wrapper">
+            <div id="table">
+                <div id="test"></div>
+                <div id="row">
+                    <div id="cell"></div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

@@ -9,26 +9,25 @@
         <style type="text/css">
             div
             {
-                font: 12pt ahem;
-                height: 1in;
+                background-repeat: no-repeat;
+                height: 3in;
+                width: 3in;
             }
             #div1
             {
-                border: 3px solid orange;
+                background-image: url("../support/background-position-center-left.png");
             }
-            #div2
+            div div
             {
-                background-image: url("../support/black15x15.png");
+                background-image: url("../support/blue96x96.png");
                 background-position: -0em;
-                background-repeat: no-repeat;
-                width: 1in;
             }
         </style>
     </head>
     <body>
-        <p>Test passes if the black square is vertically centered and on the left edge of the orange box.</p>
+        <p>Test passes if there is no red visible on the page.</p>
         <div id="div1">
-            <div id="div2"></div>
+            <div></div>
         </div>
     </body>
 </html>

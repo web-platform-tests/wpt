@@ -9,26 +9,25 @@
         <style type="text/css">
             div
             {
-                height: 1in;
-                width: 1in;
+                background-repeat: no-repeat;
+                height: 3in;
+                width: 3in;
             }
             #div1
             {
-                background-image: url("../support/background-position-141.png");
-                border: 3px solid orange;
+                background-image: url("../support/background-position-bottom-right.png");
             }
-            #div2
+            div div
             {
-                background-image: url("../support/blue15x15.png");
+                background-image: url("../support/blue96x96.png");
                 background-position: right bottom;
-                background-repeat: no-repeat;
             }
         </style>
     </head>
     <body>
         <p>Test passes if there is no red visible on the page.</p>
         <div id="div1">
-            <div id="div2"></div>
+            <div></div>
         </div>
     </body>
 </html>

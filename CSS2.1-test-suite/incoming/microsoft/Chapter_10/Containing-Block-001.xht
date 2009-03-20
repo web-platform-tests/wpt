@@ -1,19 +1,32 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
-        <title>CSS Test: Initial containing block direction</title>
+        <title>CSS Test: Containing block for relative positioned elements is nearest block-level ancestor</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#containing-block-details" />
-        <meta name="flags" content="internal" />
-        <meta name="assert" content="The 'direction' property of the initial containing block is the same as for the root element." />
-        <style  type="text/css">
-            html
+        <meta name="flags" content="" />
+        <meta name="assert" content="If the element's position is 'relative', the containing block is formed by the content edge of the nearest block-level ancestor box." />
+        <style type="text/css">
+            #div1
             {
-                direction: rtl;
+                background: red;
+                display: block;
+                height: 100px;
+                width: 100px;
+            }
+            div div
+            {
+                background: green;
+                height: 100%;
+                position: relative;
+                width: 100%;
             }
         </style>
     </head>
     <body>
-        <p>Test passes if this text is aligned to the right of the page.</p>
+        <p>Test passes if there is no red visible on the page.</p>
+        <div id="div1">
+            <div></div>
+        </div>
     </body>
 </html>

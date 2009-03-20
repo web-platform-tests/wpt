@@ -1,40 +1,42 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
-        <title>CSS Test: Floating replaced elements with instrinsic ratios and height/width or set to auto</title>
+        <title>CSS Test: Floated replaced elements relying on intrinsic height dimensions</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#inline-replaced-height" />
         <meta name="flags" content="image" />
-        <meta name="assert" content="Verify floated replaced elements with an intrinsic height and height and width are computed to auto, the height becomes the intrinsic height." />
+        <meta name="assert" content="The 'height' is the intrinsic height when an floated replaced element with and intrinsic height has a 'height' and 'width' computed as 'auto'." />
         <style type="text/css">
-            #d1
+            div
             {
-                border: 3px solid green;
-                background: red;
-                height: 83px;
-                width: 100px;
+                line-height: 0;
+                position: relative;
             }
-            #d2
+            div div
             {
-                clear: both;
-                float: left;
-                background: blue;
-                height: 50px;
-                width: 100px;
+                background: orange;
+                height: 15px;
+                left: 15px;
+                position: absolute;
+                top: 0;
+                width: 15px;
             }
             img
             {
-                float: left;
                 height: auto;
                 width: auto;
+            }
+            div, img
+            {
+                float: left;
             }
         </style>
     </head>
     <body>
-        <p>Test passes if the blue box is in the top left corner of the green box and there is no red visible on the page.</p>
-        <div id="d1">
-            <img alt="Test Image" src="../../../Support/blue100x33.png" />
-            <div id="d2"></div>
+        <p>Test passes if the blue and orange boxes below are the same height.</p>
+        <div>
+            <img alt="blue 15x15" src="../support/blue15x15.png" />
+            <div></div>
         </div>
     </body>
 </html>

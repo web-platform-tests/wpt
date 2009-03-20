@@ -1,48 +1,32 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
-        <title>CSS Test: Containing block for absolute positioned elements is nearest positioned (fixed) ancestor.</title>
+        <title>CSS Test: Initial containing block for fixed positioned elements</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#containing-block-details" />
         <meta name="flags" content="" />
-        <meta name="assert" content="If the element has 'position: absolute', the containing block is established by the nearest positioned ancestor." />
-        <style>
-            #d1
+        <meta name="assert" content="The containing block is established by the viewport when an element uses fixed positioning." />
+        <style type="text/css">
+            #div1
             {
-                margin: 50px;
+                position: relative;
+                bottom: 0;
             }
-            #d2
+            div div
             {
+                background: blue;
+                height: 1in;
                 position: fixed;
-                height: 23px;
-                width: 360px;
-                top: 20px;
-                left: 20px;
-                border: solid green 2px;
-            }
-            #d3
-            {
-                height: 10px;
-                width: 10px;
-                float: right;
-            }
-            #d4
-            {
-                position: absolute;
-                width: 100%;
-                top: 2px;
-                left: 10px;
+                right: 0;
+                top: 0;
+                width: 1in;
             }
         </style>
     </head>
     <body>
-        <div id="d1">
-            <div id="d2">
-                <div id="d3">
-                    <div id="d4">Filler Text Filler Text Filler Text Filler Text Filler Text</div>
-                </div>
-            </div>
+        <p>Test passes if there is a blue box in the upper-right corner of the page.</p>
+        <div id="div1">
+            <div></div>
         </div>
-        <p>Test passes if the "Filler Text" is contained within the green box.</p>
     </body>
 </html>

@@ -3,21 +3,21 @@
     <head>
         <title>CSS Test: Absolutely positioned, non-replaced elements, solve for 'bottom'</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
-        <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#abs-replaced-height" />
+        <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#abs-non-replaced-height" />
         <meta name="flags" content="" />
-        <meta name="assert" content="Verify margin-top' and 'margin-bottom' are set to '0' and 'bottom' resolves to the remaining space within the containing block." />
+        <meta name="assert" content="When 'margin-top' and 'margin-bottom' are set to '0' the 'bottom' value resolves to the remaining space within the containing block." />
         <style type="text/css">
             #div1
             {
+                border: solid black;
+                height: 3in;
                 position: relative;
-                border: 3px solid black;
-                height: 5in;
-                width: 5in;
+                width: 3in;
             }
-            #div2
+            div div
             {
                 position: absolute;
-                top: 2in;
+                top: 1in;
                 bottom: auto;
                 height: 1in;
                 margin-top: auto;
@@ -28,9 +28,9 @@
         </style>
     </head>
     <body>
-        <p>Test passes if the blue box is vertically centered in the black bordered box.</p>
+        <p>Test passes if the blue box is vertically centered in the black box.</p>
         <div id="div1">
-            <div id="div2"></div>
+            <div></div>
         </div>
     </body>
 </html>

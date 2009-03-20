@@ -1,15 +1,18 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
-        <title>CSS Test: Block-level replaced elements with auto margins</title>
+        <title>CSS Test: Block replaced elements with 'margin-top' and 'margin-bottom' as 'auto'</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#inline-replaced-height" />
         <meta name="flags" content="image" />
-        <meta name="assert" content="Verify block level replaced elements in normal flow with margin-top or margin-bottom set to auto result in a used value of '0'." />
+        <meta name="assert" content="A block replaced elements' used value of 'margin-top' and/or 'margin-bottom' set to 'auto' is '0'." />
         <style type="text/css">
             div
             {
-                border: 3px solid green;
+                border-bottom: solid orange;
+                border-top: solid orange;
+                line-height: 0;
+                width: 1in;
             }
             img
             {
@@ -20,9 +23,9 @@
         </style>
     </head>
     <body>
-        <p>Test passes if no white space is in between the top and bottom edges of the blue box and the green borders.</p>
+        <p>Test passes if there is no white space between the blue box below and the orange lines.</p>
         <div>
-            <img src="../../../Support/blue100x33.png" alt="Test Image" />
+            <img alt="blue 15x15" src="../support/blue15x15.png" />
         </div>
     </body>
 </html>

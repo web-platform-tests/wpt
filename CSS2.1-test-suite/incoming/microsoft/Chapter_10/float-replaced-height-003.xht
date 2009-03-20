@@ -1,40 +1,44 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
-        <title>CSS Test: Floating replaced elements with instrinsic ratios and height set to auto</title>
+        <title>CSS Test: Floating replaced elements with intrinsic ratios and 'height' set to 'auto'</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#inline-replaced-height" />
         <meta name="flags" content="image" />
-        <meta name="assert" content="Verify replaced element with intrinsic ratio and height computed to auto uses height as the used width divided by the ratio." />
+        <meta name="assert" content="The 'height' is the used width divided by the ratio when an floated replaced element has an intrinsic ratio, 'height' is set to 'auto' and 'width' is specified." />
         <style type="text/css">
-            #d1
+            div
             {
-                border: 3px solid green;
-                background: red;
-                height: 83px;
-                width: 100px;
+                line-height: 0;
+                position: relative;
             }
-            #d2
+            div div
             {
-                clear: both;
-                float: left;
-                background: blue;
-                height: 50px;
-                width: 100px;
+                background: orange;
+                height: 1in;
+                left: 1in;
+                position: absolute;
+                top: 0;
             }
             img
             {
-                float: left;
                 height: auto;
-                width: 100px;
+            }
+            div, img
+            {
+                float: left;
+            }
+            div div, img
+            {
+                width: 1in;
             }
         </style>
     </head>
     <body>
-        <p>Test passes if green bordered box is filled in with a blue background.</p>
-        <div id="d1">
-            <img alt="Test Image" src="../../../Support/blue100x33.png" />
-            <div id="d2"></div>
+        <p>Test passes if the blue and orange boxes below are the same height.</p>
+        <div>
+            <img alt="blue 15x15" src="../support/blue15x15.png" />
+            <div></div>
         </div>
     </body>
 </html>

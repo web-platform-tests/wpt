@@ -3,34 +3,34 @@
     <head>
         <title>CSS Test: Absolutely positioned, non-replaced elements, 'margin-top' and 'margin-bottom' set to '0'</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
-        <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#abs-replaced-height" />
+        <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#abs-non-replaced-height" />
         <meta name="flags" content="" />
-        <meta name="assert" content="Verify that 'auto' values for 'margin-top' and 'margin-bottom' are set to '0', when 'top', 'height' and 'bottom' are all not auto." />
+        <meta name="assert" content="The 'auto' values for 'margin-top' and 'margin-bottom' are set to '0', when 'top', 'height' and 'bottom' are all not auto." />
         <style type="text/css">
-            #d1
+            #div1
             {
+                border: solid black;
+                height: 3in;
                 position: relative;
-                border: 3px solid black;
-                height: 5in;
-                width: 5in;
+                width: 3in;
             }
-            #d2
+            div div
             {
+                background: blue;
+                bottom: 1in;
+                height: 1in;
+                margin-bottom: auto;
+                margin-top: auto;
                 position: absolute;
                 top: auto;
-                bottom: 2in;
-                height: 1in;
-                margin-top: auto;
-                margin-bottom: auto;
-                background: blue;
                 width: 100%;
             }
         </style>
     </head>
     <body>
-        <p>Test passes if the blue box is vertically aligned in the center of the black bordered box.</p>
-        <div id="d1">
-            <div id="d2"></div>
+        <p>Test passes if the blue box is vertically centered in the black box.</p>
+        <div id="div1">
+            <div></div>
         </div>
     </body>
 </html>

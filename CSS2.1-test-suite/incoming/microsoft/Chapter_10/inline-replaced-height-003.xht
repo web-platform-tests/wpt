@@ -1,28 +1,41 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
-        <title>CSS Test: Inline replaced elements when height computes to auto</title>
+        <title>CSS Test: Inline replaced elements with intrinsic ratios and 'height' set to 'auto'</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#inline-replaced-height" />
         <meta name="flags" content="image" />
-        <meta name="assert" content="When inline replaced elements have a height value that computes to auto and has intrinsic ratio, verify that the height is used width divided by the ratio." />
+        <meta name="assert" content="The 'height' is the used width divided by the ratio when an inline replaced element has an intrinsic ratio, 'height' is set to 'auto' and 'width' is specified." />
         <style type="text/css">
             div
             {
-                border: 5px solid green;
                 line-height: 0;
+                position: relative;
+            }
+            div div
+            {
+                background: orange;
+                height: 1in;
+                left: 1in;
+                position: absolute;
+                top: 0;
             }
             img
             {
+                display: inline;
                 height: auto;
-                width: 100px;
+            }
+            div div, img
+            {
+                width: 1in;
             }
         </style>
     </head>
     <body>
-        <p>Test passes if the top and bottom edges of the blue box touch the top and bottom inner edges of the green border.</p>
+        <p>Test passes if the blue and orange boxes below are the same height.</p>
         <div>
-            <img alt="Test Image" src="../../../Support/blue100x33.png" />
+            <img alt="blue 15x15" src="../support/blue15x15.png" />
+            <div></div>
         </div>
     </body>
 </html>

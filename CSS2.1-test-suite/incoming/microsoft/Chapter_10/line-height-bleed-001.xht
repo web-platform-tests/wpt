@@ -4,26 +4,25 @@
         <title>CSS Test: Glyphs overflow line box</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#propdef-line-height" />
-        <meta name="flags" content="internal" />
-        <meta name="assert" content="Verify that glyphs bleed out of the box when 'line-height' is less than the content height." />
+        <meta name="flags" content="" />
+        <meta name="assert" content="Glyphs bleed out of the box when 'line-height' is less than the content height and the height of the box is not increased." />
         <style type="text/css">
-            #d1
+            #div1
             {
-                width: 200px;
-                font-size: 2em;
+                font: 1in/1em serif;
+                margin-top: 1in;
             }
-            #d2
+            div div
             {
-                margin-top: 20px;
+                background: red;
                 line-height: 0;
-                background: green;
             }
         </style>
     </head>
     <body>
-        <p>Test passes if the "Filler Text" content is completely visible without any clipping.</p>
-        <div id="d1">
-            <div id="d2">Filler Text</div>
+        <p>Test passes if the "Filler Text" below is completely visible without any clipping and there is no red visible on the page.</p>
+        <div id="div1">
+            <div>Filler Text</div>
         </div>
     </body>
 </html>

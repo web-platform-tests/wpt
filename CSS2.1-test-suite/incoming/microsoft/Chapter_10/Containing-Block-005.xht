@@ -1,42 +1,44 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
-        <title>CSS Test: Containing block for absolute positioned elements when no ancestor is positioned</title>
+        <title>CSS Test: Containing block for static positioned elements is nearest table cell ancestor</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#containing-block-details" />
         <meta name="flags" content="" />
-        <meta name="assert" content="If the element has ’position: absolute’, the containing block is established by the nearest ancestor with a ’position’ of ’absolute’ and if there are no positioned ancestors, the initial containing block becomes the contain block." />
+        <meta name="assert" content="If the element's position is 'static', the containing block is formed by the content edge of the nearest table cell ancestor box." />
         <style type="text/css">
-            #d1
+            #table
             {
-                float: right;
+                display: table;
             }
-            #d2
+            #row
             {
-                position: absolute;
-                height: 200px;
-                width: 200px;
-                top: 0;
-                left: 0;
-                background-color: blue;
+                display: table-row;
+            }
+            #cell
+            {
+                background: red;
+                display: table-cell;
+                height: 100px;
+                width: 100px;
+            }
+            #cell div
+            {
+                background: green;
+                height: 100%;
+                position: static;
+                width: 100%;
             }
         </style>
     </head>
     <body>
-        <div id="d1">
-            <div id="d2"></div>
+        <p>Test passes if there is no red visible on the page.</p>
+        <div id="table">
+            <div id="row">
+                <div id="cell">
+                    <div></div>
+                </div>
+            </div>
         </div>
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
-        <p>This blue box should be in the top/left of the page without any space between it and the edges of the browser.</p>
     </body>
 </html>

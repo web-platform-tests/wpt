@@ -3,34 +3,34 @@
     <head>
         <title>CSS Test: Absolutely positioned, non-replaced elements, 'top' set to static position</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
-        <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#abs-replaced-height" />
+        <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#abs-non-replaced-height" />
         <meta name="flags" content="" />
-        <meta name="assert" content="Verify that 'top' is set to the static position and any 'auto' values for top and bottom margin are set to '0', when 'top' and 'bottom' are 'auto' and 'height' is not 'auto'." />
+        <meta name="assert" content="When 'top' is set to the static position and any 'auto' values for top and bottom margin are set to '0', when 'top' and 'bottom' are 'auto' and 'height' is not 'auto'." />
         <style type="text/css">
-            #d1
+            #div1
             {
+                background: blue;
+                height: 3in;
                 position: relative;
-                border: 3px solid black;
-                height: 5in;
-                width: 5in;
+                width: 1in;
             }
-            #d2
+            div div
             {
-                position: absolute;
-                top: auto;
+                background: orange;
                 bottom: auto;
                 height: 1in;
-                margin-top: auto;
                 margin-bottom: auto;
-                background: blue;
+                margin-top: auto;
+                position: absolute;
+                top: auto;
                 width: 100%;
             }
         </style>
     </head>
     <body>
-        <p>Test passes if the blue box is vertical aligned to the top of the black bordered box.</p>
-        <div id="d1">
-            <div id="d2"></div>
+        <p>Test passes if there are two boxes below, a blue box below an orange box.</p>
+        <div id="div1">
+            <div></div>
         </div>
     </body>
 </html>

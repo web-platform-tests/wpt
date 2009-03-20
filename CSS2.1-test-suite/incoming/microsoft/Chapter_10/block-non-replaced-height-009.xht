@@ -1,37 +1,59 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
-        <title>CSS Test: Collapsing margins with padding/border</title>
+        <title>CSS Test: Height determination for block-level non-replaced elements in normal flow when 'overflow' computes to 'visible' and elements' margins do not collapse</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#normal-block" />
         <meta name="flags" content="" />
-        <meta name="assert" content="The top margin of the top most block box collapses as does the bottom margin of the bottom most block box without the presence of the padding or borders on the container." />
+        <meta name="assert" content="When a block-level non-replaced element is in normal flow, 'overflow' computes to 'visible', the 'height' is 'auto' and top and bottom margins do not collapse. The 'height' is the sized from the top of the topmost margin edge of the content to the bottom of the bottom most margin edge of the content." />
         <style type="text/css">
-            #d1
+            #div1
             {
-                height: auto;
-                width: .65in;
-                background: green;
+                position: relative;
             }
-            #d2
+            #div2
             {
-                margin: 20px;
-                height: 20px;
-                background: white;
+                background: blue;
+                border-bottom: 0.25in solid blue;
+                border-top: 0.25in solid blue;
             }
-            #d3
+            #div2, #div3, #div4, #div5
             {
-                margin: 20px;
-                height: 20px;
-                background: white;
+                width: 1in;
+            }
+            #div3, #div4
+            {
+                background: blue;
+                height: 0.25in;
+            }
+            #div3
+            {
+                border-top: 0.25in solid blue;
+                margin-top: 0.25in;
+            }
+            #div4
+            {
+                border-bottom: 0.25in solid blue;
+                margin-bottom: 0.25in;
+            }
+            #div5
+            {
+                background: blue;
+                height: 2in;
+                left: 1in;
+                position: absolute;
+                top: 0;
             }
         </style>
     </head>
     <body>
-        <p>Test passes if the elements on the page form the letter H.</p>
-        <div id="d1">
-            <div id="d2"></div>
-            <div id="d3"></div>
+        <p>Test passes if there is a blue square below.</p>
+        <div id="div1">
+            <div id="div2">
+                <div id="div3"></div>
+                <div id="div4"></div>
+            </div>
+            <div id="div5"></div>
         </div>
     </body>
 </html>

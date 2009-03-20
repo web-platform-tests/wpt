@@ -4,28 +4,28 @@
         <title>CSS Test: Line-height with multiple font sizes</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#propdef-line-height" />
-        <meta name="flags" content="" />
-        <meta name="assert" content="Determine if the line-height value uses the largest font size when there is more than one font size." />
+        <meta name="flags" content="may" />
+        <meta name="assert" content="The 'line-height' value may use the largest font size when there is more than one font size." />
         <style type="text/css">
             div
             {
-                background-color: Green;
+                background-color: blue;
             }
-            #s1
+            #span1
             {
                 font-size: 0.5in;
             }
-            #s2
+            #span2
             {
                 font-size: 1in;
             }
         </style>
     </head>
     <body>
-        <p>Test passes if the green background is tall enough to contain all of "Filler Text".</p>
+        <p>Test passes if the "Filler Text" below is completely contained within the blue box.</p>
         <div>
-            <span id="s1">Filler</span>
-            <span id="s2">Text</span>
+            <span id="span1">Filler</span>
+            <span id="span2">Text</span>
         </div>
     </body>
 </html>

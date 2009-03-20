@@ -1,15 +1,25 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
-        <title>CSS Test: Block-level replaced elements with intrinsic ratios</title>
+        <title>CSS Test: Block replaced elements relying on intrinsic height dimensions</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#inline-replaced-height" />
         <meta name="flags" content="image" />
-        <meta name="assert" content="When computed height and width are auto and the element has intrinsic height, the height is the intrinsic height." />
+        <meta name="assert" content="The 'height' is the intrinsic height when an block replaced element with and intrinsic height has a 'height' and 'width' computed as 'auto'." />
         <style type="text/css">
             div
             {
-                border: 3px solid green;
+                line-height: 0;
+                position: relative;
+            }
+            div div
+            {
+                background: orange;
+                height: 15px;
+                left: 15px;
+                position: absolute;
+                top: 0;
+                width: 15px;
             }
             img
             {
@@ -20,9 +30,10 @@
         </style>
     </head>
     <body>
-        <p>Test passes if no white space is in between the top and bottom edges of the blue box and the green borders.</p>
+        <p>Test passes if the blue and orange boxes below are the same height.</p>
         <div>
-            <img src="../../../Support/blue100x33.png" alt="Test Image" />
+            <img alt="blue 15x15" src="../support/blue15x15.png" />
+            <div></div>
         </div>
     </body>
 </html>

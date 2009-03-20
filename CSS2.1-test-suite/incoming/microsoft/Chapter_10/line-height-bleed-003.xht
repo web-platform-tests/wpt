@@ -4,32 +4,24 @@
         <title>CSS Test: Leading and half leading line heights leads to space above and below</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#line-height" />
-        <meta name="flags" content="internal" />
+        <meta name="flags" content="" />
         <meta name="assert" content="Line-height can be different from the content area so there is space above and below." />
         <style type="text/css">
-            #d1
+            #div1
             {
-                width: 0;
-                background: red;
+                font: 0.5in/1em serif;
             }
-            #s1
+            span
             {
-                background: red;
-                color: red;
-            }
-            #s2
-            {
-                background-color: green;
+                border-bottom: 1in solid blue;
                 line-height: 0;
-                font-size: 36pt;
             }
         </style>
     </head>
     <body>
-        <p>Test passes if the "FillerText" below does not extend beyond the green box and there is no red visible on the page.</p>
-        <div id="d1">
-            <div><span id="s1">FillerText</span></div>
-            <div><span id="s2">FillerText</span></div>
+        <p>Test passes if the second line of "Filler Text" below is inside the blue box.</p>
+        <div id="div1">
+            <span>Filler Text<br />Filler Text</span>
         </div>
     </body>
 </html>

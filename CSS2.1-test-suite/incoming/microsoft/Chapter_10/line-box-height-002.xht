@@ -1,34 +1,37 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
-        <title>CSS Test: The line box height is determined by content height.</title>
+        <title>CSS Test: Height for inline replaced elements and 'line-height'</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
-        <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#line-height" />
-        <meta name="flags" content="" />
-        <meta name="assert" content="The height of each inline box in the line box is calculated and the 'line-height' property." />
-        <style>
-            .c1
+        <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#propdef-line-height" />
+        <meta name="flags" content="image" />
+        <meta name="assert" content="The 'line-height' property doe not set the height for inline replaced elements. The height of the replaced element sets the line-height'." />
+        <style type="text/css">
+            #div1
             {
-                vertical-align: top;
-                background: green;
+                position: relative;
             }
-            div
+            img
             {
-                border: solid 5px black;
+                display: inline;
+                line-height: 2in;
+            }
+            div div
+            {
+                background: orange;
+                height: 96px;
+                left: 1in;
+                position: absolute;
+                top: 0;
                 width: 96px;
-                background: green;
-            }
-            #s1
-            {
-                font-size: 32pt;
-                background: yellow;
             }
         </style>
     </head>
     <body>
-        <p>Test passes if the number "1" is contained within the yellow area and does not overflow the black borders while "Filler Text" appears contained and at the top/left of its green area.</p>
-        <div>
-            <span class="c1"><span id="s1">1</span><span class="c1">Filler Text</span></span>
+        <p>Test passes if the blue and orange boxes below are the same height.</p>
+        <div id="div1">
+            <img alt="blue 96x96" src="../support/blue96x96.png" />
+            <div></div>
         </div>
     </body>
 </html>

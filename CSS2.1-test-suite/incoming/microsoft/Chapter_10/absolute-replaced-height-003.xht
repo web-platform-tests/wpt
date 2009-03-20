@@ -1,37 +1,41 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
-        <title>CSS Test: Absolutely positioned, replaced elements with percentage height</title>
+        <title>CSS Test: Absolute replaced elements with intrinsic ratios and 'height' set to 'auto'</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#abs-replaced-height" />
         <meta name="flags" content="image" />
-        <meta name="assert" content="Verify absolutely positioned replaced elements with percentage intrinsic height resolves based on the containing block height." />
+        <meta name="assert" content="The 'height' is the used width divided by the ratio when an absolutely positioned replaced element has an intrinsic ratio, 'height' is set to 'auto' and 'width' is specified." />
         <style type="text/css">
-            #d1
+            div
             {
+                line-height: 0;
                 position: relative;
-                height: 1in;
             }
-            #d2
+            div div
             {
+                background: orange;
+                height: 1in;
+                left: 1in;
                 position: absolute;
-                left: 150px;
-                background: green;
-                height: 0.5in;
-                width: 145px;
+                top: 0;
             }
             img
             {
+                height: auto;
                 position: absolute;
-                height: 50%;
+            }
+            div div, img
+            {
+                width: 1in;
             }
         </style>
     </head>
     <body>
-        <p>Test passes if blue box and the green box are the same height.</p>
-        <div id="d1">
-            <img alt="blue 15 x 15" src="../../../Support/blue15x15.png" />
-            <div id="d2"></div>
+        <p>Test passes if the blue and orange boxes below are the same height.</p>
+        <div>
+            <img alt="blue 15x15" src="../support/blue15x15.png" />
+            <div></div>
         </div>
     </body>
 </html>

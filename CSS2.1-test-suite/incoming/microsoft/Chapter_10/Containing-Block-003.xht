@@ -1,38 +1,32 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
-        <title>CSS Test: Initial containing block for fixed positioned elements.</title>
+        <title>CSS Test: Containing block for relative positioned elements is nearest inline-block ancestor</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#containing-block-details" />
         <meta name="flags" content="" />
-        <meta name="assert" content="The containing block is established by the viewport when an element uses fixed positioning." />
+        <meta name="assert" content="If the element's position is 'relative', the containing block is formed by the content edge of the nearest inline-block ancestor box." />
         <style type="text/css">
-            #d1
+            #div1
             {
+                background: red;
+                display: inline-block;
+                height: 100px;
+                width: 100px;
+            }
+            div div
+            {
+                background: green;
+                height: 100%;
                 position: relative;
-                width: 360px;
-                left: 100px;
-                border: green 2px solid;
-                height: 22px;
-            }
-            #d2
-            {
-                width: 300px;
-                height: 25px;
-            }
-            #d3
-            {
-                position: fixed;
-                top: 11px;
-                left: 120px;
+                width: 100%;
             }
         </style>
     </head>
     <body>
-        <div id="d1"></div>
-        <div id="d2">
-            <div id="d3">Filler Text Filler Text Filler Text Filler Text Filler Text</div>
+        <p>Test passes if there is no red visible on the page.</p>
+        <div id="div1">
+            <div></div>
         </div>
-        <p>Test passes if "Filler Text" is contained within the green box and does not overlap the borders.</p>
     </body>
 </html>

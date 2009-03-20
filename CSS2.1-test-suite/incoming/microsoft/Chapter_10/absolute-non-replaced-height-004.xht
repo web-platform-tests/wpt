@@ -3,34 +3,34 @@
     <head>
         <title>CSS Test: Absolutely positioned, non-replaced elements, 'margin-top' set to 'auto'</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
-        <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#abs-replaced-height" />
+        <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#abs-non-replaced-height" />
         <meta name="flags" content="" />
-        <meta name="assert" content="Verify 'margin-top' becomes the remainder of the height of the containing box, when 'top', 'bottom' and 'height' are all are not 'auto', 'margin-top' is 'auto' and 'margin-bottom' is not 'auto'." />
+        <meta name="assert" content="When 'top', 'bottom' and 'height' are all are not 'auto', 'margin-top' is 'auto' and 'margin-bottom' is not 'auto'. Then 'margin-top' becomes the remainder of the height of the containing box." />
         <style type="text/css">
-            #d1
+            #div1
             {
+                border: solid black;
+                height: 3in;
                 position: relative;
-                border: 3px solid black;
-                height: 5in;
-                width: 5in;
+                width: 3in;
             }
-            #d2
+            div div
             {
-                position: absolute;
-                top: 1in;
-                bottom: 1in;
+                background: blue;
+                bottom: 0.5in;
                 height: 1in;
                 margin-top: auto;
-                margin-bottom: 1in;
-                background: blue;
+                margin-bottom: 0.5in;
+                position: absolute;
+                top: 0.5in;
                 width: 100%;
             }
         </style>
     </head>
     <body>
-        <p>Test passes if the blue box is vertically centered in the black bordered box.</p>
-        <div id="d1">
-            <div id="d2"></div>
+        <p>Test passes if the blue box is vertically centered in the black box.</p>
+        <div id="div1">
+            <div></div>
         </div>
     </body>
 </html>

@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
-        <title>CSS Test: Min-height set to inherit</title>
+        <title>CSS Test: Min-height set to 'inherit'</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#propdef-min-height" />
         <meta name="flags" content="" />
@@ -11,7 +11,7 @@
             {
                 min-height: 1px;
             }
-            #div2
+            div div
             {
                 background: black;
                 min-height: inherit;
@@ -19,9 +19,9 @@
         </style>
     </head>
     <body>
-        <p>Test passes if there is a black line below this text.</p>
+        <p>Test passes if there is a line below.</p>
         <div id="div1">
-            <div id="div2"></div>
+            <div></div>
         </div>
     </body>
 </html>

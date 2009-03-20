@@ -3,34 +3,35 @@
     <head>
         <title>CSS Test: Absolutely positioned, non-replaced elements, shrinks-to-fit height</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
-        <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#abs-replaced-height" />
-        <meta name="flags" content="" />
-        <meta name="assert" content="Verify that the used value for absolutely positioned elements shrinks-to-fit height." />
+        <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#abs-non-replaced-height" />
+        <meta name="flags" content="ahem" />
+        <meta name="assert" content="The used value for absolutely positioned elements shrinks-to-fit height." />
         <style type="text/css">
-            #d1
+            #div1
             {
+                border: solid black;
+                height: 2in;
                 position: relative;
-                border: 3px solid green;
-                height: 5in;
-                width: 5in;
+                width: 2in;
             }
-            #d2
+            div div
             {
+                background: red;
+                bottom: auto;
+                color: blue;
+                font: 1in/1em ahem;
+                height: auto;
+                margin-bottom: auto;
+                margin-top: auto;
                 position: absolute;
                 top: auto;
-                bottom: auto;
-                height: auto;
-                margin-top: auto;
-                margin-bottom: auto;
-                background: blue;
-                width: 2in;
             }
         </style>
     </head>
     <body>
-        <p>Test passes if the blue box shrinks to the height of the content and the blue box is in the upper left corner of the green box.</p>
-        <div id="d1">
-            <div id="d2">Filler Text</div>
+        <p>Test passes if the blue box below is in the upper-left corner of the black box and there is no red visible on the page.</p>
+        <div id="div1">
+            <div>X</div>
         </div>
     </body>
 </html>

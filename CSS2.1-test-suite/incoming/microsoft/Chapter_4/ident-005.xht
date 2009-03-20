@@ -7,7 +7,7 @@
         <meta name="flags" content="invalid" />
         <meta name="assert" content="Attribute selectors cannot begin with hyphens then digits." />
         <style type="text/css">
-            [-123abc="true"]
+            [-1hyphendigit="true"]
             {
                 color: red;
             }
@@ -15,6 +15,6 @@
     </head>
     <body>
         <p>Test passes if there is no red visible on the page.</p>
-        <div -123abc="true">Filler Text</div>
+        <div -1hyphendigit="true">Filler Text</div>
     </body>
 </html>

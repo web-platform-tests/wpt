@@ -4,10 +4,10 @@
         <title>CSS Test: Selector attributes and hyphens</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/syndata.html" />
-        <meta name="flags" content="invalid" />
+        <meta name="flags" content="" />
         <meta name="assert" content="Selector attributes can begin with hyphens." />
         <style type="text/css">
-            [-myattrib="true"]
+            [-hyphen="true"]
             {
                 color: green;
             }
@@ -15,6 +15,6 @@
     </head>
     <body>
         <p>Test passes if the "Filler Text" below is green.</p>
-        <div -myattrib="true">Filler Text</div>
+        <div -hyphen="true">Filler Text</div>
     </body>
 </html>

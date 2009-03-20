@@ -4,10 +4,10 @@
         <title>CSS Test: Attribute selectors and underscores</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/syndata.html" />
-        <meta name="flags" content="invalid" />
+        <meta name="flags" content="" />
         <meta name="assert" content="Attribute selectors can begin with underscores." />
         <style type="text/css">
-            [_myattrib="true"]
+            [_underscore="true"]
             {
                 color: green;
             }
@@ -15,6 +15,6 @@
     </head>
     <body>
         <p>Test passes if the "Filler Text" below is green.</p>
-        <div _myattrib="true">Filler Text</div>
+        <div _underscore="true">Filler Text</div>
     </body>
 </html>

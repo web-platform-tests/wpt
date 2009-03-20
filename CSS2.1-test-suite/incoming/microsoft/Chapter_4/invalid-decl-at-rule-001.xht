@@ -1,23 +1,25 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
     <head>
-        <title>CSS Test: Parsing invalid declarations in at-rules where valid declaration preceeds invalid rule</title>
+        <title>CSS Test: Parsing invalid declarations in at-rules where valid declaration precedes an invalid rule</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/syndata.html#parsing-errors" />
         <meta name="flags" content="invalid" />
         <meta name="assert" content="Invalid declarations within at-rules are ignored while the valid ones are applied." />
         <style type="text/css">
-            @media screen
-            {
-                div
+            /*<![CDATA[*/
+                @media screen
                 {
-                    color: green;
+                    div
+                    {
+                        color: green;
+                    }
+                    div&p
+                    {
+                        red: isbad;
+                    }
                 }
-                div&p
-                {
-                    red: isbad /*this decl is bad but should not make the whole @media block bad*/
-                };
-            }
+            /*]]>*/
         </style>
     </head>
     <body>

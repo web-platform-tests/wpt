@@ -1,10 +1,10 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
         <title>CSS Test: Parsing escaped special CSS characters</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/syndata.html#q6" />
-        <meta name="flags" content="invalid" />
+        <meta name="flags" content="" />
         <meta name="assert" content="Escaped special CSS characters are no longer meaningful." />
         <style type="text/css">
             .\31st\'Class\27 /* escaped "1st'Class'" */
@@ -15,6 +15,6 @@
     </head>
     <body>
         <p>Test passes if the "Filler Text" below is green.</p>
-        <p class="1st'Class'">Filler Text</p>
+        <div class="1st'Class'">Filler Text</div>
     </body>
 </html>

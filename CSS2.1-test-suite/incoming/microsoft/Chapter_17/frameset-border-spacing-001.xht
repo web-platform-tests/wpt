@@ -5,7 +5,7 @@
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#separated-borders" />
         <meta name="flags" content="may" />
-        <meta name="assert" content="The user agent allows the 'border-spacing' property to be applied to an HTML/XHTML 'frameset' element (non-normative rule)." />
+        <meta name="assert" content="The user agent may allow the 'border-spacing' property to be applied to an HTML/XHTML 'frameset' element (non-normative rule)." />
         <style type="text/css">
             frameset
             {
@@ -14,9 +14,9 @@
             }
         </style>
     </head>
-    <frameset cols="33%, 33%, 33%">
+    <frameset cols="33%, 33%, *">
         <frame src="" />
-        <frame src="../support/frameset_border_spacing_support.xht" />
+        <frame src="../support/frameset-border-spacing-001.htm" />
         <frame src="" />
         <noframes>
             <body>

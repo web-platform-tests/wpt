@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
-        <title>CSS Test: Clip using the rect() function and specifying all values as 'auto'</title>
+        <title>CSS Test: Clip using the 'rect()' function and specifying all values as 'auto'</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/visufx.html#propdef-clip" />
         <meta name="flags" content="" />
@@ -16,7 +16,7 @@
             {
                 background: red;
             }
-            #div2
+            div div
             {
                 background: green;
                 clip: rect(auto, auto, auto, auto);
@@ -25,9 +25,9 @@
         </style>
     </head>
     <body>
-        <p>Test passes if there is a green box visible and there is no red on the page.</p>
+        <p>Test passes if there is a green box visible and there is no red visible on the page.</p>
         <div id="div1">
-            <div id="div2"></div>
+            <div></div>
         </div>
     </body>
 </html>

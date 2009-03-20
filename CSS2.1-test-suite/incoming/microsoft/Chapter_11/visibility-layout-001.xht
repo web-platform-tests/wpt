@@ -7,17 +7,30 @@
         <meta name="flags" content="" />
         <meta name="assert" content="Invisible boxes still affect layout." />
         <style type="text/css">
+            div
+            {
+                height: 1in;
+                width: 1in;
+            }
             #div1
             {
-                color: red;
-                height: 300px;
+                background: orange;
+            }
+            #div2
+            {
+                background: red;
                 visibility: hidden;
+            }
+            #div3
+            {
+                background: blue;
             }
         </style>
     </head>
     <body>
-        <p>Test passes if the "Filler Text" below is more than one line below this text.</p>
-        <div id="div1">This test fails if this text is visible on the page.</div>
-        <div>Filler Text</div>
+        <p>Test passes if the blue and orange boxes below are not touching and there is no red visible on the page.</p>
+        <div id="div1"></div>
+        <div id="div2">FAIL FAIL</div>
+        <div id="div3"></div>
     </body>
 </html>

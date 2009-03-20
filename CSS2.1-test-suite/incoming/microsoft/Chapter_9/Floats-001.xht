@@ -7,30 +7,30 @@
         <meta name="flags" content="" />
         <meta name="assert" content="A left floated box shifts left until its outer edge touches the containing block edge." />
         <style type="text/css">
-            div
+            #div1
+            {
+                border: solid 5px black;
+                height: 1in;
+                width: 2in;
+            }
+            div div
             {
                 display: inline-block;
                 height: 1in;
                 width: 1in;
             }
-            #div1
-            {
-                background-color: orange;
-            }
-            #div2
+            #div3
             {
                 background-color: blue;
                 float: left;
             }
-            body
-            {
-                margin: 0;
-            }
         </style>
     </head>
     <body>
-        <p>Test passes if the blue box is on the left side of the page and the orange box is directly to its right.</p>
-        <div id="div1"></div>
-        <div id="div2"></div>
+        <p>Test passes if the blue box is on the left inner edge of the black box.</p>
+        <div id="div1">
+           <div id="div2"></div>
+           <div id="div3"></div>
+        </div>
     </body>
 </html>

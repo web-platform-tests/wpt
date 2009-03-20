@@ -9,18 +9,19 @@
         <style type="text/css">
             #div1
             {
-                font: 1in ahem;
+                font: 1in/1em ahem;
             }
-            #div2
+            div div
             {
                 font-size: 1%;
             }
         </style>
     </head>
     <body>
-        <p>Test passes if there is a tiny black box below this text.</p>
+        <p>Test passes if there is a large box above a tiny box below.</p>
         <div id="div1">
-            <div id="div2">X</div>
+            X
+            <div>X</div>
         </div>
     </body>
 </html>

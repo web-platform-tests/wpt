@@ -1,0 +1,41 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>CSS Test: page-break-inside: auto</title>
+<link rel="author" title="Melinda Grant" href="mailto:melinda.grant@hp.com"/>
+<link rel="help" href="http://www.w3.org/TR/CSS21/page.html#page-break-props"/>
+<meta name="flags" content="paged" />
+<meta name="assert" content="The 'auto' value of the 'page-break-inside' property neither forces nor forbids a page break inside the box."/>
+<style type="text/css">
+	html, body {
+		height:100%;
+	}
+	div.sansBreak {
+		page-break-inside: auto;
+		height: 85%;
+	}
+	div.withBreak {
+		page-break-inside: auto;
+	}
+</style>
+</head>
+<body>
+	<div class="sansBreak">
+	  <p>This test produces two pages on paged media.</p>
+	  <p>This text is on the first page.  A list of words follow near the bottom 
+      of the page: 'one' appears on this page and 'ten' appears on page two.  The intervening values, in order, may appear on either page.</p> 
+	</div>
+	<div class="withBreak">
+      one<br />
+      two<br />
+      three<br />
+      four<br />
+      five<br />
+      six<br />
+      seven<br />
+      eight<br />
+      nine<br />
+      ten<br />      
+    </div>
+</body>
+</html>

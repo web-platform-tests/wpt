@@ -185,7 +185,7 @@ public class Driver {
                     failed = true;
                     try {
                         err.println(file.toURL().toString()
-                                + "was supposed to be invalid but was not.");
+                                + " was supposed to be invalid but was not.");
                         err.flush();
                     } catch (MalformedURLException e) {
                         throw new RuntimeException(e);

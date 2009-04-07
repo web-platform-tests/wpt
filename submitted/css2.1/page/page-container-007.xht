@@ -1,0 +1,34 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>CSS Test: Fixed content outside the page area</title>
+  <link rel="author" title="Melinda Grant" href="mailto:melinda.grant@hp.com" />
+  <link rel="help" href="http://www.w3.org/TR/css21/RELEVANT_SPEC_SECTION" />
+  <link rel="help" href="http://www.w3.org/TR/css3-page/RELEVANT_SPEC_SECTION" />
+  <meta name="flags" content="paged image" />
+  <meta name="assert" content="Any portion of an element with 'position: fixed' which is positioned outside the page area is not printed." />
+  <style type="text/css">
+   
+   img {
+      position: fixed;
+      top: 0;
+      right: -86px;
+    }
+    div {
+      page-break-after: always;
+      padding-top: 50px;
+    }
+  
+  </style>
+ </head>
+ <body>
+   <div>
+     <img alt="FAIL: image failed to load" src="support/cssom.png"/>
+     <p>When displayed on paged media, this test produces two pages.</p>
+     <p>A portion of a logo containing six blue squares appears in the upper right corner of the page, but the characters 'CSS' are not visible on either this page or the second page.</p>
+   </div>
+   <div>
+     This text appears on page two.  The logo on this page looks exactly like the one on the first page.
+   </div>
+ </body>
+</html>

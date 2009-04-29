@@ -1,0 +1,30 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>CSS Test: Page Breaks and Bottom Margin (with bg/border)</title>
+  <link rel="author" title="Melinda Grant" href="mailto:melinda.grant@hp.com" />
+  <link rel="help" href="http://www.w3.org/TR/css21/page.html#allowed-page-breaks" />
+  <link rel="help" href="http://www.w3.org/TR/css3-page/#allowed-pg-brk" />
+  <meta name="flags" content="paged" />
+  <meta name="assert" content="When an element would span a page break solely to render a bottom margin, that margin is instead truncated and the element does not span pages (even when the element has a background or border)." />
+  <style type="text/css">
+  
+    div {
+        background: #eee;
+        border: thin solid orange;
+    }
+    p {
+        margin-bottom: 15in;
+    }
+ 
+  </style>
+ </head>
+ <body>
+   <div>
+   This test produces only one page on paged media.
+     <p>
+     The page has a light-gray background and an orange border on the left, top, and right sides.  It may or may not have a bottom border.
+     </p>
+   </div>
+ </body>
+</html>

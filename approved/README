@@ -6,4 +6,3 @@ in that folder: the tests are split into multiple
 directories only because 10000 tests in one folder is
 unweildy on certain systems. The build scripts can and
 do grab arbitrary subsets that occupy a single folder.
-

@@ -1,0 +1,153 @@
+<!doctype html>
+<title>DOMImplementation.hasFeature(feature, version)</title>
+<p>FAIL (Script did not run)</p>
+<script>
+var stat = document.getElementsByTagName("p")[0].firstChild,
+    results = document.createElement("div");
+
+results.innerHTML = "<table><thead><tr><th>Result</th><th>Feature</th><th>Version</th><th>Expected</th><th>Got</th></tr></thead><tbody></tbody></table>";
+document.body.appendChild(results);
+
+results = results.firstChild.tBodies[0];
+
+var tests = [
+    ["Core", "1.0", false],
+    ["Core", "2.0", true],
+    ["Core", "3.0", false],
+    ["Core", "100.0", false],
+    ["XML", "1.0", true],
+    ["XML", "2.0", true],
+    ["XML", "3.0", false],
+    ["XML", "100.0", false],
+    ["Core", "1", false],
+    ["Core", "2", false],
+    ["Core", "3", false],
+    ["Core", "100", false],
+    ["XML", "1", false],
+    ["XML", "2", false],
+    ["XML", "3", false],
+    ["XML", "100", false],
+    ["Core", "1.1", false],
+    ["Core", "2.1", false],
+    ["Core", "3.1", false],
+    ["Core", "100.1", false],
+    ["XML", "1.1", false],
+    ["XML", "2.1", false],
+    ["XML", "3.1", false],
+    ["XML", "100.1", false],
+    ["Core", "", true],
+    ["XML", "", true],
+    ["core", "", true],
+    ["xml", "", true],
+    ["CoRe", "", true],
+    ["XmL", "", true],
+    [" Core", "", false],
+    [" XML", "", false],
+    ["Core ", "", false],
+    ["XML ", "", false],
+    ["Co re", "", false],
+    ["XM L", "", false],
+    ["aCore", "", false],
+    ["aXML", "", false],
+    ["Corea", "", false],
+    ["XMLa", "", false],
+    ["Coare", "", false],
+    ["XMaL", "", false],
+    ["Core", " ", false],
+    ["XML", " ", false],
+    ["Core", " 1.0", false],
+    ["Core", " 2.0", false],
+    ["Core", " 3.0", false],
+    ["Core", " 100.0", false],
+    ["XML", " 1.0", false],
+    ["XML", " 2.0", false],
+    ["XML", " 3.0", false],
+    ["XML", " 100.0", false],
+    ["Core", "1.0 ", false],
+    ["Core", "2.0 ", false],
+    ["Core", "3.0 ", false],
+    ["Core", "100.0 ", false],
+    ["XML", "1.0 ", false],
+    ["XML", "2.0 ", false],
+    ["XML", "3.0 ", false],
+    ["XML", "100.0 ", false],
+    ["Core", "1. 0", false],
+    ["Core", "2. 0", false],
+    ["Core", "3. 0", false],
+    ["Core", "100. 0", false],
+    ["XML", "1. 0", false],
+    ["XML", "2. 0", false],
+    ["XML", "3. 0", false],
+    ["XML", "100. 0", false],
+    ["Core", "a1.0", false],
+    ["Core", "a2.0", false],
+    ["Core", "a3.0", false],
+    ["Core", "a100.0", false],
+    ["XML", "a1.0", false],
+    ["XML", "a2.0", false],
+    ["XML", "a3.0", false],
+    ["XML", "a100.0", false],
+    ["Core", "1.0a", false],
+    ["Core", "2.0a", false],
+    ["Core", "3.0a", false],
+    ["Core", "100.0a", false],
+    ["XML", "1.0a", false],
+    ["XML", "2.0a", false],
+    ["XML", "3.0a", false],
+    ["XML", "100.0a", false],
+    ["Core", "1.a0", false],
+    ["Core", "2.a0", false],
+    ["Core", "3.a0", false],
+    ["Core", "100.a0", false],
+    ["XML", "1.a0", false],
+    ["XML", "2.a0", false],
+    ["XML", "3.a0", false],
+    ["XML", "100.a0", false],
+    ["Core", 1, false],
+    ["Core", 2, false],
+    ["Core", 3, false],
+    ["Core", 100, false],
+    ["XML", 1, false],
+    ["XML", 2, false],
+    ["XML", 3, false],
+    ["XML", 100, false],
+    ["Core", null, true],
+    ["XML", null, true],
+    ["Core", undefined, false],
+    ["XML", undefined, false],
+    ["This is filler text.", "", false],
+    [null, "", false],
+    [undefined, "", false],
+];
+
+var all_pass = true;
+
+for (i in tests)
+{
+    var test = tests[i];
+    var row = results.insertRow(-1);
+    var feature = test[0];
+    var version = test[1];
+    var expected = test[2];
+    row.insertCell(-1).innerHTML = feature;
+    row.insertCell(-1).innerHTML = version;
+    row.insertCell(-1).innerHTML = expected;
+    
+    try
+    {
+        var got = document.implementation.hasFeature(feature, version);
+        row.insertCell(-1).innerHTML = got;
+        var pass = got === expected;
+    }
+    catch(e)
+    {
+        var pass = false;
+        row.insertCell(-1).innerHTML = typeof e;
+    }
+
+    all_pass &= pass;
+    row.insertCell(0).innerHTML = pass ? "PASS" : "FAIL";
+}
+
+stat.data = all_pass ? "PASS" : "FAIL";
+</script>

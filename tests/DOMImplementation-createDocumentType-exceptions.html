@@ -1,0 +1,87 @@
+<!doctype html>
+<title>DOMImplementation.createDocumentType(qualifiedName, publicId, systemId) Exceptions</title>
+<p>FAIL (Script did not run)</p>
+<script>
+var stat = document.getElementsByTagName("p")[0].firstChild,
+    results = document.createElement("div");
+
+results.innerHTML = "<table><thead><tr><th>Result</th><th>qualifiedName</th><th>publicId</th><th>systemId</th><th>Expected</th><th>Got</th></tr></thead><tbody></tbody></table>";
+document.body.appendChild(results);
+
+results = results.firstChild.tBodies[0];
+
+var tests = [
+    ["foo", "", "", null],
+    ["1foo", "", "", DOMException.INVALID_CHARACTER_ERR],
+    ["foo1", "", "", null],
+    ["f1oo", "", "", null],
+    ["@foo", "", "", DOMException.INVALID_CHARACTER_ERR],
+    ["foo@", "", "", DOMException.INVALID_CHARACTER_ERR],
+    ["f@oo", "", "", DOMException.INVALID_CHARACTER_ERR],
+    ["f:oo", "", "", null],
+    [":foo", "", "", DOMException.NAMESPACE_ERR],
+    ["foo:", "", "", DOMException.NAMESPACE_ERR],
+    ["foo", "foo", "", null],
+    ["foo", "", "foo", null],
+    ["foo", "f'oo", "", null],
+    ["foo", "", "f'oo", null],
+    ["foo", 'f"oo', "", null],
+    ["foo", "", 'f"oo', null],
+    ["foo", "f'o\"o", "", null],
+    ["foo", "", "f'o\"o", null],
+    ["foo", "foo>", "", null],
+    ["foo", "", "foo>", null],
+];
+
+var exceptions = {};
+for (i in DOMException)
+{
+    if (typeof DOMException[i] == "number")
+    {
+        exceptions[DOMException[i]] = i;
+    }
+}
+
+function readable_exception(num)
+{
+    if (num in exceptions)
+        return exceptions[num]
+    else if (num === null)
+        return "null"
+    else
+        return num;
+}
+
+var all_pass = true;
+
+for (i in tests)
+{
+    var test = tests[i];
+    var row = results.insertRow(-1);
+    var qualifiedName = test[0];
+    var publicId = test[1];
+    var systemId = test[2];
+    var expected = test[3];
+    row.insertCell(-1).innerHTML = qualifiedName;
+    row.insertCell(-1).innerHTML = publicId;
+    row.insertCell(-1).innerHTML = systemId;
+    row.insertCell(-1).innerHTML = readable_exception(expected);
+    
+    try
+    {
+        document.implementation.createDocumentType(qualifiedName, publicId, systemId);
+        var got = null;
+    }
+    catch(e)
+    {
+        var got = e.code;
+    }
+    row.insertCell(-1).innerHTML = readable_exception(got);
+    var pass = got === expected;
+
+    all_pass &= pass;
+    row.insertCell(0).innerHTML = pass ? "PASS" : "FAIL";
+}
+
+stat.data = all_pass ? "PASS" : "FAIL";
+</script>

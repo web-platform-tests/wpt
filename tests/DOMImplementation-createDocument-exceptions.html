@@ -1,0 +1,95 @@
+<!doctype html>
+<title>DOMImplementation.createDocument(namespaceURI, qualifiedName, doctype) Exceptions</title>
+<p>FAIL (Script did not run)</p>
+<script>
+var stat = document.getElementsByTagName("p")[0].firstChild,
+    results = document.createElement("div");
+
+results.innerHTML = "<table><thead><tr><th>Result</th><th>namespaceURI</th><th>qualifiedName</th><th>doctype</th><th>Expected</th><th>Got</th></tr></thead><tbody></tbody></table>";
+document.body.appendChild(results);
+
+results = results.firstChild.tBodies[0];
+
+var tests = [
+    [null, null, null, null],
+    [null, "foo", null, null],
+    [null, "1foo", null, DOMException.INVALID_CHARACTER_ERR],
+    [null, "f1oo", null, null],
+    [null, "foo1", null, null],
+    [null, ":foo", null, DOMException.NAMESPACE_ERR],
+    [null, "f:oo", null, null],
+    [null, "foo:", null, DOMException.NAMESPACE_ERR],
+    [null, "xml:foo", null, null],
+    [null, "xmlns:foo", null, null],
+    [null, "xmlfoo:bar", null, null],
+    ["http://example.com/", null, null, null],
+    ["/", null, null, null],
+    ["http://example.com/", "foo", null, null],
+    ["/", "foo", null, null],
+    ["http://example.com/", ":foo", null, DOMException.NAMESPACE_ERR],
+    ["http://example.com/", "f:oo", null, null],
+    ["http://example.com/", "foo:", null, DOMException.NAMESPACE_ERR],
+    ["http://www.w3.org/XML/1998/namespace", "xml:foo", null, null],
+    ["http://www.w3.org/2000/xmlns/", "xmlns:foo", null, null],
+    ["http://example.com/", "xml:foo", null, null],
+    ["http://example.com/", "xmlns:foo", null, null],
+    ["http://example.com/", "xmlfoo:bar", null, null],
+    [null, null, document.implementation.createDocumentType("foo", "", ""), null],
+    //[null, null, document.doctype, DOMException.WRONG_DOCUMENT_ERR], // This causes a horrible WebKit bug.
+    [null, null, function(){ var foo = document.implementation.createDocumentType("foo", "", ""); document.implementation.createDocument(null, null, foo); return foo; }(), DOMException.WRONG_DOCUMENT_ERR],
+    [null, null, function(){ var foo = document.implementation.createDocumentType("foo", "", ""); var bar = document.implementation.createDocument(null, null, foo); return bar.implementation.createDocumentType("bar", "", ""); }(), DOMException.WRONG_DOCUMENT_ERR],
+    [null, null, function(){ var foo = document.implementation.createDocumentType("foo", "", ""); var bar = document.implementation.createDocument(null, null, foo); var magic = bar.implementation.createDocumentType("bar", "", ""); bar.implementation.createDocument(null, null, magic); return magic; }(), DOMException.WRONG_DOCUMENT_ERR],
+];
+
+var exceptions = {};
+for (i in DOMException)
+{
+    if (typeof DOMException[i] == "number")
+    {
+        exceptions[DOMException[i]] = i;
+    }
+}
+
+function readable_exception(num)
+{
+    if (num in exceptions)
+        return exceptions[num]
+    else if (num === null)
+        return "null"
+    else
+        return num;
+}
+
+var all_pass = true;
+
+for (i in tests)
+{
+    var test = tests[i];
+    var row = results.insertRow(-1);
+    var namespaceURI = test[0];
+    var qualifiedName = test[1];
+    var doctype = test[2];
+    var expected = test[3];
+    row.insertCell(-1).innerHTML = namespaceURI;
+    row.insertCell(-1).innerHTML = qualifiedName;
+    row.insertCell(-1).innerHTML = doctype;
+    row.insertCell(-1).innerHTML = readable_exception(expected);
+    
+    try
+    {
+        document.implementation.createDocument(namespaceURI, qualifiedName, doctype);
+        var got = null;
+    }
+    catch(e)
+    {
+        var got = e.code;
+    }
+    row.insertCell(-1).innerHTML = readable_exception(got);
+    var pass = got === expected;
+
+    all_pass &= pass;
+    row.insertCell(0).innerHTML = pass ? "PASS" : "FAIL";
+}
+
+stat.data = all_pass ? "PASS" : "FAIL";
+</script>

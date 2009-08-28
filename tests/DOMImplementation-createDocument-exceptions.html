@@ -35,7 +35,7 @@ var tests = [
     ["http://example.com/", "xmlns:foo", null, null],
     ["http://example.com/", "xmlfoo:bar", null, null],
     [null, null, document.implementation.createDocumentType("foo", "", ""), null],
-    //[null, null, document.doctype, DOMException.WRONG_DOCUMENT_ERR], // This causes a horrible WebKit bug.
+    [null, null, document.doctype, DOMException.WRONG_DOCUMENT_ERR], // This causes a horrible WebKit bug.
     [null, null, function(){ var foo = document.implementation.createDocumentType("foo", "", ""); document.implementation.createDocument(null, null, foo); return foo; }(), DOMException.WRONG_DOCUMENT_ERR],
     [null, null, function(){ var foo = document.implementation.createDocumentType("foo", "", ""); var bar = document.implementation.createDocument(null, null, foo); return bar.implementation.createDocumentType("bar", "", ""); }(), DOMException.WRONG_DOCUMENT_ERR],
     [null, null, function(){ var foo = document.implementation.createDocumentType("foo", "", ""); var bar = document.implementation.createDocument(null, null, foo); var magic = bar.implementation.createDocumentType("bar", "", ""); bar.implementation.createDocument(null, null, magic); return magic; }(), DOMException.WRONG_DOCUMENT_ERR],

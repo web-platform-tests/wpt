@@ -176,6 +176,7 @@ sub writeIndexFiles {
     $tt2->process('sectionIndex.tmpl',
 		 { chapters=>$orderedChapters,
 		   extension=>'xht',
+		   isXML=>'true',
 		   specroot=>$specroot},
 		  $output . 'sectionIndex.xht')
 	|| die $tt2->error(), "\n";
@@ -192,6 +193,7 @@ sub writeIndexFiles {
 		      { tocData => $chapterTocData->{$chapter},
 			chapter=>$chapter,
 			extension=>'xht',
+			isXML=>'true',
 			isAppendix=>$chapters->{$chapter}->{isAppendix},
 			chapterTitle=>$chapters->{$chapter}->{chapterTitle},
 			chapterCount=>$chapterCounts->{$chapter},

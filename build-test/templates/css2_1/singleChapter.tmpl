@@ -1,10 +1,15 @@
+[%- IF isXML -%]
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
+[%- ELSE -%]
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+[%- END %]
  <head>
   <title>CSS 2.1 Conformance Test Suite Chapter</title>
   <style type="text/css">
-    @import &quot;http://www.w3.org/StyleSheets/TR/base.css&quot;;
-    @import &quot;../indices.css&quot;;
+    @import "http://www.w3.org/StyleSheets/TR/base.css";
+    @import "../indices.css";
   </style>
  </head>
 
@@ -13,21 +18,17 @@
   <h1>CSS2.1 Conformance Test Suite</h1>
   <h2>[% IF isAppendix %]Appendix[% ELSE %]Chapter[% END %] [% chapter %] - [% chapterTitle %] ([% chapterCount %] tests)</h2>
   <table summary="Chapter Tests" width="100%">
-    <col id="test-column"/>
-    <col id="flags-column"/>
+    <col id="test-column">[% IF isXML %]</col>[% END %]
+    <col id="flags-column">[% IF isXML %]</col>[% END %]
     <thead>
       <tr>
         <th>Test</th>
         <th>Flags</th>
       </tr>
-
     </thead>
-
 [% FOREACH section IN tocData %]
     <tbody id="s[% section.section %]">
       <tr><th colspan="2" scope="rowgroup"><a href="[% specroot %]/[% section.uri %]">[% section.section %] [% section.title %]</a></th></tr>
-    </tbody>
-
 [% FOREACH entry IN section.tests %]
       <tr id="[% entry.file %]_[% section.section %]">
         <td>[% IF entry.isPrimary %]<strong>[% END %]<a href="[% entry.file %].[% extension %]">[% entry.title %]</a>[% IF entry.isPrimary %]</strong>[% END %]</td>
@@ -35,16 +36,12 @@
       </tr>
 [% FOREACH assertion IN entry.assert %]
       <tr>
-	<td><strong>assertion: [% assertion %]</strong></td>
+	<td class="assert">[% assertion %]</td>
 	<td/>
       </tr>
-[% END %][% END %][% END %]
-
-
-
-
-
-
+[% END %][% END %]
+    </tbody>
+[% END %]
   </table>
 
  </body>

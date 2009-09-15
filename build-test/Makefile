@@ -58,9 +58,14 @@ OFFICIAL =
 ###############################################################################
 # Defaults
 
+# Directory name on test development server
 DEVDIR = $(SUITE)
+# Root URL of spec
 SPECROOT = http://www.w3.org/TR/$(SUITE)
+# File extension of test files
 EXT = xht
+# Whether to generate multiple formats, or just copy the source
+BUILD_FORMAT = true
 
 # special case - css2_1 version name does not match version used
 # on csswg.org for submitted subdir
@@ -78,6 +83,7 @@ endif
 ifeq ($(SUITE),css3-namespace)
 EXT = xml
 SPECNAME = CSS Namespaces
+BUILD_FORMAT =
 endif 
 
 ###############################################################################
@@ -166,9 +172,11 @@ generate:
 	#
 	rm -rf dist/$(SUITE)
 	mkdir dist/$(SUITE)
+ifdef BUILD_FORMAT
 	mkdir dist/$(SUITE)/html4
 	mkdir dist/$(SUITE)/xhtml1
 	mkdir dist/$(SUITE)/xhtml1print
+endif
 	#
 	# documentation and htaccess
 	#
@@ -182,14 +190,13 @@ generate:
 	tpage --relative --define path=$(SUITE)/data/ $(INTROPARAMS) --define specName='$(SPECNAME)' --define specRoot=$(SPECROOT) --include_path=templates/$(SUITE) --include_path=templates/common/ index.html.tmpl > dist/$(SUITE)/index.html
 
 
-
+ifdef BUILD_FORMAT
 	#
 	# generate the tests in all supported formats, along with support files
 	#
 
 	find tests/$(SUITE) -name '*.$(EXT)' | xargs perl tools/common/generate.pl $(SUITE) $(EXT)
-	find tests/$(SUITE) -name 'chapter*.htm' | xargs perl tools/common/generate.pl $(SUITE) $(EXT)
-
+	find tests/$(SUITE) -name 'chapter*.xht' | xargs perl tools/common/generate.pl $(SUITE) $(EXT)
 
 	cp -Lr tests/$(SUITE)/support dist/$(SUITE)/html4/support
 	cp -Lr tests/$(SUITE)/support dist/$(SUITE)/xhtml1/support
@@ -208,6 +215,16 @@ generate:
 	# report number of tests now included (XHTML1.1 variants only)
 	#
 	ls dist/$(SUITE)/xhtml1/*.xht | wc -l
+else
+	#
+	# copy tests and support files
+	#
+	cp -Lr tests/$(SUITE)/*.$(EXT) dist/$(SUITE)
+	cp -LR tests/$(SUITE)/support dist/$(SUITE)/support
+	cp -Lr tests/$(SUITE)/sectionIndex.xht dist/$(SUITE)/by-section.xht
+	cp -Lr tests/$(SUITE)/sectionIndex.htm dist/$(SUITE)/by-section.htm
+endif
+
 ifdef OFFICIAL
 	@echo "Built as official copy"
 endif

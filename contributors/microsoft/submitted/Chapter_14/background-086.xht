@@ -1,0 +1,30 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>CSS Test: Background with (color image repeat attachment)</title>
+        <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="help" href="http://www.w3.org/TR/CSS21/colors.html#propdef-background" />
+        <meta name="flags" content="image interact" />
+        <meta name="assert" content="Background with (color image repeat attachment) sets the background to the color specified, tiling the image across the x-axis and also scrolls with the content." />
+        <style type="text/css">
+            #testDiv
+            {
+                height: 200px;
+                overflow: scroll;
+                width: 200px;
+            }
+            #innerDiv
+            {
+                background: green url("../support/cat.png") repeat-x scroll;
+                height: 400px;
+                width: 400px;
+            }
+        </style>
+    </head>
+    <body>
+    <p>Test passes if there is a picture of a cat repeated over a green rectangle in the box below.  Also, when the box is scrolled to the right, the cat image moves with the scrollbar.</p>
+        <div id="testDiv">
+            <div id="innerDiv"></div>
+        </div>
+    </body>
+</html>

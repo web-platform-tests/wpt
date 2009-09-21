@@ -1,0 +1,29 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>CSS Test: Leading and half leading line heights</title>
+        <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#leading" />
+        <meta name="flags" content="ahem" />
+        <meta name="assert" content="Line-height can be different from the content area so space is above and below." />
+        <style type="text/css">
+            div
+            {
+                font: 1in/1em ahem;
+                background: blue;
+                width: 2in;
+            }
+            span
+            {
+                color: orange;
+                line-height: 2in;
+            }
+        </style>
+    </head>
+    <body>
+        <p>Test passes if the orange box is vertically centered inside the blue box.</p>
+        <div>
+            <span>X</span>
+        </div>
+    </body>
+</html>

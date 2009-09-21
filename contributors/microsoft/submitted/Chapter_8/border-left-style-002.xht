@@ -1,0 +1,22 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>CSS Test: Border-left-style set to 'hidden'</title>
+        <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#propdef-border-left-style" />
+        <meta name="flags" content="" />
+        <meta name="assert" content="The 'border-left-style' property set to 'hidden' does not render any border for non-table elements." />
+        <style type="text/css">
+            div
+            {
+                border-left-style: hidden;
+                border-left-width: 3px;
+                height: 1in;
+            }
+        </style>
+    </head>
+    <body>
+        <p>Test passes if there is no line below.</p>
+        <div></div>
+    </body>
+</html>

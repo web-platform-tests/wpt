@@ -1,0 +1,41 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>CSS Test: Setting a percentage 'height' on cell computes to 'auto'</title>
+        <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#height-layout" />
+        <meta name="flags" content="ahem" />
+        <meta name="assert" content="A percentage 'height' value on a table cell computes to 'auto'." />
+        <style type="text/css">
+            table
+            {
+                background: black;
+                border-spacing: 0;
+                height: 4em;
+            }
+            td
+            {
+                background: black;
+                font: 20px/1em ahem;
+                padding: 0;
+            }
+            #cell
+            {
+                background: blue;
+                color: blue;
+                height: 25%;
+            }
+        </style>
+    </head>
+    <body>
+        <p>Test passes if the blue and black boxes below are not the same height.</p>
+        <table>
+            <tr>
+                <td id="cell">XXXXXXXXXX</td>
+            </tr>
+            <tr>
+                <td>XXXXXXXXXX</td>
+            </tr>
+        </table>
+    </body>
+</html>

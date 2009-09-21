@@ -1,0 +1,47 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>CSS Test: Vertical-align applied to elements with 'display' set to 'table-cell'</title>
+        <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#propdef-vertical-align" />
+        <meta name="flags" content="ahem" />
+        <meta name="assert" content="The 'vertical-align' property applies to elements with 'display' set to 'table-cell'." />
+        <style type="text/css">
+            div
+            {
+                color: blue;
+                font: 0.25in/1em ahem;
+            }
+            #table
+            {
+                display: table;
+            }
+            #row
+            {
+                display: table-row;
+            }
+            #cell
+            {
+                background: orange;
+                display: table-cell;
+                height: 1in;
+                vertical-align: bottom;
+                width: 1in;
+            }
+            .box
+            {
+                background: black;
+                height: 1em;
+                width: 1in;
+            }
+        </style>
+    </head>
+    <body>
+        <p>Test passes if the blue box below is in the lower-left corner of the orange box.</p>
+        <div id="table">
+            <div id="row">
+                <div id="cell">X</div>
+            </div>
+        </div>
+    </body>
+</html>

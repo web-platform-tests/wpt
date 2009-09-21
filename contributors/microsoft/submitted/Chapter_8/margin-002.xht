@@ -1,0 +1,47 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>CSS Test: Margin set to using two values</title>
+        <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#propdef-margin" />
+        <meta name="flags" content="" />
+        <meta name="assert" content="The 'margin' property set using two values properly assigns the first value to the top and bottom margins and the second value to the left and right margins." />
+        <style type="text/css">
+            #wrapper
+            {
+                position: relative;
+            }
+            #div1, #div2
+            {
+                border: 0.1in solid green;
+            }
+            #div1, #reference
+            {
+                left: 0;
+                position: absolute;
+                top: 0;
+            }
+            #div2
+            {
+                margin: 2.54cm 0.5in;
+                height: 1in;
+                width: 3in;
+            }
+            #reference
+            {
+                border: 0.1in solid red;
+                height: 3.2in;
+                width: 4.2in;
+            }
+        </style>
+    </head>
+    <body>
+        <p>Test passes if there is no red visible on the page.</p>
+        <div id="wrapper">
+            <div id="reference"></div>
+            <div id="div1">
+                <div id="div2"></div>
+            </div>
+        </div>
+    </body>
+</html>

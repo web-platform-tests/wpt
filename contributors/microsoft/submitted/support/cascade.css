@@ -1,0 +1,16 @@
+#cascade
+{
+    display: none;
+}
+.cascadegreen
+{
+    color: green;
+}
+.cascadegreenimportant
+{
+    color: green!important;
+}
+.cascadered
+{
+    color: red;
+}

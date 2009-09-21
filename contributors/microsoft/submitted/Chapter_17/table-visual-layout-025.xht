@@ -1,0 +1,35 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>CSS Test: Handling cell spanning conflicts</title>
+        <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#table-layout" />
+        <meta name="flags" content="image may" />
+        <meta name="assert" content="When resolving cell spanning conflicts, user agents are free to visually overlap the cells or to shift the cell to avoid the visual overlap (example from spec section 17.5)." />
+        <style type="text/css">
+            td
+            {
+                border: 1px solid black;
+                width: 2em;
+                height: 1.5em;
+            }
+        </style>
+    </head>
+    <body>
+        <table>
+            <tr>
+                <td>1 </td>
+                <td rowspan="2">2 </td>
+                <td>3 </td>
+                <td>4 </td>
+            </tr>
+            <tr>
+                <td colspan="2">5 </td>
+            </tr>
+        </table>
+        <p>Test passes if the grid configuration above this line has the same structure as either one of the two configurations below (with either cell '2' and '5' overlapping, or cell '2' spanning two rows and cell '5' to the right of it on the second row).</p>
+        <div>
+            <img alt="Two possible resolutions to cell spanning conflict" src="../support/table_visual_layout_025.png" />
+        </div>
+    </body>
+</html>

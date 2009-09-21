@@ -1,0 +1,38 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>CSS Test: Max-height using picas with a nominal value, 6pc</title>
+        <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#propdef-max-height" />
+        <meta name="flags" content="" />
+        <meta name="assert" content="The 'max-height' property sets a nominal length value in picas." />
+        <style type="text/css">
+            div
+            {
+                position: relative;
+            }
+            #div2
+            {
+                background: black;
+                max-height: 6pc;
+                height: 7pc;
+                width: 1in;
+            }
+            #div3
+            {
+                border-top: 6pc solid black;
+                left: 1.1in;
+                position: absolute;
+                top: 0;
+                width: 1in;
+            }
+        </style>
+    </head>
+    <body>
+        <p>Test passes if the two boxes below are the same height.</p>
+        <div id="div1">
+            <div id="div2"></div>
+            <div id="div3"></div>
+        </div>
+    </body>
+</html>

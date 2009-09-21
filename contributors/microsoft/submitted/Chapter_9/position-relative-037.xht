@@ -1,0 +1,31 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>CSS Test: Relative positioning with left canceled out by right position</title>
+        <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#positioning-scheme" />
+        <meta name="flags" content="" />
+        <meta name="assert" content="Relative positioning with left and right values that cancel each other out appear at the original offset before applying left or right." />
+        <style type="text/css">
+            #div1
+            {
+                border: solid;
+                width: 2in;
+            }
+            div div
+            {
+                background: blue;
+                height: 1in;
+                left: 1in;
+                right: -1in;
+                width: 1in;
+            }
+        </style>
+    </head>
+    <body>
+        <p>Test passes if the left side of the box below is blue.</p>
+        <div id="div1">
+            <div></div>
+        </div>
+    </body>
+</html>

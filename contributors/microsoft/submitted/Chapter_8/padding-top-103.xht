@@ -1,0 +1,37 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>CSS Test: Padding-top using the 'inherit' value</title>
+        <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#propdef-padding-top" />
+        <meta name="flags" content="" />
+        <meta name="assert" content="The 'padding-top' property handles the 'inherit' value." />
+        <style type="text/css">
+            div
+            {
+                height: 0;
+            }
+            #wrapper
+            {
+                padding-top: 1in;
+            }
+            #div1
+            {
+                border-top: 0.1in solid red;
+                padding-top: inherit;
+            }
+            #div2
+            {
+                border-bottom: 0.1in solid black;
+                margin-top: -1.1in;
+            }
+        </style>
+    </head>
+    <body>
+        <p>Test passes if there is no red visible on the page.</p>
+       <div id="wrapper">
+            <div id="div1"></div>
+            <div id="div2"></div>
+        </div>
+    </body>
+</html>

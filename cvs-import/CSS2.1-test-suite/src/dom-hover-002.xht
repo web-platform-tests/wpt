@@ -6,6 +6,7 @@
   <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu"/>
     <link rel="help"
           href="http://www.w3.org/TR/CSS21/selector.html#dynamic-pseudo-classes" />
+    <meta name="flags" content="dom" />
     <script type="text/javascript">
       function remove() {
         var node = document.getElementById("target");
@@ -13,16 +14,19 @@
       }
     </script>
     <style>
-      div#green { color: red; }
-      div:hover { color: green !important; }
+      div:hover { color: red; }
+      div#green { color: green; }
     </style>
   </head>
   <body>
-    <div id="target" onmouseover="setTimeout(remove, 1000)">Hover this text,
-       then wait till it disappears.  At that point there should be no red.
+    <div>
+      Dummy text. Dummy text.
+      <div id="target" onmouseover="setTimeout(remove, 1000)"><span>Hover this text,
+         then wait till it disappears.  At that point there should be no red.</span>
+      </div>
     </div>
     <div id="green">
-      This should end up green.
+      Dummy text. Dummy text.
     </div>
   </body>
 </html>

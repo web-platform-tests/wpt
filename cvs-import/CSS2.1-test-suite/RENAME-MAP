@@ -1,3 +1,4 @@
+# Mapping of old-style filenames to new-style filenames in src/
 t170602-bdr-conflct-w-(\d\d)-d.xht border-conflict-w-0$2.xht
 t040103-ident-(\d\d)-c.xht	ident-0$2.xht
 t040102-keywords-0(\d)-b.xht	keywords-00$2.xht
@@ -27,3 +28,7 @@ t1001-abs-pos-cb-0(\d)-b.xht	abspos-containing-block-00$2.xht
 t090502-mrgn-colaps-flt-(\d\d)-d.xht	margin-collapse-clear-0$2.xht
 t0509-id-sel-syntax-01-f.xht	ident-008.xht
 t0509-id-sel-syntax-02-b.xht	ident-012.xht
+t051103-dom-hover-01-c-io.xht	dom-hover-001.xht
+t051103-dom-hover-02-c-io.xht	dom-hover-002.xht
+t090204-display-change-01-b-ao.xht	display-change-001.xht
+t0602-inherit-bdr-pad-b-00.xht	inherit-border-padding-000.xht

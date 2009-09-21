@@ -9,6 +9,13 @@ New tests:
    css3-modsel-184f - NEGATED contains attribute selector with empty value
      Tests to verify that attribute selectors with empty values don't match
 
+Removed tests:
+  css3-modsel-40 - ::selection pseudo-element
+  css3-modsel-162 - Contextual ::selection
+  css3-modsel-164 - :focus with ::selection
+  css3-modsel-165 - :hover with ::selection
+     ::selection has been removed from Selectors Level 3
+
 ------------------------------------------------------------------------
 Since the 19 October 2005 release, the following tests have changed:
 

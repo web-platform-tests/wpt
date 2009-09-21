@@ -1,4 +1,4 @@
-<csstest def="Starts-with attribute selector with empty value" module="W3C Selectors" modulename="css3-modsel" number="184" rev="1.0" date="30-october-2008" xmlns="http://www.example.org/css3tests">
+<csstest def="Starts-with attribute selector with empty value" module="W3C Selectors" modulename="css3-modsel" number="184b" rev="1.0" date="30-october-2008" xmlns="http://www.example.org/css3tests">
 
 <author>Lachlan Hunt</author>
 

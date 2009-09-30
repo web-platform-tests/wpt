@@ -1,0 +1,26 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+ <head>
+ <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+  <title>CSS Test: @import</title>
+  <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
+  <link rel="help" href=
+  "http://www.w3.org/TR/CSS21/cascade.html#at-import">
+  <meta name="flags" content="paged">
+  <meta name="assert" content="Media-dependent @import rules">
+
+  <style type="text/css">
+  @import url("http://www.w3.org/Style/CSS/Test/CSS2.1/current/xhtml1/support/a-green.css") print;
+  </style>
+
+ </head>
+
+ <body class="a">
+
+  <p>PREREQUISITE: Switch to print preview or a paged media view of
+  the page.</p>
+
+  <p>This test is passed if the whole text of this page is green.</p>
+
+ </body>
+</html>

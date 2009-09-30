@@ -1,0 +1,37 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+ <head>
+ <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+  <title>CSS Test: background-position</title>
+  <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
+  <link rel="help" href="http://www.w3.org/TR/CSS21/colors.html#background-properties">
+  <link rel="help" href="http://www.w3.org/TR/CSS21/syndata.html#length-units">
+  <link rel="help" href="http://www.w3.org/TR/CSS21/fonts.html#font-size-props">
+  <meta name="flags" content="ahem image">
+  <meta name="assert" content="ex unit is the 'x-height' of the relevant font. 'em' and 'ex' length values when defining 'font-size' property refer to the computed font size of the parent element.">
+
+  <style type="text/css">
+  html {font: 20px/1 Ahem;}
+
+  body
+  {
+  background: url("http://www.w3.org/Style/CSS/Test/CSS2.1/current/xhtml1/support/1x1-lime.png") repeat-x 0 6.25ex;
+  font-size: 2.5ex;
+  margin: 0px;
+  }
+  
+  #vertical-ruler {margin-top: 1px;}
+  
+  #expected-results {font-family: serif;}
+  </style>
+
+ </head>
+
+ <body>
+
+  <p id="vertical-ruler"><img src="support/ruler-v-100px-200px-300px.png" width="55" height="350" alt="FAIL"></p>
+
+  <p id="expected-results">A green horizontal line should appear at exactly 200px</p>
+
+ </body>
+</html>

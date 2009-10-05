@@ -1,14 +1,14 @@
 <!doctype html>
 <title>DOMImplementation.createDocument(namespaceURI, qualifiedName, doctype) Exceptions</title>
 <p>FAIL (Script did not run)</p>
+<script src=setException.js></script>
 <script>
 var stat = document.getElementsByTagName("p")[0].firstChild,
-    results = document.createElement("div");
+    results = document.createElement("div"),
+    all_pass = true;
 
 results.innerHTML = "<table><thead><tr><th>Result</th><th>namespaceURI</th><th>qualifiedName</th><th>doctype</th><th>Expected</th><th>Got</th></tr></thead><tbody></tbody></table>";
 document.body.appendChild(results);
-
-results = results.firstChild.tBodies[0];
 
 var tests = [
     [null, null, null, null],
@@ -34,15 +34,27 @@ var tests = [
     ["http://example.com/", "xml:foo", null, null],
     ["http://example.com/", "xmlns:foo", null, null],
     ["http://example.com/", "xmlfoo:bar", null, null],
-    [null, null, document.implementation.createDocumentType("foo", "", ""), null],
-    [null, null, document.doctype, DOMException.WRONG_DOCUMENT_ERR], // This causes a horrible WebKit bug.
-    [null, null, function(){ var foo = document.implementation.createDocumentType("foo", "", ""); document.implementation.createDocument(null, null, foo); return foo; }(), DOMException.WRONG_DOCUMENT_ERR],
-    [null, null, function(){ var foo = document.implementation.createDocumentType("foo", "", ""); var bar = document.implementation.createDocument(null, null, foo); return bar.implementation.createDocumentType("bar", "", ""); }(), DOMException.WRONG_DOCUMENT_ERR],
-    [null, null, function(){ var foo = document.implementation.createDocumentType("foo", "", ""); var bar = document.implementation.createDocument(null, null, foo); var magic = bar.implementation.createDocumentType("bar", "", ""); bar.implementation.createDocument(null, null, magic); return magic; }(), DOMException.WRONG_DOCUMENT_ERR],
-    [null, "foo", document.implementation.createDocumentType("foo", "", ""), null],
-    ["foo", null, document.implementation.createDocumentType("foo", "", ""), null],
-    ["foo", "bar", document.implementation.createDocumentType("foo", "", ""), null],
 ];
+
+try
+{
+    var tempTests = tests.concat([
+        [null, null, document.implementation.createDocumentType("foo", "", ""), null],
+        [null, null, document.doctype, DOMException.WRONG_DOCUMENT_ERR], // This causes a horrible WebKit bug.
+        [null, null, function(){ var foo = document.implementation.createDocumentType("foo", "", ""); document.implementation.createDocument(null, null, foo); return foo; }(), DOMException.WRONG_DOCUMENT_ERR],
+        [null, null, function(){ var foo = document.implementation.createDocumentType("foo", "", ""); var bar = document.implementation.createDocument(null, null, foo); return bar.implementation.createDocumentType("bar", "", ""); }(), DOMException.WRONG_DOCUMENT_ERR],
+        [null, null, function(){ var foo = document.implementation.createDocumentType("foo", "", ""); var bar = document.implementation.createDocument(null, null, foo); var magic = bar.implementation.createDocumentType("bar", "", ""); bar.implementation.createDocument(null, null, magic); return magic; }(), DOMException.WRONG_DOCUMENT_ERR],
+        [null, "foo", document.implementation.createDocumentType("foo", "", ""), null],
+        ["foo", null, document.implementation.createDocumentType("foo", "", ""), null],
+        ["foo", "bar", document.implementation.createDocumentType("foo", "", ""), null],
+    ]);
+    tests = tempTests;
+}
+catch(e)
+{
+    results.innerHTML += "<p>document.implementation.createDocumentType dependency failed.</p>";
+    all_pass = false;
+}
 
 var exceptions = {};
 for (i in DOMException)
@@ -63,12 +75,12 @@ function readable_exception(num)
         return num;
 }
 
-var all_pass = true;
+var resultsTbody = results.firstChild.tBodies[0];
 
 for (i in tests)
 {
     var test = tests[i];
-    var row = results.insertRow(-1);
+    var row = resultsTbody.insertRow(-1);
     var namespaceURI = test[0];
     var qualifiedName = test[1];
     var doctype = test[2];

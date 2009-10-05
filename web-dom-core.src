@@ -316,7 +316,7 @@ module domexception {
 <p>The <dfn title=dom-Document-createProcessingInstruction><code>createProcessingInstruction(<var title>target</var>, <var title>data</var>)</code></dfn> method must run the following steps:
 <ol>
  <li><p>If <var title>target</var> doesn't match the <!--<code title>PITarget</code>--> <code title>Name</code> production in XML, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and abort these steps. [XML] <!-- DOM3 didn't check for "xml" --></li>
- <!--<li><p>If <var title>target</var> contains a U+003A COLON (":") character, raise an <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and abort these steps.--> <!-- DOM3 didn't check this -->
+ <!--<li><p>If <var title>target</var> contains a U+003A COLON (":") character, raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and abort these steps.--> <!-- DOM3 didn't check this -->
  <li><p>Return a new <code>ProcessingInstruction</code> node with its <code title=dom-ProcessingInstruction-target>target</code> attribute set to <var title>target</var>, <code title=dom-ProcessingInstruction-data>data</code> attribute set to <var title>data</var> and <code title=dom-Node-ownerDocument>ownerDocument</code> set to the <span>context node</span>.
 </ol>
 <p class=note>No check is performed that the processing instruction target contains "xml" or the colon, or that the data contains characters that match the <code title>Char</code> production in XML or that it contains the string "<code title>?></code>". [XML]</p>
@@ -345,9 +345,9 @@ module domexception {
 <p>The <dfn title=dom-Document-createElementNS><code>createElementNS(<var title>namespaceURI</var>, <var title>qualifiedName</var>)</code></dfn> method must run the following steps:</p>
 <ol>
  <li><p>If <var title>qualifiedName</var> doesn't match the <code title>Name</code> production in XML, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and abort these steps. [XML]
- <li><p>If <var title>qualifiedName</var> doesn't match the <code title>QName</code> production in Namespaces in XML, raise an <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and abort these steps. [XMLNS]
+ <li><p>If <var title>qualifiedName</var> doesn't match the <code title>QName</code> production in Namespaces in XML, raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and abort these steps. [XMLNS]
  <li><p>If <var title>qualifiedName</var> contains a U+003E COLON (":") character, then split the string on the colon and let <var title>prefix</var> be the part before the colon and <var title>localName</var> the part after the colon. Otherwise, let <var title>prefix</var> be null and <var title>localName</var> be <var title>qualifiedName</var>.
- <li><p>If <var title>prefix</var> is not null and <var title>namespaceURI</var> is an empty string, raise an <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and abort these steps.
+ <li><p>If <var title>prefix</var> is not null and <var title>namespaceURI</var> is an empty string, raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and abort these steps.
  <li><p>Return a new <code>Element</code> node with no attributes, <code title=dom-Node-namespaceURI>namespaceURI</code> set to <var title>namespaceURI</var>, <code title=dom-Node-prefix>prefix</code> set to <var title>prefix</var>, <code title=dom-Node-localName>localName</code> set to <var title>localName</var>, and <code title=dom-Node-ownerDocument>ownerDocument</code> set to the <span>context node</span>.
 </ol>
 
@@ -529,7 +529,7 @@ module domexception {
   <p>If <var title>prefix</var> is not null, run the following substeps:
   <ol>
    <li><p>If <var title>prefix</var> doesn't match the <code title>Name</code> production in XML, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and abort these steps. [XML]
-   <li><p>If <var title>prefix</var> doesn't match the <code title>NCName</code> production in Namespaces in XML, raise an <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and abort these steps. [XMLNS]
+   <li><p>If <var title>prefix</var> doesn't match the <code title>NCName</code> production in Namespaces in XML, raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and abort these steps. [XMLNS]
   </ol>
  <li><p class=XXX>Actually this doesn't match any browser. Let's try to drop it instead.
 </ol>-->

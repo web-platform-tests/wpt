@@ -349,6 +349,8 @@ module domexception {
  <li><p>If <var title>qualifiedName</var> doesn't match the <code title>QName</code> production in Namespaces in XML, raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and abort these steps. [XMLNS]
  <li><p>If <var title>qualifiedName</var> contains a U+003E COLON (":") character, then split the string on the colon and let <var title>prefix</var> be the part before the colon and <var title>localName</var> the part after the colon. Otherwise, let <var title>prefix</var> be null and <var title>localName</var> be <var title>qualifiedName</var>.
  <li><p>If <var title>prefix</var> is not null and <var title>namespaceURI</var> is an empty string, raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and abort these steps.
+ <li><p>If <var title>prefix</var> is "xml" and <var title>namespaceURI</var> is not "http://www.w3.org/XML/1998/namespace", raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and abort these steps.
+ <li><p>If <var title>qualifiedName</var> or <var title>prefix</var> is "xmlns" and <var title>namespaceURI</var> is not "http://www.w3.org/2000/xmlns/", raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and abort these steps.
  <li><p>Return a new <code>Element</code> node with no attributes, <code title=dom-Node-namespaceURI>namespaceURI</code> set to <var title>namespaceURI</var>, <code title=dom-Node-prefix>prefix</code> set to <var title>prefix</var>, <code title=dom-Node-localName>localName</code> set to <var title>localName</var>, and <code title=dom-Node-ownerDocument>ownerDocument</code> set to the <span>context node</span>.
 </ol>
 

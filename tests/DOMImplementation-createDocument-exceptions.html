@@ -31,8 +31,8 @@ var tests = [
     ["http://example.com/", "foo:", null, DOMException.NAMESPACE_ERR],
     ["http://www.w3.org/XML/1998/namespace", "xml:foo", null, null],
     ["http://www.w3.org/2000/xmlns/", "xmlns:foo", null, null],
-    ["http://example.com/", "xml:foo", null, null],
-    ["http://example.com/", "xmlns:foo", null, null],
+    ["http://example.com/", "xml:foo", null, DOMException.NAMESPACE_ERR],
+    ["http://example.com/", "xmlns:foo", null, DOMException.NAMESPACE_ERR],
     ["http://example.com/", "xmlfoo:bar", null, null],
 ];
 

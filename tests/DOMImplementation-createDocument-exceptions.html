@@ -41,9 +41,9 @@ try
     var tempTests = tests.concat([
         [null, null, document.implementation.createDocumentType("foo", "", ""), null],
         [null, null, document.doctype, DOMException.WRONG_DOCUMENT_ERR], // This causes a horrible WebKit bug.
-        [null, null, function(){ var foo = document.implementation.createDocumentType("foo", "", ""); document.implementation.createDocument(null, null, foo); return foo; }(), DOMException.WRONG_DOCUMENT_ERR],
-        [null, null, function(){ var foo = document.implementation.createDocumentType("foo", "", ""); var bar = document.implementation.createDocument(null, null, foo); return bar.implementation.createDocumentType("bar", "", ""); }(), DOMException.WRONG_DOCUMENT_ERR],
-        [null, null, function(){ var foo = document.implementation.createDocumentType("foo", "", ""); var bar = document.implementation.createDocument(null, null, foo); var magic = bar.implementation.createDocumentType("bar", "", ""); bar.implementation.createDocument(null, null, magic); return magic; }(), DOMException.WRONG_DOCUMENT_ERR],
+        [null, null, function(){ var foo = document.implementation.createDocumentType("foo", "", ""); document.implementation.createDocument(null, null, foo); return foo; }(), DOMException.WRONG_DOCUMENT_ERR], // DOCTYPE already associated with a document.
+        [null, null, function(){ var bar = document.implementation.createDocument(null, null, null); return bar.implementation.createDocumentType("bar", "", ""); }(), DOMException.WRONG_DOCUMENT_ERR], // DOCTYPE created by a different implementation.
+        [null, null, function(){ var bar = document.implementation.createDocument(null, null, null); var magic = bar.implementation.createDocumentType("bar", "", ""); bar.implementation.createDocument(null, null, magic); return magic; }(), DOMException.WRONG_DOCUMENT_ERR], // DOCTYPE created by a different implementation and already associated with a document.
         [null, "foo", document.implementation.createDocumentType("foo", "", ""), null],
         ["foo", null, document.implementation.createDocumentType("foo", "", ""), null],
         ["foo", "bar", document.implementation.createDocumentType("foo", "", ""), null],

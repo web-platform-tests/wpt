@@ -218,7 +218,7 @@ module domexception {
  <li>
   <p>If <var title>doctype</var> is not null, run the following substeps:
   <ol>
-   <li><p>If the <var title>doctype</var>'s <code title=dom-Node-ownerDocument>ownerDocument</code> is not null or if <var title>doctype</var> was created from a different <code>DOMImplementation</code>, then raise a <code title=dom-DOMException-WRONG_DOCUMENT_ERR>WRONG_DOCUMENT_ERR</code> exception and abort the overall set of steps.
+   <li><p>If the <var title>doctype</var>'s <code title=dom-Node-ownerDocument>ownerDocument</code> is not null, raise a <code title=dom-DOMException-WRONG_DOCUMENT_ERR>WRONG_DOCUMENT_ERR</code> exception and abort the overall set of steps.
    <li><p>Set the <var title>doctype</var>'s <code title=dom-Node-ownerDocument>ownerDocument</code> to <var title>document</var>.
    <li><p>Append <var title>doctype</var> to <var title>document</var>.
   </ol>

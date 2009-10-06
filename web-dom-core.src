@@ -139,13 +139,7 @@
 
 <h3>Exception <code title>DOMException</code></h3>
 
-<pre class=idl>[ExceptionConsts=<span>DOMException</span>]
-module domexception {
-  exception <dfn>DOMException</dfn> {
-    unsigned short <span title=dom-DOMException-code>code</span>;
-    DOMString <span title=dom-DOMException-message>message</span>;
-    DOMString <span title=dom-DOMException-name>name</span>;
-  };
+<pre class=idl>exception <dfn>DOMException</dfn> {
   const unsigned short <span title=dom-domexception-INDEX_SIZE_ERR>INDEX_SIZE_ERR</span> = 1;
   const unsigned short <span title=dom-domexception-DOMSTRING_SIZE_ERR>DOMSTRING_SIZE_ERR</span> = 2;
   const unsigned short <span title=dom-domexception-HIERARCHY_REQUEST_ERR>HIERARCHY_REQUEST_ERR</span> = 3;
@@ -169,6 +163,10 @@ module domexception {
   const unsigned short <span title=dom-domexception-URL_MISMATCH_ERR>URL_MISMATCH_ERR</span> = 21;
   const unsigned short <span title=dom-domexception-QUOTA_EXCEEDED_ERR>QUOTA_EXCEEDED_ERR</span> = 22;
   const unsigned short <span title=dom-domexception-DATAGRID_MODEL_ERR>DATAGRID_MODEL_ERR</span> = 23;
+  
+  unsigned short <span title=dom-DOMException-code>code</span>;
+  DOMString <span title=dom-DOMException-message>message</span>;
+  DOMString <span title=dom-DOMException-name>name</span>;
 };</pre>
 
 <p>The <dfn title=dom-DOMException-code><code>code</code></dfn> exception member must return the code for the exception, which must be one of the following:

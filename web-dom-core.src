@@ -297,6 +297,7 @@
 <Philip`>	(http://www.movingideas.org/content/en/issue_items/education.htm)
 <Philip`>	(n = tens of thousands, I think)
 -->
+<!-- As far as I can tell, this isn't needed for web compatibility. Neither WebKit nor Opera support it, and Firefox's implementation still throws on the majority of cases in the wild, as almost all cases in the wild take advantage of the fact that IE allows attributes. -->
 <ol>
  <li><p>If <var title>tagName</var> doesn't match the <code title>Name</code> production in XML, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and abort these steps. [XML]
  <li><p>Return a new <code>Element</code> node with no attributes, <code title=dom-Node-namespaceURI>namespaceURI</code> set to "<code title>http://www.w3.org/1999/xhtml</code>", <code title=dom-Node-prefix>prefix</code> set to null, <code title=dom-Node-localName>localName</code> set to <var title>tagName</var>, <span>converted to lowercase</span>, and <code title=dom-Node-ownerDocument>ownerDocument</code> set to the <span>context node</span>.

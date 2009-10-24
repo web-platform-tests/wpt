@@ -1,0 +1,13 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>CSS: Minimum font-size interaction</title>
+  <style type="text/css">
+   div { font-family: Verdana; }
+   .a { font-size: 0.01px; height: 0.5em; background: red; }
+   .a span { font-size: 1000em; color: green; }
+  </style>
+ </head>
+ <body>
+   <div class="a"> <span>PASS</span> </div>
+ </body>
+</html>

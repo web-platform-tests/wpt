@@ -1,0 +1,15 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+ <head>
+  <title>Fonts and not bidi</title>
+  <style type="text/css">
+   .control { display: inline; font: 1em/1 Ahem, sans-serif; background: red; color: white; }
+   .test { font: 2em/1 Ahem; color: blue; }
+  </style>
+ </head>
+ <body>
+  <div class="control">Ahem_font_required_for_this_test.</div>
+  <p>Below there should be a two identical blocks side by side with an "&#x0130;" between them.</p>
+  <p class="test">XXXX &#x0130; FAIL</p>
+ </body>
+</html>

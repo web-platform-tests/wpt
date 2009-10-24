@@ -1,0 +1,7 @@
+
+redirect permanent /tests/adhoc/css/box/float/001.html http://www.hixie.ch/tests/adhoc/css/box/float/001-demo.html
+redirect permanent /tests/adhoc/css/box/float/002.html http://www.hixie.ch/tests/adhoc/css/box/float/002-demo.html
+redirect permanent /tests/adhoc/css/box/float/003.html http://www.hixie.ch/tests/adhoc/css/box/float/003-demo.html
+
+redirect permanent /tests/adhoc/css/box/float/037.html http://www.hixie.ch/tests/adhoc/css/box/float/wrapping/001.html
+AddDescription "(redirects to wrapping/001.html)" 037.html

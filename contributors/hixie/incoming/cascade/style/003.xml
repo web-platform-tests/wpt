@@ -1,0 +1,13 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>CSS: style attributes and importance</title>
+  <style type="text/css">
+   div { color: red; }
+  </style>
+ </head>
+ <body>
+  <div style="color: green"> This should be green. It has a style
+  attribute with "color: green" and a normal style rule with "color:
+  red". </div>
+ </body>
+</html>

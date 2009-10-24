@@ -1,0 +1,16 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>Dynamic sheet insertion (&lt;link&gt;)</title>
+  <script type="text/javascript" id="script">
+   var style = document.createElementNS("http://www.w3.org/1999/xhtml", "link");
+   style.setAttribute("type", "text/css");
+   style.setAttribute("rel", "stylesheet");
+   style.setAttribute("href", "body-red.css");
+   document.getElementsByTagName("head")[0].insertBefore(style, document.getElementById("script"));
+  </script>
+  <link rel="stylesheet" type="text/css" href="body-green.css" />
+ </head>
+ <body>
+  <p>This text should be green.</p>
+ </body>
+</html>

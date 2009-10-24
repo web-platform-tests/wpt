@@ -1,0 +1,20 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+ <head>
+  <title>Table cell size with line box content</title>
+  <style type="text/css">
+   td { margin: 0; border: 1em green; border-style: solid none; width: 10em; }
+   div { height: 1em; background: yellow; }
+  </style>
+ </head>
+ <body>
+  <p>There should be two green bars below (with a yellow one in between).</p>
+  <table>
+   <tr>
+    <td>
+     <div>TEST</div>
+    </td>
+   </tr>
+  </table>
+ </body>
+</html>

@@ -1,0 +1,11 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>CSS: style attributes and importance</title>
+  <style type="text/css">
+   div { color: white ! important; background: green ! important; }
+  </style>
+ </head>
+ <body>
+  <div style="color: yellow; background: red;"> This should be white on green. </div>
+ </body>
+</html>

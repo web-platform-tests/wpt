@@ -1,0 +1,30 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>CSS table model and generated content: Basics</title>
+  <style type="text/css">
+   table { display: table; border-spacing: 0; background: red; color: green; }
+   row { display: table-row; }
+   cell { display: table-cell; background: white; border: solid white; }
+   row[test]:before, row[test]:after { display: table-cell; border: white; background: white; }
+   row[test]:before { content: "P"; }
+   row[test]:after { content: "S"; }
+  </style>
+ </head>
+ <body>
+  <p>There should be two times the word PASS below, and no red.</p>
+  <table xmlns="http://www.example.com/">
+    <row>
+     <cell>P</cell>
+     <cell>A</cell>
+     <cell>S</cell>
+     <cell>S</cell>
+    </row>
+    <row test="test">
+     <!--<cell>P</cell>-->
+     <cell>A</cell>
+     <cell>S</cell>
+     <!--<cell>S</cell>-->
+    </row>
+  </table>
+ </body>
+</html>

@@ -1,0 +1,18 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>CSS Inline Box Model: Behaviour near cells</title>
+  <style type="text/css">
+   div, table, tr, td { margin: 0; border: 0; padding: 0; border-spacing: 0; line-height: 1; }
+   span { font-size: 0.2em; }
+   table { background: green; color: white; width: 5em; }
+   .test { height: 1em; background: red; width: 5em; }
+   .wrapper { font-size: 5em; }
+  </style>
+ </head>
+ <body>
+  <p>Below this line there should be no red.</p>
+  <div class="wrapper">
+   <div class="test"><table><tr><td><span>This box should be green.</span></td></tr></table></div>
+  </div>
+ </body>
+</html>

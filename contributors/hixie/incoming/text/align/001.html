@@ -1,0 +1,23 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+ <head>
+  <title>text-align and bidi (basic test)</title>
+  <style type="text/css">
+   .control { display: inline; font: 1em/1 Ahem, sans-serif; background: red; color: white; }
+   .test { margin: 1em; width: 29em; font: 0.5em/1 Ahem; }
+   .left { text-align: left; }
+   .right { text-align: right; }
+   .justify { text-align: justify; }
+  </style>
+ </head>
+ <body>
+  <div class="control">Ahem_font_required_for_this_test.</div>
+  <p>There should be a perfect 6&times;6 grid of squares below. (Force bidi: &#x05D0;) </p>
+  <div class="test left">xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx abcd</div>
+  <div class="test right">xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx abcd</div>
+  <div class="test justify">xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx abcd</div>
+  <div class="test left">&#x202E;xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx abcd</div>
+  <div class="test right">&#x202E;xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx abcd</div>
+  <div class="test justify">&#x202E;xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx abcd</div>
+ </body>
+</html>

@@ -1,0 +1,6 @@
+These tests are meaningless if the control tests do not pass.
+
+These tests are courtesy of Boris Zbarsky.
+
+Note: These tests are not as trivial as they seem. At least one UA
+failed all but one of them at one point.

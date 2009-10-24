@@ -1,0 +1,19 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+ <head>
+  <title>CSS Floats: Nested floats (no other content)</title>
+  <style type="text/css">
+   p { color: navy; }
+   div { border: 1px solid teal; padding: 4px; margin: 4px; }
+   .left { float: left; }
+   .right { float: right; }
+   .size { width: 10em; height: 10em; }
+  </style>
+ </head>
+ <body>
+  <p> You should see two perfectly nested boxes below, the inner box
+  equidistant from the outer box on all sides, and both exactly
+  square. </p>
+  <div class="left"><div class="size right">This should be inside the inner box.</div></div>
+ </body>
+</html>

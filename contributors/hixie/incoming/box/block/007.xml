@@ -1,0 +1,31 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>CSS Blocks: Margin Collapsing</title>
+  <style type="text/css">
+   div {
+     border: solid blue;
+     height: 180px;
+   }
+   div > * { 
+     border: thin solid silver;
+     margin: 1em;
+     height: 1em;
+     border-spacing: 0;
+     display: block;
+     font: 20px/20px Ahem;
+   }
+   td, :table-cell { padding: 0; /* work around for bug 72359 */ }
+   :table { border-spacing: 0; /* work around for bug 72358 */ }
+  </style>
+ </head>
+ <body>
+  <p>The black bars should not overflow the blue box.</p>
+  <div>
+   <table><tr><td>Test</td></tr></table>
+   <table><tr><td>Test</td></tr></table>
+   <p>Test</p>
+   <p>Test</p>
+  </div>
+  <p>This test has passed if the black bars are evenly distributed in the blue box.</p>
+ </body>
+</html>

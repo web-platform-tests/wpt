@@ -1,0 +1,67 @@
+<!DOCTYPE HTML>
+<html>
+ <head>
+  <title>empty block collapsing</title>
+  <style>
+   div, td { margin: 0; padding: 0; }
+   img { display: block; }
+   .reference { background: red; }
+   div.container { width:100px; height:100px; border: solid thin; margin: 20px; }
+   .nothing      { }
+   .topBorder    { border-top:    1px solid aqua; }
+   .bottomBorder { border-bottom: 1px solid lime; }
+   .block        { height: 20px; background: silver; }
+   .topMargin    { margin-top: 40px; }
+   .A            { height: 20px; float:left; width: 40px; background: orange; }
+   .B            { height: 20px; float:left; width: 40px; background: teal; }
+
+  </style>
+ </head>
+ <body>
+
+  <p>The two columns of diagrams below should be identical to the pixel.</p>
+
+  <table>
+   <tr>
+    <td>
+
+     <div class="container">
+      <div class="block"></div>
+      <div class="nothing">
+       <div class="A"></div> 
+       <div class="topMargin">
+        <div class="B"></div> 
+       </div>
+      </div>
+     </div>
+
+     <div class="container">
+      <div class="block"></div>
+      <div class="topBorder">
+       <div class="A"></div> 
+       <div class="topMargin">
+        <div class="B"></div> 
+       </div>
+      </div>
+     </div>
+
+     <div class="container">
+      <div class="block"></div>
+      <div class="bottomBorder">
+       <div class="A"></div> 
+       <div class="topMargin">
+        <div class="B"></div> 
+       </div>
+      </div>
+     </div>
+
+    </td>
+
+    <td class="reference">
+     <img src="068.png" alt="">
+    </td>
+   </tr>
+  </table>
+
+ </body>
+</html>

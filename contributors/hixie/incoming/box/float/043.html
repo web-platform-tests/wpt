@@ -1,0 +1,17 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+ <head>
+  <title>Nested floats: Basic</title>
+  <style type="text/css">
+   .float { float: left; background: red; padding: 0; margin: 0; list-style: none; }
+   .text { font: 900 2em/1 sans-serif; background: green; color: white; }
+  </style>
+ </head>
+ <body>
+  <p>There should be a single green block with the word "PASS" below.</p>
+  <ul class="float">
+   <li class="float"> <span class="float text"> PA </span>
+   <li class="float"> <span class="float text"> SS </span>
+  </ul>
+ </body>
+</html>

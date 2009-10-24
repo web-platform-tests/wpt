@@ -1,0 +1,24 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html lang="en">
+ <head>
+  <title>CSS3 Text: text-decoration with block children</title>
+  <style type="text/css">
+   div { color: blue; text-decoration: underline; }
+   span { vertical-align: bottom; }
+   .inline-block { display: inline-block; width: 3em; }
+   .up { vertical-align: 0.5em; }
+  </style>
+ </head>
+ <body>
+  <p>There should only be on solid line under the following text, if
+  the line is broken at any point, or if there are two underlines
+  anywhere, then the test has failed.</p>
+  <div>
+   <span> Test test test </span>
+   <span class="inline-block"> test test test </span>
+   <span> test test test </span>
+   <span class="up"> test test test </span>
+   <span> test test test. </span>
+  </div>
+ </body>
+</html>

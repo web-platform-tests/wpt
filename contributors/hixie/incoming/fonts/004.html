@@ -1,0 +1,17 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html lang="en">
+ <head>
+  <title>font inheritance into &lt;pre&gt; elements</title>
+  <style type="text/css">
+   .control { display: inline; font: 1em/1 Ahem, sans-serif; background: red; color: white; }
+   div { font: 1em/1 Ahem; width: 2em; background: red; height: 2em; }
+   pre { font: inherit; color: green; }
+  </style>
+ </head>
+ <body>
+  <div class="control">Ahem_font_required_for_this_test.</div>
+  <p>There should be a green square below with no red present.</p>
+  <div><pre>xx
+xx</pre></div>
+ </body>
+</html>

@@ -1,0 +1,19 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+ <head>
+  <title>Negative heights</title>
+  <style type="text/css">
+   .outer { background: red; height: 2em; }
+   .test { border-top: solid green 1em; border-bottom: solid green 1em; background: red; }
+   .inner { margin-bottom: -10em; }
+  </style>
+ </head>
+ <body>
+  <p>There should be a green block below and no red.</p>
+  <div class="outer">
+   <div class="test">
+    <div class="inner"></div>
+   </div>
+  </div>
+ </body>
+</html>

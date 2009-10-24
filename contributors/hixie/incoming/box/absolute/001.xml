@@ -1,0 +1,20 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>CSS Absolute Positioning: Collapsible Margins</title>
+  <style type="text/css">
+   /* Set Up Conditions */
+   * { margin: 0; padding: 0; border: 0; position: static; float: none; top: auto; left: auto; right: auto; bottom: auto; display: block; }
+   head { display: none; } body { padding: 1em; }
+   /* Test */
+   .margin { margin-bottom: 2em; }
+   .abs { position: absolute; background: green; z-index: 1; height: 1em; width: 10em; }
+   .flow { background: red; height: 1em; width: 10em; }
+  </style>
+ </head>
+ <body>
+
+  <div class="margin">This page should have a single green block 2em below this paragraph and no red. </div>
+  <div class="abs"/> <div class="flow"/>
+
+ </body>
+</html>

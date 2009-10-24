@@ -1,0 +1,46 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+ <head>
+  <title>text-align and bidi</title>
+  <style type="text/css">
+   p { color: blue; }
+   .test { margin: 1em; border: solid; padding: 1em; width: 15em; font: 2em/1 monospace; text-align: justify; direction: rtl; }
+  </style>
+ </head>
+ <body>
+  <p>The text below should be justified to fit in the box (straight edges on all sides).</p>
+  <div class="test">
+   &#x05D0;
+   &#x05D0;
+   X
+   &#x05D0;&#x05D0;
+   &#x05D0;&#x05D0;&#x05D0;&#x05D0;
+   XX
+   &#x05D0;
+   &#x05D0;
+   X
+
+   XX
+   &#x05D0;&#x05D0;
+   XXX
+   &#x05D0;&#x05D0;&#x05D0;
+   &#x05D0;&#x05D0;&#x05D0;
+   &#x05D0;&#x05D0;
+   XX
+
+   &#x05D0;&#x05D0;&#x05D0;
+   &#x05D0;&#x05D0;&#x05D0;
+   XXXX
+   &#x05D0;&#x05D0;&#x05D0;&#x05D0;
+   XXX
+   &#x05D0;&#x05D0;&#x05D0;
+
+   XXXX
+   &#x05D0;&#x05D0;&#x05D0;&#x05D0;
+   &#x05D0;&#x05D0;
+   XX
+   &#x05D0;&#x05D0;&#x05D0;&#x05D0;
+   &#x05D0;&#x05D1;&#x05D2;&#x05D3;
+  </div>
+ </body>
+</html>

@@ -1,0 +1,25 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+ <head>
+  <title>CSS Tables: Caption rendering</title>
+  <style type="text/css">
+   body, div, table, caption, td { border: solid; padding: 0; border-spacing: 0; }
+   .table { display: table; }
+   .caption { display: table-caption; }
+   .row { display: table-row; }
+   .cell { display: table-cell; }
+   table, .table { margin-left: 6em; }
+   caption, .caption { margin: 1em; }
+  </style>
+ </head>
+ <body>
+  <div class="table">
+   <div class="caption">CAPTION</div>
+   <div class="row"><div class="cell">ROWROW</div></div>
+  </div>
+  <table>
+   <caption>CAPTION</caption>
+   <tr><td>ROWROW</td></tr>
+  </table>
+ </body>
+</html>

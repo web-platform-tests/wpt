@@ -1,0 +1,28 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>font-size in pixels</title>
+  <style>
+   .prereq { display: inline; font: 1em/1 Ahem, sans-serif; background: red; color: white; }
+   .control { height: 0; }
+   .control div { width: 1000px; height: 100px; background: red; }
+   .test { font: 1000px/1 Ahem; color: green; }
+  </style>
+ </head>
+ <body>
+  <div class="prereq">Ahem_font_required_for_this_test_-_see_directory_listing_for_details.</div>
+  <p>There should be no red below (scroll all the way down if necessary).</p>
+  <div class="control">
+   <div></div>
+   <div></div>
+   <div></div>
+   <div></div>
+   <div></div>
+   <div></div>
+   <div></div>
+   <div></div>
+   <div></div>
+   <div></div>
+  </div>
+  <div class="test">X</div>
+ </body>
+</html>

@@ -1,0 +1,15 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>CSS inheritance: content</title>
+  <style type="text/css">
+   body { content: 'PASSED'; }
+   test { content: inherit; }
+   test:after { content: inherit; color: green; }
+  </style>
+ </head>
+ <body>
+  <test xmlns="http://www.example.org/">
+   This test has: 
+  </test>
+ </body>
+</html>

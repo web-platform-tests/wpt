@@ -1,0 +1,14 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+ <head>
+  <title>CSS inheritance: basic test</title>
+  <style type="text/css">
+   p { color: blue; }
+   .test { font-weight: inherit; font-style: inherit; color: inherit; }
+   .test span { font-weight: bold; font-style: italic; color: red; }
+  </style>
+ </head>
+ <body>
+  <p> <span class="test"> This sentence should be <span> </span> the same throughout. </span> </p>
+ </body>
+</html>

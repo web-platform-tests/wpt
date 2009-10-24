@@ -1,0 +1,15 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+ <head>
+  <title>CSS table model: empty-cells: zero-height inline images</title>
+  <style type="text/css">
+   table { background: red; border-spacing: 0; }
+   td { empty-cells: hide; background: green; color: white; padding: 0 2em; }
+   img { height: 0; width: 0; display: inline; }
+  </style>
+ </head>
+ <body>
+  <p>There should be a green block below.</p>
+  <table><tr><td><img src="/resources/images/1x1-red" alt=""></td></tr></table>
+ </body>
+</html>

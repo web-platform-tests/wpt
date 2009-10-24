@@ -1,0 +1,18 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+ <head>
+  <title>Floats inside blocks</title>
+  <style type="text/css">
+   p { float: left; color: green; margin: 0; }
+   div { background: red; clear: both; }
+   div.a { }
+   div.b { width: 30em; }
+   div.c { height: 0; }
+  </style>
+ </head>
+ <body>
+  <div class="a"><p>This line should be green (line 1).</p></div>
+  <div class="b"><p>This line should be green (line 2).</p></div>
+  <div class="c"><p>This line should be green (line 3).</p></div>
+ </body>
+</html>

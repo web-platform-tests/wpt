@@ -1,0 +1,28 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html lang="en">
+ <head>
+  <title>:active (basic test)</title>
+  <style type="text/css">
+
+   /* Make our document's head visible */
+   html { margin: 0; padding: 1em; }
+   head { display: block; }
+   title, style { display: none; }
+   link { display: inline; }
+   body { margin: 0; padding: 0; }
+   p { margin: 1em 0; }
+
+   /* The test */
+   link:before { content: '1. Clicking these links, or activating them with the keyboard, should make them go green in exactly the same way.'; }
+   .test { color: blue; }
+   :active { color: yellow; border: red solid thick; background: red; }
+   :link:active, :visited:active { color: white; background: green; border: green solid thick; }
+
+  </style>
+  <link class="test" href="#test" rel="bookmark">
+ </head>
+ <body>
+  <p><a class="test" href="#test">2. Clicking these links, or activating them with the keyboard, should make them go green in exactly the same way.</a></p>
+  <p><a class="test" href="#test"><span>3. Clicking these links, or activating them with the keyboard, should make them go green in exactly the same way.</span></a></p>
+ </body>
+</html>

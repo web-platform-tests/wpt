@@ -1,0 +1,15 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html lang="en">
+ <head>
+  <title>Parsing invalid '!' declarations</title>
+  <style type="text/css">
+   body { color: green; }
+   p { background: red ! fail; color: yellow ! fail }
+   div { background: red ! important fail; color: yellow ! important fail }
+  </style>
+ </head>
+ <body>
+  <p>This line should be green.</p>
+  <div>This line should be green.</div>
+ </body>
+</html>

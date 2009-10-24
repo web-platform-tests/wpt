@@ -1,0 +1,13 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html lang="en">
+ <head>
+  <title>CSS: z-index auto, -1 and backgrounds (child)</title>
+  <style type="text/css">
+   .background { position: absolute; height: 150px; width: 400px; background: green; z-index: auto; }
+   .negative { position: absolute; height: 100px; width: 300px; background: red; z-index: -1; }
+  </style>
+ </head>
+ <body>
+  <div class="background"> <div class="negative"> </div> </div>
+ </body>
+</html>

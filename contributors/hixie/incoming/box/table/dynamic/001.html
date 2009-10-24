@@ -1,0 +1,49 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html lang="en">
+ <head>
+  <title>Table layout: checking dynamic layouts match initial layouts</title>
+  <style type="text/css">
+   table { font-size: 4em; position: absolute; margin-top: 1em; }
+   td { border: solid; }
+   .control { color: red; }
+   .control div { margin-top: 10%; margin-left: 50%; }
+   .test { color: green; }
+  </style>
+  <script type="text/javascript">
+   function test() {
+     var element = document.getElementById('test');
+     element.style.marginTop = "10%";
+     element.style.marginLeft = "50%";
+   }
+  </script>
+ </head>
+ <body onload="setTimeout(test, 0)">
+  <p>There should be no red below, only green boxes with snowflakes in them.</p>
+  <table class="control">
+   <tr>
+    <td>
+     &#x2743;
+    </td>
+    <td>
+     <div>&#x2744;</div>
+    </td>
+    <td>
+     &#x2745;
+    </td>
+   </tr>
+  </table>
+  <table class="test">
+   <tr>
+    <td>
+     &#x2743;
+    </td>
+    <td>
+     <div id="test">&#x2744;</div>
+    </td>
+    <td>
+     &#x2745;
+    </td>
+   </tr>
+  </table>
+ </body>
+</html>

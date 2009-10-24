@@ -1,0 +1,18 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>run-in and sibling blocks</title>
+  <style type="text/css">
+   .r { color: white; display: run-in; }
+   .b { backgound: green; display: block; }
+   .fail { background: red; line-height: 0; }
+  </style>
+ </head>
+ <body>
+  <p>The next line should be green.</p>
+  <div class="r">This line should be green.</div>
+  <div class="b"></div>
+  <div class="fail">
+   <span>The line above should be green.</span>
+  </div>
+ </body>
+</html>

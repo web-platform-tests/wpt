@@ -1,0 +1,14 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+ <head>
+  <title>CSS table model: empty-cells: Text</title>
+  <style type="text/css">
+   table { background: red; border-spacing: 0; }
+   td { empty-cells: hide; background: green; color: white; }
+  </style>
+ </head>
+ <body>
+  <p>There should be a green block below with the word TEST.</p>
+  <table><tr><td>TEST</td></tr></table>
+ </body>
+</html>

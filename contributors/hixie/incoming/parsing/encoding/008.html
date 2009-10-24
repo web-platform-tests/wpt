@@ -1,0 +1,19 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html lang="en">
+ <head>
+  <title>Stylesheet encodings: malformed UTF-8</title>
+  <style type="text/css">
+   p { color: white; background: green; }
+  </style>
+  <link rel="stylesheet" href="008.css">
+ </head>
+ <body>
+  <p class="t&eacute;st">This line should be green.</p>
+  <p class="t&#x0E49;st">This line should be green.</p>
+  <p class="t&#x0449;st">This line should be green.</p>
+  <p class="t&#x0649;st">This line should be green.</p>
+  <p class="t&#x03B9;st">This line should be green.</p>
+  <p class="t&#x05D9;st">This line should be green.</p>
+  <p class="t&#x0418;st">This line should be green.</p>
+ </body>
+</html>

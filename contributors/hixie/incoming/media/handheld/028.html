@@ -1,0 +1,15 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<htmL>
+ <head>
+  <title>Media type selection non-triggers (@media) (Handheld devices only)</title>
+  <style type="text/css" media="screen">
+   p { background: green; color: white; }
+   @media handheld {
+     p { background: red; color: yellow; }
+   }
+  </style>
+ </head>
+ <body>
+  <p> This line should be green once you switch out of SSR mode (it should default to SSR mode). </p>
+ </body>
+</html>

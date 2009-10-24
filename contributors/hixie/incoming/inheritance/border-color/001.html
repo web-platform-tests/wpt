@@ -1,0 +1,22 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+ <head>
+  <title>CSS inheritance: border-color</title>
+  <style type="text/css">
+   .test { display: block; color: green; border: none; }
+   .test .inner { border-color: inherit; border-style: solid; color: red; }
+   .test .inner .text { color: green; }
+  </style>
+ </head>
+ <body>
+  <div class="test">
+   <div class="inner">
+    <div class="text">
+     This should have a green border, because the computed value of
+     'border-color' set to its initial value is the computed value
+     of 'color', which is then inherited as a color.
+    </div>
+   </div>
+  </div>
+ </body>
+</html>

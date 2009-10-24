@@ -1,0 +1,27 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>CSS: sanity tests for relative keyword values of font-size</title>
+  <style type="text/css">
+
+    tests *|* { line-height: 0; border: none; margin: 0; padding: 0; display: block; }
+    tests { margin: 20em 2em 0 2em; display: block; }
+    text { display: inline; white-space: pre; }
+
+    big { font-size: 20em; }
+    xxlarge { font-size: xx-large; }
+    smaller { font-size: smaller; }
+
+    xxlarge > text { background: red; font-weight: bold; }
+    smaller > text { background: white; }
+    p { color: green; }
+
+  </style>
+ </head>
+ <body class="test">
+  <p>This test has passed if you see no red on this page.</p>
+  <tests xmlns="http://www.example.org/">
+    <xxlarge><text>        </text></xxlarge>
+    <big><smaller><text>        </text></smaller></big>
+  </tests>
+ </body>
+</html>

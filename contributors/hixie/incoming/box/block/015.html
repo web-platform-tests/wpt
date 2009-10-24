@@ -1,0 +1,36 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html lang="en">
+ <head>
+  <title>Percentage Dimensions in Shrink Wrap Blocks</title>
+  <style type="text/css">
+   body, html { margin: 0 0 0 1em; padding: 0; }
+   p { margin: 1em 0; height: 2em; }
+   table, .float, .abspos, .fixpos { border: 0.25em solid; background: red; }
+   table, td { padding: 0; border-spacing: 0; }
+   .float { float: left; }
+   .fixpos { position: fixed; left: 7.5em; top: 4em; }
+   .abspos { position: absolute; left: 7.5em; top: 9.5em; }
+   .testA { width: 5em; height: 5em; background: green; }
+   .testB { width: 20%; height: 20%; background: red; }
+  </style>
+ </head>
+ <body>
+  <p>There should be four green squares below making a green square pattern.</p>
+  <table><tr><td>
+   <div class="testA"></div>
+   <div class="testB"></div>
+  </td></tr></table>
+  <div class="float">
+   <div class="testA"></div>
+   <div class="testB"></div>
+  </div>
+  <div class="fixpos">
+   <div class="testA"></div>
+   <div class="testB"></div>
+  </div>
+  <div class="abspos">
+   <div class="testA"></div>
+   <div class="testB"></div>
+  </div>
+ </body>
+</html>

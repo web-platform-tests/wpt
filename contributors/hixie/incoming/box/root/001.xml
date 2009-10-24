@@ -1,0 +1,13 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>Placing the root element</title>
+  <style type="text/css">
+   html { margin: 1em; border: 0; padding: 0; background: green; }
+   body { margin: 0; border: 0; padding: 0; background: red; }
+   p { margin: 0; border: 0; padding: 1em; background: white; }
+  </style>
+ </head>
+ <body>
+  <p>This text should be in a white box with a thick green border (and green to the bottom of the viewport underneath it).</p>
+ </body>
+</html>

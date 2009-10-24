@@ -1,0 +1,81 @@
+#!/usr/bin/perl -wT
+# -*- Mode: perl; tab-width: 4; indent-tabs-mode: nil; -*-
+#
+# 005: Part of a series of tests for CSS units
+#
+# Copyright (c) 2002 by Ian Hickson
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+use strict;
+use CGI;
+my $query = new CGI;
+my $size = $query->param('size');
+
+if (!defined($size) or $size !~ m/^[0-9]+(?:\.[0-9]+)$/) {
+    $size = 0.87;
+}
+
+my $sizeTimesTen = $size * 10;
+
+print <<end;
+Content-Type: text/html
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html lang="en">
+ <head>
+  <title>Units: em (${size}em floats)</title>
+  <style type="text/css">
+   div { width: ${sizeTimesTen}em; height: ${sizeTimesTen}em; background: red; border: solid lime; }
+   span { float: left; width: ${size}em; height: ${size}em; background: green; }
+   input[type="text"] { text-align: right; }
+  </style>
+ </head>
+ <body>
+  <div>
+   <!-- 100 spans -->
+   <span></span> <span></span> <span></span> <span></span> <span></span>
+                 <span></span> <span></span> <span></span> <span></span> <span></span>
+   <span></span> <span></span> <span></span> <span></span> <span></span>
+                 <span></span> <span></span> <span></span> <span></span> <span></span>
+   <span></span> <span></span> <span></span> <span></span> <span></span>
+                 <span></span> <span></span> <span></span> <span></span> <span></span>
+   <span></span> <span></span> <span></span> <span></span> <span></span>
+                 <span></span> <span></span> <span></span> <span></span> <span></span>
+   <span></span> <span></span> <span></span> <span></span> <span></span>
+                 <span></span> <span></span> <span></span> <span></span> <span></span>
+   <span></span> <span></span> <span></span> <span></span> <span></span>
+                 <span></span> <span></span> <span></span> <span></span> <span></span>
+   <span></span> <span></span> <span></span> <span></span> <span></span>
+                 <span></span> <span></span> <span></span> <span></span> <span></span>
+   <span></span> <span></span> <span></span> <span></span> <span></span>
+                 <span></span> <span></span> <span></span> <span></span> <span></span>
+   <span></span> <span></span> <span></span> <span></span> <span></span>
+                 <span></span> <span></span> <span></span> <span></span> <span></span>
+   <span></span> <span></span> <span></span> <span></span> <span></span>
+                 <span></span> <span></span> <span></span> <span></span> <span></span>
+  </div>
+  <p>You should see no red above, just a green square with a green
+  border. Try different font sizes, zooms, and resolutions, as well as
+  slightly different sizes for the floats.</p>
+  <form action="" method="get">
+   <p>
+    Set each float to width: <input type="text" name="size" value="${size}" size="5">em.
+    <input type="submit" value="Generate Test">
+   </p>
+  </form>
+ </body>
+</html>
+end

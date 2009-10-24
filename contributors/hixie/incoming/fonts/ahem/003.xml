@@ -1,0 +1,29 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>CSS: font-weight inheritance</title>
+  <style type="text/css">
+   .control { display: inline; font: 1em/1 Ahem, sans-serif; background: red; color: white; }
+   .a { font-weight: 900; }
+   .c { font-family: Ahem; font-size: 64px; line-height: 64px; height: 64px; width: 257px; background: red; color: green; position: absolute; }
+   .container { position: relative; }
+   .overlapper { position: absolute; height: 48px; width: 240px; padding: 8px; background: white; -moz-opacity: 0.99; }
+  </style>
+ </head>
+ <body>
+  <div class="control">Ahem_font_required_for_this_test.</div>
+
+  <div class="container">
+   <div class="a">
+    <div class="b">
+      <div class="c">
+        FAIL
+      </div>
+    </div>
+   </div>
+   <div class="overlapper">
+    There should be a green line to the right of this text.
+   </div>
+  </div>
+
+ </body>
+</html>

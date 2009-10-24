@@ -1,0 +1,26 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html lang="en">
+ <head> <!-- same as http://www.hixie.ch/tests/adhoc/css/box/block/margin-collapse/061.html -->
+  <title>position: fixed; top: auto; test - margin collapsing</title>
+  <style type="text/css">
+   html { margin: 0; padding: 0; }
+   body { margin: 0 10px; padding: 0; }
+   .a { position: fixed; top: 10px; left: 10px; width: 20em; height: 4em; background: red; color: yellow; }
+   .b { position: fixed; top: auto; left: auto; width: 20em; height: 4em; background: green; color: white; }
+   .c1 { margin: 2px; }
+   .c2 { margin: -4px 20px; }
+   .c3 { margin: 0 0 14px; }
+   .c4 { margin: 50px; }
+  </style>
+ </head>
+ <body>
+  <div class="c1">
+   <div class="c2">
+    <div class="c3"></div>
+   </div>
+  </div>
+  <div class="a">FAIL</div>
+  <div class="b">This block should be green.</div>
+  <div class="c4"></div>
+ </body>
+</html>

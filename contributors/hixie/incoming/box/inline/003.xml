@@ -1,0 +1,13 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>CSS Inline Box Model: Wrapping Borders</title>
+  <style type="text/css">
+   p { font: 2em/2 sans-serif; }
+   span { border: solid; }
+  </style>
+ </head>
+ <body>
+  <div>This is a more obvious version of <a href="004.xml">the X grid</a> test.</div>
+  <p> <span>Resize</span> <span>the</span> <span>window</span> <span>so</span> <span>that</span> <span>this</span> <span>wraps</span> </p>
+ </body>
+</html>

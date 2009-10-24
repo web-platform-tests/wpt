@@ -1,0 +1,18 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+ <head>
+  <title>Generated Content: \A and white-space</title>
+  <style type="text/css">
+   .test { width: 20em; padding: 2em 10em; }
+   .test div { display: inline; padding: 0 1em 0 0; background: navy; color: navy; }
+   .test div:after { content: '  \A'; white-space: pre; }
+  </style>
+ </head>
+ <body>
+  <div>There should be a single blue bar below.</div>
+  <div class="test"><div>
+   This test has failed.
+  </div></div>
+  </div>
+ </body>
+</html>

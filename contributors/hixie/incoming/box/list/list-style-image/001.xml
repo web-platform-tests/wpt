@@ -1,0 +1,16 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>CSS List Images: invalid</title>
+  <style type="text/css">
+   .no { list-style-image: url(404); }
+  </style>
+ </head>
+ <body>
+  <p>There should be a numbered list with three similarly formatted list items below.</p>
+  <ol>
+   <li> One.</li>
+   <li class="no"> Two.</li>
+   <li> Three.</li>
+  </ol>
+ </body>
+</html>

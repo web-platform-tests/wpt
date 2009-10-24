@@ -1,0 +1,22 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>CSS: font-family inheritance</title>
+  <style type="text/css">
+   .control { display: inline; font: 1em/1 Ahem, sans-serif; background: red; color: white; }
+   .a { font-family: Ahem; }
+   .c { font-size: 16px; line-height: 16px; height: 16px; width: 64px; background: red; color: green; }
+  </style>
+ </head>
+ <body>
+  <div class="control">Ahem_font_required_for_this_test.</div>
+
+  <div class="a">
+   <div class="b">
+     <div class="c">
+       FAIL
+     </div>
+   </div>
+  </div>
+
+ </body>
+</html>

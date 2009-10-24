@@ -1,0 +1,19 @@
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+ <head>
+  <title>#id and invalid IDs</title>
+  <style type="text/css">
+    #test\[a\] { background: orange; }
+    #dup { background: orange; }
+    # { background: red; }
+    #\20 { background: orange; }
+  </style>
+ </head>
+ <body>
+  <ol>
+   <li>id="test[a]": <span id="test[a]">TEST</span></li>
+   <li>id="dup": <span id="dup">-</span><span id="dup">-</span><span id="dup">-</span><span id="dup">-</span><span id="dup">-</span></li>
+   <li>id="": <span id="">TEST</span></li>
+   <li>id=" ": <span id=" ">TEST</span></li>
+  </ol>
+ </body>
+</html>

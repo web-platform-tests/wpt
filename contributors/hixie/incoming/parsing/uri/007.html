@@ -1,0 +1,15 @@
+<!DOCTYPE HTML>
+<html>
+ <head>
+  <title>Error handling of broken url() with open /*</title>
+  <style>
+   body { color: green; }
+   p { background: red url(007-test /* test); color: red; }
+   div { color: red; border: solid red */ ; background: red; }
+  </style>
+ </head>
+ <body>
+  <p>This line should be green.</p>
+  <div>This line should be green.</div>
+ </body>
+</html>

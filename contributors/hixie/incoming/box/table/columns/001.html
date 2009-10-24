@@ -1,0 +1,23 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html lang="en">
+ <head>
+  <title>Properties that apply to columns</title>
+  <style type="text/css">
+   table { border-collapse: collapse; color: white; }
+   col { width: 10em; background: green; border: solid lime; color: red; }
+   .a { visibility: collapse; }
+   .fail { background: maroon; color: yellow; }
+  </style>
+ </head>
+ <body>
+  <p>There should be two green boxes touching below, but no red.</p>
+  <table>
+   <col class="">   <col class="a">   <col class="">
+   <tr>
+    <td> This should be 10em wide, have a green background, and be bordered in lime green. </td>
+    <td class="fail"> FAIL </td>
+    <td> This box should be identical. </td>
+   </tr>
+  </table>
+ </body>
+</html>

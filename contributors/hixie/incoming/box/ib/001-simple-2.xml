@@ -1,0 +1,27 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>CSS: Blocks Within Inlines (reduced testcase with borders)</title>
+  <style type="text/css">
+   * { border: 1px solid fuchsia; padding: 4px; margin: 4px; }
+   inline { display: inline; }
+   block { display: block; }
+  </style>
+ </head>
+ <body>
+  <p>There should be three paragraphs below this one. Resize your
+  window to make sure it works at all window widths.</p>
+  <inline xmlns="http://www.example.org/">
+   aaaaaaa aaaaaaa aaaaaaa aaaaaaa aaaaaaa aaaaaaa aaaaaaa aaaaaaa
+   aaaaaaa aaaaaaa aaaaaaa aaaaaaa aaaaaaa aaaaaaa aaaaaaa aaaaaaa
+   <block>
+    bbbbbbb bbbbbbb bbbbbbb bbbbbbb bbbbbbb bbbbbbb bbbbbbb bbbbbbb
+    bbbbbbb bbbbbbb bbbbbbb bbbbbbb bbbbbbb bbbbbbb bbbbbbb bbbbbbb
+    bbbbbbb bbbbbbb bbbbbbb bbbbbbb bbbbbbb bbbbbbb bbbbbbb bbbbbbb
+    bbbbbbb bbbbbbb bbbbbbb bbbbbbb bbbbbbb bbbbbbb bbbbbbb bbbbbbb
+    bbbbbbb bbbbbbb bbbbbbb bbbbbbb bbbbbbb bbbbbbb bbbbbbb bbbbbbb
+   </block>
+   aaaaaaa aaaaaaa aaaaaaa aaaaaaa aaaaaaa aaaaaaa aaaaaaa aaaaaaa
+   aaaaaaa aaaaaaa aaaaaaa aaaaaaa aaaaaaa aaaaaaa aaaaaaa aaaaaaa
+  </inline>
+ </body>
+</html>

@@ -1,0 +1,23 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+ <head>
+  <title>Clear on inline elements</title>
+  <style type="text/css">
+   .float { float: left; width: 5em; height: 5.5em; border: solid }
+   .clear { clear: left; border: solid; }
+  </style>
+ </head>
+ <body>
+  <p>
+   <span class="float">
+    Float
+   </span>
+   Text Text Text Text Text Text Text Text Text Text Text Text Text
+   Text Text Text Text Text Text Text Text Text Text Text Text Text
+   Text Text Text Text Text Text Text Text <span
+   class="clear">Clear</span> Text Text Text Text Text Text Text.
+  </p>
+ </body>
+</html>
+
+

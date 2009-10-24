@@ -1,0 +1,45 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html lang="en">
+ <head>
+  <title>:active (basic test)</title>
+  <style type="text/css">
+   .test { color: blue; }
+   :active { color: yellow; border: red solid thick; background: red; }
+   button, input[type=button], input[type=checkbox], input[type=radio] { color: blue; background: silver; border: silver outset thick; }
+   button:active, input[type=button]:active, input[type=checkbox]:active, input[type=radio]:active { color: white; background: green; border: green inset thick; }
+  </style>
+ </head>
+ <body>
+
+  <p class="test">Clicking this element should NOT make it go red.</p>
+
+  <p>Clicking the following form field should have no effect: <input
+  class="test" type="text" value="Click Here"></p>
+
+  <p>Button 1: <button>While this button is being depressed, either by the space bar or the primary mouse button, it should go green. Nothing should go red.</button></p>
+
+  <p>Button 2: <input type="button" value="While this button is being depressed, either by the space bar or the primary mouse button, it should go green. Nothing should go red."></p>
+
+  <p>Once you release the mouse button or space bar, the buttons should return
+  to normal.</p>
+
+  <p>Checkbox: <label class="test"><input type="checkbox"> Clicking
+  the checkbox, or focussing it and holding down the space bar, should
+  make the checkbox turn green. Clicking this text should also make
+  the checkbox go green (but shouldn't affect the text), and should
+  toggle the state of the checkbox.</label></p>
+
+  <p>Radio Button: <label class="test"><input type="radio"
+  name="test"> Clicking the radio button, or focussing it and holding
+  down the space bar, should make the radio button turn green.
+  Clicking this text should also make the radio button go green (but
+  shouldn't affect the text) and should check the radio button if it
+  isn't already.</label></p>
+
+  <p class="test">Clicking blank areas of the page should have no effect.</p>
+
+  <p>Here is another radio button paired with the one above if needed
+  for testing: <input type="radio" name="test"> </p>
+
+ </body>
+</html>

@@ -1,0 +1,12 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>First-Line: Innermost vs outermost</title>
+  <style type="text/css">
+   p:first-line { background: red; color: yellow; }
+   span { background: green; color: white; }
+  </style>
+ </head>
+ <body>
+  <p><span>This line should be green (if the UA puts ::first-line outermost).</span></p>
+ </body>
+</html>

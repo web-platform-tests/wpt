@@ -1,0 +1,19 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>CSS Floats: Auto Sizing</title>
+  <style type="text/css">
+   .control { display: inline; font: 1em/1 Ahem, sans-serif; background: red; color: white; }
+   test { display: block; }
+   control { display: block; width: 100px; height: 25px; margin-bottom: 10px; background: navy; }
+   float { float: left; color: navy; font: 25px Ahem; }
+  </style>
+ </head>
+ <body>
+  <div class="control">Ahem_font_required_for_this_test.</div>
+  <p>There should be two identical blocks below.</p>
+  <test xmlns="http://www.w3.org/">
+   <control/>
+   <float>XXXX</float>
+  </test>
+ </body>
+</html>

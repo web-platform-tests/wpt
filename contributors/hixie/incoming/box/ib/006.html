@@ -1,0 +1,27 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+ <head>
+  <title>Blocks within inlines: Simple with dynamic class changes</title>
+  <style type="text/css">
+   body { color: blue; }
+   .inline { display: inline; }
+   .block { display: block; }
+  </style>
+  <script type="text/javascript">
+   function clicked() {
+     document.getElementById('test').className = document.getElementById('test').className == 'inline' ? 'block' : 'inline';
+   }
+  </script>
+ </head>
+ <body onclick="clicked()">
+  <div class="block">
+   <div class="inline">
+    This text should split into
+    <div class="inline" id="test">
+     three separate lines when
+    </div>
+    you click on the text.
+   </div>
+  </div>
+ </body>
+</html>

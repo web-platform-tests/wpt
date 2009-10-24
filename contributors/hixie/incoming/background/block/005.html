@@ -1,0 +1,18 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html lang="en">
+ <head>
+  <title>Background Positioning Test</title>
+  <style type="text/css">
+   div {
+     background: url(http://www.hixie.ch/resources/images/patterns/red-blobs)
+                 1em repeat-y;
+   }
+   img { display: block; margin: 0 0 0 1em; }
+  </style>
+ </head>
+ <body>
+  <p>There should be a big green square pattern, with no red, below.</p>
+  <div><img src="http://www.hixie.ch/resources/images/patterns/quiet-green"
+            alt="FAIL"></div>
+ </body>
+</html>

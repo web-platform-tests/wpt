@@ -1,0 +1,22 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+ <head>
+  <title>CSS Floats: Wrapping blocks around floats</title>
+  <style type="text/css">
+   .control { display: inline; font: 1em/1 Ahem, sans-serif; background: red; color: white; }
+   .container { width: 15em; height: 5em; background: green; }
+   .float { width: 5em; height: 5em; background: green; float: left; }
+   .box { width: 5em; height: 5em; background: red; margin: 0; padding: 0; border: 0; }
+  </style>
+ </head>
+ <body>
+  <div class="control">Ahem_font_required_for_this_test.</div>
+  <p>There should just be one green block below.</p>
+  <div class="container">
+   <div class="float"></div>
+   <div class="box"></div>
+  </div>
+ </body>
+</html>
+
+

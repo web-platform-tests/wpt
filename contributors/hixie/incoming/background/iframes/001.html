@@ -1,0 +1,16 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html lang="en">
+ <head>
+  <title>Transparent IFrames</title>
+  <style type="text/css">
+   * { background: transparent; margin: 0; padding: 0; }
+   body { padding: 1em; }
+   p { margin: 1em; color: green; }
+   iframe { position: absolute; top: 0; left: 0; z-index: 1; margin: 0; }
+  </style>
+ </head>
+ <body>
+  <p>PASS</p>
+  <iframe src="001a.html"><p>XXXX FAIL</p></iframe>
+ </body>
+</html>

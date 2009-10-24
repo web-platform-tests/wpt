@@ -1,0 +1,21 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+ <head>
+  <title>CSS Floats: Nested floats (some inline content before nested float)</title>
+  <style type="text/css">
+   div { border: 1px solid teal; padding: 4px; margin: 4px; }
+   .left { float: left; }
+   .right { float: right; }
+   .size { width: 150px; height: 150px; }
+  </style>
+ </head>
+ <body>
+
+  <p>content before the nested float. You should see two boxes
+  touching: one just fitting the content, the other big and below
+  it.</p>
+
+  <div class="left">content before<div class="size left"></div></div>
+
+ </body>
+</html>

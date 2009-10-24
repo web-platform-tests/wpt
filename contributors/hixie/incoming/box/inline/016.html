@@ -1,0 +1,18 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html lang="en">
+ <head>
+  <title>Inline box model: space collapsing, padding, white-space, et al</title>
+  <style type="text/css">
+   .ahem { display: inline; font: 900 1em/1 Ahem, sans-serif; background: red; color: white; }   
+   div { width: 4em; background: teal; color: aqua; margin: 1em; font: 2em/1 Ahem; }
+   .test span { padding-left: 1em; }
+   .control { white-space: pre; }
+  </style>
+ </head>
+ <body>
+  <p class="ahem">Ahem_font_required_for_this_test._See_directory_listing_for_details.</p>
+  <p>The following two blocks should be identical.</p>
+  <div class="test"><span> XX</span></div>
+  <div class="control"><span> XX</span></div>
+ </body>
+</html>

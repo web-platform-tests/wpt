@@ -1,0 +1,14 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>User Stylesheets and non-CSS Presentational Hints</title>
+  <style type="text/css">
+   .instructions { color: red; }
+  </style>
+ </head>
+ <body id="hixie-cascade-tests">
+  <!--#include virtual="user-css.inc" -->
+  <p><font color="red" class="green">This text should be green.</font></p>
+  <p><b class="normal">This text should</b> not be bold.</p>
+  <p class="green">This line should be green.</p>
+ </body>
+</html>

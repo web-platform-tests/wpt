@@ -1,0 +1,46 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>CSS Inline Box Model: Wrapping Spaces Outside Inline Elements</title>
+  <style type="text/css">
+   p > span { padding: 0.3em 0; border-style: solid none; background: silver; line-height: 3; letter-spacing: 0.2em; }
+   span { border: solid; }
+  </style>
+ </head>
+ <body>
+
+  <p>Resize your window slowly from a wide size to a narrow size. The
+  paragraph of XXXXXXXXXXXXXXXs below should remain perfectly aligned.</p>
+
+  <p> <span>
+   <span>XXXXXXXXXXXXXXX</span> <span>XXXXXXXXXXXXXXX</span>
+   <span>XXXXXXXXXXXXXXX</span> <span>XXXXXXXXXXXXXXX</span>
+   <span>XXXXXXXXXXXXXXX</span> <span>XXXXXXXXXXXXXXX</span>
+   <span>XXXXXXXXXXXXXXX</span> <span>XXXXXXXXXXXXXXX</span>
+   <span>XXXXXXXXXXXXXXX</span> <span>XXXXXXXXXXXXXXX</span>
+   <span>XXXXXXXXXXXXXXX</span> <span>XXXXXXXXXXXXXXX</span>
+   <span>XXXXXXXXXXXXXXX</span> <span>XXXXXXXXXXXXXXX</span>
+   <span>XXXXXXXXXXXXXXX</span> <span>XXXXXXXXXXXXXXX</span>
+   <span>XXXXXXXXXXXXXXX</span> <span>XXXXXXXXXXXXXXX</span>
+   <span>XXXXXXXXXXXXXXX</span> <span>XXXXXXXXXXXXXXX</span>
+   <span>XXXXXXXXXXXXXXX</span> <span>XXXXXXXXXXXXXXX</span>
+   <span>XXXXXXXXXXXXXXX</span> <span>XXXXXXXXXXXXXXX</span>
+   <span>XXXXXXXXXXXXXXX</span> <span>XXXXXXXXXXXXXXX</span>
+   <span>XXXXXXXXXXXXXXX</span> <span>XXXXXXXXXXXXXXX</span>
+   <span>XXXXXXXXXXXXXXX</span> <span>XXXXXXXXXXXXXXX</span>
+   <span>XXXXXXXXXXXXXXX</span> <span>XXXXXXXXXXXXXXX</span>
+   <span>XXXXXXXXXXXXXXX</span> <span>XXXXXXXXXXXXXXX</span>
+   <span>XXXXXXXXXXXXXXX</span> <span>XXXXXXXXXXXXXXX</span>
+   <span>XXXXXXXXXXXXXXX</span> <span>XXXXXXXXXXXXXXX</span>
+   <span>XXXXXXXXXXXXXXX</span> <span>XXXXXXXXXXXXXXX</span>
+   <span>XXXXXXXXXXXXXXX</span> <span>XXXXXXXXXXXXXXX</span>
+   <span>XXXXXXXXXXXXXXX</span> <span>XXXXXXXXXXXXXXX</span>
+   <span>XXXXXXXXXXXXXXX</span> <span>XXXXXXXXXXXXXXX</span>
+   <span>XXXXXXXXXXXXXXX</span> <span>XXXXXXXXXXXXXXX</span>
+   <span>XXXXXXXXXXXXXXX</span> <span>XXXXXXXXXXXXXXX</span>
+   <span>XXXXXXXXXXXXXXX</span> <span>XXXXXXXXXXXXXXX</span>
+   <span>XXXXXXXXXXXXXXX</span> <span>XXXXXXXXXXXXXXX</span>
+   <span>XXXXXXXXXXXXXXX</span> <span>XXXXXXXXXXXXXXX</span>
+  </span> </p>
+
+ </body>
+</html>

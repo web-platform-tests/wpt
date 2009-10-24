@@ -1,0 +1,58 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+
+ <!-- ================================================================ -->
+ <!-- WARNING! This document contains significant trailing whitespace! -->
+ <!-- ================================================================ -->
+
+ <head>
+  <title>white-space: mixed tests</title>
+  <style type="text/css">
+   .control { display: inline; font: 1em/1 Ahem, sans-serif; background: red; color: white; }
+   div { font: 1em/1 Ahem, monospace; color: navy; }
+   .bn { white-space: normal; }
+   .bp { white-space: pre; }
+   div:hover .an { white-space: normal; }
+   div:hover .ap { white-space: pre; }
+   div:hover .aG { color: green; }
+   div:hover .aB { color: brown; }
+   div:hover .abG { background: green; }
+   div:hover .abL { background: lime; }
+  </style>
+ </head>
+ <body>
+  <div class="control">Ahem_font_required_for_this_test.</div>
+
+  <p>The picture below should change when you hover over it.</p>
+
+  <!-- note that spaces at the start of a line collapse in white-space: normal -->
+
+  <div>
+<span class="bp an">    </span><span class="bn ap aG">   ###</span><span class="bp ap"><!-- keep newline -->
+ </span><span class="bp an aG">  ##<span class="abL"> </span>  </span><span class="bp ap aG">##
+ </span><span class="bp an aG"> #<span class="abL">       #
+<!-- keep newline --></span> #</span><span class="bn ap"><!-- keep newline -->
+  </span><span class="bp an aG">        #</span><span class="bp an aG abL"><!-- keep newline -->
+ #</span><span class="bn ap"><!-- keep newline -->
+   </span><span class="bp an aB"> #</span><span class="bn ap"><!-- keep newline -->
+  </span><span class="bp ap aB">  #</span><span class="bn ap"><!-- keep newline -->
+   </span><span class="bp an aB"> #</span><span class="bp ap"><!-- keep newline -->
+<!-- keep newline --></span><span class="bn ap aB">    #</span><span class="bn an"><!-- keep newline -->
+<!-- keep newline --></span><span class="bp an"> </span><span class="bp ap aG">         #</span><span class="bn ap"><!-- keep newline -->
+   </span><span class="bp an"><!-- keep newline -->
+<!-- keep newline --></span><span class="bn an aB">#
+  </span><span class="bp ap">       </span><span class="bp an aG"> <span class="abL">  #
+#</span></span><span class="bn ap"><!-- keep newline -->
+   </span><span class="bp an aB">          #<span class="bn ap">         </span>
+ </span><span class="bp an aG"># </span><span class="bn ap aB"><!-- keep newline -->
+    #</span><span class="bp ap">  </span><span class="bn ap aB">        #
+   </span><span class="bp an aB"> #<span class="bn ap">         </span>
+ #</span><span class="bn ap"><!-- keep newline -->
+ </span><span class="bp ap aG abL">  ##</span><span class="bp an aG abL">#   #
+  #       #
+   ##<span class="abG">  </span> ##
+     ###</span><span class="bn ap abL">  </span>
+  </div>
+
+ </body>
+</html>

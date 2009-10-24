@@ -1,0 +1,126 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html lang="en">
+ <head>
+  <title>:active (dynamic test)</title>
+  <style type="text/css">
+   * { color: black; }
+   :active { color: fuchsia; }
+   .pass { background: green; color: white; }
+   .fail { background: red; color: yellow; }
+   .inform { background: white; color: silver; }
+   ol { margin: 0; padding: 0; }
+   li { margin: 0; padding: 0 0 0 2em; }
+  </style>
+  <script type="text/javascript">
+
+   function sendMouseEvent(type, target) {
+     inform('sending ' + type + ' to ' + target.id);
+     try {
+       var e = document.createEvent("MouseEvents");
+       e.initMouseEvent(type, true, true, document.defaultView, 1, 0, 0, 0, 0, false, false, false, false, 0, null);
+       target.dispatchEvent(e);
+     } catch (e) {
+       exception('failed to send event', e);
+     }
+   }
+
+   function test() {
+     clearResults();
+     inform('starting test...');
+     var e1 = document.getElementById('test1'); // activatable
+     var e2 = document.getElementById('test2'); // activatable
+     var e3 = document.getElementById('test3'); // not activatable
+     assertNotActive(e1);
+     assertNotActive(e2);
+     assertNotActive(e3);
+     sendMouseEvent('mousedown', e1);
+     assertActive(e1);
+     assertNotActive(e2);
+     assertNotActive(e3);
+     sendMouseEvent('mouseup', e2);
+     assertActive(e1);
+     assertNotActive(e2);
+     assertNotActive(e3);
+     sendMouseEvent('mouseup', e1);
+     assertNotActive(e1);
+     assertNotActive(e2);
+     assertNotActive(e3);
+     sendMouseEvent('mouseup', e1);
+     assertNotActive(e1);
+     assertNotActive(e2);
+     assertNotActive(e3);
+     sendMouseEvent('mousedown', e2);
+     assertNotActive(e1);
+     assertActive(e2);
+     assertNotActive(e3);
+     sendMouseEvent('mousedown', e1);
+     assertActive(e1);
+     assertNotActive(e2);
+     assertNotActive(e3);
+     sendMouseEvent('mousedown', e3);
+     assertActive(e1);
+     assertNotActive(e2);
+     assertNotActive(e3);
+     sendMouseEvent('mouseup', e1);
+     assertNotActive(e1);
+     assertNotActive(e2);
+     assertNotActive(e3);
+     inform('test complete');
+   }
+
+   function assertActive(e) {
+     assertActiveInternal(e, 'fuchsia', 'rgb(255, 0, 255)', 'correctly active', 'SHOULD BE ACTIVE BUT IS NOT');
+   }
+
+   function assertNotActive(e) {
+     assertActiveInternal(e, 'black', 'rgb(0, 0, 0)', 'correctly inactive', 'SHOULD BE INACTIVE BUT IS NOT');
+   }
+
+   function assertActiveInternal(e, targetKeyword, targetRGB, s1, s2) {
+     try {
+       var c = document.defaultView.getComputedStyle(e, '').color;
+       if (c == targetKeyword || c == targetRGB) {
+         addLine('pass', 'element ' + e.id + ' ' + s1);
+      } else {
+         addLine('fail', 'element ' + e.id + ' ' + s2 + ' (detected colour as ' + c + ')');
+       }
+     } catch(e) {
+       exception('failed to detect :active state', e);
+     }
+   }
+
+   function inform(text) {
+     addLine('inform', text);
+   }
+
+   function exception(text, e) {
+     addLine('fail', text + ': ' + e.message);
+   }
+
+   function addLine(type, text) {
+     var e = document.createElement('li');
+     e.className = type;
+     e.appendChild(document.createTextNode(text));
+     document.getElementById('results').appendChild(e);
+   }
+
+   function clearResults() {
+     var e = document.getElementById('results');
+     while (e.firstChild) {
+       e.removeChild(e.firstChild);
+     }
+   }
+
+  </script>
+ </head>
+ <body onload="test()">
+  <p>There should be no red below.</p>
+  <ol id="results"><li class="fail">test failed to start</li></ol>
+  <p>Ignore everything below this point.</p>
+  <p>
+   <input type="button" id="test1" value="Test 1">
+   <input type="button" id="test2" value="Test 2">
+   <span id="test3">Test 3</span>
+  </p>
+ </body>
+</html>

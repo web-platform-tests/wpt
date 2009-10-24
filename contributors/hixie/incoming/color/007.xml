@@ -1,0 +1,11 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>Color Inheritance in XML</title>
+  <style type="text/css">
+   html { color: green; }
+  </style>
+ </head>
+ <body>
+  <p>This line should be green.</p>
+ </body>
+</html>

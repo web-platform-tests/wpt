@@ -1,0 +1,31 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html lang="en">
+ <head>
+  <title>CSS text-indent: Percentges</title>
+  <style type="text/css">
+   div { width: auto; background: white; color: black; padding: 1em; border: 1px solid black; }
+   span { color: silver; }
+   div div { width: 25%; text-indent: 50%; border: 1px solid blue; }
+  </style>
+ </head>
+ <body>
+  <div> This is a relatively large DIV. It has a lot of text in
+   it. It contains a smaller DIV which will come next. <span>Filler
+   text. Filler text. Filler text. Filler text. Filler text. Filler
+   text. Filler text. Filler text. Filler text. Filler text. Filler
+   text. Filler text. Filler text. Filler text. Filler text. Filler
+   text. Filler text. Filler text. Filler text. Filler text. Filler
+   text. Filler text. Filler text. Filler text. Filler text. Filler
+   text. Filler text. Filler text. Filler text. Filler text. Filler
+   text. Filler text. Filler text. Filler text. Filler text.</span>
+   <div>
+    This is a narrow DIV contained inside the larger DIV. It has a
+    text-indent of 50%, and a width of 25%. According to the spec,
+    the text indent should be half way throug the parent, not half
+    way through the inner block. This will cause either the first
+    line to be blank (if that is allowed) or the first word to be
+    way out of the inner box.
+   </div>
+  </div>
+ </body>
+</html>

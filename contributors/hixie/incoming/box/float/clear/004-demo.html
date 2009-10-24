@@ -1,0 +1,35 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html lang="en">
+ <head>
+  <title>State Transititions in Clearance</title>
+  <style type="text/css">
+   * { border-width: 0.1em; }
+   #before { border-style: none solid solid solid; height: 1em; background: fuchsia; }
+   #float { float: left; border-style: solid; background: yellow; width: 12em; height: 7em; }
+   #container { background: blue; }
+   #child { border-style: solid solid none solid; background: white; margin-left: 2em; margin-right: 2em; height: 4em; clear: left; }
+  </style>
+  <script type="text/javascript">
+   var topMargin = 3.0;
+   var delta = 0.1;
+   function test() {
+     document.getElementById('child').style.marginTop = topMargin + 'em';
+     document.getElementById('status').firstChild.data = 
+        document.getElementById('child').style.marginTop;
+     topMargin += delta;
+     if (topMargin > 10 || topMargin <= 1) {
+        delta =- delta;
+     }
+     window.setTimeout(test, 100);
+   }
+  </script>
+ </head>
+ <body onload="window.setTimeout(test, 100)">
+  <p>The white block's top margin is: <span id="status">not animating</span></p>
+  <div id="before"></div>
+  <div id="float"></div>
+  <div id="container">
+   <div id="child"></div>
+  </div>
+ </body>
+</html>

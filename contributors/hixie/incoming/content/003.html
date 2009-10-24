@@ -1,0 +1,66 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+
+<!-- WARNING!
+ !   This file contains SIGNIFICANT trailing white space characters!
+ !   Edit with care!
+ !-->
+
+<html>
+ <head>
+  <title>Generated Content: Nasty parsing and generated content test</title>
+  <style type="text/css">
+   td { font: 1em/1em monospace; border: solid; }
+   div { white-space: pre; }
+/*******************************************************************************/
+/*   FOR THE LOVE OF ALL CATS, DO NOT CHANGE THE FOLLOWING LINES IN ANY WAY!   */
+/*******************************************************************************/
+   .test:before { content: '\A                   ,\A                 _/((\A    \
+    _.---. .\'   `\\\A      .\'    '
+                           '  `     ^ T=\A     /     \\       .--\'\A   \
+ |      /       )\'-.\A  '; }
+   .test:after { content: '  ; ,   <__..-(   \'-.)  \A     \\ \\-.__)    ``--._\
+)\A  jgs \'.\'-.__.-.\A  \20\020 \0020\00020\000020  \'-.' '.' '.-\'\A' '\A'; }
+/*******************************************************************************/
+
+  </style>
+ </head>
+ <body>
+
+  <p>The following two boxes should be pixel-perfect identical,
+  <em>including</em> the blank lines and the margin between the edges
+  of the image and the border:</p>
+
+  <table>
+   <thead>
+    <tr>
+     <th> Test </th>
+     <th> Control </th>
+    </tr>
+   </thead>
+   <tbody>
+    <tr class="pre">
+     <td>
+<div class="test"></div>
+     </td>
+     <td>
+<div>                         
+                  ,
+                _/((
+       _.---. .'   `\
+     .'      `     ^ T=
+    /     \       .--'
+   |      /       )'-.
+   ; ,   <__..-(   '-.)
+    \ \-.__)    ``--._)
+ jgs '.'-.__.-.
+       '-...-'
+ </div>
+     </td>
+    </tr>
+   </tbody>
+  </table>
+  <p>The cats should also be aligned vertically (i.e. be at the same
+  height), if they are not then there is a bug and the test has not
+  passed.</p>
+ </body>
+</html>

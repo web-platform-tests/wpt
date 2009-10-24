@@ -1,0 +1,16 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>Multiple backgrounds: Inheritance into inlines</title>
+  <style type="text/css">
+   p, span { background: red; color: yellow; }
+   body { background-position: right 200px, 2px -2px, top right; }
+   p { background-position: inherit;
+       background-image: url(/resources/images/patterns/paper), url(/resources/images/1x1-red), url(/resources/images/patterns/quiet-green); color: green; }
+   span { background-image: inherit; background-position: inherit; background-repeat: repeat-x; color: white; }
+  </style>
+ </head>
+ <body>
+  <div>There should be two sentences below.</div>
+  <p>This sentence should be green. <span>This sentence should be white on green.</span></p>
+ </body>
+</html>

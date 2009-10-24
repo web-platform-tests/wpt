@@ -1,0 +1,29 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+ <head>
+  <title>The 'font' property with line-height: normal</title>
+  <style type="text/css">
+   .control { display: inline; font: 1em/1 Ahem, sans-serif; background: red; color: white; }
+   .container { background: red; height: 1em; width: 6em; }
+   .test { font: 2em/0 Ahem; background: green; color: green; }
+   .test { font: 2em/normal Ahem; } /* should override previous line */
+  </style>
+ </head>
+ <body>
+  <div class="control">Ahem_font_required_for_this_test.</div>
+  <p>There should be a green block below with no red.</p>
+  <div class="container"><div class="test">ppp</div></div>
+
+  <!-- "p" is like an underscore in Ahem. --->
+
+  <!-- the result will be that if the line-height is 0, then the
+       container will be visible as the test will be height:0 and the
+       text will overflow the test with a small green line, leaving
+       the red of the container visible. otherwise, line-height is
+       normal, the test block will grow to be bigger than the
+       container, overflowing it, and hiding the red. -->
+
+  <!-- see line-height/001.html -->
+
+ </body>
+</html>

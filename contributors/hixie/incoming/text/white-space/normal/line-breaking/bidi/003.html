@@ -1,0 +1,16 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html lang="en">
+ <head>
+  <title>Line breaking and the bidi algorithm (no breaks)</title>
+  <style type="text/css">
+   .control { display: inline; font: 1em/1 Ahem, sans-serif; background: red; color: white; }
+   .test { font: 40px/1 Ahem; border: solid; width: 17em; background: red; }
+   .test > span { background: lime; }
+  </style>
+ </head>
+ <body>
+  <div class="control">Ahem_font_required_for_this_test.</div>
+  <p> There should be no red below, just one unbroken bar of green. (Force bidi: &#x05D0;) </p>
+  <div class="test"><span>&nbsp;&nbsp;&#x202E;&nbsp;&#x202D;&nbsp;&#x202E;&nbsp;&#x202D;&nbsp;&#x202E;&nbsp;&nbsp;&#x202D;&nbsp;&#x202C;&nbsp;<span>&nbsp;</span>&#x202C;&nbsp;&#x202C;&nbsp;&#x202C;&nbsp;&#x202C;&nbsp;&nbsp;&#x202C;&nbsp;</span></div>
+ </body>
+</html>

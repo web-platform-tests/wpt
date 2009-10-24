@@ -1,0 +1,14 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+ <head>
+  <title>background-repeat on table rows</title>
+  <style type="text/css">
+   table { background: green; color: white; }
+   tr { background: url(/resources/images/1x1-red) -1em 0 no-repeat; } /* -1em means it's outside the element */
+   td { background-repeat: repeat; }
+  </style>
+ </head>
+ <body>
+  <table><tr><td>This line should be green.</td></tr></table>
+ </body>
+</html>

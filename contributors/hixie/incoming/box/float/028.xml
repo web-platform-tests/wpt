@@ -1,0 +1,25 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>CSS Floats: Float Sizing</title>
+  <style type="text/css">
+   .float { float: left; display: table; }
+   .float div { margin: 0; border: solid; padding: 0.5em; margin: 0.5em; } 
+  </style>
+ </head>
+ <body>
+
+  <p> Make your window an inch or two bigger than than the width of
+  one float. All floats should be the same size. Try resizing the
+  window so that floats wrap in one or two columns. </p>
+
+  <div class="float"> <div> this is a float this is a float this is a float this is a float this is a float this is a float this is a float </div> </div>
+  <div class="float"> <div> this is a float this is a float this is a float this is a float this is a float this is a float this is a float </div> </div>
+  <div class="float"> <div> this is a float this is a float this is a float this is a float this is a float this is a float this is a float </div> </div>
+  <div class="float"> <div> this is a float this is a float this is a float this is a float this is a float this is a float this is a float </div> </div>
+  <div class="float"> <div> this is a float this is a float this is a float this is a float this is a float this is a float this is a float </div> </div>
+  <div class="float"> <div> this is a float this is a float this is a float this is a float this is a float this is a float this is a float </div> </div>
+  <div class="float"> <div> this is a float this is a float this is a float this is a float this is a float this is a float this is a float </div> </div>
+  <div class="float"> <div> this is a float this is a float this is a float this is a float this is a float this is a float this is a float </div> </div>
+
+ </body>
+</html>

@@ -1,0 +1,16 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+ <head>
+  <title>Specificity with universal selector</title>
+  <style type="text/css">
+    p { color: yellow; background: red; border: maroon; } /* selects the <p> with 0,0,0,1 */
+    div * { color: white; background: green; } /* selects the <p> with 0,0,0,1 and so should override */
+    body div * { border: solid lime; } /* selects the <p> with 0,0,0,2 */
+  </style>
+ </head>
+ <body>
+  <div>
+   <p>This line should be green.</p>
+  </div>
+ </body>
+</html>

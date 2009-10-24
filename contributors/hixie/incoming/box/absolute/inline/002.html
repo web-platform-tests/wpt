@@ -1,0 +1,23 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html lang="en">
+ <head>
+  <title>Absolutely positioned boxes in inlines: 'auto' with 'relative'</title>
+  <style type="text/css">
+   p { font: 1em monospace; }
+   .filler { color: silver; }
+   .absolute { color: white; background: green; position: absolute; }
+   .fail { color: yellow; background: red; }
+   .test { position: relative; }
+  </style>
+ </head>
+ <body>
+  <p>
+   <span class="filler"> This is filler text. This is filler text. This is filler text. </span>
+   <span class="test"> The test has <span class="absolute">PASSED</span><span class="fail">FAILED</span>.</span>
+   <span class="filler"> This is filler text. This is filler text. This is filler text. </span>
+  </p>
+  <p>(Exception: when the word FAILED has just wrapped onto the next
+  line, the word PASSED may still be at the end of the previous
+  line.)</p>
+ </body>
+</html>

@@ -1,0 +1,14 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+ <head>
+  <title>CSS table model: empty-cells: white-space normal</title>
+  <style type="text/css">
+   table { background: green; border-spacing: 0; }
+   td { empty-cells: hide; background: red; white-space: normal; padding: 0.5em 2em; }
+  </style>
+ </head>
+ <body>
+  <p>There should be a green block below.</p>
+  <table><tr><td>            </td></tr></table>
+ </body>
+</html>

@@ -1,0 +1,14 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+ <head>
+  <title>CSS table model: empty-cells: NBSPs</title>
+  <style type="text/css">
+   table { background: red; border-spacing: 0; }
+   td { empty-cells: hide; background: green; color: white; }
+  </style>
+ </head>
+ <body>
+  <p>There should be a green block below.</p>
+  <table><tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td></tr></table>
+ </body>
+</html>

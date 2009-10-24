@@ -1,0 +1,11 @@
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>Repeating Backgrounds: Y</title>
+  <style type="text/css">
+   html { background: url(/resources/images/smallcats) repeat-y; color: navy; font: bold 2em sans-serif; }
+  </style>
+ </head>
+ <body>
+  <p>There should be a column of cats to the left of this page.</p>
+ </body>
+</html>

@@ -1,0 +1,17 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+ <head>
+  <title>Floats: negative margin test</title>
+  <style type="text/css">
+   div { background: green; }
+   div p { margin-left: 10em; background: white; color: white; }
+   div p span { float: left; margin-left: -8em; }
+  </style>
+ </head>
+ <body>
+  <p>There should be a short green bar below with no text in it. (If the word "fail" appears this test has failed.)</p>
+  <div>
+    <p> FAIL <span></span> </p>
+  </div>
+ </body>
+</html>

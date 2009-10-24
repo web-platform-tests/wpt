@@ -1,0 +1,19 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+ <head>
+  <title>Blocks within inlines: Simple</title>
+  <style type="text/css">
+   .inline { background: red; color: red; display: inline; }
+   .block { color: green; display: block; } 
+  </style>
+ </head>
+ <body>
+  <div class="block">
+   <div class="inline">
+    <div class="block">
+     There should be no red on this page.
+    </div>
+   </div>
+  </div>
+ </body>
+</html>

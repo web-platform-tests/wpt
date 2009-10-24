@@ -1,0 +1,11 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>q elements in non-XHTML namespaces aren't magical</title>
+  <style type="text/css">
+   body { color: navy; }
+  </style>
+ </head>
+ <body>
+  <p><q xmlns="http://www.example.com/">There should be no quotes no this page.</q></p>
+ </body>
+</html>

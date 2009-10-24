@@ -1,0 +1,16 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+ <head>
+  <title>Generated Content via Universal Selectors</title>
+  <style type="text/css">
+    p:after { content: "FAILED"; border: none; }
+    div :after { content: "PASSED"; border-top: solid teal; }
+    body div :after { border-bottom: solid blue; }
+  </style>
+ </head>
+ <body>
+  <div>
+   <p>This test has: </p>
+  </div>
+ </body>
+</html>

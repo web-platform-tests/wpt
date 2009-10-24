@@ -1,0 +1,14 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>CSS: sanity tests for font inheritance</title>
+  <style type="text/css">
+   span { font: inherit; }
+  </style>
+ </head>
+ <body>
+  <p>There should be two perfect columns of identical Xs below:</p>
+  <pre class="test">   XXX       XXX
+   <span>XXX</span>       XXX
+   XXX       XXX  </pre>
+ </body>
+</html>

@@ -1,0 +1,3 @@
+The following query will find all known bugs in Mozilla that relate to these tests:
+
+   http://bugzilla.mozilla.org/buglist.cgi?bug_status=NEW&bug_status=ASSIGNED&bug_status=REOPENED&bug_file_loc=%2Fbackground%2F&bug_file_loc_type=substring

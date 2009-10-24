@@ -1,0 +1,19 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>Multiple backgrounds: repetition in funky situations (primarily no-repeat)</title>
+  <style type="text/css">
+   body { color: navy; }
+   div { background: red; height: 200px; width: 400px; }
+   div { background-color: red;
+         background: none, no-repeat url(/resources/images/test-bl) 50px bottom, url(/resources/images/test-br) 150px 100px no-repeat,
+                     url(/resources/images/test-tr) top no-repeat, none, url(/resources/images/test-tl) 16.667% 0 repeat-y,
+                     repeat, fixed, none, url(/resources/images/1x1);
+         background-attachment: fixed, scroll, scroll, scroll, fixed, scroll, fixed;
+         background-repeat: repeat, no-repeat, no-repeat, no-repeat, repeat-y, no-repeat; }
+  </style>
+ </head>
+ <body>
+  <p>There should be a complete unbroken drawing of a yin-yang (&#x262F;) symbol below.</p>
+  <div></div>
+ </body>
+</html>

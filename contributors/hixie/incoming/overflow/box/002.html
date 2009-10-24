@@ -1,0 +1,22 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+ <head>
+  <title>Floats and overflow</title>
+  <style type="text/css">
+   p { color: green; }
+   .container { border: solid white; position: relative; }
+   .overflow { overflow: auto; color: yellow; background: red; height: 0; }
+   .float { float: left; background: red; color: yellow; width: 10em; }
+   .pass { background: white; color: black; width: 10em; }
+   .fail { background: black; position: absolute; top: 1em; }
+  </style>
+ </head>
+ <body>
+  <p>It should say "PASS" below:</p>
+  <div class="container">
+   <div class="fail"> XXXX </div>
+   <div class="overflow"> <div class="float"> FAIL </div> FAIL </div>
+   <div class="pass"> PASS </div> <!-- the float should be contained inside the overflow block -->
+  </div>
+ </body>
+</html>

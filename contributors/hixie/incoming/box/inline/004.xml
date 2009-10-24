@@ -1,0 +1,49 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>CSS Inline Box Model: Wrapping Spaces Outside Inline Elements</title>
+  <style type="text/css">
+  </style>
+ </head>
+ <body>
+
+  <p>Resize your window slowly from a wide size to a narrow size. The
+  paragraph of Xs below should remain perfectly aligned.</p>
+
+  <p>
+   <span>X</span> <span>X</span> <span>X</span> <span>X</span>
+   <span>X</span> <span>X</span> <span>X</span> <span>X</span>
+   <span>X</span> <span>X</span> <span>X</span> <span>X</span>
+   <span>X</span> <span>X</span> <span>X</span> <span>X</span>
+   <span>X</span> <span>X</span> <span>X</span> <span>X</span>
+   <span>X</span> <span>X</span> <span>X</span> <span>X</span>
+   <span>X</span> <span>X</span> <span>X</span> <span>X</span>
+   <span>X</span> <span>X</span> <span>X</span> <span>X</span>
+   <span>X</span> <span>X</span> <span>X</span> <span>X</span>
+   <span>X</span> <span>X</span> <span>X</span> <span>X</span>
+   <span>X</span> <span>X</span> <span>X</span> <span>X</span>
+   <span>X</span> <span>X</span> <span>X</span> <span>X</span>
+   <span>X</span> <span>X</span> <span>X</span> <span>X</span>
+   <span>X</span> <span>X</span> <span>X</span> <span>X</span>
+   <span>X</span> <span>X</span> <span>X</span> <span>X</span>
+   <span>X</span> <span>X</span> <span>X</span> <span>X</span>
+   <span>X</span> <span>X</span> <span>X</span> <span>X</span>
+   <span>X</span> <span>X</span> <span>X</span> <span>X</span>
+   <span>X</span> <span>X</span> <span>X</span> <span>X</span>
+   <span>X</span> <span>X</span> <span>X</span> <span>X</span>
+   <span>X</span> <span>X</span> <span>X</span> <span>X</span>
+   <span>X</span> <span>X</span> <span>X</span> <span>X</span>
+   <span>X</span> <span>X</span> <span>X</span> <span>X</span>
+   <span>X</span> <span>X</span> <span>X</span> <span>X</span>
+   <span>X</span> <span>X</span> <span>X</span> <span>X</span>
+   <span>X</span> <span>X</span> <span>X</span> <span>X</span>
+   <span>X</span> <span>X</span> <span>X</span> <span>X</span>
+   <span>X</span> <span>X</span> <span>X</span> <span>X</span>
+   <span>X</span> <span>X</span> <span>X</span> <span>X</span>
+   <span>X</span> <span>X</span> <span>X</span> <span>X</span>
+   <span>X</span> <span>X</span> <span>X</span> <span>X</span>
+   <span>X</span> <span>X</span> <span>X</span> <span>X</span>
+   <span>X</span> <span>X</span> <span>X</span> <span>X</span>
+  </p>
+
+ </body>
+</html>

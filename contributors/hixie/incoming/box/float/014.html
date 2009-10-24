@@ -1,0 +1,18 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+ <head>
+  <title>CSS Floats: Generated Content</title>
+  <style type="text/css">
+   .test { border: solid navy; padding: 0.5em; }
+   .a:before { float: none; content: 'PA'; width: 5em; }
+   .b:before { float: left; content: 'PA'; }
+   .c:after { float: left; content: 'PA'; height: 5em }
+  </style>
+ </head>
+ <body>
+  <p> The following three lines should be identical and should read 'PASS' as one unbroken word:</p>
+  <p class="test a">SS</p>
+  <p class="test b">SS</p>
+  <p class="test c">SS</p>
+ </body>
+</html>

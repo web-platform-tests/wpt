@@ -1,0 +1,17 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>CSS Floats: Empty Floats</title>
+  <style type="text/css">
+   test { display: block; position: relative; }
+   fill { position: absolute; top: 0; left: 6em; padding: 1em; margin: 1.1em; width: 6em; background: red; }
+   float { float: left; width: 6em; } /* height effectively 0, but still taking room up on its "line" */
+   overlap { float: left; width: 6em; border: 0.1em green solid; padding: 1em; margin: 1em; background: green; -moz-opacity: 90%; }
+  </style>
+ </head>
+ <body>
+  <p>You should not see any red below. (If you do, it should be bordered in green. Note: This test is probably debatable.)</p>
+  <test xmlns="http://www.example.org/">
+   <fill/> <float/> <overlap/>
+  </test>
+ </body>
+</html>

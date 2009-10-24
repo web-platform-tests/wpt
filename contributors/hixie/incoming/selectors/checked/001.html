@@ -1,0 +1,16 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+ <head>
+  <title>CSS Selectors (:checked)</title>
+  <style type="text/css">
+   :checked, :checked + span { border: solid blue; color: blue; background: navy; }
+  </style>
+ </head>
+ <body>
+  <p>Anything that is checked below should be blue.</p>
+  <p><input checked type="checkbox"> <span>X</span></p>
+  <p><input checked type="radio" name="x"> <span>X</span> <input checked type="radio" name="x"> <span>X</span></p>
+  <p><select><option selected>X</option></select></p>
+  <p><select size="2"><option selected>X</option></select></p>
+ </body>
+</html>

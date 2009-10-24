@@ -1,0 +1,16 @@
+<!DOCTYPE HTML>
+<html>
+ <head>
+  <title>Error handling of broken url() - balancing braces</title>
+  <style>
+   p {
+        color: green;
+        background: red url( { test ); border: solid red; } body { background: red; } ) ;
+        border: solid green;
+     }
+  </style>
+ </head>
+ <body>
+  <p>This line should be green with a green border.</p>
+ </body>
+</html>

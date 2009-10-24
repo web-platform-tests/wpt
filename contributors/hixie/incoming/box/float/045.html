@@ -1,0 +1,24 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+ <head>
+  <title>Bottom margins on floats</title>
+  <style type="text/css">
+   div {
+     float: left;
+     background: green;
+   }
+   span { 
+     float: left;
+     background: white;
+     margin: 0 0 1em 0;
+   }
+  </style>
+ </head>
+ <body>
+  <div>
+   <span>There should be a green bar below, and no red anywhere.</span>
+   <!-- (note: the "no red anywhere" clause is just for consistency with other tests, this test has no red. -->
+  </div>
+ </body>
+</html>
+

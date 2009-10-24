@@ -1,0 +1,38 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html lang="en">
+ <head>
+  <title>Stacking order: Floats and Blocks in Inlines</title>
+  <style type="text/css">
+   .control { display: inline; font: 1em/1 Ahem, sans-serif; background: red; color: white; }
+
+   /* outer block */
+   .container { width: 5em; height: 5em; border: solid; font: 20px/1 Ahem; background: red; display: block; }
+   .inner { display: block; }
+
+   /* top and botom */
+   .float { width: 5em; height: 3em; margin: -5em 0 0 0; padding: 1em 0; background: red; float: left; }
+   .inner .inline { color: lime; display: inline; }
+
+   /* middle */
+   .float .block { height: 3em; margin: 0; background: lime; display: block; }
+   .inner .block { height: 3em; margin: 0; background: red; display: block; }
+
+  </style>
+ </head>
+ <body>
+  <p class="control">Ahem_font_would_be_nice_for_this_test.</p>
+  <p>There should just be a single green square below (with a black border).</p>
+
+  <div class="container">
+   <div class="inner">
+    <div class="inline">XXXXX</div>
+    <div class="block"></div>
+    <div class="inline">XXXXX</div>
+   </div>
+   <div class="float">
+    <div class="block"></div>
+   </div>
+  </div>
+
+ </body>
+</html>

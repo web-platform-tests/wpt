@@ -1,0 +1,19 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+ <head> 
+  <title>Empty inlines being displaced by floats</title> 
+  <style type="text/css">
+    .block { display: block; background: green; }
+    .inline { display: inline; margin-left: 40px; }
+    span { float: left; width: 50%; background: white; }
+  </style> 
+ </head> 
+ <body> 
+  <div class="block">
+   <div class="inline"> 
+    <span>There should be a green bar to the right: &#x21E8;</span>
+    <span></span> <!-- this float should be on the second "line" -->
+   </div> 
+  </div>
+ </body>
+</html>

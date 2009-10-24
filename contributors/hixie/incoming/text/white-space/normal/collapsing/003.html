@@ -1,0 +1,20 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+ <head>
+  <title>white-space normal: collapsing at line edges</title>
+  <style type="text/css">
+   .test { margin: 0.25em; border: 0.25em solid navy; padding: 0.1em; background: blue; color: yellow; text-decoration: underline; width: 7em; text-align: center; font: 2em Ahem, monospace; }
+  </style>
+ </head>
+ <body>
+  <p>The following lines should all look identical:</p>
+  <div class="test a">XXXX</div>
+  <div class="test b">XXXX </div>
+  <div class="test c"> XXXX</div>
+  <div class="test d"> XXXX </div>
+  <div class="test a"><span>XXXX</span></div>
+  <div class="test b"><span>XXXX </span></div>
+  <div class="test c"><span> XXXX</span></div>
+  <div class="test d"><span> XXXX </span></div>
+ </body>
+</html>

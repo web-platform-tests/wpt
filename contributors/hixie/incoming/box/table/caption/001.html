@@ -1,0 +1,20 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+ <head>
+  <title>CSS Tables: Multiple captions</title>
+  <style type="text/css">
+   .table { display: table; }
+   .caption { display: table-caption; }
+   .row { display: table-row; }
+   .green { color: green; }
+   .red { background: red; color: yellow; }
+  </style>
+ </head>
+ <body class="table">
+  <div class="green row">2. This line should be green. </div>
+  <div class="green caption">1. This line should be green. </div>
+  <div class="red caption">A. This line would be red but should probably not appear (second caption). </div>
+  <div class="green row">3. This line should be green. </div>
+  <div class="red caption">B. This line would be red but should probably not appear (second caption). </div>
+ </body>
+</html>

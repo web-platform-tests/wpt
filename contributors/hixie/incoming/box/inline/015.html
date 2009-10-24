@@ -1,0 +1,21 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+ <head>
+  <title>Inline box model: space taken by images in cells</title>
+  <style type="text/css">
+   div { background: red; height: 64px; width: 128px; }
+   table { background: green; width: 100%; padding: 0; border: 0; border-spacing: 0; margin: 0; }
+   td { padding: 0; border: 0; font-size: 64px; }
+  </style>
+ </head>
+ <body>
+  <p>There should be no red below.</p>
+  <div>
+   <table>
+    <tr> <!-- same as 014 but without spaces around the image -->
+     <td><img src="http://www.hixie.ch/resources/images/1x1"></td>
+    </tr>
+   </table>
+  </div>
+ </body>
+</html>

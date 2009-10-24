@@ -1,0 +1,13 @@
+<!-- Tag Soup -->
+<html>
+ <head>
+  <title>CSS Compatibility: Case Insensitive Classes</title>
+  <style type="text/css">
+   .teST { background: red; color: yellow; } /* should be overridden */
+   .TEst { background: white; color: green; }
+  </style>
+ </head>
+ <body>
+  <p class="teST">This text should be green.</p>
+ </body>
+</html>

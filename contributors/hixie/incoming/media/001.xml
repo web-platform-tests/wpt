@@ -1,0 +1,16 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>CSS: simple @media test</title>
+  <style type="text/css">
+   @media screen {
+     media:after { content: 'screen'; }
+   }
+   @media print {
+     media:after { content: 'print'; }
+   }
+  </style>
+ </head>
+ <body>
+  <media xmlns="http://www.example.org/">The current media is: </media>
+ </body>
+</html>

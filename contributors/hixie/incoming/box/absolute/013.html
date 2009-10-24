@@ -1,0 +1,21 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html lang="en">
+ <head>
+  <title>Table layout: Absolute positioning should shrink wrap</title>
+  <style type="text/css">
+   table { position: absolute; background: red; border-spacing: 0; }
+   td { padding: 0; }
+   div { width: 3em; height: 2em; background: green; }
+  </style>
+ </head>
+ <body>
+  <p>There should be a green block and no red below.</p>
+  <table>
+   <tr>
+    <td>
+     <div></div>
+    </td>
+   </tr>
+  </table>
+ </body>
+</html>

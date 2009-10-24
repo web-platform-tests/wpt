@@ -1,0 +1,17 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html lang="en">
+ <head>
+  <title>Nested heights with percentages and borders</title>
+  <style type="text/css">
+   .a { height: 10em; width: 10em; background: red; border: 5em white solid; }
+   .b { height: 100%; background: green; }
+  </style>
+ </head>
+ <body>
+  <p>There should be a green block below and no red on this page.</p>
+  <div class="a">
+   <div class="b">
+   </div>
+  </div>
+ </body>
+</html>

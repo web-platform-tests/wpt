@@ -1,0 +1,24 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html class="table">
+ <head class="row">
+  <title>Styling the root element: display:table</title>
+  <style type="text/css">
+   * { display: none; padding: 0; border: 0; margin: 0; width: auto; height; auto; }
+   .table { display: table; border-spacing: 0; margin-top: 2em; }
+   .row { display: table-row; }
+   .cell { display: table-cell; width: 100px; height: 100px; }
+   .tl { background: url(http://hixie.ch/resources/images/test-tl); }
+   .tr { background: url(http://hixie.ch/resources/images/test-tr); }
+   .bl { background: url(http://hixie.ch/resources/images/test-bl); }
+   .br { background: url(http://hixie.ch/resources/images/test-br); }
+   p { display: block; position: fixed; top: 0; /* taken out of flow */ }
+  </style>
+  <style class="cell tl"></style>
+  <style class="cell tr"></style>
+ </head>
+ <body class="row">
+  <p> There should be a single unbroken ying-yang symbol below. </p>
+  <div class="cell bl"></div>
+  <div class="cell br"></div>
+ </body>
+</html>

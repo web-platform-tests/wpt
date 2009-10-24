@@ -1,0 +1,18 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html lang="en">
+ <head>
+  <title>Positioning blocks inside inline contexts with top:auto</title>
+  <style type="text/css">
+   .container div { height: 1em; width: 10em; }
+   .test { position: absolute; background: green; z-index: 1; }
+   .control { background: red; }
+  </style>
+ </head>
+ <body>
+  <div class="container">
+   There should be no red on this page.
+   <div class="test"></div>
+   <div class="control"></div>
+  </div>
+ </body>
+</html>

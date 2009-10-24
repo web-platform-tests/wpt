@@ -1,0 +1,33 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+ <head>
+  <title>Clear cases</title>
+  <style type="text/css">
+   .border { border: solid; clear: both; margin: 8em 2em; }
+   .float { float: left; width: 10em; height: 5em; background: silver; }
+   .container { background: blue; }
+   .clear { clear: both; }
+   .mt { margin-top: 1em; }
+   .mtl { margin-top: 10em; }
+   .mb { margin-bottom: 1em; }
+  </style>
+ </head>
+ <body>
+  <div class="border">
+   <div class="container mt mb">
+    <div class="float"></div>
+    <div class="mt mb clear"></div>
+    <div class="mt mb clear"></div>
+   </div>
+  </div>
+  <div class="border">
+   <div class="container mt mb">
+    <div class="float"></div>
+    <div class="mtl mb clear"></div>
+    <div class="mt mb clear"></div>
+   </div>
+  </div>
+ </body>
+</html>
+
+

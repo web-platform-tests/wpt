@@ -1,0 +1,19 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+ <head>
+  <title>Clear on floats after floats with display:none blocks between them</title>
+  <style type="text/css">
+   p { margin: 0; }
+   .float { float: left; }
+   .clear { clear: left; display: none; }
+  </style>
+ </head>
+ <body>
+  <p>The next word should be on one line.</p>
+  <p class="float">PA</p>
+  <p class="clear">| FAIL |</p>
+  <p class="float">SS</p>
+ </body>
+</html>
+
+

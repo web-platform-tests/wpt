@@ -1,0 +1,13 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html lang="en">
+ <head>
+  <title>Nested blocks in unexpected places</title>
+  <style type="text/css">
+   .test { color: white; background: green; }
+   .test { test { :nested; color: yellow; background: red; }: not-nested; font-weight: bold; }
+  </style>
+ </head>
+ <body>
+  <p class="test">This line should be green (and bold).</p>
+ </body>
+</html>

@@ -1,0 +1,19 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html lang="en">
+ <head>
+  <title>:active (basic test)</title>
+  <style type="text/css">
+   p, span { display: block; margin: 0; padding: 1em; color: navy; }
+   .a :active { background: red; color: yellow; }
+   .b *:active { background: red; color: yellow; }
+   .c :active { background: red; color: yellow; }
+   .d p:active { background: red; color: yellow; }
+  </style>
+ </head>
+ <body>
+  <div class="a"> <span>Clicking this line should not make it go red.</span> </div>
+  <div class="b"> <span>Clicking this line should not make it go red.</span> </div>
+  <div class="c"> <p>Clicking this line should not make it go red.</p> </div>
+  <div class="d"> <p>Clicking this line should not make it go red.</p> </div>
+ </body>
+</html>

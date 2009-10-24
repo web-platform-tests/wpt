@@ -1,0 +1,22 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+ <head>
+  <title></title>
+  <style type="text/css">
+   .test { background: green; }
+   .test div { margin: 10em 0; background: red; }
+   .style { border: solid lime; }
+  </style>
+ </head>
+ <body>
+  <p>There should be a big green box below.</p>
+  <div class="test" id="test">
+   <div></div>
+  </div>
+  <script type="text/javascript">
+   var x = document.getElementById('test');
+   x.clientHeight; // force reflow
+   x.className += " style";
+  </script>
+ </body>
+</html>

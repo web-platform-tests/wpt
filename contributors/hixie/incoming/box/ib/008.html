@@ -1,0 +1,26 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+ <head>
+  <title>Blocks within inlines: Relative positioning</title>
+  <style type="text/css">
+   .inline { display: inline; }
+   .block { display: block; }
+   .control { background: red; height: 5em; width: 5em; }
+   .test { background: green; height: 5em; width: 5em; position: relative; top: -5em; }
+  </style>
+ </head>
+ <body>
+  <p>There should be no red below.</p>
+  <div class="control"></div>
+  <div>
+   <div class="inline">
+    <div class="block test"></div>
+   </div>
+  </div>
+ </body>
+</html>
+
+
+
+
+

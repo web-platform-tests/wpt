@@ -1,0 +1,27 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>CSS: sanity tests for relative keyword values of font-size</title>
+  <style type="text/css">
+
+    tests { display: block; padding: 2em; font: 900 1em Ahem, Verdana, sans-serif; }
+    tests > * { position: absolute; color: red; }
+    tests > * + * { color: green; }
+
+    l { font-size: larger; }
+    s { font-size: smaller; }
+
+    smallest { font-size: xx-small; }
+    largest { font-size: xx-large; }
+
+    tests * { vertical-align: bottom; }
+
+  </style>
+ </head>
+ <body class="test">
+  <p>This test has passed if you see no red on this page (a faint trace of red may be visible in anti-aliasing).</p>
+  <tests xmlns="http://www.example.org/">
+   <smallest>X<l>X<l>X<l>X<l>X<l>X<l>X</l></l></l></l></l></l></smallest>
+   <largest><s><s><s><s><s><s>X</s>X</s>X</s>X</s>X</s>X</s>X</largest>
+  </tests>
+ </body>
+</html>

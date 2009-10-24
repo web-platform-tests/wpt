@@ -1,0 +1,10 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>CSS: style attributes and importance</title>
+ </head>
+ <body>
+  <div style="color: green ! important; color: red"> This should be
+  green. It has a style attribute with "color: red" preceeded by an
+  important "color: green". </div>
+ </body>
+</html>

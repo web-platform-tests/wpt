@@ -1,0 +1,17 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+ <head>
+  <title>left:auto for fixed-pos blocks inside abs-pos blocks</title>
+  <style type="text/css">
+   body { color: navy; }
+   div { position: absolute; left: 50%; }
+   .test { position: fixed; left: auto; background: green; color: white; }
+  </style>
+ </head>
+ <body>
+  <p>There should be a green block roughly centered below.</p>
+  <div>
+   <p class="test">This block should be green.</p>
+  </div>
+ </body>
+</html>

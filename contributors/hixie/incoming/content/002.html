@@ -1,0 +1,65 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+ <head>
+  <title>Generated Content: \A and white-space</title>
+  <style type="text/css">
+   /* Setup */
+   td { font: 1em/1em monospace; border: solid; }
+   .normal div { white-space: normal; }
+   .pre div { white-space: pre; }
+   .nowrap div { white-space: nowrap; }
+   :before, :after { white-space: inherit; /* this isn't a cascade test */ }
+
+   /* Test */
+   .test:before { content: 'XXX\A    XXX\A       '; }
+   .test:after { content: 'XXX'; }
+  </style>
+ </head>
+ <body>
+
+  <p>The following two columns should be pixel-perfect identical (the
+  first two rows should just be rows of Xs, the last row should be be
+  a step pattern):</p>
+
+  <table>
+   <thead>
+    <tr>
+     <th> Test </th>
+     <th> Control </th>
+    </tr>
+   </thead>
+   <tbody>
+    <tr class="normal">
+     <td>
+<div class="test"></div>
+     </td>
+     <td> 
+<div>XXX
+   XXX
+      XXX</div>
+     </td>
+    </tr>
+    <tr class="nowrap">
+     <td>
+<div class="test"></div>
+     </td>
+     <td>
+<div>XXX
+   XXX
+      XXX</div>
+     </td>
+    </tr>
+    <tr class="pre">
+     <td>
+<div class="test"></div>
+     </td>
+     <td> 
+<div>XXX
+   XXX
+      XXX</div>
+     </td>
+    </tr>
+   </tbody>
+  </table>
+ </body>
+</html>

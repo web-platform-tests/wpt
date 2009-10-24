@@ -1,0 +1,12 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>CSS: style attributes and importance</title>
+  <style type="text/css">
+   body { color: green; }
+   div { color: red; }
+  </style>
+ </head>
+ <body>
+  <div style="color: inherit"> This should be green. </div>
+ </body>
+</html>

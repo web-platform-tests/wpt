@@ -1,0 +1,13 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>CSS Parsing: Negative Border Widths</title>
+  <style type="text/css">
+   test { color: green; border-color: red; border-width: 0; border-width: -10px; border-style: solid; display: block; }
+  </style>
+ </head>
+ <body>
+  <test xmlns="http://www.example.org/">
+    This should have no border, because negative border is a parser error.
+  </test>
+ </body>
+</html>

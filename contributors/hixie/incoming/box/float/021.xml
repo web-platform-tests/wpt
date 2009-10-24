@@ -1,0 +1,19 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>CSS Floats: Fixed Sizing (with border)</title>
+  <style type="text/css">
+   .control { display: inline; font: 1em/1 Ahem, sans-serif; background: red; color: white; }
+   container { display: block; width: 299px; background: red; color: green; font: 50px Ahem; border: solid white; }
+   float { float: left; margin: 50px; }
+  </style>
+ </head>
+ <body>
+  <div class="control">Ahem_font_required_for_this_test.</div>
+  <p>There should be a green block below this line.</p>
+  <container xmlns="http://www.w3.org/">
+   <test1/>
+   <test2/>
+   <float>XXXX</float>
+  </container>
+ </body>
+</html>

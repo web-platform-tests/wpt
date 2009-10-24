@@ -1,0 +1,73 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html lang="en">
+ <head>
+  <title>Scrolling Backgrounds in Scrolling Backgrounds</title>
+  <style type="text/css">
+   .outer {
+     background: transparent url(/resources/images/smallcats) -30px -30px scroll;
+     border: 30px dotted;
+     overflow: auto; height: 237px; width: 330px;
+     white-space: pre; font-size: 16px;
+   }
+   .inner {
+     background: transparent url(/resources/images/astrophy/200-a) -30px -30px scroll;
+     border: 30px dotted; margin: 0 40px;
+     overflow: auto; height: 140px; width: 140px;
+   }
+   ul { color: navy; }
+  </style>
+ </head>
+ <body>
+
+  <ul>
+   <li>You should see the orange cats going under the border.</li>
+   <li>As you scroll the element below the orange cats should not move.</li>
+   <li>There should be exactly six unbroken pictures of the two cats visible in the background at all times.</li>
+   <li>However, as you scroll the element, a new cat should come into view, with its own associated nested scrollbar.</li>
+   <li>As you scroll the outer element, the inner cat should move up and down with its border.</li>
+   <li>As you scroll the inner element, the inner cat should not move.</li>
+   <li><strong>You should see the orange cats behind the inner cat, and a white background behind the lot.</strong></li>
+  </ul>
+
+  <div class="outer">   1
+   2
+   3
+   4
+   5
+   6
+   7
+   8
+   9
+  <div class="inner">   1
+   2
+   3
+   4
+   5
+   6
+   7
+   8
+   9
+  10
+  11
+  12
+  13
+  14
+  15
+  16
+  17
+  18
+  19
+  20  </div>
+  10
+  11
+  12
+  13
+  14
+  15
+  16
+  17
+  18
+  19
+  20  </div>
+ </body>
+</html>

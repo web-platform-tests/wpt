@@ -1,0 +1,20 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>CSS Tables: Font Inheritance</title>
+  <style type="text/css">
+   .control { display: inline; font: 1em/1 Ahem, sans-serif; background: red; color: white; }
+   div { font: 50px/1em Ahem; color: green; margin-left: 1em; }
+   div > * { display: table; background: red; }
+   td { padding: 0; }
+   table { border-spacing: 0; }
+  </style>
+ </head>
+ <body>
+  <div class="control">Ahem_font_required_for_this_test.</div>
+  <p>There should be no red below, merely two big identical green blocks.</p>
+  <div>
+   <table><tr><td>Test<br/>Test</td></tr></table>
+   <p>Test<br/>Test</p>
+  </div>
+ </body>
+</html>

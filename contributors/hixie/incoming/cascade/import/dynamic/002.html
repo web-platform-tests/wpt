@@ -1,0 +1,20 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+ <head>
+  <title>Dynamic sheet append (&lt;link&gt;)</title>
+  <script type="text/javascript">
+   var style = document.createElement("LINK");
+   style.setAttribute("type", "text/css");
+   style.setAttribute("rel", "stylesheet");
+   style.setAttribute("href", "body-red.css");
+   document.getElementsByTagName("HEAD")[0].appendChild(style);
+   // note: when this runs, we've only parsed as far as the next line,
+   // so the <style> element below doesn't exist, so we "append"
+   // before that element.
+  </script>
+  <link rel="stylesheet" type="text/css" href="body-green.css">
+ </head>
+ <body>
+  <p>This text should be green.</p>
+ </body>
+</html>

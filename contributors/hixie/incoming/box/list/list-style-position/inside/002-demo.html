@@ -1,0 +1,33 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html dir="rtl">
+ <head>
+  <title>Outside bullets</title>
+  <style type="text/css">
+   ol { margin: 0; padding: 0; border: 0; }
+   li, div { border: solid orange 0.25em; padding: 0.5em 3em 0.5em 0.5em; list-style-position: inside; }
+  </style>
+ </head>
+ <body>
+  <ol>
+   <li>
+    <ol>
+     <li>
+      <ol>
+       <li>
+        List item text.
+       </li>
+      </ol>
+     </li>
+    </ol>
+   </li>
+  </ol>
+  <p>The above should render like the example below.</p>
+  <div>
+   <div>
+    <div>
+     1. 1. 1. List item text.
+    </div>
+   </div>
+  </div>
+ </body>
+</html>

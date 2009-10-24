@@ -1,0 +1,29 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>CSS Tables: Table In Table Alignment</title>
+  <style type="text/css">
+
+    /* test */
+    @namespace html url(http://www.w3.org/1999/xhtml);
+    table { display: table; background: red; }
+    row { display: table-row; }
+    :not(html|*) { display: table-cell; } /* turn the non-existent elements into table cells */
+    /* reset all the other properties that might give us gaps */
+    :table-cell, :table, :not(html|*) { padding: 0; margin: 0; border: 0; border-spacing: 1em; }
+
+    /* control */
+    body > * { position: absolute; top: 2em; left: 2em; }
+    div { height: 2em; width: 2em; background: green; -moz-opacity: 90%; }
+
+  </style>
+ </head>
+ <body>
+  <table xmlns="http://www.example.org/">
+   <row>
+    <table/>
+    <!-- nothing -->
+   </row>
+  </table>
+  <div/>
+ </body>
+</html>

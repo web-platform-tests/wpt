@@ -1,0 +1,18 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+ <head>
+  <title>Positioning in paged media: Initial containing block</title>
+  <style type="text/css">
+   div { page-break-after: always; }
+   h1 { position: absolute; top: 2em; left: 1em; font: 6em monospace; }
+  </style>
+ </head>
+ <body>
+  <p>Display this in a paged media. The word PASS should display below
+  (followed by several blank pages).</p>
+  <div><h1>P</h1></div>
+  <div><h1>&nbsp;A</h1></div>
+  <div><h1>&nbsp;&nbsp;S</h1></div>
+  <div><h1>&nbsp;&nbsp;&nbsp;S</h1></div>
+ </body>
+</html>

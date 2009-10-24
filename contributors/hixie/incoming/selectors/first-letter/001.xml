@@ -1,0 +1,20 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>:first-letter in XML</title>
+  <style type="text/css">
+   .test { float: left; font: 2em sans-serif; }
+   .test:first-letter { color: green; }
+  </style>
+ </head>
+ <body>
+  <p>This next line should be green:</p>
+  <div class="test">T</div>
+  <div class="test"><![CDATA[E]]></div>
+  <div class="test">&#x0053;</div>
+  <div class="test"><div>T</div></div> <!-- debatable, CSS2.1 should clarify this -->
+  <div class="test"> I </div>
+  <div class="test"><!-- FAIL -->N</div>
+  <div class="test">
+G</div>
+ </body>
+</html>

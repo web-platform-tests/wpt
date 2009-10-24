@@ -1,0 +1,23 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+ <head>
+  <title>Floats: No more to the right than the right edge of the containing block</title>
+  <style type="text/css">
+   .outer { width: 20em; background: silver; margin: 1em; }
+   .container { width: 9em; margin: 0 5em; background: yellow; height: 2em; border: solid 0.5em orange; }
+   .float { float: right; width: 14em; background: navy; color: white; }
+  </style>
+ </head>
+ <body>
+  <div class="outer" dir="ltr">
+   <div class="container">
+    <div class="float">TEST-LTR</div>
+   </div>
+  </div>
+  <div class="outer" dir="rtl">
+   <div class="container">
+    <div class="float">TEST-RTL</div>
+   </div>
+  </div>
+ </body>
+</html>

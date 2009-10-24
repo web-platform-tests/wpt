@@ -1,0 +1,19 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html lang="en">
+ <head>
+  <title>vertical-align: top on :first-line</title>
+  <style type="text/css">
+  .ahem { display: inline; font: 1em/1 Ahem, sans-serif; background: red; color: white; }
+  p { margin: 0.2em; }
+  .control, .test { font: 4em/1 Ahem; color: green; }
+  .first-line, .test:first-line { background: red; vertical-align: top; }
+  .inner { font-size: 1.25em; vertical-align: top; }
+  </style>
+ </head>
+ <body>
+  <div class="ahem">Ahem_font_required_for_this_test.</div>
+  <p>There should be two unbroken lines of green below.</p>
+  <p class="control"><span class="first-line">X<span class="inner">&Eacute;</span>X</p>
+  <p class="test">X<span class="inner">&Eacute;</span>X</p>
+ </body>
+</html>

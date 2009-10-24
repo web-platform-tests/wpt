@@ -1,0 +1,16 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>CSS Lists: Simple Image Bullets</title>
+  <style type="text/css">
+   .li { list-style: url(/resources/images/smallcats) disc inside; display: list-item; border: solid; }
+   .img { border: solid; }
+  </style>
+ </head>
+ <body>
+  <p>The following two boxes should pixel-to-pixel identical.</p>  
+  <table> <tr> 
+   <td> <div class="li"></div> </td>
+   <td> <div class="img"><img src="/resources/images/smallcats" alt="FAIL"/></div> </td> 
+  </tr> </table>
+ </body>
+</html>

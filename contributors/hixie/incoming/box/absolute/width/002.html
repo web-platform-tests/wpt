@@ -1,0 +1,21 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html lang="en">
+ <head>
+  <title>CSS: width:auto with block width:100%</title>
+  <style type="text/css">
+   p { color: green; }   
+   .a, .b { position: absolute; }
+   .inner { background: red; height: 2em; }
+   .a { top: 4em; }
+   .a .inner { width: auto; }
+   .b { top: 8em; }
+   .b .inner { width: 100%; }
+  </style>
+ </head>
+ <body>
+  <p>There should be no red on this page.</p>
+  <!-- both should shrink wrap to 0, and 100% of 0 is 0. -->
+  <div class="a"> <div class="inner"> </div> </div>
+  <div class="b"> <div class="inner"> </div> </div>
+ </body>
+</html>

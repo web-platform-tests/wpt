@@ -1,0 +1,14 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+ <head>
+  <title>Margins on DIVs and Ps: Are they interoperable in flow? (top)</title>
+  <style type="text/css">
+   body { padding: 1em; } /* prevent outward margin collapsing */
+   .flow { border: solid silver; width: 30em; background: aqua; } /* prevent any margin collapsing */
+   .flow p { background: yellow; color: black; }
+  </style>
+ </head>
+ <body>
+  <div class="flow"><div>&nbsp;</div><p>This should look the same in all browsers.</p></div>
+ </body>
+</html>

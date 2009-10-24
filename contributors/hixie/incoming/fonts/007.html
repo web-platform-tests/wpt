@@ -1,0 +1,33 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html lang="en">
+ <head>
+  <title>font and fallbacks</title>
+  <style type="text/css">
+   p { color: navy; }
+   .a span.test { font: 4em "Missing Font", "Times New Roman"; }
+   .a span.control { font: 4em "Times New Roman"; }
+   .b span.test { font: 4em "Missing Font", "Arial"; }
+   .b span.control { font: 4em "Arial"; }
+   .c span.test { font: 4em "Missing Font", "Courier New"; }
+   .c span.control { font: 4em "Courier New"; }
+  </style>
+ </head>
+ <body>
+  <div>In each of the three lines below, the two words should look identical.</div>
+  <p class="a">
+   <span class="test">&#x0162;&#x0119;&#x015F;&#x0163;</span>
+   &mdash;
+   <span class="control">&#x0162;&#x0119;&#x015F;&#x0163;</span>
+  </p>
+  <p class="b">
+   <span class="test">&#x0162;&#x0119;&#x015F;&#x0163;</span>
+   &mdash;
+   <span class="control">&#x0162;&#x0119;&#x015F;&#x0163;</span>
+  </p>
+  <p class="c">
+   <span class="test">&#x0162;&#x0119;&#x015F;&#x0163;</span>
+   &mdash;
+   <span class="control">&#x0162;&#x0119;&#x015F;&#x0163;</span>
+  </p>
+ </body>
+</html>

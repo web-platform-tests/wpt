@@ -1,0 +1,14 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>CSS Positioning: Containing Block of Top Level Absolutely Positioned Elements</title>
+  <style type="text/css">
+   html { background: green; color: white; }
+   p, a { background: white; color: black; display: block; margin: 0; padding: 0.25em; }
+  </style>
+ </head>
+ <body>
+  <p> This document (except for this white box) should be green. <a
+  href="20.xml">Go to previous test.</a> <a href="22.xml">Go to next
+  test.</a> </p>
+ </body>
+</html>

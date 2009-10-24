@@ -1,0 +1,17 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>CSS Tables: Anonymous Cell Children</title>
+  <style type="text/css">
+
+    /* basics */
+    table { display: table; height: 5em; width: 5em; background: green; }
+    table > * { display: table-cell; color: yellow; background: red; }
+    table > *:after { content: 'FAIL!!!'; color: yellow; background: red; }
+
+  </style>
+ </head>
+ <body>
+  <p>There should be a green block below.</p>
+  <table xmlns="http://www.example.org/"><!-- empty --></table>
+ </body>
+</html>

@@ -1,0 +1,17 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>Dynamic sheet insertion (&lt;style&gt;)</title>
+  <script type="text/javascript" id="script">
+   var style = document.createElement("style");
+   var text = document.createTextNode("body { color: red }");
+   style.appendChild(text);
+   document.getElementsByTagName("head")[0].insertBefore(style, document.getElementById("script"));
+  </script>
+  <style type="text/css">
+   body { color: green }
+  </style>
+ </head>
+ <body>
+  <p>This text should be green.</p>
+ </body>
+</html>

@@ -1,0 +1,19 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+<head>
+<title>'clip': Basic Test</title>
+<style type="text/css">
+.clip {
+  width: 256px;
+  height: 256px;
+  background: url(http://www.hixie.ch/resources/images/patterns/plasma-and-fail-99-repeat-x) no-repeat red;
+  position: absolute;
+  clip: rect(0px, 256px, 99px, 0px);
+}
+</style>
+<body>
+
+<p>You should see a green plasma blob below. If you see any red, the
+test has failed.</p>
+
+<div class="clip"></div>

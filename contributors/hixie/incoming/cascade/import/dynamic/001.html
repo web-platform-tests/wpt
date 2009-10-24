@@ -1,0 +1,21 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+ <head>
+  <title>Dynamic sheet append (&lt;style&gt;)</title>
+  <script type="text/javascript">
+   var style = document.createElement("STYLE");
+   var text = document.createTextNode("body { color: red; }");
+   style.appendChild(text);
+   document.getElementsByTagName("HEAD")[0].appendChild(style);
+   // note: when this runs, we've only parsed as far as the next line,
+   // so the <style> element below doesn't exist, so we "append"
+   // before that element.
+  </script>
+  <style type="text/css">
+   body { color: green; }
+  </style>
+ </head>
+ <body>
+  <p>This text should be green.</p>
+ </body>
+</html>

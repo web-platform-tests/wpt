@@ -1,0 +1,16 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>CSS Parsing: Negative Padding</title>
+  <style type="text/css">
+   test { background: green; padding: 8px; padding: -8px; display: block; }
+   test > inner { background: white; display: block; }
+  </style>
+ </head>
+ <body>
+  <test xmlns="http://www.example.org/">
+   <inner>
+    This should have a green border, because negative padding is a parser error.
+   </inner>
+  </test>
+ </body>
+</html>

@@ -1,0 +1,17 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html lang="en">
+ <head>
+  <title>Positioning tables</title>
+  <style type="text/css">
+   body { font: 900 10em Lucida Console, Courier New, Courier, monospace; }
+   .description { color: gray; font: medium serif; margin: 15em 3em; }
+   .test { position: absolute; bottom: 0; left: auto; right: 0; top: auto; background: white; color: green; margin: 0; }
+   .control { position: absolute; bottom: 0; left: auto; right: 0; top: auto; background: white; color: red; margin: 0; }
+  </style>
+ </head>
+ <body>
+  <p class="description">The word PASS should appear at the bottom right of this document.</p>
+  <p class="control">FAIL</p>
+  <table class="test"><tr><td>PASS</td></tr></table>
+ </body>
+</html>

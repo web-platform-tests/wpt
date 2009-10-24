@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!DOCTYPE generic>
+
+<?xml-stylesheet type="text/css" href="18.css" ?>
+
+<generic xmlns:xlink="http://www.w3.org/1999/xlink">
+
+   <!-->Mozilla Tests: Background: Test Eighteen</-->
+
+   <generic>
+
+      <p> This is an XML document. This paragraph and the links below
+      should have two lime borders surrounding them, and the
+      background EVERYWHERE should be green. Including the canvas. THE
+      ROOT ELEMENT SHOULD NOT STRETCH TO FIT THE VIEWPORT! </p>
+
+      <p>
+       <a xlink:type="simple" xlink:href="17.xml">Go to previous test.</a>
+       <a xlink:type="simple" xlink:href="19.xml">Go to next test.</a>
+      </p>
+
+   </generic>
+
+</generic>

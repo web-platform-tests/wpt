@@ -1,0 +1,15 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+ <head>
+  <title>Positioning replaced elements with left and right</title>
+  <style type="text/css">
+   img { position: absolute; left: 4em; right: 4em; top: 4em; bottom: 4em; }
+   div { position: absolute; left: 4em; top: 4em; height: 256px; width: 256px; background: green; }
+}
+  </style>
+ </head>
+ <body>
+  <p>No red should be visible:<img alt="FAIL" src="http://hixie.ch/resources/images/patterns/red-blobs"></p>
+  <div></div>
+ </body>
+</html>

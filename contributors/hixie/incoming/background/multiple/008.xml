@@ -1,0 +1,19 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>Multiple backgrounds: Inheritance into blocks (shorthand)</title>
+  <style type="text/css">
+   body { font: 16px serif; }
+   div { height: 0; background: url(/resources/images/test-tl) no-repeat,
+                                url(/resources/images/test-tr) no-repeat right 0%,
+                                url(/resources/images/test-bl) no-repeat fixed 80px 11.25em,
+                                url(/resources/images/test-br) no-repeat bottom right,
+                                white repeat scroll bottom right; }
+   div p { position: absolute; top: 5em; left: 5em; height: 200px; width: 200px;
+           background: inherit; }
+  </style>
+ </head>
+ <body>
+  <p>There should be a complete unbroken drawing of a yin-yang (&#x262F;) symbol below.</p>
+  <div><p></p></div>
+ </body>
+</html>

@@ -1,0 +1,17 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html lang="en">
+ <head>
+  <title>The bidi algorithm and inlines in CSS wrapping bidi formatting characters</title>
+  <style type="text/css">
+   div div { border: solid black; color: navy; margin: 1em; padding: 1em; font: 2em monospace; }
+   span { border: solid orange; padding: 0.1em 1em; margin: 0.1em 1em; background: yellow; }
+  </style>
+ </head>
+ <body>
+  <p> The following two lines should be identical. (Force bidi: &#x05D0;) </p>
+  <div>
+   <div class="test">TE<span>&#x202E;TSET</span>&#x202D;ST </div>
+   <div class="reference">TEST<span>TEST</span></div>
+  </div>
+ </body>
+</html>

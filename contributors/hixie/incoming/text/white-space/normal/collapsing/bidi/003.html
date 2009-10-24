@@ -1,0 +1,20 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html lang="en">
+ <head>
+  <title>Trailing spaces in table cells</title>
+  <style type="text/css">
+   .control { display: inline; font: 1em/1 Ahem, sans-serif; background: red; color: white; }
+   td { border: solid; padding: 0; background: red; font: 1em/1 Ahem; color: green; white-space: normal; }
+  </style>
+ </head>
+ <body>
+  <div class="control">Ahem_font_required_for_this_test.</div>
+  <p>There should be six identical boxes below with no red.</p>
+  <table><tr><td>XXX </td></tr>
+  <table><tr><td> XXX</td></tr>
+  <table><tr><td> XXX </td></tr>
+  <table dir="rtl"><tr><td>XXX </td></tr>
+  <table dir="rtl"><tr><td> XXX</td></tr>
+  <table dir="rtl"><tr><td> XXX </td></tr>
+ </body>
+</html>

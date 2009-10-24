@@ -1,0 +1,16 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+ <head>
+  <title>Generated Content: Entities</title>
+  <style type="text/css">
+   div { position: relative; font: 3em sans-serif; color: red; }
+   span { position: absolute; top: 0; left: 0; }
+   .control { color: green; }
+   .test:before { content: 'TEST &#x46;&#x41;&#x49;&#x4c;'; }
+  </style>
+ </head>
+ <body>
+  <p>There should be no red below, just a jumble of letters and symbols that makes no sense.</p>
+  <div><span class="test">ED</span><span class="control">TEST &amp;#x46;&amp;#x41;&amp;#x49;&amp;#x4c;ED</span></div>
+ </body>
+</html>

@@ -1,0 +1,14 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>CSS Lists: Simple Image Bullets</title>
+  <style type="text/css">
+   .li { list-style: url(/resources/images/astrophy/48) disc outside; display: list-item; margin: 100px; }
+  </style>
+ </head>
+ <body>
+  <div class="li">If there is a single cat on this page before this
+  text and baseline aligned with this text then this test has
+  passed. The horizontal space between the image and the text is
+  undefined.</div>
+ </body>
+</html>

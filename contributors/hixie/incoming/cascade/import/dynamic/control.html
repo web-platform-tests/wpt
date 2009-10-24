@@ -1,0 +1,19 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+ <head>
+  <title>Control test</title>
+  <style type="text/css" id="test">
+   p { color: red; }
+  </style>
+ </head>
+ <body>
+  <p>This text should be green.</p>
+  <script type="text/javascript">
+   document.getElementsByTagName("HEAD")[0].removeChild(document.getElementById("test"));
+   var style = document.createElement("STYLE");
+   var text = document.createTextNode("body { color: green; }");
+   style.appendChild(text);
+   document.getElementsByTagName("HEAD")[0].appendChild(style);
+  </script>
+ </body>
+</html>

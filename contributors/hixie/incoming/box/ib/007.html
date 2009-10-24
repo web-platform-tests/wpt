@@ -1,0 +1,54 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+ <head>
+  <title>Blocks within inlines: Simple</title>
+  <style type="text/css">
+   .inline { display: inline; }
+   .block { display: block; margin: 1em 0; }
+   td { font: 1em/1 monospace; }
+  </style>
+ </head>
+ <body>
+  <p>The pairs of letters below should be adjacent.</p>
+  <table>
+   <tr>
+    <td>
+     <div class="block">
+      <div class="inline">
+       A
+       <div class="block">
+       B
+       </div>
+       <div class="block">
+       C
+       </div>
+       D
+       <div class="block">
+       E
+       </div>
+       F
+       <div class="block">
+       G
+       </div>
+      </div>
+     </div>
+    </td>
+    <td>
+<pre>A
+
+B
+
+C
+
+D
+
+E
+
+F
+
+G</pre>
+    </td>
+   </tr>
+  </table>
+ </body>
+</html>

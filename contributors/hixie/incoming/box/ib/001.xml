@@ -1,0 +1,27 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>CSS: Blocks Within Inlines (XML Version)</title>
+  <style type="text/css">
+   td { border: solid black; color: white; padding: 0; background: red; }
+   inline { display: inline; background: teal; }
+   block { display: block; background: green; }
+   .a, .c { background: teal; }
+   .b { background: green; }
+  </style>
+ </head>
+ <body>
+  <p>The following two boxes should look identical.</p>
+  <table>
+   <tr>
+    <td>
+     <inline xmlns="http://www.example.org/">Line 1<block>Line 2</block>Line 3</inline>
+    </td>
+    <td>
+     <div class="a">Line 1</div>
+     <div class="b">Line 2</div>
+     <div class="c">Line 3</div>
+    </td>
+   </tr>
+  </table>
+ </body>
+</html>

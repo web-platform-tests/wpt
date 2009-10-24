@@ -1,0 +1,13 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>Dynamic sheet deletion (&lt;link&gt;)</title>
+  <link rel="stylesheet" type="text/css" id="link" href="body-red.css" />
+  <script type="text/javascript">
+   document.getElementsByTagName("head")[0].removeChild(document.getElementById("link"));
+  </script>
+  <link rel="stylesheet" type="text/css" href="body-red.css" />
+ </head>
+ <body style="color: green">
+  <p>This text should be green.</p>
+ </body>
+</html>

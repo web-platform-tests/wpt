@@ -1,0 +1,15 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>font-variant and color</title>
+  <style type="text/css">
+   span { color: green; font-variant: small-caps; }
+   div { color: white; text-decoration: underline; }
+  </style>
+ </head>
+ <body>
+  <p>It should say PASSED below.</p>
+  <div>
+   <span>THIS TEST HAS: passed.</span>
+  </div>
+ </body>
+</html>

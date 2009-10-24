@@ -1,0 +1,52 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+ <head>
+  <title>Percentage widths in tables</title>
+  <style type="text/css">
+   .control, .test { margin: 2em; }
+   .test * { overflow: visible; padding: 0; margin: 0; border: 0; border-spacing: 0; }
+   table.a { border: solid blue 20px; }
+   td.a { width: 80px; background: lime; }
+   table.b { margin: 0 40px; width: 100%; }
+   td.b { border: solid aqua 20px; background: yellow; }
+   .control .blue-line { height: 20px; width: 120px; background: blue; }
+   .control .blue-bar { border-left: 20px solid blue; }
+   .control .lime-bar { border-left: 40px solid lime; }
+   .control .aqua-line { height: 20px; width: 120px; background: aqua; }
+   .control .aqua-bars { border-left: 20px solid aqua; width: 80px; border-right: 20px solid aqua; }
+   .control .yellow-area { background: yellow; }
+  </style>
+ </head>
+ <body>
+  <p>(Note: This test assumes a sensible table model.)</p>
+  <p>The following two diagrams should be identical:</p>
+  <div class="test">
+   <table class="a">
+    <tr class="a">
+     <td class="a">
+      <table class="b">
+       <tr class="b">
+        <td class="b">
+         X
+        </td>
+       </tr>
+      </table>
+     </td>
+    </tr>
+   </table>
+  </div>
+  <div class="control">
+   <div class="blue-line"></div>
+   <div class="blue-bar">
+    <div class="lime-bar">
+     <div class="aqua-line"></div>
+     <div class="aqua-bars">
+      <div class="yellow-area">X</div>
+     </div>
+     <div class="aqua-line"></div>
+    </div>
+   </div>
+   <div class="blue-line"></div>
+  </div>
+ </body>
+</html>

@@ -1,0 +1,17 @@
+<!DOCTYPE HTML>
+<html>
+ <head>
+  <title>CSS Inline Box Model: Empty inlines near the top of the document</title>
+  <style type="text/css">
+   p, body, html { margin: 0; padding: 0; color: green; font: 20px/1 serif; }
+   div { display: inline; border-left: solid lime; }
+   .fail { background: red; color: yellow; width: 4em; }
+   .pass { background: white; color: green; position: absolute; top: 1em; }
+  </style>
+ </head>
+ <body>
+  <div></div>
+  <p class="fail">FAIL</p>
+  <p class="pass">This line should be green (with a green vertical bar on the previous line).</p>
+ </body>
+</html>

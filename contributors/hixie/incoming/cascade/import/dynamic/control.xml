@@ -1,0 +1,18 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>Control test</title>
+  <style type="text/css" id="test">
+   p { color: red; }
+  </style>
+ </head>
+ <body>
+  <p>This text should be green.</p>
+  <script type="text/javascript">
+   document.getElementsByTagName("head")[0].removeChild(document.getElementById("test"));
+   var style = document.createElement("style");
+   var text = document.createTextNode("body { color: green; }");
+   style.appendChild(text);
+   document.getElementsByTagName("head")[0].appendChild(style);
+  </script>
+ </body>
+</html>

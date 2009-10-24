@@ -1,0 +1,58 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<!-- DOCTYPE is a lie. -->
+<html lang="en">
+ <head>
+  <title>Ruby: Ping Test</title>
+  <style type="text/css">
+   p { color: navy; }
+   .a ruby { display: ruby-base; display: inline; display: ruby-base; }
+   .a rbc { display: ruby-base-container; display: inline; display: ruby-base-container; }
+   .a rb { display: ruby-base; display: inline; display: ruby-base; }
+   .a rtc.before { display: ruby-text-container; display: inline; display: ruby-text-container; ruby-position: before; }
+   .a rtc.after  { display: ruby-text-container; display: inline; display: ruby-text-container; ruby-position: after; }
+   .a rt { display: ruby-text; display: inline; display: ruby-text; ruby-span: 3; }
+   .b ruby { display: inline; }
+   .b rbc { display: inline; }
+   .b rb { display: inline; }
+   .b rtc { display: inline; }
+   .b rt { display: inline; }
+  </style>
+ </head>
+ <body>
+  <p>There should be four lines below.</p>
+  <p>
+   <ruby class="a">
+     <rbc>
+       <rb> 2. This is </rb>
+       <rb> the second </rb>
+       <rb> line. </rb>
+     </rbc>
+     <rtc class="before">
+       <rt> 1. This is </rt>
+       <rt> the first </rt>
+       <rt> line. </rt>
+     </rtc>
+     <rtc class="after">
+       <rt> 3. This is the third line. </rt>
+     </rtc>
+   </ruby>
+  </p>
+  <p>
+   <ruby class="b">
+     <rbc>
+       <rb> 4. This </rb>
+       <rb> is </rb>
+       <rb> the </rb>
+     </rbc>
+     <rtc class="before">
+       <rt> fourth </rt>
+       <rt> and </rt>
+       <rt> final </rt>
+     </rtc>
+     <rtc class="after">
+       <rt> line. </rt>
+     </rtc>
+   </ruby>
+  </p>
+ </body>
+</html>

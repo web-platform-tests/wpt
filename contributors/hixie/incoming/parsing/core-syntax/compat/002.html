@@ -1,0 +1,16 @@
+<html lang="en">
+ <head>
+  <title>Nested blocks in unexpected places</title>
+  <style type="text/css">
+   p {
+       color: green;
+       /* no "}" */
+       span { color: yellow; background: red; }
+       .test { color: maroon; background: yellow; } 
+     }
+  </style>
+ </head>
+ <body>
+  <p>This line <span>should</span> be <span class="test">all green</span>.</p>
+ </body>
+</html>

@@ -1,0 +1,18 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+ <head>
+  <title>Basic media queries test</title>
+  <style type="text/css">
+   @media only screen {
+     .a, .b { color: green; }
+   }
+   @media not only screen {
+     .b { color: red; }
+   }
+  </style>
+ </head>
+ <body>
+  <p class="a"> This line should be green. </p>
+  <p class="b"> This line should be green. </p>
+ </body>
+</html>

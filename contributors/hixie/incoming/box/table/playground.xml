@@ -1,0 +1,27 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>CSS table model: initial table spacing - playground</title>
+  <style type="text/css">
+   float { float: left; background: red; }
+   table { display: table; }
+   row { display: table-row; }
+   cell { display: table-cell; background: green; color: white; text-align: center; }
+   :table-cell { padding: 0 ! important; }
+  </style>
+ </head>
+ <body>
+  <float xmlns="http://www.example.org/">
+   <cell>THERE</cell>
+   <row>
+    <!-- cell -->
+     <table> 
+      <cell>SHOULD B</cell>
+      <cell>E N</cell>
+      <cell>O RED</cell>
+     </table>
+    <!-- /cell -->
+   </row>
+   <cell>ANYWHERE</cell>
+  </float>
+ </body>
+</html>

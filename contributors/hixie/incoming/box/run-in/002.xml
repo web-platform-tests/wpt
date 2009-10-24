@@ -1,0 +1,15 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>run-in and the line box model</title>
+  <style type="text/css">
+   .r { color: white; display: run-in; }
+   .b { backgound: green; line-height: 0; }
+   span { color: white; }
+  </style>
+ </head>
+ <body>
+  <p>There should be a green line below.</p>
+  <div class="r">This li</div>
+  <div class="b"><span>ne should be green.</span></div>
+ </body>
+</html>

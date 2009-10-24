@@ -1,0 +1,15 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>CSS Floats: Auto Sizing (with relative positioning)</title>
+  <style type="text/css">
+   .control { display: inline; font: 1em/1 Ahem, sans-serif; background: red; color: white; }
+   container { display: block; width: 150px; background: red; position: relative; }
+   float { float: left; color: green; font: 50px Ahem; }
+  </style>
+ </head>
+ <body>
+  <div class="control">Ahem_font_required_for_this_test.</div>
+  <p>There should be a green square below this line.</p>
+  <container xmlns="http://www.w3.org/"><float>X</float></container>
+ </body>
+</html>

@@ -1,0 +1,11 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>Basic :first-line test</title>
+  <style type="text/css">
+   *:first-line { color: green; }
+  </style>
+ </head>
+ <body>
+  <p>This line should be green.</p>
+ </body>
+</html>

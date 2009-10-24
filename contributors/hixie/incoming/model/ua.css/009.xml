@@ -1,0 +1,18 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>Sanity test for PRE element font</title>
+  <style type="text/css">
+   pre { margin: 0 2em; color: navy; }
+   .test1 { font-family: monospace; }
+   .test2 { font-size: 1em; }
+   .test3 { font: 1em monospace; }
+  </style>
+ </head>
+ <body>
+  <p>There should be a block of four lines of identical Xs below.</p>
+  <pre class="control">XXXXXXXXXX</pre>
+  <pre class="test1">XXXXXXXXXX</pre>
+  <pre class="test2">XXXXXXXXXX</pre>
+  <pre class="test3">XXXXXXXXXX</pre>
+ </body>
+</html>

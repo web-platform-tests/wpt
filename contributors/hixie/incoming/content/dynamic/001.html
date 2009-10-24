@@ -1,0 +1,14 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+ <head>
+  <title>Generated Content and :hover</title>
+  <style type="text/css">
+   div:before { content: "Hover here."; display: block; background: navy; color: white; }
+   div:hover:before { content: "PASS"; background: green; }
+  </style>
+ </head>
+ <body>
+  <p>The following block should be green when you hover it:</p>
+  <div></div>
+ </body>
+</html>

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <title>Positioning of floats</title>
+  <style type="text/css">
+   div { width: 4em; }
+   #absolute { position: absolute; top: 3em; background: red; border: 1px solid black; }
+   #parent { margin-bottom: 1em; }
+   #float { background: lime; height: 4em; float: left; }
+   #normal { margin-top: 4em; }
+  </style>
+ </head>
+ <body>
+  <p>You should see a green square below and no red.</p>
+  <div id="absolute">
+   <div id="parent">
+    <div id="float"></div>
+    <div id="normal"></div>
+   </div>
+  </div>
+ </body>
+</html>

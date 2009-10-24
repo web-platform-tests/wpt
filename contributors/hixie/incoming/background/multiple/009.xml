@@ -1,0 +1,16 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>Multiple backgrounds: Parsing test (shorthand)</title>
+  <style type="text/css">
+   p { height: 100px; color: green;
+       background: url(/resources/images/patterns/red-pieces) no-repeat,
+                   url(/resources/images/patterns/red-pieces) no-repeat right,
+                   url(/resources/images/patterns/red-pieces) no-repeat fixed 80px 11.25em,
+                   url(/resources/images/patterns/red-pieces) no-repeat bottom right,
+                   red repeat left scroll bottom; } /* this line is not valid, so whole thing should be dropped */
+  </style>
+ </head>
+ <body>
+  <p>This line should be green.</p>
+ </body>
+</html>

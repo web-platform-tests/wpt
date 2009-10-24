@@ -1,0 +1,18 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html lang="en">
+ <head>
+  <title>:hover and font-weight</title>
+  <style type="text/css">
+   p { color: blue; }
+   .serif { font: 1em serif; }
+   .sansSerif { font: 1em sans-serif; }
+   .monospace { font: 1em monospace; }
+   .test:hover { font-weight: bold; }
+  </style>
+ </head>
+ <body>
+  <p>When you hover over this text it should go bold: <span class="serif test">test test</span> |</p>
+  <p>When you hover over this text it should go bold: <span class="sansSerif test">test test</span> |</p>
+  <p>When you hover over this text it should go bold: <span class="monospace test">test test</span> |</p>
+ </body>
+</html>

@@ -1,0 +1,18 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+ <head>
+  <title>Dynamic sheet deletion (&lt;style&gt;)</title>
+  <style type="text/css" id="style">
+   body { color: blue; }
+  </style>
+  <script type="text/javascript" >
+   document.getElementsByTagName("HEAD")[0].removeChild(document.getElementById("style"));
+  </script>
+  <style type="text/css">
+   body { color: red; }
+  </style>
+ </head>
+ <body style="color:green">
+  <p>This text should be green.</p>
+ </body>
+</html>

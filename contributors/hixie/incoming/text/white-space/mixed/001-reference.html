@@ -1,0 +1,21 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+ <head>
+  <title>white-space: mixed tests (reference rendering)</title>
+  <style type="text/css">
+   .control { display: inline; font: 1em/1 Ahem, sans-serif; background: red; color: white; }
+   .test { font: 1em/1 Ahem; background: green; color: lime; width: 19em; white-space: pre; }
+  </style>
+ </head>
+ <body>
+  <div class="control">Ahem_font_required_for_this_test.</div>
+  <p>There should be a pretty green and lime pattern and the word "PASS" in lime on white below.</p>
+  <div class="test">1234567890123456789
+x x x x x x x x x x
+1234567890123456789 xxxx xxxx xxxx xxxx
+x                 x x  x x  x x    x   
+x x x x x x x x x x xxxx xxxx xxxx xxxx
+x                 x x    x  x    x    x
+xxxxxxxxxxxxxxxxxxx x    x  x xxxx xxxx</div>
+ </body>
+</html>

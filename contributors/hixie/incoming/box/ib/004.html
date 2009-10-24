@@ -1,0 +1,22 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+ <head>
+  <title>Blocks within inlines: Simple with :hover</title>
+  <style type="text/css">
+   .inline { color: blue; display: inline; }
+   .block { display: block; } 
+   .inline:hover { color: green; }
+  </style>
+ </head>
+ <body>
+  <div class="block">
+   <div class="inline">
+    This line should go green when you hover over any of the text on this page.
+    <div class="block">
+     This line should go green when you hover over any of the text on this page.
+    </div>
+    This line should go green when you hover over any of the text on this page.
+   </div>
+  </div>
+ </body>
+</html>

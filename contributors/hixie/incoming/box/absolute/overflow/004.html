@@ -1,0 +1,18 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html lang="en">
+ <head>
+  <title>Absolutely positioned children of overflow: hidden</title>
+  <style type="text/css">
+   html, body { margin: 0; border: 0; padding: 0; }
+   .control { color: yellow; background: red; width: 10em; }
+   .overflow { width: 8em; height: 8em; overflow: hidden; }
+   .positioned { color: white; background: green; position: absolute; top: 0; left: 0; width: 10em; }
+  </style>
+ </head>
+ <body>
+  <div class="control">FAIL</div>
+  <div class="overflow">
+   <div class="positioned">PASS</div>
+  </div>
+ </body>
+</html>

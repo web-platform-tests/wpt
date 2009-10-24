@@ -1,0 +1,35 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html lang="en">
+ <head>
+  <title>font-family and fallbacks</title>
+  <style type="text/css">
+   .ahem { display: inline; font: 1em/1 Ahem, sans-serif; background: red; color: white; }
+   p { color: navy; font-size: 4em; margin: 0.25em; }
+   .a span.test { font-family: "Ahem", "Times New Roman"; }
+   .a span.control { font-family: "Times New Roman"; }
+   .b span.test { font-family: "Ahem", "Arial"; }
+   .b span.control { font-family: "Arial"; }
+   .c span.test { font-family: "Ahem", "Courier New"; }
+   .c span.control { font-family: "Courier New"; }
+  </style>
+ </head>
+ <body>
+  <div class="ahem">Ahem_font_required_for_this_test.</div>
+  <div>In each of the three lines below, the two words should look identical.</div>
+  <p class="a">
+   <span class="test">&#x0162;&#x0119;&#x015F;&#x0163;</span>
+   &mdash;
+   <span class="control">&#x0162;&#x0119;&#x015F;&#x0163;</span>
+  </p>
+  <p class="b">
+   <span class="test">&#x0162;&#x0119;&#x015F;&#x0163;</span>
+   &mdash;
+   <span class="control">&#x0162;&#x0119;&#x015F;&#x0163;</span>
+  </p>
+  <p class="c">
+   <span class="test">&#x0162;&#x0119;&#x015F;&#x0163;</span>
+   &mdash;
+   <span class="control">&#x0162;&#x0119;&#x015F;&#x0163;</span>
+  </p>
+ </body>
+</html>

@@ -1,0 +1,12 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>CSS: @import and weight (XML)</title>
+  <style type="text/css">
+    @import "001.css";  /* test { color: green ! important; } */
+    test { color: red; }
+  </style>
+ </head>
+ <body>
+  <test xmlns="http://www.example.org/"> This should be green. </test>
+ </body>
+</html>

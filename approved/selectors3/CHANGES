@@ -1,3 +1,15 @@
+Since the 3 June 2009 release, the following tests have changed:
+
+Removed tests:
+  css3-modsel-d5 - :indeterminate
+  css3-modsel-d5a - :indeterminate and :checked
+  css3-modsel-d5b - NEGATED :indeterminate and :checked
+  css3-modsel-d5c - :indeterminate and :checked
+  css3-modsel-d5d - :indeterminate with :checked
+  css3-modsel-d5e - NEGATED :indeterminate with :checked
+    :indeterminate is not part of Selectors Level 3
+
+------------------------------------------------------------------------
 Since the 7 March 2006 release, the following tests have changed:
 
 New tests:

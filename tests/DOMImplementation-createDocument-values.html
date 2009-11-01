@@ -139,19 +139,21 @@ for (i in tests)
         var pass = true;
         
         var newdoc = document.implementation.createDocument(namespaceURI, qualifiedName, doctype);
-
-        var gotDescendants = newdoc.evaluate("count(/descendant::node())", newdoc, null, XPathResult.ANY_TYPE, null).numberValue;
-        row.insertCell(-1).innerHTML = gotDescendants;
-
-        var gotDescendants = function(node)
-        {
-            var count = node.childNodes.length;
-            for (var j = 0; j < node.childNodes.length; j++)
+        
+        if (newdoc.evalute)
+            var gotDescendants = newdoc.evaluate("count(/descendant::node())", newdoc, null, XPathResult.ANY_TYPE, null).numberValue;
+        else
+            var gotDescendants = function(node)
             {
-                count += arguments.callee(node.childNodes[j]);
-            }
-            return count;
-        }(newdoc);
+                var count = node.childNodes.length;
+                for (var j = 0; j < node.childNodes.length; j++)
+                {
+                    count += arguments.callee(node.childNodes[j]);
+                }
+                return count;
+            }(newdoc);
+        
+        row.insertCell(-1).innerHTML = gotDescendants;
         
         pass &= gotDescendants === expectedDescendants;
 

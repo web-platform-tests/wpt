@@ -18,8 +18,8 @@ t1204-multiple-0(\d)-c.xht	counters-multi-00$2.xht
 t1204-order-0(\d)-[cd].xht	counters-order-00$2.xht
 t1204-reset-0(\d)-c-o.xht	counter-reset-00$2.xht
 t1204-root-e.xht	counters-root-000.xht
-t040105-atkeyw-0(\d)-b.xht	atkeywords-00$2.xht
-t040105-atrule-0(\d)-b.xht	atrules-00$2.xht
+t040105-atkeyw-0(\d)-b.xht	at-keywords-00$2.xht
+t040105-atrule-0(\d)-b.xht	at-rules-00$2.xht
 t040105-import-0(\d)-b.xht	import-00$2.xht
 t0402-syntax-0(\d)-f.xht	declaration-00$2.xht
 t040306-syntax-01-f.xht	color-000.xht

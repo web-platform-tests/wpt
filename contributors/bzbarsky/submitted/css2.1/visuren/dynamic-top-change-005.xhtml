@@ -1,0 +1,34 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>CSS Test: Testing inherited 'top' changes</title>
+  <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu"/>
+  <link rel="help" href="http://www.w3.org/TR/CSS21/cascade.html#value-def-inherit"/>
+  <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#position-props"/>
+  <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#propdef-position"/>
+  <meta name="flags" content="dom" />
+  <meta name="assert" content="The position of a positioned element which inherits its 'top' value from its grandparent changes when the grandparent's 'top' value is changed."/>
+  <style type="text/css"><![CDATA[
+    .testDiv { position: absolute; width: 100px; height: 100px; }
+    #green { top: 40px; background: green; }
+    #red { top: inherit; background: red; display: block; }
+    #parent { top: inherit; position: relative; }
+    #grandparent { position: relative; font-size: 0; line-height: 0; }
+  ]]></style>
+  <script type="application/x-javascript"><![CDATA[
+    window.onload = function() {
+      document.body.offsetWidth;
+      document.getElementById("grandparent").style.top = "20px";
+    }
+  ]]></script>
+ </head>
+ <body>
+   <p>There should be no red.</p>
+   <div id="grandparent">
+     <span id="parent">
+       <span id="red" class="testDiv"></span>
+     </span>
+     <div id="green" class="testDiv"></div>
+   </div>
+ </body>
+</html>

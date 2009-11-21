@@ -6,7 +6,7 @@
   <link rel="help" href="http://www.w3.org/TR/CSS21/selector.html#adjacent-selectors"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/selector.html#attribute-selectors"/>
   <meta name="flags" content="dom" />
-  <meta name="assert" content="The position of a positioned element which inherits its 'top' value from its grandparent changes when the grandparent's 'top' value is changed."/>
+  <meta name="assert" content="Changing an attribute should cause selectors using '+' to match as needed."/>
   <style type="text/css"><![CDATA[
       div { color: red; }
       [class=foo] + div { color: green; }

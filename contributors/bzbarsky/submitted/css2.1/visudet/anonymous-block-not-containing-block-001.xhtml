@@ -1,0 +1,28 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>CSS Test: Testing percent heights inside anonymous blocks</title>
+  <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu"/>
+  <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#containing-block-details"/>
+  <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#block-root-margin"/>
+  <meta name="assert" content="Anonymous blocks should not be containing blocks."/>
+  <style type="text/css"><![CDATA[
+    #parent { height: 200px; position: relative; }
+    #child { float: left; height: 50%; width: 100px; background: green; position: relative }
+    #background { position: absolute; top: 0; left: 0; width: 100px; height: 100px; background: red }
+  ]]></style>
+  <script type="application/x-javascript"><![CDATA[
+    window.onload = function() {
+      document.body.offsetWidth;
+      document.getElementById("test").className = "foo";
+    }
+  ]]></script>
+ </head>
+ <body>
+   There should be no red below.  A 100px by 100px green square should be visible.
+   <div id="parent">
+     <div id="background"></div>
+     <div id="child"></div>&nbsp;<div></div>
+   </div>
+ </body>
+</html>

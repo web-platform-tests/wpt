@@ -1,0 +1,33 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+ <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>CSS Test: Marker box position - descendant block box with 'overflow'</title>
+  <link rel="author" title="James Hopkins" href="mailto:james(at)idreamincode.co.uk">
+  <link rel="help" href="http://www.w3.org/TR/CSS2/generate.html#propdef-list-style-position">
+  <link rel="help" href="http://www.w3.org/TR/CSS2/visuren.html#principal-box">
+  <meta name="flags" content="">
+  <meta name="assert" content="The position of a descendant block box inside a principal box must not be affected by 'overflow' being applied to the descedant, when marker box is positioned outside the principal box">
+  <style type="text/css">
+  #test{
+  background:red;
+  display:list-item;
+  font-size:85px;
+  margin:50px;
+  }
+
+  #test span.descendant{
+  background:lime;
+  display: block;
+  overflow:auto;
+  }
+  </style>
+ </head>
+
+ <body>
+  <p>Below, there <strong>must</strong> be a circular symbol visible which <strong>should</strong> appear alongside the green bar to the left, and there <strong>must not</strong> not be any red in this page.</p>
+  <div id="test">
+   <div><span class="descendant">&nbsp;</span></div>
+  </div>
+ </body>
+</html>

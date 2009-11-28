@@ -1,0 +1,33 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+ <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>CSS Test: Marker box position - adjacent sibling block box</title>
+  <link rel="author" title="James Hopkins" href="mailto:james(at)idreamincode.co.uk">
+  <link rel="help" href="http://www.w3.org/TR/CSS21/generate.html#propdef-list-style-position">
+  <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#principal-box">
+  <meta name="flags" content="">
+  <meta name="assert" content="Since a marker box is the first inline element in the principal box when 'list-style-position:inside', the following block box (in normal flow) must create a new stacking context below the marker box">
+  <style type="text/css">
+  #test{
+  background:lime;
+  display:list-item;
+  font-size:85px;
+  color:lime;
+  list-style-position:inside;
+  }
+
+  #test span{
+  background:blue;
+  display:block;
+  }
+  </style>
+ </head>
+
+ <body>
+  <p>To pass, there <strong>must</strong> be a green bar stacked on top of a blue bar.</p>
+  <div id="test">
+   <span>&nbsp;</span>
+  </div>
+ </body>
+</html>

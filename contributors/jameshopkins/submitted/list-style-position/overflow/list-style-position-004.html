@@ -1,0 +1,26 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+ <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>CSS Test:  Marker box position - list-item overflow - 'list-style-position:outside'</title>
+  <link rel="author" title="James Hopkins" href="mailto:james(at)idreamincode.co.uk">
+  <link rel="help" href="http://www.w3.org/TR/CSS21/generate.html#propdef-list-style-position">
+  <meta name="flags" content="">
+  <meta name="assert" content="'overflow' applied to the list-item must not clip the marker box">
+  <style type="text/css">
+  #test{
+  display:list-item;
+  font-size:200px;
+  margin-left:150px;
+  overflow:auto;
+  }
+  </style>
+ </head>
+
+ <body>
+  <p>To pass, there <strong>must</strong> be a circular symbol below</p>
+  <div id="test">
+   &nbsp;
+  </div>
+ </body>
+</html>

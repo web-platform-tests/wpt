@@ -7,7 +7,7 @@
   <link rel="help" href="http://www.w3.org/TR/CSS21/generate.html#propdef-list-style-position">
   <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#principal-box">
   <meta name="flags" content="">
-  <meta name="assert" content="The position of a descendant block box inside a principal box must not be affected by 'overflow' being applied to the descedant, when marker box is positioned outside the principal box">
+  <meta name="assert" content="The position of a descendant block box inside a principal box must not be affected by 'overflow' being applied to the descendant, when marker box is positioned outside the principal box">
   <style type="text/css">
   #test{
   background:red;
@@ -15,19 +15,17 @@
   font-size:85px;
   margin:50px;
   }
-
-  #test span.descendant{
+  #test div.descendant{
   background:lime;
   display: block;
   overflow:auto;
   }
   </style>
  </head>
-
  <body>
-  <p>Below, there <strong>must</strong> be a circular symbol visible which <strong>should</strong> appear alongside the green bar to the left, and there <strong>must not</strong> not be any red in this page.</p>
+  <p>To pass, there <strong>must</strong> be a bullet (filled-in circle) visible which <strong>should</strong> appear alongside the green bar to the left, and there <strong>must not</strong> not be any red in this page.</p>
   <div id="test">
-   <div><span class="descendant">&nbsp;</span></div>
+   <div><div class="descendant">&nbsp;</div></div>
   </div>
  </body>
 </html>

@@ -10,11 +10,11 @@
   <meta name="assert" content="When a :before pseudo element is set as a list-item, it establishes a principal box into which a marker box is placed (when 'list-style-position:inside). As a result, the anonymous block box of the containing block must be placed below the :before pseudo element. The position of the marker box of the containing block must not be affected, as it must still appear to the outside left edge of it's principal box (since 'list-style-position:outside') and should be positioned towards the top of this principal box.">
   <style type="text/css">
   #test{
+  border-left:3px solid black;
   color:blue;
   display:list-item;
   font-size:85px;
   margin:100px;
-  border-left:3px solid black;
   }
   #test:before{
   color:yellow;
@@ -25,7 +25,7 @@
   </style>
  </head>
  <body>
-  <p>To pass, there <strong>must</strong> be one bullet (filled-in circle) either side of a line, <strong>and</strong> a word to the right side of the same line below that bullet.</p>
+  <p>To pass, there <strong>must</strong> be a yellow bullet (filled-in circle) to the right of the line, <strong>and</strong> a blue bullet to the left of the line, <strong>and</strong> a word to the right side of the same line below that bullet.</p>
   <div id="test">
    test
   </div>

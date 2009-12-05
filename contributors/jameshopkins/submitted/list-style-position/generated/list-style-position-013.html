@@ -1,0 +1,32 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+ <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>CSS Test: Marker box position (outside principal box) - :before pseudo-element list-item ('list-style-position:outside')</title>
+  <link rel="help" href="http://www.w3.org/TR/CSS21/generate.html#propdef-list-style-position">
+  <link rel="help" href="http://www.w3.org/TR/CSS2/generate.html#before-after-content">
+  <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#principal-box">
+  <meta name="flags" content="">
+  <meta name="assert" content="When a :before pseudo element is set as a list-item, it establishes a principal block box, and a marker box which is positioned outside of the principal box (when 'list-style-position:outside). As a result, the anonymous block box of the containing block must be placed below the :before pseudo element. The position of the marker box of the containing block must not be affected, as it must still appear to the outside left edge of it's principal box (since 'list-style-position:outside') and should be positioned towards the top of this principal box. Both marker boxes should be positioned on top of each another, however, as the stacking level of marker boxes in this context isn't defined in CSS21 (when positioned outside the principal box), either bullet could appear in front of the other.">
+  <style type="text/css">
+  #test{
+  color:blue;
+  display:list-item;
+  font-size:85px;
+  margin:100px;
+  list-style-position:outside;
+  }
+  #test:before{
+  content:'\00A0';
+  display:list-item;
+  color:yellow;
+  }
+  </style>
+ </head>
+ <body>
+  <p>To pass, a word <strong>must</strong> appear below (and to the right) of a yellow bullet (filled in circle).</p>
+  <div id="test">
+   test
+  </div>
+ </body>
+</html>

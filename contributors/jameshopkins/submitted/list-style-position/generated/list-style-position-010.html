@@ -1,0 +1,33 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+ <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>CSS Test: Marker box position (outside principal box) - :before pseudo-element list-item ('list-style-position:inside')</title>
+  <link rel="help" href="http://www.w3.org/TR/CSS21/generate.html#propdef-list-style-position">
+  <link rel="help" href="http://www.w3.org/TR/CSS2/generate.html#before-after-content">
+  <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#principal-box">
+  <meta name="flags" content="">
+  <meta name="assert" content="When a :before pseudo element is set as a list-item, it establishes a principal block box into which a marker box is placed (when 'list-style-position:inside). As a result, the anonymous block box of the containing block must be placed below the :before pseudo element. The position of the marker box of the containing block must not be affected, as it must still appear to the outside left edge of it's principal box (since 'list-style-position:outside') and should be positioned towards the top of this principal box.">
+  <style type="text/css">
+  #test{
+  color:blue;
+  display:list-item;
+  font-size:85px;
+  margin:100px;
+  border-left:3px solid black;
+  }
+  #test:before{
+  color:yellow;
+  content:'\00A0';
+  display:list-item;
+  list-style-position:inside;
+  }
+  </style>
+ </head>
+ <body>
+  <p>To pass, there <strong>must</strong> be one bullet (filled-in circle) either side of a line, <strong>and</strong> a word to the right side of the same line below that bullet.</p>
+  <div id="test">
+   test
+  </div>
+ </body>
+</html>

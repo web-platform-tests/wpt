@@ -1,0 +1,33 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+ <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>CSS Test: Marker box position (inside principal box) - :before pseudo-element list-item ('list-style-position:inside')</title>
+  <link rel="author" title="James Hopkins" href="mailto:james(at)idreamincode.co.uk">
+  <link rel="help" href="http://www.w3.org/TR/CSS21/generate.html#propdef-list-style-position">
+  <link rel="help" href="http://www.w3.org/TR/CSS2/generate.html#before-after-content">
+  <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#principal-box">
+  <meta name="flags" content="">
+  <meta name="assert" content="When a :before pseudo element is set as a list-item, it establishes a principal block box into which a marker box is placed (when 'list-style-position:inside). As a result, the anonymous block box of the containing block must be placed below the :before pseudo element. However, since the marker box of the containing block must be the first inline element within that principal box, that marker box must appear at the top of the rendering.">
+  <style type="text/css">
+  #test{
+  color:blue;
+  display:list-item;
+  font-size:85px;
+  margin:100px;
+  list-style-position:inside;
+  }
+  #test:before{
+  content:'\00A0';
+  display:list-item;
+  color:yellow;
+  }
+  </style>
+ </head>
+ <body>
+  <p>To pass, there <strong>must</strong> be a blue bullet (filled-in circle) above a yellow bullet, <strong>and</strong> a word below the yellow bullet.</p>
+  <div id="test">
+   test
+  </div>
+ </body>
+</html>

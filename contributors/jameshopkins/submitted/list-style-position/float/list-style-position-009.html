@@ -1,0 +1,36 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+ <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>CSS Test: Marker box position (outside principal box) - child block box with 'float:right'</title>
+  <link rel="author" title="James Hopkins" href="mailto:james(at)idreamincode.co.uk">
+  <link rel="help" href="http://www.w3.org/TR/CSS21/generate.html#propdef-list-style-position">
+  <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#principal-box">
+  <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#floats">
+  <meta name="flags" content="">
+  <meta name="assert" content="A floated element (as a child of the principal box) should not affect the horizontal position of the marker box (positioned outside principal box) in relation to the principal box's content">
+  <style type="text/css">
+  #test{
+  color:navy;
+  display:list-item;
+  font-size:85px;
+  list-style-position:outside;
+  margin:100px;
+  width:250px;
+  }
+  #test div{
+  background:blue;
+  float:right;
+  height:100px;
+  width:100px;
+  }
+  </style>
+ </head>
+
+ <body>
+  <p>To pass, a bullet (filled-in circle) <strong>must</strong> appear to the left of a blue square, and the bullet symbol probably <strong>should not</strong> appear above the top edge or below the bottom edge of the blue square.</p>
+  <div id="test">
+   <div></div>
+  </div>
+ </body>
+</html>

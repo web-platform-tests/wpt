@@ -1,0 +1,38 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+ <head>
+ <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+  <title>CSS Test: float</title>
+  <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
+  <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#floats">
+  <meta name="flags" content="ahem">
+  <meta name="assert" content="A non-positioned block box created after a float box should flow vertically as if the float did not exist. The line boxes created next to the float should be shortened to make room for that preceding floated box.">
+
+  <style type="text/css">
+  div#left-floated-square
+  {
+  color: blue;
+  float: left;
+  font: 100px/1 Ahem;
+  }
+
+  div#non-positioned-block-square-after
+  {
+  background-color: black;
+  height: 200px;
+  width: 200px;
+  }
+  </style>
+
+ </head>
+
+ <body>
+
+  <p>Test passes if a blue square is in the upper left corner of a bigger black square.</p>
+
+  <div id="left-floated-square">X</div>
+
+  <div id="non-positioned-block-square-after"></div>
+
+ </body>
+</html>

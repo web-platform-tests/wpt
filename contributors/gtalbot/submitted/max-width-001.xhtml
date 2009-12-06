@@ -21,16 +21,15 @@
   height: 200px;
   max-width: 200px;
   overflow: auto;
+  position: absolute;
   }
 
   div#control-green-overlapping
   {
   background-color: green;
   height: 200px;
-  left: auto;
-  position: relative;
-  top: -200px;
-  width: 200px;  
+  position: absolute;
+  width: 200px;
   }
   ]]></style>
 
@@ -38,7 +37,7 @@
 
  <body>
 
-  <p>Test is passed if there is a green square below and if there is no red. The green square may have scrollbar(s).</p>
+  <p>Test is passed if there is a green square below and if there is no red.</p>
 
   <div id="test-red-overlapped">XX XX</div>
 

@@ -4,18 +4,21 @@
 
  <head>
 
-  <title>CSS Test: text-align</title>
+  <title>CSS Test: text-align - inheritance and table-cell</title>
 
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
   <link rel="author" title="James Hopkins" href="james(a)idreamincode.co.uk" />
-  <link rel="author" title="mvdleij" href="to fill" />
   <link rel="help" href="http://www.w3.org/TR/CSS21/text.html#propdef-text-align" />
   <meta name="flags" content="" />
   <meta name="assert" content="'text-align' is inherited and applies to table cells" />
 
   <style type="text/css"><![CDATA[
   div {text-align: right;}
-  table {border: blue solid thin; width: 100%;}
+  table
+  {
+  border: blue solid thin;
+  width: 100%;
+  }
   ]]></style>
 
  </head>

@@ -1,0 +1,33 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+ <head>
+ <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+  <title>CSS Test: max-height - float and overflow</title>
+  <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
+  <link rel="author" title="Hilbrand Edskes" href="http://edskes.com/">
+  <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#propdef-max-height">
+  <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#floats">
+  <meta name="flags" content="ahem">
+  <meta name="assert" content="">
+
+  <style type="text/css">
+  div
+  {
+  color: green;
+  float: left;
+  font: 200px/1 Ahem;
+  max-height: 200px;
+  overflow: scroll;
+  }
+  </style>
+
+ </head>
+
+ <body>
+
+  <p>Test is passed if there is a green square with scrollbars.</p>
+
+  <div>X</div>
+
+ </body>
+</html>

@@ -3,14 +3,15 @@
  <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <title>CSS Test: Marker box position (inside principal box) - :before pseudo-element list-item ('list-style-position:inside')</title>
-  <link rel="author" title="James Hopkins" href="mailto:james(at)idreamincode.co.uk">
+  <link rel="author" title="James Hopkins" href="http://idreamincode.co.uk/css21testsuite">
   <link rel="help" href="http://www.w3.org/TR/CSS21/generate.html#propdef-list-style-position">
   <link rel="help" href="http://www.w3.org/TR/CSS21/generate.html#before-after-content">
   <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#principal-box">
   <meta name="flags" content="">
-  <meta name="assert" content="When a :before pseudo element is set as a list-item, it establishes a principal box into which a marker box is placed (when 'list-style-position:inside). As a result, the anonymous block box of the containing block must be placed below the :before pseudo element. However, since the marker box of the containing block must be the first inline element within that principal box, that marker box must appear at the top of the rendering.">
+  <meta name="assert" content="When the :before element is set as a list-item, it establishes a principal box into which a marker box is placed (when 'list-style-position:inside). The document tree content of the associated element must be placed after the principal box established by the :before pseudo element.  Since the marker box of the associated element must be the first inline element within it's principal box (since 'list-style-position:inside'), that marker box must appear before the marker box and principal box of the :before pseudo-element.">
   <style type="text/css">
   #test{
+  background:silver;
   color:blue;
   display:list-item;
   font-size:85px;
@@ -19,15 +20,15 @@
   }
   #test:before{
   color:yellow;
-  content:'\00A0';
+  content:'T';
   display:list-item;
   }
   </style>
  </head>
  <body>
-  <p>To pass, there <strong>must</strong> be a blue bullet (filled-in circle) above a yellow bullet, <strong>and</strong> a word below the yellow bullet.</p>
+  <p>To pass, there <strong>must</strong> be a blue bullet (filled-in circle) to the inside left edge of a grey box, below which must be a yellow bullet and a yellow letter to the right of that yellow bullet. Below the yellow bullet, there <strong>must</strong> be a blue letter.</p>
   <div id="test">
-   test
+   T
   </div>
  </body>
 </html>

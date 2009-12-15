@@ -164,7 +164,7 @@ process:
 	#
 	# now catalog them
 	#
-	find tests/$(SUITE) -name '*.$(EXT)' | xargs perl tools/common/catalog.pl $(SUITE) $(DATASOURCE) $(ASSERTIONS)
+	find tests/$(SUITE) -name '*.$(EXT)' | perl tools/common/catalog.pl $(SUITE) $(DATASOURCE) $(ASSERTIONS)
 
 generate:
 	#

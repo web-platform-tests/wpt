@@ -41,10 +41,15 @@ if ($specVersion eq 'css2_1') {
     $specManagerString = 'css3_common_specManager';
     $commonSpecVersion = 'css3_common';
 }
+my @files;
+while (<STDIN>) {
+  chomp;
+  push @files, $_ if ($_);
+}
 my $specManager = new $specManagerString({specVersion=>$specVersion,
 					  useAssertions=>$useAssertions});
 $specManager->writeIndexFiles({dataSource=>$dataSource,
-			       files=>\@ARGV});
+			       files=>\@files});
 $specManager->saveCreditsData("$specVersion/data/contributors.data");
 $specManager->saveTestData("$specVersion/data/testinfo.data");
 

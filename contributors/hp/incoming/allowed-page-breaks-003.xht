@@ -1,0 +1,39 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>CSS Test: allowed page break - dropping page-break-* restrictions</title>
+<link rel="author" title="Tom Clancy" href="mailto:tclancy@revenution.com"/>
+<link rel="help" href="http://www.w3.org/TR/CSS21/page.html#page-break-props"/>
+<meta name="assert" content="If the standard restrictions do not provide enough break points to keep content from overflowing the page boxes, then the restrictions imposed by 'avoid' on the 'page-break-*' properties are dropped."/>
+<meta name="flags" content="paged" />
+<style type="text/css">
+	@page {
+		size: 5in 5in;
+		margin: 0.5in;
+	}
+	div#wrapper {
+		page-break-inside: avoid;
+		widows: 3;
+		orphans: 3;
+	}
+	
+	p {
+		margin: 0;
+		height: 1in;
+		page-break-before: avoid;
+		page-break-after: avoid;
+	}
+</style>
+</head>
+<body>
+	<div id="wrapper">
+		<p>This test requires two pages.</p>
+		<p>a</p>
+		<p>b</p>
+		<p>c</p>
+		<p>d</p>
+		<p>e</p>
+		<p>f</p>
+	</div>
+</body>
+</html>

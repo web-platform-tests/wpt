@@ -1,0 +1,44 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>CSS Test: allowed page break - line box breaking</title>
+<link rel="author" title="Tom Clancy" href="mailto:tclancy@revenution.com"/>
+<link rel="help" href="http://www.w3.org/TR/CSS21/page.html#page-break-props"/>
+<meta name="assert" content="Breaking between line boxes is allowed only if the number of line boxes between the break and the start of the enclosing block box is the value of 'orphans' or more, and the number of line boxes between the break and the end of the box is the value of 'widows' or more and the value of the 'page-break-inside' property is 'auto'."/>
+<meta name="flags" content="paged" />
+<style type="text/css">
+	html, body {height: 100%;}
+	div {
+		widows: 0;
+		orphans: 0;
+	}
+	
+	* {page-break-inside: auto;}
+	div.spacer {
+		height: 100%;
+		margin-bottom: -4em;
+	}
+	div.dummy {
+		width: 0;
+		page-break-after: always;
+	}
+	
+	div#second {orphans: 6;}
+	div#third {widows: 6;}
+	div#fourth {page-break-inside: avoid;}
+</style>
+</head>
+<body>
+	<div class="spacer">This test requires 8 pages. The text below this line should break after 'c'.</div>
+	<div class="dummy">a b c d e f</div>
+	
+	<div class="spacer">The letters after this line should appear on the next page.</div>
+	<div class="dummy" id="second">a b c d e f</div>
+	
+	<div class="spacer">The letters after this line should appear on the next page.</div>
+	<div class="dummy" id="third">a b c d e f</div>
+	
+	<div class="spacer">The letters after this line should appear on the next page.</div>
+	<div class="dummy" id="fourth">a b c d e f</div>
+</body>
+</html>

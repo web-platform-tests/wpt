@@ -1,0 +1,37 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>CSS Test: @page page-break-inside (Invalid Value Syntax)</title>
+<link rel="author" title="Tom Clancy" href="mailto:tclancy@revenution.com"/>
+<link rel="help" href="http://www.w3.org/TR/CSS21/page.html#page-break-props"/>
+<meta name="flags" content="paged"/>
+<meta name="assert" content="The syntax of the 'page-break-inside' property is auto | avoid."/>
+<style type="text/css">
+	html,body {
+		font-size:12pt;
+		line-height:1;
+		height:100%;
+		margin:0;
+	}
+	.marginDiv1, .marginDiv2 {
+		height:50%;
+	}
+	.marginDiv2 {
+		margin-top:-5em;
+	}
+	div.break {
+		page-break-inside:avoid avoid;
+		width:4em;
+	}
+
+</style>
+</head>
+<body>
+	<div class="marginDiv1"/>
+	<div class="marginDiv2"/>
+	<div>The text below should have a page break in it.</div>
+	<div class="break">
+		Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi.
+	</div>
+</body>
+</html>

@@ -1,0 +1,37 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>CSS Test: @page page-break-inside not inherited</title>
+<link rel="author" title="Tom Clancy" href="mailto:tclancy@revenution.com"/>
+<link rel="help" href="http://www.w3.org/TR/CSS21/page.html#page-break-props"/>
+<meta name="flags" content="paged" />
+<meta name="assert" content="The 'page-break-inside' property is not inherited"/>
+<style type="text/css">
+	@page {margin: 7%;}
+	* {
+		margin: 0;
+		padding: 0;
+		orphans: 1;
+		widows: 1;
+	}
+	html, body {
+		height:100%;
+	}
+	div#spacer {
+		height: 100%;
+		margin-bottom: -2em;
+	}
+	div#noBreak {
+		page-break-inside: avoid;
+		width: 0;
+	}
+	
+</style>
+</head>
+<body>
+	<div id="spacer">The text below should be split between this page and the next.</div>
+	<div id="noBreak">
+		<p>a b c</p>
+	</div>
+</body>
+</html>

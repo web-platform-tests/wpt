@@ -1,0 +1,48 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>CSS Test: breaks inside elements: orphans - block-level only</title>
+<link rel="author" title="Tom Clancy" href="mailto:tclancy@revenution.com"/>
+<link rel="help" href="http://www.w3.org/TR/CSS21/page.html#break-inside"/>
+<meta name="flags" content="paged" />
+<meta name="assert" content="The 'widows' property is only applied to block-level elements."/>
+<style type="text/css">
+	html, body {
+		height:100%;
+		line-height:1;
+		font-size:16px;
+	}
+	* {
+		margin:0;
+		padding:0;
+	}
+	div {
+		height:50%;
+		color:black;
+	}
+	div#bottom {
+		margin-top:-4em;
+	}
+	span {
+		widows:7;
+	}
+</style>
+</head>
+<body>
+	<div>
+		The paragraph below must break across two pages, with at least 3 lines on the second page. This test requires 2 pages.
+	</div>
+	<div id="bottom"></div>
+	<div>
+		<span>
+		This is dummy text this is dummy text this is dummy text this is dummy text<br />
+		This is dummy text this is dummy text this is dummy text this is dummy text<br />
+		This is dummy text this is dummy text this is dummy text this is dummy text<br />
+		This is dummy text this is dummy text this is dummy text this is dummy text<br />
+		This is dummy text this is dummy text this is dummy text this is dummy text<br />
+		This is dummy text this is dummy text this is dummy text this is dummy text<br />
+		This is dummy text this is dummy text this is dummy text this is dummy text<br />
+		</span>
+	</div>
+</body>
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>CSS Test: page-break-after (invalid syntax)</title>
+<link rel="author" title="Tom Clancy" href="mailto:tclancy@revenution.com"/>
+<link rel="help" href="http://www.w3.org/TR/CSS21/page.html#page-break-props"/>
+<link rel="help" href="http://www.w3.org/TR/css3-page/#pg-br-before-after"/>
+<meta name="flags" content="paged invalid" />
+<meta name="assert" content="The syntax of the 'page-break-after' property is auto | always | avoid | left | right."/>
+<style type="text/css">
+	p.noBreakAuto {
+		page-break-after: always;
+		page-break-after: auto auto;
+	}
+	p.noBreakLeft {
+		page-break-after: auto;
+		page-break-after: left always;
+	}
+	p.noBreakAlways {
+		page-break-after: always always;
+	}
+	p.breakRight {
+		page-break-after: right;
+		page-break-after: true always;
+	}
+	p.breakLeft {
+		page-break-after: left;
+		page-break-after: avoid always;
+	}
+	p.noBreak {
+		page-break-after: avoid;
+		page-break-after: always always;
+	}
+	.dummy {
+		color: gray;
+	}
+
+</style>
+</head>
+<body>
+	<p class="noBreakAuto">There <strong>must</strong> be a page break after this line of text.</p>
+	<p class="noBreakLeft">There must <strong>not</strong> be a page break after this line of text.</p>
+	<p class="noBreakAlways">There must <strong>not</strong> be a page break after this line of text.</p>
+	
+	<p class="breakRight">There <strong>must</strong> be a page break after this line of text.</p>
+	<p class="breakLeft">There <strong>must</strong> be a page break after this line of text.</p>
+	<p class="noBreak">There must <strong>not</strong> be a page break after this line of text.</p>
+	<p class="dummy">
+		Lorem ipsum dolor sit amet, consectetuer adipiscing elit.
+	</p>
+</body>
+</html>

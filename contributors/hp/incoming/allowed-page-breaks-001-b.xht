@@ -1,0 +1,94 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>CSS Test: allowed page break margin handling (table rows)</title>
+<link rel="author" title="Tom Clancy" href="mailto:tclancy@revenution.com"/>
+<link rel="help" href="http://www.w3.org/TR/CSS21/page.html#page-break-props"/>
+<link rel="help" href="http://www.w3.org/TR/css3-page/#allowed-pg-brk"/>
+<meta name="assert" content="Breaking in the vertical margin between table rows is allowed only if the 'page-break-after' and 'page-break-before' properties of the rows that meet at this margin allow it, which is when at least one of them has the value 'always', 'left', or 'right', or when all of them are 'auto' and the nearest common ancestor of all the elements does not have a 'page-break-inside' value of 'avoid'."/>
+<meta name="flags" content="may paged" />
+<style type="text/css">
+	div#strictParent {page-break-inside: avoid;}
+	
+	table {
+		border-collapse: collapse;
+		page-break-after: always;
+		widows: 0;
+		orphans: 0;
+	}
+	
+	tr {
+		page-break-before: avoid;
+		page-break-after: avoid;
+	}
+	
+	td {
+		margin: 0;
+		padding: 0;
+	}
+	
+	#lefty {page-break-before: left;}
+	#alwaysBreak {page-break-before: always;}
+	
+	div#permissiveParent {page-break-inside: auto;}
+	
+	div#permissiveParent table {
+		widows: 2;
+		orphans: 2;
+	}
+	
+	div#permissiveParent tr {
+		page-break-before: auto;
+		page-break-after: auto;
+	}
+</style>
+</head>
+<body>
+	<div id="strictParent">
+		<table>
+			<tr>
+				<td>This test requires 6 pages. There should be no other content on this page.</td>
+			</tr>
+			<tr id="lefty">
+				<td>a</td>
+			</tr>
+			<tr>
+				<td>b</td>
+			</tr>
+		</table>
+		
+		<table>
+			<tr>
+				<td>There should be no other content on this page.</td>
+			</tr>
+			<tr id="alwaysBreak">
+				<td>a</td>
+			</tr>
+			<tr>
+				<td>b</td>
+			</tr>
+		</table>
+	</div>
+	
+	<div id="permissiveParent">
+		<table>
+			<tr>
+				<td>There should be an 'a' and a 'b' on this page.</td>
+			</tr>
+			<tr>
+				<td>a</td>
+			</tr>
+			<tr>
+				<td>b</td>
+			</tr>
+			<tr>
+				<td>c</td>
+			</tr>
+			<tr>
+				<td>d</td>
+			</tr>
+		</table>
+	</div>
+
+</body>
+</html>

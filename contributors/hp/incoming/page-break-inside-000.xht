@@ -1,0 +1,31 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>CSS Test: @page page-break-inside:auto</title>
+<link rel="author" title="Tom Clancy" href="mailto:tclancy@revenution.com"/>
+<link rel="help" href="http://www.w3.org/TR/CSS21/page.html#page-break-props"/>
+<meta name="flags" content="paged" />
+<meta name="assert" content="The 'auto' value of the 'page-break-inside' property neither forces nor forbids a page break inside the box."/>
+<style type="text/css">
+	@page {
+		size: 6in 4in;
+	}
+	html, body {
+		height:100%;
+	}
+	div.top {
+		page-break-inside: auto;
+		margin-bottom:90%;
+	}
+	div.noBreak {
+		page-break-inside: auto;
+	}
+</style>
+</head>
+<body>
+	<div class="top">The text below is allowed to have a page break in it.<br /> Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. </div>
+	<div class="noBreak">
+		Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+	</div>
+</body>
+</html>

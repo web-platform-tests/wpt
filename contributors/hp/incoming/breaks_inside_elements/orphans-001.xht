@@ -1,0 +1,43 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>CSS Test: breaks inside elements: orphans initial value</title>
+<link rel="author" title="Tom Clancy" href="mailto:tclancy@revenution.com"/>
+<link rel="help" href="http://www.w3.org/TR/CSS21/page.html#break-inside"/>
+<link rel="help" href="http://www.w3.org/TR/css3-page/#breaks-inside"/>
+<meta name="flags" content="paged" />
+<meta name="assert" content="The initial value of the 'orphans' property is 2."/>
+<style type="text/css">
+	html, body {
+		height:100%;
+		line-height:1;
+		orphans: inherit;
+	}
+	* {
+		margin:0;
+		padding:0;
+	}
+	div {
+		height:50%;
+	}
+	div#bottom {
+		margin-top:-1em;
+	}
+</style>
+</head>
+<body>
+	<div>
+		The following paragraph must be completely on the second page. This test requires 2 pages.
+	</div>
+	<div id="bottom"></div>
+	<p>
+		This is dummy text this is dummy text this is dummy text this is dummy text<br />
+		This is dummy text this is dummy text this is dummy text this is dummy text<br />
+		This is dummy text this is dummy text this is dummy text this is dummy text<br />
+		This is dummy text this is dummy text this is dummy text this is dummy text<br />
+		This is dummy text this is dummy text this is dummy text this is dummy text<br />
+		This is dummy text this is dummy text this is dummy text this is dummy text<br />
+		This is dummy text this is dummy text this is dummy text this is dummy text<br />
+	</p>
+</body>
+</html>

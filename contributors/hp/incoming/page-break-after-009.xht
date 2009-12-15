@@ -1,0 +1,45 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>CSS Test: page-break-after: avoid</title>
+<link rel="author" title="Tom Clancy" href="mailto:tclancy@revenution.com"/>
+<link rel="help" href="http://www.w3.org/TR/CSS21/page.html#page-break-props"/>
+<link rel="help" href="http://www.w3.org/TR/css3-page/#pg-br-before-after"/>
+<meta name="assert" content="The 'avoid' value of the 'page-break-after' property inhibits a page break after the element when possible."/>
+<style type="text/css">
+	@page {margin: 7%;}
+	html, body {
+		height: 100%;
+		line-height: 1;
+	}
+	* {
+		margin: 0;
+		padding: 0;
+	}
+	div {
+		height: 100%;
+		margin-bottom: -1em;
+		page-break-after: avoid;
+	}
+	p {
+		width: 1em;
+		page-break-after: always;
+	}
+	p#one {
+		widows: 3;
+		orphans: 1;
+	}
+	div#draggedDown {margin-bottom: -2em;}
+	p#two {
+		widows: 3;
+		orphans: 3;
+	}
+</style>
+</head>
+<body>
+	<div>The letters a, b, and c follow. The 'a' must appear on this page.</div>
+	<p id="one">a b c</p>
+	<div id="draggedDown">The letters a, b, and c follow and should appear on this page.</div>
+	<p id="two">a b c</p>
+</body>
+</html>

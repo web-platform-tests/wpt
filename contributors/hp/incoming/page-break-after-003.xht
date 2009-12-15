@@ -1,0 +1,30 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>CSS Test:page-break-after (no inherit)</title>
+<link rel="author" title="Tom Clancy" href="mailto:tclancy@revenution.com"/>
+<link rel="help" href="http://www.w3.org/TR/CSS21/page.html#page-break-props"/>
+<link rel="help" href="http://www.w3.org/TR/css3-page/#pg-br-before-after"/>
+<meta name="flags" content="paged" />
+<meta name="assert" content="The 'page-break-after' property is not inherited."/>
+<style type="text/css">
+
+	div {
+		page-break-after:always;
+	}
+	.dummy {
+		color:gray;
+	}
+
+</style>
+</head>
+<body>
+	<div>
+		<p>There must <strong>not</strong> be a page break after this line of text.</p>
+		<p class="dummy">Lorem ipsum dolor sit amet, consectetuer adipiscing elit.</p>
+	</div>
+	<div>
+		This text must be at the top of the second page.
+	</div>
+</body>
+</html>

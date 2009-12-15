@@ -1,0 +1,41 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>CSS Test: page-break-inside: paged media</title>
+<link rel="author" title="Tom Clancy" href="mailto:tclancy@revenution.com"/>
+<link rel="help" href="http://www.w3.org/TR/CSS21/page.html#page-break-props"/>
+<meta name="assert" content="The 'page-break-inside' property applies to paged media only."/>
+<meta name="flags" content="paged" />
+<style type="text/css">
+	@page {margin: 7%;}
+	html, body {
+		height: 100%;
+		line-height: 1;
+		font-size: 16px;
+	}
+	* {
+		margin: 0;
+		padding: 0;
+	}
+	div {
+		page-break-inside: avoid;
+		height: 100%;
+	}
+	p#pusher {
+		height: 100%;
+		margin-bottom: -2em;
+	}
+	p#skinny {
+		width: 1em;
+		widows: 4;
+		orphans: 4;
+	}
+</style>
+</head>
+<body>
+	<div>
+		<p id="pusher">On screen, the 'c' below this text must be hidden until you scroll, but, when printed, all content should appear on one page.</p>
+		<p id="skinny">a b c</p>
+	</div>
+</body>
+</html>

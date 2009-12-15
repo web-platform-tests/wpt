@@ -1,0 +1,20 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>CSS Test: page-break-after: always</title>
+<link rel="author" title="Tom Clancy" href="mailto:tclancy@revenution.com"/>
+<link rel="help" href="http://www.w3.org/TR/CSS21/page.html#page-break-props"/>
+<link rel="help" href="http://www.w3.org/TR/css3-page/#pg-br-before-after"/>
+<meta name="flags" content="paged" />
+<meta name="assert" content="The 'always' value of the 'page-break-after' property forces a page break after the box."/>
+<style type="text/css">
+	p.break {
+		page-break-after:always;
+	}
+</style>
+</head>
+<body>
+	<p class="break">There must be a page break after this line of text followed by another line of content.</p>
+	<p>This text should be at the top of the second page.</p>
+</body>
+</html>

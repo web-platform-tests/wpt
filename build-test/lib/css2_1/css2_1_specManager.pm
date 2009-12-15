@@ -103,7 +103,6 @@ sub writeIndexFiles {
     my $orderedChapters = [];
     my $chapterTocData = {};
 
-
     foreach my $entry (@$tocData) {
 	my $uri = $entry->{uri};
 
@@ -111,7 +110,6 @@ sub writeIndexFiles {
 	if ($uri =~/$specroot\/(.+)\s?/) {
 	    $uri = $1;
 	}
-
 	my $section = $entry->{section};
 	my ($chapter,$junk) = split /\./,$section,2;
 	push @{$chapterTocData->{$chapter}},$entry;
@@ -224,13 +222,14 @@ sub indexSingleTestFile {
     my $specVersion = $self->{specVersion};
     $file =~ m/^tests\/$specVersion\/(.+)\.(xht|xhtml)$/os;
 
-
     my $root = $1;
+    # $root =~ m!^(?:[^/]+/)*([^/]+)$!;
+    my $filename = $1;
 
     my $data = $self->getHeadData({'file'=>$file,
-				   'id'=>$root});
+				   'id'=>$filename});
     my $links = $data->{links};
-    if ($root =~ m/^t(\d\d)(\d\d)?(\d\d)?-[a-z0-9\-]+-([a-f])(?:-([a-z]+))?$/) {
+    if ($filename =~ m/^t(\d\d)(\d\d)?(\d\d)?-[a-z0-9\-]+-([a-f])(?:-([a-z]+))?$/) {
 	my @flags;
 	my @letters = sort split //, $5 || '';
 	foreach (@letters) {
@@ -239,18 +238,17 @@ sub indexSingleTestFile {
 	}
 	push @{$data->{flags}},@flags;
     }
-    elsif ($root =~ m/^[a-z\-\/]+-\d\d\d$/) {
+    elsif ($filename =~ m/^[a-z\-\/]+-\d\d\d$/) {
     }
     else {
-	print "!! Filename fails format test: $root\n";
+	print "!! Filename fails format test: $filename\n";
 	return;
     }
-    
+
     # Build Test Database
     $self->storeTestData({file=>$root,
 			  data=>$data});
     
-
     # Build Section-based Index
     foreach (@{$links}) {
 	$self->{linkindex}->{$_} ||= []; # if (!exists($linkindex{$_}));

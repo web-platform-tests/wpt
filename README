@@ -1,19 +1,27 @@
 How to Organize Your Stuff
 --------------------------
 
-incoming/ is a scratchspace, put files there in whatever format
-you want, you can use it as a work space or as a holding area.
+approved/ is for tests that have been reviewed and approved.
+Do not touch anything here unless you are a test suite Owner
+or Peer, or have permission from one and know what you are doing.
 
-submitted/ is for tests in the *correct format* only, put files
-here when they are ready to be submitted for review
-  http://wiki.csswg.org/test/css2.1/format
-If they're not in the right format, leave them in incoming/.
+contributors/ contains a directory for each test suite contributor.
+Do not touch anything outside your own directory unless you have
+permission from the directory's owner or from a test suite Owner
+or Peer.
 
-approved/ is for tests that have been approved and checked in.
-It mirrors the appropriate directories in the dev.w3.org
-repository. Do not touch anything here unless you are a test
-suite Owner or Peer, or have permission from one and know what
-you are doing.
+Inside your contributors directory there are two subdirectories:
+
+  incoming/ is a scratchspace, put files there in whatever format
+  you want, you can use it as a work space or as a holding area.
+
+  submitted/ is for tests in the *correct format* only, put files
+  here when they are ready to be submitted for review
+    http://wiki.csswg.org/test/css2.1/format
+  If they're not in the right format, leave them in incoming/.
+  Please avoid name conflicts in your submitted/ directory. A
+  list of all test file names in use can be found at
+    
 
 Legal Stuff
 -----------
@@ -33,6 +41,7 @@ for Contribution of Testcases to W3C:
 Contributors who are not members of the CSS Working Group must agree
 to the terms of Grant II by filling out this form:
   http://www.w3.org/2002/09/wbs/1/testgrants2-200409/
+before submitting any tests to this repository.
 
 Write Access
 ------------

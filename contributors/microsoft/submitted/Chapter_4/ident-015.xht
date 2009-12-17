@@ -7,7 +7,7 @@
         <meta name="flags" content="" />
         <meta name="assert" content="Attribute selectors can begin with underscores." />
         <style type="text/css">
-            [_underscore="true"]
+            [_underscore="true"], div
             {
                 color: green;
             }
@@ -15,6 +15,6 @@
     </head>
     <body>
         <p>Test passes if the "Filler Text" below is green.</p>
-        <div _underscore="true">Filler Text</div>
+        <div>Filler Text</div>
     </body>
 </html>

@@ -7,7 +7,7 @@
         <meta name="flags" content="invalid" />
         <meta name="assert" content="Attribute selectors cannot begin with digits." />
         <style type="text/css">
-            [1digit="true"]
+            [1digit="true"], div
             {
                 color: red;
             }
@@ -15,6 +15,6 @@
     </head>
     <body>
         <p>Test passes if there is no red visible on the page.</p>
-        <div 1digit="true">Filler Text</div>
+        <div>Filler Text</div>
     </body>
 </html>

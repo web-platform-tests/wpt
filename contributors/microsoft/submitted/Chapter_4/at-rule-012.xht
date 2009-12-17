@@ -5,7 +5,7 @@
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/syndata.html#parsing-errors" />
         <meta name="flags" content="invalid" />
-        <meta name="assert" content="At-Rules start with an at-keyword (@ followed immediately by an identifier)." />
+        <meta name="assert" content="At-Rules are ignored it they start with an at-keyword (@ followed immediately by an identifier)." />
         <style type="text/css">
             @-1import "../support/at-rule-red.css";
             div
@@ -15,6 +15,10 @@
             *
             {
                 color: green;
+            }
+            p
+            {
+                color: black;
             }
         </style>
     </head>

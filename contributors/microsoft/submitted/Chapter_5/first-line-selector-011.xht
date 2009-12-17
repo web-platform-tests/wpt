@@ -11,16 +11,21 @@
             {
                 display: inline-block;
             }
+            div
+            {
+                background: white;
+                color: white;
+            }
             div:first-line
             {
-                background: green;
+                color: red;
             }
         </style>
     </head>
     <body>
-        <p>Test passes if the second line of "Filler Text" below has a green background.</p>
+        <p>Test passes if there is no red visible on the page.</p>
         <div>
-            <span>Filler Text<br />Filler Text</span>
+            <span>FAIL<br />FAIL</span>
         </div>
     </body>
 </html>

@@ -1,0 +1,44 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+ <head>
+ <meta http-equiv="content-type" content="text/html; charset=UTF-8" >
+  <title>CSS Test: z-index - negative values</title>
+  <link rel="author" title="Gйrard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
+  <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#propdef-z-index">
+  <link rel="help" href="http://www.w3.org/TR/CSS21/syndata.html#numbers">
+  <meta name="flags" content="">
+  <meta name="assert" content="Integers should range from -2,147,483,648 to 2,147,483,647 according to C Language Specification">
+
+  <style type="text/css">
+  div
+  {
+  height: 100px;
+  position: absolute;
+  width: 100px;
+  }
+
+  #very-deep
+  {
+  background-color: red;
+  z-index: -2147483646;
+  }
+
+  #just-under-surface
+  {
+  background-color: green;
+  z-index: -1;
+  }
+  </style>
+
+ </head>
+
+ <body>
+
+  <p>Below there should be a green square and no red.</p>
+
+  <div id="just-under-surface"></div>
+
+  <div id="very-deep"></div>
+
+ </body>
+</html>

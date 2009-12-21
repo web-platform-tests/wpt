@@ -4,28 +4,28 @@
 
  <head>
 
-  <title>CSS Test: font - inherit keyword value</title>
+  <title>CSS Test: font - system fonts</title>
 
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
-  <link rel="help" href="http://www.w3.org/TR/CSS21/changes.html#q142" />
   <link rel="help" href="http://www.w3.org/TR/CSS21/fonts.html#font-shorthand" />
-  <meta name="flags" content="ahem invalid" />
-  <meta name="assert" content="The inherit keyword value cannot mix with other subproperty values" />
+  <meta name="flags" content="ahem" />
+  <meta name="assert" content="A system font sets all of the font subproperties at the same time; then each font subproperty can be altered individually" />
 
   <style type="text/css"><![CDATA[
-  div 
+  div
   {
   background-color: red;
   color: white;
-  font: 128px/1 Ahem;
-  width: 4em;
+  display: inline-block;
+  font: 32px/1 Ahem;
   }
 
   span
   {
   background-color: white;
   color: green;
-  font: 32px inherit;
+  font: small-caption;
+  font-size: 32px;
   }
   ]]></style>
 
@@ -33,10 +33,10 @@
 
  <body>
 
-  <p>There should be a large green rectangle below and no red in this page.</p>
+  <p>There should be no red in this page</p>
 
   <div>
-    <span>XXXX</span>
+    <span>This text should be green</span>
   </div>
 
  </body>

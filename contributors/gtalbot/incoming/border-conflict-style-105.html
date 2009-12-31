@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
 <html>
  <head>
- <meta http-equiv="content-type" content="text/html; charset=UTF-8" >
+ <meta http-equiv="content-type" content="text/html; charset=UTF-8">
   <title>CSS Test: border conflict resolution - border-style: hidden applied to table-footer-group</title>
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
   <link rel="author" title="Marc Pacheco" href="http://marc.baffl.co.uk/contact.php">
@@ -21,8 +21,9 @@
   border-style: hidden;
   }
 
-  td
+  tfoot td
   {
+  border: red solid;
   height: 200px;
   width: 200px;
   }
@@ -36,17 +37,17 @@
 
   <table>
 
-  <tfoot>
-   <tr>
-    <td></td>
-   </tr>
-  </tfoot>
+   <tfoot>
+    <tr>
+     <td></td>
+    </tr>
+   </tfoot>
 
-  <tbody>
-   <tr>
-    <td></td>
-   </tr>
-  </tbody>
+   <tbody>
+    <tr>
+     <td></td>
+    </tr>
+   </tbody>
 
   </table>
 

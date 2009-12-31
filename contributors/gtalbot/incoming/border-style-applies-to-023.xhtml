@@ -4,29 +4,36 @@
 
  <head>
 
-  <title>CSS Test: border conflict resolution - border-style: hidden applied to table-column</title>
+  <title>CSS Test: border-style: hidden applied to element with display table-row-group</title>
 
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
   <link rel="author" title="Marc Pacheco" href="http://marc.baffl.co.uk/contact.php" />
-  <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#border-conflict-resolution" />
+  <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#border-style-properties" />
   <meta name="flags" content="" />
-  <meta name="assert" content="A table element with the 'border-style' value of 'hidden' should suppress all borders for such element." />
+  <meta name="assert" content="'border-style: hidden' must apply to all elements, including elements with display table-row-group. 'hidden' (border-style) is the same as 'none': the computed border width is zero." />
 
   <style type="text/css"><![CDATA[
-  table
+  #table
   {
   border-collapse: collapse;
+  display: table;
   }
 
-  col
+  #test
   {
   border-color: red;
   border-style: hidden;
+  display: table-row-group;
   }
 
-  td
+  #row
   {
-  border: red solid;
+  display: table-row;
+  }
+
+  #cell
+  {
+  display: table-cell;
   height: 200px;
   width: 200px;
   }
@@ -38,17 +45,13 @@
 
   <p>There should be no red below, not even thin red lines.</p>
 
-  <table>
-
-   <col></col>
-
-   <tbody>
-    <tr>
-     <td></td>
-    </tr>
-   </tbody>
-
-  </table>
+  <div id="table">
+   <div id="test">
+    <div id="row">
+     <div id="cell"></div>
+    </div>
+   </div>
+  </div>
 
  </body>
 </html>

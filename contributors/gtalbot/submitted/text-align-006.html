@@ -2,33 +2,51 @@
 <html>
  <head>
  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
-  <title>CSS Test: text-align - inheritance and table-cell</title>
+  <title>CSS Test: text-align</title>
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
-  <link rel="author" title="James Hopkins" href="james(a)idreamincode.co.uk">
-  <link rel="help" href="http://www.w3.org/TR/CSS21/text.html#propdef-text-align">
+  <link rel="help" href="http://www.w3.org/TR/CSS21/text.html#alignment-prop">
   <meta name="flags" content="">
-  <meta name="assert" content="'text-align' is inherited and applies to table cells">
+  <meta name="assert" content="text-align property determines how inline content of a block is horizontally aligned within such block. When a block-level element has no inline content, then setting text-align property should have no effect on the horizontal formating of the block itself.">
 
   <style type="text/css">
-  table
+  hr
   {
-  border: blue solid thin;
-  text-align: right;
-  width: 100%;
+  background-color: black;
+  border-style: none;
+  height: 33px;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  width: 198px;
   }
+  
+  hr#first {text-align: left;}
+
+  hr#second {text-align: center;}
+
+  hr#third {text-align: right;}
+
+  hr#fourth {text-align: justify;}
+
+  hr#fifth {text-align: inherit;}
   </style>
 
  </head>
 
  <body>
 
-  <p>Test is passed if the words "Filler text" below are aligned to the right, inside the rectangle with a thin blue border.</p>
+  <p>Below this paragraph, there should be one (and only one) black square.</p>
 
-  <table>
-   <tr>
-    <th>Filler text</th>
-    </tr>
-  </table>
+  <hr id="first">
+
+  <hr id="second">
+
+  <hr id="third">
+
+  <hr id="fourth">
+
+  <hr id="fifth">
+
+  <hr>
 
  </body>
 </html>

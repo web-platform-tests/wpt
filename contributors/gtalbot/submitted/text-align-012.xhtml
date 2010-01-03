@@ -13,8 +13,12 @@
   <meta name="assert" content="'text-align' is inherited and applies to table cells" />
 
   <style type="text/css"><![CDATA[
-  table {border: blue solid thin; width: 100%;}
-  tr {text-align: right;}
+  div {text-align: right;}
+  table
+  {
+  border: blue solid thin;
+  width: 100%;
+  }
   ]]></style>
 
  </head>
@@ -23,11 +27,13 @@
 
   <p>Test is passed if the words "Filler text" below are aligned to the right, inside the rectangle with a thin blue border.</p>
 
-  <table>
-   <tr>
-    <th>Filler text</th>
+  <div>
+   <table>
+    <tr>
+     <th>Filler text</th>
     </tr>
-  </table>
+   </table>
+  </div>
 
  </body>
 </html>

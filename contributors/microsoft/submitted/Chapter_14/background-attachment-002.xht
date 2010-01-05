@@ -8,13 +8,13 @@
         <meta name="flags" content="image interact" />
         <meta name="assert" content="Background-attachment set to fixed, with image set as well, causes the background image not to move with the box when it is scrolled." />
         <style type="text/css">
-            #testDiv
+            #div1
             {
                 height: 200px;
                 width: 200px;
                 overflow: scroll;
             }
-            #innerDiv
+            div div
             {
                 background-image: url("../support/cat.png");
                 background-attachment: fixed;
@@ -25,8 +25,8 @@
     </head>
     <body>
         <p>Test passes if when the box below is scrolled, the cat images do not move.</p>
-        <div id="testDiv">
-             <div id="innerDiv"></div>
+        <div id="div1">
+             <div></div>
         </div>
     </body>
 </html>

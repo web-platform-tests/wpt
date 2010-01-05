@@ -8,13 +8,13 @@
         <meta name="flags" content="image interact" />
         <meta name="assert" content="Background with (position attachment image repeat color) sets the background to the color specified, tiling the image across the x-axis at the bottom of the element." />
         <style type="text/css">
-            #testDiv
+            #div1
             {
                 height: 200px;
                 width: 200px;
                 overflow: scroll;
             }
-            #innerDiv
+            div div
             {
                 background: bottom scroll url("../support/cat.png") repeat-x green;
                 width: 400px;
@@ -24,8 +24,8 @@
     </head>
     <body>
         <p>Test passes if there is a green box below, when the box is scrolled down, there is a cat image at the bottom of the box.</p>
-        <div id="testDiv">
-            <div id="innerDiv"></div>
+        <div id="div1">
+            <div></div>
         </div>
     </body>
 </html>

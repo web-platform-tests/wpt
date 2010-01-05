@@ -3,7 +3,7 @@
     <head>
         <title>CSS Test: Spanning cell that intersects a 'visibility: collapse' column</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
-        <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#q4" />
+        <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#columns" />
         <meta name="flags" content="" />
         <meta name="assert" content="Contents of a cell which spans through a collapsed column are clipped." />
         <style type="text/css">
@@ -20,6 +20,7 @@
             #cell1
             {
                 background: white;
+                white-space: nowrap;
             }
             #red
             {

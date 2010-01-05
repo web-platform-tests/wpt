@@ -7,20 +7,30 @@
         <meta name="flags" content="image may" />
         <meta name="assert" content="Replaced elements width may be scaled by the user agent when the value of the property is not 'auto'." />
         <style type="text/css">
+            div
+            {
+                position: relative;
+            }
+            div div
+            {
+                background: orange;
+                height: 15px;
+                width: 15px;
+            }
             img
             {
-                left: 0;
                 position: absolute;
-                top: 1in;
-                width: 200px;
+                left: 0.25in;
+                top: 0;
+                width: 1in;
             }
         </style>
     </head>
     <body>
+        <p>Test passes if the blue square is the same size or larger than the orange square.</p>
         <div>
             <div></div>
             <img alt="blue 15x15" src="../support/blue15x15.png" />
         </div>
-        <p>Test passes if there is a blue box below.</p>
     </body>
 </html>

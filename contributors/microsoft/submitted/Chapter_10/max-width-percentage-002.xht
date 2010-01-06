@@ -9,21 +9,30 @@
         <style type="text/css">
             #div1
             {
-                margin-right: -10px;
-                width: 0;
+                position: relative;
+                width: 100px;
             }
-            div div
+            #div2
+            {
+                left: 120px;
+                position: absolute;
+                right: 120px;
+                width: auto;
+            }
+            #div3
             {
                 background-color: red;
                 height: 1in;
-                max-width: 100%;
+                max-width: 200%;
             }
         </style>
     </head>
     <body>
         <p>Test passes if there is no red visible on the page.</p>
         <div id="div1">
-            <div></div>
+            <div id="div2">
+                <div id="div3"></div>
+            </div>
         </div>
     </body>
 </html>

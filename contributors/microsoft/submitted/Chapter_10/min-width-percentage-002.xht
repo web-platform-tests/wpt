@@ -7,12 +7,19 @@
         <meta name="flags" content="" />
         <meta name="assert" content="If the containing block's width is negative, the used value is zero." />
         <style type="text/css">
-            div
+            #div1
             {
-                margin-right: -10px;
-                width: 0;
+                position: relative;
+                width: 100px;
             }
-            div div
+            #div2
+            {
+                left: 120px;
+                position: absolute;
+                right: 120px;
+                width: auto;
+            }
+            #div3
             {
                 background-color: red;
                 height: 1in;
@@ -22,8 +29,10 @@
     </head>
     <body>
         <p>Test passes if there is no red visible on the page.</p>
-        <div>
-            <div></div>
+        <div id="div1">
+            <div id="div2">
+                <div id="div3"></div>
+            </div>
         </div>
     </body>
 </html>

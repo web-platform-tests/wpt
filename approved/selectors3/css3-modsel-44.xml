@@ -3,7 +3,7 @@
 <author>Daniel Glazman</author>
 <author>Ian Hickson</author>
 
-<cssrules>.white { backround-color: transparent ! important; }
+<cssrules>.white { background-color: transparent ! important; }
 .red { background-color: red; }
 div &gt; p.test { background-color: lime; }</cssrules>
 

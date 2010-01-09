@@ -1,0 +1,48 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+ <head>
+ <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <title>CSS Test: border-style: hidden applied to table-row-group</title>
+  <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
+  <link rel="author" title="Marc Pacheco" href="http://marc.baffl.co.uk/contact.php">
+  <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#border-style-properties">
+  <meta name="flags" content="">
+  <meta name="assert" content="'border-style: hidden' must apply to all elements, including internal table elements. 'hidden' (border-style) is the same as 'none': the computed border width is zero.">
+
+  <style type="text/css">
+  table
+  {
+  border-collapse: collapse;
+  }
+
+  tbody
+  {
+  border-color: red;
+  border-style: hidden;
+  }
+
+  td
+  {
+  height: 200px;
+  width: 200px;
+  }
+  </style>
+
+ </head>
+
+ <body>
+
+  <p>There should be no red below, not even thin red lines.</p>
+
+  <table>
+
+   <tbody>
+    <tr>
+     <td></td>
+    </tr>
+   </tbody>
+
+  </table>
+
+ </body>
+</html>

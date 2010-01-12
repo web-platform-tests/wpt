@@ -10,6 +10,8 @@ import filecmp
 # Files to not sync across support/ directories
 fileExcludes = ('README')
 dirExcludes = ('.svn', '.hg', 'CVS')
+# To prevent support files from being propagated into a particular support/
+# directory, add a file named LOCK
 
 def propagate(source, dest, errors):
   """Compare each file and copy from source to destination.
@@ -20,6 +22,9 @@ def propagate(source, dest, errors):
        source filepath and the second a destination filepath,
        of file pairs where the destination isdifferent from
   """
+
+  # This directory is locked; don't propagate
+  if os.path.exists(join(dest, 'LOCK')): return
 
   # Get the file and directory lists for source
   children = os.listdir(source)

@@ -8,7 +8,8 @@ import shutil
 import filecmp
 
 # Files to not sync across support/ directories
-excludes = ('README')
+fileExcludes = ('README')
+dirExcludes = ('.svn', '.hg', 'CVS')
 
 def propagate(source, dest, errors):
   """Compare each file and copy from source to destination.
@@ -21,27 +22,28 @@ def propagate(source, dest, errors):
   """
 
   # Get the file and directory lists for source
-  root, dirs, files = os.walk(source).next()
-  # Copy over the file if it needs copying
-  for name in files:
-    if name in excludes:
-      continue;
+  children = os.listdir(source)
+  for name in children:
     origin = join(source, name)
     copy = join(dest, name)
-    if not os.path.exists(copy): # file missing
-      shutil.copy2(origin, copy) # copy it over
-    elif not filecmp.cmp(origin, copy): # files differ
-      if not filecmp.cmp(origin, copy, True): # contents equal, stats differ
-        shutil.copystat(origin, copy) # update stats so they match for next time
-      else: # contents differ
-        errors.append((origin, copy))
-  # Duplicate the directory structure and propagate the subtree
-  for name in dirs:
-    origin = join(source, name)
-    copy = join(dest, name)
-    if not os.path.exists(copy):
-      os.mkdirs(copy)
-    propagate(origin, copy, errors)
+    if os.path.isfile(origin):
+      if name in fileExcludes: continue
+      # Copy over the file if it needs copying
+      if not os.path.exists(copy): # file missing
+        shutil.copy2(origin, copy) # copy it over
+      elif not filecmp.cmp(origin, copy): # files differ
+        if not filecmp.cmp(origin, copy, True): # contents equal, stats differ
+          shutil.copystat(origin, copy) # update stats so they match for next time
+        else: # contents differ
+          errors.append((origin, copy))
+    elif os.path.isdir(origin):
+      if name in dirExcludes: continue
+      # Duplicate the directory structure and propagate the subtree
+      if not os.path.exists(copy):
+        os.makedirs(copy)
+      propagate(origin, copy, errors)
+  if len(children) == 0:
+    print "Warn: " + source + " is empty.\n"
 
 def waterfall(parentDir, childDir, errors):
   """Copy down support files from parent support to child.
@@ -51,12 +53,12 @@ def waterfall(parentDir, childDir, errors):
      waterfall recurses into childDir's children."""
   assert os.path.exists(join(parentDir, 'support')), join(parentDir, 'support') + " doesn't exist\n"
   if os.path.exists(join(childDir, 'support')):
-    dirs = os.walk(join(dir, 'support')).next()[1]
-    for child in dirs:
-      if child == 'support':
+    dirs = os.walk(childDir).next()[1]
+    for name in dirs:
+      if name == 'support':
         propagate(join(parentDir, 'support'), join(childDir, 'support'), errors)
-      else:
-        waterfall(childDir, child, errors)
+      elif name not in dirExcludes:
+        waterfall(childDir, join(childDir, name), errors)
 
 def outline(source, dest, errors):
   """Copy over directory structure and all files under any support/ directories
@@ -70,6 +72,7 @@ def outline(source, dest, errors):
   dirs = os.walk(source).next()[1]
   # Copy directory structure
   for name in dirs:
+    if name in dirExcludes: continue
     origin = join(source, name)
     copy = join(dest, name)
     if not os.path.exists(copy):
@@ -80,7 +83,7 @@ def outline(source, dest, errors):
     else:
       outline(origin, copy, errors)
 
-def copySupport(source, dest, errors):
+def syncSupport(source, dest, errors):
   """For each support directory in dest, propagate the corresponding support
      files from source.
      source and dest are both directory paths.
@@ -93,13 +96,14 @@ def copySupport(source, dest, errors):
   dirs = os.walk(dest).next()[1]
   # Scan directory structure, building support dirs as necessary
   for name in dirs:
+    if name in dirExcludes: continue
     master = join(source, name)
     slave  = join(dest, name)
     if name == 'support':
       # Copy support files
       propagate(master, slave, errors)
     else:
-      copySupport(master, slave, errors)
+      syncSupport(master, slave, errors)
 
 def main():
   # Part I: Propagate support files through approved/
@@ -107,7 +111,9 @@ def main():
   errors = []
   root, dirs, _ = os.walk('.').next()
   if 'approved' in dirs:
-    suites = os.walk('approved').next()[1]
+    root = join(root, 'approved')
+    suites = os.walk(root).next()[1]
+    suites = filter(lambda name: name not in dirExcludes, suites)
     for suite in suites:
       waterfall(root, join(root, suite, 'src'), errors)
   else:
@@ -117,14 +123,18 @@ def main():
   # Part II: Propagate test suite support files into contributors/
 
   if 'contributors' in dirs:
-    contribRoot, contribs, _ = os.walk('contributors').next()
-    for contrib in contribs:
-      dirs = os.walk(join(contribRoot, contrib)).next()[1]
+    _, contribs, _ = os.walk('contributors').next()
+    for contributor in contribs:
+      contribRoot = join('contributors', contributor, 'submitted')
+      if not os.path.exists(contribRoot): continue # missing submitted folder
+      dirs = os.walk(contribRoot).next()[1]
       for dir in dirs:
-        if dir in suites: # contributor has a directory name matching one of our suites
-          suiteRoot = join(root, 'approved', dir, 'src')
+        # Check if contributor has a top-level directory name matching
+        # one of our suites; if so, sync any matching support directories
+        if dir in suites:
+          suiteRoot = join(root, dir, 'src')
           if os.path.exists(suiteRoot):
-            copySupport(join(contribRoot, dir), suiteRoot)
+            syncSupport(suiteRoot, join(contribRoot, dir), errors)
   else:
     print "Failed to find contributors/ directory.\n"
 

@@ -1,3 +1,4 @@
+include bugs/reftest.list
 include css-charset/reftest.list
 include first-letter/reftest.list
 include first-line/reftest.list

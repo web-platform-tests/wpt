@@ -1,26 +1,19 @@
 ﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
-        <title>CSS Test: Background-attachment applied to elements with 'display' set to 'table-caption'</title>
+        <title>CSS Test: Background-repeat applied to elements with 'display' set to 'table'</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
-        <link rel="help" href="http://www.w3.org/TR/CSS21/colors.html#propdef-background-attachment" />
+        <link rel="help" href="http://www.w3.org/TR/CSS21/colors.html#propdef-background-repeat" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/colors.html#background-properties" />
         <meta name="flags" content="image" />
-        <meta name="assert" content="The 'background-attachment' property applies to elements with 'display' set to 'table-caption'." />
+        <meta name="assert" content="The 'background-repeat' property applies to elements with 'display' set to 'table'." />
         <style type="text/css">
             #table
             {
+                background-color: red;
+                background-image: url('__CSS__SUPPORT/green15x15.png');
+                background-repeat: repeat;
                 display: table;
-            }
-            #caption
-            {
-                background-image: url('../support/blue96x96.png');
-                background-attachment: fixed;
-                background-repeat: repeat-x;
-                border: solid black;
-                display: table-caption;
-                height: 1in;
-                width: 1in;
             }
             #row
             {
@@ -28,14 +21,16 @@
             }
             #cell
             {
+                border: solid black;
                 display: table-cell;
+                height: 1in;
+                width: 1in;
             }
         </style>
     </head>
     <body>
-        <p>Test passes if the black box below has a shorter blue box above a white box.</p>
+        <p>Test passes if there is no red visible on the page.</p>
         <div id="table">
-            <div id="caption"></div>
             <div id="row">
                 <div id="cell"></div>
             </div>

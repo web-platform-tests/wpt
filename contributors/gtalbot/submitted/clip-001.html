@@ -1,16 +1,19 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
-<html>
- <head>
- <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
- <meta http-equiv="Content-Script-Type" content="text/javascript">
-  <title>CSS test: clip - auto value</title>
-  <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
-  <link rel="author" title="Vasil Dinkov" href="http://www.vadikom.com/">
-  <link rel="help" href="http://www.w3.org/TR/CSS21/visufx.html#clipping">
-  <meta name="flags" content="dom">
-  <meta name="assert" content="An element must not clip when clip is set to auto.">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
-  <style type="text/css">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+ <head>
+
+  <title>CSS Test: clip - auto value</title>
+
+  <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
+  <link rel="author" title="Vasil Dinkov" href="http://www.vadikom.com/" />
+  <link rel="help" href="http://www.w3.org/TR/CSS21/visufx.html#clipping" />
+  <meta name="flags" content="dom" />
+  <meta name="assert" content="An element must not clip when clip is set to auto." />
+  <meta http-equiv="Content-Script-Type" content="text/javascript" />
+
+  <style type="text/css"><![CDATA[
   #red-overlapped-layer
   {
   background-color: red;
@@ -34,16 +37,16 @@
   height: 300px;
   width: 300px;
   }
-  </style>
+  ]]></style>
 
-  <script type="text/javascript">
+  <script type="text/javascript"><![CDATA[
   function StartTest()
   {
   document.getElementById("red-parent").style.clip = "auto";
   }
-  </script>
+  ]]></script>
 
-</head>
+ </head>
 
  <body onload="StartTest();">
 

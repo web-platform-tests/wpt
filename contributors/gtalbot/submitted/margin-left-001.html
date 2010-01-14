@@ -1,15 +1,18 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
-<html>
- <head>
- <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
-  <title>CSS Test: margin-left - &lt;hr&gt; element</title>
-  <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
-  <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#margin-properties">
-  <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#blockwidth">
-  <meta name="flags" content="">
-  <meta name="assert" content="margin-left: 0 should apply to hr element since it is a block-level element">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
-  <style type="text/css">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+ <head>
+
+  <title>CSS Test: margin-left - &lt;hr&gt; element</title>
+
+  <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
+  <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#margin-properties" />
+  <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#blockwidth" />
+  <meta name="flags" content="" />
+  <meta name="assert" content="margin-left: 0 should apply to hr element since it is a block-level element" />
+
+  <style type="text/css"><![CDATA[
   hr
   {
   background-color: black;
@@ -26,7 +29,7 @@
   margin-left: 0px;
   width: 33%;
   }
-  </style>
+  ]]></style>
 
  </head>
 
@@ -34,7 +37,7 @@
 
   <p>The 2 black stripes below should be positioned on the left</p>
 
-  <hr>
+  <hr />
 
   <div id="control"></div>
 

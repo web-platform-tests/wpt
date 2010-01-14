@@ -1,18 +1,21 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
-<html>
- <head>
- <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
-  <title>CSS Test: margin collapsing</title>
-  <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
-  <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#collapsing-margins">
-  <meta name="flags" content="">
-  <meta name="assert" content="The top margin of an in-flow block-level element is adjoining to its first in-flow block-level child's top margin if the element has no top padding. Adjoining of margin must be determined only after resolving percentage padding-top value.">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
-  <style type="text/css">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+ <head>
+
+  <title>CSS Test: margin collapsing</title>
+
+  <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
+  <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#collapsing-margins" />
+  <meta name="flags" content="" />
+  <meta name="assert" content="The top margin of an in-flow block-level element is adjoining to its first in-flow block-level child's top margin if the element has no top padding. Adjoining of margin must be determined only after resolving percentage padding-top value." />
+
+  <style type="text/css"><![CDATA[
   #grand-parent-block-container {background-color: red; border: solid;}
   #parent-block-container {background-color: lime; padding: 1%;}
   #child-block {margin: 180px;}
-  </style>
+  ]]></style>
 
  </head>
 

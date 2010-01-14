@@ -1,14 +1,17 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
-<html>
- <head>
- <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
-  <title>CSS Test: text-align</title>
-  <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
-  <link rel="help" href="http://www.w3.org/TR/CSS21/text.html#alignment-prop">
-  <meta name="flags" content="">
-  <meta name="assert" content="text-align property determines how inline content of a block is horizontally aligned within such block. When a block-level element has no inline content, then setting text-align property should have no effect on the horizontal formating of the block itself.">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
-  <style type="text/css">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+ <head>
+
+  <title>CSS Test: text-align</title>
+
+  <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
+  <link rel="help" href="http://www.w3.org/TR/CSS21/text.html#alignment-prop" />
+  <meta name="flags" content="" />
+  <meta name="assert" content="text-align property determines how inline content of a block is horizontally aligned within such block. When a block-level element has no inline content, then setting text-align property should have no effect on the horizontal formating of the block itself." />
+
+  <style type="text/css"><![CDATA[
   hr
   {
   background-color: black;
@@ -18,7 +21,7 @@
   margin-bottom: 0px;
   width: 198px;
   }
-  
+
   hr#first {text-align: left;}
 
   hr#second {text-align: center;}
@@ -28,7 +31,7 @@
   hr#fourth {text-align: justify;}
 
   hr#fifth {text-align: inherit;}
-  </style>
+  ]]></style>
 
  </head>
 
@@ -36,17 +39,17 @@
 
   <p>Below this paragraph, there should be one (and only one) black square.</p>
 
-  <hr id="first">
+  <hr id="first" />
 
-  <hr id="second">
+  <hr id="second" />
 
-  <hr id="third">
+  <hr id="third" />
 
-  <hr id="fourth">
+  <hr id="fourth" />
 
-  <hr id="fifth">
+  <hr id="fifth" />
 
-  <hr>
+  <hr />
 
  </body>
 </html>

@@ -1,14 +1,17 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
-<html>
- <head>
- <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
-  <title>CSS Test: replaced elements - margin</title>
-  <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
-  <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#block-replaced-width">
-  <meta name="flags" content="">
-  <meta name="assert" content="Block-level, replaced elements with margin-left: auto and margin-right: auto should be centered within their respective parent block">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
-  <style type="text/css">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+ <head>
+
+  <title>CSS Test: replaced elements - margin</title>
+
+  <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
+  <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#block-replaced-width" />
+  <meta name="flags" content="" />
+  <meta name="assert" content="Block-level, replaced elements with margin-left: auto and margin-right: auto should be centered within their respective parent block" />
+
+  <style type="text/css"><![CDATA[
   div
   {
   background-color: green;
@@ -23,7 +26,7 @@
   margin-right: auto;
   width: auto;
   }
-  </style>
+  ]]></style>
 
  </head>
 
@@ -32,12 +35,12 @@
   <p>Below, there should be 2 orange boxes horizontally centered within their respective green bars.</p>
 
   <div>
-    <input type="button" value="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;">
+    <input type="button" value="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" />
   </div>
 
   <form action="">
     <div>
-      <input type="submit" value="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;">
+      <input type="submit" value="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" />
     </div>
   </form>
 

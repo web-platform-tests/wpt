@@ -1,16 +1,19 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
-<html>
- <head>
- <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
-  <title>CSS Test: max-width - float and overflow</title>
-  <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
-  <link rel="author" title="Hilbrand Edskes" href="http://edskes.com/">
-  <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#floats">
-  <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#min-max-widths">
-  <meta name="flags" content="ahem">
-  <meta name="assert" content="'max-width' specifies a fixed maximum used width. If the used width is greater than max-width, then the computed value of max-width is used as the computed value for width. A floated box should not become wider than its declared max-width.">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
-  <style type="text/css">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+ <head>
+
+  <title>CSS Test: max-width - float and overflow</title>
+
+  <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
+  <link rel="author" title="Hilbrand Edskes" href="http://edskes.com/" />
+  <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#floats" />
+  <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#min-max-widths" />
+  <meta name="flags" content="ahem" />
+  <meta name="assert" content="'max-width' specifies a fixed maximum used width. If the used width is greater than max-width, then the computed value of max-width is used as the computed value for width. A floated box should not become wider than its declared max-width." />
+
+  <style type="text/css"><![CDATA[
   div#test-red-overlapped
   {
   color: red;
@@ -19,7 +22,7 @@
   max-width: 100px;
   overflow: scroll;
   }
-  
+
   div#control-green-overlapping
   {
   background-color: green;
@@ -27,7 +30,7 @@
   position: absolute;
   width: 200px;
   }
-  </style>
+  ]]></style>
 
  </head>
 

@@ -2,6 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
   <title>CSS Test: The Height of Lines</title>
+  <link rel="help" href="http://www.w3.org/TR/REC-CSS1#the-height-of-lines"/>
   <link rel="author" title="CSS1 Test Suite Contributors" href="http://www.w3.org/Style/CSS/Test/CSS1/current/tsack.html"/>
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
   <style type="text/css"><![CDATA[

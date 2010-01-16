@@ -9,28 +9,38 @@
         <style type="text/css">
             #div1
             {
-                border: solid black;
-                height: 3in;
+                border: 10px solid black;
+                height: 300px;
                 position: relative;
-                width: 3in;
+                width: 300px;
+                overflow: auto;
             }
             div div
             {
                 background: blue;
-                bottom: 0.5in;
-                height: 1in;
-                margin-bottom: 0.5in;
-                margin-top: 0.5in;
+                height: 150px;
+                margin-bottom: 50px;
+                margin-top: 50px;
                 position: absolute;
-                top: 0.5in;
-                width: 100%;
+                top: 50px;
+                width: 50%;
+            }
+            #div2
+            {
+                bottom: 50px;
+            }
+            #div3
+            {
+                bottom: 0;
+                left: 50%;
             }
         </style>
     </head>
     <body>
-        <p>Test passes if the blue box is vertically centered in the black box.</p>
+        <p>Test passes if there is one blue box on the page.</p>
         <div id="div1">
-            <div></div>
+            <div id="div2"></div>
+            <div id="div3"></div>
         </div>
     </body>
 </html>

@@ -8,34 +8,37 @@
         <meta name="flags" content="ahem" />
         <meta name="assert" content="The 'vertical-align' property sets the keyword 'text-bottom'." />
         <style type="text/css">
-            div
+            #div1
             {
-                font: 0.5in/1em ahem;
                 position: relative;
             }
-            #div3
+            #div2
             {
                 position: absolute;
-                top: 0.8in;
+                top: 1in;
             }
             #span1
+            {
+                font: 1.5in/1em ahem;
+            }
+            span span
             {
                 color: red;
                 vertical-align: text-bottom;
             }
-            #span2
+            #div2, span span
             {
-                font: 1.5in/1em ahem;
+                font: 0.5in/1em ahem;
             }
         </style>
     </head>
     <body>
-        <p>Test passes if there is a small and large box on the page and there is no red visible on the page.</p>
+        <p>Test passes if there is a large and small box on the page and there is no red visible on the page.</p>
         <div id="div1">
-            <div id="div2">
-                <span id="span1">X</span><span id="span2">X</span>
+            <div>
+                <span id="span1"><span>X</span>X</span>
             </div>
-            <div id="div3">X</div>
+            <div id="div2">X</div>
         </div>
     </body>
 </html>

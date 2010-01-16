@@ -1,0 +1,48 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD//XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>CSS Test: overflow applied to elements with 'display' set to 'table-caption'</title>
+        <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="help" href="http://www.w3.org/TR/CSS21/visufx.html#propdef-overflow" />
+        <link rel="help" href="http://www.w3.org/TR/CSS21/visufx.html#overflow" />
+        <meta name="flags" content="ahem" />
+        <meta name="assert" content="The 'overflow' property applies to elements with 'display' set to 'table-caption'." />
+        <style type="text/css">
+            #test
+            {
+                border: 5px solid blue;
+                display: table-caption;
+                font: 20px/1em ahem;
+                height: 5em;
+                overflow: hidden;
+                white-space: nowrap;
+                width: 5em;
+            }
+            #table
+            {
+                display: table;
+            }
+            #row
+            {
+                display: table-row;
+            }
+            #cell
+            {
+                display: table-cell;
+            }
+            #span2
+            {
+                color: green;
+            }
+        </style>
+    </head>
+    <body>
+        <p>Test passes if there is a green box below.</p>
+        <div id="table">
+            <div id="test"><span>XXXXX</span><span id="span2">XXXXX</span></div>
+            <div id="row">
+                <div id="cell"></div>
+            </div>
+        </div>
+    </body>
+</html>

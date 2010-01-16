@@ -1,0 +1,9 @@
+== ltr-basic.xht left-ltr-ref.html
+== rtl-basic.xht right-rtl-ref.html
+== rtl-span-only.xht left-rtl-ref.html
+== ltr-span-only.xht right-ltr-ref.html
+== ltr-ib.xht left-ltr-ref.html
+== rtl-ib.xht right-rtl-ref.html
+== rtl-span-only-ib.xht left-rtl-ref.html
+== ltr-span-only-ib.xht right-ltr-ref.html
+== rtl-linebreak.xht rtl-linebreak-ref.html

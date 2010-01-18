@@ -7,26 +7,17 @@
         <meta name="flags" content="" />
         <meta name="assert" content="An element with 'float: none' behaves as if it were never set to begin with." />
         <style type="text/css">
-            #div
-            {
-                width: 100px;
-            }
-            div .span1
+            #div1
             {
                 float: left;
-            }
-            #span1
-            {
                 float: none;
             }
         </style>
     </head>
     <body>
-        <p>Test passes if there is a single line of "Filler Text" below.</p>
-        <div>
-            <span>Filler Text</span>
-            <span class="span1">Filler Text</span>
-            <span>Filler Text</span>
-        </div>
+        <p>Test passes if there are three lines of "Filler Text" below.</p>
+        <div>Filler Text</div>
+        <div id="div1">Filler Text</div>
+        <div>Filler Text</div>
     </body>
 </html>

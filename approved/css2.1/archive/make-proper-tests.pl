@@ -42,22 +42,22 @@ my %groups;
 open(FILENAMES, '<', "$filenames") or die "$0: $filenames: $!\n";
 while (defined($_ = <FILENAMES>)) {
     next if m/^#/os;
-    die "$0:$filenames:$.: invalid syntax\n" unless m/^([^ ]+) ([^ ]+)(?: (.+))?[\n\r]+$/os;
+    die "$0:$filenames:$.: invalid syntax\n" unless m/^([^ ]+) ([^ ]+) (\d+)(?: (.+))?[\n\r]+$/os;
     my $input = "$directory/$1";
     my $filename = $2;
-    my $extraSections = $3;
+    my $section = $3;
+    my $extraSections = $4;
 
-    die "$0:$filenames:$.: invalid filename ('$filename')\n" unless $filename =~ m/^t([0-9A-Z]+)-(.+)-([0-9]+)-[a-f](?:-[a-zA-Z0-9]+)?\.xht$/os;
+    die "$0:$filenames:$.: invalid filename ('$filename')\n" unless $filename =~ m/^(.+)-([0-9]+)\.xht$/os;
     die "$0:$filenames:$.: filename longer than 31 characters\n" if length($filename) > 31;
-    my $section = $1;
-    my $name = $2;
-    my $num = $3;
+    my $name = $1;
+    my $num = $2;
 
-    $groups{"$section-$name"} += 1;
-    my $n = $groups{"$section-$name"};
+    $groups{"$name"} += 1;
+    my $n = $groups{"$name"};
     $n = "0$n" if $n < 10;
-    die "$0:$filenames:$.: 't$section-$name-$num' unexpected (expected 't$section-$name-$n' first)\n" if $groups{"$section-$name"} < $num+1;
-    die "$0:$filenames:$.: 't$section-$name-$num' duplicate\n" if $groups{"$section-$name"} > $num+1;
+    die "$0:$filenames:$.: '$name-$num' unexpected (expected '$name-$n' first)\n" if $groups{"$name"} < $num+1;
+    die "$0:$filenames:$.: '$name-$num' duplicate\n" if $groups{"$name"} > $num+1;
 
     my $output = "tests/$filename";
     die "$0:$.: $output already exists\n" if -e $output;

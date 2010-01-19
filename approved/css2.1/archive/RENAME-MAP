@@ -32,3 +32,12 @@ t051103-dom-hover-01-c-io.xht	dom-hover-001.xht
 t051103-dom-hover-02-c-io.xht	dom-hover-002.xht
 t090204-display-change-01-b-ao.xht	display-change-001.xht
 t0602-inherit-bdr-pad-b-00.xht	inherit-border-padding-000.xht
+
+# CSS1 tests
+t0905-c414-flt-0([2-4])-c.xht	c414-flt-fit-00$1.xht
+t0905-c414-flt-00-d.xht	c414-flt-fit-005.xht
+t0905-c414-flt-01-d-g.xht	c414-flt-fit-006.xht
+t1004-c43-rpl-bbx-00-d-ag.xht	c43-rpl-bbx-002.xht
+t1005-c5524-width-0(\d)-b-g.xht	c5524-height-00$1.xht
+t1004-c5524-width-00-b-g.xht	c5524-height-002.xht
+t\d+-(c\d+-[a-z0-9\-]+)-(\d\d)([a-e]-[a-i]+)?.xht	$1-0$2.xht

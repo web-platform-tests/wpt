@@ -58,10 +58,11 @@ def waterfall(parentDir, childDir, errors):
      waterfall recurses into childDir's children."""
   assert os.path.exists(join(parentDir, 'support')), join(parentDir, 'support') + " doesn't exist\n"
   if os.path.exists(join(childDir, 'support')):
+    propagate(join(parentDir, 'support'), join(childDir, 'support'), errors)
     dirs = os.walk(childDir).next()[1]
     for name in dirs:
       if name == 'support':
-        propagate(join(parentDir, 'support'), join(childDir, 'support'), errors)
+        pass
       elif name not in dirExcludes:
         waterfall(childDir, join(childDir, name), errors)
 

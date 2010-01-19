@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
-  <title>CSS Test: Floating Elements</title>
+  <title>CSS Test: Non-Replaced Float Alignment to Containing Block Edges</title>
   <link rel="help" href="http://www.w3.org/TR/REC-CSS1#floating-elements"/>
   <link rel="author" title="CSS1 Test Suite Contributors" href="http://www.w3.org/Style/CSS/Test/CSS1/current/tsack.html"/>
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
@@ -12,6 +12,7 @@
    .test p.left { float: left; }
    .test p.right { float: right; }
   ]]></style>
+  <meta name="assert" content="A floated box is shifted to the left or right until its outer edge touches the containing block edge."/>
  </head>
  <body>
   <p>In the following test, the teal blocks must be just inside the

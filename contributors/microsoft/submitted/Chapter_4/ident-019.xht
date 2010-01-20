@@ -4,17 +4,17 @@
         <title>CSS Test: Attribute selectors starting with underscore and digits</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/syndata.html" />
-        <meta name="flags" content="invalid" />
-        <meta name="assert" content="Attribute selectors cannot begin with underscore then digits." />
+        <meta name="flags" content="" />
+        <meta name="assert" content="Attribute selectors can begin with underscore then digits." />
         <style type="text/css">
             [_1underscoredigit="true"], div
             {
-                color: red;
+                color: green;
             }
         </style>
     </head>
     <body>
-        <p>Test passes if there is no red visible on the page.</p>
+        <p>Test passes if the "Filler Text" below is green.</p>
         <div>Filler Text</div>
     </body>
 </html>

@@ -3,7 +3,8 @@ ReadmeName none
 
 # README is returned as text/plain anyway, but this is needed to
 # make it show up.
-#
+
 <Files "README">
-ForceType 'text/plain'
+ForceType text/plain
 </Files>
+

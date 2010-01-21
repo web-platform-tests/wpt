@@ -15,23 +15,26 @@
             #div1
             {
                 background: url('../support/margin-collapse-4em-space.png');
-                height: 6em;
+                height: 6em
             }
             .class1
             {
                 background: green;
                 height: 1em;
             }
+            #float
+            {
+                float: left;
+                height: 3em;
+            }
             #test
             {
-                background: green;
-                margin-bottom: 2em;
+                margin-bottom: 1em;
             }
             #test1
             {
                 clear: both;
-                height: 0;
-                margin-top: 2em;
+                margin-top: 1em;
             }
         </style>
     </head>
@@ -40,6 +43,7 @@
         <div id="div1">
             <div class="class1"></div>
             <div id="test">
+                <div id="float"></div>
                 <div id="test1"></div>
             </div>
             <div class="class1"></div>

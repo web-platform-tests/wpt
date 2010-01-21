@@ -8,10 +8,10 @@
   <link rel="help" href="http://www.w3.org/TR/CSS21/generate.html#counter-styles"/>
   <style type="text/css">
 
-  body { white-space: nowrap; }
+  div { white-space: nowrap; }
 
 
-  #test { counter-reset: c; }
+  #test { counter-reset: c; color: blue; }
   #test span { counter-increment: c; }
   #test span:before { content: counter(c, circle); }
 
@@ -19,7 +19,8 @@
  </head>
  <body>
 
- <p>The following two lines should look <em>approximately</em> the same:</p>
+ <p>There should be a string of 12 blue hollow circles below. (A string of
+    12 black hollow circles is provided on the second line for reference.):</p>
 
  <div id="test">
    <span></span>

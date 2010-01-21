@@ -7,41 +7,37 @@
         <meta name="flags" content="" />
         <meta name="assert" content="Computed value of 'bottom' set to 'auto' is equal to negative 'top'." />
         <style type="text/css">
-            div
+            .parent
             {
-                height: 1in;
                 width: 0.5in;
                 float: left;
             }
-            #div1, #div3
+            div div
             {
-                background: orange;
-                position: absolute;
-            }
-            #div2, #div4
-            {
-                background: blue;
-                bottom: auto;
+                background: black;
+                height: 1in;
                 position: relative;
+                width: 0.5in;
+            }
+            #div1
+            {
+                bottom: auto;
                 top: 1in;
             }
-            #div4
+            #div2
             {
-                background: blue;
                 bottom: -1in;
                 top: auto;
             }
         </style>
     </head>
     <body>
-        <p>Test passes if the blue box is directly below the orange box.</p>
-        <div>
+        <p>Test passes if there is one square on the page.</p>
+        <div class="parent">
             <div id="div1"></div>
-            <div id="div2"></div>
         </div>
-        <div>
-            <div id="div3"></div>
-            <div id="div4"></div>
+        <div class="parent">
+            <div id="div2"></div>
         </div>
     </body>
 </html>

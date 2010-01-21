@@ -1,0 +1,35 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+     <head>
+        <title>CSS Test: font shorthand parsing should not cause incorrect matching</title>
+        <link rel="author" title="Mozilla" href="http://www.mozilla.com/" />
+        <link rel="help" href="http://www.w3.org/TR/CSS21/fonts.html#propdef-font-family" />
+        <link rel="help" href="http://www.w3.org/TR/CSS21/fonts.html#font-family-prop" />
+        <meta name="flags" content="font" />
+        <meta name="assert" content="Font shorthand parsing should not cause incorrect matching of font-family values" />
+        <style type="text/css">
+            div { font-family: CSSTest Fallback; }
+            p {
+                font-size: 36px;
+            }
+            p#test1 {
+                font-family: x-large CSSTest Fallback;
+            }
+            p#test2 {
+                font-family: small-caps 1in CSSTest Fallback;
+            }
+            p#test3 {
+                font-family: 12px CSSTest Fallback;
+            }
+            p#test4 {
+                font-family: caption CSSTest Fallback;
+            }
+        </style>
+    </head>
+    <body>
+        <div><p id="test1">PaSs</p></div>
+        <div><p id="test2">PaSs</p></div>
+        <div><p id="test3">PaSs</p></div>
+        <div><p id="test4">PaSs</p></div>
+    </body>
+</html>

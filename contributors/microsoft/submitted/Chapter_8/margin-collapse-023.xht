@@ -12,25 +12,29 @@
                 font: 20px/1em ahem;
                 width: 5em;
             }
-            div div
+            #div3
             {
-                background: green;
                 float: left;
-                height: 1em;
+                height: 3em;
             }
             #div1
             {
-                background: url('../support/margin-collapse-2em-space.png');
-                height: 4em;
+                background: url('../support/margin-collapse-4em-space.png');
+                height: 6em;
             }
             #div2
             {
                 margin-bottom: 1em;
             }
-            #div3
+            #div4
             {
                 clear: both;
-                margin-top: 1em;
+                margin-top: 2em;
+            }
+            #div2, #div4
+            {
+                background: green;
+                height: 1em;
             }
         </style>
     </head>
@@ -39,6 +43,7 @@
         <div id="div1">
             <div id="div2"></div>
             <div id="div3"></div>
+            <div id="div4"></div>
         </div>
     </body>
 </html>

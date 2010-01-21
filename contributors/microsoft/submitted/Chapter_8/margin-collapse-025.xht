@@ -1,11 +1,11 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
-        <title>CSS Test: Margin collapsing - bottom margin not collapse when cleared</title>
+        <title>CSS Test: Margin collapsing - in-flow block-level margins with an element 'height' of 'auto' and 'max-height' and 'min-height'</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#collapsing-margins" />
         <meta name="flags" content="ahem image" />
-        <meta name="assert" content="Top margins collapse to siblings and bottom margin do not collapse when own margins collapse and clearance is applied." />
+        <meta name="assert" content="The bottom margin of an in-flow block-level element with a 'height' of 'auto' and a 'min-height' less than the used height of the element and a 'max-height' greater than the elements used height will adjoin the its last in-flow block-level child's bottom margin if there is no bottom padding or border. The bottom margins will then collapse." />
         <style type="text/css">
             div
             {
@@ -14,30 +14,24 @@
             }
             #div1
             {
-                background: url('../support/margin-collapse-4em-space.png');
+                background: url('../support/margin-collapse-2em-space.png') 0 0;
+                height: 4em;
             }
             #div2
             {
-                margin-bottom: 2em;
+                background: red;
+                height: auto;
+                min-height: 0.5em;
+                max-height: 2em;
             }
-            #div3, #div5
-            {
-                margin-bottom: 1em;
-            }
-            #div3, #div6
+            #div3, #div4
             {
                 background: green;
                 height: 1em;
             }
-            #div4
+            #div2, #div3
             {
-                float: left;
-                height: 1em;
-            }
-            #div5
-            {
-                clear: both;
-                margin-top: 1.5em;
+                margin-bottom: 2em;
             }
         </style>
     </head>
@@ -46,10 +40,8 @@
         <div id="div1">
             <div id="div2">
                 <div id="div3"></div>
-                <div id="div4"></div>
-                <div id="div5"></div>
             </div>
-            <div id="div6"></div>
+            <div id="div4"></div>
         </div>
     </body>
 </html>

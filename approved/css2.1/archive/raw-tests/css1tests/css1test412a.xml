@@ -22,12 +22,11 @@
   <div class="test">
    <p id="ruled">X X X X X</p>
    <p id="control">
-    <object data="support/css1test412a.png">
-     <p>The diagram above should be as described here: A 40px white
+    <img src="support/css1test412a.png"
+     alt="The diagram above should be as described here: A 40px white
      square (which will appear as a 40px indent from the left margin),
      a 40px fuchsia square, six 40px aqua squares separated by five
-     40px blue squares, and a final fuchsia square.</p>
-    </object>
+     40px blue squares, and a final fuchsia square." />
    </p>
   </div>
  </body>

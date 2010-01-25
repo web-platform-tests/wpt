@@ -12,15 +12,16 @@
    .nine {letter-spacing: normal;}
    .ten {letter-spacing: 300%;}
    .eleven {letter-spacing: -0.5em;}
+   .fill { color: yellow; }
   ]]></style>
  </head>
  <body>
   <p>There should be a stripy pattern of yellow and aqua below (each vertical stripe should be straight and unbroken).</p>
-  <div class="test">x&#xA0;&#xA0;x&#xA0;&#xA0;&#xA0;&#xA0;xx&#xA0;xx </div>
-  <div class="test">x&#xA0;&#xA0;x&#xA0;&#xA0;&#xA0;&#xA0;xx&#xA0;xx </div>
-  <div class="test">x&#xA0;&#xA0;x&#xA0;&#xA0;&#xA0;&#xA0;xx&#xA0;xx </div>
-  <div class="eight"> xx <span class="nine">xx xx</span> </div> <!-- this test assumes letter-spacing is distributed evenly on both sides of each letter (half on each side), which is not specified in the spec (the spec leaves this undefined) -->
-  <div class="ten">x &#xA0;x&#xA0; &#xA0; xx xx </div>
-  <div class="eleven">x&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;x&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;x&#xA0;x&#xA0;&#xA0;&#xA0;x&#xA0;x </div>
+  <div class="test">x&#xA0;&#xA0;x&#xA0;&#xA0;&#xA0;&#xA0; x&#xA0; x </div>
+  <div class="test">x&#xA0;&#xA0;x&#xA0;&#xA0;&#xA0;&#xA0; x&#xA0; x </div>
+  <div class="test"><span class="eight"> xx xx </span></div>
+  <div class="eight"><span class="nine">x&#xA0;&#xA0;x&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;x&#xA0;&#xA0;x </span></div>
+  <div class="ten">x &#xA0;x&#xA0;&#xA0; &#xA0; x &#xA0;x </div>
+  <div class="eleven">x&#xA0; &#xA0;&#xA0; x&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;<span class="fill">x</span>&#xA0;x&#xA0;&#xA0;&#xA0;<span class="fill">x</span> x </div>
  </body>
 </html>

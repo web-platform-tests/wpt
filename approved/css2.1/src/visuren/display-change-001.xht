@@ -11,14 +11,13 @@
       function test() {
         document.getElementById('float').style.display = 'none';
       }
-      document.addEventListener("load", test, false);
     </script>
     <style>
       #float { width: 100%; float:left; }
       div { background: red; color: green; width: 1em; font-family: Ahem; }
     </style>
   </head>
-  <body>
+  <body onload="test()">
     <p>There should be no red below, only green.</p>
     <div id="float">X</div>
     <div>

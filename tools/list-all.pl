@@ -11,6 +11,10 @@ $top = $ARGV[-1] || 'source';
 foreach (@files) {
   chomp;
   m!^(?:\./)?((?:[^/]+/)*)([^/]+?)(\.[a-z]+)?$!;
+  next if (m!/support/!);
+  next if (m!\.css$!);
+  next if (m!hixie!); # temporary
+  next if (m!boland!);
   unless (exists $pairs{$2}) {
     $pairs{$2} = ["$1$2$3"];
   }

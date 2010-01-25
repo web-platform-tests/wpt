@@ -16,7 +16,7 @@
    .six {text-decoration: underline overline;}
    .seven {text-decoration: underline overline line-through;}
    div, strong, img { color: red; }
-   span { color: white; }
+   .eight { color: white; }
   ]]></style>
  </head>
  <body>
@@ -28,16 +28,16 @@
   <p class="six"> This sentence should be underlined and overlined. </p>
   <p class="seven"> This sentence should be underlined, overlined, and stricken. </p>
   <div class="seven"></div> <!-- there should be no red on this page -->
-  <p> There should be no red at the end of this line.<strong class="one"> </strong>&#xA0;</p> <!-- the NBSP (there is one after the strong end tag) makes the strong element's space not be collapsed -->
   <p> There should be no red at the end of this line.<img src="support/swatch-white.png" alt="FAIL: Images required." class="one"/>&#xA0;</p>
   <p class="one">
-   The text of this sentence and all its spaces (including the space between the images)
+   The text of this sentence and all<span> </span>its<span>&nbsp;</span>spaces (including the space between the images)
    <img src="support/square-teal.png" alt="FAIL: Images required."/>
    <img src="support/square-purple.png" alt="FAIL: Images required."/>
    should be underlined, but the images themselves should <em>not</em> be underlined.
   </p>
   <p class="one">
-   There should be a long blue underline between here: <span> FAIL FAIL FAIL FAIL </span> :and here.
+   There should be a long blue underline between here: <span class="eight"> FAIL FAIL FAIL FAIL </span> :and here.
   </p>
- </body>
+  <p>There should be a long blue underline between here:<span class="one"> &#xA0; &#xA0;&#xA0;&#xA0; &#xA0;&#xA0;&#xA0;&#xA0; &#xA0;&#xA0;&#xA0;&#xA0; &#xA0;&#xA0;&#xA0;&#xA0; </span> :and here.</p>
+</body>
 </html>

@@ -1,0 +1,8 @@
+div > p:first-child
+{
+    color: green;
+}
+#user-stylesheet-010
+{
+    display: none;
+}

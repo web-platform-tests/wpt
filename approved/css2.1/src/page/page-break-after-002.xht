@@ -1,22 +1,23 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<title>CSS Test: page-break-after (inline elements)</title>
-<link rel="author" title="Michael Turnwall" href="mailto:mturnwall@revenution.com"/>
-<link rel="author" title="Hewlett-Packard Company" href="http://www.hp.com/"/>
+<title>CSS Test: page-break-after applies to blocks</title>
+<link rel="author" title="Tom Clancy" href="mailto:tclancy@revenution.com"/>
 <link rel="help" href="http://www.w3.org/TR/CSS21/page.html#page-break-props"/>
-<link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#display-prop"/>
+<link rel="help" href="http://www.w3.org/TR/css3-page/#pg-br-before-after"/>
 <meta name="flags" content="paged" />
-<meta name="assert" content="The 'page-break-after' property applies to block-level elements only."/>
+<meta name="assert" content="The 'page-break-after' property must be applied to block-level elements and may be applied to other elements."/>
 <style type="text/css">
-	div.noBreak {
-		page-break-after:always;
-		display:inline;
+	p {page-break-after: always;}
+	p.noBreak {
+		display: inline;
 	}
 </style>
 </head>
 <body>
-	<div class="noBreak">There must <strong>not</strong> be a page-break after this line of text.</div>
-	<div>This test should produce only one page of output.</div>
+	<p>This sentence must be on the first page.</p>
+        <p class="noBreak">This sentence must be on the second page.</p>
+	<p>This sentence must be either on the second or on the third page.</p>
+
 </body>
 </html>

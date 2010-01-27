@@ -1,22 +1,23 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <title>Lists 4 - list-style-type</title>
+    <title>CSS Test: list-style-image in rtl context</title>
     <link rel="author" title="Eira Monstad, Opera Software ASA" href="mailto:public-testsuites@opera.com"/>
-    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#propdef-direction"/>
     <link rel="help" href="http://www.w3.org/TR/CSS21/generate.html#propdef-list-style-type"/>
+    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#propdef-direction"/>
     <meta name="flags" content=""/>
-    <meta name="assert" content="list-style-type should be correctly applied in rtl context"/>
+    <meta name="assert" content="list-style-image should be positioned to the right in rtl context"/>
     <style type="text/css"><![CDATA[
       body {direction:rtl;}
       ul {
-      list-style-type: square;
+      list-style-image: url("support/bidi-list-style-image-001.png");
       }
     ]]></style>
+    
   </head>
-  <body dir="rtl">
+  <body>
     <ul>
-      <li>This list item should have a square to the right</li>
+      <li>This list item should have an orange bullet to the right</li>
     </ul>
   </body>
 </html>

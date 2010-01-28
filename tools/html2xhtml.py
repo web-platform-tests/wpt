@@ -59,10 +59,13 @@ o = re.sub('</body><',
 o = re.sub('</html>$',
            '</html>\n',
            o);
+o = re.sub('\xa0',
+           '&nbsp;',
+           o); # make nbsp visible to people viewing source
 
 #######################################################################
 # Write to file
 
 f = open(sys.argv[2], 'w')
-f.write(o)
+f.write(o.encode('utf-8'))
 f.close()

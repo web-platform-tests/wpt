@@ -7,18 +7,14 @@
         <meta name="flags" content="" />
         <meta name="assert" content="Attribute 'valign' has a specificity of zero and is overridden by CSS." />
         <style type="text/css">
-            body
-            {
-                margin: 0;
-            }
             table
             {
-                border: none;
+                border: 1px solid;
                 border-spacing: 0;
                 height: 200px;
                 width: 100%;
             }
-            td
+            *
             {
                 padding: 0;
                 vertical-align: top;
@@ -26,11 +22,11 @@
         </style>
     </head>
     <body>
+        <p>Test passes if the "Filler Text" is at the top-left corner of the box below.</p>
         <table>
             <tr>
                 <td valign="bottom">Filler Text</td>
             </tr>
         </table>
-        <p>Test passes if the "Filler Text" is at the top left corner of the page.</p>
     </body>
 </html>

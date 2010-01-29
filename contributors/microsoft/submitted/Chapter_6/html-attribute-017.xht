@@ -7,7 +7,11 @@
         <meta name="flags" content="" />
         <meta name="assert" content="Attribute 'height' has a specificity of zero and is overridden by CSS." />
         <style type="text/css">
-            iframe
+            html, body, p
+            {
+                height: auto;
+            }
+            *
             {
                 height: 300px;
             }

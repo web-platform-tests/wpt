@@ -7,9 +7,13 @@
         <meta name="flags" content="interact" />
         <meta name="assert" content="Attribute 'alink' has a specificity of zero and is overridden by CSS." />
         <style type="text/css">
-            a:active
+            *:active
             {
                 color: green;
+            }
+            a
+            {
+                color: black;
             }
         </style>
     </head>

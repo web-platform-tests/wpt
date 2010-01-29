@@ -7,7 +7,7 @@
         <meta name="flags" content="ahem" />
         <meta name="assert" content="Attribute 'face' has a specificity of zero and is overridden by CSS." />
         <style type="text/css">
-            font, div
+            *
             {
                 font-family: sans-serif;
             }
@@ -16,7 +16,7 @@
     <body>
         <p>Test passes if the two lines of "Filler Text" below look the same.</p>
         <font face="ahem">
-            <span>Filler Text Filler Text</span>
+            Filler Text Filler Text
         </font>
         <div>Filler Text Filler Text</div>
     </body>

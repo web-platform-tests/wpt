@@ -7,7 +7,11 @@
         <meta name="flags" content="" />
         <meta name="assert" content="Attribute 'rules' has a specificity of zero and is overridden by CSS." />
         <style type="text/css">
-            td
+            html, body, p
+            {
+                width: auto;
+            }
+            *
             {
                 border: 0 none transparent;
                 width: 100%;

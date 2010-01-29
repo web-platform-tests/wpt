@@ -7,20 +7,27 @@
         <meta name="flags" content="" />
         <meta name="assert" content="Attribute 'cols' has a specificity of zero and is overridden by CSS." />
         <style type="text/css">
-            div div, textarea
+            html, body, p, br, div
             {
+                border: none;
+                width: auto;
+            }
+            *
+            {
+                border: 1px solid blue;
                 width: 100px;
-                border: 1px solid green;
             }
             div div
             {
-                background: green;
+                background: orange;
+                border: 1px solid orange;
                 height: 20px;
+                width: 102px;
             }
         </style>
     </head>
     <body>
-        <p>Test passes if the width of the box is the same as the bar below within a few pixels.</p>
+        <p>Test passes if the width of the blue box is the same as the orange bar below.</p>
         <div>
             <textarea cols="500" rows="10"></textarea>
             <br />

@@ -7,18 +7,22 @@
         <meta name="flags" content="" />
         <meta name="assert" content="Attribute 'align' has a specificity of zero and is overridden by CSS." />
         <style type="text/css">
+            p
+            {
+                text-align: left;
+            }
             table
             {
                 width: 100%;
             }
-            .test
+            *
             {
-                text-align: left;
+                text-align: center;
             }
         </style>
     </head>
     <body>
-        <p>Test passes if there is a "Filler Text" on the left side of the page, and one on the right side of the page.</p>
+        <p>Test passes if the "Filler Text" below is centered on the page.</p>
         <table>
             <caption align="right">Filler Text</caption>
             <tr>
@@ -26,7 +30,7 @@
             </tr>
         </table>
         <table>
-            <caption class="test" align="right">Filler Text</caption>
+            <caption align="right">Filler Text</caption>
             <tr>
                 <td></td>
             </tr>

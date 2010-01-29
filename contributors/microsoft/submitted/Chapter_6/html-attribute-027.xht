@@ -7,10 +7,15 @@
         <meta name="flags" content="" />
         <meta name="assert" content="Attribute 'size' has a specificity of zero and is overridden by CSS." />
         <style type="text/css">
-            hr
+            html, body, p
+            {
+                background: white;
+                height: auto;
+            }
+            *
             {
                 background: green;
-                height: 0;
+                height: 1px;
             }
         </style>
     </head>

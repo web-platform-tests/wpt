@@ -8,8 +8,10 @@
         <meta name="flags" content="" />
         <meta name="assert" content="The 'border-width' property set to 'inherit' correctly inherits the three values specified on the parent element." />
         <style type="text/css">
-            body
+            #parent
             {
+                border-color: transparent;
+                border-style: solid;
                 border-width: 0.5in 0.25in 0.75in;
             }
             #test
@@ -30,7 +32,9 @@
     </head>
     <body>
         <p>Test passes if two boxes below are the same size and shape.</p>
-        <div id="test"></div>
-        <div id="reference"></div>
+        <div id="parent">
+            <div id="test"></div>
+            <div id="reference"></div>
+        </div>
     </body>
 </html>

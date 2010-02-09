@@ -1,3 +1,4 @@
+
 # CSS Test Suite Common Makefile
 # ==============================
 #
@@ -140,7 +141,7 @@ else
 endif
 
 ifeq ($(SUITE),css2_1)
-	find css1 -name FILENAMES | xargs -n 1 perl tools/$(SUITE)/make-proper-tests.pl
+	# find css1 -name FILENAMES | xargs -n 1 perl tools/$(SUITE)/make-proper-tests.pl
 endif
 
 ifdef DEVEL
@@ -201,16 +202,16 @@ ifdef BUILD_FORMAT
 	cp -Lr tests/$(SUITE)/support dist/$(SUITE)/html4/support
 	cp -Lr tests/$(SUITE)/support dist/$(SUITE)/xhtml1/support
 	cp -Lr tests/$(SUITE)/support dist/$(SUITE)/xhtml1print/support
-	cp -Lr tests/$(SUITE)/sectionIndex.htm dist/$(SUITE)/html4/index.htm
-	cp -Lr tests/$(SUITE)/sectionIndex.xht dist/$(SUITE)/xhtml1/index.xht
-	cp -Lr tests/$(SUITE)/sectionIndex.xht dist/$(SUITE)/xhtml1print/index.xht
+	cp -Lr tests/$(SUITE)/sectionIndex.htm dist/$(SUITE)/html4/toc.htm
+	cp -Lr tests/$(SUITE)/sectionIndex.xht dist/$(SUITE)/xhtml1/toc.xht
+	cp -Lr tests/$(SUITE)/sectionIndex.xht dist/$(SUITE)/xhtml1print/toc.xht
 
-
+finish:
 	# PNG->JPEG conversion requires ImageMagick's 'convert' tool
-	find dist/$(SUITE)/xhtml1print/support -iname '*.png' | xargs -iFILENAME convert FILENAME -background white -flatten -quality 90 -interlace none FILENAME.jpg
-	find dist/$(SUITE)/xhtml1print/support -iname '*.png.jpg' | xargs rename s/png.jpg/jpg/
-	find dist/$(SUITE)/xhtml1print/support -iname '*.png' | xargs rm -rf
-	find dist/$(SUITE)/xhtml1print -iname '*.$(EXT)' -o -iname '*.css' | xargs perl -pi -e 's/\.png/\.jpg/g'
+	find dist/$(SUITE)/xhtml1print/support -iname '*.png' | xargs -t -n1 -0 -iFILENAME convert FILENAME -background white -flatten -quality 90 -interlace none FILENAME.jpg
+	find dist/$(SUITE)/xhtml1print/support -iname '*.png.jpg' | xargs -n 20  -0 rename s/png.jpg/jpg/
+	find dist/$(SUITE)/xhtml1print/support -iname '*.png' | xargs -n 20 -0 rm -rf
+	find dist/$(SUITE)/xhtml1print -iname '*.$(EXT)' -o -iname '*.css' | xargs -n 20  -0 perl -pi -e 's/\.png/\.jpg/g'
 	#
 	# report number of tests now included (XHTML1.1 variants only)
 	#

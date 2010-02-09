@@ -40,7 +40,7 @@
   }
 
   th, td {
-    padding: 0.1em;
+    padding: 0.2em;
     text-align: left;
     vertical-align: baseline;
   }
@@ -75,4 +75,10 @@
   th a:focus,
   td a:focus {
     text-decoration: underline;
+  }
+
+  .assert, .assert > li {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
   }

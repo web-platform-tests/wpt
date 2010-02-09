@@ -11,19 +11,19 @@
    CSS conformance</strong>. This build exists to aid in test development
    <strong>only</strong>.
 [% ELSE %]
- <p>It is woefully incomplete and may contain incorrect tests.
+ <p>It contains unreviewed tests and is likely to contain incorrect tests.
 [% END %]
    Please check the latest version of the
    <a href="http://www.w3.org/TR/CSS21/">CSS2.1 specification</a> and the
    <a href="http://www.w3.org/Style/css2-updates/CR-CSS21-20070719-errata.html">errata
    list</a> before assuming a failure is due to an implementation bug and
    not a test suite bug.</p>
-
+<!--
 [% UNLESS official %]
  <p>You can find the <a href="http://www.w3.org/Style/CSS/Test/CSS2.1/current/">official
   build</a> of the CSS 2.1 Test Suite on W3C's web site.</p>
 [% END %]
-
+-->
  <p>In time we hope to correct all errors and extend this test suite to
   cover all of CSS2.1. Your help is welcome in this effort. The appropriate
   mailing list for submitting tests and bug reports is
@@ -35,11 +35,11 @@
  <p>Tests are currently available in three formats:</p>
 
  <dl>
-   <dt><a href="xhtml1/index.xht">XHTML 1.1</a></dt>
+   <dt><a href="xhtml1/toc.xht">XHTML 1.1</a></dt>
      <dd>XHTML 1.1 tests sent as <code>application/xhtml+xml</code></dd>
-   <dt><a href="html4/index.htm">HTML 4.01</a></dt>
+   <dt><a href="html4/toc.htm">HTML 4.01</a></dt>
      <dd>HTML 4.01 tests sent as <code>text/html</code></dd>
-   <dt><a href="xhtml1print/index.xht">XHTML 1.1 for Printers</a></dt>
+   <dt><a href="xhtml1print/toc.xht">XHTML 1.1 for Printers</a></dt>
      <dd>XHTML 1.1 tests with all images converted from PNG to JPEG
        and formatted with headers and footers to ease testing of
        embedded printer software. This is not a canonical format,
@@ -103,7 +103,8 @@
 
   <p>The tests that need these assumptions to be true have not yet been
   marked, but it is likely that we will add a way to identify these
-  tests in due course.</p>
+  tests in due course. Tests should avoid relying on these assumptions
+  where unnecessary.</p>
 
 
 <h2>License</h2>

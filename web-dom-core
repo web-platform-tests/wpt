@@ -159,7 +159,7 @@ is passed an Infinity or Not-a-Number (NaN) value, a
 <p>When a UA is to <dfn id=clone>clone</dfn> a <var title="">node</var>, with a <var title="">new ownerDocument</var> and with a <var title="">clone children</var> flag, it must run the following steps:
 
 <ol>
- <li><p>If <var title="">node</var> is a <code><a href=#documenttype>DocumentType</a></code> node, raise a <code title=dom-Exception-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</code> exception and abort these steps.
+ <li><p>If <var title="">node</var> is a <code><a href=#documenttype>DocumentType</a></code> node, raise a <code title=dom-DOMException-NOT_SUPPORTED_ERR><a href=#dom-domexception-not_supported_err>NOT_SUPPORTED_ERR</a></code> exception and abort these steps.
  <li>
   <p>Let <var title="">copy</var> be a new <code><a href=#node>Node</a></code> that implements the same interfaces as <var title="">node</var>, with <code title=dom-Node-ownerDocument><a href=#dom-node-ownerdocument>ownerDocument</a></code> set to <var title="">new ownerDocument</var>, <code title=dom-Node-prefix><a href=#dom-node-prefix>prefix</a></code>, <code title=dom-Node-localName><a href=#dom-node-localname>localName</a></code> and <code title=dom-Node-namespaceURI><a href=#dom-node-namespaceuri>namespaceURI</a></code> attributes set to the values of the attributes on <var title="">node</var> with the same names, and other attributes set to the values of the attributes on <var title="">node</var> with the same names depending on the type of <var title="">node</var> according to the following table:</p>
   <table>
@@ -190,7 +190,7 @@ is passed an Infinity or Not-a-Number (NaN) value, a
  <li><p>The <code><a href=#node>Node</a></code> is an <code><a href=#attr>Attr</a></code> node, a <code><a href=#text>Text</a></code> node, a <code><a href=#processinginstruction>ProcessingInstruction</a></code> node, a <code><a href=#comment>Comment</a></code> node, or a <code><a href=#documenttype>DocumentType</a></code> node, and has no child nodes.
 </ul>
 
-<p>Before running the steps of an algorithm of a method or attribute in this specification, the user agent must check that running the algorithm will result in a <a href=#legal-hierarchy-0>legal hierarchy</a>. If it won't, then the user agent must instead raise a <code title=dom-domexception-HIERARCHY_REQUEST_ERR>HIERARCHY_REQUEST_ERR</code> exception.
+<p>Before running the steps of an algorithm of a method or attribute in this specification, the user agent must check that running the algorithm will result in a <a href=#legal-hierarchy-0>legal hierarchy</a>. If it won't, then the user agent must instead raise a <code title=dom-DOMException-HIERARCHY_REQUEST_ERR><a href=#dom-domexception-hierarchy_request_err>HIERARCHY_REQUEST_ERR</a></code> exception.
 
 
 <h2 id=basic-types><span class=secno>2 </span>Basic types</h2>
@@ -210,42 +210,73 @@ is passed an Infinity or Not-a-Number (NaN) value, a
 <h3 id=exception-domexception><span class=secno>3.1 </span>Exception <code title="">DOMException</code></h3>
 
 <pre class=idl>exception <dfn id=domexception>DOMException</dfn> {
-  const unsigned short <span title=dom-domexception-INDEX_SIZE_ERR>INDEX_SIZE_ERR</span> = 1;
-  const unsigned short <span title=dom-domexception-DOMSTRING_SIZE_ERR>DOMSTRING_SIZE_ERR</span> = 2;
-  const unsigned short <span title=dom-domexception-HIERARCHY_REQUEST_ERR>HIERARCHY_REQUEST_ERR</span> = 3;
-  const unsigned short <span title=dom-domexception-WRONG_DOCUMENT_ERR>WRONG_DOCUMENT_ERR</span> = 4;
-  const unsigned short <span title=dom-domexception-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</span> = 5;
-  const unsigned short <span title=dom-domexception-NO_DATA_ALLOWED_ERR>NO_DATA_ALLOWED_ERR</span> = 6;
-  const unsigned short <span title=dom-domexception-NO_MODIFICATION_ALLOWED_ERR>NO_MODIFICATION_ALLOWED_ERR</span> = 7;
-  const unsigned short <span title=dom-domexception-NOT_FOUND_ERR>NOT_FOUND_ERR</span> = 8;
-  const unsigned short <span title=dom-domexception-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</span> = 9;
-  const unsigned short <span title=dom-domexception-INUSE_ATTRIBUTE_ERR>INUSE_ATTRIBUTE_ERR</span> = 10;
-  const unsigned short <span title=dom-domexception-INVALID_STATE_ERR>INVALID_STATE_ERR</span> = 11;
-  const unsigned short <span title=dom-domexception-SYNTAX_ERR>SYNTAX_ERR</span> = 12;
-  const unsigned short <span title=dom-domexception-INVALID_MODIFICATION_ERR>INVALID_MODIFICATION_ERR</span> = 13;
-  const unsigned short <span title=dom-domexception-NAMESPACE_ERR>NAMESPACE_ERR</span> = 14;
-  const unsigned short <span title=dom-domexception-INVALID_ACCESS_ERR>INVALID_ACCESS_ERR</span> = 15;
-  const unsigned short <span title=dom-domexception-VALIDATION_ERR>VALIDATION_ERR</span> = 16;
-  const unsigned short <span title=dom-domexception-TYPE_MISMATCH_ERR>TYPE_MISMATCH_ERR</span> = 17;
-  const unsigned short <span title=dom-domexception-SECURITY_ERR>SECURITY_ERR</span> = 18;
-  const unsigned short <span title=dom-domexception-NETWORK_ERR>NETWORK_ERR</span> = 19;
-  const unsigned short <span title=dom-domexception-ABORT_ERR>ABORT_ERR</span> = 20;
-  const unsigned short <span title=dom-domexception-URL_MISMATCH_ERR>URL_MISMATCH_ERR</span> = 21;
-  const unsigned short <span title=dom-domexception-QUOTA_EXCEEDED_ERR>QUOTA_EXCEEDED_ERR</span> = 22;
-  const unsigned short <span title=dom-domexception-DATAGRID_MODEL_ERR>DATAGRID_MODEL_ERR</span> = 23;
-  
+  const unsigned short <a href=#dom-domexception-index_size_err title=dom-DOMException-INDEX_SIZE_ERR>INDEX_SIZE_ERR</a> = 1;
+  const unsigned short <a href=#dom-domexception-domstring_size_err title=dom-DOMException-DOMSTRING_SIZE_ERR>DOMSTRING_SIZE_ERR</a> = 2;
+  const unsigned short <a href=#dom-domexception-hierarchy_request_err title=dom-DOMException-HIERARCHY_REQUEST_ERR>HIERARCHY_REQUEST_ERR</a> = 3;
+  const unsigned short <a href=#dom-domexception-wrong_document_err title=dom-DOMException-WRONG_DOCUMENT_ERR>WRONG_DOCUMENT_ERR</a> = 4;
+  const unsigned short <a href=#dom-domexception-invalid_character_err title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</a> = 5;
+  const unsigned short <a href=#dom-domexception-no_data_allowed_err title=dom-DOMException-NO_DATA_ALLOWED_ERR>NO_DATA_ALLOWED_ERR</a> = 6;
+  const unsigned short <a href=#dom-domexception-no_modification_allowed_err title=dom-DOMException-NO_MODIFICATION_ALLOWED_ERR>NO_MODIFICATION_ALLOWED_ERR</a> = 7;
+  const unsigned short <a href=#dom-domexception-not_found_err title=dom-DOMException-NOT_FOUND_ERR>NOT_FOUND_ERR</a> = 8;
+  const unsigned short <a href=#dom-domexception-not_supported_err title=dom-DOMException-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</a> = 9;
+  const unsigned short <a href=#dom-domexception-inuse_attribute_err title=dom-DOMException-INUSE_ATTRIBUTE_ERR>INUSE_ATTRIBUTE_ERR</a> = 10;
+  const unsigned short <a href=#dom-domexception-invalid_state_err title=dom-DOMException-INVALID_STATE_ERR>INVALID_STATE_ERR</a> = 11;
+  const unsigned short <a href=#dom-domexception-syntax_err title=dom-DOMException-SYNTAX_ERR>SYNTAX_ERR</a> = 12;
+  const unsigned short <a href=#dom-domexception-invalid_modification_err title=dom-DOMException-INVALID_MODIFICATION_ERR>INVALID_MODIFICATION_ERR</a> = 13;
+  const unsigned short <a href=#dom-domexception-namespace_err title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</a> = 14;
+  const unsigned short <a href=#dom-domexception-invalid_access_err title=dom-DOMException-INVALID_ACCESS_ERR>INVALID_ACCESS_ERR</a> = 15;
+  const unsigned short <a href=#dom-domexception-validation_err title=dom-DOMException-VALIDATION_ERR>VALIDATION_ERR</a> = 16;
+  const unsigned short <a href=#dom-domexception-type_mismatch_err title=dom-DOMException-TYPE_MISMATCH_ERR>TYPE_MISMATCH_ERR</a> = 17;
+  const unsigned short <a href=#dom-domexception-security_err title=dom-DOMException-SECURITY_ERR>SECURITY_ERR</a> = 18;
+  const unsigned short <a href=#dom-domexception-network_err title=dom-DOMException-NETWORK_ERR>NETWORK_ERR</a> = 19;
+  const unsigned short <a href=#dom-domexception-abort_err title=dom-DOMException-ABORT_ERR>ABORT_ERR</a> = 20;
+  const unsigned short <a href=#dom-domexception-url_mismatch_err title=dom-DOMException-URL_MISMATCH_ERR>URL_MISMATCH_ERR</a> = 21;
+  const unsigned short <a href=#dom-domexception-quota_exceeded_err title=dom-DOMException-QUOTA_EXCEEDED_ERR>QUOTA_EXCEEDED_ERR</a> = 22;
+  const unsigned short <a href=#dom-domexception-parse_err title=dom-DOMException-PARSE_ERR>PARSE_ERR</a> = 81;
+  const unsigned short <a href=#dom-domexception-serialize_err title=dom-DOMException-SERIALIZE_ERR>SERIALIZE_ERR</a> = 82;
   unsigned short <a href=#dom-domexception-code title=dom-DOMException-code>code</a>;
   DOMString <a href=#dom-domexception-message title=dom-DOMException-message>message</a>;
   DOMString <a href=#dom-domexception-name title=dom-DOMException-name>name</a>;
 };</pre>
 
-<p>The <dfn id=dom-domexception-code title=dom-DOMException-code><code>code</code></dfn> exception member must return the code for the exception, which must be one of the following:
+<p>The <dfn id=dom-domexception-code title=dom-DOMException-code><code>code</code></dfn> exception member
+must return the code for the exception, which must be one of the following:
+
+<ol class=brief>
+ <li value=1><dfn id=dom-domexception-index_size_err title=dom-DOMException-INDEX_SIZE_ERR><code>INDEX_SIZE_ERR</code></dfn></li>
+ <li value=2><dfn id=dom-domexception-domstring_size_err title=dom-DOMException-DOMSTRING_SIZE_ERR><code>DOMSTRING_SIZE_ERR</code></dfn></li>
+ <li value=3><dfn id=dom-domexception-hierarchy_request_err title=dom-DOMException-HIERARCHY_REQUEST_ERR><code>HIERARCHY_REQUEST_ERR</code></dfn></li>
+ <li value=4><dfn id=dom-domexception-wrong_document_err title=dom-DOMException-WRONG_DOCUMENT_ERR><code>WRONG_DOCUMENT_ERR</code></dfn></li>
+ <li value=5><dfn id=dom-domexception-invalid_character_err title=dom-DOMException-INVALID_CHARACTER_ERR><code>INVALID_CHARACTER_ERR</code></dfn></li>
+ <li value=6><dfn id=dom-domexception-no_data_allowed_err title=dom-DOMException-NO_DATA_ALLOWED_ERR><code>NO_DATA_ALLOWED_ERR</code></dfn></li>
+ <li value=7><dfn id=dom-domexception-no_modification_allowed_err title=dom-DOMException-NO_MODIFICATION_ALLOWED_ERR><code>NO_MODIFICATION_ALLOWED_ERR</code></dfn></li>
+ <li value=8><dfn id=dom-domexception-not_found_err title=dom-DOMException-NOT_FOUND_ERR><code>NOT_FOUND_ERR</code></dfn></li>
+ <li value=9><dfn id=dom-domexception-not_supported_err title=dom-DOMException-NOT_SUPPORTED_ERR><code>NOT_SUPPORTED_ERR</code></dfn></li>
+ <li value=10><dfn id=dom-domexception-inuse_attribute_err title=dom-DOMException-INUSE_ATTRIBUTE_ERR><code>INUSE_ATTRIBUTE_ERR</code></dfn></li>
+ <li value=11><dfn id=dom-domexception-invalid_state_err title=dom-DOMException-INVALID_STATE_ERR><code>INVALID_STATE_ERR</code></dfn></li>
+ <li value=12><dfn id=dom-domexception-syntax_err title=dom-DOMException-SYNTAX_ERR><code>SYNTAX_ERR</code></dfn></li>
+ <li value=13><dfn id=dom-domexception-invalid_modification_err title=dom-DOMException-INVALID_MODIFICATION_ERR><code>INVALID_MODIFICATION_ERR</code></dfn></li>
+ <li value=14><dfn id=dom-domexception-namespace_err title=dom-DOMException-NAMESPACE_ERR><code>NAMESPACE_ERR</code></dfn></li>
+ <li value=15><dfn id=dom-domexception-invalid_access_err title=dom-DOMException-INVALID_ACCESS_ERR><code>INVALID_ACCESS_ERR</code></dfn></li>
+ <li value=16><dfn id=dom-domexception-validation_err title=dom-DOMException-VALIDATION_ERR><code>VALIDATION_ERR</code></dfn></li>
+ <li value=17><dfn id=dom-domexception-type_mismatch_err title=dom-DOMException-TYPE_MISMATCH_ERR><code>TYPE_MISMATCH_ERR</code></dfn></li>
+ <li value=18><dfn id=dom-domexception-security_err title=dom-DOMException-SECURITY_ERR><code>SECURITY_ERR</code></dfn></li>
+ <li value=19><dfn id=dom-domexception-network_err title=dom-DOMException-NETWORK_ERR><code>NETWORK_ERR</code></dfn></li>
+ <li value=20><dfn id=dom-domexception-abort_err title=dom-DOMException-ABORT_ERR><code>ABORT_ERR</code></dfn></li>
+ <li value=21><dfn id=dom-domexception-url_mismatch_err title=dom-DOMException-URL_MISMATCH_ERR><code>URL_MISMATCH_ERR</code></dfn></li>
+ <li value=22><dfn id=dom-domexception-quota_exceeded_err title=dom-DOMException-QUOTA_EXCEEDED_ERR><code>QUOTA_EXCEEDED_ERR</code></dfn></li>
+ <li value=81><dfn id=dom-domexception-parse_err title=dom-DOMException-PARSE_ERR><code>PARSE_ERR</code></dfn></li>
+ <li value=82><dfn id=dom-domexception-serialize_err title=dom-DOMException-SERIALIZE_ERR><code>SERIALIZE_ERR</code></dfn></li>
+</ol>
 
 <dl class=XXX><dt>...<dd>...</dl>
 
-<p>The <dfn id=dom-domexception-message title=dom-DOMException-message><code>message</code></dfn> exception member must return <span class=XXX>...</span>
+<p>The <dfn id=dom-domexception-message title=dom-DOMException-message><code>message</code></dfn> exception
+member must return a User Agent-defined human readable string describing the
+exception.
 
-<p>The <dfn id=dom-domexception-name title=dom-DOMException-name><code>name</code></dfn> exception member must return <span class=XXX>...</span></p>
+<p>The <dfn id=dom-domexception-name title=dom-DOMException-name><code>name</code></dfn> exception member
+must return the name of the exception constant as a string.</p>
 
 <!-- DOMStringList dropped -->
 <!-- NameList dropped -->
@@ -269,9 +300,9 @@ is passed an Infinity or Not-a-Number (NaN) value, a
 <p>The <dfn id=dom-domimplementation-createdocumenttype title=dom-DOMImplementation-createDocumentType><code>createDocumentType(<var title="">qualifiedName</var>, <var title="">publicId</var>, <var title="">systemId</var>)</code></dfn> method must run the following steps:
 
 <ol>
- <li><p>If <var title="">qualifiedName</var> doesn't match the <code title="">Name</code> production in XML, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
+ <li><p>If <var title="">qualifiedName</var> doesn't match the <code title="">Name</code> production in XML, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR><a href=#dom-domexception-invalid_character_err>INVALID_CHARACTER_ERR</a></code>
  exception and abort these steps. <a href=#refsXML>[XML]</a>
- <li><p>If <var title="">qualifiedName</var> doesn't match the <code title="">NCName</code> production in Namespaces in XML, raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and abort
+ <li><p>If <var title="">qualifiedName</var> doesn't match the <code title="">NCName</code> production in Namespaces in XML, raise a <code title=dom-DOMException-NAMESPACE_ERR><a href=#dom-domexception-namespace_err>NAMESPACE_ERR</a></code> exception and abort
  these steps. <a href=#refsXMLNS>[XMLNS]</a>
  <!--<li><p>If <var title>publicId</var> contains a character that doesn't match the <code title>PubidChar</code> production in XML, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and abort these steps. <a href=#refsXML>[XML]</a>--> <!-- DOM3 didn't check this -->
  <!--<li><p>If <var title>systemId</var> contains both a U+0022 QUOTATION MARK ('"') and a U+0027 APOSTROPHE ("'") character, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and abort these steps.--> <!-- DOM3 didn't check this -->
@@ -288,7 +319,7 @@ is passed an Infinity or Not-a-Number (NaN) value, a
  <li>
   <p>If <var title="">doctype</var> is not null, run the following substeps:
   <ol>
-   <li><p>If the <var title="">doctype</var>'s <code title=dom-Node-ownerDocument><a href=#dom-node-ownerdocument>ownerDocument</a></code> is not null, raise a <code title=dom-DOMException-WRONG_DOCUMENT_ERR>WRONG_DOCUMENT_ERR</code> exception and abort the overall set of steps.
+   <li><p>If the <var title="">doctype</var>'s <code title=dom-Node-ownerDocument><a href=#dom-node-ownerdocument>ownerDocument</a></code> is not null, raise a <code title=dom-DOMException-WRONG_DOCUMENT_ERR><a href=#dom-domexception-wrong_document_err>WRONG_DOCUMENT_ERR</a></code> exception and abort the overall set of steps.
    <li><p>Set the <var title="">doctype</var>'s <code title=dom-Node-ownerDocument><a href=#dom-node-ownerdocument>ownerDocument</a></code> to <var title="">document</var>.
    <li><p>Append <var title="">doctype</var> to <var title="">document</var>.
   </ol>
@@ -373,7 +404,7 @@ is passed an Infinity or Not-a-Number (NaN) value, a
 <!-- As far as I can tell, this isn't needed for web compatibility. Neither WebKit nor Opera support it, and Firefox's implementation still throws on the majority of cases in the wild, as almost all cases in the wild take advantage of the fact that IE allows attributes. -->
 <ol>
  <li><p>If <var title="">tagName</var> doesn't match the <code title="">Name</code>
- production in XML, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
+ production in XML, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR><a href=#dom-domexception-invalid_character_err>INVALID_CHARACTER_ERR</a></code>
  exception and abort these steps. <a href=#refsXML>[XML]</a>
  <li><p>Return a new <code><a href=#element>Element</a></code> node with no attributes, <code title=dom-Node-namespaceURI><a href=#dom-node-namespaceuri>namespaceURI</a></code> set to "<code title="">http://www.w3.org/1999/xhtml</code>", <code title=dom-Node-prefix><a href=#dom-node-prefix>prefix</a></code> set to null, <code title=dom-Node-localName><a href=#dom-node-localname>localName</a></code> set to <var title="">tagName</var>, <a href=#converted-to-lowercase>converted to lowercase</a>, and <code title=dom-Node-ownerDocument><a href=#dom-node-ownerdocument>ownerDocument</a></code> set to the <a href=#context-node>context node</a>.
 </ol>
@@ -395,7 +426,7 @@ adjacent hyphens or ends with a hyphen. <a href=#refsXML>[XML]</a>
 <ol>
  <li><p>If <var title="">target</var> doesn't match the <!--<code
  title>PITarget</code>--> <code title="">Name</code> production in XML, raise an
- <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
+ <code title=dom-DOMException-INVALID_CHARACTER_ERR><a href=#dom-domexception-invalid_character_err>INVALID_CHARACTER_ERR</a></code>
  exception and abort these steps. <a href=#refsXML>[XML]</a> <!-- DOM3 didn't
  check for "xml" --></li>
  <!--<li><p>If <var title>target</var> contains a U+003A COLON (":") character, raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and abort these steps.--> <!-- DOM3 didn't check this -->
@@ -423,21 +454,21 @@ contains "xml" or the colon, or that the data contains characters that match the
 <p>The <dfn id=dom-document-importnode title=dom-Document-importNode><code>importNode(<var title="">importedNode</var>, <var title="">deep</var>)</code></dfn> method must <!--run the following steps:
 <ol>-->
  <!--<li><p>If the <span>context node</span> is an XML document, then if any imported <code>Element</code> or <code>Attr</code> node have a <code title=dom-Node-nodeName>nodeName</code> that doesn't match the <code>Name</code> production in XML, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and abort these steps. <a href=#refsXML>[XML]</a> (browsers don't do this) --> <!-- XXX this might be wrong -->
- <!--<li><p>If <var>importedNode</var>'s <code title=dom-Node-ownerDocument>ownerDocument</code>'s <span>effective script origin</span> is not the <span title=same-origin>same</span> as the <span>effective script origin</span> of the <span>context node</span>, raise a <code title=dom-domexception-SECURITY_ERR>SECURITY_ERR</code> exception and abort these steps. <a href=#refsHTML>[HTML]</a> (can't get a reference to a node that you can't adopt anyway) -->
+ <!--<li><p>If <var>importedNode</var>'s <code title=dom-Node-ownerDocument>ownerDocument</code>'s <span>effective script origin</span> is not the <span title=same-origin>same</span> as the <span>effective script origin</span> of the <span>context node</span>, raise a <code title=dom-DOMException-SECURITY_ERR>SECURITY_ERR</code> exception and abort these steps. <a href=#refsHTML>[HTML]</a> (can't get a reference to a node that you can't adopt anyway) -->
  <!--<li><p>R-->return a <a href=#clone>clone</a> of <var title="">importedNode</var>, with <var title="">new ownerDocument</var> being the <a href=#context-node>context node</a>, and the <var title="">clone children</var> flag set if <var title="">deep</var> is true.
 <!--</ol>-->
 
 <p>The <dfn id=dom-document-createelementns title=dom-Document-createElementNS><code>createElementNS(<var title="">namespaceURI</var>, <var title="">qualifiedName</var>)</code></dfn> method must run the following steps:</p>
 <ol>
- <li><p>If <var title="">qualifiedName</var> doesn't match the <code title="">Name</code> production in XML, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
+ <li><p>If <var title="">qualifiedName</var> doesn't match the <code title="">Name</code> production in XML, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR><a href=#dom-domexception-invalid_character_err>INVALID_CHARACTER_ERR</a></code>
  exception and abort these steps. <a href=#refsXML>[XML]</a>
- <li><p>If <var title="">qualifiedName</var> doesn't match the <code title="">QName</code> production in Namespaces in XML, raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and abort
+ <li><p>If <var title="">qualifiedName</var> doesn't match the <code title="">QName</code> production in Namespaces in XML, raise a <code title=dom-DOMException-NAMESPACE_ERR><a href=#dom-domexception-namespace_err>NAMESPACE_ERR</a></code> exception and abort
  these steps. <a href=#refsXMLNS>[XMLNS]</a>
  <li><p>If <var title="">qualifiedName</var> contains a U+003E COLON (":") character, then split the string on the colon and let <var title="">prefix</var> be the part before the colon and <var title="">localName</var> the part after the colon. Otherwise, let <var title="">prefix</var> be null and <var title="">localName</var> be <var title="">qualifiedName</var>.
- <li><p>If <var title="">prefix</var> is not null and <var title="">namespaceURI</var> is an empty string, raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and abort these steps.
- <li><p>If <var title="">prefix</var> is "xml" and <var title="">namespaceURI</var> is not "http://www.w3.org/XML/1998/namespace", raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and abort these steps.
- <li><p>If <var title="">qualifiedName</var> or <var title="">prefix</var> is "xmlns" and <var title="">namespaceURI</var> is not "http://www.w3.org/2000/xmlns/", raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and abort these steps.
- <li><p>If <var title="">namespaceURI</var> is "http://www.w3.org/2000/xmlns/" and neither <var title="">qualifiedName</var> nor <var title="">prefix</var> is "xmlns", raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and abort these steps.
+ <li><p>If <var title="">prefix</var> is not null and <var title="">namespaceURI</var> is an empty string, raise a <code title=dom-DOMException-NAMESPACE_ERR><a href=#dom-domexception-namespace_err>NAMESPACE_ERR</a></code> exception and abort these steps.
+ <li><p>If <var title="">prefix</var> is "xml" and <var title="">namespaceURI</var> is not "http://www.w3.org/XML/1998/namespace", raise a <code title=dom-DOMException-NAMESPACE_ERR><a href=#dom-domexception-namespace_err>NAMESPACE_ERR</a></code> exception and abort these steps.
+ <li><p>If <var title="">qualifiedName</var> or <var title="">prefix</var> is "xmlns" and <var title="">namespaceURI</var> is not "http://www.w3.org/2000/xmlns/", raise a <code title=dom-DOMException-NAMESPACE_ERR><a href=#dom-domexception-namespace_err>NAMESPACE_ERR</a></code> exception and abort these steps.
+ <li><p>If <var title="">namespaceURI</var> is "http://www.w3.org/2000/xmlns/" and neither <var title="">qualifiedName</var> nor <var title="">prefix</var> is "xmlns", raise a <code title=dom-DOMException-NAMESPACE_ERR><a href=#dom-domexception-namespace_err>NAMESPACE_ERR</a></code> exception and abort these steps.
  <li><p>Return a new <code><a href=#element>Element</a></code> node with no attributes, <code title=dom-Node-namespaceURI><a href=#dom-node-namespaceuri>namespaceURI</a></code> set to <var title="">namespaceURI</var>, <code title=dom-Node-prefix><a href=#dom-node-prefix>prefix</a></code> set to <var title="">prefix</var>, <code title=dom-Node-localName><a href=#dom-node-localname>localName</a></code> set to <var title="">localName</var>, and <code title=dom-Node-ownerDocument><a href=#dom-node-ownerdocument>ownerDocument</a></code> set to the <a href=#context-node>context node</a>.
 </ol>
 
@@ -564,8 +595,8 @@ contains "xml" or the colon, or that the data contains characters that match the
 <p>The <dfn id=dom-node-insertbefore title=dom-Node-insertBefore><code>insertBefore(<var>newChild</var>, <var>refChild</var>)</code></dfn> method must run the following steps:
 
 <ol>
- <li><p>If <var>newChild</var> doesn't implement the <code><a href=#node>Node</a></code> interface, or if <var>refChild</var> is not null or doesn't implement the <code><a href=#node>Node</a></code> interface, then raise a <code title=dom-exception-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</code> exception and abort these steps.
- <li><p>If <var>refChild</var> is not null and is not a child of the <a href=#context-node>context node</a>, then raise a <code title=dom-exception-NOT_FOUND_ERR>NOT_FOUND_ERR</code> exception and abort these steps.
+ <li><p>If <var>newChild</var> doesn't implement the <code><a href=#node>Node</a></code> interface, or if <var>refChild</var> is not null or doesn't implement the <code><a href=#node>Node</a></code> interface, then raise a <code title=dom-DOMException-NOT_SUPPORTED_ERR><a href=#dom-domexception-not_supported_err>NOT_SUPPORTED_ERR</a></code> exception and abort these steps.
+ <li><p>If <var>refChild</var> is not null and is not a child of the <a href=#context-node>context node</a>, then raise a <code title=dom-DOMException-NOT_FOUND_ERR><a href=#dom-domexception-not_found_err>NOT_FOUND_ERR</a></code> exception and abort these steps.
  <!-- no security check -->
  <li><p>If <var>newChild</var> is a <code><a href=#documentfragment>DocumentFragment</a></code> node, then while <var>newChild</var>'s <code title=dom-Node-firstChild><a href=#dom-node-firstchild>firstChild</a></code> is not null, call <code title=dom-Node-insertBefore><a href=#dom-node-insertbefore>insertBefore</a></code> on the <a href=#context-node>context node</a> with <var>newChild</var>'s <code title=dom-Node-firstChild><a href=#dom-node-firstchild>firstChild</a></code> as first argument and <var>refChild</var> as second argument.
  <li><p>Otherwise, if <var>refChild</var> is null, append <var>newChild</var> to the <a href=#context-node>context node</a>.
@@ -576,8 +607,8 @@ contains "xml" or the colon, or that the data contains characters that match the
 <p>The <dfn id=dom-node-replacechild title=dom-Node-replaceChild><code>replaceChild(<var>newChild</var>, <var>oldChild</var>)</code></dfn> method must run the following steps:
 
 <ol>
- <li><p>If <var>newChild</var> or <var>oldChild</var> doesn't implement the <code><a href=#node>Node</a></code> interface, then raise a <code title=dom-exception-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</code> exception and abort these steps.
- <li><p>If <var>oldChild</var> is not a child of the <a href=#context-node>context node</a>, then raise a <code title=dom-exception-NOT_FOUND_ERR>NOT_FOUND_ERR</code> exception and abort these steps.
+ <li><p>If <var>newChild</var> or <var>oldChild</var> doesn't implement the <code><a href=#node>Node</a></code> interface, then raise a <code title=dom-DOMException-NOT_SUPPORTED_ERR><a href=#dom-domexception-not_supported_err>NOT_SUPPORTED_ERR</a></code> exception and abort these steps.
+ <li><p>If <var>oldChild</var> is not a child of the <a href=#context-node>context node</a>, then raise a <code title=dom-DOMException-NOT_FOUND_ERR><a href=#dom-domexception-not_found_err>NOT_FOUND_ERR</a></code> exception and abort these steps.
  <!-- no security check -->
  <li><p>Let <var>refChild</var> be <var>oldChild</var>'s <code title=dom-Node-nextSibling><a href=#dom-node-nextsibling>nextSibling</a></code>.
  <li><p>Remove <var>oldChild</var> from <a href=#context-node>context node</a>.
@@ -588,8 +619,8 @@ contains "xml" or the colon, or that the data contains characters that match the
 <p>The <dfn id=dom-node-removechild title=dom-Node-removeChild><code>removeChild(<var>oldChild</var>)</code></dfn> method must run the following steps:
 
 <ol>
- <li><p>If <var>oldChild</var> doesn't implement the <code><a href=#node>Node</a></code> interface, then raise a <code title=dom-exception-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</code> exception and abort these steps.
- <li><p>If <var>oldChild</var> is not a child of the <a href=#context-node>context node</a>, then raise a <code title=dom-exception-NOT_FOUND_ERR>NOT_FOUND_ERR</code> exception and abort these steps.
+ <li><p>If <var>oldChild</var> doesn't implement the <code><a href=#node>Node</a></code> interface, then raise a <code title=dom-DOMException-NOT_SUPPORTED_ERR><a href=#dom-domexception-not_supported_err>NOT_SUPPORTED_ERR</a></code> exception and abort these steps.
+ <li><p>If <var>oldChild</var> is not a child of the <a href=#context-node>context node</a>, then raise a <code title=dom-DOMException-NOT_FOUND_ERR><a href=#dom-domexception-not_found_err>NOT_FOUND_ERR</a></code> exception and abort these steps.
  <li><p>Remove <var>oldChild</var> from <a href=#context-node>context node</a>.
  <li><p>Return <var>oldChild</var>.
 </ol>
@@ -597,7 +628,7 @@ contains "xml" or the colon, or that the data contains characters that match the
 <p>The <dfn id=dom-node-appendchild title=dom-Node-appendChild><code>appendChild(<var>newChild</var>)</code></dfn> method must run the following steps:
 
 <ol>
- <li><p>If <var>newChild</var> doesn't implement the <code><a href=#node>Node</a></code> interface, then raise a <code title=dom-exception-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</code> exception and abort these steps.
+ <li><p>If <var>newChild</var> doesn't implement the <code><a href=#node>Node</a></code> interface, then raise a <code title=dom-DOMException-NOT_SUPPORTED_ERR><a href=#dom-domexception-not_supported_err>NOT_SUPPORTED_ERR</a></code> exception and abort these steps.
  <!-- no security check -->
  <li><p>Append <var>newChild</var> to the <a href=#context-node>context node</a>.
  <li><p>Return <var>newChild</var>.
@@ -711,7 +742,7 @@ contains "xml" or the colon, or that the data contains characters that match the
 <p>The <dfn id=dom-characterdata-substringdata title=dom-CharacterData-substringData><code>substringData(<var>offset</var>, <var>count</var>)</code></dfn> method must run the following steps:
 
 <ol>
- <li><p>If <var>offset</var> is negative or is greater than the <a href=#context-node>context node</a>'s <code title=dom-CharacterData-length><a href=#dom-characterdata-length>length</a></code>, or if <var>count</var> is negative, raise an <code title=dom-domexception-INDEX_SIZE_ERR>INDEX_SIZE_ERR</code> exception and abort these steps.
+ <li><p>If <var>offset</var> is negative or is greater than the <a href=#context-node>context node</a>'s <code title=dom-CharacterData-length><a href=#dom-characterdata-length>length</a></code>, or if <var>count</var> is negative, raise an <code title=dom-DOMException-INDEX_SIZE_ERR><a href=#dom-domexception-index_size_err>INDEX_SIZE_ERR</a></code> exception and abort these steps.
  <li><p>If <span><var>offset</var>+<var>count</var></span> is greater than the <a href=#context-node>context node</a>'s <code title=dom-CharacterData-length><a href=#dom-characterdata-length>length</a></code>, return a <code>DOMString</code> whose value is the UTF-16 code units from the <var>offset</var>th UTF-16 code unit to the end of <var title="">data</var>.
  <li><p>Return a <code>DOMString</code> whose value is the UTF-16 code units from the <var>offset</var>th UTF-16 code unit to the <span><var>offset</var>+<var>count</var></span>th UTF-16 code unit in <var title="">data</var>.
 </ol>

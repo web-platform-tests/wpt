@@ -336,7 +336,7 @@ is passed an Infinity or Not-a-Number (NaN) value, a
 };</pre>
 
 <p>The <dfn id=dom-document-doctype title=dom-Document-doctype><code>doctype</code></dfn> attribute must return the first child of the <code><a href=#document>Document</a></code> node that is a <code><a href=#documenttype>DocumentType</a></code> node, if there is one, or null otherwise.
-<p class=note>In both HTML and XML there will only ever be one <code><a href=#documenttype>DocumentType</a></code> node descendant of the <code><a href=#document>Document</a></code> node. [HTML] <a href=#refsXML>[XML]</a>
+<p class=note>In both HTML and XML there will only ever be one <code><a href=#documenttype>DocumentType</a></code> node descendant of the <code><a href=#document>Document</a></code> node. <a href=#refsHTML>[HTML]</a> <a href=#refsXML>[XML]</a>
 
 <p>The <dfn id=dom-document-implementation title=dom-Document-implementation><code>implementation</code></dfn> attribute must return the <code><a href=#domimplementation>DOMImplementation</a></code> object that is associated with the <code><a href=#document>Document</a></code> node.
 
@@ -423,7 +423,7 @@ contains "xml" or the colon, or that the data contains characters that match the
 <p>The <dfn id=dom-document-importnode title=dom-Document-importNode><code>importNode(<var title="">importedNode</var>, <var title="">deep</var>)</code></dfn> method must <!--run the following steps:
 <ol>-->
  <!--<li><p>If the <span>context node</span> is an XML document, then if any imported <code>Element</code> or <code>Attr</code> node have a <code title=dom-Node-nodeName>nodeName</code> that doesn't match the <code>Name</code> production in XML, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and abort these steps. <a href=#refsXML>[XML]</a> (browsers don't do this) --> <!-- XXX this might be wrong -->
- <!--<li><p>If <var>importedNode</var>'s <code title=dom-Node-ownerDocument>ownerDocument</code>'s <span>effective script origin</span> is not the <span title=same-origin>same</span> as the <span>effective script origin</span> of the <span>context node</span>, raise a <code title=dom-domexception-SECURITY_ERR>SECURITY_ERR</code> exception and abort these steps. [HTML5] (can't get a reference to a node that you can't adopt anyway) -->
+ <!--<li><p>If <var>importedNode</var>'s <code title=dom-Node-ownerDocument>ownerDocument</code>'s <span>effective script origin</span> is not the <span title=same-origin>same</span> as the <span>effective script origin</span> of the <span>context node</span>, raise a <code title=dom-domexception-SECURITY_ERR>SECURITY_ERR</code> exception and abort these steps. <a href=#refsHTML>[HTML]</a> (can't get a reference to a node that you can't adopt anyway) -->
  <!--<li><p>R-->return a <a href=#clone>clone</a> of <var title="">importedNode</var>, with <var title="">new ownerDocument</var> being the <a href=#context-node>context node</a>, and the <var title="">clone children</var> flag set if <var title="">deep</var> is true.
 <!--</ol>-->
 
@@ -666,7 +666,7 @@ contains "xml" or the colon, or that the data contains characters that match the
 
 <h3 id=interface-nodelist><span class=secno>3.6 </span>Interface <code title="">NodeList</code></h3>
 
-<p>A <code><a href=#nodelist>NodeList</a></code> is a <span title=collections>collection</span>, except that <code><a href=#nodelist>NodeList</a></code>s can be static (as opposed to live) if a specification defines them to be static. [HTML5]
+<p>A <code><a href=#nodelist>NodeList</a></code> is a <span title=collections>collection</span>, except that <code><a href=#nodelist>NodeList</a></code>s can be static (as opposed to live) if a specification defines them to be static. <a href=#refsHTML>[HTML]</a>
 
 <pre class=idl>interface <dfn id=nodelist>NodeList</dfn> {
   getter <a href=#node>Node</a> <a href=#dom-nodelist-item title=dom-NodeList-item>item</a>(in unsigned long index);
@@ -820,6 +820,10 @@ contains "xml" or the colon, or that the data contains characters that match the
 because the newer ones keep changing. -->
 
 <dl>
+ <dt id=refsHTML>[HTML]</dt>
+ <dd><cite><a href=http://www.whatwg.org/specs/web-apps/current-work/>HTML</a></cite>,
+ I. Hickson. WHATWG.</dd>
+
  <dt id=refsRFC2119>[RFC2119]</dt>
  <dd><cite><a href=http://www.ietf.org/rfc/rfc2119.txt>Key words for use in
  RFCs to Indicate Requirement Levels</a></cite>, S. Bradner. IETF.</dd>

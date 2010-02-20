@@ -61,7 +61,35 @@
 
 <h3>Conformance requirements</h3>
 
-<p class=XXX>RFC2119, WebIDL, HTML5.
+<p>All diagrams, examples, and notes in this specification are
+non-normative, as are all sections explicitly marked non-normative.
+Everything else in this specification is normative.</p>
+
+<p>The key words "MUST", "MUST NOT", "REQUIRED", <!--"SHALL", "SHALL
+NOT",--> "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and
+"OPTIONAL" in the normative parts of this document are to be
+interpreted as described in RFC2119. For readability, these words do
+not appear in all uppercase letters in this specification. <a
+href="#refsRFC2119">[RFC2119]</a></p>
+
+<p>Requirements phrased in the imperative as part of algorithms
+(such as "strip any leading space characters" or "return false and
+abort these steps") are to be interpreted with the meaning of the
+key word ("must", "should", "may", etc) used in introducing the
+algorithm.</p>
+
+<p>Conformance requirements phrased as algorithms or specific steps
+may be implemented in any manner, so long as the end result is
+equivalent. (In particular, the algorithms defined in this
+specification are intended to be easy to follow, and not intended to
+be performant.)</p>
+
+<p id="hardwareLimitations">User agents may impose
+implementation-specific limits on otherwise unconstrained inputs,
+e.g. to prevent denial of service attacks, to guard against running
+out of memory, or to work around platform-specific limitations.</p>
+
+<p class=XXX>WebIDL, HTML5.
 
 <p>When a method or an attribute is said to call another method or attribute, the user agent must invoke its internal API for that attribute or method so that e.g. the author can't change the behavior by overriding attributes or methods with custom properties or functions in ECMAScript.
 
@@ -724,6 +752,20 @@
            attribute DOMString <span title=dom-ProcessingInstruction-data>data</span>;
 };</pre>
 
+
+
+<h2 class="no-num" id="references">References</h2><!--REFS-->
+
+<p>All references are normative unless marked "Non-normative".</p>
+
+<!-- Dates are only included for standards older than the Web,
+because the newer ones keep changing. -->
+
+<dl>
+ <dt id="refsRFC2119">[RFC2119]</dt>
+ <dd><cite><a href="http://www.ietf.org/rfc/rfc2119.txt">Key words for use in
+ RFCs to Indicate Requirement Levels</a></cite>, S. Bradner. IETF.</dd>
+</dl>
 
 <h2 class=no-num>Acknowledgements</h2>
 

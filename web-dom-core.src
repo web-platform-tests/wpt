@@ -2,7 +2,7 @@
 <title>Web DOM Core</title>
 <link rel=stylesheet href=http://www.whatwg.org/style/specification>
 <style>
- pre, code { font-size:13px }
+ pre, code { font-family:monospace, sans-serif; }
  h2 code, h3 code, h4 code { font:inherit; color:inherit; font-style:italic }
 </style>
 <body class=draft>
@@ -13,6 +13,7 @@
  <dt>Editors
  <dd>Simon Pieters &lt;simonp@opera.com>
  <dd>Geoffrey Sneddon &lt;gsneddon@opera.com>
+ <dd>Ms2ger &lt;ms2ger@gmail.com>
 </dl>
 </div>
 

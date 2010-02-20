@@ -1,17 +1,18 @@
 <!DOCTYPE html><title>Web DOM Core</title>
 <link href=http://www.whatwg.org/style/specification rel=stylesheet>
 <style>
- pre, code { font-size:13px }
+ pre, code { font-family:monospace, sans-serif; }
  h2 code, h3 code, h4 code { font:inherit; color:inherit; font-style:italic }
 </style>
 <body class=draft>
 <div class=head>
 <h1>Web DOM Core</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-date:-01-jan-1901>Work in Progress &mdash; Last Update 7 October 2009</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-date:-01-jan-1901>Work in Progress &mdash; Last Update 20 February 2010</h2>
 <dl>
  <dt>Editors
  <dd>Simon Pieters &lt;simonp@opera.com&gt;
  <dd>Geoffrey Sneddon &lt;gsneddon@opera.com&gt;
+ <dd>Ms2ger &lt;ms2ger@gmail.com&gt;
 </dl>
 </div>
 

@@ -242,9 +242,15 @@ is passed an Infinity or Not-a-Number (NaN) value, a
 <p>The <dfn title=dom-DOMImplementation-createDocumentType><code>createDocumentType(<var title>qualifiedName</var>, <var title>publicId</var>, <var title>systemId</var>)</code></dfn> method must run the following steps:
 
 <ol>
- <li><p>If <var title>qualifiedName</var> doesn't match the <code title>Name</code> production in XML, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and abort these steps. [XML]
- <li><p>If <var title>qualifiedName</var> doesn't match the <code title>NCName</code> production in Namespaces in XML, raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and abort these steps. [XMLNS]
- <!--<li><p>If <var title>publicId</var> contains a character that doesn't match the <code title>PubidChar</code> production in XML, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and abort these steps. [XML]--> <!-- DOM3 didn't check this -->
+ <li><p>If <var title>qualifiedName</var> doesn't match the <code
+ title>Name</code> production in XML, raise an <code
+ title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
+ exception and abort these steps. <a href=#refsXML>[XML]</a>
+ <li><p>If <var title>qualifiedName</var> doesn't match the <code
+ title>NCName</code> production in Namespaces in XML, raise a <code
+ title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and abort
+ these steps. <a href=#refsXMLNS>[XMLNS]</a>
+ <!--<li><p>If <var title>publicId</var> contains a character that doesn't match the <code title>PubidChar</code> production in XML, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and abort these steps. <a href=#refsXML>[XML]</a>--> <!-- DOM3 didn't check this -->
  <!--<li><p>If <var title>systemId</var> contains both a U+0022 QUOTATION MARK ('"') and a U+0027 APOSTROPHE ("'") character, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and abort these steps.--> <!-- DOM3 didn't check this -->
  <li><p>Return a new <code>DocumentType</code> node with <code title=dom-Node-ownerDocument>ownerDocument</code> set to null, <code title=dom-DocumentType-name>name</code> set to <var title>qualifiedName</var>, <code title=dom-DocumentType-publicId>publicId</code> set to <var title>publicId</var>, and <code title=dom-DocumentType-systemId>systemId</code> set to <var title>systemId</var>.
 </ol>
@@ -307,7 +313,7 @@ is passed an Infinity or Not-a-Number (NaN) value, a
 };</pre>
 
 <p>The <dfn title=dom-Document-doctype><code>doctype</code></dfn> attribute must return the first child of the <code>Document</code> node that is a <code>DocumentType</code> node, if there is one, or null otherwise.
-<p class=note>In both HTML and XML there will only ever be one <code>DocumentType</code> node descendant of the <code>Document</code> node. [HTML] [XML]
+<p class=note>In both HTML and XML there will only ever be one <code>DocumentType</code> node descendant of the <code>Document</code> node. [HTML] <a href=#refsXML>[XML]</a>
 
 <p>The <dfn title=dom-Document-implementation><code>implementation</code></dfn> attribute must return the <code>DOMImplementation</code> object that is associated with the <code>Document</code> node.
 
@@ -343,35 +349,50 @@ is passed an Infinity or Not-a-Number (NaN) value, a
 -->
 <!-- As far as I can tell, this isn't needed for web compatibility. Neither WebKit nor Opera support it, and Firefox's implementation still throws on the majority of cases in the wild, as almost all cases in the wild take advantage of the fact that IE allows attributes. -->
 <ol>
- <li><p>If <var title>tagName</var> doesn't match the <code title>Name</code> production in XML, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and abort these steps. [XML]
+ <li><p>If <var title>tagName</var> doesn't match the <code title>Name</code>
+ production in XML, raise an <code
+ title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
+ exception and abort these steps. <a href=#refsXML>[XML]</a>
  <li><p>Return a new <code>Element</code> node with no attributes, <code title=dom-Node-namespaceURI>namespaceURI</code> set to "<code title>http://www.w3.org/1999/xhtml</code>", <code title=dom-Node-prefix>prefix</code> set to null, <code title=dom-Node-localName>localName</code> set to <var title>tagName</var>, <span>converted to lowercase</span>, and <code title=dom-Node-ownerDocument>ownerDocument</code> set to the <span>context node</span>.
 </ol>
 <!-- this is very different from DOM3 -->
-<p class=note>No check is performed that the local name will match the <code title>NCName</code> production in Namespaces in XML. [XMLNS]
+<p class=note>No check is performed that the local name will match the <code
+title>NCName</code> production in Namespaces in XML. <a
+href=#refsXMLNS>[XMLNS]</a>
 
 <p>The <dfn title=dom-Document-createDocumentFragment><code>createDocumentFragment()</code></dfn> method must return a new <code>DocumentFragment</code> node with its <code title=dom-Node-ownerDocument>ownerDocument</code> set to the <span>context node</span>.
 
 <p>The <dfn title=dom-Document-createTextNode><code>createTextNode(<var title>data</var>)</code></dfn> method must return a new <code>Text</code> node with its <code title=dom-CharacterData-data>data</code> attribute set to <var title>data</var> and <code title=dom-Node-ownerDocument>ownerDocument</code> set to the <span>context node</span>.
-<p class=note>No check is performed that the text node contains characters that match the <code title>Char</code> production in XML. [XML]
+<p class=note>No check is performed that the text node contains characters that
+match the <code title>Char</code> production in XML. <a href=#refsXML>[XML]</a>
 
 <p>The <dfn title=dom-Document-createComment><code>createComment(<var title>data</var>)</code></dfn> method must return a new <code>Comment</code> node with its <code title=dom-CharacterData-data>data</code> attribute set to <var title>data</var> and <code title=dom-Node-ownerDocument>ownerDocument</code> set to the <span>context node</span>.
-<p class=note>No check is performed that the comment contains characters that match the <code title>Char</code> production in XML or that it contains two adjacent hyphens or ends with a hyphen. [XML]
+<p class=note>No check is performed that the comment contains characters that
+match the <code title>Char</code> production in XML or that it contains two
+adjacent hyphens or ends with a hyphen. <a href=#refsXML>[XML]</a>
 
 <p>The <dfn title=dom-Document-createProcessingInstruction><code>createProcessingInstruction(<var title>target</var>, <var title>data</var>)</code></dfn> method must run the following steps:
 <ol>
- <li><p>If <var title>target</var> doesn't match the <!--<code title>PITarget</code>--> <code title>Name</code> production in XML, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and abort these steps. [XML] <!-- DOM3 didn't check for "xml" --></li>
+ <li><p>If <var title>target</var> doesn't match the <!--<code
+ title>PITarget</code>--> <code title>Name</code> production in XML, raise an
+ <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
+ exception and abort these steps. <a href=#refsXML>[XML]</a> <!-- DOM3 didn't
+ check for "xml" --></li>
  <!--<li><p>If <var title>target</var> contains a U+003A COLON (":") character, raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and abort these steps.--> <!-- DOM3 didn't check this -->
  <li><p>Return a new <code>ProcessingInstruction</code> node with its <code title=dom-ProcessingInstruction-target>target</code> attribute set to <var title>target</var>, <code title=dom-ProcessingInstruction-data>data</code> attribute set to <var title>data</var> and <code title=dom-Node-ownerDocument>ownerDocument</code> set to the <span>context node</span>.
 </ol>
-<p class=note>No check is performed that the processing instruction target contains "xml" or the colon, or that the data contains characters that match the <code title>Char</code> production in XML or that it contains the string "<code title>?></code>". [XML]</p>
+<p class=note>No check is performed that the processing instruction target
+contains "xml" or the colon, or that the data contains characters that match the
+<code title>Char</code> production in XML or that it contains the string
+"<code title>?></code>". <a href=#refsXML>[XML]</a></p>
 
 <!--<p>The <dfn title=dom-Document-createAttribute><code>createAttribute(<var title>name</var>)</code></dfn> method must run the following steps:</p>
 <ol>
- <li><p>If <var title>name</var> doesn't match the <code title>Name</code> production in XML, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and abort these steps. [XML]
+ <li><p>If <var title>name</var> doesn't match the <code title>Name</code> production in XML, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and abort these steps. <a href=#refsXML>[XML]</a>
  <li><p>Return a new <code>Attr</code> node with its <code title=dom-Node-namespaceURI>namespaceURI</code> set to null, <code title=dom-Node-prefix>prefix</code> set to null, <code title=dom-Node-localName>localName</code> set to <var title>name</var>, and <code title=dom-Node-ownerDocument>ownerDocument</code> set to the <span>context node</span>.
 </ol>-->
 <!-- this is different from DOM3 -->
-<!--<p class=note>No check is performed that the local name will match the <code title>NCName</code> production in Namespaces in XML. [XMLNS]-->
+<!--<p class=note>No check is performed that the local name will match the <code title>NCName</code> production in Namespaces in XML. <a href=#refsXMLNS>[XMLNS]</a>-->
 
 <p>The <dfn title=dom-Document-getElementsByTagName><code>getElementsByTagName(<var title>localName</var>)</code></dfn> method must run the following steps:
 <ol>
@@ -381,15 +402,21 @@ is passed an Infinity or Not-a-Number (NaN) value, a
 
 <p>The <dfn title=dom-Document-importNode><code>importNode(<var title>importedNode</var>, <var title>deep</var>)</code></dfn> method must <!--run the following steps:
 <ol>-->
- <!--<li><p>If the <span>context node</span> is an XML document, then if any imported <code>Element</code> or <code>Attr</code> node have a <code title=dom-Node-nodeName>nodeName</code> that doesn't match the <code>Name</code> production in XML, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and abort these steps. [XML] (browsers don't do this) --> <!-- XXX this might be wrong -->
+ <!--<li><p>If the <span>context node</span> is an XML document, then if any imported <code>Element</code> or <code>Attr</code> node have a <code title=dom-Node-nodeName>nodeName</code> that doesn't match the <code>Name</code> production in XML, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and abort these steps. <a href=#refsXML>[XML]</a> (browsers don't do this) --> <!-- XXX this might be wrong -->
  <!--<li><p>If <var>importedNode</var>'s <code title=dom-Node-ownerDocument>ownerDocument</code>'s <span>effective script origin</span> is not the <span title=same-origin>same</span> as the <span>effective script origin</span> of the <span>context node</span>, raise a <code title=dom-domexception-SECURITY_ERR>SECURITY_ERR</code> exception and abort these steps. [HTML5] (can't get a reference to a node that you can't adopt anyway) -->
  <!--<li><p>R-->return a <span>clone</span> of <var title>importedNode</var>, with <var title>new ownerDocument</var> being the <span>context node</span>, and the <var title>clone children</var> flag set if <var title>deep</var> is true.
 <!--</ol>-->
 
 <p>The <dfn title=dom-Document-createElementNS><code>createElementNS(<var title>namespaceURI</var>, <var title>qualifiedName</var>)</code></dfn> method must run the following steps:</p>
 <ol>
- <li><p>If <var title>qualifiedName</var> doesn't match the <code title>Name</code> production in XML, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and abort these steps. [XML]
- <li><p>If <var title>qualifiedName</var> doesn't match the <code title>QName</code> production in Namespaces in XML, raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and abort these steps. [XMLNS]
+ <li><p>If <var title>qualifiedName</var> doesn't match the <code
+ title>Name</code> production in XML, raise an <code
+ title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
+ exception and abort these steps. <a href=#refsXML>[XML]</a>
+ <li><p>If <var title>qualifiedName</var> doesn't match the <code
+ title>QName</code> production in Namespaces in XML, raise a <code
+ title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and abort
+ these steps. <a href=#refsXMLNS>[XMLNS]</a>
  <li><p>If <var title>qualifiedName</var> contains a U+003E COLON (":") character, then split the string on the colon and let <var title>prefix</var> be the part before the colon and <var title>localName</var> the part after the colon. Otherwise, let <var title>prefix</var> be null and <var title>localName</var> be <var title>qualifiedName</var>.
  <li><p>If <var title>prefix</var> is not null and <var title>namespaceURI</var> is an empty string, raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and abort these steps.
  <li><p>If <var title>prefix</var> is "xml" and <var title>namespaceURI</var> is not "http://www.w3.org/XML/1998/namespace", raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and abort these steps.
@@ -575,8 +602,8 @@ is passed an Infinity or Not-a-Number (NaN) value, a
  <li>
   <p>If <var title>prefix</var> is not null, run the following substeps:
   <ol>
-   <li><p>If <var title>prefix</var> doesn't match the <code title>Name</code> production in XML, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and abort these steps. [XML]
-   <li><p>If <var title>prefix</var> doesn't match the <code title>NCName</code> production in Namespaces in XML, raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and abort these steps. [XMLNS]
+   <li><p>If <var title>prefix</var> doesn't match the <code title>Name</code> production in XML, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and abort these steps. <a href=#refsXML>[XML]</a>
+   <li><p>If <var title>prefix</var> doesn't match the <code title>NCName</code> production in Namespaces in XML, raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and abort these steps. <a href=#refsXMLNS>[XMLNS]</a>
   </ol>
  <li><p class=XXX>Actually this doesn't match any browser. Let's try to drop it instead.
 </ol>-->
@@ -788,6 +815,15 @@ because the newer ones keep changing. -->
  -->
  <dd><cite><a href="http://dev.w3.org/2006/webapi/WebIDL/">Web
  IDL</a></cite>, C. McCormack. W3C.</dd>
+
+ <dt id="refsXML">[XML]</dt>
+ <dd><cite><a href="http://www.w3.org/TR/xml/">Extensible Markup
+ Language</a></cite>, T. Bray, J. Paoli, C. Sperberg-McQueen,
+ E. Maler, F. Yergeau. W3C.</dd>
+
+ <dt id="refsXMLNS">[XMLNS]</dt>
+ <dd><cite><a href="http://www.w3.org/TR/xml-names/">Namespaces in
+ XML</a></cite>, T. Bray, D. Hollander, A. Layman, R. Tobin. W3C.</dd>
 </dl>
 
 <h2 class=no-num>Acknowledgements</h2>

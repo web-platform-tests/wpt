@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<title>document.createElement and foreign tag names</title>
+<link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
+<link rel="help" href="../web-dom-core#dom-Element-getAttribute">
+<body>
+<script src="support/test.js"></script>
+<script>
+try {
+  var elt = document.createElement("foo");
+  Test.is(elt.getAttribute("bar"), null);
+} catch (e) {
+  Test.fail("Exception was thrown.");
+}
+Test.finish();
+</script>

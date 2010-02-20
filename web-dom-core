@@ -21,7 +21,7 @@
 
 <ul class=XXX>
  <li>define moving nodes between documents <a href="http://html5.org/tools/web-apps-tracker?from=1729&amp;to=1730">http://html5.org/tools/web-apps-tracker?from=1729&amp;to=1730</a> <a href=http://www.w3.org/mid/Pine.LNX.4.62.0806020441160.504@hixie.dreamhostps.com>http://www.w3.org/mid/Pine.LNX.4.62.0806020441160.504@hixie.dreamhostps.com</a> <a href=http://www.w3.org/mid/3292C233-9089-4733-9226-15ED8DCA23FE@apple.com>http://www.w3.org/mid/3292C233-9089-4733-9226-15ED8DCA23FE@apple.com</a>
- <li>getAttribute/getAttributeNS returning null
+ <li>getAttributeNS returning null
  <li>createElement()
  <li>innerHTML etc on all Elements? <a href=http://osdir.com/ml/org.w3c.webapi/2007-08/msg00069.html>http://osdir.com/ml/org.w3c.webapi/2007-08/msg00069.html</a>
  <li>\0 <a href=http://krijnhoetmer.nl/irc-logs/whatwg/20080321#l-312>http://krijnhoetmer.nl/irc-logs/whatwg/20080321#l-312</a>
@@ -736,7 +736,7 @@ contains "xml" or the colon, or that the data contains characters that match the
 
 <pre class=idl>interface <dfn id=element>Element</dfn> : <a href=#node>Node</a> {
   readonly attribute DOMString <a href=#dom-element-tagname title=dom-Element-tagName>tagName</a>;
-  DOMString <span title=dom-Element-getAttribute>getAttribute</span>(in DOMString name);
+  DOMString? <a href=#dom-element-getattribute title=dom-Element-getAttribute>getAttribute</a>(in DOMString name);
   void <span title=dom-Element-setAttribute>setAttribute</span>(in DOMString name, in DOMString value);
   void <span title=dom-Element-removeAttribute>removeAttribute</span>(in DOMString name);<!--
   Attr <span title=dom-Element-getAttributeNode>getAttributeNode</span>(in DOMString name);
@@ -759,6 +759,10 @@ contains "xml" or the colon, or that the data contains characters that match the
 };</pre>
 
 <p class=XXX>HTMLCollection is defined in HTML5. Perhaps we should move that to this spec. Perhaps also DOMTokenList, DOMStringMap, getElementsByClassName...
+
+<p>The <dfn id=dom-element-getattribute title=dom-Element-getAttribute><code>getAttribute()</code></dfn>
+method must return the value of the attribute given by the first argument,
+if the attribute is present, or null otherwise.
 
 <p>The <dfn id=dom-element-tagname title=dom-Element-tagName><code>tagName</code></dfn> attribute must, on getting, return the concatenation of <code title=dom-Node-prefix><a href=#dom-node-prefix>prefix</a></code>, the character U+003E COLON (":") and <code title=dom-Node-localName><a href=#dom-node-localname>localName</a></code> if <code title=dom-Node-prefix><a href=#dom-node-prefix>prefix</a></code> is not null, and otherwise just <code title=dom-Node-localName><a href=#dom-node-localname>localName</a></code>.
 

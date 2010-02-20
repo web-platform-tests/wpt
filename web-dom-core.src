@@ -89,7 +89,22 @@ implementation-specific limits on otherwise unconstrained inputs,
 e.g. to prevent denial of service attacks, to guard against running
 out of memory, or to work around platform-specific limitations.</p>
 
-<p class=XXX>WebIDL, HTML5.
+<p>The IDL fragments in this specification must be interpreted as
+required for conforming IDL fragments, as described in the Web IDL
+specification. <a href="#refsWEBIDL">[WEBIDL]</a></p>
+
+<p id="float-nan">Except where otherwise specified, if an IDL
+attribute that is a floating point number type (<code
+title="">float</code>) is assigned an Infinity or Not-a-Number
+(NaN) value, a <code>NOT_SUPPORTED_ERR</code> exception must be
+raised.</p>
+
+<p>Except where otherwise specified, if a method with an argument
+that is a floating point number type (<code title="">float</code>)
+is passed an Infinity or Not-a-Number (NaN) value, a
+<code>NOT_SUPPORTED_ERR</code> exception must be raised.</p>
+
+<p class=XXX>HTML5.
 
 <p>When a method or an attribute is said to call another method or attribute, the user agent must invoke its internal API for that attribute or method so that e.g. the author can't change the behavior by overriding attributes or methods with custom properties or functions in ECMAScript.
 
@@ -765,6 +780,14 @@ because the newer ones keep changing. -->
  <dt id="refsRFC2119">[RFC2119]</dt>
  <dd><cite><a href="http://www.ietf.org/rfc/rfc2119.txt">Key words for use in
  RFCs to Indicate Requirement Levels</a></cite>, S. Bradner. IETF.</dd>
+
+ <dt id="refsWEBIDL">[WEBIDL]</dt>
+ <!--
+ <dd><cite><a href="http://www.w3.org/TR/WebIDL/">Web
+ IDL</a></cite>, C. McCormack. W3C.</dd>
+ -->
+ <dd><cite><a href="http://dev.w3.org/2006/webapi/WebIDL/">Web
+ IDL</a></cite>, C. McCormack. W3C.</dd>
 </dl>
 
 <h2 class=no-num>Acknowledgements</h2>

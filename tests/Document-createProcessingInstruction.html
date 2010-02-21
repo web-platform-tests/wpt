@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<title>Document.createProcessingInstruction in HTML documents</title>
+<link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
+<link rel="help" href="../web-dom-core#dom-document-createprocessinginstruction">
+<body>
+<script src="support/test.js"></script>
+<script>
+try {
+  try {
+    document.createProcessingInstruction("A", "B");
+    Test.fail("Should have thrown.");
+  } catch (e) {
+    Test.is(e.code, DOMException.NOT_SUPPORTED_ERR);
+  }
+} catch (e) {
+  Test.fail("Exception was thrown.");
+}
+Test.finish();
+</script>

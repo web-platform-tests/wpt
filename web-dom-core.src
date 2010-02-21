@@ -79,6 +79,9 @@ purposes of this specification, are U+0020 SPACE, U+0009 CHARACTER
 TABULATION (tab), U+000A LINE FEED (LF), U+000C FORM FEED (FF), and
 U+000D CARRIAGE RETURN (CR).</p>
 
+<h4>Terminology defined in other specifications</h4>
+<p>HTML defines <dfn>HTML documents</dfn>. <a href=#refsHTML>[HTML]</a>
+
 <h3>Conformance requirements</h3>
 
 <p>All diagrams, examples, and notes in this specification are
@@ -422,16 +425,27 @@ match the <code title>Char</code> production in XML. <a href=#refsXML>[XML]</a>
 match the <code title>Char</code> production in XML or that it contains two
 adjacent hyphens or ends with a hyphen. <a href=#refsXML>[XML]</a>
 
-<p>The <dfn title=dom-Document-createProcessingInstruction><code>createProcessingInstruction(<var title>target</var>, <var title>data</var>)</code></dfn> method must run the following steps:
+<p>The <dfn title=dom-Document-createProcessingInstruction><code
+>createProcessingInstruction(<var title>target</var>, <var
+title>data</var>)</code></dfn> method must run the following steps:
+
 <ol>
+ <li><p>If the <span>context node</span> is an <span title="HTML documents">HTML
+ document</span>, raise a <code
+ title=dom-DOMException-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</code> exception and
+ abort these steps.
+
  <li><p>If <var title>target</var> doesn't match the <!--<code
  title>PITarget</code>--> <code title>Name</code> production in XML, raise an
  <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
  exception and abort these steps. <a href=#refsXML>[XML]</a> <!-- DOM3 didn't
  check for "xml" --></li>
+
  <!--<li><p>If <var title>target</var> contains a U+003A COLON (":") character, raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and abort these steps.--> <!-- DOM3 didn't check this -->
+
  <li><p>Return a new <code>ProcessingInstruction</code> node with its <code title=dom-ProcessingInstruction-target>target</code> attribute set to <var title>target</var>, <code title=dom-ProcessingInstruction-data>data</code> attribute set to <var title>data</var> and <code title=dom-Node-ownerDocument>ownerDocument</code> set to the <span>context node</span>.
 </ol>
+
 <p class=note>No check is performed that the processing instruction target
 contains "xml" or the colon, or that the data contains characters that match the
 <code title>Char</code> production in XML or that it contains the string

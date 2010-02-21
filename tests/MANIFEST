@@ -5,4 +5,5 @@ Document-getElementsByTagName-same.html
 Element-getAttribute.html
 Element-setAttribute.html
 MANIFEST
+Node-hasAttributes.html
 support

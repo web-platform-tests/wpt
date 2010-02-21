@@ -438,6 +438,10 @@ contains "xml" or the colon, or that the data contains characters that match the
  <li><p>If <var title>localName</var> is just the character U+002A ASTERISK ("*"), return a <code>NodeList</code> rooted at the <span>context node</span>, whose filter matches only <code>Element</code> nodes.
  <li><p>Otherwise, return a <code>NodeList</code> rooted at the <span>context node</span>, whose filter matches only <code>Element</code> nodes that have a <code title=dom-node-localName>localName</code> equal to <var title>localName</var>.
 </ol>
+<p>A new <code>NodeList</code> object must be returned each time unless
+the argument is the same as the last time the method was invoked on
+this <code>Document</code> object, in which case the object must be
+the same as the object returned by the previous call.</p>
 
 <p>The <dfn title=dom-Document-importNode><code>importNode(<var title>importedNode</var>, <var title>deep</var>)</code></dfn> method must <!--run the following steps:
 <ol>-->
@@ -471,6 +475,10 @@ contains "xml" or the colon, or that the data contains characters that match the
  <li><p>Otherwise, if <var title>localName</var> is just the character U+002A ASTERISK ("*"), return a <code>NodeList</code> rooted at the <span>context node</span>, whose filter matches only <code>Element</code> nodes with the <code title=dom-Node-namespaceURI>namespaceURI</code> equal to <var title>namespaceURI</var>.
  <li><p>Otherwise, return a <code>NodeList</code> rooted at the <span>context node</span>, whose filter matches only <code>Element</code> nodes that have a <code title=dom-Element-namespaceURI>namespaceURI</code> equal to <var title>namespaceURI</var> and a <code title=dom-Element-localName>localName</code> equal to <var title>localName</var> (both in a <span>case-sensitive</span> manner).
 </ol>
+<p>A new <code>NodeList</code> object must be returned each time unless
+the argument is the same as the last time the method was invoked on
+this <code>Document</code> object, in which case the object must be
+the same as the object returned by the previous call.</p>
 
 <p>The <dfn title=dom-Document-getElementById><code>getElementById(<var
 title>elementId</var>)</code></dfn> method must return the first

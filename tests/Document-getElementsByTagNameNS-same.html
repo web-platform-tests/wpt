@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<title>Document.getElementsByTagNameNS with the same argument</title>
+<link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
+<link rel="help" href="../web-dom-core#dom-document-getelementsbytagnamens">
+<body>
+<script src="support/test.js"></script>
+<script>
+try {
+  Test.is(document.getElementsByTagNameNS("http://www.w3.org/1999/xhtml",
+                                          "html"),
+          document.getElementsByTagNameNS("http://www.w3.org/1999/xhtml",
+                                          "html"));
+} catch (e) {
+  Test.fail("Exception was thrown.");
+}
+Test.finish();
+</script>

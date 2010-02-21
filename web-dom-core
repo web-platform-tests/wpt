@@ -685,7 +685,10 @@ node</a> whose <a href=#concept-id title=concept-ID>ID</a> is <var title="">elem
 
 <p>The <dfn id=dom-node-localname title=dom-Node-localName><code>localName</code></dfn> attribute, on getting, must return the local name that is associated with the node.
 
-<p>The <dfn id=dom-node-hasattributes title=dom-Node-hasAttributes><code>hasAttributes()</code></dfn> method must <span class=XXX>...</span>
+<p>The <dfn id=dom-node-hasattributes title=dom-Node-hasAttributes><code>hasAttributes()</code></dfn>
+method must return whether there are any attributes associated with the
+<a href=#context-node>context node</a>, if it is an <code><a href=#element>Element</a></code> node, and false
+otherwise.
 
 <p>The <dfn id=dom-node-baseuri title=dom-Node-baseURI><code>baseURI</code></dfn> attribute must <span class=XXX>...</span>
 

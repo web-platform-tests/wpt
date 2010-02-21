@@ -671,7 +671,10 @@ title>elementId</var>, or null if there is none.
 
 <p>The <dfn title=dom-Node-localName><code>localName</code></dfn> attribute, on getting, must return the local name that is associated with the node.
 
-<p>The <dfn title=dom-Node-hasAttributes><code>hasAttributes()</code></dfn> method must <span class=XXX>...</span>
+<p>The <dfn title=dom-Node-hasAttributes><code>hasAttributes()</code></dfn>
+method must return whether there are any attributes associated with the
+<span>context node</span>, if it is an <code>Element</code> node, and false
+otherwise.
 
 <p>The <dfn title=dom-Node-baseURI><code>baseURI</code></dfn> attribute must <span class=XXX>...</span>
 

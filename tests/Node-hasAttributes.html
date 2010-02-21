@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<title>Node.hasAttributes</title>
+<link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
+<link rel="help" href="../web-dom-core#dom-node-hasattributes">
+<body>
+<script src="support/test.js"></script>
+<script>
+try {
+  var el = document.createElement("foo");
+  Test.is(el.hasAttributes(), false);
+  el.setAttribute("bar", "baz");
+  Test.is(el.hasAttributes(), true);
+  el.removeAttribute("bar");
+  Test.is(el.hasAttributes(), false);
+
+  Test.separate();
+  Test.is(document.hasAttributes(), false);
+  Test.is(document.doctype.hasAttributes(), false);
+  Test.is(document.createDocumentFragment().hasAttributes(), false);
+  Test.is(document.createTextNode("A").hasAttributes(), false);
+  Test.is(document.createComment("A").hasAttributes(), false);
+} catch (e) {
+  Test.fail("Exception was thrown.");
+}
+Test.finish();
+</script>

@@ -57,6 +57,18 @@
 
 <p>The term <dfn>context node</dfn> means the <code>Node</code> on which the method or attribute being discussed was called.
 
+<p>The term <dfn>root element</dfn>, when not explicitly qualified
+as referring to the document's root element, means the furthest
+ancestor element node of whatever node is being discussed, or the
+node itself if it has no ancestors. When the node is a part of the
+document, then the node's <span>root element</span> is indeed the
+document's root element; however, if the node is not currently part
+of the document tree, the root element will be an orphaned node.</p>
+
+<p>When an element's <span>root element</span> is the root element
+of a <code>Document</code>, it is said to be <dfn>in a
+<code>Document</code></dfn>.
+
 <p>A node's <dfn>home subtree</dfn> is the subtree rooted at that
 node's <span>root element</span>. When a node is <span>in a
 <code>Document</code></span>, its <span>home subtree</span> is that

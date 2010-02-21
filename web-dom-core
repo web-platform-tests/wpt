@@ -86,9 +86,21 @@
 
 <p>The term <dfn id=context-node>context node</dfn> means the <code><a href=#node>Node</a></code> on which the method or attribute being discussed was called.
 
+<p>The term <dfn id=root-element>root element</dfn>, when not explicitly qualified
+as referring to the document's root element, means the furthest
+ancestor element node of whatever node is being discussed, or the
+node itself if it has no ancestors. When the node is a part of the
+document, then the node's <a href=#root-element>root element</a> is indeed the
+document's root element; however, if the node is not currently part
+of the document tree, the root element will be an orphaned node.</p>
+
+<p>When an element's <a href=#root-element>root element</a> is the root element
+of a <code><a href=#document>Document</a></code>, it is said to be <dfn id=in-a-document>in a
+<code>Document</code></dfn>.
+
 <p>A node's <dfn id=home-subtree>home subtree</dfn> is the subtree rooted at that
-node's <span>root element</span>. When a node is <span>in a
-<code><a href=#document>Document</a></code></span>, its <a href=#home-subtree>home subtree</a> is that
+node's <a href=#root-element>root element</a>. When a node is <a href=#in-a-document>in a
+<code>Document</code></a>, its <a href=#home-subtree>home subtree</a> is that
 <code><a href=#document>Document</a></code>'s tree.
 
 <p>The <dfn id=space-character title="space character">space characters</dfn>, for the

@@ -781,7 +781,7 @@ title>elementId</var>, or null if there is none.
 
 <pre class=idl>interface <dfn>Element</dfn> : <span>Node</span> {
   readonly attribute DOMString <span title=dom-Element-tagName>tagName</span>;
-  DOMString? <span title=dom-Element-getAttribute>getAttribute</span>(in DOMString name);
+  DOMString? <span title=dom-Element-getAttribute>getAttribute</span>(in DOMString <var title>name</var>);
   void <span title=dom-Element-setAttribute>setAttribute</span>(in DOMString <var title>name</var>, in DOMString <var title>value</var>);
   void <span title=dom-Element-removeAttribute>removeAttribute</span>(in DOMString name);<!--
   Attr <span title=dom-Element-getAttributeNode>getAttributeNode</span>(in DOMString name);
@@ -819,10 +819,10 @@ title=concept-id>ID</span>. <a href=#refsHTML>[HTML]</a>
 
 <p class=XXX>HTMLCollection is defined in HTML5. Perhaps we should move that to this spec. Perhaps also DOMTokenList, DOMStringMap, getElementsByClassName...
 
-<p>The <dfn title=dom-Element-getAttribute><code>getAttribute()</code></dfn>
-method must return the value of the first attribute in <span>tree order</span>
-whose name is given by the first argument, in any namespace, if the attribute is
-present, or null otherwise.
+<p>The <dfn title=dom-Element-getAttribute><code>getAttribute(<var
+title>name</var>)</code></dfn> method must return the value of the first
+attribute in <span>tree order</span> whose name is given by the first argument,
+in any namespace, if the attribute is present, or null otherwise.
 
 <p>The <dfn title=dom-Element-setAttribute><code>setAttribute(<var
 title>name</var>, <var title>value</var>)</code></dfn> method must run the

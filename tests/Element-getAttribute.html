@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<title>Element.getAttribute for nonexistent attributes</title>
+<title>Element.getAttribute</title>
 <link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
 <link rel="help" href="../web-dom-core#dom-Element-getAttribute">
 <body>
 <script src="support/test.js"></script>
 <script>
 try {
-  var elt = document.createElement("foo");
-  Test.is(elt.getAttribute("bar"), null);
+  var el = document.createElement("foo");
+  Test.is(el.getAttribute("bar"), null);
 
   Test.separate();
   el.setAttributeNS("ab", "attr", "pass");

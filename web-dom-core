@@ -796,7 +796,7 @@ node</a> whose <a href=#concept-id title=concept-ID>ID</a> is <var title="">elem
 <pre class=idl>interface <dfn id=element>Element</dfn> : <a href=#node>Node</a> {
   readonly attribute DOMString <a href=#dom-element-tagname title=dom-Element-tagName>tagName</a>;
   DOMString? <a href=#dom-element-getattribute title=dom-Element-getAttribute>getAttribute</a>(in DOMString name);
-  void <span title=dom-Element-setAttribute>setAttribute</span>(in DOMString name, in DOMString value);
+  void <a href=#dom-element-setattribute title=dom-Element-setAttribute>setAttribute</a>(in DOMString <var title="">name</var>, in DOMString <var title="">value</var>);
   void <span title=dom-Element-removeAttribute>removeAttribute</span>(in DOMString name);<!--
   Attr <span title=dom-Element-getAttributeNode>getAttributeNode</span>(in DOMString name);
   Attr <span title=dom-Element-setAttributeNode>setAttributeNode</span>(in Attr newAttr);
@@ -833,6 +833,23 @@ containing <a href=#space-character title="space character">space characters</a>
 method must return the value of the first attribute in <a href=#tree-order>tree order</a>
 whose name is given by the first argument, in any namespace, if the attribute is
 present, or null otherwise.
+
+<p>The <dfn id=dom-element-setattribute title=dom-Element-setAttribute><code>setAttribute(<var title="">name</var>, <var title="">value</var>)</code></dfn> method must run the
+following steps:
+
+<ol>
+ <li><p>If <var title="">name</var> is empty or <var title="">name</var> doesn't
+ match the <code title="">Name</code> production in XML, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR><a href=#dom-domexception-invalid_character_err>INVALID_CHARACTER_ERR</a></code>
+ exception and abort these steps. <a href=#refsXML>[XML]</a>
+
+ <li><p>If the node doesn't have an attribute whose name equals <var title="">name</var>, create an <code><a href=#attr>Attr</a></code> node in no namespace, with <var title="">name</var> as its <code title=dom-Attr-name>name</code>, <var title="">value</var> as its <code title=dom-Attr-value>value</code>, <code title=dom-Attr-specified>specified</code> set to true and the <a href=#context-node>context
+ node</a> as its <code title=dom-Attr-ownerElement>ownerElement</code>.
+ Append this node to the <a href=#context-node title="context node">context node's</a> <code title=dom-Node-attributes><a href=#dom-node-attributes>attributes</a></code>, as its last item.
+
+ <li><p>Otherwise, set the <code title=dom-Attr-value>value</code> of the first
+ attribute in <a href=#tree-order>tree order</a> whose name equals <var title="">name</var>,
+ in any namespace, to <var title="">value</var>.
+</ol>
 
 <p>The <dfn id=dom-element-tagname title=dom-Element-tagName><code>tagName</code></dfn> attribute must, on getting, return the concatenation of <code title=dom-Node-prefix><a href=#dom-node-prefix>prefix</a></code>, the character U+003E COLON (":") and <code title=dom-Node-localName><a href=#dom-node-localname>localName</a></code> if <code title=dom-Node-prefix><a href=#dom-node-prefix>prefix</a></code> is not null, and otherwise just <code title=dom-Node-localName><a href=#dom-node-localname>localName</a></code>.
 

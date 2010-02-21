@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<title>Element.setAttribute</title>
+<link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
+<link rel="help" href="../web-dom-core#dom-Element-setAttribute">
+<body>
+<script src="support/test.js"></script>
+<script>
+function testInvalid(el, name) {
+  try {
+    el.setAttribute(name, "fail");
+    Test.fail("Should have thrown.")
+  } catch (e) {
+    Test.is(e.code, DOMException.INVALID_CHARACTER_ERR);
+  }
+}
+function testValid(el, name) {
+  try {
+    el.setAttribute(name, "pass");
+    Test.is(el.getAttribute(name), "pass");
+  } catch (e) {
+    Test.fail("Should not have thrown.")
+  }
+}
+</script>
+<script>
+try {
+  var el = document.createElement("foo");
+  testInvalid(el, "\\");
+  testInvalid(el, "'");
+  testInvalid(el, '"');
+  testInvalid(el, "0");
+  testInvalid(el, "0:a");
+  testValid(el, ":");
+  testValid(el, "a:0");
+
+  Test.separate();
+  el = document.createElement("bar");
+  el.setAttribute("a", "1");
+  el.setAttribute("b", "2");
+  el.setAttribute("a", "3");
+  el.setAttribute("c", "4");
+  var attrs = el.attributes;
+  var expected =
+               [ {"name":"a","value":"3","specified":true,"namespaceURI":null}
+               , {"name":"b","value":"2","specified":true,"namespaceURI":null}
+               , {"name":"c","value":"4","specified":true,"namespaceURI":null}];
+  for (var i = 0, il = attrs.length; i < il; ++i) {
+    Test.is(attrs[i].name, expected[i].name);
+    Test.is(attrs[i].value, expected[i].value);
+    Test.is(attrs[i].specified, expected[i].specified);
+    Test.is(attrs[i].namespaceURI, expected[i].namespaceURI);
+    Test.is(attrs[i].ownerElement, el);
+  }
+
+  Test.separate();
+  el = document.createElement("baz");
+  el.setAttributeNS("ab", "attr", "fail");
+  el.setAttributeNS("kl", "attr", "pass");
+  el.setAttribute("attr", "pass");
+  attrs = el.attributes;
+  for (var i = 0, il = attrs.length; i < il; ++i) {
+    Test.is(attrs[i].value, "pass");
+  }
+} catch (e) {
+  Test.fail("Exception was thrown.");
+}
+Test.finish();
+</script>

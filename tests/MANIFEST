@@ -2,5 +2,6 @@ Document-getElementById-emptystring.html
 Document-getElementsByTagNameNS-same.html
 Document-getElementsByTagName-same.html
 Element-getAttribute.html
+Element-setAttribute.html
 MANIFEST
 support

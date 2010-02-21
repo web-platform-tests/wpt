@@ -8,6 +8,11 @@
 try {
   var elt = document.createElement("foo");
   Test.is(elt.getAttribute("bar"), null);
+
+  Test.separate();
+  el.setAttributeNS("ab", "attr", "pass");
+  el.setAttributeNS("kl", "attr", "fail");
+  Test.is(el.getAttribute("attr"), "pass");
 } catch (e) {
   Test.fail("Exception was thrown.");
 }

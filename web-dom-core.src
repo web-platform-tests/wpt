@@ -820,8 +820,9 @@ title=concept-id>ID</span>. <a href=#refsHTML>[HTML]</a>
 <p class=XXX>HTMLCollection is defined in HTML5. Perhaps we should move that to this spec. Perhaps also DOMTokenList, DOMStringMap, getElementsByClassName...
 
 <p>The <dfn title=dom-Element-getAttribute><code>getAttribute()</code></dfn>
-method must return the value of the attribute given by the first argument,
-if the attribute is present, or null otherwise.
+method must return the value of the first attribute in <span>tree order</span>
+whose name is given by the first argument, in any namespace, if the attribute is
+present, or null otherwise.
 
 <p>The <dfn title=dom-Element-tagName><code>tagName</code></dfn> attribute must, on getting, return the concatenation of <code title=dom-Node-prefix>prefix</code>, the character U+003E COLON (":") and <code title=dom-Node-localName>localName</code> if <code title=dom-Node-prefix>prefix</code> is not null, and otherwise just <code title=dom-Node-localName>localName</code>.
 

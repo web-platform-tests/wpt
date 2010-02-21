@@ -29,7 +29,6 @@
  <li>clarify lookupNamespaceURI <a href=http://www.w3.org/mid/4878DFC6.40401@lachy.id.au>http://www.w3.org/mid/4878DFC6.40401@lachy.id.au</a>
  <li>document.parseError? <a href=http://www.w3.org/mid/op.ucv5axjp64w2qv@annevk-t60.oslo.opera.com>http://www.w3.org/mid/op.ucv5axjp64w2qv@annevk-t60.oslo.opera.com</a>
  <li>exceptions for createDocument <a href=http://osdir.com/ml/web.dom.general/2005-12/msg00058.html>http://osdir.com/ml/web.dom.general/2005-12/msg00058.html</a>
- <li>empty string getElementById <a href=http://osdir.com/ml/web.svg/2005-03/msg00079.html>http://osdir.com/ml/web.svg/2005-03/msg00079.html</a>
  <li>sourceIndex? <a href=http://www.quirksmode.org/dom/w3c_core.html>http://www.quirksmode.org/dom/w3c_core.html</a>
  <li>xmlVersion <a href=http://lists.w3.org/Archives/Public/www-dom/2003JulSep/0049.html>http://lists.w3.org/Archives/Public/www-dom/2003JulSep/0049.html</a>
  <li>textContent <a href="http://www.w3.org/mid/c9e12660808271343v58990698gabac29d2123a82ce@mail.gmail.com">http://www.w3.org/mid/c9e12660808271343v58990698gabac29d2123a82ce@mail.gmail.com</a>
@@ -58,6 +57,15 @@
 
 <p>The term <dfn>context node</dfn> means the <code>Node</code> on which the method or attribute being discussed was called.
 
+<p>A node's <dfn>home subtree</dfn> is the subtree rooted at that
+node's <span>root element</span>. When a node is <span>in a
+<code>Document</code></span>, its <span>home subtree</span> is that
+<code>Document</code>'s tree.
+
+<p>The <dfn title="space character">space characters</dfn>, for the
+purposes of this specification, are U+0020 SPACE, U+0009 CHARACTER
+TABULATION (tab), U+000A LINE FEED (LF), U+000C FORM FEED (FF), and
+U+000D CARRIAGE RETURN (CR).</p>
 
 <h3>Conformance requirements</h3>
 
@@ -464,9 +472,11 @@ contains "xml" or the colon, or that the data contains characters that match the
  <li><p>Otherwise, return a <code>NodeList</code> rooted at the <span>context node</span>, whose filter matches only <code>Element</code> nodes that have a <code title=dom-Element-namespaceURI>namespaceURI</code> equal to <var title>namespaceURI</var> and a <code title=dom-Element-localName>localName</code> equal to <var title>localName</var> (both in a <span>case-sensitive</span> manner).
 </ol>
 
-<p>The <dfn title=dom-Document-getElementById><code>getElementById(<var title>elementId</var>)</code></dfn> method must return the first <code>Element</code> node, in <span>tree order</span>, in the <span>context node</span> that has the ID <var title>elementId</var>, or null if there is none.
-
-<!-- XXX <annevk5>		zcorpan, it sort of makes sense if you define DOM ID and then have the respective specs define how they map to that -->
+<p>The <dfn title=dom-Document-getElementById><code>getElementById(<var
+title>elementId</var>)</code></dfn> method must return the first
+<code>Element</code> node, in <span>tree order</span>, in the <span>context
+node</span> whose <span title=concept-ID>ID</span> is <var
+title>elementId</var>, or null if there is none.
 
 <p>The <dfn title=dom-Document-adoptNode><code>adoptNode(<var title>source</var>)</code></dfn> method must run the following steps:
 
@@ -772,6 +782,20 @@ contains "xml" or the colon, or that the data contains characters that match the
   void setIdAttributeNode(in Attr idAttr, in boolean isId);-->
            attribute <span>HTMLCollection</span> <span title=dom-Element-children>children</span>;
 };</pre>
+
+
+<p><code>Element</code> nodes can have a <dfn title=concept-id>unique
+identifier (ID)</dfn> associated with them. <span title=concept-id>IDs</span>
+must contain at least one character and must not contain any <span
+title="space character">space characters</span>. User agents must not associate
+empty <span title=concept-id>IDs</span> and <span title=concept-id>IDs</span>
+containing <span title="space character">space characters</span> with
+<code>Element</code> nodes. Specifications may define how <span
+title=concept-id>IDs</span> are associated with <code>Element</code> nodes.
+
+<p class=note>For example, HTML elements can have an <code title=attr-id
+data-anolis-spec=html>id</code> attribute specified, to specify its <span
+title=concept-id>ID</span>. <a href=#refsHTML>[HTML]</a>
 
 <p class=XXX>HTMLCollection is defined in HTML5. Perhaps we should move that to this spec. Perhaps also DOMTokenList, DOMStringMap, getElementsByClassName...
 

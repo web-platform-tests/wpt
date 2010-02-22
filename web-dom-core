@@ -35,7 +35,7 @@
  <li>Range.createContextualFragment <a href=http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2009-March/018892.html>http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2009-March/018892.html</a>
  <li>attributes.length should always return the length.
  <li>[Reflect] <a href=http://krijnhoetmer.nl/irc-logs/whatwg/20090622#l-90>http://krijnhoetmer.nl/irc-logs/whatwg/20090622#l-90</a>
- <li>HTMLCollection is defined in HTML5. Perhaps we should move that to this spec. Perhaps also DOMTokenList, DOMStringMap, getElementsByClassName...
+ <li><dfn id=htmlcollection>HTMLCollection</dfn> is defined in HTML5. Perhaps we should move that to this spec. Perhaps also DOMTokenList, DOMStringMap, getElementsByClassName...
 </ul>
 
 
@@ -193,9 +193,9 @@ be raised.
     <tr><th>Type of <var title="">node</var><th>Attributes
    <tbody>
     <tr><td><code><a href=#element>Element</a></code><td>&mdash;
-    <tr><td><code><a href=#attr>Attr</a></code><td><code title=dom-Attr-value>value</code>
+    <tr><td><code><a href=#attr>Attr</a></code><td><code title=dom-Attr-value><a href=#dom-attr-value>value</a></code>
     <tr><td><code><a href=#text>Text</a></code><td><code title=dom-CharacterData-data><a href=#dom-characterdata-data>data</a></code>
-    <tr><td><code><a href=#processinginstruction>ProcessingInstruction</a></code><td><code title=dom-ProcessingInstruction-target>target</code>, <code title=dom-ProcessingInstruction-data>data</code>
+    <tr><td><code><a href=#processinginstruction>ProcessingInstruction</a></code><td><code title=dom-ProcessingInstruction-target><a href=#dom-processinginstruction-target>target</a></code>, <code title=dom-ProcessingInstruction-data><a href=#dom-processinginstruction-data>data</a></code>
     <tr><td><code><a href=#comment>Comment</a></code><td><code title=dom-CharacterData-data><a href=#dom-characterdata-data>data</a></code>
     <tr><td><code><a href=#documentfragment>DocumentFragment</a></code><td>&mdash;
   </table>
@@ -332,7 +332,7 @@ must return the name of the exception constant as a string.</p>
  these steps. <a href=#refsXMLNS>[XMLNS]</a>
  <!--<li><p>If <var title>publicId</var> contains a character that doesn't match the <code title>PubidChar</code> production in XML, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and abort these steps. <a href=#refsXML>[XML]</a>--> <!-- DOM3 didn't check this -->
  <!--<li><p>If <var title>systemId</var> contains both a U+0022 QUOTATION MARK ('"') and a U+0027 APOSTROPHE ("'") character, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and abort these steps.--> <!-- DOM3 didn't check this -->
- <li><p>Return a new <code><a href=#documenttype>DocumentType</a></code> node with <code title=dom-Node-ownerDocument><a href=#dom-node-ownerdocument>ownerDocument</a></code> set to null, <code title=dom-DocumentType-name>name</code> set to <var title="">qualifiedName</var>, <code title=dom-DocumentType-publicId>publicId</code> set to <var title="">publicId</var>, and <code title=dom-DocumentType-systemId>systemId</code> set to <var title="">systemId</var>.
+ <li><p>Return a new <code><a href=#documenttype>DocumentType</a></code> node with <code title=dom-Node-ownerDocument><a href=#dom-node-ownerdocument>ownerDocument</a></code> set to null, <code title=dom-DocumentType-name><a href=#dom-documenttype-name>name</a></code> set to <var title="">qualifiedName</var>, <code title=dom-DocumentType-publicId><a href=#dom-documenttype-publicid>publicId</a></code> set to <var title="">publicId</var>, and <code title=dom-DocumentType-systemId><a href=#dom-documenttype-systemid>systemId</a></code> set to <var title="">systemId</var>.
 </ol>
 <p class=note>No check is performed that the <var title="">publicId</var> matches the <code title="">PublicChar</code> production in XML or that the <var title="">systemId</var> doesn't contain both a quotation mark (") and an apostrophe (').
 
@@ -380,12 +380,12 @@ must return the name of the exception constant as a string.</p>
   <span>Attr</span> <span title=dom-Document-createAttributeNS>createAttributeNS</span>(in DOMString namespaceURI, in DOMString qualifiedName);-->
   <a href=#nodelist>NodeList</a> <a href=#dom-document-getelementsbytagnamens title=dom-Document-getElementsByTagNameNS>getElementsByTagNameNS</a>(in DOMString namespaceURI, in DOMString localName);
   <a href=#element>Element</a> <a href=#dom-document-getelementbyid title=dom-Document-getElementById>getElementById</a>(in DOMString elementId);
-  readonly attribute DOMString <span title=dom-Document-inputEncoding>inputEncoding</span>;<!--
+  readonly attribute DOMString <a href=#dom-document-inputencoding title=dom-Document-inputEncoding>inputEncoding</a>;<!--
   readonly attribute DOMString xmlEncoding;
            attribute boolean xmlStandalone;
            attribute DOMString xmlVersion;
            attribute boolean strictErrorChecking;-->
-           attribute DOMString <span title=dom-Document-documentURI>documentURI</span>;
+           attribute DOMString <a href=#dom-document-documenturi title=dom-Document-documentURI>documentURI</a>;
   <a href=#node>Node</a> <a href=#dom-document-adoptnode title=dom-Document-adoptNode>adoptNode</a>(in <a href=#node>Node</a> source);<!--
   readonly attribute DOMConfiguration domConfig;
   void normalizeDocument();
@@ -463,7 +463,7 @@ adjacent hyphens or ends with a hyphen. <a href=#refsXML>[XML]</a>
 
  <!--<li><p>If <var title>target</var> contains a U+003A COLON (":") character, raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and abort these steps.--> <!-- DOM3 didn't check this -->
 
- <li><p>Return a new <code><a href=#processinginstruction>ProcessingInstruction</a></code> node with its <code title=dom-ProcessingInstruction-target>target</code> attribute set to <var title="">target</var>, <code title=dom-ProcessingInstruction-data>data</code> attribute set to <var title="">data</var> and <code title=dom-Node-ownerDocument><a href=#dom-node-ownerdocument>ownerDocument</a></code> set to the <a href=#context-node>context node</a>.
+ <li><p>Return a new <code><a href=#processinginstruction>ProcessingInstruction</a></code> node with its <code title=dom-ProcessingInstruction-target><a href=#dom-processinginstruction-target>target</a></code> attribute set to <var title="">target</var>, <code title=dom-ProcessingInstruction-data><a href=#dom-processinginstruction-data>data</a></code> attribute set to <var title="">data</var> and <code title=dom-Node-ownerDocument><a href=#dom-node-ownerdocument>ownerDocument</a></code> set to the <a href=#context-node>context node</a>.
 </ol>
 
 <p class=note>No check is performed that the processing instruction target
@@ -525,6 +525,10 @@ the same as the object returned by the previous call.</p>
 <p>The <dfn id=dom-document-getelementbyid title=dom-Document-getElementById><code>getElementById(<var title="">elementId</var>)</code></dfn> method must return the first
 <code><a href=#element>Element</a></code> node, in <a href=#tree-order>tree order</a>, in the <a href=#context-node>context
 node</a> whose <a href=#concept-id title=concept-ID>ID</a> is <var title="">elementId</var>, or null if there is none.
+
+<p class=XXX><dfn id=dom-document-inputencoding title=dom-Document-inputEncoding>inputEncoding</dfn>
+
+<p class=XXX><dfn id=dom-document-documenturi title=dom-Document-documentURI>documentURI</dfn>
 
 <p>The <dfn id=dom-document-adoptnode title=dom-Document-adoptNode><code>adoptNode(<var title="">source</var>)</code></dfn> method must run the following steps:
 
@@ -607,12 +611,12 @@ node</a> whose <a href=#concept-id title=concept-ID>ID</a> is <var title="">elem
 <thead><tr><th>Interface<th><code title=dom-Node-nodeName><a href=#dom-node-nodename>nodeName</a></code><th><code title=dom-Node-nodeValue><a href=#dom-node-nodevalue>nodeValue</a></code><th><code title=dom-Node-nodeType><a href=#dom-node-nodetype>nodeType</a></code>
 <tbody>
 <tr><td><code><a href=#element>Element</a></code><td>same as <code title=dom-Element-tagName><a href=#dom-element-tagname>tagName</a></code><td>null<td>1
-<tr><td><code><a href=#attr>Attr</a></code><td>same as <code title=dom-Attr-name>name</code><td>same as <code title=dom-Attr-value>value</code><td>2
+<tr><td><code><a href=#attr>Attr</a></code><td>same as <code title=dom-Attr-name><a href=#dom-attr-name>name</a></code><td>same as <code title=dom-Attr-value><a href=#dom-attr-value>value</a></code><td>2
 <tr><td><code><a href=#text>Text</a></code><td>"<code title="">#text</code>"<td>same as <code title=dom-CharacterData-data><a href=#dom-characterdata-data>data</a></code><td>3
-<tr><td><code><a href=#processinginstruction>ProcessingInstruction</a></code><td>same as <code title=dom-ProcessingInstruction-target>target</code><td>same as <code title=dom-ProcessingInstruction-data>data</code><td>7
+<tr><td><code><a href=#processinginstruction>ProcessingInstruction</a></code><td>same as <code title=dom-ProcessingInstruction-target><a href=#dom-processinginstruction-target>target</a></code><td>same as <code title=dom-ProcessingInstruction-data><a href=#dom-processinginstruction-data>data</a></code><td>7
 <tr><td><code><a href=#comment>Comment</a></code><td>"<code title="">#comment</code>"<td>same as <code title=dom-CharacterData-data><a href=#dom-characterdata-data>data</a></code><td>8
 <tr><td><code><a href=#document>Document</a></code><td>"<code title="">#document</code>"<td>null<td>9
-<tr><td><code><a href=#documenttype>DocumentType</a></code><td>same as <code title=dom-DocumentType-name>name</code><td>null<td>10
+<tr><td><code><a href=#documenttype>DocumentType</a></code><td>same as <code title=dom-DocumentType-name><a href=#dom-documenttype-name>name</a></code><td>null<td>10
 <tr><td><code><a href=#documentfragment>DocumentFragment</a></code><td>"<code title="">#document-fragment</code>"<td>null<td>11
 </table>
 
@@ -742,7 +746,7 @@ otherwise.
 
 <h3 id=interface-nodelist><span class=secno>3.6 </span>Interface <code title="">NodeList</code></h3>
 
-<p>A <code><a href=#nodelist>NodeList</a></code> is a <span title=collections>collection</span>, except that <code><a href=#nodelist>NodeList</a></code>s can be static (as opposed to live) if a specification defines them to be static. <a href=#refsHTML>[HTML]</a>
+<p>A <code><a href=#nodelist>NodeList</a></code> is a <span data-anolis-spec=html title=collections>collection</span>, except that <code><a href=#nodelist>NodeList</a></code>s can be static (as opposed to live) if a specification defines them to be static. <a href=#refsHTML>[HTML]</a>
 
 <pre class=idl>interface <dfn id=nodelist>NodeList</dfn> {
   getter <a href=#node>Node</a> <a href=#dom-nodelist-item title=dom-NodeList-item>item</a>(in unsigned long index);
@@ -751,21 +755,37 @@ otherwise.
 
 <p>The <dfn id=dom-nodelist-item title=dom-NodeList-item><code>item(<var>index</var>)</code></dfn> method must return the <var>index</var>th node in the collection. If there is no <var>index</var>th node in the collection, then the method must return null.
 
-<p>The <dfn id=dom-nodelist-length title=dom-NodeList-length><code>length</code></dfn> attribute must, on getting, return the number of nodes <span>represented by the collection</span>.
+<p>The <dfn id=dom-nodelist-length title=dom-NodeList-length><code>length</code></dfn> attribute must, on getting, return the number of nodes <span data-anolis-spec=html>represented by the collection</span>.
 
 
 <h3 id=interface-namednodemap><span class=secno>3.7 </span>Interface <code title="">NamedNodeMap</code></h3>
 
 <pre class=idl>interface <dfn id=namednodemap>NamedNodeMap</dfn> {
-  <a href=#node>Node</a> <span title=dom-NamedNodeMap-getNamedItem>getNamedItem</span>(in DOMString name);
-  <a href=#node>Node</a> <span title=dom-NamedNodeMap-setNamedItem>setNamedItem</span>(in <a href=#node>Node</a> arg);
-  <a href=#node>Node</a> <span title=dom-NamedNodeMap-removeNamedItem>removeNamedItem</span>(in DOMString name);
-  <a href=#node>Node</a> <span title=dom-NamedNodeMap-item>item</span>(in unsigned long index);
-  readonly attribute unsigned long <span title=dom-NamedNodeMap-length>length</span>;
-  <a href=#node>Node</a> <span title=dom-NamedNodeMap-getNamedItemNS>getNamedItemNS</span>(in DOMString namespaceURI, in DOMString localName);
-  <a href=#node>Node</a> <span title=dom-NamedNodeMap-setNamedItemNS>setNamedItemNS</span>(in <a href=#node>Node</a> arg);
-  <a href=#node>Node</a> <span title=dom-NamedNodeMap-removeNamedItemNS>removeNamedItemNS</span>(in DOMString namespaceURI, in DOMString localName);
+  <a href=#node>Node</a> <a href=#dom-namednodemap-getnameditem title=dom-NamedNodeMap-getNamedItem>getNamedItem</a>(in DOMString name);
+  <a href=#node>Node</a> <a href=#dom-namednodemap-setnameditem title=dom-NamedNodeMap-setNamedItem>setNamedItem</a>(in <a href=#node>Node</a> arg);
+  <a href=#node>Node</a> <a href=#dom-namednodemap-removenameditem title=dom-NamedNodeMap-removeNamedItem>removeNamedItem</a>(in DOMString name);
+  <a href=#node>Node</a> <a href=#dom-namednodemap-item title=dom-NamedNodeMap-item>item</a>(in unsigned long index);
+  readonly attribute unsigned long <a href=#dom-namednodemap-length title=dom-NamedNodeMap-length>length</a>;
+  <a href=#node>Node</a> <a href=#dom-namednodemap-getnameditemns title=dom-NamedNodeMap-getNamedItemNS>getNamedItemNS</a>(in DOMString namespaceURI, in DOMString localName);
+  <a href=#node>Node</a> <a href=#dom-namednodemap-setnameditemns title=dom-NamedNodeMap-setNamedItemNS>setNamedItemNS</a>(in <a href=#node>Node</a> arg);
+  <a href=#node>Node</a> <a href=#dom-namednodemap-removenameditemns title=dom-NamedNodeMap-removeNamedItemNS>removeNamedItemNS</a>(in DOMString namespaceURI, in DOMString localName);
 };</pre>
+
+<p class=XXX><dfn id=dom-namednodemap-getnameditem title=dom-NamedNodeMap-getNamedItem>getNamedItem</dfn>
+
+<p class=XXX><dfn id=dom-namednodemap-setnameditem title=dom-NamedNodeMap-setNamedItem>setNamedItem</dfn>
+
+<p class=XXX><dfn id=dom-namednodemap-removenameditem title=dom-NamedNodeMap-removeNamedItem>removeNamedItem</dfn>
+
+<p class=XXX><dfn id=dom-namednodemap-item title=dom-NamedNodeMap-item>item</dfn>
+
+<p class=XXX><dfn id=dom-namednodemap-length title=dom-NamedNodeMap-length>length</dfn>
+
+<p class=XXX><dfn id=dom-namednodemap-getnameditemns title=dom-NamedNodeMap-getNamedItemNS>getNamedItemNS</dfn>
+
+<p class=XXX><dfn id=dom-namednodemap-setnameditemns title=dom-NamedNodeMap-setNamedItemNS>setNamedItemNS</dfn>
+
+<p class=XXX><dfn id=dom-namednodemap-removenameditemns title=dom-NamedNodeMap-removeNamedItemNS>removeNamedItemNS</dfn>
 
 
 <h3 id=interface-characterdata><span class=secno>3.8 </span>Interface <code title="">CharacterData</code></h3>
@@ -774,10 +794,10 @@ otherwise.
   [TreatNullAs=EmptyString] attribute DOMString <a href=#dom-characterdata-data title=dom-CharacterData-data>data</a>;
   readonly attribute unsigned long <a href=#dom-characterdata-length title=dom-CharacterData-length>length</a>;
   DOMString <a href=#dom-characterdata-substringdata title=dom-CharacterData-substringData>substringData</a>(in unsigned long offset, in unsigned long count);
-  void <span title=dom-CharacterData-appendData>appendData</span>(in DOMString arg);
-  void <span title=dom-CharacterData-insertData>insertData</span>(in unsigned long offset, in DOMString arg);
-  void <span title=dom-CharacterData-deleteData>deleteData</span>(in unsigned long offset, in unsigned long count);
-  void <span title=dom-CharacterData-replaceData>replaceData</span>(in unsigned long offset, in unsigned long count, in DOMString arg);
+  void <a href=#dom-characterdata-appenddata title=dom-CharacterData-appendData>appendData</a>(in DOMString arg);
+  void <a href=#dom-characterdata-insertdata title=dom-CharacterData-insertData>insertData</a>(in unsigned long offset, in DOMString arg);
+  void <a href=#dom-characterdata-deletedata title=dom-CharacterData-deleteData>deleteData</a>(in unsigned long offset, in unsigned long count);
+  void <a href=#dom-characterdata-replacedata title=dom-CharacterData-replaceData>replaceData</a>(in unsigned long offset, in unsigned long count, in DOMString arg);
 };</pre>
 
 <p>The <dfn id=dom-characterdata-data title=dom-CharacterData-data><code>data</code></dfn> attribute must, on getting, return the data of the node, and on setting, must change the node's data to the new value. <!-- XXX should getting throw if length is longer than a DOMString can take? -->
@@ -793,19 +813,33 @@ otherwise.
 </ol>
 <!-- XXX should it throw if it's too long? -->
 
+<p class=XXX><dfn id=dom-characterdata-appenddata title=dom-CharacterData-appendData>appendData</dfn>
 
+<p class=XXX><dfn id=dom-characterdata-insertdata title=dom-CharacterData-insertData>insertData</dfn>
+
+<p class=XXX><dfn id=dom-characterdata-deletedata title=dom-CharacterData-deleteData>deleteData</dfn>
+
+<p class=XXX><dfn id=dom-characterdata-replacedata title=dom-CharacterData-replaceData>replaceData</dfn>
 
 
 <h3 id=interface-attr><span class=secno>3.9 </span>Interface <code title="">Attr</code></h3>
 
 <pre class=idl>interface <dfn id=attr>Attr</dfn> : <a href=#node>Node</a> {
-  readonly attribute DOMString <span title=dom-Attr-name>name</span>;
-  readonly attribute boolean <span title=dom-Attr-specified>specified</span>;
-           attribute DOMString <span title=dom-Attr-value>value</span>;
-  readonly attribute Element <span title=dom-Attr-ownerElement>ownerElement</span>;<!--
+  readonly attribute DOMString <a href=#dom-attr-name title=dom-Attr-name>name</a>;
+  readonly attribute boolean <a href=#dom-attr-specified title=dom-Attr-specified>specified</a>;
+           attribute DOMString <a href=#dom-attr-value title=dom-Attr-value>value</a>;
+  readonly attribute Element <a href=#dom-attr-ownerelement title=dom-Attr-ownerElement>ownerElement</a>;<!--
   readonly attribute TypeInfo schemaTypeInfo;
   readonly attribute boolean isId;-->
 };</pre>
+
+<p class=XXX><dfn id=dom-attr-name title=dom-Attr-name>name</dfn>
+
+<p class=XXX><dfn id=dom-attr-specified title=dom-Attr-specified>specified</dfn>
+
+<p class=XXX><dfn id=dom-attr-value title=dom-Attr-value>value</dfn>
+
+<p class=XXX><dfn id=dom-attr-ownerelement title=dom-Attr-ownerElement>ownerElement</dfn>
 
 
 <h3 id=interface-element><span class=secno>3.10 </span>Interface <code title="">Element</code></h3>
@@ -814,26 +848,25 @@ otherwise.
   readonly attribute DOMString <a href=#dom-element-tagname title=dom-Element-tagName>tagName</a>;
   DOMString? <a href=#dom-element-getattribute title=dom-Element-getAttribute>getAttribute</a>(in DOMString <var title="">name</var>);
   void <a href=#dom-element-setattribute title=dom-Element-setAttribute>setAttribute</a>(in DOMString <var title="">name</var>, in DOMString <var title="">value</var>);
-  void <span title=dom-Element-removeAttribute>removeAttribute</span>(in DOMString name);<!--
+  void <a href=#dom-element-removeattribute title=dom-Element-removeAttribute>removeAttribute</a>(in DOMString name);<!--
   Attr <span title=dom-Element-getAttributeNode>getAttributeNode</span>(in DOMString name);
   Attr <span title=dom-Element-setAttributeNode>setAttributeNode</span>(in Attr newAttr);
   Attr <span title=dom-Element-removeAttributeNode>removeAttributeNode</span>(in Attr oldAttr);-->
-  NodeList <span title=dom-Element-getElementsByTagName>getElementsByTagName</span>(in DOMString name);
-  DOMString <span title=dom-Element-getAttributeNS>getAttributeNS</span>(in DOMString namespaceURI, in DOMString localName);
-  void <span title=dom-Element-setAttributeNS>setAttributeNS</span>(in DOMString namespaceURI, in DOMString qualifiedName, in DOMString value);
-  void <span title=dom-Element-removeAttributeNS>removeAttributeNS</span>(in DOMString namespaceURI, in DOMString localName);<!--
+  NodeList <a href=#dom-element-getelementsbytagname title=dom-Element-getElementsByTagName>getElementsByTagName</a>(in DOMString name);
+  DOMString <a href=#dom-element-getattributens title=dom-Element-getAttributeNS>getAttributeNS</a>(in DOMString namespaceURI, in DOMString localName);
+  void <a href=#dom-element-setattributens title=dom-Element-setAttributeNS>setAttributeNS</a>(in DOMString namespaceURI, in DOMString qualifiedName, in DOMString value);
+  void <a href=#dom-element-removeattributens title=dom-Element-removeAttributeNS>removeAttributeNS</a>(in DOMString namespaceURI, in DOMString localName);<!--
   Attr <span title=dom-Element-getAttributeNodeNS>getAttributeNodeNS</span>(in DOMString namespaceURI, in DOMString localName);
   Attr getAttributeNodeNS(in DOMString namespaceURI, in DOMString localName);-->
-  <a href=#nodelist>NodeList</a> <span title=dom-Element-getElementsByTagNameNS>getElementsByTagNameNS</span>(in DOMString namespaceURI, in DOMString localName);
-  boolean <span title=dom-Element-hasAttribute>hasAttribute</span>(in DOMString name);
-  boolean <span title=dom-Element-hasAttributeNS>hasAttributeNS</span>(in DOMString namespaceURI, in DOMString localName);<!--
+  <a href=#nodelist>NodeList</a> <a href=#dom-element-getelementsbytagnamens title=dom-Element-getElementsByTagNameNS>getElementsByTagNameNS</a>(in DOMString namespaceURI, in DOMString localName);
+  boolean <a href=#dom-element-hasattribute title=dom-Element-hasAttribute>hasAttribute</a>(in DOMString name);
+  boolean <a href=#dom-element-hasattributens title=dom-Element-hasAttributeNS>hasAttributeNS</a>(in DOMString namespaceURI, in DOMString localName);<!--
   readonly attribute TypeInfo schemaTypeInfo;
   void setIdAttribute(in DOMString name, in boolean isId);
   void setIdAttributeNS(in DOMString namespaceURI, in DOMString localName, in boolean isId);
   void setIdAttributeNode(in Attr idAttr, in boolean isId);-->
-           attribute <span>HTMLCollection</span> <span title=dom-Element-children>children</span>;
+           attribute <a href=#htmlcollection>HTMLCollection</a> <a href=#dom-element-children title=dom-Element-children>children</a>;
 };</pre>
-
 
 <p><code><a href=#element>Element</a></code> nodes can have a <dfn id=concept-id title=concept-id>unique
 identifier (ID)</dfn> associated with them. <a href=#concept-id title=concept-id>IDs</a>
@@ -859,24 +892,48 @@ following steps:
  match the <code title="">Name</code> production in XML, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR><a href=#dom-domexception-invalid_character_err>INVALID_CHARACTER_ERR</a></code>
  exception and abort these steps. <a href=#refsXML>[XML]</a>
 
- <li><p>If the node doesn't have an attribute whose name equals <var title="">name</var>, create an <code><a href=#attr>Attr</a></code> node in no namespace, with <var title="">name</var> as its <code title=dom-Attr-name>name</code>, <var title="">value</var> as its <code title=dom-Attr-value>value</code>, <code title=dom-Attr-specified>specified</code> set to true and the <a href=#context-node>context
- node</a> as its <code title=dom-Attr-ownerElement>ownerElement</code>.
+ <li><p>If the node doesn't have an attribute whose name equals <var title="">name</var>, create an <code><a href=#attr>Attr</a></code> node in no namespace, with <var title="">name</var> as its <code title=dom-Attr-name><a href=#dom-attr-name>name</a></code>, <var title="">value</var> as its <code title=dom-Attr-value><a href=#dom-attr-value>value</a></code>, <code title=dom-Attr-specified><a href=#dom-attr-specified>specified</a></code> set to true and the <a href=#context-node>context
+ node</a> as its <code title=dom-Attr-ownerElement><a href=#dom-attr-ownerelement>ownerElement</a></code>.
  Append this node to the <a href=#context-node title="context node">context node's</a> <code title=dom-Node-attributes><a href=#dom-node-attributes>attributes</a></code>, as its last item.
 
- <li><p>Otherwise, set the <code title=dom-Attr-value>value</code> of the first
+ <li><p>Otherwise, set the <code title=dom-Attr-value><a href=#dom-attr-value>value</a></code> of the first
  attribute in <a href=#tree-order>tree order</a> whose name equals <var title="">name</var>,
  in any namespace, to <var title="">value</var>.
 </ol>
+
+<p class=XXX><dfn id=dom-element-removeattribute title=dom-Element-removeAttribute>removeAttribute</dfn>
+
+<p class=XXX><dfn id=dom-element-getelementsbytagname title=dom-Element-getElementsByTagName>getElementsByTagName</dfn>
+
+<p class=XXX><dfn id=dom-element-getattributens title=dom-Element-getAttributeNS>getAttributeNS</dfn>
+
+<p class=XXX><dfn id=dom-element-setattributens title=dom-Element-setAttributeNS>setAttributeNS</dfn>
+
+<p class=XXX><dfn id=dom-element-removeattributens title=dom-Element-removeAttributeNS>removeAttributeNS</dfn>
+
+<p class=XXX><dfn id=dom-element-getelementsbytagnamens title=dom-Element-getElementsByTagNameNS>getElementsByTagNameNS</dfn>
+
+<p class=XXX><dfn id=dom-element-hasattribute title=dom-Element-hasAttribute>hasAttribute</dfn>
+
+<p class=XXX><dfn id=dom-element-hasattributens title=dom-Element-hasAttributeNS>hasAttributeNS</dfn>
+
+<p class=XXX><dfn id=dom-element-children title=dom-Element-children>children</dfn>
 
 
 <h3 id=interface-text><span class=secno>3.11 </span>Interface <code title="">Text</code></h3>
 
 <pre class=idl>interface <dfn id=text>Text</dfn> : <a href=#characterdata>CharacterData</a> {
-  <a href=#text>Text</a> <span title=dom-Text-splitText>splitText</span>(in unsigned long offset);<!--
+  <a href=#text>Text</a> <a href=#dom-text-splittext title=dom-Text-splitText>splitText</a>(in unsigned long offset);<!--
   readonly attribute boolean isElementContentWhitespace;-->
-  readonly attribute DOMString <span title=dom-Text-wholeText>wholeText</span>;
-  <a href=#text>Text</a> <span title=dom-Text-replaceWholeText>replaceWholeText</span>(in DOMString content);
+  readonly attribute DOMString <a href=#dom-text-wholetext title=dom-Text-wholeText>wholeText</a>;
+  <a href=#text>Text</a> <a href=#dom-text-replacewholetext title=dom-Text-replaceWholeText>replaceWholeText</a>(in DOMString content);
 };</pre>
+
+<p class=XXX><dfn id=dom-text-splittext title=dom-Text-splitText>splitText</dfn>
+
+<p class=XXX><dfn id=dom-text-wholetext title=dom-Text-wholeText>wholeText</dfn>
+
+<p class=XXX><dfn id=dom-text-replacewholetext title=dom-Text-replaceWholeText>replaceWholeText</dfn>
 
 
 <h3 id=interface-comment><span class=secno>3.12 </span>Interface <code title="">Comment</code></h3>
@@ -896,13 +953,19 @@ following steps:
 <h3 id=interface-documenttype><span class=secno>3.13 </span>Interface <code title="">DocumentType</code></h3>
 
 <pre class=idl>interface <dfn id=documenttype>DocumentType</dfn> : <a href=#node>Node</a> {
-  readonly attribute DOMString <span title=dom-DocumentType-name>name</span>;<!--
+  readonly attribute DOMString <a href=#dom-documenttype-name title=dom-DocumentType-name>name</a>;<!--
   readonly attribute NamedNodeMap entities;
   readonly attribute NamedNodeMap notations;-->
-  readonly attribute DOMString <span title=dom-DocumentType-publicId>publicId</span>;
-  readonly attribute DOMString <span title=dom-DocumentType-systemId>systemId</span>;<!--
+  readonly attribute DOMString <a href=#dom-documenttype-publicid title=dom-DocumentType-publicId>publicId</a>;
+  readonly attribute DOMString <a href=#dom-documenttype-systemid title=dom-DocumentType-systemId>systemId</a>;<!--
   readonly attribute DOMString internalSubset;-->
 };</pre>
+
+<p class=XXX><dfn id=dom-documenttype-name title=dom-DocumentType-name>name</dfn>
+
+<p class=XXX><dfn id=dom-documenttype-publicid title=dom-DocumentType-publicId>publicId</dfn>
+
+<p class=XXX><dfn id=dom-documenttype-systemid title=dom-DocumentType-systemId>systemId</dfn>
 
 <!-- Notation dropped -->
 <!-- Entity dropped -->
@@ -912,10 +975,13 @@ following steps:
 <h3 id=interface-processinginstruction><span class=secno>3.14 </span>Interface <code title="">ProcessingInstruction</code></h3>
 
 <pre class=idl>interface <dfn id=processinginstruction>ProcessingInstruction</dfn> : <a href=#node>Node</a> {
-  readonly attribute DOMString <span title=dom-ProcessingInstruction-target>target</span>;
-           attribute DOMString <span title=dom-ProcessingInstruction-data>data</span>;
+  readonly attribute DOMString <a href=#dom-processinginstruction-target title=dom-ProcessingInstruction-target>target</a>;
+           attribute DOMString <a href=#dom-processinginstruction-data title=dom-ProcessingInstruction-data>data</a>;
 };</pre>
 
+<p class=XXX><dfn id=dom-processinginstruction-target title=dom-ProcessingInstruction-target>target</dfn>
+
+<p class=XXX><dfn id=dom-processinginstruction-data title=dom-ProcessingInstruction-data>data</dfn>
 
 
 <h2 class=no-num id=references>References</h2><!--REFS-->

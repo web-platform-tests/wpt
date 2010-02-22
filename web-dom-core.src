@@ -36,7 +36,7 @@
  <li>Range.createContextualFragment <a href="http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2009-March/018892.html">http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2009-March/018892.html</a>
  <li>attributes.length should always return the length.
  <li>[Reflect] <a href=http://krijnhoetmer.nl/irc-logs/whatwg/20090622#l-90>http://krijnhoetmer.nl/irc-logs/whatwg/20090622#l-90</a>
- <li>HTMLCollection is defined in HTML5. Perhaps we should move that to this spec. Perhaps also DOMTokenList, DOMStringMap, getElementsByClassName...
+ <li><dfn>HTMLCollection</dfn> is defined in HTML5. Perhaps we should move that to this spec. Perhaps also DOMTokenList, DOMStringMap, getElementsByClassName...
 </ul>
 
 
@@ -514,6 +514,10 @@ title>elementId</var>)</code></dfn> method must return the first
 node</span> whose <span title=concept-ID>ID</span> is <var
 title>elementId</var>, or null if there is none.
 
+<p class=XXX><dfn title=dom-Document-inputEncoding>inputEncoding</dfn>
+
+<p class=XXX><dfn title=dom-Document-documentURI>documentURI</dfn>
+
 <p>The <dfn title=dom-Document-adoptNode><code>adoptNode(<var title>source</var>)</code></dfn> method must run the following steps:
 
 <ol>
@@ -730,7 +734,7 @@ otherwise.
 
 <h3>Interface <code title>NodeList</code></h3>
 
-<p>A <code>NodeList</code> is a <span title=collections>collection</span>, except that <code>NodeList</code>s can be static (as opposed to live) if a specification defines them to be static. <a href=#refsHTML>[HTML]</a>
+<p>A <code>NodeList</code> is a <span title=collections data-anolis-spec=html>collection</span>, except that <code>NodeList</code>s can be static (as opposed to live) if a specification defines them to be static. <a href=#refsHTML>[HTML]</a>
 
 <pre class=idl>interface <dfn>NodeList</dfn> {
   getter <span>Node</span> <span title=dom-NodeList-item>item</span>(in unsigned long index);
@@ -739,7 +743,7 @@ otherwise.
 
 <p>The <dfn title=dom-NodeList-item><code>item(<var>index</var>)</code></dfn> method must return the <var>index</var>th node in the collection. If there is no <var>index</var>th node in the collection, then the method must return null.
 
-<p>The <dfn title=dom-NodeList-length><code>length</code></dfn> attribute must, on getting, return the number of nodes <span>represented by the collection</span>.
+<p>The <dfn title=dom-NodeList-length><code>length</code></dfn> attribute must, on getting, return the number of nodes <span data-anolis-spec=html>represented by the collection</span>.
 
 
 <h3>Interface <code title>NamedNodeMap</code></h3>
@@ -754,6 +758,22 @@ otherwise.
   <span>Node</span> <span title=dom-NamedNodeMap-setNamedItemNS>setNamedItemNS</span>(in <span>Node</span> arg);
   <span>Node</span> <span title=dom-NamedNodeMap-removeNamedItemNS>removeNamedItemNS</span>(in DOMString namespaceURI, in DOMString localName);
 };</pre>
+
+<p class=XXX><dfn title=dom-NamedNodeMap-getNamedItem>getNamedItem</dfn>
+
+<p class=XXX><dfn title=dom-NamedNodeMap-setNamedItem>setNamedItem</dfn>
+
+<p class=XXX><dfn title=dom-NamedNodeMap-removeNamedItem>removeNamedItem</dfn>
+
+<p class=XXX><dfn title=dom-NamedNodeMap-item>item</dfn>
+
+<p class=XXX><dfn title=dom-NamedNodeMap-length>length</dfn>
+
+<p class=XXX><dfn title=dom-NamedNodeMap-getNamedItemNS>getNamedItemNS</dfn>
+
+<p class=XXX><dfn title=dom-NamedNodeMap-setNamedItemNS>setNamedItemNS</dfn>
+
+<p class=XXX><dfn title=dom-NamedNodeMap-removeNamedItemNS>removeNamedItemNS</dfn>
 
 
 <h3>Interface <code title>CharacterData</code></h3>
@@ -781,7 +801,13 @@ otherwise.
 </ol>
 <!-- XXX should it throw if it's too long? -->
 
+<p class=XXX><dfn title=dom-CharacterData-appendData>appendData</dfn>
 
+<p class=XXX><dfn title=dom-CharacterData-insertData>insertData</dfn>
+
+<p class=XXX><dfn title=dom-CharacterData-deleteData>deleteData</dfn>
+
+<p class=XXX><dfn title=dom-CharacterData-replaceData>replaceData</dfn>
 
 
 <h3>Interface <code title>Attr</code></h3>
@@ -794,6 +820,14 @@ otherwise.
   readonly attribute TypeInfo schemaTypeInfo;
   readonly attribute boolean isId;-->
 };</pre>
+
+<p class=XXX><dfn title=dom-Attr-name>name</dfn>
+
+<p class=XXX><dfn title=dom-Attr-specified>specified</dfn>
+
+<p class=XXX><dfn title=dom-Attr-value>value</dfn>
+
+<p class=XXX><dfn title=dom-Attr-ownerElement>ownerElement</dfn>
 
 
 <h3>Interface <code title>Element</code></h3>
@@ -821,7 +855,6 @@ otherwise.
   void setIdAttributeNode(in Attr idAttr, in boolean isId);-->
            attribute <span>HTMLCollection</span> <span title=dom-Element-children>children</span>;
 };</pre>
-
 
 <p><code>Element</code> nodes can have a <dfn title=concept-id>unique
 identifier (ID)</dfn> associated with them. <span title=concept-id>IDs</span>
@@ -872,6 +905,24 @@ following steps:
  in any namespace, to <var title>value</var>.
 </ol>
 
+<p class=XXX><dfn title=dom-Element-removeAttribute>removeAttribute</dfn>
+
+<p class=XXX><dfn title=dom-Element-getElementsByTagName>getElementsByTagName</dfn>
+
+<p class=XXX><dfn title=dom-Element-getAttributeNS>getAttributeNS</dfn>
+
+<p class=XXX><dfn title=dom-Element-setAttributeNS>setAttributeNS</dfn>
+
+<p class=XXX><dfn title=dom-Element-removeAttributeNS>removeAttributeNS</dfn>
+
+<p class=XXX><dfn title=dom-Element-getElementsByTagNameNS>getElementsByTagNameNS</dfn>
+
+<p class=XXX><dfn title=dom-Element-hasAttribute>hasAttribute</dfn>
+
+<p class=XXX><dfn title=dom-Element-hasAttributeNS>hasAttributeNS</dfn>
+
+<p class=XXX><dfn title=dom-Element-children>children</dfn>
+
 
 <h3>Interface <code title>Text</code></h3>
 
@@ -881,6 +932,12 @@ following steps:
   readonly attribute DOMString <span title=dom-Text-wholeText>wholeText</span>;
   <span>Text</span> <span title=dom-Text-replaceWholeText>replaceWholeText</span>(in DOMString content);
 };</pre>
+
+<p class=XXX><dfn title=dom-Text-splitText>splitText</dfn>
+
+<p class=XXX><dfn title=dom-Text-wholeText>wholeText</dfn>
+
+<p class=XXX><dfn title=dom-Text-replaceWholeText>replaceWholeText</dfn>
 
 
 <h3>Interface <code title>Comment</code></h3>
@@ -908,6 +965,12 @@ following steps:
   readonly attribute DOMString internalSubset;-->
 };</pre>
 
+<p class=XXX><dfn title=dom-DocumentType-name>name</dfn>
+
+<p class=XXX><dfn title=dom-DocumentType-publicId>publicId</dfn>
+
+<p class=XXX><dfn title=dom-DocumentType-systemId>systemId</dfn>
+
 <!-- Notation dropped -->
 <!-- Entity dropped -->
 <!-- EntityReference dropped -->
@@ -920,6 +983,9 @@ following steps:
            attribute DOMString <span title=dom-ProcessingInstruction-data>data</span>;
 };</pre>
 
+<p class=XXX><dfn title=dom-ProcessingInstruction-target>target</dfn>
+
+<p class=XXX><dfn title=dom-ProcessingInstruction-data>data</dfn>
 
 
 <h2 class="no-num" id="references">References</h2><!--REFS-->

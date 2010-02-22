@@ -147,15 +147,15 @@ out of memory, or to work around platform-specific limitations.</p>
 required for conforming IDL fragments, as described in the Web IDL
 specification. <a href=#refsWEBIDL>[WEBIDL]</a></p>
 
-<p id=float-nan>Except where otherwise specified, if an IDL
-attribute that is a floating point number type (<code title="">float</code>) is assigned an Infinity or Not-a-Number
-(NaN) value, a <code>NOT_SUPPORTED_ERR</code> exception must be
-raised.</p>
+<p id=float-nan>Except where otherwise specified, if an IDL attribute that is a
+floating point number type (<code data-anolis-spec=webidl>float</code>) is
+assigned an Infinity or Not-a-Number (NaN) value, a <code title=dom-DOMException-NOT_SUPPORTED_ERR><a href=#dom-domexception-not_supported_err>NOT_SUPPORTED_ERR</a></code> exception must
+be raised.
 
-<p>Except where otherwise specified, if a method with an argument
-that is a floating point number type (<code title="">float</code>)
-is passed an Infinity or Not-a-Number (NaN) value, a
-<code>NOT_SUPPORTED_ERR</code> exception must be raised.</p>
+<p>Except where otherwise specified, if a method with an argument that is a
+floating point number type (<code data-anolis-spec=webidl>float</code>) is
+passed an Infinity or Not-a-Number (NaN) value, a <code title=dom-DOMException-NOT_SUPPORTED_ERR><a href=#dom-domexception-not_supported_err>NOT_SUPPORTED_ERR</a></code> exception must
+be raised.
 
 <p class=XXX>HTML5.
 
@@ -515,7 +515,7 @@ the same as the object returned by the previous call.</p>
  <li><p>If both <var title="">namespaceURI</var> and <var title="">localName</var> are just the character U+002A ASTERISK ("*"), return a <code><a href=#nodelist>NodeList</a></code> rooted at the <a href=#context-node>context node</a>, whose filter matches only <code><a href=#element>Element</a></code> nodes.
  <li><p>Otherwise, if <var title="">namespaceURI</var> is just the character U+002A ASTERISK ("*"), return a <code><a href=#nodelist>NodeList</a></code> rooted at the <a href=#context-node>context node</a>, whose filter matches only <code><a href=#element>Element</a></code> nodes with the <code title=dom-Node-localName><a href=#dom-node-localname>localName</a></code> equal to <var title="">localName</var>.
  <li><p>Otherwise, if <var title="">localName</var> is just the character U+002A ASTERISK ("*"), return a <code><a href=#nodelist>NodeList</a></code> rooted at the <a href=#context-node>context node</a>, whose filter matches only <code><a href=#element>Element</a></code> nodes with the <code title=dom-Node-namespaceURI><a href=#dom-node-namespaceuri>namespaceURI</a></code> equal to <var title="">namespaceURI</var>.
- <li><p>Otherwise, return a <code><a href=#nodelist>NodeList</a></code> rooted at the <a href=#context-node>context node</a>, whose filter matches only <code><a href=#element>Element</a></code> nodes that have a <code title=dom-Element-namespaceURI>namespaceURI</code> equal to <var title="">namespaceURI</var> and a <code title=dom-Element-localName>localName</code> equal to <var title="">localName</var> (both in a <a href=#case-sensitive>case-sensitive</a> manner).
+ <li><p>Otherwise, return a <code><a href=#nodelist>NodeList</a></code> rooted at the <a href=#context-node>context node</a>, whose filter matches only <code><a href=#element>Element</a></code> nodes that have a <code title=dom-Name-namespaceURI>namespaceURI</code> equal to <var title="">namespaceURI</var> and a <code title=dom-Node-localName><a href=#dom-node-localname>localName</a></code> equal to <var title="">localName</var> (both in a <a href=#case-sensitive>case-sensitive</a> manner).
 </ol>
 <p>A new <code><a href=#nodelist>NodeList</a></code> object must be returned each time unless
 the argument is the same as the last time the method was invoked on
@@ -728,7 +728,7 @@ otherwise.
 
 <ul>
  <li><p><var>arg</var> implements the <code><a href=#node>Node</a></code> interface.
- <li><p><var>arg</var>'s <code title=dom-Node-type>type</code> is the same as the <a href=#context-node>context node</a>'s <code title=dom-Node-type>type</code>.
+ <li><p><var>arg</var>'s <code title=dom-Node-nodeType><a href=#dom-node-nodetype>nodeType</a></code> is the same as the <a href=#context-node>context node</a>'s <code title=dom-Node-nodeType><a href=#dom-node-nodetype>nodeType</a></code>.
  <li><p><var>arg</var>'s <code title=dom-Node-nodeName><a href=#dom-node-nodename>nodeName</a></code> is the same as the <a href=#context-node>context node</a>'s <code title=dom-Node-nodeName><a href=#dom-node-nodename>nodeName</a></code>.
  <li><p><var>arg</var>'s <code title=dom-Node-localName><a href=#dom-node-localname>localName</a></code> is the same as the <a href=#context-node>context node</a>'s <code title=dom-Node-localName><a href=#dom-node-localname>localName</a></code>.
  <li><p><var>arg</var>'s <code title=dom-Node-namespaceURI><a href=#dom-node-namespaceuri>namespaceURI</a></code> is the same as the <a href=#context-node>context node</a>'s <code title=dom-Node-namespaceURI><a href=#dom-node-namespaceuri>namespaceURI</a></code>.
@@ -736,7 +736,7 @@ otherwise.
  <li><p><var>arg</var>'s <code title=dom-Node-nodeValue><a href=#dom-node-nodevalue>nodeValue</a></code> is the same as the <a href=#context-node>context node</a>'s <code title=dom-Node-nodeValue><a href=#dom-node-nodevalue>nodeValue</a></code>.
  <li><p><var>arg</var>'s <code title=dom-Node-attributes><a href=#dom-node-attributes>attributes</a></code> is the same as the <a href=#context-node>context node</a>'s <code title=dom-Node-attributes><a href=#dom-node-attributes>attributes</a></code>. <span class=XXX>Elaborate...</span>
  <li><p><var>arg</var>'s <code title=dom-Node-childNodes><a href=#dom-node-childnodes>childNodes</a></code>' <code title=dom-NodeList-length><a href=#dom-nodelist-length>length</a></code> is the same as the <a href=#context-node>context node</a>'s <code title=dom-Node-childNodes><a href=#dom-node-childnodes>childNodes</a></code>' <code title=dom-NodeList-length><a href=#dom-nodelist-length>length</a></code>.
- <li><p>Calling <code title=dom-Node-isEqual>isEqualNode</code> on each child node of the <a href=#context-node>context node</a>, with the child node of the same index in <var>arg</var> as argument returns true for every child node.
+ <li><p>Calling <code title=dom-Node-isEqualNode><a href=#dom-node-isequalnode>isEqualNode</a></code> on each child node of the <a href=#context-node>context node</a>, with the child node of the same index in <var>arg</var> as argument returns true for every child node.
 </ul>
 
 
@@ -788,8 +788,8 @@ otherwise.
 
 <ol>
  <li><p>If <var>offset</var> is negative or is greater than the <a href=#context-node>context node</a>'s <code title=dom-CharacterData-length><a href=#dom-characterdata-length>length</a></code>, or if <var>count</var> is negative, raise an <code title=dom-DOMException-INDEX_SIZE_ERR><a href=#dom-domexception-index_size_err>INDEX_SIZE_ERR</a></code> exception and abort these steps.
- <li><p>If <span title=""><var>offset</var>+<var>count</var></span> is greater than the <a href=#context-node>context node</a>'s <code title=dom-CharacterData-length><a href=#dom-characterdata-length>length</a></code>, return a <code>DOMString</code> whose value is the UTF-16 code units from the <var>offset</var>th UTF-16 code unit to the end of <var title="">data</var>.
- <li><p>Return a <code>DOMString</code> whose value is the UTF-16 code units from the <var>offset</var>th UTF-16 code unit to the <span title=""><var>offset</var>+<var>count</var></span>th UTF-16 code unit in <var title="">data</var>.
+ <li><p>If <span title=""><var>offset</var>+<var>count</var></span> is greater than the <a href=#context-node>context node</a>'s <code title=dom-CharacterData-length><a href=#dom-characterdata-length>length</a></code>, return a <code data-anolis-spec=webidl>DOMString</code> whose value is the UTF-16 code units from the <var>offset</var>th UTF-16 code unit to the end of <var title="">data</var>.
+ <li><p>Return a <code data-anolis-spec=webidl>DOMString</code> whose value is the UTF-16 code units from the <var>offset</var>th UTF-16 code unit to the <span title=""><var>offset</var>+<var>count</var></span>th UTF-16 code unit in <var title="">data</var>.
 </ol>
 <!-- XXX should it throw if it's too long? -->
 

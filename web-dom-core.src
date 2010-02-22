@@ -117,16 +117,17 @@ out of memory, or to work around platform-specific limitations.</p>
 required for conforming IDL fragments, as described in the Web IDL
 specification. <a href="#refsWEBIDL">[WEBIDL]</a></p>
 
-<p id="float-nan">Except where otherwise specified, if an IDL
-attribute that is a floating point number type (<code
-title="">float</code>) is assigned an Infinity or Not-a-Number
-(NaN) value, a <code>NOT_SUPPORTED_ERR</code> exception must be
-raised.</p>
+<p id=float-nan>Except where otherwise specified, if an IDL attribute that is a
+floating point number type (<code data-anolis-spec=webidl>float</code>) is
+assigned an Infinity or Not-a-Number (NaN) value, a <code
+title=dom-DOMException-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</code> exception must
+be raised.
 
-<p>Except where otherwise specified, if a method with an argument
-that is a floating point number type (<code title="">float</code>)
-is passed an Infinity or Not-a-Number (NaN) value, a
-<code>NOT_SUPPORTED_ERR</code> exception must be raised.</p>
+<p>Except where otherwise specified, if a method with an argument that is a
+floating point number type (<code data-anolis-spec=webidl>float</code>) is
+passed an Infinity or Not-a-Number (NaN) value, a <code
+title=dom-DOMException-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</code> exception must
+be raised.
 
 <p class=XXX>HTML5.
 
@@ -500,7 +501,7 @@ the same as the object returned by the previous call.</p>
  <li><p>If both <var title>namespaceURI</var> and <var title>localName</var> are just the character U+002A ASTERISK ("*"), return a <code>NodeList</code> rooted at the <span>context node</span>, whose filter matches only <code>Element</code> nodes.
  <li><p>Otherwise, if <var title>namespaceURI</var> is just the character U+002A ASTERISK ("*"), return a <code>NodeList</code> rooted at the <span>context node</span>, whose filter matches only <code>Element</code> nodes with the <code title=dom-Node-localName>localName</code> equal to <var title>localName</var>.
  <li><p>Otherwise, if <var title>localName</var> is just the character U+002A ASTERISK ("*"), return a <code>NodeList</code> rooted at the <span>context node</span>, whose filter matches only <code>Element</code> nodes with the <code title=dom-Node-namespaceURI>namespaceURI</code> equal to <var title>namespaceURI</var>.
- <li><p>Otherwise, return a <code>NodeList</code> rooted at the <span>context node</span>, whose filter matches only <code>Element</code> nodes that have a <code title=dom-Element-namespaceURI>namespaceURI</code> equal to <var title>namespaceURI</var> and a <code title=dom-Element-localName>localName</code> equal to <var title>localName</var> (both in a <span>case-sensitive</span> manner).
+ <li><p>Otherwise, return a <code>NodeList</code> rooted at the <span>context node</span>, whose filter matches only <code>Element</code> nodes that have a <code title=dom-Name-namespaceURI>namespaceURI</code> equal to <var title>namespaceURI</var> and a <code title=dom-Node-localName>localName</code> equal to <var title>localName</var> (both in a <span>case-sensitive</span> manner).
 </ol>
 <p>A new <code>NodeList</code> object must be returned each time unless
 the argument is the same as the last time the method was invoked on
@@ -715,7 +716,7 @@ otherwise.
 
 <ul>
  <li><p><var>arg</var> implements the <code>Node</code> interface.
- <li><p><var>arg</var>'s <code title=dom-Node-type>type</code> is the same as the <span>context node</span>'s <code title=dom-Node-type>type</code>.
+ <li><p><var>arg</var>'s <code title=dom-Node-nodeType>nodeType</code> is the same as the <span>context node</span>'s <code title=dom-Node-nodeType>nodeType</code>.
  <li><p><var>arg</var>'s <code title=dom-Node-nodeName>nodeName</code> is the same as the <span>context node</span>'s <code title=dom-Node-nodeName>nodeName</code>.
  <li><p><var>arg</var>'s <code title=dom-Node-localName>localName</code> is the same as the <span>context node</span>'s <code title=dom-Node-localName>localName</code>.
  <li><p><var>arg</var>'s <code title=dom-Node-namespaceURI>namespaceURI</code> is the same as the <span>context node</span>'s <code title=dom-Node-namespaceURI>namespaceURI</code>.
@@ -723,7 +724,7 @@ otherwise.
  <li><p><var>arg</var>'s <code title=dom-Node-nodeValue>nodeValue</code> is the same as the <span>context node</span>'s <code title=dom-Node-nodeValue>nodeValue</code>.
  <li><p><var>arg</var>'s <code title=dom-Node-attributes>attributes</code> is the same as the <span>context node</span>'s <code title=dom-Node-attributes>attributes</code>. <span class=XXX>Elaborate...</span>
  <li><p><var>arg</var>'s <code title=dom-Node-childNodes>childNodes</code>' <code title=dom-NodeList-length>length</code> is the same as the <span>context node</span>'s <code title=dom-Node-childNodes>childNodes</code>' <code title=dom-NodeList-length>length</code>.
- <li><p>Calling <code title=dom-Node-isEqual>isEqualNode</code> on each child node of the <span>context node</span>, with the child node of the same index in <var>arg</var> as argument returns true for every child node.
+ <li><p>Calling <code title=dom-Node-isEqualNode>isEqualNode</code> on each child node of the <span>context node</span>, with the child node of the same index in <var>arg</var> as argument returns true for every child node.
 </ul>
 
 
@@ -775,8 +776,8 @@ otherwise.
 
 <ol>
  <li><p>If <var>offset</var> is negative or is greater than the <span>context node</span>'s <code title=dom-CharacterData-length>length</code>, or if <var>count</var> is negative, raise an <code title=dom-DOMException-INDEX_SIZE_ERR>INDEX_SIZE_ERR</code> exception and abort these steps.
- <li><p>If <span title><var>offset</var>+<var>count</var></span> is greater than the <span>context node</span>'s <code title=dom-CharacterData-length>length</code>, return a <code>DOMString</code> whose value is the UTF-16 code units from the <var>offset</var>th UTF-16 code unit to the end of <var title>data</var>.
- <li><p>Return a <code>DOMString</code> whose value is the UTF-16 code units from the <var>offset</var>th UTF-16 code unit to the <span title><var>offset</var>+<var>count</var></span>th UTF-16 code unit in <var title>data</var>.
+ <li><p>If <span title><var>offset</var>+<var>count</var></span> is greater than the <span>context node</span>'s <code title=dom-CharacterData-length>length</code>, return a <code data-anolis-spec=webidl>DOMString</code> whose value is the UTF-16 code units from the <var>offset</var>th UTF-16 code unit to the end of <var title>data</var>.
+ <li><p>Return a <code data-anolis-spec=webidl>DOMString</code> whose value is the UTF-16 code units from the <var>offset</var>th UTF-16 code unit to the <span title><var>offset</var>+<var>count</var></span>th UTF-16 code unit in <var title>data</var>.
 </ol>
 <!-- XXX should it throw if it's too long? -->
 

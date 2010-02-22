@@ -36,6 +36,7 @@
  <li>Range.createContextualFragment <a href="http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2009-March/018892.html">http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2009-March/018892.html</a>
  <li>attributes.length should always return the length.
  <li>[Reflect] <a href=http://krijnhoetmer.nl/irc-logs/whatwg/20090622#l-90>http://krijnhoetmer.nl/irc-logs/whatwg/20090622#l-90</a>
+ <li>HTMLCollection is defined in HTML5. Perhaps we should move that to this spec. Perhaps also DOMTokenList, DOMStringMap, getElementsByClassName...
 </ul>
 
 
@@ -834,7 +835,12 @@ title=concept-id>IDs</span> are associated with <code>Element</code> nodes.
 data-anolis-spec=html>id</code> attribute specified, to specify its <span
 title=concept-id>ID</span>. <a href=#refsHTML>[HTML]</a>
 
-<p class=XXX>HTMLCollection is defined in HTML5. Perhaps we should move that to this spec. Perhaps also DOMTokenList, DOMStringMap, getElementsByClassName...
+<p>The <dfn title=dom-Element-tagName><code>tagName</code></dfn> attribute must,
+on getting, return the concatenation of <code
+title=dom-Node-prefix>prefix</code>, the character U+003E COLON (":") and <code
+title=dom-Node-localName>localName</code> if <code
+title=dom-Node-prefix>prefix</code> is not null, and otherwise just <code
+title=dom-Node-localName>localName</code>.
 
 <p>The <dfn title=dom-Element-getAttribute><code>getAttribute(<var
 title>name</var>)</code></dfn> method must return the value of the first
@@ -864,8 +870,6 @@ following steps:
  attribute in <span>tree order</span> whose name equals <var title>name</var>,
  in any namespace, to <var title>value</var>.
 </ol>
-
-<p>The <dfn title=dom-Element-tagName><code>tagName</code></dfn> attribute must, on getting, return the concatenation of <code title=dom-Node-prefix>prefix</code>, the character U+003E COLON (":") and <code title=dom-Node-localName>localName</code> if <code title=dom-Node-prefix>prefix</code> is not null, and otherwise just <code title=dom-Node-localName>localName</code>.
 
 
 <h3>Interface <code title>Text</code></h3>

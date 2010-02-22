@@ -7,7 +7,7 @@
 <body class=draft>
 <div class=head>
 <h1>Web DOM Core</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-date:-01-jan-1901>Work in Progress &mdash; Last Update 21 February 2010</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-date:-01-jan-1901>Work in Progress &mdash; Last Update 22 February 2010</h2>
 <dl>
  <dt>Editors
  <dd>Simon Pieters &lt;simonp@opera.com&gt;
@@ -35,6 +35,7 @@
  <li>Range.createContextualFragment <a href=http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2009-March/018892.html>http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2009-March/018892.html</a>
  <li>attributes.length should always return the length.
  <li>[Reflect] <a href=http://krijnhoetmer.nl/irc-logs/whatwg/20090622#l-90>http://krijnhoetmer.nl/irc-logs/whatwg/20090622#l-90</a>
+ <li>HTMLCollection is defined in HTML5. Perhaps we should move that to this spec. Perhaps also DOMTokenList, DOMStringMap, getElementsByClassName...
 </ul>
 
 
@@ -843,7 +844,8 @@ containing <a href=#space-character title="space character">space characters</a>
 
 <p class=note>For example, HTML elements can have an <code data-anolis-spec=html title=attr-id>id</code> attribute specified, to specify its <a href=#concept-id title=concept-id>ID</a>. <a href=#refsHTML>[HTML]</a>
 
-<p class=XXX>HTMLCollection is defined in HTML5. Perhaps we should move that to this spec. Perhaps also DOMTokenList, DOMStringMap, getElementsByClassName...
+<p>The <dfn id=dom-element-tagname title=dom-Element-tagName><code>tagName</code></dfn> attribute must,
+on getting, return the concatenation of <code title=dom-Node-prefix><a href=#dom-node-prefix>prefix</a></code>, the character U+003E COLON (":") and <code title=dom-Node-localName><a href=#dom-node-localname>localName</a></code> if <code title=dom-Node-prefix><a href=#dom-node-prefix>prefix</a></code> is not null, and otherwise just <code title=dom-Node-localName><a href=#dom-node-localname>localName</a></code>.
 
 <p>The <dfn id=dom-element-getattribute title=dom-Element-getAttribute><code>getAttribute(<var title="">name</var>)</code></dfn> method must return the value of the first
 attribute in <a href=#tree-order>tree order</a> whose name is given by the first argument,
@@ -865,8 +867,6 @@ following steps:
  attribute in <a href=#tree-order>tree order</a> whose name equals <var title="">name</var>,
  in any namespace, to <var title="">value</var>.
 </ol>
-
-<p>The <dfn id=dom-element-tagname title=dom-Element-tagName><code>tagName</code></dfn> attribute must, on getting, return the concatenation of <code title=dom-Node-prefix><a href=#dom-node-prefix>prefix</a></code>, the character U+003E COLON (":") and <code title=dom-Node-localName><a href=#dom-node-localname>localName</a></code> if <code title=dom-Node-prefix><a href=#dom-node-prefix>prefix</a></code> is not null, and otherwise just <code title=dom-Node-localName><a href=#dom-node-localname>localName</a></code>.
 
 
 <h3 id=interface-text><span class=secno>3.11 </span>Interface <code title="">Text</code></h3>

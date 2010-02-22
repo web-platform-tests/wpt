@@ -57,7 +57,8 @@
    <li><a href=#case-sensitivity><span class=secno>1.3 </span>Case-sensitivity</a></li>
    <li><a href=#dom-features><span class=secno>1.4 </span>DOM features</a></li>
    <li><a href=#cloning-nodes><span class=secno>1.5 </span>Cloning nodes</a></li>
-   <li><a href=#legal-hierarchy><span class=secno>1.6 </span>Legal hierarchy</a></ol></li>
+   <li><a href=#legal-hierarchy><span class=secno>1.6 </span>Legal hierarchy</a></li>
+   <li><a href=#namespaces><span class=secno>1.7 </span>Namespaces</a></ol></li>
  <li><a href=#basic-types><span class=secno>2 </span>Basic types</a></li>
  <li><a href=#interfaces><span class=secno>3 </span>Interfaces</a>
   <ol>
@@ -217,6 +218,15 @@ be raised.
 </ul>
 
 <p>Before running the steps of an algorithm of a method or attribute in this specification, the user agent must check that running the algorithm will result in a <a href=#legal-hierarchy-0>legal hierarchy</a>. If it won't, then the user agent must instead raise a <code title=dom-DOMException-HIERARCHY_REQUEST_ERR><a href=#dom-domexception-hierarchy_request_err>HIERARCHY_REQUEST_ERR</a></code> exception.
+
+
+<h3 id=namespaces><span class=secno>1.7 </span>Namespaces</h3>
+
+<p>The <dfn id=html-namespace>HTML namespace</dfn> is <code title="">http://www.w3.org/1999/xhtml</code>.
+
+<p>The <dfn id=xml-namespace>XML namespace</dfn> is <code title="">http://www.w3.org/XML/1998/namespace</code>.
+
+<p>The <dfn id=xmlns-namespace>XMLNS namespace</dfn> is <code title="">http://www.w3.org/2000/xmlns/</code>.
 
 
 <h2 id=basic-types><span class=secno>2 </span>Basic types</h2>
@@ -432,7 +442,7 @@ must return the name of the exception constant as a string.</p>
  <li><p>If <var title="">tagName</var> doesn't match the <code title="">Name</code>
  production in XML, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR><a href=#dom-domexception-invalid_character_err>INVALID_CHARACTER_ERR</a></code>
  exception and abort these steps. <a href=#refsXML>[XML]</a>
- <li><p>Return a new <code><a href=#element>Element</a></code> node with no attributes, <code title=dom-Node-namespaceURI><a href=#dom-node-namespaceuri>namespaceURI</a></code> set to "<code title="">http://www.w3.org/1999/xhtml</code>", <code title=dom-Node-prefix><a href=#dom-node-prefix>prefix</a></code> set to null, <code title=dom-Node-localName><a href=#dom-node-localname>localName</a></code> set to <var title="">tagName</var>, <a href=#converted-to-lowercase>converted to lowercase</a>, and <code title=dom-Node-ownerDocument><a href=#dom-node-ownerdocument>ownerDocument</a></code> set to the <a href=#context-node>context node</a>.
+ <li><p>Return a new <code><a href=#element>Element</a></code> node with no attributes, <code title=dom-Node-namespaceURI><a href=#dom-node-namespaceuri>namespaceURI</a></code> set to the <a href=#html-namespace>HTML namespace</a>, <code title=dom-Node-prefix><a href=#dom-node-prefix>prefix</a></code> set to null, <code title=dom-Node-localName><a href=#dom-node-localname>localName</a></code> set to <var title="">tagName</var>, <a href=#converted-to-lowercase>converted to lowercase</a>, and <code title=dom-Node-ownerDocument><a href=#dom-node-ownerdocument>ownerDocument</a></code> set to the <a href=#context-node>context node</a>.
 </ol>
 <!-- this is very different from DOM3 -->
 <p class=note>No check is performed that the local name will match the <code title="">NCName</code> production in Namespaces in XML. <a href=#refsXMLNS>[XMLNS]</a>
@@ -504,9 +514,9 @@ the same as the object returned by the previous call.</p>
  these steps. <a href=#refsXMLNS>[XMLNS]</a>
  <li><p>If <var title="">qualifiedName</var> contains a U+003E COLON (":") character, then split the string on the colon and let <var title="">prefix</var> be the part before the colon and <var title="">localName</var> the part after the colon. Otherwise, let <var title="">prefix</var> be null and <var title="">localName</var> be <var title="">qualifiedName</var>.
  <li><p>If <var title="">prefix</var> is not null and <var title="">namespaceURI</var> is an empty string, raise a <code title=dom-DOMException-NAMESPACE_ERR><a href=#dom-domexception-namespace_err>NAMESPACE_ERR</a></code> exception and abort these steps.
- <li><p>If <var title="">prefix</var> is "xml" and <var title="">namespaceURI</var> is not "http://www.w3.org/XML/1998/namespace", raise a <code title=dom-DOMException-NAMESPACE_ERR><a href=#dom-domexception-namespace_err>NAMESPACE_ERR</a></code> exception and abort these steps.
- <li><p>If <var title="">qualifiedName</var> or <var title="">prefix</var> is "xmlns" and <var title="">namespaceURI</var> is not "http://www.w3.org/2000/xmlns/", raise a <code title=dom-DOMException-NAMESPACE_ERR><a href=#dom-domexception-namespace_err>NAMESPACE_ERR</a></code> exception and abort these steps.
- <li><p>If <var title="">namespaceURI</var> is "http://www.w3.org/2000/xmlns/" and neither <var title="">qualifiedName</var> nor <var title="">prefix</var> is "xmlns", raise a <code title=dom-DOMException-NAMESPACE_ERR><a href=#dom-domexception-namespace_err>NAMESPACE_ERR</a></code> exception and abort these steps.
+ <li><p>If <var title="">prefix</var> is "xml" and <var title="">namespaceURI</var> is not the <a href=#xml-namespace>XML namespace</a>, raise a <code title=dom-DOMException-NAMESPACE_ERR><a href=#dom-domexception-namespace_err>NAMESPACE_ERR</a></code> exception and abort these steps.
+ <li><p>If <var title="">qualifiedName</var> or <var title="">prefix</var> is "xmlns" and <var title="">namespaceURI</var> is not the <a href=#xmlns-namespace>XMLNS namespace</a>, raise a <code title=dom-DOMException-NAMESPACE_ERR><a href=#dom-domexception-namespace_err>NAMESPACE_ERR</a></code> exception and abort these steps.
+ <li><p>If <var title="">namespaceURI</var> is the <a href=#xmlns-namespace>XMLNS namespace</a> and neither <var title="">qualifiedName</var> nor <var title="">prefix</var> is "xmlns", raise a <code title=dom-DOMException-NAMESPACE_ERR><a href=#dom-domexception-namespace_err>NAMESPACE_ERR</a></code> exception and abort these steps.
  <li><p>Return a new <code><a href=#element>Element</a></code> node with no attributes, <code title=dom-Node-namespaceURI><a href=#dom-node-namespaceuri>namespaceURI</a></code> set to <var title="">namespaceURI</var>, <code title=dom-Node-prefix><a href=#dom-node-prefix>prefix</a></code> set to <var title="">prefix</var>, <code title=dom-Node-localName><a href=#dom-node-localname>localName</a></code> set to <var title="">localName</var>, and <code title=dom-Node-ownerDocument><a href=#dom-node-ownerdocument>ownerDocument</a></code> set to the <a href=#context-node>context node</a>.
 </ol>
 

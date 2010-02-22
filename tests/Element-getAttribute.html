@@ -13,6 +13,10 @@ try {
   el.setAttributeNS("ab", "attr", "pass");
   el.setAttributeNS("kl", "attr", "fail");
   Test.is(el.getAttribute("attr"), "pass");
+
+  Test.separate();
+  el.setAttribute("style", "color:#fff;")
+  Test.is(el.getAttribute("style"), "color:#fff;");
 } catch (e) {
   Test.fail("Exception was thrown.");
 }

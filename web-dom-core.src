@@ -593,6 +593,33 @@ title>elementId</var>, or null if there is none.
   DOMUserData getUserData(in DOMString key);-->
 };</pre>
 
+<ol>
+ <li value=1><dfn title=dom-Node-ELEMENT_NODE><code>ELEMENT_NODE</code></dfn>
+
+ <li value=2><dfn title=dom-Node-ATTRIBUTE_NODE><code>ATTRIBUTE_NODE</code></dfn>
+
+ <li value=3><dfn title=dom-Node-TEXT_NODE><code>TEXT_NODE</code></dfn>
+
+ <li value=4><dfn title=dom-Node-CDATA_SECTION_NODE><code>CDATA_SECTION_NODE</code></dfn>
+
+ <li value=5><dfn title=dom-Node-ENTITY_REFERENCE_NODE><code>ENTITY_REFERENCE_NODE</code></dfn>
+
+ <li value=6><dfn title=dom-Node-ENTITY_NODE><code>ENTITY_NODE</code></dfn>
+
+ <li value=7><dfn title=dom-Node-PROCESSING_INSTRUCTION_NODE><code>PROCESSING_INSTRUCTION_NODE</code></dfn>
+
+ <li value=8><dfn title=dom-Node-COMMENT_NODE><code>COMMENT_NODE</code></dfn>
+
+ <li value=9><dfn title=dom-Node-DOCUMENT_NODE><code>DOCUMENT_NODE</code></dfn>
+
+ <li value=10><dfn title=dom-Node-DOCUMENT_TYPE_NODE><code>DOCUMENT_TYPE_NODE</code></dfn>
+
+ <li value=11><dfn title=dom-Node-DOCUMENT_FRAGMENT_NODE><code>DOCUMENT_FRAGMENT_NODE</code></dfn>
+
+ <li value=12><dfn title=dom-Node-NOTATION_NODE><code>NOTATION_NODE</code></dfn>
+</ol>
+
+
 <p>The <dfn title=dom-Node-nodeName><code>nodeName</code></dfn>, <dfn title=dom-Node-nodeValue><code>nodeValue</code></dfn> and <dfn title=dom-Node-nodeType><code>nodeType</code></dfn> attributes must, on getting, return what is in the second, third and forth column, respectively, if the node also implements the interface in the first column on the same row in the following table:
 
 <table>
@@ -697,6 +724,20 @@ method must return whether there are any attributes associated with the
 otherwise.
 
 <p>The <dfn title=dom-Node-baseURI><code>baseURI</code></dfn> attribute must <span class=XXX>...</span>
+
+<ol>
+ <li value=1><dfn title=dom-Node-DOCUMENT_POSITION_DISCONNECTED><code>DOCUMENT_POSITION_DISCONNECTED</code></dfn>
+
+ <li value=2><dfn title=dom-Node-DOCUMENT_POSITION_PRECEDING><code>DOCUMENT_POSITION_PRECEDING</code></dfn>
+
+ <li value=4><dfn title=dom-Node-DOCUMENT_POSITION_FOLLOWING><code>DOCUMENT_POSITION_FOLLOWING</code></dfn>
+
+ <li value=8><dfn title=dom-Node-DOCUMENT_POSITION_CONTAINS><code>DOCUMENT_POSITION_CONTAINS</code></dfn>
+
+ <li value=16><dfn title=dom-Node-DOCUMENT_POSITION_CONTAINED_BY><code>DOCUMENT_POSITION_CONTAINED_BY</code></dfn>
+
+ <li value=32><dfn title=dom-Node-DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC><code>DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC</code></dfn>
+</ol>
 
 <p>The <dfn title=dom-Node-compareDocumentPosition><code>compareDocumentPosition(<var>other</var>)</code></dfn> method must <span class=XXX>...</span>
 

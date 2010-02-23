@@ -702,6 +702,10 @@ title>elementId</var>, or null if there is none.
 
 <ol>
  <li><p>If <var>newChild</var> doesn't implement the <code>Node</code> interface, then raise a <code title=dom-DOMException-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</code> exception and abort these steps.
+ <li><p>If the <span>context node</span> is an <code>Attr</code> node, then
+ raise a <code
+ title=dom-DOMException-HIERARCHY_REQUEST_ERR>HIERARCHY_REQUEST_ERR</code> and
+ abort these steps. <!-- See Mozilla bug 547798 -->
  <!-- no security check -->
  <li><p>Append <var>newChild</var> to the <span>context node</span>.
  <li><p>Return <var>newChild</var>.

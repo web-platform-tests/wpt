@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<title>Node.appendChild</title>
+<link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
+<link rel="help" href="../web-dom-core#dom-node-appendchild">
+<body>
+<script src="support/test.js"></script>
+<script>
+try {
+  document.body.setAttribute("abc", "pass");
+  var attr = document.body.attributes[0];
+  Test.ok(attr, "No attribute node?");
+  try {
+    attr.appendChild(document.createTextNode("fail"));
+    Test.fail("Exception should have been thrown.")
+  } catch (e) {
+    Test.is(e.code, DOMException.HIERARCHY_REQUEST_ERR);
+  }
+  Test.is(attr.value, "pass");
+  Test.is(attr.childNodes.length, 1);
+  Test.is(attr.childNodes[0].nodeValue, "pass");
+} catch (e) {
+  Test.fail("Exception was thrown.");
+}
+Test.finish();
+</script>

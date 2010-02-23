@@ -7,7 +7,7 @@
 <body class=draft>
 <div class=head>
 <h1>Web DOM Core</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-date:-01-jan-1901>Work in Progress &mdash; Last Update 22 February 2010</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-date:-01-jan-1901>Work in Progress &mdash; Last Update 23 February 2010</h2>
 <dl>
  <dt>Editors
  <dd>Simon Pieters &lt;simonp@opera.com&gt;
@@ -712,6 +712,9 @@ node</a> whose <a href=#concept-id title=concept-ID>ID</a> is <var title="">elem
 
 <ol>
  <li><p>If <var>newChild</var> doesn't implement the <code><a href=#node>Node</a></code> interface, then raise a <code title=dom-DOMException-NOT_SUPPORTED_ERR><a href=#dom-domexception-not_supported_err>NOT_SUPPORTED_ERR</a></code> exception and abort these steps.
+ <li><p>If the <a href=#context-node>context node</a> is an <code><a href=#attr>Attr</a></code> node, then
+ raise a <code title=dom-DOMException-HIERARCHY_REQUEST_ERR><a href=#dom-domexception-hierarchy_request_err>HIERARCHY_REQUEST_ERR</a></code> and
+ abort these steps. <!-- See Mozilla bug 547798 -->
  <!-- no security check -->
  <li><p>Append <var>newChild</var> to the <a href=#context-node>context node</a>.
  <li><p>Return <var>newChild</var>.

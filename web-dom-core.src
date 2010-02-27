@@ -819,6 +819,8 @@ otherwise.
   <span>Node</span> <span title=dom-NamedNodeMap-removeNamedItemNS>removeNamedItemNS</span>(in DOMString namespaceURI, in DOMString localName);
 };</pre>
 
+<p>The <code>NamedNodeMap</code> interface represents an ordered set of nodes.
+
 <p class=XXX><dfn title=dom-NamedNodeMap-getNamedItem>getNamedItem</dfn>
 
 <p class=XXX><dfn title=dom-NamedNodeMap-setNamedItem>setNamedItem</dfn>
@@ -956,9 +958,11 @@ title=dom-Node-localName>localName</code>.
 
 <p>The <dfn title=dom-Element-getAttribute><code>getAttribute(<var
 title>name</var>)</code></dfn> method must return the value of the first
-attribute in <span>tree order</span> whose <span
-title=concept-attribute-name>name</span> is given by the first argument,
-in any namespace, if the attribute is present, or null otherwise.
+attribute in the <span title="context node">context node's</span> <code
+title=dom-Node-attributes>attributes</code> whose <span
+title=concept-attribute-name>name</span> <span
+title=case-sensitive>case-sensitively</span> equals the first argument, in any
+namespace, if the attribute is present, or null otherwise.
 
 <p>The <dfn title=dom-Element-setAttribute><code>setAttribute(<var
 title>name</var>, <var title>value</var>)</code></dfn> method must run the
@@ -971,8 +975,9 @@ following steps:
  exception and abort these steps. <a href=#refsXML>[XML]</a>
 
  <li><p>If the node doesn't have an attribute whose <span
- title=concept-attribute-name>name</span> equals <var title>name</var>, create
- an <code>Attr</code> node, with <var title>name</var> as its <span
+ title=concept-attribute-name>name</span> <span
+ title=case-sensitive>case-sensitively</span> equals <var title>name</var>,
+ create an <code>Attr</code> node, with <var title>name</var> as its <span
  title=concept-attribute-name>name</span> and the <span>context node</span> as
  its <span title=concept-attribute-element>element</span>. Set its <code
  title=dom-Attr-value>value</code> to <var title>value</var>. Append this node
@@ -980,8 +985,10 @@ following steps:
  title=dom-Node-attributes>attributes</code>, as its last item.
 
  <li><p>Otherwise, set the <code title=dom-Attr-value>value</code> of the first
- attribute in <span>tree order</span> whose <span
- title=concept-attribute-name>name</span> equals <var title>name</var>,
+ attribute in the <span title="context node">context node's</span> <code
+ title=dom-Node-attributes>attributes</code> whose <span
+ title=concept-attribute-name>name</span> <span
+ title=case-sensitive>case-sensitively</span> equals <var title>name</var>,
  in any namespace, to <var title>value</var>.
 </ol>
 

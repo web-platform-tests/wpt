@@ -828,6 +828,8 @@ otherwise.
   <a href=#node>Node</a> <a href=#dom-namednodemap-removenameditemns title=dom-NamedNodeMap-removeNamedItemNS>removeNamedItemNS</a>(in DOMString namespaceURI, in DOMString localName);
 };</pre>
 
+<p>The <code><a href=#namednodemap>NamedNodeMap</a></code> interface represents an ordered set of nodes.
+
 <p class=XXX><dfn id=dom-namednodemap-getnameditem title=dom-NamedNodeMap-getNamedItem>getNamedItem</dfn>
 
 <p class=XXX><dfn id=dom-namednodemap-setnameditem title=dom-NamedNodeMap-setNamedItem>setNamedItem</dfn>
@@ -952,8 +954,8 @@ containing <a href=#space-character title="space character">space characters</a>
 on getting, return the concatenation of <code title=dom-Node-prefix><a href=#dom-node-prefix>prefix</a></code>, the character U+003E COLON (":") and <code title=dom-Node-localName><a href=#dom-node-localname>localName</a></code> if <code title=dom-Node-prefix><a href=#dom-node-prefix>prefix</a></code> is not null, and otherwise just <code title=dom-Node-localName><a href=#dom-node-localname>localName</a></code>.
 
 <p>The <dfn id=dom-element-getattribute title=dom-Element-getAttribute><code>getAttribute(<var title="">name</var>)</code></dfn> method must return the value of the first
-attribute in <a href=#tree-order>tree order</a> whose <a href=#concept-attribute-name title=concept-attribute-name>name</a> is given by the first argument,
-in any namespace, if the attribute is present, or null otherwise.
+attribute in the <a href=#context-node title="context node">context node's</a> <code title=dom-Node-attributes><a href=#dom-node-attributes>attributes</a></code> whose <a href=#concept-attribute-name title=concept-attribute-name>name</a> <a href=#case-sensitive title=case-sensitive>case-sensitively</a> equals the first argument, in any
+namespace, if the attribute is present, or null otherwise.
 
 <p>The <dfn id=dom-element-setattribute title=dom-Element-setAttribute><code>setAttribute(<var title="">name</var>, <var title="">value</var>)</code></dfn> method must run the
 following steps:
@@ -963,13 +965,13 @@ following steps:
  match the <code title="">Name</code> production in XML, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR><a href=#dom-domexception-invalid_character_err>INVALID_CHARACTER_ERR</a></code>
  exception and abort these steps. <a href=#refsXML>[XML]</a>
 
- <li><p>If the node doesn't have an attribute whose <a href=#concept-attribute-name title=concept-attribute-name>name</a> equals <var title="">name</var>, create
- an <code><a href=#attr>Attr</a></code> node, with <var title="">name</var> as its <a href=#concept-attribute-name title=concept-attribute-name>name</a> and the <a href=#context-node>context node</a> as
+ <li><p>If the node doesn't have an attribute whose <a href=#concept-attribute-name title=concept-attribute-name>name</a> <a href=#case-sensitive title=case-sensitive>case-sensitively</a> equals <var title="">name</var>,
+ create an <code><a href=#attr>Attr</a></code> node, with <var title="">name</var> as its <a href=#concept-attribute-name title=concept-attribute-name>name</a> and the <a href=#context-node>context node</a> as
  its <a href=#concept-attribute-element title=concept-attribute-element>element</a>. Set its <code title=dom-Attr-value><a href=#dom-attr-value>value</a></code> to <var title="">value</var>. Append this node
  to the <a href=#context-node title="context node">context node's</a> <code title=dom-Node-attributes><a href=#dom-node-attributes>attributes</a></code>, as its last item.
 
  <li><p>Otherwise, set the <code title=dom-Attr-value><a href=#dom-attr-value>value</a></code> of the first
- attribute in <a href=#tree-order>tree order</a> whose <a href=#concept-attribute-name title=concept-attribute-name>name</a> equals <var title="">name</var>,
+ attribute in the <a href=#context-node title="context node">context node's</a> <code title=dom-Node-attributes><a href=#dom-node-attributes>attributes</a></code> whose <a href=#concept-attribute-name title=concept-attribute-name>name</a> <a href=#case-sensitive title=case-sensitive>case-sensitively</a> equals <var title="">name</var>,
  in any namespace, to <var title="">value</var>.
 </ol>
 

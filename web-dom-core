@@ -383,6 +383,7 @@ must return the name of the exception constant as a string.</p>
   CDATASection createCDATASection(in DOMString data);-->
   <a href=#processinginstruction>ProcessingInstruction</a> <a href=#dom-document-createprocessinginstruction title=dom-Document-createProcessingInstruction>createProcessingInstruction</a>(in DOMString target, in DOMString data);<!--
   <span>Attr</span> <span title=dom-Document-createAttribute>createAttribute</span>(in DOMString name);
+    If adding this, search for [createAttribute]
   EntityReference createEntityReference(in DOMString name);-->
   <a href=#nodelist>NodeList</a> <a href=#dom-document-getelementsbytagname title=dom-Document-getElementsByTagName>getElementsByTagName</a>(in DOMString tagname);
   <a href=#node>Node</a> <a href=#dom-document-importnode title=dom-Document-importNode>importNode</a>(in <a href=#node>Node</a> importedNode, in boolean deep);
@@ -481,7 +482,9 @@ contains "xml" or the colon, or that the data contains characters that match the
 <code title="">Char</code> production in XML or that it contains the string
 "<code title="">?&gt;</code>". <a href=#refsXML>[XML]</a></p>
 
-<!--<p>The <dfn title=dom-Document-createAttribute><code>createAttribute(<var title>name</var>)</code></dfn> method must run the following steps:</p>
+<!--
+[createAttribute]
+<p>The <dfn title=dom-Document-createAttribute><code>createAttribute(<var title>name</var>)</code></dfn> method must run the following steps:</p>
 <ol>
  <li><p>If <var title>name</var> doesn't match the <code title>Name</code> production in XML, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and abort these steps. <a href=#refsXML>[XML]</a>
  <li><p>Return a new <code>Attr</code> node with its <code title=dom-Node-namespaceURI>namespaceURI</code> set to null, <code title=dom-Node-prefix>prefix</code> set to null, <code title=dom-Node-localName>localName</code> set to <var title>name</var>, and <code title=dom-Node-ownerDocument>ownerDocument</code> set to the <span>context node</span>.
@@ -882,18 +885,32 @@ otherwise.
   readonly attribute DOMString <a href=#dom-attr-name title=dom-Attr-name>name</a>;
   readonly attribute boolean <a href=#dom-attr-specified title=dom-Attr-specified>specified</a>;
            attribute DOMString <a href=#dom-attr-value title=dom-Attr-value>value</a>;
-  readonly attribute Element <a href=#dom-attr-ownerelement title=dom-Attr-ownerElement>ownerElement</a>;<!--
+  readonly attribute <a href=#element>Element</a> <a href=#dom-attr-ownerelement title=dom-Attr-ownerElement>ownerElement</a>;<!--
   readonly attribute TypeInfo schemaTypeInfo;
   readonly attribute boolean isId;-->
 };</pre>
 
-<p class=XXX><dfn id=dom-attr-name title=dom-Attr-name>name</dfn>
+<p><code><a href=#attr>Attr</a></code> nodes represent attributes. They have a <dfn id=concept-attribute-name title=concept-attribute-name>name</dfn> and an <dfn id=concept-attribute-element title=concept-attribute-element>element</dfn> associated with them when they are
+created<!--, or when they are passed as the argument to the <code
+title=dom-Element-setAttributeNode>setAttributeNode</code> method.
+[createAttribute]-->.
 
-<p class=XXX><dfn id=dom-attr-specified title=dom-Attr-specified>specified</dfn>
+<p>The <dfn id=dom-attr-name title=dom-Attr-name><code>name</code></dfn> attribute must return
+the <a href=#concept-attribute-name title=concept-attribute-name>name</a> associated with the
+<a href=#context-node>context node</a>.
 
-<p class=XXX><dfn id=dom-attr-value title=dom-Attr-value>value</dfn>
+<p>The <dfn id=dom-attr-specified title=dom-Attr-specified><code>specified</code></dfn> attribute must
+return true.
 
-<p class=XXX><dfn id=dom-attr-ownerelement title=dom-Attr-ownerElement>ownerElement</dfn>
+<p>The <dfn id=dom-attr-value title=dom-Attr-value><code>value</code></dfn> attribute, on getting,
+must return the same value as the <code title=dom-Node-textContent><a href=#dom-node-textcontent>textContent</a></code> IDL attribute on the
+<a href=#context-node>context node</a>, and on setting, must act as if the <code title=dom-Node-textContent><a href=#dom-node-textcontent>textContent</a></code> IDL attribute on the
+<a href=#context-node>context node</a> had been set to the new value.
+
+<p>The <dfn id=dom-attr-ownerelement title=dom-Attr-ownerElement><code>ownerElement</code></dfn>
+attribute must return the <a href=#concept-attribute-element title=concept-attribute-element>element</a>
+associated with the <a href=#context-node>context node</a><!--, if there is one, or null
+otherwise [createAttribute]-->.
 
 
 <h3 id=interface-element><span class=secno>3.10 </span>Interface <code title="">Element</code></h3>
@@ -935,7 +952,7 @@ containing <a href=#space-character title="space character">space characters</a>
 on getting, return the concatenation of <code title=dom-Node-prefix><a href=#dom-node-prefix>prefix</a></code>, the character U+003E COLON (":") and <code title=dom-Node-localName><a href=#dom-node-localname>localName</a></code> if <code title=dom-Node-prefix><a href=#dom-node-prefix>prefix</a></code> is not null, and otherwise just <code title=dom-Node-localName><a href=#dom-node-localname>localName</a></code>.
 
 <p>The <dfn id=dom-element-getattribute title=dom-Element-getAttribute><code>getAttribute(<var title="">name</var>)</code></dfn> method must return the value of the first
-attribute in <a href=#tree-order>tree order</a> whose name is given by the first argument,
+attribute in <a href=#tree-order>tree order</a> whose <a href=#concept-attribute-name title=concept-attribute-name>name</a> is given by the first argument,
 in any namespace, if the attribute is present, or null otherwise.
 
 <p>The <dfn id=dom-element-setattribute title=dom-Element-setAttribute><code>setAttribute(<var title="">name</var>, <var title="">value</var>)</code></dfn> method must run the
@@ -946,12 +963,13 @@ following steps:
  match the <code title="">Name</code> production in XML, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR><a href=#dom-domexception-invalid_character_err>INVALID_CHARACTER_ERR</a></code>
  exception and abort these steps. <a href=#refsXML>[XML]</a>
 
- <li><p>If the node doesn't have an attribute whose name equals <var title="">name</var>, create an <code><a href=#attr>Attr</a></code> node in no namespace, with <var title="">name</var> as its <code title=dom-Attr-name><a href=#dom-attr-name>name</a></code>, <var title="">value</var> as its <code title=dom-Attr-value><a href=#dom-attr-value>value</a></code>, <code title=dom-Attr-specified><a href=#dom-attr-specified>specified</a></code> set to true and the <a href=#context-node>context
- node</a> as its <code title=dom-Attr-ownerElement><a href=#dom-attr-ownerelement>ownerElement</a></code>.
- Append this node to the <a href=#context-node title="context node">context node's</a> <code title=dom-Node-attributes><a href=#dom-node-attributes>attributes</a></code>, as its last item.
+ <li><p>If the node doesn't have an attribute whose <a href=#concept-attribute-name title=concept-attribute-name>name</a> equals <var title="">name</var>, create
+ an <code><a href=#attr>Attr</a></code> node, with <var title="">name</var> as its <a href=#concept-attribute-name title=concept-attribute-name>name</a> and the <a href=#context-node>context node</a> as
+ its <a href=#concept-attribute-element title=concept-attribute-element>element</a>. Set its <code title=dom-Attr-value><a href=#dom-attr-value>value</a></code> to <var title="">value</var>. Append this node
+ to the <a href=#context-node title="context node">context node's</a> <code title=dom-Node-attributes><a href=#dom-node-attributes>attributes</a></code>, as its last item.
 
  <li><p>Otherwise, set the <code title=dom-Attr-value><a href=#dom-attr-value>value</a></code> of the first
- attribute in <a href=#tree-order>tree order</a> whose name equals <var title="">name</var>,
+ attribute in <a href=#tree-order>tree order</a> whose <a href=#concept-attribute-name title=concept-attribute-name>name</a> equals <var title="">name</var>,
  in any namespace, to <var title="">value</var>.
 </ol>
 

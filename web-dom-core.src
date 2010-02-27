@@ -651,7 +651,18 @@ title>elementId</var>, or null if there is none.
 <tr><td><code>DocumentFragment</code><td>"<code title>#document-fragment</code>"<td>null<td>11
 </table>
 
-<p>The <dfn title=dom-Node-parentNode><code>parentNode</code></dfn> attribute must, on getting, return the parent node of the <span>context node</span>, or null if there is no parent.
+<p>The <dfn title=dom-Node-parentNode><code>parentNode</code></dfn> attribute
+must, on getting, run the following steps:
+
+<ol>
+ <li><p>If the <span>context node</span> is an <code>Attr</code> node, return
+ null and abort these steps.
+
+ <li><p>If the <span>context node</span> doesn't have a parent node, return
+ null and abort these steps.
+
+ <li><p>Return the parent node of the <span>context node</span>.
+</ol>
 
 <p>The <dfn title=dom-Node-parentElement><code>parentElement</code></dfn> attribute must, on getting, return the parent node of the <span>context node</span> if there is a parent and it is an element, or null otherwise.
 
@@ -661,9 +672,31 @@ title>elementId</var>, or null if there is none.
 
 <p>The <dfn title=dom-Node-lastChild><code>lastChild</code></dfn> attribute must, on getting, return the last child node of the <span>context node</span>, or null if there is none.
 
-<p>The <dfn title=dom-Node-previousSibling><code>previousSibling</code></dfn> attribute must, on getting, return the previous sibling node of the <span>context node</span>, or null if there is none.
+<p>The <dfn title=dom-Node-previousSibling><code>previousSibling</code></dfn>
+attribute must, on getting, run the following steps:
 
-<p>The <dfn title=dom-Node-nextSibling><code>nextSibling</code></dfn> attribute must, on getting, return the next sibling node of the <span>context node</span>, or null if there is none.
+<ol>
+ <li><p>If the <span>context node</span> is an <code>Attr</code> node, return
+ null and abort these steps.
+
+ <li><p>If the <span>context node</span> doesn't have a previous sibling node,
+ return null and abort these steps.
+
+ <li><p>Return the previous sibling node of the <span>context node</span>.
+</ol>
+
+<p>The <dfn title=dom-Node-nextSibling><code>nextSibling</code></dfn> attribute
+must, on getting, run the following steps:
+
+<ol>
+ <li><p>If the <span>context node</span> is an <code>Attr</code> node, return
+ null and abort these steps.
+
+ <li><p>If the <span>context node</span> doesn't have a next sibling node,
+ return null and abort these steps.
+
+ <li><p>Return the next sibling node of the <span>context node</span>.
+</ol>
 
 <p>The <dfn title=dom-Node-attributes><code>attributes</code></dfn> attribute must, on getting, return a <code>NamedNodeMap</code> of all the <code>Attr</code> nodes associated with the node of the <span>context node</span>, if it is an <code>Element</code> node, or null otherwise.
 
@@ -889,7 +922,10 @@ title=concept-attribute-name>name</dfn> and an <dfn
 title=concept-attribute-element>element</dfn> associated with them when they are
 created<!--, or when they are passed as the argument to the <code
 title=dom-Element-setAttributeNode>setAttributeNode</code> method.
-[createAttribute]-->.
+[createAttribute]-->. <code>Attr</code> nodes are not considered part of the
+document tree, so their <code title=dom-Node-parentNode>parentNode</code>, <code
+title=dom-Node-previousSibling>previousSibling</code> and <code
+title=dom-Node-nextSibling>nextSibling</code> attributes return null.
 
 <p>The <dfn title=dom-Attr-name><code>name</code></dfn> attribute must return
 the <span title=concept-attribute-name>name</span> associated with the

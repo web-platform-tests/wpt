@@ -6,7 +6,7 @@
  h2 code, h3 code, h4 code { font:inherit; color:inherit; font-style:italic }
 </style>
 <body class=draft>
-<div class=head>
+<div class=head id=head>
 <h1>Web DOM Core</h1>
 <h2 class="no-num no-toc">Work in Progress &mdash; Last Update [DATE: 01 Jan 1901]</h2>
 <dl>

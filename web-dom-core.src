@@ -574,7 +574,7 @@ title>elementId</var>, or null if there is none.
   readonly attribute <span>Node</span> <span title=dom-Node-nextSibling>nextSibling</span>;
   readonly attribute <span>NamedNodeMap</span> <span title=dom-Node-attributes>attributes</span>;
   readonly attribute <span>Document</span> <span title=dom-Node-ownerDocument>ownerDocument</span>;
-  <span>Node</span> <span title=dom-Node-insertBefore>insertBefore</span>(in <span>Node</span> newChild, [TreatUndefinedAs=Null] in <span>Node</span> refChild);
+  <span>Node</span> <span title=dom-Node-insertBefore>insertBefore</span>(in <span>Node</span> newChild, in <span>Node</span> refChild);
   <span>Node</span> <span title=dom-Node-replaceChild>replaceChild</span>(in <span>Node</span> newChild, in <span>Node</span> oldChild);
   <span>Node</span> <span title=dom-Node-removeChild>removeChild</span>(in <span>Node</span> oldChild);
   <span>Node</span> <span title=dom-Node-appendChild>appendChild</span>(in <span>Node</span> newChild);

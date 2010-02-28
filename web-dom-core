@@ -584,7 +584,7 @@ node</a> whose <a href=#concept-id title=concept-ID>ID</a> is <var title="">elem
   readonly attribute <a href=#node>Node</a> <a href=#dom-node-nextsibling title=dom-Node-nextSibling>nextSibling</a>;
   readonly attribute <a href=#namednodemap>NamedNodeMap</a> <a href=#dom-node-attributes title=dom-Node-attributes>attributes</a>;
   readonly attribute <a href=#document>Document</a> <a href=#dom-node-ownerdocument title=dom-Node-ownerDocument>ownerDocument</a>;
-  <a href=#node>Node</a> <a href=#dom-node-insertbefore title=dom-Node-insertBefore>insertBefore</a>(in <a href=#node>Node</a> newChild, [TreatUndefinedAs=Null] in <a href=#node>Node</a> refChild);
+  <a href=#node>Node</a> <a href=#dom-node-insertbefore title=dom-Node-insertBefore>insertBefore</a>(in <a href=#node>Node</a> newChild, in <a href=#node>Node</a> refChild);
   <a href=#node>Node</a> <a href=#dom-node-replacechild title=dom-Node-replaceChild>replaceChild</a>(in <a href=#node>Node</a> newChild, in <a href=#node>Node</a> oldChild);
   <a href=#node>Node</a> <a href=#dom-node-removechild title=dom-Node-removeChild>removeChild</a>(in <a href=#node>Node</a> oldChild);
   <a href=#node>Node</a> <a href=#dom-node-appendchild title=dom-Node-appendChild>appendChild</a>(in <a href=#node>Node</a> newChild);

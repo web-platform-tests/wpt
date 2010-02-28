@@ -11,13 +11,14 @@ dstExt = '.htm'
 skipDirs = ('contributors/microsoft/submitted/support', # XXXfixme files should be .xht
             'incoming', '.svn', 'CVS', '.hg')
 
-import os.path
-from lxml import etree
-import html5lib # Warning: This uses a patched version of html5lib
-from os.path import join, getmtime
 import sys
 import re
 import os
+import os.path
+from os.path import join, getmtime, exists
+
+sys.path.insert(0, 'lib')
+from CSSTestSource import CSSTestSource
 
 def xhtml2html(source, dest):
     """Convert XHTML file given by path `source` into HTML file at path `dest`."""
@@ -73,15 +74,9 @@ for root, dirs, files in os.walk(root):
         elif file.endswith(srcExt):
             source = join(root, file)
             dest = join(root, file[0:-1*len(srcExt)] + dstExt)
-            if not os.path.exists(dest) or getmtime(source) > getmtime(dest) or force:
+            if not exists(dest) or getmtime(source) > getmtime(dest) or force:
                 # print "Processing %s" % source
-                try:
-                    xhtml2html(source, dest)
-                except etree.ParseError as e:
-                    print >>sys.stderr, "Parse error on %s:\n%s\n" % (source, e)
-                    error = """<!DOCTYPE html><title>Syntax Error</title>
-                        <p>The XHTML file %s contains a syntax error and could not be parsed.
-                        Please correct it and try again.</p>
-                        <p>The parser's error report was:</p>
-                        <pre>%s</pre>""" % (file, e)
-                    open(dest, 'w').write(error.encode('utf-8'))
+                doc = CSSTestSource(source)
+                if doc.error:
+                    print >>sys.stderr, "Parse error on %s:\n%s\n" % (source, doc.error)
+                doc.writeHTML(dest)

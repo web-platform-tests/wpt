@@ -6,6 +6,7 @@
 import re
 import html5lib # Warning: This uses a patched version of html5lib
 from lxml import etree
+from lxml.etree import ParseError
 
 class CSSTestSourceMetaError(Exception):
   pass
@@ -16,7 +17,7 @@ class CSSTestSource:
   #### HTML/XHTML Parsing and Serialization Methods ###################
 
   # Public Data
-  syntaxErrorDoc =
+  syntaxErrorDoc = \
   """
   <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
   <html xmlns="http://www.w3.org/1999/xhtml">
@@ -41,7 +42,7 @@ class CSSTestSource:
        if specified, else returns as a string."""
 
     # serialize
-    o = html5lib.serializer.serialize(self.tree, tree='lxml',
+    o = html5lib.serializer.serialize(tree, tree='lxml',
                                       format='html',
                                       emit_doctype='html',
                                       resolve_entities=False,
@@ -56,6 +57,7 @@ class CSSTestSource:
     f = open(dest, 'w')
     f.write(o.encode('utf-8'))
     f.close()
+  __tree2HTML = staticmethod(__tree2HTML)
 
   # Public Methods
   def __init__(self, source, reference=None):
@@ -63,30 +65,33 @@ class CSSTestSource:
         - as self-describing test given by test filepath `source` or
         - as reftest given by test filepath `source` and reference
           filepath `reference`.
+      Parse errors are reported as caught exceptions in `self.error`,
+      and the source (and reference, if any) is replaced with an
+      XHTML error message.
     """
+    self.error = False
     def HandleParseError(filename, e):
-        """Print error to stderr, replace document with an error message, and reraise exception."""
-        print >>sys.stderr, "Parse error on %s:\n%s\n" % (filename, e)
-        errorDoc = syntaxErrorDoc % (filename, e)
-        self.tree = etree.parse(errorDoc, parser=__parser)
-        self.reference = etree.parse(errorDoc, parser=__parser)
+        """Replace document with an error message, and reraise exception."""
+        errorDoc = self.syntaxErrorDoc % (filename, e)
+        self.tree = etree.fromstring(errorDoc, parser=self.__parser)
+        self.reference = etree.fromstring(errorDoc, parser=self.__parser)
         e.CSSTestSourceErrorLocation = filename
-        raise e
+        self.error = e
 
     # Parse test
     try:
-      self.tree = etree.parse(source, parser=__parser)
+      self.tree = etree.parse(source, parser=self.__parser)
     except etree.ParseError as e:
       HandleParseError(source, e)
-
-    # Parse reference
-    if reference:
-      try:
-        self.reference = etree.parse(reference, parser=__parser)
-      except etree.ParseError as e:
-        HandleParseError(reference, e)
     else:
-      self.reference = None
+      # Parse reference
+      if reference:
+        try:
+          self.reference = etree.parse(reference, parser=self.__parser)
+        except etree.ParseError as e:
+          HandleParseError(reference, e)
+      else:
+        self.reference = None
 
     # Extract filename base
     m = re.search('([^/\.])+(?:\.[a-z0-9])*$', source)
@@ -99,7 +104,9 @@ class CSSTestSource:
        reference file, then it will be serialized into HTML
        at path `refDest`.
     """
-
+    self.__tree2HTML(self.tree, dest)
+    if refDest and self.reference:
+      self.__tree2HTML(self.reference, refDest)
 
   #### CSS Test File Metadata Methods #################################
   ## See http://wiki.csswg.org/test/css2.1/format for more info
@@ -136,7 +143,7 @@ class CSSTestSource:
           if not name:
             raise CSSTestSourceMetaError("Author link missing name (title attribute).")
           credits.append((name, link))
-      elif node.tag = xhtml+'meta':
+      elif node.tag == xhtml+'meta':
         meta = node['name'].strip()
         if meta == 'flags':
           if readFlags:
@@ -145,9 +152,9 @@ class CSSTestSource:
           flags = node['content'].split().sort()
         elif meta == 'assert':
           asserts.append(node['content'].strip().replace('\t', ' '))
-      elif node.tag = xhtml+'title':
+      elif node.tag == xhtml+'title':
         title = node.text.strip()
         if not title.startswith(titlePrefix):
           raise CSSTestSourceMetaError("Title must start with %s" % titlePrefix)
-        data['title'] = [len(titlePrefix):]
-  return data
+        data['title'] = title[len(titlePrefix):]
+    return data

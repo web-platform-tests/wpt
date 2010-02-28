@@ -48,7 +48,7 @@
           </ul>
       [%- END %]
         </td>
-        <td>[% FOREACH flag IN entry.flags %]<abbr title="[% flag.title %]">[% flag.string %]</abbr>[% END %]</td>
+        <td>[% FOREACH flag IN entry.flags %]<abbr class="[% flag.string %]" title="[% flag.title %]">[% flag.string %]</abbr>[% END %]</td>
       </tr>
     [%- END %]
   [%- END %]

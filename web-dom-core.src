@@ -222,7 +222,7 @@ title>http://www.w3.org/2000/xmlns/</code>.
 
 <pre class=idl>exception <dfn>DOMException</dfn> {
   const unsigned short <span title=dom-DOMException-INDEX_SIZE_ERR>INDEX_SIZE_ERR</span> = 1;
-  const unsigned short <span title=dom-DOMException-DOMSTRING_SIZE_ERR>DOMSTRING_SIZE_ERR</span> = 2;
+  const unsigned short <span title=dom-DOMException-DOMSTRING_SIZE_ERR>DOMSTRING_SIZE_ERR</span> = 2; // historical
   const unsigned short <span title=dom-DOMException-HIERARCHY_REQUEST_ERR>HIERARCHY_REQUEST_ERR</span> = 3;
   const unsigned short <span title=dom-DOMException-WRONG_DOCUMENT_ERR>WRONG_DOCUMENT_ERR</span> = 4;
   const unsigned short <span title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</span> = 5;
@@ -884,7 +884,7 @@ otherwise.
   void <span title=dom-CharacterData-replaceData>replaceData</span>(in unsigned long offset, in unsigned long count, in DOMString arg);
 };</pre>
 
-<p>The <dfn title=dom-CharacterData-data><code>data</code></dfn> attribute must, on getting, return the data of the node, and on setting, must change the node's data to the new value. <!-- XXX should getting throw if length is longer than a DOMString can take? -->
+<p>The <dfn title=dom-CharacterData-data><code>data</code></dfn> attribute must, on getting, return the data of the node, and on setting, must change the node's data to the new value.
 
 <p>The <dfn title=dom-CharacterData-length><code>length</code></dfn> attribute must, on getting, return the number of UTF-16 code units represented by the node's data.
 
@@ -895,7 +895,6 @@ otherwise.
  <li><p>If <span title><var>offset</var>+<var>count</var></span> is greater than the <span>context node</span>'s <code title=dom-CharacterData-length>length</code>, return a <code data-anolis-spec=webidl>DOMString</code> whose value is the UTF-16 code units from the <var>offset</var>th UTF-16 code unit to the end of <var title>data</var>.
  <li><p>Return a <code data-anolis-spec=webidl>DOMString</code> whose value is the UTF-16 code units from the <var>offset</var>th UTF-16 code unit to the <span title><var>offset</var>+<var>count</var></span>th UTF-16 code unit in <var title>data</var>.
 </ol>
-<!-- XXX should it throw if it's too long? -->
 
 <p class=XXX><dfn title=dom-CharacterData-appendData>appendData</dfn>
 

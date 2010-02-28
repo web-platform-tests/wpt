@@ -7,7 +7,7 @@
 <body class=draft>
 <div class=head id=head>
 <h1>Web DOM Core</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-date:-01-jan-1901>Work in Progress &mdash; Last Update 27 February 2010</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-date:-01-jan-1901>Work in Progress &mdash; Last Update 28 February 2010</h2>
 <dl>
  <dt>Editors
  <dd>Simon Pieters &lt;simonp@opera.com&gt;
@@ -248,7 +248,7 @@ be raised.
 
 <pre class=idl>exception <dfn id=domexception>DOMException</dfn> {
   const unsigned short <a href=#dom-domexception-index_size_err title=dom-DOMException-INDEX_SIZE_ERR>INDEX_SIZE_ERR</a> = 1;
-  const unsigned short <a href=#dom-domexception-domstring_size_err title=dom-DOMException-DOMSTRING_SIZE_ERR>DOMSTRING_SIZE_ERR</a> = 2;
+  const unsigned short <a href=#dom-domexception-domstring_size_err title=dom-DOMException-DOMSTRING_SIZE_ERR>DOMSTRING_SIZE_ERR</a> = 2; // historical
   const unsigned short <a href=#dom-domexception-hierarchy_request_err title=dom-DOMException-HIERARCHY_REQUEST_ERR>HIERARCHY_REQUEST_ERR</a> = 3;
   const unsigned short <a href=#dom-domexception-wrong_document_err title=dom-DOMException-WRONG_DOCUMENT_ERR>WRONG_DOCUMENT_ERR</a> = 4;
   const unsigned short <a href=#dom-domexception-invalid_character_err title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</a> = 5;
@@ -893,7 +893,7 @@ otherwise.
   void <a href=#dom-characterdata-replacedata title=dom-CharacterData-replaceData>replaceData</a>(in unsigned long offset, in unsigned long count, in DOMString arg);
 };</pre>
 
-<p>The <dfn id=dom-characterdata-data title=dom-CharacterData-data><code>data</code></dfn> attribute must, on getting, return the data of the node, and on setting, must change the node's data to the new value. <!-- XXX should getting throw if length is longer than a DOMString can take? -->
+<p>The <dfn id=dom-characterdata-data title=dom-CharacterData-data><code>data</code></dfn> attribute must, on getting, return the data of the node, and on setting, must change the node's data to the new value.
 
 <p>The <dfn id=dom-characterdata-length title=dom-CharacterData-length><code>length</code></dfn> attribute must, on getting, return the number of UTF-16 code units represented by the node's data.
 
@@ -904,7 +904,6 @@ otherwise.
  <li><p>If <span title=""><var>offset</var>+<var>count</var></span> is greater than the <a href=#context-node>context node</a>'s <code title=dom-CharacterData-length><a href=#dom-characterdata-length>length</a></code>, return a <code data-anolis-spec=webidl>DOMString</code> whose value is the UTF-16 code units from the <var>offset</var>th UTF-16 code unit to the end of <var title="">data</var>.
  <li><p>Return a <code data-anolis-spec=webidl>DOMString</code> whose value is the UTF-16 code units from the <var>offset</var>th UTF-16 code unit to the <span title=""><var>offset</var>+<var>count</var></span>th UTF-16 code unit in <var title="">data</var>.
 </ol>
-<!-- XXX should it throw if it's too long? -->
 
 <p class=XXX><dfn id=dom-characterdata-appenddata title=dom-CharacterData-appendData>appendData</dfn>
 

@@ -269,6 +269,7 @@ be raised.
   const unsigned short <a href=#dom-domexception-abort_err title=dom-DOMException-ABORT_ERR>ABORT_ERR</a> = 20;
   const unsigned short <a href=#dom-domexception-url_mismatch_err title=dom-DOMException-URL_MISMATCH_ERR>URL_MISMATCH_ERR</a> = 21;
   const unsigned short <a href=#dom-domexception-quota_exceeded_err title=dom-DOMException-QUOTA_EXCEEDED_ERR>QUOTA_EXCEEDED_ERR</a> = 22;
+  const unsigned short <a href=#dom-domexception-timeout_err title=dom-DOMException-TIMEOUT_ERR>TIMEOUT_ERR</a> = 23;
   const unsigned short <a href=#dom-domexception-parse_err title=dom-DOMException-PARSE_ERR>PARSE_ERR</a> = 81;
   const unsigned short <a href=#dom-domexception-serialize_err title=dom-DOMException-SERIALIZE_ERR>SERIALIZE_ERR</a> = 82;
   unsigned short <a href=#dom-domexception-code title=dom-DOMException-code>code</a>;
@@ -302,11 +303,12 @@ must return the code for the exception, which must be one of the following:
  <li value=20><dfn id=dom-domexception-abort_err title=dom-DOMException-ABORT_ERR><code>ABORT_ERR</code></dfn></li>
  <li value=21><dfn id=dom-domexception-url_mismatch_err title=dom-DOMException-URL_MISMATCH_ERR><code>URL_MISMATCH_ERR</code></dfn></li>
  <li value=22><dfn id=dom-domexception-quota_exceeded_err title=dom-DOMException-QUOTA_EXCEEDED_ERR><code>QUOTA_EXCEEDED_ERR</code></dfn></li>
+ <li value=23><dfn id=dom-domexception-timeout_err title=dom-DOMException-TIMEOUT_ERR><code>TIMEOUT_ERR</code></dfn></li>
  <li value=81><dfn id=dom-domexception-parse_err title=dom-DOMException-PARSE_ERR><code>PARSE_ERR</code></dfn></li>
  <li value=82><dfn id=dom-domexception-serialize_err title=dom-DOMException-SERIALIZE_ERR><code>SERIALIZE_ERR</code></dfn></li>
 </ol>
 
-<dl class=XXX><dt>...<dd>...</dl>
+<p class=XXX>Add a description of those exceptions?
 
 <p>The <dfn id=dom-domexception-message title=dom-DOMException-message><code>message</code></dfn> exception
 member must return a User Agent-defined human readable string describing the

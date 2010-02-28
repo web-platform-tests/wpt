@@ -243,6 +243,7 @@ title>http://www.w3.org/2000/xmlns/</code>.
   const unsigned short <span title=dom-DOMException-ABORT_ERR>ABORT_ERR</span> = 20;
   const unsigned short <span title=dom-DOMException-URL_MISMATCH_ERR>URL_MISMATCH_ERR</span> = 21;
   const unsigned short <span title=dom-DOMException-QUOTA_EXCEEDED_ERR>QUOTA_EXCEEDED_ERR</span> = 22;
+  const unsigned short <span title=dom-DOMException-TIMEOUT_ERR>TIMEOUT_ERR</span> = 23;
   const unsigned short <span title=dom-DOMException-PARSE_ERR>PARSE_ERR</span> = 81;
   const unsigned short <span title=dom-DOMException-SERIALIZE_ERR>SERIALIZE_ERR</span> = 82;
   unsigned short <span title=dom-DOMException-code>code</span>;
@@ -276,11 +277,12 @@ must return the code for the exception, which must be one of the following:
  <li value="20"><dfn title=dom-DOMException-ABORT_ERR><code>ABORT_ERR</code></dfn></li>
  <li value="21"><dfn title=dom-DOMException-URL_MISMATCH_ERR><code>URL_MISMATCH_ERR</code></dfn></li>
  <li value="22"><dfn title=dom-DOMException-QUOTA_EXCEEDED_ERR><code>QUOTA_EXCEEDED_ERR</code></dfn></li>
+ <li value="23"><dfn title=dom-DOMException-TIMEOUT_ERR><code>TIMEOUT_ERR</code></dfn></li>
  <li value="81"><dfn title=dom-DOMException-PARSE_ERR><code>PARSE_ERR</code></dfn></li>
  <li value="82"><dfn title=dom-DOMException-SERIALIZE_ERR><code>SERIALIZE_ERR</code></dfn></li>
 </ol>
 
-<dl class=XXX><dt>...<dd>...</dl>
+<p class=XXX>Add a description of those exceptions?
 
 <p>The <dfn title=dom-DOMException-message><code>message</code></dfn> exception
 member must return a User Agent-defined human readable string describing the

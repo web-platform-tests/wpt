@@ -61,6 +61,15 @@ try {
   for (var i = 0, il = attrs.length; i < il; ++i) {
     Test.is(attrs[i].value, "pass");
   }
+
+  Test.separate();
+  el = document.createElement("iframe");
+  try {
+    el.setAttribute("src", "file:///home");
+    Test.is(el.getAttribute("src"), "file:///home");
+  } catch (e) {
+    Test.fail("Should not have thrown.")
+  }
 } catch (e) {
   Test.fail("Exception was thrown.");
 }

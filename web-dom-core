@@ -712,48 +712,97 @@ must, on getting, run the following steps:
 
 <p>The <dfn id=dom-node-ownerdocument title=dom-Node-ownerDocument><code>ownerDocument</code></dfn> attribute must, on getting, return the <code><a href=#document>Document</a></code> node that the <a href=#context-node>context node</a> is associated with, or null if there is none.
 
-<p>The <dfn id=dom-node-insertbefore title=dom-Node-insertBefore><code>insertBefore(<var>newChild</var>, <var>refChild</var>)</code></dfn> method must run the following steps:
+<p>The <dfn id=dom-node-insertbefore title=dom-Node-insertBefore><code>insertBefore(<var>newChild</var>,
+<var>refChild</var>)</code></dfn> method must run the following steps:
 
 <ol>
- <li><p>If <var>newChild</var> doesn't implement the <code><a href=#node>Node</a></code> interface, or if <var>refChild</var> is not null or doesn't implement the <code><a href=#node>Node</a></code> interface, then raise a <code title=dom-DOMException-NOT_SUPPORTED_ERR><a href=#dom-domexception-not_supported_err>NOT_SUPPORTED_ERR</a></code> exception and abort these steps.
- <li><p>If <var>refChild</var> is not null and is not a child of the <a href=#context-node>context node</a>, then raise a <code title=dom-DOMException-NOT_FOUND_ERR><a href=#dom-domexception-not_found_err>NOT_FOUND_ERR</a></code> exception and abort these steps.
- <!-- no security check -->
- <li><p>If <var>newChild</var> is a <code><a href=#documentfragment>DocumentFragment</a></code> node, then while <var>newChild</var>'s <code title=dom-Node-firstChild><a href=#dom-node-firstchild>firstChild</a></code> is not null, call <code title=dom-Node-insertBefore><a href=#dom-node-insertbefore>insertBefore</a></code> on the <a href=#context-node>context node</a> with <var>newChild</var>'s <code title=dom-Node-firstChild><a href=#dom-node-firstchild>firstChild</a></code> as first argument and <var>refChild</var> as second argument.
- <li><p>Otherwise, if <var>refChild</var> is null, append <var>newChild</var> to the <a href=#context-node>context node</a>.
- <li><p>Otherwise insert <var>newChild</var> in the <a href=#context-node>context node</a> as the previous sibling of <var>refChild</var>.
- <li><p>Return <var>newChild</var>.
-</ol>
-
-<p>The <dfn id=dom-node-replacechild title=dom-Node-replaceChild><code>replaceChild(<var>newChild</var>, <var>oldChild</var>)</code></dfn> method must run the following steps:
-
-<ol>
- <li><p>If <var>newChild</var> or <var>oldChild</var> doesn't implement the <code><a href=#node>Node</a></code> interface, then raise a <code title=dom-DOMException-NOT_SUPPORTED_ERR><a href=#dom-domexception-not_supported_err>NOT_SUPPORTED_ERR</a></code> exception and abort these steps.
- <li><p>If <var>oldChild</var> is not a child of the <a href=#context-node>context node</a>, then raise a <code title=dom-DOMException-NOT_FOUND_ERR><a href=#dom-domexception-not_found_err>NOT_FOUND_ERR</a></code> exception and abort these steps.
- <!-- no security check -->
- <li><p>Let <var>refChild</var> be <var>oldChild</var>'s <code title=dom-Node-nextSibling><a href=#dom-node-nextsibling>nextSibling</a></code>.
- <li><p>Remove <var>oldChild</var> from <a href=#context-node>context node</a>.
- <li><p>Call <code title=dom-Node-insertBefore><a href=#dom-node-insertbefore>insertBefore</a></code> on the <a href=#context-node>context node</a> with <var>newChild</var> and <var>refChild</var> as arguments, respectively.
- <li><p>Return <var>newChild</var>.
-</ol>
-
-<p>The <dfn id=dom-node-removechild title=dom-Node-removeChild><code>removeChild(<var>oldChild</var>)</code></dfn> method must run the following steps:
-
-<ol>
- <li><p>If <var>oldChild</var> doesn't implement the <code><a href=#node>Node</a></code> interface, then raise a <code title=dom-DOMException-NOT_SUPPORTED_ERR><a href=#dom-domexception-not_supported_err>NOT_SUPPORTED_ERR</a></code> exception and abort these steps.
- <li><p>If <var>oldChild</var> is not a child of the <a href=#context-node>context node</a>, then raise a <code title=dom-DOMException-NOT_FOUND_ERR><a href=#dom-domexception-not_found_err>NOT_FOUND_ERR</a></code> exception and abort these steps.
- <li><p>Remove <var>oldChild</var> from <a href=#context-node>context node</a>.
- <li><p>Return <var>oldChild</var>.
-</ol>
-
-<p>The <dfn id=dom-node-appendchild title=dom-Node-appendChild><code>appendChild(<var>newChild</var>)</code></dfn> method must run the following steps:
-
-<ol>
- <li><p>If <var>newChild</var> doesn't implement the <code><a href=#node>Node</a></code> interface, then raise a <code title=dom-DOMException-NOT_SUPPORTED_ERR><a href=#dom-domexception-not_supported_err>NOT_SUPPORTED_ERR</a></code> exception and abort these steps.
  <li><p>If the <a href=#context-node>context node</a> is an <code><a href=#attr>Attr</a></code> node, then
  raise a <code title=dom-DOMException-HIERARCHY_REQUEST_ERR><a href=#dom-domexception-hierarchy_request_err>HIERARCHY_REQUEST_ERR</a></code> and
  abort these steps. <!-- See Mozilla bug 547798 -->
+
+ <li><p>If <var>newChild</var> is null, then raise a <code title=dom-DOMException-NOT_SUPPORTED_ERR><a href=#dom-domexception-not_supported_err>NOT_SUPPORTED_ERR</a></code> exception and
+ abort these steps.
+
+ <li><p>If <var>refChild</var> is not null and is not a child of the
+ <a href=#context-node>context node</a>, then raise a <code title=dom-DOMException-NOT_FOUND_ERR><a href=#dom-domexception-not_found_err>NOT_FOUND_ERR</a></code> exception and abort
+ these steps.
+
+ <!-- no security check -->
+ <li><p>If <var>newChild</var> is a <code><a href=#documentfragment>DocumentFragment</a></code> node, then
+ while <var>newChild</var>'s <code title=dom-Node-firstChild><a href=#dom-node-firstchild>firstChild</a></code>
+ is not null, call <code title=dom-Node-insertBefore><a href=#dom-node-insertbefore>insertBefore</a></code> on the
+ <a href=#context-node>context node</a> with <var>newChild</var>'s <code title=dom-Node-firstChild><a href=#dom-node-firstchild>firstChild</a></code> as first argument and
+ <var>refChild</var> as second argument.
+
+ <li><p>Otherwise, if <var>refChild</var> is null, append <var>newChild</var> to
+ the <a href=#context-node>context node</a>.
+
+ <li><p>Otherwise insert <var>newChild</var> in the <a href=#context-node>context node</a> as
+ the previous sibling of <var>refChild</var>.
+
+ <li><p>Return <var>newChild</var>.
+</ol>
+
+<p>The <dfn id=dom-node-replacechild title=dom-Node-replaceChild><code>replaceChild(<var>newChild</var>,
+<var>oldChild</var>)</code></dfn> method must run the following steps:
+
+<ol>
+ <li><p>If the <a href=#context-node>context node</a> is an <code><a href=#attr>Attr</a></code> node, then
+ raise a <code title=dom-DOMException-HIERARCHY_REQUEST_ERR><a href=#dom-domexception-hierarchy_request_err>HIERARCHY_REQUEST_ERR</a></code> and
+ abort these steps. <!-- See Mozilla bug 547798 -->
+
+ <li><p>If either <var>newChild</var> or <var>oldChild</var> is null, then raise
+ a <code title=dom-DOMException-NOT_SUPPORTED_ERR><a href=#dom-domexception-not_supported_err>NOT_SUPPORTED_ERR</a></code>
+ exception and abort these steps.
+
+ <li><p>If <var>oldChild</var> is not a child of the <a href=#context-node>context node</a>,
+ then raise a <code title=dom-DOMException-NOT_FOUND_ERR><a href=#dom-domexception-not_found_err>NOT_FOUND_ERR</a></code>
+ exception and abort these steps.
+
+ <!-- no security check -->
+ <li><p>Let <var>refChild</var> be <var>oldChild</var>'s
+ <code title=dom-Node-nextSibling><a href=#dom-node-nextsibling>nextSibling</a></code>.
+
+ <li><p>Remove <var>oldChild</var> from <a href=#context-node>context node</a>.
+
+ <li><p>Call <code title=dom-Node-insertBefore><a href=#dom-node-insertbefore>insertBefore</a></code> on the
+ <a href=#context-node>context node</a> with <var>newChild</var> and <var>refChild</var> as
+ arguments, respectively.
+
+ <li><p>Return <var>newChild</var>.
+</ol>
+
+<p>The <dfn id=dom-node-removechild title=dom-Node-removeChild><code>removeChild(<var>oldChild</var>)</code></dfn>
+method must run the following steps:
+
+<ol>
+ <!-- Attr nodes are okay -->
+ <li><p>If <var>oldChild</var> is null, then raise a <code title=dom-DOMException-NOT_SUPPORTED_ERR><a href=#dom-domexception-not_supported_err>NOT_SUPPORTED_ERR</a></code> exception and
+ abort these steps.
+
+ <li><p>If <var>oldChild</var> is not a child of the <a href=#context-node>context node</a>,
+ then raise a <code title=dom-DOMException-NOT_FOUND_ERR><a href=#dom-domexception-not_found_err>NOT_FOUND_ERR</a></code>
+ exception and abort these steps.
+
+ <li><p>Remove <var>oldChild</var> from <a href=#context-node>context node</a>.
+
+ <li><p>Return <var>oldChild</var>.
+</ol>
+
+<p>The <dfn id=dom-node-appendchild title=dom-Node-appendChild><code>appendChild(<var>newChild</var>)</code></dfn>
+method must run the following steps:
+
+<ol>
+ <li><p>If the <a href=#context-node>context node</a> is an <code><a href=#attr>Attr</a></code> node, then
+ raise a <code title=dom-DOMException-HIERARCHY_REQUEST_ERR><a href=#dom-domexception-hierarchy_request_err>HIERARCHY_REQUEST_ERR</a></code> and
+ abort these steps. <!-- See Mozilla bug 547798 -->
+
+ <li><p>If <var>newChild</var> is null, then raise a <code title=dom-DOMException-NOT_SUPPORTED_ERR><a href=#dom-domexception-not_supported_err>NOT_SUPPORTED_ERR</a></code> exception and
+ abort these steps.
+
  <!-- no security check -->
  <li><p>Append <var>newChild</var> to the <a href=#context-node>context node</a>.
+
  <li><p>Return <var>newChild</var>.
 </ol>
 
@@ -929,7 +978,8 @@ otherwise.
 created<!--, or when they are passed as the argument to the <code
 title=dom-Element-setAttributeNode>setAttributeNode</code> method.
 [createAttribute]-->. <code><a href=#attr>Attr</a></code> nodes are not considered part of the
-document tree, so their <code title=dom-Node-parentNode><a href=#dom-node-parentnode>parentNode</a></code>, <code title=dom-Node-previousSibling><a href=#dom-node-previoussibling>previousSibling</a></code> and <code title=dom-Node-nextSibling><a href=#dom-node-nextsibling>nextSibling</a></code> attributes return null.
+document tree, so their <code title=dom-Node-parentNode><a href=#dom-node-parentnode>parentNode</a></code>, <code title=dom-Node-previousSibling><a href=#dom-node-previoussibling>previousSibling</a></code> and <code title=dom-Node-nextSibling><a href=#dom-node-nextsibling>nextSibling</a></code> attributes return null. Also, its
+child nodes can not be manipulated directly through the <code title=dom-Node-insertBefore><a href=#dom-node-insertbefore>insertBefore</a></code>, <code title=dom-Node-replaceChild><a href=#dom-node-replacechild>replaceChild</a></code> and <code title=dom-Node-appendChild><a href=#dom-node-appendchild>appendChild</a></code> methods.
 
 <p>The <dfn id=dom-attr-name title=dom-Attr-name><code>name</code></dfn> attribute must return
 the <a href=#concept-attribute-name title=concept-attribute-name>name</a> associated with the

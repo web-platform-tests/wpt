@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<title>Node.appendChild</title>
+<title>Node.insertBefore</title>
 <link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
-<link rel="help" href="../web-dom-core#dom-node-appendchild">
+<link rel="help" href="../web-dom-core#dom-node-insertbefore">
 <link rel="help" href="http://dev.w3.org/2006/webapi/WebIDL/#es-interface">
 <body>
 <script src="support/test.js"></script>
@@ -9,7 +9,16 @@
 try {
   var len = document.body.childNodes.length;
   try {
-    document.body.appendChild(null);
+    document.body.insertBefore(null, null);
+    Test.fail("Exception should have been thrown.");
+  } catch (e) {
+    Test.is(e.code, DOMException.NOT_SUPPORTED_ERR);
+  }
+  Test.is(document.body.childNodes.length, len);
+
+  var len = document.body.childNodes.length;
+  try {
+    document.body.insertBefore(null, document.body.firstChild);
     Test.fail("Exception should have been thrown.");
   } catch (e) {
     Test.is(e.code, DOMException.NOT_SUPPORTED_ERR);
@@ -17,19 +26,18 @@ try {
   Test.is(document.body.childNodes.length, len);
 
   try {
-    document.body.appendChild({'a':'b'});
+    document.body.insertBefore({'a':'b'}, document.body.firstChild);
     Test.fail("Exception should have been thrown.");
   } catch (e) {
     Test.ok(e instanceof TypeError, "Should have thrown TypeError.");
   }
-  Test.is(document.body.childNodes.length, len);
 
   Test.separate();
   document.body.setAttribute("abc", "pass");
   var attr = document.body.attributes[0];
   Test.ok(attr, "No attribute node?");
   try {
-    attr.appendChild(document.createTextNode("fail"));
+    attr.insertBefore(document.createTextNode("fail"), null);
     Test.fail("Exception should have been thrown.");
   } catch (e) {
     Test.is(e.code, DOMException.HIERARCHY_REQUEST_ERR);
@@ -38,7 +46,7 @@ try {
   Test.is(attr.childNodes.length, 1);
   Test.is(attr.childNodes[0].nodeValue, "pass");
   try {
-    attr.appendChild(null);
+    attr.insertBefore(null, null);
     Test.fail("Exception should have been thrown.");
   } catch (e) {
     Test.is(e.code, DOMException.HIERARCHY_REQUEST_ERR);

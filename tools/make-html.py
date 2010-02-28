@@ -44,22 +44,21 @@ def xhtml2html(source, dest):
     f.write(o.encode('utf-8'))
     f.close()
 
-if len(sys.argv) < 2 or len(sys.argv) > 3 or \
-   (len(sys.argv) == 3 and (sys.argv[1] != '--clobber' or sys.argv[1] == '-f')):
+if len(sys.argv) == 3:
+    clobber = sys.argv[1] == '--clobber'
+    force   = sys.argv[1] == '-f'
+    root    = sys.argv[2]
+elif len(sys.argv) == 2 and (sys.argv[1] != '--clobber' and sys.argv[1] != '-f'):
+    clobber = False;
+    force   = False;
+    root    = sys.argv[1]
+else:
     print "make-html converts all %s XHTML files to %s HTML files." % (srcExt, dstExt)
     print "Only changed files are converted, unless you specify -f."
     print "To use, specify the root directory of the files you want converted, e.g."
     print "  make-html ."
     print "To delete all files with extension %s, specify the --clobber option." % dstExt
     exit()
-elif len(sys.argv) > 2:
-    clobber = sys.argv[1] == '--clobber'
-    force   = sys.argv[1] == '-f'
-    root    = sys.argv[2]
-else:
-    clobber = False;
-    force   = False;
-    root    = sys.argv[1]
 
 for root, dirs, files in os.walk(root):
     for file in files:

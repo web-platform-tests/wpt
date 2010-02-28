@@ -8,6 +8,8 @@
 
 srcExt = '.xht'
 dstExt = '.htm'
+skipDirs = ('contributors/microsoft/submitted/support', # XXXfixme files should be .xht
+            'incoming', '.svn', 'CVS', '.hg')
 
 import os.path
 from lxml import etree
@@ -61,6 +63,9 @@ else:
     exit()
 
 for root, dirs, files in os.walk(root):
+    for skip in skipDirs:
+        if skip in dirs:
+            dirs.remove(skip)
     for file in files:
         if clobber:
             if file.endswith(dstExt):

@@ -70,5 +70,14 @@ for root, dirs, files in os.walk(root):
             source = join(root, file)
             dest = join(root, file[0:-1*len(srcExt)] + dstExt)
             if not os.path.exists(dest) or getmtime(source) > getmtime(dest) or force:
-                print "Processing %s\n" % source
-                xhtml2html(source, dest)
+                # print "Processing %s" % source
+                try:
+                    xhtml2html(source, dest)
+                except etree.ParseError as e:
+                    print >>sys.stderr, "Parse error on %s:\n%s\n" % (source, e)
+                    error = """<!DOCTYPE html><title>Syntax Error</title>
+                        <p>The XHTML file %s contains a syntax error and could not be parsed.
+                        Please correct it and try again.</p>
+                        <p>The parser's error report was:</p>
+                        <pre>%s</pre>""" % (file, e)
+                    open(dest, 'w').write(error.encode('utf-8'))

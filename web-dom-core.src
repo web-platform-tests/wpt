@@ -81,9 +81,6 @@ purposes of this specification, are U+0020 SPACE, U+0009 CHARACTER
 TABULATION (tab), U+000A LINE FEED (LF), U+000C FORM FEED (FF), and
 U+000D CARRIAGE RETURN (CR).</p>
 
-<h4>Terminology defined in other specifications</h4>
-<p>HTML defines <dfn>HTML documents</dfn>. <a href=#refsHTML>[HTML]</a>
-
 <h3>Conformance requirements</h3>
 
 <p>All diagrams, examples, and notes in this specification are
@@ -448,8 +445,8 @@ adjacent hyphens or ends with a hyphen. <a href=#refsXML>[XML]</a>
 title>data</var>)</code></dfn> method must run the following steps:
 
 <ol>
- <li><p>If the <span>context node</span> is an <span title="HTML documents">HTML
- document</span>, raise a <code
+ <li><p>If the <span>context node</span> is an <span title="HTML documents"
+ data-anolis-spec=html>HTML document</span>, raise a <code
  title=dom-DOMException-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</code> exception and
  abort these steps.
 
@@ -888,7 +885,7 @@ otherwise.
 
 <h3>Interface <code title>NodeList</code></h3>
 
-<p>A <code>NodeList</code> is a <span title=collections data-anolis-spec=html>collection</span>, except that <code>NodeList</code>s can be static (as opposed to live) if a specification defines them to be static. <a href=#refsHTML>[HTML]</a>
+<p>A <code>NodeList</code> is a <span title=collections data-anolis-spec=html>collection</span>, except that <code>NodeList</code>s can be static (as opposed to live) if a specification defines them to be static.
 
 <pre class=idl>interface <dfn>NodeList</dfn> {
   getter <span>Node</span> <span title=dom-NodeList-item>item</span>(in unsigned long index);
@@ -1047,7 +1044,7 @@ title=concept-id>IDs</span> are associated with <code>Element</code> nodes.
 
 <p class=note>For example, HTML elements can have an <code title=attr-id
 data-anolis-spec=html>id</code> attribute specified, to specify its <span
-title=concept-id>ID</span>. <a href=#refsHTML>[HTML]</a>
+title=concept-id>ID</span>.
 
 <p>The <dfn title=dom-Element-tagName><code>tagName</code></dfn> attribute must,
 on getting, return the concatenation of <code

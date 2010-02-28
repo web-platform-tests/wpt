@@ -1,0 +1,11 @@
+{
+  "name" : "html",
+  "url" : "http://www.whatwg.org/html/#",
+  "definitions" :
+    {
+      "attr-id" : "attr-id",
+      "collections" : "collections",
+      "represented by the collection" : "represented-by-the-collection",
+      "html documents" : "html-documents"
+    }
+}

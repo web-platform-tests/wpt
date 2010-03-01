@@ -5,5 +5,7 @@ Document-getElementsByTagName-same.html
 Element-getAttribute.html
 Element-setAttribute.html
 MANIFEST
+Node-appendChild.html
 Node-hasAttributes.html
+Node-insertBefore.html
 support

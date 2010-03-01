@@ -20,33 +20,6 @@ from os.path import join, getmtime, exists
 sys.path.insert(0, 'lib')
 from CSSTestSource import CSSTestSource
 
-def xhtml2html(source, dest):
-    """Convert XHTML file given by path `source` into HTML file at path `dest`."""
-
-    # read and parse
-    parser = etree.XMLParser(no_network=True,
-                             remove_comments=False,
-                             strip_cdata=False,
-                             resolve_entities=False)
-    tree = etree.parse(source, parser=parser)
-
-    # serialize
-    o = html5lib.serializer.serialize(tree, tree='lxml',
-                                      format='html',
-                                      emit_doctype='html',
-                                      resolve_entities=False,
-                                      quote_attr_values=True)
-
-    # lxml fixup for eating whitespace outside root element
-    m = re.search('<!DOCTYPE[^>]+>(\s*)<', o)
-    if m.group(1) == '': # run match to avoid perf hit from searching whole doc
-        o = re.sub('(<!DOCTYPE[^>]+>)<', '\g<1>\n<', o)
-
-    # write
-    f = open(dest, 'w')
-    f.write(o.encode('utf-8'))
-    f.close()
-
 if len(sys.argv) == 3:
     clobber = sys.argv[1] == '--clobber'
     force   = sys.argv[1] == '-f'

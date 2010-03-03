@@ -22,19 +22,12 @@
 
 <ul class=XXX>
  <li>define moving nodes between documents <a href="http://html5.org/tools/web-apps-tracker?from=1729&amp;to=1730">http://html5.org/tools/web-apps-tracker?from=1729&amp;to=1730</a> <a href=http://www.w3.org/mid/Pine.LNX.4.62.0806020441160.504@hixie.dreamhostps.com>http://www.w3.org/mid/Pine.LNX.4.62.0806020441160.504@hixie.dreamhostps.com</a> <a href=http://www.w3.org/mid/3292C233-9089-4733-9226-15ED8DCA23FE@apple.com>http://www.w3.org/mid/3292C233-9089-4733-9226-15ED8DCA23FE@apple.com</a>
- <li>getAttributeNS returning null
- <li>createElement()
  <li>innerHTML etc on all Elements? <a href=http://osdir.com/ml/org.w3c.webapi/2007-08/msg00069.html>http://osdir.com/ml/org.w3c.webapi/2007-08/msg00069.html</a>
  <li>\0 <a href=http://krijnhoetmer.nl/irc-logs/whatwg/20080321#l-312>http://krijnhoetmer.nl/irc-logs/whatwg/20080321#l-312</a>
- <li>clarify lookupNamespaceURI <a href=http://www.w3.org/mid/4878DFC6.40401@lachy.id.au>http://www.w3.org/mid/4878DFC6.40401@lachy.id.au</a>
  <li>document.parseError? <a href=http://www.w3.org/mid/op.ucv5axjp64w2qv@annevk-t60.oslo.opera.com>http://www.w3.org/mid/op.ucv5axjp64w2qv@annevk-t60.oslo.opera.com</a>
- <li>exceptions for createDocument <a href=http://osdir.com/ml/web.dom.general/2005-12/msg00058.html>http://osdir.com/ml/web.dom.general/2005-12/msg00058.html</a>
  <li>sourceIndex? <a href=http://www.quirksmode.org/dom/w3c_core.html>http://www.quirksmode.org/dom/w3c_core.html</a>
  <li>xmlVersion <a href=http://lists.w3.org/Archives/Public/www-dom/2003JulSep/0049.html>http://lists.w3.org/Archives/Public/www-dom/2003JulSep/0049.html</a>
- <li>textContent <a href="http://www.w3.org/mid/c9e12660808271343v58990698gabac29d2123a82ce@mail.gmail.com">http://www.w3.org/mid/c9e12660808271343v58990698gabac29d2123a82ce@mail.gmail.com</a>
- <li>lookupNamespaceURI, isDefaultNamespace <a href="http://html5.org/tools/web-apps-tracker?from=2125&amp;to=2126">http://html5.org/tools/web-apps-tracker?from=2125&amp;to=2126</a>
  <li>Range.createContextualFragment <a href="http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2009-March/018892.html">http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2009-March/018892.html</a>
- <li>attributes.length should always return the length.
  <li>[Reflect] <a href=http://krijnhoetmer.nl/irc-logs/whatwg/20090622#l-90>http://krijnhoetmer.nl/irc-logs/whatwg/20090622#l-90</a>
  <li><dfn>HTMLCollection</dfn> is defined in HTML5. Perhaps we should move that to this spec. Perhaps also DOMTokenList, DOMStringMap, getElementsByClassName...
  <li><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/apis-in-html-documents.html#apis-in-html-documents>http://www.whatwg.org/specs/web-apps/current-work/multipage/apis-in-html-documents.html#apis-in-html-documents</a>
@@ -342,6 +335,8 @@ must return the name of the exception constant as a string.</p>
  <li><p>Return <var title>document</var>.
 </ol>
 
+<p class=XXX>exceptions for createDocument <a href=http://osdir.com/ml/web.dom.general/2005-12/msg00058.html>http://osdir.com/ml/web.dom.general/2005-12/msg00058.html</a>
+
 <p><span data-anolis-spec=html>HTML documents</span> can be created using the
 <code title=dom-DOMImplementation-createHTMLDocument>createHTMLDocument()</code>
 method.</p>
@@ -447,6 +442,8 @@ steps:
 <p>The <dfn title=dom-Document-documentElement><code>documentElement</code></dfn> attribute must return the first child of the <code>Document</code> node that is an <code>Element</code> node, if there is one, or null otherwise.
 
 <p>The <dfn title=dom-Document-createElement><code>createElement(<var title>tagName</var>)</code></dfn> method must run the following steps:</p>
+
+<p class=XXX><code title>createElement("&lt;div class='test'>")</code>?
 <!-- ie allows createElement("<div class='test'>") and firefox in quirks mode allows createElement("<div>") -->
 <!--
 <zcorpan> i don't like dom's error checking at all
@@ -920,6 +917,8 @@ otherwise.
  <li><p>If <var title>data</var> is not the empty string, append a new <code>Text</code> node to the <span>context node</span> whose <code title=dom-CharacterData-data>data</code> is set to <var title>data</var>.
 </ol>
 
+<p class=XXX><a href="http://www.w3.org/mid/c9e12660808271343v58990698gabac29d2123a82ce@mail.gmail.com">http://www.w3.org/mid/c9e12660808271343v58990698gabac29d2123a82ce@mail.gmail.com</a>
+
 <p>The <dfn title=dom-Node-isSameNode><code>isSameNode(<var>other</var>)</code></dfn> method must return true if <var>other</var> is a reference to the same object as the <span>context node</span>, and false otherwise.
 
 <p>The <dfn title=dom-Node-lookupPrefix><code>lookupPrefix(<var>namespaceURI</var>)</code></dfn> method must <span class=XXX>...</span>
@@ -927,6 +926,8 @@ otherwise.
 <p>The <dfn title=dom-Node-isDefaultNamespace><code>isDefaultNamespace(<var>namespaceURI</var>)</code></dfn> method must <span class=XXX>...</span>
 
 <p>The <dfn title=dom-Node-lookupNamespaceURI><code>lookupNamespaceURI(<var>prefix</var>)</code></dfn> method must <span class=XXX>...</span>
+
+<p class=XXX>clarify lookupNamespaceURI <a href=http://www.w3.org/mid/4878DFC6.40401@lachy.id.au>http://www.w3.org/mid/4878DFC6.40401@lachy.id.au</a>; lookupNamespaceURI, isDefaultNamespace <a href="http://html5.org/tools/web-apps-tracker?from=2125&amp;to=2126">http://html5.org/tools/web-apps-tracker?from=2125&amp;to=2126</a>
 
 <p>The <dfn title=dom-Node-isEqualNode><code>isEqualNode(<var>arg</var>)</code></dfn> method must return true if all of the following conditions are true, and must otherwise return false:
 
@@ -982,6 +983,7 @@ otherwise.
 <p class=XXX><dfn title=dom-NamedNodeMap-item>item</dfn>
 
 <p class=XXX><dfn title=dom-NamedNodeMap-length>length</dfn>
+(attributes.length should always return the length.)
 
 <p class=XXX><dfn title=dom-NamedNodeMap-getNamedItemNS>getNamedItemNS</dfn>
 
@@ -1079,7 +1081,7 @@ otherwise [createAttribute]-->.
   Attr <span title=dom-Element-setAttributeNode>setAttributeNode</span>(in Attr newAttr);
   Attr <span title=dom-Element-removeAttributeNode>removeAttributeNode</span>(in Attr oldAttr);-->
   <span>NodeList</span> <span title=dom-Element-getElementsByTagName>getElementsByTagName</span>(in DOMString name);
-  DOMString <span title=dom-Element-getAttributeNS>getAttributeNS</span>(in DOMString namespaceURI, in DOMString localName);
+  DOMString? <span title=dom-Element-getAttributeNS>getAttributeNS</span>(in DOMString namespaceURI, in DOMString localName);
   void <span title=dom-Element-setAttributeNS>setAttributeNS</span>(in DOMString namespaceURI, in DOMString qualifiedName, in DOMString value);
   void <span title=dom-Element-removeAttributeNS>removeAttributeNS</span>(in DOMString namespaceURI, in DOMString localName);<!--
   Attr <span title=dom-Element-getAttributeNodeNS>getAttributeNodeNS</span>(in DOMString namespaceURI, in DOMString localName);
@@ -1154,7 +1156,7 @@ following steps:
 
 <p class=XXX><dfn title=dom-Element-getElementsByTagName>getElementsByTagName</dfn>
 
-<p class=XXX><dfn title=dom-Element-getAttributeNS>getAttributeNS</dfn>
+<p class=XXX><dfn title=dom-Element-getAttributeNS>getAttributeNS</dfn> (returns null)
 
 <p class=XXX><dfn title=dom-Element-setAttributeNS>setAttributeNS</dfn>
 

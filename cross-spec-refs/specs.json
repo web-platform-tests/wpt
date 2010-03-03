@@ -3,5 +3,7 @@
     [ "html"
     , "webidl"
     , "domviews"
+    , "xml"
+    , "xmlns"
     ]
 }

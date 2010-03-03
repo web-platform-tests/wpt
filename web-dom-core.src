@@ -303,6 +303,7 @@ must return the name of the exception constant as a string.</p>
   DocumentType <span title=dom-DOMImplementation-createDocumentType>createDocumentType</span>([TreatNullAs=EmptyString] in DOMString qualifiedName, in DOMString publicId, in DOMString systemId);
   Document <span title=dom-DOMImplementation-createDocument>createDocument</span>([TreatNullAs=EmptyString] in DOMString namespaceURI, [TreatNullAs=EmptyString] in DOMString qualifiedName, in DocumentType doctype);<!--
   DOMObject getFeature(in DOMString feature, in DOMString version);-->
+  <span>Document</span> <span title=dom-DOMImplementation-createHTMLDocument>createHTMLDocument</span>(in DOMString title);
 };</pre>
 
 <p>The <dfn title=dom-DOMImplementation-hasFeature><code>hasFeature(<var title>feature</var>, <var title>version</var>)</code></dfn> method must return true if the UA supports the given feature <var title>feature</var> of version <var title>version</var>, and false otherwise.
@@ -339,6 +340,62 @@ must return the name of the exception constant as a string.</p>
   </ol>
  <li><p>If <var title>element</var> is not null, append <var title>element</var> to <var title>document</var>.
  <li><p>Return <var title>document</var>.
+</ol>
+
+<p><span data-anolis-spec=html>HTML documents</span> can be created using the
+<code title=dom-DOMImplementation-createHTMLDocument>createHTMLDocument()</code>
+method.</p>
+
+<dl class=domintro>
+ <dt><var title>doc</var> = <var title=dom-AbstractView-document
+ data-anolis-spec=domviews>document</var> . <code
+ title=dom-Document-implementation>implementation</code> . <code
+ title=dom-DOMImplementation-createHTMLDocument>createHTMLDocument</code>(
+ <var title>title</var> )
+
+ <dd><p>Returns a new <code>Document</code>, with a basic DOM already
+ constructed with an appropriate <code title>title</code> element.
+</dl>
+
+<p>The <dfn
+title=dom-DOMImplementation-createHTMLDocument><code>createHTMLDocument(<var
+title>title</var>)</code></dfn> method, when invoked, must run the following
+steps:
+
+<ol>
+ <li><p>Let <var title>doc</var> be a newly created <code>Document</code>
+ object.
+
+ <li><p>Mark <var title>doc</var> as being an <span data-anolis-spec=html
+ title="HTML documents">HTML document</span>.</p></li>
+
+ <li><p>Create a <code>DocumentType</code> node with the <code title>name</code>
+ attribute set to the string "<code title="">html</code>", and the other
+ attributes specific to <code>DocumentType</code> objects set to the empty
+ string, null, and empty lists, as appropriate. Append the newly created node to
+ <var title>doc</var>.
+
+ <li><p>Create an <code title>html</code> element in the <span>HTML
+ namespace</span>, and append it to <var title>doc</var>.
+
+ <li><p>Create a <code title>head</code> element in the <span>HTML
+ namespace</span>, and append it to the <code title>html</code> element created
+ in the previous step.
+
+ <li><p>Create a <code title>title</code> element in the <span>HTML
+ namespace</span>, and append it to the <code title>head</code> element created
+ in the previous step.
+
+ <li><p>Create a <code>Text</code> node, and set its <code
+ title=dom-CharacterData-data>data</code> attribute to the string given by the
+ method's argument (which could be the empty string). Append it to the
+ <code title>title</code> element created in the previous step.
+
+ <li><p>Create a <code title>body</code> element in the <span>HTML
+ namespace</span>, and append it to the <code title>html</code> element created
+ in the earlier step.
+
+ <li><p>Return <var title>doc</var>.</p></li>
 </ol>
 
 
@@ -1216,6 +1273,8 @@ because the newer ones keep changing. -->
 <h2 class=no-num>Acknowledgements</h2>
 
 <p>Thanks to Anne van Kesteren and Henri Sivonen for their useful comments.
+Special thanks to Ian Hickson for first specifying some parts of this
+specification in HTML. <a href=#refsHTML>HTML</a>
 
 
 <script src="http://www.whatwg.org/specs/web-apps/current-work/dfn.js"></script>

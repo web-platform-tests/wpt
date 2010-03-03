@@ -2,6 +2,7 @@ Document-createProcessingInstruction.html
 Document-getElementById-emptystring.html
 Document-getElementsByTagNameNS-same.html
 Document-getElementsByTagName-same.html
+DOMImplementation-createHTMLDocument.html
 Element-getAttribute.html
 Element-setAttribute.html
 MANIFEST

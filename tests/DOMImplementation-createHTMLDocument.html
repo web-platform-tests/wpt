@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<title>createHTMLDocument</title>
+<link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
+<link rel="help" href="../web-dom-core#dom-domimplementation-createhtmldocument">
+<link rel="help" href="http://www.whatwg.org/html5/#document.title">
+<body>
+<script src="support/test.js"></script>
+<script>
+function checkDoc(title, expectedtitle, normalizedtitle) {
+  var doc = document.implementation.createHTMLDocument(title);
+  Test.is(doc.doctype.name, "html");
+  Test.is(doc.doctype.publicId, "");
+  Test.is(doc.doctype.systemId, "");
+  Test.is(doc.documentElement.localName, "html");
+  Test.is(doc.documentElement.firstChild.localName, "head");
+  Test.is(doc.documentElement.firstChild.childNodes.length, 1);
+  Test.is(doc.documentElement.firstChild.firstChild.localName, "title");
+  Test.is(doc.documentElement.firstChild.firstChild.firstChild.data,
+    expectedtitle);
+  Test.is(doc.documentElement.lastChild.localName, "body");
+  Test.is(doc.documentElement.lastChild.childNodes.length, 0);
+  Test.is(doc.title, normalizedtitle);
+}
+</script>
+<script>
+try {
+  checkDoc("", "", "");
+  checkDoc(null, "null", "null");
+  checkDoc(undefined, "undefined", "undefined");
+  checkDoc("foo  bar baz", "foo  bar baz", "foo bar baz");
+  checkDoc("foo\t\tbar baz", "foo\t\tbar baz", "foo bar baz");
+  checkDoc("foo\n\nbar baz", "foo\n\nbar baz", "foo bar baz");
+  checkDoc("foo\f\fbar baz", "foo\f\fbar baz", "foo bar baz");
+  checkDoc("foo\r\rbar baz", "foo\r\rbar baz", "foo bar baz");
+} catch (e) {
+  Test.fail("Exception was thrown.");
+}
+Test.finish();
+</script>

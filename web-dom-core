@@ -327,6 +327,7 @@ must return the name of the exception constant as a string.</p>
   DocumentType <a href=#dom-domimplementation-createdocumenttype title=dom-DOMImplementation-createDocumentType>createDocumentType</a>([TreatNullAs=EmptyString] in DOMString qualifiedName, in DOMString publicId, in DOMString systemId);
   Document <a href=#dom-domimplementation-createdocument title=dom-DOMImplementation-createDocument>createDocument</a>([TreatNullAs=EmptyString] in DOMString namespaceURI, [TreatNullAs=EmptyString] in DOMString qualifiedName, in DocumentType doctype);<!--
   DOMObject getFeature(in DOMString feature, in DOMString version);-->
+  <a href=#document>Document</a> <a href=#dom-domimplementation-createhtmldocument title=dom-DOMImplementation-createHTMLDocument>createHTMLDocument</a>(in DOMString title);
 };</pre>
 
 <p>The <dfn id=dom-domimplementation-hasfeature title=dom-DOMImplementation-hasFeature><code>hasFeature(<var title="">feature</var>, <var title="">version</var>)</code></dfn> method must return true if the UA supports the given feature <var title="">feature</var> of version <var title="">version</var>, and false otherwise.
@@ -359,6 +360,55 @@ must return the name of the exception constant as a string.</p>
   </ol>
  <li><p>If <var title="">element</var> is not null, append <var title="">element</var> to <var title="">document</var>.
  <li><p>Return <var title="">document</var>.
+</ol>
+
+<p><a href=http://www.whatwg.org/html/#html-documents>HTML documents</a> can be created using the
+<code title=dom-DOMImplementation-createHTMLDocument><a href=#dom-domimplementation-createhtmldocument>createHTMLDocument()</a></code>
+method.</p>
+
+<dl class=domintro>
+ <dt><var title="">doc</var> = <var title=dom-AbstractView-document><a href=http://www.w3.org/TR/DOM-Level-2-Views/views.html#Views-AbstractView-document>document</a></var> . <code title=dom-Document-implementation><a href=#dom-document-implementation>implementation</a></code> . <code title=dom-DOMImplementation-createHTMLDocument><a href=#dom-domimplementation-createhtmldocument>createHTMLDocument</a></code>(
+ <var title="">title</var> )
+
+ <dd><p>Returns a new <code><a href=#document>Document</a></code>, with a basic DOM already
+ constructed with an appropriate <code title="">title</code> element.
+</dl>
+
+<p>The <dfn id=dom-domimplementation-createhtmldocument title=dom-DOMImplementation-createHTMLDocument><code>createHTMLDocument(<var title="">title</var>)</code></dfn> method, when invoked, must run the following
+steps:
+
+<ol>
+ <li><p>Let <var title="">doc</var> be a newly created <code><a href=#document>Document</a></code>
+ object.
+
+ <li><p>Mark <var title="">doc</var> as being an <a href=http://www.whatwg.org/html/#html-documents title="HTML documents">HTML document</a>.</li>
+
+ <li><p>Create a <code><a href=#documenttype>DocumentType</a></code> node with the <code title="">name</code>
+ attribute set to the string "<code title="">html</code>", and the other
+ attributes specific to <code><a href=#documenttype>DocumentType</a></code> objects set to the empty
+ string, null, and empty lists, as appropriate. Append the newly created node to
+ <var title="">doc</var>.
+
+ <li><p>Create an <code title="">html</code> element in the <a href=#html-namespace>HTML
+ namespace</a>, and append it to <var title="">doc</var>.
+
+ <li><p>Create a <code title="">head</code> element in the <a href=#html-namespace>HTML
+ namespace</a>, and append it to the <code title="">html</code> element created
+ in the previous step.
+
+ <li><p>Create a <code title="">title</code> element in the <a href=#html-namespace>HTML
+ namespace</a>, and append it to the <code title="">head</code> element created
+ in the previous step.
+
+ <li><p>Create a <code><a href=#text>Text</a></code> node, and set its <code title=dom-CharacterData-data><a href=#dom-characterdata-data>data</a></code> attribute to the string given by the
+ method's argument (which could be the empty string). Append it to the
+ <code title="">title</code> element created in the previous step.
+
+ <li><p>Create a <code title="">body</code> element in the <a href=#html-namespace>HTML
+ namespace</a>, and append it to the <code title="">html</code> element created
+ in the earlier step.
+
+ <li><p>Return <var title="">doc</var>.</li>
 </ol>
 
 
@@ -1181,6 +1231,8 @@ because the newer ones keep changing. -->
 <h2 class=no-num id=acknowledgements>Acknowledgements</h2>
 
 <p>Thanks to Anne van Kesteren and Henri Sivonen for their useful comments.
+Special thanks to Ian Hickson for first specifying some parts of this
+specification in HTML. <a href=#refsHTML>HTML</a>
 
 
 <script src=http://www.whatwg.org/specs/web-apps/current-work/dfn.js></script>

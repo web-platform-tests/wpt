@@ -1,3 +1,7 @@
 {
-  "specs" : ["html", "webidl"]
+  "specs" :
+    [ "html"
+    , "webidl"
+    , "domviews"
+    ]
 }

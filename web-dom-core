@@ -7,7 +7,7 @@
 <body class=draft>
 <div class=head id=head>
 <h1>Web DOM Core</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-date:-01-jan-1901>Work in Progress &mdash; Last Update 28 February 2010</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-date:-01-jan-1901>Work in Progress &mdash; Last Update 3 March 2010</h2>
 <dl>
  <dt>Editors
  <dd>Simon Pieters &lt;simonp@opera.com&gt;
@@ -399,7 +399,8 @@ must return the name of the exception constant as a string.</p>
   readonly attribute DOMConfiguration domConfig;
   void normalizeDocument();
   Node renameNode(in Node n, in DOMString namespaceURI, in DOMString qualifiedName);-->
-};</pre>
+};
+<a href=#document>Document</a> implements <a href=http://www.w3.org/TR/DOM-Level-2-Views/views.html#Views-DocumentView>DocumentView</a>;</pre>
 
 <p>The <dfn id=dom-document-doctype title=dom-Document-doctype><code>doctype</code></dfn> attribute must return the first child of the <code><a href=#document>Document</a></code> node that is a <code><a href=#documenttype>DocumentType</a></code> node, if there is one, or null otherwise.
 <p class=note>In both HTML and XML there will only ever be one <code><a href=#documenttype>DocumentType</a></code> node descendant of the <code><a href=#document>Document</a></code> node. <a href=#refsHTML>[HTML]</a> <a href=#refsXML>[XML]</a>
@@ -1146,6 +1147,11 @@ following steps:
 because the newer ones keep changing. -->
 
 <dl>
+ <dt id=refsDOMVIEWS>[DOMVIEWS]</dt>
+ <dd><cite><a href=http://www.w3.org/TR/DOM-Level-2-Views/>Document Object
+ Model (DOM) Level 2 Views Specification</a></cite>, A. Le Hors, L.
+ Cable. W3C.</dd>
+
  <dt id=refsHTML>[HTML]</dt>
  <dd><cite><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage>HTML</a></cite>,
  I. Hickson. WHATWG.</dd>

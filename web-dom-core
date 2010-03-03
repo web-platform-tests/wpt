@@ -324,8 +324,8 @@ must return the name of the exception constant as a string.</p>
 
 <pre class=idl>interface <dfn id=domimplementation>DOMImplementation</dfn> {
   boolean <a href=#dom-domimplementation-hasfeature title=dom-DOMImplementation-hasFeature>hasFeature</a>(in DOMString feature, [TreatNullAs=EmptyString] in DOMString version);
-  DocumentType <a href=#dom-domimplementation-createdocumenttype title=dom-DOMImplementation-createDocumentType>createDocumentType</a>([TreatNullAs=EmptyString] in DOMString qualifiedName, in DOMString publicId, in DOMString systemId);
-  Document <a href=#dom-domimplementation-createdocument title=dom-DOMImplementation-createDocument>createDocument</a>([TreatNullAs=EmptyString] in DOMString namespaceURI, [TreatNullAs=EmptyString] in DOMString qualifiedName, in DocumentType doctype);<!--
+  <a href=#documenttype>DocumentType</a> <a href=#dom-domimplementation-createdocumenttype title=dom-DOMImplementation-createDocumentType>createDocumentType</a>([TreatNullAs=EmptyString] in DOMString qualifiedName, in DOMString publicId, in DOMString systemId);
+  <a href=#document>Document</a> <a href=#dom-domimplementation-createdocument title=dom-DOMImplementation-createDocument>createDocument</a>([TreatNullAs=EmptyString] in DOMString namespaceURI, [TreatNullAs=EmptyString] in DOMString qualifiedName, in DocumentType doctype);<!--
   DOMObject getFeature(in DOMString feature, in DOMString version);-->
   <a href=#document>Document</a> <a href=#dom-domimplementation-createhtmldocument title=dom-DOMImplementation-createHTMLDocument>createHTMLDocument</a>(in DOMString title);
 };</pre>
@@ -383,11 +383,9 @@ steps:
 
  <li><p>Mark <var title="">doc</var> as being an <a href=http://www.whatwg.org/html/#html-documents title="HTML documents">HTML document</a>.</li>
 
- <li><p>Create a <code><a href=#documenttype>DocumentType</a></code> node with the <code title="">name</code>
- attribute set to the string "<code title="">html</code>", and the other
- attributes specific to <code><a href=#documenttype>DocumentType</a></code> objects set to the empty
- string, null, and empty lists, as appropriate. Append the newly created node to
- <var title="">doc</var>.
+ <li><p>Create a <code><a href=#documenttype>DocumentType</a></code> node with the <code title=dom-DocumentType-name><a href=#dom-documenttype-name>name</a></code> attribute set to the string "<code title="">html</code>", and the other attributes specific to
+ <code><a href=#documenttype>DocumentType</a></code> objects set to the empty string, null, and empty
+ lists, as appropriate. Append the newly created node to <var title="">doc</var>.
 
  <li><p>Create an <code title="">html</code> element in the <a href=#html-namespace>HTML
  namespace</a>, and append it to <var title="">doc</var>.
@@ -1056,7 +1054,7 @@ otherwise [createAttribute]-->.
   Attr <span title=dom-Element-getAttributeNode>getAttributeNode</span>(in DOMString name);
   Attr <span title=dom-Element-setAttributeNode>setAttributeNode</span>(in Attr newAttr);
   Attr <span title=dom-Element-removeAttributeNode>removeAttributeNode</span>(in Attr oldAttr);-->
-  NodeList <a href=#dom-element-getelementsbytagname title=dom-Element-getElementsByTagName>getElementsByTagName</a>(in DOMString name);
+  <a href=#nodelist>NodeList</a> <a href=#dom-element-getelementsbytagname title=dom-Element-getElementsByTagName>getElementsByTagName</a>(in DOMString name);
   DOMString <a href=#dom-element-getattributens title=dom-Element-getAttributeNS>getAttributeNS</a>(in DOMString namespaceURI, in DOMString localName);
   void <a href=#dom-element-setattributens title=dom-Element-setAttributeNS>setAttributeNS</a>(in DOMString namespaceURI, in DOMString qualifiedName, in DOMString value);
   void <a href=#dom-element-removeattributens title=dom-Element-removeAttributeNS>removeAttributeNS</a>(in DOMString namespaceURI, in DOMString localName);<!--

@@ -300,8 +300,8 @@ must return the name of the exception constant as a string.</p>
 
 <pre class=idl>interface <dfn>DOMImplementation</dfn> {
   boolean <span title=dom-DOMImplementation-hasFeature>hasFeature</span>(in DOMString feature, [TreatNullAs=EmptyString] in DOMString version);
-  DocumentType <span title=dom-DOMImplementation-createDocumentType>createDocumentType</span>([TreatNullAs=EmptyString] in DOMString qualifiedName, in DOMString publicId, in DOMString systemId);
-  Document <span title=dom-DOMImplementation-createDocument>createDocument</span>([TreatNullAs=EmptyString] in DOMString namespaceURI, [TreatNullAs=EmptyString] in DOMString qualifiedName, in DocumentType doctype);<!--
+  <span>DocumentType</span> <span title=dom-DOMImplementation-createDocumentType>createDocumentType</span>([TreatNullAs=EmptyString] in DOMString qualifiedName, in DOMString publicId, in DOMString systemId);
+  <span>Document</span> <span title=dom-DOMImplementation-createDocument>createDocument</span>([TreatNullAs=EmptyString] in DOMString namespaceURI, [TreatNullAs=EmptyString] in DOMString qualifiedName, in DocumentType doctype);<!--
   DOMObject getFeature(in DOMString feature, in DOMString version);-->
   <span>Document</span> <span title=dom-DOMImplementation-createHTMLDocument>createHTMLDocument</span>(in DOMString title);
 };</pre>
@@ -369,11 +369,11 @@ steps:
  <li><p>Mark <var title>doc</var> as being an <span data-anolis-spec=html
  title="HTML documents">HTML document</span>.</p></li>
 
- <li><p>Create a <code>DocumentType</code> node with the <code title>name</code>
- attribute set to the string "<code title="">html</code>", and the other
- attributes specific to <code>DocumentType</code> objects set to the empty
- string, null, and empty lists, as appropriate. Append the newly created node to
- <var title>doc</var>.
+ <li><p>Create a <code>DocumentType</code> node with the <code
+ title=dom-DocumentType-name>name</code> attribute set to the string "<code
+ title>html</code>", and the other attributes specific to
+ <code>DocumentType</code> objects set to the empty string, null, and empty
+ lists, as appropriate. Append the newly created node to <var title>doc</var>.
 
  <li><p>Create an <code title>html</code> element in the <span>HTML
  namespace</span>, and append it to <var title>doc</var>.
@@ -1075,7 +1075,7 @@ otherwise [createAttribute]-->.
   Attr <span title=dom-Element-getAttributeNode>getAttributeNode</span>(in DOMString name);
   Attr <span title=dom-Element-setAttributeNode>setAttributeNode</span>(in Attr newAttr);
   Attr <span title=dom-Element-removeAttributeNode>removeAttributeNode</span>(in Attr oldAttr);-->
-  NodeList <span title=dom-Element-getElementsByTagName>getElementsByTagName</span>(in DOMString name);
+  <span>NodeList</span> <span title=dom-Element-getElementsByTagName>getElementsByTagName</span>(in DOMString name);
   DOMString <span title=dom-Element-getAttributeNS>getAttributeNS</span>(in DOMString namespaceURI, in DOMString localName);
   void <span title=dom-Element-setAttributeNS>setAttributeNS</span>(in DOMString namespaceURI, in DOMString qualifiedName, in DOMString value);
   void <span title=dom-Element-removeAttributeNS>removeAttributeNS</span>(in DOMString namespaceURI, in DOMString localName);<!--

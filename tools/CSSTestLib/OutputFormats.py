@@ -12,20 +12,29 @@ class BasicFormat:
      transformations (e.g. subdirectory for all tests in that format)
      associated with a test suite format.
 
-     The base class implementation performs no conversions or location
-     transformations."""
+     The base class implementation performs no conversions or
+     format-specific location transformations."""
 
-  def __init__(destroot):
+  def __init__(self, destroot):
     """Creates format root of the output tree. `destroot` is the root
        of the output tree."""
     self.root = destroot
     os.makedirs(self.root)
+    self.groupName = None
 
-  def dest(relpath):
+  def setGroupDir(self, name=None):
+    """Sets format to write into group subdirectory `name`.
+    """
+    self.groupName = name
+
+  def dest(self, relpath):
     """Returns final destination of relpath in this format."""
-    return join(self.root, relpath)
+    if self.groupName:
+      return join(self.root, self.groupName, relpath)
+    else
+      return join(self.root, relpath)
 
-  def write(source):
+  def write(self, source):
     """Write FileSource to destination, following all necessary
        conversion methods."""
     destpath = dest(source.relpath)
@@ -33,21 +42,16 @@ class BasicFormat:
 
 class XHTMLFormat(BasicFormat):
   """Base class for XHTML test suite format. Builds into 'xhtml' subfolder of root."""
-  def __init__(destroot):
-    self.root = join(destroot, 'xhtml')
-    os.makedirs(self.root)
-
-  def dest(relpath):
-    return join(self.destroot, self.subdir, relpath)
+  formatDirName = 'xhtml1'
+  def __init__(self, destroot):
+    BasicFormat.__init__(self, join(destroot, self.formatDirName))
 
 class HTMLFormat(BasicFormat):
   """Base class for HTML test suite format."""
-  def __init__(destroot):
-    self.root = join(destroot, 'html')
-    os.makedirs(self.root)
+  formatDirName = 'html4'
 
-  def dest(relpath):
-    return join(self.root, relpath)
+  def __init__(self, destroot):
+    BasicFormat.__init__(self, join(destroot, self.formatDirName))
 
   def write(source):
     if isintance(source, XHTMLSource):

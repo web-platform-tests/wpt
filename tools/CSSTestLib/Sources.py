@@ -31,16 +31,16 @@ class SourceCache:
      per sourcepath.
   """
   def __init__(self):
-    self.cache = {}
+    self.__cache = {}
 
   def generateSource(self, sourcepath, relpath, isTest=False):
     """Return a FileSource or derivative based on the extensionMap.
        Creates a CSSTestSource if isTest is true.
        Uses a cache to avoid creating more than one of the same object:
        does not support creating two FileSources with the same sourcepath;
-       throws an exception if this is tried.
+       asserts if this is tried.
     """
-    if self.cache.has_key(sourcepath):
+    if self.__cache.has_key(sourcepath):
       source = cache[sourcepath]
       assert isTest and isinstance(source, CSSTestSource)
       assert relpath == source.relpath
@@ -54,18 +54,68 @@ class SourceCache:
         source = XHTMLSource(sourcepath, relpath)
       else:
         source = FileSource(sourcepath, relpath, mime)
-    cache[sourcepath] = source
+    self.__cache[sourcepath] = source
     return source
 
-  def writeAll(self, format):
+class SourceSet:
+  """Set of FileSource objects. No two FileSources in the set may
+     have the same relpath.
+  """
+  def __init__(self, sourceCache):
+    self.sourceCache = sourceCache
+    self.pathMap = {} # relpath -> source
+
+  def addSource(self, source):
+    """Add FileSource `source`. Throws exception if we already have
+       a FileSource with the same path relpath but different contents.
+    """
+    cachedSource = self.pathMap.get(source.relpath)
+    if not cachedSource:
+      self.pathMap[source.relpath] = source
+    else:
+      if source != cachedSource
+        raise Exception("File merge mismatch %s vs %s for %s" % \
+              (cachedSource.sourcepath, source.sourcepath, source.relpath)
+
+  def add(self, sourcepath, relpath, isTest=False):
+    """Generate and add FileSource from sourceCache.
+
+       Throws exception if we already have a FileSource with the same path
+       relpath but different contents.
+    """
+    self.addSource(self.sourceCache.generateSource(sourcepath, relpath, isTest))
+
+  @staticmethod
+  def merge(a, b):
+    """Merges a and b, and returns whichever one contains the merger (which
+       one is chosen based on merge efficiency).
+    """
+    if len(a) < len(b):
+      return b.merge(a)
+    return a.merge(b)
+
+  def merge(self, other):
+    """Merge sourceSet's contents into this SourceSet.
+
+       Throws a RuntimeError if there's a sourceCache mismatch.
+       Throws an Exception if two files with the same relpath mismatch.
+    """
+    if self.sourceCache is not other.sourceCache:
+      raise RuntimeError
+
+    for source in other.pathMap.iter():
+      self.add(source)
+
+  def write(self, format):
     """Write files out through OutputFormat `format`.
     """
-    for source in self.cache.values():
+    for source in self.pathMap.iter():
       format.write(source)
+
 
 class FileSource:
   """Object representing a file. Two FileSources are equal if they represent
-     the same source file. It is recommended to use a SourceCache to generate
+     the same file contents. It is recommended to use a SourceCache to generate
      FileSources.
   """
 
@@ -81,7 +131,11 @@ class FileSource:
     self.mimetype   = mimetype or getMimeFromExt(splitext(sourcepath)[1])
 
   def __eq__(self, other):
-    return isinstance(other, FileSource) and self.sourcepath == other.sourcepath
+    if not isinstance(other, FileSource):
+      return False
+    return self.sourcepath == other.sourcepath or \
+           filecmp.cmp(self.sourcepath, other.sourcepath)
+
   def __ne__(self, other):
     return not self == other
 

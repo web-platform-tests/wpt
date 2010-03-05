@@ -185,6 +185,9 @@ class XHTMLSource(FileSource):
       Parse errors are reported as caught exceptions in `self.error`,
       and the source (and reference, if any) is replaced with an
       XHTML error message.
+      self.postProcess(outputString, format) is offered as a
+      post-serialization hook in the `write` method for derivative
+      classes.
     """
     FileSource.__init__(self, sourcepath, relpath)
 
@@ -192,7 +195,7 @@ class XHTMLSource(FileSource):
       """Replace document with an error message."""
       errorDoc = self.syntaxErrorDoc % (filename, e)
       self.tree = etree.fromstring(errorDoc, parser=self.__parser)
-
+  
   def parse(self):
     """Parse file and store any parse errors in self.error"""
     self.error = False
@@ -203,35 +206,40 @@ class XHTMLSource(FileSource):
       e.CSSTestSourceErrorLocation = filename
       self.error = e
 
-  def writeHTML(self, format):
-    """Serialize CSSTestSource into HTML file at path `dest`.
-       If `refDest` is given and the CSSTestSource has a
-       reference file, then it will be serialized into HTML
-       at path `refDest`.
+  def write(self, format, asHTML=False):
+    """Serialize through OutputFormat `format` into (X)HTML file at path `dest`.
+       Serializes as HTML if `asHTML` is true.
     """
+    # Parse
     if not self.tree:
       self.parse()
 
-    # serialize
-    o = html5lib.serializer.serialize(self.tree, tree='lxml',
-                                      format='html',
-                                      emit_doctype='html',
-                                      resolve_entities=False,
-                                      quote_attr_values=True)
+    # Serialize
+    if asHTML:
+      o = html5lib.serializer.serialize(self.tree, tree='lxml',
+                                        format='html',
+                                        emit_doctype='html',
+                                        resolve_entities=False,
+                                        quote_attr_values=True)
 
-    # lxml fixup for eating whitespace outside root element
-    m = re.search('<!DOCTYPE[^>]+>(\s*)<', o)
-    if m.group(1) == '': # match first to avoid perf hit from searching whole doc
-      o = re.sub('(<!DOCTYPE[^>]+>)<', '\g<1>\n<', o)
+      # lxml fixup for eating whitespace outside root element
+      m = re.search('<!DOCTYPE[^>]+>(\s*)<', o)
+      if m.group(1) == '': # match first to avoid perf hit from searching whole doc
+        o = re.sub('(<!DOCTYPE[^>]+>)<', '\g<1>\n<', o)
+    else:
+      o = str(self.tree)
+
+    # postprocess if needed
+    if self.postProcess:
+      self.postProcess(o, format)
 
     # write
     f = open(format.dest(self.relpath), 'w')
     f.write(o.encode('utf-8'))
     f.close()
 
-  def clear():
+  def compact():
     self.tree = None
-    self.error = None
 
 class CSSTestSource(XHTMLSource):
   """XHTMLSource representing the main CSS test file. Supports metadata lookups."""
@@ -239,10 +247,13 @@ class CSSTestSource(XHTMLSource):
   def __init__(self, sourcepath, relpath):
 
     XHTMLSource.__init__(self, sourcepath, relpath)
-
-    # Extract filename base
+    # Extract filename base as test name
     m = re.search('([^/\.])+(?:\.[a-z0-9])*$', relpath)
     self.name = m.groups(1)
+
+  def postProcess(self, outputString, format):
+    if format.testTransform:
+      format.testTransform(outputString, self)
 
   # See http://wiki.csswg.org/test/css2.1/format for more info on metadata
   def getMetadata(self, titlePrefix=''):

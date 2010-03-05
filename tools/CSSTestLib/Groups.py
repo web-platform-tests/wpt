@@ -9,15 +9,11 @@ import os.path
 from os.path import exists, join
 from Sources import SourceCache, SourceSet
 
-def testName(filepath):
-  """Returns base name (without extenion)."""
-  return re.match('([^/\.])+(?:\.[a-z0-9])*', os.path.basename(filepath)).groups(1)
-
 class Group:
   """Base class for test groups. Should never be used directly.
   """
 
-  def __init__(self, sourceCache, importDir, name=None, supportDirNames=('support')):
+  def __init__(self, sourceCache, importDir, name=None, supportDirNames=('support',)):
     """Initialize with:
          SourceCache `sourceCache`
          Group name `name`, which must be a possible directory name or None

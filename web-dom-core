@@ -7,7 +7,7 @@
 <body class=draft>
 <div class=head id=head>
 <h1>Web DOM Core</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-date:-01-jan-1901>Work in Progress &mdash; Last Update 3 March 2010</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-date:-01-jan-1901>Work in Progress &mdash; Last Update 5 March 2010</h2>
 <dl>
  <dt>Editors
  <dd>Simon Pieters &lt;simonp@opera.com&gt;
@@ -768,7 +768,16 @@ must, on getting, run the following steps:
 
  <li><p>If <var>refChild</var> is not null and is not a child of the
  <a href=#context-node>context node</a>, then raise a <code title=dom-DOMException-NOT_FOUND_ERR><a href=#dom-domexception-not_found_err>NOT_FOUND_ERR</a></code> exception and abort
- these steps.
+ these steps. <!-- Do not adopt. -->
+
+ <li><p>If <var>newChild</var>'s
+ <code title=dom-Node-ownerDocument><a href=#dom-node-ownerdocument>ownerDocument</a></code> is not equal to the
+ <a href=#context-node>context node</a>'s
+ <code title=dom-Node-ownerDocument><a href=#dom-node-ownerdocument>ownerDocument</a></code>, call the
+ <a href=#context-node>context node</a>'s
+ <code title=dom-Node-ownerDocument><a href=#dom-node-ownerdocument>ownerDocument</a></code>
+ <code title=dom-Document-adoptNode><a href=#dom-document-adoptnode>adoptNode</a></code> method with
+ <var>newChild</var> as its argument.
 
  <!-- no security check -->
  <li><p>If <var>newChild</var> is a <code><a href=#documentfragment>DocumentFragment</a></code> node, then
@@ -797,6 +806,15 @@ must, on getting, run the following steps:
  <li><p>If either <var>newChild</var> or <var>oldChild</var> is null, then raise
  a <code title=dom-DOMException-NOT_SUPPORTED_ERR><a href=#dom-domexception-not_supported_err>NOT_SUPPORTED_ERR</a></code>
  exception and abort these steps.
+
+ <li><p>If <var>newChild</var>'s
+ <code title=dom-Node-ownerDocument><a href=#dom-node-ownerdocument>ownerDocument</a></code> is not equal to the
+ <a href=#context-node>context node</a>'s
+ <code title=dom-Node-ownerDocument><a href=#dom-node-ownerdocument>ownerDocument</a></code>, call the
+ <a href=#context-node>context node</a>'s
+ <code title=dom-Node-ownerDocument><a href=#dom-node-ownerdocument>ownerDocument</a></code>
+ <code title=dom-Document-adoptNode><a href=#dom-document-adoptnode>adoptNode</a></code> method with
+ <var>newChild</var> as its argument.
 
  <li><p>If <var>oldChild</var> is not a child of the <a href=#context-node>context node</a>,
  then raise a <code title=dom-DOMException-NOT_FOUND_ERR><a href=#dom-domexception-not_found_err>NOT_FOUND_ERR</a></code>
@@ -842,6 +860,15 @@ method must run the following steps:
 
  <li><p>If <var>newChild</var> is null, then raise a <code title=dom-DOMException-NOT_SUPPORTED_ERR><a href=#dom-domexception-not_supported_err>NOT_SUPPORTED_ERR</a></code> exception and
  abort these steps.
+
+ <li><p>If <var>newChild</var>'s
+ <code title=dom-Node-ownerDocument><a href=#dom-node-ownerdocument>ownerDocument</a></code> is not equal to the
+ <a href=#context-node>context node</a>'s
+ <code title=dom-Node-ownerDocument><a href=#dom-node-ownerdocument>ownerDocument</a></code>, call the
+ <a href=#context-node>context node</a>'s
+ <code title=dom-Node-ownerDocument><a href=#dom-node-ownerdocument>ownerDocument</a></code>
+ <code title=dom-Document-adoptNode><a href=#dom-document-adoptnode>adoptNode</a></code> method with
+ <var>newChild</var> as its argument.
 
  <!-- no security check -->
  <li><p>Append <var>newChild</var> to the <a href=#context-node>context node</a>.

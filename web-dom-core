@@ -20,7 +20,7 @@
 <h2 class="no-num no-toc" id=issues>Issues</h2>
 
 <ul class=XXX>
- <li>define moving nodes between documents <a href="http://html5.org/tools/web-apps-tracker?from=1729&amp;to=1730">http://html5.org/tools/web-apps-tracker?from=1729&amp;to=1730</a> <a href=http://www.w3.org/mid/Pine.LNX.4.62.0806020441160.504@hixie.dreamhostps.com>http://www.w3.org/mid/Pine.LNX.4.62.0806020441160.504@hixie.dreamhostps.com</a> <a href=http://www.w3.org/mid/3292C233-9089-4733-9226-15ED8DCA23FE@apple.com>http://www.w3.org/mid/3292C233-9089-4733-9226-15ED8DCA23FE@apple.com</a> <a href=http://lists.whatwg.org/pipermail/whatwg-whatwg.org/2010-March/025398.html>http://lists.whatwg.org/pipermail/whatwg-whatwg.org/2010-March/025398.html</a>
+ <li>define moving nodes between documents <a href=http://www.w3.org/mid/Pine.LNX.4.62.0806020441160.504@hixie.dreamhostps.com>http://www.w3.org/mid/Pine.LNX.4.62.0806020441160.504@hixie.dreamhostps.com</a> <a href=http://www.w3.org/mid/3292C233-9089-4733-9226-15ED8DCA23FE@apple.com>http://www.w3.org/mid/3292C233-9089-4733-9226-15ED8DCA23FE@apple.com</a> <a href=http://lists.whatwg.org/pipermail/whatwg-whatwg.org/2010-March/025398.html>http://lists.whatwg.org/pipermail/whatwg-whatwg.org/2010-March/025398.html</a>
  <li>innerHTML etc on all Elements? <a href=http://osdir.com/ml/org.w3c.webapi/2007-08/msg00069.html>http://osdir.com/ml/org.w3c.webapi/2007-08/msg00069.html</a>
  <li>\0 <a href=http://krijnhoetmer.nl/irc-logs/whatwg/20080321#l-312>http://krijnhoetmer.nl/irc-logs/whatwg/20080321#l-312</a>
  <li>document.parseError? <a href=http://www.w3.org/mid/op.ucv5axjp64w2qv@annevk-t60.oslo.opera.com>http://www.w3.org/mid/op.ucv5axjp64w2qv@annevk-t60.oslo.opera.com</a>
@@ -47,7 +47,8 @@
    <li><a href=#terminology><span class=secno>1.1 </span>Terminology</a></li>
    <li><a href=#conformance-requirements><span class=secno>1.2 </span>Conformance requirements</a>
     <ol>
-     <li><a href=#dependencies><span class=secno>1.2.1 </span>Dependencies</a></ol></li>
+     <li><a href=#dependencies><span class=secno>1.2.1 </span>Dependencies</a></li>
+     <li><a href=#extensibility><span class=secno>1.2.2 </span>Extensibility</a></ol></li>
    <li><a href=#case-sensitivity><span class=secno>1.3 </span>Case-sensitivity</a></li>
    <li><a href=#dom-features><span class=secno>1.4 </span>DOM features</a></li>
    <li><a href=#cloning-nodes><span class=secno>1.5 </span>Cloning nodes</a></li>
@@ -156,6 +157,32 @@ passed an Infinity or Not-a-Number (NaN) value, a <code title=dom-DOMException-N
 be raised.
 
 <p class=XXX>HTML5?
+
+<h4 id=extensibility><span class=secno>1.2.2 </span>Extensibility</h4>
+
+<p>Vendor-specific proprietary extensions to this specification are
+strongly discouraged. Authors must not use such extensions, as
+doing so reduces interoperability and fragments the user base,
+allowing only users of specific user agents to access the content in
+question.</p>
+
+<p>If vendor-specific extensions are needed, the members should be
+prefixed by vendor-specific strings to prevent clashes with future
+versions of this specification. Extensions must be defined so that
+the use of extensions neither contradicts nor causes the
+non-conformance of functionality defined in the specification.</p>
+<!-- thanks to QA Framework -->
+
+<p>When vendor-neutral extensions to this specification are needed,
+either this specification can be updated accordingly, or an
+extension specification can be written that overrides the
+requirements in this specification. When someone applying this
+specification to their activities decides that they will recognise
+the requirements of such an extension specification, it becomes an
+<dfn id=other-applicable-specifications title="other applicable specifications">applicable
+specification</dfn> for the purposes of conformance requirements in
+this specification.</p>
+<!-- http://www.w3.org/mid/17E341CD-E790-422C-9F9A-69347EE01CEB@iki.fi -->
 
 
 <h3 id=case-sensitivity><span class=secno>1.3 </span>Case-sensitivity</h3>
@@ -595,10 +622,17 @@ node</a> whose <a href=#concept-id title=concept-ID>ID</a> is <var title="">elem
 <p>The <dfn id=dom-document-adoptnode title=dom-Document-adoptNode><code>adoptNode(<var title="">source</var>)</code></dfn> method must run the following steps:
 
 <ol>
+ <li><p>If <var title="">source</var> is an <code><a href=#element>Element</a></code> node, it is
+ <a href=#affected-by-a-base-url-change>affected by a base URL change</a>.
+
  <!-- no security check -->
- <li><p>If <var>source</var>'s <code title=dom-Node-parentNode><a href=#dom-node-parentnode>parentNode</a></code> is not null, remove <var>source</var> from its parent.
- <li><p>Set <var>source</var>'s <code title=dom-Node-ownerDocument><a href=#dom-node-ownerdocument>ownerDocument</a></code> to the <a href=#context-node>context node</a>.
- <li><p>Return <var>source</var>.
+ <li><p>If <var title="">source</var>'s <code title=dom-Node-parentNode><a href=#dom-node-parentnode>parentNode</a></code> is not null, remove
+ <var title="">source</var> from its parent.
+
+ <li><p>Set <var title="">source</var>'s <code title=dom-Node-ownerDocument><a href=#dom-node-ownerdocument>ownerDocument</a></code> to the <a href=#context-node>context
+ node</a>.
+
+ <li><p>Return <var title="">source</var>.
 </ol>
 
 
@@ -1117,6 +1151,12 @@ containing <a href=#space-character title="space character">space characters</a>
 <code><a href=#element>Element</a></code> nodes. Specifications may define how <a href=#concept-id title=concept-id>IDs</a> are associated with <code><a href=#element>Element</a></code> nodes.
 
 <p class=note>For example, HTML elements can have an <code title=attr-id><a href=http://www.whatwg.org/html/#attr-id>id</a></code> attribute specified, to specify its <a href=#concept-id title=concept-id>ID</a>.
+
+<p>Specifications may define <dfn id=base-url-change-steps>base URL change steps</dfn>.
+
+<p>When an <code><a href=#element>Element</a></code> node is <dfn id=affected-by-a-base-url-change>affected by a base URL
+change</dfn>, the user agent must run the <a href=#base-url-change-steps>base URL change steps</a>, as
+defined in <a href=#other-applicable-specifications>other applicable specifications</a>.
 
 <p>The <dfn id=dom-element-tagname title=dom-Element-tagName><code>tagName</code></dfn> attribute must,
 on getting, return the concatenation of <code title=dom-Node-prefix><a href=#dom-node-prefix>prefix</a></code>, the character U+003E COLON (":") and <code title=dom-Node-localName><a href=#dom-node-localname>localName</a></code> if <code title=dom-Node-prefix><a href=#dom-node-prefix>prefix</a></code> is not null, and otherwise just <code title=dom-Node-localName><a href=#dom-node-localname>localName</a></code>.

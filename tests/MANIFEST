@@ -9,4 +9,5 @@ MANIFEST
 Node-appendChild.html
 Node-hasAttributes.html
 Node-insertBefore.html
+Node-removeChild.html
 support

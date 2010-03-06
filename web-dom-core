@@ -7,7 +7,7 @@
 <body class=draft>
 <div class=head id=head>
 <h1>Web DOM Core</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-date:-01-jan-1901>Work in Progress &mdash; Last Update 5 March 2010</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-date:-01-jan-1901>Work in Progress &mdash; Last Update 6 March 2010</h2>
 <dl>
  <dt>Editors
  <dd>Simon Pieters &lt;simonp@opera.com&gt;
@@ -484,6 +484,7 @@ steps:
 <Philip`>	(n = tens of thousands, I think)
 -->
 <!-- As far as I can tell, this isn't needed for web compatibility. Neither WebKit nor Opera support it, and Firefox's implementation still throws on the majority of cases in the wild, as almost all cases in the wild take advantage of the fact that IE allows attributes. -->
+<!-- http://philip.html5.org/data/createelement-with-angle-bracket.txt -->
 <ol>
  <li><p>If <var title="">tagName</var> doesn't match the <code><a href=http://www.w3.org/TR/xml/#NT-Name>Name</a></code> production in XML, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR><a href=#dom-domexception-invalid_character_err>INVALID_CHARACTER_ERR</a></code>
  exception and abort these steps.
@@ -844,6 +845,7 @@ method must run the following steps:
  <li><p>If <var>oldChild</var> is not a child of the <a href=#context-node>context node</a>,
  then raise a <code title=dom-DOMException-NOT_FOUND_ERR><a href=#dom-domexception-not_found_err>NOT_FOUND_ERR</a></code>
  exception and abort these steps.
+ <!-- Including other documents. -->
 
  <li><p>Remove <var>oldChild</var> from <a href=#context-node>context node</a>.
 

@@ -472,6 +472,7 @@ steps:
 <Philip`>	(n = tens of thousands, I think)
 -->
 <!-- As far as I can tell, this isn't needed for web compatibility. Neither WebKit nor Opera support it, and Firefox's implementation still throws on the majority of cases in the wild, as almost all cases in the wild take advantage of the fact that IE allows attributes. -->
+<!-- http://philip.html5.org/data/createelement-with-angle-bracket.txt -->
 <ol>
  <li><p>If <var title>tagName</var> doesn't match the <code
  data-anolis-spec=xml>Name</code> production in XML, raise an <code

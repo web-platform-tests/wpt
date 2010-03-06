@@ -45,7 +45,9 @@
  <li><a href=#common-infrastructure><span class=secno>1 </span>Common infrastructure</a>
   <ol>
    <li><a href=#terminology><span class=secno>1.1 </span>Terminology</a></li>
-   <li><a href=#conformance-requirements><span class=secno>1.2 </span>Conformance requirements</a></li>
+   <li><a href=#conformance-requirements><span class=secno>1.2 </span>Conformance requirements</a>
+    <ol>
+     <li><a href=#dependencies><span class=secno>1.2.1 </span>Dependencies</a></ol></li>
    <li><a href=#case-sensitivity><span class=secno>1.3 </span>Case-sensitivity</a></li>
    <li><a href=#dom-features><span class=secno>1.4 </span>DOM features</a></li>
    <li><a href=#cloning-nodes><span class=secno>1.5 </span>Cloning nodes</a></li>
@@ -133,6 +135,12 @@ implementation-specific limits on otherwise unconstrained inputs,
 e.g. to prevent denial of service attacks, to guard against running
 out of memory, or to work around platform-specific limitations.</p>
 
+<p>When a method or an attribute is said to call another method or attribute, the user agent must invoke its internal API for that attribute or method so that e.g. the author can't change the behavior by overriding attributes or methods with custom properties or functions in ECMAScript.
+
+<p>Unless otherwise stated, string comparisons are done in a <a href=#case-sensitive>case-sensitive</a> manner.
+
+<h4 id=dependencies><span class=secno>1.2.1 </span>Dependencies</h4>
+
 <p>The IDL fragments in this specification must be interpreted as
 required for conforming IDL fragments, as described in the Web IDL
 specification. <a href=#refsWEBIDL>[WEBIDL]</a></p>
@@ -147,11 +155,7 @@ floating point number type (<code><a href=http://dev.w3.org/2006/webapi/WebIDL/#
 passed an Infinity or Not-a-Number (NaN) value, a <code title=dom-DOMException-NOT_SUPPORTED_ERR><a href=#dom-domexception-not_supported_err>NOT_SUPPORTED_ERR</a></code> exception must
 be raised.
 
-<p class=XXX>HTML5.
-
-<p>When a method or an attribute is said to call another method or attribute, the user agent must invoke its internal API for that attribute or method so that e.g. the author can't change the behavior by overriding attributes or methods with custom properties or functions in ECMAScript.
-
-<p>Unless otherwise stated, string comparisons are done in a <a href=#case-sensitive>case-sensitive</a> manner.
+<p class=XXX>HTML5?
 
 
 <h3 id=case-sensitivity><span class=secno>1.3 </span>Case-sensitivity</h3>

@@ -104,6 +104,12 @@ implementation-specific limits on otherwise unconstrained inputs,
 e.g. to prevent denial of service attacks, to guard against running
 out of memory, or to work around platform-specific limitations.</p>
 
+<p>When a method or an attribute is said to call another method or attribute, the user agent must invoke its internal API for that attribute or method so that e.g. the author can't change the behavior by overriding attributes or methods with custom properties or functions in ECMAScript.
+
+<p>Unless otherwise stated, string comparisons are done in a <span>case-sensitive</span> manner.
+
+<h4>Dependencies</h4>
+
 <p>The IDL fragments in this specification must be interpreted as
 required for conforming IDL fragments, as described in the Web IDL
 specification. <a href="#refsWEBIDL">[WEBIDL]</a></p>
@@ -120,11 +126,7 @@ passed an Infinity or Not-a-Number (NaN) value, a <code
 title=dom-DOMException-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</code> exception must
 be raised.
 
-<p class=XXX>HTML5.
-
-<p>When a method or an attribute is said to call another method or attribute, the user agent must invoke its internal API for that attribute or method so that e.g. the author can't change the behavior by overriding attributes or methods with custom properties or functions in ECMAScript.
-
-<p>Unless otherwise stated, string comparisons are done in a <span>case-sensitive</span> manner.
+<p class=XXX>HTML5?
 
 
 <h3>Case-sensitivity</h3>

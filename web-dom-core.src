@@ -365,9 +365,9 @@ must return the name of the exception constant as a string.</p>
 
 <p class=XXX>exceptions for createDocument <a href=http://osdir.com/ml/web.dom.general/2005-12/msg00058.html>http://osdir.com/ml/web.dom.general/2005-12/msg00058.html</a>
 
-<p><span data-anolis-spec=html>HTML documents</span> can be created using the
-<code title=dom-DOMImplementation-createHTMLDocument>createHTMLDocument()</code>
-method.</p>
+<p><span>HTML documents</span> can be created using the <code
+title=dom-DOMImplementation-createHTMLDocument>createHTMLDocument()</code>
+method.
 
 <dl class=domintro>
  <dt><var title>doc</var> = <var title=dom-AbstractView-document
@@ -389,8 +389,8 @@ steps:
  <li><p>Let <var title>doc</var> be a newly created <code>Document</code>
  object.
 
- <li><p>Mark <var title>doc</var> as being an <span data-anolis-spec=html
- title="HTML documents">HTML document</span>.</p></li>
+ <li><p>Mark <var title>doc</var> as being an <span title="HTML documents">HTML
+ document</span>.
 
  <li><p>Create a <code>DocumentType</code> node with the <code
  title=dom-DocumentType-name>name</code> attribute set to the string "<code
@@ -462,6 +462,12 @@ steps:
 };
 <span>Document</span> implements <span data-anolis-spec=domviews>DocumentView</span>;</pre>
 
+<p><code>Document</code> nodes are assumed to be <dfn>XML documents</dfn> unless
+they are flagged as being <dfn>HTML documents</dfn> when they are created.
+Whether a document is an <span title="HTML documents">HTML document</span> or an
+<span title="XML documents">XML document</span> affects the behavior of certain
+APIs.
+
 <p>The <dfn title=dom-Document-doctype><code>doctype</code></dfn> attribute must return the first child of the <code>Document</code> node that is a <code>DocumentType</code> node, if there is one, or null otherwise.
 <p class=note>In both HTML and XML there will only ever be one <code>DocumentType</code> node descendant of the <code>Document</code> node. <a href=#refsHTML>[HTML]</a> <a href=#refsXML>[XML]</a>
 
@@ -528,8 +534,8 @@ contains two adjacent hyphens or ends with a hyphen.
 title>data</var>)</code></dfn> method must run the following steps:
 
 <ol>
- <li><p>If the <span>context node</span> is an <span title="HTML documents"
- data-anolis-spec=html>HTML document</span>, raise a <code
+ <li><p>If the <span>context node</span> is an <span title="HTML documents">HTML
+ document</span>, raise a <code
  title=dom-DOMException-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</code> exception and
  abort these steps.
 
@@ -572,7 +578,7 @@ the same as the object returned by the previous call.</p>
 
 <p>The <dfn title=dom-Document-importNode><code>importNode(<var title>importedNode</var>, <var title>deep</var>)</code></dfn> method must <!--run the following steps:
 <ol>-->
- <!--<li><p>If the <span>context node</span> is an XML document, then if any imported <code>Element</code> or <code>Attr</code> node have a <code title=dom-Node-nodeName>nodeName</code> that doesn't match the <code data-anolis-spec=xml>Name</code> production in XML, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and abort these steps. (browsers don't do this) --> <!-- XXX this might be wrong -->
+ <!--<li><p>If the <span>context node</span> is an <span>XML document</span>, then if any imported <code>Element</code> or <code>Attr</code> node have a <code title=dom-Node-nodeName>nodeName</code> that doesn't match the <code data-anolis-spec=xml>Name</code> production in XML, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and abort these steps. (browsers don't do this) --> <!-- XXX this might be wrong -->
  <!--<li><p>If <var>importedNode</var>'s <code title=dom-Node-ownerDocument>ownerDocument</code>'s <span>effective script origin</span> is not the <span title=same-origin>same</span> as the <span>effective script origin</span> of the <span>context node</span>, raise a <code title=dom-DOMException-SECURITY_ERR>SECURITY_ERR</code> exception and abort these steps. <a href=#refsHTML>[HTML]</a> (can't get a reference to a node that you can't adopt anyway) -->
  <!--<li><p>R-->return a <span>clone</span> of <var title>importedNode</var>, with <var title>new ownerDocument</var> being the <span>context node</span>, and the <var title>clone children</var> flag set if <var title>deep</var> is true.
 <!--</ol>-->

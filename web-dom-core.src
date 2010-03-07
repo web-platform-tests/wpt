@@ -21,7 +21,6 @@
 <h2 class="no-num no-toc">Issues</h2>
 
 <ul class=XXX>
- <li>define moving nodes between documents <a href=http://www.w3.org/mid/Pine.LNX.4.62.0806020441160.504@hixie.dreamhostps.com>http://www.w3.org/mid/Pine.LNX.4.62.0806020441160.504@hixie.dreamhostps.com</a> <a href=http://www.w3.org/mid/3292C233-9089-4733-9226-15ED8DCA23FE@apple.com>http://www.w3.org/mid/3292C233-9089-4733-9226-15ED8DCA23FE@apple.com</a> <a href=http://lists.whatwg.org/pipermail/whatwg-whatwg.org/2010-March/025398.html>http://lists.whatwg.org/pipermail/whatwg-whatwg.org/2010-March/025398.html</a>
  <li>innerHTML etc on all Elements? <a href=http://osdir.com/ml/org.w3c.webapi/2007-08/msg00069.html>http://osdir.com/ml/org.w3c.webapi/2007-08/msg00069.html</a>
  <li>\0 <a href=http://krijnhoetmer.nl/irc-logs/whatwg/20080321#l-312>http://krijnhoetmer.nl/irc-logs/whatwg/20080321#l-312</a>
  <li>document.parseError? <a href=http://www.w3.org/mid/op.ucv5axjp64w2qv@annevk-t60.oslo.opera.com>http://www.w3.org/mid/op.ucv5axjp64w2qv@annevk-t60.oslo.opera.com</a>
@@ -576,12 +575,35 @@ the argument is the same as the last time the method was invoked on
 this <code>Document</code> object, in which case the object must be
 the same as the object returned by the previous call.</p>
 
-<p>The <dfn title=dom-Document-importNode><code>importNode(<var title>importedNode</var>, <var title>deep</var>)</code></dfn> method must <!--run the following steps:
-<ol>-->
- <!--<li><p>If the <span>context node</span> is an <span>XML document</span>, then if any imported <code>Element</code> or <code>Attr</code> node have a <code title=dom-Node-nodeName>nodeName</code> that doesn't match the <code data-anolis-spec=xml>Name</code> production in XML, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and abort these steps. (browsers don't do this) --> <!-- XXX this might be wrong -->
- <!--<li><p>If <var>importedNode</var>'s <code title=dom-Node-ownerDocument>ownerDocument</code>'s <span>effective script origin</span> is not the <span title=same-origin>same</span> as the <span>effective script origin</span> of the <span>context node</span>, raise a <code title=dom-DOMException-SECURITY_ERR>SECURITY_ERR</code> exception and abort these steps. <a href=#refsHTML>[HTML]</a> (can't get a reference to a node that you can't adopt anyway) -->
- <!--<li><p>R-->return a <span>clone</span> of <var title>importedNode</var>, with <var title>new ownerDocument</var> being the <span>context node</span>, and the <var title>clone children</var> flag set if <var title>deep</var> is true.
-<!--</ol>-->
+<p>The <dfn title=dom-Document-importNode><code>importNode(<var
+title>importedNode</var>, <var title>deep</var>)</code></dfn> method must run
+the following steps:
+<ol>
+ <!-- Similar text for adoptNode -->
+ <li><p>If the <span>context node</span> is an <span title="XML documents">XML
+ document</span>, then if <var title>importedNode</var> or any of its descendant
+ nodes or any of its <code title=dom-Node-attributes>attributes</code> or any of
+ the <code title=dom-Node-attributes>attributes</code> of any descendant
+ <code>Element</code> nodes has a <code
+ title=dom-Node-localName>localName</code><!-- or <code
+ title=dom-Node-prefix>prefix</code>--> which either does not match the <code
+ data-anolis-spec=xml>Name</code> production in XML or contains a U+003A COLON
+ (:) character, raise an <code
+ title=dom-DOMException-INVALID_STATE_ERR>INVALID_STATE_ERR</code> and abort
+ these steps.
+
+ <!--<li><p>If <var title>importedNode</var>'s <code
+ title=dom-Node-ownerDocument>ownerDocument</code>'s <span>effective script
+ origin</span> is not the <span title=same-origin
+ data-anolis-spec=html>same</span> as the <span data-anolis-spec=html>effective
+ script origin</span> of the <span>context node</span>, raise a <code
+ title=dom-DOMException-SECURITY_ERR>SECURITY_ERR</code> exception and abort
+ these steps. (can't get a reference to a node that you can't adopt anyway) -->
+
+ <li><p>Return a <span>clone</span> of <var title>importedNode</var>, with <var
+ title>new ownerDocument</var> being the <span>context node</span>, and the <var
+ title>clone children</var> flag set if <var title>deep</var> is true.
+</ol>
 
 <p>The <dfn title=dom-Document-createElementNS><code>createElementNS(<var title>namespaceURI</var>, <var title>qualifiedName</var>)</code></dfn> method must run the following steps:</p>
 <ol>
@@ -623,20 +645,49 @@ title>elementId</var>, or null if there is none.
 
 <p class=XXX><dfn title=dom-Document-documentURI>documentURI</dfn>
 
-<p>The <dfn title=dom-Document-adoptNode><code>adoptNode(<var title>source</var>)</code></dfn> method must run the following steps:
+<p>The <dfn title=dom-Document-adoptNode><code>adoptNode(<var
+title>source</var>)</code></dfn> method must run the following steps:
 
 <ol>
+ <li><p>If <var title>source</var> is a <code>Document</code> node or a
+ <code>DocumentType</code> node, raise a <code
+ title=dom-DOMException-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</code> exception and
+ abort these steps.
+
+ <!-- Similar text for importNode -->
+ <li><p>If the <span>context node</span> is an <span title="XML documents">XML
+ document</span>, then if <var title>source</var> or any of its descendant
+ nodes or any of its <code title=dom-Node-attributes>attributes</code> or any of
+ the <code title=dom-Node-attributes>attributes</code> of any descendant
+ <code>Element</code> nodes has a <code
+ title=dom-Node-localName>localName</code><!-- or <code
+ title=dom-Node-prefix>prefix</code>--> which either does not match the <code
+ data-anolis-spec=xml>Name</code> production in XML or contains a U+003A COLON
+ (:) character, raise an <code
+ title=dom-DOMException-INVALID_STATE_ERR>INVALID_STATE_ERR</code> and abort
+ these steps.
+
  <li><p>If <var title>source</var> is an <code>Element</code> node, it is
  <span>affected by a base URL change</span>.
 
  <!-- no security check -->
  <li><p>If <var title>source</var>'s <code
- title=dom-Node-parentNode>parentNode</code> is not null, remove
- <var title>source</var> from its parent.
+ title=dom-Node-parentNode>parentNode</code> is not null and its <code
+ title=dom-Node-ownerDocument>ownerDocument</code> isn't equal to the
+ <span>context node</span>, remove <var title>source</var> from its parent.
 
  <li><p>Set <var title>source</var>'s <code
  title=dom-Node-ownerDocument>ownerDocument</code> to the <span>context
  node</span>.
+
+ <li><p>If <var title>source</var> is an <code>Element</code> node,
+ set the <code title=dom-Node-ownerDocument>ownerDocument</code> of all
+ <code>Attr</code> in its <code title=dom-Node-attributes>attributes</code>
+ to the <span>context node</span>.
+
+ <li><p>For each child node of <var title>source</var>, call <code
+ title=dom-Document-adoptNode>adoptNode</code> on the <span>context node</span>,
+ with the child node as its argument.
 
  <li><p>Return <var title>source</var>.
 </ol>

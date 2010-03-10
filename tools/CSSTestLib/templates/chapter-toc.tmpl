@@ -1,0 +1,39 @@
+[%# variables in this template
+  indexext    [string, e.g. '.html']
+  suitetitle  [string]
+  specroot    [uri string]
+  formatdir   [dir name string]
+  chapters    [list of struct]
+    .sortstr    [string, e.g. '060113']
+    .numstr     [string, e.g. '6.1.13']
+    .title      [string]
+    .testcount  [number]
+%]
+[% IF isXML %]
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+[% ELSE %]
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+[% END %]
+ <head>
+  <title>[% suitetitle %]</title>
+  <style type="text/css">
+    @import "http://www.w3.org/StyleSheets/TR/base.css";
+    @import "[% IF formatdir %]../[% END %]indices.css";
+  </style>
+ </head>
+<body>
+  <h1>[% suitetitle %] By Chapter</h1>
+  <table>
+[% FOREACH chapter IN chapters %]
+    <tbody id="s[% chapter.sortstr %]">
+      <tr><th><a href="chapter-[% chapter.sortstr %][% indexext %]">Chapter
+        [% chapter.numstr %]
+        - [% chapter.title %]</a></th>
+      <td>([% chapter.testcount %] Tests)</td></tr>
+    </tbody>
+[% END %]
+  </table>
+</body>
+</html>

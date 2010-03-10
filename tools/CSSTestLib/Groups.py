@@ -13,7 +13,7 @@ class Group:
   """Base class for test groups. Should never be used directly.
   """
 
-  def __init__(self, sourceCache, importDir, name=None, supportDirNames=('support',)):
+  def __init__(self, sourceCache, importDir, name=None, title=None, supportDirNames=('support',)):
     """Initialize with:
          SourceCache `sourceCache`
          Group name `name`, which must be a possible directory name or None
@@ -22,6 +22,7 @@ class Group:
     """
     # Save name
     self.name = name
+    self.title = title
 
     # Load htaccess
     htapath = join(importDir, '.htaccess')
@@ -40,6 +41,11 @@ class Group:
             sourcepath = join(root, name)
             relpath = os.path.relpath(sourcepath, importDir)
             self.support.add(sourcepath, relpath)
+
+  def count(self):
+    """Returns number of tests.
+    """
+    return 0
 
   def merge(self, other):
     """Merge Group `other`'s contents into this Group.
@@ -68,7 +74,7 @@ class SelftestGroup(Group):
   """Class for self-verifying tests.
   """
 
-  def __init__(self, sourceCache, importDir, name=None, testExt=None, testList=None):
+  def __init__(self, sourceCache, importDir, name=None, title=None, testExt=None, testList=None):
     """Initialize with:
          SourceCache `sourceCache`
          Directory path `importDir`, whose context is imported into the group
@@ -78,7 +84,7 @@ class SelftestGroup(Group):
          List of test filenames `testList`, which identifies individual test
            files to import from importDir
     """
-    TestGroup.__init__(self, sourceCache, name, importDir)
+    TestGroup.__init__(self, sourceCache, importDir, name, title)
 
     self.tests = SourceSet(sourceCache)
     if testExt:
@@ -89,6 +95,11 @@ class SelftestGroup(Group):
     if testList:
       for file in testList:
         self.tests.add(join(importDir, file), file, True)
+
+  def count(self):
+    """Returns number of tests.
+    """
+    return len(self.tests)
 
   def merge(self, other):
     """Merge SelftestGroup `other`'s contents into this SelftestGroup.
@@ -105,3 +116,6 @@ class SelftestGroup(Group):
     format.setGroup(self.name)
     self.tests.write(format)
     format.setGroup(self.name)
+
+  def iterTests(self):
+    return self.tests.iter()

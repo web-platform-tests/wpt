@@ -4,34 +4,48 @@
 # Licensed under BSD 3-Clause: <http://www.w3.org/Consortium/Legal/2008/03-bsd-license>
 
 import OutputFormats
+from Groups import SelftestGroup
 
 class CSSTestSuite:
   """Representation of a standard CSS test suite."""
 
-  def __init__(self, name):
-    self.name = name
+  def __init__(self, title, specUri):
+    self.title = title
+    self.specroot = specUri
+
     self.stripTestTitlePrefix='CSS Test'
     self.groups = {}
+    self.sourcecache = SourceCache()
 
-  def addTestGroup(self, group)
-    """Add Group `group` to the test suite."""
-    assert
+  def addSelfTestsFromDir(self, dir, ext=None, filenames=None, groupName='', groupTitle=''):
+    """Add tests from directory `dir`, either by file extension (via `ext`,
+       e.g. ext='.xht') or via file name list (via list `filenames`)."""
+
+    # Create group
+    group = SelftestGroup(self.sourcecache,
+                          dir, testExt=ext, testnames=filenames,
+                          name=groupName, title=groupTitle)
+
+    # Add to store
     master = self.groups.get(group.name)
     if master:
       master.merge(group)
     else:
       self.groups[group.name] = group
 
-  def buildInto(self, dest):
-    """Builds test suite through all formats into directory at path `dest`
-       or build into format `dest`."""
+  def buildInto(self, dest, indexer):
+    """Builds test suite through all OutputFormats into directory at path `dest`
+       or through OutputFormat destination `dest`, using Indexer `indexer`."""
     if isinstance(dest, OutputFormats.BasicFormat):
       formats = (dest,)
     else:
       formats = (OutputFormats.XHTMLFormat(dest),
                  OutputFormats.HTMLFormat(dest),
-                 OutputFormats.XHTMLPrintFormat(dest),
+                 OutputFormats.XHTMLPrintFormat(dest, self.title),
                 )
+    for group in self.groups.itervalues():
+      indexer.indexGroup(group)
     for format in formats
-      for group in self.groups.iter():
+      for group in self.groups.itervalues():
         group.write(format)
+      indexer.write(format)

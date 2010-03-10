@@ -65,6 +65,14 @@ class SourceSet:
     self.sourceCache = sourceCache
     self.pathMap = {} # relpath -> source
 
+  def __len__(self):
+    return len(self.pathMap)
+
+  def iter(self):
+    """Iterate over FileSource objects in SourceSet.
+    """
+    return self.pathMap.itervalues()
+
   def addSource(self, source):
     """Add FileSource `source`. Throws exception if we already have
        a FileSource with the same path relpath but different contents.
@@ -243,6 +251,7 @@ class XHTMLSource(FileSource):
 
 class CSSTestSource(XHTMLSource):
   """XHTMLSource representing the main CSS test file. Supports metadata lookups."""
+  titlePrefix='CSS Test:'
 
   def __init__(self, sourcepath, relpath):
 
@@ -251,14 +260,25 @@ class CSSTestSource(XHTMLSource):
     m = re.search('([^/\.])+(?:\.[a-z0-9])*$', relpath)
     self.name = m.groups(1)
 
+  def __cmp__(self):
+    return self.name.__cmp__()
+
   def postProcess(self, outputString, format):
     if format.testTransform:
       format.testTransform(outputString, self)
 
   # See http://wiki.csswg.org/test/css2.1/format for more info on metadata
-  def getMetadata(self, titlePrefix=''):
+  def getMetadata(self):
     """Return dictionary of test metadata. Returns None and stores error
-       exception in self.error if there is a parse or metadata error."""
+       exception in self.error if there is a parse or metadata error.
+       Data fields include:
+         - asserts [list of strings]
+         - credits [list of (name string, url string) tuples]
+         - flags   [list of token strings]
+         - links   [list of url strings
+         - name    [string]
+         - title   [string]
+    """
 
     # Check for cached data
     if self.error:
@@ -287,34 +307,40 @@ class CSSTestSource(XHTMLSource):
     head = self.tree.getRoot().find(xhtmlns+'head')
     readFlags = False
     try:
+      # Scan and cache metadata
       for node in head:
         if node.tag == xhtml+'link':
           link = node['href'].strip()
+          # help links
           if tokenMatch('help', node['rel']):
             if not link:
               raise CSSTestSourceMetaError("Help link missing href value.")
             if not link.startswith('http://') or link.startswith('https://'):
               raise CSSTestSourceMetaError("Help link must be absolute URL.")
-            links.append(link)
+            links.append(intern(link))
+          # credits
           elif tokenMatch('author', node['rel']):
             name = node['title'].strip()
             if not name:
               raise CSSTestSourceMetaError("Author link missing name (title attribute).")
-            credits.append((name, link))
+            credits.append((intern(name), intern(link)))
         elif node.tag == xhtml+'meta':
           meta = node['name'].strip()
+          # requirement flags
           if meta == 'flags':
             if readFlags:
               raise CSSTestSourceMetaError("Flags must only be specified once.")
             readFlags = True
-            flags = node['content'].split().sort()
+            flags = [intern(flag) for flag in node['content'].split().sort()]
+          # test assertions
           elif meta == 'assert':
             asserts.append(node['content'].strip().replace('\t', ' '))
+        # test title
         elif node.tag == xhtml+'title':
           title = node.text.strip()
           if not title.startswith(titlePrefix):
             raise CSSTestSourceMetaError("Title must start with %s" % titlePrefix)
-          data['title'] = title[len(titlePrefix):]
+          data['title'] = title[len(titlePrefix):].strip()
     # Cache error and return
     except CSSTestSourceMetaError, e:
       self.error = e

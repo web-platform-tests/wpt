@@ -3,7 +3,10 @@
 # Initial code by fantasai, joint copyright 2010 W3C and Microsoft
 # Licensed under BSD 3-Clause: <http://www.w3.org/Consortium/Legal/2008/03-bsd-license>
 
-from os.path import splitext
+from os.path import splitext, dirname, exists
+import os
+import filecmp
+import shutil
 import re
 import html5lib # Warning: This uses a patched version of html5lib
 from lxml import etree
@@ -24,7 +27,7 @@ extensionMap = { None     : 'application/octet-stream', # default
 def getMimeFromExt(ext):
   """Convenience function: equal to extenionMap.get(ext, extensionMap[None]).
   """
-  return extenionMap.get(ext, extensionMap[None])
+  return extensionMap.get(ext, extensionMap[None])
 
 class SourceCache:
   """Cache for FileSource objects. Supports one FileSource object
@@ -41,15 +44,15 @@ class SourceCache:
        asserts if this is tried.
     """
     if self.__cache.has_key(sourcepath):
-      source = cache[sourcepath]
-      assert isTest and isinstance(source, CSSTestSource)
+      source = self.__cache[sourcepath]
+      assert isTest == isinstance(source, CSSTestSource)
       assert relpath == source.relpath
       return source
 
     if isTest:
       source = CSSTestSource(sourcepath, relpath)
     else:
-      mime = getMimeFromExt(splitpath(sourcepath)[1])
+      mime = getMimeFromExt(splitext(sourcepath)[1])
       if mime == 'application/xhtml+xml':
         source = XHTMLSource(sourcepath, relpath)
       else:
@@ -81,9 +84,9 @@ class SourceSet:
     if not cachedSource:
       self.pathMap[source.relpath] = source
     else:
-      if source != cachedSource
+      if source != cachedSource:
         raise Exception("File merge mismatch %s vs %s for %s" % \
-              (cachedSource.sourcepath, source.sourcepath, source.relpath)
+              (cachedSource.sourcepath, source.sourcepath, source.relpath))
 
   def add(self, sourcepath, relpath, isTest=False):
     """Generate and add FileSource from sourceCache.
@@ -94,7 +97,7 @@ class SourceSet:
     self.addSource(self.sourceCache.generateSource(sourcepath, relpath, isTest))
 
   @staticmethod
-  def merge(a, b):
+  def combine(a, b):
     """Merges a and b, and returns whichever one contains the merger (which
        one is chosen based on merge efficiency).
     """
@@ -107,17 +110,20 @@ class SourceSet:
 
        Throws a RuntimeError if there's a sourceCache mismatch.
        Throws an Exception if two files with the same relpath mismatch.
+       Returns merge result (i.e. self)
     """
     if self.sourceCache is not other.sourceCache:
       raise RuntimeError
 
-    for source in other.pathMap.iter():
-      self.add(source)
+    for source in other.pathMap.itervalues():
+      self.addSource(source)
+
+    return self
 
   def write(self, format):
     """Write files out through OutputFormat `format`.
     """
-    for source in self.pathMap.iter():
+    for source in self.pathMap.itervalues():
       format.write(source)
 
 
@@ -126,6 +132,8 @@ class FileSource:
      the same file contents. It is recommended to use a SourceCache to generate
      FileSources.
   """
+
+  isTest = False
 
   def __init__(self, sourcepath, relpath, mimetype=None):
     """Init FileSource from source path. Give it relative path relpath.
@@ -137,6 +145,7 @@ class FileSource:
     self.sourcepath = sourcepath
     self.relpath    = relpath
     self.mimetype   = mimetype or getMimeFromExt(splitext(sourcepath)[1])
+    self.error      = None
 
   def __eq__(self, other):
     if not isinstance(other, FileSource):
@@ -153,7 +162,10 @@ class FileSource:
 
   def write(self, format):
      """Writes FileSource out to `self.relpath` through Format `format`."""
-     shutils.copy(self.sourcepath, format.dest(self.relpath))
+     dest = format.dest(self.relpath)
+     if not exists(dest):
+       os.makedirs(dest)
+     shutil.copy(self.sourcepath, dest)
 
   def compact(self):
     """Clears all cached data, preserves computed data."""
@@ -198,6 +210,7 @@ class XHTMLSource(FileSource):
       classes.
     """
     FileSource.__init__(self, sourcepath, relpath)
+    self.tree = None
 
   def cacheAsParseError(self, filename, e):
       """Replace document with an error message."""
@@ -211,57 +224,64 @@ class XHTMLSource(FileSource):
       self.tree = etree.parse(self.sourcepath, parser=self.__parser)
     except etree.ParseError as e:
       cacheParseError(self.sourcepath, e)
-      e.CSSTestSourceErrorLocation = filename
+      e.CSSTestSourceErrorLocation = self.sourcepath
       self.error = e
 
-  def write(self, format, asHTML=False):
-    """Serialize through OutputFormat `format` into (X)HTML file at path `dest`.
-       Serializes as HTML if `asHTML` is true.
-    """
+  def serializeXHTML(self):
+    return str(self.tree)
+
+  def serializeHTML(self):
     # Parse
     if not self.tree:
       self.parse()
-
     # Serialize
-    if asHTML:
-      o = html5lib.serializer.serialize(self.tree, tree='lxml',
-                                        format='html',
-                                        emit_doctype='html',
-                                        resolve_entities=False,
-                                        quote_attr_values=True)
+    o = html5lib.serializer.serialize(self.tree, tree='lxml',
+                                      format='html',
+                                      emit_doctype='html',
+                                      resolve_entities=False,
+                                      quote_attr_values=True)
 
-      # lxml fixup for eating whitespace outside root element
-      m = re.search('<!DOCTYPE[^>]+>(\s*)<', o)
-      if m.group(1) == '': # match first to avoid perf hit from searching whole doc
-        o = re.sub('(<!DOCTYPE[^>]+>)<', '\g<1>\n<', o)
-    else:
-      o = str(self.tree)
+    # lxml fixup for eating whitespace outside root element
+    m = re.search('<!DOCTYPE[^>]+>(\s*)<', o)
+    if m.group(1) == '': # match first to avoid perf hit from searching whole doc
+      o = re.sub('(<!DOCTYPE[^>]+>)<', '\g<1>\n<', o)
+    return o
 
-    # postprocess if needed
-    if self.postProcess:
-      self.postProcess(o, format)
+  def write(self, format, output=None):
+    """Write Source through OutputFormat `format`.
+       Write contents as string `output` instead if specified.
+    """
+    if not output:
+      return FileSource.write(self, format)
 
     # write
     f = open(format.dest(self.relpath), 'w')
-    f.write(o.encode('utf-8'))
+    f.write(output.encode('utf-8'))
     f.close()
 
   def compact():
     self.tree = None
 
+class CSSTestSourceMetaError(Exception):
+  pass
+
+CSSTestTitlePrefix='CSS Test:' # stripped from metadata
+
 class CSSTestSource(XHTMLSource):
   """XHTMLSource representing the main CSS test file. Supports metadata lookups."""
-  titlePrefix='CSS Test:'
+
+  isTest = True
 
   def __init__(self, sourcepath, relpath):
-
     XHTMLSource.__init__(self, sourcepath, relpath)
-    # Extract filename base as test name
-    m = re.search('([^/\.])+(?:\.[a-z0-9])*$', relpath)
-    self.name = m.groups(1)
+    self.data = None
 
-  def __cmp__(self):
-    return self.name.__cmp__()
+  def __cmp__(self, other):
+    return cmp(self.name, other.name)
+
+  def name(self):
+    """Extract filename base as test name."""
+    return os.path.splitext(os.path.split(self.relpath)[1])[0]
 
   def postProcess(self, outputString, format):
     if format.testTransform:
@@ -283,12 +303,12 @@ class CSSTestSource(XHTMLSource):
     # Check for cached data
     if self.error:
       return None
-    if self.data
-      return data
+    if self.data:
+      return self.data
 
     # Make sure we're parsed
     if not self.tree:
-      XHTMLSource.load(self)
+      XHTMLSource.parse(self)
     if self.error:
       return None
 
@@ -304,48 +324,57 @@ class CSSTestSource(XHTMLSource):
     def tokenMatch(token, string):
       return bool(re.search('(^|\s+)%s(^|\s+)' % token, string))
 
-    head = self.tree.getRoot().find(xhtmlns+'head')
+    head = self.tree.getroot().find(xhtmlns+'head')
     readFlags = False
     try:
       # Scan and cache metadata
       for node in head:
-        if node.tag == xhtml+'link':
-          link = node['href'].strip()
+        if node.tag == xhtmlns+'link':
+          link = node.get('href').strip()
           # help links
-          if tokenMatch('help', node['rel']):
+          if tokenMatch('help', node.get('rel')):
             if not link:
               raise CSSTestSourceMetaError("Help link missing href value.")
             if not link.startswith('http://') or link.startswith('https://'):
               raise CSSTestSourceMetaError("Help link must be absolute URL.")
             links.append(intern(link))
           # credits
-          elif tokenMatch('author', node['rel']):
-            name = node['title'].strip()
+          elif tokenMatch('author', node.get('rel')):
+            name = node.get('title')
+            name = name.strip() if name else name
             if not name:
               raise CSSTestSourceMetaError("Author link missing name (title attribute).")
             credits.append((intern(name), intern(link)))
-        elif node.tag == xhtml+'meta':
-          meta = node['name'].strip()
+        elif node.tag == xhtmlns+'meta':
+          metatype = node.get('name')
+          metatype = metatype.strip() if metatype else metatype
           # requirement flags
-          if meta == 'flags':
+          if metatype == 'flags':
             if readFlags:
               raise CSSTestSourceMetaError("Flags must only be specified once.")
             readFlags = True
-            flags = [intern(flag) for flag in node['content'].split().sort()]
+            flags = [intern(flag) for flag in sorted(node.get('content').split())]
           # test assertions
-          elif meta == 'assert':
-            asserts.append(node['content'].strip().replace('\t', ' '))
+          elif metatype == 'assert':
+            asserts.append(node.get('content').strip().replace('\t', ' '))
         # test title
-        elif node.tag == xhtml+'title':
+        elif node.tag == xhtmlns+'title':
           title = node.text.strip()
-          if not title.startswith(titlePrefix):
-            raise CSSTestSourceMetaError("Title must start with %s" % titlePrefix)
-          data['title'] = title[len(titlePrefix):].strip()
+          if not title.startswith(CSSTestTitlePrefix):
+            raise CSSTestSourceMetaError("Title must start with %s" % CSSTestTitlePrefix)
+          data['title'] = title[len(CSSTestTitlePrefix):].strip()
     # Cache error and return
     except CSSTestSourceMetaError, e:
+      e.CSSTestSourceErrorLocation = self.sourcepath
       self.error = e
       return None
 
     # Cache data and return
     self.data = data
     return data
+
+  def hasFlag(self, flag):
+    data = self.getMetadata()
+    if data:
+      return flag in data['flags']
+    return False

@@ -5,6 +5,7 @@
 
 import OutputFormats
 from Groups import SelftestGroup
+from Sources import SourceCache
 
 class CSSTestSuite:
   """Representation of a standard CSS test suite."""
@@ -23,7 +24,7 @@ class CSSTestSuite:
 
     # Create group
     group = SelftestGroup(self.sourcecache,
-                          dir, testExt=ext, testnames=filenames,
+                          dir, testExt=ext, testList=filenames,
                           name=groupName, title=groupTitle)
 
     # Add to store
@@ -38,6 +39,7 @@ class CSSTestSuite:
        or through OutputFormat destination `dest`, using Indexer `indexer`."""
     if isinstance(dest, OutputFormats.BasicFormat):
       formats = (dest,)
+      dest = dest.root
     else:
       formats = (OutputFormats.XHTMLFormat(dest),
                  OutputFormats.HTMLFormat(dest),
@@ -45,7 +47,8 @@ class CSSTestSuite:
                 )
     for group in self.groups.itervalues():
       indexer.indexGroup(group)
-    for format in formats
+    indexer.writeOverview(dest)
+    for format in formats:
       for group in self.groups.itervalues():
         group.write(format)
       indexer.write(format)

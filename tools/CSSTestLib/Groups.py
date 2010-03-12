@@ -9,7 +9,9 @@ import os.path
 from os.path import exists, join
 from Sources import SourceCache, SourceSet
 
-class Group:
+excludeDirs = ['CVS', '.svn', '.hg']
+
+class TestGroup:
   """Base class for test groups. Should never be used directly.
   """
 
@@ -20,6 +22,8 @@ class Group:
          Directory path `importDir`, whose context is imported into the group
          Tuple of support directory names `supportDirNames`
     """
+    assert exists(importDir), "Directory to import %s does not exist" % importDir
+
     # Save name
     self.name = name
     self.title = title
@@ -37,6 +41,9 @@ class Group:
       supportDir = join(importDir, supportName)
       if exists(supportDir):
         for (root, dirs, files) in os.walk(supportDir):
+          for dir in excludeDirs:
+            if dir in dirs:
+              dirs.remove(dir)
           for name in files:
             sourcepath = join(root, name)
             relpath = os.path.relpath(sourcepath, importDir)
@@ -50,27 +57,27 @@ class Group:
   def merge(self, other):
     """Merge Group `other`'s contents into this Group.
     """
-    assert isinstance(other, Group),
+    assert isinstance(other, TestGroup), \
            "Expected Group instance, got %s" % type(other)
     self.htaccess += '\n' + '#' * 72 + '\n' # add a divider
-    self.support = SourceSet.merge(self.support, other.support)
+    self.support = SourceSet.combine(self.support, other.support)
 
   def build(self, format):
     """Build Group's contents through OutputFormat `format`.
     """
-    format.setGroup(self.name)
+    format.setSubDir(self.name)
 
     # Write .htaccess
-    f = open(format.dest('.htaccess'))
+    f = open(format.dest('.htaccess'), 'w')
     f.write(self.htaccess)
     f.close()
 
     # Write support files
     self.support.write(format)
 
-    format.setGroup()
+    format.setSubDir()
 
-class SelftestGroup(Group):
+class SelftestGroup(TestGroup):
   """Class for self-verifying tests.
   """
 
@@ -88,7 +95,7 @@ class SelftestGroup(Group):
 
     self.tests = SourceSet(sourceCache)
     if testExt:
-      ,,files = os.walk(importDir)
+      _,_,files = os.walk(importDir).next()
       for file in files:
         if file.endswith(testExt):
           self.tests.add(join(importDir, file), file, True)
@@ -104,18 +111,18 @@ class SelftestGroup(Group):
   def merge(self, other):
     """Merge SelftestGroup `other`'s contents into this SelftestGroup.
     """
-    assert isinstance(other, SelftestGroup),
+    assert isinstance(other, SelftestGroup), \
            "Expected SelftestGroup instance, got %s" % type(other)
-    Group.merge(self, other)
-    self.tests = SourceSet.merge(self.tests, other.tests)
+    TestGroup.merge(self, other)
+    self.tests = SourceSet.combine(self.tests, other.tests)
 
   def write(self, format):
     """Build Group's contents through OutputFormat `format`.
     """
-    Group.build(self, format)
-    format.setGroup(self.name)
+    TestGroup.build(self, format)
+    format.setSubDir(self.name)
     self.tests.write(format)
-    format.setGroup(self.name)
+    format.setSubDir(self.name)
 
   def iterTests(self):
     return self.tests.iter()

@@ -367,7 +367,8 @@ must return the name of the exception constant as a string.</p>
 
 <p class=XXX>exceptions for createDocument <a href=http://osdir.com/ml/web.dom.general/2005-12/msg00058.html>http://osdir.com/ml/web.dom.general/2005-12/msg00058.html</a>
 
-<p><span>HTML documents</span> can be created using the <code
+<p><span title="HTML document">HTML documents</span> can be created using the
+<code
 title=dom-DOMImplementation-createHTMLDocument>createHTMLDocument()</code>
 method.
 
@@ -391,8 +392,7 @@ steps:
  <li><p>Let <var title>doc</var> be a newly created <code>Document</code>
  object.
 
- <li><p>Mark <var title>doc</var> as being an <span title="HTML documents">HTML
- document</span>.
+ <li><p>Mark <var title>doc</var> as being an <span>HTML document</span>.
 
  <li><p>Create a <code>DocumentType</code> node with the <code
  title=dom-DocumentType-name>name</code> attribute set to the string "<code
@@ -464,11 +464,10 @@ steps:
 };
 <span>Document</span> implements <span data-anolis-spec=domviews>DocumentView</span>;</pre>
 
-<p><code>Document</code> nodes are assumed to be <dfn>XML documents</dfn> unless
-they are flagged as being <dfn>HTML documents</dfn> when they are created.
-Whether a document is an <span title="HTML documents">HTML document</span> or an
-<span title="XML documents">XML document</span> affects the behavior of certain
-APIs.
+<p>A <code>Document</code> node is assumed to be an <dfn>XML document</dfn>
+unless they are flagged as being an <dfn>HTML document</dfn> when they are
+created. Whether a document is an <span>HTML document</span> or an <span>XML
+document</span> affects the behavior of certain APIs.
 
 <p>The <dfn title=dom-Document-doctype><code>doctype</code></dfn> attribute must return the first child of the <code>Document</code> node that is a <code>DocumentType</code> node, if there is one, or null otherwise.
 <p class=note>In both HTML and XML there will only ever be one <code>DocumentType</code> node descendant of the <code>Document</code> node. <a href=#refsHTML>[HTML]</a> <a href=#refsXML>[XML]</a>
@@ -536,10 +535,9 @@ contains two adjacent hyphens or ends with a hyphen.
 title>data</var>)</code></dfn> method must run the following steps:
 
 <ol>
- <li><p>If the <span>context node</span> is an <span title="HTML documents">HTML
- document</span>, raise a <code
- title=dom-DOMException-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</code> exception and
- abort these steps.
+ <li><p>If the <span>context node</span> is an <span>HTML document</span>, raise
+ a <code title=dom-DOMException-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</code>
+ exception and abort these steps.
 
  <li><p>If <var title>target</var> doesn't match the <!--<code
  data-anolis-spec=xml>PITarget</code>--> <code data-anolis-spec=xml>Name</code>
@@ -583,10 +581,10 @@ title>importedNode</var>, <var title>deep</var>)</code></dfn> method must run
 the following steps:
 <ol>
  <!-- Similar text for adoptNode -->
- <li><p>If the <span>context node</span> is an <span title="XML documents">XML
- document</span>, then if <var title>importedNode</var> or any of its descendant
- nodes or any of its <code title=dom-Node-attributes>attributes</code> or any of
- the <code title=dom-Node-attributes>attributes</code> of any descendant
+ <li><p>If the <span>context node</span> is an <span>XML document</span>, then
+ if <var title>importedNode</var> or any of its descendant nodes or any of its
+ <code title=dom-Node-attributes>attributes</code> or any of the <code
+ title=dom-Node-attributes>attributes</code> of any descendant
  <code>Element</code> nodes has a <code
  title=dom-Node-localName>localName</code><!-- or <code
  title=dom-Node-prefix>prefix</code>--> which either does not match the <code
@@ -658,10 +656,10 @@ title>source</var>)</code></dfn> method must run the following steps:
  abort these steps.
 
  <!-- Similar text for importNode -->
- <li><p>If the <span>context node</span> is an <span title="XML documents">XML
- document</span>, then if <var title>source</var> or any of its descendant
- nodes or any of its <code title=dom-Node-attributes>attributes</code> or any of
- the <code title=dom-Node-attributes>attributes</code> of any descendant
+ <li><p>If the <span>context node</span> is an <span>XML document</span>, then
+ if <var title>source</var> or any of its descendant nodes or any of its <code
+ title=dom-Node-attributes>attributes</code> or any of the <code
+ title=dom-Node-attributes>attributes</code> of any descendant
  <code>Element</code> nodes has a <code
  title=dom-Node-localName>localName</code><!-- or <code
  title=dom-Node-prefix>prefix</code>--> which either does not match the <code

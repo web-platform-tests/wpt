@@ -7,7 +7,7 @@
 <body class=draft>
 <div class=head id=head>
 <h1>Web DOM Core</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-date:-01-jan-1901>Work in Progress &mdash; Last Update 7 March 2010</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-date:-01-jan-1901>Work in Progress &mdash; Last Update 14 March 2010</h2>
 <dl>
  <dt>Editors
  <dd>Simon Pieters &lt;simonp@opera.com&gt;
@@ -391,7 +391,8 @@ must return the name of the exception constant as a string.</p>
 
 <p class=XXX>exceptions for createDocument <a href=http://osdir.com/ml/web.dom.general/2005-12/msg00058.html>http://osdir.com/ml/web.dom.general/2005-12/msg00058.html</a>
 
-<p><a href=#html-documents>HTML documents</a> can be created using the <code title=dom-DOMImplementation-createHTMLDocument><a href=#dom-domimplementation-createhtmldocument>createHTMLDocument()</a></code>
+<p><a href=#html-document title="HTML document">HTML documents</a> can be created using the
+<code title=dom-DOMImplementation-createHTMLDocument><a href=#dom-domimplementation-createhtmldocument>createHTMLDocument()</a></code>
 method.
 
 <dl class=domintro>
@@ -409,8 +410,7 @@ steps:
  <li><p>Let <var title="">doc</var> be a newly created <code><a href=#document>Document</a></code>
  object.
 
- <li><p>Mark <var title="">doc</var> as being an <a href=#html-documents title="HTML documents">HTML
- document</a>.
+ <li><p>Mark <var title="">doc</var> as being an <a href=#html-document>HTML document</a>.
 
  <li><p>Create a <code><a href=#documenttype>DocumentType</a></code> node with the <code title=dom-DocumentType-name><a href=#dom-documenttype-name>name</a></code> attribute set to the string "<code title="">html</code>", and the other attributes specific to
  <code><a href=#documenttype>DocumentType</a></code> objects set to the empty string, null, and empty
@@ -479,11 +479,10 @@ steps:
 };
 <a href=#document>Document</a> implements <a href=http://www.w3.org/TR/DOM-Level-2-Views/views.html#Views-DocumentView>DocumentView</a>;</pre>
 
-<p><code><a href=#document>Document</a></code> nodes are assumed to be <dfn id=xml-documents>XML documents</dfn> unless
-they are flagged as being <dfn id=html-documents>HTML documents</dfn> when they are created.
-Whether a document is an <a href=#html-documents title="HTML documents">HTML document</a> or an
-<a href=#xml-documents title="XML documents">XML document</a> affects the behavior of certain
-APIs.
+<p>A <code><a href=#document>Document</a></code> node is assumed to be an <dfn id=xml-document>XML document</dfn>
+unless they are flagged as being an <dfn id=html-document>HTML document</dfn> when they are
+created. Whether a document is an <a href=#html-document>HTML document</a> or an <a href=#xml-document>XML
+document</a> affects the behavior of certain APIs.
 
 <p>The <dfn id=dom-document-doctype title=dom-Document-doctype><code>doctype</code></dfn> attribute must return the first child of the <code><a href=#document>Document</a></code> node that is a <code><a href=#documenttype>DocumentType</a></code> node, if there is one, or null otherwise.
 <p class=note>In both HTML and XML there will only ever be one <code><a href=#documenttype>DocumentType</a></code> node descendant of the <code><a href=#document>Document</a></code> node. <a href=#refsHTML>[HTML]</a> <a href=#refsXML>[XML]</a>
@@ -546,9 +545,9 @@ contains two adjacent hyphens or ends with a hyphen.
 <p>The <dfn id=dom-document-createprocessinginstruction title=dom-Document-createProcessingInstruction><code>createProcessingInstruction(<var title="">target</var>, <var title="">data</var>)</code></dfn> method must run the following steps:
 
 <ol>
- <li><p>If the <a href=#context-node>context node</a> is an <a href=#html-documents title="HTML documents">HTML
- document</a>, raise a <code title=dom-DOMException-NOT_SUPPORTED_ERR><a href=#dom-domexception-not_supported_err>NOT_SUPPORTED_ERR</a></code> exception and
- abort these steps.
+ <li><p>If the <a href=#context-node>context node</a> is an <a href=#html-document>HTML document</a>, raise
+ a <code title=dom-DOMException-NOT_SUPPORTED_ERR><a href=#dom-domexception-not_supported_err>NOT_SUPPORTED_ERR</a></code>
+ exception and abort these steps.
 
  <li><p>If <var title="">target</var> doesn't match the <!--<code
  data-anolis-spec=xml>PITarget</code>--> <code><a href=http://www.w3.org/TR/xml/#NT-Name>Name</a></code>
@@ -590,10 +589,9 @@ the same as the object returned by the previous call.</p>
 the following steps:
 <ol>
  <!-- Similar text for adoptNode -->
- <li><p>If the <a href=#context-node>context node</a> is an <a href=#xml-documents title="XML documents">XML
- document</a>, then if <var title="">importedNode</var> or any of its descendant
- nodes or any of its <code title=dom-Node-attributes><a href=#dom-node-attributes>attributes</a></code> or any of
- the <code title=dom-Node-attributes><a href=#dom-node-attributes>attributes</a></code> of any descendant
+ <li><p>If the <a href=#context-node>context node</a> is an <a href=#xml-document>XML document</a>, then
+ if <var title="">importedNode</var> or any of its descendant nodes or any of its
+ <code title=dom-Node-attributes><a href=#dom-node-attributes>attributes</a></code> or any of the <code title=dom-Node-attributes><a href=#dom-node-attributes>attributes</a></code> of any descendant
  <code><a href=#element>Element</a></code> nodes has a <code title=dom-Node-localName><a href=#dom-node-localname>localName</a></code><!-- or <code
  title=dom-Node-prefix>prefix</code>--> which either does not match the <code><a href=http://www.w3.org/TR/xml/#NT-Name>Name</a></code> production in XML or contains a U+003A COLON
  (:) character, raise an <code title=dom-DOMException-INVALID_STATE_ERR><a href=#dom-domexception-invalid_state_err>INVALID_STATE_ERR</a></code> and abort
@@ -653,10 +651,8 @@ node</a> whose <a href=#concept-id title=concept-ID>ID</a> is <var title="">elem
  abort these steps.
 
  <!-- Similar text for importNode -->
- <li><p>If the <a href=#context-node>context node</a> is an <a href=#xml-documents title="XML documents">XML
- document</a>, then if <var title="">source</var> or any of its descendant
- nodes or any of its <code title=dom-Node-attributes><a href=#dom-node-attributes>attributes</a></code> or any of
- the <code title=dom-Node-attributes><a href=#dom-node-attributes>attributes</a></code> of any descendant
+ <li><p>If the <a href=#context-node>context node</a> is an <a href=#xml-document>XML document</a>, then
+ if <var title="">source</var> or any of its descendant nodes or any of its <code title=dom-Node-attributes><a href=#dom-node-attributes>attributes</a></code> or any of the <code title=dom-Node-attributes><a href=#dom-node-attributes>attributes</a></code> of any descendant
  <code><a href=#element>Element</a></code> nodes has a <code title=dom-Node-localName><a href=#dom-node-localname>localName</a></code><!-- or <code
  title=dom-Node-prefix>prefix</code>--> which either does not match the <code><a href=http://www.w3.org/TR/xml/#NT-Name>Name</a></code> production in XML or contains a U+003A COLON
  (:) character, raise an <code title=dom-DOMException-INVALID_STATE_ERR><a href=#dom-domexception-invalid_state_err>INVALID_STATE_ERR</a></code> and abort

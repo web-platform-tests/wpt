@@ -1083,6 +1083,8 @@ otherwise.
 
 <p>The <dfn title=dom-NodeList-length><code>length</code></dfn> attribute must, on getting, return the number of nodes <span data-anolis-spec=html>represented by the collection</span>.
 
+<p><code>NodeList</code>s are enumerable. <span class=XXX>Explain?</span>
+
 
 <h3>Interface <code title>NamedNodeMap</code></h3>
 
@@ -1408,8 +1410,16 @@ because the newer ones keep changing. -->
 
 <h2 class=no-num>Acknowledgements</h2>
 
-<p>Thanks to Anne van Kesteren and Henri Sivonen for their useful comments.
-Special thanks to Ian Hickson for first specifying some parts of this
+<p>Thanks to
+
+Anne van Kesteren,
+Dethe Elza,
+and
+Henri Sivonen,
+
+for their useful comments.
+
+<p>Special thanks to Ian Hickson for first specifying some parts of this
 specification in HTML. <a href=#refsHTML>[HTML]</a>
 
 

@@ -1059,6 +1059,8 @@ otherwise.
 
 <p>The <dfn id=dom-nodelist-length title=dom-NodeList-length><code>length</code></dfn> attribute must, on getting, return the number of nodes <a href=http://www.whatwg.org/html/#represented-by-the-collection>represented by the collection</a>.
 
+<p><code><a href=#nodelist>NodeList</a></code>s are enumerable. <span class=XXX>Explain?</span>
+
 
 <h3 id=interface-namednodemap><span class=secno>3.7 </span>Interface <code title="">NamedNodeMap</code></h3>
 
@@ -1353,8 +1355,16 @@ because the newer ones keep changing. -->
 
 <h2 class=no-num id=acknowledgements>Acknowledgements</h2>
 
-<p>Thanks to Anne van Kesteren and Henri Sivonen for their useful comments.
-Special thanks to Ian Hickson for first specifying some parts of this
+<p>Thanks to
+
+Anne van Kesteren,
+Dethe Elza,
+and
+Henri Sivonen,
+
+for their useful comments.
+
+<p>Special thanks to Ian Hickson for first specifying some parts of this
 specification in HTML. <a href=#refsHTML>[HTML]</a>
 
 

@@ -645,6 +645,7 @@ title>elementId</var>, or null if there is none.
 <p class=XXX><dfn title=dom-Document-inputEncoding>inputEncoding</dfn>
 
 <p class=XXX><dfn title=dom-Document-documentURI>documentURI</dfn>
+Should document.documentURI really exist? be readonly? 
 
 <p>The <dfn title=dom-Document-adoptNode><code>adoptNode(<var
 title>source</var>)</code></dfn> method must run the following steps:

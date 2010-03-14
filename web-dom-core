@@ -642,6 +642,7 @@ node</a> whose <a href=#concept-id title=concept-ID>ID</a> is <var title="">elem
 <p class=XXX><dfn id=dom-document-inputencoding title=dom-Document-inputEncoding>inputEncoding</dfn>
 
 <p class=XXX><dfn id=dom-document-documenturi title=dom-Document-documentURI>documentURI</dfn>
+Should document.documentURI really exist? be readonly? 
 
 <p>The <dfn id=dom-document-adoptnode title=dom-Document-adoptNode><code>adoptNode(<var title="">source</var>)</code></dfn> method must run the following steps:
 

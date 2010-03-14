@@ -7,7 +7,7 @@ import shutil
 import filecmp
 import os.path
 from os.path import exists, join
-from Sources import SourceCache, SourceSet
+from Sources import SourceCache, SourceSet, HTAccessSource
 
 excludeDirs = ['CVS', '.svn', '.hg']
 
@@ -30,10 +30,8 @@ class TestGroup:
 
     # Load htaccess
     htapath = join(importDir, '.htaccess')
-    if exists(htapath):
-      self.htaccess = open(htapath).read()
-    else:
-      self.htaccess = ''
+    self.htaccess = HTAccessSource(htapath) if exists(htapath) \
+                    else None
 
     # Load support files
     self.support = SourceSet(sourceCache)
@@ -59,7 +57,10 @@ class TestGroup:
     """
     assert isinstance(other, TestGroup), \
            "Expected Group instance, got %s" % type(other)
-    self.htaccess += '\n' + '#' * 72 + '\n' # add a divider
+    if self.htaccess and other.htaccess:
+      self.htaccess.append(other.htaccess)
+    elif other.htaccess:
+      self.htaccess = other.htaccess
     self.support = SourceSet.combine(self.support, other.support)
 
   def build(self, format):
@@ -68,9 +69,8 @@ class TestGroup:
     format.setSubDir(self.name)
 
     # Write .htaccess
-    f = open(format.dest('.htaccess'), 'w')
-    f.write(self.htaccess)
-    f.close()
+    if self.htaccess:
+      format.write(self.htaccess)
 
     # Write support files
     self.support.write(format)
@@ -116,7 +116,7 @@ class SelftestGroup(TestGroup):
     TestGroup.merge(self, other)
     self.tests = SourceSet.combine(self.tests, other.tests)
 
-  def write(self, format):
+  def build(self, format):
     """Build Group's contents through OutputFormat `format`.
     """
     TestGroup.build(self, format)

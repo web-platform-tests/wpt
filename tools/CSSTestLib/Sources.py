@@ -3,7 +3,7 @@
 # Initial code by fantasai, joint copyright 2010 W3C and Microsoft
 # Licensed under BSD 3-Clause: <http://www.w3.org/Consortium/Legal/2008/03-bsd-license>
 
-from os.path import splitext, dirname, exists
+from os.path import splitext, basename, exists
 import os
 import filecmp
 import shutil
@@ -11,23 +11,7 @@ import re
 import html5lib # Warning: This uses a patched version of html5lib
 from lxml import etree
 from lxml.etree import ParseError
-
-extensionMap = { None     : 'application/octet-stream', # default
-                 '.xht'   : 'application/xhtml+xml',
-                 '.xhtml' : 'application/xhtml+xml',
-                 '.xml'   : 'application/xml',
-                 '.htm'   : 'text/html',
-                 '.html'  : 'text/html',
-                 '.txt'   : 'text/plain',
-                 '.jpg'   : 'image/jpeg',
-                 '.png'   : 'image/png',
-                 '.svg'   : 'image/svg+xml',
-               }
-
-def getMimeFromExt(ext):
-  """Convenience function: equal to extenionMap.get(ext, extensionMap[None]).
-  """
-  return extensionMap.get(ext, extensionMap[None])
+from utils import getMimeFromExt, escapeToNamedASCII
 
 class SourceCache:
   """Cache for FileSource objects. Supports one FileSource object
@@ -39,9 +23,10 @@ class SourceCache:
   def generateSource(self, sourcepath, relpath, isTest=False):
     """Return a FileSource or derivative based on the extensionMap.
        Creates a CSSTestSource if isTest is true.
+
        Uses a cache to avoid creating more than one of the same object:
        does not support creating two FileSources with the same sourcepath;
-       asserts if this is tried.
+       asserts if this is tried. (.htaccess files are not cached.)
     """
     if self.__cache.has_key(sourcepath):
       source = self.__cache[sourcepath]
@@ -52,6 +37,8 @@ class SourceCache:
     if isTest:
       source = CSSTestSource(sourcepath, relpath)
     else:
+      if basename(sourcepath) == '.htaccess':
+        return HTAccessSource(sourcepath, relpath)
       mime = getMimeFromExt(splitext(sourcepath)[1])
       if mime == 'application/xhtml+xml':
         source = XHTMLSource(sourcepath, relpath)
@@ -62,7 +49,7 @@ class SourceCache:
 
 class SourceSet:
   """Set of FileSource objects. No two FileSources in the set may
-     have the same relpath.
+     have the same relpath (except .htaccess files, which are merged).
   """
   def __init__(self, sourceCache):
     self.sourceCache = sourceCache
@@ -85,8 +72,11 @@ class SourceSet:
       self.pathMap[source.relpath] = source
     else:
       if source != cachedSource:
-        raise Exception("File merge mismatch %s vs %s for %s" % \
-              (cachedSource.sourcepath, source.sourcepath, source.relpath))
+        if isinstance(source, HTAccessSource):
+          cachedSource.append(source)
+        else:
+          raise Exception("File merge mismatch %s vs %s for %s" % \
+                (cachedSource.sourcepath, source.sourcepath, source.relpath))
 
   def add(self, sourcepath, relpath, isTest=False):
     """Generate and add FileSource from sourceCache.
@@ -162,15 +152,47 @@ class FileSource:
 
   def write(self, format):
      """Writes FileSource out to `self.relpath` through Format `format`."""
-     dest = format.dest(self.relpath)
-     if not exists(dest):
-       os.makedirs(dest)
-     shutil.copy(self.sourcepath, dest)
+     shutil.copy(self.sourcepath, format.dest(self.relpath))
 
   def compact(self):
     """Clears all cached data, preserves computed data."""
     pass
 
+class HTAccessSource(FileSource):
+  """Object representing a .htaccess file. Capable of merging .htaccess contents.
+  """
+  def __init__(self, sourcepath, relpath='.htaccess'):
+    """Init HTAccessSource from source path. Give it relative path relpath.
+    """
+    FileSource.__init__(self, sourcepath, relpath, 'htaccess')
+    self.sourcepath = [sourcepath]
+
+  def __eq__(self, other):
+    if not isinstance(other, HTAccessSource):
+      return False
+    if self is other or self.sourcepath == other.sourcepath:
+      return True
+    if len(self.sourcepath) != len(other.sourcepath):
+      return False
+    for this, that in zip(self.sourcepath, other.sourcepath):
+      if not filecmp.cmp(this, that):
+        return False
+    return True
+
+  def write(self, format):
+    """Writes HTAccessSource out to `self.relpath` through Format `format`,
+       merging contents of all htaccess files represented by this source.
+    """
+    f = open(format.dest(self.relpath), 'w')
+    for src in self.sourcepath:
+      f.write(open(src).read())
+
+  def append(self, other):
+    """Appends contents of HTAccessSource `other` to this source.
+    """
+    assert isinstance(other, HTAccessSource)
+    assert self != other
+    self.sourcepath.append(other.sourcepath)
 
 xhtmlns = '{http://www.w3.org/1999/xhtml}'
 
@@ -223,7 +245,7 @@ class XHTMLSource(FileSource):
     try:
       self.tree = etree.parse(self.sourcepath, parser=self.__parser)
     except etree.ParseError as e:
-      cacheParseError(self.sourcepath, e)
+      self.cacheAsParseError(self.sourcepath, e)
       e.CSSTestSourceErrorLocation = self.sourcepath
       self.error = e
 
@@ -232,7 +254,7 @@ class XHTMLSource(FileSource):
 
   def serializeHTML(self):
     # Parse
-    if not self.tree:
+    if self.tree is None:
       self.parse()
     # Serialize
     o = html5lib.serializer.serialize(self.tree, tree='lxml',
@@ -277,7 +299,7 @@ class CSSTestSource(XHTMLSource):
     self.data = None
 
   def __cmp__(self, other):
-    return cmp(self.name, other.name)
+    return cmp(self.name(), other.name())
 
   def name(self):
     """Extract filename base as test name."""
@@ -307,22 +329,22 @@ class CSSTestSource(XHTMLSource):
       return self.data
 
     # Make sure we're parsed
-    if not self.tree:
+    if self.tree is None:
       XHTMLSource.parse(self)
     if self.error:
       return None
 
     # Extract data
-    links = []; credits = []; asserts = []; flags = []
+    links = []; credits = []; asserts = [];
     data = {'asserts' : asserts,
             'credits' : credits,
-            'flags'   : flags, # sorted
+            'flags'   : [], # sorted
             'links'   : links,
-            'name'    : self.name,
+            'name'    : self.name(),
             'title'   : ''
            }
     def tokenMatch(token, string):
-      return bool(re.search('(^|\s+)%s(^|\s+)' % token, string))
+      return bool(re.search('(^|\s+)%s($|\s+)' % token, string))
 
     head = self.tree.getroot().find(xhtmlns+'head')
     readFlags = False
@@ -344,7 +366,7 @@ class CSSTestSource(XHTMLSource):
             name = name.strip() if name else name
             if not name:
               raise CSSTestSourceMetaError("Author link missing name (title attribute).")
-            credits.append((intern(name), intern(link)))
+            credits.append((intern(escapeToNamedASCII(name)), intern(link)))
         elif node.tag == xhtmlns+'meta':
           metatype = node.get('name')
           metatype = metatype.strip() if metatype else metatype
@@ -353,7 +375,7 @@ class CSSTestSource(XHTMLSource):
             if readFlags:
               raise CSSTestSourceMetaError("Flags must only be specified once.")
             readFlags = True
-            flags = [intern(flag) for flag in sorted(node.get('content').split())]
+            data['flags'] = [intern(flag) for flag in sorted(node.get('content').split())]
           # test assertions
           elif metatype == 'assert':
             asserts.append(node.get('content').strip().replace('\t', ' '))

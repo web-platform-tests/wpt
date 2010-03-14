@@ -14,7 +14,7 @@ class Section:
     self.title = title
     self.sortstr = sortstr # sortable (zero-filled) section number
     self.numstr = numstr
-    self.tests = {} # lists indexed by group name
+    self.tests = []
   def __cmp__(self, other):
     return cmp(self.sortstr, other.sortstr)
 
@@ -62,7 +62,8 @@ class Indexer:
       data = test.getMetadata()
       if data: # Shallow copy for template output
         data = data.copy()
-        data['file'] = '/'.join((group.name, test.name()))
+        data['file'] = '/'.join((group.name, test.relpath)) \
+                       if group.name else test.relpath
         for uri in data['links']:
           if self.sections.has_key(uri):
             testlist = self.sections[uri].tests.append(data)
@@ -145,6 +146,7 @@ class Indexer:
       for chap in chapters:
         data['chaptertitle'] = chap.title
         data['testcount']    = chap.testcount
+        data['sections']     = chap.sections
         self.__writeTemplate('test-toc.tmpl', data, format.dest('chapter-%s%s' \
                              % (chap.sortstr, format.indexExt)))
 

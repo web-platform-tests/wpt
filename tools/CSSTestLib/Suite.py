@@ -50,5 +50,5 @@ class CSSTestSuite:
     indexer.writeOverview(dest)
     for format in formats:
       for group in self.groups.itervalues():
-        group.write(format)
+        group.build(format)
       indexer.write(format)

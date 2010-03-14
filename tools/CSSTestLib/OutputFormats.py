@@ -5,7 +5,7 @@
 
 import re
 import os
-from os.path import join, exists, splitext
+from os.path import join, exists, splitext, dirname
 from Sources import CSSTestSource, XHTMLSource
 
 class ExtensionMap:
@@ -46,11 +46,17 @@ class BasicFormat:
     self.subdir = name
 
   def dest(self, relpath):
-    """Returns final destination of relpath in this format."""
-    if self.subdir:
-      return join(self.root, self.subdir, relpath)
-    else:
-      return join(self.root, relpath)
+    """Returns final destination of relpath in this format and ensures that the
+       parent directory exists."""
+    # Translate path
+    dest = join(self.root, self.subdir, relpath) if self.subdir \
+           else join(self.root, relpath)
+    # Ensure parent
+    parent = dirname(dest)
+    if not exists(parent):
+      os.makedirs(parent)
+
+    return dest
 
   def write(self, source):
     """Write FileSource to destination, following all necessary
@@ -85,6 +91,9 @@ class HTMLFormat(BasicFormat):
     if not extMap:
       extMap = {'.xht' : '.htm', '.xhtml' : '.html' }
     BasicFormat.__init__(self, join(destroot, self.formatDirName), extMap)
+
+  def dest(self, relpath):
+    return BasicFormat.dest(self, self.extMap.translate(relpath))
 
   def write(self, source):
     # skip nonHTML tests

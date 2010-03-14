@@ -77,7 +77,7 @@ class XHTMLFormat(BasicFormat):
     BasicFormat.__init__(self, join(destroot, self.formatDirName), extMap)
   def write(self, source):
     # skip HTMLonly tests
-    if hasattr(source, 'hasFlag') and not source.hasFlag('HTMLonly'):
+    if hasattr(source, 'hasFlag') and source.hasFlag('HTMLonly'):
       return
     source.write(self)
 

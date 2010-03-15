@@ -12,36 +12,24 @@ skipDirs = ('contributors/microsoft/submitted/support', # XXXfixme files should 
             'incoming', '.svn', 'CVS', '.hg')
 
 import os.path
-from lxml import etree
-import html5lib # Warning: This uses a patched version of html5lib
 from os.path import join, getmtime
 import sys
 import re
 import os
+from CSSTestLib.Sources import XHTMLSource
 
 def xhtml2html(source, dest):
     """Convert XHTML file given by path `source` into HTML file at path `dest`."""
 
-    # read and parse
-    parser = etree.XMLParser(no_network=True,
-                             remove_comments=False,
-                             strip_cdata=False,
-                             resolve_entities=False)
-    tree = etree.parse(source, parser=parser)
+    # Parse and serialize
+    xs = XHTMLSource(source, dest)
+    o = xs.serializeHTML()
 
-    # serialize
-    o = html5lib.serializer.serialize(tree, tree='lxml',
-                                      format='html',
-                                      emit_doctype='html',
-                                      resolve_entities=False,
-                                      quote_attr_values=True)
+    # Report errors
+    if xs.error:
+      print >>sys.stderr, "Error parsing XHTML file %s: %s" % (source, xs.error)
 
-    # lxml fixup for eating whitespace outside root element
-    m = re.search('<!DOCTYPE[^>]+>(\s*)<', o)
-    if m.group(1) == '': # run match to avoid perf hit from searching whole doc
-        o = re.sub('(<!DOCTYPE[^>]+>)<', '\g<1>\n<', o)
-
-    # write
+    # Write
     f = open(dest, 'w')
     f.write(o.encode('utf-8'))
     f.close()

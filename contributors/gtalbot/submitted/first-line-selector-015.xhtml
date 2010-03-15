@@ -9,8 +9,9 @@
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
   <link rel="help" href="http://www.w3.org/TR/CSS21/selector.html#first-line-pseudo" />
   <link rel="help" href="http://www.w3.org/TR/CSS21/text.html#caps-prop" />
-  <meta name="flags" content="" />
-  <meta name="assert" content="The :first-line pseudo-element can be attached to an unordered list because it is a block-level element. The &quot;first formatted line&quot; of an unordered list occurs inside its first list-item because it is a non-positioned and non-floated block-level descendant in the same flow." />
+  <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#viewport" />
+  <meta content="" name="flags" />
+  <meta content="The :first-line pseudo-element can be attached to an unordered list because it is a block-level element. The &quot;first formatted line&quot; of an unordered list occurs inside its first list-item because it is a non-positioned and non-floated block-level descendant in the same flow. User agents may change the document's layout (preferred behavior but nonetheless optional) when the viewport is resized." name="assert" />
 
   <style type="text/css"><![CDATA[
   ul:first-line
@@ -23,7 +24,7 @@
 
  <body>
 
-  <p>Test passes if the first line (and only the first line) of the first list-item (a latin paragraph starting with "Lorem ipsum...") below has all characters of each word in uppercase. This should be still true even after changing the window size.</p>
+  <p>Test passes if the first line (and only the first line) of the first list-item (a latin paragraph starting with "Lorem ipsum...") below has all characters of each word in uppercase. This may still be true after changing the window size.</p>
 
   <ul>  
    <li>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse metus nibh, sodales at interdum a, commodo vitae nisl. Curabitur cursus rutrum urna et tempus. Proin purus lectus, lobortis id pharetra lacinia, porta in mauris. Nunc ultricies tincidunt velit, at sollicitudin tortor vulputate tempor. Cras consequat mauris ac neque tempor rhoncus. Quisque at nisi nisl. Integer convallis sodales sem quis euismod. Aliquam ornare purus libero, vel cursus nunc.</li>

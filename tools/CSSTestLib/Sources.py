@@ -11,7 +11,7 @@ import re
 import html5lib # Warning: This uses a patched version of html5lib
 from lxml import etree
 from lxml.etree import ParseError
-from utils import getMimeFromExt, escapeToNamedASCII
+from Utils import getMimeFromExt, escapeToNamedASCII
 
 class SourceCache:
   """Cache for FileSource objects. Supports one FileSource object

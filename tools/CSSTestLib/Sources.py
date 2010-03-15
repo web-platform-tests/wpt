@@ -244,7 +244,7 @@ class XHTMLSource(FileSource):
     self.error = False
     try:
       self.tree = etree.parse(self.sourcepath, parser=self.__parser)
-    except etree.ParseError as e:
+    except etree.ParseError, e:
       self.cacheAsParseError(self.sourcepath, e)
       e.CSSTestSourceErrorLocation = self.sourcepath
       self.error = e

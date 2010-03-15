@@ -1,0 +1,49 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+ <head>
+
+  <title>CSS Test: display - sub-table elements set to 'inline'</title>
+
+  <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#display-prop" />
+  <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
+  <link rel="author" title="Daniel Schattenkirchner" href="crazy-daniel{at}gmx.de" />
+  <meta content="The property 'display' set to 'inline' behaves in layout as an inline element and should generate inline box." name="assert" />
+  <meta content="" name="flags" />
+
+  <style type="text/css"><![CDATA[
+  table, caption, tbody, tr, th, td
+  {
+  display: inline;
+  vertical-align: baseline;
+  }
+  ]]></style>
+
+ </head>
+
+ <body>
+
+  <p>Test passes if the 3 "Filler Text" below are all on the same line.</p>
+
+  <table>
+   <caption>Filler Text </caption>
+
+   <tbody>
+
+    <tr>
+     <th>Filler </th>
+     <td>Text </td>
+    </tr>
+
+    <tr>
+     <th>Filler </th>
+     <td>Text</td>
+    </tr>
+
+   </tbody>
+
+  </table>
+
+ </body>
+</html>

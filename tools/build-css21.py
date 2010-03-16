@@ -53,7 +53,7 @@ from CSSTestLib.Groups import SelftestGroup
 # run from css test suite repo root
 
 # Set up
-suite = CSSTestSuite('CSS\u00A02.1 Test Suite', 'http://www.w3.org/TR/CSS21/')
+suite = CSSTestSuite(u'CSS\u00A02.1 Test Suite', 'http://www.w3.org/TR/CSS21/')
 
 # Add approved tests
 testroot = join('approved', 'css2.1', 'src')

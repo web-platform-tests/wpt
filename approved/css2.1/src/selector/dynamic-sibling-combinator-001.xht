@@ -3,10 +3,11 @@
  <head>
   <title>CSS Test: Testing dynamic changes and the '+' combinator</title>
   <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu"/>
+  <link rel="reviewer" title="Elika J. Etemad" href="http://fantasai.inkedblade.net/contact"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/selector.html#adjacent-selectors"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/selector.html#attribute-selectors"/>
   <meta name="flags" content="dom" />
-  <meta name="assert" content="Changing an attribute should cause selectors using '+' to match as needed."/>
+  <meta name="assert" content="Dynamically changing an attribute should cause selectors using '+' to match as needed."/>
   <style type="text/css"><![CDATA[
       div { color: red; }
       [class=foo] + div { color: green; }

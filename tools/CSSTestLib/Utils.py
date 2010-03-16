@@ -53,10 +53,10 @@ def escapeToNamed(text):
       escapable.add(c)
   if type(text) == types.UnicodeType:
     for c in escapable:
-      text = text.replace(c, entityify[c.encode('Latin-1', 'replace')])
+      text = text.replace(c, "&%s;" % entityify[c.encode('Latin-1', 'replace')])
   else:
     for c in escapable:
-      text = text.replace(c, entityify[c])
+      text = text.replace(c, "&%s;" % entityify[c])
   return text
 
 def escapeToASCII(text):

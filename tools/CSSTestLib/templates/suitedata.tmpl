@@ -25,3 +25,42 @@
                        abbr  => 'V'}
     }
 %]
+
+[%  statusNames = {
+      'pa' => {
+        'title' => 'Pre-Alpha',
+        'link'  => 'http://www.w3.org/Style/CSS/Test/#phase-pa' },
+      'alpha' => {
+        'title' => 'Alpha',
+        'link'  => 'http://www.w3.org/Style/CSS/Test/#phase-alpha' },
+      'beta' => {
+        'title' => 'Beta',
+        'link'  => 'http://www.w3.org/Style/CSS/Test/#phase-beta' },
+      'rc' => {
+        'title' => 'Release Candidate',
+        'link'  => 'http://www.w3.org/Style/CSS/Test/#phase-rc' },
+      'fin' => {
+        'title' => 'Final',
+        'link'  => 'http://www.w3.org/Style/CSS/Test/#phase-fin' },
+    }
+%]
+
+[% suites = {
+      'css2.1' => {
+        'title'    => 'CSS2.1',
+        'specroot' => 'http://www.w3.org/TR/CSS21/',
+        'status'   => 'alpha' },
+      'css3-namespace' => {
+        'title'    => 'CSS Namespaces',
+        'specroot' => 'http://www.w3.org/TR/css3-namespace/',
+        'status'   => 'rc' },
+      'css3-page' => {
+        'title'    => 'CSS3 Paged Media',
+        'specroot' => 'http://www.w3.org/TR/css3-page/',
+        'status'   => 'pa' },
+      'css3-color' => {
+        'title'    => 'CSS3 Color',
+        'specroot' => 'http://www.w3.org/TR/css3-color/',
+        'status'   => 'beta' },
+    }
+%]

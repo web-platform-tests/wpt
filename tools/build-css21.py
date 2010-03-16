@@ -53,7 +53,7 @@ from CSSTestLib.Groups import SelftestGroup
 # run from css test suite repo root
 
 # Set up
-suite = CSSTestSuite(u'CSS\u00A02.1 Test Suite', 'http://www.w3.org/TR/CSS21/')
+suite = CSSTestSuite('css2.1', 'CSS2.1&nbsp;Test Suite', 'http://www.w3.org/TR/CSS21/')
 
 # Add approved tests
 testroot = join('approved', 'css2.1', 'src')
@@ -63,6 +63,8 @@ for dir in groupset:
 # Add unreviewed tests
 for dir in sys.argv[1:]:
   def grep(file):
+    if not file.endswith('.xht'):
+      return False
     for line in open(join(dir, file)):
       if line.find(suite.specroot) != -1:
         return True
@@ -72,5 +74,7 @@ for dir in sys.argv[1:]:
   suite.addSelfTestsFromDir(dir, filenames=files)
 
 # Build
-indexer = Indexer(suite, join('approved', 'css2.1', 'data', 'sections.dat'), 2)
+data = join('approved', 'css2.1', 'data')
+indexer = Indexer(suite, join(data, 'sections.dat'), 2, templatePathList=[data],
+                  extraData={ 'devel' : True, 'official' : True })
 suite.buildInto(join('dist', 'css2.1'), indexer)

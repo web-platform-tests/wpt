@@ -378,7 +378,7 @@ class CSSTestSource(XHTMLSource):
             data['flags'] = [intern(flag) for flag in sorted(node.get('content').split())]
           # test assertions
           elif metatype == 'assert':
-            asserts.append(node.get('content').strip().replace('\t', ' '))
+            asserts.append(node.get('content').strip())
         # test title
         elif node.tag == xhtmlns+'title':
           title = node.text.strip()

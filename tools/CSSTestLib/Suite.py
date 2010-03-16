@@ -10,7 +10,8 @@ from Sources import SourceCache
 class CSSTestSuite:
   """Representation of a standard CSS test suite."""
 
-  def __init__(self, title, specUri):
+  def __init__(self, name, title, specUri):
+    self.name = name
     self.title = title
     self.specroot = specUri
 
@@ -51,4 +52,4 @@ class CSSTestSuite:
     for format in formats:
       for group in self.groups.itervalues():
         group.build(format)
-      indexer.write(format)
+      indexer.writeIndex(format)

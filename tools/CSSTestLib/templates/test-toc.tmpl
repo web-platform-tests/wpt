@@ -27,7 +27,7 @@
 [% formatMismatchFlag = 'nonHTML' %]
 [% END %]
  <head>
-  <title>[% suitetitle %]</title>
+  <title>[% chaptertitle %] - [% suitetitle %]</title>
   <style type="text/css">
     @import "http://www.w3.org/StyleSheets/TR/base.css";
     @import "[% IF formatdir %]../[% END %]indices.css";
@@ -51,8 +51,8 @@
     </thead>
 [% FOREACH section IN sections %]
     <tbody id="s[% section.numstr %]">
-      <tr><th colspan="2" scope="rowgroup"><a href="[% section.uri %]">[% section.numstr %] [% section.title %]</a></th></tr>
-  [% FOREACH entry IN section.tests %]
+      <tr><th colspan="2" scope="rowgroup"><a href="[% section.uri %]">[% section.numstr +%] [%+ section.title %]</a></th></tr>
+  [% FOREACH entry IN section.tests.sort('file') %]
     [% FOREACH flag IN entry.flags %]
       [% SET skip = 1 IF flag == formatMismatchFlag %]
     [% END %]

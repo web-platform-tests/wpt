@@ -1,32 +1,33 @@
+[% INCLUDE "suitedata.tmpl" %]
 [% IF official %]
-  <h1>CSS 2.1 Conformance Test Suite</h1>
+  <h1>CSS2.1 Conformance Test Suite</h1>
+  <p>This is a [% suites.$suite.status %] version of the
+     CSS2.1 Test Suite.</p>
 [% ELSE %]
-  <h1>CSS 2.1 Test Collection</h1>
+  <h1>CSS2.1 Test Collection</h1>
 [% END %]
-
- <p>This is a development version of the CSS&nbsp;2.1 Test Suite.</p>
 
 [% IF devel %]
  <p>It contains unreviewed tests and <strong>should not be used for testing
    CSS conformance</strong>. This build exists to aid in test development
    <strong>only</strong>.
-[% ELSE %]
- <p>It contains unreviewed tests and is likely to contain incorrect tests.
-[% END %]
    Please check the latest version of the
    <a href="http://www.w3.org/TR/CSS21/">CSS2.1 specification</a> and the
    <a href="http://www.w3.org/Style/css2-updates/CR-CSS21-20070719-errata.html">errata
    list</a> before assuming a failure is due to an implementation bug and
    not a test suite bug.</p>
-
-[% UNLESS official %]
- <p>You can find the <a href="http://www.w3.org/Style/CSS/Test/CSS2.1/current/">official
-  build</a> of the CSS 2.1 Test Suite on W3C's web site.</p>
 [% END %]
 
- <p>In time we hope to correct all errors and extend this test suite to
-  cover all of CSS2.1. Your help is welcome in this effort. The appropriate
-  mailing list for submitting tests and bug reports is
+[% UNLESS official %]
+ <p>You can find the <a href="[% suites.$suite.officialUrl %]">official
+  build</a> of the [% suites.$suite.title %] Test Suite on W3C's web site.</p>
+[% END %]
+
+  <p>[% IF suites.$suite.status != 'fin' && suites.$suite.status != 'rc' %]
+  In time we hope to correct all errors and extend this test suite to
+  cover all of CSS2.1. Your help is welcome in this effort.
+  [% END %]
+  The appropriate mailing list for submitting tests and bug reports is
   <a href="http://lists.w3.org/Archives/Public/public-css-testsuite/">public-css-testsuite@w3.org</a>.
   More information on the contribution process and test guidelines is
   available on the <a href="http://csswg.inkedblade.net/test">wiki
@@ -35,11 +36,11 @@
  <p>Tests are currently available in three formats:</p>
 
  <dl>
-   <dt><a href="xhtml1/index.xht">XHTML 1.1</a></dt>
+   <dt><a href="xhtml1/toc.xhtml">XHTML 1.1</a></dt>
      <dd>XHTML 1.1 tests sent as <code>application/xhtml+xml</code></dd>
-   <dt><a href="html4/index.htm">HTML 4.01</a></dt>
+   <dt><a href="html4/toc.html">HTML 4.01</a></dt>
      <dd>HTML 4.01 tests sent as <code>text/html</code></dd>
-   <dt><a href="xhtml1print/index.xht">XHTML 1.1 for Printers</a></dt>
+   <dt><a href="xhtml1print/toc.xhtml">XHTML 1.1 for Printers</a></dt>
      <dd>XHTML 1.1 tests with all images converted from PNG to JPEG
        and formatted with headers and footers to ease testing of
        embedded printer software. This is not a canonical format,
@@ -49,9 +50,7 @@
 
   <p>Note that many of the tests require the
    <a href="http://www.w3.org/Style/CSS/Test/Ahem/">Ahem font to be installed</a>.
-   The tests that require this are marked with an 'a' at the end of the
-   filename, after the test type classification. Without the Ahem font
-   installed, these tests are of no value.</p>
+   Without the Ahem font installed, these tests are of no value.</p>
 
 <h2 id="common">Common Assumptions</h2>
 
@@ -128,9 +127,8 @@
 
   <p>Many thanks to the following for their contributions:</p>
   <ul>
-[%- USE contributors = datafile("${path}contributors.data", delim = '	') %]
-[%- FOREACH person = contributors %]
-    <li>[% person.name %]</li>
+[%- FOREACH person = contributors.keys.sort %]
+    <li>[% person %]</li>
 [%- END %]
   </ul>
   <p>...and all the <a href="http://www.w3.org/Style/CSS/Test/CSS1/current/tsack.html">contributors

@@ -4,9 +4,12 @@
 # Licensed under BSD 3-Clause: <http://www.w3.org/Consortium/Legal/2008/03-bsd-license>
 
 import sys
+import re
+import os
 from os.path import join, exists, abspath
 from template import Template
 import CSSTestLib
+import shutil
 
 class Section:
   def __init__(self, uri, title, sortstr, numstr):
@@ -20,7 +23,8 @@ class Section:
 
 class Indexer:
 
-  def __init__(self, suite, tocDataPath, splitlevel=0, templatePathList=None):
+  def __init__(self, suite, tocDataPath, splitlevel=0, templatePathList=None,
+               extraData=None, overviewTmplNames=None, overviewCopyExts=('.css', 'htaccess')):
     """Initialize indexer with CSSTestSuite `suite` toc data file
        `tocDataPath` and additional template paths in list `templatePathList`.
 
@@ -31,9 +35,21 @@ class Indexer:
        chapter's sort string in the toc data file: set to zero for a
        single-page index; set to two to create chapter indices when
        using two-digit chapter numbers in the sort string.
+       `extraData` can be a dictionary whose data gets passed to the templates.
+       `overviewCopyExts` lists file extensions that should be found
+       and copied from the template path into the main build directory.
+       The default value is ['.css', 'htaccess'].
+       `overviewTemplateNames` lists template names that should be
+       processed from the template path into the main build directory.
+       The '.tmpl' extension, if any, is stripped from the output filename.
+       The default value is ['index.html.tmpl', 'index.xht.tmpl', 'testinfo.data.tmpl']
     """
-    self.suite = suite
+    self.suite      = suite
     self.splitlevel = splitlevel
+    self.extraData  = extraData
+    self.overviewCopyExtPat = re.compile('.*%s$' % '|'.join(overviewCopyExts))
+    self.overviewTmplNames = overviewTmplNames if overviewTmplNames is not None \
+      else ['index.html.tmpl', 'index.xht.tmpl', 'testinfo.data.tmpl']
 
     # Initialize template engine
     self.templatePath = [join(CSSTestLib.__path__[0], 'templates')]
@@ -54,8 +70,9 @@ class Indexer:
       self.sections[uri] = Section(uri, title, sortstr, numstr)
 
     # Initialize storage
-    self.errors = []
-    self.contributors = set()
+    self.errors = set()
+    self.contributors = {}
+    self.alltests = []
 
   def indexGroup(self, group):
     for test in group.iterTests():
@@ -64,13 +81,14 @@ class Indexer:
         data = data.copy()
         data['file'] = '/'.join((group.name, test.relpath)) \
                        if group.name else test.relpath
+        self.alltests.append(data)
         for uri in data['links']:
           if self.sections.has_key(uri):
             testlist = self.sections[uri].tests.append(data)
         for credit in data['credits']:
-          self.contributors.add(credit)
+          self.contributors[credit[0]] = credit[1]
       else:
-        self.errors.append(test.error)
+        self.errors.add(test.error)
 
   def __writeTemplate(self, template, data, outfile):
     o = self.tt.process(template, data)
@@ -89,28 +107,44 @@ class Indexer:
     """
 
     # Set common values
-    data = {}
-    data['suitetitle'] = self.suite.title
-    data['specroot']   = self.suite.specroot
+    data = self.extraData.copy()
+    data['suitetitle']   = self.suite.title
+    data['suite']        = self.suite.name
+    data['specroot']     = self.suite.specroot
+    data['contributors'] = self.contributors
+    data['tests']        = self.alltests
 
-    # Print 
+    # Copy simple copy files
+    for tmplDir in reversed(self.templatePath):
+      _,_,files = os.walk(tmplDir).next()
+      for file in files:
+        if self.overviewCopyExtPat.match(file):
+          shutil.copy(join(tmplDir, file), join(destDir, file))
+
+    # Generate indexes
+    for tmpl in self.overviewTmplNames:
+      out = tmpl[0:-5] if tmpl.endswith('.tmpl') else tmpl
+      self.__writeTemplate(tmpl, data, join(destDir, out))
 
     # Report errors
+    errors = sorted(self.errors)
     if type(errorOut) is type(('tmpl','out')):
-      data['errors'] = self.errors
+      data['errors'] = errors
       self.__writeTemplate(errorOut[0], data, join(destDir, errorOut[1]))
     else:
-      for error in self.errors:
+      sys.stdout.flush()
+      for error in errors:
         print >> errorOut, "Error in %s: %s" % \
                            (error.CSSTestSourceErrorLocation, error)
 
-  def write(self, format):
+  def writeIndex(self, format):
     """Write indices into test suite build output through format `format`.
     """
 
     # Set common values
-    data = {}
+    data = self.extraData.copy()
     data['suitetitle'] = self.suite.title
+    data['suite']      = self.suite.name
     data['specroot']   = self.suite.specroot
     data['indexext']   = format.indexExt
     data['isXML']      = format.indexExt.startswith('.x')
@@ -148,7 +182,7 @@ class Indexer:
         data['testcount']    = chap.testcount
         data['sections']     = chap.sections
         self.__writeTemplate('test-toc.tmpl', data, format.dest('chapter-%s%s' \
-                             % (chap.sortstr, format.indexExt)))
+                             % (chap.numstr, format.indexExt)))
 
     else: # not splitlevel
       data['chapters'] = sectionlist

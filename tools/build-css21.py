@@ -41,7 +41,7 @@ groupmap = {
 groupset = [ 'about', 'box-model', 'box-model', 'box-margins', 'box-padding',
     'box-borders', 'cascade', 'colors', 'conform', 'fonts', 'generate',
     'intro', 'media', 'page', 'selector', 'syndata', 'tables', 'text',
-    'visudet', 'visufx', 'visuren', 'zindex',
+    'visudet', 'visufx', 'visuren', 'zindex', 'css1',
   ]
 
 import sys

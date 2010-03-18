@@ -52,13 +52,14 @@
 [% FOREACH section IN sections %]
     <tbody id="s[% section.numstr %]">
       <tr><th colspan="2" scope="rowgroup"><a href="[% section.uri %]">[% section.numstr +%] [%+ section.title %]</a></th></tr>
+      <!-- [% section.tests.size %] tests -->
   [% FOREACH entry IN section.tests.sort('file') %]
     [% FOREACH flag IN entry.flags %]
       [% SET skip = 1 IF flag == formatMismatchFlag %]
     [% END %]
     [% UNLESS skip %]
       [% primary = entry.links.0 == section.uri %]
-      <tr id="[% entry.name %]-[% section.numstr %]" class="[% flag FOREACH flag IN entry.flags %] [% 'primary' IF primary %]">
+      <tr id="[% entry.name %]-[% section.numstr %]" class="[% flag FOREACH flag IN entry.flags %] [% ' primary' IF primary %]">
         <td>[% IF primary %]<strong>[% END %]<a href="[% extmap.translate(entry.file) %]">[% entry.title %]</a>[% IF primary %]</strong>[% END %]
       [% IF entry.asserts.size > 0 %]
           <ul class="assert">
@@ -68,9 +69,10 @@
           </ul>
       [% END %]
         </td>
-        <td>[% FOREACH flag IN entry.flags %]<abbr class="[% flag %]" title="[% flagInfo.$flag.title %]">[% flagInfo.$flag.abbr %]</abbr>[% END %]</td>
+        <td>[% FOREACH flag IN entry.flags %][% IF flag != 'nonHTML' and flag != 'HTMLonly' %]<abbr class="[% flag %]" title="[% flagInfo.$flag.title %]">[% flagInfo.$flag.abbr %]</abbr>[% END %][% END %]</td>
       </tr>
     [% END %]
+    [% skip = 0 %]
   [% END %]
     </tbody>
 [% END %]

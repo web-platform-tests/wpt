@@ -201,7 +201,7 @@ class XHTMLSource(FileSource):
 
   # Public Data
   syntaxErrorDoc = \
-  """
+  u"""
   <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
   <html xmlns="http://www.w3.org/1999/xhtml">
     <head><title>Syntax Error</title></head>
@@ -237,8 +237,9 @@ class XHTMLSource(FileSource):
   def cacheAsParseError(self, filename, e):
       """Replace document with an error message."""
       errorDoc = self.syntaxErrorDoc % (filename, e)
-      self.tree = etree.fromstring(errorDoc, parser=self.__parser)
-  
+      from StringIO import StringIO 
+      self.tree = etree.parse(StringIO(errorDoc), parser=self.__parser)
+
   def parse(self):
     """Parse file and store any parse errors in self.error"""
     self.error = False
@@ -249,8 +250,15 @@ class XHTMLSource(FileSource):
       e.CSSTestSourceErrorLocation = self.sourcepath
       self.error = e
 
+  def validate(self):
+    """Parse file if not parsed, and store any parse errors in self.error"""
+    if self.tree is None:
+      self.parse()
+
   def serializeXHTML(self):
-    return str(self.tree)
+    if self.tree is None:
+      self.parse()
+    return etree.tounicode(self.tree)
 
   def serializeHTML(self):
     # Parse
@@ -274,7 +282,10 @@ class XHTMLSource(FileSource):
        Write contents as string `output` instead if specified.
     """
     if not output:
-      return FileSource.write(self, format)
+      if not self.error: # can shortcut as copy if no error
+        return FileSource.write(self, format)
+      else:
+        output = self.serializeXHTML()
 
     # write
     f = open(format.dest(self.relpath), 'w')

@@ -259,36 +259,36 @@
 1804	http://www.w3.org/TR/CSS21/ui.html#dynamic-outlines	18.4	Dynamic outlines: the 'outline' property
 180401	http://www.w3.org/TR/CSS21/ui.html#outline-focus	18.4.1	Outlines and the focus
 1805	http://www.w3.org/TR/CSS21/ui.html#magnification	18.5	Magnification
-0A	http://www.w3.org/TR/CSS21/aural.html	A	Aural style sheets
-0A01	http://www.w3.org/TR/CSS21/aural.html#aural-media-group	A.1	The media types 'aural' and 'speech'
-0A02	http://www.w3.org/TR/CSS21/aural.html#aural-intro	A.2	Introduction to aural style sheets
-0A0201	http://www.w3.org/TR/CSS21/aural.html#angles	A.2.1	Angles
-0A0202	http://www.w3.org/TR/CSS21/aural.html#times	A.2.2	Times
-0A0203	http://www.w3.org/TR/CSS21/aural.html#frequencies	A.2.3	Frequencies
-0A03	http://www.w3.org/TR/CSS21/aural.html#volume-props	A.3	Volume properties: 'volume'
-0A04	http://www.w3.org/TR/CSS21/aural.html#speaking-props	A.4	Speaking properties: 'speak'
-0A05	http://www.w3.org/TR/CSS21/aural.html#pause-props	A.5	Pause properties: 'pause-before', 'pause-after', and 'pause'
-0A06	http://www.w3.org/TR/CSS21/aural.html#cue-props	A.6	Cue properties: 'cue-before', 'cue-after', and 'cue'
-0A07	http://www.w3.org/TR/CSS21/aural.html#mixing-props	A.7	Mixing properties: 'play-during'
-0A08	http://www.w3.org/TR/CSS21/aural.html#spatial-props	A.8	Spatial properties: 'azimuth' and 'elevation'
-0A09	http://www.w3.org/TR/CSS21/aural.html#voice-char-props	A.9	Voice characteristic properties: 'speech-rate', 'voice-family', 'pitch', 'pitch-range', 'stress', and 'richness'
-0A10	http://www.w3.org/TR/CSS21/aural.html#speech-props	A.10	Speech properties: 'speak-punctuation' and 'speak-numeral'
-0A11	http://www.w3.org/TR/CSS21/aural.html#aural-tables	A.11	Audio rendering of tables
-0A1101	http://www.w3.org/TR/CSS21/aural.html#speak-headers	A.11.1	Speaking headers: the 'speak-header' property
-0A12	http://www.w3.org/TR/CSS21/aural.html#sample	A.12	Sample style sheet for HTML
-0A13	http://www.w3.org/TR/CSS21/aural.html#Emacspeak	A.13	Emacspeak
-0B	http://www.w3.org/TR/CSS21/refs.html	B	Bibliography
-0B01	http://www.w3.org/TR/CSS21/refs.html#normative	B.1	Normative references
-0B02	http://www.w3.org/TR/CSS21/refs.html#informative	B.2	Informative references
-0C	http://www.w3.org/TR/CSS21/changes.html	C	Changes
-0D	http://www.w3.org/TR/CSS21/sample.html	D	Default style sheet for HTML 4
-0E	http://www.w3.org/TR/CSS21/zindex.html	E	Elaborate description of Stacking Contexts
-0E01	http://www.w3.org/TR/CSS21/zindex.html#stacking-defs	E.1	Definitions
-0E02	http://www.w3.org/TR/CSS21/zindex.html#painting-order	E.2	Painting order
-0E03	http://www.w3.org/TR/CSS21/zindex.html#stacking-notes	E.3	Notes
-0F	http://www.w3.org/TR/CSS21/propidx.html	F	Full property table
-0G	http://www.w3.org/TR/CSS21/grammar.html	G	Grammar of CSS 2.1
-0G01	http://www.w3.org/TR/CSS21/grammar.html#grammar	G.1	Grammar
-0G02	http://www.w3.org/TR/CSS21/grammar.html#scanner	G.2	Lexical scanner
-0G03	http://www.w3.org/TR/CSS21/grammar.html#tokenizer-diffs	G.3	Comparison of tokenization in CSS 2.1 and CSS1
-0I	http://www.w3.org/TR/CSS21/indexlist.html	I	Index
+_A	http://www.w3.org/TR/CSS21/aural.html	A	Aural style sheets
+_A01	http://www.w3.org/TR/CSS21/aural.html#aural-media-group	A.1	The media types 'aural' and 'speech'
+_A02	http://www.w3.org/TR/CSS21/aural.html#aural-intro	A.2	Introduction to aural style sheets
+_A0201	http://www.w3.org/TR/CSS21/aural.html#angles	A.2.1	Angles
+_A0202	http://www.w3.org/TR/CSS21/aural.html#times	A.2.2	Times
+_A0203	http://www.w3.org/TR/CSS21/aural.html#frequencies	A.2.3	Frequencies
+_A03	http://www.w3.org/TR/CSS21/aural.html#volume-props	A.3	Volume properties: 'volume'
+_A04	http://www.w3.org/TR/CSS21/aural.html#speaking-props	A.4	Speaking properties: 'speak'
+_A05	http://www.w3.org/TR/CSS21/aural.html#pause-props	A.5	Pause properties: 'pause-before', 'pause-after', and 'pause'
+_A06	http://www.w3.org/TR/CSS21/aural.html#cue-props	A.6	Cue properties: 'cue-before', 'cue-after', and 'cue'
+_A07	http://www.w3.org/TR/CSS21/aural.html#mixing-props	A.7	Mixing properties: 'play-during'
+_A08	http://www.w3.org/TR/CSS21/aural.html#spatial-props	A.8	Spatial properties: 'azimuth' and 'elevation'
+_A09	http://www.w3.org/TR/CSS21/aural.html#voice-char-props	A.9	Voice characteristic properties: 'speech-rate', 'voice-family', 'pitch', 'pitch-range', 'stress', and 'richness'
+_A10	http://www.w3.org/TR/CSS21/aural.html#speech-props	A.10	Speech properties: 'speak-punctuation' and 'speak-numeral'
+_A11	http://www.w3.org/TR/CSS21/aural.html#aural-tables	A.11	Audio rendering of tables
+_A1101	http://www.w3.org/TR/CSS21/aural.html#speak-headers	A.11.1	Speaking headers: the 'speak-header' property
+_A12	http://www.w3.org/TR/CSS21/aural.html#sample	A.12	Sample style sheet for HTML
+_A13	http://www.w3.org/TR/CSS21/aural.html#Emacspeak	A.13	Emacspeak
+_B	http://www.w3.org/TR/CSS21/refs.html	B	Bibliography
+_B01	http://www.w3.org/TR/CSS21/refs.html#normative	B.1	Normative references
+_B02	http://www.w3.org/TR/CSS21/refs.html#informative	B.2	Informative references
+_C	http://www.w3.org/TR/CSS21/changes.html	C	Changes
+_D	http://www.w3.org/TR/CSS21/sample.html	D	Default style sheet for HTML 4
+_E	http://www.w3.org/TR/CSS21/zindex.html	E	Elaborate description of Stacking Contexts
+_E01	http://www.w3.org/TR/CSS21/zindex.html#stacking-defs	E.1	Definitions
+_E02	http://www.w3.org/TR/CSS21/zindex.html#painting-order	E.2	Painting order
+_E03	http://www.w3.org/TR/CSS21/zindex.html#stacking-notes	E.3	Notes
+_F	http://www.w3.org/TR/CSS21/propidx.html	F	Full property table
+_G	http://www.w3.org/TR/CSS21/grammar.html	G	Grammar of CSS 2.1
+_G01	http://www.w3.org/TR/CSS21/grammar.html#grammar	G.1	Grammar
+_G02	http://www.w3.org/TR/CSS21/grammar.html#scanner	G.2	Lexical scanner
+_G03	http://www.w3.org/TR/CSS21/grammar.html#tokenizer-diffs	G.3	Comparison of tokenization in CSS 2.1 and CSS1
+_I	http://www.w3.org/TR/CSS21/indexlist.html	I	Index

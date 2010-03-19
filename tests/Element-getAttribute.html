@@ -17,6 +17,38 @@ try {
   Test.separate();
   el.setAttribute("style", "color:#fff;")
   Test.is(el.getAttribute("style"), "color:#fff;");
+
+  Test.separate();
+  el = document.createElement("div");
+  el.setAttributeNS("", "ALIGN", "left");
+  Test.is(el.getAttribute("ALIGN"), null);
+  Test.is(el.getAttribute("align"), null);
+
+  Test.separate();
+  el.setAttributeNS("", "CHEEseCaKe", "tasty");
+  Test.is(el.getAttribute("CHEESECAKE"), null);
+  Test.is(el.getAttribute("CHEEseCaKe"), null);
+  Test.is(el.getAttribute("cheesecake"), null);
+
+  Test.separate();
+  el = document.createElement("div");
+  el.setAttributeNS(null, "align", "left");
+  el.setAttributeNS("xx", "align", "right");
+  el.setAttributeNS(null, "foo", "left");
+  el.setAttributeNS("xx", "foo", "right");
+  document.body.appendChild(el);
+  Test.is(el.getAttribute("align"), "left");
+  Test.is(el.getAttribute("foo"), "left");
+
+  Test.separate();
+  el = document.createElement("div");
+  el.setAttributeNS("xx", "align", "right");
+  el.setAttributeNS(null, "align", "left");
+  el.setAttributeNS("xx", "foo", "right");
+  el.setAttributeNS(null, "foo", "left");
+  document.body.appendChild(el);
+  Test.is(el.getAttribute("align"), "right");
+  Test.is(el.getAttribute("foo"), "right");
 } catch (e) {
   Test.fail("Exception was thrown.");
 }

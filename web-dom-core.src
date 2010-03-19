@@ -1371,7 +1371,7 @@ have its name converted to ASCII lowercase before the element is affected.
 
 <p class=XXX><dfn title=dom-Element-getElementsByTagName>getElementsByTagName</dfn>
 
-<p class=XXX><dfn title=dom-Element-getAttributeNS>getAttributeNS</dfn> (returns null)
+<p class=XXX><dfn title=dom-Element-getAttributeNS>getAttributeNS</dfn> (might return null; Gecko and WebKit don't)
 
 <p class=XXX><dfn title=dom-Element-setAttributeNS>setAttributeNS</dfn>
 

@@ -36,6 +36,10 @@ var tests = [
     ["xml:foo", null],
     ["xmlns:foo", null],
     ["xmlfoo:bar", null],
+    ["<foo", DOMException.INVALID_CHARACTER_ERR],
+    ["foo>", DOMException.INVALID_CHARACTER_ERR],
+    ["<foo>", DOMException.INVALID_CHARACTER_ERR],
+    ["f<oo", DOMException.INVALID_CHARACTER_ERR]
 ];
 
 var exceptions = {};

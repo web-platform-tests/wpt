@@ -26,6 +26,9 @@ def propagate(source, dest, errors):
   # This directory is locked; don't propagate
   if os.path.exists(join(dest, 'LOCK')): return
 
+  # If the source directory doesn't exist return
+  if not os.path.exists(source): return
+
   # Get the file and directory lists for source
   children = os.listdir(source)
   for name in children:

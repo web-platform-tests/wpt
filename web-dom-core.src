@@ -513,7 +513,18 @@ document</span> affects the behavior of certain APIs.
  data-anolis-spec=xml>Name</code> production in XML, raise an <code
  title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
  exception and abort these steps.
- <li><p>Return a new <code>Element</code> node with no attributes, <code title=dom-Node-namespaceURI>namespaceURI</code> set to the <span>HTML namespace</span>, <code title=dom-Node-prefix>prefix</code> set to null, <code title=dom-Node-localName>localName</code> set to <var title>tagName</var>, <span>converted to lowercase</span>, and <code title=dom-Node-ownerDocument>ownerDocument</code> set to the <span>context node</span>.
+
+ <li><p>If the <span>context node</span> is an <span>HTML document</span>, let
+ <var title>localName</var> be <var title>tagName</var>, <span>converted to
+ lowercase</span>. Otherwise, let <var title>localName</var> be <var
+ title>tagName</var>.
+
+ <li><p>Return a new <code>Element</code> node with no attributes, <code
+ title=dom-Node-namespaceURI>namespaceURI</code> set to the <span>HTML
+ namespace</span>, <code title=dom-Node-prefix>prefix</code> set to null, <code
+ title=dom-Node-localName>localName</code> set to <var title>localName</var>,
+ and <code title=dom-Node-ownerDocument>ownerDocument</code> set to the
+ <span>context node</span>.
 </ol>
 <!-- this is very different from DOM3 -->
 <p class=note>No check is performed that the local name will match the <code
@@ -566,15 +577,50 @@ contains "xml" or the colon, or that the data contains characters that match the
 <!--<p class=note>No check is performed that the local name will match the <code
 data-anolis-spec=xmlns>NCName</code> production in Namespaces in XML.-->
 
-<p>The <dfn title=dom-Document-getElementsByTagName><code>getElementsByTagName(<var title>localName</var>)</code></dfn> method must run the following steps:
+<hr>
+
+<p>The <dfn
+title=dom-Document-getElementsByTagName><code>getElementsByTagName(<var
+title>localName</var>)</code></dfn> method must run the following steps:
 <ol>
- <li><p>If <var title>localName</var> is just the character U+002A ASTERISK ("*"), return a <code>NodeList</code> rooted at the <span>context node</span>, whose filter matches only <code>Element</code> nodes.
- <li><p>Otherwise, return a <code>NodeList</code> rooted at the <span>context node</span>, whose filter matches only <code>Element</code> nodes that have a <code title=dom-node-localName>localName</code> equal to <var title>localName</var>.
+ <li><p>If <var title>localName</var> is just a U+002A ASTERISK ("*") character,
+ return a <code>NodeList</code> rooted at the <span>context node</span>, whose
+ filter matches only <code>Element</code> nodes.
+
+ <li><p>Otherwise, if the <span>context node</span> is an <span>HTML
+ document</span>, return a <code>NodeList</code> rooted at the <span>context
+ node</span>, whose filter matches only the following nodes:
+  <ul>
+   <li><code>Element</code> nodes in the <span>HTML namespace</span> that have a
+   <code title=dom-node-localName>localName</code> <span
+   title=case-sensitive>case-sensitively</span> equal to <var
+   title>localName</var>, <span>converted to lowercase</span>.
+
+   <li><code>Element</code> nodes, <em>not</em> in the <span>HTML
+   namespace</span>, that have a <code title=dom-node-localName>localName</code>
+   <span title=case-sensitive>case-sensitively</span> equal to <var
+   title>localName</var>.
+  </ul>
+
+ <li><p>Otherwise, return a <code>NodeList</code> rooted at the <span>context
+ node</span>, whose filter matches only <code>Element</code> nodes that have a
+ <code title=dom-node-localName>localName</code> <span
+ title=case-sensitive>case-sensitively</span> equal to <var
+ title>localName</var>.
 </ol>
+
 <p>A new <code>NodeList</code> object must be returned each time unless
 the argument is the same as the last time the method was invoked on
 this <code>Document</code> object, in which case the object must be
 the same as the object returned by the previous call.</p>
+
+<p class=note>Thus, in an <span>HTML document</span>, <code
+title>document.getElementsByTagName("FOO")</code> will match <code
+title>FOO</code> elements that aren't in the <span>HTML namespace</span>, and
+<code title>foo</code> elements that are in the <span>HTML namespace</span>, but
+not <code title>FOO</code> elements that are in the <span>HTML namespace</span>.
+
+<hr>
 
 <p>The <dfn title=dom-Document-importNode><code>importNode(<var
 title>importedNode</var>, <var title>deep</var>)</code></dfn> method must run
@@ -589,7 +635,7 @@ the following steps:
  title=dom-Node-localName>localName</code><!-- or <code
  title=dom-Node-prefix>prefix</code>--> which either does not match the <code
  data-anolis-spec=xml>Name</code> production in XML or contains a U+003A COLON
- (:) character, raise an <code
+ (":") character, raise an <code
  title=dom-DOMException-INVALID_STATE_ERR>INVALID_STATE_ERR</code> and abort
  these steps.
 
@@ -665,7 +711,7 @@ title>source</var>)</code></dfn> method must run the following steps:
  title=dom-Node-localName>localName</code><!-- or <code
  title=dom-Node-prefix>prefix</code>--> which either does not match the <code
  data-anolis-spec=xml>Name</code> production in XML or contains a U+003A COLON
- (:) character, raise an <code
+ (":") character, raise an <code
  title=dom-DOMException-INVALID_STATE_ERR>INVALID_STATE_ERR</code> and abort
  these steps.
 
@@ -1243,19 +1289,36 @@ change</dfn>, the user agent must run the <span>base URL change steps</span>, as
 defined in <span>other applicable specifications</span>.
 
 <p>The <dfn title=dom-Element-tagName><code>tagName</code></dfn> attribute must,
-on getting, return the concatenation of <code
-title=dom-Node-prefix>prefix</code>, the character U+003E COLON (":") and <code
-title=dom-Node-localName>localName</code> if <code
-title=dom-Node-prefix>prefix</code> is not null, and otherwise just <code
-title=dom-Node-localName>localName</code>.
+on getting, run the following steps:
+<ol>
+ <li><p>If the <span>context node</span>'s <code
+ title=dom-Node-prefix>prefix</code> is not null, let <var title>tagName</var>
+ be the concatenation of the <span>context node</span>'s <code
+ title=dom-Node-prefix>prefix</code>, a U+003E COLON (":") character and its
+ <code title=dom-Node-localName>localName</code>. Otherwise, let <var
+ title>tagName</var> be just the the <span>context node</span>'s <code
+ title=dom-Node-localName>localName</code>.
+
+ <li><p>If the <span>context node</span> is in the <span>HTML namespace</span>
+ and its <code title=dom-Node-ownerDocument>ownerDocument</code> is an
+ <span>HTML document</span>, return <var title>tagName</var>, <span>converted to
+ uppercase</span>. Otherwise, return <var title>tagName</var>.
+</ol>
 
 <p>The <dfn title=dom-Element-getAttribute><code>getAttribute(<var
-title>name</var>)</code></dfn> method must return the value of the first
-attribute in the <span title="context node">context node's</span> <code
-title=dom-Node-attributes>attributes</code> whose <span
-title=concept-attribute-name>name</span> <span
-title=case-sensitive>case-sensitively</span> equals the first argument, in any
-namespace, if the attribute is present, or null otherwise.
+title>name</var>)</code></dfn> method must run the following steps:
+<ol>
+ <li><p>If the <span>context node</span> is in the <span>HTML namespace</span>
+ and its <code title=dom-Node-ownerDocument>ownerDocument</code> is an
+ <span>HTML document</span>, let <var title>name</var> be <var title>name</var>,
+ <span>converted to lowercase</span>.
+
+ <li><p>Return the value of the first attribute in the <span>context
+ node</span>'s <code title=dom-Node-attributes>attributes</code> whose <span
+ title=concept-attribute-name>name</span> <span
+ title=case-sensitive>case-sensitively</span> equals the first argument, in any
+ namespace, if the attribute is present, or null otherwise.
+</ol>
 
 <p>The <dfn title=dom-Element-setAttribute><code>setAttribute(<var
 title>name</var>, <var title>value</var>)</code></dfn> method must run the
@@ -1266,6 +1329,11 @@ following steps:
  match the <code data-anolis-spec=xml>Name</code> production in XML, raise an
  <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
  exception and abort these steps.
+
+ <li><p>If the <span>context node</span> is in the <span>HTML namespace</span>
+ and its <code title=dom-Node-ownerDocument>ownerDocument</code> is an
+ <span>HTML document</span>, let <var title>name</var> be <var title>name</var>,
+ <span>converted to lowercase</span>.
 
  <li><p>If the node doesn't have an attribute whose <span
  title=concept-attribute-name>name</span> <span
@@ -1286,6 +1354,16 @@ following steps:
 </ol>
 
 <p class=XXX><dfn title=dom-Element-removeAttribute>removeAttribute</dfn>
+
+<!--<dfn title=dom-Element-getAttributeNode>getAttributeNode</dfn>: when the
+Element.getAttributeNode() method is invoked on an HTML element, the name
+argument must be converted to ASCII lowercase before the element's attributes
+are examined. (In HTML documents.) -->
+
+<!-- <dfn title=dom-Element-setAttributeNode>setAttributeNode</dfn>: when an
+Attr node is set on an HTML element using Element.setAttributeNode(), it must
+have its name converted to ASCII lowercase before the element is affected.
+(In HTML documents.) -->
 
 <p class=XXX><dfn title=dom-Element-getElementsByTagName>getElementsByTagName</dfn>
 

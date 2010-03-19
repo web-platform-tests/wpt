@@ -7,7 +7,7 @@
 <body class=draft>
 <div class=head id=head>
 <h1>Web DOM Core</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-date:-01-jan-1901>Work in Progress &mdash; Last Update 14 March 2010</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-date:-01-jan-1901>Work in Progress &mdash; Last Update 19 March 2010</h2>
 <dl>
  <dt>Editors
  <dd>Simon Pieters &lt;simonp@opera.com&gt;
@@ -526,7 +526,15 @@ document</a> affects the behavior of certain APIs.
 <ol>
  <li><p>If <var title="">tagName</var> doesn't match the <code><a href=http://www.w3.org/TR/xml/#NT-Name>Name</a></code> production in XML, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR><a href=#dom-domexception-invalid_character_err>INVALID_CHARACTER_ERR</a></code>
  exception and abort these steps.
- <li><p>Return a new <code><a href=#element>Element</a></code> node with no attributes, <code title=dom-Node-namespaceURI><a href=#dom-node-namespaceuri>namespaceURI</a></code> set to the <a href=#html-namespace>HTML namespace</a>, <code title=dom-Node-prefix><a href=#dom-node-prefix>prefix</a></code> set to null, <code title=dom-Node-localName><a href=#dom-node-localname>localName</a></code> set to <var title="">tagName</var>, <a href=#converted-to-lowercase>converted to lowercase</a>, and <code title=dom-Node-ownerDocument><a href=#dom-node-ownerdocument>ownerDocument</a></code> set to the <a href=#context-node>context node</a>.
+
+ <li><p>If the <a href=#context-node>context node</a> is an <a href=#html-document>HTML document</a>, let
+ <var title="">localName</var> be <var title="">tagName</var>, <a href=#converted-to-lowercase>converted to
+ lowercase</a>. Otherwise, let <var title="">localName</var> be <var title="">tagName</var>.
+
+ <li><p>Return a new <code><a href=#element>Element</a></code> node with no attributes, <code title=dom-Node-namespaceURI><a href=#dom-node-namespaceuri>namespaceURI</a></code> set to the <a href=#html-namespace>HTML
+ namespace</a>, <code title=dom-Node-prefix><a href=#dom-node-prefix>prefix</a></code> set to null, <code title=dom-Node-localName><a href=#dom-node-localname>localName</a></code> set to <var title="">localName</var>,
+ and <code title=dom-Node-ownerDocument><a href=#dom-node-ownerdocument>ownerDocument</a></code> set to the
+ <a href=#context-node>context node</a>.
 </ol>
 <!-- this is very different from DOM3 -->
 <p class=note>No check is performed that the local name will match the <code><a href=http://www.w3.org/TR/xml-names/#NT-NCName>NCName</a></code> production in Namespaces in XML.
@@ -575,15 +583,41 @@ contains "xml" or the colon, or that the data contains characters that match the
 <!--<p class=note>No check is performed that the local name will match the <code
 data-anolis-spec=xmlns>NCName</code> production in Namespaces in XML.-->
 
+<hr>
+
 <p>The <dfn id=dom-document-getelementsbytagname title=dom-Document-getElementsByTagName><code>getElementsByTagName(<var title="">localName</var>)</code></dfn> method must run the following steps:
 <ol>
- <li><p>If <var title="">localName</var> is just the character U+002A ASTERISK ("*"), return a <code><a href=#nodelist>NodeList</a></code> rooted at the <a href=#context-node>context node</a>, whose filter matches only <code><a href=#element>Element</a></code> nodes.
- <li><p>Otherwise, return a <code><a href=#nodelist>NodeList</a></code> rooted at the <a href=#context-node>context node</a>, whose filter matches only <code><a href=#element>Element</a></code> nodes that have a <code title=dom-node-localName><a href=#dom-node-localname>localName</a></code> equal to <var title="">localName</var>.
+ <li><p>If <var title="">localName</var> is just a U+002A ASTERISK ("*") character,
+ return a <code><a href=#nodelist>NodeList</a></code> rooted at the <a href=#context-node>context node</a>, whose
+ filter matches only <code><a href=#element>Element</a></code> nodes.
+
+ <li><p>Otherwise, if the <a href=#context-node>context node</a> is an <a href=#html-document>HTML
+ document</a>, return a <code><a href=#nodelist>NodeList</a></code> rooted at the <a href=#context-node>context
+ node</a>, whose filter matches only the following nodes:
+  <ul>
+   <li><code><a href=#element>Element</a></code> nodes in the <a href=#html-namespace>HTML namespace</a> that have a
+   <code title=dom-node-localName><a href=#dom-node-localname>localName</a></code> <a href=#case-sensitive title=case-sensitive>case-sensitively</a> equal to <var title="">localName</var>, <a href=#converted-to-lowercase>converted to lowercase</a>.
+
+   <li><code><a href=#element>Element</a></code> nodes, <em>not</em> in the <a href=#html-namespace>HTML
+   namespace</a>, that have a <code title=dom-node-localName><a href=#dom-node-localname>localName</a></code>
+   <a href=#case-sensitive title=case-sensitive>case-sensitively</a> equal to <var title="">localName</var>.
+  </ul>
+
+ <li><p>Otherwise, return a <code><a href=#nodelist>NodeList</a></code> rooted at the <a href=#context-node>context
+ node</a>, whose filter matches only <code><a href=#element>Element</a></code> nodes that have a
+ <code title=dom-node-localName><a href=#dom-node-localname>localName</a></code> <a href=#case-sensitive title=case-sensitive>case-sensitively</a> equal to <var title="">localName</var>.
 </ol>
+
 <p>A new <code><a href=#nodelist>NodeList</a></code> object must be returned each time unless
 the argument is the same as the last time the method was invoked on
 this <code><a href=#document>Document</a></code> object, in which case the object must be
 the same as the object returned by the previous call.</p>
+
+<p class=note>Thus, in an <a href=#html-document>HTML document</a>, <code title="">document.getElementsByTagName("FOO")</code> will match <code title="">FOO</code> elements that aren't in the <a href=#html-namespace>HTML namespace</a>, and
+<code title="">foo</code> elements that are in the <a href=#html-namespace>HTML namespace</a>, but
+not <code title="">FOO</code> elements that are in the <a href=#html-namespace>HTML namespace</a>.
+
+<hr>
 
 <p>The <dfn id=dom-document-importnode title=dom-Document-importNode><code>importNode(<var title="">importedNode</var>, <var title="">deep</var>)</code></dfn> method must run
 the following steps:
@@ -594,7 +628,7 @@ the following steps:
  <code title=dom-Node-attributes><a href=#dom-node-attributes>attributes</a></code> or any of the <code title=dom-Node-attributes><a href=#dom-node-attributes>attributes</a></code> of any descendant
  <code><a href=#element>Element</a></code> nodes has a <code title=dom-Node-localName><a href=#dom-node-localname>localName</a></code><!-- or <code
  title=dom-Node-prefix>prefix</code>--> which either does not match the <code><a href=http://www.w3.org/TR/xml/#NT-Name>Name</a></code> production in XML or contains a U+003A COLON
- (:) character, raise an <code title=dom-DOMException-INVALID_STATE_ERR><a href=#dom-domexception-invalid_state_err>INVALID_STATE_ERR</a></code> and abort
+ (":") character, raise an <code title=dom-DOMException-INVALID_STATE_ERR><a href=#dom-domexception-invalid_state_err>INVALID_STATE_ERR</a></code> and abort
  these steps.
 
  <!--<li><p>If <var title>importedNode</var>'s <code
@@ -656,7 +690,7 @@ Should document.documentURI really exist? be readonly?
  if <var title="">source</var> or any of its descendant nodes or any of its <code title=dom-Node-attributes><a href=#dom-node-attributes>attributes</a></code> or any of the <code title=dom-Node-attributes><a href=#dom-node-attributes>attributes</a></code> of any descendant
  <code><a href=#element>Element</a></code> nodes has a <code title=dom-Node-localName><a href=#dom-node-localname>localName</a></code><!-- or <code
  title=dom-Node-prefix>prefix</code>--> which either does not match the <code><a href=http://www.w3.org/TR/xml/#NT-Name>Name</a></code> production in XML or contains a U+003A COLON
- (:) character, raise an <code title=dom-DOMException-INVALID_STATE_ERR><a href=#dom-domexception-invalid_state_err>INVALID_STATE_ERR</a></code> and abort
+ (":") character, raise an <code title=dom-DOMException-INVALID_STATE_ERR><a href=#dom-domexception-invalid_state_err>INVALID_STATE_ERR</a></code> and abort
  these steps.
 
  <li><p>If <var title="">source</var> is an <code><a href=#element>Element</a></code> node, it is
@@ -1206,11 +1240,29 @@ change</dfn>, the user agent must run the <a href=#base-url-change-steps>base UR
 defined in <a href=#other-applicable-specifications>other applicable specifications</a>.
 
 <p>The <dfn id=dom-element-tagname title=dom-Element-tagName><code>tagName</code></dfn> attribute must,
-on getting, return the concatenation of <code title=dom-Node-prefix><a href=#dom-node-prefix>prefix</a></code>, the character U+003E COLON (":") and <code title=dom-Node-localName><a href=#dom-node-localname>localName</a></code> if <code title=dom-Node-prefix><a href=#dom-node-prefix>prefix</a></code> is not null, and otherwise just <code title=dom-Node-localName><a href=#dom-node-localname>localName</a></code>.
+on getting, run the following steps:
+<ol>
+ <li><p>If the <a href=#context-node>context node</a>'s <code title=dom-Node-prefix><a href=#dom-node-prefix>prefix</a></code> is not null, let <var title="">tagName</var>
+ be the concatenation of the <a href=#context-node>context node</a>'s <code title=dom-Node-prefix><a href=#dom-node-prefix>prefix</a></code>, a U+003E COLON (":") character and its
+ <code title=dom-Node-localName><a href=#dom-node-localname>localName</a></code>. Otherwise, let <var title="">tagName</var> be just the the <a href=#context-node>context node</a>'s <code title=dom-Node-localName><a href=#dom-node-localname>localName</a></code>.
 
-<p>The <dfn id=dom-element-getattribute title=dom-Element-getAttribute><code>getAttribute(<var title="">name</var>)</code></dfn> method must return the value of the first
-attribute in the <a href=#context-node title="context node">context node's</a> <code title=dom-Node-attributes><a href=#dom-node-attributes>attributes</a></code> whose <a href=#concept-attribute-name title=concept-attribute-name>name</a> <a href=#case-sensitive title=case-sensitive>case-sensitively</a> equals the first argument, in any
-namespace, if the attribute is present, or null otherwise.
+ <li><p>If the <a href=#context-node>context node</a> is in the <a href=#html-namespace>HTML namespace</a>
+ and its <code title=dom-Node-ownerDocument><a href=#dom-node-ownerdocument>ownerDocument</a></code> is an
+ <a href=#html-document>HTML document</a>, return <var title="">tagName</var>, <a href=#converted-to-uppercase>converted to
+ uppercase</a>. Otherwise, return <var title="">tagName</var>.
+</ol>
+
+<p>The <dfn id=dom-element-getattribute title=dom-Element-getAttribute><code>getAttribute(<var title="">name</var>)</code></dfn> method must run the following steps:
+<ol>
+ <li><p>If the <a href=#context-node>context node</a> is in the <a href=#html-namespace>HTML namespace</a>
+ and its <code title=dom-Node-ownerDocument><a href=#dom-node-ownerdocument>ownerDocument</a></code> is an
+ <a href=#html-document>HTML document</a>, let <var title="">name</var> be <var title="">name</var>,
+ <a href=#converted-to-lowercase>converted to lowercase</a>.
+
+ <li><p>Return the value of the first attribute in the <a href=#context-node>context
+ node</a>'s <code title=dom-Node-attributes><a href=#dom-node-attributes>attributes</a></code> whose <a href=#concept-attribute-name title=concept-attribute-name>name</a> <a href=#case-sensitive title=case-sensitive>case-sensitively</a> equals the first argument, in any
+ namespace, if the attribute is present, or null otherwise.
+</ol>
 
 <p>The <dfn id=dom-element-setattribute title=dom-Element-setAttribute><code>setAttribute(<var title="">name</var>, <var title="">value</var>)</code></dfn> method must run the
 following steps:
@@ -1220,6 +1272,11 @@ following steps:
  match the <code><a href=http://www.w3.org/TR/xml/#NT-Name>Name</a></code> production in XML, raise an
  <code title=dom-DOMException-INVALID_CHARACTER_ERR><a href=#dom-domexception-invalid_character_err>INVALID_CHARACTER_ERR</a></code>
  exception and abort these steps.
+
+ <li><p>If the <a href=#context-node>context node</a> is in the <a href=#html-namespace>HTML namespace</a>
+ and its <code title=dom-Node-ownerDocument><a href=#dom-node-ownerdocument>ownerDocument</a></code> is an
+ <a href=#html-document>HTML document</a>, let <var title="">name</var> be <var title="">name</var>,
+ <a href=#converted-to-lowercase>converted to lowercase</a>.
 
  <li><p>If the node doesn't have an attribute whose <a href=#concept-attribute-name title=concept-attribute-name>name</a> <a href=#case-sensitive title=case-sensitive>case-sensitively</a> equals <var title="">name</var>,
  create an <code><a href=#attr>Attr</a></code> node, with <var title="">name</var> as its <a href=#concept-attribute-name title=concept-attribute-name>name</a> and the <a href=#context-node>context node</a> as
@@ -1232,6 +1289,16 @@ following steps:
 </ol>
 
 <p class=XXX><dfn id=dom-element-removeattribute title=dom-Element-removeAttribute>removeAttribute</dfn>
+
+<!--<dfn title=dom-Element-getAttributeNode>getAttributeNode</dfn>: when the
+Element.getAttributeNode() method is invoked on an HTML element, the name
+argument must be converted to ASCII lowercase before the element's attributes
+are examined. (In HTML documents.) -->
+
+<!-- <dfn title=dom-Element-setAttributeNode>setAttributeNode</dfn>: when an
+Attr node is set on an HTML element using Element.setAttributeNode(), it must
+have its name converted to ASCII lowercase before the element is affected.
+(In HTML documents.) -->
 
 <p class=XXX><dfn id=dom-element-getelementsbytagname title=dom-Element-getElementsByTagName>getElementsByTagName</dfn>
 

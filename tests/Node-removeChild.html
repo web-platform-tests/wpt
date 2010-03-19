@@ -81,8 +81,8 @@ try {
   Test.separate();
   var iframe = document.createElement("iframe");
   iframe.onload = testCrossDocument;
-  iframe.src = "support/document";
-  document.body.removeChild(iframe);
+  iframe.src = "support/document.html";
+  document.body.appendChild(iframe);
 } catch (e) {
   Test.fail("Exception was thrown.");
 }

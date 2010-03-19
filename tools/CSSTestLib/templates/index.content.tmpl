@@ -36,11 +36,11 @@
  <p>Tests are currently available in three formats:</p>
 
  <dl>
-   <dt><a href="xhtml1/toc.xhtml">XHTML 1.1</a></dt>
+   <dt><a href="xhtml1/toc.xht">XHTML 1.1</a></dt>
      <dd>XHTML 1.1 tests sent as <code>application/xhtml+xml</code></dd>
    <dt><a href="html4/toc.html">HTML 4.01</a></dt>
      <dd>HTML 4.01 tests sent as <code>text/html</code></dd>
-   <dt><a href="xhtml1print/toc.xhtml">XHTML 1.1 for Printers</a></dt>
+   <dt><a href="xhtml1print/toc.xht">XHTML 1.1 for Printers</a></dt>
      <dd>XHTML 1.1 tests with all images converted from PNG to JPEG
        and formatted with headers and footers to ease testing of
        embedded printer software. This is not a canonical format,
@@ -128,7 +128,9 @@
   <p>Many thanks to the following for their contributions:</p>
   <ul>
 [%- FOREACH person = contributors.keys.sort %]
+  [% IF not person.match('^CSS1') %]
     <li>[% person %]</li>
+  [% END %]
 [%- END %]
   </ul>
   <p>...and all the <a href="http://www.w3.org/Style/CSS/Test/CSS1/current/tsack.html">contributors

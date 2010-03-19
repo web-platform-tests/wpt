@@ -59,8 +59,11 @@
     [% END %]
     [% UNLESS skip %]
       [% primary = entry.links.0 == section.uri %]
-      <tr id="[% entry.name %]-[% section.numstr %]" class="[% flag FOREACH flag IN entry.flags %] [% ' primary' IF primary %]">
-        <td>[% IF primary %]<strong>[% END %]<a href="[% extmap.translate(entry.file) %]">[% entry.title %]</a>[% IF primary %]</strong>[% END %]
+      <tr id="[% entry.name %]-[% section.numstr %]" class="
+              [% 'primary' IF primary %]
+              [% ' ' IF primary and entry.flags.size > 0 %]
+              [% entry.flags.join(' ') %]">
+        <td>[% '<strong>' IF primary %]<a href="[% extmap.translate(entry.file) %]">[% entry.title %]</a>[% '</strong>' IF primary %]
       [% IF entry.asserts.size > 0 %]
           <ul class="assert">
         [% FOREACH assertion IN entry.asserts %]

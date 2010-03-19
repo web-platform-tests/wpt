@@ -12,7 +12,7 @@ document.body.appendChild(results);
 results = results.firstChild.tBodies[0];
 
 var tests = [
-    [null, null],
+    [null, DOMException.INVALID_CHARACTER_ERR],
     [undefined, null],
     ["foo", null],
     ["1foo", DOMException.INVALID_CHARACTER_ERR],

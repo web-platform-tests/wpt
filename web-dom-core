@@ -36,7 +36,6 @@
  <li>Range.createContextualFragment <a href=http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2009-March/018892.html>http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2009-March/018892.html</a>
  <li>[Reflect] <a href=http://krijnhoetmer.nl/irc-logs/whatwg/20090622#l-90>http://krijnhoetmer.nl/irc-logs/whatwg/20090622#l-90</a>
  <li><code><a href=http://www.whatwg.org/html/#htmlcollection>HTMLCollection</a></code> is defined in HTML5. Perhaps we should move that to this spec. Perhaps also DOMTokenList, DOMStringMap, getElementsByClassName...
- <li><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/apis-in-html-documents.html#apis-in-html-documents>APIs in HTML documents</a>
 </ul>
 
 
@@ -456,7 +455,7 @@ steps:
   readonly attribute <a href=#documenttype>DocumentType</a> <a href=#dom-document-doctype title=dom-Document-doctype>doctype</a>;
   readonly attribute <a href=#domimplementation>DOMImplementation</a> <a href=#dom-document-implementation title=dom-Document-implementation>implementation</a>;
   readonly attribute <a href=#element>Element</a> <a href=#dom-document-documentelement title=dom-Document-documentElement>documentElement</a>;
-  <a href=#element>Element</a> <a href=#dom-document-createelement title=dom-Document-createElement>createElement</a>(in DOMString tagName);
+  <a href=#element>Element</a> <a href=#dom-document-createelement title=dom-Document-createElement>createElement</a>([TreatNullAs=EmptyString] in DOMString tagName);
   <a href=#documentfragment>DocumentFragment</a> createDocumentFragment();
   <a href=#text>Text</a> <a href=#dom-document-createtextnode title=dom-Document-createTextNode>createTextNode</a>(in DOMString data);
   <a href=#comment>Comment</a> <a href=#dom-document-createcomment title=dom-Document-createComment>createComment</a>(in DOMString data);<!--

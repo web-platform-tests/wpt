@@ -76,7 +76,7 @@ for (i in tests)
         row.insertCell(-1).innerHTML = element.tagName;
         pass &= element.tagName === tagName;
                 
-        if (document.evalute)
+        if (document.evaluate)
             var gotDescendants = document.evaluate("count(/descendant::node())", element, null, XPathResult.ANY_TYPE, null).numberValue;
         else
             var gotDescendants = function(node)

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<title>Element.tagName</title>
+<link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
+<link rel="help" href="../web-dom-core#dom-element-tagname">
+<body>
+<script src="support/test.js"></script>
+<script>
+var HTMLNS = "http://www.w3.org/1999/xhtml";
+var SVGNS = "http://www.w3.org/2000/svg";
+try {
+  var el = document.createElementNS(HTMLNS, "I");
+  Test.is(el.tagName, "I");
+  el = document.createElementNS(HTMLNS, "i");
+  Test.is(el.tagName, "I");
+  el = document.createElementNS(SVGNS, "svg");
+  Test.is(el.tagName, "svg");
+  el = document.createElementNS(SVGNS, "SVG");
+  Test.is(el.tagName, "SVG");
+} catch (e) {
+  Test.fail("Exception was thrown.");
+}
+Test.finish();
+</script>

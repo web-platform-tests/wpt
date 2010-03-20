@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<title>Document.getElementsByTagName</title>
+<link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
+<link rel="help" href="../web-dom-core#dom-document-getelementsbytagname">
+<body>
+<script src="support/test.js"></script>
+<script>
+try {
+  Test.is(document.getElementsByTagName("html"),
+          document.getElementsByTagName("html"));
+
+  Test.separate();
+  Test.is(document.createElementNS(gNS.HTML, "i").localName, "i"); // Sanity
+  var i = document.body.appendChild(document.createElementNS(gNS.HTML, "I"));
+  Test.is(i.localName, "I");
+  Test.is(i.tagName, "I");
+  Test.is(document.getElementsByTagName("I").length, 0);
+  Test.is(document.getElementsByTagName("i").length, 0);
+  Test.is(document.body.getElementsByTagName("I").length, 0);
+  Test.is(document.body.getElementsByTagName("i").length, 0);
+} catch (e) {
+  Test.fail("Exception was thrown.");
+}
+Test.finish();
+</script>

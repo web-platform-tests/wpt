@@ -70,6 +70,17 @@ try {
   } catch (e) {
     Test.fail("Should not have thrown.")
   }
+
+  Test.separate();
+  el = document.createElement("div");
+  el.setAttribute("ALIGN", "left");
+  Test.is(el.getAttributeNS("", "ALIGN"), "");
+  Test.is(el.getAttributeNS("", "align"), "left");
+  Test.is(el.getAttribute("align"), "left");
+  el.setAttribute("CHEEseCaKe", "tasty");
+  Test.is(el.getAttributeNS("", "CHEEseCaKe"), "");
+  Test.is(el.getAttributeNS("", "cheesecake"), "tasty");
+  Test.is(el.getAttribute("cheesecake"), "tasty");
 } catch (e) {
   Test.fail("Exception was thrown.");
 }

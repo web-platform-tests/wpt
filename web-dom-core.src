@@ -163,10 +163,10 @@ this specification.</p>
 
 <h3>Case-sensitivity</h3>
 
-<p>This specification defines several comparison operators for strings. 
-<p>Comparing two strings in a <dfn>case-sensitive</dfn> manner means comparing them exactly, codepoint for codepoint. 
-<p>Comparing two strings in a <dfn>ASCII case-insensitive</dfn> manner means comparing them exactly, codepoint for codepoint, except that the characters in the range U+0041 .. U+005A (i.e. LATIN CAPITAL LETTER A to LATIN CAPITAL LETTER Z) and the corresponding characters in the range U+0061 .. U+007A (i.e. LATIN SMALL LETTER A to LATIN SMALL LETTER Z) are considered to also match. 
-<p><dfn title="converted to uppercase">Converting a string to uppercase</dfn> means replacing all characters in the range U+0061 .. U+007A (i.e. LATIN SMALL LETTER A to LATIN SMALL LETTER Z) with the corresponding characters in the range U+0041 .. U+005A (i.e. LATIN CAPITAL LETTER A to LATIN CAPITAL LETTER Z). 
+<p>This specification defines several comparison operators for strings.
+<p>Comparing two strings in a <dfn>case-sensitive</dfn> manner means comparing them exactly, codepoint for codepoint.
+<p>Comparing two strings in a <dfn>ASCII case-insensitive</dfn> manner means comparing them exactly, codepoint for codepoint, except that the characters in the range U+0041 .. U+005A (i.e. LATIN CAPITAL LETTER A to LATIN CAPITAL LETTER Z) and the corresponding characters in the range U+0061 .. U+007A (i.e. LATIN SMALL LETTER A to LATIN SMALL LETTER Z) are considered to also match.
+<p><dfn title="converted to uppercase">Converting a string to uppercase</dfn> means replacing all characters in the range U+0061 .. U+007A (i.e. LATIN SMALL LETTER A to LATIN SMALL LETTER Z) with the corresponding characters in the range U+0041 .. U+005A (i.e. LATIN CAPITAL LETTER A to LATIN CAPITAL LETTER Z).
 <p><dfn title="converted to lowercase">Converting a string to lowercase</dfn> means replacing all characters in the range U+0041 .. U+005A (i.e. LATIN CAPITAL LETTER A to LATIN CAPITAL LETTER Z) with the corresponding characters in the range U+0061 .. U+007A (i.e. LATIN SMALL LETTER A to LATIN SMALL LETTER Z).
 
 
@@ -440,28 +440,32 @@ steps:
   readonly attribute <span>DocumentType</span> <span title=dom-Document-doctype>doctype</span>;
   readonly attribute <span>DOMImplementation</span> <span title=dom-Document-implementation>implementation</span>;
   readonly attribute <span>Element</span> <span title=dom-Document-documentElement>documentElement</span>;
+
   <span>Element</span> <span title=dom-Document-createElement>createElement</span>([TreatNullAs=EmptyString] in DOMString tagName);
+  <span>Element</span> <span title=dom-Document-createElementNS>createElementNS</span>(in DOMString namespaceURI, in DOMString qualifiedName);
   <span>DocumentFragment</span> createDocumentFragment();
   <span>Text</span> <span title=dom-Document-createTextNode>createTextNode</span>(in DOMString data);
-  <span>Comment</span> <span title=dom-Document-createComment>createComment</span>(in DOMString data);<!--
-  CDATASection createCDATASection(in DOMString data);-->
+  <span>Comment</span> <span title=dom-Document-createComment>createComment</span>(in DOMString data);
   <span>ProcessingInstruction</span> <span title=dom-Document-createProcessingInstruction>createProcessingInstruction</span>(in DOMString target, in DOMString data);<!--
+  CDATASection createCDATASection(in DOMString data);
+  EntityReference createEntityReference(in DOMString name);
   <span>Attr</span> <span title=dom-Document-createAttribute>createAttribute</span>(in DOMString name);
-    If adding this, search for [createAttribute]
-  EntityReference createEntityReference(in DOMString name);-->
+  <span>Attr</span> <span title=dom-Document-createAttributeNS>createAttributeNS</span>(in DOMString namespaceURI, in DOMString qualifiedName);
+    If adding this, search for [createAttribute]-->
+
   <span>NodeList</span> <span title=dom-Document-getElementsByTagName>getElementsByTagName</span>(in DOMString tagname);
-  <span>Node</span> <span title=dom-Document-importNode>importNode</span>(in <span>Node</span> importedNode, in boolean deep);
-  <span>Element</span> <span title=dom-Document-createElementNS>createElementNS</span>(in DOMString namespaceURI, in DOMString qualifiedName);<!--
-  <span>Attr</span> <span title=dom-Document-createAttributeNS>createAttributeNS</span>(in DOMString namespaceURI, in DOMString qualifiedName);-->
   <span>NodeList</span> <span title=dom-Document-getElementsByTagNameNS>getElementsByTagNameNS</span>(in DOMString namespaceURI, in DOMString localName);
   <span>Element</span> <span title=dom-Document-getElementById>getElementById</span>(in DOMString elementId);
-  readonly attribute DOMString <span title=dom-Document-inputEncoding>inputEncoding</span>;<!--
+
+  <span>Node</span> <span title=dom-Document-importNode>importNode</span>(in <span>Node</span> importedNode, in boolean deep);
+  <span>Node</span> <span title=dom-Document-adoptNode>adoptNode</span>(in <span>Node</span> source);
+
+  readonly attribute DOMString <span title=dom-Document-inputEncoding>inputEncoding</span>;
+           attribute DOMString <span title=dom-Document-documentURI>documentURI</span>;<!--
   readonly attribute DOMString xmlEncoding;
            attribute boolean xmlStandalone;
            attribute DOMString xmlVersion;
-           attribute boolean strictErrorChecking;-->
-           attribute DOMString <span title=dom-Document-documentURI>documentURI</span>;
-  <span>Node</span> <span title=dom-Document-adoptNode>adoptNode</span>(in <span>Node</span> source);<!--
+           attribute boolean strictErrorChecking;
   readonly attribute DOMConfiguration domConfig;
   void normalizeDocument();
   Node renameNode(in Node n, in DOMString namespaceURI, in DOMString qualifiedName);-->
@@ -477,6 +481,8 @@ document</span> affects the behavior of certain APIs.
 <p class=note>In both HTML and XML there will only ever be one <code>DocumentType</code> node descendant of the <code>Document</code> node. <a href=#refsHTML>[HTML]</a> <a href=#refsXML>[XML]</a>
 
 <p>The <dfn title=dom-Document-implementation><code>implementation</code></dfn> attribute must return the <code>DOMImplementation</code> object that is associated with the <code>Document</code> node.
+
+<hr>
 
 <p>The <dfn title=dom-Document-documentElement><code>documentElement</code></dfn> attribute must return the first child of the <code>Document</code> node that is an <code>Element</code> node, if there is one, or null otherwise.
 
@@ -533,6 +539,24 @@ document</span> affects the behavior of certain APIs.
 <!-- this is very different from DOM3 -->
 <p class=note>No check is performed that the local name will match the <code
 data-anolis-spec=xmlns>NCName</code> production in Namespaces in XML.
+
+<p>The <dfn title=dom-Document-createElementNS><code>createElementNS(<var title>namespaceURI</var>, <var title>qualifiedName</var>)</code></dfn> method must run the following steps:</p>
+<ol>
+ <li><p>If <var title>qualifiedName</var> doesn't match the <code
+ data-anolis-spec=xml>Name</code> production in XML, raise an <code
+ title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
+ exception and abort these steps.
+ <li><p>If <var title>qualifiedName</var> doesn't match the <code
+ data-anolis-spec=xmlns>QName</code> production in Namespaces in XML, raise a
+ <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and
+ abort these steps.
+ <li><p>If <var title>qualifiedName</var> contains a U+003E COLON (":") character, then split the string on the colon and let <var title>prefix</var> be the part before the colon and <var title>localName</var> the part after the colon. Otherwise, let <var title>prefix</var> be null and <var title>localName</var> be <var title>qualifiedName</var>.
+ <li><p>If <var title>prefix</var> is not null and <var title>namespaceURI</var> is an empty string, raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and abort these steps.
+ <li><p>If <var title>prefix</var> is "xml" and <var title>namespaceURI</var> is not the <span>XML namespace</span>, raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and abort these steps.
+ <li><p>If <var title>qualifiedName</var> or <var title>prefix</var> is "xmlns" and <var title>namespaceURI</var> is not the <span>XMLNS namespace</span>, raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and abort these steps.
+ <li><p>If <var title>namespaceURI</var> is the <span>XMLNS namespace</span> and neither <var title>qualifiedName</var> nor <var title>prefix</var> is "xmlns", raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and abort these steps.
+ <li><p>Return a new <code>Element</code> node with no attributes, <code title=dom-Node-namespaceURI>namespaceURI</code> set to <var title>namespaceURI</var>, <code title=dom-Node-prefix>prefix</code> set to <var title>prefix</var>, <code title=dom-Node-localName>localName</code> set to <var title>localName</var>, and <code title=dom-Node-ownerDocument>ownerDocument</code> set to the <span>context node</span>.
+</ol>
 
 <p>The <dfn title=dom-Document-createDocumentFragment><code>createDocumentFragment()</code></dfn> method must return a new <code>DocumentFragment</code> node with its <code title=dom-Node-ownerDocument>ownerDocument</code> set to the <span>context node</span>.
 
@@ -624,6 +648,24 @@ title>FOO</code> elements that aren't in the <span>HTML namespace</span>, and
 <code title>foo</code> elements that are in the <span>HTML namespace</span>, but
 not <code title>FOO</code> elements that are in the <span>HTML namespace</span>.
 
+<p>The <dfn title=dom-Document-getElementsByTagNameNS><code>getElementsByTagNameNS(<var title>namespaceURI</var>, <var title>localName</var>)</code></dfn> method must run the following steps:
+<ol>
+ <li><p>If both <var title>namespaceURI</var> and <var title>localName</var> are just the character U+002A ASTERISK ("*"), return a <code>NodeList</code> rooted at the <span>context node</span>, whose filter matches only <code>Element</code> nodes.
+ <li><p>Otherwise, if <var title>namespaceURI</var> is just the character U+002A ASTERISK ("*"), return a <code>NodeList</code> rooted at the <span>context node</span>, whose filter matches only <code>Element</code> nodes with the <code title=dom-Node-localName>localName</code> equal to <var title>localName</var>.
+ <li><p>Otherwise, if <var title>localName</var> is just the character U+002A ASTERISK ("*"), return a <code>NodeList</code> rooted at the <span>context node</span>, whose filter matches only <code>Element</code> nodes with the <code title=dom-Node-namespaceURI>namespaceURI</code> equal to <var title>namespaceURI</var>.
+ <li><p>Otherwise, return a <code>NodeList</code> rooted at the <span>context node</span>, whose filter matches only <code>Element</code> nodes that have a <code title=dom-Node-namespaceURI>namespaceURI</code> equal to <var title>namespaceURI</var> and a <code title=dom-Node-localName>localName</code> equal to <var title>localName</var> (both in a <span>case-sensitive</span> manner).
+</ol>
+<p>A new <code>NodeList</code> object must be returned each time unless
+the argument is the same as the last time the method was invoked on
+this <code>Document</code> object, in which case the object must be
+the same as the object returned by the previous call.</p>
+
+<p>The <dfn title=dom-Document-getElementById><code>getElementById(<var
+title>elementId</var>)</code></dfn> method must return the first
+<code>Element</code> node, in <span>tree order</span>, in the <span>context
+node</span> whose <span title=concept-ID>ID</span> is <var
+title>elementId</var>, or null if there is none.
+
 <hr>
 
 <p>The <dfn title=dom-Document-importNode><code>importNode(<var
@@ -655,47 +697,6 @@ the following steps:
  title>new ownerDocument</var> being the <span>context node</span>, and the <var
  title>clone children</var> flag set if <var title>deep</var> is true.
 </ol>
-
-<p>The <dfn title=dom-Document-createElementNS><code>createElementNS(<var title>namespaceURI</var>, <var title>qualifiedName</var>)</code></dfn> method must run the following steps:</p>
-<ol>
- <li><p>If <var title>qualifiedName</var> doesn't match the <code
- data-anolis-spec=xml>Name</code> production in XML, raise an <code
- title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
- exception and abort these steps.
- <li><p>If <var title>qualifiedName</var> doesn't match the <code
- data-anolis-spec=xmlns>QName</code> production in Namespaces in XML, raise a
- <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and
- abort these steps.
- <li><p>If <var title>qualifiedName</var> contains a U+003E COLON (":") character, then split the string on the colon and let <var title>prefix</var> be the part before the colon and <var title>localName</var> the part after the colon. Otherwise, let <var title>prefix</var> be null and <var title>localName</var> be <var title>qualifiedName</var>.
- <li><p>If <var title>prefix</var> is not null and <var title>namespaceURI</var> is an empty string, raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and abort these steps.
- <li><p>If <var title>prefix</var> is "xml" and <var title>namespaceURI</var> is not the <span>XML namespace</span>, raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and abort these steps.
- <li><p>If <var title>qualifiedName</var> or <var title>prefix</var> is "xmlns" and <var title>namespaceURI</var> is not the <span>XMLNS namespace</span>, raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and abort these steps.
- <li><p>If <var title>namespaceURI</var> is the <span>XMLNS namespace</span> and neither <var title>qualifiedName</var> nor <var title>prefix</var> is "xmlns", raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and abort these steps.
- <li><p>Return a new <code>Element</code> node with no attributes, <code title=dom-Node-namespaceURI>namespaceURI</code> set to <var title>namespaceURI</var>, <code title=dom-Node-prefix>prefix</code> set to <var title>prefix</var>, <code title=dom-Node-localName>localName</code> set to <var title>localName</var>, and <code title=dom-Node-ownerDocument>ownerDocument</code> set to the <span>context node</span>.
-</ol>
-
-<p>The <dfn title=dom-Document-getElementsByTagNameNS><code>getElementsByTagNameNS(<var title>namespaceURI</var>, <var title>localName</var>)</code></dfn> method must run the following steps:
-<ol>
- <li><p>If both <var title>namespaceURI</var> and <var title>localName</var> are just the character U+002A ASTERISK ("*"), return a <code>NodeList</code> rooted at the <span>context node</span>, whose filter matches only <code>Element</code> nodes.
- <li><p>Otherwise, if <var title>namespaceURI</var> is just the character U+002A ASTERISK ("*"), return a <code>NodeList</code> rooted at the <span>context node</span>, whose filter matches only <code>Element</code> nodes with the <code title=dom-Node-localName>localName</code> equal to <var title>localName</var>.
- <li><p>Otherwise, if <var title>localName</var> is just the character U+002A ASTERISK ("*"), return a <code>NodeList</code> rooted at the <span>context node</span>, whose filter matches only <code>Element</code> nodes with the <code title=dom-Node-namespaceURI>namespaceURI</code> equal to <var title>namespaceURI</var>.
- <li><p>Otherwise, return a <code>NodeList</code> rooted at the <span>context node</span>, whose filter matches only <code>Element</code> nodes that have a <code title=dom-Node-namespaceURI>namespaceURI</code> equal to <var title>namespaceURI</var> and a <code title=dom-Node-localName>localName</code> equal to <var title>localName</var> (both in a <span>case-sensitive</span> manner).
-</ol>
-<p>A new <code>NodeList</code> object must be returned each time unless
-the argument is the same as the last time the method was invoked on
-this <code>Document</code> object, in which case the object must be
-the same as the object returned by the previous call.</p>
-
-<p>The <dfn title=dom-Document-getElementById><code>getElementById(<var
-title>elementId</var>)</code></dfn> method must return the first
-<code>Element</code> node, in <span>tree order</span>, in the <span>context
-node</span> whose <span title=concept-ID>ID</span> is <var
-title>elementId</var>, or null if there is none.
-
-<p class=XXX><dfn title=dom-Document-inputEncoding>inputEncoding</dfn>
-
-<p class=XXX><dfn title=dom-Document-documentURI>documentURI</dfn>
-Should document.documentURI really exist? be readonly? 
 
 <p>The <dfn title=dom-Document-adoptNode><code>adoptNode(<var
 title>source</var>)</code></dfn> method must run the following steps:
@@ -743,6 +744,13 @@ title>source</var>)</code></dfn> method must run the following steps:
 
  <li><p>Return <var title>source</var>.
 </ol>
+
+<hr>
+
+<p class=XXX><dfn title=dom-Document-inputEncoding>inputEncoding</dfn>
+
+<p class=XXX><dfn title=dom-Document-documentURI>documentURI</dfn>
+Should document.documentURI really exist? be readonly?
 
 
 <h3>Interface <code title>Node</code></h3>

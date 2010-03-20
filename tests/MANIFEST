@@ -1,14 +1,16 @@
 Document-createElement.html
 Document-createProcessingInstruction.html
 Document-getElementById-emptystring.html
+Document-getElementsByTagName.html
 Document-getElementsByTagNameNS-same.html
-Document-getElementsByTagName-same.html
 DOMImplementation-createHTMLDocument.html
 Element-getAttribute.html
 Element-setAttribute.html
+Element-tagName.html
 MANIFEST
 Node-appendChild.html
 Node-hasAttributes.html
 Node-insertBefore.html
+Node-nodeName.html
 Node-removeChild.html
 support

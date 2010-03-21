@@ -582,7 +582,12 @@ title>data</var>)</code></dfn> method must run the following steps:
  data-anolis-spec=xml>PITarget</code>--> <code data-anolis-spec=xml>Name</code>
  production in XML, raise an <code
  title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
- exception and abort these steps. <!-- DOM3 didn't check for "xml" --></li>
+ exception and abort these steps. <!-- DOM3 didn't check for "xml" -->
+
+ <li><p>If <var title>data</var> contains the string "<code title>?></code>",
+ raise an <code
+ title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
+ exception and abort these steps. <!-- Gecko does this. -->
 
  <!--<li><p>If <var title>target</var> contains a U+003A COLON (":") character, raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and abort these steps.--> <!-- DOM3 didn't check this -->
 
@@ -591,8 +596,7 @@ title>data</var>)</code></dfn> method must run the following steps:
 
 <p class=note>No check is performed that the processing instruction target
 contains "xml" or the colon, or that the data contains characters that match the
-<code data-anolis-spec=xml>Char</code> production in XML or that it contains the string
-"<code title>?></code>".</p>
+<code data-anolis-spec=xml>Char</code> production in XML.</p>
 
 <!--
 [createAttribute]

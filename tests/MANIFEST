@@ -1,5 +1,6 @@
 Document-createElement.html
 Document-createProcessingInstruction.html
+Document-createProcessingInstruction.xhtml
 Document-getElementById-emptystring.html
 Document-getElementsByTagName.html
 Document-getElementsByTagNameNS-same.html

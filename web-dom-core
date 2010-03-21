@@ -7,7 +7,7 @@
 <body class=draft>
 <div class=head id=head>
 <h1>Web DOM Core</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-date:-01-jan-1901>Work in Progress &mdash; Last Update 20 March 2010</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-date:-01-jan-1901>Work in Progress &mdash; Last Update 21 March 2010</h2>
 <dl>
  <dt>Editors
  <dd>Simon Pieters &lt;simonp@opera.com&gt;
@@ -585,7 +585,11 @@ contains two adjacent hyphens or ends with a hyphen.
  <li><p>If <var title="">target</var> doesn't match the <!--<code
  data-anolis-spec=xml>PITarget</code>--> <code><a href=http://www.w3.org/TR/xml/#NT-Name>Name</a></code>
  production in XML, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR><a href=#dom-domexception-invalid_character_err>INVALID_CHARACTER_ERR</a></code>
- exception and abort these steps. <!-- DOM3 didn't check for "xml" --></li>
+ exception and abort these steps. <!-- DOM3 didn't check for "xml" -->
+
+ <li><p>If <var title="">data</var> contains the string "<code title="">?&gt;</code>",
+ raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR><a href=#dom-domexception-invalid_character_err>INVALID_CHARACTER_ERR</a></code>
+ exception and abort these steps. <!-- Gecko does this. -->
 
  <!--<li><p>If <var title>target</var> contains a U+003A COLON (":") character, raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and abort these steps.--> <!-- DOM3 didn't check this -->
 
@@ -594,8 +598,7 @@ contains two adjacent hyphens or ends with a hyphen.
 
 <p class=note>No check is performed that the processing instruction target
 contains "xml" or the colon, or that the data contains characters that match the
-<code><a href=http://www.w3.org/TR/xml/#NT-Char>Char</a></code> production in XML or that it contains the string
-"<code title="">?&gt;</code>".</p>
+<code><a href=http://www.w3.org/TR/xml/#NT-Char>Char</a></code> production in XML.</p>
 
 <!--
 [createAttribute]

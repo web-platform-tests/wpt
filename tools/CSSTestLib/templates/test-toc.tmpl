@@ -63,11 +63,11 @@
               [% 'primary' IF primary %]
               [% ' ' IF primary and entry.flags.size > 0 %]
               [% entry.flags.join(' ') %]">
-        <td>[% '<strong>' IF primary %]<a href="[% extmap.translate(entry.file) %]">[% entry.title %]</a>[% '</strong>' IF primary %]
+        <td>[% '<strong>' IF primary %]<a href="[% extmap.translate(entry.file) %]">[% entry.title | collapse | html %]</a>[% '</strong>' IF primary %]
       [% IF entry.asserts.size > 0 %]
           <ul class="assert">
         [% FOREACH assertion IN entry.asserts %]
-            <li>[% assertion %]</li>
+            <li>[% assertion | collapse | html %]</li>
        [% END %]
           </ul>
       [% END %]

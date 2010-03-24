@@ -269,6 +269,8 @@ class XHTMLSource(FileSource):
                                       format='html',
                                       emit_doctype='html',
                                       resolve_entities=False,
+                                      omit_optional_tags=False,
+                                      minimize_boolean_attributes=True,
                                       quote_attr_values=True)
 
     # lxml fixup for eating whitespace outside root element

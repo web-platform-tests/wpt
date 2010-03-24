@@ -10,6 +10,7 @@
         <meta name="flags" content="ahem invalid" />
         <meta name="assert" content="Invalid characters in font family names invalidate entire declaration."/>
         <style type="text/css">
+            <![CDATA[
             #div1
             {
                 font-family: test!foo, ahem;
@@ -82,6 +83,7 @@
             {
                 font-family: test~foo, ahem;
             }
+            ]]>
         </style>
     </head>
     <body>

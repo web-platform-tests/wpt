@@ -5,7 +5,7 @@
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#positioning-scheme" />
         <meta name="flags" content="" />
-        <meta name="assert" content="Computed value of positive top equals negative bottom." />
+        <meta name="assert" content="Used value of top equals negative bottom when top is auto and bottom is given. (Computed value of top remains auto.)" />
         <style type="text/css">
             div
             {
@@ -15,19 +15,28 @@
             #div1
             {
                 position: absolute;
-                background: orange;
+                background: red;
+                margin-top: 1in;
             }
             #div2
             {
-                background: blue;
                 bottom: -1in;
                 position: relative;
+                top: auto;
+            }
+            #div3
+            {
+                background: green;
+                position: relative;
+                top: inherit;
             }
         </style>
     </head>
     <body>
-        <p>Test passes if the blue box is directly below the orange box.</p>
+        <p>Test passes if there is no red visible on the page.</p>
         <div id="div1"></div>
-        <div id="div2"></div>
+        <div id="div2">
+            <div id="div3"></div>
+        </div>
     </body>
 </html>

@@ -7,7 +7,6 @@
   <title>CSS Test: Collapsing margins - margin-bottom of the last in-flow child block collapsing with its parent min-height block's bottom margin</title>
 
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
-  <link rel="author" title="Hilbrand Edskes" href="http://edskes.com/" />
   <link rel="author" title="Bruno Fassino" href="fassino[at]gmail.com" />
   <link rel="help" href="http://www.w3.org/TR/CSS21/changes.html#q313" />
   <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#collapsing-margins" />
@@ -19,30 +18,24 @@
 
   p {margin: 8px 0px 0px;}
 
-  div#reference-overlapped-red
+  div#reference-overlapping-green
   {
-  background-color: red;
-  height: 200px;
+  background-color: green;
+  height: 100px;
   left: 8px;
   position: absolute;
   right: 8px;
-  z-index: -1;
   }
 
-  div#green-grand-parent
+  #test-overlapped-red
   {
-  background-color: green;
-  border-bottom: green solid 1px;
+  background-color: red;
+  min-height: 50px;
   }
 
-  div#parent-block
+  #last-child
   {
-  margin-bottom: 0px;
-  min-height: 99px;
-  }
-
-  div#last-child
-  {
+  height: 100px;
   margin-bottom: 100px;
   }
   ]]></style>
@@ -51,14 +44,12 @@
 
  <body>
 
-  <p>Below, there should be a tall green rectangle across the page. There should be no red in this page.</p>
+  <p>Below, there should be a green rectangle across the page. There should be no red in this page.</p>
 
-  <div id="reference-overlapped-red"></div>
+  <div id="reference-overlapping-green"></div>
 
-  <div id="green-grand-parent">
-    <div id="parent-block">
-      <div id="last-child">&nbsp;</div>
-    </div>
+  <div id="test-overlapped-red">
+    <div id="last-child"></div>
   </div>
 
  </body>

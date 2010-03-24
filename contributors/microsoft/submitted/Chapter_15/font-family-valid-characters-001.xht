@@ -1,0 +1,63 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD//XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>CSS Test: Valid characters in font-family values</title>
+        <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="author" title="Arron Eicholz" href="http://www.microsoft.com/" />
+        <link rel="author" title="Elika Etemad" href="http://fantasai.inkedblade.net/contact" />
+        <link rel="help" href="http://www.w3.org/TR/CSS21/fonts.html#font-family-prop"/>
+        <link rel="help" href="http://www.w3.org/TR/CSS21/syndata.html#characters"/>
+        <meta name="flags" content="ahem" />
+        <meta name="assert" content="Valid characters in font family names."/>
+        <style type="text/css">
+            #div1
+            {
+                font-family: test-foo, ahem;
+            }
+            #div2
+            {
+                font-family: test_foo, ahem;
+            }
+            #div3
+            {
+                font-family: test\foo, ahem;
+            }
+            #div4
+            {
+                font-family: test, foo, ahem;
+            }
+            #div5
+            {
+                font-family: _testfoo, ahem;
+            }
+            #div6
+            {
+                font-family: -testfoo, ahem;
+            }
+            #div7
+            {
+                font-family: test -foo, ahem;
+            }
+            #div8
+            {
+                font-family: test _foo, ahem;
+            }
+            #div9
+            {
+                font-family: \testfoo, ahem;
+            }
+        </style>
+    </head>
+    <body>
+        <p>Test passes if the word "Fail" is not visible below.</p>
+        <div id="div1">Fail</div>
+        <div id="div2">Fail</div>
+        <div id="div3">Fail</div>
+        <div id="div4">Fail</div>
+        <div id="div5">Fail</div>
+        <div id="div6">Fail</div>
+        <div id="div7">Fail</div>
+        <div id="div8">Fail</div>
+        <div id="div9">Fail</div>
+    </body>
+</html>

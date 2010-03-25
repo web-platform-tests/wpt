@@ -11,21 +11,25 @@
             {
                 display: inline-block;
                 color: white;
+                vertical-align:-100px;
+                background: green;
             }
             div
             {
-                color: white;
+                background: white;
+                color: white
             }
             div:first-line
             {
-                color: red;
+                background: blue;
+                color: white;
             }
         </style>
     </head>
     <body>
-        <p>Test passes if there is no red visible on the page.</p>
+        <p>Test passes if the words "PASS PASS" are below.</p>
         <div>
-            <span>FAIL<br />FAIL</span>
+            <span>&nbsp;<br />PASS</span>PASS
         </div>
     </body>
 </html>

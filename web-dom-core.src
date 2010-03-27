@@ -3,7 +3,24 @@
 <link rel=stylesheet href=http://www.whatwg.org/style/specification>
 <style>
  pre, code { font-family:monospace, sans-serif; }
- h2 code, h3 code, h4 code { font:inherit; color:inherit; font-style:italic }
+ h2 code, h3 code, h4 code { font:inherit; color:inherit; font-style:italic; }
+ span:not([title]):not([class]):not([id]):not([data-anolis-spec]),
+ abbr:not([title]):not([class]):not([id]):not([data-anolis-spec]),
+ code:not([title]):not([class]):not([id]):not([data-anolis-spec]),
+ var:not([title]):not([class]):not([id]):not([data-anolis-spec]),
+ i:not([title]):not([class]):not([id]):not([data-anolis-spec])
+ { border-bottom: solid #99CC99; }
+ dfn span:not([title]):not([class]):not([id]):not([data-anolis-spec]),
+ a span:not([title]):not([class]):not([id]):not([data-anolis-spec]),
+ dfn abbr:not([title]):not([class]):not([id]):not([data-anolis-spec]),
+ a abbr:not([title]):not([class]):not([id]):not([data-anolis-spec]),
+ dfn code:not([title]):not([class]):not([id]):not([data-anolis-spec]),
+ a code:not([title]):not([class]):not([id]):not([data-anolis-spec]),
+ dfn var:not([title]):not([class]):not([id]):not([data-anolis-spec]),
+ a var:not([title]):not([class]):not([id]):not([data-anolis-spec]),
+ dfn i:not([title]):not([class]):not([id]):not([data-anolis-spec]),
+ a i:not([title]):not([class]):not([id]):not([data-anolis-spec])
+ { border-bottom: none; }
 </style>
 <body class=draft>
 <div class=head id=head>
@@ -631,8 +648,9 @@ must, on getting, run the following steps:
 
 <p>The <dfn title=dom-Node-ownerDocument><code>ownerDocument</code></dfn> attribute must, on getting, return the <code>Document</code> node that the <span>context node</span> is associated with, or null if there is none.
 
-<p>The <dfn title=dom-Node-insertBefore><code>insertBefore(<var>newChild</var>,
-<var>refChild</var>)</code></dfn> method must run the following steps:
+<p>The <dfn title=dom-Node-insertBefore><code>insertBefore(<var
+title>newChild</var>, <var title>refChild</var>)</code></dfn> method must run
+the following steps:
 
 <ol>
  <li><p>If the <span>context node</span> is an <code>Attr</code> node, then
@@ -640,43 +658,45 @@ must, on getting, run the following steps:
  title=dom-DOMException-HIERARCHY_REQUEST_ERR>HIERARCHY_REQUEST_ERR</code> and
  abort these steps. <!-- See Mozilla bug 547798 -->
 
- <li><p>If <var>newChild</var> is null, then raise a <code
+ <li><p>If <var title>newChild</var> is null, then raise a <code
  title=dom-DOMException-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</code> exception and
  abort these steps.
 
- <li><p>If <var>refChild</var> is not null and is not a child of the
+ <li><p>If <var title>refChild</var> is not null and is not a child of the
  <span>context node</span>, then raise a <code
  title=dom-DOMException-NOT_FOUND_ERR>NOT_FOUND_ERR</code> exception and abort
  these steps. <!-- Do not adopt. -->
 
- <li><p>If <var>newChild</var>'s
+ <li><p>If <var title>newChild</var>'s
  <code title=dom-Node-ownerDocument>ownerDocument</code> is not equal to the
  <span>context node</span>'s
  <code title=dom-Node-ownerDocument>ownerDocument</code>, call the
  <span>context node</span>'s
  <code title=dom-Node-ownerDocument>ownerDocument</code>
  <code title=dom-Document-adoptNode>adoptNode</code> method with
- <var>newChild</var> as its argument.
+ <var title>newChild</var> as its argument.
 
  <!-- no security check -->
- <li><p>If <var>newChild</var> is a <code>DocumentFragment</code> node, then
- while <var>newChild</var>'s <code title=dom-Node-firstChild>firstChild</code>
- is not null, call <code title=dom-Node-insertBefore>insertBefore</code> on the
- <span>context node</span> with <var>newChild</var>'s <code
- title=dom-Node-firstChild>firstChild</code> as first argument and
- <var>refChild</var> as second argument.
+ <li><p>If <var title>newChild</var> is a <code>DocumentFragment</code> node,
+ then while <var title>newChild</var>'s <code
+ title=dom-Node-firstChild>firstChild</code> is not null, call <code
+ title=dom-Node-insertBefore>insertBefore</code> on the <span>context
+ node</span> with <var title>newChild</var>'s <code
+ title=dom-Node-firstChild>firstChild</code> as first argument and <var
+ title>refChild</var> as second argument.
 
- <li><p>Otherwise, if <var>refChild</var> is null, append <var>newChild</var> to
- the <span>context node</span>.
+ <li><p>Otherwise, if <var title>refChild</var> is null, append <var
+ title>newChild</var> to the <span>context node</span>.
 
- <li><p>Otherwise insert <var>newChild</var> in the <span>context node</span> as
- the previous sibling of <var>refChild</var>.
+ <li><p>Otherwise insert <var title>newChild</var> in the <span>context
+ node</span> as the previous sibling of <var title>refChild</var>.
 
- <li><p>Return <var>newChild</var>.
+ <li><p>Return <var title>newChild</var>.
 </ol>
 
-<p>The <dfn title=dom-Node-replaceChild><code>replaceChild(<var>newChild</var>,
-<var>oldChild</var>)</code></dfn> method must run the following steps:
+<p>The <dfn title=dom-Node-replaceChild><code>replaceChild(<var
+title>newChild</var>, <var title>oldChild</var>)</code></dfn> method must run
+the following steps:
 
 <ol>
  <li><p>If the <span>context node</span> is an <code>Attr</code> node, then
@@ -684,59 +704,62 @@ must, on getting, run the following steps:
  title=dom-DOMException-HIERARCHY_REQUEST_ERR>HIERARCHY_REQUEST_ERR</code> and
  abort these steps. <!-- See Mozilla bug 547798 -->
 
- <li><p>If either <var>newChild</var> or <var>oldChild</var> is null, then raise
- a <code title=dom-DOMException-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</code>
- exception and abort these steps.
+ <li><p>If either <var title>newChild</var> or <var title>oldChild</var> is
+ null, then raise a <code
+ title=dom-DOMException-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</code> exception and
+ abort these steps.
 
- <li><p>If <var>newChild</var>'s
+ <li><p>If <var title>newChild</var>'s
  <code title=dom-Node-ownerDocument>ownerDocument</code> is not equal to the
  <span>context node</span>'s
  <code title=dom-Node-ownerDocument>ownerDocument</code>, call the
  <span>context node</span>'s
  <code title=dom-Node-ownerDocument>ownerDocument</code>
  <code title=dom-Document-adoptNode>adoptNode</code> method with
- <var>newChild</var> as its argument.
+ <var title>newChild</var> as its argument.
 
- <li><p>If <var>oldChild</var> is not a child of the <span>context node</span>,
- then raise a <code title=dom-DOMException-NOT_FOUND_ERR>NOT_FOUND_ERR</code>
+ <li><p>If <var title>oldChild</var> is not a child of the <span>context
+ node</span>, then raise a <code
+ title=dom-DOMException-NOT_FOUND_ERR>NOT_FOUND_ERR</code>
  exception and abort these steps.
 
  <!-- no security check -->
- <li><p>Let <var>refChild</var> be <var>oldChild</var>'s
+ <li><p>Let <var title>refChild</var> be <var title>oldChild</var>'s
  <code title=dom-Node-nextSibling>nextSibling</code>.
 
- <li><p>Remove <var>oldChild</var> from <span>context node</span>.
+ <li><p>Remove <var title>oldChild</var> from <span>context node</span>.
 
  <li><p>Call <code title=dom-Node-insertBefore>insertBefore</code> on the
- <span>context node</span> with <var>newChild</var> and <var>refChild</var> as
- arguments, respectively.
+ <span>context node</span> with <var title>newChild</var> and <var
+ title>refChild</var> as arguments, respectively.
 
- <li><p>Return <var>newChild</var>.
+ <li><p>Return <var title>newChild</var>.
 </ol>
 
 <p>The <dfn
-title=dom-Node-removeChild><code>removeChild(<var>oldChild</var>)</code></dfn>
-method must run the following steps:
+title=dom-Node-removeChild><code>removeChild(<var
+title>oldChild</var>)</code></dfn> method must run the following steps:
 
 <ol>
  <!-- Attr nodes are okay -->
- <li><p>If <var>oldChild</var> is null, then raise a <code
+ <li><p>If <var title>oldChild</var> is null, then raise a <code
  title=dom-DOMException-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</code> exception and
  abort these steps.
 
- <li><p>If <var>oldChild</var> is not a child of the <span>context node</span>,
- then raise a <code title=dom-DOMException-NOT_FOUND_ERR>NOT_FOUND_ERR</code>
- exception and abort these steps.
+ <li><p>If <var title>oldChild</var> is not a child of the <span>context
+ node</span>, then raise a <code
+ title=dom-DOMException-NOT_FOUND_ERR>NOT_FOUND_ERR</code> exception and abort
+ these steps.
  <!-- Including other documents. -->
 
- <li><p>Remove <var>oldChild</var> from <span>context node</span>.
+ <li><p>Remove <var title>oldChild</var> from <span>context node</span>.
 
- <li><p>Return <var>oldChild</var>.
+ <li><p>Return <var title>oldChild</var>.
 </ol>
 
 <p>The <dfn
-title=dom-Node-appendChild><code>appendChild(<var>newChild</var>)</code></dfn>
-method must run the following steps:
+title=dom-Node-appendChild><code>appendChild(<var
+title>newChild</var>)</code></dfn> method must run the following steps:
 
 <ol>
  <li><p>If the <span>context node</span> is an <code>Attr</code> node, then
@@ -744,28 +767,33 @@ method must run the following steps:
  title=dom-DOMException-HIERARCHY_REQUEST_ERR>HIERARCHY_REQUEST_ERR</code> and
  abort these steps. <!-- See Mozilla bug 547798 -->
 
- <li><p>If <var>newChild</var> is null, then raise a <code
+ <li><p>If <var title>newChild</var> is null, then raise a <code
  title=dom-DOMException-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</code> exception and
  abort these steps.
 
- <li><p>If <var>newChild</var>'s
+ <li><p>If <var title>newChild</var>'s
  <code title=dom-Node-ownerDocument>ownerDocument</code> is not equal to the
  <span>context node</span>'s
  <code title=dom-Node-ownerDocument>ownerDocument</code>, call the
  <span>context node</span>'s
  <code title=dom-Node-ownerDocument>ownerDocument</code>
  <code title=dom-Document-adoptNode>adoptNode</code> method with
- <var>newChild</var> as its argument.
+ <var title>newChild</var> as its argument.
 
  <!-- no security check -->
- <li><p>Append <var>newChild</var> to the <span>context node</span>.
+ <li><p>Append <var title>newChild</var> to the <span>context node</span>.
 
- <li><p>Return <var>newChild</var>.
+ <li><p>Return <var title>newChild</var>.
 </ol>
 
 <p>The <dfn title=dom-Node-hasChildNodes><code>hasChildNodes()</code></dfn> method must return false if the <span>context node</span>'s <code title=dom-Node-firstChild>firstChild</code> is null, and true otherwise.
 
-<p>The <dfn title=dom-Node-cloneNode><code>cloneNode(<var>deep</var>)</code></dfn> method must return a <span>clone</span> of the <span>context node</span>, with <var title>new ownerDocument</var> being the <span>context node</span>'s <code title=dom-Node-ownerDocument>ownerDocument</code>, and the <var title>clone children</var> flag set if <var title>deep</var> is true.
+<p>The <dfn title=dom-Node-cloneNode><code>cloneNode(<var
+title>deep</var>)</code></dfn> method must return a <span>clone</span> of the
+<span>context node</span>, with <var title>new ownerDocument</var> being the
+<span>context node</span>'s <code
+title=dom-Node-ownerDocument>ownerDocument</code>, and the <var title>clone
+children</var> flag set if <var title>deep</var> is true.
 
 <p>The <dfn title=dom-Node-isSupported><code>isSupported(<var title>feature</var>, <var title>version</var>)</code></dfn> method must return true if the UA supports the given feature <var title>feature</var> of version <var title>version</var> on the <span>context node</span>, and false otherwise.
 
@@ -810,7 +838,9 @@ otherwise.
  <li value=32><dfn title=dom-Node-DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC><code>DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC</code></dfn>
 </ol>
 
-<p>The <dfn title=dom-Node-compareDocumentPosition><code>compareDocumentPosition(<var>other</var>)</code></dfn> method must <span class=XXX>...</span>
+<p>The <dfn
+title=dom-Node-compareDocumentPosition><code>compareDocumentPosition(<var
+title>other</var>)</code></dfn> method must <span class=XXX>...</span>
 
 <p>The <dfn title=dom-Node-textContent><code>textContent</code></dfn> attribute, on getting, must return a concatenation of the <code title=dom-CharacterData-data>data</code> of all the descendant <code>Text</code> nodes of the <span>context node</span>, in <span>tree order</span>. On setting, it must run the following steps:
 
@@ -822,29 +852,37 @@ otherwise.
 
 <p class=XXX><a href="http://www.w3.org/mid/c9e12660808271343v58990698gabac29d2123a82ce@mail.gmail.com">http://www.w3.org/mid/c9e12660808271343v58990698gabac29d2123a82ce@mail.gmail.com</a>
 
-<p>The <dfn title=dom-Node-isSameNode><code>isSameNode(<var>other</var>)</code></dfn> method must return true if <var>other</var> is a reference to the same object as the <span>context node</span>, and false otherwise.
+<p>The <dfn title=dom-Node-isSameNode><code>isSameNode(<var
+title>other</var>)</code></dfn> method must return true if <var
+title>other</var> is a reference to the same object as the <span>context
+node</span>, and false otherwise.
 
-<p>The <dfn title=dom-Node-lookupPrefix><code>lookupPrefix(<var>namespaceURI</var>)</code></dfn> method must <span class=XXX>...</span>
+<p>The <dfn title=dom-Node-lookupPrefix><code>lookupPrefix(<var
+title>namespaceURI</var>)</code></dfn> method must <span class=XXX>...</span>
 
-<p>The <dfn title=dom-Node-isDefaultNamespace><code>isDefaultNamespace(<var>namespaceURI</var>)</code></dfn> method must <span class=XXX>...</span>
+<p>The <dfn title=dom-Node-isDefaultNamespace><code>isDefaultNamespace(<var
+title>namespaceURI</var>)</code></dfn> method must <span class=XXX>...</span>
 
-<p>The <dfn title=dom-Node-lookupNamespaceURI><code>lookupNamespaceURI(<var>prefix</var>)</code></dfn> method must <span class=XXX>...</span>
+<p>The <dfn title=dom-Node-lookupNamespaceURI><code>lookupNamespaceURI(<var
+title>prefix</var>)</code></dfn> method must <span class=XXX>...</span>
 
 <p class=XXX>clarify lookupNamespaceURI <a href=http://www.w3.org/mid/4878DFC6.40401@lachy.id.au>http://www.w3.org/mid/4878DFC6.40401@lachy.id.au</a>; lookupNamespaceURI, isDefaultNamespace <a href="http://html5.org/tools/web-apps-tracker?from=2125&amp;to=2126">http://html5.org/tools/web-apps-tracker?from=2125&amp;to=2126</a>
 
-<p>The <dfn title=dom-Node-isEqualNode><code>isEqualNode(<var>arg</var>)</code></dfn> method must return true if all of the following conditions are true, and must otherwise return false:
+<p>The <dfn title=dom-Node-isEqualNode><code>isEqualNode(<var
+title>arg</var>)</code></dfn> method must return true if all of the following
+conditions are true, and must otherwise return false:
 
 <ul>
- <li><p><var>arg</var> implements the <code>Node</code> interface.
- <li><p><var>arg</var>'s <code title=dom-Node-nodeType>nodeType</code> is the same as the <span>context node</span>'s <code title=dom-Node-nodeType>nodeType</code>.
- <li><p><var>arg</var>'s <code title=dom-Node-nodeName>nodeName</code> is the same as the <span>context node</span>'s <code title=dom-Node-nodeName>nodeName</code>.
- <li><p><var>arg</var>'s <code title=dom-Node-localName>localName</code> is the same as the <span>context node</span>'s <code title=dom-Node-localName>localName</code>.
- <li><p><var>arg</var>'s <code title=dom-Node-namespaceURI>namespaceURI</code> is the same as the <span>context node</span>'s <code title=dom-Node-namespaceURI>namespaceURI</code>.
- <li><p><var>arg</var>'s <code title=dom-Node-prefix>prefix</code> is the same as the <span>context node</span>'s <code title=dom-Node-prefix>prefix</code>.
- <li><p><var>arg</var>'s <code title=dom-Node-nodeValue>nodeValue</code> is the same as the <span>context node</span>'s <code title=dom-Node-nodeValue>nodeValue</code>.
- <li><p><var>arg</var>'s <code title=dom-Node-attributes>attributes</code> is the same as the <span>context node</span>'s <code title=dom-Node-attributes>attributes</code>. <span class=XXX>Elaborate...</span>
- <li><p><var>arg</var>'s <code title=dom-Node-childNodes>childNodes</code>' <code title=dom-NodeList-length>length</code> is the same as the <span>context node</span>'s <code title=dom-Node-childNodes>childNodes</code>' <code title=dom-NodeList-length>length</code>.
- <li><p>Calling <code title=dom-Node-isEqualNode>isEqualNode</code> on each child node of the <span>context node</span>, with the child node of the same index in <var>arg</var> as argument returns true for every child node.
+ <li><p><var title>arg</var> implements the <code>Node</code> interface.
+ <li><p><var title>arg</var>'s <code title=dom-Node-nodeType>nodeType</code> is the same as the <span>context node</span>'s <code title=dom-Node-nodeType>nodeType</code>.
+ <li><p><var title>arg</var>'s <code title=dom-Node-nodeName>nodeName</code> is the same as the <span>context node</span>'s <code title=dom-Node-nodeName>nodeName</code>.
+ <li><p><var title>arg</var>'s <code title=dom-Node-localName>localName</code> is the same as the <span>context node</span>'s <code title=dom-Node-localName>localName</code>.
+ <li><p><var title>arg</var>'s <code title=dom-Node-namespaceURI>namespaceURI</code> is the same as the <span>context node</span>'s <code title=dom-Node-namespaceURI>namespaceURI</code>.
+ <li><p><var title>arg</var>'s <code title=dom-Node-prefix>prefix</code> is the same as the <span>context node</span>'s <code title=dom-Node-prefix>prefix</code>.
+ <li><p><var title>arg</var>'s <code title=dom-Node-nodeValue>nodeValue</code> is the same as the <span>context node</span>'s <code title=dom-Node-nodeValue>nodeValue</code>.
+ <li><p><var title>arg</var>'s <code title=dom-Node-attributes>attributes</code> is the same as the <span>context node</span>'s <code title=dom-Node-attributes>attributes</code>. <span class=XXX>Elaborate...</span>
+ <li><p><var title>arg</var>'s <code title=dom-Node-childNodes>childNodes</code>' <code title=dom-NodeList-length>length</code> is the same as the <span>context node</span>'s <code title=dom-Node-childNodes>childNodes</code>' <code title=dom-NodeList-length>length</code>.
+ <li><p>Calling <code title=dom-Node-isEqualNode>isEqualNode</code> on each child node of the <span>context node</span>, with the child node of the same index in <var title>arg</var> as argument returns true for every child node.
 </ul>
 
 
@@ -1400,12 +1438,28 @@ have its name converted to ASCII lowercase before the element is affected.
 
 <p>The <dfn title=dom-CharacterData-length><code>length</code></dfn> attribute must, on getting, return the number of UTF-16 code units represented by the node's data.
 
-<p>The <dfn title=dom-CharacterData-substringData><code>substringData(<var>offset</var>, <var>count</var>)</code></dfn> method must run the following steps:
+<p>The <dfn title=dom-CharacterData-substringData><code>substringData(<var
+title>offset</var>, <var title>count</var>)</code></dfn> method must run the
+following steps:
 
 <ol>
- <li><p>If <var>offset</var> is negative or is greater than the <span>context node</span>'s <code title=dom-CharacterData-length>length</code>, or if <var>count</var> is negative, raise an <code title=dom-DOMException-INDEX_SIZE_ERR>INDEX_SIZE_ERR</code> exception and abort these steps.
- <li><p>If <span title><var>offset</var>+<var>count</var></span> is greater than the <span>context node</span>'s <code title=dom-CharacterData-length>length</code>, return a <code data-anolis-spec=webidl>DOMString</code> whose value is the UTF-16 code units from the <var>offset</var>th UTF-16 code unit to the end of <var title>data</var>.
- <li><p>Return a <code data-anolis-spec=webidl>DOMString</code> whose value is the UTF-16 code units from the <var>offset</var>th UTF-16 code unit to the <span title><var>offset</var>+<var>count</var></span>th UTF-16 code unit in <var title>data</var>.
+ <li><p>If <var title>offset</var> is negative or is greater than the
+ <span>context node</span>'s <code title=dom-CharacterData-length>length</code>,
+ or if <var title>count</var> is negative, raise an <code
+ title=dom-DOMException-INDEX_SIZE_ERR>INDEX_SIZE_ERR</code> exception and abort
+ these steps.
+
+ <li><p>If <span title><var title>offset</var>+<var title>count</var></span> is
+ greater than the <span>context node</span>'s <code
+ title=dom-CharacterData-length>length</code>, return a <code
+ data-anolis-spec=webidl>DOMString</code> whose value is the UTF-16 code units
+ from the <var title>offset</var>th UTF-16 code unit to the end of <var
+ title>data</var>.
+
+ <li><p>Return a <code data-anolis-spec=webidl>DOMString</code> whose value is
+ the UTF-16 code units from the <var title>offset</var>th UTF-16 code unit to
+ the <span title><var title>offset</var>+<var title>count</var></span>th UTF-16
+ code unit in <var title>data</var>.
 </ol>
 
 <p class=XXX><dfn title=dom-CharacterData-appendData>appendData</dfn>
@@ -1553,7 +1607,10 @@ steps:
   readonly attribute unsigned long <span title=dom-NodeList-length>length</span>;
 };</pre>
 
-<p>The <dfn title=dom-NodeList-item><code>item(<var>index</var>)</code></dfn> method must return the <var>index</var>th node in the collection. If there is no <var>index</var>th node in the collection, then the method must return null.
+<p>The <dfn title=dom-NodeList-item><code>item(<var
+title>index</var>)</code></dfn> method must return the <var title>index</var>th
+node in the collection. If there is no <var title>index</var>th node in the
+collection, then the method must return null.
 
 <p>The <dfn title=dom-NodeList-length><code>length</code></dfn> attribute must, on getting, return the number of nodes <span data-anolis-spec=html>represented by the collection</span>.
 

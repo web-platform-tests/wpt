@@ -1424,13 +1424,26 @@ steps:
 <p class=XXX><dfn title=dom-NamedNodeMap-removeNamedItemNS>removeNamedItemNS</dfn>
 
 
+<h3>Interface <code>DOMStringList</code></h3>
+<pre class=idl>interface <dfn>DOMStringList</dfn> {
+  DOMString <span title=dom-DOMStringList-item>item</span>(in unsigned long index);
+  readonly attribute unsigned long <span title=dom-DOMStringList-length>length</span>;
+  boolean <span title=dom-DOMStringList-contains>contains</span>(in DOMString str);
+};</pre>
+
+<p class=XXX><dfn title=dom-DOMStringList-item>item</dfn>
+
+<p class=XXX><dfn title=dom-DOMStringList-length>length</dfn>
+
+<p class=XXX><dfn title=dom-DOMStringList-contains>contains</dfn>
+
+
 
 <h2>Historical interfaces</h2>
 <p>This specification does not define the following interfaces:
 <ul class=brief>
  <li><dfn><code>DOMUserData</code></dfn>
  <li><dfn><code>DOMObject</code></dfn>
- <li><dfn><code>DOMStringList</code></dfn>
  <li><dfn><code>NameList</code></dfn>
  <li><dfn><code>DOMImplementationList</code></dfn>
  <li><dfn><code>DOMImplementationSource</code></dfn>

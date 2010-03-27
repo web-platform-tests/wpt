@@ -82,7 +82,8 @@
   <ol>
    <li><a href=#interface-domimplementation><span class=secno>5.1 </span>Interface <code>DOMImplementation</code></a></li>
    <li><a href=#interface-nodelist><span class=secno>5.2 </span>Interface <code>NodeList</code></a></li>
-   <li><a href=#interface-namednodemap><span class=secno>5.3 </span>Interface <code>NamedNodeMap</code></a></ol></li>
+   <li><a href=#interface-namednodemap><span class=secno>5.3 </span>Interface <code>NamedNodeMap</code></a></li>
+   <li><a href=#interface-domstringlist><span class=secno>5.4 </span>Interface <code>DOMStringList</code></a></ol></li>
  <li><a href=#historical-interfaces><span class=secno>6 </span>Historical interfaces</a></li>
  <li><a class=no-num href=#references>References</a></li>
  <li><a class=no-num href=#acknowledgements>Acknowledgements</a></ol>
@@ -1363,13 +1364,26 @@ steps:
 <p class=XXX><dfn id=dom-namednodemap-removenameditemns title=dom-NamedNodeMap-removeNamedItemNS>removeNamedItemNS</dfn>
 
 
+<h3 id=interface-domstringlist><span class=secno>5.4 </span>Interface <code><a href=#domstringlist>DOMStringList</a></code></h3>
+<pre class=idl>interface <dfn id=domstringlist>DOMStringList</dfn> {
+  DOMString <a href=#dom-domstringlist-item title=dom-DOMStringList-item>item</a>(in unsigned long index);
+  readonly attribute unsigned long <a href=#dom-domstringlist-length title=dom-DOMStringList-length>length</a>;
+  boolean <a href=#dom-domstringlist-contains title=dom-DOMStringList-contains>contains</a>(in DOMString str);
+};</pre>
+
+<p class=XXX><dfn id=dom-domstringlist-item title=dom-DOMStringList-item>item</dfn>
+
+<p class=XXX><dfn id=dom-domstringlist-length title=dom-DOMStringList-length>length</dfn>
+
+<p class=XXX><dfn id=dom-domstringlist-contains title=dom-DOMStringList-contains>contains</dfn>
+
+
 
 <h2 id=historical-interfaces><span class=secno>6 </span>Historical interfaces</h2>
 <p>This specification does not define the following interfaces:
 <ul class=brief>
  <li><dfn id=domuserdata><code>DOMUserData</code></dfn>
  <li><dfn id=domobject><code>DOMObject</code></dfn>
- <li><dfn id=domstringlist><code>DOMStringList</code></dfn>
  <li><dfn id=namelist><code>NameList</code></dfn>
  <li><dfn id=domimplementationlist><code>DOMImplementationList</code></dfn>
  <li><dfn id=domimplementationsource><code>DOMImplementationSource</code></dfn>

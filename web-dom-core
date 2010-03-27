@@ -7,7 +7,7 @@
 <body class=draft>
 <div class=head id=head>
 <h1>Web DOM Core</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-date:-01-jan-1901>Work in Progress &mdash; Last Update 21 March 2010</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-date:-01-jan-1901>Work in Progress &mdash; Last Update 27 March 2010</h2>
 <dl>
  <dt>Editors
  <dd>Simon Pieters &lt;simonp@opera.com&gt;
@@ -76,7 +76,8 @@
    <li><a href=#interface-text><span class=secno>3.11 </span>Interface <code title="">Text</code></a></li>
    <li><a href=#interface-comment><span class=secno>3.12 </span>Interface <code title="">Comment</code></a></li>
    <li><a href=#interface-documenttype><span class=secno>3.13 </span>Interface <code title="">DocumentType</code></a></li>
-   <li><a href=#interface-processinginstruction><span class=secno>3.14 </span>Interface <code title="">ProcessingInstruction</code></a></ol></li>
+   <li><a href=#interface-processinginstruction><span class=secno>3.14 </span>Interface <code title="">ProcessingInstruction</code></a></li>
+   <li><a href=#historical-interfaces><span class=secno>3.15 </span>Historical interfaces</a></ol></li>
  <li><a class=no-num href=#references>References</a></li>
  <li><a class=no-num href=#acknowledgements>Acknowledgements</a></ol>
 <!--end-toc-->
@@ -1394,6 +1395,28 @@ have its name converted to ASCII lowercase before the element is affected.
 <p class=XXX><dfn id=dom-processinginstruction-target title=dom-ProcessingInstruction-target>target</dfn>
 
 <p class=XXX><dfn id=dom-processinginstruction-data title=dom-ProcessingInstruction-data>data</dfn>
+
+
+<h3 id=historical-interfaces><span class=secno>3.15 </span>Historical interfaces</h3>
+<p>This specification does not define the following interfaces:
+<ul class=brief>
+ <li><dfn id=domuserdata><code>DOMUserData</code></dfn>
+ <li><dfn id=domobject><code>DOMObject</code></dfn>
+ <li><dfn id=domstringlist><code>DOMStringList</code></dfn>
+ <li><dfn id=namelist><code>NameList</code></dfn>
+ <li><dfn id=domimplementationlist><code>DOMImplementationList</code></dfn>
+ <li><dfn id=domimplementationsource><code>DOMImplementationSource</code></dfn>
+ <li><dfn id=typeinfo><code>TypeInfo</code></dfn>
+ <li><dfn id=userdatahandler><code>UserDataHandler</code></dfn>
+ <li><dfn id=domerror><code>DOMError</code></dfn>
+ <li><dfn id=domerrorhandler><code>DOMErrorHandler</code></dfn>
+ <li><dfn id=domlocator><code>DOMLocator</code></dfn>
+ <li><dfn id=domconfiguration><code>DOMConfiguration</code></dfn>
+ <li><dfn id=cdatasection><code>CDATASection</code></dfn>
+ <li><dfn id=notation><code>Notation</code></dfn>
+ <li><dfn id=entity><code>Entity</code></dfn>
+ <li><dfn id=entityreference><code>EntityReference</code></dfn>
+</ul>
 
 
 <h2 class=no-num id=references>References</h2><!--REFS-->

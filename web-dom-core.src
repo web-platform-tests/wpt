@@ -1462,6 +1462,28 @@ have its name converted to ASCII lowercase before the element is affected.
 <p class=XXX><dfn title=dom-ProcessingInstruction-data>data</dfn>
 
 
+<h3>Historical interfaces</h3>
+<p>This specification does not define the following interfaces:
+<ul class=brief>
+ <li><dfn><code>DOMUserData</code></dfn>
+ <li><dfn><code>DOMObject</code></dfn>
+ <li><dfn><code>DOMStringList</code></dfn>
+ <li><dfn><code>NameList</code></dfn>
+ <li><dfn><code>DOMImplementationList</code></dfn>
+ <li><dfn><code>DOMImplementationSource</code></dfn>
+ <li><dfn><code>TypeInfo</code></dfn>
+ <li><dfn><code>UserDataHandler</code></dfn>
+ <li><dfn><code>DOMError</code></dfn>
+ <li><dfn><code>DOMErrorHandler</code></dfn>
+ <li><dfn><code>DOMLocator</code></dfn>
+ <li><dfn><code>DOMConfiguration</code></dfn>
+ <li><dfn><code>CDATASection</code></dfn>
+ <li><dfn><code>Notation</code></dfn>
+ <li><dfn><code>Entity</code></dfn>
+ <li><dfn><code>EntityReference</code></dfn>
+</ul>
+
+
 <h2 class="no-num" id="references">References</h2><!--REFS-->
 
 <p>All references are normative unless marked "Non-normative".</p>

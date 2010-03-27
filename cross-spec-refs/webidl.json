@@ -4,6 +4,7 @@
   "definitions" :
     {
       "float" : "idl-float",
-      "domstring" : "idl-DOMString"
+      "domstring" : "idl-DOMString",
+      "supported property indices" : "dfn-supported-property-indices"
     }
 }

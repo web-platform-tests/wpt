@@ -37,7 +37,7 @@
  <li>xmlVersion <a href=http://lists.w3.org/Archives/Public/www-dom/2003JulSep/0049.html>http://lists.w3.org/Archives/Public/www-dom/2003JulSep/0049.html</a>
  <li>Range.createContextualFragment <a href="http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2009-March/018892.html">http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2009-March/018892.html</a>
  <li>[Reflect] <a href=http://krijnhoetmer.nl/irc-logs/whatwg/20090622#l-90>http://krijnhoetmer.nl/irc-logs/whatwg/20090622#l-90</a>
- <li><code data-anolis-spec=html>HTMLCollection</code> is defined in HTML5. Perhaps we should move that to this spec. Perhaps also DOMTokenList, DOMStringMap, getElementsByClassName...
+ <li><code data-anolis-spec=html>HTMLCollection</code> is defined in HTML5. Perhaps we should move that to this spec. Perhaps also DOMStringMap, getElementsByClassName...
 </ul>
 
 
@@ -169,6 +169,174 @@ this specification.</p>
 <p><dfn title="converted to lowercase">Converting a string to lowercase</dfn> means replacing all characters in the range U+0041 .. U+005A (i.e. LATIN CAPITAL LETTER A to LATIN CAPITAL LETTER Z) with the corresponding characters in the range U+0061 .. U+007A (i.e. LATIN SMALL LETTER A to LATIN SMALL LETTER Z).
 
 
+<h3>Common microsyntaxes</h3>
+<h4>Common parser idioms</h4>
+<p>Some of the micro-parsers described below follow the pattern of
+having an <var title="">input</var> variable that holds the string
+being parsed, and having a <var title="">position</var> variable
+pointing at the next character to parse in <var
+title="">input</var>.</p>
+
+<p>For parsers based on this pattern, a step that requires the user
+agent to <dfn>collect a sequence of characters</dfn> means that the
+following algorithm must be run, with <var title="">characters</var>
+being the set of characters that can be collected:</p>
+
+<ol>
+
+ <li><p>Let <var title="">input</var> and <var
+ title="">position</var> be the same variables as those of the same
+ name in the algorithm that invoked these steps.</p></li>
+
+ <li><p>Let <var title="">result</var> be the empty string.</p></li>
+
+ <li><p>While <var title="">position</var> doesn't point past the
+ end of <var title="">input</var> and the character at <var
+ title="">position</var> is one of the <var
+ title="">characters</var>, append that character to the end of <var
+ title="">result</var> and advance <var title="">position</var> to
+ the next character in <var title="">input</var>.</p></li>
+
+ <li><p>Return <var title="">result</var>.</p></li>
+
+</ol>
+
+<p>The step <dfn>skip whitespace</dfn> means that the user agent
+must <span>collect a sequence of characters</span> that are <span
+title="space character">space characters</span>. The collected
+characters are not used.
+
+<h4>Space-separated tokens</h4>
+<p>A <dfn>set of space-separated tokens</dfn> is a string containing
+zero or more words separated by one or more <span title="space
+character">space characters</span>, where words consist of any
+string of one or more characters, none of which are <span
+title="space character">space characters</span>.</p>
+
+<p>A string containing a <span>set of space-separated tokens</span>
+may have leading or trailing <span title="space character">space
+characters</span>.</p>
+
+<div class="impl">
+
+<p>When a user agent has to <dfn>split a string on spaces</dfn>, it
+must use the following algorithm:</p>
+
+<ol>
+
+ <li><p>Let <var title="">input</var> be the string being
+ parsed.</p></li>
+
+ <li><p>Let <var title="">position</var> be a pointer into <var
+ title="">input</var>, initially pointing at the start of the
+ string.</p></li>
+
+ <li><p>Let <var title="">tokens</var> be a list of tokens,
+ initially empty.</p></li>
+
+ <li><p><span>Skip whitespace</span></p></li>
+
+ <li><p>While <var title="">position</var> is not past the end of
+ <var title="">input</var>:</p>
+
+  <ol>
+
+   <li><p><span>Collect a sequence of characters</span> that are not
+   <span title="space character">space characters</span>.</p></li>
+
+   <li><p>Add the string collected in the previous step to <var
+   title="">tokens</var>.</p></li>
+
+   <li><p><span>Skip whitespace</span></p></li>
+
+  </ol>
+
+ </li>
+
+ <li><p>Return <var title="">tokens</var>.</p></li>
+
+</ol>
+
+<p>When a user agent has to <dfn>remove a token from a string</dfn>,
+it must use the following algorithm:</p>
+
+<ol>
+
+ <li><p>Let <var title="">input</var> be the string being
+ modified.</p></li>
+
+ <li><p>Let <var title="">token</var> be the token being removed. It
+ will not contain any <span title="space character">space
+ characters</span>.</p></li>
+
+ <li><p>Let <var title="">output</var> be the output string,
+ initially empty.</p></li>
+
+ <li><p>Let <var title="">position</var> be a pointer into <var
+ title="">input</var>, initially pointing at the start of the
+ string.</p></li>
+
+ <li><p>If <var title="">position</var> is beyond the end of <var
+ title="">input</var>, abort these steps.</p></li>
+
+ <li><p>If the character at <var title="">position</var> is a
+ <span>space character</span>:</p>
+
+  <ol>
+
+   <li><p>Append the character at <var title="">position</var> to
+   the end of <var title="">output</var>.</p></li>
+
+   <li><p>Advance <var title="">position</var> so it points at the
+   next character in <var title="">input</var>.</p></li>
+
+   <li><p>Return to step 5 in the overall set of steps.</p></li>
+
+  </ol>
+
+ </li>
+
+ <li><p>Otherwise, the character at <var title="">position</var> is
+ the first character of a token. <span>Collect a sequence of
+ characters</span> that are not <span title="space character">space
+ characters</span>, and let that be <var title="">s</var>.</p></li>
+
+ <li><p>If <var title="">s</var> is exactly equal to <var
+ title="">token</var>, then:</p>
+
+  <ol>
+
+   <li><p><span>Skip whitespace</span> (in <var
+   title="">input</var>).</p></li>
+
+   <li><p>Remove any <span title="space character">space
+   characters</span> currently at the end of <var
+   title="">output</var>.</p></li>
+
+   <li><p>If <var title="">position</var> is not past the end of
+   <var title="">input</var>, and <var title="">output</var> is not
+   the empty string, append a single U+0020 SPACE character at the
+   end of <var title="">output</var>.</p></li>
+
+  </ol>
+
+ </li>
+
+ <li><p>Otherwise, append <var title="">s</var> to the end of <var
+ title="">output</var>.</p></li>
+
+ <li><p>Return to step 6 in the overall set of steps.</p></li>
+
+</ol>
+
+<p class="note">This causes any occurrences of the token to be
+removed from the string, and any spaces that were surrounding the
+token to be collapsed to a single space, except at the start and end
+of the string, where such spaces are removed.</p>
+
+</div>
+
+
 <h3>DOM features</h3>
 <p class=XXX>Features are ASCII case-insensitive. Empty string means any version.
 
@@ -237,14 +405,14 @@ title>http://www.w3.org/2000/xmlns/</code>.
   const unsigned short <span title=dom-DOMException-DOMSTRING_SIZE_ERR>DOMSTRING_SIZE_ERR</span> = 2; // historical
   const unsigned short <span title=dom-DOMException-HIERARCHY_REQUEST_ERR>HIERARCHY_REQUEST_ERR</span> = 3;
   const unsigned short <span title=dom-DOMException-WRONG_DOCUMENT_ERR>WRONG_DOCUMENT_ERR</span> = 4;
-  const unsigned short <span title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</span> = 5;
+  const unsigned short <span title=dom-DOMException-INVALID_CHARACTER_ERR title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</span> = 5;
   const unsigned short <span title=dom-DOMException-NO_DATA_ALLOWED_ERR>NO_DATA_ALLOWED_ERR</span> = 6;
   const unsigned short <span title=dom-DOMException-NO_MODIFICATION_ALLOWED_ERR>NO_MODIFICATION_ALLOWED_ERR</span> = 7;
   const unsigned short <span title=dom-DOMException-NOT_FOUND_ERR>NOT_FOUND_ERR</span> = 8;
   const unsigned short <span title=dom-DOMException-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</span> = 9;
   const unsigned short <span title=dom-DOMException-INUSE_ATTRIBUTE_ERR>INUSE_ATTRIBUTE_ERR</span> = 10;
   const unsigned short <span title=dom-DOMException-INVALID_STATE_ERR>INVALID_STATE_ERR</span> = 11;
-  const unsigned short <span title=dom-DOMException-SYNTAX_ERR>SYNTAX_ERR</span> = 12;
+  const unsigned short <span title=dom-DOMException-SYNTAX_ERR title=dom-DOMException-SYNTAX_ERR>SYNTAX_ERR</span> = 12;
   const unsigned short <span title=dom-DOMException-INVALID_MODIFICATION_ERR>INVALID_MODIFICATION_ERR</span> = 13;
   const unsigned short <span title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</span> = 14;
   const unsigned short <span title=dom-DOMException-INVALID_ACCESS_ERR>INVALID_ACCESS_ERR</span> = 15;
@@ -271,14 +439,14 @@ must return the code for the exception, which must be one of the following:
  <li value="2"><dfn title=dom-DOMException-DOMSTRING_SIZE_ERR><code>DOMSTRING_SIZE_ERR</code></dfn></li>
  <li value="3"><dfn title=dom-DOMException-HIERARCHY_REQUEST_ERR><code>HIERARCHY_REQUEST_ERR</code></dfn></li>
  <li value="4"><dfn title=dom-DOMException-WRONG_DOCUMENT_ERR><code>WRONG_DOCUMENT_ERR</code></dfn></li>
- <li value="5"><dfn title=dom-DOMException-INVALID_CHARACTER_ERR><code>INVALID_CHARACTER_ERR</code></dfn></li>
+ <li value="5"><dfn title=dom-DOMException-INVALID_CHARACTER_ERR><code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code></dfn></li>
  <li value="6"><dfn title=dom-DOMException-NO_DATA_ALLOWED_ERR><code>NO_DATA_ALLOWED_ERR</code></dfn></li>
  <li value="7"><dfn title=dom-DOMException-NO_MODIFICATION_ALLOWED_ERR><code>NO_MODIFICATION_ALLOWED_ERR</code></dfn></li>
  <li value="8"><dfn title=dom-DOMException-NOT_FOUND_ERR><code>NOT_FOUND_ERR</code></dfn></li>
  <li value="9"><dfn title=dom-DOMException-NOT_SUPPORTED_ERR><code>NOT_SUPPORTED_ERR</code></dfn></li>
  <li value="10"><dfn title=dom-DOMException-INUSE_ATTRIBUTE_ERR><code>INUSE_ATTRIBUTE_ERR</code></dfn></li>
  <li value="11"><dfn title=dom-DOMException-INVALID_STATE_ERR><code>INVALID_STATE_ERR</code></dfn></li>
- <li value="12"><dfn title=dom-DOMException-SYNTAX_ERR><code>SYNTAX_ERR</code></dfn></li>
+ <li value="12"><dfn title=dom-DOMException-SYNTAX_ERR><code title=dom-DOMException-SYNTAX_ERR>SYNTAX_ERR</code></dfn></li>
  <li value="13"><dfn title=dom-DOMException-INVALID_MODIFICATION_ERR><code>INVALID_MODIFICATION_ERR</code></dfn></li>
  <li value="14"><dfn title=dom-DOMException-NAMESPACE_ERR><code>NAMESPACE_ERR</code></dfn></li>
  <li value="15"><dfn title=dom-DOMException-INVALID_ACCESS_ERR><code>INVALID_ACCESS_ERR</code></dfn></li>
@@ -610,7 +778,7 @@ method must run the following steps:
  <li>
   <p>If <var title>prefix</var> is not null, run the following substeps:
   <ol>
-   <li><p>If <var title>prefix</var> doesn't match the <code data-anolis-spec=xml>Name</code> production in XML, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and abort these steps.
+   <li><p>If <var title>prefix</var> doesn't match the <code data-anolis-spec=xml>Name</code> production in XML, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and abort these steps.
    <li><p>If <var title>prefix</var> doesn't match the <code
    data-anolis-spec=xmlns>NCName</code> production in Namespaces in XML, raise a
    <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and
@@ -771,7 +939,7 @@ document</span> affects the behavior of certain APIs.
 <ol>
  <li><p>If <var title>tagName</var> doesn't match the <code
  data-anolis-spec=xml>Name</code> production in XML, raise an <code
- title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
+ title=dom-DOMException-INVALID_CHARACTER_ERR title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
  exception and abort these steps.
 
  <li><p>If the <span>context node</span> is an <span>HTML document</span>, let
@@ -794,7 +962,7 @@ data-anolis-spec=xmlns>NCName</code> production in Namespaces in XML.
 <ol>
  <li><p>If <var title>qualifiedName</var> doesn't match the <code
  data-anolis-spec=xml>Name</code> production in XML, raise an <code
- title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
+ title=dom-DOMException-INVALID_CHARACTER_ERR title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
  exception and abort these steps.
  <li><p>If <var title>qualifiedName</var> doesn't match the <code
  data-anolis-spec=xmlns>QName</code> production in Namespaces in XML, raise a
@@ -831,12 +999,12 @@ title>data</var>)</code></dfn> method must run the following steps:
  <li><p>If <var title>target</var> doesn't match the <!--<code
  data-anolis-spec=xml>PITarget</code>--> <code data-anolis-spec=xml>Name</code>
  production in XML, raise an <code
- title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
+ title=dom-DOMException-INVALID_CHARACTER_ERR title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
  exception and abort these steps. <!-- DOM3 didn't check for "xml" -->
 
  <li><p>If <var title>data</var> contains the string "<code title>?></code>",
  raise an <code
- title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
+ title=dom-DOMException-INVALID_CHARACTER_ERR title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
  exception and abort these steps. <!-- Gecko does this. -->
 
  <!--<li><p>If <var title>target</var> contains a U+003A COLON (":") character, raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and abort these steps.--> <!-- DOM3 didn't check this -->
@@ -852,7 +1020,7 @@ contains "xml" or the colon, or that the data contains characters that match the
 [createAttribute]
 <p>The <dfn title=dom-Document-createAttribute><code>createAttribute(<var title>name</var>)</code></dfn> method must run the following steps:</p>
 <ol>
- <li><p>If <var title>name</var> doesn't match the <code data-anolis-spec=xml>Name</code> production in XML, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and abort these steps.
+ <li><p>If <var title>name</var> doesn't match the <code data-anolis-spec=xml>Name</code> production in XML, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and abort these steps.
  <li><p>Return a new <code>Attr</code> node with its <code title=dom-Node-namespaceURI>namespaceURI</code> set to null, <code title=dom-Node-prefix>prefix</code> set to null, <code title=dom-Node-localName>localName</code> set to <var title>name</var>, and <code title=dom-Node-ownerDocument>ownerDocument</code> set to the <span>context node</span>.
 </ol>-->
 <!-- this is different from DOM3 -->
@@ -1134,7 +1302,7 @@ following steps:
 <ol>
  <li><p>If <var title>name</var> is empty or <var title>name</var> doesn't
  match the <code data-anolis-spec=xml>Name</code> production in XML, raise an
- <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
+ <code title=dom-DOMException-INVALID_CHARACTER_ERR title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
  exception and abort these steps.
 
  <li><p>If the <span>context node</span> is in the <span>HTML namespace</span>
@@ -1289,14 +1457,14 @@ have its name converted to ASCII lowercase before the element is affected.
 <ol>
  <li><p>If <var title>qualifiedName</var> doesn't match the <code
  data-anolis-spec=xml>Name</code> production in XML, raise an <code
- title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
+ title=dom-DOMException-INVALID_CHARACTER_ERR title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
  exception and abort these steps.
  <li><p>If <var title>qualifiedName</var> doesn't match the <code
  data-anolis-spec=xmlns>NCName</code> production in Namespaces in XML, raise a
  <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and
  abort these steps.
- <!--<li><p>If <var title>publicId</var> contains a character that doesn't match the <code data-anolis-spec=xml>PubidChar</code> production in XML, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and abort these steps. --> <!-- DOM3 didn't check this -->
- <!--<li><p>If <var title>systemId</var> contains both a U+0022 QUOTATION MARK ('"') and a U+0027 APOSTROPHE ("'") character, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and abort these steps.--> <!-- DOM3 didn't check this -->
+ <!--<li><p>If <var title>publicId</var> contains a character that doesn't match the <code data-anolis-spec=xml>PubidChar</code> production in XML, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and abort these steps. --> <!-- DOM3 didn't check this -->
+ <!--<li><p>If <var title>systemId</var> contains both a U+0022 QUOTATION MARK ('"') and a U+0027 APOSTROPHE ("'") character, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and abort these steps.--> <!-- DOM3 didn't check this -->
  <li><p>Return a new <code>DocumentType</code> node with <code title=dom-Node-ownerDocument>ownerDocument</code> set to null, <code title=dom-DocumentType-name>name</code> set to <var title>qualifiedName</var>, <code title=dom-DocumentType-publicId>publicId</code> set to <var title>publicId</var>, and <code title=dom-DocumentType-systemId>systemId</code> set to <var title>systemId</var>.
 </ol>
 <p class=note>No check is performed that the <var title>publicId</var> matches the <code title>PublicChar</code> production in XML or that the <var title>systemId</var> doesn't contain both a quotation mark (") and an apostrophe (').
@@ -1436,6 +1604,265 @@ steps:
 <p class=XXX><dfn title=dom-DOMStringList-length>length</dfn>
 
 <p class=XXX><dfn title=dom-DOMStringList-contains>contains</dfn>
+
+
+<h3>Interface <code>DOMTokenList</code></h3>
+<p>The <code>DOMTokenList</code> interface represents an interface
+to an underlying string that consists of a <span>set of
+space-separated tokens</span>.</p>
+
+<p class="note"><code>DOMTokenList</code> objects are always
+<span>case-sensitive</span>, even when the underlying string might
+ordinarily be treated in a case-insensitive manner.</p>
+
+<pre class="idl">interface <dfn>DOMTokenList</dfn> {
+  readonly attribute unsigned long <span title="dom-DOMTokenList-length">length</span>;
+  getter DOMString <span title="dom-DOMTokenList-item">item</span>(in unsigned long index);
+  boolean <span title="dom-DOMTokenList-contains">contains</span>(in DOMString token);
+  void <span title="dom-DOMTokenList-add">add</span>(in DOMString token);
+  void <span title="dom-DOMTokenList-remove">remove</span>(in DOMString token);
+  boolean <span title="dom-DOMTokenList-toggle">toggle</span>(in DOMString token);
+  <span title="dom-DOMTokenList-toString">stringifier</span> DOMString ();
+};</pre>
+
+<dl class="domintro">
+
+ <dt><var title="">tokenlist</var> . <code title="dom-DOMTokenList-length">length</code></dt>
+ <dd>
+  <p>Returns the number of tokens in the string.</p>
+ </dd>
+
+ <dt><var title="">element</var> = <var title="">tokenlist</var> . <code title="dom-DOMTokenList-item">item</code>(<var title="">index</var>)</dt>
+ <dt><var title="">tokenlist</var>[<var title="">index</var>]</dt>
+ <dd>
+  <p>Returns the token with index <var title="">index</var>. The tokens are returned in the order they are found in the underlying string.</p>
+  <p>Returns null if <var title="">index</var> is out of range.</p>
+ </dd>
+
+ <dt><var title="">hastoken</var> = <var title="">tokenlist</var> . <code title="dom-DOMTokenList-contains">contains</code>(<var title="">token</var>)</dt>
+ <dd>
+  <p>Returns true if the <var title="">token</var> is present; false otherwise.</p>
+  <p>Throws a <code title=dom-DOMException-SYNTAX_ERR>SYNTAX_ERR</code> exception if <var title="">token</var> is empty.</p>
+  <p>Throws an <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception if <var title="">token</var> contains any spaces.</p>
+ </dd>
+
+ <dt><var title="">tokenlist</var> . <code title="dom-DOMTokenList-add">add</code>(<var title="">token</var>)</dt>
+ <dd>
+  <p>Adds <var title="">token</var>, unless it is already present.</p>
+  <p>Throws a <code title=dom-DOMException-SYNTAX_ERR>SYNTAX_ERR</code> exception if <var title="">token</var> is empty.</p>
+  <p>Throws an <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception if <var title="">token</var> contains any spaces.</p>
+ </dd>
+
+ <dt><var title="">tokenlist</var> . <code title="dom-DOMTokenList-remove">remove</code>(<var title="">token</var>)</dt>
+ <dd>
+  <p>Removes <var title="">token</var> if it is present.</p>
+  <p>Throws a <code title=dom-DOMException-SYNTAX_ERR>SYNTAX_ERR</code> exception if <var title="">token</var> is empty.</p>
+  <p>Throws an <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception if <var title="">token</var> contains any spaces.</p>
+ </dd>
+
+ <dt><var title="">hastoken</var> = <var title="">tokenlist</var> . <code title="dom-DOMTokenList-toggle">toggle</code>(<var title="">token</var>)</dt>
+ <dd>
+  <p>Adds <var title="">token</var> if it is not present, or removes
+  it if it is. Returns true if <var title="">token</var> is now
+  present (it was added); returns false if it is not (it was
+  removed).</p>
+  <p>Throws a <code title=dom-DOMException-SYNTAX_ERR>SYNTAX_ERR</code> exception if <var title="">token</var> is empty.</p>
+  <p>Throws an <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception if <var title="">token</var> contains any spaces.</p>
+ </dd>
+
+</dl>
+
+<div class="impl">
+
+<p>The <dfn title="dom-DOMTokenList-length"><code>length</code></dfn>
+attribute must return the number of tokens that result from <span
+title="split a string on spaces">splitting the underlying string on
+spaces</span>. This is the <var
+title="dom-DOMTokenList-length">length</var>.</p>
+
+<p>The object's <span data-anolis-spec=webidl>supported property
+indices</span> are the numbers in the range zero to <span title=""><var
+title="dom-DOMTokenList-length">length</var>&minus;1</span>, unless the <var
+title="dom-DOMTokenList-length">length</var> is zero, in which case there are no
+<span data-anolis-spec=webidl>supported property indices</span>.</p>
+
+<p>The <dfn title="dom-DOMTokenList-item"><code>item(<var
+title="">index</var>)</code></dfn> method must <span title="split a
+string on spaces">split the underlying string on spaces</span>,
+preserving the order of the tokens as found in the underlying
+string, and then return the <var title="">index</var>th item in this
+list. If <var title="">index</var> is equal to or greater than the
+number of tokens, then the method must return null.</p>
+
+<p class="example">For example, if the string is "<code title="">a b
+a c</code>" then there are four tokens: the token with index 0 is
+"<code title="">a</code>", the token with index 1 is "<code
+title="">b</code>", the token with index 2 is "<code
+title="">a</code>", and the token with index 3 is "<code
+title="">c</code>".</p>
+
+<p>The <dfn title="dom-DOMTokenList-contains"><code>contains(<var
+title="">token</var>)</code></dfn> method must run the following
+algorithm:</p>
+
+<ol>
+
+ <li>If the <var title="">token</var> argument is the empty string,
+ then raise a <code title=dom-DOMException-SYNTAX_ERR>SYNTAX_ERR</code> exception and stop the
+ algorithm.</li>
+
+ <li>If the <var title="">token</var> argument contains any <span
+ title="space character">space characters</span>, then raise an
+ <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and stop the
+ algorithm.</li>
+
+ <li>Otherwise, <span title="split a string on spaces">split the
+ underlying string on spaces</span> to get the list of tokens in the
+ object's underlying string.</li>
+
+ <li>If the token indicated by <var title="">token</var> is a
+ <span>case-sensitive</span> match for one of the tokens in the
+ object's underlying string then return true and stop this
+ algorithm.</li>
+
+ <li>Otherwise, return false.</li>
+
+</ol>
+
+<p>The <dfn title="dom-DOMTokenList-add"><code>add(<var
+title="">token</var>)</code></dfn> method must run the following
+algorithm:</p>
+
+<ol>
+
+ <li>If the <var title="">token</var> argument is the empty string,
+ then raise a <code title=dom-DOMException-SYNTAX_ERR>SYNTAX_ERR</code> exception and stop the
+ algorithm.</li>
+
+ <li>If the <var title="">token</var> argument contains any <span
+ title="space character">space characters</span>, then raise an
+ <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and stop the
+ algorithm.</li>
+
+ <li>Otherwise, <span title="split a string on spaces">split the
+ underlying string on spaces</span> to get the list of tokens in the
+ object's underlying string.</li>
+
+ <li>If the given <var title="">token</var> is a
+ <span>case-sensitive</span> match for one of the tokens in the
+ <code>DOMTokenList</code> object's underlying string then stop the
+ algorithm.</li>
+
+ <li>Otherwise, if the <code>DOMTokenList</code> object's underlying
+ string is not the empty string and the last character of that
+ string is not a <span>space character</span>, then append a U+0020
+ SPACE character to the end of that string.</li>
+
+ <li>Append the value of <var title="">token</var> to the end of the
+ <code>DOMTokenList</code> object's underlying string.</li>
+
+</ol>
+
+<p>The <dfn title="dom-DOMTokenList-remove"><code>remove(<var
+title="">token</var>)</code></dfn> method must run the following
+algorithm:</p>
+
+<ol>
+
+ <li>If the <var title="">token</var> argument is the empty string,
+ then raise a <code title=dom-DOMException-SYNTAX_ERR>SYNTAX_ERR</code> exception and stop the
+ algorithm.</li>
+
+ <li>If the <var title="">token</var> argument contains any <span
+ title="space character">space characters</span>, then raise an
+ <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and stop the
+ algorithm.</li>
+
+ <li>Otherwise, <span title="remove a token from a string">remove
+ the given <var title="">token</var> from the underlying
+ string</span>.</li>
+
+</ol>
+
+<p>The <dfn title="dom-DOMTokenList-toggle"><code>toggle(<var
+title="">token</var>)</code></dfn> method must run the following
+algorithm:</p>
+
+<ol>
+
+ <li>If the <var title="">token</var> argument is the empty string,
+ then raise a <code title=dom-DOMException-SYNTAX_ERR>SYNTAX_ERR</code> exception and stop the
+ algorithm.</li>
+
+ <li>If the <var title="">token</var> argument contains any <span
+ title="space character">space characters</span>, then raise an
+ <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and stop the
+ algorithm.</li>
+
+ <li>Otherwise, <span title="split a string on spaces">split the
+ underlying string on spaces</span> to get the list of tokens in the
+ object's underlying string.</li>
+
+ <li>If the given <var title="">token</var> is a
+ <span>case-sensitive</span> match for one of the tokens in the
+ <code>DOMTokenList</code> object's underlying string then <span
+ title="remove a token from a string">remove the given <var
+ title="">token</var> from the underlying string</span> and stop the
+ algorithm, returning false.</li>
+
+ <li>Otherwise, if the <code>DOMTokenList</code> object's underlying
+ string is not the empty string and the last character of that
+ string is not a <span>space character</span>, then append a U+0020
+ SPACE character to the end of that string.</li>
+
+ <li>Append the value of <var title="">token</var> to the end of the
+ <code>DOMTokenList</code> object's underlying string.</li>
+
+ <li>Return true.</li>
+
+</ol>
+
+<p>Objects implementing the <code>DOMTokenList</code> interface must
+<dfn title="dom-DOMTokenList-toString">stringify</dfn> to the object's
+underlying string representation.</p>
+
+</div>
+
+
+<h3>Interface <code>DOMSettableTokenList</code></h3>
+
+<p>The <code>DOMSettableTokenList</code> interface is the same as the
+<code>DOMTokenList</code> interface, except that it allows the
+underlying string to be directly changed.</p>
+
+<pre class="idl">interface <dfn>DOMSettableTokenList</dfn> : <span>DOMTokenList</span> {
+            attribute DOMString <span title="dom-DOMSettableTokenList-value">value</span>;
+};</pre>
+
+<dl class="domintro">
+
+ <dt><var title="">tokenlist</var> . <code title="dom-DOMSettableTokenList-value">value</code></dt>
+ <dd>
+  <p>Returns the underlying string.</p>
+  <p>Can be set, to change the underlying string.</p>
+ </dd>
+
+</dl>
+
+<div class="impl">
+
+<p>An object implementing the <code>DOMSettableTokenList</code>
+interface must act as defined for the <code>DOMTokenList</code>
+interface, except for the <code
+title="dom-DOMSettableTokenList-value">value</code> attribute defined
+here.</p>
+
+<p>The <dfn
+title="dom-DOMSettableTokenList-value"><code>value</code></dfn>
+attribute must return the underlying string on getting, and must
+replace the underlying string with the new value on setting.</p>
+
+</div>
 
 
 

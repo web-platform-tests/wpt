@@ -920,6 +920,7 @@ conditions are true, and must otherwise return false:
   void normalizeDocument();
   Node renameNode(in Node n, in DOMString namespaceURI, in DOMString qualifiedName);-->
 };
+<dfn id=xmldocument>XMLDocument</dfn> : <a href=#document>Document</a> {};
 <a href=#document>Document</a> implements <a class=external href=http://www.w3.org/TR/DOM-Level-2-Views/views.html#Views-DocumentView>DocumentView</a>;</pre>
 
 <p>A <a href=#document><code>Document</code></a> node is assumed to be an <dfn id=xml-document>XML document</dfn>

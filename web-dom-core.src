@@ -928,6 +928,7 @@ conditions are true, and must otherwise return false:
   void normalizeDocument();
   Node renameNode(in Node n, in DOMString namespaceURI, in DOMString qualifiedName);-->
 };
+<dfn>XMLDocument</dfn> : <span>Document</span> {};
 <span>Document</span> implements <span data-anolis-spec=domviews>DocumentView</span>;</pre>
 
 <p>A <code>Document</code> node is assumed to be an <dfn>XML document</dfn>

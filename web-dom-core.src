@@ -424,14 +424,14 @@ title>http://www.w3.org/2000/xmlns/</code>.
   const unsigned short <span title=dom-DOMException-DOMSTRING_SIZE_ERR>DOMSTRING_SIZE_ERR</span> = 2; // historical
   const unsigned short <span title=dom-DOMException-HIERARCHY_REQUEST_ERR>HIERARCHY_REQUEST_ERR</span> = 3;
   const unsigned short <span title=dom-DOMException-WRONG_DOCUMENT_ERR>WRONG_DOCUMENT_ERR</span> = 4;
-  const unsigned short <span title=dom-DOMException-INVALID_CHARACTER_ERR title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</span> = 5;
+  const unsigned short <span title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</span> = 5;
   const unsigned short <span title=dom-DOMException-NO_DATA_ALLOWED_ERR>NO_DATA_ALLOWED_ERR</span> = 6;
   const unsigned short <span title=dom-DOMException-NO_MODIFICATION_ALLOWED_ERR>NO_MODIFICATION_ALLOWED_ERR</span> = 7;
   const unsigned short <span title=dom-DOMException-NOT_FOUND_ERR>NOT_FOUND_ERR</span> = 8;
   const unsigned short <span title=dom-DOMException-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</span> = 9;
   const unsigned short <span title=dom-DOMException-INUSE_ATTRIBUTE_ERR>INUSE_ATTRIBUTE_ERR</span> = 10;
   const unsigned short <span title=dom-DOMException-INVALID_STATE_ERR>INVALID_STATE_ERR</span> = 11;
-  const unsigned short <span title=dom-DOMException-SYNTAX_ERR title=dom-DOMException-SYNTAX_ERR>SYNTAX_ERR</span> = 12;
+  const unsigned short <span title=dom-DOMException-SYNTAX_ERR>SYNTAX_ERR</span> = 12;
   const unsigned short <span title=dom-DOMException-INVALID_MODIFICATION_ERR>INVALID_MODIFICATION_ERR</span> = 13;
   const unsigned short <span title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</span> = 14;
   const unsigned short <span title=dom-DOMException-INVALID_ACCESS_ERR>INVALID_ACCESS_ERR</span> = 15;

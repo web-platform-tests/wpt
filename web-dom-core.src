@@ -3,7 +3,10 @@
 <link rel=stylesheet href=http://www.whatwg.org/style/specification>
 <style>
  pre, code { font-family:monospace, sans-serif; }
- h2 code, h3 code, h4 code { font:inherit; color:inherit; font-style:italic; }
+ h2 code, h3 code, h4 code,
+ h2 :link, h3 :link, h4 :link,
+ h2 :visited, h3 :visited, h4 :visited
+ { font:inherit; color:inherit; font-style:italic; }
  span:not([title]):not([class]):not([id]):not([data-anolis-spec]),
  abbr:not([title]):not([class]):not([id]):not([data-anolis-spec]),
  code:not([title]):not([class]):not([id]):not([data-anolis-spec]),

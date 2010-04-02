@@ -898,6 +898,7 @@ conditions are true, and must otherwise return false:
   readonly attribute <span>DocumentType</span> <span title=dom-Document-doctype>doctype</span>;
   readonly attribute <span>DOMImplementation</span> <span title=dom-Document-implementation>implementation</span>;
   readonly attribute <span>Element</span> <span title=dom-Document-documentElement>documentElement</span>;
+  readonly attribute <span data-anolis-spec=window>WindowProxy</span> <span title=dom-Document-defaultView>defaultView</span>;
 
   <span>Element</span> <span title=dom-Document-createElement>createElement</span>([TreatNullAs=EmptyString] in DOMString tagName);
   <span>Element</span> <span title=dom-Document-createElementNS>createElementNS</span>(in DOMString namespaceURI, in DOMString qualifiedName);
@@ -928,22 +929,33 @@ conditions are true, and must otherwise return false:
   void normalizeDocument();
   Node renameNode(in Node n, in DOMString namespaceURI, in DOMString qualifiedName);-->
 };
-<dfn>XMLDocument</dfn> : <span>Document</span> {};
-<span>Document</span> implements <span data-anolis-spec=domviews>DocumentView</span>;</pre>
+<dfn>XMLDocument</dfn> : <span>Document</span> {};</pre>
 
 <p>A <code>Document</code> node is assumed to be an <dfn>XML document</dfn>
 unless they are flagged as being an <dfn>HTML document</dfn> when they are
 created. Whether a document is an <span>HTML document</span> or an <span>XML
 document</span> affects the behavior of certain APIs.
 
+<dl class=domintro>
+ <dt><var title=dom-Window-document data-anolis-spec=window>document</var> .
+     <code title=dom-Document-defaultView>defaultView</code>
+ <dd><p>Returns the <code data-anolis-spec=window>Window</code> object of the
+        <span data-anolis-spec=html>active document</span>.
+</dl>
+
 <p>The <dfn title=dom-Document-doctype><code>doctype</code></dfn> attribute must return the first child of the <code>Document</code> node that is a <code>DocumentType</code> node, if there is one, or null otherwise.
 <p class=note>In both HTML and XML there will only ever be one <code>DocumentType</code> node descendant of the <code>Document</code> node. <a href=#refsHTML>[HTML]</a> <a href=#refsXML>[XML]</a>
 
 <p>The <dfn title=dom-Document-implementation><code>implementation</code></dfn> attribute must return the <code>DOMImplementation</code> object that is associated with the <code>Document</code> node.
 
-<hr>
-
 <p>The <dfn title=dom-Document-documentElement><code>documentElement</code></dfn> attribute must return the first child of the <code>Document</code> node that is an <code>Element</code> node, if there is one, or null otherwise.
+
+<p>The <dfn title=dom-Document-defaultView><code>defaultView</code></dfn>
+attribute must return the <span>context node</span>'s <span
+data-anolis-spec=html>browsing context</span>'s <code
+data-anolis-spec=window>WindowProxy</code> object.</p>
+
+<hr>
 
 <p>The <dfn title=dom-Document-createElement><code>createElement(<var title>tagName</var>)</code></dfn> method must run the following steps:</p>
 
@@ -1548,8 +1560,8 @@ title=dom-DOMImplementation-createHTMLDocument>createHTMLDocument()</code>
 method.
 
 <dl class=domintro>
- <dt><var title>doc</var> = <var title=dom-AbstractView-document
- data-anolis-spec=domviews>document</var> . <code
+ <dt><var title>doc</var> = <var title=dom-Window-document
+ data-anolis-spec=window>document</var> . <code
  title=dom-Document-implementation>implementation</code> . <code
  title=dom-DOMImplementation-createHTMLDocument>createHTMLDocument</code>(
  <var title>title</var> )
@@ -1952,12 +1964,6 @@ replace the underlying string with the new value on setting.</p>
 because the newer ones keep changing. -->
 
 <dl>
- <dt id="refsDOMVIEWS">[DOMVIEWS]</dt>
- <dd><cite><a
- href="http://www.w3.org/TR/DOM-Level-2-Views/">Document Object
- Model (DOM) Level 2 Views Specification</a></cite>, A. Le Hors, L.
- Cable. W3C.</dd>
-
  <dt id="refsHTML">[HTML]</dt>
  <dd><cite><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage>HTML</a></cite>,
  I. Hickson. WHATWG.</dd>

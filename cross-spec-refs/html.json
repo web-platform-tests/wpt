@@ -7,6 +7,8 @@
       "collections" : "collections",
       "represented by the collection" : "represented-by-the-collection",
       "htmlcollection" : "htmlcollection",
-      "htmldocument" : "htmldocument"
+      "htmldocument" : "htmldocument",
+      "browsing context" : "browsing-context",
+      "active document" : "active-document"
     }
 }

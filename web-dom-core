@@ -890,6 +890,7 @@ conditions are true, and must otherwise return false:
   readonly attribute <a href=#documenttype>DocumentType</a> <a href=#dom-document-doctype title=dom-Document-doctype>doctype</a>;
   readonly attribute <a href=#domimplementation>DOMImplementation</a> <a href=#dom-document-implementation title=dom-Document-implementation>implementation</a>;
   readonly attribute <a href=#element>Element</a> <a href=#dom-document-documentelement title=dom-Document-documentElement>documentElement</a>;
+  readonly attribute <a class=external href=http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#windowproxy>WindowProxy</a> <a href=#dom-document-defaultview title=dom-Document-defaultView>defaultView</a>;
 
   <a href=#element>Element</a> <a href=#dom-document-createelement title=dom-Document-createElement>createElement</a>([TreatNullAs=EmptyString] in DOMString tagName);
   <a href=#element>Element</a> <a href=#dom-document-createelementns title=dom-Document-createElementNS>createElementNS</a>(in DOMString namespaceURI, in DOMString qualifiedName);
@@ -920,22 +921,31 @@ conditions are true, and must otherwise return false:
   void normalizeDocument();
   Node renameNode(in Node n, in DOMString namespaceURI, in DOMString qualifiedName);-->
 };
-<dfn id=xmldocument>XMLDocument</dfn> : <a href=#document>Document</a> {};
-<a href=#document>Document</a> implements <a class=external href=http://www.w3.org/TR/DOM-Level-2-Views/views.html#Views-DocumentView>DocumentView</a>;</pre>
+<dfn id=xmldocument>XMLDocument</dfn> : <a href=#document>Document</a> {};</pre>
 
 <p>A <a href=#document><code>Document</code></a> node is assumed to be an <dfn id=xml-document>XML document</dfn>
 unless they are flagged as being an <dfn id=html-document>HTML document</dfn> when they are
 created. Whether a document is an <a href=#html-document>HTML document</a> or an <a href=#xml-document>XML
 document</a> affects the behavior of certain APIs.
 
+<dl class=domintro>
+ <dt><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#dom-document><var class=external title=dom-Window-document>document</var></a> .
+     <a href=#dom-document-defaultview><code title=dom-Document-defaultView>defaultView</code></a>
+ <dd><p>Returns the <a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#window><code class=external>Window</code></a> object of the
+        <a class=external href=http://www.whatwg.org/html/#active-document>active document</a>.
+</dl>
+
 <p>The <dfn id=dom-document-doctype title=dom-Document-doctype><code>doctype</code></dfn> attribute must return the first child of the <a href=#document><code>Document</code></a> node that is a <a href=#documenttype><code>DocumentType</code></a> node, if there is one, or null otherwise.
 <p class=note>In both HTML and XML there will only ever be one <a href=#documenttype><code>DocumentType</code></a> node descendant of the <a href=#document><code>Document</code></a> node. <a href=#refsHTML>[HTML]</a> <a href=#refsXML>[XML]</a>
 
 <p>The <dfn id=dom-document-implementation title=dom-Document-implementation><code>implementation</code></dfn> attribute must return the <a href=#domimplementation><code>DOMImplementation</code></a> object that is associated with the <a href=#document><code>Document</code></a> node.
 
-<hr>
-
 <p>The <dfn id=dom-document-documentelement title=dom-Document-documentElement><code>documentElement</code></dfn> attribute must return the first child of the <a href=#document><code>Document</code></a> node that is an <a href=#element><code>Element</code></a> node, if there is one, or null otherwise.
+
+<p>The <dfn id=dom-document-defaultview title=dom-Document-defaultView><code>defaultView</code></dfn>
+attribute must return the <a href=#context-node>context node</a>'s <a class=external href=http://www.whatwg.org/html/#browsing-context>browsing context</a>'s <a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#windowproxy><code class=external>WindowProxy</code></a> object.</p>
+
+<hr>
 
 <p>The <dfn id=dom-document-createelement title=dom-Document-createElement><code>createElement(<var title="">tagName</var>)</code></dfn> method must run the following steps:</p>
 
@@ -1460,7 +1470,7 @@ following steps:
 method.
 
 <dl class=domintro>
- <dt><var title="">doc</var> = <a href=http://www.w3.org/TR/DOM-Level-2-Views/views.html#Views-AbstractView-document><var class=external title=dom-AbstractView-document>document</var></a> . <a href=#dom-document-implementation><code title=dom-Document-implementation>implementation</code></a> . <a href=#dom-domimplementation-createhtmldocument><code title=dom-DOMImplementation-createHTMLDocument>createHTMLDocument</code></a>(
+ <dt><var title="">doc</var> = <a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#dom-document><var class=external title=dom-Window-document>document</var></a> . <a href=#dom-document-implementation><code title=dom-Document-implementation>implementation</code></a> . <a href=#dom-domimplementation-createhtmldocument><code title=dom-DOMImplementation-createHTMLDocument>createHTMLDocument</code></a>(
  <var title="">title</var> )
 
  <dd><p>Returns a new <a href=#document><code>Document</code></a>, with a basic DOM already
@@ -1835,11 +1845,6 @@ replace the underlying string with the new value on setting.</p>
 because the newer ones keep changing. -->
 
 <dl>
- <dt id=refsDOMVIEWS>[DOMVIEWS]</dt>
- <dd><cite><a href=http://www.w3.org/TR/DOM-Level-2-Views/>Document Object
- Model (DOM) Level 2 Views Specification</a></cite>, A. Le Hors, L.
- Cable. W3C.</dd>
-
  <dt id=refsHTML>[HTML]</dt>
  <dd><cite><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage>HTML</a></cite>,
  I. Hickson. WHATWG.</dd>

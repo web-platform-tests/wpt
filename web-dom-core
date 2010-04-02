@@ -27,7 +27,7 @@
 <body class=draft>
 <div class=head id=head>
 <h1>Web DOM Core</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-date:-01-jan-1901>Work in Progress &mdash; Last Update 28 March 2010</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-date:-01-jan-1901>Work in Progress &mdash; Last Update 2 April 2010</h2>
 <dl>
  <dt>Editors
  <dd>Simon Pieters &lt;simonp@opera.com&gt;
@@ -1072,10 +1072,7 @@ data-anolis-spec=xmlns>NCName</code> production in Namespaces in XML.-->
  <a href=#dom-node-localname><code title=dom-node-localName>localName</code></a> <a href=#case-sensitive title=case-sensitive>case-sensitively</a> equal to <var title="">localName</var>.
 </ol>
 
-<p>A new <a href=#nodelist><code>NodeList</code></a> object must be returned each time unless
-the argument is the same as the last time the method was invoked on
-this <a href=#document><code>Document</code></a> object, in which case the object must be
-the same as the object returned by the previous call.</p>
+<p>A new <a href=#nodelist><code>NodeList</code></a> object must be returned each time.
 
 <p class=note>Thus, in an <a href=#html-document>HTML document</a>, <code title="">document.getElementsByTagName("FOO")</code> will match <code title="">FOO</code> elements that aren't in the <a href=#html-namespace>HTML namespace</a>, and
 <code title="">foo</code> elements that are in the <a href=#html-namespace>HTML namespace</a>, but
@@ -1088,10 +1085,7 @@ not <code title="">FOO</code> elements that are in the <a href=#html-namespace>H
  <li><p>Otherwise, if <var title="">localName</var> is just the character U+002A ASTERISK ("*"), return a <a href=#nodelist><code>NodeList</code></a> rooted at the <a href=#context-node>context node</a>, whose filter matches only <a href=#element><code>Element</code></a> nodes with the <a href=#dom-node-namespaceuri><code title=dom-Node-namespaceURI>namespaceURI</code></a> equal to <var title="">namespaceURI</var>.
  <li><p>Otherwise, return a <a href=#nodelist><code>NodeList</code></a> rooted at the <a href=#context-node>context node</a>, whose filter matches only <a href=#element><code>Element</code></a> nodes that have a <a href=#dom-node-namespaceuri><code title=dom-Node-namespaceURI>namespaceURI</code></a> equal to <var title="">namespaceURI</var> and a <a href=#dom-node-localname><code title=dom-Node-localName>localName</code></a> equal to <var title="">localName</var> (both in a <a href=#case-sensitive>case-sensitive</a> manner).
 </ol>
-<p>A new <a href=#nodelist><code>NodeList</code></a> object must be returned each time unless
-the argument is the same as the last time the method was invoked on
-this <a href=#document><code>Document</code></a> object, in which case the object must be
-the same as the object returned by the previous call.</p>
+<p>A new <a href=#nodelist><code>NodeList</code></a> object must be returned each time.
 
 <p>The <dfn id=dom-document-getelementbyid title=dom-Document-getElementById><code>getElementById(<var title="">elementId</var>)</code></dfn> method must return the first
 <a href=#element><code>Element</code></a> node, in <a href=#tree-order>tree order</a>, in the <a href=#context-node>context

@@ -6,10 +6,10 @@
 <script src="support/test.js"></script>
 <script>
 try {
-  Test.is(document.getElementsByTagNameNS("http://www.w3.org/1999/xhtml",
-                                          "html"),
-          document.getElementsByTagNameNS("http://www.w3.org/1999/xhtml",
-                                          "html"));
+  Test.ok(
+    document.getElementsByTagNameNS("http://www.w3.org/1999/xhtml", "html") !==
+    document.getElementsByTagNameNS("http://www.w3.org/1999/xhtml", "html"),
+    "Must not cache gEBTNNS.");
 } catch (e) {
   Test.fail("Exception was thrown.");
 }

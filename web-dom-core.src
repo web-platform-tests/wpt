@@ -1100,10 +1100,7 @@ title>localName</var>)</code></dfn> method must run the following steps:
  title>localName</var>.
 </ol>
 
-<p>A new <code>NodeList</code> object must be returned each time unless
-the argument is the same as the last time the method was invoked on
-this <code>Document</code> object, in which case the object must be
-the same as the object returned by the previous call.</p>
+<p>A new <code>NodeList</code> object must be returned each time.
 
 <p class=note>Thus, in an <span>HTML document</span>, <code
 title>document.getElementsByTagName("FOO")</code> will match <code
@@ -1118,10 +1115,7 @@ not <code title>FOO</code> elements that are in the <span>HTML namespace</span>.
  <li><p>Otherwise, if <var title>localName</var> is just the character U+002A ASTERISK ("*"), return a <code>NodeList</code> rooted at the <span>context node</span>, whose filter matches only <code>Element</code> nodes with the <code title=dom-Node-namespaceURI>namespaceURI</code> equal to <var title>namespaceURI</var>.
  <li><p>Otherwise, return a <code>NodeList</code> rooted at the <span>context node</span>, whose filter matches only <code>Element</code> nodes that have a <code title=dom-Node-namespaceURI>namespaceURI</code> equal to <var title>namespaceURI</var> and a <code title=dom-Node-localName>localName</code> equal to <var title>localName</var> (both in a <span>case-sensitive</span> manner).
 </ol>
-<p>A new <code>NodeList</code> object must be returned each time unless
-the argument is the same as the last time the method was invoked on
-this <code>Document</code> object, in which case the object must be
-the same as the object returned by the previous call.</p>
+<p>A new <code>NodeList</code> object must be returned each time.
 
 <p>The <dfn title=dom-Document-getElementById><code>getElementById(<var
 title>elementId</var>)</code></dfn> method must return the first

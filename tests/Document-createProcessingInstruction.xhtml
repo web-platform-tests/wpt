@@ -1,19 +1,50 @@
-<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
 <title>Document.createProcessingInstruction</title>
-<link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
-<link rel="help" href="../web-dom-core#dom-document-createprocessinginstruction">
+<link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com"/>
+<link rel="help" href="../web-dom-core#dom-document-createprocessinginstruction"/>
+</head>
 <body>
 <script src="support/test.js"></script>
 <script>
+var invalid = [
+  ["A", "?>"],
+  ["\u00B7A", "x"],
+  ["\u00D7A", "x"],
+  ["A\u00D7", "x"],
+  ["\\A", "x"],
+  ["\f", "x"],
+  [0, "x"],
+  ["0", "x"]
+];
+var valid = [
+  ["xml:fail", "x"],
+  ["A\u00B7A", "x"],
+  ["a0", "x"]
+]
 try {
-  try {
-    document.createProcessingInstruction("A", "?>");
-    Test.fail("Should have thrown.");
-  } catch (e) {
-    Test.is(e.code, DOMException.INVALID_CHARACTER_ERR);
+  for (var i = 0, il = invalid.length; i &lt; il; ++i) {
+    try {
+      document.createProcessingInstruction(invalid[i][0], invalid[i][1]);
+      Test.fail("Should have thrown.");
+    } catch (e) {
+      Test.is(e.code, DOMException.INVALID_CHARACTER_ERR);
+    }
+  }
+  for (var i = 0, il = valid.length; i &lt; il; ++i) {
+    try {
+      var pi = document.createProcessingInstruction(valid[i][0], valid[i][1]);
+      Test.is(pi.target, valid[i][0]);
+      Test.is(pi.data, valid[i][1]);
+      Test.is(pi.ownerDocument, document);
+    } catch (e) {
+      Test.fail("Exception was thrown.");
+    }
   }
 } catch (e) {
   Test.fail("Exception was thrown.");
 }
 Test.finish();
 </script>
+</body>
+</html>

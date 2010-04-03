@@ -1,11 +1,21 @@
 <!DOCTYPE html>
-<title>Document.getElementsByTagNameNS with the same argument</title>
+<title>Document.getElementsByTagNameNS</title>
 <link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
 <link rel="help" href="../web-dom-core#dom-document-getelementsbytagnamens">
 <body>
 <script src="support/test.js"></script>
 <script>
 try {
+  Test.ok(
+    document.getElementsByTagNameNS("http://www.w3.org/1999/xhtml", "html")
+      instanceof NodeList,
+    "Must return a NodeList.");
+  Test.ok(
+    !(document.getElementsByTagNameNS("http://www.w3.org/1999/xhtml", "html")
+      instanceof HTMLCollection),
+    "Must not return an HTMLCollection.");
+
+  Test.separate();
   Test.ok(
     document.getElementsByTagNameNS("http://www.w3.org/1999/xhtml", "html") !==
     document.getElementsByTagNameNS("http://www.w3.org/1999/xhtml", "html"),

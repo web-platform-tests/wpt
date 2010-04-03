@@ -3,7 +3,7 @@ Document-createProcessingInstruction.html
 Document-createProcessingInstruction.xhtml
 Document-getElementById-emptystring.html
 Document-getElementsByTagName.html
-Document-getElementsByTagNameNS-same.html
+Document-getElementsByTagNameNS.html
 DOMImplementation-createHTMLDocument.html
 Element-getAttribute.html
 Element-setAttribute.html

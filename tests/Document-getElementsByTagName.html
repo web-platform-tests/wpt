@@ -6,6 +6,12 @@
 <script src="support/test.js"></script>
 <script>
 try {
+  Test.ok(document.getElementsByTagName("html") instanceof NodeList,
+          "Must return a NodeList.");
+  Test.ok(!(document.getElementsByTagName("html") instanceof HTMLCollection),
+          "Must not return an HTMLCollection.");
+
+  Test.separate();
   Test.ok(document.getElementsByTagName("html") !==
           document.getElementsByTagName("html"), "Must not cache gEBTN.");
 

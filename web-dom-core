@@ -27,7 +27,7 @@
 <body class=draft>
 <div class=head id=head>
 <h1>Web DOM Core</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-date:-01-jan-1901>Work in Progress &mdash; Last Update 2 April 2010</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-date:-01-jan-1901>Work in Progress &mdash; Last Update 3 April 2010</h2>
 <dl>
  <dt>Editors
  <dd>Simon Pieters &lt;simonp@opera.com&gt;
@@ -1323,7 +1323,10 @@ have its name converted to ASCII lowercase before the element is affected.
 
 <p class=XXX><dfn id=dom-element-hasattributens title=dom-Element-hasAttributeNS>hasAttributeNS</dfn>
 
-<p class=XXX><dfn id=dom-element-children title=dom-Element-children>children</dfn>
+<p>The <dfn id=dom-element-children title=dom-Element-children><code>children</code></dfn> attribute
+must return an <a href=http://www.whatwg.org/html/#htmlcollection><code class=external>HTMLCollection</code></a> <a class=external href=http://www.whatwg.org/html/#collections title=collections>collection</a>, whose filter matches
+only <a href=#element><code>Element</code></a> nodes in the <a href=#context-node>context node</a>'s <a href=#dom-node-childnodes><code title=dom-Node-childNodes>childNodes</code></a>. <span class=XXX>Or a
+<a href=#nodelist><code>NodeList</code></a>?</span> 
 
 
 <h3 id=interface-documenttype><span class=secno>4.6 </span>Interface <a href=#documenttype><code>DocumentType</code></a></h3>

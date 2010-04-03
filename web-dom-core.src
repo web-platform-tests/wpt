@@ -1404,7 +1404,12 @@ have its name converted to ASCII lowercase before the element is affected.
 
 <p class=XXX><dfn title=dom-Element-hasAttributeNS>hasAttributeNS</dfn>
 
-<p class=XXX><dfn title=dom-Element-children>children</dfn>
+<p>The <dfn title=dom-Element-children><code>children</code></dfn> attribute
+must return an <code data-anolis-spec=html>HTMLCollection</code> <span
+title=collections data-anolis-spec=html>collection</span>, whose filter matches
+only <code>Element</code> nodes in the <span>context node</span>'s <code
+title=dom-Node-childNodes>childNodes</code>. <span class=XXX>Or a
+<code>NodeList</code>?</span> 
 
 
 <h3>Interface <code>DocumentType</code></h3>

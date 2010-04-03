@@ -875,14 +875,25 @@ title>arg</var>)</code></dfn> method must return true if all of the following
 conditions are true, and must otherwise return false:
 
 <ul>
- <li><p><var title>arg</var> implements the <code>Node</code> interface.
+ <li><p><var title>arg</var> is not null.
  <li><p><var title>arg</var>'s <code title=dom-Node-nodeType>nodeType</code> is the same as the <span>context node</span>'s <code title=dom-Node-nodeType>nodeType</code>.
  <li><p><var title>arg</var>'s <code title=dom-Node-nodeName>nodeName</code> is the same as the <span>context node</span>'s <code title=dom-Node-nodeName>nodeName</code>.
  <li><p><var title>arg</var>'s <code title=dom-Node-localName>localName</code> is the same as the <span>context node</span>'s <code title=dom-Node-localName>localName</code>.
  <li><p><var title>arg</var>'s <code title=dom-Node-namespaceURI>namespaceURI</code> is the same as the <span>context node</span>'s <code title=dom-Node-namespaceURI>namespaceURI</code>.
  <li><p><var title>arg</var>'s <code title=dom-Node-prefix>prefix</code> is the same as the <span>context node</span>'s <code title=dom-Node-prefix>prefix</code>.
  <li><p><var title>arg</var>'s <code title=dom-Node-nodeValue>nodeValue</code> is the same as the <span>context node</span>'s <code title=dom-Node-nodeValue>nodeValue</code>.
- <li><p><var title>arg</var>'s <code title=dom-Node-attributes>attributes</code> is the same as the <span>context node</span>'s <code title=dom-Node-attributes>attributes</code>. <span class=XXX>Elaborate...</span>
+
+ <li><p>Either <var title>arg</var>'s <code
+ title=dom-Node-attributes>attributes</code> and the <span>context node</span>'s
+ <code title=dom-Node-attributes>attributes</code> are both null or a bijection
+ exists between the set of <var title>arg</var>'s <code
+ title=dom-Node-attributes>attributes</code> and the set of the <span>context
+ node</span>'s <code title=dom-Node-attributes>attributes</code> so that every
+ <code>Attr</code> node in the former is mapped to an <code>Attr</code> node in
+ the latter for which calling <code
+ title=dom-Node-isEqualNode>isEqualNode</code> on the first <code>Attr</code>
+ node with the second <code>Attr</code> node as its argument returns true.
+
  <li><p><var title>arg</var>'s <code title=dom-Node-childNodes>childNodes</code>' <code title=dom-NodeList-length>length</code> is the same as the <span>context node</span>'s <code title=dom-Node-childNodes>childNodes</code>' <code title=dom-NodeList-length>length</code>.
  <li><p>Calling <code title=dom-Node-isEqualNode>isEqualNode</code> on each child node of the <span>context node</span>, with the child node of the same index in <var title>arg</var> as argument returns true for every child node.
 </ul>

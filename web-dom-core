@@ -867,14 +867,22 @@ node</a>, and false otherwise.
 conditions are true, and must otherwise return false:
 
 <ul>
- <li><p><var title="">arg</var> implements the <a href=#node><code>Node</code></a> interface.
+ <li><p><var title="">arg</var> is not null.
  <li><p><var title="">arg</var>'s <a href=#dom-node-nodetype><code title=dom-Node-nodeType>nodeType</code></a> is the same as the <a href=#context-node>context node</a>'s <a href=#dom-node-nodetype><code title=dom-Node-nodeType>nodeType</code></a>.
  <li><p><var title="">arg</var>'s <a href=#dom-node-nodename><code title=dom-Node-nodeName>nodeName</code></a> is the same as the <a href=#context-node>context node</a>'s <a href=#dom-node-nodename><code title=dom-Node-nodeName>nodeName</code></a>.
  <li><p><var title="">arg</var>'s <a href=#dom-node-localname><code title=dom-Node-localName>localName</code></a> is the same as the <a href=#context-node>context node</a>'s <a href=#dom-node-localname><code title=dom-Node-localName>localName</code></a>.
  <li><p><var title="">arg</var>'s <a href=#dom-node-namespaceuri><code title=dom-Node-namespaceURI>namespaceURI</code></a> is the same as the <a href=#context-node>context node</a>'s <a href=#dom-node-namespaceuri><code title=dom-Node-namespaceURI>namespaceURI</code></a>.
  <li><p><var title="">arg</var>'s <a href=#dom-node-prefix><code title=dom-Node-prefix>prefix</code></a> is the same as the <a href=#context-node>context node</a>'s <a href=#dom-node-prefix><code title=dom-Node-prefix>prefix</code></a>.
  <li><p><var title="">arg</var>'s <a href=#dom-node-nodevalue><code title=dom-Node-nodeValue>nodeValue</code></a> is the same as the <a href=#context-node>context node</a>'s <a href=#dom-node-nodevalue><code title=dom-Node-nodeValue>nodeValue</code></a>.
- <li><p><var title="">arg</var>'s <a href=#dom-node-attributes><code title=dom-Node-attributes>attributes</code></a> is the same as the <a href=#context-node>context node</a>'s <a href=#dom-node-attributes><code title=dom-Node-attributes>attributes</code></a>. <span class=XXX>Elaborate...</span>
+
+ <li><p>Either <var title="">arg</var>'s <a href=#dom-node-attributes><code title=dom-Node-attributes>attributes</code></a> and the <a href=#context-node>context node</a>'s
+ <a href=#dom-node-attributes><code title=dom-Node-attributes>attributes</code></a> are both null or a bijection
+ exists between the set of <var title="">arg</var>'s <a href=#dom-node-attributes><code title=dom-Node-attributes>attributes</code></a> and the set of the <a href=#context-node>context
+ node</a>'s <a href=#dom-node-attributes><code title=dom-Node-attributes>attributes</code></a> so that every
+ <a href=#attr><code>Attr</code></a> node in the former is mapped to an <a href=#attr><code>Attr</code></a> node in
+ the latter for which calling <a href=#dom-node-isequalnode><code title=dom-Node-isEqualNode>isEqualNode</code></a> on the first <a href=#attr><code>Attr</code></a>
+ node with the second <a href=#attr><code>Attr</code></a> node as its argument returns true.
+
  <li><p><var title="">arg</var>'s <a href=#dom-node-childnodes><code title=dom-Node-childNodes>childNodes</code></a>' <a href=#dom-nodelist-length><code title=dom-NodeList-length>length</code></a> is the same as the <a href=#context-node>context node</a>'s <a href=#dom-node-childnodes><code title=dom-Node-childNodes>childNodes</code></a>' <a href=#dom-nodelist-length><code title=dom-NodeList-length>length</code></a>.
  <li><p>Calling <a href=#dom-node-isequalnode><code title=dom-Node-isEqualNode>isEqualNode</code></a> on each child node of the <a href=#context-node>context node</a>, with the child node of the same index in <var title="">arg</var> as argument returns true for every child node.
 </ul>

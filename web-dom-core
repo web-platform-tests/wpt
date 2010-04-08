@@ -1408,6 +1408,9 @@ following steps:
 
 <p class=XXX><dfn id=dom-text-replacewholetext title=dom-Text-replaceWholeText>replaceWholeText</dfn>
 
+<!-- isElementContentWhitespace: Mozilla returns true if the node contains only
+space, tab, newline -->
+
 
 <h3 id=interface-comment><span class=secno>4.10 </span>Interface <a href=#comment><code>Comment</code></a></h3>
 <pre class=idl>interface <dfn id=comment>Comment</dfn> : <a href=#characterdata>CharacterData</a> {

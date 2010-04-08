@@ -8,7 +8,7 @@
 <script>
 var HTMLNS = "http://www.w3.org/1999/xhtml";
 try {
-  var tests = [
+  var validtests = [
     //[input, localName],
     [undefined, "undefined"],
     ["foo", "foo"],
@@ -29,8 +29,24 @@ try {
     ["math", "math"],
     ["FOO", "foo"]
   ];
-  for (var i = 0, il = tests.length; i < il; ++i) {
-    var test = tests[i];
+  var invalidtests = [
+    "",
+    "1foo",
+    "\u0300foo",
+    "}foo",
+    "f}oo",
+    "foo}",
+    "\ufffffoo",
+    "f\uffffoo",
+    "foo\uffff",
+    "<foo",
+    "foo>",
+    "<foo>",
+    "f<oo"    
+  ];
+
+  for (var i = 0, il = validtests.length; i < il; ++i) {
+    var test = validtests[i];
     try {
       var elt = document.createElement(test[0]);
       Test.ok(elt instanceof Element);
@@ -39,7 +55,17 @@ try {
       Test.is(elt.prefix, null);
       Test.is(elt.namespaceURI, HTMLNS);
     } catch (e) {
-      Test.fail("Exception was thrown." +e);
+      Test.fail("Exception was thrown.");
+    }
+    Test.separate();
+  }
+  for (var i = 0, il = invalidtests.length; i < il; ++i) {
+    try {
+      var elt = document.createElement(invalidtests[i]);
+      Test.fail("Should have thrown an exception.");
+    } catch (e) {
+      Test.ok(e instanceof DOMException, "Should have got a DOMException.");
+      Test.is(e.code, DOMException.INVALID_CHARACTER_ERR);
     }
   }
 } catch (e) {

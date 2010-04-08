@@ -27,7 +27,7 @@
 <body class=draft>
 <div class=head id=head>
 <h1>Web DOM Core</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-date:-01-jan-1901>Work in Progress &mdash; Last Update 3 April 2010</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-date:-01-jan-1901>Work in Progress &mdash; Last Update 8 April 2010</h2>
 <dl>
  <dt>Editors
  <dd>Simon Pieters &lt;simonp@opera.com&gt;
@@ -314,65 +314,51 @@ it must use the following algorithm:</p>
 
 <ol>
 
- <li><p>Let <var title="">input</var> be the string being
- modified.</li>
+ <li><p>Let <var title="">input</var> be the string being modified.
 
- <li><p>Let <var title="">token</var> be the token being removed. It
- will not contain any <a href=#space-character title="space character">space
- characters</a>.</li>
+ <li><p>Let <var title="">token</var> be the token being removed. It will not
+ contain any <a href=#space-character title="space character">space characters</a>.
 
- <li><p>Let <var title="">output</var> be the output string,
- initially empty.</li>
+ <li><p>Let <var title="">output</var> be the output string, initially empty.
 
- <li><p>Let <var title="">position</var> be a pointer into <var title="">input</var>, initially pointing at the start of the
- string.</li>
+ <li><p>Let <var title="">position</var> be a pointer into <var title="">input</var>,
+ initially pointing at the start of the string.
 
- <li><p>If <var title="">position</var> is beyond the end of <var title="">input</var>, abort these steps.</li>
+ <li><p><i>Loop</i>: If <var title="">position</var> is beyond the end of <var title="">input</var>, abort these steps.
 
- <li><p>If the character at <var title="">position</var> is a
- <a href=#space-character>space character</a>:</p>
+ <li>
+  <p>If the character at <var title="">position</var> is a <a href=#space-character>space
+  character</a>:
 
   <ol>
+   <li><p>Append the character at <var title="">position</var> to the end of <var title="">output</var>.
 
-   <li><p>Append the character at <var title="">position</var> to
-   the end of <var title="">output</var>.</li>
+   <li><p>Advance <var title="">position</var> so it points at the next character
+   in <var title="">input</var>.
 
-   <li><p>Advance <var title="">position</var> so it points at the
-   next character in <var title="">input</var>.</li>
-
-   <li><p>Return to step 5 in the overall set of steps.</li>
-
+   <li><p>Return to the step labeled <i>loop</i>.
   </ol>
 
- </li>
+ <li><p>Otherwise, the character at <var title="">position</var> is the first
+ character of a token. <a href=#collect-a-sequence-of-characters>Collect a sequence of characters</a> that are
+ not <a href=#space-character title="space character">space characters</a>, and let that be <var title="">s</var>.
 
- <li><p>Otherwise, the character at <var title="">position</var> is
- the first character of a token. <a href=#collect-a-sequence-of-characters>Collect a sequence of
- characters</a> that are not <a href=#space-character title="space character">space
- characters</a>, and let that be <var title="">s</var>.</li>
-
- <li><p>If <var title="">s</var> is exactly equal to <var title="">token</var>, then:</p>
+ <li>
+  <p>If <var title="">s</var> is exactly equal to <var title="">token</var>, then:
 
   <ol>
+   <li><p><a href=#skip-whitespace>Skip whitespace</a> (in <var title="">input</var>).
 
-   <li><p><a href=#skip-whitespace>Skip whitespace</a> (in <var title="">input</var>).</li>
+   <li><p>Remove any <a href=#space-character title="space character">space characters</a>
+   currently at the end of <var title="">output</var>.
 
-   <li><p>Remove any <a href=#space-character title="space character">space
-   characters</a> currently at the end of <var title="">output</var>.</li>
-
-   <li><p>If <var title="">position</var> is not past the end of
-   <var title="">input</var>, and <var title="">output</var> is not
-   the empty string, append a single U+0020 SPACE character at the
-   end of <var title="">output</var>.</li>
-
+   <li><p>If <var title="">position</var> is not past the end of <var title="">input</var>, and <var title="">output</var> is not the empty string,
+   append a single U+0020 SPACE character at the end of <var title="">output</var>.
   </ol>
 
- </li>
+ <li><p>Otherwise, append <var title="">s</var> to the end of <var title="">output</var>.
 
- <li><p>Otherwise, append <var title="">s</var> to the end of <var title="">output</var>.</li>
-
- <li><p>Return to step 6 in the overall set of steps.</li>
-
+ <li><p>Return to the step labeled <i>loop</i>.</li>
 </ol>
 
 <p class=note>This causes any occurrences of the token to be

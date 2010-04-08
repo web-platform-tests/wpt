@@ -1556,7 +1556,7 @@ space, tab, newline -->
  <li><p>Return <var title>document</var>.
 </ol>
 
-<p class=XXX>exceptions for createDocument <a href=http://osdir.com/ml/web.dom.general/2005-12/msg00058.html>http://osdir.com/ml/web.dom.general/2005-12/msg00058.html</a>
+<p class=XXX>exceptions for createDocument <a href=http://lists.w3.org/Archives/Public/www-dom/2005OctDec/0076.html>http://lists.w3.org/Archives/Public/www-dom/2005OctDec/0076.html</a>.
 
 <p><span title="HTML document">HTML documents</span> can be created using the
 <code

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<title>Document.createElementNS</title>
+<link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
+<link rel="help" href="../web-dom-core#dom-document-createelementns">
+<body>
+<script src="support/test.js"></script>
+<script>
+try {
+  var invalidQualifiedNames = [
+    "",
+    "1foo",
+    "\u0300foo",
+    "}foo",
+    "f}oo",
+    "foo}",
+    "\ufffffoo",
+    "f\uffffoo",
+    "foo\uffff",
+    "<foo",
+    "foo>",
+    "<foo>",
+    "f<oo"
+  ];
+  for (var i = 0, il = invalidQualifiedNames.length; i < il; ++i) {
+    try {
+      var elt = document.createElementNS("", invalidQualifiedNames[i]);
+      Test.fail("Should have thrown an exception.");
+    } catch (e) {
+      Test.ok(e instanceof DOMException, "Should have got a DOMException.");
+      Test.is(e.code, DOMException.INVALID_CHARACTER_ERR);
+    }
+  }
+} catch (e) {
+  Test.fail("Exception was thrown.");
+}
+Test.finish();
+</script>

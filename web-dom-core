@@ -27,7 +27,7 @@
 <body class=draft>
 <div class=head id=head>
 <h1>Web DOM Core</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-date:-01-jan-1901>Work in Progress &mdash; Last Update 20 April 2010</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-date:-01-jan-1901>Work in Progress &mdash; Last Update 24 April 2010</h2>
 <dl>
  <dt>Editors
  <dd>Simon Pieters &lt;simonp@opera.com&gt;
@@ -155,7 +155,7 @@ Everything else in this specification is normative.</p>
 NOT",--> "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and
 "OPTIONAL" in the normative parts of this document are to be
 interpreted as described in RFC2119. For readability, these words do
-not appear in all uppercase letters in this specification. <a href=#refsRFC2119>[RFC2119]</a></p>
+not appear in all uppercase letters in this specification. <a data-anolis-ref="" href=#refsRFC2119>[RFC2119]</a></p>
 
 <p>Requirements phrased in the imperative as part of algorithms
 (such as "strip any leading space characters" or "return false and
@@ -182,7 +182,7 @@ out of memory, or to work around platform-specific limitations.</p>
 
 <p>The IDL fragments in this specification must be interpreted as
 required for conforming IDL fragments, as described in the Web IDL
-specification. <a href=#refsWEBIDL>[WEBIDL]</a></p>
+specification. <a data-anolis-ref="" href=#refsWEBIDL>[WEBIDL]</a></p>
 
 <p id=float-nan>Except where otherwise specified, if an IDL attribute that is a
 floating point number type (<a href=http://dev.w3.org/2006/webapi/WebIDL/#idl-float><code class=external>float</code></a>) is
@@ -934,7 +934,7 @@ document</a> affects the behavior of certain APIs.
 </dl>
 
 <p>The <dfn id=dom-document-doctype title=dom-Document-doctype><code>doctype</code></dfn> attribute must return the first child of the <a href=#document><code>Document</code></a> node that is a <a href=#documenttype><code>DocumentType</code></a> node, if there is one, or null otherwise.
-<p class=note>In both HTML and XML there will only ever be one <a href=#documenttype><code>DocumentType</code></a> node descendant of the <a href=#document><code>Document</code></a> node. <a href=#refsHTML>[HTML]</a> <a href=#refsXML>[XML]</a>
+<p class=note>In both HTML and XML there will only ever be one <a href=#documenttype><code>DocumentType</code></a> node descendant of the <a href=#document><code>Document</code></a> node. <a data-anolis-ref="" href=#refsHTML>[HTML]</a> <a data-anolis-ref="" href=#refsXML>[XML]</a>
 
 <p>The <dfn id=dom-document-implementation title=dom-Document-implementation><code>implementation</code></dfn> attribute must return the <a href=#domimplementation><code>DOMImplementation</code></a> object that is associated with the <a href=#document><code>Document</code></a> node.
 
@@ -1848,32 +1848,17 @@ replace the underlying string with the new value on setting.</p>
 <!-- Dates are only included for standards older than the Web,
 because the newer ones keep changing. -->
 
-<dl>
- <dt id=refsHTML>[HTML]</dt>
- <dd><cite><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage>HTML</a></cite>,
- I. Hickson. WHATWG.</dd>
-
- <dt id=refsRFC2119>[RFC2119]</dt>
- <dd><cite><a href=http://www.ietf.org/rfc/rfc2119.txt>Key words for use in
- RFCs to Indicate Requirement Levels</a></cite>, S. Bradner. IETF.</dd>
-
- <dt id=refsWEBIDL>[WEBIDL]</dt>
- <!--
- <dd><cite><a href="http://www.w3.org/TR/WebIDL/">Web
- IDL</a></cite>, C. McCormack. W3C.</dd>
- -->
- <dd><cite><a href=http://dev.w3.org/2006/webapi/WebIDL/>Web
- IDL</a></cite>, C. McCormack. W3C.</dd>
-
- <dt id=refsXML>[XML]</dt>
- <dd><cite><a href=http://www.w3.org/TR/xml/>Extensible Markup
- Language</a></cite>, T. Bray, J. Paoli, C. Sperberg-McQueen,
- E. Maler, F. Yergeau. W3C.</dd>
-
- <dt id=refsXMLNS>[XMLNS]</dt>
- <dd><cite><a href=http://www.w3.org/TR/xml-names/>Namespaces in
- XML</a></cite>, T. Bray, D. Hollander, A. Layman, R. Tobin. W3C.</dd>
-</dl>
+<div id=anolis-references><dl><dt id=refsHTML>[HTML]
+<dd><cite><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage>HTML</a></cite>, I. Hickson. WHATWG.
+<dt id=refsRFC2119>[RFC2119]
+<dd><cite><a href=http://www.ietf.org/rfc/rfc2119.txt>Key words for use in RFCs to Indicate Requirement Levels</a></cite>, S. Bradner. IETF.
+<dt id=refsWEBIDL>[WEBIDL]
+<dd><cite><a href=http://dev.w3.org/2006/webapi/WebIDL/>Web IDL</a></cite>, C. McCormack. W3C.
+<dt id=refsXML>[XML]
+<dd><cite><a href=http://www.w3.org/TR/xml/>Extensible Markup Language</a></cite>, T. Bray, J. Paoli, C. Sperberg-McQueen, E. Maler, F. Yergeau. W3C.
+<dt id=refsXMLNS>[XMLNS]
+<dd><cite><a href=http://www.w3.org/TR/xml-names/>Namespaces in XML</a></cite>, T. Bray, D. Hollander, A. Layman, R. Tobin. W3C.
+</dl></div>
 
 
 
@@ -1888,7 +1873,7 @@ Henri Sivonen,
 for their useful comments.
 
 <p>Special thanks to Ian Hickson for first specifying some parts of this
-specification in HTML. <a href=#refsHTML>[HTML]</a>
+specification in HTML. <a data-anolis-ref="" href=#refsHTML>[HTML]</a>
 
 
 <script src=http://www.whatwg.org/specs/web-apps/current-work/dfn.js></script>

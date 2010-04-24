@@ -1,0 +1,34 @@
+{
+  "references" : [
+    { "key" : "HTML",
+      "href" : "http://www.whatwg.org/specs/web-apps/current-work/multipage",
+      "title" : "HTML",
+      "authors" : "I. Hickson",
+      "publisher" : "WHATWG"
+    },
+    { "key" : "RFC2119",
+      "href" : "http://www.ietf.org/rfc/rfc2119.txt",
+      "title" : "Key words for use in RFCs to Indicate Requirement Levels",
+      "authors" : "S. Bradner",
+      "publisher" : "IETF"
+    },
+    { "key" : "WEBIDL",
+      "href" : "http://dev.w3.org/2006/webapi/WebIDL/",
+      "title" : "Web IDL",
+      "authors" : "C. McCormack",
+      "publisher" : "W3C"
+    },
+    { "key" : "XML",
+      "href" : "http://www.w3.org/TR/xml/",
+      "title" : "Extensible Markup Language",
+      "authors" : "T. Bray, J. Paoli, C. Sperberg-McQueen, E. Maler, F. Yergeau",
+      "publisher" : "W3C"
+    },
+    { "key" : "XMLNS",
+      "href" : "http://www.w3.org/TR/xml-names/",
+      "title" : "Namespaces in XML",
+      "authors" : "T. Bray, D. Hollander, A. Layman, R. Tobin",
+      "publisher" : "W3C"
+    }
+  ]
+}

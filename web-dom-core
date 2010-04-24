@@ -1207,7 +1207,8 @@ otherwise [createAttribute]-->.
 
 <hr>
 
-<p>This specification further defines a special type of <a href=#concept-attribute title=concept-attribute>attributes</a>: <a href=#concept-id-attribute title=concept-ID-attribute>ID
+<p>This specification further defines two special types of <a href=#concept-attribute title=concept-attribute>attributes</a>: <a href=#concept-id-attribute title=concept-ID-attribute>ID
+attributes</a> and <a href=#concept-class-attribute title=concept-class-attribute>class
 attributes</a>.
 
 <p><dfn id=concept-id-attribute title=concept-ID-attribute>ID attributes</dfn> must have a
@@ -1218,6 +1219,19 @@ does not contain any <a href=#space-character title="space character">space char
 <p class=note>For example, the <a href=http://www.whatwg.org/html/#attr-id><code class=external title=attr-id>id</code></a> attribute in HTML is an <a href=#concept-id-attribute title=concept-ID-attribute>ID attribute</a>, as well as the <code title="">id</code> attributes in MathML and SVG, and the <code title="">id</code>
 attribute in the <a href=#xml-namespace>XML namespace</a>. <a data-anolis-ref="" href=#refsHTML>[HTML]</a>
 <a data-anolis-ref="" href=#refsMATHML>[MATHML]</a> <a data-anolis-ref="" href=#refsSVG>[SVG]</a> <a data-anolis-ref="" href=#refsXMLID>[XMLID]</a>
+
+<p><dfn id=concept-class-attribute title=concept-class-attribute>Class attributes</dfn> must have a
+<a href=#dom-attr-value><code title=dom-Attr-value>value</code></a> that is a <a href=#set-of-space-separated-tokens>set of space-separated
+tokens</a> representing the various classes that the element belongs to.
+
+<p>The classes that an <a href=#element><code>Element</code></a> node has associated with it is the
+set of all the classes returned when the value of the <a href=#concept-class-attribute title=concept-class-attribute>class attribute</a> is <a href=#split-a-string-on-spaces title="split a string on spaces">split on spaces</a>. (Duplicates are
+ignored.)
+
+<p class=note>The <code title="">class</code> attributes in HTML, MathML and SVG
+are all <a href=#concept-class-attribute title=concept-class-attribute>class attributes</a>. <a data-anolis-ref="" href=#refsHTML>[HTML]</a> <a data-anolis-ref="" href=#refsMATHML>[MATHML]</a> <a data-anolis-ref="" href=#refsSVG>[SVG]</a>
+
+<p class=note>This specification does not <!--normatively--> define the <a href=#concept-attribute-name title=concept-attribute-name>name</a> of <a href=#concept-id-attribute title=concept-id-attribute>ID</a> or <a href=#concept-class-attribute title=concept-class-attribute>class attributes</a>.
 
 
 <h3 id=interface-element><span class=secno>4.5 </span>Interface <a href=#element><code>Element</code></a></h3>

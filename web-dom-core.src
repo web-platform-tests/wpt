@@ -1271,8 +1271,9 @@ otherwise [createAttribute]-->.
 
 <hr>
 
-<p>This specification further defines a special type of <span
+<p>This specification further defines two special types of <span
 title=concept-attribute>attributes</span>: <span title=concept-ID-attribute>ID
+attributes</span> and <span title=concept-class-attribute>class
 attributes</span>.
 
 <p><dfn title=concept-ID-attribute>ID attributes</dfn> must have a
@@ -1288,6 +1289,26 @@ title>id</code> attributes in MathML and SVG, and the <code title>id</code>
 attribute in the <span>XML namespace</span>. <span data-anolis-ref>HTML</span>
 <span data-anolis-ref>MATHML</span> <span data-anolis-ref>SVG</span> <span
 data-anolis-ref>XMLID</span>
+
+<p><dfn title=concept-class-attribute>Class attributes</dfn> must have a
+<code title=dom-Attr-value>value</code> that is a <span>set of space-separated
+tokens</span> representing the various classes that the element belongs to.
+
+<p>The classes that an <code>Element</code> node has associated with it is the
+set of all the classes returned when the value of the <span
+title=concept-class-attribute>class attribute</span> is <span
+title="split a string on spaces">split on spaces</span>. (Duplicates are
+ignored.)
+
+<p class=note>The <code title>class</code> attributes in HTML, MathML and SVG
+are all <span title=concept-class-attribute>class attributes</span>. <span
+data-anolis-ref>HTML</span> <span data-anolis-ref>MATHML</span> <span
+data-anolis-ref>SVG</span>
+
+<p class=note>This specification does not <!--normatively--> define the <span
+title=concept-attribute-name>name</span> of <span
+title=concept-id-attribute>ID</span> or <span
+title=concept-class-attribute>class attributes</span>.
 
 
 <h3>Interface <code>Element</code></h3>

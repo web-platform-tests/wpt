@@ -787,7 +787,8 @@ children</var> flag set if <var title>deep</var> is true.
 
 <p>The <dfn title=dom-Node-namespaceURI><code>namespaceURI</code></dfn> attribute, on getting, must return the namespace that is associated with the node, if there is one and it's not the empty string, or null otherwise.
 
-<p>The <dfn title=dom-Node-prefix><code>prefix</code></dfn> attribute, on getting, must return the prefix that is associated with the node, if there is one and it's not the empty string, or null otherwise. <!--On setting, it must run the following steps:
+<p>The <dfn title=dom-Node-prefix><code>prefix</code></dfn> attribute, on getting, must return the prefix that is associated with the node, if there is one and it's not the empty string, or null otherwise.
+<span class=XXX>And on setting?</span> <!--On setting, it must run the following steps:
 
 <ol>
  <li><p>Let <var title>prefix</var> be the value being assigned.

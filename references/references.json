@@ -6,11 +6,23 @@
       "authors" : "I. Hickson",
       "publisher" : "WHATWG"
     },
+    { "key" : "MATHML",
+      "href" : "http://www.w3.org/TR/MathML/",
+      "title" : "Mathematical Markup Language (MathML)",
+      "authors" : "D. Carlisle, P. Ion, R. Miner, N. Poppelier",
+      "publisher" : "W3C"
+    },
     { "key" : "RFC2119",
       "href" : "http://www.ietf.org/rfc/rfc2119.txt",
       "title" : "Key words for use in RFCs to Indicate Requirement Levels",
       "authors" : "S. Bradner",
       "publisher" : "IETF"
+    },
+    { "key" : "SVG",
+      "href" : "http://www.w3.org/TR/SVG/",
+      "title" : "Scalable Vector Graphics (SVG)",
+      "authors" : "O. Andersson, R. Berjon, E. Dahlström, A. Emmons, J. Ferraiolo, A. Grasso, V. Hardy, S. Hayman, D. Jackson, C. Lilley, C. McCormack, A. Neumann, C. Northway, A. Quint, N. Ramani, D. Schepers, A. Shellshear",
+      "publisher" : "W3C"
     },
     { "key" : "WEBIDL",
       "href" : "http://dev.w3.org/2006/webapi/WebIDL/",
@@ -22,6 +34,12 @@
       "href" : "http://www.w3.org/TR/xml/",
       "title" : "Extensible Markup Language",
       "authors" : "T. Bray, J. Paoli, C. Sperberg-McQueen, E. Maler, F. Yergeau",
+      "publisher" : "W3C"
+    },
+    { "key" : "XMLID",
+      "href" : "http://www.w3.org/TR/xml-id/",
+      "title" : "xml:id",
+      "authors" : "J. Marsh, D. Veillard, N. Walsh",
       "publisher" : "W3C"
     },
     { "key" : "XMLNS",

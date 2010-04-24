@@ -1181,7 +1181,7 @@ http://lists.w3.org/Archives/Public/www-dom/2003JulSep/0049.html -->
   readonly attribute boolean isId;-->
 };</pre>
 
-<p><a href=#attr><code>Attr</code></a> nodes represent attributes. They have a <dfn id=concept-attribute-name title=concept-attribute-name>name</dfn> and an <dfn id=concept-attribute-element title=concept-attribute-element>element</dfn> associated with them when they are
+<p><a href=#attr><code>Attr</code></a> nodes represent <dfn id=concept-attribute title=concept-attribute>attributes</dfn>. They have a <dfn id=concept-attribute-name title=concept-attribute-name>name</dfn> and an <dfn id=concept-attribute-element title=concept-attribute-element>element</dfn> associated with them when they are
 created<!--, or when they are passed as the argument to the <code
 title=dom-Element-setAttributeNode>setAttributeNode</code> method.
 [createAttribute]-->. <a href=#attr><code>Attr</code></a> nodes are not considered part of the
@@ -1204,6 +1204,20 @@ must return the same value as the <a href=#dom-node-textcontent><code title=dom-
 attribute must return the <a href=#concept-attribute-element title=concept-attribute-element>element</a>
 associated with the <a href=#context-node>context node</a><!--, if there is one, or null
 otherwise [createAttribute]-->.
+
+<hr>
+
+<p>This specification further defines a special type of <a href=#concept-attribute title=concept-attribute>attributes</a>: <a href=#concept-id-attribute title=concept-ID-attribute>ID
+attributes</a>.
+
+<p><dfn id=concept-id-attribute title=concept-ID-attribute>ID attributes</dfn> must have a
+<a href=#dom-attr-value><code title=dom-Attr-value>value</code></a> that contains at least one character and
+does not contain any <a href=#space-character title="space character">space characters</a>. The
+<a href=#dom-attr-value><code title=dom-Attr-value>value</code></a> must be unique amongst all the <a href=#concept-id title=concept-id>IDs</a> in the element's <a href=#home-subtree>home subtree</a>.
+
+<p class=note>For example, the <a href=http://www.whatwg.org/html/#attr-id><code class=external title=attr-id>id</code></a> attribute in HTML is an <a href=#concept-id-attribute title=concept-ID-attribute>ID attribute</a>, as well as the <code title="">id</code> attributes in MathML and SVG, and the <code title="">id</code>
+attribute in the <a href=#xml-namespace>XML namespace</a>. <a data-anolis-ref="" href=#refsHTML>[HTML]</a>
+<a data-anolis-ref="" href=#refsMATHML>[MATHML]</a> <a data-anolis-ref="" href=#refsSVG>[SVG]</a> <a data-anolis-ref="" href=#refsXMLID>[XMLID]</a>
 
 
 <h3 id=interface-element><span class=secno>4.5 </span>Interface <a href=#element><code>Element</code></a></h3>
@@ -1232,13 +1246,11 @@ otherwise [createAttribute]-->.
 };</pre>
 
 <p><a href=#element><code>Element</code></a> nodes can have a <dfn id=concept-id title=concept-id>unique
-identifier (ID)</dfn> associated with them. <a href=#concept-id title=concept-id>IDs</a>
-must contain at least one character and must not contain any <a href=#space-character title="space character">space characters</a>. User agents must not associate
-empty <a href=#concept-id title=concept-id>IDs</a> and <a href=#concept-id title=concept-id>IDs</a>
-containing <a href=#space-character title="space character">space characters</a> with
-<a href=#element><code>Element</code></a> nodes. Specifications may define how <a href=#concept-id title=concept-id>IDs</a> are associated with <a href=#element><code>Element</code></a> nodes.
-
-<p class=note>For example, HTML elements can have an <a href=http://www.whatwg.org/html/#attr-id><code class=external title=attr-id>id</code></a> attribute specified, to specify its <a href=#concept-id title=concept-id>ID</a>.
+identifier (ID)</dfn> associated with them. User agents must associate the
+<a href=#dom-attr-value><code title=dom-Attr-value>value</code></a> of all <a href=#concept-id-attribute title=concept-ID-attribute>ID attributes</a> in the <a href=#element><code>Element</code></a>
+node's <a href=#dom-node-attributes><code title=dom-Node-attributes>attributes</code></a> with the
+<a href=#element><code>Element</code></a> node, unless it contains less than one character or
+contains any <a href=#space-character title="space character">space characters</a>.
 
 <p>Specifications may define <dfn id=base-url-change-steps>base URL change steps</dfn>.
 
@@ -1850,12 +1862,18 @@ because the newer ones keep changing. -->
 
 <div id=anolis-references><dl><dt id=refsHTML>[HTML]
 <dd><cite><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage>HTML</a></cite>, I. Hickson. WHATWG.
+<dt id=refsMATHML>[MATHML]
+<dd><cite><a href=http://www.w3.org/TR/MathML/>Mathematical Markup Language (MathML)</a></cite>, D. Carlisle, P. Ion, R. Miner, N. Poppelier. W3C.
 <dt id=refsRFC2119>[RFC2119]
 <dd><cite><a href=http://www.ietf.org/rfc/rfc2119.txt>Key words for use in RFCs to Indicate Requirement Levels</a></cite>, S. Bradner. IETF.
+<dt id=refsSVG>[SVG]
+<dd><cite><a href=http://www.w3.org/TR/SVG/>Scalable Vector Graphics (SVG)</a></cite>, O. Andersson, R. Berjon, E. Dahlstr&ouml;m, A. Emmons, J. Ferraiolo, A. Grasso, V. Hardy, S. Hayman, D. Jackson, C. Lilley, C. McCormack, A. Neumann, C. Northway, A. Quint, N. Ramani, D. Schepers, A. Shellshear. W3C.
 <dt id=refsWEBIDL>[WEBIDL]
 <dd><cite><a href=http://dev.w3.org/2006/webapi/WebIDL/>Web IDL</a></cite>, C. McCormack. W3C.
 <dt id=refsXML>[XML]
 <dd><cite><a href=http://www.w3.org/TR/xml/>Extensible Markup Language</a></cite>, T. Bray, J. Paoli, C. Sperberg-McQueen, E. Maler, F. Yergeau. W3C.
+<dt id=refsXMLID>[XMLID]
+<dd><cite><a href=http://www.w3.org/TR/xml-id/>xml:id</a></cite>, J. Marsh, D. Veillard, N. Walsh. W3C.
 <dt id=refsXMLNS>[XMLNS]
 <dd><cite><a href=http://www.w3.org/TR/xml-names/>Namespaces in XML</a></cite>, T. Bray, D. Hollander, A. Layman, R. Tobin. W3C.
 </dl></div>

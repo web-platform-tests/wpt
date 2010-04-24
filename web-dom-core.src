@@ -1235,7 +1235,8 @@ http://lists.w3.org/Archives/Public/www-dom/2003JulSep/0049.html -->
   readonly attribute boolean isId;-->
 };</pre>
 
-<p><code>Attr</code> nodes represent attributes. They have a <dfn
+<p><code>Attr</code> nodes represent <dfn
+title=concept-attribute>attributes</dfn>. They have a <dfn
 title=concept-attribute-name>name</dfn> and an <dfn
 title=concept-attribute-element>element</dfn> associated with them when they are
 created<!--, or when they are passed as the argument to the <code
@@ -1268,6 +1269,26 @@ attribute must return the <span title=concept-attribute-element>element</span>
 associated with the <span>context node</span><!--, if there is one, or null
 otherwise [createAttribute]-->.
 
+<hr>
+
+<p>This specification further defines a special type of <span
+title=concept-attribute>attributes</span>: <span title=concept-ID-attribute>ID
+attributes</span>.
+
+<p><dfn title=concept-ID-attribute>ID attributes</dfn> must have a
+<code title=dom-Attr-value>value</code> that contains at least one character and
+does not contain any <span title="space character">space characters</span>. The
+<code title=dom-Attr-value>value</code> must be unique amongst all the <span
+title=concept-id>IDs</span> in the element's <span>home subtree</span>.
+
+<p class=note>For example, the <code title=attr-id
+data-anolis-spec=html>id</code> attribute in HTML is an <span
+title=concept-ID-attribute>ID attribute</span>, as well as the <code
+title>id</code> attributes in MathML and SVG, and the <code title>id</code>
+attribute in the <span>XML namespace</span>. <span data-anolis-ref>HTML</span>
+<span data-anolis-ref>MATHML</span> <span data-anolis-ref>SVG</span> <span
+data-anolis-ref>XMLID</span>
+
 
 <h3>Interface <code>Element</code></h3>
 <pre class=idl>interface <dfn>Element</dfn> : <span>Node</span> {
@@ -1295,17 +1316,12 @@ otherwise [createAttribute]-->.
 };</pre>
 
 <p><code>Element</code> nodes can have a <dfn title=concept-id>unique
-identifier (ID)</dfn> associated with them. <span title=concept-id>IDs</span>
-must contain at least one character and must not contain any <span
-title="space character">space characters</span>. User agents must not associate
-empty <span title=concept-id>IDs</span> and <span title=concept-id>IDs</span>
-containing <span title="space character">space characters</span> with
-<code>Element</code> nodes. Specifications may define how <span
-title=concept-id>IDs</span> are associated with <code>Element</code> nodes.
-
-<p class=note>For example, HTML elements can have an <code title=attr-id
-data-anolis-spec=html>id</code> attribute specified, to specify its <span
-title=concept-id>ID</span>.
+identifier (ID)</dfn> associated with them. User agents must associate the
+<code title=dom-Attr-value>value</code> of all <span
+title=concept-ID-attribute>ID attributes</span> in the <code>Element</code>
+node's <code title=dom-Node-attributes>attributes</code> with the
+<code>Element</code> node, unless it contains less than one character or
+contains any <span title="space character">space characters</span>.
 
 <p>Specifications may define <dfn>base URL change steps</dfn>.
 

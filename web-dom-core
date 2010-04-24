@@ -27,7 +27,7 @@
 <body class=draft>
 <div class=head id=head>
 <h1>Web DOM Core</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-date:-01-jan-1901>Work in Progress &mdash; Last Update 8 April 2010</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-date:-01-jan-1901>Work in Progress &mdash; Last Update 20 April 2010</h2>
 <dl>
  <dt>Editors
  <dd>Simon Pieters &lt;simonp@opera.com&gt;
@@ -56,6 +56,7 @@
  <li>Range.createContextualFragment <a href=http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2009-March/018892.html>http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2009-March/018892.html</a>
  <li>[Reflect] <a href=http://krijnhoetmer.nl/irc-logs/whatwg/20090622#l-90>http://krijnhoetmer.nl/irc-logs/whatwg/20090622#l-90</a>
  <li><a href=http://www.whatwg.org/html/#htmlcollection><code class=external>HTMLCollection</code></a> is defined in HTML5. Perhaps we should move that to this spec. Perhaps also DOMStringMap, getElementsByClassName...
+ <li class=XXX>http://hg.mozilla.org/mozilla-central/rev/91694d19d7b2
 </ul>
 
 

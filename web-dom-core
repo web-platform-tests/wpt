@@ -804,7 +804,9 @@ children</var> flag set if <var title="">deep</var> is true.
  <li><p class=XXX>Actually this doesn't match any browser. Let's try to drop it instead.
 </ol>-->
 
-<p>The <dfn id=dom-node-localname title=dom-Node-localName><code>localName</code></dfn> attribute, on getting, must return the local name that is associated with the node.
+<p>The <dfn id=dom-node-localname title=dom-Node-localName><code>localName</code></dfn> attribute, on
+getting, must return the local name that is associated with the node, if it has
+one, and null otherwise.
 
 <p>The <dfn id=dom-node-hasattributes title=dom-Node-hasAttributes><code>hasAttributes()</code></dfn>
 method must return whether there are any attributes associated with the

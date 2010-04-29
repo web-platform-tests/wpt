@@ -27,7 +27,7 @@
 <body class=draft>
 <div class=head id=head>
 <h1>Web DOM Core</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-date:-01-jan-1901>Work in Progress &mdash; Last Update 24 April 2010</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-date:-01-jan-1901>Work in Progress &mdash; Last Update 29 April 2010</h2>
 <dl>
  <dt>Editors
  <dd>Simon Pieters &lt;simonp@opera.com&gt;
@@ -665,9 +665,9 @@ must, on getting, run the following steps:
 the following steps:
 
 <ol>
- <li><p>If the <a href=#context-node>context node</a> is an <a href=#attr><code>Attr</code></a> node, then
- raise a <a href=#dom-domexception-hierarchy_request_err><code title=dom-DOMException-HIERARCHY_REQUEST_ERR>HIERARCHY_REQUEST_ERR</code></a> and
- abort these steps. <!-- See Mozilla bug 547798 -->
+ <li><p>If the <a href=#context-node>context node</a> is an <a href=#attr><code>Attr</code></a> node or a
+ <a href=#text><code>Text</code></a> node, then raise a <a href=#dom-domexception-hierarchy_request_err><code title=dom-DOMException-HIERARCHY_REQUEST_ERR>HIERARCHY_REQUEST_ERR</code></a> and
+ abort these steps. <!-- See Mozilla bug 547798, 558973 -->
 
  <li><p>If <var title="">newChild</var> is null, then raise a <a href=#dom-domexception-not_supported_err><code title=dom-DOMException-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</code></a> exception and
  abort these steps.
@@ -702,9 +702,9 @@ the following steps:
 the following steps:
 
 <ol>
- <li><p>If the <a href=#context-node>context node</a> is an <a href=#attr><code>Attr</code></a> node, then
- raise a <a href=#dom-domexception-hierarchy_request_err><code title=dom-DOMException-HIERARCHY_REQUEST_ERR>HIERARCHY_REQUEST_ERR</code></a> and
- abort these steps. <!-- See Mozilla bug 547798 -->
+ <li><p>If the <a href=#context-node>context node</a> is an <a href=#attr><code>Attr</code></a> node or a
+ <a href=#text><code>Text</code></a> node, then raise a <a href=#dom-domexception-hierarchy_request_err><code title=dom-DOMException-HIERARCHY_REQUEST_ERR>HIERARCHY_REQUEST_ERR</code></a> and
+ abort these steps. <!-- See Mozilla bug 547798, 558973 -->
 
  <li><p>If either <var title="">newChild</var> or <var title="">oldChild</var> is
  null, then raise a <a href=#dom-domexception-not_supported_err><code title=dom-DOMException-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</code></a> exception and
@@ -755,9 +755,9 @@ the following steps:
 <p>The <dfn id=dom-node-appendchild title=dom-Node-appendChild><code>appendChild(<var title="">newChild</var>)</code></dfn> method must run the following steps:
 
 <ol>
- <li><p>If the <a href=#context-node>context node</a> is an <a href=#attr><code>Attr</code></a> node, then
- raise a <a href=#dom-domexception-hierarchy_request_err><code title=dom-DOMException-HIERARCHY_REQUEST_ERR>HIERARCHY_REQUEST_ERR</code></a> and
- abort these steps. <!-- See Mozilla bug 547798 -->
+ <li><p>If the <a href=#context-node>context node</a> is an <a href=#attr><code>Attr</code></a> node or a
+ <a href=#text><code>Text</code></a> node, then raise a <a href=#dom-domexception-hierarchy_request_err><code title=dom-DOMException-HIERARCHY_REQUEST_ERR>HIERARCHY_REQUEST_ERR</code></a> and
+ abort these steps. <!-- See Mozilla bug 547798, 558973 -->
 
  <li><p>If <var title="">newChild</var> is null, then raise a <a href=#dom-domexception-not_supported_err><code title=dom-DOMException-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</code></a> exception and
  abort these steps.

@@ -6,6 +6,23 @@
 <body>
 <script src="support/test.js"></script>
 <script>
+function testHRE(aNode) {
+  Test.ok(aNode, "No node?");
+  try {
+    aNode.appendChild(document.createTextNode("fail"));
+    Test.fail("Exception should have been thrown.");
+  } catch (e) {
+    Test.is(e.code, DOMException.HIERARCHY_REQUEST_ERR);
+  }
+  try {
+    aNode.appendChild(null);
+    Test.fail("Exception should have been thrown.");
+  } catch (e) {
+    Test.is(e.code, DOMException.HIERARCHY_REQUEST_ERR);
+  }
+}
+</script>
+<script>
 function testCrossDocument() {
   try {
     var s = this.contentDocument.createElement("a");
@@ -46,24 +63,13 @@ try {
   document.body.setAttribute("abc", "pass");
   var attr = document.body.attributes[0];
   Test.ok(attr, "No attribute node?");
-  try {
-    attr.appendChild(document.createTextNode("fail"));
-    Test.fail("Exception should have been thrown.");
-  } catch (e) {
-    Test.is(e.code, DOMException.HIERARCHY_REQUEST_ERR);
-  }
+  testHRE(attr);
   Test.is(attr.value, "pass");
   Test.is(attr.childNodes.length, 1);
   Test.is(attr.childNodes[0].nodeValue, "pass");
-  try {
-    attr.appendChild(null);
-    Test.fail("Exception should have been thrown.");
-  } catch (e) {
-    Test.is(e.code, DOMException.HIERARCHY_REQUEST_ERR);
-  }
-  Test.is(attr.value, "pass");
-  Test.is(attr.childNodes.length, 1);
-  Test.is(attr.childNodes[0].nodeValue, "pass");
+
+  Test.separate();
+  testHRE(document.createTextNode("Foo"));
 
   Test.separate();
   var iframe = document.createElement("iframe");

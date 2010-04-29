@@ -641,10 +641,10 @@ title>newChild</var>, <var title>refChild</var>)</code></dfn> method must run
 the following steps:
 
 <ol>
- <li><p>If the <span>context node</span> is an <code>Attr</code> node, then
- raise a <code
+ <li><p>If the <span>context node</span> is an <code>Attr</code> node or a
+ <code>Text</code> node, then raise a <code
  title=dom-DOMException-HIERARCHY_REQUEST_ERR>HIERARCHY_REQUEST_ERR</code> and
- abort these steps. <!-- See Mozilla bug 547798 -->
+ abort these steps. <!-- See Mozilla bug 547798, 558973 -->
 
  <li><p>If <var title>newChild</var> is null, then raise a <code
  title=dom-DOMException-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</code> exception and
@@ -687,10 +687,10 @@ title>newChild</var>, <var title>oldChild</var>)</code></dfn> method must run
 the following steps:
 
 <ol>
- <li><p>If the <span>context node</span> is an <code>Attr</code> node, then
- raise a <code
+ <li><p>If the <span>context node</span> is an <code>Attr</code> node or a
+ <code>Text</code> node, then raise a <code
  title=dom-DOMException-HIERARCHY_REQUEST_ERR>HIERARCHY_REQUEST_ERR</code> and
- abort these steps. <!-- See Mozilla bug 547798 -->
+ abort these steps. <!-- See Mozilla bug 547798, 558973 -->
 
  <li><p>If either <var title>newChild</var> or <var title>oldChild</var> is
  null, then raise a <code
@@ -750,10 +750,10 @@ title=dom-Node-appendChild><code>appendChild(<var
 title>newChild</var>)</code></dfn> method must run the following steps:
 
 <ol>
- <li><p>If the <span>context node</span> is an <code>Attr</code> node, then
- raise a <code
+ <li><p>If the <span>context node</span> is an <code>Attr</code> node or a
+ <code>Text</code> node, then raise a <code
  title=dom-DOMException-HIERARCHY_REQUEST_ERR>HIERARCHY_REQUEST_ERR</code> and
- abort these steps. <!-- See Mozilla bug 547798 -->
+ abort these steps. <!-- See Mozilla bug 547798, 558973 -->
 
  <li><p>If <var title>newChild</var> is null, then raise a <code
  title=dom-DOMException-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</code> exception and

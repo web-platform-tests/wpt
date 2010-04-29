@@ -6,6 +6,23 @@
 <body>
 <script src="support/test.js"></script>
 <script>
+function testHRE(aNode) {
+  Test.ok(aNode, "No node?");
+  try {
+    aNode.insertBefore(document.createTextNode("fail"), null);
+    Test.fail("Exception should have been thrown.");
+  } catch (e) {
+    Test.is(e.code, DOMException.HIERARCHY_REQUEST_ERR);
+  }
+  try {
+    aNode.insertBefore(null, null);
+    Test.fail("Exception should have been thrown.");
+  } catch (e) {
+    Test.is(e.code, DOMException.HIERARCHY_REQUEST_ERR);
+  }
+}
+</script>
+<script>
 try {
   var len = document.body.childNodes.length;
   try {
@@ -35,25 +52,13 @@ try {
   Test.separate();
   document.body.setAttribute("abc", "pass");
   var attr = document.body.attributes[0];
-  Test.ok(attr, "No attribute node?");
-  try {
-    attr.insertBefore(document.createTextNode("fail"), null);
-    Test.fail("Exception should have been thrown.");
-  } catch (e) {
-    Test.is(e.code, DOMException.HIERARCHY_REQUEST_ERR);
-  }
+  testHRE(attr);
   Test.is(attr.value, "pass");
   Test.is(attr.childNodes.length, 1);
   Test.is(attr.childNodes[0].nodeValue, "pass");
-  try {
-    attr.insertBefore(null, null);
-    Test.fail("Exception should have been thrown.");
-  } catch (e) {
-    Test.is(e.code, DOMException.HIERARCHY_REQUEST_ERR);
-  }
-  Test.is(attr.value, "pass");
-  Test.is(attr.childNodes.length, 1);
-  Test.is(attr.childNodes[0].nodeValue, "pass");
+
+  Test.separate();
+  testHRE(document.createTextNode("Foo"));
 } catch (e) {
   Test.fail("Exception was thrown.");
 }

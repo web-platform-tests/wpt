@@ -1392,6 +1392,9 @@ following steps:
  <code title=dom-DOMException-INVALID_CHARACTER_ERR title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
  exception and abort these steps.
 
+ <li class=XXX><p>Do something about <var title>name</var> == "xmlns"?
+ <a href=https://bugzilla.mozilla.org/show_bug.cgi?id=315805>Moz bug 315805</a>
+
  <li><p>If the <span>context node</span> is in the <span>HTML namespace</span>
  and its <code title=dom-Node-ownerDocument>ownerDocument</code> is an
  <span>HTML document</span>, let <var title>name</var> be <var title>name</var>,

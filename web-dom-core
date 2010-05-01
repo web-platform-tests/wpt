@@ -27,7 +27,7 @@
 <body class=draft>
 <div class=head id=head>
 <h1>Web DOM Core</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-date:-01-jan-1901>Work in Progress &mdash; Last Update 29 April 2010</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-date:-01-jan-1901>Work in Progress &mdash; Last Update 1 May 2010</h2>
 <dl>
  <dt>Editors
  <dd>Simon Pieters &lt;simonp@opera.com&gt;
@@ -1305,6 +1305,9 @@ following steps:
  match the <a href=http://www.w3.org/TR/xml/#NT-Name><code class=external>Name</code></a> production in XML, raise an
  <a href=#dom-domexception-invalid_character_err><code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code></a>
  exception and abort these steps.
+
+ <li class=XXX><p>Do something about <var title="">name</var> == "xmlns"?
+ <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=315805">Moz bug 315805</a>
 
  <li><p>If the <a href=#context-node>context node</a> is in the <a href=#html-namespace>HTML namespace</a>
  and its <a href=#dom-node-ownerdocument><code title=dom-Node-ownerDocument>ownerDocument</code></a> is an

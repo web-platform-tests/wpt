@@ -1,6 +1,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
   <title>Multiple backgrounds: Different layer counts</title>
+  <link rel="help" href="" />
   <style type="text/css">
    body { color: navy; }
    div { background: red; height: 256px; width: 256px; }

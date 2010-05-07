@@ -1,6 +1,7 @@
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
  <head>
   <title>Repeating Backgrounds: Y</title>
+  <link rel="help" href="http://www.w3.org/TR/CSS21/colors.html#background" />
   <style type="text/css">
    html { background: url(/resources/images/smallcats) repeat-y; color: navy; font: bold 2em sans-serif; }
   </style>

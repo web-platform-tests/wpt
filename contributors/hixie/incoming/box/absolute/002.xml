@@ -1,7 +1,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
   <title>CSS Tables: Absolute Positioning of Tables and Blocks</title>
-  <style type="text/css">
+  <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#abs-non-replaced-width" />
+     <style type="text/css">
 
     table { display: table; background: red; color: yellow; }
     row { display: table-row; }

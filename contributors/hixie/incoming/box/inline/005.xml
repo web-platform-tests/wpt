@@ -1,6 +1,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
   <title>CSS Inline Box Model: Wrapping Spaces Outside Inline Elements</title>
+  <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#inline-boxes" />
   <style type="text/css">
    p > span { padding: 0.3em 0; border-style: solid none; background: silver; line-height: 3; letter-spacing: 0.2em; }
    span { border: solid; }

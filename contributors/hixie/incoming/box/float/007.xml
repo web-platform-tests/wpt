@@ -1,6 +1,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
   <title>CSS Floats: Empty Floats</title>
+  <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#floats" />
   <style type="text/css">
    test { display: block; position: relative; }
    fill { position: absolute; top: 0; left: 6em; padding: 1em; margin: 1.1em; width: 6em; background: red; }

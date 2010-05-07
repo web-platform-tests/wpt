@@ -1,7 +1,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
   <title>Positioning with an ancestor containing block</title>
-  <style type="text/css">
+  <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#comp-abspos" />
+     <style type="text/css">
    .container { position: relative; }
    .test { position: absolute; height: 200px; width: 300px; background: green; color: white; border: solid 10px lime; }
   </style>

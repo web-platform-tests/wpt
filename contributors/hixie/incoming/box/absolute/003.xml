@@ -1,7 +1,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
   <title>CSS Positioning: Containing Block of Top Level Absolutely Positioned Elements</title>
-  <style type="text/css">
+  <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#comp-abspos" />
+     <style type="text/css">
    html { margin: 0; border: 0; padding: 0; background: white; color: yellow; }
    body { margin: 1em; border: 1em solid red; padding: 1em; background: maroon; color: yellow; }
    p { margin: 1em; padding: 1em; }

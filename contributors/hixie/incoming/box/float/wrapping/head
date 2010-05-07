@@ -2,6 +2,7 @@
 <html>
  <head>
   <title>Wrapping text around multiple floats</title>
+  <link rel="help" href="" />
   <style type="text/css">
    .control { display: inline; font: 1em/1 Ahem, sans-serif; background: red; color: white; }
 

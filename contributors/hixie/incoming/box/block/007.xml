@@ -1,6 +1,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
   <title>CSS Blocks: Margin Collapsing</title>
+  <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#collapsing-margins" />
   <style type="text/css">
    div {
      border: solid blue;

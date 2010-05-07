@@ -1,6 +1,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
   <title>CSS Backgrounds: Overlapped alpha transparent backgrounds</title>
+  <link rel="help" href="http://www.w3.org/TR/CSS21/colors.html#background" />
   <style type="text/css">
    html { background: white url(test.png) fixed; color: black; }
    p { background: white; color: black; padding: 0.25em; border: thin solid black; display: inline; line-height: 2; }

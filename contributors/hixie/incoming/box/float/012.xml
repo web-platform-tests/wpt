@@ -1,6 +1,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
   <title>CSS Floats: Shrink Wrapped Right Floats With Right Aligned Text</title>
+  <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#floats" />
   <style>
    .control { display: inline; font: 1em/1 Ahem, sans-serif; background: red; color: white; }
    .container { width: 40%; padding: 0; margin: 1em; border: solid black; font: 2em/1 Ahem; height: 1em; width: 2em; background: red; }

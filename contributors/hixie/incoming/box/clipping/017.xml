@@ -3,6 +3,7 @@
  <head>
   <!-- Based on http://www.brothercake.com/Ref/clip.html -->
   <title>Convoluted clip() test</title>
+  <link rel="help" href="http://www.w3.org/TR/CSS21/visufx.html#clipping" />
   <style type="text/css">
    #test-outer {
       width: 150px; height: 150px; border: 20px solid lime; background-color: teal;

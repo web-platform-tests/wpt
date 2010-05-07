@@ -1,6 +1,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
   <title>CSS Positioning: Containing Block of Top Level Absolutely Positioned Elements</title>
+  <link rel="help" href="http://www.w3.org/TR/CSS21/colors.html#background" />
   <style type="text/css">
    html { background: green; color: white; }
    p, a { background: white; color: black; display: block; margin: 0; padding: 0.25em; }

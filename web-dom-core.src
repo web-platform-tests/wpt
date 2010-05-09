@@ -152,7 +152,10 @@ passed an Infinity or Not-a-Number (NaN) value, a <code
 title=dom-DOMException-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</code> exception must
 be raised.
 
-<p class=XXX>HTML5?
+<p>Some of the terms used in this specification are defined in <cite>XML</cite>,
+<cite>Namespaces in XML</cite> and <cite>HTML</cite>. <span
+data-anolis-ref>XML</span> <span data-anolis-ref>XMLNS</span> <span
+data-anolis-ref>HTML</span>
 
 <h4>Extensibility</h4>
 

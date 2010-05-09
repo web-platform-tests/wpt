@@ -27,7 +27,7 @@
 <body class=draft>
 <div class=head id=head>
 <h1>Web DOM Core</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-date:-01-jan-1901>Work in Progress &mdash; Last Update 1 May 2010</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-date:-01-jan-1901>Work in Progress &mdash; Last Update 9 May 2010</h2>
 <dl>
  <dt>Editors
  <dd>Simon Pieters &lt;simonp@opera.com&gt;
@@ -194,7 +194,8 @@ floating point number type (<a href=http://dev.w3.org/2006/webapi/WebIDL/#idl-fl
 passed an Infinity or Not-a-Number (NaN) value, a <a href=#dom-domexception-not_supported_err><code title=dom-DOMException-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</code></a> exception must
 be raised.
 
-<p class=XXX>HTML5?
+<p>Some of the terms used in this specification are defined in <cite>XML</cite>,
+<cite>Namespaces in XML</cite> and <cite>HTML</cite>. <a data-anolis-ref="" href=#refsXML>[XML]</a> <a data-anolis-ref="" href=#refsXMLNS>[XMLNS]</a> <a data-anolis-ref="" href=#refsHTML>[HTML]</a>
 
 <h4 id=extensibility><span class=secno>1.2.2 </span>Extensibility</h4>
 

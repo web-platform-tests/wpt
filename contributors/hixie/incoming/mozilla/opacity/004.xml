@@ -1,8 +1,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
   <title>CSS: -moz-opacity nesting</title>
-  <link rel="help" href="" />
-  <style type="text/css">
+    <style type="text/css">
    .half { -moz-opacity: 0.5; }
    span { -moz-opacity: 1.0; }
   </style>

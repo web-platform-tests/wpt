@@ -2,8 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
   <title>Contextual ::selection</title>
-  <link rel="help" href="" />
-  <style type="text/css"><![CDATA[
+    <style type="text/css"><![CDATA[
   td > div { border: solid thick black; padding: 1em; line-height: 2; }
   td > div > span { padding: 0.25em; }
 

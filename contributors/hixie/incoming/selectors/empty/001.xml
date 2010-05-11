@@ -1,8 +1,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
   <title>CSS: 15 simple tests of :empty</title>
-  <link rel="help" href="" />
-  <style type="text/css">
+    <style type="text/css">
    tests, tests * { display: block; }
    tests > * { border: solid thick red; height: 1em; padding: 4px; margin: 4px; color: white; }
    tests[type=positive] > :empty, tests[type=negative] > :not(:empty) { border: solid thick lime; }

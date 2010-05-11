@@ -1,8 +1,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
   <title>Multiple backgrounds: Basic Positioning</title>
-  <link rel="help" href="" />
-  <style type="text/css">
+    <style type="text/css">
    body { color: navy; }
    div { background: red; height: 200px; width: 400px; }
    div { background: no-repeat url(/resources/images/test-bl) 50px bottom, url(/resources/images/test-br) 150px 100px no-repeat,

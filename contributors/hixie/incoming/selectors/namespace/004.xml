@@ -1,8 +1,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
   <title>CSS: @namespace blocks across embedded stylesheets (part 1, positive tests)</title>
-  <link rel="help" href="" />
-  <style type="text/css">
+    <style type="text/css">
     @namespace a url(http://www.example.org/2);
     @namespace b url(http://www.example.org/1);
     test3 { color: green; } /* no default namespace, so this matches *:test3 */

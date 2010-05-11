@@ -1,8 +1,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
   <title>Multiple backgrounds: Painting order</title>
-  <link rel="help" href="" />
-  <style type="text/css">
+    <style type="text/css">
    body { color: navy; }
    div, span, tr { background-image: url(/resources/images/1x1-green), url(/resources/images/1x1-red); background-color: red; color: white; }
   </style>

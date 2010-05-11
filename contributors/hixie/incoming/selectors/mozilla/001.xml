@@ -1,8 +1,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
   <title>CSS: Tests for :-moz-any-link</title>
-  <link rel="help" href="" />
-  <style type="text/css">
+    <style type="text/css">
    :-moz-any-link { color: green; text-decoration: none; }
    * { display: block; margin: 1em; padding: 0; }
    title, style { display: none; }

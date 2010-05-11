@@ -1,8 +1,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
   <title>Multiple backgrounds: Inheritance into inlines</title>
-  <link rel="help" href="" />
-  <style type="text/css">
+    <style type="text/css">
    p, span { background: red; color: yellow; }
    body { background-position: right 200px, 2px -2px, top right; }
    p { background-position: inherit;

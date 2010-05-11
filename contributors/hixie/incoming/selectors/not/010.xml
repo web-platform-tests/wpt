@@ -1,8 +1,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
   <title>CSS: 12 very simple tests for attribute selectors</title>
-  <link rel="help" href="" />
-  <style type="text/css">
+    <style type="text/css">
     @namespace html url(http://www.w3.org/1999/xhtml);
     @namespace test url(http://www.example.org/);
     *|* { color: red; display: block; margin: 0; padding: 0; }

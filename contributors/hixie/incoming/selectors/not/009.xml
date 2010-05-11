@@ -1,8 +1,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
   <title>CSS: 2 simple negative tests of HTML-specific :not()</title>
-  <link rel="help" href="" />
-  <style type="text/css">
+    <style type="text/css">
 
     /* setup */
     *|* { color: green; margin: 0; padding: 0; }

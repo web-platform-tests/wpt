@@ -1,8 +1,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
   <title>CSS font-size-adjust: Basics</title>
-  <link rel="help" href="" />
-  <style type="text/css">
+    <style type="text/css">
    div { font-family: Verdana; font-size: 1px; font-size-adjust: 100; }
   </style>
  </head>

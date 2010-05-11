@@ -1,8 +1,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
   <title>Multiple backgrounds: Inheritance into blocks (shorthand)</title>
-  <link rel="help" href="" />
-  <style type="text/css">
+    <style type="text/css">
    body { font: 16px serif; }
    div { height: 0; background: url(/resources/images/test-tl) no-repeat,
                                 url(/resources/images/test-tr) no-repeat right 0%,

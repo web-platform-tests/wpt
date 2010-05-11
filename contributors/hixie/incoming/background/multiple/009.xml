@@ -1,8 +1,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
   <title>Multiple backgrounds: Parsing test (shorthand)</title>
-  <link rel="help" href="" />
-  <style type="text/css">
+    <style type="text/css">
    p { height: 100px; color: green;
        background: url(/resources/images/patterns/red-pieces) no-repeat,
                    url(/resources/images/patterns/red-pieces) no-repeat right,

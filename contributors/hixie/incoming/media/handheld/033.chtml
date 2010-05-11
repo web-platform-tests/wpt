@@ -2,8 +2,7 @@
 <html>
  <head> <!-- the lowercase "draft" is not in any of the listed FPIs -->
   <title>Media type selection non-triggers (CHTML) (Handheld devices only)</title>
-  <link rel="help" href="" />
- </head>
+   </head>
  <body>
   <p><font color="red">This should be in SSR mode, it should not be in
   handheld mode.</font></p>

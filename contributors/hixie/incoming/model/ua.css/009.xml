@@ -1,8 +1,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
   <title>Sanity test for PRE element font</title>
-  <link rel="help" href="" />
-  <style type="text/css">
+    <style type="text/css">
    pre { margin: 0 2em; color: navy; }
    .test1 { font-family: monospace; }
    .test2 { font-size: 1em; }

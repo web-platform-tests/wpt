@@ -1,6 +1,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
   <title>CSS table model: initial table spacing</title>
+  <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes" />
   <style type="text/css">
    float { float: left; background: red; }
    table { display: table; }

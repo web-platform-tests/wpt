@@ -1,6 +1,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
   <title>CSS Tables: Font Inheritance</title>
+  <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#table-layout" />
   <style type="text/css">
    .control { display: inline; font: 1em/1 Ahem, sans-serif; background: red; color: white; }
    div { font: 50px/1em Ahem; color: green; margin-left: 1em; }

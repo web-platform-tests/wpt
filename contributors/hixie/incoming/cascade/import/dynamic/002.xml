@@ -1,6 +1,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
   <title>Dynamic sheet append (&lt;link&gt;)</title>
+  <link rel="help" href="http://www.w3.org/TR/CSS2/selector.html" />
   <script type="text/javascript">
    var style = document.createElementNS("http://www.w3.org/1999/xhtml", "link");
    style.setAttribute("type", "text/css");

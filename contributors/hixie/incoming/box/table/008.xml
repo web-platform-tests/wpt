@@ -1,6 +1,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
   <title>CSS Tables: Anonymous Cell Children</title>
+  <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes" />
   <style type="text/css">
 
     /* basics */

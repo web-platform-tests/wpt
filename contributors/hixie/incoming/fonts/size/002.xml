@@ -1,6 +1,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
   <title>CSS: sanity tests for relative keyword values of font-size</title>
+  <link rel="help" href="http://www.w3.org/TR/CSS2/fonts.html#font-size-props" />
   <style type="text/css">
 
     tests *|* { line-height: 0; border: none; margin: 0; padding: 0; display: block; }

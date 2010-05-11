@@ -1,6 +1,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
   <title>Media type selection non-triggers (WML) (Handheld devices only)</title>
+  <link rel="help" href="http://www.w3.org/TR/CSS2/media.html#media-sheets" />
   <style type="text/css" media="screen">
    p { background: green; color: white; }
   </style>

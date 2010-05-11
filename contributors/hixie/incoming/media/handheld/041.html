@@ -2,6 +2,7 @@
 <htmL>
  <head>
   <title>Checking that handheld is not selected when it is not mentioned in the main document (Handheld devices only)</title>
+  <link rel="help" href="http://www.w3.org/TR/CSS2/media.html#media-sheets" />
   <link rel="stylesheet" href="http://software.hixie.ch/utilities/cgi/test-tools/delayed-file?pause=1&mime=text%2Fcss&text=%40media+screen+%7B%0D%0A++.screen+%7B+display%3A+none%3B+%7D%0D%0A%7D&cache=041+a">
   <link rel="stylesheet" href="http://software.hixie.ch/utilities/cgi/test-tools/delayed-file?pause=10&mime=text%2Fcss&text=%40media+handheld+%7B%0D%0A++.handheld+%7B+display%3A+none%3B+%7D%0D%0A%7D&cache=041+b">
   <!-- that sheet contains a handheld style, but it should not be

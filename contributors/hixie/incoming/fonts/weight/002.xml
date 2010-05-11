@@ -1,6 +1,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
   <title>CSS: sanity tests for relative keyword values of font-weight</title>
+  <link rel="help" href="http://www.w3.org/TR/CSS2/fonts.html#font-boldness" />
   <style type="text/css">
    /* Chains should be followed all the way. If a chain causes reentrancy, fail. */
    .fw100 { font-weight: 100; } /* defaults to 200 */

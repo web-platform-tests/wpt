@@ -1,6 +1,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
   <title>CSS: font-family and whitespace</title>
+  <link rel="help" href="http://www.w3.org/TR/CSS2/fonts.html#font-family-prop" />
   <style type="text/css">
    .test { border: solid; margin: 1em; padding: 0 1em; background: navy; color: yellow; font: 900 2em Ahem, Marlett, Arial; }
    .a { font-family: Courier New, Ahem, Marlett, Arial, sans-serif; }

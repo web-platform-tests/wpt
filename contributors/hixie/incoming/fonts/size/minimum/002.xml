@@ -1,6 +1,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
   <title>DOM CSS: Computed Values of 'font-size' when minimum font sizes are involved</title>
+  <link rel="help" href="http://www.w3.org/TR/CSS2/fonts.html#font-size-props" />
   <style type="text/css">
    #test { font-size: 1px; }
   </style>

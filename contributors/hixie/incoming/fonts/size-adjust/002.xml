@@ -1,6 +1,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
   <title>CSS font-size-adjust: Inheritance and Parental Influence</title>
+  <link rel="help" href="" />
   <style type="text/css">
    div { font-family: Verdana; font-size: 1px; }
    .a { font-size-adjust: 1; } /* not used by anything in this test case */

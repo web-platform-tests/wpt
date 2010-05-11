@@ -1,6 +1,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
   <title>CSS: transparent text over a stretched smooth alpha transparent PNG</title>
+  <link rel="help" href="" />
   <style type="text/css">
    img { position: fixed; left: 0; bottom: 0; right: 0; top: 0; }
    p { font: 900 2em sans-serif; margin: 1em; -moz-opacity: 0.555; }

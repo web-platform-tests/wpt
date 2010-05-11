@@ -1,6 +1,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
   <title>CSS font-size-adjust: line-height 'ex' calculations</title>
+  <link rel="help" href="" />
   <style type="text/css">
    div { font: 1px/4ex sans-serif; font-size-adjust: 20; }
   </style>

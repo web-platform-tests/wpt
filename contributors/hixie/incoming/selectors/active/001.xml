@@ -1,6 +1,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
   <title>:active (basic test)</title>
+  <link rel="help" href="http://www.w3.org/TR/CSS21/selector.html#dynamic-pseudo-classes" />
   <style type="text/css">
    .test { color: blue; }
    :active { color: yellow; border: red solid thick; background: red; }

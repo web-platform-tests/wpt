@@ -1,6 +1,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
   <title>CSS: font-variant</title>
+  <link rel="help" href="http://www.w3.org/TR/CSS2/fonts.html#small-caps" />
   <style type="text/css">
    p { color: blue; }
    .small-caps { font-variant: small-caps; }

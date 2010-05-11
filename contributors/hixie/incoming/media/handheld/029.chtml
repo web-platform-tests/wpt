@@ -2,6 +2,7 @@
 <html>
  <head>
   <title>Media type selection triggers (CHTML) (Handheld devices only)</title>
+  <link rel="help" href="" />
  </head>
  <body>
   <p><font color="green">This should be in author mode, it should not be in SSR mode.</font></p>

@@ -1,6 +1,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
   <title>CSS and Quotes: Counting Right (Slightly Simpler Version)</title>
+  <link rel="help" href="http://www.w3.org/TR/CSS21/generate.html#quotes" />
   <style type="text/css">
   <![CDATA[
      .party1 * { display: inline; }

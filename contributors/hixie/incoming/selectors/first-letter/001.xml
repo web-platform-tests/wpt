@@ -1,6 +1,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
   <title>:first-letter in XML</title>
+  <link rel="help" href="http://www.w3.org/TR/CSS21/selector.html#first-letter" />
   <style type="text/css">
    .test { float: left; font: 2em sans-serif; }
    .test:first-letter { color: green; }

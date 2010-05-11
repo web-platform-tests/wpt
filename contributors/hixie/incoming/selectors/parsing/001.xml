@@ -1,6 +1,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
   <title>CSS: Selector Parsing and Invalid Pseudo-Elements</title>
+  <link rel="help" href="http://www.w3.org/TR/CSS21/syndata.html#parsing-errors" />
   <style type="text/css">
    p { background: white; color: green; }
    p:invalidPseudoClass, p.test1 { color: yellow; background: red; }

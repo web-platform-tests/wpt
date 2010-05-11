@@ -1,6 +1,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
   <title>CSS: -moz-opacity with PNG backgrounds</title>
+  <link rel="help" href="" />
   <style type="text/css">
    .left {
      background: url(black-0.0-0.5-h.png) center center no-repeat;

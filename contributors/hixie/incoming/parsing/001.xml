@@ -1,6 +1,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
   <title>CSS Parsing: Negative Padding</title>
+  <link rel="help" href="http://www.w3.org/TR/CSS21/syndata.html#length-units" />
   <style type="text/css">
    test { background: green; padding: 8px; padding: -8px; display: block; }
    test > inner { background: white; display: block; }

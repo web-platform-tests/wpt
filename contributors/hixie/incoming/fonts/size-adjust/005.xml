@@ -1,6 +1,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
   <title>CSS font-size-adjust: line-height percentage calculations</title>
+  <link rel="help" href="" />
   <style type="text/css">
    div { font: 1px/200% sans-serif; font-size-adjust: 20; }
   </style>

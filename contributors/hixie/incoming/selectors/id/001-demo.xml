@@ -1,6 +1,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
  <head>
   <title>#id and invalid IDs</title>
+  <link rel="help" href="http://www.w3.org/TR/CSS21/selector.html#id-selectors" />
   <style type="text/css">
     #test\[a\] { background: orange; }
     #dup { background: orange; }

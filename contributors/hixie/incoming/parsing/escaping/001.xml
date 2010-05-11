@@ -1,6 +1,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
   <title>CSS Parsing: Escaped keywords</title>
+  <link rel="help" href="http://www.w3.org/TR/CSS21/syndata.html#rule-sets" />
   <style type="text/css">
    p { color: green; color: \r\e\d; } /* '\r\e\d' is 'r^N^M', which isn't valid */
   </style>

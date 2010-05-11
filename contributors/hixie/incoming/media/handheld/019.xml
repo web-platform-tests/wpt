@@ -2,6 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
   <title>Media type selection triggers (xml-stylesheet PI) (Handheld devices only)</title>
+  <link rel="help" href="http://www.w3.org/TR/CSS2/media.html#media-sheets" />
   <link rel="stylesheet" href="handheld-test.css"/>
  </head>
  <body>

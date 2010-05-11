@@ -1,6 +1,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
   <title>CSS: Specificity Tests</title>
+  <link rel="help" href="" />
   <style type="text/css">
     @namespace url(http://www.example.org/);
     @namespace test url(http://www.example.org/test);

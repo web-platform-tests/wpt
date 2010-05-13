@@ -4,20 +4,43 @@
         <title>CSS Test: Text-align set to 'justify' with 'white-space' set to 'pre-line'</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/text.html#alignment-prop" />
-        <meta name="flags" content="" />
+        <meta name="flags" content="ahem" />
         <meta name="assert" content="Setting 'text-align' to 'justify' and 'white-space' to 'pre-line', text-align is computed to its initial value." />
         <style type="text/css">
             div
             {
-                border: solid;
+                font: 1em/1 ahem;
+                position: relative;
+                width: 9em;
+            }
+            div div
+            {
+                position: absolute;
+            }
+            #test
+            {
+                color: green;
                 text-align: justify;
                 white-space: pre-line;
-                width: 1.5in;
+            }
+            .red
+            {
+                color: red;
+            }
+            .green
+            {
+                color: green;
             }
         </style>
     </head>
     <body>
-        <p>Test passes if the "FillerText" below aligns to the left side of the box.</p>
-        <div>FillerText FillerText FillerText FillerText FillerText FillerText FillerText FillerText</div>
+        <p>Test passes if there is no red visible on the page.</p>
+        <div>
+            <div><span class="red">xxx</span><span class="green">x</span><span class="red">xxx</span><span class="green">xx</span>
+                <span class="red">xxx</span><span class="green">x</span><span class="red">xxx</span><span class="green">xx</span>
+                <span class="red">xxx</span><span class="green">x</span><span class="red">xxx</span><span class="green">xx</span>
+                <span class="red">xxx</span><span class="green">x</span><span class="red">xxx</span><span class="green">xx</span></div>
+            <div id="test">XXX XXX XXX XXX XXX XXX XXX XXX</div>
+        </div>
     </body>
 </html>

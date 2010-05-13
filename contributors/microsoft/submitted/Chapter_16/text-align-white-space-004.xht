@@ -4,21 +4,40 @@
         <title>CSS Test: Text-align set to 'justify' with 'white-space' set to 'nowrap'</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/text.html#alignment-prop" />
-        <meta name="flags" content="" />
+        <meta name="flags" content="ahem" />
         <meta name="assert" content="Setting 'text-align' to 'justify' and 'white-space' to 'nowrap', text-align is computed to 'justify'." />
         <style type="text/css">
             div
             {
-                border: solid;
-                height: 1in;
+                font: 1em/1 ahem;
+                position: relative;
+                width: 16em;
+            }
+            div div
+            {
+                position: absolute;
+            }
+            #test
+            {
+                color: green;
                 text-align: justify;
                 white-space: nowrap;
-                width: 1in;
+            }
+            .red
+            {
+                color: red;
+            }
+            .green
+            {
+                color: green;
             }
         </style>
     </head>
     <body>
-        <p>Test passes if the "Filler Text" below does not wrap and is aligned to the left side of the box.</p>
-        <div>Filler Text Filler Text Filler Text</div>
+        <p>Test passes if there is no red visible on the page.</p>
+        <div>
+            <div><span class="red">xxxx</span><span class="green">x</span><span class="red">xxxx</span><span class="green">x</span><span class="red">xxxx</span></div>
+            <div id="test">xxxx xxxx xxxx</div>
+        </div>
     </body>
 </html>

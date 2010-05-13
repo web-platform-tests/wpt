@@ -4,26 +4,46 @@
         <title>CSS Test: Text-align set to 'justify' with 'white-space' set to 'pre' and 'direction' set to 'rtl'</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/text.html#alignment-prop" />
-        <meta name="flags" content="" />
+        <meta name="flags" content="ahem" />
         <meta name="assert" content="Setting 'text-align' to 'justify' and 'white-space' to 'pre', text-align is computed to its initial value." />
         <style type="text/css">
             div
             {
                 direction: rtl;
+                font: 1em/1 ahem;
+                margin-left: 4em;
+                position: relative;
+                width: 12em;
             }
             div div
             {
-                border: solid;
+                margin: 0;
+                position: absolute;
+            }
+            #test
+            {
+                color: green;
                 text-align: justify;
                 white-space: pre;
-                width: 1in;
+                
+            }
+            .red
+            {
+                color: red;
+            }
+            .green
+            {
+                color: green;
             }
         </style>
     </head>
     <body>
-        <p>Test passes if the "Filler Text" below does not wrap and is aligned to the right side of the box.</p>
+        <p>Test passes if there is no red visible on the page.</p>
         <div>
-            <div>Filler Text Filler Text Filler Text</div>
+            <div><span class="red">xxxx</span><span class="green">x</span><span class="red">xxxx</span><span class="green">x</span><span class="red">xxxx</span> <span class="red">xxxx</span><span class="green">x</span><span class="red">xxxx</span><span class="green">x</span><span class="red">xxxx</span></div>
+            <div id="test">xxxx xxxx xxxx
+xxxx xxxx xxxx
+            </div>
         </div>
     </body>
 </html>

@@ -7,6 +7,8 @@ import os.path
 print "Building CSS2.1 Test Suite from repository %s into %s" % \
       (os.path.abspath('.'), os.path.abspath(os.path.join('.', 'dist', 'css2.1')))
 
+skipDirs = ('support')
+reftestPath = os.path.join('reftest', 'reftest.list')
 groupmap = {
     'http://www.w3.org/TR/CSS21/about.html'    : 'about',
     'http://www.w3.org/TR/CSS21/box.html#box-dimensions'              : 'box-model',
@@ -38,14 +40,8 @@ groupmap = {
     'http://www.w3.org/TR/CSS21/zindex.html'   : 'zindex',
   }
 
-groupset = [ 'about', 'box-model', 'box-model', 'box-margins', 'box-padding',
-    'box-borders', 'cascade', 'colors', 'conform', 'fonts', 'generate',
-    'intro', 'media', 'page', 'selector', 'syndata', 'tables', 'text',
-    'visudet', 'visufx', 'visuren', 'zindex', 'css1',
-  ]
-
 import sys
-from os.path import join
+from os.path import join, exists
 from CSSTestLib.Suite import CSSTestSuite
 from CSSTestLib.Indexer import Indexer
 from CSSTestLib.Groups import SelftestGroup
@@ -56,22 +52,30 @@ from CSSTestLib.Groups import SelftestGroup
 suite = CSSTestSuite('css2.1', 'CSS2.1 Test Suite', 'http://www.w3.org/TR/CSS21/')
 
 # Add approved tests
-testroot = join('approved', 'css2.1', 'src')
-for dir in groupset:
-  suite.addSelfTestsFromDir(join(testroot, dir), ext='.xht')
+root = join('approved', 'css2.1', 'src')
+_,dirs,_ = os.walk(root).next()
+for dir in dirs:
+  if dir in skipDirs: continue
+  testroot = join(root, dir)
+  suite.addSelftestsByExt(testroot, '.xht')
+  if exists(join(testroot, reftestPath)):
+    suite.addReftests(testroot, reftestPath)
 
 # Add unreviewed tests
-for dir in sys.argv[1:]:
-  def grep(file):
-    if not file.endswith('.xht'):
+for path in sys.argv[1:]:
+  if path.endswith('reftest.list'):
+    suite.addReftests(os.path.split(path)[0], 'reftest.list')
+  else:
+    def grep(file):
+      if not file.endswith('.xht'):
+        return False
+      for line in open(join(path, file)):
+        if line.find(suite.specroot) != -1:
+          return True
       return False
-    for line in open(join(dir, file)):
-      if line.find(suite.specroot) != -1:
-        return True
-    return False
-  _,_,files = os.walk(dir).next()
-  files = filter(grep, files)
-  suite.addSelfTestsFromDir(dir, filenames=files)
+    _,_,files = os.walk(path).next()
+    files = filter(grep, files)
+    suite.addSelftestsByList(path, files)
 
 # Build
 data = join('approved', 'css2.1', 'data')

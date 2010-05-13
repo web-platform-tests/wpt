@@ -4,7 +4,7 @@
 # Licensed under BSD 3-Clause: <http://www.w3.org/Consortium/Legal/2008/03-bsd-license>
 
 import OutputFormats
-from Groups import SelftestGroup
+from Groups import CSSTestGroup, SelftestGroup, ReftestGroup
 from Sources import SourceCache
 
 class CSSTestSuite:
@@ -16,28 +16,47 @@ class CSSTestSuite:
     self.specroot = specUri
 
     self.stripTestTitlePrefix='CSS Test'
+    self.defaultReftestRelpath='reftest/reftest.list'
     self.groups = {}
     self.sourcecache = SourceCache()
 
-  def addSelfTestsFromDir(self, dir, ext=None, filenames=None, groupName='', groupTitle=''):
-    """Add tests from directory `dir`, either by file extension (via `ext`,
-       e.g. ext='.xht') or via file name list (via list `filenames`)."""
-
-    # Create group
-    group = SelftestGroup(self.sourcecache,
-                          dir, testExt=ext, testList=filenames,
+  def addSelftestsByExt(self, dir, ext, groupName='', groupTitle=''):
+    """Add tests from directory `dir` by file extension (via `ext`, e.g. ext='.xht').
+    """
+    group = SelftestGroup(self.sourcecache, dir, testExt=ext,
                           name=groupName, title=groupTitle)
+    self.addGroup(group)
 
-    # Add to store
+
+  def addSelftestsByList(self, dir, filenames, groupName='', groupTitle=''):
+    """Add tests from directory `dir`, via file name list `filenames`.
+    """
+    group = SelftestGroup(self.sourcecache, dir, testList=filenames,
+                          name=groupName, title=groupTitle)
+    self.addGroup(group)
+
+  def addReftests(self, dir, manifestPath, groupName='', groupTitle=''):
+    """Add tests by importing context of directory `dir` and importing all
+       tests listed in the `reftestManifestName` manifest inside `dir`.
+    """
+    group = ReftestGroup(self.sourcecache,
+                         dir, manifestPath=manifestPath,
+                         manifestDest=self.defaultReftestRelpath,
+                         name=groupName, title=groupTitle)
+    self.addGroup(group)
+
+  def addGroup(self, group):
+    """ Add CSSTestGroup `group` to store. """
     master = self.groups.get(group.name)
     if master:
       master.merge(group)
     else:
-      self.groups[group.name] = group
+      self.groups[group.name] = CSSTestGroup(group)
 
   def buildInto(self, dest, indexer):
     """Builds test suite through all OutputFormats into directory at path `dest`
-       or through OutputFormat destination `dest`, using Indexer `indexer`."""
+       or through OutputFormat destination `dest`, using Indexer `indexer`.
+    """
     if isinstance(dest, OutputFormats.BasicFormat):
       formats = (dest,)
       dest = dest.root

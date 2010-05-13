@@ -29,6 +29,8 @@ rmtree('dist/css2.1');
 #  visuren/* - all selftests, but r-
 
 push @dirs, 'contributors/bzbarsky/submitted/css2.1/visuren';
+push @dirs, 'contributors/bzbarsky/submitted/css2.1/box/reftest.list';
+push @dirs, 'contributors/bzbarsky/submitted/css2.1/run-in/reftest.list';
 
 ###############################################################################
 # Eira Monstad

@@ -3,7 +3,7 @@
 # Initial code by fantasai, joint copyright 2010 W3C and Microsoft
 # Licensed under BSD 3-Clause: <http://www.w3.org/Consortium/Legal/2008/03-bsd-license>
 
-from os.path import splitext, basename, exists
+from os.path import basename, exists, join
 import os
 import filecmp
 import shutil
@@ -11,7 +11,7 @@ import re
 import html5lib # Warning: This uses a patched version of html5lib
 from lxml import etree
 from lxml.etree import ParseError
-from Utils import getMimeFromExt, escapeToNamedASCII
+from Utils import getMimeFromExt, escapeToNamedASCII, pathInsideBase
 
 class SourceCache:
   """Cache for FileSource objects. Supports one FileSource object
@@ -38,8 +38,8 @@ class SourceCache:
       source = CSSTestSource(sourcepath, relpath)
     else:
       if basename(sourcepath) == '.htaccess':
-        return HTAccessSource(sourcepath, relpath)
-      mime = getMimeFromExt(splitext(sourcepath)[1])
+        return ConfigSource(sourcepath, relpath)
+      mime = getMimeFromExt(sourcepath)
       if mime == 'application/xhtml+xml':
         source = XHTMLSource(sourcepath, relpath)
       else:
@@ -66,31 +66,37 @@ class SourceSet:
   def addSource(self, source):
     """Add FileSource `source`. Throws exception if we already have
        a FileSource with the same path relpath but different contents.
+       (ConfigSources are exempt from this requirement.)
     """
     cachedSource = self.pathMap.get(source.relpath)
     if not cachedSource:
       self.pathMap[source.relpath] = source
     else:
       if source != cachedSource:
-        if isinstance(source, HTAccessSource):
+        if isinstance(source, ConfigSource):
           cachedSource.append(source)
         else:
           raise Exception("File merge mismatch %s vs %s for %s" % \
                 (cachedSource.sourcepath, source.sourcepath, source.relpath))
 
   def add(self, sourcepath, relpath, isTest=False):
-    """Generate and add FileSource from sourceCache.
+    """Generate and add FileSource from sourceCache. Return the resulting
+       FileSource.
 
        Throws exception if we already have a FileSource with the same path
        relpath but different contents.
     """
-    self.addSource(self.sourceCache.generateSource(sourcepath, relpath, isTest))
+    source = self.sourceCache.generateSource(sourcepath, relpath, isTest)
+    self.addSource(source)
+    return source
 
   @staticmethod
   def combine(a, b):
     """Merges a and b, and returns whichever one contains the merger (which
-       one is chosen based on merge efficiency).
+       one is chosen based on merge efficiency). Can accept None as an argument.
     """
+    if not (a and b):
+      return a or b
     if len(a) < len(b):
       return b.merge(a)
     return a.merge(b)
@@ -134,7 +140,7 @@ class FileSource:
     """
     self.sourcepath = sourcepath
     self.relpath    = relpath
-    self.mimetype   = mimetype or getMimeFromExt(splitext(sourcepath)[1])
+    self.mimetype   = mimetype or getMimeFromExt(sourcepath)
     self.error      = None
 
   def __eq__(self, other):
@@ -158,17 +164,19 @@ class FileSource:
     """Clears all cached data, preserves computed data."""
     pass
 
-class HTAccessSource(FileSource):
-  """Object representing a .htaccess file. Capable of merging .htaccess contents.
+class ConfigSource(FileSource):
+  """Object representing a text-based configuration file.
+     Capable of merging multiple config-file contents.
   """
-  def __init__(self, sourcepath, relpath='.htaccess'):
-    """Init HTAccessSource from source path. Give it relative path relpath.
+
+  def __init__(self, sourcepath, relpath, mimetype=None):
+    """Init ConfigSource from source path. Give it relative path relpath.
     """
-    FileSource.__init__(self, sourcepath, relpath, 'htaccess')
+    FileSource.__init__(self, sourcepath, relpath, mimetype)
     self.sourcepath = [sourcepath]
 
   def __eq__(self, other):
-    if not isinstance(other, HTAccessSource):
+    if not isinstance(other, ConfigSource):
       return False
     if self is other or self.sourcepath == other.sourcepath:
       return True
@@ -179,20 +187,95 @@ class HTAccessSource(FileSource):
         return False
     return True
 
+  def __ne__(self, other):
+    return not self == other
+
   def write(self, format):
-    """Writes HTAccessSource out to `self.relpath` through Format `format`,
-       merging contents of all htaccess files represented by this source.
+    """Writes ConfigSource out to `self.relpath` through Format `format`,
+       merging contents of all config files represented by this source.
     """
     f = open(format.dest(self.relpath), 'w')
     for src in self.sourcepath:
       f.write(open(src).read())
+      f.write('\n')
 
   def append(self, other):
-    """Appends contents of HTAccessSource `other` to this source.
+    """Appends contents of ConfigSource `other` to this source.
+       Asserts if self.relpath != other.relpath.
     """
-    assert isinstance(other, HTAccessSource)
-    assert self != other
-    self.sourcepath.append(other.sourcepath)
+    assert isinstance(other, ConfigSource)
+    assert self != other and self.relpath == other.relpath
+    self.sourcepath.extend(other.sourcepath)
+
+class ReftestFilepathError(Exception):
+  pass
+
+class ReftestManifest(ConfigSource):
+  """Object representing a reftest manifest file and its .htaccess.
+     Iterating the ReftestManifest returns (testpath, refpath) tuples
+     with paths relative to the manifest.
+  """
+  def __init__(self, sourcepath, relpath):
+    """Init ReftestManifest from source path. Give it relative path `relpath`
+       and load its .htaccess file.
+    """
+    ConfigSource.__init__(self, sourcepath, relpath, 'config/reftest')
+    htapath = join(basename(sourcepath), '.htaccess')
+    self.htaccess = ConfigSource(htapath, join(basepath(), '.htaccess')) \
+                    if exists(htapath) else None
+
+  def append(self, other):
+    """Appends contents of ConfigSource `other` to this source.
+       Asserts if self.relpath != other.relpath.
+    """
+    ConfigSource.append(self, other)
+    if self.htaccess and other.htaccess:
+      self.htaccess.append(other.htaccess)
+    else:
+      self.htaccess = self.htaccess or other.htaccess
+
+  def basepath(self):
+    """Returns the base relpath of this reftest manifest path, i.e.
+       the parent of the manifest file.
+    """
+    return basename(self.relpath)
+
+  stripRE = re.compile(r'#.*')
+  parseRE = re.compile(r'^\s*==\s*(\S+)\s+(\S+)')
+
+  def __iter__(self):
+    """Parse the reftest manifest files represented by this ReftestManifest
+       and return path information about each reftest pair as
+         ((test-sourcepath, ref-sourcepath), (test-relpath, ref-relpath))
+       Raises a ReftestFilepathError if any sources file do not exist or
+       if any relpaths point higher than the relpath root.
+    """
+    for src in self.sourcepath:
+      relbase = os.path.split(self.relpath)[0]
+      srcbase = os.path.split(src)[0]
+      for line in open(src):
+        line = self.stripRE.sub('', line)
+        m = self.parseRE.search(line)
+        if m:
+          record = ((join(srcbase, m.group(1)), join(srcbase, m.group(2))), \
+                    (join(relbase, m.group(1)), join(relbase, m.group(2))))
+          if not exists(record[0][0]):
+            raise ReftestFilepathError("Manifest Error in %s: "
+                                       "Reftest test file %s does not exist." \
+                                        % (src, record[0][0]))
+          elif not exists(record[0][1]):
+            raise ReftestFilepathError("Manifest Error in %s: "
+                                       "Reftest reference file %s does not exist." \
+                                       % (src, record[0][1]))
+          elif not pathInsideBase(record[1][0]):
+            raise ReftestFilepathError("Manifest Error in %s: "
+                                       "Reftest test replath %s not within relpath root." \
+                                       % (src, record[1][0]))
+          elif not pathInsideBase(record[1][1]):
+            raise ReftestFilepathError("Manifest Error in %s: "
+                                       "Reftest test replath %s not within relpath root." \
+                                       % (src, record[1][1]))
+          yield record
 
 xhtmlns = '{http://www.w3.org/1999/xhtml}'
 
@@ -225,11 +308,7 @@ class XHTMLSource(FileSource):
   def __init__(self, sourcepath, relpath):
     """Initialize XHTMLSource by loading from XHTML file `sourcepath`.
       Parse errors are reported as caught exceptions in `self.error`,
-      and the source (and reference, if any) is replaced with an
-      XHTML error message.
-      self.postProcess(outputString, format) is offered as a
-      post-serialization hook in the `write` method for derivative
-      classes.
+      and the source is replaced with an XHTML error message.
     """
     FileSource.__init__(self, sourcepath, relpath)
     self.tree = None
@@ -247,13 +326,34 @@ class XHTMLSource(FileSource):
       self.tree = etree.parse(self.sourcepath, parser=self.__parser)
     except etree.ParseError, e:
       self.cacheAsParseError(self.sourcepath, e)
-      e.CSSTestSourceErrorLocation = self.sourcepath
+      e.CSSTestLibErrorLocation = self.sourcepath
       self.error = e
 
   def validate(self):
     """Parse file if not parsed, and store any parse errors in self.error"""
     if self.tree is None:
       self.parse()
+
+  def injectHeadTag(tagSnippet):
+    """Inject (prepend) <head> data given in `tagSnippet`, which should be
+       a single (XHTML-closed) element. Throws an exception if `tagSnippet`
+       is invalid.
+    """
+    snippet = etree.XML(tagSnippet)
+    self.validate()
+    head = self.tree.getroot().find('head')
+    assert head
+    snippet.tail = head.text
+    snippet.isCSSTestLibInjection = True
+    head.insert(0, snippet)
+
+  def clearInjectedTags():
+    if self.tree:
+      head = self.tree.getroot().find('head')
+      if head:
+        for e in head.iterchildren():
+          if e.isCSSTestLibInjection:
+            head.remove(e)
 
   def serializeXHTML(self):
     if self.tree is None:
@@ -307,9 +407,17 @@ class CSSTestSource(XHTMLSource):
 
   isTest = True
 
-  def __init__(self, sourcepath, relpath):
+  def __init__(self, sourcepath, relpath, referenceSource=None):
+    """Initialize CSSTestSource by loading from XHTML file `sourcepath`.
+       Links to reftest reference FileSource `reference` if given,
+       sets up as Selftest otherwise.
+       Parse errors are reported as caught exceptions in `self.error`,
+       and the source is replaced with an XHTML error message.
+    """
     XHTMLSource.__init__(self, sourcepath, relpath)
     self.data = None
+    self.ref  = referenceSource
+    self.selftest = not referenceSource
 
   def __cmp__(self, other):
     return cmp(self.name(), other.name())
@@ -318,9 +426,24 @@ class CSSTestSource(XHTMLSource):
     """Extract filename base as test name."""
     return os.path.splitext(os.path.split(self.relpath)[1])[0]
 
-  def postProcess(self, outputString, format):
-    if format.testTransform:
-      format.testTransform(outputString, self)
+  def setReftest(self, referenceSource):
+    """Sets test to be a reftest, with reference relpath `reference`."""
+    self.ref = referenceSource
+
+  def isReftest(self):
+    return bool(self.ref)
+
+  def setSelftest(self, isSelftest=True):
+    self.selftest = isSelftest
+
+  def isSelftest(self):
+    return self.selftest
+
+  def parse(self):
+    XHTMLSource.parse(self)
+    if self.ref:
+      self.injectHeadTag('<link rel="reference" href="%s"/>'
+                         % relpath(self.ref.relpath, self.relpath))
 
   # See http://wiki.csswg.org/test/css2.1/format for more info on metadata
   def getMetadata(self):
@@ -333,6 +456,7 @@ class CSSTestSource(XHTMLSource):
          - links   [list of url strings
          - name    [string]
          - title   [string]
+         - reference [relative path to reference; None if not reftest]
     """
 
     # Check for cached data
@@ -354,7 +478,9 @@ class CSSTestSource(XHTMLSource):
             'flags'   : [], # sorted
             'links'   : links,
             'name'    : self.name(),
-            'title'   : ''
+            'title'   : '',
+            'reference' : self.ref.relpath if self.ref else None,
+            'selftest' : self.isSelftest
            }
     def tokenMatch(token, string):
       return bool(re.search('(^|\s+)%s($|\s+)' % token, string))
@@ -400,7 +526,7 @@ class CSSTestSource(XHTMLSource):
           data['title'] = title[len(CSSTestTitlePrefix):].strip()
     # Cache error and return
     except CSSTestSourceMetaError, e:
-      e.CSSTestSourceErrorLocation = self.sourcepath
+      e.CSSTestLibErrorLocation = self.sourcepath
       self.error = e
       return None
 
@@ -413,3 +539,15 @@ class CSSTestSource(XHTMLSource):
     if data:
       return flag in data['flags']
     return False
+
+  def augmentHead(next=None, prev=None):
+    """Add extra useful metadata to the head.
+         * Adds next/prev links to paths given
+         * Adds link to reference if reftest
+    """
+    self.validate()
+    if next:
+      self.injectHeadTag('<link rel="next" href="%s"/>' % next)
+    if prev:
+      self.injectHeadTag('<link rel="prev" href="%s"/>' % prev)
+

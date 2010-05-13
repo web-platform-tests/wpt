@@ -3,6 +3,12 @@
 # Initial code by fantasai, joint copyright 2010 W3C and Microsoft
 # Licensed under BSD 3-Clause: <http://www.w3.org/Consortium/Legal/2008/03-bsd-license>
 
+# Define contains vmethod for Template Toolkit
+from template.stash import list_op
+@list_op("contains")
+def list_contains(l, x):
+  return x in l
+
 import sys
 import re
 import os
@@ -135,7 +141,7 @@ class Indexer:
       sys.stdout.flush()
       for error in errors:
         print >> errorOut, "Error in %s: %s" % \
-                           (error.CSSTestSourceErrorLocation, error)
+                           (error.CSSTestLibErrorLocation, error)
 
   def writeIndex(self, format):
     """Write indices into test suite build output through format `format`.
@@ -150,8 +156,15 @@ class Indexer:
     data['isXML']      = format.indexExt.startswith('.x')
     data['formatdir']  = format.formatDirName
     data['extmap']     = format.extMap
+    data['tests']        = self.alltests
 
-    # Generate indices
+    # Generate indices:
+
+    # Reftest indices
+    self.__writeTemplate('reftest-toc.tmpl', data,
+                         format.dest('reftest-toc%s' % format.indexExt))
+
+    # Table of Contents
     sectionlist = sorted(self.sections.values())
     if self.splitlevel:
       # Split sectionlist into chapters

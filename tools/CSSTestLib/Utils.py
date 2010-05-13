@@ -3,6 +3,24 @@
 # Initial code by fantasai, joint copyright 2010 W3C and Microsoft
 # Licensed under BSD 3-Clause: <http://www.w3.org/Consortium/Legal/2008/03-bsd-license>
 
+###### File path manipulation ######
+
+import os.path
+
+def pathInsideBase(path, base=''):
+  path = os.path.normpath(path)
+  if base:
+    base = os.path.normpath(base)
+    pathlist = path.split(os.path.sep)
+    baselist = base.split(os.path.sep)
+    while baselist:
+      p = pathlist.pop(0)
+      b = baselist.pop(0)
+      if p != b:
+        return False
+    return not pathlist[0].startswith(os.path.pardir)
+  return not path.startswith(os.path.pardir)
+
 ###### MIME types and file extensions ######
 
 extensionMap = { None     : 'application/octet-stream', # default
@@ -17,9 +35,12 @@ extensionMap = { None     : 'application/octet-stream', # default
                  '.svg'   : 'image/svg+xml',
                }
 
-def getMimeFromExt(ext):
+def getMimeFromExt(filepath):
   """Convenience function: equal to extenionMap.get(ext, extensionMap[None]).
   """
+  if filepath.endswith('.htaccess'):
+    return 'config/htaccess'
+  ext = os.path.splitext(filepath)[1]
   return extensionMap.get(ext, extensionMap[None])
 
 ###### Escaping ######

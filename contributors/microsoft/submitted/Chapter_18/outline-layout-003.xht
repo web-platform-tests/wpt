@@ -4,8 +4,8 @@
         <title>CSS Test: Outline and border placement</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/ui.html#dynamic-outlines" />
-        <meta name="flags" content="" />
-        <meta name="assert" content="Outline is drawn directly outside of the border." />
+        <meta name="flags" content="may" />
+        <meta name="assert" content="Outline may be drawn directly outside of the border." />
         <style type="text/css">
             div
             {
@@ -17,7 +17,7 @@
         </style>
     </head>
     <body>
-        <p>Test passes if the green box surrounds the blue box.</p>
+        <p>Test passes if there is a green box below. The green box may be around the blue border, inside the blue border or on top of the blue border.</p>
         <div></div>
     </body>
 </html>

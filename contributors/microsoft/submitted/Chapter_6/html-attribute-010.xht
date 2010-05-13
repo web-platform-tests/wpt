@@ -1,4 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
         <title>CSS Test: Attribute 'cols' vs CSS 'width' specificity</title>
@@ -7,22 +7,18 @@
         <meta name="flags" content="" />
         <meta name="assert" content="Attribute 'cols' has a specificity of zero and is overridden by CSS." />
         <style type="text/css">
-            html, body, p, br, div
-            {
-                border: none;
-                width: auto;
-            }
-            *
-            {
-                border: 1px solid blue;
-                width: 100px;
-            }
             div div
             {
                 background: orange;
-                border: 1px solid orange;
                 height: 20px;
                 width: 102px;
+            }
+            textarea
+            {
+                border: 1px solid blue;
+                margin: 0;
+                padding: 0;
+                width: 100px;
             }
         </style>
     </head>
@@ -30,7 +26,6 @@
         <p>Test passes if the width of the blue box is the same as the orange bar below.</p>
         <div>
             <textarea cols="500" rows="10"></textarea>
-            <br />
             <div></div>
         </div>
     </body>

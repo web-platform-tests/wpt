@@ -1,19 +1,26 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 
  <head>
 
-  <title>CSS Test: text-align - inheritance and table-cell</title>
+  <title>CSS Test: cascades, inheritance and table-cell horizontal alignment</title>
 
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
   <link rel="author" title="James Hopkins" href="james(a)idreamincode.co.uk" />
-  <link rel="help" href="http://www.w3.org/TR/CSS21/text.html#propdef-text-align" />
+  <link rel="help" href="http://www.w3.org/TR/CSS21/cascade.html#specified-value" />
+  <link rel="help" href="http://www.w3.org/TR/CSS21/cascade.html#inheritance" />
+  <link rel="help" href="http://www.w3.org/TR/html4/struct/tables.html#h-11.3.2" />
   <meta name="flags" content="" />
-  <meta name="assert" content="'text-align' is inherited and applies to table cells" />
+  <meta name="assert" content="When determining the specified value of a property, the cascade mechanism of (user agent, author, user) style sheets has precedence. If no value results from such mechanism, then the property may inherit from its parent. In this testcase, it is presumed that table cell headers are specified to be aligned in the center in user agents style sheets. Center is the default horizontal alignment value for table header cells." />
 
   <style type="text/css"><![CDATA[
-  table {border: blue solid thin; width: 100%;}
+  table
+  {
+  border: blue solid thin;
+  width: 100%;
+  }
+
   thead {text-align: right;}
   ]]></style>
 
@@ -21,7 +28,7 @@
 
  <body>
 
-  <p>Test is passed if the words "Filler text" below are aligned to the right, inside the rectangle with a thin blue border.</p>
+  <p>Test is passed if the words "Filler text" below are aligned in the center inside the rectangle with a thin blue border.</p>
 
   <table>
 

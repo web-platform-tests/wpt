@@ -7,24 +7,27 @@
   <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#position-props"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#propdef-position"/>
   <meta name="flags" content="dom" />
-  <meta name="assert" content="The position of a positioned element which inherits its 'top' value from its parent changes when the parent's 'top' value is changed even if table pseudo-elements are involved."/>
+  <meta name="assert" content="The position of a positioned element which inherits its 'top' value from its parent changes when the parent's 'top' value is changed even if the parent is display:table-row."/>
   <style type="text/css"><![CDATA[
     .testDiv { width: 100px; height: 100px; }
     #green { top: 4em; background: green; position: absolute; }
     #red { top: inherit; background: red; position: relative; }
-    #parent { position: absolute; display: table-row; }
+    #parent { position: absolute; top: 2em; }
+    #intermediate { display: table-row; }
   ]]></style>
   <script type="application/x-javascript"><![CDATA[
     window.onload = function() {
       document.body.offsetWidth;
-      document.getElementById("parent").style.top = "2em";
+      document.getElementById("intermediate").style.top = "2em";
     }
   ]]></script>
  </head>
  <body>
    <p>There should be no red.</p>
    <div id="parent">
-     <div id="red" class="testDiv"></div>
+     <div id="intermediate">
+       <div id="red" class="testDiv"></div>
+     </div>
    </div>
    <div id="green" class="testDiv"></div>
  </body>

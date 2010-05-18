@@ -1,10 +1,10 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
-<html>
- <head>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
   <title></title>
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
   <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/border/dynamic/002.html"/>
-  <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#border-shorthand-properties" />
+  <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#border-shorthand-properties"/>
   <style type="text/css">
    .test { background: green; }
    .test div { margin: 10em 0; background: red; }
@@ -13,7 +13,7 @@
  </head>
  <body>
   <p>There should be a big green box below.</p>
-  <div class="test" id="test">
+  <div id="test" class="test">
    <div></div>
   </div>
   <script type="text/javascript">
@@ -21,5 +21,6 @@
    x.clientHeight; // force reflow
    x.className += " style";
   </script>
- </body>
+ 
+</body>
 </html>

@@ -14,27 +14,27 @@
   document with a green background. There should be no red on this
   page, only a square green box with white text and a lime green
   border.<p>
-  <div><object type="text/html" data="001a.html">FAIL</object></div>
+  <div><object type="text/html" data="support/model-canvas-001a.html">FAIL</object></div>
 
   <!-- reasoning:
 
     Section 9.1.1:
     # There is at most one viewport per canvas
-     -- http://www.w3.org/TR/CSS21/visuren.html#q2
+     -> http://www.w3.org/TR/CSS21/visuren.html#q2
 
     Section 2.3.1:
     # the term canvas describes "the space where the formatting
     # structure is rendered."
-     -- http://www.w3.org/TR/CSS21/intro.html#q4
+     -> http://www.w3.org/TR/CSS21/intro.html#q4
 
     Section 2.3, item 5:
     # From the annotated document tree, generate a formatting
     # structure.
-     -- http://www.w3.org/TR/CSS21/intro.html#processing-model
+     -> http://www.w3.org/TR/CSS21/intro.html#processing-model
 
     Section 2.3, item 1:
     # Parse the source document and create a document tree.
-     -- http://www.w3.org/TR/CSS21/intro.html#processing-model
+     -> http://www.w3.org/TR/CSS21/intro.html#processing-model
 
     ...therefore is a viewport per rendered document. Since there are
     two documents on this page (the main one and the one in the

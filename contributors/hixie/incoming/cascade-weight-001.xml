@@ -3,7 +3,7 @@
   <title>CSS: @import and weight (XML)</title>
   <link rel="help" href="http://www.w3.org/TR/CSS2/cascade.html#at-import" />
   <style type="text/css">
-    @import "001.css";  /* test { color: green ! important; } */
+    @import "support/cascade-weight-001.css";  /* test { color: green ! important; } */
     test { color: red; }
   </style>
  </head>

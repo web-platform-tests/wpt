@@ -8,7 +8,7 @@
     .block { height: 1em; width: 4em; display: block; }
     .float { height: 1em; width: 4em; float: left; margin-bottom: -1em; }
     .inline { display: inline; }
-    .spacer { height: 1em; width: 4em; vertical-align: bottom; }
+    .spacer { padding: 0.4em 1.9em; height: 0.2em; width: 0.2em; vertical-align: bottom; }
     div { background: red; font: 1em/1 Ahem, monospace; }
     .block-control.block, .float-control.float, .inline-control.inline, .test.float { background: green; }
     .test.float { opacity: 0.99; }
@@ -25,13 +25,13 @@
   <div class="inline-control block">
    <div class="inline-control float"></div>
    <div class="inline-control inline">
-    <img src="/resources/images/1x1" class="spacer" alt="FAIL">
+    <img src="support/1x1-green.png" class="spacer" alt="FAIL">
    </div>
   </div>
   <div class="test block">
    <div class="test float"></div>
    <div class="test inline">
-    <img src="/resources/images/1x1" class="spacer" alt="FAIL">
+    <img src="support/1x1-green.png" class="spacer" alt="FAIL">
    </div>
   </div>
  </body>

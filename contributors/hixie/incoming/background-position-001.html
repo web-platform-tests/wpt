@@ -5,16 +5,17 @@
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
   <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/background/position/001.html"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/colors.html#background" />
+  <meta name="flags" content="dom"/>
   <style type="text/css">
    #test {
-     background: url(/resources/images/bullet) no-repeat;
+     background: url(support/diamond.gif) no-repeat;
      background-position: 0% 100%;
      position: relative;
-     height: 40em; width: 40em;
+     height: 20em; width: 20em;
      margin: 2em;
    }
    #ring {
-     position: absolute; left: 0; top: 40em;
+     position: absolute; left: 0; top: 20em;
      margin: -20px 0 0 -20px;
    }
   </style>
@@ -27,8 +28,8 @@
          position = 0;
        }
        document.styleSheets[0].cssRules[0].style.backgroundPosition = (sin(position) + 1) * 50 + '% ' + (cos(position) + 1) * 50 + '%';
-       document.styleSheets[0].cssRules[1].style.left = (sin(position) + 1) * 20 + 'em';
-       document.styleSheets[0].cssRules[1].style.top = (cos(position) + 1) * 20 + 'em';
+       document.styleSheets[0].cssRules[1].style.left = (sin(position) + 1) * 10 + 'em';
+       document.styleSheets[0].cssRules[1].style.top = (cos(position) + 1) * 10 + 'em';
        document.getElementById('status').firstChild.data = document.styleSheets[0].cssRules[0].style.backgroundPosition;
      }
    }
@@ -40,7 +41,7 @@
   diamond should be moving around the edge of the outer circle, so
   that it is always on the side of the circle that points towards the
   center of the large circle that they are going around.</p>
-  <div id="control"><div id="test"><img id="ring" src="/resources/images/ring" alt="O"></div></div>
+  <div id="control"><div id="test"><img id="ring" src="support/ring.gif" alt="O"></div></div>
   <p>Position: <span id="status">0% 0%</span></p>
  </body>
 </html>

@@ -1,10 +1,5 @@
-@import "002b.css";
-.c { color: green; }
-.d { color: red; }
-.e { color: red; }
-.f { color: red; }
-.g { color: red; }
-.h { color: red; }
+@import url('cascade-import-002g.css');
+.h { color: green; }
 .i { color: red; }
 .j { color: red; }
 .k { color: red; }

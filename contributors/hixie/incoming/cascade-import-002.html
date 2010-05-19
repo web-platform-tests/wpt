@@ -5,10 +5,11 @@
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
   <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/cascade/import/002.html"/>
   <link rel="help" href="http://www.w3.org/TR/CSS2/selector.html" />
-  <meta http-equiv="Link" content="<002h.css>; rel=&quot;stylesheet&quot;">
-  <link href="002j.css" rel="stylesheet">
+  <meta name="flags" content="http"/>
+  <meta http-equiv="Link" content="<support/cascade-import-002h.css>; rel=&quot;stylesheet&quot;">
+  <link href="support/cascade-import-002j.css" rel="stylesheet">
   <style type="text/css">
-   @import url(002k.css);
+   @import url(support/cascade-import-002k.css);
    .l { color: green; }
    .m { color: red; }
    .n { color: red; }
@@ -17,8 +18,8 @@
    .q { color: red; }
    .r { color: red; }
   </style>
-  <link href="002p.css" rel="stylesheet">
-  <meta http-equiv="Link" content="<002r.css>; rel=&quot;stylesheet&quot;">
+  <link href="support/cascade-import-002p.css" rel="stylesheet">
+  <meta http-equiv="Link" content="<support/cascade-import-002r.css>; rel=&quot;stylesheet&quot;">
  </head>
  <body>
   <div class="a"> This line should be green. (a) </div>

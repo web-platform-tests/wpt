@@ -1,4 +1,4 @@
-<?xml-stylesheet type="text/css" href="007.css"?>
+<?xml-stylesheet type="text/css" href="support/selectors-not-007.css"?>
 <tests html:class="test" xmlns:html="http://www.w3.org/1999/xhtml">
   <testA> <item>This should be green. (A)</item> </testA>
   <testB> <thing> This should be green. (B) </thing> </testB>

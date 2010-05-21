@@ -3,19 +3,29 @@
  <head>
   <title>Scrolling Backgrounds in Scrolling Backgrounds</title>
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
-  <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/background/block/004.html"/>
+  <link rel="author" title="Elika J. Etemad" href="http://fantasai.inkedblade.net/contact"/>
+  <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/background/block/003.html"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/colors.html#background" />
+  <meta name="flags" content="image interact scroll"/>
   <style type="text/css">
    .outer {
-     background: transparent url(/resources/images/smallcats) -30px -30px scroll;
-     border: 30px dotted;
-     overflow: auto; height: 237px; width: 330px;
+     background: url(support/bordered-rectangle.png) -5px center scroll repeat-x;
+     border: 10px dotted;
+     overflow: auto; height: 190px; width: 390px;
      white-space: pre; font-size: 16px;
+     text-align: center;
+     margin: -10px;
    }
    .inner {
-     background: transparent url(/resources/images/astrophy/200-a) -30px -30px scroll;
-     border: 30px dotted; margin: 0 40px;
-     overflow: auto; height: 140px; width: 140px;
+     background: url(support/cat.png) scroll center no-repeat;
+     border: 10px dotted orange; margin: 0 auto;
+     overflow: auto; height: 99px; width: 80%;
+     color: orange;
+   }
+   .backdrop {
+     border: teal solid 10px;
+     background: yellow;
+     width: 390px;
    }
    ul { color: navy; }
   </style>
@@ -23,15 +33,16 @@
  <body>
 
   <ul>
-   <li>You should see the orange cats going under the border.</li>
-   <li>As you scroll the element below the orange cats should not move.</li>
-   <li>There should be exactly six unbroken pictures of the two cats visible in the background at all times.</li>
-   <li>However, as you scroll the element, a new cat should come into view, with its own associated nested scrollbar.</li>
-   <li>As you scroll the outer element, the inner cat should move up and down with its border.</li>
-   <li>As you scroll the inner element, the inner cat should not move.</li>
-   <li><strong>You should see the orange cats behind the inner cat, and a white background behind the lot.</strong></li>
+   <li>You should see teal underneath the dotted black border below.</li>
+   <li>There should be exactly two teal-bordered aqua rectangles visible inside the dotted border at all times, with yellow stripes above and below.</li>
+   <li>As you scroll the element below the teal, aqua, and yellow regions should not move.</li>
+   <li>However, as you scroll the aqua-and-teal element, a cat surrounded by an orange dotted border should come into view, with its own associated nested scrolling mechanism.</li>
+   <li>As you scroll the aqua-and-teal element, the cat should move up and down with its border.</li>
+   <li>As you scroll the numbers inside the orange border, the cat should not move.</li>
+   <li>The aqua rectangles should be visible inside the dotted orange border.
   </ul>
 
+  <div class="backdrop">
   <div class="outer">   1
    2
    3
@@ -60,7 +71,7 @@
   17
   18
   19
-  20  </div>
+  20</div>
   10
   11
   12
@@ -71,6 +82,7 @@
   17
   18
   19
-  20  </div>
+  20</div>
+  </div>
  </body>
 </html>

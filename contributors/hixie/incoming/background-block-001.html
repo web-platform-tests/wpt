@@ -3,13 +3,15 @@
  <head>
   <title>Scrolling Backgrounds</title>
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
+  <link rel="author" title="Elika J. Etemad" href="http://fantasai.inkedblade.net/contact"/>
   <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/background/block/001.html"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/colors.html#background" />
+  <meta name="flags" content="image interact scroll"/>
   <style type="text/css">
    div {
-     background: -30px -30px silver url(/resources/images/smallcats) scroll;
-     border: 30px dotted;
-     overflow: auto; height: 138px; width: 330px;
+     background: red -5px -5px url(support/bordered-rectangle.png) scroll;
+     border: 10px dotted silver;
+     overflow: auto; height: 90px; width: 190px;
      white-space: pre; font-size: 16px;
    }
    ul { color: navy; }
@@ -18,10 +20,11 @@
  <body>
 
   <ul>
-   <li>You should see the cats going under the border.</li>
-   <li>As you scroll the element below the cats should not move.</li>
-   <li>There should be exactly four unbroken pictures of the two cats visible at all times.</li>
-   <li>They should be on a light grey background.</li>
+   <li>There should be a gray dotted box below.</li>
+   <li>There should be a teal border underneath the dotted box.</li>
+   <li>The box should be painted aqua inside the border.</li>
+   <li>There should be no red.</li>
+   <li>As you scroll the element through the numbers, the aqua, teal, and gray colors should not change position.</li>
   </ul>
 
   <div>   1

@@ -5,23 +5,20 @@
   <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/background/13.html"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/colors.html#background" />
 <STYLE type="text/css">
-   BODY { border: solid lime; background: green url(/resources/images/box-12x12) center top no-repeat; color: white; }
-   HTML { border: solid blue; background: white url(/resources/images/astrophy/original) repeat-x top center; color: black; }
+   BODY { border: solid lime; background: green url(support/square-purple.png) center top no-repeat; color: white; }
+   HTML { border: solid blue; background: white url(support/square-teal.png) repeat-x top center; color: black; }
    :link, :visited { color: inherit; background: transparent; }
-   * { margin: 1em; padding: 1em; }
-   HTML, BODY { margin: 53px; }
+   p { margin: 1em; padding: 1em; }
+   HTML, BODY { margin: 17px; }
 </STYLE>
 
-<P> According to the specs, the lovely Astrophy should line the top of
-the blue box, and should spill outside the box to the left and right.
-That is to say, there should be many cats in a horizontal line
-touching either side of the canvas/viewport, and the cats should be
+<P>There should be many teal squares in a horizontal line
+touching either side of the canvas/viewport, and the squares should be
 vertically aligned to be between the HTML box's blue border and the
-BODY box's green border. Note that there should be one Astrophy
-EXACTLY horizontally centred across the viewport, so its left paw (the
-one that is to our right) should be EXACTLY above the bathroom tile
-that appears at the top of the inner BODY box. </p>
+BODY box's green border. Note that there should be one tile
+EXACTLY horizontally centred across the viewport, so that is is
+EXACTLY above the purple square that appears at the top of the inner BODY box. </p>
 
-<p>ASTROPHY SHOULD NOT BE CLIPPED BY THE HTML BOX'S BORDERS!</p>
+<p>THE TEAL TILES SHOULD NOT BE CLIPPED BY THE HTML BOX'S BORDERS!</p>
 
 

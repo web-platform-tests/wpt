@@ -2,7 +2,7 @@
  <head>
   <title>CSS: -moz-opacity with glyphs and transparent PNG backgrounds</title>
     <style type="text/css">
-   body { background: white url(black-0.5-0.0-h.png) repeat-y fixed; color: black; }
+   body { background: white url(mozilla-opacity-black-0.5-0.0-h.png) repeat-y fixed; color: black; }
    p { font: 900 2em sans-serif; margin: 1em; }
    div { font: 900 9em sans-serif; margin: 0 0.5em; line-height: 1.0; }
   </style>

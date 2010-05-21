@@ -3,11 +3,11 @@
   <title>CSS: -moz-opacity with PNG backgrounds</title>
     <style type="text/css">
    .left {
-     background: url(black-0.0-0.5-h.png) center center no-repeat;
+     background: url(mozilla-opacity-black-0.0-0.5-h.png) center center no-repeat;
      -moz-opacity: 0.50; z-index: 1;
    }
    .right {
-     background: url(black-0.5-0.0-h.png) center center no-repeat;
+     background: url(mozilla-opacity-black-0.5-0.0-h.png) center center no-repeat;
      -moz-opacity: 1.00; z-index: 0;
    }
    .gradient {

@@ -1,11 +1,11 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
-<html lang="en">
- <head>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
   <title>CSS background position: animated</title>
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
   <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/background/position/001.html"/>
-  <link rel="help" href="http://www.w3.org/TR/CSS21/colors.html#background" />
-  <meta name="flags" content="dom"/>
+  <link rel="help" href="http://www.w3.org/TR/CSS21/colors.html#background"/>
+  <meta content="dom" name="flags" />
   <style type="text/css">
    #test {
      background: url(support/diamond.png) no-repeat;
@@ -24,7 +24,7 @@
    function test() {
      with (Math) {
        position += PI / 1000;
-       if (position >= 2 * PI) {
+       if (position &gt;= 2 * PI) {
          position = 0;
        }
        document.styleSheets[0].cssRules[0].style.backgroundPosition = (sin(position) + 1) * 50 + '% ' + (cos(position) + 1) * 50 + '%';
@@ -41,7 +41,9 @@
   diamond should be moving around the edge of the outer circle, so
   that it is always on the side of the circle that points towards the
   center of the large circle that they are going around.</p>
-  <div id="control"><div id="test"><img id="ring" src="support/ring.png" alt="O"></div></div>
+  <div id="control"><div id="test"><img src="support/ring.png" alt="O" id="ring" /></div></div>
   <p>Position: <span id="status">0% 0%</span></p>
- </body>
+ 
+
+</body>
 </html>

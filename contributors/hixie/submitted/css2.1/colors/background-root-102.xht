@@ -1,9 +1,10 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
-<html lang="en">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
  <head>
   <title>CSS: Changing the background of the BODY element by changing its class</title>
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
   <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/background/dynamic/002.html"/>
+  <meta name="flags" content="dom"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/colors.html#background" />
   <style type="text/css">
     body.before { background: red; color: yellow; }
@@ -12,8 +13,8 @@
   </style>
   <script type="text/javascript">
     function test() {
-      document.getElementsByTagName('BODY')[0].className = 'after';
-      document.getElementsByTagName('P')[0].className = 'after';
+      document.getElementsByTagName('body')[0].className = 'after';
+      document.getElementsByTagName('p')[0].className = 'after';
     }
   </script>
  </head>

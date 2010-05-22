@@ -1,0 +1,29 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>CSS Test: Background propagation on &lt;body&gt; and &lt;html&gt; - canvas positioning</title>
+  <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
+  <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/background/13.html"/>
+  <link rel="help" href="http://www.w3.org/TR/CSS21/colors.html#background"/>
+<style type="text/css">
+   body { border: solid lime; background: green url(support/square-purple.png) center top no-repeat; color: white; }
+   html { border: solid blue; background: white url(support/square-teal.png) repeat-x top center; color: black; }
+   :link, :visited { color: inherit; background: transparent; }
+   p { margin: 1em; padding: 1em; }
+   html, body { margin: 17px; }
+</style>
+
+</head>
+<body>
+<p>There should be many teal squares in a horizontal line
+touching either side of the canvas/viewport, and the squares should be
+vertically aligned to be between the HTML box's blue border and the
+BODY box's green border. Note that there should be one tile
+EXACTLY horizontally centred across the viewport, so that is is
+EXACTLY above the purple square that appears at the top of the inner BODY box. </p>
+
+<p>THE TEAL TILES SHOULD NOT BE CLIPPED BY THE HTML BOX'S BORDERS!</p>
+
+
+</body>
+</html>

@@ -1,0 +1,29 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>CSS Test: Height of root element</title>
+  <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
+  <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/background/14.html"/>
+  <link rel="help" href="http://www.w3.org/TR/CSS2/visudet.html#Computing_heights_and_margins"/>
+  <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#containing-block-details"/>
+  <link rel="help" href="http://www.w3.org/TR/CSS21/colors.html#background"/>
+<style type="text/css">
+   body { border: solid lime; background: green; color: white; }
+   html { border: solid blue; background: navy; color: yellow; }
+   :link, :visited { color: inherit; background: transparent; }
+   * { margin: 1em; padding: 1em; }
+</style>
+
+</head>
+<body>
+<p> The inner box (BODY) should be green, it should be bordered in
+bright green. The inner box should centred inside a blue box (HTML)
+with a bright blue border. The blue box (HTML) should itself be in a
+sea of blue: the canvas, whose background is the same as the HTML
+element's. The outer sea of blue should be the size of the viewport,
+but the inner boxes should just wrap around this text. The HTML box
+SHOULD NOT SIZE TO FIT THE VIEWPORT!</p>
+
+
+</body>
+</html>

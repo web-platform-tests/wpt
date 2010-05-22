@@ -1,0 +1,25 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>CSS Test: Background propagation on &lt;body&gt; and &lt;html&gt; - propagated position</title>
+  <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
+  <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/background/09.html"/>
+  <link rel="help" href="http://www.w3.org/TR/CSS21/colors.html#background"/>
+<style type="text/css">
+   body { border: solid lime; background: green url(support/square-white.png) no-repeat 50% 50%; color: white; }
+   html { border: solid blue; background: transparent; color: yellow; }
+   :link, :visited { color: inherit; background: transparent; }
+   * { margin: 1em; padding: 1em; }
+</style>
+
+</head>
+<body>
+<p> In the middle of the HTML box, the outer one with the blue border,
+there should be a bathroom tile. Resizing the window should keep it
+centred in the HTML box. It should also probably look like it is
+centred inside the BODY box, since the BODY box is centred in the HTML
+box!
+
+
+</p></body>
+</html>

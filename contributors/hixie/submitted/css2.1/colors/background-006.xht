@@ -1,0 +1,23 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>CSS Test: Backgrounds on &lt;body&gt; and &lt;html&gt; - propagation vs. repeat</title>
+  <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
+  <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/background/06.html"/>
+  <link rel="help" href="http://www.w3.org/TR/CSS21/colors.html#background"/>
+<style type="text/css">
+   BODY { border: solid lime; background: green url(support/square-white.png) repeat-y top left; color: white; }
+   HTML { border: solid blue; background: transparent repeat-x; color: yellow; }
+   :link, :visited { color: inherit; background: transparent; }
+   * { margin: 1em; padding: 1em; }
+</style>
+
+</head>
+<body>
+<p> This is the BODY. It should have a green background with a green
+border, and around it should be a blue box with a line of squares
+going down its left hand side, just inside the border.</p>
+
+
+</body>
+</html>

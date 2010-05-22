@@ -1,0 +1,26 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>CSS Test: Background propagation on &lt;body&gt; and &lt;html&gt; - Tiling and positioning</title>
+  <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
+  <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/background/15.html"/>
+  <link rel="help" href="http://www.w3.org/TR/CSS21/colors.html#background"/>
+<style type="text/css">
+   body { border: solid lime; background: white url(support/cat.png); color: black; }
+   html { border: solid blue; background: transparent; color: black; }
+   :link, :visited { color: inherit; background: transparent; }
+   P { font: 900 1.75em Verdana, sans-serif; }
+   * { margin: 1em; padding: 1em; }
+</style>
+
+</head>
+<body>
+<p> There should be lots of cats in the background, covering the
+entire canvas. One of the cats should start exactly at the top left
+corner of the hollow blue box (the HTML box). Ignore the green box, it
+merely marks out the BODY box. There should not be a thick white
+border around the blue box. </p>
+
+
+</body>
+</html>

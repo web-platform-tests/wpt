@@ -1,0 +1,26 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>CSS Test: Background propagation on &lt;body&gt; and &lt;html&gt; - non-propagated position</title>
+  <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
+  <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/background/10.html"/>
+  <link rel="help" href="http://www.w3.org/TR/CSS21/colors.html#background"/>
+<style type="text/css">
+   body { border: solid lime; background: green url(support/square-white.png) no-repeat 50% 50%; color: white; }
+   html { border: solid blue; background: navy; color: yellow; }
+   :link, :visited { color: inherit; background: transparent; }
+   * { margin: 1em; padding: 1em; }
+</style>
+
+</head>
+<body>
+<p> In the middle of this inner BODY box with the green border, there
+should be a bathroom tile. Resizing the window should make its
+position relative to this inner BODY box stay the same. It may well
+also be centred about the outer navy box, since the BODY box should
+have margins the same all the way around it, and thus be centred in
+the HTML box.</p>
+
+
+</body>
+</html>

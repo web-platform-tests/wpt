@@ -1,17 +1,19 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
-<html lang="en">
- <head>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
   <title>Positioning tables</title>
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
   <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/box/absolute/007.html"/>
-  <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#comp-abspos" />
+  <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#comp-abspos"/>
   <style type="text/css">
    .absolute { position: absolute; bottom: 0; left: 0; right: 0; top: 0; background: white; color: green; margin: 0;  }
    .FAIL { font: 900 15em Tahoma, Verdana, sans-serif; color: yellow; margin: 0; background: red; }
   </style>
  </head>
  <body>
-  <table class="absolute"><tr><td>PASS</td></tr></table>
+  <table class="absolute"><tbody><tr><td>PASS</td></tr></tbody></table>
   <p class="FAIL">FAIL</p>
- </body>
+ 
+
+</body>
 </html>

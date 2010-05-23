@@ -1,10 +1,10 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
-<html lang="en">
- <head>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
   <title>Table layout: Absolute positioning should shrink wrap</title>
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
   <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/box/absolute/013.html"/>
-  <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#abs-non-replaced-width" />
+  <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#abs-non-replaced-width"/>
   <style type="text/css">
    table { position: absolute; background: red; border-spacing: 0; }
    td { padding: 0; }
@@ -14,11 +14,13 @@
  <body>
   <p>There should be a green block and no red below.</p>
   <table>
-   <tr>
+   <tbody><tr>
     <td>
      <div></div>
     </td>
    </tr>
-  </table>
- </body>
+  </tbody></table>
+ 
+
+</body>
 </html>

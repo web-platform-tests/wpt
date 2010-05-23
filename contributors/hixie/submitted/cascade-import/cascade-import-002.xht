@@ -1,13 +1,18 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
-<html lang="en">
- <head>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
   <title>Cascade: Ordering test with various import techniques</title>
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
   <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/cascade/import/002.html"/>
-  <link rel="help" href="http://www.w3.org/TR/CSS2/selector.html" />
-  <meta name="flags" content="http"/>
-  <meta http-equiv="Link" content="<support/cascade-import-002h.css>; rel=&quot;stylesheet&quot;">
-  <link href="support/cascade-import-002j.css" rel="stylesheet">
+  <link rel="help" href="http://www.w3.org/TR/html4/present/styles.html#h-14.3"/>
+  <link rel="help" href="http://www.w3.org/TR/html4/present/styles.html#h-14.6"/>
+  <!-- There seems to be no spec defining http-equiv="Link" behavior -->
+  <link rel="help" href="http://www.w3.org/TR/CSS21/cascade.html#at-import"/>
+  <link rel="help" href="http://www.w3.org/TR/CSS21/cascade.html#cascading-order"/>
+  <meta name="flags" content="http" />
+
+  <meta http-equiv="Link" content='&lt;support/cascade-import-002h.css>; rel="stylesheet"'/>
+  <link rel="stylesheet" href="support/cascade-import-002j.css"/>
   <style type="text/css">
    @import url(support/cascade-import-002k.css);
    .l { color: green; }
@@ -18,8 +23,8 @@
    .q { color: red; }
    .r { color: red; }
   </style>
-  <link href="support/cascade-import-002p.css" rel="stylesheet">
-  <meta http-equiv="Link" content="<support/cascade-import-002r.css>; rel=&quot;stylesheet&quot;">
+  <link rel="stylesheet" href="support/cascade-import-002p.css"/>
+  <meta http-equiv="Link" content='&lt;support/cascade-import-002r.css>; rel="stylesheet"'/>
  </head>
  <body>
   <div class="a"> This line should be green. (a) </div>
@@ -80,5 +85,7 @@
    q    Rule
    r   Rule
   -->
- </body>
+ 
+
+</body>
 </html>

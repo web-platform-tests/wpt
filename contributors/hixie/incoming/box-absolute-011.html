@@ -1,17 +1,18 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
-<html> 
- <head> 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head> 
   <title>Shrink wrapping of absolute positioned blocks</title>
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
   <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/box/absolute/011.html"/>
-  <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#abs-non-replaced-width" />
+  <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#abs-non-replaced-width"/>
   <style> 
    .container { font-size: 100px; position: relative; border-top: 10px solid white; }
    .outer { position: absolute; top: 0; left: 0; z-index: 1; }
    .inner { background: green; color: white; float: left; }
    .control { float: left; color: yellow; background: red; }
   </style> 
- <body>
+ </head>
+<body>
   <p>There should be no red below.</p>
   <div class="container">
    <div class="outer">
@@ -21,5 +22,6 @@
    </div>
    <div class="control">X X1</div>
   </div>
- </body>
+ 
+</body>
 </html>

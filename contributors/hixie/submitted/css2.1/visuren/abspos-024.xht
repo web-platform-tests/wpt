@@ -3,14 +3,20 @@
 <head>
   <title>Static position in rtl context</title>
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
+  <link rel="author" title="Elika J. Etemad" href="http://fantasai.inkedblade.net/contact"/>
   <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/box/absolute/022.html"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#abs-non-replaced-width"/>
   <style type="text/css">
-   p { position: absolute; font: 2em sans-serif; color: navy; }
+   body { position: relative; }
+   .test { position: absolute; background: green; color: green;
+           width: 4em; height: 1em; }
+   .control { border-right: 4em solid red; height: 1em; }
   </style>
  </head>
  <body>
-  <p dir="rtl"><bdo dir="ltr">This should be <em>right aligned</em>. ⇨</bdo></p>
+  <p>There should be a green box below on the right and no red.</p>
+  <p class="test" dir="rtl"></p>
+  <p class="control"></p>
  
 </body>
 </html>

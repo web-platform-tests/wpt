@@ -3,19 +3,22 @@
 <head>
   <title>left:auto for fixed-pos blocks inside abs-pos blocks</title>
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
+  <link rel="author" title="Elika J. Etemad" href="http://fantasai.inkedblade.net/contact"/>
   <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/box/absolute/021.html"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#abs-non-replaced-width"/>
   <style type="text/css">
    body { color: navy; }
-   div { position: absolute; left: 50%; }
-   .test { position: fixed; left: auto; background: green; color: white; }
+   .control { margin-left: 50%; border-top: 1em solid red; width: 1em; }
+   .container { position: absolute; left: 50%; }
+   .test { position: fixed; left: auto; width: 1em; height: 1em;
+           background: green; color: white; }
   </style>
  </head>
  <body>
-  <p>There should be a green block roughly centered below.</p>
-  <div>
-   <p class="test">This block should be green.</p>
+  <p>There should be a green square roughly centered below and no red.</p>
+  <div class="container">
+   <div class="test"> </div>
   </div>
- 
+  <div class="control"></div>
 </body>
 </html>

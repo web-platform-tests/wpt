@@ -3,17 +3,21 @@
 <head> 
   <title>Right alignment with position:right</title>
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
+  <link rel="author" title="Elika J. Etemad" href="http://fantasai.inkedblade.net/contact"/>
   <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/box/absolute/012.html"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#comp-abspos"/>
   <style type="text/css">
-   .control { TODO }
-   .test { position: absolute; right; 0; width; 10em; height: 1em; background: green; color: white; }
+   body { position: relative; }
+   .control { border-right: 10em solid red; height: 1em; }
+   .test { position: absolute; width: 10em; height: 1em;
+           right: 0; margin: auto;
+           background: green; color: white; }
   </style> 
  </head>
 <body>
   <p>There should be a green block on the right.</p>
-  <div class="control"></div>
   <div class="test"></div>
+  <div class="control"></div>
  
 </body>
 </html>

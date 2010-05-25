@@ -1,6 +1,9 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
   <title>CSS: unquoted 'font-family' syntax (tested with 'font')</title>
+  <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
+  <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/fonts/ahem/004.xml"/>
   <link rel="help" href="http://www.w3.org/TR/CSS2/fonts.html#font-family-prop" />
   <style type="text/css">
    /* valids */
@@ -12,19 +15,19 @@
    .d { font: 10px 32px, Ahem;  }
    .e { font: 10px -test, Ahem;  }
    /* invalids */
-   .f { font: 32px :-), Arial;  }
-   .g { font: 32px , Arial;  }
-   .h { font: 32px (), Arial;  }
-   .i { font: 32px {}, Arial;  }
-   .j { font: 32px [], Arial;  }
-   .k { font: 32px a(), Arial;  }
-   .l { font: 32px a{}, Arial;  }
-   .m { font: 32px a[], Arial;  }
+   .f { font: 32px :-), sans-serif;  }
+   .g { font: 32px , sans-serif;  }
+   .h { font: 32px (), sans-serif;  }
+   .i { font: 32px {}, sans-serif;  }
+   .j { font: 32px [], sans-serif;  }
+   .k { font: 32px a(), sans-serif;  }
+   .l { font: 32px a{}, sans-serif;  }
+   .m { font: 32px a[], sans-serif;  }
    .n { font: 32px; }
-   .o { font: 32px \"", Arial;  }
+   .o { font: 32px \"", sans-serif;  }
   </style>
   <style type="text/css">
-   .P { font: 32px \\", Arial;  }
+   .P { font: 32px \\", sans-serif;  }
   </style>
   <style type="text/css">
    /* environment */
@@ -32,7 +35,7 @@
    body { margin: 1em; position: relative; }
    .control { display: inline; font: 1em/1 Ahem, sans-serif; background: red; color: white; }
    .overlapper { position: absolute; left: 0; top: 1em; height: 160px; width: 60px; background: green; z-index: 1; -moz-opacity: 90%; }
-   .valid { font: 32px Arial; color: red; }
+   .valid { font: 32px sans-serif; color: red; }
    .invalid { font: 10px Ahem; color: red; }
   </style>
  </head>

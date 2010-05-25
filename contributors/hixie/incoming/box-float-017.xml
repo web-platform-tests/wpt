@@ -1,6 +1,9 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
   <title>CSS Floats: Auto Sizing (with border)</title>
+  <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
+  <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/box/float/017.xml"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#floats" />
   <style type="text/css">
    .control { display: inline; font: 1em/1 Ahem, sans-serif; background: red; color: white; }
@@ -11,8 +14,8 @@
  <body>
   <div class="control">Ahem_font_required_for_this_test.</div>
   <p>There should be a green block below this line.</p>
-  <test xmlns="http://www.w3.org/">
-   <float>XXXX</float>
-  </test>
+  <div class="test" xmlns="http://www.w3.org/">
+   <div class="float">XXXX</div>
+  </div>
  </body>
 </html>

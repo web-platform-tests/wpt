@@ -1,7 +1,10 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
   <title>Sanity test for PRE element font</title>
-    <style type="text/css">
+  <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
+  <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/model/ua.css/009.xml"/>
+  <style type="text/css">
    pre { margin: 0 2em; color: navy; }
    .test1 { font-family: monospace; }
    .test2 { font-size: 1em; }

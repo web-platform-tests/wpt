@@ -1,6 +1,9 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
   <title>CSS table model and generated content: Basics</title>
+  <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
+  <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/box/table/generated/content/001.xml"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/generate.html#content" />
   <style type="text/css">
    table { display: table; border-spacing: 0; background: red; color: green; }
@@ -13,19 +16,19 @@
  </head>
  <body>
   <p>There should be two times the word PASS below, and no red.</p>
-  <table xmlns="http://www.example.com/">
-    <row>
-     <cell>P</cell>
-     <cell>A</cell>
-     <cell>S</cell>
-     <cell>S</cell>
-    </row>
-    <row test="test">
-     <!--<cell>P</cell>-->
-     <cell>A</cell>
-     <cell>S</cell>
-     <!--<cell>S</cell>-->
-    </row>
-  </table>
+  <div class="table" xmlns="http://www.example.com/">
+    <div class="row">
+     <div class="cell">P</div>
+     <div class="cell">A</div>
+     <div class="cell">S</div>
+     <div class="cell">S</div>
+    </div>
+    <div class="row" test="test">
+     <!--<div class="cell">P</div>-->
+     <div class="cell">A</div>
+     <div class="cell">S</div>
+     <!--<div class="cell">S</div>-->
+    </div>
+  </div>
  </body>
 </html>

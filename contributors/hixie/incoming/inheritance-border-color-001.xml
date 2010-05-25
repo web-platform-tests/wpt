@@ -1,22 +1,25 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
   <title>CSS inheritance: border-color</title>
+  <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
+  <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/inheritance/border/color/001.xml"/>
   <link rel="help" href="http://www.w3.org/TR/CSS2/box.html#border-color-properties" />
   <style type="text/css">
-   test { display: block; color: green; border: none; }
-   test > inner { border-color: inherit; border-style: solid; color: red; }
-   test > inner > text { color: green; }
+   .test { display: block; color: green; border: none; }
+   .test > .inner { border-color: inherit; border-style: solid; color: red; }
+   .test > .inner > .text { color: green; }
   </style>
  </head>
  <body>
-  <test xmlns="http://www.example.org/">
-   <inner>
-    <text>
+  <div class="test">
+   <span class="inner">
+    <span class="text">
      This should have a green border, because the computed value of
      'border-color' set to its initial value is the computed value
      of 'color', which is then inherited as a color.
-    </text>
-   </inner>
-  </test>
+    </span>
+   </span>
+  </div>
  </body>
 </html>

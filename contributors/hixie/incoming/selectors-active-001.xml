@@ -1,8 +1,11 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
   <title>:active (basic test)</title>
   <link rel="help" href="http://www.w3.org/TR/CSS21/selector.html#dynamic-pseudo-classes" />
-  <style type="text/css">
+  <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
+  <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/selectors/active/001.xml"/>
+<style type="text/css">
    .test { color: blue; }
    :active { color: yellow; border: red solid thick; background: red; }
    button, input[type=button], input[type=checkbox], input[type=radio] { color: blue; background: silver; border: silver outset thick; }

@@ -1,17 +1,20 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
   <title>CSS Parsing: Negative Font-Size</title>
+  <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
+  <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/parsing/002.xml"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/syndata.html#length-units" />
   <style type="text/css">
-   test { font-size: 20px; font-size: -10px; display: block; width: 100px; height: 40px; background: red; }
-   test > em { width: 5em; height: 1em; background: green; display: block; }
-   test > px { width: 100px; height: 20px; background: green; display: block; }
+   div { font-size: 20px; font-size: -10px; display: block; width: 100px; height: 40px; background: red; }
+   div > .em { width: 5em; height: 1em; background: green; display: block; }
+   div > .px { width: 100px; height: 20px; background: green; display: block; }
   </style>
  </head>
  <body>
-  <test xmlns="http://www.example.org/">
-   <em/>
-   <px/>
+  <div>
+   <span class="em"/>
+   <span class="px"/>
   </test>
  </body>
 </html>

@@ -1,28 +1,31 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
   <title>CSS: sanity tests for relative keyword values of font-size</title>
+  <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
+  <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/fonts/size/002.xml"/>
   <link rel="help" href="http://www.w3.org/TR/CSS2/fonts.html#font-size-props" />
   <style type="text/css">
 
-    tests *|* { line-height: 0; border: none; margin: 0; padding: 0; display: block; }
-    tests { margin: 20em 2em 0 2em; display: block; }
-    text { display: inline; white-space: pre; }
+    .tests * { line-height: 0; border: none; margin: 0; padding: 0; display: block; }
+    .tests { margin: 20em 2em 0 2em; display: block; }
+    .text { display: inline; white-space: pre; }
 
-    big { font-size: 20em; }
-    xxlarge { font-size: xx-large; }
-    smaller { font-size: smaller; }
+    .big { font-size: 20em; }
+    .xxlarge { font-size: xx-large; }
+    .smaller { font-size: smaller; }
 
-    xxlarge > text { background: red; font-weight: bold; }
-    smaller > text { background: white; }
-    p { color: green; }
+    .xxlarge > .text { background: red; font-weight: bold; }
+    .smaller > .text { background: white; }
+    .p { color: green; }
 
   </style>
  </head>
  <body class="test">
   <p>This test has passed if you see no red on this page.</p>
-  <tests xmlns="http://www.example.org/">
-    <xxlarge><text>        </text></xxlarge>
-    <big><smaller><text>        </text></smaller></big>
-  </tests>
+  <div class="tests">
+    <div class="xxlarge"><div class="text">        </div></div>
+    <div class="big"><div class="smaller"><div class="text">        </div></div></div>
+  </div>
  </body>
 </html>

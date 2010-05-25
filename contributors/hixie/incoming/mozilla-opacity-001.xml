@@ -1,7 +1,10 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
   <title>CSS: -moz-opacity with PNG backgrounds</title>
-    <style type="text/css">
+  <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
+  <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/mozilla/opacity/001.xml"/>
+  <style type="text/css">
    .left {
      background: url(mozilla-opacity-black-0.0-0.5-h.png) center center no-repeat;
      -moz-opacity: 0.50; z-index: 1;

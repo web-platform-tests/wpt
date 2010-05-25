@@ -1,27 +1,32 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
   <title>CSS: Blocks Within Inlines (reduced testcase)</title>
+  <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
+  <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/box/ib/001/simple/1.xml"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#display-prop" />
   <style type="text/css">
-   inline { display: inline; }
-   block { display: block; }
+   span { display: inline; }
+   .block { display: block; }
   </style>
  </head>
  <body>
   <p>There should be three paragraphs below this one. Resize your
   window to make sure it works at all window widths.</p>
-  <inline xmlns="http://www.example.org/">
+  <p>
+  <span>
    aaaaaaa aaaaaaa aaaaaaa aaaaaaa aaaaaaa aaaaaaa aaaaaaa aaaaaaa
    aaaaaaa aaaaaaa aaaaaaa aaaaaaa aaaaaaa aaaaaaa aaaaaaa aaaaaaa
-   <block>
+   <span class="block">
     bbbbbbb bbbbbbb bbbbbbb bbbbbbb bbbbbbb bbbbbbb bbbbbbb bbbbbbb
     bbbbbbb bbbbbbb bbbbbbb bbbbbbb bbbbbbb bbbbbbb bbbbbbb bbbbbbb
     bbbbbbb bbbbbbb bbbbbbb bbbbbbb bbbbbbb bbbbbbb bbbbbbb bbbbbbb
     bbbbbbb bbbbbbb bbbbbbb bbbbbbb bbbbbbb bbbbbbb bbbbbbb bbbbbbb
     bbbbbbb bbbbbbb bbbbbbb bbbbbbb bbbbbbb bbbbbbb bbbbbbb bbbbbbb
-   </block>
+   </span>
    aaaaaaa aaaaaaa aaaaaaa aaaaaaa aaaaaaa aaaaaaa aaaaaaa aaaaaaa
    aaaaaaa aaaaaaa aaaaaaa aaaaaaa aaaaaaa aaaaaaa aaaaaaa aaaaaaa
-  </inline>
+  </span>
+  </p>
  </body>
 </html>

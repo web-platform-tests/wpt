@@ -1,14 +1,17 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
   <title>CSS Parsing: Negative Border Widths</title>
+  <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
+  <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/parsing/004.xml"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/syndata.html#length-units" />
   <style type="text/css">
-   test { border-color: green; border-width: 8px; border-style: solid; border: red solid -1px; display: block; }
+   .test { border-color: green; border-width: 8px; border-style: solid; border: red solid -1px; display: block; }
   </style>
  </head>
  <body>
-  <test xmlns="http://www.example.org/">
+  <div class="test">
     This should have a green border, because negative border is a parser error.
-  </test>
+  </div>
  </body>
 </html>

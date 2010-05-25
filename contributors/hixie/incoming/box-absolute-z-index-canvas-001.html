@@ -3,31 +3,29 @@
  <head>
   <title>CSS: z-index and the canvas and background propagation</title>
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
+  <link rel="author" title="Elika J. Etemad" href="http://fantasai.inkedblade.net/contact"/>
   <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/box/absolute/z-index/canvas/001.html"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#z-index" />
   <style type="text/css">
-   * { background: transparent; margin: 2em; }
-   html { background: transparent; height: 10em; width: 10em; border: solid; color: blue }
-   body { background: navy; height: 5em; width: 5em; border: solid; color: yellow; }
-   div { background: purple; height: 10em; width: 20em; border: solid; color: fuchsia; 
-             position: absolute; z-index: -1; }
+   * { background: transparent; margin: 0; }
+   html { margin: 5em auto;
+          height: 35px; width: 35px;
+          border: solid 10px green;
+          background: transparent url(support/swatch-red.png) no-repeat center; }
+   body { background: transparent; height: 15px; width: 15px;
+          border: 10px solid green; }
+   div { background: green; height: 15px; width: 15px; border: solid 19px red;
+         position: absolute; margin-top: -19px; margin-left: -19px; z-index: -1; }
+   p { position: absolute; top: 0; left: 0; margin: 1em; }
   </style>
  </head>
  <body>
+   <p>There should be a completely-filled green square and no red.</p>
   <!--
 
-   The canvas should be navy.
-
-   The <html> should be a navy square box (side 10em) with a blue
-   border.
-
-   The <body> should be a transparent square box (side 5em) with a
-   yellow border.
-
-   The <div> should be a purple square box (side 10em) with a fuchsia
-   border, and should be under the <html> box but above the canvas.
+   The <div> should be under the <html> box but above the canvas.
 
    !-->
-  <div>THIS TEST IS INCOMPLETE</div>
+  <div></div>
  </body>
 </html>

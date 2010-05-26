@@ -1,11 +1,13 @@
 #!/usr/bin/perl
 # Print all files by filename and highlight duplicates
-# Prints HTML unless '-dump' is sent as an argument on the command line,
-# in which case it prints a tab-separated database
+# Prints in format specified as an argument on the command line:
+#   '-txt'  -> tab-separated database
+#   '-pre'  -> linkified tab-separated database using HTML and <pre>
+#   '-html' -> HTML with tables
 
 use Template;
 
-$top = $ARGV[-1] || 'source';
+$top = $ARGV[-1] || '.';
 
 @files = `find $top -type f ! -ipath '*svn*' ! -ipath '*build-test*' ! -ipath '*selectors3*'`;
 foreach (@files) {
@@ -13,7 +15,6 @@ foreach (@files) {
   m!^(?:\./)?((?:[^/]+/)*)([^/]+?)(\.[a-z]+)?$!;
   next if (m!/support/!);
   next if (m!\.css$!);
-  next if (m!hixie!); # temporary
   next if (m!boland!);
   unless (exists $pairs{$2}) {
     $pairs{$2} = ["$1$2$3"];
@@ -25,15 +26,28 @@ foreach (@files) {
 
 my $tt = Template->new({ INCLUDE_PATH => $libroot . '/templates' }) || die $tt->error(), "\n";
 
-if ($ARGV[0] eq '-dump') {
-  $tmpl = <<'EOM'
+# default template
+$tmpl = <<'EOM'
 [%- FOREACH name = pairs.keys.sort %]
 [%- FOREACH path = pairs.$name %]
 [% name %]	[% path %]
 [%- END %][% END %]
 EOM
+# linkified version
+if ($ARGV[0] eq '-pre') {
+  $tmpl = <<'EOM'
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<title>CSS Tests by Filename</title>
+<pre> <!-- tables are too slow -->
+[%- FOREACH name = pairs.keys.sort %]
+[%- FOREACH path = pairs.$name %]
+[% name %]	<a href="[% path %]">[% path %]</a>
+[%- END %][% END %]
+</pre>
+EOM
 }
-else {
+# tables version
+elsif ($ARGV[0] eq '-html') {
   $tmpl = <<'EOM'
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
 <html>
@@ -52,7 +66,7 @@ else {
     <tr><th>Filename <th>Path</tr>
   </thead>
 [%- FOREACH pair = pairs.pairs %]
-  <tbody[% ' class="dup"' IF pair.value.size > 1 %]>
+  <tbody>
   [%- first = 1 %]
   [%- FOREACH path = pair.value %]
     <tr[%' class="support"' IF path.match('support') %]>

@@ -1,0 +1,22 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+ <head>
+  <title>vertical-align: top on :first-line</title>
+  <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
+  <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/box/block/first-line/013.html"/>
+  <link rel="help" href="http://www.w3.org/TR/CSS21/selector.html#first-line-pseudo" />
+  <style type="text/css">
+  .ahem { display: inline; font: 1em/1 Ahem, sans-serif; background: red; color: white; }
+  p { margin: 0.2em; }
+  .control, .test { font: 4em/1 Ahem; color: green; }
+  .first-line, .test:first-line { background: red; vertical-align: top; }
+  .inner { font-size: 1.25em; vertical-align: bottom; }
+  </style>
+ </head>
+ <body>
+  <div class="ahem">Ahem_font_required_for_this_test.</div>
+  <p>There should be two unbroken lines of green below.</p>
+  <p class="control"><span class="first-line">X<span class="inner">&Eacute;</span>X</p>
+  <p class="test">X<span class="inner">&Eacute;</span>X</p>
+ </body>
+</html>

@@ -1,0 +1,37 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>Percentage Padding in Shrink Wrap Blocks</title>
+  <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
+  <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/box/block/014.html"/>
+  <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#the-width-property"/>
+  <style type="text/css">
+   body, html { margin: 0 0 0 1em; padding: 0; }
+   p { margin: 1em 0; height: 2em; }
+   table, .float, .abspos, .fixpos { border: 0.25em solid; background: red; }
+   table, td { padding: 0; border-spacing: 0; }
+   .float { float: left; }
+   .fixpos { position: fixed; left: 7.5em; top: 4em; }
+   .abspos { position: absolute; left: 7.5em; top: 9.5em; }
+   .test { padding: 20%; }
+   .test div { width: 5em; height: 5em; background: green; }
+  </style>
+ </head>
+ <body>
+  <p>There should be four green squares below making a green square pattern.</p>
+  <table><tbody><tr><td>
+   <div class="test"><div></div></div>
+  </td></tr></tbody></table>
+  <div class="float">
+   <div class="test"><div></div></div>
+  </div>
+  <div class="fixpos">
+   <div class="test"><div></div></div>
+  </div>
+  <div class="abspos">
+   <div class="test"><div></div></div>
+  </div>
+ 
+
+</body>
+</html>

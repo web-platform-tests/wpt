@@ -5,4 +5,4 @@ perl -pi -e "s#^$1/?((?:[^/]+/)*)([^/]+?)(\.[a-z]+)?\$#\$2\t\$1\$2\$3#" $2.txt
 sort $2.txt -o $2.txt
 echo '<!DOCTYPE html><html><title>CSS Tests by Filename</title><pre>' > $2.html
 perl -pe 's#\t(.+)$#\t<a href="$1">$1</a>#' < $2.txt >> $2.html
-echo '</pre>' >> $2
+echo '</pre>' >> $2.html

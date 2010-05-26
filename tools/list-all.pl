@@ -33,6 +33,7 @@ $tmpl = <<'EOM'
 [% name %]	[% path %]
 [%- END %][% END %]
 EOM
+;
 # linkified version
 if ($ARGV[0] eq '-pre') {
   $tmpl = <<'EOM'

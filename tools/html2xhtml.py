@@ -36,6 +36,12 @@ o = re.sub('<html( [^>]+)?>',
            lambda m : '<html' + firstMatch(m) + ' xmlns="http://www.w3.org/1999/xhtml">',
            o);
 
+# Fix weird reordering
+
+o = re.sub('<link href="(.*?)" (.*?) ?/>',
+           lambda m : '<link ' + m.group(2) + ' href="' + m.group(1) + '"/>',
+           o);
+
 # Indentation
 
 o = re.sub('<!DOCTYPE ([^>]+)><html',

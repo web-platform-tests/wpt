@@ -1,0 +1,47 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>Margin Collapsing: in flow (used border)</title>
+  <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
+  <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/box/block/margin-collapse/008.html"/>
+  <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#collapsing-margins"/>
+  <style type="text/css">
+   table { border-spacing: 0; font-size: 50px; border: solid; background: red; }
+   td { padding: 0; }
+   .test, .control { background: orange; }
+
+   /* test */
+   .test .a { background: lime; margin: 0 0 1em 0; }
+   .test .c { background: red; margin: 1em 0 1em 0; border-top: red solid 0.4px; } /* computed: 0.4px; actual: 0px; */
+   .test .b { background: yellow; margin: 1em 0 0 0; }
+
+   /* control */
+   .control .a { margin: 0 0 2em; background: lime; }
+   .control .b { margin: 2em 0 0; background: yellow; }
+  </style>
+ </head>
+ <body>
+  <p>The pattern below should be a stack of horizontal bars with no red.</p>
+  <table>
+   <tr>
+    <td>
+     <div class="test">
+      <div class="a">A</div>
+      <div class="c"></div>
+      <div class="b">B</div>
+     </div>
+    </td>
+    <td>
+     <div class="control">
+      <div class="a">A</div>
+      <div class="b">B</div>
+     </div>
+    </td>
+   </tr>
+  </table>
+  <p>This tests that emptiness is based on the computed values of content/padding/border.</p>
+  <p>This test is meaningless if you don't pass <a href="margin-collapse-106">test 006</a>.</p>
+ 
+
+</body>
+</html>

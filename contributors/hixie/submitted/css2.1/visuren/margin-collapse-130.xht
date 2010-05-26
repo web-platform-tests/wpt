@@ -1,0 +1,25 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>Margin Collapsing: basic overflow test</title>
+  <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
+  <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/box/block/margin-collapse/030.html"/>
+  <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#collapsing-margins"/>
+  <style type="text/css">
+   .ahem { display: inline; font: 1em/1 Ahem, sans-serif; background: red; color: white; }
+   .test { border: solid; background: red; width: 5em; font: 1em/1em Ahem; }
+   .test .a { height: 0; margin: 0 0 1em 0; background: red; color: lime; }
+   .test .b { height: 1em; margin: 1em 0 0 0; background: lime; }
+  </style>
+ </head>
+ <body>
+  <div class="ahem">Ahem_font_required_for_this_test.</div>
+  <p>There should be no red below.</p>
+  <div class="test">
+   <p class="a">XXXXX</p>
+   <p class="b"></p>
+  </div>
+ 
+
+</body>
+</html>

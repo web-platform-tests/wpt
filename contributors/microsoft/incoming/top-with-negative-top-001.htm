@@ -1,0 +1,42 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD//XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>CSS Test: Vertical centering with negative and positive top positioning</title>
+        <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#positioning-scheme"/>
+        <meta name="flags" content="" />
+        <meta name="assert" content="Equal 50% positive and negative positioning can vertically center objects."/>
+        <style type="text/css">
+            div, p
+            {
+                margin: 0;
+            }
+            .outer
+            {
+                background: blue;
+                width: 200px;
+                height: 300px;
+            }
+            .inner
+            {
+                background: red;
+                position: relative;
+                top: 50%
+            }
+            .inner p
+            {
+                background: orange;
+                position: relative;
+                top: -50%;
+            }
+        </style>
+    </head>
+    <body>
+        <p>Rest passes if the orange bar is vertically centered within the blue box and there is no red visible on the page.</p>
+        <div class="outer">
+            <div class="inner">
+                <p>This is some text</p>
+            </div>
+        </div>
+    </body>
+</html>

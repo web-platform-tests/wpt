@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>CSS Test: text-transform - Cyrillic, uppercase</title>
+<link rel='author' title='Richard Ishida' href='http://rishida.net' />
+<link rel='reviewer' title='Elika J. Etemad' href='http://fantasai.inkedblade.net/contact' />
+<link rel='help' href='http://www.w3.org/TR/CSS21/text.html#caps-prop' />
+<link rel='alternate' href='http://www.w3.org/International/tests/tests-html-css/tests-text-transform/generate?test=11' />
+<meta name='flags' content='' />
+<meta name="assert" content="The UA will uppercase Unicode Cyrillic when text-transform is set to uppercase." />
+<style type='text/css'>
+.test { text-transform: uppercase; }
+
+/* the CSS below is not part of the test */
+.test { font-size: 130%; line-height: 2.5em; }
+.test span { margin-right: 1em; white-space: nowrap; }</style>
+<script type='text/javascript'>
+//<![CDATA[
+function setFontFamily () {var fontName = document.getElementById( 'fontName' ).value;	var divs = document.getElementsByTagName('div');	var i = 0; var div;	while (i < divs.length) {	 	div = divs.item(i);		if (div.className == 'test') { 			div.style.fontFamily = fontName; 			}		i++;		}	}
+//]]>
+</script>
+</head>
+<body>
+<p class="instructions">Test passes if the right-hand character in each pair matches the left-hand one.</p>
+
+
+<div class="test"><span>А а</span> <span>Б б</span> <span>В в</span> <span>Г г</span> <span>Д д</span> <span>Е е</span> <span>Ж ж</span> <span>З з</span> <span>И и</span> <span>Й й</span> <span>К к</span> <span>Л л</span> <span>М м</span> <span>Н н</span> <span>О о</span> <span>П п</span> <span>Р р</span> <span>С с</span> <span>Т т</span> <span>У у</span> <span>Ф ф</span> <span>Х х</span> <span>Ц ц</span> <span>Ч ч</span> <span>Ш ш</span> <span>Щ щ</span> <span>Ъ ъ</span> <span>Ы ы</span> <span>Ь ь</span> <span>Э э</span> <span>Ю ю</span> <span>Я я</span> <span>Ѐ ѐ</span> <span>Ё ё</span> <span>Ђ ђ</span> <span>Ѓ ѓ</span> <span>Є є</span> <span>Ѕ ѕ</span> <span>І і</span> <span>Ї ї</span> <span>Ј ј</span> <span>Љ љ</span> <span>Њ њ</span> <span>Ћ ћ</span> <span>Ќ ќ</span> <span>Ѝ ѝ</span> <span>Ў ў</span> <span>Џ џ</span> <span>Ѡ ѡ</span> <span>Ѣ ѣ</span> <span>Ѥ ѥ</span> <span>Ѧ ѧ</span> <span>Ѩ ѩ</span> <span>Ѫ ѫ</span> <span>Ѭ ѭ</span> <span>Ѯ ѯ</span> <span>Ѱ ѱ</span> <span>Ѳ ѳ</span> <span>Ѵ ѵ</span> <span>Ѷ ѷ</span> <span>Ѹ ѹ</span> <span>Ѻ ѻ</span> <span>Ѽ ѽ</span> <span>Ѿ ѿ</span> <span>Ҁ ҁ</span> <span>Ҋ ҋ</span> <span>Ҍ ҍ</span> <span>Ҏ ҏ</span> <span>Ґ ґ</span> <span>Ғ ғ</span> <span>Ҕ ҕ</span> <span>Җ җ</span> <span>Ҙ ҙ</span> <span>Қ қ</span> <span>Ҝ ҝ</span> <span>Ҟ ҟ</span> <span>Ҡ ҡ</span> <span>Ң ң</span> <span>Ҥ ҥ</span> <span>Ҧ ҧ</span> <span>Ҩ ҩ</span> <span>Ҫ ҫ</span> <span>Ҭ ҭ</span> <span>Ү ү</span> <span>Ұ ұ</span> <span>Ҳ ҳ</span> <span>Ҵ ҵ</span> <span>Ҷ ҷ</span> <span>Ҹ ҹ</span> <span>Һ һ</span> <span>Ҽ ҽ</span> <span>Ҿ ҿ</span> <span>Ӂ ӂ</span> <span>Ӄ ӄ</span> <span>Ӆ ӆ</span> <span>Ӈ ӈ</span> <span>Ӊ ӊ</span> <span>Ӌ ӌ</span> <span>Ӎ ӎ</span> <span>Ӑ ӑ</span> <span>Ӓ ӓ</span> <span>Ӕ ӕ</span> <span>Ӗ ӗ</span> <span>Ә ә</span> <span>Ӛ ӛ</span> <span>Ӝ ӝ</span> <span>Ӟ ӟ</span> <span>Ӡ ӡ</span> <span>Ӣ ӣ</span> <span>Ӥ ӥ</span> <span>Ӧ ӧ</span> <span>Ө ө</span> <span>Ӫ ӫ</span> <span>Ӭ ӭ</span> <span>Ӯ ӯ</span> <span>Ӱ ӱ</span> <span>Ӳ ӳ</span> <span>Ӵ ӵ</span> <span>Ӹ ӹ</span> <span>Ԁ ԁ</span> <span>Ԃ ԃ</span> <span>Ԅ ԅ</span> <span>Ԇ ԇ</span> <span>Ԉ ԉ</span> <span>Ԋ ԋ</span> <span>Ԍ ԍ</span> <span>Ԏ ԏ</span></div>
+
+
+<p id='fontChange' style='display: none;' class='notes'>If you are unable to see font glyphs for certain characters using the browsers default font you can apply a specific font by typing its name in the following box: <input class='css' name='fontName' id='fontName' value='' type='text' /> <button class='notes' type='button' onclick='setFontFamily()'>Apply</button></p><script type='text/javascript'>if (document.getElementById) {document.getElementById('fontChange').style.display = 'block'}</script></body>
+</html>

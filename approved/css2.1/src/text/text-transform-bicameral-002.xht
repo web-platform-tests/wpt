@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>CSS Test: text-transform - Latin1 lowercase</title>
+<link rel='author' title='Richard Ishida' href='http://rishida.net' />
+<link rel='reviewer' title='Elika J. Etemad' href='http://fantasai.inkedblade.net/contact' />
+<link rel='help' href='http://www.w3.org/TR/CSS21/text.html#caps-prop' />
+<link rel='alternate' href='http://www.w3.org/International/tests/tests-html-css/tests-text-transform/generate?test=2' />
+<meta name='flags' content='' />
+<meta name="assert" content="The UA will lowercase all letters in the Latin 1 set when text-transform is set to lowercase." />
+<style type='text/css'>
+.test { text-transform: lowercase; }
+
+/* the CSS below is not part of the test */
+.test { font-size: 130%; line-height: 2.5em; }
+.test span { margin-right: 1em; white-space: nowrap; }</style>
+<script type='text/javascript'>
+//<![CDATA[
+function setFontFamily () {var fontName = document.getElementById( 'fontName' ).value;	var divs = document.getElementsByTagName('div');	var i = 0; var div;	while (i < divs.length) {	 	div = divs.item(i);		if (div.className == 'test') { 			div.style.fontFamily = fontName; 			}		i++;		}	}
+//]]>
+</script>
+</head>
+<body>
+<p class="instructions">Test passes if the left-hand character in each pair matches the right-hand one.</p>
+
+
+<div class="test"><span>A a</span> <span>B b</span> <span>C c</span> <span>D d</span> <span>E e</span> <span>F f</span> <span>G g</span> <span>H h</span> <span>I i</span> <span>J j</span> <span>K k</span> <span>L l</span> <span>M m</span> <span>N n</span> <span>O o</span> <span>P p</span> <span>Q q</span> <span>R r</span> <span>S s</span> <span>T t</span> <span>U u</span> <span>V v</span> <span>W w</span> <span>X x</span> <span>Y y</span> <span>Z z</span> <span>À à</span> <span>Á á</span> <span>Â â</span> <span>Ã ã</span> <span>Ä ä</span> <span>Å å</span> <span>Æ æ</span> <span>Ç ç</span> <span>È è</span> <span>É é</span> <span>Ê ê</span> <span>Ë ë</span> <span>Ì ì</span> <span>Í í</span> <span>Î î</span> <span>Ï ï</span> <span>Ð ð</span> <span>Ñ ñ</span> <span>Ò ò</span> <span>Ó ó</span> <span>Ô ô</span> <span>Õ õ</span> <span>Ö ö</span> <span>Ø ø</span> <span>Ù ù</span> <span>Ú ú</span> <span>Û û</span> <span>Ü ü</span> <span>Ý ý</span> <span>Þ þ</span> <span>Ÿ ÿ</span></div>
+
+
+<!--p class="notes">Notes: <br />The <a href='http://www.w3.org/TR/REC-CSS2/text.html#propdef-text-transform'>CSS2 specification</a> only requires that text-transform work for 'the Latin1 repertoire'. It is not clear what characters the term 'Latin1' covers. This test assumes that it means the Basic Latin and Latin-1 Supplement blocks of the Unicode Standard (equivalent to ISO-8859-1). There is one character in this set, ÿ, that only occurs in the lower-case form.</p-->
+<p id='fontChange' style='display: none;' class='notes'>If you are unable to see font glyphs for certain characters using the browsers default font you can apply a specific font by typing its name in the following box: <input class='css' name='fontName' id='fontName' value='' type='text' /> <button class='notes' type='button' onclick='setFontFamily()'>Apply</button></p><script type='text/javascript'>if (document.getElementById) {document.getElementById('fontChange').style.display = 'block'}</script></body>
+</html>

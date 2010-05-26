@@ -67,8 +67,9 @@ push @dirs, 'contributors/jameshopkins/submitted/css2.1/*';
 
 push @dirs, 'contributors/microsoft/submitted'; # grab support files
 push @dirs, 'contributors/microsoft/submitted/Chapter*';
-#print `perl -pi -e 's#\.\./support/#support/#g' contributors/microsoft/submitted/Chapter*/*.xht contributors/microsoft/submitted/support/*.css`;
+print `perl -pi -e 's#\.\./support/#support/#g' contributors/microsoft/submitted/Chapter*/*.xht contributors/microsoft/submitted/support/*.css`;
 
 $dirlist = join ' ', @dirs;
 print `python tools/build-css21.py $dirlist`;
-#find -type f | xargs chmod 644
+print `chmod 644 *.*`;
+print `perl -pi -e 's#support/#\.\./support/#g' contributors/microsoft/submitted/Chapter*/*.xht contributors/microsoft/submitted/support/*.css`;

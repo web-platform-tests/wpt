@@ -1,0 +1,74 @@
+<!DOCTYPE HTML>
+<head>
+<title>HTMLVideoElement</title>
+<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+<link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+<link rel="help" href="http://dev.w3.org/html5/spec/video.html#video" />
+</head>
+
+<script>
+
+//
+// Just appends a .xyz so that the UA
+// gets a video stream that is supported
+//
+function getVideoExtension(videoName)
+{
+    var extension = '.mp4';
+
+    if ( navigator.userAgent.match(/Gecko/i)  != null ||
+         navigator.userAgent.match(/Chrome/i) != null ||
+         navigator.userAgent.match(/Opera/i)  != null )
+    {
+        extension = '.ogv';
+    }
+
+    return videoName + extension;
+
+}
+</script>
+<body>
+<pre>
+HTMLVideoElement Test For The Global'src' attribute
+</pre>
+<table id='testtable' border='1'>
+<tr>
+ <td>Test Result</td>
+ <td>Test Assertion</td>
+</tr>
+<tr>
+ <td id='test_0_result'>Manual</td>
+ <td id='test_0_assertion'>Test passes if a video loads but is not playing with video controls showing.</td>
+</tr>
+</table>
+<pre>
+
+http://dev.w3.org/html5/spec/video.html#video
+
+Content attributes:
+    Global attributes
+    src
+    poster
+    preload
+    autoplay
+    loop
+    controls
+    width
+    height
+DOM interface:
+    interface HTMLVideoElement : HTMLMediaElement {
+               attribute DOMString width;
+               attribute DOMString height;
+      readonly attribute unsigned long videoWidth;
+      readonly attribute unsigned long videoHeight;
+               attribute DOMString poster;
+    };
+</pre>
+<script>
+document.write("<video src='"+ getVideoExtension('movie_300') + "' controls='controls'>");
+</script>
+If you see this then you do not implement the HTMLVideoElement
+</video>
+
+</body>
+</html>

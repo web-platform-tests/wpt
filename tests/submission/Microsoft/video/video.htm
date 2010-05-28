@@ -5,39 +5,20 @@
 <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
 <link rel="help" href="http://dev.w3.org/html5/spec/video.html#video" />
 </head>
-<script>
-//
-// Just appends a .xyz so that the UA
-// gets a video stream that is supported
-//
-function getVideoExtension(videoName)
-{
-    var extension = '.mp4';
-
-    if ( navigator.userAgent.match(/Gecko/i)  != null ||
-         navigator.userAgent.match(/Chrome/i) != null ||
-         navigator.userAgent.match(/Opera/i)  != null )
-    {
-        extension = '.ogv';
-    }
-
-    return videoName + extension;
-
-}
-</script>
+<script src="../common/video.js" type="text/javascript" />
 <body>
 <pre>
-HTMLVideoElement Test For The Global'src' attribute
+HTMLVideoElement Test For The Global'src' Attribute
 </pre>
 <table id='testtable' border='1'>
-<tr>
- <td>Test Result</td>
- <td>Test Assertion</td>
-</tr>
-<tr>
- <td id='test_0_result'>Manual</td>
- <td id='test_0_assertion'>Test passes if a video loads but is not playing with video controls showing.</td>
-</tr>
+ <tr>
+  <td>Test Result</td>
+  <td>Test Assertion</td>
+ </tr>
+ <tr>
+  <td id='test_0_result'>Manual Verification</td>
+  <td id='test_0_assertion'>Test passes if a video loads but is not playing, since the default state is paused.</td>
+ </tr>
 </table>
 <pre>
 
@@ -63,10 +44,9 @@ DOM interface:
     };
 </pre>
 <script>
-document.write("<video src='"+ getVideoExtension('http://media.w3.org/2010/05/video/movie_300') + "' controls='controls'>");
+document.write("<video src='"+ getVideoExtension('http://media.w3.org/2010/05/video/movie_300') + " />");
 </script>
 If you see this then you do not implement the HTMLVideoElement
 </video>
-
 </body>
 </html>

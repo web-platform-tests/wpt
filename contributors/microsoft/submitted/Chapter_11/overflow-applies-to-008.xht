@@ -6,14 +6,19 @@
         <link rel="help" href="http://www.w3.org/TR/CSS21/visufx.html#propdef-overflow" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/visufx.html#overflow" />
         <meta name="flags" content="ahem" />
-        <meta name="assert" content="The 'overflow' property applies to elements with 'display' set to 'inline'." />
+        <meta name="assert" content="The 'overflow' property does not apply to elements with 'display' set to 'inline'." />
         <style type="text/css">
-            div
+            #parent
             {
                 border: 5px solid blue;
-                display: inline;
                 font: 20px/1em ahem;
+                width: 5em;
+            }
+            div div
+            {
+                display: inline;
                 overflow: hidden;
+                white-space: nowrap;
             }
             #span2
             {
@@ -23,6 +28,8 @@
     </head>
     <body>
         <p>Test passes if there is a green box below.</p>
-        <div><span>XXXXX</span><span id="span2">XXXXX</span></div>
+        <div id="parent">
+            <div><span>XXXXX</span><span id="span2">XXXXX</span></div>
+        </div>
     </body>
 </html>

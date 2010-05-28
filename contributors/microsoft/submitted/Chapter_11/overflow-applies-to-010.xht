@@ -8,6 +8,10 @@
         <meta name="flags" content="ahem" />
         <meta name="assert" content="The 'overflow' property applies to elements with 'display' set to 'list-item'." />
         <style type="text/css">
+            body
+            {
+                margin-left: 50px;
+            }
             div
             {
                 border: 5px solid blue;
@@ -24,7 +28,7 @@
         </style>
     </head>
     <body>
-        <p>Test passes if there is no red visible on the page.</p>
+        <p>Test passes if there is a list marker to the left of the blue box and there is no red visible on the page.</p>
         <div><span>XXXXX</span><span id="span2">XXXXX</span></div>
     </body>
 </html>

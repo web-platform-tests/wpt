@@ -6,7 +6,7 @@
         <link rel="help" href="http://www.w3.org/TR/CSS21/visufx.html#propdef-overflow" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/visufx.html#overflow" />
         <meta name="flags" content="ahem" />
-        <meta name="assert" content="The 'overflow' property applies to elements with 'display' set to 'table-caption'." />
+        <meta name="assert" content="The 'overflow' property does not apply to elements with 'display' set to 'table-caption'." />
         <style type="text/css">
             #test
             {
@@ -32,12 +32,12 @@
             }
             #span2
             {
-                color: red;
+                color: green;
             }
         </style>
     </head>
     <body>
-        <p>Test passes if there is no red visible on the page.</p>
+        <p>Test passes if there is a green box below.</p>
         <div id="table">
             <div id="test"><span>XXXXX</span><span id="span2">XXXXX</span></div>
             <div id="row">

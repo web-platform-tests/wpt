@@ -1,0 +1,65 @@
+[%# variables in this template
+  isXML       [bool]
+  extmap      [ExtensionMap object]
+  suitetitle  [string]
+  specroot    [URI of spec]
+  formatdir   [string]
+  chaptitle   [string]
+  chapdir     [string]
+  testcount   [number]
+  sections    [list of struct]
+    .id          [string - section number or id]
+    .uri         [URI of section]
+    .tests       [list of struct]
+       .asserts    [list of strings]
+       .flags      [list of token strings]
+       .links      [list of uri strings]
+       .name       [string]
+%]
+[% PROCESS suitedata.tmpl %]
+[% IF isXML %]
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+[% formatMismatchFlag = 'HTMLonly' %]
+[% ELSE %]
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+[% formatMismatchFlag = 'nonHTML' %]
+[% END %]
+ <head>
+  <title>[% suitetitle %] Reftest Index</title>
+  <style type="text/css">
+    @import "http://www.w3.org/StyleSheets/TR/base.css";
+    @import "[% IF formatdir %]../[% END %]indices.css";
+  </style>
+ </head>
+
+ <body>
+
+  <h1>[% suitetitle %] Reftest Index</h1>
+  <table width="100%">
+    <col id="test-column">[% IF isXML %]</col>[% END %]
+    <col id="ref-column">[% IF isXML %]</col>[% END %]
+    <col id="flags-column">[% IF isXML %]</col>[% END %]
+    <thead>
+      <tr>
+        <th>Test</th>
+        <th>Reference</th>
+        <th>Flags</th>
+      </tr>
+    </thead>
+    <tbody>
+  [% FOR entry IN tests.sort('name') %]
+    [% IF entry.reference and not entry.flags.contains(formatMismatchFlag) %]
+      <tr id="[% entry.name %]" class="[% entry.flags.join(' ') %]">
+        <td><a href="[% extmap.translate(entry.file) %]">[% entry.name%]</a></td>
+        <td><a href="[% extmap.translate(entry.reference) %]">Reference</a></td>
+        <td>[% FOREACH flag IN entry.flags %][% IF flag != 'nonHTML' and flag != 'HTMLonly' %]<abbr class="[% flag %]" title="[% flagInfo.$flag.title %]">[% flagInfo.$flag.abbr %]</abbr>[% END %][% END %]</td>
+      </tr>
+    [% END %]
+  [% END %]
+    </tbody>
+  </table>
+
+ </body>
+</html>

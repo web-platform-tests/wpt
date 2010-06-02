@@ -368,6 +368,7 @@ class XHTMLSource(FileSource):
     o = html5lib.serializer.serialize(self.tree, tree='lxml',
                                       format='html',
                                       emit_doctype='html',
+                                      lang_attr='html',
                                       resolve_entities=False,
                                       omit_optional_tags=False,
                                       minimize_boolean_attributes=True,

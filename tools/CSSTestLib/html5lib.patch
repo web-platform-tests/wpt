@@ -1,19 +1,38 @@
+diff --git a/python/src/html5lib/constants.py b/python/src/html5lib/constants.py
+--- a/python/src/html5lib/constants.py
++++ b/python/src/html5lib/constants.py
+@@ -456,16 +456,17 @@ booleanAttributes = {
+     "style": frozenset(("scoped",)),
+     "img": frozenset(("ismap",)),
+     "audio": frozenset(("autoplay","controls")),
+     "video": frozenset(("autoplay","controls")),
+     "script": frozenset(("defer", "async")),
+     "details": frozenset(("open",)),
+     "datagrid": frozenset(("multiple", "disabled")),
+     "command": frozenset(("hidden", "disabled", "checked", "default")),
++    "hr": frozenset(("noshade")),
+     "menu": frozenset(("autosubmit",)),
+     "fieldset": frozenset(("disabled", "readonly")),
+     "option": frozenset(("disabled", "readonly", "selected")),
+     "optgroup": frozenset(("disabled", "readonly")),
+     "button": frozenset(("disabled", "autofocus")),
+     "input": frozenset(("disabled", "readonly", "required", "autofocus", "checked", "ismap")),
+     "select": frozenset(("disabled", "readonly", "autofocus", "multiple")),
+     "output": frozenset(("disabled", "readonly")),
 diff --git a/python/src/html5lib/serializer/htmlserializer.py b/python/src/html5lib/serializer/htmlserializer.py
 --- a/python/src/html5lib/serializer/htmlserializer.py
 +++ b/python/src/html5lib/serializer/htmlserializer.py
-@@ -6,16 +6,19 @@ except NameError:
- 
+@@ -7,16 +7,18 @@ except NameError:
  import gettext
  _ = gettext.gettext
  
  from html5lib.constants import voidElements, booleanAttributes, spaceCharacters
- from html5lib.constants import rcdataElements
- 
+ from html5lib.constants import rcdataElements, entities, xmlEntities
+ from html5lib import utils
  from xml.sax.saxutils import escape
-+import htmlentitydefs
-+
-+import re
  
++import re
++
  spaceCharacters = u"".join(spaceCharacters)
  
  try:
@@ -21,47 +40,29 @@ diff --git a/python/src/html5lib/serializer/htmlserializer.py b/python/src/html5
  except ImportError:
      unicode_encode_errors = "strict"
  else:
-@@ -49,55 +52,78 @@ else:
- 
-     del register_error
- 
- def encode(text, encoding):
-     return text.encode(encoding, unicode_encode_errors)
- 
- class HTMLSerializer(object):
- 
-+    # attribute quoting options
-     quote_attr_values = False
-     quote_char = '"'
-     use_best_quote_char = True
-+
-+    # tag syntax options
-+    omit_optional_tags = True
-     minimize_boolean_attributes = True
--
-     use_trailing_solidus = False
+     unicode_encode_errors = "htmlentityreplace"
+@@ -79,33 +81,51 @@ class HTMLSerializer(object):
      space_before_trailing_solidus = True
-+
-+    # escaping options
+ 
+     # escaping options
      escape_lt_in_attrs = False
      escape_rcdata = False
-+    resolve_entities = True
+     resolve_entities = True
  
-+    # miscellaneous options
+     # miscellaneous options
 +    emit_doctype = 'preserve'
      inject_meta_charset = True
++    lang_attr = 'preserve'
      strip_whitespace = False
      sanitize = False
--    omit_optional_tags = True
  
      options = ("quote_attr_values", "quote_char", "use_best_quote_char",
            "minimize_boolean_attributes", "use_trailing_solidus",
            "space_before_trailing_solidus", "omit_optional_tags",
            "strip_whitespace", "inject_meta_charset", "escape_lt_in_attrs",
--          "escape_rcdata", 'use_trailing_solidus', "sanitize")
-+          "escape_rcdata", "resolve_entities", "emit_doctype", "sanitize")
-+
-+    xmlEntities = ('lt', 'gt', 'amp', 'apos', 'quot')
+-          "escape_rcdata", "resolve_entities", "sanitize")
++          "escape_rcdata", "resolve_entities", "emit_doctype", "lang_attr",
++          "sanitize")
  
      def __init__(self, **kwargs):
          """Initialize HTMLSerializer.
@@ -80,6 +81,11 @@ diff --git a/python/src/html5lib/serializer/htmlserializer.py b/python/src/html5
 +            * emit_doctype='preserve' preserves the doctype, if any, unchanged
          inject_meta_charset=True|False
            ..?
++        lang_attr='preserve'|'xml'|'html'
++          Whether to translate 'lang' attributes.
++            * lang_attr='preserve' does no translation
++            * lang_attr='xml' translates 'lang' to 'xml:lang'
++            * lang_attr='html' translates 'xml:lang' to 'lang'
          quote_attr_values=True|False
            Whether to quote attribute values that don't require quoting
            per HTML5 parsing rules.
@@ -88,22 +94,7 @@ diff --git a/python/src/html5lib/serializer/htmlserializer.py b/python/src/html5
            use double quote unless attribute value contains a double quote,
            in which case single quotes are used instead.
          escape_lt_in_attrs=False|True
-           Whether to escape < in attribute values.
-         escape_rc_data=False|True
-           ..?
-+        resolve_entities=True|False
-+          Whether to resolve named character entities that appear in the
-+          source tree. The XML predified entities &lt; &gt; &amp; &quot; &apos;
-+          are unaffected by this setting.
-         strip_whitespace=False|True
-           ..?
-         minimize_boolean_attributes=True|false
-           Shortens boolean attributes to give just the attribute value,
-           for example <input disabled="disabled"> becomes <input disabled>.
-         use_trailing_solidus
-           Includes a close-tag slash at the end of the start tag of void
-           elements (empty elements whose end tag is forbidden). E.g. <hr/>.
-@@ -112,16 +138,96 @@ class HTMLSerializer(object):
+@@ -135,16 +155,96 @@ class HTMLSerializer(object):
          """
          if kwargs.has_key('quote_char'):
              self.use_best_quote_char = False
@@ -200,7 +191,7 @@ diff --git a/python/src/html5lib/serializer/htmlserializer.py b/python/src/html5
              treewalker = Filter(treewalker, encoding)
          # XXX: WhitespaceFilter should be used before OptionalTagFilter
          # for maximum efficiently of this latter filter
-@@ -129,36 +235,22 @@ class HTMLSerializer(object):
+@@ -152,36 +252,22 @@ class HTMLSerializer(object):
              from html5lib.filters.whitespace import Filter
              treewalker = Filter(treewalker)
          if self.sanitize:
@@ -240,7 +231,7 @@ diff --git a/python/src/html5lib/serializer/htmlserializer.py b/python/src/html5
              elif type in ("Characters", "SpaceCharacters"):
                  if type == "SpaceCharacters" or in_cdata:
                      if in_cdata and token["data"].find("</") >= 0:
-@@ -168,25 +260,27 @@ class HTMLSerializer(object):
+@@ -191,27 +277,41 @@ class HTMLSerializer(object):
                      else:
                          yield token["data"]
                  elif encoding:
@@ -263,122 +254,23 @@ diff --git a/python/src/html5lib/serializer/htmlserializer.py b/python/src/html5
 -                attrs.sort()
                  attributes = []
                  for k,v in attrs:
++
++                    # clean up xml:lang
++                    if k == '{http://www.w3.org/XML/1998/namespace}lang':
++                        k = 'xml:lang'
++                    if self.lang_attr == 'xml':
++                        if k == 'lang' and not ('xml:lang' in attrs or
++                           '{http://www.w3.org/XML/1998/namespace}lang' in attrs):
++                            k = 'xml:lang'
++                    elif self.lang_attr == 'html':
++                        if k == 'xml:lang' and not ('lang' in attrs):
++                            k = 'lang'
++
                      if encoding:
                          k = k.encode(encoding, "strict")
                      attributes.append(' ')
  
                      attributes.append(k)
                      if not self.minimize_boolean_attributes or \
-@@ -243,16 +337,28 @@ class HTMLSerializer(object):
-                 data = token["data"]
-                 if data.find("--") >= 0:
-                     self.serializeError(_("Comment contains --"))
-                 comment = u"<!--%s-->" % token["data"]
-                 if encoding:
-                     comment = comment.encode(encoding, unicode_encode_errors)
-                 yield comment
- 
-+            elif type == "Entity":
-+                name = token["name"]
-+                if not htmlentitydefs.entitydefs.has_key(name):
-+                    self.serializeError(_("Entity %s not recognized" % name))
-+                if self.resolve_entities and name not in self.xmlEntities:
-+                    data = unichr(htmlentitydefs.name2codepoint[name])
-+                else:
-+                    data = u"&%s;" % name
-+                if encoding:
-+                    data = data.encode(encoding, unicode_encode_errors)
-+                yield data
-+
-             else:
-                 self.serializeError(token["data"])
- 
-     def render(self, treewalker, encoding=None):
-         if encoding:
-             return "".join(list(self.serialize(treewalker, encoding)))
-         else:
-             return u"".join(list(self.serialize(treewalker)))
-diff --git a/python/src/html5lib/treewalkers/_base.py b/python/src/html5lib/treewalkers/_base.py
---- a/python/src/html5lib/treewalkers/_base.py
-+++ b/python/src/html5lib/treewalkers/_base.py
-@@ -59,16 +59,19 @@ class TreeWalker(object):
- 
-     def doctype(self, name, publicId=None, systemId=None, correct=True):
-         return {"type": "Doctype",
-                 "name": name is not None and unicode(name) or u"",
-                 "publicId": publicId,
-                 "systemId": systemId,
-                 "correct": correct}
- 
-+    def entity(self, name):
-+        return {"type": "Entity", "name": unicode(name)}
-+
-     def unknown(self, nodeType):
-         return self.error(_("Unknown node type: ") + nodeType)
- 
- class RecursiveTreeWalker(TreeWalker):
-     def walkChildren(self, node):
-         raise NodeImplementedError
- 
-     def element(self, node, namespace, name, attrs, hasChildren):
-@@ -84,16 +87,17 @@ class RecursiveTreeWalker(TreeWalker):
- 
- from xml.dom import Node
- 
- DOCUMENT = Node.DOCUMENT_NODE
- DOCTYPE = Node.DOCUMENT_TYPE_NODE
- TEXT = Node.TEXT_NODE
- ELEMENT = Node.ELEMENT_NODE
- COMMENT = Node.COMMENT_NODE
-+ENTITY = Node.ENTITY_NODE
- UNKNOWN = "<#UNKNOWN#>"
- 
- class NonRecursiveTreeWalker(TreeWalker):
-     def getNodeDetails(self, node):
-         raise NotImplementedError
-     
-     def getFirstChild(self, node):
-         raise NotImplementedError
-@@ -128,16 +132,19 @@ class NonRecursiveTreeWalker(TreeWalker)
-                     hasChildren = False
-                 else:
-                     endTag = name
-                     yield self.startTag(namespace, name, attributes)
- 
-             elif type == COMMENT:
-                 yield self.comment(details[0])
- 
-+            elif type == ENTITY:
-+                yield self.entity(details[0])
-+
-             elif type == DOCUMENT:
-                 hasChildren = True
- 
-             else:
-                 yield self.unknown(details[0])
-             
-             if hasChildren:
-                 firstChild = self.getFirstChild(currentNode)
-diff --git a/python/src/html5lib/treewalkers/lxmletree.py b/python/src/html5lib/treewalkers/lxmletree.py
---- a/python/src/html5lib/treewalkers/lxmletree.py
-+++ b/python/src/html5lib/treewalkers/lxmletree.py
-@@ -121,16 +121,19 @@ class TreeWalker(_base.NonRecursiveTreeW
-             return _base.DOCTYPE, node.name, node.public_id, node.system_id
- 
-         elif isinstance(node, FragmentWrapper) and node.isstring:
-             return _base.TEXT, node
- 
-         elif node.tag == etree.Comment:
-             return _base.COMMENT, node.text
- 
-+        elif node.tag == etree.Entity:
-+            return _base.ENTITY, node.text[1:-1] # strip &;
-+
-         else:
-             #This is assumed to be an ordinary element
-             match = tag_regexp.match(node.tag)
-             if match:
-                 namespace, tag = match.groups()
-             else:
-                 namespace = None
-                 tag = node.tag
+                       (k not in booleanAttributes.get(name, tuple()) \
+                       and k not in booleanAttributes.get("", tuple())):

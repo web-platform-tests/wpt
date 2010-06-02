@@ -7,6 +7,9 @@
 
 import os.path
 
+def basepath(path):
+  return os.path.split(path)[0]
+
 def pathInsideBase(path, base=''):
   path = os.path.normpath(path)
   if base:

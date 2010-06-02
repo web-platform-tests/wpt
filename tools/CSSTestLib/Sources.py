@@ -11,7 +11,7 @@ import re
 import html5lib # Warning: This uses a patched version of html5lib
 from lxml import etree
 from lxml.etree import ParseError
-from Utils import getMimeFromExt, escapeToNamedASCII, pathInsideBase
+from Utils import getMimeFromExt, escapeToNamedASCII, pathInsideBase, basepath
 
 class SourceCache:
   """Cache for FileSource objects. Supports one FileSource object
@@ -220,7 +220,7 @@ class ReftestManifest(ConfigSource):
        and load its .htaccess file.
     """
     ConfigSource.__init__(self, sourcepath, relpath, 'config/reftest')
-    htapath = join(basename(sourcepath), '.htaccess')
+    htapath = join(basepath(sourcepath), '.htaccess')
     self.htaccess = ConfigSource(htapath, join(basepath(), '.htaccess')) \
                     if exists(htapath) else None
 
@@ -238,7 +238,7 @@ class ReftestManifest(ConfigSource):
     """Returns the base relpath of this reftest manifest path, i.e.
        the parent of the manifest file.
     """
-    return basename(self.relpath)
+    return basepath(self.relpath)
 
   stripRE = re.compile(r'#.*')
   parseRE = re.compile(r'^\s*==\s*(\S+)\s+(\S+)')
@@ -251,8 +251,8 @@ class ReftestManifest(ConfigSource):
        if any relpaths point higher than the relpath root.
     """
     for src in self.sourcepath:
-      relbase = os.path.split(self.relpath)[0]
-      srcbase = os.path.split(src)[0]
+      relbase = basepath(self.relpath)
+      srcbase = basepath(src)
       for line in open(src):
         line = self.stripRE.sub('', line)
         m = self.parseRE.search(line)
@@ -424,7 +424,7 @@ class CSSTestSource(XHTMLSource):
 
   def name(self):
     """Extract filename base as test name."""
-    return os.path.splitext(os.path.split(self.relpath)[1])[0]
+    return os.path.splitext(basename(self.relpath))[0]
 
   def setReftest(self, referenceSource):
     """Sets test to be a reftest, with reference relpath `reference`."""

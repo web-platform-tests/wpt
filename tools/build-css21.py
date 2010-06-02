@@ -8,7 +8,7 @@ print "Building CSS2.1 Test Suite from repository %s into %s" % \
       (os.path.abspath('.'), os.path.abspath(os.path.join('.', 'dist', 'css2.1')))
 
 skipDirs = ('support')
-reftestPath = os.path.join('reftest', 'reftest.list')
+reftestPath = 'reftest.list'
 groupmap = {
     'http://www.w3.org/TR/CSS21/about.html'    : 'about',
     'http://www.w3.org/TR/CSS21/box.html#box-dimensions'              : 'box-model',

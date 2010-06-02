@@ -6,7 +6,7 @@
 import shutil
 import filecmp
 import os.path
-from os.path import exists, join, basename
+from os.path import exists, join
 from Sources import SourceCache, SourceSet, ConfigSource, ReftestManifest
 
 excludeDirs = ['CVS', '.svn', '.hg']

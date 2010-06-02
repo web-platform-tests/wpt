@@ -22,13 +22,10 @@ rmtree('dist/css2.1');
 ###############################################################################
 # Boris Zbarsky
 # submitted/css2.1/
-#  box/ - all reftests
-#  run-in/ - all reftests
-#  table/ - needs HTML->XHTML conversion
 #  visudet/anonymous-block-not-containing-block-001.xhtml - pending spec changes
-#  visuren/* - all selftests, but r-
 
 push @dirs, 'contributors/bzbarsky/submitted/css2.1/visuren';
+push @dirs, 'contributors/bzbarsky/submitted/css2.1/tables';
 push @dirs, 'contributors/bzbarsky/submitted/css2.1/box/reftest.list';
 push @dirs, 'contributors/bzbarsky/submitted/css2.1/run-in/reftest.list';
 

@@ -5,6 +5,9 @@
     {
       "float" : "idl-float",
       "domstring" : "idl-DOMString",
-      "supported property indices" : "dfn-supported-property-indices"
+      "object" : "idl-object",
+      "supported property indices" : "dfn-supported-property-indices",
+      "support named properties" : "dfn-support-named-properties",
+      "supported property names" : "dfn-supported-property-names"
     }
 }

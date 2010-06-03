@@ -55,7 +55,7 @@
  <li>sourceIndex? <a href=http://www.quirksmode.org/dom/w3c_core.html>http://www.quirksmode.org/dom/w3c_core.html</a>
  <li>Range.createContextualFragment <a href=http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2009-March/018892.html>http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2009-March/018892.html</a>
  <li>[Reflect] <a href=http://krijnhoetmer.nl/irc-logs/whatwg/20090622#l-90>http://krijnhoetmer.nl/irc-logs/whatwg/20090622#l-90</a>
- <li><a href=http://www.whatwg.org/html/#htmlcollection><code class=external>HTMLCollection</code></a> is defined in HTML5. Perhaps we should move that to this spec. Perhaps also DOMStringMap, getElementsByClassName...
+ <li>Perhaps we should move DOMStringMap, getElementsByClassName to this spec...
  <li class=XXX>http://hg.mozilla.org/mozilla-central/rev/91694d19d7b2
 </ul>
 
@@ -107,7 +107,8 @@
  <li><a href=#collections><span class=secno>5 </span>Collections</a>
   <ol>
    <li><a href=#interface-nodelist><span class=secno>5.1 </span>Interface <code>NodeList</code></a></li>
-   <li><a href=#interface-namednodemap><span class=secno>5.2 </span>Interface <code>NamedNodeMap</code></a></ol></li>
+   <li><a href=#interface-htmlcollection><span class=secno>5.2 </span>Interface <code>HTMLCollection</code></a></li>
+   <li><a href=#interface-namednodemap><span class=secno>5.3 </span>Interface <code>NamedNodeMap</code></a></ol></li>
  <li><a href=#lists><span class=secno>6 </span>Lists</a>
   <ol>
    <li><a href=#interface-domstringlist><span class=secno>6.1 </span>Interface <code>DOMStringList</code></a></li>
@@ -185,7 +186,7 @@ out of memory, or to work around platform-specific limitations.</p>
 
 <p>The IDL fragments in this specification must be interpreted as
 required for conforming IDL fragments, as described in the Web IDL
-specification. <a data-anolis-ref="" href=#refsWEBIDL>[WEBIDL]</a></p>
+specification. <a data-anolis-ref="" href=#refsWEBIDL>[WEBIDL]</a>
 
 <p id=float-nan>Except where otherwise specified, if an IDL attribute that is a
 floating point number type (<a href=http://dev.w3.org/2006/webapi/WebIDL/#idl-float><code class=external>float</code></a>) is
@@ -197,8 +198,9 @@ floating point number type (<a href=http://dev.w3.org/2006/webapi/WebIDL/#idl-fl
 passed an Infinity or Not-a-Number (NaN) value, a <a href=#dom-domexception-not_supported_err><code title=dom-DOMException-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</code></a> exception must
 be raised.
 
-<p>Some of the terms used in this specification are defined in <cite>XML</cite>,
-<cite>Namespaces in XML</cite> and <cite>HTML</cite>. <a data-anolis-ref="" href=#refsXML>[XML]</a> <a data-anolis-ref="" href=#refsXMLNS>[XMLNS]</a> <a data-anolis-ref="" href=#refsHTML>[HTML]</a>
+<p>Some of the terms used in this specification are defined in <cite>Web
+IDL</cite>, <cite>XML</cite>, <cite>Namespaces in XML</cite> and
+<cite>HTML</cite>. <a data-anolis-ref="" href=#refsWEBIDL>[WEBIDL]</a> <a data-anolis-ref="" href=#refsXML>[XML]</a> <a data-anolis-ref="" href=#refsXMLNS>[XMLNS]</a> <a data-anolis-ref="" href=#refsHTML>[HTML]</a>
 
 <h4 id=extensibility><span class=secno>1.2.2 </span>Extensibility</h4>
 
@@ -1354,7 +1356,7 @@ are all <a href=#concept-class-attribute title=concept-class-attribute>class att
   void setIdAttribute(in DOMString name, in boolean isId);
   void setIdAttributeNS(in DOMString namespaceURI, in DOMString localName, in boolean isId);
   void setIdAttributeNode(in Attr idAttr, in boolean isId);-->
-           attribute <a class=external href=http://www.whatwg.org/html/#htmlcollection>HTMLCollection</a> <a href=#dom-element-children title=dom-Element-children>children</a>;
+           attribute <a href=#htmlcollection>HTMLCollection</a> <a href=#dom-element-children title=dom-Element-children>children</a>;
 };</pre>
 
 <p><a href=#element><code>Element</code></a> nodes can have a <dfn id=concept-id title=concept-id>unique
@@ -1449,7 +1451,7 @@ have its name converted to ASCII lowercase before the element is affected.
 <p class=XXX><dfn id=dom-element-hasattributens title=dom-Element-hasAttributeNS>hasAttributeNS</dfn>
 
 <p>The <dfn id=dom-element-children title=dom-Element-children><code>children</code></dfn> attribute
-must return an <a href=http://www.whatwg.org/html/#htmlcollection><code class=external>HTMLCollection</code></a> <a href=#concept-collection title=concept-collection>collection</a>, rooted at the <a href=#context-node>context
+must return an <a href=#htmlcollection><code>HTMLCollection</code></a> <a href=#concept-collection title=concept-collection>collection</a>, rooted at the <a href=#context-node>context
 node</a>, whose filter matches only <a href=#element><code>Element</code></a> nodes whose <a href=#dom-node-parentnode><code title=dom-Node-parentNode>parentNode</code></a> is the <a href=#context-node>context node</a>.
 <span class=XXX>Or a <a href=#nodelist><code>NodeList</code></a>?</span> 
 
@@ -1591,7 +1593,83 @@ collection</a>.
 <p><a href=#nodelist><code>NodeList</code></a>s are enumerable. <span class=XXX>Explain? <code title="">for ... in</code></span>
 
 
-<h3 id=interface-namednodemap><span class=secno>5.2 </span>Interface <a href=#namednodemap><code>NamedNodeMap</code></a></h3>
+<h3 id=interface-htmlcollection><span class=secno>5.2 </span>Interface <a href=#htmlcollection><code>HTMLCollection</code></a></h3>
+<p>The <a href=#htmlcollection><code>HTMLCollection</code></a> interface represents a generic <a href=#concept-collection title=concept-collection>collection</a> of elements.
+
+<p class=note>This interface is called <a href=#htmlcollection><code>HTMLCollection</code></a> for
+historical reasons. The various getters on this interface return <a href=http://dev.w3.org/2006/webapi/WebIDL/#idl-object><code class=external>object</code></a> for interfaces that inherit from
+it, which return other objects for historical reasons.
+
+<pre class=idl>interface <dfn id=htmlcollection>HTMLCollection</dfn> {
+readonly attribute unsigned long <a href=#dom-htmlcollection-length title=dom-HTMLCollection-length>length</a>;
+caller getter object <a href=#dom-htmlcollection-item title=dom-HTMLCollection-item>item</a>(in unsigned long index); // only returns Element
+caller getter object <a href=#dom-htmlcollection-nameditem title=dom-HTMLCollection-namedItem>namedItem</a>(in DOMString name); // only returns Element
+};</pre>
+
+<dl class=domintro>
+ <dt><var title="">collection</var> . <a href=#dom-htmlcollection-length><code title=dom-HTMLCollection-length>length</code></a>
+ <dd>
+  <p>Returns the number of elements in the collection.
+
+ <dt><var title="">element</var> = <var title="">collection</var> . <a href=#dom-htmlcollection-item><code title=dom-HTMLCollection-item>item</code></a>(<var title="">index</var>)
+ <dt><var title="">collection</var>[<var title="">index</var>]
+ <dt><var title="">collection</var>(<var title="">index</var>)
+ <dd>
+  <p>Returns the item with index <var title="">index</var> from the collection. The items are sorted in <a href=#tree-order>tree order</a>.
+  <p>Returns null if <var title="">index</var> is out of range.
+
+ <dt><var title="">element</var> = <var title="">collection</var> . <a href=#dom-htmlcollection-nameditem><code title=dom-HTMLCollection-namedItem>namedItem</code></a>(<var title="">name</var>)</dt>
+ <dt><var title="">collection</var>[<var title="">name</var>]</dt>
+ <dt><var title="">collection</var>(<var title="">name</var>)</dt>
+ <dd>
+  <p>Returns the first item with <a href=#concept-id title=concept-id>ID</a> or name <var title="">name</var>
+  from the collection.</p>
+  <p>Returns null if no element with that <a href=#concept-id title=concept-id>ID</a> or name could be found.</p>
+  <p>Only <code title="">a</code>, <code title="">applet</code>, <code title="">area</code>,
+  <code title="">embed</code>, <code title="">form</code>, <code title="">frame</code>,
+  <code title="">frameset</code>, <code title="">iframe</code>, <code title="">img</code>, and
+  <code title="">object</code> elements in the <a href=#html-namespace>HTML namespace</a> can have a
+  name for the purpose of this method; their name is given by the value of their
+  <code title="">name</code> attribute.</p>
+ </dd>
+</dl>
+
+<p>The object's <a class=external href=http://dev.w3.org/2006/webapi/WebIDL/#dfn-supported-property-indices>supported property indices</a>
+are the numbers in the range zero to one less than the number of nodes
+<a href=#represented-by-the-collection>represented by the collection</a>. If there are no such elements, then
+there are no <a class=external href=http://dev.w3.org/2006/webapi/WebIDL/#dfn-supported-property-indices>supported property indices</a>.
+
+<p>The <dfn id=dom-htmlcollection-length title=dom-HTMLCollection-length><code>length</code></dfn> attribute
+must return the number of nodes <a href=#represented-by-the-collection>represented by the collection</a>.
+
+<p>The <dfn id=dom-htmlcollection-item title=dom-HTMLCollection-item><code>item(<var title="">index</var>)</code></dfn> method must return the <var title="">index</var>th node in the collection. If there is no <var title="">index</var>th node in the collection, then the method must
+return null.
+
+<p>The <a class=external href=http://dev.w3.org/2006/webapi/WebIDL/#dfn-supported-property-names>supported property names</a> consist
+of the values of the <code title="">name</code> attributes of each <code title="">a</code>, <code title="">applet</code>, <code title="">area</code>, <code title="">embed</code>, <code title="">form</code>, <code title="">frame</code>, <code title="">frameset</code>, <code title="">iframe</code>, <code title="">img</code>, and
+<code title="">object</code> element in the <a href=#html-namespace>HTML namespace</a>,
+<a href=#represented-by-the-collection>represented by the collection</a> with a <code title="">name</code>
+attribute, plus the list of <a href=#concept-id title=concept-id>IDs</a> that the elements
+<a href=#represented-by-the-collection>represented by the collection</a> have.
+
+<p>The <dfn id=dom-htmlcollection-nameditem title=dom-HTMLCollection-namedItem><code>namedItem(<var title="">key</var>)</code></dfn> method must return the first node in the
+<a href=#concept-collection title=concept-collection>collection</a> that matches the following
+requirements:</p>
+
+<ul>
+ <li>It is an <code title="">a</code>, <code title="">applet</code>, <code title="">area</code>, <code title="">embed</code>, <code title="">form</code>, <code title="">frame</code>, <code title="">frameset</code>, <code title="">iframe</code>,
+ <code title="">img</code>, or <code title="">object</code> element, in the <a href=#html-namespace>HTML
+ namespace</a>, with a <code title="">name</code> attribute equal to <var title="">key</var>, or,
+
+ <li>It is an element with an <a href=#concept-id title=concept-id>ID</a>
+ equal to <var title="">key</var>.
+</ul>
+
+<p>If no such elements are found, then the method must return
+null.
+
+
+<h3 id=interface-namednodemap><span class=secno>5.3 </span>Interface <a href=#namednodemap><code>NamedNodeMap</code></a></h3>
 <p>A <a href=#namednodemap><code>NamedNodeMap</code></a> object is a kind of <a href=#concept-collection title=concept-collection>collection</a>, whose primary purpose is to expose
 <a href=#node><code>Node</code></a>s by name.
 

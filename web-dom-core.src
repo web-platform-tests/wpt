@@ -56,7 +56,7 @@
  <li>sourceIndex? <a href=http://www.quirksmode.org/dom/w3c_core.html>http://www.quirksmode.org/dom/w3c_core.html</a>
  <li>Range.createContextualFragment <a href="http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2009-March/018892.html">http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2009-March/018892.html</a>
  <li>[Reflect] <a href=http://krijnhoetmer.nl/irc-logs/whatwg/20090622#l-90>http://krijnhoetmer.nl/irc-logs/whatwg/20090622#l-90</a>
- <li><code data-anolis-spec=html>HTMLCollection</code> is defined in HTML5. Perhaps we should move that to this spec. Perhaps also DOMStringMap, getElementsByClassName...
+ <li>Perhaps we should move DOMStringMap, getElementsByClassName to this spec...
  <li class=XXX>http://hg.mozilla.org/mozilla-central/rev/91694d19d7b2
 </ul>
 
@@ -138,7 +138,7 @@ out of memory, or to work around platform-specific limitations.</p>
 
 <p>The IDL fragments in this specification must be interpreted as
 required for conforming IDL fragments, as described in the Web IDL
-specification. <span data-anolis-ref>WEBIDL</span></p>
+specification. <span data-anolis-ref>WEBIDL</span>
 
 <p id=float-nan>Except where otherwise specified, if an IDL attribute that is a
 floating point number type (<code data-anolis-spec=webidl>float</code>) is
@@ -152,8 +152,9 @@ passed an Infinity or Not-a-Number (NaN) value, a <code
 title=dom-DOMException-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</code> exception must
 be raised.
 
-<p>Some of the terms used in this specification are defined in <cite>XML</cite>,
-<cite>Namespaces in XML</cite> and <cite>HTML</cite>. <span
+<p>Some of the terms used in this specification are defined in <cite>Web
+IDL</cite>, <cite>XML</cite>, <cite>Namespaces in XML</cite> and
+<cite>HTML</cite>. <span data-anolis-ref>WEBIDL</span> <span
 data-anolis-ref>XML</span> <span data-anolis-ref>XMLNS</span> <span
 data-anolis-ref>HTML</span>
 
@@ -1442,7 +1443,7 @@ title=concept-class-attribute>class attributes</span>.
   void setIdAttribute(in DOMString name, in boolean isId);
   void setIdAttributeNS(in DOMString namespaceURI, in DOMString localName, in boolean isId);
   void setIdAttributeNode(in Attr idAttr, in boolean isId);-->
-           attribute <span data-anolis-spec=html>HTMLCollection</span> <span title=dom-Element-children>children</span>;
+           attribute <span>HTMLCollection</span> <span title=dom-Element-children>children</span>;
 };</pre>
 
 <p><code>Element</code> nodes can have a <dfn title=concept-id>unique
@@ -1554,7 +1555,7 @@ have its name converted to ASCII lowercase before the element is affected.
 <p class=XXX><dfn title=dom-Element-hasAttributeNS>hasAttributeNS</dfn>
 
 <p>The <dfn title=dom-Element-children><code>children</code></dfn> attribute
-must return an <code data-anolis-spec=html>HTMLCollection</code> <span
+must return an <code>HTMLCollection</code> <span
 title=concept-collection>collection</span>, rooted at the <span>context
 node</span>, whose filter matches only <code>Element</code> nodes whose <code
 title=dom-Node-parentNode>parentNode</code> is the <span>context node</span>.
@@ -1711,6 +1712,94 @@ collection</span>.
 
 <p><code>NodeList</code>s are enumerable. <span class=XXX>Explain? <code
 title>for ... in</code></span>
+
+
+<h3>Interface <code>HTMLCollection</code></h3>
+<p>The <code>HTMLCollection</code> interface represents a generic <span
+title=concept-collection>collection</span> of elements.
+
+<p class=note>This interface is called <code>HTMLCollection</code> for
+historical reasons. The various getters on this interface return <code
+data-anolis-spec=webidl>object</code> for interfaces that inherit from
+it, which return other objects for historical reasons.
+
+<pre class=idl>interface <dfn>HTMLCollection</dfn> {
+readonly attribute unsigned long <span title=dom-HTMLCollection-length>length</span>;
+caller getter object <span title=dom-HTMLCollection-item>item</span>(in unsigned long index); // only returns Element
+caller getter object <span title=dom-HTMLCollection-namedItem>namedItem</span>(in DOMString name); // only returns Element
+};</pre>
+
+<dl class=domintro>
+ <dt><var title>collection</var> . <code title=dom-HTMLCollection-length>length</code>
+ <dd>
+  <p>Returns the number of elements in the collection.
+
+ <dt><var title>element</var> = <var title>collection</var> . <code title=dom-HTMLCollection-item>item</code>(<var title>index</var>)
+ <dt><var title>collection</var>[<var title>index</var>]
+ <dt><var title>collection</var>(<var title>index</var>)
+ <dd>
+  <p>Returns the item with index <var title>index</var> from the collection. The items are sorted in <span>tree order</span>.
+  <p>Returns null if <var title>index</var> is out of range.
+
+ <dt><var title>element</var> = <var title>collection</var> . <code title=dom-HTMLCollection-namedItem>namedItem</code>(<var title>name</var>)</dt>
+ <dt><var title>collection</var>[<var title>name</var>]</dt>
+ <dt><var title>collection</var>(<var title>name</var>)</dt>
+ <dd>
+  <p>Returns the first item with <span title="concept-id">ID</span> or name <var title>name</var>
+  from the collection.</p>
+  <p>Returns null if no element with that <span title="concept-id">ID</span> or name could be found.</p>
+  <p>Only <code title>a</code>, <code title>applet</code title>, <code title>area</code>,
+  <code title>embed</code>, <code title>form</code>, <code title>frame</code>,
+  <code title>frameset</code>, <code title>iframe</code>, <code title>img</code>, and
+  <code title>object</code> elements in the <span>HTML namespace</span> can have a
+  name for the purpose of this method; their name is given by the value of their
+  <code title>name</code> attribute.</p>
+ </dd>
+</dl>
+
+<p>The object's <span data-anolis-spec=webidl>supported property indices</span>
+are the numbers in the range zero to one less than the number of nodes
+<span>represented by the collection</span>. If there are no such elements, then
+there are no <span data-anolis-spec=webidl>supported property indices</span>.
+
+<p>The <dfn title=dom-HTMLCollection-length><code>length</code></dfn> attribute
+must return the number of nodes <span>represented by the collection</span>.
+
+<p>The <dfn title=dom-HTMLCollection-item><code>item(<var
+title>index</var>)</code></dfn> method must return the <var
+title>index</var>th node in the collection. If there is no <var
+title>index</var>th node in the collection, then the method must
+return null.
+
+<p>The <span data-anolis-spec=webidl>supported property names</span> consist
+of the values of the <code title>name</code> attributes of each <code
+title>a</code>, <code title>applet</code>, <code title>area</code>, <code
+title>embed</code>, <code title>form</code>, <code title>frame</code>, <code
+title>frameset</code>, <code title>iframe</code>, <code title>img</code>, and
+<code title>object</code> element in the <span>HTML namespace</span>,
+<span>represented by the collection</span> with a <code title>name</code>
+attribute, plus the list of <span title=concept-id>IDs</span> that the elements
+<span>represented by the collection</span> have.
+
+<p>The <dfn title=dom-HTMLCollection-namedItem><code>namedItem(<var
+title>key</var>)</code></dfn> method must return the first node in the
+<span title=concept-collection>collection</span> that matches the following
+requirements:</p>
+
+<ul>
+ <li>It is an <code title>a</code>, <code title>applet</code>, <code
+ title>area</code>, <code title>embed</code>, <code title>form</code>, <code
+ title>frame</code>, <code title>frameset</code>, <code title>iframe</code>,
+ <code title>img</code>, or <code title>object</code> element, in the <span>HTML
+ namespace</span>, with a <code title>name</code> attribute equal to <var
+ title>key</var>, or,
+
+ <li>It is an element with an <span title=concept-id>ID</span>
+ equal to <var title>key</var>.
+</ul>
+
+<p>If no such elements are found, then the method must return
+null.
 
 
 <h3>Interface <code>NamedNodeMap</code></h3>

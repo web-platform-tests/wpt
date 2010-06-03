@@ -1555,10 +1555,10 @@ have its name converted to ASCII lowercase before the element is affected.
 
 <p>The <dfn title=dom-Element-children><code>children</code></dfn> attribute
 must return an <code data-anolis-spec=html>HTMLCollection</code> <span
-title=collections data-anolis-spec=html>collection</span>, whose filter matches
-only <code>Element</code> nodes in the <span>context node</span>'s <code
-title=dom-Node-childNodes>childNodes</code>. <span class=XXX>Or a
-<code>NodeList</code>?</span> 
+title=concept-collection>collection</span>, rooted at the <span>context
+node</span>, whose filter matches only <code>Element</code> nodes whose <code
+title=dom-Node-parentNode>parentNode</code> is the <span>context node</span>.
+<span class=XXX>Or a <code>NodeList</code>?</span> 
 
 
 <h3>Interface <code>DocumentType</code></h3>
@@ -1662,8 +1662,37 @@ space, tab, newline -->
 
 
 <h2>Collections</h2>
+<p>A <dfn title=concept-collection>collection</dfn> is an object that represents
+a lists of DOM nodes. A <span title=concept-collection>collection</span> can be
+either <dfn title=concept-collection-live>live</dfn> or <dfn
+title=concept-collection-static>static</dfn>. Unless otherwise stated, a <span
+title=concept-collection>collection</span> must be <span
+title=concept-collection-live>live</span>.
+
+<p>If a <span title=concept-collection>collection</span> is <span
+title=concept-collection-live>live</span>, then the attributes and methods on
+that object must</span> operate on the actual underlying data, not a snapshot of
+the data.
+
+<p>When a <span title=concept-collection>collection</span> is created, a filter
+and a root are associated with it.
+
+<p>The <span title=concept-collection>collection</span> then <dfn
+title="represented by the collection">represents</dfn> a view of the subtree
+rooted at the <span title=concept-collection>collection's</span> root,
+containing only nodes that match the given filter. The view is linear. In the
+absence of specific requirements to the contrary, the nodes within the <span
+title=concept-collection>collection</span> must be sorted in <span>tree
+order</span>.
+
+<p>An attribute that returns a <span title=concept-collection-live>live</span>
+<span title=concept-collection>collection</span> must return the same object
+every time it is retrieved.
+
+
 <h3>Interface <code>NodeList</code></h3>
-<p>A <code>NodeList</code> is a <span title=collections data-anolis-spec=html>collection</span>, except that <code>NodeList</code>s can be static (as opposed to live) if a specification defines them to be static.
+<p>A <code>NodeList</code> object is a kind of <span
+title=concept-collection>collection</span>.
 
 <pre class=idl>interface <dfn>NodeList</dfn> {
   getter <span>Node</span> <span title=dom-NodeList-item>item</span>(in unsigned long index);
@@ -1672,12 +1701,16 @@ space, tab, newline -->
 
 <p>The <dfn title=dom-NodeList-item><code>item(<var
 title>index</var>)</code></dfn> method must return the <var title>index</var>th
-node in the collection. If there is no <var title>index</var>th node in the
-collection, then the method must return null.
+node in the <span title=concept-collection>collection</span>. If there is no
+<var title>index</var>th node in the <span
+title=concept-collection>collection</span>, then the method must return null.
 
-<p>The <dfn title=dom-NodeList-length><code>length</code></dfn> attribute must, on getting, return the number of nodes <span data-anolis-spec=html>represented by the collection</span>.
+<p>The <dfn title=dom-NodeList-length><code>length</code></dfn> attribute must,
+on getting, return the number of nodes <span>represented by the
+collection</span>.
 
-<p><code>NodeList</code>s are enumerable. <span class=XXX>Explain?</span>
+<p><code>NodeList</code>s are enumerable. <span class=XXX>Explain? <code
+title>for ... in</code></span>
 
 
 <h3>Interface <code>NamedNodeMap</code></h3>

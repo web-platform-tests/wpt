@@ -1449,9 +1449,9 @@ have its name converted to ASCII lowercase before the element is affected.
 <p class=XXX><dfn id=dom-element-hasattributens title=dom-Element-hasAttributeNS>hasAttributeNS</dfn>
 
 <p>The <dfn id=dom-element-children title=dom-Element-children><code>children</code></dfn> attribute
-must return an <a href=http://www.whatwg.org/html/#htmlcollection><code class=external>HTMLCollection</code></a> <a class=external href=http://www.whatwg.org/html/#collections title=collections>collection</a>, whose filter matches
-only <a href=#element><code>Element</code></a> nodes in the <a href=#context-node>context node</a>'s <a href=#dom-node-childnodes><code title=dom-Node-childNodes>childNodes</code></a>. <span class=XXX>Or a
-<a href=#nodelist><code>NodeList</code></a>?</span> 
+must return an <a href=http://www.whatwg.org/html/#htmlcollection><code class=external>HTMLCollection</code></a> <a href=#concept-collection title=concept-collection>collection</a>, rooted at the <a href=#context-node>context
+node</a>, whose filter matches only <a href=#element><code>Element</code></a> nodes whose <a href=#dom-node-parentnode><code title=dom-Node-parentNode>parentNode</code></a> is the <a href=#context-node>context node</a>.
+<span class=XXX>Or a <a href=#nodelist><code>NodeList</code></a>?</span> 
 
 
 <h3 id=interface-documenttype><span class=secno>4.6 </span>Interface <a href=#documenttype><code>DocumentType</code></a></h3>
@@ -1550,8 +1550,30 @@ space, tab, newline -->
 
 
 <h2 id=collections><span class=secno>5 </span>Collections</h2>
+<p>A <dfn id=concept-collection title=concept-collection>collection</dfn> is an object that represents
+a lists of DOM nodes. A <a href=#concept-collection title=concept-collection>collection</a> can be
+either <dfn id=concept-collection-live title=concept-collection-live>live</dfn> or <dfn id=concept-collection-static title=concept-collection-static>static</dfn>. Unless otherwise stated, a <a href=#concept-collection title=concept-collection>collection</a> must be <a href=#concept-collection-live title=concept-collection-live>live</a>.
+
+<p>If a <a href=#concept-collection title=concept-collection>collection</a> is <a href=#concept-collection-live title=concept-collection-live>live</a>, then the attributes and methods on
+that object must operate on the actual underlying data, not a snapshot of
+the data.
+
+<p>When a <a href=#concept-collection title=concept-collection>collection</a> is created, a filter
+and a root are associated with it.
+
+<p>The <a href=#concept-collection title=concept-collection>collection</a> then <dfn id=represented-by-the-collection title="represented by the collection">represents</dfn> a view of the subtree
+rooted at the <a href=#concept-collection title=concept-collection>collection's</a> root,
+containing only nodes that match the given filter. The view is linear. In the
+absence of specific requirements to the contrary, the nodes within the <a href=#concept-collection title=concept-collection>collection</a> must be sorted in <a href=#tree-order>tree
+order</a>.
+
+<p>An attribute that returns a <a href=#concept-collection-live title=concept-collection-live>live</a>
+<a href=#concept-collection title=concept-collection>collection</a> must return the same object
+every time it is retrieved.
+
+
 <h3 id=interface-nodelist><span class=secno>5.1 </span>Interface <a href=#nodelist><code>NodeList</code></a></h3>
-<p>A <a href=#nodelist><code>NodeList</code></a> is a <a class=external href=http://www.whatwg.org/html/#collections title=collections>collection</a>, except that <a href=#nodelist><code>NodeList</code></a>s can be static (as opposed to live) if a specification defines them to be static.
+<p>A <a href=#nodelist><code>NodeList</code></a> object is a kind of <a href=#concept-collection title=concept-collection>collection</a>.
 
 <pre class=idl>interface <dfn id=nodelist>NodeList</dfn> {
   getter <a href=#node>Node</a> <a href=#dom-nodelist-item title=dom-NodeList-item>item</a>(in unsigned long index);
@@ -1559,12 +1581,14 @@ space, tab, newline -->
 };</pre>
 
 <p>The <dfn id=dom-nodelist-item title=dom-NodeList-item><code>item(<var title="">index</var>)</code></dfn> method must return the <var title="">index</var>th
-node in the collection. If there is no <var title="">index</var>th node in the
-collection, then the method must return null.
+node in the <a href=#concept-collection title=concept-collection>collection</a>. If there is no
+<var title="">index</var>th node in the <a href=#concept-collection title=concept-collection>collection</a>, then the method must return null.
 
-<p>The <dfn id=dom-nodelist-length title=dom-NodeList-length><code>length</code></dfn> attribute must, on getting, return the number of nodes <a class=external href=http://www.whatwg.org/html/#represented-by-the-collection>represented by the collection</a>.
+<p>The <dfn id=dom-nodelist-length title=dom-NodeList-length><code>length</code></dfn> attribute must,
+on getting, return the number of nodes <a href=#represented-by-the-collection>represented by the
+collection</a>.
 
-<p><a href=#nodelist><code>NodeList</code></a>s are enumerable. <span class=XXX>Explain?</span>
+<p><a href=#nodelist><code>NodeList</code></a>s are enumerable. <span class=XXX>Explain? <code title="">for ... in</code></span>
 
 
 <h3 id=interface-namednodemap><span class=secno>5.2 </span>Interface <a href=#namednodemap><code>NamedNodeMap</code></a></h3>

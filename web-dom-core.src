@@ -1228,6 +1228,112 @@ Should document.documentURI really exist? be readonly?
 http://lists.w3.org/Archives/Public/www-dom/2003JulSep/0049.html -->
 
 
+<h4>Interface <code>DOMImplementation</code></h4>
+<p>User agents must create a new <code>DOMImplementation</code> object whenever a new <code>Document</code> node is created and associate it with the that <code>Document</code> node.
+
+<pre class=idl>interface <dfn>DOMImplementation</dfn> {
+  boolean <span title=dom-DOMImplementation-hasFeature>hasFeature</span>(in DOMString feature, [TreatNullAs=EmptyString] in DOMString version);
+  <span>DocumentType</span> <span title=dom-DOMImplementation-createDocumentType>createDocumentType</span>([TreatNullAs=EmptyString] in DOMString qualifiedName, in DOMString publicId, in DOMString systemId);
+  <span>Document</span> <span title=dom-DOMImplementation-createDocument>createDocument</span>([TreatNullAs=EmptyString] in DOMString namespaceURI, [TreatNullAs=EmptyString] in DOMString qualifiedName, in DocumentType doctype);<!--
+  DOMObject getFeature(in DOMString feature, in DOMString version);-->
+  <span>Document</span> <span title=dom-DOMImplementation-createHTMLDocument>createHTMLDocument</span>(in DOMString title);
+};</pre>
+
+<p>The <dfn title=dom-DOMImplementation-hasFeature><code>hasFeature(<var title>feature</var>, <var title>version</var>)</code></dfn> method must return true if the UA supports the given feature <var title>feature</var> of version <var title>version</var>, and false otherwise.
+
+<p>The <dfn title=dom-DOMImplementation-createDocumentType><code>createDocumentType(<var title>qualifiedName</var>, <var title>publicId</var>, <var title>systemId</var>)</code></dfn> method must run the following steps:
+
+<ol>
+ <li><p>If <var title>qualifiedName</var> doesn't match the <code
+ data-anolis-spec=xml>Name</code> production in XML, raise an <code
+ title=dom-DOMException-INVALID_CHARACTER_ERR title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
+ exception and abort these steps.
+ <li><p>If <var title>qualifiedName</var> doesn't match the <code
+ data-anolis-spec=xmlns>NCName</code> production in Namespaces in XML, raise a
+ <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and
+ abort these steps.
+ <!--<li><p>If <var title>publicId</var> contains a character that doesn't match the <code data-anolis-spec=xml>PubidChar</code> production in XML, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and abort these steps. --> <!-- DOM3 didn't check this -->
+ <!--<li><p>If <var title>systemId</var> contains both a U+0022 QUOTATION MARK ('"') and a U+0027 APOSTROPHE ("'") character, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and abort these steps.--> <!-- DOM3 didn't check this -->
+ <li><p>Return a new <code>DocumentType</code> node with <code title=dom-Node-ownerDocument>ownerDocument</code> set to null, <code title=dom-DocumentType-name>name</code> set to <var title>qualifiedName</var>, <code title=dom-DocumentType-publicId>publicId</code> set to <var title>publicId</var>, and <code title=dom-DocumentType-systemId>systemId</code> set to <var title>systemId</var>.
+</ol>
+<p class=note>No check is performed that the <var title>publicId</var> matches the <code title>PublicChar</code> production in XML or that the <var title>systemId</var> doesn't contain both a quotation mark (") and an apostrophe (').
+
+<p>The <dfn title=dom-DOMImplementation-createDocument><code>createDocument(<var title>namespaceURI</var>, <var title>qualifiedName</var>, <var title>doctype</var>)</code></dfn> method must run the following steps:
+
+<ol>
+ <li><p>Let <var title>document</var> be a new <code>Document</code> node.
+ <li><p>Let <var title>element</var> be null.
+ <li><p>If <var title>qualifiedName</var> is not the empty string, set <var title>element</var> to the result of invoking the <code title=dom-Document-createElementNS>createElementNS</code> method with the arguments <var title>namespaceURI</var> and <var title>qualifiedName</var> on <var title>document</var>. If that raised an exception, re-raise the same exception and abort these steps.
+ <li>
+  <p>If <var title>doctype</var> is not null, run the following substeps:
+  <ol>
+   <li><p>If the <var title>doctype</var>'s <code title=dom-Node-ownerDocument>ownerDocument</code> is not null, raise a <code title=dom-DOMException-WRONG_DOCUMENT_ERR>WRONG_DOCUMENT_ERR</code> exception and abort the overall set of steps.
+   <li><p>Set the <var title>doctype</var>'s <code title=dom-Node-ownerDocument>ownerDocument</code> to <var title>document</var>.
+   <li><p>Append <var title>doctype</var> to <var title>document</var>.
+  </ol>
+ <li><p>If <var title>element</var> is not null, append <var title>element</var> to <var title>document</var>.
+ <li><p>Return <var title>document</var>.
+</ol>
+
+<p class=XXX>exceptions for createDocument <a href=http://lists.w3.org/Archives/Public/www-dom/2005OctDec/0076.html>http://lists.w3.org/Archives/Public/www-dom/2005OctDec/0076.html</a>.
+
+<p><span title="HTML document">HTML documents</span> can be created using the
+<code
+title=dom-DOMImplementation-createHTMLDocument>createHTMLDocument()</code>
+method.
+
+<dl class=domintro>
+ <dt><var title>doc</var> = <var title=dom-Window-document
+ data-anolis-spec=window>document</var> . <code
+ title=dom-Document-implementation>implementation</code> . <code
+ title=dom-DOMImplementation-createHTMLDocument>createHTMLDocument</code>(
+ <var title>title</var> )
+
+ <dd><p>Returns a new <code>Document</code>, with a basic DOM already
+ constructed with an appropriate <code title>title</code> element.
+</dl>
+
+<p>The <dfn
+title=dom-DOMImplementation-createHTMLDocument><code>createHTMLDocument(<var
+title>title</var>)</code></dfn> method, when invoked, must run the following
+steps:
+
+<ol>
+ <li><p>Let <var title>doc</var> be a newly created <code>Document</code>
+ object.
+
+ <li><p>Mark <var title>doc</var> as being an <span>HTML document</span>.
+
+ <li><p>Create a <code>DocumentType</code> node with the <code
+ title=dom-DocumentType-name>name</code> attribute set to the string "<code
+ title>html</code>", and the other attributes specific to
+ <code>DocumentType</code> objects set to the empty string, null, and empty
+ lists, as appropriate. Append the newly created node to <var title>doc</var>.
+
+ <li><p>Create an <code title>html</code> element in the <span>HTML
+ namespace</span>, and append it to <var title>doc</var>.
+
+ <li><p>Create a <code title>head</code> element in the <span>HTML
+ namespace</span>, and append it to the <code title>html</code> element created
+ in the previous step.
+
+ <li><p>Create a <code title>title</code> element in the <span>HTML
+ namespace</span>, and append it to the <code title>head</code> element created
+ in the previous step.
+
+ <li><p>Create a <code>Text</code> node, and set its <code
+ title=dom-CharacterData-data>data</code> attribute to the string given by the
+ method's argument (which could be the empty string). Append it to the
+ <code title>title</code> element created in the previous step.
+
+ <li><p>Create a <code title>body</code> element in the <span>HTML
+ namespace</span>, and append it to the <code title>html</code> element created
+ in the earlier step.
+
+ <li><p>Return <var title>doc</var>.</p></li>
+</ol>
+
+
 <h3>Interface <code>Attr</code></h3>
 <pre class=idl>interface <dfn>Attr</dfn> : <span>Node</span> {
   readonly attribute DOMString <span title=dom-Attr-name>name</span>;
@@ -1556,112 +1662,6 @@ space, tab, newline -->
 
 
 <h2>Interfaces</h2>
-<h3>Interface <code>DOMImplementation</code></h3>
-<p>User agents must create a new <code>DOMImplementation</code> object whenever a new <code>Document</code> node is created and associate it with the that <code>Document</code> node.
-
-<pre class=idl>interface <dfn>DOMImplementation</dfn> {
-  boolean <span title=dom-DOMImplementation-hasFeature>hasFeature</span>(in DOMString feature, [TreatNullAs=EmptyString] in DOMString version);
-  <span>DocumentType</span> <span title=dom-DOMImplementation-createDocumentType>createDocumentType</span>([TreatNullAs=EmptyString] in DOMString qualifiedName, in DOMString publicId, in DOMString systemId);
-  <span>Document</span> <span title=dom-DOMImplementation-createDocument>createDocument</span>([TreatNullAs=EmptyString] in DOMString namespaceURI, [TreatNullAs=EmptyString] in DOMString qualifiedName, in DocumentType doctype);<!--
-  DOMObject getFeature(in DOMString feature, in DOMString version);-->
-  <span>Document</span> <span title=dom-DOMImplementation-createHTMLDocument>createHTMLDocument</span>(in DOMString title);
-};</pre>
-
-<p>The <dfn title=dom-DOMImplementation-hasFeature><code>hasFeature(<var title>feature</var>, <var title>version</var>)</code></dfn> method must return true if the UA supports the given feature <var title>feature</var> of version <var title>version</var>, and false otherwise.
-
-<p>The <dfn title=dom-DOMImplementation-createDocumentType><code>createDocumentType(<var title>qualifiedName</var>, <var title>publicId</var>, <var title>systemId</var>)</code></dfn> method must run the following steps:
-
-<ol>
- <li><p>If <var title>qualifiedName</var> doesn't match the <code
- data-anolis-spec=xml>Name</code> production in XML, raise an <code
- title=dom-DOMException-INVALID_CHARACTER_ERR title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
- exception and abort these steps.
- <li><p>If <var title>qualifiedName</var> doesn't match the <code
- data-anolis-spec=xmlns>NCName</code> production in Namespaces in XML, raise a
- <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and
- abort these steps.
- <!--<li><p>If <var title>publicId</var> contains a character that doesn't match the <code data-anolis-spec=xml>PubidChar</code> production in XML, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and abort these steps. --> <!-- DOM3 didn't check this -->
- <!--<li><p>If <var title>systemId</var> contains both a U+0022 QUOTATION MARK ('"') and a U+0027 APOSTROPHE ("'") character, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and abort these steps.--> <!-- DOM3 didn't check this -->
- <li><p>Return a new <code>DocumentType</code> node with <code title=dom-Node-ownerDocument>ownerDocument</code> set to null, <code title=dom-DocumentType-name>name</code> set to <var title>qualifiedName</var>, <code title=dom-DocumentType-publicId>publicId</code> set to <var title>publicId</var>, and <code title=dom-DocumentType-systemId>systemId</code> set to <var title>systemId</var>.
-</ol>
-<p class=note>No check is performed that the <var title>publicId</var> matches the <code title>PublicChar</code> production in XML or that the <var title>systemId</var> doesn't contain both a quotation mark (") and an apostrophe (').
-
-<p>The <dfn title=dom-DOMImplementation-createDocument><code>createDocument(<var title>namespaceURI</var>, <var title>qualifiedName</var>, <var title>doctype</var>)</code></dfn> method must run the following steps:
-
-<ol>
- <li><p>Let <var title>document</var> be a new <code>Document</code> node.
- <li><p>Let <var title>element</var> be null.
- <li><p>If <var title>qualifiedName</var> is not the empty string, set <var title>element</var> to the result of invoking the <code title=dom-Document-createElementNS>createElementNS</code> method with the arguments <var title>namespaceURI</var> and <var title>qualifiedName</var> on <var title>document</var>. If that raised an exception, re-raise the same exception and abort these steps.
- <li>
-  <p>If <var title>doctype</var> is not null, run the following substeps:
-  <ol>
-   <li><p>If the <var title>doctype</var>'s <code title=dom-Node-ownerDocument>ownerDocument</code> is not null, raise a <code title=dom-DOMException-WRONG_DOCUMENT_ERR>WRONG_DOCUMENT_ERR</code> exception and abort the overall set of steps.
-   <li><p>Set the <var title>doctype</var>'s <code title=dom-Node-ownerDocument>ownerDocument</code> to <var title>document</var>.
-   <li><p>Append <var title>doctype</var> to <var title>document</var>.
-  </ol>
- <li><p>If <var title>element</var> is not null, append <var title>element</var> to <var title>document</var>.
- <li><p>Return <var title>document</var>.
-</ol>
-
-<p class=XXX>exceptions for createDocument <a href=http://lists.w3.org/Archives/Public/www-dom/2005OctDec/0076.html>http://lists.w3.org/Archives/Public/www-dom/2005OctDec/0076.html</a>.
-
-<p><span title="HTML document">HTML documents</span> can be created using the
-<code
-title=dom-DOMImplementation-createHTMLDocument>createHTMLDocument()</code>
-method.
-
-<dl class=domintro>
- <dt><var title>doc</var> = <var title=dom-Window-document
- data-anolis-spec=window>document</var> . <code
- title=dom-Document-implementation>implementation</code> . <code
- title=dom-DOMImplementation-createHTMLDocument>createHTMLDocument</code>(
- <var title>title</var> )
-
- <dd><p>Returns a new <code>Document</code>, with a basic DOM already
- constructed with an appropriate <code title>title</code> element.
-</dl>
-
-<p>The <dfn
-title=dom-DOMImplementation-createHTMLDocument><code>createHTMLDocument(<var
-title>title</var>)</code></dfn> method, when invoked, must run the following
-steps:
-
-<ol>
- <li><p>Let <var title>doc</var> be a newly created <code>Document</code>
- object.
-
- <li><p>Mark <var title>doc</var> as being an <span>HTML document</span>.
-
- <li><p>Create a <code>DocumentType</code> node with the <code
- title=dom-DocumentType-name>name</code> attribute set to the string "<code
- title>html</code>", and the other attributes specific to
- <code>DocumentType</code> objects set to the empty string, null, and empty
- lists, as appropriate. Append the newly created node to <var title>doc</var>.
-
- <li><p>Create an <code title>html</code> element in the <span>HTML
- namespace</span>, and append it to <var title>doc</var>.
-
- <li><p>Create a <code title>head</code> element in the <span>HTML
- namespace</span>, and append it to the <code title>html</code> element created
- in the previous step.
-
- <li><p>Create a <code title>title</code> element in the <span>HTML
- namespace</span>, and append it to the <code title>head</code> element created
- in the previous step.
-
- <li><p>Create a <code>Text</code> node, and set its <code
- title=dom-CharacterData-data>data</code> attribute to the string given by the
- method's argument (which could be the empty string). Append it to the
- <code title>title</code> element created in the previous step.
-
- <li><p>Create a <code title>body</code> element in the <span>HTML
- namespace</span>, and append it to the <code title>html</code> element created
- in the earlier step.
-
- <li><p>Return <var title>doc</var>.</p></li>
-</ol>
-
-
 <h3>Interface <code>NodeList</code></h3>
 <p>A <code>NodeList</code> is a <span title=collections data-anolis-spec=html>collection</span>, except that <code>NodeList</code>s can be static (as opposed to live) if a specification defines them to be static.
 

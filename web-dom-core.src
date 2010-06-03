@@ -1714,7 +1714,9 @@ title>for ... in</code></span>
 
 
 <h3>Interface <code>NamedNodeMap</code></h3>
-<p>The <code>NamedNodeMap</code> interface represents an ordered set of nodes.
+<p>A <code>NamedNodeMap</code> object is a kind of <span
+title=concept-collection>collection</span>, whose primary purpose is to expose
+<code>Node</code>s by name.
 
 <pre class=idl>interface <dfn>NamedNodeMap</dfn> {
   <span>Node</span> <span title=dom-NamedNodeMap-getNamedItem>getNamedItem</span>(in DOMString name);
@@ -1735,8 +1737,9 @@ title>for ... in</code></span>
 
 <p class=XXX><dfn title=dom-NamedNodeMap-item>item</dfn>
 
-<p class=XXX><dfn title=dom-NamedNodeMap-length>length</dfn>
-(attributes.length should always return the length.)
+<p>The <dfn title=dom-NamedNodeMap-length><code>length</code></dfn> attribute
+must, on getting, return the number of nodes <span>represented by the
+collection</span>.
 
 <p class=XXX><dfn title=dom-NamedNodeMap-getNamedItemNS>getNamedItemNS</dfn>
 

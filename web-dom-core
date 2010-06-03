@@ -1592,7 +1592,8 @@ collection</a>.
 
 
 <h3 id=interface-namednodemap><span class=secno>5.2 </span>Interface <a href=#namednodemap><code>NamedNodeMap</code></a></h3>
-<p>The <a href=#namednodemap><code>NamedNodeMap</code></a> interface represents an ordered set of nodes.
+<p>A <a href=#namednodemap><code>NamedNodeMap</code></a> object is a kind of <a href=#concept-collection title=concept-collection>collection</a>, whose primary purpose is to expose
+<a href=#node><code>Node</code></a>s by name.
 
 <pre class=idl>interface <dfn id=namednodemap>NamedNodeMap</dfn> {
   <a href=#node>Node</a> <a href=#dom-namednodemap-getnameditem title=dom-NamedNodeMap-getNamedItem>getNamedItem</a>(in DOMString name);
@@ -1613,8 +1614,9 @@ collection</a>.
 
 <p class=XXX><dfn id=dom-namednodemap-item title=dom-NamedNodeMap-item>item</dfn>
 
-<p class=XXX><dfn id=dom-namednodemap-length title=dom-NamedNodeMap-length>length</dfn>
-(attributes.length should always return the length.)
+<p>The <dfn id=dom-namednodemap-length title=dom-NamedNodeMap-length><code>length</code></dfn> attribute
+must, on getting, return the number of nodes <a href=#represented-by-the-collection>represented by the
+collection</a>.
 
 <p class=XXX><dfn id=dom-namednodemap-getnameditemns title=dom-NamedNodeMap-getNamedItemNS>getNamedItemNS</dfn>
 

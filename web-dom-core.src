@@ -1661,7 +1661,7 @@ space, tab, newline -->
 
 
 
-<h2>Interfaces</h2>
+<h2>Collections</h2>
 <h3>Interface <code>NodeList</code></h3>
 <p>A <code>NodeList</code> is a <span title=collections data-anolis-spec=html>collection</span>, except that <code>NodeList</code>s can be static (as opposed to live) if a specification defines them to be static.
 
@@ -1681,6 +1681,8 @@ collection, then the method must return null.
 
 
 <h3>Interface <code>NamedNodeMap</code></h3>
+<p>The <code>NamedNodeMap</code> interface represents an ordered set of nodes.
+
 <pre class=idl>interface <dfn>NamedNodeMap</dfn> {
   <span>Node</span> <span title=dom-NamedNodeMap-getNamedItem>getNamedItem</span>(in DOMString name);
   <span>Node</span> <span title=dom-NamedNodeMap-setNamedItem>setNamedItem</span>(in <span>Node</span> arg);
@@ -1691,8 +1693,6 @@ collection, then the method must return null.
   <span>Node</span> <span title=dom-NamedNodeMap-setNamedItemNS>setNamedItemNS</span>(in <span>Node</span> arg);
   <span>Node</span> <span title=dom-NamedNodeMap-removeNamedItemNS>removeNamedItemNS</span>(in DOMString namespaceURI, in DOMString localName);
 };</pre>
-
-<p>The <code>NamedNodeMap</code> interface represents an ordered set of nodes.
 
 <p class=XXX><dfn title=dom-NamedNodeMap-getNamedItem>getNamedItem</dfn>
 
@@ -1712,6 +1712,8 @@ collection, then the method must return null.
 <p class=XXX><dfn title=dom-NamedNodeMap-removeNamedItemNS>removeNamedItemNS</dfn>
 
 
+
+<h2>Lists</h2>
 <h3>Interface <code>DOMStringList</code></h3>
 <pre class=idl>interface <dfn>DOMStringList</dfn> {
   DOMString <span title=dom-DOMStringList-item>item</span>(in unsigned long index);

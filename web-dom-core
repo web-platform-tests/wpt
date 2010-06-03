@@ -104,14 +104,16 @@
    <li><a href=#interface-characterdata><span class=secno>4.8 </span>Interface <code>CharacterData</code></a></li>
    <li><a href=#interface-text><span class=secno>4.9 </span>Interface <code>Text</code></a></li>
    <li><a href=#interface-comment><span class=secno>4.10 </span>Interface <code>Comment</code></a></ol></li>
- <li><a href=#interfaces><span class=secno>5 </span>Interfaces</a>
+ <li><a href=#collections><span class=secno>5 </span>Collections</a>
   <ol>
    <li><a href=#interface-nodelist><span class=secno>5.1 </span>Interface <code>NodeList</code></a></li>
-   <li><a href=#interface-namednodemap><span class=secno>5.2 </span>Interface <code>NamedNodeMap</code></a></li>
-   <li><a href=#interface-domstringlist><span class=secno>5.3 </span>Interface <code>DOMStringList</code></a></li>
-   <li><a href=#interface-domtokenlist><span class=secno>5.4 </span>Interface <code>DOMTokenList</code></a></li>
-   <li><a href=#interface-domsettabletokenlist><span class=secno>5.5 </span>Interface <code>DOMSettableTokenList</code></a></ol></li>
- <li><a href=#historical-interfaces><span class=secno>6 </span>Historical interfaces</a></li>
+   <li><a href=#interface-namednodemap><span class=secno>5.2 </span>Interface <code>NamedNodeMap</code></a></ol></li>
+ <li><a href=#lists><span class=secno>6 </span>Lists</a>
+  <ol>
+   <li><a href=#interface-domstringlist><span class=secno>6.1 </span>Interface <code>DOMStringList</code></a></li>
+   <li><a href=#interface-domtokenlist><span class=secno>6.2 </span>Interface <code>DOMTokenList</code></a></li>
+   <li><a href=#interface-domsettabletokenlist><span class=secno>6.3 </span>Interface <code>DOMSettableTokenList</code></a></ol></li>
+ <li><a href=#historical-interfaces><span class=secno>7 </span>Historical interfaces</a></li>
  <li><a class=no-num href=#references>References</a></li>
  <li><a class=no-num href=#acknowledgements>Acknowledgements</a></ol>
 <!--end-toc-->
@@ -1547,7 +1549,7 @@ space, tab, newline -->
 
 
 
-<h2 id=interfaces><span class=secno>5 </span>Interfaces</h2>
+<h2 id=collections><span class=secno>5 </span>Collections</h2>
 <h3 id=interface-nodelist><span class=secno>5.1 </span>Interface <a href=#nodelist><code>NodeList</code></a></h3>
 <p>A <a href=#nodelist><code>NodeList</code></a> is a <a class=external href=http://www.whatwg.org/html/#collections title=collections>collection</a>, except that <a href=#nodelist><code>NodeList</code></a>s can be static (as opposed to live) if a specification defines them to be static.
 
@@ -1566,6 +1568,8 @@ collection, then the method must return null.
 
 
 <h3 id=interface-namednodemap><span class=secno>5.2 </span>Interface <a href=#namednodemap><code>NamedNodeMap</code></a></h3>
+<p>The <a href=#namednodemap><code>NamedNodeMap</code></a> interface represents an ordered set of nodes.
+
 <pre class=idl>interface <dfn id=namednodemap>NamedNodeMap</dfn> {
   <a href=#node>Node</a> <a href=#dom-namednodemap-getnameditem title=dom-NamedNodeMap-getNamedItem>getNamedItem</a>(in DOMString name);
   <a href=#node>Node</a> <a href=#dom-namednodemap-setnameditem title=dom-NamedNodeMap-setNamedItem>setNamedItem</a>(in <a href=#node>Node</a> arg);
@@ -1576,8 +1580,6 @@ collection, then the method must return null.
   <a href=#node>Node</a> <a href=#dom-namednodemap-setnameditemns title=dom-NamedNodeMap-setNamedItemNS>setNamedItemNS</a>(in <a href=#node>Node</a> arg);
   <a href=#node>Node</a> <a href=#dom-namednodemap-removenameditemns title=dom-NamedNodeMap-removeNamedItemNS>removeNamedItemNS</a>(in DOMString namespaceURI, in DOMString localName);
 };</pre>
-
-<p>The <a href=#namednodemap><code>NamedNodeMap</code></a> interface represents an ordered set of nodes.
 
 <p class=XXX><dfn id=dom-namednodemap-getnameditem title=dom-NamedNodeMap-getNamedItem>getNamedItem</dfn>
 
@@ -1597,7 +1599,9 @@ collection, then the method must return null.
 <p class=XXX><dfn id=dom-namednodemap-removenameditemns title=dom-NamedNodeMap-removeNamedItemNS>removeNamedItemNS</dfn>
 
 
-<h3 id=interface-domstringlist><span class=secno>5.3 </span>Interface <a href=#domstringlist><code>DOMStringList</code></a></h3>
+
+<h2 id=lists><span class=secno>6 </span>Lists</h2>
+<h3 id=interface-domstringlist><span class=secno>6.1 </span>Interface <a href=#domstringlist><code>DOMStringList</code></a></h3>
 <pre class=idl>interface <dfn id=domstringlist>DOMStringList</dfn> {
   DOMString <a href=#dom-domstringlist-item title=dom-DOMStringList-item>item</a>(in unsigned long index);
   readonly attribute unsigned long <a href=#dom-domstringlist-length title=dom-DOMStringList-length>length</a>;
@@ -1611,7 +1615,7 @@ collection, then the method must return null.
 <p class=XXX><dfn id=dom-domstringlist-contains title=dom-DOMStringList-contains>contains</dfn>
 
 
-<h3 id=interface-domtokenlist><span class=secno>5.4 </span>Interface <a href=#domtokenlist><code>DOMTokenList</code></a></h3>
+<h3 id=interface-domtokenlist><span class=secno>6.2 </span>Interface <a href=#domtokenlist><code>DOMTokenList</code></a></h3>
 <p>The <a href=#domtokenlist><code>DOMTokenList</code></a> interface represents an interface
 to an underlying string that consists of a <a href=#set-of-space-separated-tokens>set of
 space-separated tokens</a>.</p>
@@ -1816,7 +1820,7 @@ underlying string representation.</p>
 </div>
 
 
-<h3 id=interface-domsettabletokenlist><span class=secno>5.5 </span>Interface <a href=#domsettabletokenlist><code>DOMSettableTokenList</code></a></h3>
+<h3 id=interface-domsettabletokenlist><span class=secno>6.3 </span>Interface <a href=#domsettabletokenlist><code>DOMSettableTokenList</code></a></h3>
 
 <p>The <a href=#domsettabletokenlist><code>DOMSettableTokenList</code></a> interface is the same as the
 <a href=#domtokenlist><code>DOMTokenList</code></a> interface, except that it allows the
@@ -1851,7 +1855,7 @@ replace the underlying string with the new value on setting.</p>
 
 
 
-<h2 id=historical-interfaces><span class=secno>6 </span>Historical interfaces</h2>
+<h2 id=historical-interfaces><span class=secno>7 </span>Historical interfaces</h2>
 <p>This specification does not define the following interfaces:
 <ul class=brief>
  <li><dfn id=domuserdata><code>DOMUserData</code></dfn>

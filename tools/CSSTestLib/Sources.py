@@ -329,6 +329,7 @@ class XHTMLSource(FileSource):
       self.cacheAsParseError(self.sourcepath, e)
       e.CSSTestLibErrorLocation = self.sourcepath
       self.error = e
+      self.encoding = 'utf-8'
 
   def validate(self):
     """Parse file if not parsed, and store any parse errors in self.error"""

@@ -31,7 +31,7 @@ def xhtml2html(source, dest):
 
     # Write
     f = open(dest, 'w')
-    f.write(o.encode('utf-8'))
+    f.write(o.encode(xs.encoding))
     f.close()
 
 if len(sys.argv) == 3:

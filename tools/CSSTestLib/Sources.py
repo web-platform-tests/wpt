@@ -324,6 +324,7 @@ class XHTMLSource(FileSource):
     self.error = False
     try:
       self.tree = etree.parse(self.sourcepath, parser=self.__parser)
+      self.encoding = self.tree.docinfo.encoding or 'utf-8'
     except etree.ParseError, e:
       self.cacheAsParseError(self.sourcepath, e)
       e.CSSTestLibErrorLocation = self.sourcepath
@@ -392,7 +393,7 @@ class XHTMLSource(FileSource):
 
     # write
     f = open(format.dest(self.relpath), 'w')
-    f.write(output.encode('utf-8'))
+    f.write(output.encode(self.encoding))
     f.close()
 
   def compact():

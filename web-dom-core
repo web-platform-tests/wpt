@@ -55,7 +55,7 @@
  <li>sourceIndex? <a href=http://www.quirksmode.org/dom/w3c_core.html>http://www.quirksmode.org/dom/w3c_core.html</a>
  <li>Range.createContextualFragment <a href=http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2009-March/018892.html>http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2009-March/018892.html</a>
  <li>[Reflect] <a href=http://krijnhoetmer.nl/irc-logs/whatwg/20090622#l-90>http://krijnhoetmer.nl/irc-logs/whatwg/20090622#l-90</a>
- <li>Perhaps we should move DOMStringMap, getElementsByClassName to this spec...
+ <li>Perhaps we should move DOMStringMap to this spec...
  <li class=XXX>http://hg.mozilla.org/mozilla-central/rev/91694d19d7b2
 </ul>
 
@@ -911,6 +911,7 @@ conditions are true, and must otherwise return false:
 
   <a href=#nodelist>NodeList</a> <a href=#dom-document-getelementsbytagname title=dom-Document-getElementsByTagName>getElementsByTagName</a>(in DOMString tagname);
   <a href=#nodelist>NodeList</a> <a href=#dom-document-getelementsbytagnamens title=dom-Document-getElementsByTagNameNS>getElementsByTagNameNS</a>(in DOMString namespaceURI, in DOMString localName);
+  <a href=#nodelist>NodeList</a> <a href=#dom-document-getelementsbyclassname title=dom-Document-getElementsByClassName>getElementsByClassName</a>(in DOMString classNames);
   <a href=#element>Element</a> <a href=#dom-document-getelementbyid title=dom-Document-getElementById>getElementById</a>(in DOMString elementId);
 
   <a href=#node>Node</a> <a href=#dom-document-importnode title=dom-Document-importNode>importNode</a>(in <a href=#node>Node</a> importedNode, in boolean deep);
@@ -1077,6 +1078,16 @@ contains "xml" or the colon, or that the data contains characters that match the
 data-anolis-spec=xmlns>NCName</code> production in Namespaces in XML.-->
 
 <hr>
+<dl class=domintro>
+ <dt><var title="">collection</var> = <var title="">document</var> . <a href=#dom-document-getelementsbyclassname><code title=dom-Document-getElementsByClassName>getElementsByClassName(<var title="">classes</var>)</code></a>
+ <dt><var title="">collection</var> = <var title="">element</var> . <a href=#dom-element-getelementsbyclassname><code title=dom-Element-getElementsByClassName>getElementsByClassName(<var title="">classes</var>)</code></a>
+ <dd>
+  <p>Returns a <a href=#nodelist><code>NodeList</code></a> of the elements in the object
+  on which the method was invoked (a <a href=#document><code>Document</code></a> or an
+  <a href=#element><code>Element</code></a>) that have all the classes given by <var title="">classes</var>.
+  <p>The <var title="">classes</var> argument is interpreted as a
+  space-separated list of classes.
+</dl>
 
 <p>The <dfn id=dom-document-getelementsbytagname title=dom-Document-getElementsByTagName><code>getElementsByTagName(<var title="">localName</var>)</code></dfn> method must run the following steps:
 <ol>
@@ -1107,6 +1118,7 @@ data-anolis-spec=xmlns>NCName</code> production in Namespaces in XML.-->
 <code title="">foo</code> elements that are in the <a href=#html-namespace>HTML namespace</a>, but
 not <code title="">FOO</code> elements that are in the <a href=#html-namespace>HTML namespace</a>.
 
+
 <p>The <dfn id=dom-document-getelementsbytagnamens title=dom-Document-getElementsByTagNameNS><code>getElementsByTagNameNS(<var title="">namespaceURI</var>, <var title="">localName</var>)</code></dfn> method must run the following steps:
 <ol>
  <li><p>If both <var title="">namespaceURI</var> and <var title="">localName</var> are just the character U+002A ASTERISK ("*"), return a <a href=#nodelist><code>NodeList</code></a> rooted at the <a href=#context-node>context node</a>, whose filter matches only <a href=#element><code>Element</code></a> nodes.
@@ -1115,6 +1127,48 @@ not <code title="">FOO</code> elements that are in the <a href=#html-namespace>H
  <li><p>Otherwise, return a <a href=#nodelist><code>NodeList</code></a> rooted at the <a href=#context-node>context node</a>, whose filter matches only <a href=#element><code>Element</code></a> nodes that have a <a href=#dom-node-namespaceuri><code title=dom-Node-namespaceURI>namespaceURI</code></a> equal to <var title="">namespaceURI</var> and a <a href=#dom-node-localname><code title=dom-Node-localName>localName</code></a> equal to <var title="">localName</var> (both in a <a href=#case-sensitive>case-sensitive</a> manner).
 </ol>
 <p>A new <a href=#nodelist><code>NodeList</code></a> object must be returned each time.
+
+
+<p>The <dfn id=dom-document-getelementsbyclassname title=dom-Document-getElementsByClassName><code>getElementsByClassName(<var title="">classNames</var>)</code></dfn> method takes a string that contains a
+<a href=#set-of-space-separated-tokens>set of space-separated tokens</a> representing <a href=#concept-class title=concept-class>classes</a>. When called, the method must return a <a href=#concept-collection-live title=concept-collection-live>live</a> <a href=#nodelist><code>NodeList</code></a> object
+containing all the elements in the <a href=#context-node>context node</a>, in <a href=#tree-order>tree
+order</a>, that have all the <a href=#concept-class title=concept-class>classes</a>
+specified in the <var title="">classNames</var> argument, having obtained the
+<a href=#concept-class title=concept-class>classes</a> by <a href=#split-a-string-on-spaces title="split a string on
+spaces">splitting the string on spaces</a>. (Duplicates are ignored.) If
+there are no tokens specified in the argument, then the method must return an
+empty <a href=#nodelist><code>NodeList</code></a>. If the document is in <a href=#concept-quirks-mode title=concept-quirks-mode>quirks mode</a>, then the comparisons for the <a href=#concept-class title=concept-class>classes</a> must be done in an <a href=#ascii-case-insensitive>ASCII
+case-insensitive</a> manner, otherwise, the comparisons must be done in a
+<a href=#case-sensitive>case-sensitive</a> manner.
+<p>A new <a href=#nodelist><code>NodeList</code></a> object must be returned each time.
+
+<div class=example>
+ <p>Given the following XHTML fragment:</p>
+
+ <pre>&lt;div id="example"&gt;
+  &lt;p id="p1" class="aaa bbb"/&gt;
+  &lt;p id="p2" class="aaa ccc"/&gt;
+  &lt;p id="p3" class="bbb ccc"/&gt;
+&lt;/div&gt;</pre>
+
+ <p>A call to <a href=#dom-element-getelementsbyclassname><code title=dom-Element-getElementsByClassName>document.getElementById('example').getElementsByClassName('aaa')</code></a>
+ would return a <a href=#nodelist><code>NodeList</code></a> with the two paragraphs <code title="">p1</code> and <code title="">p2</code> in it.</p>
+
+ <p>A call to <a href=#dom-element-getelementsbyclassname><code title=dom-Element-getElementsByClassName>getElementsByClassName('ccc&nbsp;bbb')</code></a> would only
+ return one node, however, namely <code title="">p3</code>. A call
+ to <a href=#dom-element-getelementsbyclassname><code title=dom-Element-getElementsByClassName>document.getElementById('example').getElementsByClassName('bbb&nbsp;&nbsp;ccc&nbsp;')</code></a>
+ would return the same thing.</p>
+
+ <p>A call to <a href=#dom-element-getelementsbyclassname><code title=dom-Element-getElementsByClassName>getElementsByClassName('aaa,bbb')</code></a> would return no
+ nodes; none of the elements above are in the "aaa,bbb" class.</p>
+</div>
+
+<!-- v2:
+>         * xGetParentElementByClassName(rootElement, className, tagName) -
+> Navigates upwards until we hit a parent element with the given class name and
+> optional tag name.
+-->
+
 
 <p>The <dfn id=dom-document-getelementbyid title=dom-Document-getElementById><code>getElementById(<var title="">elementId</var>)</code></dfn> method must return the first
 <a href=#element><code>Element</code></a> node, in <a href=#tree-order>tree order</a>, in the <a href=#context-node>context
@@ -1352,10 +1406,11 @@ attribute in the <a href=#xml-namespace>XML namespace</a>. <a data-anolis-ref=""
 
 <p><dfn id=concept-class-attribute title=concept-class-attribute>Class attributes</dfn> must have a
 <a href=#dom-attr-value><code title=dom-Attr-value>value</code></a> that is a <a href=#set-of-space-separated-tokens>set of space-separated
-tokens</a> representing the various classes that the element belongs to.
+tokens</a> representing the various <dfn id=concept-class title=concept-class>classes</dfn>
+that the element belongs to.
 
-<p>The classes that an <a href=#element><code>Element</code></a> node has associated with it is the
-set of all the classes returned when the value of the <a href=#concept-class-attribute title=concept-class-attribute>class attribute</a> is <a href=#split-a-string-on-spaces title="split a string on spaces">split on spaces</a>. (Duplicates are
+<p>The <a href=#concept-class title=concept-class>classes</a> that an <a href=#element><code>Element</code></a>
+node has associated with it is the set of all the <a href=#concept-class title=concept-class>classes</a> returned when the value of the <a href=#concept-class-attribute title=concept-class-attribute>class attribute</a> is <a href=#split-a-string-on-spaces title="split a string on spaces">split on spaces</a>. (Duplicates are
 ignored.)
 
 <p class=note>The <code title="">class</code> attributes in HTML, MathML and SVG
@@ -1374,6 +1429,7 @@ are all <a href=#concept-class-attribute title=concept-class-attribute>class att
   Attr <span title=dom-Element-setAttributeNode>setAttributeNode</span>(in Attr newAttr);
   Attr <span title=dom-Element-removeAttributeNode>removeAttributeNode</span>(in Attr oldAttr);-->
   <a href=#nodelist>NodeList</a> <a href=#dom-element-getelementsbytagname title=dom-Element-getElementsByTagName>getElementsByTagName</a>(in DOMString name);
+  <a href=#nodelist>NodeList</a> <a href=#dom-element-getelementsbyclassname title=dom-Element-getElementsByClassName>getElementsByClassName</a>(in DOMString classNames);
   DOMString? <a href=#dom-element-getattributens title=dom-Element-getAttributeNS>getAttributeNS</a>(in DOMString namespaceURI, in DOMString localName);
   void <a href=#dom-element-setattributens title=dom-Element-setAttributeNS>setAttributeNS</a>(in DOMString namespaceURI, in DOMString qualifiedName, in DOMString value);
   void <a href=#dom-element-removeattributens title=dom-Element-removeAttributeNS>removeAttributeNS</a>(in DOMString namespaceURI, in DOMString localName);<!--
@@ -1466,7 +1522,21 @@ Attr node is set on an HTML element using Element.setAttributeNode(), it must
 have its name converted to ASCII lowercase before the element is affected.
 (In HTML documents.) -->
 
+<hr>
+
 <p class=XXX><dfn id=dom-element-getelementsbytagname title=dom-Element-getElementsByTagName>getElementsByTagName</dfn>
+
+
+<p>The <dfn id=dom-element-getelementsbyclassname title=dom-Element-getElementsByClassName><code>getElementsByClassName(<var title="">classNames</var>)</code></dfn> method on the <a href=#element><code>Element</code></a>
+interface must return a <a href=#concept-collection-live title=concept-collection-live>live</a>
+<a href=#nodelist><code>NodeList</code></a> with the nodes that the <a href=#dom-document-getelementsbyclassname><code title=dom-Document-getElementsByClassName>getElementsByClassName</code></a>
+method would return when called on the <a href=#context-node title="context node">context
+node's</a> <a href=#dom-node-ownerdocument><code title=dom-Node-ownerDocument>ownerDocument</code></a> and
+passed the same argument(s), excluding any elements that are not descendants of
+the <a href=#context-node>context node</a> on which the method was invoked.
+<p>A new <a href=#nodelist><code>NodeList</code></a> object must be returned each time.
+
+<hr>
 
 <p class=XXX><dfn id=dom-element-getattributens title=dom-Element-getAttributeNS>getAttributeNS</dfn> (might return null; Gecko and WebKit don't)
 

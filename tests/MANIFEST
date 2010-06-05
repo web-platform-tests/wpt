@@ -5,11 +5,11 @@ Document-createProcessingInstruction.xhtml
 Document-getElementById-emptystring.html
 Document-getElementsByTagName.html
 Document-getElementsByTagNameNS.html
+Document-getElementsByClassName.html
 DOMImplementation-createHTMLDocument.html
 Element-getAttribute.html
 Element-setAttribute.html
 Element-tagName.html
-MANIFEST
 Node-appendChild.html
 Node-hasAttributes.html
 Node-insertBefore.html

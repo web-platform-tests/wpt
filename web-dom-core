@@ -1538,16 +1538,32 @@ have its name converted to ASCII lowercase before the element is affected.
 
 <hr>
 
-<p class=XXX><dfn id=dom-element-getelementsbytagname title=dom-Element-getElementsByTagName>getElementsByTagName</dfn>
+<p>The <dfn id=dom-element-getelementsbytagname title=dom-Element-getElementsByTagName><code>getElementsByTagName(<var title="">name</var>)</code></dfn> method on the <a href=#element><code>Element</code></a>
+interface must return a <a href=#concept-collection-live title=concept-collection-live>live</a>
+<a href=#nodelist><code>NodeList</code></a> with the nodes that the <a href=#dom-document-getelementsbytagname><code title=dom-Document-getElementsByTagName>getElementsByTagName</code></a>
+method would return when called on the <a href=#context-node title="context node">context
+node's</a> <a href=#dom-node-ownerdocument><code title=dom-Node-ownerDocument>ownerDocument</code></a> and
+passed the same argument, excluding any elements that are not descendants of
+the <a href=#context-node>context node</a> on which the method was invoked.
+<p>A new <a href=#nodelist><code>NodeList</code></a> object must be returned each time.
 
-<p class=XXX><dfn id=dom-element-getelementsbytagnamens title=dom-Element-getElementsByTagNameNS>getElementsByTagNameNS</dfn>
+
+<p>The <dfn id=dom-element-getelementsbytagnamens title=dom-Element-getElementsByTagNameNS><code>getElementsByTagNameNS(<var title="">namespaceURI</var>, <var title="">localName</var>)</code></dfn> method on the
+<a href=#element><code>Element</code></a> interface must return a <a href=#concept-collection-live title=concept-collection-live>live</a> <a href=#nodelist><code>NodeList</code></a> with the nodes
+that the <a href=#dom-document-getelementsbytagnamens><code title=dom-Document-getElementsByTagNameNS>getElementsByTagNameNS</code></a>
+method would return when called on the <a href=#context-node title="context node">context
+node's</a> <a href=#dom-node-ownerdocument><code title=dom-Node-ownerDocument>ownerDocument</code></a> and
+passed the same arguments, excluding any elements that are not descendants of
+the <a href=#context-node>context node</a> on which the method was invoked.
+<p>A new <a href=#nodelist><code>NodeList</code></a> object must be returned each time.
+
 
 <p>The <dfn id=dom-element-getelementsbyclassname title=dom-Element-getElementsByClassName><code>getElementsByClassName(<var title="">classNames</var>)</code></dfn> method on the <a href=#element><code>Element</code></a>
 interface must return a <a href=#concept-collection-live title=concept-collection-live>live</a>
 <a href=#nodelist><code>NodeList</code></a> with the nodes that the <a href=#dom-document-getelementsbyclassname><code title=dom-Document-getElementsByClassName>getElementsByClassName</code></a>
 method would return when called on the <a href=#context-node title="context node">context
 node's</a> <a href=#dom-node-ownerdocument><code title=dom-Node-ownerDocument>ownerDocument</code></a> and
-passed the same argument(s), excluding any elements that are not descendants of
+passed the same argument, excluding any elements that are not descendants of
 the <a href=#context-node>context node</a> on which the method was invoked.
 <p>A new <a href=#nodelist><code>NodeList</code></a> object must be returned each time.
 

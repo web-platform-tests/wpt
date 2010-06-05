@@ -1659,9 +1659,32 @@ have its name converted to ASCII lowercase before the element is affected.
 
 <hr>
 
-<p class=XXX><dfn title=dom-Element-getElementsByTagName>getElementsByTagName</dfn>
+<p>The <dfn
+title=dom-Element-getElementsByTagName><code>getElementsByTagName(<var
+title>name</var>)</code></dfn> method on the <code>Element</code>
+interface must return a <span title=concept-collection-live>live</span>
+<code>NodeList</code> with the nodes that the <code
+title=dom-Document-getElementsByTagName>getElementsByTagName</code>
+method would return when called on the <span title="context node">context
+node's</span> <code title=dom-Node-ownerDocument>ownerDocument</code> and
+passed the same argument, excluding any elements that are not descendants of
+the <span>context node</span> on which the method was invoked.
+<p>A new <code>NodeList</code> object must be returned each time.
 
-<p class=XXX><dfn title=dom-Element-getElementsByTagNameNS>getElementsByTagNameNS</dfn>
+
+<p>The <dfn
+title=dom-Element-getElementsByTagNameNS><code>getElementsByTagNameNS(<var
+title>namespaceURI</var>, <var title>localName</var>)</code></dfn> method on the
+<code>Element</code> interface must return a <span
+title=concept-collection-live>live</span> <code>NodeList</code> with the nodes
+that the <code
+title=dom-Document-getElementsByTagNameNS>getElementsByTagNameNS</code>
+method would return when called on the <span title="context node">context
+node's</span> <code title=dom-Node-ownerDocument>ownerDocument</code> and
+passed the same arguments, excluding any elements that are not descendants of
+the <span>context node</span> on which the method was invoked.
+<p>A new <code>NodeList</code> object must be returned each time.
+
 
 <p>The <dfn
 title=dom-Element-getElementsByClassName><code>getElementsByClassName(<var
@@ -1671,7 +1694,7 @@ interface must return a <span title=concept-collection-live>live</span>
 title="dom-Document-getElementsByClassName">getElementsByClassName</code>
 method would return when called on the <span title="context node">context
 node's</span> <code title=dom-Node-ownerDocument>ownerDocument</code> and
-passed the same argument(s), excluding any elements that are not descendants of
+passed the same argument, excluding any elements that are not descendants of
 the <span>context node</span> on which the method was invoked.
 <p>A new <code>NodeList</code> object must be returned each time.
 

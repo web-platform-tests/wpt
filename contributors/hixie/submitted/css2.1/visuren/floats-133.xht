@@ -1,24 +1,24 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0//EN">
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
  <head>
-  <title>CSS Floats: Wrapping long text</title>
+  <title>CSS Floats: Wrapping text and position:static</title>
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
-  <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/box/float/032.html"/>
+  <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/box/float/033.html"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#floats" />
   <style type="text/css">
    .control { display: inline; font: 1em/1 Ahem, sans-serif; background: red; color: white; }
-   .container { font: 20px/1 Ahem; width: 8em; height: 2em; background: red; }
-   .box { height: 1em; background: green; color: lime; }
+   .container { font: 20px/1 Ahem; width: 2em; height: 1em; background: red; }
+   .box { height: 1em; color: white; }
    .float { width: 1em; height: 1em; float: left; background: green; }
   </style>
  </head>
  <body>
   <div class="control">Ahem_font_required_for_this_test.</div>
-  <p>There should be two layers of green below.</p>
+  <p>There should be a green square below.</p>
   <div class="container">
    <div class="box">
     <div class="float"></div>
-    xxxxxxxx
+    x
    </div>
   </div>
  </body>

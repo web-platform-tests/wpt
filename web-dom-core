@@ -27,7 +27,7 @@
 <body class=draft>
 <div class=head id=head>
 <h1>Web DOM Core</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-date:-01-jan-1901>Work in Progress &mdash; Last Update 3 June 2010</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-date:-01-jan-1901>Work in Progress &mdash; Last Update 5 June 2010</h2>
 <dl>
  <dt>Editors
  <dd>Simon Pieters &lt;simonp@opera.com&gt;
@@ -331,7 +331,8 @@ it must use the following algorithm:</p>
  <li><p>Let <var title="">position</var> be a pointer into <var title="">input</var>,
  initially pointing at the start of the string.
 
- <li><p><i>Loop</i>: If <var title="">position</var> is beyond the end of <var title="">input</var>, abort these steps.
+ <li><p><i title="">Loop</i>: If <var title="">position</var> is beyond the end of
+ <var title="">input</var>, abort these steps.
 
  <li>
   <p>If the character at <var title="">position</var> is a <a href=#space-character>space
@@ -343,7 +344,7 @@ it must use the following algorithm:</p>
    <li><p>Advance <var title="">position</var> so it points at the next character
    in <var title="">input</var>.
 
-   <li><p>Return to the step labeled <i>loop</i>.
+   <li><p>Return to the step labeled <i title="">loop</i>.
   </ol>
 
  <li><p>Otherwise, the character at <var title="">position</var> is the first
@@ -365,7 +366,7 @@ it must use the following algorithm:</p>
 
  <li><p>Otherwise, append <var title="">s</var> to the end of <var title="">output</var>.
 
- <li><p>Return to the step labeled <i>loop</i>.</li>
+ <li><p>Return to the step labeled <i title="">loop</i>.</li>
 </ol>
 
 <p class=note>This causes any occurrences of the token to be

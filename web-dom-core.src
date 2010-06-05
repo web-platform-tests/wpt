@@ -296,8 +296,8 @@ it must use the following algorithm:</p>
  <li><p>Let <var title>position</var> be a pointer into <var title>input</var>,
  initially pointing at the start of the string.
 
- <li><p><i>Loop</i>: If <var title>position</var> is beyond the end of <var
- title>input</var>, abort these steps.
+ <li><p><i title>Loop</i>: If <var title>position</var> is beyond the end of
+ <var title>input</var>, abort these steps.
 
  <li>
   <p>If the character at <var title>position</var> is a <span>space
@@ -310,7 +310,7 @@ it must use the following algorithm:</p>
    <li><p>Advance <var title>position</var> so it points at the next character
    in <var title>input</var>.
 
-   <li><p>Return to the step labeled <i>loop</i>.
+   <li><p>Return to the step labeled <i title>loop</i>.
   </ol>
 
  <li><p>Otherwise, the character at <var title>position</var> is the first
@@ -335,7 +335,7 @@ it must use the following algorithm:</p>
  <li><p>Otherwise, append <var title>s</var> to the end of <var
  title>output</var>.
 
- <li><p>Return to the step labeled <i>loop</i>.</p></li>
+ <li><p>Return to the step labeled <i title>loop</i>.</p></li>
 </ol>
 
 <p class="note">This causes any occurrences of the token to be

@@ -1525,8 +1525,8 @@ title=concept-class-attribute>class attributes</span>.
 <h3>Interface <code>Element</code></h3>
 <pre class=idl>interface <dfn>Element</dfn> : <span>Node</span> {
   readonly attribute DOMString <span title=dom-Element-tagName>tagName</span>;
-  DOMString? <span title=dom-Element-getAttribute>getAttribute</span>(in DOMString <var title>name</var>);
-  void <span title=dom-Element-setAttribute>setAttribute</span>(in DOMString <var title>name</var>, in DOMString <var title>value</var>);
+  DOMString? <span title=dom-Element-getAttribute>getAttribute</span>(in DOMString name);
+  void <span title=dom-Element-setAttribute>setAttribute</span>(in DOMString name, in DOMString value);
   void <span title=dom-Element-removeAttribute>removeAttribute</span>(in DOMString name);<!--
   Attr <span title=dom-Element-getAttributeNode>getAttributeNode</span>(in DOMString name);
   Attr <span title=dom-Element-setAttributeNode>setAttributeNode</span>(in Attr newAttr);

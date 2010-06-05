@@ -1421,8 +1421,8 @@ are all <a href=#concept-class-attribute title=concept-class-attribute>class att
 <h3 id=interface-element><span class=secno>4.5 </span>Interface <a href=#element><code>Element</code></a></h3>
 <pre class=idl>interface <dfn id=element>Element</dfn> : <a href=#node>Node</a> {
   readonly attribute DOMString <a href=#dom-element-tagname title=dom-Element-tagName>tagName</a>;
-  DOMString? <a href=#dom-element-getattribute title=dom-Element-getAttribute>getAttribute</a>(in DOMString <var title="">name</var>);
-  void <a href=#dom-element-setattribute title=dom-Element-setAttribute>setAttribute</a>(in DOMString <var title="">name</var>, in DOMString <var title="">value</var>);
+  DOMString? <a href=#dom-element-getattribute title=dom-Element-getAttribute>getAttribute</a>(in DOMString name);
+  void <a href=#dom-element-setattribute title=dom-Element-setAttribute>setAttribute</a>(in DOMString name, in DOMString value);
   void <a href=#dom-element-removeattribute title=dom-Element-removeAttribute>removeAttribute</a>(in DOMString name);<!--
   Attr <span title=dom-Element-getAttributeNode>getAttributeNode</span>(in DOMString name);
   Attr <span title=dom-Element-setAttributeNode>setAttributeNode</span>(in Attr newAttr);

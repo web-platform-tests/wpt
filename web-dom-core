@@ -1421,26 +1421,29 @@ are all <a href=#concept-class-attribute title=concept-class-attribute>class att
 <h3 id=interface-element><span class=secno>4.5 </span>Interface <a href=#element><code>Element</code></a></h3>
 <pre class=idl>interface <dfn id=element>Element</dfn> : <a href=#node>Node</a> {
   readonly attribute DOMString <a href=#dom-element-tagname title=dom-Element-tagName>tagName</a>;
+
   DOMString? <a href=#dom-element-getattribute title=dom-Element-getAttribute>getAttribute</a>(in DOMString name);
-  void <a href=#dom-element-setattribute title=dom-Element-setAttribute>setAttribute</a>(in DOMString name, in DOMString value);
-  void <a href=#dom-element-removeattribute title=dom-Element-removeAttribute>removeAttribute</a>(in DOMString name);<!--
-  Attr <span title=dom-Element-getAttributeNode>getAttributeNode</span>(in DOMString name);
-  Attr <span title=dom-Element-setAttributeNode>setAttributeNode</span>(in Attr newAttr);
-  Attr <span title=dom-Element-removeAttributeNode>removeAttributeNode</span>(in Attr oldAttr);-->
-  <a href=#nodelist>NodeList</a> <a href=#dom-element-getelementsbytagname title=dom-Element-getElementsByTagName>getElementsByTagName</a>(in DOMString name);
-  <a href=#nodelist>NodeList</a> <a href=#dom-element-getelementsbyclassname title=dom-Element-getElementsByClassName>getElementsByClassName</a>(in DOMString classNames);
   DOMString? <a href=#dom-element-getattributens title=dom-Element-getAttributeNS>getAttributeNS</a>(in DOMString namespaceURI, in DOMString localName);
+  void <a href=#dom-element-setattribute title=dom-Element-setAttribute>setAttribute</a>(in DOMString name, in DOMString value);
   void <a href=#dom-element-setattributens title=dom-Element-setAttributeNS>setAttributeNS</a>(in DOMString namespaceURI, in DOMString qualifiedName, in DOMString value);
-  void <a href=#dom-element-removeattributens title=dom-Element-removeAttributeNS>removeAttributeNS</a>(in DOMString namespaceURI, in DOMString localName);<!--
-  Attr <span title=dom-Element-getAttributeNodeNS>getAttributeNodeNS</span>(in DOMString namespaceURI, in DOMString localName);
-  Attr getAttributeNodeNS(in DOMString namespaceURI, in DOMString localName);-->
-  <a href=#nodelist>NodeList</a> <a href=#dom-element-getelementsbytagnamens title=dom-Element-getElementsByTagNameNS>getElementsByTagNameNS</a>(in DOMString namespaceURI, in DOMString localName);
+  void <a href=#dom-element-removeattribute title=dom-Element-removeAttribute>removeAttribute</a>(in DOMString name);
+  void <a href=#dom-element-removeattributens title=dom-Element-removeAttributeNS>removeAttributeNS</a>(in DOMString namespaceURI, in DOMString localName);
   boolean <a href=#dom-element-hasattribute title=dom-Element-hasAttribute>hasAttribute</a>(in DOMString name);
-  boolean <a href=#dom-element-hasattributens title=dom-Element-hasAttributeNS>hasAttributeNS</a>(in DOMString namespaceURI, in DOMString localName);<!--
+  boolean <a href=#dom-element-hasattributens title=dom-Element-hasAttributeNS>hasAttributeNS</a>(in DOMString namespaceURI, in DOMString localName);
+<!--
+  <span>Attr</span> <span title=dom-Element-getAttributeNode>getAttributeNode</span>(in DOMString name);
+  <span>Attr</span> <span title=dom-Element-setAttributeNode>setAttributeNode</span>(in Attr newAttr);
+  <span>Attr</span> <span title=dom-Element-removeAttributeNode>removeAttributeNode</span>(in Attr oldAttr);
+  <span>Attr</span> <span title=dom-Element-getAttributeNodeNS>getAttributeNodeNS</span>(in DOMString namespaceURI, in DOMString localName);
+-->
+  <a href=#nodelist>NodeList</a> <a href=#dom-element-getelementsbytagname title=dom-Element-getElementsByTagName>getElementsByTagName</a>(in DOMString name);
+  <a href=#nodelist>NodeList</a> <a href=#dom-element-getelementsbytagnamens title=dom-Element-getElementsByTagNameNS>getElementsByTagNameNS</a>(in DOMString namespaceURI, in DOMString localName);
+  <a href=#nodelist>NodeList</a> <a href=#dom-element-getelementsbyclassname title=dom-Element-getElementsByClassName>getElementsByClassName</a>(in DOMString classNames);<!--
   readonly attribute TypeInfo schemaTypeInfo;
   void setIdAttribute(in DOMString name, in boolean isId);
   void setIdAttributeNS(in DOMString namespaceURI, in DOMString localName, in boolean isId);
   void setIdAttributeNode(in Attr idAttr, in boolean isId);-->
+
            attribute <a href=#htmlcollection>HTMLCollection</a> <a href=#dom-element-children title=dom-Element-children>children</a>;
 };</pre>
 
@@ -1470,6 +1473,8 @@ on getting, run the following steps:
  uppercase</a>. Otherwise, return <var title="">tagName</var>.
 </ol>
 
+<hr>
+
 <p>The <dfn id=dom-element-getattribute title=dom-Element-getAttribute><code>getAttribute(<var title="">name</var>)</code></dfn> method must run the following steps:
 <ol>
  <li><p>If the <a href=#context-node>context node</a> is in the <a href=#html-namespace>HTML namespace</a>
@@ -1481,6 +1486,8 @@ on getting, run the following steps:
  node</a>'s <a href=#dom-node-attributes><code title=dom-Node-attributes>attributes</code></a> whose <a href=#concept-attribute-name title=concept-attribute-name>name</a> <a href=#case-sensitive title=case-sensitive>case-sensitively</a> equals the first argument, in any
  namespace, if the attribute is present, or null otherwise.
 </ol>
+
+<p class=XXX><dfn id=dom-element-getattributens title=dom-Element-getAttributeNS>getAttributeNS</dfn> (might return null; Gecko and WebKit don't)
 
 <p>The <dfn id=dom-element-setattribute title=dom-Element-setAttribute><code>setAttribute(<var title="">name</var>, <var title="">value</var>)</code></dfn> method must run the
 following steps:
@@ -1509,7 +1516,15 @@ following steps:
  in any namespace, to <var title="">value</var>.
 </ol>
 
+<p class=XXX><dfn id=dom-element-setattributens title=dom-Element-setAttributeNS>setAttributeNS</dfn>
+
 <p class=XXX><dfn id=dom-element-removeattribute title=dom-Element-removeAttribute>removeAttribute</dfn>
+
+<p class=XXX><dfn id=dom-element-removeattributens title=dom-Element-removeAttributeNS>removeAttributeNS</dfn>
+
+<p class=XXX><dfn id=dom-element-hasattribute title=dom-Element-hasAttribute>hasAttribute</dfn>
+
+<p class=XXX><dfn id=dom-element-hasattributens title=dom-Element-hasAttributeNS>hasAttributeNS</dfn>
 
 <!--<dfn title=dom-Element-getAttributeNode>getAttributeNode</dfn>: when the
 Element.getAttributeNode() method is invoked on an HTML element, the name
@@ -1525,6 +1540,7 @@ have its name converted to ASCII lowercase before the element is affected.
 
 <p class=XXX><dfn id=dom-element-getelementsbytagname title=dom-Element-getElementsByTagName>getElementsByTagName</dfn>
 
+<p class=XXX><dfn id=dom-element-getelementsbytagnamens title=dom-Element-getElementsByTagNameNS>getElementsByTagNameNS</dfn>
 
 <p>The <dfn id=dom-element-getelementsbyclassname title=dom-Element-getElementsByClassName><code>getElementsByClassName(<var title="">classNames</var>)</code></dfn> method on the <a href=#element><code>Element</code></a>
 interface must return a <a href=#concept-collection-live title=concept-collection-live>live</a>
@@ -1536,18 +1552,6 @@ the <a href=#context-node>context node</a> on which the method was invoked.
 <p>A new <a href=#nodelist><code>NodeList</code></a> object must be returned each time.
 
 <hr>
-
-<p class=XXX><dfn id=dom-element-getattributens title=dom-Element-getAttributeNS>getAttributeNS</dfn> (might return null; Gecko and WebKit don't)
-
-<p class=XXX><dfn id=dom-element-setattributens title=dom-Element-setAttributeNS>setAttributeNS</dfn>
-
-<p class=XXX><dfn id=dom-element-removeattributens title=dom-Element-removeAttributeNS>removeAttributeNS</dfn>
-
-<p class=XXX><dfn id=dom-element-getelementsbytagnamens title=dom-Element-getElementsByTagNameNS>getElementsByTagNameNS</dfn>
-
-<p class=XXX><dfn id=dom-element-hasattribute title=dom-Element-hasAttribute>hasAttribute</dfn>
-
-<p class=XXX><dfn id=dom-element-hasattributens title=dom-Element-hasAttributeNS>hasAttributeNS</dfn>
 
 <p>The <dfn id=dom-element-children title=dom-Element-children><code>children</code></dfn> attribute
 must return an <a href=#htmlcollection><code>HTMLCollection</code></a> <a href=#concept-collection title=concept-collection>collection</a>, rooted at the <a href=#context-node>context

@@ -1525,26 +1525,29 @@ title=concept-class-attribute>class attributes</span>.
 <h3>Interface <code>Element</code></h3>
 <pre class=idl>interface <dfn>Element</dfn> : <span>Node</span> {
   readonly attribute DOMString <span title=dom-Element-tagName>tagName</span>;
+
   DOMString? <span title=dom-Element-getAttribute>getAttribute</span>(in DOMString name);
-  void <span title=dom-Element-setAttribute>setAttribute</span>(in DOMString name, in DOMString value);
-  void <span title=dom-Element-removeAttribute>removeAttribute</span>(in DOMString name);<!--
-  Attr <span title=dom-Element-getAttributeNode>getAttributeNode</span>(in DOMString name);
-  Attr <span title=dom-Element-setAttributeNode>setAttributeNode</span>(in Attr newAttr);
-  Attr <span title=dom-Element-removeAttributeNode>removeAttributeNode</span>(in Attr oldAttr);-->
-  <span>NodeList</span> <span title=dom-Element-getElementsByTagName>getElementsByTagName</span>(in DOMString name);
-  <span>NodeList</span> <span title=dom-Element-getElementsByClassName>getElementsByClassName</span>(in DOMString classNames);
   DOMString? <span title=dom-Element-getAttributeNS>getAttributeNS</span>(in DOMString namespaceURI, in DOMString localName);
+  void <span title=dom-Element-setAttribute>setAttribute</span>(in DOMString name, in DOMString value);
   void <span title=dom-Element-setAttributeNS>setAttributeNS</span>(in DOMString namespaceURI, in DOMString qualifiedName, in DOMString value);
-  void <span title=dom-Element-removeAttributeNS>removeAttributeNS</span>(in DOMString namespaceURI, in DOMString localName);<!--
-  Attr <span title=dom-Element-getAttributeNodeNS>getAttributeNodeNS</span>(in DOMString namespaceURI, in DOMString localName);
-  Attr getAttributeNodeNS(in DOMString namespaceURI, in DOMString localName);-->
-  <span>NodeList</span> <span title=dom-Element-getElementsByTagNameNS>getElementsByTagNameNS</span>(in DOMString namespaceURI, in DOMString localName);
+  void <span title=dom-Element-removeAttribute>removeAttribute</span>(in DOMString name);
+  void <span title=dom-Element-removeAttributeNS>removeAttributeNS</span>(in DOMString namespaceURI, in DOMString localName);
   boolean <span title=dom-Element-hasAttribute>hasAttribute</span>(in DOMString name);
-  boolean <span title=dom-Element-hasAttributeNS>hasAttributeNS</span>(in DOMString namespaceURI, in DOMString localName);<!--
+  boolean <span title=dom-Element-hasAttributeNS>hasAttributeNS</span>(in DOMString namespaceURI, in DOMString localName);
+<!--
+  <span>Attr</span> <span title=dom-Element-getAttributeNode>getAttributeNode</span>(in DOMString name);
+  <span>Attr</span> <span title=dom-Element-setAttributeNode>setAttributeNode</span>(in Attr newAttr);
+  <span>Attr</span> <span title=dom-Element-removeAttributeNode>removeAttributeNode</span>(in Attr oldAttr);
+  <span>Attr</span> <span title=dom-Element-getAttributeNodeNS>getAttributeNodeNS</span>(in DOMString namespaceURI, in DOMString localName);
+-->
+  <span>NodeList</span> <span title=dom-Element-getElementsByTagName>getElementsByTagName</span>(in DOMString name);
+  <span>NodeList</span> <span title=dom-Element-getElementsByTagNameNS>getElementsByTagNameNS</span>(in DOMString namespaceURI, in DOMString localName);
+  <span>NodeList</span> <span title=dom-Element-getElementsByClassName>getElementsByClassName</span>(in DOMString classNames);<!--
   readonly attribute TypeInfo schemaTypeInfo;
   void setIdAttribute(in DOMString name, in boolean isId);
   void setIdAttributeNS(in DOMString namespaceURI, in DOMString localName, in boolean isId);
   void setIdAttributeNode(in Attr idAttr, in boolean isId);-->
+
            attribute <span>HTMLCollection</span> <span title=dom-Element-children>children</span>;
 };</pre>
 
@@ -1579,6 +1582,8 @@ on getting, run the following steps:
  uppercase</span>. Otherwise, return <var title>tagName</var>.
 </ol>
 
+<hr>
+
 <p>The <dfn title=dom-Element-getAttribute><code>getAttribute(<var
 title>name</var>)</code></dfn> method must run the following steps:
 <ol>
@@ -1593,6 +1598,8 @@ title>name</var>)</code></dfn> method must run the following steps:
  title=case-sensitive>case-sensitively</span> equals the first argument, in any
  namespace, if the attribute is present, or null otherwise.
 </ol>
+
+<p class=XXX><dfn title=dom-Element-getAttributeNS>getAttributeNS</dfn> (might return null; Gecko and WebKit don't)
 
 <p>The <dfn title=dom-Element-setAttribute><code>setAttribute(<var
 title>name</var>, <var title>value</var>)</code></dfn> method must run the
@@ -1630,7 +1637,15 @@ following steps:
  in any namespace, to <var title>value</var>.
 </ol>
 
+<p class=XXX><dfn title=dom-Element-setAttributeNS>setAttributeNS</dfn>
+
 <p class=XXX><dfn title=dom-Element-removeAttribute>removeAttribute</dfn>
+
+<p class=XXX><dfn title=dom-Element-removeAttributeNS>removeAttributeNS</dfn>
+
+<p class=XXX><dfn title=dom-Element-hasAttribute>hasAttribute</dfn>
+
+<p class=XXX><dfn title=dom-Element-hasAttributeNS>hasAttributeNS</dfn>
 
 <!--<dfn title=dom-Element-getAttributeNode>getAttributeNode</dfn>: when the
 Element.getAttributeNode() method is invoked on an HTML element, the name
@@ -1646,6 +1661,7 @@ have its name converted to ASCII lowercase before the element is affected.
 
 <p class=XXX><dfn title=dom-Element-getElementsByTagName>getElementsByTagName</dfn>
 
+<p class=XXX><dfn title=dom-Element-getElementsByTagNameNS>getElementsByTagNameNS</dfn>
 
 <p>The <dfn
 title=dom-Element-getElementsByClassName><code>getElementsByClassName(<var
@@ -1660,18 +1676,6 @@ the <span>context node</span> on which the method was invoked.
 <p>A new <code>NodeList</code> object must be returned each time.
 
 <hr>
-
-<p class=XXX><dfn title=dom-Element-getAttributeNS>getAttributeNS</dfn> (might return null; Gecko and WebKit don't)
-
-<p class=XXX><dfn title=dom-Element-setAttributeNS>setAttributeNS</dfn>
-
-<p class=XXX><dfn title=dom-Element-removeAttributeNS>removeAttributeNS</dfn>
-
-<p class=XXX><dfn title=dom-Element-getElementsByTagNameNS>getElementsByTagNameNS</dfn>
-
-<p class=XXX><dfn title=dom-Element-hasAttribute>hasAttribute</dfn>
-
-<p class=XXX><dfn title=dom-Element-hasAttributeNS>hasAttributeNS</dfn>
 
 <p>The <dfn title=dom-Element-children><code>children</code></dfn> attribute
 must return an <code>HTMLCollection</code> <span

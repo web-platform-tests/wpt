@@ -1,5 +1,5 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0//EN">
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
  <head>
   <title>CSS Floats: Nested floats (some inline content before nested float)</title>
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
@@ -14,11 +14,10 @@
  </head>
  <body>
 
-  <p>content before the nested float. You should see two boxes
-  touching: one just fitting the content, the other big and below
-  it.</p>
+  <p>The content before should be to the right of the inner square,
+     and both it and the inner square should be surrounded by an outer box.</p>
 
-  <div class="left">content before<div class="size left"></div></div>
+  <div class="left">content before <div class="size left"></div></div>
 
  </body>
 </html>

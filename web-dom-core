@@ -1266,7 +1266,7 @@ http://lists.w3.org/Archives/Public/www-dom/2003JulSep/0049.html -->
 <pre class=idl>interface <dfn id=domimplementation>DOMImplementation</dfn> {
   boolean <a href=#dom-domimplementation-hasfeature title=dom-DOMImplementation-hasFeature>hasFeature</a>(in DOMString feature, [TreatNullAs=EmptyString] in DOMString version);
   <a href=#documenttype>DocumentType</a> <a href=#dom-domimplementation-createdocumenttype title=dom-DOMImplementation-createDocumentType>createDocumentType</a>([TreatNullAs=EmptyString] in DOMString qualifiedName, in DOMString publicId, in DOMString systemId);
-  <a href=#document>Document</a> <a href=#dom-domimplementation-createdocument title=dom-DOMImplementation-createDocument>createDocument</a>([TreatNullAs=EmptyString] in DOMString namespaceURI, [TreatNullAs=EmptyString] in DOMString qualifiedName, in DocumentType doctype);<!--
+  <a href=#document>Document</a> <a href=#dom-domimplementation-createdocument title=dom-DOMImplementation-createDocument>createDocument</a>([TreatNullAs=EmptyString] in DOMString namespaceURI, [TreatNullAs=EmptyString] in DOMString qualifiedName, in <a href=#documenttype>DocumentType</a> doctype);<!--
   DOMObject getFeature(in DOMString feature, in DOMString version);-->
   <a href=#document>Document</a> <a href=#dom-domimplementation-createhtmldocument title=dom-DOMImplementation-createHTMLDocument>createHTMLDocument</a>(in DOMString title);
 };</pre>
@@ -1283,7 +1283,10 @@ http://lists.w3.org/Archives/Public/www-dom/2003JulSep/0049.html -->
  abort these steps.
  <!--<li><p>If <var title>publicId</var> contains a character that doesn't match the <code data-anolis-spec=xml>PubidChar</code> production in XML, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and abort these steps. --> <!-- DOM3 didn't check this -->
  <!--<li><p>If <var title>systemId</var> contains both a U+0022 QUOTATION MARK ('"') and a U+0027 APOSTROPHE ("'") character, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and abort these steps.--> <!-- DOM3 didn't check this -->
- <li><p>Return a new <a href=#documenttype><code>DocumentType</code></a> node with <a href=#dom-node-ownerdocument><code title=dom-Node-ownerDocument>ownerDocument</code></a> set to null, <a href=#dom-documenttype-name><code title=dom-DocumentType-name>name</code></a> set to <var title="">qualifiedName</var>, <a href=#dom-documenttype-publicid><code title=dom-DocumentType-publicId>publicId</code></a> set to <var title="">publicId</var>, and <a href=#dom-documenttype-systemid><code title=dom-DocumentType-systemId>systemId</code></a> set to <var title="">systemId</var>.
+ <li><p>Return a new <a href=#concept-doctype title=concept-doctype>document type
+ declaration</a>, with <var title="">qualifiedName</var> as its <a href=#concept-doctype-name title=concept-doctype-name>name</a>, <var title="">publicId</var> as its <a href=#concept-doctype-publicid title=concept-doctype-publicid>public ID</a>, and <var title="">systemId</var>
+ as its <a href=#concept-doctype-systemid title=concept-doctype-systemid>system ID</a>, and with its
+ <a href=#dom-node-ownerdocument><code title=dom-Node-ownerDocument>ownerDocument</code></a> set to null.
 </ol>
 <p class=note>No check is performed that the <var title="">publicId</var> matches the <code title="">PublicChar</code> production in XML or that the <var title="">systemId</var> doesn't contain both a quotation mark (") and an apostrophe (').
 
@@ -1327,9 +1330,9 @@ steps:
 
  <li><p>Mark <var title="">doc</var> as being an <a href=#html-document>HTML document</a>.
 
- <li><p>Create a <a href=#documenttype><code>DocumentType</code></a> node with the <a href=#dom-documenttype-name><code title=dom-DocumentType-name>name</code></a> attribute set to the string "<code title="">html</code>", and the other attributes specific to
- <a href=#documenttype><code>DocumentType</code></a> objects set to the empty string, null, and empty
- lists, as appropriate. Append the newly created node to <var title="">doc</var>.
+ <li><p>Create a new <a href=#concept-doctype title=concept-doctype>document type
+ declaration</a>, with "<code title="">html</code>" as its <a href=#concept-doctype-name title=concept-doctype-name>name</a> and with its <a href=#dom-node-ownerdocument><code title=dom-Node-ownerDocument>ownerDocument</code></a> set to doc. Append the newly
+ created node to <var title="">doc</var>.
 
  <li><p>Create an <code title="">html</code> element in the <a href=#html-namespace>HTML
  namespace</a>, and append it to <var title="">doc</var>.
@@ -1585,11 +1588,24 @@ node</a>, whose filter matches only <a href=#element><code>Element</code></a> no
   readonly attribute DOMString internalSubset;-->
 };</pre>
 
-<p class=XXX><dfn id=dom-documenttype-name title=dom-DocumentType-name>name</dfn>
+<p><a href=#documenttype><code>DocumentType</code></a> nodes represent <dfn id=concept-doctype title=concept-doctype>document
+type declarations</dfn>. They have a <dfn id=concept-doctype-name title=concept-doctype-name>name</dfn>
+and potentially a <dfn id=concept-doctype-publicid title=concept-doctype-publicid>public ID</dfn>, and a
+<dfn id=concept-doctype-systemid title=concept-doctype-systemid>system ID</dfn> associated with them when
+they are created.
 
-<p class=XXX><dfn id=dom-documenttype-publicid title=dom-DocumentType-publicId>publicId</dfn>
+<p>The <dfn id=dom-documenttype-name title=dom-DocumentType-name><code>name</code></dfn> attribute must,
+on getting, return the <a href=#context-node title="context node">context node's</a> <a href=#concept-doctype-name title=concept-doctype-name>name</a>.
 
-<p class=XXX><dfn id=dom-documenttype-systemid title=dom-DocumentType-systemId>systemId</dfn>
+<p>The <dfn id=dom-documenttype-publicid title=dom-DocumentType-publicId><code>publicId</code></dfn>
+attribute must, on getting, return the <a href=#context-node title="context node">context
+node's</a> <a href=#concept-doctype-publicid title=concept-doctype-publicid>public ID</a>, if it has
+one, or the empty string otherwise.
+
+<p>The <dfn id=dom-documenttype-systemid title=dom-DocumentType-systemId><code>systemId</code></dfn>
+attribute must, on getting, return the <a href=#context-node title="context node">context
+node's</a> <a href=#concept-doctype-systemid title=concept-doctype-systemid>system ID</a>, if it has
+one, or the empty string otherwise.
 
 
 <h3 id=interface-processinginstruction><span class=secno>4.7 </span>Interface <a href=#processinginstruction><code>ProcessingInstruction</code></a></h3>

@@ -1334,7 +1334,7 @@ http://lists.w3.org/Archives/Public/www-dom/2003JulSep/0049.html -->
 <pre class=idl>interface <dfn>DOMImplementation</dfn> {
   boolean <span title=dom-DOMImplementation-hasFeature>hasFeature</span>(in DOMString feature, [TreatNullAs=EmptyString] in DOMString version);
   <span>DocumentType</span> <span title=dom-DOMImplementation-createDocumentType>createDocumentType</span>([TreatNullAs=EmptyString] in DOMString qualifiedName, in DOMString publicId, in DOMString systemId);
-  <span>Document</span> <span title=dom-DOMImplementation-createDocument>createDocument</span>([TreatNullAs=EmptyString] in DOMString namespaceURI, [TreatNullAs=EmptyString] in DOMString qualifiedName, in DocumentType doctype);<!--
+  <span>Document</span> <span title=dom-DOMImplementation-createDocument>createDocument</span>([TreatNullAs=EmptyString] in DOMString namespaceURI, [TreatNullAs=EmptyString] in DOMString qualifiedName, in <span>DocumentType</span> doctype);<!--
   DOMObject getFeature(in DOMString feature, in DOMString version);-->
   <span>Document</span> <span title=dom-DOMImplementation-createHTMLDocument>createHTMLDocument</span>(in DOMString title);
 };</pre>
@@ -1346,7 +1346,7 @@ http://lists.w3.org/Archives/Public/www-dom/2003JulSep/0049.html -->
 <ol>
  <li><p>If <var title>qualifiedName</var> doesn't match the <code
  data-anolis-spec=xml>Name</code> production in XML, raise an <code
- title=dom-DOMException-INVALID_CHARACTER_ERR title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
+ title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
  exception and abort these steps.
  <li><p>If <var title>qualifiedName</var> doesn't match the <code
  data-anolis-spec=xmlns>NCName</code> production in Namespaces in XML, raise a
@@ -1354,7 +1354,12 @@ http://lists.w3.org/Archives/Public/www-dom/2003JulSep/0049.html -->
  abort these steps.
  <!--<li><p>If <var title>publicId</var> contains a character that doesn't match the <code data-anolis-spec=xml>PubidChar</code> production in XML, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and abort these steps. --> <!-- DOM3 didn't check this -->
  <!--<li><p>If <var title>systemId</var> contains both a U+0022 QUOTATION MARK ('"') and a U+0027 APOSTROPHE ("'") character, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and abort these steps.--> <!-- DOM3 didn't check this -->
- <li><p>Return a new <code>DocumentType</code> node with <code title=dom-Node-ownerDocument>ownerDocument</code> set to null, <code title=dom-DocumentType-name>name</code> set to <var title>qualifiedName</var>, <code title=dom-DocumentType-publicId>publicId</code> set to <var title>publicId</var>, and <code title=dom-DocumentType-systemId>systemId</code> set to <var title>systemId</var>.
+ <li><p>Return a new <span title=concept-doctype>document type
+ declaration</span>, with <var title>qualifiedName</var> as its <span
+ title=concept-doctype-name>name</span>, <var title>publicId</var> as its <span
+ title=concept-doctype-publicid>public ID</span>, and <var title>systemId</var>
+ as its <span title=concept-doctype-systemid>system ID</span>, and with its
+ <code title=dom-Node-ownerDocument>ownerDocument</code> set to null.
 </ol>
 <p class=note>No check is performed that the <var title>publicId</var> matches the <code title>PublicChar</code> production in XML or that the <var title>systemId</var> doesn't contain both a quotation mark (") and an apostrophe (').
 
@@ -1404,11 +1409,11 @@ steps:
 
  <li><p>Mark <var title>doc</var> as being an <span>HTML document</span>.
 
- <li><p>Create a <code>DocumentType</code> node with the <code
- title=dom-DocumentType-name>name</code> attribute set to the string "<code
- title>html</code>", and the other attributes specific to
- <code>DocumentType</code> objects set to the empty string, null, and empty
- lists, as appropriate. Append the newly created node to <var title>doc</var>.
+ <li><p>Create a new <span title=concept-doctype>document type
+ declaration</span>, with "<code title>html</code>" as its <span
+ title=concept-doctype-name>name</span> and with its <code
+ title=dom-Node-ownerDocument>ownerDocument</code> set to doc. Append the newly
+ created node to <var title>doc</var>.
 
  <li><p>Create an <code title>html</code> element in the <span>HTML
  namespace</span>, and append it to <var title>doc</var>.
@@ -1718,11 +1723,25 @@ title=dom-Node-parentNode>parentNode</code> is the <span>context node</span>.
   readonly attribute DOMString internalSubset;-->
 };</pre>
 
-<p class=XXX><dfn title=dom-DocumentType-name>name</dfn>
+<p><code>DocumentType</code> nodes represent <dfn title=concept-doctype>document
+type declarations</dfn>. They have a <dfn title=concept-doctype-name>name</dfn>
+and potentially a <dfn title=concept-doctype-publicid>public ID</dfn>, and a
+<dfn title=concept-doctype-systemid>system ID</dfn> associated with them when
+they are created.
 
-<p class=XXX><dfn title=dom-DocumentType-publicId>publicId</dfn>
+<p>The <dfn title=dom-DocumentType-name><code>name</code></dfn> attribute must,
+on getting, return the <span title="context node">context node's</span> <span
+title=concept-doctype-name>name</span>.
 
-<p class=XXX><dfn title=dom-DocumentType-systemId>systemId</dfn>
+<p>The <dfn title=dom-DocumentType-publicId><code>publicId</code></dfn>
+attribute must, on getting, return the <span title="context node">context
+node's</span> <span title=concept-doctype-publicid>public ID</span>, if it has
+one, or the empty string otherwise.
+
+<p>The <dfn title=dom-DocumentType-systemId><code>systemId</code></dfn>
+attribute must, on getting, return the <span title="context node">context
+node's</span> <span title=concept-doctype-systemid>system ID</span>, if it has
+one, or the empty string otherwise.
 
 
 <h3>Interface <code>ProcessingInstruction</code></h3>

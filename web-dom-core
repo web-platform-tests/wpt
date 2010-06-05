@@ -917,7 +917,8 @@ conditions are true, and must otherwise return false:
   <a href=#node>Node</a> <a href=#dom-document-adoptnode title=dom-Document-adoptNode>adoptNode</a>(in <a href=#node>Node</a> source);
 
   readonly attribute DOMString <a href=#dom-document-inputencoding title=dom-Document-inputEncoding>inputEncoding</a>;
-           attribute DOMString <a href=#dom-document-documenturi title=dom-Document-documentURI>documentURI</a>;<!--
+           attribute DOMString <a href=#dom-document-documenturi title=dom-Document-documentURI>documentURI</a>;
+  readonly attribute DOMString <a href=#dom-document-compatmode title=dom-Document-compatMode>compatMode</a>;<!--
   readonly attribute DOMString xmlEncoding;
            attribute boolean xmlStandalone;
            attribute DOMString <span title=dom-Document-xmlVersion>xmlVersion</span>;
@@ -932,6 +933,19 @@ conditions are true, and must otherwise return false:
 unless they are flagged as being an <dfn id=html-document>HTML document</dfn> when they are
 created. Whether a document is an <a href=#html-document>HTML document</a> or an <a href=#xml-document>XML
 document</a> affects the behavior of certain APIs.
+
+<p>A <a href=#document><code>Document</code></a> node is always set to one of three modes when it is
+created: <dfn id=concept-no-quirks-mode title=concept-no-quirks-mode>no-quirks mode</dfn>, the default;
+<dfn id=concept-quirks-mode title=concept-quirks-mode>quirks mode</dfn>, used typically for legacy
+documents; and <dfn id=concept-limited-quirks-mode title=concept-limited-quirks-mode>limited-quirks mode</dfn>,
+also known as "almost standards" mode. Unless <a href=#other-applicable-specifications>other applicable
+specifications</a> define otherwise, the <a href=#document><code>Document</code></a> must be in
+<a href=#concept-no-quirks-mode title=concept-no-quirks-mode>no-quirks mode</a>.
+
+<p class=note>The mode is only ever changed from the default if the
+<a href=#document><code>Document</code></a> node is created by the <a class=external href=http://www.whatwg.org/html/#html-parser>HTML
+parser</a>, based on the presence, absence, or value of the DOCTYPE string.
+<a data-anolis-ref="" href=#refsHTML>[HTML]</a>
 
 <dl class=domintro>
  <dt><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#dom-document><var class=external title=dom-Window-document>document</var></a> .
@@ -1169,10 +1183,25 @@ the following steps:
 
 <hr>
 
+<dl class=domintro>
+ <dt><var title="">document</var> . <a href=#dom-document-compatmode><code title=dom-Document-compatMode>compatMode</code></a>
+ <dd>
+  <p>Returns the string "<code title="">CSS1Compat</code>" if the <a href=#context-node>context
+  node</a> is in <a href=#concept-no-quirks-mode title=concept-no-quirks-mode>no-quirks mode</a> or
+  <a href=#concept-limited-quirks-mode title=concept-limited-quirks-mode>limited-quirks mode</a>, and
+  "<code title="">BackCompat</code>", if the <a href=#document><code>Document</code></a> is in
+  <a href=#concept-quirks-mode title=concept-quirks-mode>quirks mode</a>.
+</dl>
+
 <p class=XXX><dfn id=dom-document-inputencoding title=dom-Document-inputEncoding>inputEncoding</dfn>
 
 <p class=XXX><dfn id=dom-document-documenturi title=dom-Document-documentURI>documentURI</dfn>
 Should document.documentURI really exist? be readonly?
+
+<p>The <dfn id=dom-document-compatmode title=dom-Document-compatMode><code>compatMode</code></dfn> IDL
+attribute must return the literal string "<code title="">CSS1Compat</code>" unless
+the <a href=#context-node>context node</a> is in <a href=#concept-quirks-mode title=concept-quirks-mode>quirks mode</a>, in which case it must instead
+return the literal string "<code title="">BackCompat</code>".
 
 <!-- <dfn title=dom-Document-xmlVersion>xmlVersion</dfn>
 http://lists.w3.org/Archives/Public/www-dom/2003JulSep/0049.html -->

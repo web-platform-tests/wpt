@@ -924,7 +924,8 @@ conditions are true, and must otherwise return false:
   <span>Node</span> <span title=dom-Document-adoptNode>adoptNode</span>(in <span>Node</span> source);
 
   readonly attribute DOMString <span title=dom-Document-inputEncoding>inputEncoding</span>;
-           attribute DOMString <span title=dom-Document-documentURI>documentURI</span>;<!--
+           attribute DOMString <span title=dom-Document-documentURI>documentURI</span>;
+  readonly attribute DOMString <span title=dom-Document-compatMode>compatMode</span>;<!--
   readonly attribute DOMString xmlEncoding;
            attribute boolean xmlStandalone;
            attribute DOMString <span title=dom-Document-xmlVersion>xmlVersion</span>;
@@ -939,6 +940,19 @@ conditions are true, and must otherwise return false:
 unless they are flagged as being an <dfn>HTML document</dfn> when they are
 created. Whether a document is an <span>HTML document</span> or an <span>XML
 document</span> affects the behavior of certain APIs.
+
+<p>A <code>Document</code> node is always set to one of three modes when it is
+created: <dfn title=concept-no-quirks-mode>no-quirks mode</dfn>, the default;
+<dfn title=concept-quirks-mode>quirks mode</dfn>, used typically for legacy
+documents; and <dfn title=concept-limited-quirks-mode>limited-quirks mode</dfn>,
+also known as "almost standards" mode. Unless <span>other applicable
+specifications</span> define otherwise, the <code>Document</code> must be in
+<span title=concept-no-quirks-mode>no-quirks mode</span>.
+
+<p class=note>The mode is only ever changed from the default if the
+<code>Document</code> node is created by the <span data-anolis-spec=html>HTML
+parser</span>, based on the presence, absence, or value of the DOCTYPE string.
+<span data-anolis-ref>HTML</span>
 
 <dl class=domintro>
  <dt><var title=dom-Window-document data-anolis-spec=window>document</var> .
@@ -1220,10 +1234,26 @@ title>source</var>)</code></dfn> method must run the following steps:
 
 <hr>
 
+<dl class=domintro>
+ <dt><var title>document</var> . <code title=dom-Document-compatMode>compatMode</code>
+ <dd>
+  <p>Returns the string "<code title>CSS1Compat</code>" if the <span>context
+  node</span> is in <span title=concept-no-quirks-mode>no-quirks mode</span> or
+  <span title=concept-limited-quirks-mode>limited-quirks mode</span>, and
+  "<code title>BackCompat</code>", if the <code>Document</code> is in
+  <span title=concept-quirks-mode>quirks mode</span>.
+</dl>
+
 <p class=XXX><dfn title=dom-Document-inputEncoding>inputEncoding</dfn>
 
 <p class=XXX><dfn title=dom-Document-documentURI>documentURI</dfn>
 Should document.documentURI really exist? be readonly?
+
+<p>The <dfn title=dom-Document-compatMode><code>compatMode</code></dfn> IDL
+attribute must return the literal string "<code title>CSS1Compat</code>" unless
+the <span>context node</span> is in <span
+title=concept-quirks-mode>quirks mode</span>, in which case it must instead
+return the literal string "<code title>BackCompat</code>".
 
 <!-- <dfn title=dom-Document-xmlVersion>xmlVersion</dfn>
 http://lists.w3.org/Archives/Public/www-dom/2003JulSep/0049.html -->

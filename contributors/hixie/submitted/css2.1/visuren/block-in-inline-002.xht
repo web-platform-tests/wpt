@@ -1,15 +1,15 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
-  <title>CSS: Blocks Within Inlines (XHTML Version)</title>
+  <title>CSS: Blocks Within Inlines - Backgrounds</title>
+  <link rel="author" title="Elika J. Etemad" href="http://fantasai.inkedblade.net/contact" />
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
-  <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/box/ib/002.xml"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#display-prop" />
   <style type="text/css">
-   td { border: solid black; color: white; padding: 0; background: red; }
-   .inline { display: inline; background: teal; }
-   .block { display: block; background: green; }
-   .a, .c { background: teal; }
+   td { border: solid black; color: black; padding: 0; background: green; }
+   .inline { display: inline; background: lime; }
+   .block { display: block; }
+   .a, .c { background: lime; }
    .b { background: green; }
   </style>
  </head>
@@ -18,7 +18,7 @@
   <table>
    <tr>
     <td>
-     <div class="inline">Line 1<div class="block">Line 2</div>Line 3</div>
+     <span class="inline">Line 1<span class="block">Line 2</span>Line 3</span>
     </td>
     <td>
      <div class="a">Line 1</div>

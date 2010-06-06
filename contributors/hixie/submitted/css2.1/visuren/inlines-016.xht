@@ -1,0 +1,21 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+ <head>
+  <title>Inline box model: space collapsing, padding, white-space, et al</title>
+  <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
+  <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/box/inline/016.html"/>
+  <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#inline-boxes" />
+  <style type="text/css">
+   .ahem { display: inline; font: 900 1em/1 Ahem, sans-serif; background: red; color: white; }   
+   div { width: 4em; background: teal; color: aqua; margin: 1em; font: 2em/1 Ahem; }
+   .test span { padding-left: 1em; }
+   .control { white-space: pre; }
+  </style>
+ </head>
+ <body>
+  <p class="ahem">Ahem_font_required_for_this_test._See_directory_listing_for_details.</p>
+  <p>The following two blocks should be identical.</p>
+  <div class="test"><span> XX</span></div>
+  <div class="control"><span> XX</span></div>
+ </body>
+</html>

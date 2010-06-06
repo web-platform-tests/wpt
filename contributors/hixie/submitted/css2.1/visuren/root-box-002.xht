@@ -1,0 +1,32 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" class="table">
+ <head class="row">
+  <title>Styling the root element: display:table</title>
+  <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
+  <link rel="author" title="Elika J. Etemad" href="http://fantasai.inkedblade.net/contact" />
+  <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/box/root/002.html"/>
+  <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#display-prop" />
+  <style type="text/css">
+   * { display: none; padding: 0; border: 0; margin: 0; width: auto; height: auto; }
+   html:before { content: "There should be a single unbroken ying-yang symbol below.";
+                 display: table-caption; margin: 0 auto -1.2em; padding: .1em;
+                 min-height: 1em;
+                 background: white; color: black; }
+   .table { display: table; border-spacing: 0; margin: 0 auto;
+            border-top: 1em solid red; }
+   .row { display: table-row; }
+   .cell { display: table-cell; width: 100px; height: 100px; }
+   .tl { background: url(support/test-tl.png); }
+   .tr { background: url(support/test-tr.png); }
+   .bl { background: url(support/test-bl.png); }
+   .br { background: url(support/test-br.png); }
+   p { display: block; position: fixed; top: 0; /* taken out of flow */ }
+  </style>
+  <style class="cell tl"></style>
+  <style class="cell tr"></style>
+ </head>
+ <body class="row">
+  <div class="cell bl"></div>
+  <div class="cell br"></div>
+ </body>
+</html>

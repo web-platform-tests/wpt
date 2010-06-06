@@ -3,17 +3,20 @@
  <head>
   <title>run-in and the line box model</title>
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
+  <link rel="author" title="Elika J. Etemad" href="http://fantasai.inkedblade.net/contact" />
   <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/box/run/in/002.xml"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#run-in" />
+  <meta name="assert" content="A run-in element inherits (line-height) from its document tree parent"/>
   <style type="text/css">
-   .r { color: white; display: run-in; }
-   .b { backgound: green; line-height: 0; }
-   span { color: white; }
+    div { font-family: monospace; }
+   .r { color: blue; display: run-in; }
+   .b { background: blue; line-height: 0; }
+   span { color: blue; }
   </style>
  </head>
  <body>
-  <p>There should be a green line below.</p>
-  <div class="r">This li</div>
-  <div class="b"><span>ne should be green.</span></div>
+  <p>There should be a blue box below.</p>
+  <div class="r">FAIL</div>
+  <div class="b"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;FAIL</span></div>
  </body>
 </html>

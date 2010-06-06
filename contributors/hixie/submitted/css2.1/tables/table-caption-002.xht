@@ -1,0 +1,23 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>CSS Tables: Multiple captions</title>
+  <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
+  <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/box/table/caption/001.html"/>
+  <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes" />
+  <style type="text/css">
+   .table { display: table; }
+   .caption { display: table-caption; }
+   .row { display: table-row; }
+   .green { color: green; }
+   .red { background: red; color: yellow; }
+  </style>
+ </head>
+ <body class="table">
+  <div class="green row">2. This line should be green. </div>
+  <div class="green caption">1. This line should be green. </div>
+  <div class="red caption">A. This line would be red but should probably not appear (second caption). </div>
+  <div class="green row">3. This line should be green. </div>
+  <div class="red caption">B. This line would be red but should probably not appear (second caption). </div>
+ </body>
+</html>

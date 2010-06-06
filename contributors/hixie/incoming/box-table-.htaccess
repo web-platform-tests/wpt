@@ -1,8 +1,0 @@
-redirect permanent /tests/adhoc/css/box/table/auto/inspection-auto-width-table.html http://www.hixie.ch/tests/adhoc/css/box/table/inspection/inspection-auto-width-table.html
-redirect permanent /tests/adhoc/css/box/table/auto/inspection-fixed-sizes.html http://www.hixie.ch/tests/adhoc/css/box/table/inspection/inspection-fixed-sizes.html
-redirect permanent /tests/adhoc/css/box/table/auto/inspection-one-row.html http://www.hixie.ch/tests/adhoc/css/box/table/inspection/inspection-one-row.html
-redirect permanent /tests/adhoc/css/box/table/auto/inspection-spanning.html http://www.hixie.ch/tests/adhoc/css/box/table/inspection/inspection-spanning.html
-redirect permanent /tests/adhoc/css/box/table/auto/inspection-three-rows.html http://www.hixie.ch/tests/adhoc/css/box/table/inspection/inspection-three-rows.html
-redirect permanent /tests/adhoc/css/box/table/auto/inspection-two-rows.html http://www.hixie.ch/tests/adhoc/css/box/table/inspection/inspection-two-rows.html
-redirect permanent /tests/adhoc/css/box/table/006.xml http://www.hixie.ch/tests/adhoc/css/box/table/016.xml
-

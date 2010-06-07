@@ -10,7 +10,16 @@
   </style>
  </head>
  <body id="hixie-cascade-tests">
-  <!--#include virtual="user-css.inc" -->
+  <div class="instructions">
+   <p>For this test, set your user stylesheet to the following:</p>
+<pre>
+/* User Stylesheet */
+#hixie-cascade-tests .instructions { display: none; }
+#hixie-cascade-tests .red { color: red; }
+#hixie-cascade-tests .green { color: green; }
+#hixie-cascade-tests .normal { font-weight: normal; }
+</pre>
+  </div>
   <p><font color="red" class="green">This text should be green.</font></p>
   <p><b class="normal">This text should</b> not be bold.</p>
   <p class="green">This line should be green.</p>

@@ -1,0 +1,19 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>Fonts and not bidi</title>
+  <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
+  <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/fonts/005.html"/>
+  <link rel="help" href="http://www.w3.org/TR/CSS2/fonts.html#algorithm" />
+  <meta name="flags" content="ahem"/>
+  <style type="text/css">
+   .control { display: inline; font: 1em/1 Ahem, sans-serif; background: red; color: white; }
+   .test { font: 2em/1 Ahem; color: blue; }
+  </style>
+ </head>
+ <body>
+  <div class="control">Ahem_font_required_for_this_test.</div>
+  <p>Below there should be a two identical blocks side by side with an "&#x0130;" between them.</p>
+  <p class="test">XXXX &#x0130; FAIL</p>
+ </body>
+</html>

@@ -1,0 +1,21 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+ <head>
+  <title>font inheritance into &lt;pre&gt; elements</title>
+  <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
+  <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/fonts/004.html"/>
+  <link rel="help" href="http://www.w3.org/TR/CSS2/fonts.html#algorithm" />
+  <meta name="flags" content="ahem"/>
+  <style type="text/css">
+   .control { display: inline; font: 1em/1 Ahem, sans-serif; background: red; color: white; }
+   div { font: 1em/1 Ahem; width: 2em; background: red; height: 2em; }
+   pre { font: inherit; color: green; }
+  </style>
+ </head>
+ <body>
+  <div class="control">Ahem_font_required_for_this_test.</div>
+  <p>There should be a green square below with no red present.</p>
+  <div><pre>xx
+xx</pre></div>
+ </body>
+</html>

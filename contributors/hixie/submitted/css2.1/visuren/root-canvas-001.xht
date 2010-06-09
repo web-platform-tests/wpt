@@ -3,18 +3,19 @@
  <head>
   <title>Canvas: Embedded documents</title>
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
+  <link rel="author" title="Elika J. Etemad" href="http://fantasai.inkedblade.net/contact" />
   <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/model/canvas/001.html"/>
+  <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#viewport"/>
+  <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#containing-block-details"/>
     <style type="text/css">
    div { width: 10em; height: 10em; border: solid lime; background: red; padding: 0; }
    object { width: 10em; height: 10em; margin: 0; padding: 0; border: 0; }
   </style>
  </head>
  <body>
-  <p>The object element below is 10em by 10em and contains a short
-  document with a green background. There should be no red on this
-  page, only a square green box with white text and a lime green
-  border.<p>
-  <div><object type="text/html" data="support/model-canvas-001a.html">FAIL</object></div>
+  <p>There should be no red on this page, only a square green box with white
+  text and a lime green border.<p>
+  <div><object type="text/html" data="support/root-canvas-001a.html">FAIL</object></div>
 
   <!-- reasoning:
 

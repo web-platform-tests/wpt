@@ -113,7 +113,6 @@ class SourceSet:
 
     for source in other.pathMap.itervalues():
       self.addSource(source)
-
     return self
 
   def write(self, format):
@@ -501,7 +500,8 @@ class CSSTestSource(XHTMLSource):
               raise CSSTestSourceMetaError("Help link missing href value.")
             if not link.startswith('http://') or link.startswith('https://'):
               raise CSSTestSourceMetaError("Help link must be absolute URL.")
-            links.append(intern(link))
+            if link.find('propdef') == -1:
+              links.append(intern(link))
           # credits
           elif tokenMatch('author', node.get('rel')):
             name = node.get('title')

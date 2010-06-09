@@ -85,6 +85,8 @@ class Indexer:
       data = test.getMetadata()
       if data: # Shallow copy for template output
         data = data.copy()
+        data['links'] = [link for link in data['links']
+                         if link.find(self.suite.specroot) > -1]
         data['file'] = '/'.join((group.name, test.relpath)) \
                        if group.name else test.relpath
         self.alltests.append(data)

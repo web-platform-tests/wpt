@@ -23,7 +23,7 @@ class CSSTestSuite:
   def addSelftestsByExt(self, dir, ext, groupName='', groupTitle=''):
     """Add tests from directory `dir` by file extension (via `ext`, e.g. ext='.xht').
     """
-    group = SelftestGroup(self.sourcecache, dir, testExt=ext,
+    group = SelftestGroup(self.sourcecache, dir, selfTestExt=ext,
                           name=groupName, title=groupTitle)
     self.addGroup(group)
 
@@ -31,7 +31,7 @@ class CSSTestSuite:
   def addSelftestsByList(self, dir, filenames, groupName='', groupTitle=''):
     """Add tests from directory `dir`, via file name list `filenames`.
     """
-    group = SelftestGroup(self.sourcecache, dir, testList=filenames,
+    group = SelftestGroup(self.sourcecache, dir, selfTestList=filenames,
                           name=groupName, title=groupTitle)
     self.addGroup(group)
 

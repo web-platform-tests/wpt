@@ -67,6 +67,6 @@ push @dirs, 'contributors/microsoft/submitted/Chapter*';
 print `perl -pi -e 's#\.\./support/#support/#g' contributors/microsoft/submitted/Chapter*/*.xht contributors/microsoft/submitted/support/*.css`;
 
 $dirlist = join ' ', @dirs;
-print `python tools/build-css21.py $dirlist`;
+print `python tools/build-css21.py $dirlist 2>&1`;
 print `chmod 644 *.*`;
 print `perl -pi -e 's#support/#\.\./support/#g' contributors/microsoft/submitted/Chapter*/*.xht contributors/microsoft/submitted/support/*.css`;

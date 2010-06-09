@@ -4,9 +4,6 @@
 # Licensed under BSD 3-Clause: <http://www.w3.org/Consortium/Legal/2008/03-bsd-license>
 
 import os.path
-print "Building CSS2.1 Test Suite from repository %s into %s" % \
-      (os.path.abspath('.'), os.path.abspath(os.path.join('.', 'dist', 'css2.1')))
-
 skipDirs = ('support')
 reftestPath = 'reftest.list'
 groupmap = {
@@ -48,6 +45,12 @@ from CSSTestLib.Groups import SelftestGroup
 
 # run from css test suite repo root
 
+print "Building CSS2.1 Test Suite from repository %s into %s" % \
+      (os.path.abspath('.'), os.path.abspath(os.path.join('.', 'dist', 'css2.1')))
+
+unreviewed = sys.argv[1:]
+print "Requested unreviewed source directories."
+
 # Set up
 suite = CSSTestSuite('css2.1', 'CSS2.1 Test Suite', 'http://www.w3.org/TR/CSS21/')
 
@@ -62,8 +65,9 @@ for dir in dirs:
     suite.addReftests(testroot, reftestPath)
 
 # Add unreviewed tests
-for path in sys.argv[1:]:
+for path in unreviewed:
   if path.endswith('reftest.list'):
+    print "Adding unreviewed reftests from %s" % path
     suite.addReftests(os.path.split(path)[0], 'reftest.list')
   else:
     def grep(file):
@@ -75,6 +79,7 @@ for path in sys.argv[1:]:
       return False
     _,_,files = os.walk(path).next()
     files = filter(grep, files)
+    print "Adding %d unreviewed selftests from %s" % (len(files), path)
     suite.addSelftestsByList(path, files)
 
 # Build

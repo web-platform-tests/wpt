@@ -1,0 +1,34 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>white-space normal: zero width non-breaking space</title>
+  <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
+  <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/text/white-space/normal/008.html"/>
+  <link rel="help" href="http://www.w3.org/TR/CSS21/text.html#white-space-model" />
+  <style type="text/css">
+   /* setup */
+   .control { display: inline; font: 1em/1 Ahem, sans-serif; background: red; color: white; }
+   * { white-space: normal; font: inherit; }
+   div { display: block; margin: 1em; }
+   span { display: inline; }
+
+   /* test */
+   div { font: 20px/1 Ahem; }
+   .green { background: lime; color: green; }
+   .red { background: red; color: maroon; }
+  </style>
+ </head>
+ <body>
+  <div class="control">Ahem_font_required_for_this_test.</div>
+  <p>There should be no red below, only two identical striped green and lime bars.</p>
+
+  <div><span class="red">
+   <span class="green">X </span> <span class="red"> </span> <span class="green"> X </span>
+   <span class="green">X </span>  <span class="green"> X </span>
+   <span class="green">X</span><span class="green"> X<span class="red"> </span></span>
+  </span></div>
+
+  <div><span class="green">X X X X X X</span></div>
+
+ </body>
+</html>

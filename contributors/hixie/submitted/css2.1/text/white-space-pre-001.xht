@@ -1,0 +1,25 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>white-space pre: simple tests</title>
+  <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
+  <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/text/white-space/pre/001.html"/>
+  <link rel="help" href="http://www.w3.org/TR/CSS21/text.html#white-space-model" />
+  <style type="text/css">
+   .control { display: inline; font: 1em/1 Ahem, sans-serif; background: red; color: white; }
+   pre { white-space: pre; font: 1em/1 Ahem; background: green; color: lime; }
+  </style>
+ </head>
+ <body>
+  <div class="control">Ahem_font_required_for_this_test.</div>
+  <table><tr><td>
+   <pre>                     
+ xxxx xxxx xxxx xxxx 
+ x  x x  x x    x    
+ xxxx xxxx xxxx xxxx
+ x    x  x    x    x 
+ x    x  x xxxx xxxx 
+                     </pre>
+  </td></tr></table>
+ </body>
+</html>

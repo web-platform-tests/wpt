@@ -1,0 +1,24 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+ <head>
+  <title>White-space collapsing and the bidi algorithm</title>
+  <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
+  <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/text/white-space/normal/collapsing/bidi/001.html"/>
+  <link rel="help" href="http://www.w3.org/TR/CSS21/text.html#egbidiwscollapse" />
+  <style type="text/css">
+   .control { display: inline; font: 1em/1 Ahem, sans-serif; background: red; color: white; }
+   td { background: red; padding: 0; border: solid; }
+   .test span { color: aqua; background: yellow; font: 2em/1 Ahem; white-space: normal; }
+   .reference .block { color: aqua; background: red; font: 2em/1 Ahem; white-space: normal; }
+   .reference .space { color: yellow; background: red; font: 2em/1 Ahem; white-space: normal; }
+  </style>
+ </head>
+ <body>
+  <div class="control">Ahem_font_required_for_this_test.</div>
+  <p> The two block below should look identical with no red present. (Force bidi: &#x05D0;) </p>
+  <table>
+   <tr><td class="test"><span>x &#x202E; x &#x202C; x</span></td></tr>
+   <tr><td class="reference"><span class="block">x</span><span class="space">x</span><span class="space">x</span><span class="block">x</span><span class="block">x</span></tr></tr>
+  </table>
+ </body>
+</html>

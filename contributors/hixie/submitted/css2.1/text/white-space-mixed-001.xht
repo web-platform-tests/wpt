@@ -1,0 +1,53 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+ <!-- ================================================================ -->
+ <!-- WARNING! This document contains significant trailing whitespace! -->
+ <!-- ================================================================ -->
+
+ <head>
+  <title>white-space: mixed tests</title>
+  <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
+  <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/text/white-space/mixed/001.html"/>
+  <link rel="help" href="http://www.w3.org/TR/CSS21/text.html#white-space-model" />
+  <style type="text/css">
+   .control { display: inline; font: 1em/1 Ahem, sans-serif; background: red; color: white; }
+   .test { border: solid blue; font: 1em/1 Ahem; background: yellow; color: orange; width: 19em; }
+   .normal { white-space: normal; }
+   .nowrap { white-space: nowrap; }
+   .pre { white-space: pre; }
+  </style>
+ </head>
+ <body>
+  <div class="control">Ahem_font_required_for_this_test.</div>
+  <p>There should be a pretty yellow and orange pattern and the word "PASS" in orange on white below.</p>
+  <div class="test pre">
+1234567890123456789<span class="normal"> 
+   x   <span>
+x            <span class="pre"></span>    x<span>
+
+</span> x x</span> x <span> x x </span> x <span class="pre">x</span>
+1234</span>567890123456789 xxxx xxxx xx<span class="normal">x<span class="nowrap">x
+xxxx </span> </span>x<span class="normal"> <span class="pre"> </span> <span class="pre"> </span> <span class="pre"> </span>
+<span class="nowrap"> 
+ </span> </span>  <span class="pre"> </span><span class="normal"> </span>   <span class="nowrap"> 
+ </span><span class="normal"> </span>  x x  x x  x x    x    
+<span class="nowrap">x
+x x x x x x x x x xxxx
+xxxx xxxx xxxx </span>
+x                 x x    x  x    x    x<span class="normal"> xxxxxxxxxxxxxxxxxxx<span
+class="pre"> x    x  x xxxx xxxx </span></span>
+</div>
+
+  <p>The pattern inside the blue box above should look exactly like the reference rendering below:</p>
+
+  <div class="test pre">1234567890123456789
+x x x x x x x x x x
+1234567890123456789 xxxx xxxx xxxx xxxx
+x                 x x  x x  x x    x   
+x x x x x x x x x x xxxx xxxx xxxx xxxx
+x                 x x    x  x    x    x
+xxxxxxxxxxxxxxxxxxx x    x  x xxxx xxxx</div>
+
+ </body>
+</html>

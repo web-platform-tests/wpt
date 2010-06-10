@@ -1,0 +1,22 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>white-space: mixed tests (simple)</title>
+  <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
+  <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/text/white-space/mixed/002.html"/>
+  <link rel="help" href="http://www.w3.org/TR/CSS21/text.html#white-space-model" />
+  <style type="text/css">
+   .control { display: inline; font: 1em/1 Ahem, sans-serif; background: red; color: white; }
+   .test { border: solid blue; font: 1em/1 Ahem; background: yellow; color: orange; float: left; clear: left; margin: 1em; }
+   .normal { white-space: normal; }
+   .nowrap { white-space: nowrap; }
+   .pre { white-space: pre; }
+  </style>
+ </head>
+ <body>
+  <div class="control">Ahem_font_required_for_this_test.</div>
+  <p>The contents of the two blue boxes should be identical.</p>
+  <div class="test normal">[<span class="normal"> </span><span class="pre"> </span><span class="normal"> </span><span class="pre"> </span><span class="normal"> </span>]</div>
+  <div class="test pre">[     ]</div>
+ </body>
+</html>

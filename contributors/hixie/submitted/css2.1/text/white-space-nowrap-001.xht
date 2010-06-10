@@ -1,0 +1,26 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>white-space nowrap: basic test</title>
+  <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
+  <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/text/white-space/nowrap/001.html"/>
+  <link rel="help" href="http://www.w3.org/TR/CSS21/text.html#white-space-model" />
+  <style type="text/css">
+   .control { display: inline; font: 1em/1 Ahem, sans-serif; background: red; color: white; }
+   .top { font: 20px/1 Ahem; }
+   .outer { width: 10em; background: red; }
+   .inner { width: 7em; color: lime; background: green; white-space: nowrap; }
+  </style>
+ </head>
+ <body>
+  <div class="control">Ahem_font_required_for_this_test.</div>
+  <p>There should be no red below, only a lime line with a green square in it.</p>
+  <div class="top">
+   <div class="outer">
+    <div class="inner">
+     xxx xxxxxx
+    </div>
+   </div>
+  </div>
+ </body>
+</html>

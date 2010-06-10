@@ -1,0 +1,63 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html lang="en">
+ <head>
+  <title>Units: cross-pixel boundaries</title>
+  <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
+  <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/units/007.html"/>
+  <link rel="help" href="http://www.w3.org/TR/CSS21/syndata.html#length-units" />
+  <style type="text/css">
+   .control { display: inline; font: 1em/1 Ahem, sans-serif; background: red; color: white; }
+
+   /* color */
+   .a.background { background: red; }
+   .b.background { background: lime; }
+   .c.background { background: blue; }
+   .d.background { background: yellow; }
+   .a.color { color: red; }
+   .b.color { color: lime; }
+   .c.color { color: blue; }
+   .d.color { color: yellow; }
+
+   /* tests */
+   img { display: block; }
+   table, .table, tr, td, .cell, div { margin: 0; padding: 0; border: 0; border-spacing: 0; empty-cells: show; }
+   .table { display: table; }
+   .table span { display: table-cell; }
+   .text { font: 1em/1 Ahem; }
+   .pos { position: relative; }
+   .pos span { position: absolute; top: 0; }
+   .float span { float: left; }
+
+   /* sizing */
+   div, table { margin-top: 0px ! important; margin-bottom: 0px ! important; }
+   img { width: 6px; height: 1px; }
+   td, .table span, .float span, .pos span { width: 1.5px; height: 1px; }
+   .border { height: 1px; overflow: hidden; }
+   .border span { border-left: 1.5px solid; }
+   .text { font-size: 1.5px; height: 1px; overflow: hidden; }
+   .pos span.a { left: 0; }
+   .pos span.b { left: 1.5px; }
+   .pos span.c { left: 3px; }
+   .pos span.d { left: 4.5px; }
+   
+  </style>
+ </head>
+ <body>
+  <div class="control">Ahem_font_required_for_this_test.</div>
+
+  <p>There are 7 separate tests below. They should all look identical,
+  to the pixel, at all zoom levels. (Note that they are tiny. Take a
+  screenshot and zoom it up, or use a magnifying accessory, to test
+  this carefully.)</p>
+
+  <div><img src="support/units-007.png" alt="(image test unavailable)"></div>
+  <table><tr><td class="a background"></td><td class="b background"></td><td class="c background"></td><td class="d background"></td></tr></table>
+  <div class="table"><span class="a background"></span><span class="b background"></span><span class="c background"></span><span class="d background"></span></div>
+  <div class="border"><span class="a color"></span><span class="b color"></span><span class="c color"></span><span class="d color"></span></div>
+  <div class="text"><span class="a color">x</span><span class="b color">x</span><span class="c color">x</span><span class="d color">x</span></div>
+  <div class="pos"><span class="a background"></span><span class="b background"></span><span class="c background"></span><span class="d background"></span></div>
+  <div class="float"><span class="a background"></span><span class="b background"></span><span class="c background"></span><span class="d background"></span></div>
+
+ </body>
+</html>
+

@@ -1,52 +1,18 @@
-#!/usr/bin/perl -wT
-# -*- Mode: perl; tab-width: 4; indent-tabs-mode: nil; -*-
-#
-# 005: Part of a series of tests for CSS units
-#
-# Copyright (c) 2002 by Ian Hickson
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful, but
-# WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-# General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
-
-use strict;
-use CGI;
-my $query = new CGI;
-my $size = $query->param('size');
-
-if (!defined($size) or $size !~ m/^[0-9]+(?:\.[0-9]+)$/) {
-    $size = 0.87;
-}
-
-my $sizeTimesTen = $size * 10;
-
-print <<end;
-Content-Type: text/html
-
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
-<html lang="en">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
  <head>
-  <title>Units: em (${size}em floats)</title>
+  <title>Units: em (0.87em floats)</title>
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
   <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/units/005.html"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/syndata.html#length-units" />
   <style type="text/css">
-   div { width: ${sizeTimesTen}em; height: ${sizeTimesTen}em; background: red; border: solid lime; }
-   span { float: left; width: ${size}em; height: ${size}em; background: green; }
+   div { width: 8.7em; height: 8.7em; background: red; border: solid lime; }
+   span { float: left; width: 0.87em; height: 0.87em; background: green; }
    input[type="text"] { text-align: right; }
   </style>
  </head>
  <body>
+  <p>You should see no red below, just a green square with a green border.
   <div>
    <!-- 100 spans -->
    <span></span> <span></span> <span></span> <span></span> <span></span>
@@ -70,8 +36,8 @@ Content-Type: text/html
    <span></span> <span></span> <span></span> <span></span> <span></span>
                  <span></span> <span></span> <span></span> <span></span> <span></span>
   </div>
-  <p>You should see no red above, just a green square with a green
-  border. Try different font sizes, zooms, and resolutions, as well as
+
+<!-- Try different font sizes, zooms, and resolutions, as well as
   slightly different sizes for the floats.</p>
   <form action="" method="get">
    <p>
@@ -79,6 +45,6 @@ Content-Type: text/html
     <input type="submit" value="Generate Test">
    </p>
   </form>
+-->
  </body>
 </html>
-end

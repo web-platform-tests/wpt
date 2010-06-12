@@ -30,6 +30,12 @@ push @dirs, 'contributors/bzbarsky/submitted/css2.1/box/reftest.list';
 push @dirs, 'contributors/bzbarsky/submitted/css2.1/run-in/reftest.list';
 
 ###############################################################################
+# John Daggett
+# submitted/css2.1/
+
+push @dirs, 'contributors/mozilla/submitted/fontreftests/fontreftest.list';
+
+###############################################################################
 # Eira Monstad
 # submitted/css2.1/* - all selftests, r=arronei?
 

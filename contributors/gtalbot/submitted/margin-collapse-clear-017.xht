@@ -16,10 +16,15 @@
   body
   {
   background: white url("support/ruler-v-100px-200px-300px.png") no-repeat;
-  margin: 62px 8px 8px 55px; /* 62px + 8px + 20px + 10px = 100px */
+  margin: 62px 8px 8px 55px; /* max(62px, 8px) + 20px + 8px + 10px = 100px */
   }
 
-  p {font-size: 16px; line-height: 20px; margin: 8px;}
+  p
+  {
+  font-size: 16px;
+  line-height: 20px;
+  margin: 8px;
+  }
 
   #parent-block
   {

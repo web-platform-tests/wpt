@@ -1,11 +1,11 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
-<html lang="en">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
  <head>
   <title>CSS Test: :active (dynamic test)</title>
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
   <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/selectors/active/003.html"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/selector.html#dynamic-pseudo-classes" />
-  <style type="text/css">
+  <style type="text/css"><![CDATA[
    * { color: black; }
    :active { color: fuchsia; }
    .pass { background: green; color: white; }
@@ -13,8 +13,8 @@
    .inform { background: white; color: silver; }
    ol { margin: 0; padding: 0; }
    li { margin: 0; padding: 0 0 0 2em; }
-  </style>
-  <script type="text/javascript">
+  ]]></style>
+  <script type="text/javascript"><![CDATA[
 
    function sendMouseEvent(type, target) {
      inform('sending ' + type + ' to ' + target.id);
@@ -114,15 +114,15 @@
      }
    }
 
-  </script>
+  ]]></script>
  </head>
  <body onload="test()">
   <p>There should be no red below.</p>
   <ol id="results"><li class="fail">test failed to start</li></ol>
   <p>Ignore everything below this point.</p>
   <p>
-   <input type="button" id="test1" value="Test 1">
-   <input type="button" id="test2" value="Test 2">
+   <input type="button" id="test1" value="Test 1"/>
+   <input type="button" id="test2" value="Test 2"/>
    <span id="test3">Test 3</span>
   </p>
  </body>

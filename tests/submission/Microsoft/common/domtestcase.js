@@ -1,13 +1,11 @@
 /*
-Copyright (c) 2001-2004 World Wide Web Consortium,
-(Massachusetts Institute of Technology, Institut National de
-Recherche en Informatique et en Automatique, Keio University). All
-Rights Reserved. This program is distributed under the W3C's Software
-Intellectual Property License. This program is distributed in the
-hope that it will be useful, but WITHOUT ANY WARRANTY; without even
-the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-PURPOSE.
-See W3C License http://www.w3.org/Consortium/Legal/ for more details.
+Distributed under both the W3C Test Suite License [1] and the W3C
+3-clause BSD License [2]. To contribute to a W3C Test Suite, see the
+policies and contribution forms [3].
+
+[1] http://www.w3.org/Consortium/Legal/2008/04-testsuite-license
+[2] http://www.w3.org/Consortium/Legal/2008/03-bsd-license
+[3] http://www.w3.org/2004/10/27-testcases
 */
 
 //

@@ -11,7 +11,7 @@
                 try
                 {
                     var svgNS = "http://www.w3.org/2000/svg";
-                    if(document.getElementsByTagName("caption")[0].childNodes[0].localName=="svg" && document.getElementsByTagName("rect")[0].namespaceURI==svgNS)
+                    if(document.getElementsByTagName("caption")[0].childNodes[1].localName=="svg" && document.getElementsByTagName("rect")[0].namespaceURI==svgNS)
                     {
                         document.getElementsByTagName("rect")[0].setAttribute("fill","green");
                     }

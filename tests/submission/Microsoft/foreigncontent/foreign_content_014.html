@@ -11,39 +11,43 @@
             {
                 try
                 {
-                
+                    var bResult = "FAIL";
                     var parentNode = document.getElementById("svg1");
                             
-                    for(var i=0;i<parentNode.childNodes.length;i++)
+                    for(var i=1;i<parentNode.childNodes.length;i=i+2)
                     {
                         var idName = parentNode.childNodes[i].id;
                         var tagName = parentNode.childNodes[i].localName;
                         if(idName!=tagName)
                         {
-                            document.getElementById("testresult").innerHTML = "FAIL";
+                            bResult = "FAIL";
                             break;
                         }
                         else
                         {
-                            document.getElementById("testresult").innerHTML = "PASS";
+                            bResult = "PASS"
                         }
                     }
                 }
                 catch(ex)
                 {
-                    document.getElementById("testresult").innerHTML = "FAIL";   
+                    bResult = "PASS";
                 }
+				
+                document.getElementById("testresult").innerHTML = bResult;
             }
         </script>
     </head>
     
     <body onload="RunTest()">
+
         <div class="testdata">
             <p id="instructions"> Test passes if the word "PASS" appears below  </p>
             <p> Test Result : </p>
             <p id="testresult"> RUNNING </div>
         </div>
         <svg id="svg1">
+
             <altglyph id="altGlyph" />
             <ALTGLYPHDEF id="altGlyphDef" />
             <AltGlyphItem id="altGlyphItem" />
@@ -53,6 +57,7 @@
             <clippath id="clipPath" />
             <feblend id="feBlend" />
             <fecolormatrix id="feColorMatrix" />
+
             <fecomponenttransfer id="feComponentTransfer" />
             <fecomposite id="feComposite" />
             <feconvolvematrix id="feConvolveMatrix" />
@@ -62,6 +67,7 @@
             <feflood id="feFlood" />
             <fefunca id="feFuncA" />
             <fefuncb id="feFuncB" />
+
             <fefuncg id="feFuncG" />
             <fefuncr id="feFuncR" />
             <fegaussianblur id="feGaussianBlur" />
@@ -71,6 +77,7 @@
             <femorphology id="feMorphology" />
             <feoffset id="feOffset" />
             <fepointlight id="fePointLight" />
+
             <fespecularlighting id="feSpecularLighting" />
             <fespotlight id="feSpotLight" />
             <fetile id="feTile" />
@@ -80,6 +87,7 @@
             <lineargradient id="linearGradient" />
             <radialgradient id="radialGradient" />
             <textpath id="textPath" />
+
         </svg> 
         
 
@@ -87,3 +95,4 @@
     </body>
 
 </html>
+

@@ -3,6 +3,12 @@
 # Initial code by fantasai, joint copyright 2010 W3C and Microsoft
 # Licensed under BSD 3-Clause: <http://www.w3.org/Consortium/Legal/2008/03-bsd-license>
 
+###### XML Parsing ######
+
+import os
+import CSSTestLib
+os.environ['XML_CATALOG_FILES'] = os.path.join(CSSTestLib.__path__[0], 'catalog/catalog.xml')
+
 ###### File path manipulation ######
 
 import os.path

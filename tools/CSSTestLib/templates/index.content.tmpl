@@ -1,7 +1,7 @@
 [% INCLUDE "suitedata.tmpl" %]
 [% IF official %]
   <h1>CSS2.1 Conformance Test Suite</h1>
-  <p>This is a [% suites.$suite.status %] version of the
+  <p>This is a [% suites.$suite.status or "ERROR: $suite" %] version of the
      CSS2.1 Test Suite.</p>
 [% ELSE %]
   <h1>CSS2.1 Test Collection</h1>
@@ -48,9 +48,14 @@
        would otherwise pass in the above XHTML 1.1 format.</dd>
   </dl>
 
-  <p>Note that many of the tests require the
-   <a href="http://www.w3.org/Style/CSS/Test/Ahem/">Ahem font to be installed</a>.
+  <p>Note that <em>many</em> of the tests require the
+   <a href="http://www.w3.org/Style/CSS/Test/Fonts/Ahem/">Ahem font to be installed</a>.
+   These tests are marked with the 'ahem' flag in their metadata.
    Without the Ahem font installed, these tests are of no value.</p>
+  <p>Some of the font-related tests also require
+   <a href="http://www.w3.org/Style/CSS/Test/Fonts/">special fonts</a>,
+   and are otherwise of no value. These tests are marked with the 'font'
+   flag in their metadata.
 
 <h2 id="common">Common Assumptions</h2>
 
@@ -102,8 +107,8 @@
 
   <p>The tests that need these assumptions to be true have not yet been
   marked, but it is likely that we will add a way to identify these
-  tests in due course.</p>
-
+  tests in due course. Tests should avoid relying on these assumptions
+  unless necessary.</p>
 
 <h2>License</h2>
 

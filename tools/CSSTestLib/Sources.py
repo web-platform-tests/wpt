@@ -210,7 +210,7 @@ class ReftestFilepathError(Exception):
   pass
 
 class ReftestManifest(ConfigSource):
-  """Object representing a reftest manifest file and its .htaccess.
+  """Object representing a reftest manifest file.
      Iterating the ReftestManifest returns (testpath, refpath) tuples
      with paths relative to the manifest.
   """
@@ -219,19 +219,6 @@ class ReftestManifest(ConfigSource):
        and load its .htaccess file.
     """
     ConfigSource.__init__(self, sourcepath, relpath, 'config/reftest')
-    htapath = join(basepath(sourcepath), '.htaccess')
-    self.htaccess = ConfigSource(htapath, join(basepath(), '.htaccess')) \
-                    if exists(htapath) else None
-
-  def append(self, other):
-    """Appends contents of ConfigSource `other` to this source.
-       Asserts if self.relpath != other.relpath.
-    """
-    ConfigSource.append(self, other)
-    if self.htaccess and other.htaccess:
-      self.htaccess.append(other.htaccess)
-    else:
-      self.htaccess = self.htaccess or other.htaccess
 
   def basepath(self):
     """Returns the base relpath of this reftest manifest path, i.e.
@@ -276,6 +263,7 @@ class ReftestManifest(ConfigSource):
                                        % (src, record[1][1]))
           yield record
 
+import Utils # set up XML catalog
 xhtmlns = '{http://www.w3.org/1999/xhtml}'
 
 class XHTMLSource(FileSource):
@@ -298,6 +286,7 @@ class XHTMLSource(FileSource):
 
   # Private Data and Methods
   __parser = etree.XMLParser(no_network=True,
+  # perf nightmare           dtd_validation=True,
                              remove_comments=False,
                              strip_cdata=False,
                              resolve_entities=False)
@@ -393,7 +382,7 @@ class XHTMLSource(FileSource):
 
     # write
     f = open(format.dest(self.relpath), 'w')
-    f.write(output.encode(self.encoding))
+    f.write(output.encode(self.encoding, 'xmlcharrefreplace'))
     f.close()
 
   def compact():
@@ -402,7 +391,7 @@ class XHTMLSource(FileSource):
 class CSSTestSourceMetaError(Exception):
   pass
 
-CSSTestTitlePrefix='CSS Test:' # stripped from metadata
+CSSTestTitlePrefixes=['CSS Test:', 'CSS2.1 Test Suite:'] # stripped from metadata
 
 class CSSTestSource(XHTMLSource):
   """XHTMLSource representing the main CSS test file. Supports metadata lookups."""
@@ -524,14 +513,21 @@ class CSSTestSource(XHTMLSource):
         # test title
         elif node.tag == xhtmlns+'title':
           title = node.text.strip()
-          if not title.startswith(CSSTestTitlePrefix):
-            raise CSSTestSourceMetaError("Title must start with %s" % CSSTestTitlePrefix)
-          data['title'] = title[len(CSSTestTitlePrefix):].strip()
+          for prefix in CSSTestTitlePrefixes:
+            if title.startswith(prefix):
+              data['title'] = title[len(CSSTestTitlePrefixes[0]):].strip()
+              break;
+          else:
+            raise CSSTestSourceMetaError("Title must start with %s"
+                                         % CSSTestTitlePrefixes[0])
     # Cache error and return
     except CSSTestSourceMetaError, e:
       e.CSSTestLibErrorLocation = self.sourcepath
       self.error = e
       return None
+    except Exception, e:
+      print "Unknown error in %s" % self.sourcepath
+      raise e
 
     # Cache data and return
     self.data = data

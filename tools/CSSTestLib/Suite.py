@@ -15,7 +15,7 @@ class CSSTestSuite:
     self.title = title
     self.specroot = specUri
 
-    self.stripTestTitlePrefix='CSS Test'
+    self.stripTestTitlePrefix=['CSS Test', 'CSS2.1 Test Suite']
     self.defaultReftestRelpath='reftest.list'
     self.groups = {}
     self.sourcecache = SourceCache()

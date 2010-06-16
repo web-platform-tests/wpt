@@ -124,7 +124,7 @@ class XHTMLPrintFormat(XHTMLFormat):
 
   def testTransform(self, source):
     assert isinstance(source, CSSTestSource)
-    output = source.serializeHTML()
+    output = source.serializeXHTML()
 
     headermeta = {'suitename' : self.testSuiteName,
                   'testid'    : source.name(),
@@ -143,7 +143,7 @@ class XHTMLPrintFormat(XHTMLFormat):
       if not re.search('@page', output):
         headermeta['margin'] = self.__margin
       output = re.sub('</title>',
-                      '<title>\n  <style type="text/css">%s</style>' % \
+                      '</title>\n  <style type="text/css">%s</style>' % \
                         (self.__css % headermeta),
                       output);
     return output;

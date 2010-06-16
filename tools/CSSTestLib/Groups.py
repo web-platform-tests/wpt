@@ -81,9 +81,10 @@ class TestGroup:
            "Expected Group instance, got %s" % type(other)
     if self.htaccess and other.htaccess:
       self.htaccess.append(other.htaccess)
-    elif other.htaccess:
-      self.htaccess = other.htaccess
+    else:
+      self.htaccess = self.htaccess or other.htaccess
     other.htaccess = None
+
     self.support = SourceSet.combine(self.support, other.support)
     other.support = None
 

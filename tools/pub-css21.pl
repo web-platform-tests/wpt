@@ -59,6 +59,15 @@ push @dirs, 'contributors/gtalbot/submitted';
 # Pending XHTML conversion
 # Pending filename conversion
 
+push @dirs, 'contributors/hixie/submitted/css2.1/[bcfgmptuvz]*';
+push @dirs, 'contributors/hixie/submitted/css2.1/selector';
+push @dirs, 'contributors/hixie/submitted/css2.1/syndata';
+
+###############################################################################
+# i18n WG (Richard Ishida)
+
+push @dirs, 'contributors/i18n/submitted/css2.1/syndata';
+push @dirs, 'contributors/i18n/submitted/css2.1/visuren';
 
 ###############################################################################
 # James Hopkins

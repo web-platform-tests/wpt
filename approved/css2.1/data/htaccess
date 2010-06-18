@@ -3,6 +3,7 @@ AddType application/xhtml+xml .xht
 AddType text/html .htm
 AddType text/css .css
 AddType image/png .png
+AddType text/plain .data .list
 
 # Set the default character set
 AddDefaultCharset utf-8

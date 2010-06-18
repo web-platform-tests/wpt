@@ -13,10 +13,9 @@
    a:hover {color: green;}
    a:focus {color: red;}
    a:active {color: red;}
-   #one {color: red;}
   ]]></style>
  </head>
  <body>
-  <p><a>This sentence should be green.</a> Check that it remains green if you click it.</p>
+  <p><a>This sentence should be green.</a> Check that it remains green after you click it. Note: the link should turn red while clicked.</p>
  </body>
 </html>

@@ -8,7 +8,8 @@ require Exporter;
 
 open(SECTIONS, '<', '../data/sections.dat') or die "$0: sections.dat: $!\n";
 while (defined($_ = <SECTIONS>)) {
-    my($code, $uri, $title) = m/^([^ ]+) ([^ ]+) (.+)\n$/gos or die "$0: sections.dat: invalid format\n";
+    my($code, $uri, $title) = m/^([^\t]+)\t([^\t]+)\t(.+)\n$/gos or die "$0: sections.dat: invalid format\n";
+    $title =~ tr/\t/ /;
     $sectionURIs{$code} = $uri;
     $sectionTitles{$code} = $title;
     $sectionCodes{$uri} = $code;

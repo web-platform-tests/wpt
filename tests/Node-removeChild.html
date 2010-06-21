@@ -34,7 +34,7 @@ function testCrossDocument() {
   Test.finish();
 }
 
-try {
+Test.runUntilFinish([function() {
   var len = document.body.childNodes.length;
   try {
     document.body.removeChild(null);
@@ -51,8 +51,8 @@ try {
     Test.ok(e instanceof TypeError, "Should have thrown TypeError.");
   }
   Test.is(document.body.childNodes.length, len);
-
-  Test.separate();
+},
+function() {
   document.body.setAttribute("abc", "fail");
   var attr = document.body.attributes[0];
   Test.ok(attr, "No attribute node?");
@@ -65,8 +65,8 @@ try {
   Test.is(document.body.hasAttribute("abc"), true);
   Test.is(attr.value, "");
   Test.is(attr.childNodes.length, 0);
-
-  Test.separate();
+},
+function() {
   attr.value = "pass";
   try {
     attr.removeChild(null);
@@ -77,13 +77,11 @@ try {
   Test.is(attr.value, "pass");
   Test.is(attr.childNodes.length, 1);
   Test.is(attr.childNodes[0].nodeValue, "pass");
-
-  Test.separate();
+},
+function() {
   var iframe = document.createElement("iframe");
   iframe.onload = testCrossDocument;
   iframe.src = "support/document.html";
   document.body.appendChild(iframe);
-} catch (e) {
-  Test.fail("Exception was thrown.");
-}
+}]);
 </script>

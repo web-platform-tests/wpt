@@ -156,7 +156,7 @@ var Test = {
     return this.ok(false, aError);
   },
 
-  "run" : function run(aTests) {
+  "runUntilFinish" : function runUntilFinish(aTests) {
     for (var i = 0, il = aTests.length; i < il; ++i) {
       try {
         aTests.shift()();
@@ -169,6 +169,11 @@ var Test = {
       }
       this.separate();
     }
+    this.finish();
+  },
+
+  "run" : function run(aTests) {
+    this.runUntilFinish(aTests);
     this.finish();
   }
 };

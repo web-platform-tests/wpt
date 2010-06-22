@@ -4,24 +4,29 @@
         <title>CSS Test: Margin on non-replaced inline elements</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#margin-properties" />
-        <meta name="flags" content="" />
+        <meta name="flags" content="ahem" />
         <meta name="assert" content="Non-replaced inline elements do not apply vertical margins." />
         <style type="text/css">
-            div
-            {
-                border: blue solid;
-            }
-            span
-            {
-                background: orange;
-                margin: 20px;
-            }
+             div
+             {
+                 background: red;
+                 border: solid green;
+                 font-family: ahem;
+                 line-height: 1;
+                 width: 4em;
+             }
+             span
+             {
+                 background: green;
+                 color: green;
+                 margin: 2em 0;
+             }
         </style>
     </head>
     <body>
-        <p>Test passes if the top and bottom of the orange box is touching the inner edges of the blue box, and there is no margin (space) above or below the orange box.</p>
-        <div>
-            <span>Filler Text</span>
-        </div>
+        <p>Test passes if there is a green box below and no red.</p>
+         <div>
+             <span>XXXX XXXX XXXX</span>
+         </div>
     </body>
 </html>

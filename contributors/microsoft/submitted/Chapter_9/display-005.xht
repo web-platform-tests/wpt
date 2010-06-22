@@ -6,12 +6,11 @@
         <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#propdef-display" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#display-prop" />
         <meta name="flags" content="" />
-        <meta name="assert" content="The property 'display' set to 'inline-block' behaves in layout as an inline block." />
+        <meta name="assert" content="The property 'display' set to 'inline-block' is formatted in layout as an inline-level element: it creates a new block formatting context for its descendants but it is laid out, flowed as an inline-level element. An inline-block does not begin on a new line and does not require to begin on a new line." />
         <style type="text/css">
             div div
             {
                 display: inline-block;
-                height: 50px;
             }
         </style>
     </head>

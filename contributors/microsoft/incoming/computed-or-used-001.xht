@@ -9,18 +9,18 @@
         <style type="text/css">
             div
             {
-                border-top: 1px solid;
+                border-top: 2px solid;
             }
             #a
             {
-                margin-top: 30px;
+                background: yellow;
                 height: 100px;
             }
             #b
             {
                 position: relative;
-                bottom: 10%;
-                height: 100px;
+                bottom: 10%; /* 10px */
+                height: 400px;
             }
             #c
             {
@@ -30,7 +30,7 @@
         </style>
     </head>
     <body>
-        <p>Should there be three thin lines below or one thick and one thin?</p>
+        <p>Test passes if there is one thick line </p>
         <div id="a">
             <div id="b">
                 <div id="c"></div>

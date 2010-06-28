@@ -47,7 +47,7 @@ function getAudioURI(base)
 {
     var extension = '.mp3';
 
-    var audiotag = document.canPlayType("audio");
+    var audiotag = document.createElement("audio");
 
     if ( audio.canPlayType &&
          audio.canPlayType('audio/ogg') )

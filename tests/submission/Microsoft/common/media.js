@@ -49,8 +49,8 @@ function getAudioURI(base)
 
     var audiotag = document.createElement("audio");
 
-    if ( audio.canPlayType &&
-         audio.canPlayType('audio/ogg') )
+    if ( audiotag.canPlayType &&
+         audiotag.canPlayType('audio/ogg') )
     {
         extension = '.oga';
     }

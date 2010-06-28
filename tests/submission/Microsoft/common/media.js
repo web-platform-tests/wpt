@@ -29,9 +29,10 @@ function getVideoURI(base)
 {
     var extension = '.mp4';
 
-    if ( navigator.userAgent.match(/Gecko/i)  != null ||
-         navigator.userAgent.match(/Chrome/i) != null ||
-         navigator.userAgent.match(/Opera/i)  != null )
+    var videotag = document.createElement("video");
+
+    if ( videotag.canPlayType  &&
+         videotag.canPlayType('video/ogg; codecs="theora, vorbis"') )
     {
         extension = '.ogv';
     }
@@ -46,9 +47,10 @@ function getAudioURI(base)
 {
     var extension = '.mp3';
 
-    if ( navigator.userAgent.match(/Gecko/i)  != null ||
-         navigator.userAgent.match(/Chrome/i) != null ||
-         navigator.userAgent.match(/Opera/i)  != null )
+    var audiotag = document.canPlayType("audio");
+
+    if ( audio.canPlayType &&
+         audio.canPlayType('audio/ogg') )
     {
         extension = '.oga';
     }

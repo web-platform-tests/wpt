@@ -7,17 +7,17 @@
   <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#floats" />
   <style type="text/css">
    .control { display: inline; font: 1em/1 Ahem, sans-serif; background: red; color: white; }
-   container { display: block; width: 299px; background: red; color: green; font: 50px Ahem; border: solid white; }
-   float { float: left; margin: 50px; }
+   #container { display: block; width: 299px; background: red; color: green; font: 50px Ahem; border: solid white; }
+   .float { float: left; margin: 50px; }
   </style>
  </head>
  <body>
   <div class="control">Ahem_font_required_for_this_test.</div>
   <p>There should be a green block below this line.</p>
-  <container xmlns="http://www.w3.org/">
+  <div id="container">
    <div class="test1"/>
    <div class="test2"/>
    <div class="float">XXXX</div>
-  </container>
+  </div>
  </body>
 </html>

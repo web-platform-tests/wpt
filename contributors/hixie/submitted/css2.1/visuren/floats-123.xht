@@ -7,13 +7,13 @@
   <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#floats" />
   <style type="text/css">
    .control { display: inline; font: 1em/1 Ahem, sans-serif; background: red; color: white; }
-   container { display: block; width: 150px; background: red; position: relative; }
-   float { float: left; color: green; font: 50px Ahem; }
+   #container { display: block; width: 150px; background: red; position: relative; }
+   .float { float: left; color: green; font: 50px Ahem; }
   </style>
  </head>
  <body>
   <div class="control">Ahem_font_required_for_this_test.</div>
   <p>There should be a green square below this line.</p>
-  <container xmlns="http://www.w3.org/"><div class="float">X</div></container>
+  <div id="container"><div class="float">X</div></div>
  </body>
 </html>

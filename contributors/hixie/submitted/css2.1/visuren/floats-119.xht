@@ -7,16 +7,16 @@
   <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#floats" />
   <style type="text/css">
    .control { display: inline; font: 1em/1 Ahem, sans-serif; background: red; color: white; }
-   test { display: block; }
-   control { display: block; width: 150px; height: 75px; margin-bottom: 10px; background: navy; }
-   float { float: left; background: navy; color: navy; font: 25px Ahem; padding: 25px; }
+   .test { display: block; }
+   span { display: block; width: 150px; height: 75px; margin-bottom: 10px; background: navy; }
+   .float { float: left; background: navy; color: navy; font: 25px Ahem; padding: 25px; }
   </style>
  </head>
  <body>
   <div class="control">Ahem_font_required_for_this_test.</div>
   <p>There should be two identical blocks below.</p>
   <div class="test" xmlns="http://www.w3.org/">
-   <control/>
+   <span/>
    <div class="float">XXXX</div>
   </div>
  </body>

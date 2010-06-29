@@ -67,9 +67,10 @@ function getVideoType(codecs)
     var mime = 'video/mp4';
     var codecs_param = 'avc1.42E01E, mp4a.40.2';
 
-    if ( navigator.userAgent.match(/Gecko/i)  != null ||
-         navigator.userAgent.match(/Chrome/i) != null ||
-         navigator.userAgent.match(/Opera/i)  != null )
+    var videotag = document.createElement("video");
+    
+    if ( videotag.canPlayType  &&
+         videotag.canPlayType('video/ogg; codecs="theora, vorbis"') )
     {
         mime = 'video/ogg';
         codecs_param = 'theora, vorbis';

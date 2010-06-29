@@ -27,7 +27,7 @@
 <body class=draft>
 <div class=head id=head>
 <h1>Web DOM Core</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-date:-01-jan-1901>Work in Progress &mdash; Last Update 5 June 2010</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-date:-01-jan-1901>Work in Progress &mdash; Last Update 29 June 2010</h2>
 <dl>
  <dt>Editors
  <dd>Simon Pieters &lt;simonp@opera.com&gt;
@@ -968,36 +968,6 @@ attribute must return the <a href=#context-node>context node</a>'s <a class=exte
 
 <p>The <dfn id=dom-document-createelement title=dom-Document-createElement><code>createElement(<var title="">tagName</var>)</code></dfn> method must run the following steps:</p>
 
-<p class=XXX><code title="">createElement("&lt;div class='test'&gt;")</code>?
-<!-- ie allows createElement("<div class='test'>") and firefox in quirks mode allows createElement("<div>") -->
-<!--
-<zcorpan> i don't like dom's error checking at all
-<zcorpan> it checks for some things but not others and the things it checks sometimes don't match what xml requires anyway
-<zcorpan> and you can smuggle in stuff from other documents without checking anyway
-<zcorpan> the questions are
-<zcorpan> is there a reason why we can't drop all error checking
-<zcorpan> and
-<zcorpan> if we do, do we need to make createElement('<div>') or createElement('<div foo="bar">') do something magic
-<hsivonen> zcorpan: does IE implement full attribute tokenization for those?
-<zcorpan> hsivonen: afaict yeah
-<zcorpan> hsivonen: though i haven't tested much
-<zcorpan> document.createElement('<x y z=a x x y u>'); works as you'd expect
-<Philip`> Seems to trigger iff the first character is '<'
-<hsivonen> what if the string tokenizes to multiple tags?
-<hsivonen> what if it tokenizes to and end tag?
-<hsivonen> what about "<>"?
-<annevk> I'd rather throw an error if the first char is "<" than implementing some small start tag tokenizer just for createElement
-<hsivonen> or something else that doesn't tokenize to a start tag
-<Philip`> It ignores everything after the first '>'
-<hsivonen> annevk: presumably, one could reuse the real tokenizer
-<Philip`> It seems to throw an error if it starts with '</'
-<Philip`> (but if e.g. it starts with '<!' then it'll just make an element whose name starts with '!')
-<Philip`>	Out of n pages for an unknown value of n, I see one that does document.createElement('<iframe frameborder="0">')
-<Philip`>	(http://www.movingideas.org/content/en/issue_items/education.htm)
-<Philip`>	(n = tens of thousands, I think)
--->
-<!-- As far as I can tell, this isn't needed for web compatibility. Neither WebKit nor Opera support it, and Firefox's implementation still throws on the majority of cases in the wild, as almost all cases in the wild take advantage of the fact that IE allows attributes. -->
-<!-- http://philip.html5.org/data/createelement-with-angle-bracket.txt -->
 <ol>
  <li><p>If <var title="">tagName</var> doesn't match the <a href=http://www.w3.org/TR/xml/#NT-Name><code class=external>Name</code></a> production in XML, raise an <a href=#dom-domexception-invalid_character_err><code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code></a>
  exception and abort these steps.

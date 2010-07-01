@@ -1,0 +1,22 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD//XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html><head>
+    <title>CSS Test: blocks inside inlines &#8211; insert-into-split-inline-16b</title>
+    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
+    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level" />
+    <meta name="flags" content="dom" />
+    <style>
+      #i { border: 2px solid; }
+      #i::after { display: block; content: "Two"; }
+    </style>
+    <script>
+      function doTest() {
+        var i = document.getElementById("i");
+        i.appendChild(document.createTextNode("One"));
+      }
+    </script>
+  </head>
+  <body onload="doTest()">
+    <span id="i"></span>
+  
+
+</body></html>

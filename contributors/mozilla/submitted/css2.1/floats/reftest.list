@@ -1,0 +1,55 @@
+== floats-rule3-outside-left-001.xht floats-rule3-outside-left-001-ref.xht
+== floats-rule3-outside-right-001.xht floats-rule3-outside-right-001-ref.xht
+# Maybe the spec should change here.  See:
+#   http://lists.w3.org/Archives/Public/www-style/2009Jan/0445.xht
+#   http://wiki.csswg.org/spec/css2.1#issue-101
+== floats-rule3-outside-left-002.xht floats-rule3-outside-left-002-ref.xht
+== floats-rule3-outside-right-002.xht floats-rule3-outside-right-002-ref.xht
+# It's possible the spec should change here too.  See:
+#   http://lists.w3.org/Archives/Public/www-style/2009Jan/0445.xht
+#   http://wiki.csswg.org/spec/css2.1#issue-101
+== floats-rule7-outside-left-001.xht floats-rule7-outside-left-001-ref.xht
+== floats-rule7-outside-right-001.xht floats-rule7-outside-right-001-ref.xht
+== floats-wrap-bfc-outside-001.xht floats-wrap-bfc-outside-001-ref.xht
+== floats-zero-height-wrap-001.xht floats-zero-height-wrap-001-ref.xht
+== floats-zero-height-002.xht floats-zero-height-wrap-001-ref.xht
+== floats-placement-vertical-001a.xht floats-placement-vertical-001-ref.xht
+== floats-placement-vertical-001b.xht floats-placement-vertical-001-ref.xht
+== floats-placement-vertical-001c.xht floats-placement-vertical-001-ref.xht
+== floats-placement-vertical-003.xht floats-placement-vertical-003-ref.xht
+== floats-placement-vertical-004.xht floats-placement-vertical-004-ref.xht
+== floats-placement-vertical-004.xht floats-placement-vertical-004-ref2.xht
+== floats-wrap-bfc-001-left-overflow.xht floats-wrap-bfc-001-left-overflow-ref.xht
+== floats-wrap-bfc-001-left-table.xht floats-wrap-bfc-001-left-table-ref.xht
+== floats-wrap-bfc-001-right-overflow.xht floats-wrap-bfc-001-right-overflow-ref.xht
+== floats-wrap-bfc-001-right-table.xht floats-wrap-bfc-001-right-table-ref.xht
+== floats-wrap-bfc-002-left-overflow.xht floats-wrap-bfc-002-left-ref.xht
+== floats-wrap-bfc-002-left-table.xht floats-wrap-bfc-002-left-ref.xht
+== floats-wrap-bfc-002-right-overflow.xht floats-wrap-bfc-002-right-ref.xht
+== floats-wrap-bfc-002-right-table.xht floats-wrap-bfc-002-right-ref.xht
+== floats-wrap-bfc-003-left-overflow.xht floats-wrap-bfc-003-left-overflow-ref.xht
+== floats-wrap-bfc-003-left-table.xht floats-wrap-bfc-003-left-table-ref.xht
+== floats-wrap-bfc-003-right-overflow.xht floats-wrap-bfc-003-right-overflow-ref.xht
+== floats-wrap-bfc-003-right-table.xht floats-wrap-bfc-003-right-table-ref.xht
+== floats-wrap-bfc-004.xht floats-wrap-bfc-004-ref.xht
+== floats-wrap-bfc-005.xht floats-wrap-bfc-005-ref.xht
+== floats-wrap-bfc-006.xht floats-wrap-bfc-006-ref.xht
+== floats-wrap-bfc-006b.xht floats-wrap-bfc-006b-ref.xht
+== floats-wrap-bfc-006c.xht floats-wrap-bfc-006c-ref.xht
+== floats-wrap-bfc-007.xht floats-wrap-bfc-007-ref.xht
+== floats-wrap-top-below-inline-001l.xht floats-wrap-top-below-001l-ref.xht
+!= floats-wrap-top-below-inline-001l.xht floats-wrap-top-below-001l-notref.xht
+== floats-wrap-top-below-inline-001r.xht floats-wrap-top-below-001r-ref.xht
+!= floats-wrap-top-below-inline-001r.xht floats-wrap-top-below-001r-notref.xht
+== floats-wrap-top-below-inline-002l.xht floats-wrap-top-below-002l-ref.xht
+== floats-wrap-top-below-inline-002r.xht floats-wrap-top-below-002r-ref.xht
+== floats-wrap-top-below-inline-003l.xht floats-wrap-top-below-003l-ref.xht
+== floats-wrap-top-below-inline-003r.xht floats-wrap-top-below-003r-ref.xht
+== floats-wrap-top-below-bfc-001l-block.xht floats-wrap-top-below-001l-ref.xht # Bug 25888
+!= floats-wrap-top-below-bfc-001l-block.xht floats-wrap-top-below-001l-notref.xht # Bug 25888
+== floats-wrap-top-below-bfc-001r-block.xht floats-wrap-top-below-001r-ref.xht # Bug 25888
+!= floats-wrap-top-below-bfc-001r-block.xht floats-wrap-top-below-001r-notref.xht # Bug 25888
+== floats-wrap-top-below-bfc-002l-block.xht floats-wrap-top-below-002l-ref.xht # Bug 25888
+== floats-wrap-top-below-bfc-002r-block.xht floats-wrap-top-below-002r-ref.xht # Bug 25888
+== floats-wrap-top-below-bfc-003l-block.xht floats-wrap-top-below-003l-ref.xht # Bug 25888
+== floats-wrap-top-below-bfc-003r-block.xht floats-wrap-top-below-003r-ref.xht # Bug 25888

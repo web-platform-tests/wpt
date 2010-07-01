@@ -1,0 +1,11 @@
+== charset-attr-001.xht pass.xht
+== at-charset-quotes-001.xht pass.xht
+== at-charset-space-001.xht pass.xht
+== at-charset-space-002.xht pass.xht
+== at-charset-utf16-le-001.xht pass.xht
+== at-charset-utf16-002.xht pass.xht
+== at-charset-utf16-003.xht pass.xht
+== at-charset-utf16-be-001.xht pass.xht
+== at-charset-utf16-be-002.xht pass.xht
+== at-charset-utf16-be-003.xht pass.xht
+== uri-012.xht uri-012-ref.xht

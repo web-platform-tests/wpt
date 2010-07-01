@@ -1,0 +1,16 @@
+# Inline Table Reftests
+== inline-table-001.xht inline-table-001-ref.xht
+== inline-table-002.xht inline-table-002-ref.xht
+== inline-table-003.xht inline-table-002-ref.xht
+== inline-table-valign-001.xht inline-table-valign-001-ref.xht
+== inline-table-height-001.xht inline-table-height-001-ref.xht
+== inline-table-height-002.xht inline-table-height-002-ref.xht
+== inline-table-width-001.xht inline-table-width-001-ref.xht
+== inline-table-width-002.xht inline-table-width-001-ref.xht
+== inline-table-width-003.xht inline-table-width-003-ref.xht
+== inline-table-width-004.xht inline-table-width-003-ref.xht
+== inline-table-zorder-001.xht inline-table-zorder-001-ref.xht
+== inline-table-zorder-002.xht inline-table-zorder-001-ref.xht
+== inline-table-zorder-003.xht inline-table-zorder-003-ref.xht
+== inline-table-zorder-004.xht inline-table-zorder-004-ref.xht
+== inline-table-zorder-005.xht inline-table-zorder-004-ref.xht

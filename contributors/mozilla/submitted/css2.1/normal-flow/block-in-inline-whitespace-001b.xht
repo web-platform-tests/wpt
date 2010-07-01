@@ -1,0 +1,24 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD//XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html><head>
+    <title>CSS Test: blocks inside inlines &#8211; whitespace-present-1b</title>
+    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
+    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level" />
+    <meta name="flags" content="dom" />
+  <style>
+    body &gt; span { border: 3px solid blue }
+  </style>
+  <script>
+    function doIt() {
+      var t = document.createTextNode("   ");
+      var d = document.getElementById("d");
+      d.parentNode.insertBefore(t, d);
+    }
+  </script>
+ </head>
+ <body onload="doIt()">
+   <span>
+     <div>One</div><div id="d">Two</div>
+   </span>
+ 
+
+</body></html>

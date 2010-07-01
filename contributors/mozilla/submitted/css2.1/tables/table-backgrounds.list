@@ -1,0 +1,15 @@
+# would also be good to test table-header-group and table-footer-group
+# (and rows and row groups in the presence of their reordering)
+# Also need to test different values of background-origin and background-clip.
+== table-backgrounds-bs-cell-001.xht table-backgrounds-bs-cell-001-ref.xht
+== table-backgrounds-bs-colgroup-001.xht table-backgrounds-bs-colgroup-001-ref.xht
+== table-backgrounds-bs-column-001.xht table-backgrounds-bs-column-001-ref.xht
+== table-backgrounds-bs-rowgroup-001.xht table-backgrounds-bs-rowgroup-001-ref.xht
+== table-backgrounds-bs-row-001.xht table-backgrounds-bs-row-001-ref.xht
+== table-backgrounds-bs-table-001.xht table-backgrounds-bs-table-001-ref.xht
+== table-backgrounds-bc-cell-001.xht table-backgrounds-bc-cell-001-ref.xht
+== table-backgrounds-bc-colgroup-001.xht table-backgrounds-bc-colgroup-001-ref.xht
+== table-backgrounds-bc-column-001.xht table-backgrounds-bc-column-001-ref.xht
+== table-backgrounds-bc-rowgroup-001.xht table-backgrounds-bc-rowgroup-001-ref.xht
+== table-backgrounds-bc-row-001.xht table-backgrounds-bc-row-001-ref.xht
+== table-backgrounds-bc-table-001.xht table-backgrounds-bc-table-001-ref.xht

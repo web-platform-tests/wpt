@@ -1,0 +1,3 @@
+include table-backgrounds.list
+include table-border-collapse.list
+include table-vertical-align.list

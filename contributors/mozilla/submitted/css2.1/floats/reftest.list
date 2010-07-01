@@ -12,7 +12,7 @@
 == floats-rule7-outside-right-001.xht floats-rule7-outside-right-001-ref.xht
 == floats-wrap-bfc-outside-001.xht floats-wrap-bfc-outside-001-ref.xht
 == floats-zero-height-wrap-001.xht floats-zero-height-wrap-001-ref.xht
-== floats-zero-height-002.xht floats-zero-height-wrap-001-ref.xht
+== floats-zero-height-wrap-002.xht floats-zero-height-wrap-001-ref.xht
 == floats-placement-vertical-001a.xht floats-placement-vertical-001-ref.xht
 == floats-placement-vertical-001b.xht floats-placement-vertical-001-ref.xht
 == floats-placement-vertical-001c.xht floats-placement-vertical-001-ref.xht
@@ -45,11 +45,11 @@
 == floats-wrap-top-below-inline-002r.xht floats-wrap-top-below-002r-ref.xht
 == floats-wrap-top-below-inline-003l.xht floats-wrap-top-below-003l-ref.xht
 == floats-wrap-top-below-inline-003r.xht floats-wrap-top-below-003r-ref.xht
-== floats-wrap-top-below-bfc-001l-block.xht floats-wrap-top-below-001l-ref.xht # Bug 25888
-!= floats-wrap-top-below-bfc-001l-block.xht floats-wrap-top-below-001l-notref.xht # Bug 25888
-== floats-wrap-top-below-bfc-001r-block.xht floats-wrap-top-below-001r-ref.xht # Bug 25888
-!= floats-wrap-top-below-bfc-001r-block.xht floats-wrap-top-below-001r-notref.xht # Bug 25888
-== floats-wrap-top-below-bfc-002l-block.xht floats-wrap-top-below-002l-ref.xht # Bug 25888
-== floats-wrap-top-below-bfc-002r-block.xht floats-wrap-top-below-002r-ref.xht # Bug 25888
-== floats-wrap-top-below-bfc-003l-block.xht floats-wrap-top-below-003l-ref.xht # Bug 25888
-== floats-wrap-top-below-bfc-003r-block.xht floats-wrap-top-below-003r-ref.xht # Bug 25888
+== floats-wrap-top-below-bfc-001l.xht floats-wrap-top-below-001l-ref.xht # Bug 25888
+!= floats-wrap-top-below-bfc-001l.xht floats-wrap-top-below-001l-notref.xht # Bug 25888
+== floats-wrap-top-below-bfc-001r.xht floats-wrap-top-below-001r-ref.xht # Bug 25888
+!= floats-wrap-top-below-bfc-001r.xht floats-wrap-top-below-001r-notref.xht # Bug 25888
+== floats-wrap-top-below-bfc-002l.xht floats-wrap-top-below-002l-ref.xht # Bug 25888
+== floats-wrap-top-below-bfc-002r.xht floats-wrap-top-below-002r-ref.xht # Bug 25888
+== floats-wrap-top-below-bfc-003l.xht floats-wrap-top-below-003l-ref.xht # Bug 25888
+== floats-wrap-top-below-bfc-003r.xht floats-wrap-top-below-003r-ref.xht # Bug 25888

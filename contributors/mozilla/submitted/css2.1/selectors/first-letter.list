@@ -1,8 +1,9 @@
 # basic functionality
 == first-letter-001.xht first-letter-001-ref.xht
-== first-letter-002.xht first-letter-001-ref.xht
+
 # parent style context correct
 == first-letter-inherit-001.xht first-letter-inherit-001-ref.xht
+
 # others
 == first-letter-nested-001.xht first-letter-nested-001-ref.xht
 == first-letter-nested-002.xht first-letter-nested-001-ref.xht

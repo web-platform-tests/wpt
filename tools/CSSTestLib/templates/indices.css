@@ -39,11 +39,6 @@
     background: transparent;
   }
 
-  /* Collapse */
-  tbody:not(:target) tr:not(:first-child) {
-    visibility: collapse;
-  }
-
   th, td {
     padding: 0.2em;
     text-align: left;

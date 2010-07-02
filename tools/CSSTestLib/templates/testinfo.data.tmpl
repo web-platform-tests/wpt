@@ -1,5 +1,10 @@
-id	title	flags	links	assertion
+id	reference	title	flags	links	assertion
 [% FOREACH test IN tests %]
-[%+ test.file.replace('\.[a-z]+$', '') +%]	[%+ test.title FILTER collapse +%]	[%+ test.flags.join(',') +%]	[%+ test.links.join(',').replace(specroot, '') +%]	[%+ test.asserts.join(' ') FILTER collapse +%]
+[%+ test.file.replace('\.[a-z]+$', '') +%]	
+[%- test.reference +%]	
+[%- test.title FILTER collapse +%]	
+[%- test.flags.join(',') +%]	
+[%- test.links.join(',').replace(specroot, '') +%]	
+[%- test.asserts.join(' ') FILTER collapse +%]
 [% END %]
 

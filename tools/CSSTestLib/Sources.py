@@ -30,7 +30,8 @@ class SourceCache:
     """
     if self.__cache.has_key(sourcepath):
       source = self.__cache[sourcepath]
-      assert isTest == isinstance(source, CSSTestSource)
+      if isTest:
+        assert isinstance(source, CSSTestSource)
       assert relpath == source.relpath
       return source
 
@@ -391,7 +392,7 @@ class XHTMLSource(FileSource):
 class CSSTestSourceMetaError(Exception):
   pass
 
-CSSTestTitlePrefixes=['CSS Test:', 'CSS2.1 Test Suite:'] # stripped from metadata
+CSSTestTitlePrefixes=[u'CSS Test:', u'CSS2.1 Test Suite:'] # stripped from metadata
 
 class CSSTestSource(XHTMLSource):
   """XHTMLSource representing the main CSS test file. Supports metadata lookups."""
@@ -418,7 +419,7 @@ class CSSTestSource(XHTMLSource):
     return os.path.splitext(basename(self.relpath))[0]
 
   def setReftest(self, referenceSource):
-    """Sets test to be a reftest, with reference relpath `reference`."""
+    """Sets test to be a reftest, with reference source referenceSource."""
     self.ref = referenceSource
 
   def isReftest(self):
@@ -448,6 +449,7 @@ class CSSTestSource(XHTMLSource):
          - name    [string]
          - title   [string]
          - reference [relative path to reference; None if not reftest]
+       Strings are given in UTF-8.
     """
 
     # Check for cached data
@@ -468,36 +470,41 @@ class CSSTestSource(XHTMLSource):
             'credits' : credits,
             'flags'   : [], # sorted
             'links'   : links,
-            'name'    : self.name(),
+            'name'    : self.name().encode('utf-8'),
             'title'   : '',
-            'reference' : self.ref.relpath if self.ref else None,
+            'reference' : self.ref.relpath.encode('utf-8') if self.ref else None,
             'selftest' : self.isSelftest
            }
     def tokenMatch(token, string):
+      if not string: return False
       return bool(re.search('(^|\s+)%s($|\s+)' % token, string))
 
     head = self.tree.getroot().find(xhtmlns+'head')
     readFlags = False
     try:
+      if not head: raise CSSTestSourceMetaError("Missing <head> element")
       # Scan and cache metadata
       for node in head:
         if node.tag == xhtmlns+'link':
-          link = node.get('href').strip()
           # help links
           if tokenMatch('help', node.get('rel')):
+            link = node.get('href').strip()
             if not link:
               raise CSSTestSourceMetaError("Help link missing href value.")
             if not link.startswith('http://') or link.startswith('https://'):
               raise CSSTestSourceMetaError("Help link must be absolute URL.")
             if link.find('propdef') == -1:
-              links.append(intern(link))
+              links.append(intern(link.encode('utf-8')))
           # credits
           elif tokenMatch('author', node.get('rel')):
             name = node.get('title')
             name = name.strip() if name else name
             if not name:
               raise CSSTestSourceMetaError("Author link missing name (title attribute).")
-            credits.append((intern(escapeToNamedASCII(name)), intern(link)))
+            link = node.get('href').strip()
+            if not link:
+              raise CSSTestSourceMetaError("Author link missing contact URL (http or mailto).")
+            credits.append((intern(escapeToNamedASCII(name)), intern(link.encode('utf-8'))))
         elif node.tag == xhtmlns+'meta':
           metatype = node.get('name')
           metatype = metatype.strip() if metatype else metatype
@@ -509,13 +516,13 @@ class CSSTestSource(XHTMLSource):
             data['flags'] = [intern(flag) for flag in sorted(node.get('content').split())]
           # test assertions
           elif metatype == 'assert':
-            asserts.append(node.get('content').strip())
+            asserts.append(escapeToNamedASCII(node.get('content').strip()))
         # test title
         elif node.tag == xhtmlns+'title':
           title = node.text.strip()
           for prefix in CSSTestTitlePrefixes:
             if title.startswith(prefix):
-              data['title'] = title[len(CSSTestTitlePrefixes[0]):].strip()
+              data['title'] = escapeToNamedASCII(title[len(prefix):].strip())
               break;
           else:
             raise CSSTestSourceMetaError("Title must start with %s"
@@ -525,9 +532,6 @@ class CSSTestSource(XHTMLSource):
       e.CSSTestLibErrorLocation = self.sourcepath
       self.error = e
       return None
-    except Exception, e:
-      print "Unknown error in %s" % self.sourcepath
-      raise e
 
     # Cache data and return
     self.data = data

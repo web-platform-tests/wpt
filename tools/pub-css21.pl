@@ -31,9 +31,21 @@ push @dirs, 'contributors/bzbarsky/submitted/css2.1/run-in/reftest.list';
 
 ###############################################################################
 # John Daggett
-# submitted/css2.1/
+# submitted/fontreftests/
 
-push @dirs, 'contributors/mozilla/submitted/fontreftests/fontreftest.list';
+push @dirs, 'contributors/mozilla/submitted/fontreftests/reftest.list';
+
+###############################################################################
+# David Baron
+# submitted/first-letter-characters/
+
+push @dirs, 'contributors/mozilla/submitted/first-letter-characters';
+
+###############################################################################
+# Mozilla
+# Managed auto-import from mozilla.org repos
+
+push @dirs, 'contributors/mozilla/submitted/css2.1/*/*.list';
 
 ###############################################################################
 # Eira Monstad

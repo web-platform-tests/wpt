@@ -8,6 +8,7 @@ import filecmp
 import os.path
 from os.path import exists, join
 from Sources import SourceCache, SourceSet, ConfigSource, ReftestManifest
+from Utils import listfiles
 
 excludeDirs = ['CVS', '.svn', '.hg']
 
@@ -121,7 +122,7 @@ class SelftestGroup(TestGroup):
 
     # Import tests
     if kwargs.get('selfTestExt'):
-      _,_,files = os.walk(importDir).next()
+      files = listfiles(importDir)
       for file in files:
         if file.endswith(kwargs['selfTestExt']):
           self.tests.add(join(importDir, file), file, True)

@@ -30,6 +30,20 @@ def pathInsideBase(path, base=''):
     return not pathlist[0].startswith(os.path.pardir)
   return not path.startswith(os.path.pardir)
 
+def listfiles(path):
+  try:
+    _,_,files = os.walk(path).next()
+  except StopIteration, e:
+    files = []
+  return files
+
+def listdirs(path):
+  try:
+    _,dirs,_ = os.walk(path).next()
+  except StopIteration, e:
+    dirs = []
+  return dirs
+
 ###### MIME types and file extensions ######
 
 extensionMap = { None     : 'application/octet-stream', # default
@@ -71,7 +85,7 @@ def escapeMarkup(data):
 def escapeToNamedASCII(text):
   """Combines escapeToNamed and escapeToASCII.
   """
-  return escapeToNamed(text).encode('Latin-1', 'xmlcharrefreplace')
+  return escapeToNamed(text).encode('ascii', 'xmlcharrefreplace')
 
 def escapeToNamed(text):
   """Escape characters with named entities.
@@ -83,7 +97,7 @@ def escapeToNamed(text):
       escapable.add(c)
   if type(text) == types.UnicodeType:
     for c in escapable:
-      text = text.replace(c, "&%s;" % entityify[c.encode('Latin-1', 'replace')])
+      text = text.replace(c, "&%s;" % entityify[c.encode('Latin-1', 'xmlcharrefreplace')])
   else:
     for c in escapable:
       text = text.replace(c, "&%s;" % entityify[c])

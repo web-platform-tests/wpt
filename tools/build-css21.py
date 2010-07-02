@@ -38,10 +38,11 @@ groupmap = {
   }
 
 import sys
-from os.path import join, exists
+from os.path import join, exists, basename
 from CSSTestLib.Suite import CSSTestSuite
 from CSSTestLib.Indexer import Indexer
 from CSSTestLib.Groups import SelftestGroup
+from CSSTestLib.Utils import listdirs, listfiles, basepath
 
 # run from css test suite repo root
 
@@ -56,7 +57,7 @@ suite = CSSTestSuite('css2.1', 'CSS2.1 Test Suite', 'http://www.w3.org/TR/CSS21/
 
 # Add approved tests
 root = join('approved', 'css2.1', 'src')
-_,dirs,_ = os.walk(root).next()
+dirs = listdirs(root)
 for dir in dirs:
   if dir in skipDirs: continue
   testroot = join(root, dir)
@@ -66,9 +67,9 @@ for dir in dirs:
 
 # Add unreviewed tests
 for path in unreviewed:
-  if path.endswith('reftest.list'):
+  if path.endswith('.list'):
     print "Adding unreviewed reftests from %s" % path
-    suite.addReftests(os.path.split(path)[0], 'reftest.list')
+    suite.addReftests(basepath(path), basename(path))
   else:
     def grep(file):
       if not file.endswith('.xht'):
@@ -77,7 +78,7 @@ for path in unreviewed:
         if line.find(suite.specroot) != -1:
           return True
       return False
-    _,_,files = os.walk(path).next()
+    files = listfiles(path)
     files = filter(grep, files)
     print "Adding %d unreviewed selftests from %s" % (len(files), path)
     suite.addSelftestsByList(path, files)

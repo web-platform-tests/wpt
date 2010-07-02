@@ -1,4 +1,4 @@
-[% INCLUDE "suitedata.tmpl" %]
+[% PROCESS "suitedata.tmpl" %]
 [% IF official %]
   <h1>CSS2.1 Conformance Test Suite</h1>
   <p>This is a [% suites.$suite.status or "ERROR: $suite" %] version of the

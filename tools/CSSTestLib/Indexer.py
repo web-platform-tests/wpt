@@ -15,6 +15,7 @@ import os
 from os.path import join, exists, abspath
 from template import Template
 import CSSTestLib
+from Utils import listfiles
 import shutil
 
 class Section:
@@ -64,6 +65,7 @@ class Indexer:
     self.templatePath = [abspath(path) for path in self.templatePath]
     self.tt = Template({
        'INCLUDE_PATH': self.templatePath,
+       'ENCODING'    : 'utf-8',
        'PRE_CHOMP'   : 1,
        'POST_CHOMP'  : 0,
     })
@@ -124,7 +126,7 @@ class Indexer:
 
     # Copy simple copy files
     for tmplDir in reversed(self.templatePath):
-      _,_,files = os.walk(tmplDir).next()
+      files = listfiles(tmplDir)
       for file in files:
         if self.overviewCopyExtPat.match(file):
           shutil.copy(join(tmplDir, file), join(destDir, file))

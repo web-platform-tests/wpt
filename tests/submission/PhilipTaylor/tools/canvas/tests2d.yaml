@@ -7900,7 +7900,7 @@
     ctx.miterLimit = 1.4;
 
     ctx.beginPath();
-    ctx.moveTo(-1000, 200, 0, 0);
+    ctx.moveTo(-1000, 200);
     ctx.lineTo(-100, 200);
     ctx.lineTo(-100, 200);
     ctx.lineTo(-100, 200);

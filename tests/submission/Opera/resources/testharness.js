@@ -29,18 +29,30 @@ policies and contribution forms [3].
     /*
     * API functions
     */
+
+    var name_counter = 0;
+    function next_default_name()
+    {
+      var prefix = document.title ? document.title : "Untitled";
+      var suffix = name_counter > 0 ? " " + name_counter : "";
+      name_counter++;
+      return prefix + suffix;
+    }
+
     function test(func, name, properties)
     {
+        var test_name = name ? name : next_default_name();
         properties = properties ? properties : {};
-        var test_obj = new Test(name, properties);
+        var test_obj = new Test(test_name, properties);
         test_obj.step(func);
         test_obj.done();
     }
 
     function async_test(name, properties)
     {
+        var test_name = name ? name : next_default_name();
         properties = properties ? properties : {};
-        var test_obj = new Test(name, properties);
+        var test_obj = new Test(test_name, properties);
         return test_obj;
     }
 

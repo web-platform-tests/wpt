@@ -1,0 +1,126 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<title>HTML5 Test Loader </title>
+<link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+<style type="text/css">
+    #Container
+    {
+        display: table;
+        width: 100%;
+    }
+    div
+    {
+       display: table-cell;
+    } 
+    #left
+    {
+        float: none;
+        text-align: left;
+    } 
+    #right
+    {
+        text-align: right;
+    } 
+</style>
+<script>
+var oWindow;
+
+var iUrl=0;
+var oTests;
+var oLog  = new Array();
+
+function init()
+{
+    var uri = "http://test.w3.org/html/tests/approvedtests.txt";
+   
+    xmlhttp = new XMLHttpRequest();
+
+    xmlhttp.onreadystatechange  = function()
+    { 
+        if(xmlhttp.readyState  == 4)
+        {
+            var fileData = xmlhttp.responseText;
+            oTests = fileData.split('\n');
+
+            for (var x=0;x<oTests.length;x++)
+            {
+                oLog[x] = 'No Result';
+            }
+
+            oWindow = window.parent.document.getElementById('test').contentWindow.location;
+            oWindow.href = oTests[iUrl];
+            document.getElementById('CurrentTest').innerHTML =  "Test #" + (iUrl+1) + "/" + oTests.length + "(" + oLog[iUrl] + ") " + oTests[iUrl];
+        }
+    }; 
+
+    xmlhttp.open("GET", uri, true);
+    xmlhttp.send(null);
+}
+
+function log(result)
+{
+    oLog[iUrl] = result;
+    next();
+}
+
+function next()
+{
+    if (iUrl<oTests.length-1)
+    {
+        iUrl++;
+        oWindow.href = oTests[iUrl] ;
+        document.getElementById('CurrentTest').innerHTML =  "Test #" + (iUrl+1) + "/" + oTests.length + "(" + oLog[iUrl] + ") " + oTests[iUrl];
+    }
+    else
+    {
+        alert("At End");
+        document.getElementById('CurrentTest').innerHTML = "Test #" + (iUrl+1) + "/" + oTests.length + "(" + oLog[iUrl] + ") " + oTests[iUrl];
+    }
+}
+
+function last()
+{
+    if (iUrl>0)
+    {
+        iUrl--;
+        oWindow.href = oTests[iUrl] ;
+        document.getElementById('CurrentTest').innerHTML = "Test #" + (iUrl+1) + "/" + oTests.length + "(" + oLog[iUrl] + ") " + oTests[iUrl];
+    }
+    else
+    {
+        alert("At Start");
+        document.getElementById('CurrentTest').innerHTML = "Test #" + (iUrl+1) + "/" + oTests.length + "(" + oLog[iUrl] + ") " + oTests[iUrl];
+    }
+}
+
+function TestResults()
+{
+    results = window.open();
+
+    results.document.writeln("<title>HTML5 Test Results</title>");
+    results.document.writeln("<pre>");
+    for (var x=0;x<oLog.length;x++)
+    {
+        results.document.writeln(oLog[x] + " " + oTests[x]);
+    }
+    results.document.writeln("</pre>");
+}
+</script>
+    </head>
+    <body onload='init();'>
+          <div id="Container">
+            <div id="left">
+                <button id="Pass" accesskey="P" onclick="log('Pass');">Pass</button>
+                <button id="Fail" accesskey="F" onclick="log('Fail');">Fail</button>
+                <button id="Not Implemented" accesskey="F" onclick="log('Not Implemented');">Not Implemented</button>
+                <button id="last" accesskey="L" onclick="last();">&lt;&lt; Last</button>
+                <button id="Next" accesskey="N" onclick="next();">Next &gt;&gt;</button>
+                <span id="CurrentTest"></span>
+            </div>
+            <div id="right">
+                <button id="TestResults" onclick="TestResults();">Test Results</button>
+            </div>
+        </div>
+    </body>
+</html>

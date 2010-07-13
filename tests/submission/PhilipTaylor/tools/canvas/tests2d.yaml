@@ -8556,13 +8556,15 @@
 
 - name: 2d.drawImage.wrongtype
   #mozilla: { bug: TODO }
+  desc: Incorrect image types in drawImage do not match any defined overloads, so WebIDL throws a TypeError
+  notes: *bindings
   testing:
     - 2d.drawImage.type
   code: |
-    @assert throws TYPE_MISMATCH_ERR ctx.drawImage(undefined, 0, 0);
-    @assert throws TYPE_MISMATCH_ERR ctx.drawImage(0, 0, 0);
-    @assert throws TYPE_MISMATCH_ERR ctx.drawImage("", 0, 0);
-    @assert throws TYPE_MISMATCH_ERR ctx.drawImage(document.createElement('p'), 0, 0); @moz-todo
+    @assert throws TypeError ctx.drawImage(undefined, 0, 0);
+    @assert throws TypeError ctx.drawImage(0, 0, 0);
+    @assert throws TypeError ctx.drawImage("", 0, 0);
+    @assert throws TypeError ctx.drawImage(document.createElement('p'), 0, 0); @moz-todo
 
 - name: 2d.drawImage.floatsource
   testing:

@@ -200,6 +200,11 @@ def expand_test_code(code):
                 % (m.group(2), m.group(1), m.group(1), m.group(1), escapeJS(m.group(2)))
             , code)
 
+    code = re.sub(r'@assert throws (\S+Error) (.*);',
+            lambda m: 'try { var _thrown = false;\n  %s;\n} catch (e) { if (!(e instanceof %s)) _fail("Failed assertion: expected exception of type %s, got: "+e); _thrown = true; } finally { _assert(_thrown, "should throw exception of type %s: %s"); }'
+                % (m.group(2), m.group(1), m.group(1), m.group(1), escapeJS(m.group(2)))
+            , code)
+
     code = re.sub(r'@assert throws (.*);',
             lambda m: 'try { var _thrown = false; %s; } catch (e) { _thrown = true; } finally { _assert(_thrown, "should throw exception: %s"); }'
                 % (m.group(1), escapeJS(m.group(1)))
@@ -261,6 +266,11 @@ def expand_mochitest_code(code):
 
     code = re.sub(r'@assert throws (\S+_ERR) (.*);',
         lambda m: 'var _thrown = undefined; try {\n  %s;\n} catch (e) { _thrown = e }; ok(_thrown && _thrown.code == DOMException.%s, "should throw %s");'
+            % (m.group(2), m.group(1), m.group(1))
+        , code)
+
+    code = re.sub(r'@assert throws (\S+Error) (.*);',
+        lambda m: 'var _thrown = undefined; try {\n  %s;\n} catch (e) { _thrown = e }; ok(_thrown && (_thrown instanceof %s), "should throw %s");'
             % (m.group(2), m.group(1), m.group(1))
         , code)
 

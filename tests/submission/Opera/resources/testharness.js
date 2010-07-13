@@ -22,7 +22,8 @@ policies and contribution forms [3].
     {
         PASS: 0,
         FAIL: 1,
-        TIMEOUT: 2
+        TIMEOUT: 2,
+        NOT_IMPLEMENTED:3
     };
     expose(status, 'status');
 
@@ -312,7 +313,7 @@ policies and contribution forms [3].
         status_text[status.PASS] = "PASS";
         status_text[status.FAIL] = "FAIL";
         status_text[status.TIMEOUT] = "TIMEOUT";
-        status_text[status.NOTIMPLEMENTED] = "NOTIMPLEMENTED";
+        status_text[status.NOT_IMPLEMENTED] = "NOT IMPLEMENTED";
 
         forEach ( tests,
                   function(test)

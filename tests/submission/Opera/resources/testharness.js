@@ -8,10 +8,6 @@ policies and contribution forms [3].
 [3] http://www.w3.org/2004/10/27-testcases
 */
 
-//
-// Log to console wrapper, use this so one doesn't create script errors on
-// user agents that don't support console.log
-
 (function ()
 {
     // default timeout is 5 seconds, test can override if needed
@@ -69,98 +65,114 @@ policies and contribution forms [3].
     /*
     * Assertions
     */
-    function assert_true(actual, description)
-    {
-        var message = make_message("assert_equals", description,
-                                   format("expected true got %s", actual));
-        assert(actual, message);
-    }
 
-    /*
-    * Test if two primitives are equal or two objects
-    * are the same object
-    */
-    function assert_equals(actual, expected, description)
-    {
-        var message = make_message("assert_equals", description,
-                                   format("expected %s got %s", expected, actual));
-
-        if (expected !== expected)
+    var assert_obj = {
+        true:function (actual, description)
         {
-            //NaN case
-            assert(actual !== actual, message);
-        }
-        else
-        {
-            //typical case
-            assert(actual === expected, message);
-        }
-    }
+            var message = make_message("assert_equals", description,
+                                       format("expected true got %s", actual));
+            assert(actual, message);
+        },
 
-    /*
-    * Test if two objects have the same properties and
-    * values of those properties, recursively
-    */
-    function assert_object_equals(actual, expected, description)
-    {
-        //This needs to be improved a great deal
-        function check_equal(expected, actual, stack)
+        equals:function(actual, expected, description)
         {
-            stack.push(actual);
+            /*
+             * Test if two primitives are equal or two objects
+             * are the same object
+             */
+            var message = make_message("assert_equals", description,
+                                       format("expected %s got %s", expected,
+                                              actual));
 
-            for (p in actual)
+            if (expected !== expected)
             {
-                var message = make_message( "assert_object_equals",
-                                            description,
-                                            format("unexpected property %s", p));
+                //NaN case
+                assert(actual !== actual, message);
+            }
+            else
+            {
+                //typical case
+                assert(actual === expected, message);
+            }
+        },
 
-                assert( expected.hasOwnProperty(p), message);
-
-                if (typeof actual[p] === "object" && actual[p] !== null)
+	object_equals:function(actual, expected, description)
+        {
+            //This needs to be improved a great deal
+            function check_equal(expected, actual, stack)
+            {
+                stack.push(actual);
+                
+                for (p in actual)
                 {
-                    if (stack.indexOf(actual[p]) === -1)
+                    var message = make_message(
+			"assert_object_equals", description,
+                        format("unexpected property %s", p));
+
+                    assert( expected.hasOwnProperty(p), message);
+
+                    if (typeof actual[p] === "object" && actual[p] !== null)
                     {
-                        check_equal(actual[p], expected[p], stack);
+                        if (stack.indexOf(actual[p]) === -1)
+                        {
+                            check_equal(actual[p], expected[p], stack);
+                        }
+                    }
+                    else
+                    {
+                        message = make_message(
+			    "assert_object_equals", description,
+                            format("property %s expected %s got %s",
+                                   p, expected, actual));
+                        
+                        assert(actual[p] === expected[p], message);
                     }
                 }
-                else
+                for (p in expected)
                 {
-                    message = make_message( "assert_object_equals",
-                                            description,
-                                            format("property %s expected %s got %s",
-                                            p, expected, actual));
+                    var message = make_message(
+			"assert_object_equals", description,
+                        format("expected property %s missing", p));
 
-                    assert(actual[p] === expected[p], message);
-                }
+                    assert( actual.hasOwnProperty(p), message);
+		}
+		stack.pop();
             }
-            for (p in expected)
-            {
-                var message = make_message( "assert_object_equals",
-                                            description,
-                                            format("expected property %s missing", p));
+            check_equal(actual, expected, []);
+	},
+	
+	exists:function(object, property_name, description)
+	{
+            var message = make_message(
+		"assert_exists", description,
+                format("expected property %s missing", property_name));
 
-                assert( actual.hasOwnProperty(p), message);
-            }
+            assert(object.hasOwnProperty(property_name, message));
+	},
 
-            stack.pop();
-        }
+	readonly:function(object, property_name, description) 
+	{
+	    var initial_value = object[property_name];
+	    try {
+		var message = make_message(
+		    "assert_readonly", description, 
+		    format("deleting property %s succeeded", property_name));
+		assert(delete object[property_name] === false, message);
+		assert(object[property_name] === initial_value, message);
+		//Note that this can have side effects in the case where
+		//the property has PutForwards
+		object[property_name] = initial_value + "a"; //XXX use some other value here?
+		message = make_message("assert_readonly", description, 
+				       format("changing property %s succeeded",
+					      property_name));
+		assert(object[property_name] === initial_value, message);
+	    } finally {
+		object[property_name] = initial_value;
+	    }
+	}
+    };
 
-        check_equal(actual, expected, []);
-    }
-
-    function assert_exists(object, property_name, description)
-    {
-        var message = make_message( "assert_exists",
-                                    description,
-                                    format("expected property %s missing", property_name));
-
-        assert(object.hasOwnProperty(property_name, message));
-    }
-
-    expose(assert_true, 'assert_true');
-    expose(assert_equals, 'assert_equals');
-    expose(assert_object_equals, 'assert_object_equals');
-    expose(assert_exists, 'assert_exists');
+    expose(assert_obj, 'assert');
 
     function Test(name, properties)
     {
@@ -201,7 +213,7 @@ policies and contribution forms [3].
             this.status = status.FAIL;
             this.message = e.message;
         }
-	this.done();
+        this.done();
     };
 
     Test.prototype.timeout = function()

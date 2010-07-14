@@ -89,6 +89,50 @@ function assertEquals(description, expected, actual)
     }
 
     /*
+     * Test if a property is readonly
+     */
+    function assert_readonly(object, property_name, description) 
+    {
+	var initial_value = object[property_name];
+	try {
+	    var message = make_message("assert_readonly", description, 
+				      format("deleting property %s succeeded",
+					    property_name));
+	    assert(delete object[property_name] === false, message);
+	    assert(object[property_name] === initial_value, message);
+	    //Note that this can have side effects in the case where
+	    //the property has PutForwards
+	    object[property_name] = initial_value + "a"; //XXX use some other value here?
+	    message = make_message("assert_readonly", description, 
+				   format("changing property %s succeeded",
+					  property_name));
+	    assert(object[property_name] === initial_value, message);
+	} finally {
+	    object[property_name] = initial_value;
+	}
+    }
+
+    function assert_putsforward(object, property_name, forwards_to) 
+    {
+	var property_initial_value = object[property_name];
+	var forwards_initial_value = object[forwards_to];
+	try {
+	    object[property_name] = forwards_initial_value + "a";
+	    var message = make_message("assert_putsforward", description, 
+				       format("changing property %s succeeded",
+					      property_name));
+	    assert(object[property_name] === property_initial_value, message);
+	    message = make_message("assert_putsforward", description, 
+				   format("forwarding property %s to &s failed",
+					  property_name, forwards_to));
+	    assert(object[forwards_to] === forwards_initial_value + "a", message);
+	} finally {
+	    object[property_name] = property_initial_value;
+	    object[forwards_to] = forwards_initial_value;
+	}
+    }
+
+    /*
     * Test if two primitives are equal or two objects
     * are the same object
     */
@@ -313,7 +357,7 @@ function assertEquals(description, expected, actual)
     }
 
     expose(add_result_callback, 'add_result_callback');
-    expose(add_completion_callback), 'add_completion_callback';
+    expose(add_completion_callback, 'add_completion_callback');
 
     /*
      * Output listener

@@ -42,7 +42,9 @@ policies and contribution forms [3].
         properties = properties ? properties : {};
         var test_obj = new Test(test_name, properties);
         test_obj.step(func);
-        test_obj.done();
+	if (test_obj.status === null) {
+	    test_obj.done();
+	}
     }
 
     function async_test(name, properties)
@@ -69,9 +71,15 @@ policies and contribution forms [3].
     var assert_obj = {
         true:function (actual, description)
         {
-            var message = make_message("assert.equals", description,
+            var message = make_message("assert.true", description,
                                        format("expected true got %s", actual));
-            assert(actual, message);
+            assert(actual === true, message);
+        },
+	false:function (actual, description)
+        {
+            var message = make_message("assert.false", description,
+                                       format("expected false got %s", actual));
+            assert(actual === false, message);
         },
 
         equals:function(actual, expected, description)
@@ -109,7 +117,7 @@ policies and contribution forms [3].
                         "assert.object_equals", description,
                         format("unexpected property %s", p));
 
-                    assert( expected.hasOwnProperty(p), message);
+                    assert(expected.hasOwnProperty(p), message);
 
                     if (typeof actual[p] === "object" && actual[p] !== null)
                     {
@@ -134,7 +142,7 @@ policies and contribution forms [3].
                         "assert.object_equals", description,
                         format("expected property %s missing", p));
 
-                    assert( actual.hasOwnProperty(p), message);
+                    assert(actual.hasOwnProperty(p), message);
                 }
                 stack.pop();
             }
@@ -195,6 +203,7 @@ policies and contribution forms [3].
        this.name = name;
        this.status = null;
        var timeout = default_timeout;
+       this.is_done = false;
 
        if (properties.timeout)
        {
@@ -205,7 +214,7 @@ policies and contribution forms [3].
 
        var this_obj = this;
        this.steps = [];
-       this.timeout_id = setTimeout( function() { this_obj.timeout(); }, timeout);
+       this.timeout_id = setTimeout(function() { this_obj.timeout(); }, timeout);
 
        tests.push(this);
    }
@@ -228,16 +237,13 @@ policies and contribution forms [3].
         {
             this.status = status.FAIL;
             this.message = e.message;
+            this.done();
         }
-        this.done();
     };
 
     Test.prototype.timeout = function()
     {
-        if (this.status == null)
-        {
-            this.status = status.TIMEOUT;
-        }
+        this.status = status.TIMEOUT;
         this.timeout_id = null;
         this.message = "test timed out";
         this.done();
@@ -245,13 +251,16 @@ policies and contribution forms [3].
 
     Test.prototype.done = function()
     {
+	if (this.is_done) {
+	    alert("done called multiple times for test " + this.name);
+	    return;
+	}
         clearTimeout(this.timeout_id);
-
         if (this.status == null)
         {
             this.status = status.PASS;
         }
-
+	this.is_done = true;
         tests.done(this);
     };
 
@@ -264,7 +273,7 @@ policies and contribution forms [3].
     function Tests()
     {
         this.tests = [];
-        this.pending_tests = 0;
+	this.num_pending = 0;
 
         this.test_done_callbacks = [];
         this.all_done_callbacks = [];
@@ -274,37 +283,42 @@ policies and contribution forms [3].
         //All tests can't be done until the load event fires
         this.all_loaded = false;
 
-        on_event( window, "load", function()
-                                  {
-                                      this_obj.all_loaded = true;
-
-                                      if (this_obj.pending_tests == 0)
-                                      {
-                                          this_obj.notify_results();
-                                      }
-                                   });
+        on_event(window, "load",
+		 function()
+		 {
+                     this_obj.all_loaded = true;
+                     if (this_obj.all_done())
+                     {
+                         this_obj.notify_results();
+                     }
+                 });
    }
 
     Tests.prototype.push = function(test)
     {
+	this.num_pending++;
         this.tests.push(test);
-        this.pending_tests++;
+    };
+
+    Tests.prototype.all_done = function() {
+	return this.all_loaded && this.num_pending == 0;
     };
 
     Tests.prototype.done = function(test)
     {
-        this.pending_tests--;
-
-        if (this.all_loaded && this.pending_tests == 0)
-        {
-            this.notify_results();
-        }
+        this.num_pending--;
 
         forEach(this.test_done_callbacks,
                 function(callback)
                 {
                     callback(test);
                 });
+
+        if (this.all_done())
+        {
+            this.notify_results();
+        }
+
     };
 
     Tests.prototype.notify_results = function()
@@ -312,11 +326,11 @@ policies and contribution forms [3].
         var test_objects = this.tests;
         var this_obj = this;
 
-        forEach ( this.all_done_callbacks,
-                  function(callback)
-                  {
-                      callback(this_obj.tests);
-                  });
+        forEach (this.all_done_callbacks,
+		 function(callback)
+                 {
+                     callback(this_obj.tests);
+                 });
     };
 
     function add_result_callback(callback)
@@ -343,10 +357,10 @@ policies and contribution forms [3].
         status_text[status.TIMEOUT] = "TIMEOUT";
         status_text[status.NOT_IMPLEMENTED] = "NOT IMPLEMENTED";
 
-        forEach ( tests,
-                  function(test)
-                  {
-                     var testtable = document.getElementById('testtable');
+        forEach (tests,
+		 function(test)
+                 {
+		     var testtable = document.getElementById('testtable');
                      var row = testtable.insertRow(testtable.rows.length);
 
                      var testresult = table= row.insertCell(0);
@@ -365,7 +379,7 @@ policies and contribution forms [3].
 
                      text_node = document.createTextNode(text);
                      testassertion.appendChild(text_node);
-                 });
+		 });
    }
 
    add_completion_callback(output_results);

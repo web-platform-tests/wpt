@@ -36,7 +36,7 @@ policies and contribution forms [3].
       return prefix + suffix;
     }
 
-    function test(func, name, properties)
+  function test(func, name, properties)
     {
         var test_name = name ? name : next_default_name();
         properties = properties ? properties : {};
@@ -96,17 +96,17 @@ policies and contribution forms [3].
             }
         },
 
-	object_equals:function(actual, expected, description)
+        object_equals:function(actual, expected, description)
         {
             //This needs to be improved a great deal
             function check_equal(expected, actual, stack)
             {
                 stack.push(actual);
-                
+
                 for (p in actual)
                 {
                     var message = make_message(
-			"assert_object_equals", description,
+                        "assert_object_equals", description,
                         format("unexpected property %s", p));
 
                     assert( expected.hasOwnProperty(p), message);
@@ -121,55 +121,55 @@ policies and contribution forms [3].
                     else
                     {
                         message = make_message(
-			    "assert_object_equals", description,
+                            "assert_object_equals", description,
                             format("property %s expected %s got %s",
                                    p, expected, actual));
-                        
+
                         assert(actual[p] === expected[p], message);
                     }
                 }
                 for (p in expected)
                 {
                     var message = make_message(
-			"assert_object_equals", description,
+                        "assert_object_equals", description,
                         format("expected property %s missing", p));
 
                     assert( actual.hasOwnProperty(p), message);
-		}
-		stack.pop();
+                }
+                stack.pop();
             }
             check_equal(actual, expected, []);
-	},
-	
-	exists:function(object, property_name, description)
-	{
+        },
+
+        exists:function(object, property_name, description)
+        {
             var message = make_message(
-		"assert_exists", description,
+                "assert_exists", description,
                 format("expected property %s missing", property_name));
 
             assert(object.hasOwnProperty(property_name, message));
-	},
+        },
 
-	readonly:function(object, property_name, description) 
-	{
-	    var initial_value = object[property_name];
-	    try {
-		var message = make_message(
-		    "assert_readonly", description, 
-		    format("deleting property %s succeeded", property_name));
-		assert(delete object[property_name] === false, message);
-		assert(object[property_name] === initial_value, message);
-		//Note that this can have side effects in the case where
-		//the property has PutForwards
-		object[property_name] = initial_value + "a"; //XXX use some other value here?
-		message = make_message("assert_readonly", description, 
-				       format("changing property %s succeeded",
-					      property_name));
-		assert(object[property_name] === initial_value, message);
-	    } finally {
-		object[property_name] = initial_value;
-	    }
-	}
+        readonly:function(object, property_name, description)
+        {
+            var initial_value = object[property_name];
+            try {
+                var message = make_message(
+                    "assert_readonly", description,
+                    format("deleting property %s succeeded", property_name));
+                assert(delete object[property_name] === false, message);
+                assert(object[property_name] === initial_value, message);
+                //Note that this can have side effects in the case where
+                //the property has PutForwards
+                object[property_name] = initial_value + "a"; //XXX use some other value here?
+                message = make_message("assert_readonly", description,
+                                       format("changing property %s succeeded",
+                                              property_name));
+                assert(object[property_name] === initial_value, message);
+            } finally {
+                object[property_name] = initial_value;
+            }
+        }
     };
 
     expose(assert_obj, 'assert');
@@ -194,7 +194,7 @@ policies and contribution forms [3].
        tests.push(this);
    }
 
-    Test.prototype.step = function(func)
+    Test.prototype.step = function(func, this_obj)
     {
         //In case the test has already failed
         if (this.status !== null)
@@ -206,7 +206,7 @@ policies and contribution forms [3].
 
         try
         {
-            func.apply(this, arguments);
+            func.apply(this_obj);
         }
         catch(e)
         {

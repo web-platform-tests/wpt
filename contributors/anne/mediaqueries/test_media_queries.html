@@ -17,8 +17,6 @@ https://bugzilla.mozilla.org/show_bug.cgi?id=156716
 <pre id="test">
 <script class="testbody" type="text/javascript">
 
-// Note that many other tests are in test_acid3_test46.html .
-
 SimpleTest.waitForExplicitFinish();
 
 function run() {
@@ -440,6 +438,14 @@ function run() {
   should_apply("[badsyntax],all");
   should_not_apply("badmedium,[badsyntax]");
   should_not_apply("[badsyntax],badmedium");
+  
+  // Parsing tests based on Acid3
+  query_should_not_be_parseable("all and color :");
+  query_should_not_be_parseable("all and color : 1");
+  should_not_apply("all and min-color : 1");
+  should_not_apply("(bogus)");
+  should_not_apply("not all and (bogus)")
+  should_not_apply("only all and (bogus)")
 
   SimpleTest.finish();
 }

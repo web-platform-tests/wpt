@@ -69,7 +69,7 @@ policies and contribution forms [3].
     var assert_obj = {
         true:function (actual, description)
         {
-            var message = make_message("assert_equals", description,
+            var message = make_message("assert.equals", description,
                                        format("expected true got %s", actual));
             assert(actual, message);
         },
@@ -80,7 +80,7 @@ policies and contribution forms [3].
              * Test if two primitives are equal or two objects
              * are the same object
              */
-            var message = make_message("assert_equals", description,
+            var message = make_message("assert.equals", description,
                                        format("expected %s got %s", expected,
                                               actual));
 
@@ -106,7 +106,7 @@ policies and contribution forms [3].
                 for (p in actual)
                 {
                     var message = make_message(
-                        "assert_object_equals", description,
+                        "assert.object_equals", description,
                         format("unexpected property %s", p));
 
                     assert( expected.hasOwnProperty(p), message);
@@ -121,7 +121,7 @@ policies and contribution forms [3].
                     else
                     {
                         message = make_message(
-                            "assert_object_equals", description,
+                            "assert.object_equals", description,
                             format("property %s expected %s got %s",
                                    p, expected, actual));
 
@@ -131,7 +131,7 @@ policies and contribution forms [3].
                 for (p in expected)
                 {
                     var message = make_message(
-                        "assert_object_equals", description,
+                        "assert.object_equals", description,
                         format("expected property %s missing", p));
 
                     assert( actual.hasOwnProperty(p), message);
@@ -144,10 +144,19 @@ policies and contribution forms [3].
         exists:function(object, property_name, description)
         {
             var message = make_message(
-                "assert_exists", description,
+                "assert.exists", description,
                 format("expected property %s missing", property_name));
 
             assert(object.hasOwnProperty(property_name, message));
+        },
+
+        not_exists:function(object, property_name, description)
+        {
+            var message = make_message(
+                "assert.not_exists", description,
+                format("unexpected property %s found", property_name));
+
+            assert(!object.hasOwnProperty(property_name, message));
         },
 
         readonly:function(object, property_name, description)
@@ -155,21 +164,28 @@ policies and contribution forms [3].
             var initial_value = object[property_name];
             try {
                 var message = make_message(
-                    "assert_readonly", description,
+                    "assert.readonly", description,
                     format("deleting property %s succeeded", property_name));
                 assert(delete object[property_name] === false, message);
                 assert(object[property_name] === initial_value, message);
                 //Note that this can have side effects in the case where
                 //the property has PutForwards
                 object[property_name] = initial_value + "a"; //XXX use some other value here?
-                message = make_message("assert_readonly", description,
+                message = make_message("assert.readonly", description,
                                        format("changing property %s succeeded",
                                               property_name));
                 assert(object[property_name] === initial_value, message);
             } finally {
                 object[property_name] = initial_value;
             }
-        }
+        },
+
+	unreached:function(description) {
+            var message = make_message("assert.unreached", description,
+				       "Reached unreachable code");
+
+	    assert(false, message);
+	}
     };
 
     expose(assert_obj, 'assert');

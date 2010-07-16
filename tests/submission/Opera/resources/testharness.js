@@ -42,9 +42,9 @@ policies and contribution forms [3].
         properties = properties ? properties : {};
         var test_obj = new Test(test_name, properties);
         test_obj.step(func);
-	if (test_obj.status === null) {
-	    test_obj.done();
-	}
+        if (test_obj.status === null) {
+            test_obj.done();
+        }
     }
 
     function async_test(name, properties)
@@ -70,136 +70,136 @@ policies and contribution forms [3].
 
     function assert_true(actual, description)
     {
-	var message = make_message("assert.true", description,
-	format("expected true got %s", actual));
-	assert(actual === true, message);
+        var message = make_message("assert_true", description,
+        format("expected true got %s", actual));
+        assert(actual === true, message);
     };
     expose(assert_true, "assert_true");
 
     function assert_false(actual, description)
     {
-	var message = make_message("assert.false", description,
-			  format("expected false got %s", actual));
-	assert(actual === false, message);
+        var message = make_message("assert_false", description,
+                          format("expected false got %s", actual));
+        assert(actual === false, message);
     };
     expose(assert_false, "assert_false");
 
     function assert_equals(actual, expected, description)
     {
-	 /*
-	  * Test if two primitives are equal or two objects
-	  * are the same object
-	  */
-	 var message = make_message("assert.equals", description,
-				    format("expected %s got %s", expected,
-					   actual));
+         /*
+          * Test if two primitives are equal or two objects
+          * are the same object
+          */
+         var message = make_message("assert_equals", description,
+                                    format("expected %s got %s", expected,
+                                           actual));
 
-	 if (expected !== expected)
-	 {
-	     //NaN case
-	     assert(actual !== actual, message);
-	 }
-	 else
-	 {
-	     //typical case
-	     assert(actual === expected, message);
-	 }
+         if (expected !== expected)
+         {
+             //NaN case
+             assert(actual !== actual, message);
+         }
+         else
+         {
+             //typical case
+             assert(actual === expected, message);
+         }
     };
     expose(assert_equals, "assert_equals");
 
     function assert_object_equals(actual, expected, description)
     {
-	 //This needs to be improved a great deal
-	 function check_equal(expected, actual, stack)
-	 {
-	     stack.push(actual);
+         //This needs to be improved a great deal
+         function check_equal(expected, actual, stack)
+         {
+             stack.push(actual);
 
-	     for (p in actual)
-	     {
-		 var message = make_message(
-		     "assert.object_equals", description,
-		     format("unexpected property %s", p));
+             for (p in actual)
+             {
+                 var message = make_message(
+                     "assert_object_equals", description,
+                     format("unexpected property %s", p));
 
-		 assert(expected.hasOwnProperty(p), message);
+                 assert(expected.hasOwnProperty(p), message);
 
-		 if (typeof actual[p] === "object" && actual[p] !== null)
-		 {
-		     if (stack.indexOf(actual[p]) === -1)
-		     {
-			 check_equal(actual[p], expected[p], stack);
-		     }
-		 }
-		 else
-		 {
-		     message = make_message(
-			 "assert.object_equals", description,
-			 format("property %s expected %s got %s",
-				p, expected, actual));
+                 if (typeof actual[p] === "object" && actual[p] !== null)
+                 {
+                     if (stack.indexOf(actual[p]) === -1)
+                     {
+                         check_equal(actual[p], expected[p], stack);
+                     }
+                 }
+                 else
+                 {
+                     message = make_message(
+                         "assert_object_equals", description,
+                         format("property %s expected %s got %s",
+                                p, expected, actual));
 
-		     assert(actual[p] === expected[p], message);
-		 }
-	     }
-	     for (p in expected)
-	     {
-		 var message = make_message(
-		     "assert.object_equals", description,
-		     format("expected property %s missing", p));
+                     assert(actual[p] === expected[p], message);
+                 }
+             }
+             for (p in expected)
+             {
+                 var message = make_message(
+                     "assert_object_equals", description,
+                     format("expected property %s missing", p));
 
-		 assert(actual.hasOwnProperty(p), message);
-	     }
-	     stack.pop();
-	 }
-	 check_equal(actual, expected, []);
+                 assert(actual.hasOwnProperty(p), message);
+             }
+             stack.pop();
+         }
+         check_equal(actual, expected, []);
     };
     expose(assert_object_equals, "assert_object_equals");
 
     function assert_exists(object, property_name, description)
     {
-	 var message = make_message(
-	     "assert.exists", description,
-	     format("expected property %s missing", property_name));
+         var message = make_message(
+             "assert_exists", description,
+             format("expected property %s missing", property_name));
 
-	 assert(object.hasOwnProperty(property_name, message));
+         assert(object.hasOwnProperty(property_name, message));
     };
     expose(assert_exists, "assert_exists");
 
     function assert_not_exists(object, property_name, description)
     {
-	 var message = make_message(
-	     "assert.not_exists", description,
-	     format("unexpected property %s found", property_name));
+         var message = make_message(
+             "assert_not_exists", description,
+             format("unexpected property %s found", property_name));
 
-	 assert(!object.hasOwnProperty(property_name, message));
+         assert(!object.hasOwnProperty(property_name, message));
     };
     expose(assert_not_exists, "assert_not_exists");
 
     function assert_readonly(object, property_name, description)
     {
-	 var initial_value = object[property_name];
-	 try {
-	     var message = make_message(
-		 "assert.readonly", description,
-		 format("deleting property %s succeeded", property_name));
-	     assert(delete object[property_name] === false, message);
-	     assert(object[property_name] === initial_value, message);
-	     //Note that this can have side effects in the case where
-	     //the property has PutForwards
-	     object[property_name] = initial_value + "a"; //XXX use some other value here?
-	     message = make_message("assert.readonly", description,
-				    format("changing property %s succeeded",
-					   property_name));
-	     assert(object[property_name] === initial_value, message);
-	 } finally {
-	     object[property_name] = initial_value;
-	 }
+         var initial_value = object[property_name];
+         try {
+             var message = make_message(
+                 "assert_readonly", description,
+                 format("deleting property %s succeeded", property_name));
+             assert(delete object[property_name] === false, message);
+             assert(object[property_name] === initial_value, message);
+             //Note that this can have side effects in the case where
+             //the property has PutForwards
+             object[property_name] = initial_value + "a"; //XXX use some other value here?
+             message = make_message("assert_readonly", description,
+                                    format("changing property %s succeeded",
+                                           property_name));
+             assert(object[property_name] === initial_value, message);
+         } finally {
+             object[property_name] = initial_value;
+         }
     };
     expose(assert_readonly, "assert_readonly");
 
     function assert_unreached(description) {
-	 var message = make_message("assert.unreached", description,
-				    "Reached unreachable code");
+         var message = make_message("assert_unreached", description,
+                                    "Reached unreachable code");
 
-	 assert(false, message);
+         assert(false, message);
     }
     expose(assert_unreached, "assert_unreached");
 
@@ -250,23 +250,23 @@ policies and contribution forms [3].
     {
         this.status = status.TIMEOUT;
         this.timeout_id = null;
-        this.message = "test timed out";
+        this.message = "Test timed out";
         this.done();
     };
 
     Test.prototype.done = function()
     {
-	if (this.is_done) {
-	    //Using alert here is bad
-	    alert("done called multiple times for test " + this.name);
-	    return;
-	}
+        if (this.is_done) {
+            //Using alert here is bad
+            alert("done called multiple times for test " + this.name);
+            return;
+        }
         clearTimeout(this.timeout_id);
         if (this.status == null)
         {
             this.status = status.PASS;
         }
-	this.is_done = true;
+        this.is_done = true;
         tests.done(this);
     };
 
@@ -279,8 +279,10 @@ policies and contribution forms [3].
     function Tests()
     {
         this.tests = [];
-	this.num_pending = 0;
+        this.num_pending = 0;
+        this.started = false;
 
+        this.start_callbacks = [];
         this.test_done_callbacks = [];
         this.all_done_callbacks = [];
 
@@ -290,8 +292,8 @@ policies and contribution forms [3].
         this.all_loaded = false;
 
         on_event(window, "load",
-		 function()
-		 {
+                 function()
+                 {
                      this_obj.all_loaded = true;
                      if (this_obj.all_done())
                      {
@@ -302,22 +304,25 @@ policies and contribution forms [3].
 
     Tests.prototype.push = function(test)
     {
-	this.num_pending++;
+        if (!this.started) {
+            this.start();
+        }
+        this.num_pending++;
         this.tests.push(test);
     };
 
     Tests.prototype.all_done = function() {
-	return this.all_loaded && this.num_pending == 0;
+        return this.all_loaded && this.num_pending == 0;
     };
 
     Tests.prototype.done = function(test)
     {
         this.num_pending--;
-
+        var this_obj = this;
         forEach(this.test_done_callbacks,
                 function(callback)
                 {
-                    callback(test);
+                    callback(test, this_obj);
                 });
 
         if (this.all_done())
@@ -327,17 +332,31 @@ policies and contribution forms [3].
 
     };
 
+    Tests.prototype.start = function() {
+        this.started = true;
+        var this_obj = this;
+        forEach (this.start_callbacks,
+                 function(callback)
+                 {
+                     callback(this_obj);
+                 });
+    };
+
     Tests.prototype.notify_results = function()
     {
         var test_objects = this.tests;
         var this_obj = this;
 
         forEach (this.all_done_callbacks,
-		 function(callback)
+                 function(callback)
                  {
                      callback(this_obj.tests);
                  });
     };
+
+    function add_start_callback(callback) {
+        tests.start_callbacks.push(callback);
+    }
 
     function add_result_callback(callback)
     {
@@ -349,47 +368,73 @@ policies and contribution forms [3].
        tests.all_done_callbacks.push(callback);
     }
 
+    expose(add_start_callback, 'add_start_callback');
     expose(add_result_callback, 'add_result_callback');
     expose(add_completion_callback, 'add_completion_callback');
 
     /*
      * Output listener
     */
+
+    (function show_status() {
+        var done_count = 0;
+         function on_done(test, tests) {
+            var log = document.getElementById("log");
+            done_count++;
+            if (log)
+            {
+                if (log.lastChild) {
+                    log.removeChild(log.lastChild);
+                }
+                log.appendChild(document.createTextNode(
+                    format("Running, %s complete %s", done_count,
+                    tests.all_loaded ? format("%s remain", tests.num_pending) : "")));
+            }
+        }
+        add_result_callback(on_done);
+     })();
+
     function output_results(tests)
     {
+        var log = document.getElementById("log");
+        if (log.lastChild) {
+            log.removeChild(log.lastChild);
+        }
         var status_text = {};
         status_text[status.PASS] = "PASS";
         status_text[status.FAIL] = "FAIL";
         status_text[status.TIMEOUT] = "TIMEOUT";
         status_text[status.NOT_IMPLEMENTED] = "NOT IMPLEMENTED";
 
-        forEach (tests,
-		 function(test)
-                 {
-		     var testtable = document.getElementById('testtable');
-                     var row = testtable.insertRow(testtable.rows.length);
+        var test_table = document.createElement("table");
 
-                     var testresult = table= row.insertCell(0);
-                     var text_node = document.createTextNode(status_text[test.status]);
+        var head = test_table.createTHead();
+        var header_row = head.insertRow(-1);
+        forEach(["Result", "Test Name", "Message"],
+               function(x)
+                {
+                   var cell = document.createElement("th");
+                   cell.appendChild(document.createTextNode(x));
+                   header_row.appendChild(cell);
+               });
 
-                     testresult.style.color = test.status === status.PASS ? "green" : "red";
-                     testresult.appendChild(text_node);
+        forEach(tests,
+                function(test)
+                {
+                    var row = test_table.insertRow(test_table.rows.length);
+                    forEach([status_text[test.status], test.name,
+                             test.message],
+                             function(x)
+                             {
+                                var cell = row.insertCell(-1);
+                                cell.appendChild(document.createTextNode(x));
+                            });
+                    row.cells[0].style.color = test.status === status.PASS ? "green" : "red";
+                });
+        log.appendChild(test_table);
+    }
 
-                     var testassertion = table= row.insertCell(1);
-                     var text = test.name;
-
-                     if (test.status !== status.PASS && test.message)
-                     {
-                         text += format(" message: " + test.message);
-                     }
-
-                     text_node = document.createTextNode(text);
-                     testassertion.appendChild(text_node);
-		 });
-   }
-
-   add_completion_callback(output_results);
-
+    add_completion_callback(output_results);
 
     /*
      * Utility funcions

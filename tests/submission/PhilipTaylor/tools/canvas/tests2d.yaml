@@ -2639,7 +2639,7 @@
     - 2d.pattern.wrongtype
   #mozilla: { bug: TODO }
   code: |
-    @assert throws TYPE_MISMATCH_ERR ctx.createPattern('../images/red.png', 'repeat'); @moz-todo
+    @assert throws TypeError ctx.createPattern('../images/red.png', 'repeat'); @moz-todo
 
 - name: 2d.pattern.image.incomplete
   testing:
@@ -9513,9 +9513,9 @@
     - 2d.imageData.put.wrongtype
   code: |
     var imgdata = { width: 1, height: 1, data: [255, 0, 0, 255] };
-    @assert throws TYPE_MISMATCH_ERR ctx.putImageData(imgdata, 0, 0); @moz-todo
-    @assert throws TYPE_MISMATCH_ERR ctx.putImageData("cheese", 0, 0); @moz-todo
-    @assert throws TYPE_MISMATCH_ERR ctx.putImageData(42, 0, 0); @moz-todo
+    @assert throws TypeError ctx.putImageData(imgdata, 0, 0); @moz-todo
+    @assert throws TypeError ctx.putImageData("cheese", 0, 0); @moz-todo
+    @assert throws TypeError ctx.putImageData(42, 0, 0); @moz-todo
   expected: green
 
 - name: 2d.imageData.put.cross

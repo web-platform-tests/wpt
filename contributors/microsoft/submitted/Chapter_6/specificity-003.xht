@@ -3,9 +3,9 @@
     <head>
         <title>CSS Test: Calculating specificity - Specificity 0100 vs. 0011</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
-        <link rel="help" href="http://www.w3.org/TR/CSS21/cascade.html" />
+        <link rel="help" href="http://www.w3.org/TR/CSS21/cascade.html#specificity" />
         <meta name="flags" content="" />
-        <meta name="assert" content="The element selector has the highest specificity - specificity 0100 takes precedence over 0011." />
+        <meta name="assert" content="The ID attribute in a selector has the higher specificity than the combined pseudo-class and element selectors - specificity 0100 takes precedence over 0011." />
         <style type="text/css">
             #id1 /* a=0 b=1 c=0 d=0 -> specificity = 0,1,0,0 */
             {

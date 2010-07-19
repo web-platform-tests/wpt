@@ -41,7 +41,7 @@ diff --git a/python/src/html5lib/serializer/htmlserializer.py b/python/src/html5
      unicode_encode_errors = "strict"
  else:
      unicode_encode_errors = "htmlentityreplace"
-@@ -79,33 +81,51 @@ class HTMLSerializer(object):
+@@ -79,34 +81,170 @@ class HTMLSerializer(object):
      space_before_trailing_solidus = True
  
      # escaping options
@@ -65,10 +65,10 @@ diff --git a/python/src/html5lib/serializer/htmlserializer.py b/python/src/html5
 +          "sanitize")
  
      def __init__(self, **kwargs):
-         """Initialize HTMLSerializer.
- 
-         Keyword options (default given first unless specified) include:
- 
++        """Initialize HTMLSerializer.
++
++        Keyword options (default given first unless specified) include:
++
 +        emit_doctype='html'|'xhtml'|'html5'|'preserve'
 +          Whether to output a doctype.
 +            * emit_doctype='xhtml' preserves unknown doctypes and valid
@@ -79,23 +79,45 @@ diff --git a/python/src/html5lib/serializer/htmlserializer.py b/python/src/html5
 +              counterparts, and uses <!DOCTYPE html> for missing doctypes
 +            * emit_doctype='html5' Uses <!DOCTYPE html> as the doctype
 +            * emit_doctype='preserve' preserves the doctype, if any, unchanged
-         inject_meta_charset=True|False
-           ..?
++        inject_meta_charset=True|False
++          ..?
 +        lang_attr='preserve'|'xml'|'html'
 +          Whether to translate 'lang' attributes.
 +            * lang_attr='preserve' does no translation
 +            * lang_attr='xml' translates 'lang' to 'xml:lang'
 +            * lang_attr='html' translates 'xml:lang' to 'lang'
-         quote_attr_values=True|False
-           Whether to quote attribute values that don't require quoting
-           per HTML5 parsing rules.
-         quote_char=u'"'|u"'"
-           Use given quote character for attribute quoting. Default is to
-           use double quote unless attribute value contains a double quote,
-           in which case single quotes are used instead.
-         escape_lt_in_attrs=False|True
-@@ -135,16 +155,96 @@ class HTMLSerializer(object):
-         """
++        quote_attr_values=True|False
++          Whether to quote attribute values that don't require quoting
++          per HTML5 parsing rules.
++        quote_char=u'"'|u"'"
++          Use given quote character for attribute quoting. Default is to
++          use double quote unless attribute value contains a double quote,
++          in which case single quotes are used instead.
++        escape_lt_in_attrs=False|True
++          Whether to escape < in attribute values.
++        escape_rc_data=False|True
++          ..?
++        resolve_entities=True|False
++          Whether to resolve named character entities that appear in the
++          source tree. The XML predified entities &lt; &gt; &amp; &quot; &apos;
++          are unaffected by this setting.
++        strip_whitespace=False|True
++          ..?
++        minimize_boolean_attributes=True|false
++          Shortens boolean attributes to give just the attribute value,
++          for example <input disabled="disabled"> becomes <input disabled>.
++        use_trailing_solidus
++          Includes a close-tag slash at the end of the start tag of void
++          elements (empty elements whose end tag is forbidden). E.g. <hr/>.
++        space_before_trailing_solidus
++          Places a space immediately before the closing slash in a tag
++          using a trailing solidus. E.g. <hr />. Requires use_trailing_solidus.
++        sanitize
++          Strip all unsafe or unknown constructs from output.
++          See `html5lib user documentation`_
++
++        .. _html5lib user documentation: http://code.google.com/p/html5lib/wiki/UserDocumentation
++        """
          if kwargs.has_key('quote_char'):
              self.use_best_quote_char = False
          for attr in self.options:
@@ -191,7 +213,7 @@ diff --git a/python/src/html5lib/serializer/htmlserializer.py b/python/src/html5
              treewalker = Filter(treewalker, encoding)
          # XXX: WhitespaceFilter should be used before OptionalTagFilter
          # for maximum efficiently of this latter filter
-@@ -152,36 +252,22 @@ class HTMLSerializer(object):
+@@ -114,36 +252,22 @@ class HTMLSerializer(object):
              from html5lib.filters.whitespace import Filter
              treewalker = Filter(treewalker)
          if self.sanitize:
@@ -231,7 +253,7 @@ diff --git a/python/src/html5lib/serializer/htmlserializer.py b/python/src/html5
              elif type in ("Characters", "SpaceCharacters"):
                  if type == "SpaceCharacters" or in_cdata:
                      if in_cdata and token["data"].find("</") >= 0:
-@@ -191,27 +277,41 @@ class HTMLSerializer(object):
+@@ -153,27 +277,41 @@ class HTMLSerializer(object):
                      else:
                          yield token["data"]
                  elif encoding:
@@ -256,15 +278,15 @@ diff --git a/python/src/html5lib/serializer/htmlserializer.py b/python/src/html5
                  for k,v in attrs:
 +
 +                    # clean up xml:lang
-+                    if k == '{http://www.w3.org/XML/1998/namespace}lang':
-+                        k = 'xml:lang'
++                    if k == u'{http://www.w3.org/XML/1998/namespace}lang':
++                        k = u'xml:lang'
 +                    if self.lang_attr == 'xml':
-+                        if k == 'lang' and not ('xml:lang' in attrs or
-+                           '{http://www.w3.org/XML/1998/namespace}lang' in attrs):
-+                            k = 'xml:lang'
++                        if k == 'lang' and not (u'xml:lang' in attrs or
++                           u'{http://www.w3.org/XML/1998/namespace}lang' in attrs):
++                            k = u'xml:lang'
 +                    elif self.lang_attr == 'html':
-+                        if k == 'xml:lang' and not ('lang' in attrs):
-+                            k = 'lang'
++                        if k == u'xml:lang' and not (u'lang' in attrs):
++                            k = u'lang'
 +
                      if encoding:
                          k = k.encode(encoding, "strict")

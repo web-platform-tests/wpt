@@ -10,39 +10,28 @@
         <style type="text/css">
             #wrapper
             {
-                position: relative;
+                background: red;
+                float: left;
             }
             #test
             {
-                font: bold 1in ahem;
+                color: green;
+                font: normal 1in ahem;
                 line-height: 1em;
-            }
-            #reference, #reference2
-            {
-                height: 1in;
             }
             #reference
             {
-                background: orange;
-                left: 1.05in;
-                position: absolute;
-                top: 0;
+                background: green;
+                height: 1in;
                 width: 1in;
-            }
-            #reference2
-            {
-                background: blue;
-                margin-top: 1px;
-                width: 1.01in;
             }
         </style>
     </head>
     <body>
-        <p>Test passes the black box is the same height as the orange square and is the same width and the blue square.</p>
+        <p>Test passes if there is no red visible on the page.</p>
         <div id="wrapper">
             <div id="test">X</div>
             <div id="reference"></div>
-            <div id="reference2"></div>
         </div>
     </body>
 </html>

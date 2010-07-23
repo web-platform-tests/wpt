@@ -408,7 +408,7 @@ class CSSTestSource(XHTMLSource):
     """
     XHTMLSource.__init__(self, sourcepath, relpath)
     self.data = None
-    self.ref  = referenceSource
+    self.refs  = [('==', referenceSource)] if referenceSource else []
     self.selftest = not referenceSource
 
   def __cmp__(self, other):
@@ -418,12 +418,12 @@ class CSSTestSource(XHTMLSource):
     """Extract filename base as test name."""
     return os.path.splitext(basename(self.relpath))[0]
 
-  def setReftest(self, referenceSource):
+  def setReftest(self, referenceSource, match='=='):
     """Sets test to be a reftest, with reference source referenceSource."""
-    self.ref = referenceSource
+    self.refs.append((match, referenceSource))
 
   def isReftest(self):
-    return bool(self.ref)
+    return bool(self.refs)
 
   def setSelftest(self, isSelftest=True):
     self.selftest = isSelftest
@@ -433,9 +433,10 @@ class CSSTestSource(XHTMLSource):
 
   def parse(self):
     XHTMLSource.parse(self)
-    if self.ref:
-      self.injectHeadTag('<link rel="reference" href="%s"/>'
-                         % relpath(self.ref.relpath, self.relpath))
+    for ref in self.refs:
+      if (ref[0] == '=='):
+        self.injectHeadTag('<link rel="reference" href="%s"/>'
+                           % relpath(ref[1].relpath, self.relpath))
 
   # See http://wiki.csswg.org/test/css2.1/format for more info on metadata
   def getMetadata(self):
@@ -445,10 +446,10 @@ class CSSTestSource(XHTMLSource):
          - asserts [list of strings]
          - credits [list of (name string, url string) tuples]
          - flags   [list of token strings]
-         - links   [list of url strings
+         - links   [list of url strings]
          - name    [string]
          - title   [string]
-         - reference [relative path to reference; None if not reftest]
+         - references [list of (matchType, relpath) for reference; None if not reftest]
        Strings are given in UTF-8.
     """
 
@@ -472,7 +473,8 @@ class CSSTestSource(XHTMLSource):
             'links'   : links,
             'name'    : self.name().encode('utf-8'),
             'title'   : '',
-            'reference' : self.ref.relpath.encode('utf-8') if self.ref else None,
+            'references' : [{'type':ref[0], 'relpath':ref[1].relpath.encode('utf-8')}
+                            for ref in self.refs] if self.refs else None,
             'selftest' : self.isSelftest
            }
     def tokenMatch(token, string):
@@ -482,7 +484,7 @@ class CSSTestSource(XHTMLSource):
     head = self.tree.getroot().find(xhtmlns+'head')
     readFlags = False
     try:
-      if not head: raise CSSTestSourceMetaError("Missing <head> element")
+      if head == None: raise CSSTestSourceMetaError("Missing <head> element")
       # Scan and cache metadata
       for node in head:
         if node.tag == xhtmlns+'link':

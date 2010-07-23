@@ -46,17 +46,17 @@
   }
   
   td {
-    padding-left: 3em;
-    text-indent: -1em;
-    font-size: smaller;
+    font-size: 0.9em;
   }
 
+  /* flags */
   td abbr {
     border: solid thin gray;
     padding: 0 0.1em;
+    cursor: help;
   }
   td abbr:hover {
-    background: white;
+    background: #ffa;
     color: black;
   }
 
@@ -77,8 +77,21 @@
     text-decoration: underline;
   }
 
+  td a {
+    display: block;
+    padding-left: 2em;
+    text-indent: -1em;
+  }
+  .refs {
+    font-weight: bold;
+    font-size: larger;
+  }
   .assert, .assert > li {
     list-style-type: none;
+    font-size: smaller;
+    font-style: italic;
+    color: gray;
     margin: 0;
     padding: 0;
+    text-indent: 0;
   }

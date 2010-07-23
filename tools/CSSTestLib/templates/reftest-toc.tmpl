@@ -48,17 +48,26 @@
         <th>Flags</th>
       </tr>
     </thead>
-    <tbody>
-  [% FOR entry IN tests.sort('name') %]
-    [% IF entry.reference and not entry.flags.contains(formatMismatchFlag) %]
-      <tr id="[% entry.name %]" class="[% entry.flags.join(' ') %]">
-        <td><a href="[% extmap.translate(entry.file) %]">[% entry.name%]</a></td>
-        <td><a href="[% extmap.translate(entry.reference) %]">Reference</a></td>
-        <td>[% FOREACH flag IN entry.flags %][% IF flag != 'nonHTML' and flag != 'HTMLonly' %]<abbr class="[% flag %]" title="[% flagInfo.$flag.title %]">[% flagInfo.$flag.abbr %]</abbr>[% END %][% END %]</td>
+[% FOREACH entry IN tests.sort('name') %]
+  [% IF entry.references and not entry.flags.contains(formatMismatchFlag) %]
+    <tbody id="[% entry.name %]" class="[% entry.flags.join(' ') %]">
+    [% FOREACH ref IN entry.references %]
+      [% IF loop.first %]
+      <tr>
+        <td rowspan="[% loop.size %]" title="[% entry.title %]">
+          <a href="[% extmap.translate(entry.file) %]">[% entry.name%]</a></td>
+        <td><a href="[% extmap.translate(ref.relpath) %]">[% refCompMap.${ref.type} %]</a></td>
+        <td rowspan="[% entry.references.size %]">[% FOREACH flag IN entry.flags %][% IF flag != 'nonHTML' and flag != 'HTMLonly' %]<abbr class="[% flag %]" title="[% flagInfo.$flag.title %]">[% flagInfo.$flag.abbr %]</abbr>[% END %][% END %]</td>
       </tr>
+      [% ELSE %]
+      <tr>
+        <td><a href="[% extmap.translate(ref.relpath) %]">[% refCompMap.${ref.type} %]</a></td>
+      </tr>
+      [% END %]
     [% END %]
-  [% END %]
     </tbody>
+  [% END %]
+[% END %]
   </table>
 
  </body>

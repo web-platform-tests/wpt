@@ -167,6 +167,8 @@ class Indexer:
     # Reftest indices
     self.__writeTemplate('reftest-toc.tmpl', data,
                          format.dest('reftest-toc%s' % format.indexExt))
+    self.__writeTemplate('reftest.tmpl', data,
+                         format.dest('reftest.list'))
 
     # Table of Contents
     sectionlist = sorted(self.sections.values())

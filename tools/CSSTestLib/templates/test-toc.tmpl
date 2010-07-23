@@ -47,13 +47,14 @@
     <thead>
       <tr>
         <th>Test</th>
+        <th><abbr title="Rendering References">Refs</abbr></th>
         <th>Flags</th>
         <th>Info</th>
       </tr>
     </thead>
 [% FOREACH section IN sections %]
     <tbody id="s[% section.numstr %]">
-      <tr><th colspan="3" scope="rowgroup">
+      <tr><th colspan="4" scope="rowgroup">
         <a href="#s[% section.numstr %]">+</a>
         <a href="[% section.uri %]">[% section.numstr +%] [%+ section.title %]</a></th></tr>
       <!-- [% section.tests.size %] tests -->
@@ -68,16 +69,16 @@
               [% ' ' IF primary and entry.flags.size > 0 %]
               [% entry.flags.join(' ') %]">
         <td>[% '<strong>' IF primary %]
-          <a href="[% extmap.translate(entry.file) %]">[% entry.name%]</a>
-          [%- IF entry.reference +%]==<a href="[% extmap.translate(entry.reference) %]">Reference</a>[% END -%]
-          [% '</strong>' IF primary %]</td>
+            <a href="[% extmap.translate(entry.file) %]">[% entry.name%]</a>
+            [% '</strong>' IF primary %]</td>
+        <td>[% FOREACH ref IN entry.references %]<a href="[% extmap.translate(ref.relpath) %]">[% refCompMap.${ref.type} %]</a> [%+ END %]</td>
         <td>[% FOREACH flag IN entry.flags %][% IF flag != 'nonHTML' and flag != 'HTMLonly' %]<abbr class="[% flag %]" title="[% flagInfo.$flag.title %]">[% flagInfo.$flag.abbr %]</abbr>[% END %][% END %]</td>
         <td>[% entry.title | collapse | html %]
       [% IF entry.asserts.size > 0 %]
           <ul class="assert">
         [% FOREACH assertion IN entry.asserts %]
             <li>[% assertion | collapse | html %]</li>
-       [% END %]
+        [% END %]
           </ul>
       [% END %]
         </td>

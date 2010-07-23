@@ -32,6 +32,12 @@
     }
 %]
 
+[% refCompMap =
+    { '==' => '=',
+      '!=' => '&#x2260;'
+    }
+%]
+
 [%  statusNames = {
       'pa' => {
         'title' => 'Pre-Alpha',
@@ -67,6 +73,6 @@
       'css3-color' => {
         'title'    => 'CSS3 Color',
         'specroot' => 'http://www.w3.org/TR/css3-color/',
-        'status'   => 'beta' },
+        'status'   => 'rc' },
     }
 %]

@@ -12,11 +12,12 @@
 
    /* test */
    .test .a { background: lime; margin: 0 0 1em 0; }
-   .test .c { background: red; margin: 1em 0 1em 0; height: 0.4px; } /* computed: 0.4px; actual: 0px; */
+   .test .c { background: red; margin: 1em 0 1em 0; height: 0.04px; } /* computed: 0.04px; actual: 0px; */
    .test .b { background: yellow; margin: 1em 0 0 0; }
 
    /* control */
    .control .a { margin: 0 0 2em; background: lime; }
+   .control .c { background: orange; }
    .control .b { margin: 2em 0 0; background: yellow; }
   </style>
  </head>
@@ -34,6 +35,7 @@
     <td>
      <div class="control">
       <div class="a">A</div>
+      <div class="c"></div>
       <div class="b">B</div>
      </div>
     </td>

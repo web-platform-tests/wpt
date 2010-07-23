@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:svg="http://www.w3.org/2000/svg">
     <head>
-        <title>CSS Test: Absolute replaced elements and 'auto' specified for 'margin-left', 'margin-right' and 'height'</title>
+        <title>CSS Test: Absolute replaced elements and 'auto' specified for 'margin-left', 'margin-right' and intrinsic height</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#abs-replaced-width" />
         <meta name="flags" content="nonHTML svg" />
@@ -15,7 +15,6 @@
             }
             svg
             {
-                height: 100px;
                 margin-left: auto;
                 margin-right: auto;
                 position: absolute;
@@ -23,8 +22,8 @@
             div div
             {
                 background: orange;
-                height: 100px;
-                margin-top: 100px;
+                height: 50px;
+                margin-top: 50px;
                 width: 200px;
             }
         </style>

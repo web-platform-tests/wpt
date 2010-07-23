@@ -1,0 +1,43 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:svg="http://www.w3.org/2000/svg">
+    <head>
+        <title>CSS Test: Absolutely positioned inline replaced elements with percentage based intrinsic height and 'bottom' set to 'auto'</title>
+        <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#abs-replaced-height" />
+        <meta name="flags" content="nonHTML svg" />
+        <meta name="assert" content="An absolutely positioned replaced element with percentage intrinsic height resolves based on the containing block when the replaced element is absolutely positioned." />
+        <style type="text/css">
+            #div1
+            {
+                border-top: solid black;
+                position: relative;
+                height: 2in;
+            }
+            div div
+            {
+                background: orange;
+                height: 1in;
+                left: 200px;
+                position: absolute;
+                top: 1in;
+                width: 200px;
+            }
+            svg
+            {
+                bottom: auto;
+                position: absolute;
+                top: 1in;
+                width: auto;
+            }
+        </style>
+    </head>
+    <body>
+        <p>Test passes if there is a single blue box below and it does not touch the black line.</p>
+        <div id="div1">
+            <svg:svg version="1.1" height="50%" baseprofile="full">
+                <svg:rect x="0" y="0" width="200" height="100" fill="blue" />
+            </svg:svg>
+            <div></div>
+        </div>
+    </body>
+</html>

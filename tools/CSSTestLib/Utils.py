@@ -83,7 +83,7 @@ def escapeMarkup(data):
   return data
 
 def escapeToNamedASCII(text):
-  """Combines escapeToNamed and escapeToASCII.
+  """Escapes to named entities where possible and numeric-escapes non-ASCII
   """
   return escapeToNamed(text).encode('ascii', 'xmlcharrefreplace')
 
@@ -102,13 +102,3 @@ def escapeToNamed(text):
     for c in escapable:
       text = text.replace(c, "&%s;" % entityify[c])
   return text
-
-def escapeToASCII(text):
-  """Numeric-escape characters above 127. Returns standard (non-Unicode) string.
-  """
-  nonascii = {}
-  for c in text:
-    if ord(c) > 127:
-      nonascii[c] = "&#x%X;" % ord(c)
-
-  return str(text)

@@ -361,6 +361,7 @@ class XHTMLSource(FileSource):
                                       emit_doctype='html',
                                       lang_attr='html',
                                       resolve_entities=False,
+                                      escape_invisible='named',
                                       omit_optional_tags=False,
                                       minimize_boolean_attributes=True,
                                       quote_attr_values=True)

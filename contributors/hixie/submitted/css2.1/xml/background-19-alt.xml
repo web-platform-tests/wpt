@@ -7,7 +7,7 @@
 
    <generic xmlns:xlink="http://www.w3.org/1999/xlink">
 
-  <link xmlns="http://www.w3.org/1999/xhtml" rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/background/21.xml"/>
+  <link xmlns="http://www.w3.org/1999/xhtml" rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/background/21.xml" type="application/xhtml+xml"/>
 
    <!-->CSS Test: Background: Test Nineteen</-->
 

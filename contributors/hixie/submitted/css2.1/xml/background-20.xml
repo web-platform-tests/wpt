@@ -2,7 +2,7 @@
 <head xmlns="http://www.w3.org/1999/xhtml">
   <title>Background (non-)propagation in XML</title>
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
-  <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/background/20.xml"/>
+  <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/background/20.xml" type="application/xhtml+xml"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/colors.html#background" />
   <style type="text/css">
    body { background: red; }

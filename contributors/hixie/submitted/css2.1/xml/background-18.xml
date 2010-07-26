@@ -9,7 +9,7 @@
 
    <generic>
 
-  <link xmlns="http://www.w3.org/1999/xhtml" rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/background/21.xml"/>
+  <link xmlns="http://www.w3.org/1999/xhtml" rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/background/21.xml" type="application/xhtml+xml"/>
 
       <p> This is an XML document. This paragraph and the links below
       should have two lime borders surrounding them, and the

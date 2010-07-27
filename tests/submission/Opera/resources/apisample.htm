@@ -1,0 +1,60 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Sample HTML5 API Tests</title>
+</head>
+<script src="testharness.js"></script>
+
+<body onload="load_test_attr.done()">
+<h1>Sample HTML5 API Tests</h1>
+<div id="log"></div>
+<script>
+    // Two examples for testing events from handler and attributes
+    var load_test_event = async_test("window onload event fires when set from the handler");
+
+    function windowLoad()
+    {
+        load_test_event.done();
+    }
+    on_event(window, "load", windowLoad);
+
+    // see the body onload below
+    var load_test_attr = async_test("body element fires the onload event set from the attribute");
+</script>
+<script>
+    // 6 Sample tests, one of which is async
+    function bodyElement()
+    {
+        assert_equals(document.body, document.getElementsByTagName("body")[0]);
+    }
+    test(bodyElement, "document.body should be the first body element in the document");
+    
+    function testAssertPass()
+    {
+        assert_true(true);
+    }
+    test(testAssertPass, "assert_true expected to pass");
+
+    function testAssertFalse()
+    {
+        assert_true(false, "false should not be true");
+    }
+    test(testAssertFalse, "assert_true expected to fail");
+
+    function basicAssertObjectEquals()
+    {
+        assert_object_equals([1, 2, [1, 2]], { 0: 1, 1: 2, 2: { 0: 1, 1: 2} }, "array is equal to object")
+    }
+    test(basicAssertObjectEquals, "basic assert_object_equals test");
+
+    async_test("test should timeout (fail) with the default of 5 seconds");
+
+    async_test("test should timeout (fail) with a custom set timeout value of 1 second",
+               {timeout:1000});
+
+</script>
+</body>
+</html>
+
+
+ 

@@ -1,6 +1,6 @@
 # basic functionality
 == first-line-001.xht first-line-001-ref.xht
-# handling of out-of-flows when ::first-line happens
+# handling of out-of-flows when :first-line happens
 == first-line-floats-001.xht first-line-floats-001-ref.xht
 == first-line-floats-002.xht first-line-floats-001-ref.xht
 == first-line-floats-003.xht first-line-floats-001-ref.xht

@@ -95,5 +95,5 @@ print `perl -pi -e 's#\.\./support/#support/#g' contributors/microsoft/submitted
 
 $dirlist = join ' ', @dirs;
 print `python tools/build-css21.py $dirlist 2>&1`;
-print `chmod 644 *.*`;
+print `find dist/css2.1 -type f | xargs chmod 644`;
 print `perl -pi -e 's#support/#\.\./support/#g' contributors/microsoft/submitted/Chapter*/*.xht contributors/microsoft/submitted/support/*.css`;

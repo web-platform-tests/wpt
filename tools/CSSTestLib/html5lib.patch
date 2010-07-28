@@ -441,7 +441,7 @@ diff --git a/python/html5lib/serializer/htmlserializer.py b/python/html5lib/seri
 diff --git a/python/html5lib/utils.py b/python/html5lib/utils.py
 --- a/python/html5lib/utils.py
 +++ b/python/html5lib/utils.py
-@@ -168,8 +168,35 @@ def isSurrogatePair(data):
+@@ -168,8 +168,34 @@ def isSurrogatePair(data):
      return (len(data) == 2 and
              ord(data[0]) >= 0xD800 and ord(data[0]) <= 0xDBFF and
              ord(data[1]) >= 0xDC00 and ord(data[1]) <= 0xDFFF)
@@ -464,16 +464,15 @@ diff --git a/python/html5lib/utils.py b/python/html5lib/utils.py
 +    escapable = set()
 +    for c in text:
 +        if ord(c) in invisibleChars:
-+            print "Added escapable char %d" % ord(c)
 +            escapable.add(c)
 +    if useNamedEntities:
 +        for c in escapable:
 +            name = codepoint2name.get(ord(c))
-+            escape = u"&%s" % name if name \
-+                     else u"&x%X;" % ord(c)
++            escape = u"&%s;" % name if name \
++                     else u"&#x%X;" % ord(c)
 +            text = text.replace(c, escape)
 +    else:
 +        for c in escapable:
-+            text = text.replace(c, u"&x%X;" % ord(c))
++            text = text.replace(c, u"&#x%X;" % ord(c))
 +
 +    return text

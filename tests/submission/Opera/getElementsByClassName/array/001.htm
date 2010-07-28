@@ -1,0 +1,17 @@
+<!doctype html>
+<html class="a
+b">
+ <head>
+  <title>document.getElementsByClassName(array): "a\n"</title>
+  <script src="../../resources/testharness.js"></script>
+ </head>
+ <body class="a
+">
+  <div id="log"></div>
+  <script>test(function () {
+                 assert_array_equals(document.getElementsByClassName(["a\n"]), 
+                                    [document.documentElement, document.body]);
+          })
+ </script>
+ </body>
+</html>

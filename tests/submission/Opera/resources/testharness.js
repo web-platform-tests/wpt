@@ -18,8 +18,7 @@ policies and contribution forms [3].
     {
         PASS: 0,
         FAIL: 1,
-        TIMEOUT: 2,
-        NOT_IMPLEMENTED:3
+        TIMEOUT: 2
     };
     expose(status, 'status');
 
@@ -30,10 +29,13 @@ policies and contribution forms [3].
     var name_counter = 0;
     function next_default_name()
     {
-      var prefix = document.title ? document.title : "Untitled";
-      var suffix = name_counter > 0 ? " " + name_counter : "";
-      name_counter++;
-      return prefix + suffix;
+        //Don't use document.title to work around an Opera bug in XHTML documents
+        var prefix = document.getElementsByTagName("title").length > 0 ?
+                         document.getElementsByTagName("title")[0].firstChild.data :
+                         "Untitled";
+        var suffix = name_counter > 0 ? " " + name_counter : "";
+        name_counter++;
+        return prefix + suffix;
     }
 
   function test(func, name, properties)
@@ -152,6 +154,31 @@ policies and contribution forms [3].
          check_equal(actual, expected, []);
     };
     expose(assert_object_equals, "assert_object_equals");
+
+    function assert_array_equals(actual, expected, description)
+    {
+        var message = make_message(
+            "assert_array_equals", description,
+            format("lengths differ, expected %s got %s",
+                    actual.length, expected.length));
+
+        assert(actual.length === expected.length, message);
+
+        for (var i=0; i < actual.length; i++) {
+            message = make_message(
+                "assert_array_equals", description,
+                format("property %s, property expected to be %s but was %s",
+                       i, expected.hasOwnProperty(i) ? "present" : "missing",
+                       actual.hasOwnProperty(i) ? "present" : "missing"));
+            assert(actual.hasOwnProperty(i) === expected.hasOwnProperty(i), message);
+            message = make_message(
+                          "assert_array_equals", description,
+                          format("property %s, expected %s but got %s",
+                          expected[i], actual[i]));
+            assert(expected[i] === actual[i], message);
+        }
+    }
+    expose(assert_array_equals, "assert_array_equals");
 
     function assert_exists(object, property_name, description)
     {
@@ -404,7 +431,6 @@ policies and contribution forms [3].
         status_text[status.PASS] = "PASS";
         status_text[status.FAIL] = "FAIL";
         status_text[status.TIMEOUT] = "TIMEOUT";
-        status_text[status.NOT_IMPLEMENTED] = "NOT IMPLEMENTED";
 
         var test_table = document.createElement("table");
 
@@ -427,7 +453,9 @@ policies and contribution forms [3].
                              function(x)
                              {
                                 var cell = row.insertCell(-1);
-                                cell.appendChild(document.createTextNode(x));
+                                if (x !== null) {
+                                    cell.appendChild(document.createTextNode(x));
+                                }
                             });
                     row.cells[0].style.color = test.status === status.PASS ? "green" : "red";
                 });

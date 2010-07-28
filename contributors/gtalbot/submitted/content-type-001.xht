@@ -7,18 +7,11 @@
   <title>CSS Test: text/css content type</title>
   
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
-  <link rel="author" title="David Hammond" href="http://www.webdevout.net/contact" />
+  <link rel="author" title="Daniel Schattenkirchner" href="crazy-daniel{at}gmx.de" />
   <link rel="help" href="http://www.w3.org/TR/CSS21/conform.html#text-css" />
-  <meta content="http" name="flags" />
+  <meta content="" name="flags" />
   <meta content="A stylesheet sent as text/plain should not be interpreted by user agents as CSS. It should instead be ignored." name="assert" />
 
-  <link href="support/stylesheet-with-content-type-text-plain.css" rel="stylesheet" type="text/css" />
-  <!--  
-  in .htaccess  
-  <Files stylesheet-with-content-type-text-plain.css>
-  ForceType text/plain
-  </Files> 
-  -->
   <style type="text/css"><![CDATA[
   div
   {
@@ -26,6 +19,7 @@
   font-size: 2em;
   }
   ]]></style>
+  <link href="support/plaintext-css.txt" rel="stylesheet" type="text/css" />
 
  </head>
 

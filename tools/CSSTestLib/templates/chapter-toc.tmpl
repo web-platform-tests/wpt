@@ -25,6 +25,14 @@
  </head>
 <body>
   <h1>[% suitetitle %] By Chapter</h1>
+
+  <p>This index contains both
+    <a href="http://wiki.csswg.org/test/selftest">self-describing tests</a>
+    and reftests.
+    A separate <a href="reftest-toc[% indexext%]">alphabetical reftest index</a>
+    is provided for tests in <a href="http://wiki.csswg.org/test/reftest">reftest
+    format</a> along with the <a href="reftest.list">reftest manifest</a>.</p>
+
   <table>
 [% FOREACH chapter IN chapters %]
     <tbody id="s[% chapter.sortstr %]">

@@ -7,10 +7,12 @@
   <link rel="help" href="http://www.w3.org/TR/CSS21/syndata.html#parsing-errors" />
   <style type="text/css">
    body { font-size: 200px; }
-   p { font-size: 16px; font-size: 200invalid; }
+   p { font-size: 16px; font-size: 200!invalid; }
+   div { font-size: 16px; }
   </style>
  </head>
  <body>
-  <p>FAIL unless this text is a normal 16 pixels high.</p>
+  <p>Test passes if this text is not dramatically taller than the text below.</p>
+  <div>Filler Text</div>
  </body>
 </html>

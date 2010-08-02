@@ -346,9 +346,50 @@ of the string, where such spaces are removed.</p>
 
 
 <h3>DOM features</h3>
-<p class=XXX>Features are ASCII case-insensitive. Empty string means any version.
+<p>A <dfn title=concept-DOMfeature>DOM feature</dfn> is a unique,
+<span>ASCII case-insensitive</span> string that represents a certain feature of
+the user agent.
 
-<p class=XXX>Suggest how specs are to define feature strings.
+<p>A <dfn title=concept-DOMfeatureversion>DOM feature version</dfn> is a (<var
+title>feature string</var>,&nbsp;<var title>version</var>) tuple, where <var
+title>feature string</var> is <span title=concept-DOMfeature>DOM feature</span>
+and <var title>version</var> is a <span>case-sensitive</span> string
+representing a version number.
+<!--of the form "<var title>major</var>.<var title>minor</var>".-->
+
+<p>Specifications may define which <span title=concept-DOMfeature>DOM
+features</span> a user agent is to <dfn
+title=concept-support-DOMfeature>support</dfn>, as well as an associated list of
+one or more <span>case-sensitive</span> strings representing version numbers,
+and under which circumstances.
+
+<p>A user agent must <dfn title=concept-support-DOMfeatureversion>support</dfn>
+a <span title=concept-DOMfeatureversion>DOM feature version</span> (<var
+title>feature string</var>,&nbsp;<var title>version</var>) if it <span
+title=concept-support-DOMfeature>supports</span> a <span
+title=concept-DOMfeature>DOM feature</span> that is a <span>ASCII
+case-insensitive</span> match for <var title>feature string</var> and <var
+title>version</var> is in the associated list of versions.
+
+<p>A user agent must <span
+title=concept-support-DOMfeatureversion>support</span> the (<var
+title>feature</var>,&nbsp;"") tuple if it <span
+title=concept-support-DOMfeature>supports</span> a <span
+title=concept-DOMfeature>DOM feature</span> that is a <span>ASCII
+case-insensitive</span> match for <var title>feature string</var>.
+
+<p class=note>Authors are strongly discouraged from using <span
+title=concept-DOMfeature>DOM features</span>, as they are notoriously unreliable
+and imprecise. Authors are encouraged to rely on explicit feature testing or
+graceful degradation.
+
+<p>For historical reasons, user agents must <span
+title=concept-support-DOMfeatureversion>support</span> the
+"XML" <span title=concept-DOMfeature>DOM feature</span> with the versions "1.0"
+and "2.0" associated with it, and the "Core" <span title=concept-DOMfeature>DOM
+feature</span> with the version "2.0" associated with it.
+
+<!-- Chrome supports Core/1.0; Opera supports x/undefined -->
 
 
 <h3>Cloning nodes</h3>
@@ -518,7 +559,7 @@ must return the name of the exception constant as a string.</p>
   boolean <span title=dom-Node-hasChildNodes>hasChildNodes</span>();
   <span>Node</span> <span title=dom-Node-cloneNode>cloneNode</span>(in boolean deep);<!--
   void normalize();-->
-  boolean <span title=dom-Node-isSupported>isSupported</span>(in DOMString feature, in DOMString version);
+  boolean <span title=dom-Node-isSupported>isSupported</span>([TreatNullAs=EmptyString] in DOMString feature, in DOMString version);
   readonly attribute DOMString <span title=dom-Node-namespaceURI>namespaceURI</span>;
   readonly attribute DOMString <span title=dom-Node-prefix>prefix</span>;
   readonly attribute DOMString <span title=dom-Node-localName>localName</span>;
@@ -786,7 +827,11 @@ title>deep</var>)</code></dfn> method must return a <span>clone</span> of the
 title=dom-Node-ownerDocument>ownerDocument</code>, and the <var title>clone
 children</var> flag set if <var title>deep</var> is true.
 
-<p>The <dfn title=dom-Node-isSupported><code>isSupported(<var title>feature</var>, <var title>version</var>)</code></dfn> method must return true if the UA supports the given feature <var title>feature</var> of version <var title>version</var> on the <span>context node</span>, and false otherwise.
+<p>The <dfn title=dom-Node-isSupported><code>isSupported(<var
+title>feature</var>, <var title>version</var>)</code></dfn> method must return
+true if the user agent <span title=concept-support-DOMfeatureversion>supports</span>
+the (<var title>feature</var>, <var title>version</var>) tuple on the
+<span>context node</span>, and false otherwise.
 
 <p>The <dfn title=dom-Node-namespaceURI><code>namespaceURI</code></dfn> attribute, on getting, must return the namespace that is associated with the node, if there is one and it's not the empty string, or null otherwise.
 
@@ -1303,13 +1348,20 @@ http://lists.w3.org/Archives/Public/www-dom/2003JulSep/0049.html -->
 
 <pre class=idl>interface <dfn>DOMImplementation</dfn> {
   boolean <span title=dom-DOMImplementation-hasFeature>hasFeature</span>(in DOMString feature, [TreatNullAs=EmptyString] in DOMString version);
+
   <span>DocumentType</span> <span title=dom-DOMImplementation-createDocumentType>createDocumentType</span>([TreatNullAs=EmptyString] in DOMString qualifiedName, in DOMString publicId, in DOMString systemId);
   <span>Document</span> <span title=dom-DOMImplementation-createDocument>createDocument</span>([TreatNullAs=EmptyString] in DOMString namespaceURI, [TreatNullAs=EmptyString] in DOMString qualifiedName, in <span>DocumentType</span> doctype);<!--
   DOMObject getFeature(in DOMString feature, in DOMString version);-->
   <span>Document</span> <span title=dom-DOMImplementation-createHTMLDocument>createHTMLDocument</span>(in DOMString title);
 };</pre>
 
-<p>The <dfn title=dom-DOMImplementation-hasFeature><code>hasFeature(<var title>feature</var>, <var title>version</var>)</code></dfn> method must return true if the UA supports the given feature <var title>feature</var> of version <var title>version</var>, and false otherwise.
+<p>The <dfn title=dom-DOMImplementation-hasFeature><code>hasFeature(<var
+title>feature</var>, <var title>version</var>)</code></dfn> method must return
+true if the user agent <span title=concept-support-DOMfeatureversion>supports</span>
+the (<var title>feature</var>, <var title>version</var>) tuple and false
+otherwise.
+
+<hr>
 
 <p>The <dfn title=dom-DOMImplementation-createDocumentType><code>createDocumentType(<var title>qualifiedName</var>, <var title>publicId</var>, <var title>systemId</var>)</code></dfn> method must run the following steps:
 

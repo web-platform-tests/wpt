@@ -113,6 +113,22 @@ var tests = [
     ["XML", 100, false],
     ["Core", null, true],
     ["XML", null, true],
+    ["core", null, true],
+    ["xml", null, true],
+    ["CoRe", null, true],
+    ["XmL", null, true],
+    [" Core", null, false],
+    [" XML", null, false],
+    ["Core ", null, false],
+    ["XML ", null, false],
+    ["Co re", null, false],
+    ["XM L", null, false],
+    ["aCore", null, false],
+    ["aXML", null, false],
+    ["Corea", null, false],
+    ["XMLa", null, false],
+    ["Coare", null, false],
+    ["XMaL", null, false],
     ["Core", undefined, false],
     ["XML", undefined, false],
     ["This is filler text.", "", false],
@@ -122,7 +138,7 @@ var tests = [
 
 var all_pass = true;
 
-for (i in tests)
+for (var i in tests)
 {
     var test = tests[i];
     var row = results.insertRow(-1);

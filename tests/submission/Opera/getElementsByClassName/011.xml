@@ -2,6 +2,7 @@
  <head>
   <title>document.getElementsByClassName(): "tricky" compound</title>
   <script src="../resources/testharness.js"></script>
+  <script src="../resources/testharnessreport.js"></script>
  </head>
  <body>
   <div id="log" />  

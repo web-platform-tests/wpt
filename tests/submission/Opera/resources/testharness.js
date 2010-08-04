@@ -256,7 +256,7 @@ policies and contribution forms [3].
         //In case the test has already failed
         if (this.status !== null)
         {
-            return;
+          return;
         }
 
         this.steps.push(func);
@@ -267,6 +267,12 @@ policies and contribution forms [3].
         }
         catch(e)
         {
+            //This can happen if something called synchronously invoked another
+            //step
+            if (this.status !== null)
+            {
+                return;
+            }
             this.status = status.FAIL;
             this.message = e.message;
             this.done();
@@ -285,7 +291,6 @@ policies and contribution forms [3].
     {
         if (this.is_done) {
             //Using alert here is bad
-            alert("done called multiple times for test " + this.name);
             return;
         }
         clearTimeout(this.timeout_id);

@@ -1,0 +1,276 @@
+<!doctype html>
+<html>
+<head>
+<title>HTML5 Confomance Test Results</title>
+<script>
+var g_arrTestResultXml = new Array();
+var g_arrBrowsers = new Array();
+var g_iProcessedCounter = 0;
+
+notWhitespace = /\S/;
+
+function cleanWhitespace(node)
+{
+    for (var x = 0; x < node.childNodes.length; x++)
+    {
+        var childNode = node.childNodes[x];
+        
+        if ((childNode.nodeType == 3)&&(!notWhitespace.test(childNode.nodeValue))) 
+        {
+            // that is, if it's a whitespace text node
+            node.removeChild(node.childNodes[x]);
+            x--;
+        }
+        if (childNode.nodeType == 1)
+        {
+            // elements can have text child nodes of their own
+            cleanWhitespace(childNode);
+        }
+    }
+}
+
+function addBrowserResult(browser)
+{
+    oTable = document.getElementById('oTestResults');
+
+    // create a new Cell in the first row...
+    oCell = oTable.rows[0].insertCell(-1);
+    oCell.innerHTML = browser.name;
+    
+    bFound = false;
+    
+    // for each result - if a feature exists add result, else add new row and add result
+    for (var k=0;k<browser.results.length;k++)
+    {
+        for (var j=1;j<oTable.rows.length;j++)
+        {
+             if ( browser.results[k].name == oTable.rows[j].cells[0].innerHTML)
+             {
+                 oCell = oTable.rows[j].insertCell(-1);
+                 oCell.innerHTML = Math.round(((browser.results[k].pass/(browser.results[k].fail+browser.results[k].pass))*100)*100)/100 + "%";
+                 bFound = true;
+                 break;
+             }
+        }
+        if(!bFound)
+        {
+            oRow = oTable.insertRow(-1);
+            var oCell;
+            
+            for( var i=0;i<oTable.rows[0].cells.length;i++)
+            {
+                oCell = oRow.insertCell(-1);
+                if (i!=0)
+                {
+                    oCell.innerHTML = 'No Results';
+                }
+                else
+                {
+                    oCell.innerHTML = browser.results[k].name;
+                }
+            }
+            oCell.innerHTML = Math.round(((browser.results[k].pass/(browser.results[k].fail+browser.results[k].pass))*100)*100)/100 + "%";
+        }
+        
+        bFound = false;
+    }
+    
+}
+
+function processXmlFile()
+{  
+    xmlhttp = new XMLHttpRequest();
+
+    xmlhttp.onreadystatechange  = function()
+    { 
+        if(xmlhttp.readyState  == 4)
+        {
+           try
+           {            
+                xmlDom = xmlhttp.responseXML;
+                
+                cleanWhitespace(xmlDom);
+                
+                browser = new Object();
+                browser.ua      = xmlDom.getElementsByTagName('ua')[0].firstChild.nodeValue;
+                browser.name    = xmlDom.getElementsByTagName('browsername')[0].firstChild.nodeValue;
+                browser.dateran = xmlDom.getElementsByTagName('dateran')[0].firstChild.nodeValue;
+                browser.results = new Array();
+                
+                oTests = xmlDom.getElementsByTagName('test');
+                var oLastObject;
+                
+                for (var i=0;i<oTests.length;i++)
+                {
+                    // split and find feature name - e.g. 'canvas' in this uri
+                    //"http://test.w3.org/html/tests/approved/canvas/canvastest.htm"
+                    arrURI = xmlDom.getElementsByTagName('test')[i].firstChild.firstChild.nodeValue.split(/\//);
+                    name = arrURI[6];
+                    
+                    result = xmlDom.getElementsByTagName('test')[i].firstChild.nextSibling.firstChild.nodeValue;
+                    
+                    // if (oLastObject && oLastObject.name == feature)
+                    // set pass/fail data 
+                    // else find it in the array, if not found the add it to the array
+                    // 
+                    if ( oLastObject && name == oLastObject.name)
+                    {
+                        if (result == "Pass")
+                        {
+                            oLastObject.pass++;
+                        }
+                        else if (result == "Fail")
+                        {
+                            oLastObject.fail++;
+                        }
+                    }
+                    else
+                    {
+                         bFound = false;
+                         
+                         for (var j=0;j<browser.results.length;j++)
+                         {
+                            if(browser.results[j].name == name)
+                            {
+                                if (result == "Pass")
+                                {
+                                    browser.results[j].pass++;
+                                }
+                                else if (result == "Fail")
+                                {
+                                    browser.results[j].fail++;
+                                }
+                                oLastObject = browser.results[j];
+                                bFound = true;
+                                break;
+                            }
+                         }
+                         
+                         if(!bFound)
+                         {
+                            newResult = new Object();
+                            newResult.name = name;
+                            newResult.pass = 0;
+                            newResult.fail = 0;
+                            
+                            if (result == "Pass")
+                            {
+                                newResult.pass++;
+                            }
+                            else if (result == "Fail")
+                            {
+                                newResult.fail++;
+                            }
+                            browser.results.push(newResult);
+                            oLastObject = browser.results[browser.results.length-1];
+                         }                         
+
+                    }
+                }
+                
+                g_arrBrowsers.push(browser);
+                
+               addBrowserResult(browser);
+            }catch(e){}
+
+            // Need to process next xml file
+            processXmlFile();
+        }
+    }; 
+
+    if (g_iProcessedCounter<g_arrTestResultXml.length)
+    {
+        xmlhttp.open("GET", g_arrTestResultXml[g_iProcessedCounter++], true);
+        xmlhttp.send(null);
+    }
+}
+
+function processTestResults()
+{
+    items = document.getElementsByTagName('iframe')[0].contentDocument.getElementsByTagName('a');
+
+    for (var i = 0;i<items.length;i++)
+    {
+        if(items[i].href.match(/.xml/))
+        {
+            g_arrTestResultXml.push(items[i].href);
+        }
+    }
+    // Create Table - just table with one row, feature + row for each xml file
+    // Feature  Browser
+    //
+    oTable = document.getElementById('oTestResults');
+    oTable.setAttribute("bgColor","#eeeeee"); 
+    oTable.setAttribute("style", "font-family: Helvetica Neue,Helvetica,Arial,Verdana,Geneva,sans-serif; color: #47587c;");
+    
+    oTable.setAttribute("cellpadding", "5");
+    oTable.setAttribute("border", "1");
+
+    // insert header row and add one cell for the 'FEATURE'
+    oRow = oTable.insertRow(-1);
+    oCell = oRow.insertCell(-1);
+    
+    oCell.innerHTML = "Feature";
+    oCell.setAttribute("bgColor","#1c6ca7");
+    oCell.setAttribute("style","color: #FFFFFF;");
+
+    processXmlFile();
+}
+
+function getTestResultXmlFiles()
+{
+    oIframe = document.createElement('iframe');
+    oIframe.setAttribute('style', 'display: none');
+    
+    document.body.appendChild(oIframe);
+    oIframe.onload = processTestResults;
+
+    // points to location of xml files
+    // This location should not have a default document and it needs to list our the files (aka browseable).
+    oIframe.src = 'http://test.w3.org/html/tests/reporting/';
+}
+</script>
+<style>
+BODY
+{
+	text-align: justify;
+	color: #333;
+	line-height: 1.3;
+	font-family: "Gill Sans MT", "Gill Sans", GillSans, Arial, Helvetica, sans-serif;
+	background-image: none;
+	background-attachment: scroll;
+	background-repeat: repeat;
+	background-position-x: 0%;
+	background-position-y: 0%;
+	background-color: white;
+}
+H1
+{
+	text-align: left;
+	line-height: 1;
+	padding-top: 0px;
+	padding-right: 0px;
+	padding-bottom: 0.2em;
+	padding-left: 0px;
+	font-variant: small-caps;
+	font-weight: normal;
+	border-bottom-width: thin;
+	border-bottom-style: solid;
+	font-style: italic;
+	border-bottom-style: none;
+	color: #000;
+}
+</style>
+</head>
+<body onload='getTestResultXmlFiles()' >
+<img alt="W3C" src="http://www.w3.org/Icons/w3c_home" />
+<h1>Official HTML5 Test Suite Conformance Results</h1>
+<p>Interoperability is the ability of two or more systems or components to exchange information and to use the information that has been exchanged. IEEE</p>
+<p>Interoperability is important to web designers. Good test suites drive interoperability. They're a key part of making sure web standards are implemented correctly and consistently. More tests encourage more interoperability.</p>
+<p>Below is a summary of the offical approved HTML5 tests that have been agreed upon by the HTML WG as vaild per the HTML5 specification.  The tests can be ran and inspected individually using our test runner, see <a href='http://test.w3.org/html/tests/harness/harness.htm'>http://test.w3.org/html/tests/harness/harness.htm</a>.  If you have feedback about the tests please send email to <a href='mailto:public-html-testsuite@w3.org'>public-html-testsuite@w3.org</a> list.</p> 
+<center>
+<table id='oTestResults'>
+</table>
+</center>
+</body>
+</html>

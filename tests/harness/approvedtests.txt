@@ -45,5 +45,3 @@ http://test.w3.org/html/tests/approved/xhtml5/html_style_in_comment.xhtml
 http://test.w3.org/html/tests/approved/xhtml5/img_border_percent.xhtml
 http://test.w3.org/html/tests/approved/xhtml5/object_border_perc.xhtml
 http://test.w3.org/html/tests/approved/xhtml5/object_border_pixel.xhtml
-http://test.w3.org/html/tests/approved/xhtml5/test-area.xhtml
-http://test.w3.org/html/tests/approved/xhtml5/test-body.xhtml 

@@ -1,8 +1,8 @@
 <testresults>
  <browser>
-  <ua>Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; WOW64; Trident/5.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0; MS-RTC LM 8; InfoPath.3; .NET4.0C; .NET4.0E)</ua>
-  <browsername>Internet Explorer 9 Platform Preview 4</browsername>
-  <dateran>Wed Aug 4 20:11:07 PDT 2010</dateran>
+  <ua>Opera/9.80 (Windows NT 6.1; U; en) Presto/2.6.30 Version/10.60</ua>
+  <browsername>Opera 10.60</browsername>
+  <dateran>Wed Aug 04 2010 19:45:58 GMT-0700</dateran>
  </browser>
  <tests>
   <test>
@@ -43,7 +43,7 @@
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/canvas_compositing_globalcompositeoperation_001.htm</uri>
-   <result>Fail</result>
+   <result>Pass</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/canvas_linestyles_linecap_001.htm</uri>
@@ -59,7 +59,7 @@
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/canvas_text_font_001.htm</uri>
-   <result>Fail</result>
+   <result>Pass</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/canvas_transformations_scale_001.htm</uri>
@@ -87,11 +87,11 @@
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/size.attributes.idl.html</uri>
-   <result>Pass</result>
+   <result>Fail</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/size.attributes.idl.set.zero.html</uri>
-   <result>Pass</result>
+   <result>Fail</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/size.attributes.parse.decimal.html</uri>
@@ -107,11 +107,11 @@
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/size.attributes.parse.exp.html</uri>
-   <result>Fail</result>
+   <result>Pass</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/size.attributes.parse.hex.html</uri>
-   <result>Pass</result>
+   <result>Fail</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/size.attributes.parse.junk.html</uri>
@@ -119,7 +119,7 @@
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/size.attributes.parse.minus.html</uri>
-   <result>Fail</result>
+   <result>Pass</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/size.attributes.parse.octal.html</uri>
@@ -151,7 +151,7 @@
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/size.attributes.parse.zero.html</uri>
-   <result>Pass</result>
+   <result>Fail</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/size.attributes.reflect.setcontent.html</uri>
@@ -163,7 +163,7 @@
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/size.attributes.reflect.setidlzero.html</uri>
-   <result>Pass</result>
+   <result>Fail</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/size.attributes.removed.html</uri>
@@ -187,11 +187,11 @@
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/size.attributes.setAttribute.exp.html</uri>
-   <result>Fail</result>
+   <result>Pass</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/size.attributes.setAttribute.hex.html</uri>
-   <result>Pass</result>
+   <result>Fail</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/size.attributes.setAttribute.junk.html</uri>
@@ -199,7 +199,7 @@
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/size.attributes.setAttribute.minus.html</uri>
-   <result>Fail</result>
+   <result>Pass</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/size.attributes.setAttribute.octal.html</uri>
@@ -231,7 +231,7 @@
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/size.attributes.setAttribute.zero.html</uri>
-   <result>Pass</result>
+   <result>Fail</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/size.attributes.style.html</uri>
@@ -239,7 +239,7 @@
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/type.delete.html</uri>
-   <result>Fail</result>
+   <result>Pass</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/type.exists.html</uri>
@@ -263,27 +263,27 @@
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/foreigncontent/foreign_content_001.html</uri>
-   <result>Pass</result>
+   <result>Fail</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/foreigncontent/foreign_content_003.html</uri>
-   <result>Pass</result>
+   <result>Fail</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/foreigncontent/foreign_content_004.html</uri>
-   <result>Pass</result>
+   <result>Fail</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/foreigncontent/foreign_content_005.html</uri>
-   <result>Pass</result>
+   <result>Fail</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/foreigncontent/foreign_content_006.html</uri>
-   <result>Pass</result>
+   <result>Fail</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/foreigncontent/foreign_content_008.html</uri>
-   <result>Pass</result>
+   <result>Fail</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/foreigncontent/foreign_content_009.html</uri>
@@ -291,19 +291,19 @@
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/foreigncontent/foreign_content_010.html</uri>
-   <result>Pass</result>
+   <result>Fail</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/foreigncontent/foreign_content_011.html</uri>
-   <result>Pass</result>
+   <result>Fail</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/foreigncontent/foreign_content_013.html</uri>
-   <result>Pass</result>
+   <result>Fail</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/video/video_000.htm</uri>
-   <result>Pass</result>
+   <result>Fail</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/video/video_001.htm</uri>
@@ -311,7 +311,7 @@
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/video/video_002.htm</uri>
-   <result>Pass</result>
+   <result>Fail</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/video/video_003.htm</uri>
@@ -327,7 +327,7 @@
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/video/video_007.htm</uri>
-   <result>Fail</result>
+   <result>Pass</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/video/video_008.htm</uri>
@@ -335,11 +335,11 @@
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/video/video_009.htm</uri>
-   <result>Pass</result>
+   <result>Fail</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/video/video_010.htm</uri>
-   <result>Pass</result>
+   <result>Fail</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/video/video_011.htm</uri>

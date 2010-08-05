@@ -1,8 +1,8 @@
 <testresults>
  <browser>
-  <ua>Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; WOW64; Trident/5.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0; MS-RTC LM 8; InfoPath.3; .NET4.0C; .NET4.0E)</ua>
-  <browsername>Internet Explorer 9 Platform Preview 4</browsername>
-  <dateran>Wed Aug 4 20:11:07 PDT 2010</dateran>
+  <ua>Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/533.4 (KHTML, like Gecko) Chrome/5.0.375.125 Safari/533.4</ua>
+  <browsername>Chrome 5.0.375.125</browsername>
+  <dateran>Wed Aug 04 2010 19:53:11 GMT-0700 (Pacific Daylight Time)</dateran>
  </browser>
  <tests>
   <test>
@@ -27,15 +27,15 @@
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/canvas_colorsandstyles_createlineargradient_001.htm</uri>
-   <result>Pass</result>
+   <result>Fail</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/canvas_complexshapes_arcto_001.htm</uri>
-   <result>Pass</result>
+   <result>Fail</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/canvas_complexshapes_beziercurveto_001.htm</uri>
-   <result>Pass</result>
+   <result>Fail</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/canvas_complexshapes_ispointInpath_001.htm</uri>
@@ -43,7 +43,7 @@
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/canvas_compositing_globalcompositeoperation_001.htm</uri>
-   <result>Fail</result>
+   <result>Pass</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/canvas_linestyles_linecap_001.htm</uri>
@@ -51,7 +51,7 @@
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/canvas_shadows_001.htm</uri>
-   <result>Pass</result>
+   <result>Fail</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/canvas_state_restore_001.htm</uri>
@@ -107,7 +107,7 @@
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/size.attributes.parse.exp.html</uri>
-   <result>Fail</result>
+   <result>Pass</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/size.attributes.parse.hex.html</uri>
@@ -131,7 +131,7 @@
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/size.attributes.parse.percent.html</uri>
-   <result>Fail</result>
+   <result>Pass</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/size.attributes.parse.plus.html</uri>
@@ -187,7 +187,7 @@
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/size.attributes.setAttribute.exp.html</uri>
-   <result>Fail</result>
+   <result>Pass</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/size.attributes.setAttribute.hex.html</uri>
@@ -211,7 +211,7 @@
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/size.attributes.setAttribute.percent.html</uri>
-   <result>Fail</result>
+   <result>Pass</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/size.attributes.setAttribute.plus.html</uri>
@@ -239,7 +239,7 @@
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/type.delete.html</uri>
-   <result>Fail</result>
+   <result>Pass</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/type.exists.html</uri>
@@ -255,7 +255,7 @@
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/type.prototype.html</uri>
-   <result>Pass</result>
+   <result>Fail</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/type.replace.html</uri>
@@ -263,27 +263,27 @@
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/foreigncontent/foreign_content_001.html</uri>
-   <result>Pass</result>
+   <result>Fail</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/foreigncontent/foreign_content_003.html</uri>
-   <result>Pass</result>
+   <result>Fail</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/foreigncontent/foreign_content_004.html</uri>
-   <result>Pass</result>
+   <result>Fail</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/foreigncontent/foreign_content_005.html</uri>
-   <result>Pass</result>
+   <result>Fail</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/foreigncontent/foreign_content_006.html</uri>
-   <result>Pass</result>
+   <result>Fail</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/foreigncontent/foreign_content_008.html</uri>
-   <result>Pass</result>
+   <result>Fail</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/foreigncontent/foreign_content_009.html</uri>
@@ -291,15 +291,15 @@
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/foreigncontent/foreign_content_010.html</uri>
-   <result>Pass</result>
+   <result>Fail</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/foreigncontent/foreign_content_011.html</uri>
-   <result>Pass</result>
+   <result>Fail</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/foreigncontent/foreign_content_013.html</uri>
-   <result>Pass</result>
+   <result>Fail</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/video/video_000.htm</uri>
@@ -311,11 +311,11 @@
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/video/video_002.htm</uri>
-   <result>Pass</result>
+   <result>Fail</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/video/video_003.htm</uri>
-   <result>Pass</result>
+   <result>Fail</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/video/video_004.htm</uri>
@@ -359,7 +359,7 @@
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/xhtml5/body_link.xhtml</uri>
-   <result>Pass</result>
+   <result>Fail</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/xhtml5/body_text_00ffff.xhtml</uri>
@@ -367,27 +367,27 @@
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/xhtml5/colgroup_valign_bottom.xhtml</uri>
-   <result>Pass</result>
+   <result>Fail</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/xhtml5/colgroup_valign_top.xhtml</uri>
-   <result>Pass</result>
+   <result>Fail</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/xhtml5/html_style_in_comment.xhtml</uri>
-   <result>Pass</result>
+   <result>Fail</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/xhtml5/img_border_percent.xhtml</uri>
-   <result>Pass</result>
+   <result>Fail</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/xhtml5/object_border_perc.xhtml</uri>
-   <result>Pass</result>
+   <result>Fail</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/xhtml5/object_border_pixel.xhtml</uri>
-   <result>Pass</result>
+   <result>Fail</result>
   </test>
  </tests>
 </testresults>

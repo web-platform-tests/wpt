@@ -160,7 +160,7 @@ policies and contribution forms [3].
         var message = make_message(
             "assert_array_equals", description,
             format("lengths differ, expected %s got %s",
-                    actual.length, expected.length));
+                    expected.length, actual.length));
 
         assert(actual.length === expected.length, message);
 

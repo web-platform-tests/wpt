@@ -77,6 +77,54 @@ function addBrowserResult(browser)
     
 }
 
+function addBrowserDetails(browser)
+{
+    oTable = document.getElementById('oTestDetails');
+
+    // create a new Cell in the first row...
+    var oCell = oTable.rows[0].insertCell(-1);
+    oCell.innerHTML = browser.name;
+    
+    bFound = false;
+    
+    // for each result - if a tests exists add result, else add new row and add result
+    for (var k=0;k<browser.details.length;k++)
+    {
+        for (var j=1;j<oTable.rows.length;j++)
+        {
+             if ( browser.details[k].name == oTable.rows[j].cells[0].innerHTML)
+             {
+                 oCell = oTable.rows[j].insertCell(-1);
+                 oCell.innerHTML = "<a href='"+ browser.details[k].uri + "'>" + browser.details[k].result + "</a>";
+                 bFound = true;
+                 break;
+             }
+        }
+        if(!bFound)
+        {
+            oRow = oTable.insertRow(-1);
+            
+            for( var i=0;i<oTable.rows[0].cells.length;i++)
+            {
+                oCell = oRow.insertCell(-1);
+                if (i!=0)
+                {
+                    oCell.innerHTML = 'No Results';
+                }
+                else
+                {
+                    oCell.innerHTML = browser.details[k].name;
+                }
+            }
+            oCell.innerHTML = "<a href='"+ browser.details[k].uri + "'>" + browser.details[k].result + "</a>";
+ 
+        } 
+       
+        bFound = false;
+    }
+    
+}
+
 function processXmlFile()
 {  
     xmlhttp = new XMLHttpRequest();
@@ -96,6 +144,7 @@ function processXmlFile()
                 browser.name    = xmlDom.getElementsByTagName('browsername')[0].firstChild.nodeValue;
                 browser.dateran = xmlDom.getElementsByTagName('dateran')[0].firstChild.nodeValue;
                 browser.results = new Array();
+                browser.details = new Array();
                 
                 oTests = xmlDom.getElementsByTagName('test');
                 var oLastObject;
@@ -108,7 +157,14 @@ function processXmlFile()
                     name = arrURI[6];
                     
                     result = xmlDom.getElementsByTagName('test')[i].firstChild.nextSibling.firstChild.nodeValue;
-                    
+
+                    details = new Object();
+                    details.uri = xmlDom.getElementsByTagName('test')[i].firstChild.firstChild.nodeValue;
+                    details.name = name + "(" + arrURI[7] + ")";
+                    details.result = result;
+
+                    browser.details.push(details);
+
                     // if (oLastObject && oLastObject.name == feature)
                     // set pass/fail data 
                     // else find it in the array, if not found the add it to the array
@@ -171,6 +227,7 @@ function processXmlFile()
                 g_arrBrowsers.push(browser);
                 
                addBrowserResult(browser);
+               addBrowserDetails(browser);
             }catch(e){}
 
             // Need to process next xml file
@@ -214,6 +271,22 @@ function processTestResults()
     oCell.setAttribute("bgColor","#1c6ca7");
     oCell.setAttribute("style","color: #FFFFFF;");
 
+    oTable = document.getElementById('oTestDetails');
+    oTable.setAttribute("bgColor","#eeeeee"); 
+    oTable.setAttribute("style", "font-family: Helvetica Neue,Helvetica,Arial,Verdana,Geneva,sans-serif; color: #47587c; font-size: small;");
+    
+    oTable.setAttribute("cellpadding", "5");
+    oTable.setAttribute("border", "1");
+
+    // insert a row and a cell for Test
+    oRow = oTable.insertRow(-1);
+    oCell = oRow.insertCell(-1);
+    
+    oCell.innerHTML = "Test";
+    oCell.setAttribute("bgColor","#1c6ca7");
+    oCell.setAttribute("style","color: #FFFFFF;");
+
+
     processXmlFile();
 }
 
@@ -226,8 +299,7 @@ function getTestResultXmlFiles()
     oIframe.onload = processTestResults;
 
     // points to location of xml files
-    // This location should not have a default document and it needs to list our the files (aka browseable).
-    oIframe.src = 'http://test.w3.org/html/tests/reporting/';
+    oIframe.src = 'http://localhost/results/';
 }
 </script>
 <style>
@@ -270,6 +342,10 @@ H1
 <p>Below is a summary of the offical approved HTML5 tests that have been agreed upon by the HTML WG as vaild per the HTML5 specification.  The tests can be ran and inspected individually using our test runner, see <a href='http://test.w3.org/html/tests/harness/harness.htm'>http://test.w3.org/html/tests/harness/harness.htm</a>.  If you have feedback about the tests please send email to <a href='mailto:public-html-testsuite@w3.org'>public-html-testsuite@w3.org</a> list.</p> 
 <center>
 <table id='oTestResults'>
+</table>
+
+<p>This is the detailed results across the userAgents</p>
+<table id='oTestDetails' >
 </table>
 </center>
 </body>

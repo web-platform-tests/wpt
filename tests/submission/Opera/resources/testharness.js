@@ -164,7 +164,8 @@ policies and contribution forms [3].
 
         assert(actual.length === expected.length, message);
 
-        for (var i=0; i < actual.length; i++) {
+        for (var i=0; i < actual.length; i++)
+        {
             message = make_message(
                 "assert_array_equals", description,
                 format("property %s, property expected to be %s but was %s",
@@ -216,11 +217,40 @@ policies and contribution forms [3].
                                     format("changing property %s succeeded",
                                            property_name));
              assert(object[property_name] === initial_value, message);
-         } finally {
+         }
+         finally
+         {
              object[property_name] = initial_value;
          }
     };
     expose(assert_readonly, "assert_readonly");
+
+  function assert_throws(code_or_object, func, description)
+  {
+      try
+      {
+          func.call(this);
+          assert(false, make_message("assert_throws", description,
+                 format("%s did not throw", func)));
+      }
+      catch(e)
+      {
+          if (typeof code_or_object === "string")
+          {
+              assert(e.code === e[code_or_object],
+                     make_message("assert_throws", description,
+                     format("%s has code %s expected %s (%s)", func,
+                            e.code, e[code_or_object], code_or_object)));
+          }
+          else
+          {
+              assert(e instanceof Object && "name" in e && e.name == code_or_object.name,
+                     make_message("assert_throws", description,
+                     format("%s threw %s (%s) expected %s (%s)", func,
+                            e, e.name, code_or_object, code_or_object.name)));
+          }
+      }
+    }
 
     function assert_unreached(description) {
          var message = make_message("assert_unreached", description,

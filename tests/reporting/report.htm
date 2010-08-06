@@ -162,7 +162,7 @@ function processXmlFile()
                     details = new Object();
                     details.uri = xmlDom.getElementsByTagName('test')[i].firstChild.firstChild.nodeValue;
 
-                    details.name = name + "(" + arrURI[length-1] + ")";
+                    details.name = name + "(" + arrURI[arrURI.length-1] + ")";
                     details.result = result;
 
                     browser.details.push(details);

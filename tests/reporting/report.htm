@@ -154,7 +154,7 @@ function processXmlFile()
                     // split and find feature name - e.g. 'canvas' in this uri
                     //"http://test.w3.org/html/tests/approved/canvas/canvastest.htm"
                     arrURI = xmlDom.getElementsByTagName('test')[i].firstChild.firstChild.nodeValue.split(/\//);
-                    name = arrURI[6];
+                    name = arrURI[arrURI.length-1];
                     
                     result = xmlDom.getElementsByTagName('test')[i].firstChild.nextSibling.firstChild.nodeValue;
 
@@ -244,7 +244,15 @@ function processXmlFile()
 
 function processTestResults()
 {
-    items = document.getElementsByTagName('iframe')[0].contentDocument.getElementsByTagName('a');
+    if (document.getElementsByTagName('iframe')[0].contentDocument)
+    {
+        items = document.getElementsByTagName('iframe')[0].contentDocument.getElementsByTagName('a');
+    }
+    else
+    {
+        items = document.getElementsByTagName('iframe')[0].document.getElementsByTagName('a');
+    }
+
 
     for (var i = 0;i<items.length;i++)
     {

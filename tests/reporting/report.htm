@@ -154,13 +154,15 @@ function processXmlFile()
                     // split and find feature name - e.g. 'canvas' in this uri
                     //"http://test.w3.org/html/tests/approved/canvas/canvastest.htm"
                     arrURI = xmlDom.getElementsByTagName('test')[i].firstChild.firstChild.nodeValue.split(/\//);
+                    // the name is 2nd to the last
                     name = arrURI[arrURI.length-2];
                     
                     result = xmlDom.getElementsByTagName('test')[i].firstChild.nextSibling.firstChild.nodeValue;
 
                     details = new Object();
                     details.uri = xmlDom.getElementsByTagName('test')[i].firstChild.firstChild.nodeValue;
-                    details.name = name + "(" + arrURI[7] + ")";
+
+                    details.name = name + "(" + arrURI[length-1] + ")";
                     details.result = result;
 
                     browser.details.push(details);

@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang=en>
+<head>
+<meta charset=utf-8>
+<title>Canvas example</title>
+</head>
+<body>
+<canvas id="myCanvas" width="300" height="300">
+Your user agent does not support the HTML5 Canvas element.
+</canvas>
+<script>
+var myCanvas      = document.getElementById("myCanvas");
+var canvasContext = myCanvas.getContext("2d");
+canvasContext.fillRect(100, 100, 100, 100);
+</script>
+</body>
+</html>

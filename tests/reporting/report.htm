@@ -293,10 +293,9 @@ function processTestResults()
 function getTestResultXmlFiles()
 {
     oIframe = document.createElement('iframe');
-    oIframe.setAttribute('style', 'display: none');
     
     document.body.appendChild(oIframe);
-    oIframe.onload = processTestResults;
+    oIframe.onload = new function() { processTestResults(); }
 
     // points to location of xml files
     oIframe.src = 'http://test.w3.org/html/tests/reporting/';
@@ -332,12 +331,16 @@ H1
 	border-bottom-style: none;
 	color: #000;
 }
+IFRAME
+{
+        display: none;
+}
 </style>
 </head>
 <body onload='getTestResultXmlFiles()' >
 <img alt="W3C" src="http://www.w3.org/Icons/w3c_home" />
 <h1>Official HTML5 Test Suite Conformance Results</h1>
-<p>Interoperability is the ability of two or more systems or components to exchange information and to use the information that has been exchanged. IEEE</p>
+<p>"Interoperability is the ability of two or more systems or components to exchange information and to use the information that has been exchanged." -IEEE</p>
 <p>Interoperability is important to web designers. Good test suites drive interoperability. They're a key part of making sure web standards are implemented correctly and consistently. More tests encourage more interoperability.</p>
 <p>Below is a summary of the offical approved HTML5 tests that have been agreed upon by the HTML WG as vaild per the HTML5 specification.  The tests can be run and inspected individually using our test runner, see <a href='http://test.w3.org/html/tests/harness/harness.htm'>http://test.w3.org/html/tests/harness/harness.htm</a>.  If you have feedback about the tests please send email to <a href='mailto:public-html-testsuite@w3.org'>public-html-testsuite@w3.org</a> list.</p> 
 <center>

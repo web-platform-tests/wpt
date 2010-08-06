@@ -295,7 +295,15 @@ function getTestResultXmlFiles()
     oIframe = document.createElement('iframe');
     
     document.body.appendChild(oIframe);
-    oIframe.onload = new function() { processTestResults(); }
+
+    if(window.addEventListner)
+    {
+        oIframe.onload = processTestResults;
+    }
+    else
+    {
+        oIframe.attachEvent('onload', processTestResults);
+    }
 
     // points to location of xml files
     oIframe.src = 'http://test.w3.org/html/tests/reporting/';

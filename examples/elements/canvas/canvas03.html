@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang=en>
+<head>
+<meta charset=utf-8>
+<title>Canvas example</title>
+</head>
+<body>
+<canvas id="myCanvas" width="600" height="600">
+Your user agent does not support the HTML5 Canvas element.
+</canvas>
+<script>
+var myCanvas = document.getElementById("myCanvas");
+var ctx = myCanvas.getContext("2d");
+var output = ctx.createImageData(myCanvas.width, myCanvas.height);
+var length= output.data.length;
+// output.data is an array of RGBA values
+for (var i = 0; i < length; i++) {
+  output.data[i] = Math.round(255*Math.random());
+}
+ctx.putImageData(output, 0, 0);
+
+</script>
+
+</body>
+</html>

@@ -235,12 +235,16 @@ policies and contribution forms [3].
         }
         catch(e)
         {
+            if (e instanceof AssertionError) {
+                throw(e);
+            }
             if (typeof code_or_object === "string")
             {
-                assert(e.code === e[code_or_object],
+                assert(e[code_or_object] !== undefined &&
+                       e.code === e[code_or_object],
                        make_message("assert_throws", description,
-                       format("%s has code %s expected %s (%s)", func,
-                              e.code, e[code_or_object], code_or_object)));
+                       format("%s has code %s expected %s", func,
+                              e.code, code_or_object)));
             }
             else
             {

@@ -8,24 +8,27 @@
         <meta name="flags" content="" />
         <meta name="assert" content="Outline with value inherit uses its parent's outline values (2 values)." />
         <style type="text/css">
-            #div1
+            body
             {
-                outline: 15px red solid;
+                background: white;
+            }
+            #test
+            {
+                outline: red solid 15px;
                 outline: inherit;
             }
-            #wrapper
+            #parent
             {
-                outline: green 15px dotted;
-                height: 50px;
-                padding: 50px 50px 50px 50px;
-                border: solid 2px blue;
+                outline: dotted 15px;
+                padding: 50px;
+                border: 2px solid blue;
             }
         </style>
     </head>
     <body>
-        <p>Test passes if there is a dotted green outline closely surrounding the "Filler Text" below.</p>
-        <div id="wrapper">
-            <div id="div1">Filler text</div>
+        <p>Test passes if there is a black outline closely surrounding the "Filler Text". That outline needs to be is the same size, style and color as the outline surrounding the blue box and there is no red visible on the page.</p>
+        <div id="parent">
+            <div id="test">Filler text</div>
         </div>
     </body>
 </html>

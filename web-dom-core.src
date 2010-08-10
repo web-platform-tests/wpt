@@ -44,6 +44,9 @@
  <dd>Geoffrey Sneddon &lt;gsneddon@opera.com>
  <dd>Ms2ger &lt;ms2ger@gmail.com>
 
+ <dt>PDF print version
+ <dd><a href=web-dom-core.pdf>Letter</a>
+
  <dt>Version history
  <dd><a href=http://bitbucket.org/ms2ger/web-dom-core/>http://bitbucket.org/ms2ger/web-dom-core</a>
  <dd><a href=http://hg.gsnedders.com/web-dom-core>http://hg.gsnedders.com/web-dom-core</a>

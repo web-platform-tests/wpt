@@ -995,7 +995,9 @@ parser</a>, based on the presence, absence, or value of the DOCTYPE string.
 </dl>
 
 <p>The <dfn id=dom-document-doctype title=dom-Document-doctype><code>doctype</code></dfn> attribute must return the first child of the <a href=#document><code>Document</code></a> node that is a <a href=#documenttype><code>DocumentType</code></a> node, if there is one, or null otherwise.
-<p class=note>In both HTML and XML there will only ever be one <a href=#documenttype><code>DocumentType</code></a> node descendant of the <a href=#document><code>Document</code></a> node. <a data-anolis-ref="" href=#refsHTML>[HTML]</a> <a data-anolis-ref="" href=#refsXML>[XML]</a>
+<p class=note>In both HTML and XML there will only ever be one
+<a href=#documenttype><code>DocumentType</code></a> node descendant of the <a href=#document><code>Document</code></a> node.
+<a class=informative data-anolis-ref="" href=#refsHTML>[HTML]</a> <a class=informative data-anolis-ref="" href=#refsXML>[XML]</a>
 
 <p>The <dfn id=dom-document-implementation title=dom-Document-implementation><code>implementation</code></dfn> attribute must return the <a href=#domimplementation><code>DOMImplementation</code></a> object that is associated with the <a href=#document><code>Document</code></a> node.
 
@@ -1423,8 +1425,7 @@ does not contain any <a href=#space-character title="space character">space char
 <a href=#dom-attr-value><code title=dom-Attr-value>value</code></a> must be unique amongst all the <a href=#concept-id title=concept-id>IDs</a> in the element's <a href=#home-subtree>home subtree</a>.
 
 <p class=note>For example, the <a href=http://www.whatwg.org/html/#attr-id><code class=external data-anolis-spec=html title=attr-id>id</code></a> attribute in HTML is an <a href=#concept-id-attribute title=concept-ID-attribute>ID attribute</a>, as well as the <code title="">id</code> attributes in MathML and SVG, and the <code title="">id</code>
-attribute in the <a href=#xml-namespace>XML namespace</a>. <a data-anolis-ref="" href=#refsHTML>[HTML]</a>
-<a data-anolis-ref="" href=#refsMATHML>[MATHML]</a> <a data-anolis-ref="" href=#refsSVG>[SVG]</a> <a data-anolis-ref="" href=#refsXMLID>[XMLID]</a>
+attribute in the <a href=#xml-namespace>XML namespace</a>. <a class=informative data-anolis-ref="" href=#refsHTML>[HTML]</a> <a class=informative data-anolis-ref="" href=#refsMATHML>[MATHML]</a> <a class=informative data-anolis-ref="" href=#refsSVG>[SVG]</a> <a class=informative data-anolis-ref="" href=#refsXMLID>[XMLID]</a>
 
 <p><dfn id=concept-class-attribute title=concept-class-attribute>Class attributes</dfn> must have a
 <a href=#dom-attr-value><code title=dom-Attr-value>value</code></a> that is a <a href=#set-of-space-separated-tokens>set of space-separated
@@ -1436,7 +1437,7 @@ node has associated with it is the set of all the <a href=#concept-class title=c
 ignored.)
 
 <p class=note>The <code title="">class</code> attributes in HTML, MathML and SVG
-are all <a href=#concept-class-attribute title=concept-class-attribute>class attributes</a>. <a data-anolis-ref="" href=#refsHTML>[HTML]</a> <a data-anolis-ref="" href=#refsMATHML>[MATHML]</a> <a data-anolis-ref="" href=#refsSVG>[SVG]</a>
+are all <a href=#concept-class-attribute title=concept-class-attribute>class attributes</a>. <a class=informative data-anolis-ref="" href=#refsHTML>[HTML]</a> <a class=informative data-anolis-ref="" href=#refsMATHML>[MATHML]</a> <a class=informative data-anolis-ref="" href=#refsSVG>[SVG]</a>
 
 <p class=note>This specification does not <!--normatively--> define the <a href=#concept-attribute-name title=concept-attribute-name>name</a> of <a href=#concept-id-attribute title=concept-id-attribute>ID</a> or <a href=#concept-class-attribute title=concept-class-attribute>class attributes</a>.
 
@@ -2152,17 +2153,17 @@ because the newer ones keep changing. -->
 <div id=anolis-references><dl><dt id=refsHTML>[HTML]
 <dd><cite><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage>HTML</a></cite>, I. Hickson. WHATWG.
 <dt id=refsMATHML>[MATHML]
-<dd><cite><a href=http://www.w3.org/TR/MathML/>Mathematical Markup Language (MathML)</a></cite>, D. Carlisle, P. Ion, R. Miner, N. Poppelier. W3C.
+<dd>(Non-normative) <cite><a href=http://www.w3.org/TR/MathML/>Mathematical Markup Language (MathML)</a></cite>, D. Carlisle, P. Ion, R. Miner, N. Poppelier. W3C.
 <dt id=refsRFC2119>[RFC2119]
 <dd><cite><a href=http://www.ietf.org/rfc/rfc2119.txt>Key words for use in RFCs to Indicate Requirement Levels</a></cite>, S. Bradner. IETF.
 <dt id=refsSVG>[SVG]
-<dd><cite><a href=http://www.w3.org/TR/SVG/>Scalable Vector Graphics (SVG)</a></cite>, O. Andersson, R. Berjon, E. Dahlstr&ouml;m, A. Emmons, J. Ferraiolo, A. Grasso, V. Hardy, S. Hayman, D. Jackson, C. Lilley, C. McCormack, A. Neumann, C. Northway, A. Quint, N. Ramani, D. Schepers, A. Shellshear. W3C.
+<dd>(Non-normative) <cite><a href=http://www.w3.org/TR/SVG/>Scalable Vector Graphics (SVG)</a></cite>, O. Andersson, R. Berjon, E. Dahlstr&ouml;m, A. Emmons, J. Ferraiolo, A. Grasso, V. Hardy, S. Hayman, D. Jackson, C. Lilley, C. McCormack, A. Neumann, C. Northway, A. Quint, N. Ramani, D. Schepers, A. Shellshear. W3C.
 <dt id=refsWEBIDL>[WEBIDL]
 <dd><cite><a href=http://dev.w3.org/2006/webapi/WebIDL/>Web IDL</a></cite>, C. McCormack, S. Weinig. W3C.
 <dt id=refsXML>[XML]
 <dd><cite><a href=http://www.w3.org/TR/xml/>Extensible Markup Language</a></cite>, T. Bray, J. Paoli, C. Sperberg-McQueen, E. Maler, F. Yergeau. W3C.
 <dt id=refsXMLID>[XMLID]
-<dd><cite><a href=http://www.w3.org/TR/xml-id/>xml:id</a></cite>, J. Marsh, D. Veillard, N. Walsh. W3C.
+<dd>(Non-normative) <cite><a href=http://www.w3.org/TR/xml-id/>xml:id</a></cite>, J. Marsh, D. Veillard, N. Walsh. W3C.
 <dt id=refsXMLNS>[XMLNS]
 <dd><cite><a href=http://www.w3.org/TR/xml-names/>Namespaces in XML</a></cite>, T. Bray, D. Hollander, A. Layman, R. Tobin. W3C.
 </dl></div>
@@ -2180,7 +2181,7 @@ Henri Sivonen,
 for their useful comments.
 
 <p>Special thanks to Ian Hickson for first specifying some parts of this
-specification in HTML. <a data-anolis-ref="" href=#refsHTML>[HTML]</a>
+specification in HTML. <a class=informative data-anolis-ref="" href=#refsHTML>[HTML]</a>
 
 
 <script src=http://www.whatwg.org/specs/web-apps/current-work/dfn.js></script>

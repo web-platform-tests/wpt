@@ -1016,7 +1016,10 @@ parser</span>, based on the presence, absence, or value of the DOCTYPE string.
 </dl>
 
 <p>The <dfn title=dom-Document-doctype><code>doctype</code></dfn> attribute must return the first child of the <code>Document</code> node that is a <code>DocumentType</code> node, if there is one, or null otherwise.
-<p class=note>In both HTML and XML there will only ever be one <code>DocumentType</code> node descendant of the <code>Document</code> node. <span data-anolis-ref>HTML</span> <span data-anolis-ref>XML</span>
+<p class=note>In both HTML and XML there will only ever be one
+<code>DocumentType</code> node descendant of the <code>Document</code> node.
+<span data-anolis-ref class=informative>HTML</span> <span data-anolis-ref
+class=informative>XML</span>
 
 <p>The <dfn title=dom-Document-implementation><code>implementation</code></dfn> attribute must return the <code>DOMImplementation</code> object that is associated with the <code>Document</code> node.
 
@@ -1535,9 +1538,11 @@ title=concept-id>IDs</span> in the element's <span>home subtree</span>.
 data-anolis-spec=html>id</code> attribute in HTML is an <span
 title=concept-ID-attribute>ID attribute</span>, as well as the <code
 title>id</code> attributes in MathML and SVG, and the <code title>id</code>
-attribute in the <span>XML namespace</span>. <span data-anolis-ref>HTML</span>
-<span data-anolis-ref>MATHML</span> <span data-anolis-ref>SVG</span> <span
-data-anolis-ref>XMLID</span>
+attribute in the <span>XML namespace</span>. <span data-anolis-ref
+class=informative>HTML</span> <span data-anolis-ref
+class=informative>MATHML</span> <span data-anolis-ref
+class=informative>SVG</span> <span data-anolis-ref
+class=informative>XMLID</span>
 
 <p><dfn title=concept-class-attribute>Class attributes</dfn> must have a
 <code title=dom-Attr-value>value</code> that is a <span>set of space-separated
@@ -1553,8 +1558,9 @@ ignored.)
 
 <p class=note>The <code title>class</code> attributes in HTML, MathML and SVG
 are all <span title=concept-class-attribute>class attributes</span>. <span
-data-anolis-ref>HTML</span> <span data-anolis-ref>MATHML</span> <span
-data-anolis-ref>SVG</span>
+data-anolis-ref class=informative>HTML</span> <span data-anolis-ref
+class=informative>MATHML</span> <span data-anolis-ref
+class=informative>SVG</span>
 
 <p class=note>This specification does not <!--normatively--> define the <span
 title=concept-attribute-name>name</span> of <span
@@ -2367,7 +2373,7 @@ Henri Sivonen,
 for their useful comments.
 
 <p>Special thanks to Ian Hickson for first specifying some parts of this
-specification in HTML. <span data-anolis-ref>HTML</span>
+specification in HTML. <span data-anolis-ref class=informative>HTML</span>
 
 
 <script src="http://www.whatwg.org/specs/web-apps/current-work/dfn.js"></script>

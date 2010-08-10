@@ -7,23 +7,6 @@
  h2 :link, h3 :link, h4 :link,
  h2 :visited, h3 :visited, h4 :visited
  { font:inherit; color:inherit; font-style:italic; }
- span:not([title]):not([class]):not([id]):not([data-anolis-spec]),
- abbr:not([title]):not([class]):not([id]):not([data-anolis-spec]),
- code:not([title]):not([class]):not([id]):not([data-anolis-spec]),
- var:not([title]):not([class]):not([id]):not([data-anolis-spec]),
- i:not([title]):not([class]):not([id]):not([data-anolis-spec])
- { border-bottom: solid #99CC99; }
- dfn span:not([title]):not([class]):not([id]):not([data-anolis-spec]),
- a span:not([title]):not([class]):not([id]):not([data-anolis-spec]),
- dfn abbr:not([title]):not([class]):not([id]):not([data-anolis-spec]),
- a abbr:not([title]):not([class]):not([id]):not([data-anolis-spec]),
- dfn code:not([title]):not([class]):not([id]):not([data-anolis-spec]),
- a code:not([title]):not([class]):not([id]):not([data-anolis-spec]),
- dfn var:not([title]):not([class]):not([id]):not([data-anolis-spec]),
- a var:not([title]):not([class]):not([id]):not([data-anolis-spec]),
- dfn i:not([title]):not([class]):not([id]):not([data-anolis-spec]),
- a i:not([title]):not([class]):not([id]):not([data-anolis-spec])
- { border-bottom: none; }
  @media print {
    [data-anolis-spec]::after {
      content: "[" attr(data-anolis-spec) "]";

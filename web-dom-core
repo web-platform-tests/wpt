@@ -27,7 +27,7 @@
 <body class=draft>
 <div class=head id=head>
 <h1>Web DOM Core</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-date:-01-jan-1901>Work in Progress &mdash; Last Update 2 August 2010</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-date:-01-jan-1901>Work in Progress &mdash; Last Update 10 August 2010</h2>
 <dl>
  <dt>Editors
  <dd>Simon Pieters &lt;simonp@opera.com&gt;
@@ -46,7 +46,7 @@
 <h2 class="no-num no-toc" id=issues>Issues</h2>
 
 <ul class=XXX>
- <li>innerHTML etc on all Elements / <code class="IDL fragment"><a href=#document>Document</a> implements <a class=external href=http://www.whatwg.org/html/#htmldocument>HTMLDocument</a>;</code>?
+ <li>innerHTML etc on all Elements / <code class="IDL fragment"><a href=#document>Document</a> implements <a class=external data-anolis-spec=html href=http://www.whatwg.org/html/#htmldocument>HTMLDocument</a>;</code>?
   <a href=http://lists.w3.org/Archives/Public/public-html/2007Aug/0778.html>public-html/2007Aug/0778.html</a>,
   <a href=http://lists.w3.org/Archives/Public/public-webapi/2007Aug/0069.html>public-webapi/2007Aug/0069.html</a>,
   <a href=http://lists.w3.org/Archives/Public/public-webapi/2007Aug/0070.html>public-webapi/2007Aug/0070.html</a>
@@ -188,12 +188,12 @@ required for conforming IDL fragments, as described in the Web IDL
 specification. <a data-anolis-ref="" href=#refsWEBIDL>[WEBIDL]</a>
 
 <p id=float-nan>Except where otherwise specified, if an IDL attribute that is a
-floating point number type (<a href=http://dev.w3.org/2006/webapi/WebIDL/#idl-float><code class=external>float</code></a>) is
+floating point number type (<a href=http://dev.w3.org/2006/webapi/WebIDL/#idl-float><code class=external data-anolis-spec=webidl>float</code></a>) is
 assigned an Infinity or Not-a-Number (NaN) value, a <a href=#dom-domexception-not_supported_err><code title=dom-DOMException-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</code></a> exception must
 be raised.
 
 <p>Except where otherwise specified, if a method with an argument that is a
-floating point number type (<a href=http://dev.w3.org/2006/webapi/WebIDL/#idl-float><code class=external>float</code></a>) is
+floating point number type (<a href=http://dev.w3.org/2006/webapi/WebIDL/#idl-float><code class=external data-anolis-spec=webidl>float</code></a>) is
 passed an Infinity or Not-a-Number (NaN) value, a <a href=#dom-domexception-not_supported_err><code title=dom-DOMException-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</code></a> exception must
 be raised.
 
@@ -925,7 +925,7 @@ conditions are true, and must otherwise return false:
   readonly attribute <a href=#documenttype>DocumentType</a> <a href=#dom-document-doctype title=dom-Document-doctype>doctype</a>;
   readonly attribute <a href=#domimplementation>DOMImplementation</a> <a href=#dom-document-implementation title=dom-Document-implementation>implementation</a>;
   readonly attribute <a href=#element>Element</a> <a href=#dom-document-documentelement title=dom-Document-documentElement>documentElement</a>;
-  readonly attribute <a class=external href=http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#windowproxy>WindowProxy</a> <a href=#dom-document-defaultview title=dom-Document-defaultView>defaultView</a>;
+  readonly attribute <a class=external data-anolis-spec=window href=http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#windowproxy>WindowProxy</a> <a href=#dom-document-defaultview title=dom-Document-defaultView>defaultView</a>;
 
   <a href=#element>Element</a> <a href=#dom-document-createelement title=dom-Document-createElement>createElement</a>([TreatNullAs=EmptyString] in DOMString tagName);
   <a href=#element>Element</a> <a href=#dom-document-createelementns title=dom-Document-createElementNS>createElementNS</a>(in DOMString namespaceURI, in DOMString qualifiedName);
@@ -974,15 +974,15 @@ specifications</a> define otherwise, the <a href=#document><code>Document</code>
 <a href=#concept-no-quirks-mode title=concept-no-quirks-mode>no-quirks mode</a>.
 
 <p class=note>The mode is only ever changed from the default if the
-<a href=#document><code>Document</code></a> node is created by the <a class=external href=http://www.whatwg.org/html/#html-parser>HTML
+<a href=#document><code>Document</code></a> node is created by the <a class=external data-anolis-spec=html href=http://www.whatwg.org/html/#html-parser>HTML
 parser</a>, based on the presence, absence, or value of the DOCTYPE string.
 <a data-anolis-ref="" href=#refsHTML>[HTML]</a>
 
 <dl class=domintro>
- <dt><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#dom-document><var class=external title=dom-Window-document>document</var></a> .
+ <dt><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#dom-document><var class=external data-anolis-spec=window title=dom-Window-document>document</var></a> .
      <a href=#dom-document-defaultview><code title=dom-Document-defaultView>defaultView</code></a>
- <dd><p>Returns the <a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#window><code class=external>Window</code></a> object of the
-        <a class=external href=http://www.whatwg.org/html/#active-document>active document</a>.
+ <dd><p>Returns the <a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#window><code class=external data-anolis-spec=window>Window</code></a> object of the
+        <a class=external data-anolis-spec=html href=http://www.whatwg.org/html/#active-document>active document</a>.
 </dl>
 
 <p>The <dfn id=dom-document-doctype title=dom-Document-doctype><code>doctype</code></dfn> attribute must return the first child of the <a href=#document><code>Document</code></a> node that is a <a href=#documenttype><code>DocumentType</code></a> node, if there is one, or null otherwise.
@@ -993,14 +993,14 @@ parser</a>, based on the presence, absence, or value of the DOCTYPE string.
 <p>The <dfn id=dom-document-documentelement title=dom-Document-documentElement><code>documentElement</code></dfn> attribute must return the first child of the <a href=#document><code>Document</code></a> node that is an <a href=#element><code>Element</code></a> node, if there is one, or null otherwise.
 
 <p>The <dfn id=dom-document-defaultview title=dom-Document-defaultView><code>defaultView</code></dfn>
-attribute must return the <a href=#context-node>context node</a>'s <a class=external href=http://www.whatwg.org/html/#browsing-context>browsing context</a>'s <a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#windowproxy><code class=external>WindowProxy</code></a> object.</p>
+attribute must return the <a href=#context-node>context node</a>'s <a class=external data-anolis-spec=html href=http://www.whatwg.org/html/#browsing-context>browsing context</a>'s <a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#windowproxy><code class=external data-anolis-spec=window>WindowProxy</code></a> object.</p>
 
 <hr>
 
 <p>The <dfn id=dom-document-createelement title=dom-Document-createElement><code>createElement(<var title="">tagName</var>)</code></dfn> method must run the following steps:</p>
 
 <ol>
- <li><p>If <var title="">tagName</var> doesn't match the <a href=http://www.w3.org/TR/xml/#NT-Name><code class=external>Name</code></a> production in XML, raise an <a href=#dom-domexception-invalid_character_err><code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code></a>
+ <li><p>If <var title="">tagName</var> doesn't match the <a href=http://www.w3.org/TR/xml/#NT-Name><code class=external data-anolis-spec=xml>Name</code></a> production in XML, raise an <a href=#dom-domexception-invalid_character_err><code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code></a>
  exception and abort these steps.
 
  <li><p>If the <a href=#context-node>context node</a> is an <a href=#html-document>HTML document</a>, let
@@ -1013,13 +1013,13 @@ attribute must return the <a href=#context-node>context node</a>'s <a class=exte
  <a href=#context-node>context node</a>.
 </ol>
 <!-- this is very different from DOM3 -->
-<p class=note>No check is performed that the local name will match the <a href=http://www.w3.org/TR/xml-names/#NT-NCName><code class=external>NCName</code></a> production in Namespaces in XML.
+<p class=note>No check is performed that the local name will match the <a href=http://www.w3.org/TR/xml-names/#NT-NCName><code class=external data-anolis-spec=xmlns>NCName</code></a> production in Namespaces in XML.
 
 <p>The <dfn id=dom-document-createelementns title=dom-Document-createElementNS><code>createElementNS(<var title="">namespaceURI</var>, <var title="">qualifiedName</var>)</code></dfn> method must run the following steps:</p>
 <ol>
- <li><p>If <var title="">qualifiedName</var> doesn't match the <a href=http://www.w3.org/TR/xml/#NT-Name><code class=external>Name</code></a> production in XML, raise an <a href=#dom-domexception-invalid_character_err><code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code></a>
+ <li><p>If <var title="">qualifiedName</var> doesn't match the <a href=http://www.w3.org/TR/xml/#NT-Name><code class=external data-anolis-spec=xml>Name</code></a> production in XML, raise an <a href=#dom-domexception-invalid_character_err><code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code></a>
  exception and abort these steps.
- <li><p>If <var title="">qualifiedName</var> doesn't match the <a href=http://www.w3.org/TR/xml-names/#NT-QName><code class=external>QName</code></a> production in Namespaces in XML, raise a
+ <li><p>If <var title="">qualifiedName</var> doesn't match the <a href=http://www.w3.org/TR/xml-names/#NT-QName><code class=external data-anolis-spec=xmlns>QName</code></a> production in Namespaces in XML, raise a
  <a href=#dom-domexception-namespace_err><code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code></a> exception and
  abort these steps.
  <li><p>If <var title="">qualifiedName</var> contains a U+003E COLON (":") character, then split the string on the colon and let <var title="">prefix</var> be the part before the colon and <var title="">localName</var> the part after the colon. Otherwise, let <var title="">prefix</var> be null and <var title="">localName</var> be <var title="">qualifiedName</var>.
@@ -1034,11 +1034,11 @@ attribute must return the <a href=#context-node>context node</a>'s <a class=exte
 
 <p>The <dfn id=dom-document-createtextnode title=dom-Document-createTextNode><code>createTextNode(<var title="">data</var>)</code></dfn> method must return a new <a href=#text><code>Text</code></a> node with its <a href=#dom-characterdata-data><code title=dom-CharacterData-data>data</code></a> attribute set to <var title="">data</var> and <a href=#dom-node-ownerdocument><code title=dom-Node-ownerDocument>ownerDocument</code></a> set to the <a href=#context-node>context node</a>.
 <p class=note>No check is performed that the text node contains characters that
-match the <a href=http://www.w3.org/TR/xml/#NT-Char><code class=external>Char</code></a> production in XML.
+match the <a href=http://www.w3.org/TR/xml/#NT-Char><code class=external data-anolis-spec=xml>Char</code></a> production in XML.
 
 <p>The <dfn id=dom-document-createcomment title=dom-Document-createComment><code>createComment(<var title="">data</var>)</code></dfn> method must return a new <a href=#comment><code>Comment</code></a> node with its <a href=#dom-characterdata-data><code title=dom-CharacterData-data>data</code></a> attribute set to <var title="">data</var> and <a href=#dom-node-ownerdocument><code title=dom-Node-ownerDocument>ownerDocument</code></a> set to the <a href=#context-node>context node</a>.
 <p class=note>No check is performed that the comment contains characters that
-match the <a href=http://www.w3.org/TR/xml/#NT-Char><code class=external>Char</code></a> production in XML or that it
+match the <a href=http://www.w3.org/TR/xml/#NT-Char><code class=external data-anolis-spec=xml>Char</code></a> production in XML or that it
 contains two adjacent hyphens or ends with a hyphen.
 
 <p>The <dfn id=dom-document-createprocessinginstruction title=dom-Document-createProcessingInstruction><code>createProcessingInstruction(<var title="">target</var>, <var title="">data</var>)</code></dfn> method must run the following steps:
@@ -1049,7 +1049,7 @@ contains two adjacent hyphens or ends with a hyphen.
  exception and abort these steps.
 
  <li><p>If <var title="">target</var> doesn't match the <!--<code
- data-anolis-spec=xml>PITarget</code>--> <a href=http://www.w3.org/TR/xml/#NT-Name><code class=external>Name</code></a>
+ data-anolis-spec=xml>PITarget</code>--> <a href=http://www.w3.org/TR/xml/#NT-Name><code class=external data-anolis-spec=xml>Name</code></a>
  production in XML, raise an <a href=#dom-domexception-invalid_character_err><code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code></a>
  exception and abort these steps. <!-- DOM3 didn't check for "xml" -->
 
@@ -1064,7 +1064,7 @@ contains two adjacent hyphens or ends with a hyphen.
 
 <p class=note>No check is performed that the processing instruction target
 contains "xml" or the colon, or that the data contains characters that match the
-<a href=http://www.w3.org/TR/xml/#NT-Char><code class=external>Char</code></a> production in XML.</p>
+<a href=http://www.w3.org/TR/xml/#NT-Char><code class=external data-anolis-spec=xml>Char</code></a> production in XML.</p>
 
 <!--
 [createAttribute]
@@ -1184,7 +1184,7 @@ the following steps:
  if <var title="">importedNode</var> or any of its descendant nodes or any of its
  <a href=#dom-node-attributes><code title=dom-Node-attributes>attributes</code></a> or any of the <a href=#dom-node-attributes><code title=dom-Node-attributes>attributes</code></a> of any descendant
  <a href=#element><code>Element</code></a> nodes has a <a href=#dom-node-localname><code title=dom-Node-localName>localName</code></a><!-- or <code
- title=dom-Node-prefix>prefix</code>--> which either does not match the <a href=http://www.w3.org/TR/xml/#NT-Name><code class=external>Name</code></a> production in XML or contains a U+003A COLON
+ title=dom-Node-prefix>prefix</code>--> which either does not match the <a href=http://www.w3.org/TR/xml/#NT-Name><code class=external data-anolis-spec=xml>Name</code></a> production in XML or contains a U+003A COLON
  (":") character, raise an <a href=#dom-domexception-invalid_state_err><code title=dom-DOMException-INVALID_STATE_ERR>INVALID_STATE_ERR</code></a> and abort
  these steps.
 
@@ -1210,7 +1210,7 @@ the following steps:
  <li><p>If the <a href=#context-node>context node</a> is an <a href=#xml-document>XML document</a>, then
  if <var title="">source</var> or any of its descendant nodes or any of its <a href=#dom-node-attributes><code title=dom-Node-attributes>attributes</code></a> or any of the <a href=#dom-node-attributes><code title=dom-Node-attributes>attributes</code></a> of any descendant
  <a href=#element><code>Element</code></a> nodes has a <a href=#dom-node-localname><code title=dom-Node-localName>localName</code></a><!-- or <code
- title=dom-Node-prefix>prefix</code>--> which either does not match the <a href=http://www.w3.org/TR/xml/#NT-Name><code class=external>Name</code></a> production in XML or contains a U+003A COLON
+ title=dom-Node-prefix>prefix</code>--> which either does not match the <a href=http://www.w3.org/TR/xml/#NT-Name><code class=external data-anolis-spec=xml>Name</code></a> production in XML or contains a U+003A COLON
  (":") character, raise an <a href=#dom-domexception-invalid_state_err><code title=dom-DOMException-INVALID_STATE_ERR>INVALID_STATE_ERR</code></a> and abort
  these steps.
 
@@ -1283,9 +1283,9 @@ otherwise.
 <p>The <dfn id=dom-domimplementation-createdocumenttype title=dom-DOMImplementation-createDocumentType><code>createDocumentType(<var title="">qualifiedName</var>, <var title="">publicId</var>, <var title="">systemId</var>)</code></dfn> method must run the following steps:
 
 <ol>
- <li><p>If <var title="">qualifiedName</var> doesn't match the <a href=http://www.w3.org/TR/xml/#NT-Name><code class=external>Name</code></a> production in XML, raise an <a href=#dom-domexception-invalid_character_err><code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code></a>
+ <li><p>If <var title="">qualifiedName</var> doesn't match the <a href=http://www.w3.org/TR/xml/#NT-Name><code class=external data-anolis-spec=xml>Name</code></a> production in XML, raise an <a href=#dom-domexception-invalid_character_err><code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code></a>
  exception and abort these steps.
- <li><p>If <var title="">qualifiedName</var> doesn't match the <a href=http://www.w3.org/TR/xml-names/#NT-NCName><code class=external>NCName</code></a> production in Namespaces in XML, raise a
+ <li><p>If <var title="">qualifiedName</var> doesn't match the <a href=http://www.w3.org/TR/xml-names/#NT-NCName><code class=external data-anolis-spec=xmlns>NCName</code></a> production in Namespaces in XML, raise a
  <a href=#dom-domexception-namespace_err><code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code></a> exception and
  abort these steps.
  <!--<li><p>If <var title>publicId</var> contains a character that doesn't match the <code data-anolis-spec=xml>PubidChar</code> production in XML, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and abort these steps. --> <!-- DOM3 didn't check this -->
@@ -1321,7 +1321,7 @@ otherwise.
 method.
 
 <dl class=domintro>
- <dt><var title="">doc</var> = <a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#dom-document><var class=external title=dom-Window-document>document</var></a> . <a href=#dom-document-implementation><code title=dom-Document-implementation>implementation</code></a> . <a href=#dom-domimplementation-createhtmldocument><code title=dom-DOMImplementation-createHTMLDocument>createHTMLDocument</code></a>(
+ <dt><var title="">doc</var> = <a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#dom-document><var class=external data-anolis-spec=window title=dom-Window-document>document</var></a> . <a href=#dom-document-implementation><code title=dom-Document-implementation>implementation</code></a> . <a href=#dom-domimplementation-createhtmldocument><code title=dom-DOMImplementation-createHTMLDocument>createHTMLDocument</code></a>(
  <var title="">title</var> )
 
  <dd><p>Returns a new <a href=#document><code>Document</code></a>, with a basic DOM already
@@ -1409,7 +1409,7 @@ attributes</a>.
 does not contain any <a href=#space-character title="space character">space characters</a>. The
 <a href=#dom-attr-value><code title=dom-Attr-value>value</code></a> must be unique amongst all the <a href=#concept-id title=concept-id>IDs</a> in the element's <a href=#home-subtree>home subtree</a>.
 
-<p class=note>For example, the <a href=http://www.whatwg.org/html/#attr-id><code class=external title=attr-id>id</code></a> attribute in HTML is an <a href=#concept-id-attribute title=concept-ID-attribute>ID attribute</a>, as well as the <code title="">id</code> attributes in MathML and SVG, and the <code title="">id</code>
+<p class=note>For example, the <a href=http://www.whatwg.org/html/#attr-id><code class=external data-anolis-spec=html title=attr-id>id</code></a> attribute in HTML is an <a href=#concept-id-attribute title=concept-ID-attribute>ID attribute</a>, as well as the <code title="">id</code> attributes in MathML and SVG, and the <code title="">id</code>
 attribute in the <a href=#xml-namespace>XML namespace</a>. <a data-anolis-ref="" href=#refsHTML>[HTML]</a>
 <a data-anolis-ref="" href=#refsMATHML>[MATHML]</a> <a data-anolis-ref="" href=#refsSVG>[SVG]</a> <a data-anolis-ref="" href=#refsXMLID>[XMLID]</a>
 
@@ -1504,7 +1504,7 @@ following steps:
 
 <ol>
  <li><p>If <var title="">name</var> is empty or <var title="">name</var> doesn't
- match the <a href=http://www.w3.org/TR/xml/#NT-Name><code class=external>Name</code></a> production in XML, raise an
+ match the <a href=http://www.w3.org/TR/xml/#NT-Name><code class=external data-anolis-spec=xml>Name</code></a> production in XML, raise an
  <a href=#dom-domexception-invalid_character_err><code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code></a>
  exception and abort these steps.
 
@@ -1651,10 +1651,10 @@ following steps:
  these steps.
 
  <li><p>If <span title=""><var title="">offset</var>+<var title="">count</var></span> is
- greater than the <a href=#context-node>context node</a>'s <a href=#dom-characterdata-length><code title=dom-CharacterData-length>length</code></a>, return a <a href=http://dev.w3.org/2006/webapi/WebIDL/#idl-DOMString><code class=external>DOMString</code></a> whose value is the UTF-16 code units
+ greater than the <a href=#context-node>context node</a>'s <a href=#dom-characterdata-length><code title=dom-CharacterData-length>length</code></a>, return a <a href=http://dev.w3.org/2006/webapi/WebIDL/#idl-DOMString><code class=external data-anolis-spec=webidl>DOMString</code></a> whose value is the UTF-16 code units
  from the <var title="">offset</var>th UTF-16 code unit to the end of <var title="">data</var>.
 
- <li><p>Return a <a href=http://dev.w3.org/2006/webapi/WebIDL/#idl-DOMString><code class=external>DOMString</code></a> whose value is
+ <li><p>Return a <a href=http://dev.w3.org/2006/webapi/WebIDL/#idl-DOMString><code class=external data-anolis-spec=webidl>DOMString</code></a> whose value is
  the UTF-16 code units from the <var title="">offset</var>th UTF-16 code unit to
  the <span title=""><var title="">offset</var>+<var title="">count</var></span>th UTF-16
  code unit in <var title="">data</var>.
@@ -1739,7 +1739,7 @@ collection</a>.
 <p>The <a href=#htmlcollection><code>HTMLCollection</code></a> interface represents a generic <a href=#concept-collection title=concept-collection>collection</a> of elements.
 
 <p class=note>This interface is called <a href=#htmlcollection><code>HTMLCollection</code></a> for
-historical reasons. The various getters on this interface return <a href=http://dev.w3.org/2006/webapi/WebIDL/#idl-object><code class=external>object</code></a> for interfaces that inherit from
+historical reasons. The various getters on this interface return <a href=http://dev.w3.org/2006/webapi/WebIDL/#idl-object><code class=external data-anolis-spec=webidl>object</code></a> for interfaces that inherit from
 it, which return other objects for historical reasons.
 
 <pre class=idl>interface <dfn id=htmlcollection>HTMLCollection</dfn> {
@@ -1776,10 +1776,10 @@ caller getter object <a href=#dom-htmlcollection-nameditem title=dom-HTMLCollect
  </dd>
 </dl>
 
-<p>The object's <a class=external href=http://dev.w3.org/2006/webapi/WebIDL/#dfn-supported-property-indices>supported property indices</a>
+<p>The object's <a class=external data-anolis-spec=webidl href=http://dev.w3.org/2006/webapi/WebIDL/#dfn-supported-property-indices>supported property indices</a>
 are the numbers in the range zero to one less than the number of nodes
 <a href=#represented-by-the-collection>represented by the collection</a>. If there are no such elements, then
-there are no <a class=external href=http://dev.w3.org/2006/webapi/WebIDL/#dfn-supported-property-indices>supported property indices</a>.
+there are no <a class=external data-anolis-spec=webidl href=http://dev.w3.org/2006/webapi/WebIDL/#dfn-supported-property-indices>supported property indices</a>.
 
 <p>The <dfn id=dom-htmlcollection-length title=dom-HTMLCollection-length><code>length</code></dfn> attribute
 must return the number of nodes <a href=#represented-by-the-collection>represented by the collection</a>.
@@ -1787,7 +1787,7 @@ must return the number of nodes <a href=#represented-by-the-collection>represent
 <p>The <dfn id=dom-htmlcollection-item title=dom-HTMLCollection-item><code>item(<var title="">index</var>)</code></dfn> method must return the <var title="">index</var>th node in the collection. If there is no <var title="">index</var>th node in the collection, then the method must
 return null.
 
-<p>The <a class=external href=http://dev.w3.org/2006/webapi/WebIDL/#dfn-supported-property-names>supported property names</a> consist
+<p>The <a class=external data-anolis-spec=webidl href=http://dev.w3.org/2006/webapi/WebIDL/#dfn-supported-property-names>supported property names</a> consist
 of the values of the <code title="">name</code> attributes of each <code title="">a</code>, <code title="">applet</code>, <code title="">area</code>, <code title="">embed</code>, <code title="">form</code>, <code title="">frame</code>, <code title="">frameset</code>, <code title="">iframe</code>, <code title="">img</code>, and
 <code title="">object</code> element in the <a href=#html-namespace>HTML namespace</a>,
 <a href=#represented-by-the-collection>represented by the collection</a> with a <code title="">name</code>
@@ -1933,9 +1933,9 @@ ordinarily be treated in a case-insensitive manner.</p>
 attribute must return the number of tokens that result from <a href=#split-a-string-on-spaces title="split a string on spaces">splitting the underlying string on
 spaces</a>. This is the <a href=#dom-domtokenlist-length><var title=dom-DOMTokenList-length>length</var></a>.</p>
 
-<p>The object's <a class=external href=http://dev.w3.org/2006/webapi/WebIDL/#dfn-supported-property-indices>supported property
+<p>The object's <a class=external data-anolis-spec=webidl href=http://dev.w3.org/2006/webapi/WebIDL/#dfn-supported-property-indices>supported property
 indices</a> are the numbers in the range zero to <span title=""><a href=#dom-domtokenlist-length><var title=dom-DOMTokenList-length>length</var></a>&minus;1</span>, unless the <a href=#dom-domtokenlist-length><var title=dom-DOMTokenList-length>length</var></a> is zero, in which case there are no
-<a class=external href=http://dev.w3.org/2006/webapi/WebIDL/#dfn-supported-property-indices>supported property indices</a>.</p>
+<a class=external data-anolis-spec=webidl href=http://dev.w3.org/2006/webapi/WebIDL/#dfn-supported-property-indices>supported property indices</a>.</p>
 
 <p>The <dfn id=dom-domtokenlist-item title=dom-DOMTokenList-item><code>item(<var title="">index</var>)</code></dfn> method must <a href=#split-a-string-on-spaces title="split a
 string on spaces">split the underlying string on spaces</a>,

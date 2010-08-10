@@ -24,6 +24,14 @@
  dfn i:not([title]):not([class]):not([id]):not([data-anolis-spec]),
  a i:not([title]):not([class]):not([id]):not([data-anolis-spec])
  { border-bottom: none; }
+ @media print {
+   [data-anolis-spec]::after {
+     content: "[" attr(data-anolis-spec) "]";
+     font-size: 0.6em;
+     vertical-align: super;
+     text-transform: uppercase;
+   }
+ }
 </style>
 <body class=draft>
 <div class=head id=head>

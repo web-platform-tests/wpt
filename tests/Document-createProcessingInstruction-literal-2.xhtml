@@ -1,0 +1,20 @@
+<?xml-stylesheet href="support/style.css" type="text/css"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Document.createProcessingInstruction</title>
+<link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com"/>
+<link rel="help" href="../web-dom-core#processinginstruction"/>
+</head>
+<body>
+<script src="support/test.js"></script>
+<script>
+Test.run([function() {
+  var pienc = document.firstChild;
+  Test.ok(pienc instanceof ProcessingInstruction,
+          "Not a ProcessingInstruction?");
+  Test.is(pienc.target, "xml-stylesheet");
+  Test.is(pienc.data, 'href="support/style.css" type="text/css"');
+}]);
+</script>
+</body>
+</html>

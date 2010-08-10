@@ -1,4 +1,5 @@
 <!doctype html>
+<meta charset=UTF-8>
 <title>Web DOM Core</title>
 <link rel=stylesheet href=http://www.whatwg.org/style/specification>
 <style>
@@ -1095,7 +1096,11 @@ title>data</var>)</code></dfn> method must run the following steps:
 
  <!--<li><p>If <var title>target</var> contains a U+003A COLON (":") character, raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and abort these steps.--> <!-- DOM3 didn't check this -->
 
- <li><p>Return a new <code>ProcessingInstruction</code> node with its <code title=dom-ProcessingInstruction-target>target</code> attribute set to <var title>target</var>, <code title=dom-ProcessingInstruction-data>data</code> attribute set to <var title>data</var> and <code title=dom-Node-ownerDocument>ownerDocument</code> set to the <span>context node</span>.
+ <li><p>Return a new <span title=concept-PI>processing instruction</span>, with
+ <var title>target</var> as its <span title=concept-PI-target>target</span> and
+ <var title>data</var> as its <span title=concept-PI-data>data</span>, and whose
+ <code title=dom-Node-ownerDocument>ownerDocument</code> is set to the
+ <span>context node</span>.
 </ol>
 
 <p class=note>No check is performed that the processing instruction target
@@ -1772,9 +1777,20 @@ one, or the empty string otherwise.
            attribute DOMString <span title=dom-ProcessingInstruction-data>data</span>;
 };</pre>
 
-<p class=XXX><dfn title=dom-ProcessingInstruction-target>target</dfn>
+<p><code>ProcessingInstruction</code> nodes represent <dfn
+title=concept-PI>processing instructions</dfn>. They have a <dfn
+title=concept-PI-target>target</dfn> and <dfn title=concept-PI-data>data</dfn>
+associated with them when they are created.
 
-<p class=XXX><dfn title=dom-ProcessingInstruction-data>data</dfn>
+<p>The <dfn title=dom-ProcessingInstruction-target>target</code></dfn> attribute
+must, on getting, return the <span title="context node">context node's</span>
+<span title=concept-PI-target>target</span>.
+
+<p>The <dfn title=dom-ProcessingInstruction-data>data</code></dfn> attribute
+must, on getting, return the <span title="context node">context node's</span>
+<span title=concept-PI-data>data</span>, and on setting, set the <span
+title="context node">context node's</span> <span
+title=concept-PI-data>data</span> to the new value.
 
 
 <h3>Interface <code>CharacterData</code></h3>

@@ -1,4 +1,5 @@
-<!DOCTYPE html><title>Web DOM Core</title>
+<!DOCTYPE html><meta charset=UTF-8>
+<title>Web DOM Core</title>
 <link href=http://www.whatwg.org/style/specification rel=stylesheet>
 <style>
  pre, code { font-family:monospace, sans-serif; }
@@ -1059,7 +1060,11 @@ contains two adjacent hyphens or ends with a hyphen.
 
  <!--<li><p>If <var title>target</var> contains a U+003A COLON (":") character, raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and abort these steps.--> <!-- DOM3 didn't check this -->
 
- <li><p>Return a new <a href=#processinginstruction><code>ProcessingInstruction</code></a> node with its <a href=#dom-processinginstruction-target><code title=dom-ProcessingInstruction-target>target</code></a> attribute set to <var title="">target</var>, <a href=#dom-processinginstruction-data><code title=dom-ProcessingInstruction-data>data</code></a> attribute set to <var title="">data</var> and <a href=#dom-node-ownerdocument><code title=dom-Node-ownerDocument>ownerDocument</code></a> set to the <a href=#context-node>context node</a>.
+ <li><p>Return a new <a href=#concept-pi title=concept-PI>processing instruction</a>, with
+ <var title="">target</var> as its <a href=#concept-pi-target title=concept-PI-target>target</a> and
+ <var title="">data</var> as its <a href=#concept-pi-data title=concept-PI-data>data</a>, and whose
+ <a href=#dom-node-ownerdocument><code title=dom-Node-ownerDocument>ownerDocument</code></a> is set to the
+ <a href=#context-node>context node</a>.
 </ol>
 
 <p class=note>No check is performed that the processing instruction target
@@ -1621,9 +1626,16 @@ one, or the empty string otherwise.
            attribute DOMString <a href=#dom-processinginstruction-data title=dom-ProcessingInstruction-data>data</a>;
 };</pre>
 
-<p class=XXX><dfn id=dom-processinginstruction-target title=dom-ProcessingInstruction-target>target</dfn>
+<p><a href=#processinginstruction><code>ProcessingInstruction</code></a> nodes represent <dfn id=concept-pi title=concept-PI>processing instructions</dfn>. They have a <dfn id=concept-pi-target title=concept-PI-target>target</dfn> and <dfn id=concept-pi-data title=concept-PI-data>data</dfn>
+associated with them when they are created.
 
-<p class=XXX><dfn id=dom-processinginstruction-data title=dom-ProcessingInstruction-data>data</dfn>
+<p>The <dfn id=dom-processinginstruction-target title=dom-ProcessingInstruction-target>target</dfn> attribute
+must, on getting, return the <a href=#context-node title="context node">context node's</a>
+<a href=#concept-pi-target title=concept-PI-target>target</a>.
+
+<p>The <dfn id=dom-processinginstruction-data title=dom-ProcessingInstruction-data>data</dfn> attribute
+must, on getting, return the <a href=#context-node title="context node">context node's</a>
+<a href=#concept-pi-data title=concept-PI-data>data</a>, and on setting, set the <a href=#context-node title="context node">context node's</a> <a href=#concept-pi-data title=concept-PI-data>data</a> to the new value.
 
 
 <h3 id=interface-characterdata><span class=secno>4.8 </span>Interface <a href=#characterdata><code>CharacterData</code></a></h3>

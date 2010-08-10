@@ -2158,7 +2158,7 @@ because the newer ones keep changing. -->
 <dt id=refsSVG>[SVG]
 <dd><cite><a href=http://www.w3.org/TR/SVG/>Scalable Vector Graphics (SVG)</a></cite>, O. Andersson, R. Berjon, E. Dahlstr&ouml;m, A. Emmons, J. Ferraiolo, A. Grasso, V. Hardy, S. Hayman, D. Jackson, C. Lilley, C. McCormack, A. Neumann, C. Northway, A. Quint, N. Ramani, D. Schepers, A. Shellshear. W3C.
 <dt id=refsWEBIDL>[WEBIDL]
-<dd><cite><a href=http://dev.w3.org/2006/webapi/WebIDL/>Web IDL</a></cite>, C. McCormack. W3C.
+<dd><cite><a href=http://dev.w3.org/2006/webapi/WebIDL/>Web IDL</a></cite>, C. McCormack, S. Weinig. W3C.
 <dt id=refsXML>[XML]
 <dd><cite><a href=http://www.w3.org/TR/xml/>Extensible Markup Language</a></cite>, T. Bray, J. Paoli, C. Sperberg-McQueen, E. Maler, F. Yergeau. W3C.
 <dt id=refsXMLID>[XMLID]

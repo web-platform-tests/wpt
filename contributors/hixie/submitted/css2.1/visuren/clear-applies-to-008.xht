@@ -2,9 +2,9 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
   <title>CSS Test: Clear on inline elements</title>
-  <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
-  <link rel="author" title="Elika J. Etemad" href="http://fantasai.inkedblade.net/contact"/>
-  <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/box/float/clear/001-demo.html" type="text/html"/>
+  <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch" />
+  <link rel="author" title="Elika J. Etemad" href="http://fantasai.inkedblade.net/contact" />
+  <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/box/float/clear/001-demo.html" type="text/html" />
   <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#flow-control" />
   <meta name="assert" content="The 'clear' property does not apply to elements with a display of 'inline'." />
   <style type="text/css">
@@ -14,8 +14,6 @@
  </head>
  <body>
   <p>Test passes if the word PASS appears on a single line below.</p>
-  <div class="float">P</div><span class="clear">A</span>SS
+  <div><div class="float">P</div><span class="clear">A</span>SS</div>
  </body>
 </html>
-
-

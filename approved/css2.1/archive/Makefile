@@ -1,0 +1,6 @@
+all:
+	rm -rf tests
+	mkdir tests
+	./make-proper-tests.pl raw-tests/css1tests/FILENAMES
+	diff -ur -x .svn ../src/css1/ tests/ || echo "Done"
+

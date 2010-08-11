@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>XMLHttpRequest: getResponseHeader() server and date</title>
+    <script src="/resources/testharness.js"></script>
+  </head>
+  <body>
+    <div id="log"></div>
+    <script>
+      var test = async_test()
+      test.step(function() {
+        var client = new XMLHttpRequest()
+        client.onreadystatechange = function() {
+          test.step(function() {
+            if(client.readyState == 4) {
+              assert_true(client.getResponseHeader("Server") != null)
+              assert_true(client.getResponseHeader("Date") != null)
+              test.done()
+            }
+          })
+        }
+        client.open("GET", "resources/headers.php")
+        client.send(null)
+      })
+  </script>
+ </body>
+</html>

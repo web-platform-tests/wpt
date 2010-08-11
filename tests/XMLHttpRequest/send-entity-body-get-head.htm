@@ -1,0 +1,24 @@
+<!doctype html>
+<html>
+  <head>
+    <title>XMLHttpRequest: send() - non-empty data argument and GET/HEAD</title>
+    <script src="/resources/testharness.js"></script>
+  </head>
+  <body>
+    <div id="log"></div>
+    <script>
+      function request(method) {
+        test(function() {
+          var client = new XMLHttpRequest()
+          client.open(method, "resources/content.php", false)
+          client.send("TEST")
+          assert_equals(client.getResponseHeader("x-request-content-length"), "NO")
+          assert_equals(client.getResponseHeader("x-request-method"), method)
+          assert_equals(client.responseText, "")
+        }, document.title + " (" + method + ")")
+      }
+      request("GET")
+      request("HEAD")
+    </script>
+  </body>
+</html>

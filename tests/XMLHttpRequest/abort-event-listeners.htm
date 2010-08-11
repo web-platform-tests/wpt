@@ -1,0 +1,23 @@
+<!doctype html>
+<html>
+  <head>
+    <title>XMLHttpRequest: abort() should not reset event listeners</title>
+    <script src="/resources/testharness.js"></script>
+  </head>
+  <body>
+    <div id="log"></div>
+    <script>
+      var test = async_test()
+      test.step(function() {
+        var client = new XMLHttpRequest(),
+            test = function() {}
+        client.onreadystatechange = test
+        client.open("GET", "../resources/delay.php?ms=200")
+        client.send(null)
+        client.abort()
+        assert_equals(client.onreadystatechange, test)
+      })
+      test.done()
+    </script>
+  </body>
+</html>

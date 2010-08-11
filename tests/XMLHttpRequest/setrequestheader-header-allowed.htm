@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+  <head>
+    <title>XMLHttpRequest: setRequestHeader() - headers that are allowed</title>
+    <script src="/resources/testharness.js"></script>
+  </head>
+  <body>
+    <div id="log"></div>
+    <script>
+      function request(header) {
+        test(function() {
+          var client = new XMLHttpRequest()
+          client.open("POST", "resources/inspect-headers.php?filter_value=t1, t2", false)
+          client.setRequestHeader(header, "t1")
+          client.setRequestHeader(header, "t2")
+          client.send(null)
+          assert_equals(client.responseText, header.toLowerCase() + ",")
+        }, document.title + " (" + header + ")")
+      }
+      request("Authorization")
+      request("Pragma")
+      request("Content-Type")
+      request("Overwrite")
+      request("If")
+      request("Status-URI")
+      request("X-Pink-Unicorn")
+    </script>
+  </body>
+</html>

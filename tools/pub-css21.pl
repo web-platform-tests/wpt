@@ -87,6 +87,11 @@ push @dirs, 'contributors/i18n/submitted/css2.1/visuren';
 push @dirs, 'contributors/jameshopkins/submitted/css2.1/*';
 
 ###############################################################################
+# Hewlett-Packard
+
+push @dirs, 'contributors/hp/submitted/css2.1/page';
+
+###############################################################################
 # Microsoft
 
 push @dirs, 'contributors/microsoft/submitted'; # grab support files

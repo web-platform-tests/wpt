@@ -1,0 +1,43 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD//XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>CSS Test: Relative Positioning - overconstrained top = -bottom</title>
+    <link rel="author" title="Elika J. Etemad" href="http://fantasai.inkedblade.net/contact"/>
+    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#relative-positioning" />
+    <meta name="flags" content="" />
+    <meta name="assert" content="For a relatively positioned element, if
+      neither 'top' nor 'bottom' is 'auto', used value of 'bottom' is minus the
+      value of 'top'." />
+    <style type="text/css">
+        div {
+            height: 80px;
+            width: 120px;
+        }
+        .outer {
+            background: green;
+            position: relative;
+            top: 50%;
+            bottom: 50%;
+        }
+        .inner {
+            background: green;
+            position: relative;
+            bottom: inherit; /* using inheritance to test computed vs. used */
+        }
+        .control {
+          background: red;
+          margin-top: -80px;
+          height: 120px;
+        }
+    </style>
+  </head>
+  <body>
+    <p>There must be a green box below and no red.</p>
+    <div class="container">
+      <div class="outer">
+        <div class="inner"></div>
+      </div>
+    </div>
+    <div class="control"></div>
+  </body>
+</html>

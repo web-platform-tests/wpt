@@ -1,0 +1,43 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD//XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>CSS Test: Relative Positioning - auto bottom = -top</title>
+    <link rel="author" title="Elika J. Etemad" href="http://fantasai.inkedblade.net/contact"/>
+    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#relative-positioning" />
+    <meta name="flags" content="" />
+    <meta name="assert" content="For a relatively positioned element, if 'bottom'
+      is 'auto', its used value is minus the value of 'top'." />
+    <style type="text/css">
+        div {
+            height: 120px;
+            width: 120px;
+        }
+        .container {
+            margin-top: -60px;
+        }
+        .outer {
+            background: red;
+            position: relative;
+            top: 50%;
+        }
+        .inner {
+            background: green;
+            position: relative;
+            bottom: inherit; /* using inheritance to test computed vs. used */
+        }
+        .control {
+          background: red;
+          margin-top: -60px;
+        }
+    </style>
+  </head>
+  <body>
+    <p>There must be a green box below and no red.</p>
+    <div class="container">
+      <div class="outer">
+        <div class="inner"></div>
+      </div>
+    </div>
+    <div class="control"></div>
+  </body>
+</html>

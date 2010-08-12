@@ -17,3 +17,8 @@ AddType image/png .png
 # Set the default character set
 AddDefaultCharset utf-8
 
+# Set up useful directory indexes
+# Indexing Options
+Options +Indexes
+IndexOptions DescriptionWidth=* NameWidth=* FancyIndexing FoldersFirst ScanHTMLTitles
+IndexIgnore .htaccess *~ .#* #*# CVS README .svn

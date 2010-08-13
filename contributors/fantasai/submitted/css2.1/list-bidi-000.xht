@@ -13,9 +13,12 @@
       margin: 0;
       padding: 0;
     }
-    li {
+    .li {
+      display: list-item;
+    }
+    li, .li {
       list-style: outside circle;
-      border: solid blue;
+      border: solid thin blue;
       margin: 0.5em 4em;
       padding: 0;
     }
@@ -28,5 +31,11 @@
   <ul dir="ltr">
     <li dir="rtl"><span dir="ltr">There must be a circle to the right of this box.</span></li>
   </ul>
+  <div dir="rtl">
+    <div class="li" dir="ltr">There must be a circle to the left of this box.</div>
+  </div>
+  <div dir="ltr">
+    <div class="li" dir="rtl"><span dir="ltr">There must be a circle to the right of this box.</span></div>
+  </div>
  </body>
 </html>

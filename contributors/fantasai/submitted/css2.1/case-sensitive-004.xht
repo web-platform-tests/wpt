@@ -1,0 +1,40 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>CSS Test: Case-sensitivity of :lang() arguments</title>
+  <link rel="author" title="Elika J. Etemad" href="http://fantasai.inkedblade.net/"/>
+  <link rel="help" href="http://www.w3.org/TR/CSS21/syndata.html#characters"/>
+  <meta name="assert" content="The argument to :lang() is ASCII case-insensitive."/>
+  <style type="text/css">
+    * { color: red; }
+
+    :lang(en) {
+      color: green;
+    }
+    :lang(FR) {
+      color: green;
+    }
+
+    /* test for ASCII (not UNICODE) case-insensitivity */
+    :lang(fİ) {
+      color: red;
+    }
+    :lang(Fı) {
+      color: red;
+    }
+    :lang(&#x212a;l) {
+      color: red;
+    }
+  </style>
+
+ </head>
+ <body>
+   <p lang="En">This sentence must be green.</p>
+   <p xml:lang="En">This sentence must be green.</p>
+   <p lang="fr">This sentence must be green.</p>
+   <p lang="kl">This sentence must be green.</p>
+   <p lang="KL">This sentence must be green.</p>
+   <p lang="fi">This sentence must be green.</p>
+   <p lang="FI">This sentence must be green.</p>
+ </body>
+</html>

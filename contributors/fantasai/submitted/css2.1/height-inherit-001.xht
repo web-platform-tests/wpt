@@ -1,0 +1,35 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+                      "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>CSS Test: Inheriting Explicit Widths</title>
+  <link rel="author" title="Elika J. Etemad" href="http://fantasai.inkedblade.net/contact"/>
+  <link rel="help" href="http://www.w3.org/TR/CSS21/generate.html#list-style"/>
+  <meta name="flags" content=""/>
+  <meta name="assert" content="The computed width is inherited, even if the
+        'width' property does not apply."/>
+  <style type="text/css">
+    .container {
+      height: 100px;
+      width: 100px;
+      background: red;
+    }
+    .outer {
+      height: 100px;
+    }
+    .inner {
+      display: block;
+      height: inherit;
+      background: green;
+    }
+  </style>
+ </head>
+ <body>
+    <p>There must be a green box below and no red.</p>
+
+    <div class="container">
+      <div><span class="outer"><span class="inner"></span></span></div>
+      <div class="control"></div>
+    </div>
+ </body>
+</html>

@@ -6,8 +6,13 @@
   <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/box/list/list-style-position/inside/001-demo.html" type="text/html"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/generate.html#list-style" />
   <style type="text/css">
-   ol { margin: 0; padding: 0; border: 0; }
-   li, div { border: solid orange 0.25em; padding: 0.5em 0.5em 0.5em 3em; list-style-position: inside; }
+   ol, li { margin: 0; padding: 0; border: 0; }
+   li, div {
+      color: blue;
+      border: solid silver 0.25em;
+      padding: 0.5em 0.5em 0.5em 3em;
+      list-style-position: inside; }
+   span { color: white; }
   </style>
  </head>
  <body>
@@ -17,7 +22,7 @@
      <li>
       <ol>
        <li>
-        List item text.
+        <span>Text</span>
        </li>
       </ol>
      </li>
@@ -25,10 +30,10 @@
    </li>
   </ol>
   <p>The above should render like the example below.</p>
-  <div>
-   <div>
+  <div>1.
+   <div>1.
     <div>
-     1. 1. 1. List item text.
+     1. <span>Text</span>
     </div>
    </div>
   </div>

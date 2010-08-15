@@ -1,0 +1,32 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>CSS Test: Auto Intrinsic Sizes: Intrinsic Height Only and Specified Width</title>
+  <link rel="author" title="Elika J. Etemad" href="http://fantasai.inkedblade.net/contact"/>
+  <link rel="help" href="http://www.w3.org/TR/CSS21/syndata.html#at-rules" />
+  <meta name="flags" content="svg" />
+  <meta name="assert" content="@import is respected after invalid (ignored) rule set" />
+  <style type="text/css">
+    object {
+      border: solid 20px red;
+      background: green;
+      width: 60px;
+    }
+    .control {
+      position: absolute;
+      border: solid 20px green;
+      height: 60px;
+      width: 60px;
+    }
+  </style>
+ </head>
+ <body>
+  <p>There must be a green box below and no red.</p>
+
+    <div class="control"></div>
+    <div class="container">
+      <object data="support/replaced-intrinsic-004.svg" type="image/svg+xml">FAIL: SVG support required</object>
+    </div>
+
+ </body>
+</html>

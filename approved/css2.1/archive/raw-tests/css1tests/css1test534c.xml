@@ -7,7 +7,7 @@
   <link rel="author" title="CSS1 Test Suite Contributors" href="http://www.w3.org/Style/CSS/Test/CSS1/current/tsack.html"/>
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
   <style type="text/css"><![CDATA[
-   .test { font: 14px/1 Ahem; width: 11em; background: red; color: green; border: solid black; }
+   .test { font: 20px/1 Ahem; width: 11em; background: red; color: green; border: solid black; }
    .one {background-image: url(support/pattern-grg-rgr-grg.png); background-position: 50% 50%; background-repeat: repeat-y;}
   ]]></style>
  </head>

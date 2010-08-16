@@ -253,7 +253,7 @@ css1test565b.xml c565-list-pos-001.xht 1205
 css1test566a.xml c566-list-stl-000.xht 1205
 css1test566b.xml c566-list-stl-001.xht 1205
 css1test61a.xml c61-rel-len-000.xht 040302
-css1test61b.xml c61-phys-len-000.xht 040302
+# css1test61b.xml c61-phys-len-000.xht 040302 # CSS2.1 Issue 149
 css1test61c.xml c61-ex-len-000.xht 040302
 css1test62.xml c62-percent-000.xht 040303
 css1test63.xml c63-color-000.xht 040306

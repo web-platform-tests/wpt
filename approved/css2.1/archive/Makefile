@@ -1,5 +1,3 @@
-all: build clobber
-
 build:
 	rm -rf tests
 	mkdir tests

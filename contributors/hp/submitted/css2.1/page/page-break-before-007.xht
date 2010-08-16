@@ -25,25 +25,12 @@
 		height: 80%;
 		margin-bottom: -4em;
 	}
-	p {
-		width: 1em;
-		color: gray;
-	}
+	p {width: 1em;}
 </style>
 </head>
 <body>
-	<div id="one">This test produces two pages on paged media.</div>
-	<div id="two">This text appears on the first page. 
-	<!-- Thus proving that a page break is not forced between boxes -->
-	The dummy text below this will flow onto a second page.</div>
-	<!-- Thus proving that a page break is not forbidden before boxes -->
-	<p>aaa<br />
-	   bbb<br />
-	   ccc<br />
-	   ddd<br />
-	   eee<br />
-	   fff<br />
-	   ggg<br />
-	</p>
+	<div id="one">This test requires two pages.</div>
+	<div id="two">This text must appear on the same page as the line above it. The dummy text below this will flow onto a second page.</div>
+	<p>a b c d e</p>
 </body>
 </html>

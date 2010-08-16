@@ -392,6 +392,11 @@ policies and contribution forms [3].
                     callback(test, this_obj);
                 });
 
+        if(top !== window && top.result_callback)
+        {
+            top.result_callback.call(test, this_obj);
+        }
+
         if (this.all_done())
         {
             this.notify_results();
@@ -407,11 +412,14 @@ policies and contribution forms [3].
                  {
                      callback(this_obj);
                  });
+        if(top !== window && top.start_callback)
+        {
+            top.start_callback.call(test, this_obj);
+        }
     };
 
     Tests.prototype.notify_results = function()
     {
-        var test_objects = this.tests;
         var this_obj = this;
 
         forEach (this.all_done_callbacks,
@@ -419,6 +427,10 @@ policies and contribution forms [3].
                  {
                      callback(this_obj.tests);
                  });
+        if(top !== window && top.completion_callback)
+        {
+            top.completion_callback.call(this_obj, this_obj.tests);
+        }
     };
 
     function add_start_callback(callback) {
@@ -464,18 +476,37 @@ policies and contribution forms [3].
     function output_results(tests)
     {
         var log = document.getElementById("log");
-        if (log.lastChild) {
+        while (log.lastChild) {
             log.removeChild(log.lastChild);
         }
+        var head = document.getElementsByTagName("head")[0];
+        var prefix = null;
+        for (var i=0; i<head.childNodes.length; i++) {
+            var child = head.childNodes[i];
+            if (child.nodeName.toLowerCase() === "script") {
+                var src = child.src;
+                if (src.slice(src.length - "testharness.js".length) === "testharness.js") {
+                    prefix = src.slice(0, src.length - "testharness.js".length);
+                }
+            }
+        }
+        if (prefix != null) {
+            var stylesheet = document.createElement("link");
+            stylesheet.setAttribute("rel", "stylesheet");
+            stylesheet.setAttribute("href", prefix + "testharness.css");
+            head.appendChild(stylesheet);
+        }
+
         var status_text = {};
-        status_text[status.PASS] = "PASS";
-        status_text[status.FAIL] = "FAIL";
-        status_text[status.TIMEOUT] = "TIMEOUT";
+        status_text[status.PASS] = "Pass";
+        status_text[status.FAIL] = "Fail";
+        status_text[status.TIMEOUT] = "Timeout";
 
         var test_table = document.createElement("table");
+        test_table.id = "results";
 
-        var head = test_table.createTHead();
-        var header_row = head.insertRow(-1);
+        var thead = test_table.createTHead();
+        var header_row = thead.insertRow(-1);
         forEach(["Result", "Test Name", "Message"],
                function(x)
                 {

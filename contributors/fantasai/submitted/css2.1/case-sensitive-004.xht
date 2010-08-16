@@ -6,7 +6,7 @@
   <link rel="help" href="http://www.w3.org/TR/CSS21/syndata.html#characters"/>
   <meta name="assert" content="The argument to :lang() is ASCII case-insensitive."/>
   <style type="text/css">
-    * { color: red; }
+    .test-folding { color: red; }
 
     :lang(en) {
       color: green;
@@ -16,6 +16,7 @@
     }
 
     /* test for ASCII (not UNICODE) case-insensitivity */
+    .test-unicode { color: green; }
     :lang(fİ) {
       color: red;
     }
@@ -29,13 +30,17 @@
 
  </head>
  <body>
+  <div class="test-folding">
    <p lang="En">This sentence must be green.</p>
    <p xml:lang="En">This sentence must be green.</p>
    <p lang="fr">This sentence must be green.</p>
    <p lang="fR">This sentence must be green.</p>
+  </div>
+  <div class="test-unicode">
    <p lang="kl">This sentence must be green.</p>
    <p lang="KL">This sentence must be green.</p>
    <p lang="fi">This sentence must be green.</p>
    <p lang="FI">This sentence must be green.</p>
+  </div>
  </body>
 </html>

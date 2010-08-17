@@ -92,6 +92,18 @@ push @dirs, 'contributors/jameshopkins/submitted/css2.1/*';
 push @dirs, 'contributors/hp/submitted/css2.1/page';
 
 ###############################################################################
+# fantasai
+
+push @dirs, 'contributors/fantasai/submitted/css2.1';
+push @dirs, 'contributors/fantasai/submitted/css2.1/backgrounds/reftest.list';
+
+###############################################################################
+# CSSWG Issues
+
+push @dirs, 'contributors/csswg-issues/submitted/css2.1/reftest.list';
+
+
+###############################################################################
 # Microsoft
 
 push @dirs, 'contributors/microsoft/submitted'; # grab support files

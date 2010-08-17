@@ -1,13 +1,12 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
  <head>
-  <title>CSS Test: Background Intrinsic Sizes: Intrinsic Ratio (Match Widths)</title>
+  <title>CSS Test: Background Intrinsic Sizes: Intrinsic Width and Height (Raster)</title>
   <link rel="author" title="Elika J. Etemad" href="http://fantasai.inkedblade.net/contact"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/syndata.html#at-rules" />
   <meta name="flags" content="svg" />
-  <meta name="assert" content="A background image with only an intrinsic ratio
-    covers largest rectangle at that ratio that exceeds neither the height nor
-    width of the background positioning area." />
+  <meta name="assert" content="A background with an intrinsic width and height
+    is drawn at that size." />
   <style type="text/css">
     /* Setup. Use 5:6 ratio because it's weird and unlikely to be hard-coded anywhere. */
     div {
@@ -17,6 +16,7 @@
       width: 120px;
       height: 120px;
       margin: 0.5em;
+      background: green; /* Used to match reference; remove for debugging. */
     }
     .control {
       position: absolute;
@@ -39,16 +39,14 @@
 
     /* Test */
     .cover .test {
-      background: no-repeat url(support/green-intrinsic-ratio-landscape.svg);
+      background: no-repeat url(support/green-portrait.png);
     }
     .limit .test {
-      background: no-repeat url(support/red-intrinsic-ratio-landscape.svg);
+      background: no-repeat url(support/red-portrait.png);
     }
-    .cover .control {
-      width: 66px;
-    }
-    .limit .control {
-      width: 67px;
+    .control {
+      width: 40px;
+      height: 60px;
     }
   </style>
  </head>

@@ -10,6 +10,7 @@ policies and contribution forms [3].
 
 (function ()
 {
+    var debug = False;
     // default timeout is 5 seconds, test can override if needed
     var default_timeout = 5000;
 
@@ -73,7 +74,7 @@ policies and contribution forms [3].
     function assert_true(actual, description)
     {
         var message = make_message("assert_true", description,
-        format("expected true got %s", actual));
+                                   "expected true got ${actual}", {actual:actual});
         assert(actual === true, message);
     };
     expose(assert_true, "assert_true");
@@ -81,7 +82,7 @@ policies and contribution forms [3].
     function assert_false(actual, description)
     {
         var message = make_message("assert_false", description,
-                          format("expected false got %s", actual));
+                                   "expected false got ${actual}", {actual:actual});
         assert(actual === false, message);
     };
     expose(assert_false, "assert_false");
@@ -93,9 +94,10 @@ policies and contribution forms [3].
           * are the same object
           */
          var message = make_message("assert_equals", description,
-                                    format("expected %s got %s", expected,
-                                           actual));
-
+                                    [["{text}", "expected "],
+                                     ["span", {"class":"expected"}, expected],
+                                     ["{text}", "got "],
+                                     ["span", {"class":"actual"}, actual]]);
          if (expected !== expected)
          {
              //NaN case
@@ -120,7 +122,7 @@ policies and contribution forms [3].
              {
                  var message = make_message(
                      "assert_object_equals", description,
-                     format("unexpected property %s", p));
+                     "unexpected property ${p}", {p:p});
 
                  assert(expected.hasOwnProperty(p), message);
 
@@ -135,8 +137,8 @@ policies and contribution forms [3].
                  {
                      message = make_message(
                          "assert_object_equals", description,
-                         format("property %s expected %s got %s",
-                                p, expected, actual));
+                         "property ${p} expected ${expected} got ${actual}",
+                         {p:p, expected:expected, actual:actual});
 
                      assert(actual[p] === expected[p], message);
                  }
@@ -145,7 +147,7 @@ policies and contribution forms [3].
              {
                  var message = make_message(
                      "assert_object_equals", description,
-                     format("expected property %s missing", p));
+                     "expected property ${p} missing", {p:p});
 
                  assert(actual.hasOwnProperty(p), message);
              }
@@ -159,8 +161,8 @@ policies and contribution forms [3].
     {
         var message = make_message(
             "assert_array_equals", description,
-            format("lengths differ, expected %s got %s",
-                    expected.length, actual.length));
+            "lengths differ, expected ${expected} got ${actual}",
+            {expected:expected.length, actual:actual.length});
 
         assert(actual.length === expected.length, message);
 
@@ -168,14 +170,14 @@ policies and contribution forms [3].
         {
             message = make_message(
                 "assert_array_equals", description,
-                format("property %s, property expected to be %s but was %s",
-                       i, expected.hasOwnProperty(i) ? "present" : "missing",
-                       actual.hasOwnProperty(i) ? "present" : "missing"));
+                "property ${i}, property expected to be $expected but was $actual",
+                {i:i, expected:expected.hasOwnProperty(i) ? "present" : "missing",
+                 actual:actual.hasOwnProperty(i) ? "present" : "missing"});
             assert(actual.hasOwnProperty(i) === expected.hasOwnProperty(i), message);
             message = make_message(
                           "assert_array_equals", description,
-                          format("property %s, expected %s but got %s",
-                          expected[i], actual[i]));
+                          "property ${i}, expected ${expected} but got ${actual}",
+                          {i:i, expected:expected[i], actual:actual[i]});
             assert(expected[i] === actual[i], message);
         }
     }
@@ -185,7 +187,7 @@ policies and contribution forms [3].
     {
          var message = make_message(
              "assert_exists", description,
-             format("expected property %s missing", property_name));
+             "expected property ${p} missing", {p:property_name});
 
          assert(object.hasOwnProperty(property_name, message));
     };
@@ -195,7 +197,7 @@ policies and contribution forms [3].
     {
          var message = make_message(
              "assert_not_exists", description,
-             format("unexpected property %s found", property_name));
+             "unexpected property ${p} found", {p:property_name});
 
          assert(!object.hasOwnProperty(property_name, message));
     };
@@ -207,15 +209,15 @@ policies and contribution forms [3].
          try {
              var message = make_message(
                  "assert_readonly", description,
-                 format("deleting property %s succeeded", property_name));
+                 "deleting property ${p} succeeded", {p:property_name});
              assert(delete object[property_name] === false, message);
              assert(object[property_name] === initial_value, message);
              //Note that this can have side effects in the case where
              //the property has PutForwards
              object[property_name] = initial_value + "a"; //XXX use some other value here?
              message = make_message("assert_readonly", description,
-                                    format("changing property %s succeeded",
-                                           property_name));
+                                    "changing property ${p} succeeded",
+                                    {p:property_name});
              assert(object[property_name] === initial_value, message);
          }
          finally
@@ -231,7 +233,7 @@ policies and contribution forms [3].
         {
             func.call(this);
             assert(false, make_message("assert_throws", description,
-                   format("%s did not throw", func)));
+                                      "%{func} did not throw", {func:func}));
         }
         catch(e)
         {
@@ -243,15 +245,18 @@ policies and contribution forms [3].
                 assert(e[code_or_object] !== undefined &&
                        e.code === e[code_or_object],
                        make_message("assert_throws", description,
-                       format("%s has code %s expected %s", func,
-                              e.code, code_or_object)));
+                           "${func} has code ${actual} expected ${expected}",
+                                    {func:func, actual:e.code,
+                                     expected:code_or_object}));
             }
             else
             {
                 assert(e instanceof Object && "name" in e && e.name == code_or_object.name,
                        make_message("assert_throws", description,
-                       format("%s threw %s (%s) expected %s (%s)", func,
-                              e, e.name, code_or_object, code_or_object.name)));
+                           "${func} threw ${actual} (${actual_name}) expected ${expected} (${expected_name})",
+                                    {func:func, actual:e, actual_name:e.name,
+                                     expected:code_or_object,
+                                     expected_name:code_or_object.name}));
             }
         }
     }
@@ -311,6 +316,9 @@ policies and contribution forms [3].
             this.status = status.FAIL;
             this.message = e.message;
             this.done();
+            if (debug) {
+                throw e;
+            }
         }
     };
 
@@ -465,9 +473,20 @@ policies and contribution forms [3].
                 if (log.lastChild) {
                     log.removeChild(log.lastChild);
                 }
-                log.appendChild(document.createTextNode(
-                    format("Running, %s complete %s", done_count,
-                    tests.all_loaded ? format("%s remain", tests.num_pending) : "")));
+                var nodes = render([["{text}", "Running, ${done} complete"],
+                                   function() {
+                                       if (tests.all_done) {
+                                           return ["{text}", "${pending} remain"];
+                                       } else {
+                                           return null;
+                                       }
+                                   }
+                                   ], {done:done_count,
+                                       pending:tests.num_pending});
+                forEach(nodes, function(node) {
+                            log.appendChild(node);
+                        });
+                log.normalize();
             }
         }
         add_result_callback(on_done);
@@ -481,11 +500,14 @@ policies and contribution forms [3].
         }
         var head = document.getElementsByTagName("head")[0];
         var prefix = null;
-        for (var i=0; i<head.childNodes.length; i++) {
+        for (var i=0; i<head.childNodes.length; i++)
+        {
             var child = head.childNodes[i];
-            if (child.nodeName.toLowerCase() === "script") {
+            if (child.nodeName.toLowerCase() === "script")
+            {
                 var src = child.src;
-                if (src.slice(src.length - "testharness.js".length) === "testharness.js") {
+                if (src.slice(src.length - "testharness.js".length) === "testharness.js")
+                {
                     prefix = src.slice(0, src.length - "testharness.js".length);
                 }
             }
@@ -502,38 +524,191 @@ policies and contribution forms [3].
         status_text[status.FAIL] = "Fail";
         status_text[status.TIMEOUT] = "Timeout";
 
-        var test_table = document.createElement("table");
-        test_table.id = "results";
+        var template = ["table", {"id":"results"},
+                        ["tr", {},
+                         ["th", {}, "Result"],
+                         ["th", {}, "Test Name"],
+                         ["th", {}, "Message"]
+                        ],
+                        function(vars) {
+                            var rv = map(vars.tests, function(test) {
+                                             var status = status_text[test.status];
+                                             return  ["tr", {},
+                                                      ["td", {"class":status.toLowerCase()}, status],
+                                                      ["td", {}, test.name],
+                                                      ["td", {}, test.message]
+                                                     ];
+                                         });
+                            return rv;
+                        }
+                       ];
 
-        var thead = test_table.createTHead();
-        var header_row = thead.insertRow(-1);
-        forEach(["Result", "Test Name", "Message"],
-               function(x)
-                {
-                   var cell = document.createElement("th");
-                   cell.appendChild(document.createTextNode(x));
-                   header_row.appendChild(cell);
-               });
+        log.appendChild(render(template, {tests:tests}));
 
-        forEach(tests,
-                function(test)
-                {
-                    var row = test_table.insertRow(test_table.rows.length);
-                    forEach([status_text[test.status], test.name,
-                             test.message],
-                             function(x)
-                             {
-                                var cell = row.insertCell(-1);
-                                if (x !== null) {
-                                    cell.appendChild(document.createTextNode(x));
-                                }
-                            });
-                    row.cells[0].style.color = test.status === status.PASS ? "green" : "red";
-                });
-        log.appendChild(test_table);
+    }
+    add_completion_callback(output_results);
+
+    /*
+     * Template code
+     */
+
+    function is_single_node(template)
+    {
+        return typeof template[0] === "string";
     }
 
-    add_completion_callback(output_results);
+    function substitute(template, substitutions)
+    {
+        if (typeof template === "function") {
+            var replacement = template(substitutions);
+            if (replacement)
+            {
+                var rv = substitute(replacement, substitutions);
+                return rv;
+            } else {
+                return null;
+            }
+        }
+        else if (is_single_node(template))
+        {
+            return substitute_single(template, substitutions);
+        }
+        else
+        {
+            return filter(map(template, function(x) {
+                                  return substitute(x, substitutions);
+                              }), function(x) {return x !== null;});
+        }
+    }
+
+    function substitute_single(template, substitutions)
+    {
+        var substitution_re = /\${([^ }]*)}/g;
+
+        function do_substitution(input) {
+            var components = input.split(substitution_re);
+            var rv = [];
+            for (var i=0; i<components.length; i+=2)
+            {
+                rv.push(components[i]);
+                if (components[i+1])
+                {
+	            rv.push(substitutions[components[i+1]]);
+                }
+            }
+            return rv;
+        }
+
+        var rv = [];
+        rv.push(do_substitution(template[0]).join(""));
+
+        if (template[0] === "{text}") {
+            substitute_children(template.slice(1), rv);
+        } else {
+            substitute_attrs(template[1], rv);
+            substitute_children(template.slice(2), rv);
+        }
+
+        function substitute_attrs(attrs, rv)
+        {
+            rv[1] = {};
+            for (name in template[1])
+            {
+                if (attrs.hasOwnProperty(name))
+                {
+                    var new_name = do_substitution(name).join("");
+                    var new_value = do_substitution(attrs[name]).join("");
+                    rv[1][new_name] = new_value;
+                };
+            }
+        }
+
+        function substitute_children(children, rv)
+        {
+            for (var i=0; i<children.length; i++)
+            {
+                if (children[i] instanceof Object) {
+                    var replacement = substitute(children[i], substitutions);
+                    if (replacement !== null)
+                    {
+                        if (is_single_node(replacement))
+                        {
+                            rv.push(replacement);
+                        }
+                        else
+                        {
+                            extend(rv, replacement);
+                        }
+                    }
+                }
+                else
+                {
+                    extend(rv, do_substitution(children[i]));
+                }
+            }
+            return rv;
+        }
+
+        return rv;
+    }
+
+    function make_dom_single(template)
+    {
+        if (template[0] === "{text}")
+        {
+            var element = document.createTextNode("");
+            for (var i=1; i<template.length; i++)
+            {
+                element.data += template[i];
+            }
+        }
+        else
+        {
+            var element = document.createElement(template[0]);
+            for (name in template[1]) {
+                if (template[1].hasOwnProperty(name))
+                {
+                    element.setAttribute(name, template[1][name]);
+                }
+            }
+            for (var i=2; i<template.length; i++)
+            {
+                if (template[i] instanceof Object)
+                {
+                    var sub_element = make_dom(template[i]);
+                    element.appendChild(sub_element);
+                }
+                else
+                {
+                    var text_node = document.createTextNode(template[i]);
+                    element.appendChild(text_node);
+                }
+            }
+        }
+
+        return element;
+    }
+
+
+
+    function make_dom(template, substitutions)
+    {
+        if (is_single_node(template))
+        {
+            return make_dom_single(template);
+        }
+        else
+        {
+            return map(template, function(x) {
+                           return make_dom_single(x);
+                       });
+        }
+    }
+
+    function render(template, substitutions)
+    {
+        return make_dom(substitute(template, substitutions));
+    }
 
     /*
      * Utility funcions
@@ -553,18 +728,53 @@ policies and contribution forms [3].
 
     function make_message(function_name, description, error)
     {
-        var message;
-
-        if (description)
-        {
-            message = format("%s (%s): %s", function_name, description, error);
-        }
-        else
-        {
-            message = format("%s: %s", function_name, error);
-        }
+        var message = substitute([["span", {"class":"assert"}, "${function_name}:"],
+                                  function()
+                                  {
+                                      if (description) {
+                                          return [["span"], {"class":"description"}, description];
+                                      } else {
+                                          return null;
+                                      }
+                                  },
+                                  ["div", {"class":"error"}, error]
+                                 ], {function_name:function_name});
 
         return message;
+    }
+
+    function filter(array, callable, thisObj) {
+        var rv = [];
+        for (var i=0; i<array.length; i++)
+        {
+            if (array.hasOwnProperty(i))
+            {
+                var pass = callable.call(thisObj, array[i], i, array);
+                if (pass) {
+                    rv.push(array[i]);
+                }
+            }
+        }
+        return rv;
+    }
+
+    function map(array, callable, thisObj)
+    {
+        var rv = [];
+        rv.length = array.length;
+        for (var i=0; i<array.length; i++)
+        {
+            if (array.hasOwnProperty(i))
+            {
+                rv[i] = callable.call(thisObj, array[i], i, array);
+            }
+        }
+        return rv;
+    }
+
+    function extend(array, items)
+    {
+        Array.prototype.push.apply(array, items);
     }
 
     function forEach (array, callback, thisObj)
@@ -576,23 +786,6 @@ policies and contribution forms [3].
                 callback.call(thisObj, array[i], i, array);
             }
         }
-   }
-
-    function format(template)
-    {
-        var args = Array.prototype.slice.call(arguments, 1);
-        var parts = template.split("%s");
-        var full_string_parts = [];
-
-        for (var i=0; i<parts.length-1; i++)
-        {
-            full_string_parts.push('' + parts[i]);
-            full_string_parts.push('' + args[i]);
-        }
-
-        full_string_parts.push(parts[parts.length - 1]);
-
-       return full_string_parts.join("");
     }
 
     function expose(object, name)

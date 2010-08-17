@@ -1,7 +1,7 @@
 id	reference	title	flags	links	assertion
 [% FOREACH test IN tests %]
 [%+ test.file.replace('\.[a-z]+$', '') +%]	
-[%- test.reference +%]	
+[%- test.references.0.relpath +%]	
 [%- test.title FILTER collapse +%]	
 [%- test.flags.join(',') +%]	
 [%- test.links.join(',').replace(specroot, '') +%]	

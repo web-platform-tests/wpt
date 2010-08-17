@@ -1,16 +1,16 @@
 [% PROCESS "suitedata.tmpl" %]
 [% IF official %]
   <h1>CSS2.1 Conformance Test Suite</h1>
-  <p>This is a [% suites.$suite.status or "ERROR: $suite" %] version of the
-     CSS2.1 Test Suite.</p>
+  <p>This is a <strong>[% suites.$suite.status or "ERROR: $suite" %]</strong>
+     version of the CSS2.1 Test Suite.</p>
 [% ELSE %]
   <h1>CSS2.1 Test Collection</h1>
 [% END %]
 
 [% IF devel %]
- <p>It contains unreviewed tests and <strong>should not be used for testing
-   CSS conformance</strong>. This build exists to aid in test development
-   <strong>only</strong>.
+ <p>This build exists to aid in test suite development and contains unreviewed
+   tests. <strong>The pass/fail results of these tests are not reliable
+   indications of conformance.</strong>
    Please check the latest version of the
    <a href="http://www.w3.org/TR/CSS21/">CSS2.1 specification</a> and the
    <a href="http://www.w3.org/Style/css2-updates/CR-CSS21-20070719-errata.html">errata

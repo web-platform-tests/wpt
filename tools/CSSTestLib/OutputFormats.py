@@ -137,7 +137,7 @@ class XHTMLPrintFormat(XHTMLFormat):
                       output);
       output = re.sub('(</body[^>]*>)',
                       '\1\n' + self.__htmlend % headermeta,
-                      outtput);
+                      output);
     else:
       # add margin rule only when @page statement does not exist
       if not re.search('@page', output):

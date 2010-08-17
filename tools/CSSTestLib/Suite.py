@@ -19,6 +19,7 @@ class CSSTestSuite:
     self.defaultReftestRelpath='reftest.list'
     self.groups = {}
     self.sourcecache = SourceCache()
+    self.formats = ('html4', 'xhtml1') # FIXME, hardcoded list is lame
 
   def addSelftestsByExt(self, dir, ext, groupName='', groupTitle=''):
     """Add tests from directory `dir` by file extension (via `ext`, e.g. ext='.xht').

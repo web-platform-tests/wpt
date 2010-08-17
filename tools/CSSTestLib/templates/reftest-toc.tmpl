@@ -54,8 +54,8 @@
     [% FOREACH ref IN entry.references %]
       [% IF loop.first %]
       <tr>
-        <td rowspan="[% loop.size %]" title="[% entry.title %]">
-          <a href="[% extmap.translate(entry.file) %]">[% entry.name%]</a></td>
+        <td rowspan="[% loop.size %]" title="[% entry.title | collapse | html %]">
+          <a href="[% extmap.translate(entry.file) %]">[% entry.name %]</a></td>
         <td><a href="[% extmap.translate(ref.relpath) %]">[% refCompMap.${ref.type} %]</a></td>
         <td rowspan="[% entry.references.size %]">[% FOREACH flag IN entry.flags %][% IF flag != 'nonHTML' and flag != 'HTMLonly' %]<abbr class="[% flag %]" title="[% flagInfo.$flag.title %]">[% flagInfo.$flag.abbr %]</abbr>[% END %][% END %]</td>
       </tr>

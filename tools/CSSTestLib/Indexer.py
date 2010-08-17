@@ -56,7 +56,8 @@ class Indexer:
     self.extraData  = extraData
     self.overviewCopyExtPat = re.compile('.*%s$' % '|'.join(overviewCopyExts))
     self.overviewTmplNames = overviewTmplNames if overviewTmplNames is not None \
-      else ['index.html.tmpl', 'index.xht.tmpl', 'testinfo.data.tmpl']
+      else ['index.html.tmpl', 'index.xht.tmpl', 'testinfo.data.tmpl',
+            'implementation-report-TEMPLATE.data.tmpl']
 
     # Initialize template engine
     self.templatePath = [join(CSSTestLib.__path__[0], 'templates')]
@@ -123,6 +124,7 @@ class Indexer:
     data['specroot']     = self.suite.specroot
     data['contributors'] = self.contributors
     data['tests']        = self.alltests
+    data['formats']      = self.suite.formats
 
     # Copy simple copy files
     for tmplDir in reversed(self.templatePath):

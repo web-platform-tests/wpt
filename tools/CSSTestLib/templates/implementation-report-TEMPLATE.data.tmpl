@@ -1,0 +1,19 @@
+# UA version OS version
+# UA string (if applicable)
+# http://test.csswg.org/suites/css2.1/DATESTAMP/
+testname    result
+[% FOREACH test IN tests.sort(name) %]
+[% SET skipHTML = 0 %]
+[% SET skipXML = 0 %]
+[% FOREACH flag IN entry.flags %]
+  [% SET skipHTML = 1 IF flag == 'nonHTML' %]
+  [% SET skipXML = 1 IF flag == 'HTMLonly' %]
+[% END %]
+[% UNLESS skipHTML +%]
+html4/[% test.name +%]	?
+[% END %]
+[% UNLESS skipXML +%]
+xhtml1/[% test.name +%]	?
+[% END %]
+[% END %]
+

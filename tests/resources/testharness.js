@@ -10,7 +10,7 @@ policies and contribution forms [3].
 
 (function ()
 {
-    var debug = False;
+    var debug = true;
     // default timeout is 5 seconds, test can override if needed
     var default_timeout = 5000;
 
@@ -489,7 +489,10 @@ policies and contribution forms [3].
                 log.normalize();
             }
         }
-        add_result_callback(on_done);
+         if (document.getElementById("log"))
+         {
+             add_result_callback(on_done);
+         }
      })();
 
     function output_results(tests)
@@ -536,7 +539,7 @@ policies and contribution forms [3].
                                              return  ["tr", {},
                                                       ["td", {"class":status.toLowerCase()}, status],
                                                       ["td", {}, test.name],
-                                                      ["td", {}, test.message]
+                                                      ["td", {}, test.message ? test.message : " "]
                                                      ];
                                          });
                             return rv;
@@ -546,7 +549,10 @@ policies and contribution forms [3].
         log.appendChild(render(template, {tests:tests}));
 
     }
-    add_completion_callback(output_results);
+    if (document.getElementById("log"))
+    {
+        add_completion_callback(output_results);
+    }
 
     /*
      * Template code
@@ -580,6 +586,7 @@ policies and contribution forms [3].
                               }), function(x) {return x !== null;});
         }
     }
+    expose(substitute, "template.substitute");
 
     function substitute_single(template, substitutions)
     {
@@ -709,6 +716,7 @@ policies and contribution forms [3].
     {
         return make_dom(substitute(template, substitutions));
     }
+    expose(render, "template.render");
 
     /*
      * Utility funcions
@@ -790,7 +798,17 @@ policies and contribution forms [3].
 
     function expose(object, name)
     {
-        window[name] = object;
+        var components = name.split(".");
+        var target = window;
+        for (var i=0; i<components.length - 1; i++)
+        {
+            if (!(components[i] in target))
+            {
+                target[components[i]] = {};
+            }
+            target = target[components[i]];
+        }
+        target[components[components.length - 1]] = object;
     }
 
 })();

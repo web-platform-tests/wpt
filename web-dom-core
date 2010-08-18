@@ -19,7 +19,7 @@
 <body class=draft>
 <div class=head id=head>
 <h1>Web DOM Core</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-date:-01-jan-1901>Work in Progress &mdash; Last Update 10 August 2010</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-date:-01-jan-1901>Work in Progress &mdash; Last Update 18 August 2010</h2>
 <dl>
  <dt>Editors
  <dd>Simon Pieters &lt;simonp@opera.com&gt;
@@ -41,7 +41,7 @@
 <h2 class="no-num no-toc" id=issues>Issues</h2>
 
 <ul class=XXX>
- <li>innerHTML etc on all Elements / <code class="IDL fragment"><a href=#document>Document</a> implements <a class=external data-anolis-spec=html href=http://www.whatwg.org/html/#htmldocument>HTMLDocument</a>;</code>?
+ <li>innerHTML etc on all Elements / <code class="IDL fragment" title=""><a href=#document>Document</a> implements <a class=external data-anolis-spec=html href=http://www.whatwg.org/html/#htmldocument>HTMLDocument</a>;</code>?
   <a href=http://lists.w3.org/Archives/Public/public-html/2007Aug/0778.html>public-html/2007Aug/0778.html</a>,
   <a href=http://lists.w3.org/Archives/Public/public-webapi/2007Aug/0069.html>public-webapi/2007Aug/0069.html</a>,
   <a href=http://lists.w3.org/Archives/Public/public-webapi/2007Aug/0070.html>public-webapi/2007Aug/0070.html</a>
@@ -423,7 +423,7 @@ feature</a> with the version "2.0" associated with it.
     <tr><td><a href=#comment><code>Comment</code></a><td><a href=#dom-characterdata-data><code title=dom-CharacterData-data>data</code></a>
     <tr><td><a href=#documentfragment><code>DocumentFragment</code></a><td>&mdash;
   </table>
- <li><p>If <var title="">node</var> is an <a href=#element><code>Element</code></a> node, <span class=XXX>copy its attributes</span>.
+ <li><p>If <var title="">node</var> is an <a href=#element><code>Element</code></a> node, <span class=XXX title="">copy its attributes</span>.
  <li><p>If the <var title="">clone children</var> flag is set, <a href=#clone>clone</a> all the children of <var title="">node</var> and append them to <var title="">copy</var>, with the same <var title="">new ownerDocument</var> and the <var title="">clone children</var> flag being set.
  <li><p>Return <var title="">copy</var>.
 </ol>
@@ -821,7 +821,7 @@ the (<var title="">feature</var>, <var title="">version</var>) tuple on the
 <p>The <dfn id=dom-node-namespaceuri title=dom-Node-namespaceURI><code>namespaceURI</code></dfn> attribute, on getting, must return the namespace that is associated with the node, if there is one and it's not the empty string, or null otherwise.
 
 <p>The <dfn id=dom-node-prefix title=dom-Node-prefix><code>prefix</code></dfn> attribute, on getting, must return the prefix that is associated with the node, if there is one and it's not the empty string, or null otherwise.
-<span class=XXX>And on setting?</span> <!--On setting, it must run the following steps:
+<span class=XXX title="">And on setting?</span> <!--On setting, it must run the following steps:
 
 <ol>
  <li><p>Let <var title>prefix</var> be the value being assigned.
@@ -846,7 +846,7 @@ method must return whether there are any attributes associated with the
 <a href=#context-node>context node</a>, if it is an <a href=#element><code>Element</code></a> node, and false
 otherwise.
 
-<p>The <dfn id=dom-node-baseuri title=dom-Node-baseURI><code>baseURI</code></dfn> attribute must <span class=XXX>...</span>
+<p>The <dfn id=dom-node-baseuri title=dom-Node-baseURI><code>baseURI</code></dfn> attribute must <span class=XXX title="">...</span>
 
 <ol>
  <li value=1><dfn id=dom-node-document_position_disconnected title=dom-Node-DOCUMENT_POSITION_DISCONNECTED><code>DOCUMENT_POSITION_DISCONNECTED</code></dfn>
@@ -862,7 +862,7 @@ otherwise.
  <li value=32><dfn id=dom-node-document_position_implementation_specific title=dom-Node-DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC><code>DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC</code></dfn>
 </ol>
 
-<p>The <dfn id=dom-node-comparedocumentposition title=dom-Node-compareDocumentPosition><code>compareDocumentPosition(<var title="">other</var>)</code></dfn> method must <span class=XXX>...</span>
+<p>The <dfn id=dom-node-comparedocumentposition title=dom-Node-compareDocumentPosition><code>compareDocumentPosition(<var title="">other</var>)</code></dfn> method must <span class=XXX title="">...</span>
 
 <p>The <dfn id=dom-node-textcontent title=dom-Node-textContent><code>textContent</code></dfn> attribute, on getting, must return a concatenation of the <a href=#dom-characterdata-data><code title=dom-CharacterData-data>data</code></a> of all the descendant <a href=#text><code>Text</code></a> nodes of the <a href=#context-node>context node</a>, in <a href=#tree-order>tree order</a>. On setting, it must run the following steps:
 
@@ -877,11 +877,11 @@ otherwise.
 <p>The <dfn id=dom-node-issamenode title=dom-Node-isSameNode><code>isSameNode(<var title="">other</var>)</code></dfn> method must return true if <var title="">other</var> is a reference to the same object as the <a href=#context-node>context
 node</a>, and false otherwise.
 
-<p>The <dfn id=dom-node-lookupprefix title=dom-Node-lookupPrefix><code>lookupPrefix(<var title="">namespaceURI</var>)</code></dfn> method must <span class=XXX>...</span>
+<p>The <dfn id=dom-node-lookupprefix title=dom-Node-lookupPrefix><code>lookupPrefix(<var title="">namespaceURI</var>)</code></dfn> method must <span class=XXX title="">...</span>
 
-<p>The <dfn id=dom-node-isdefaultnamespace title=dom-Node-isDefaultNamespace><code>isDefaultNamespace(<var title="">namespaceURI</var>)</code></dfn> method must <span class=XXX>...</span>
+<p>The <dfn id=dom-node-isdefaultnamespace title=dom-Node-isDefaultNamespace><code>isDefaultNamespace(<var title="">namespaceURI</var>)</code></dfn> method must <span class=XXX title="">...</span>
 
-<p>The <dfn id=dom-node-lookupnamespaceuri title=dom-Node-lookupNamespaceURI><code>lookupNamespaceURI(<var title="">prefix</var>)</code></dfn> method must <span class=XXX>...</span>
+<p>The <dfn id=dom-node-lookupnamespaceuri title=dom-Node-lookupNamespaceURI><code>lookupNamespaceURI(<var title="">prefix</var>)</code></dfn> method must <span class=XXX title="">...</span>
 
 <p class=XXX>clarify lookupNamespaceURI <a href=http://www.w3.org/mid/4878DFC6.40401@lachy.id.au>http://www.w3.org/mid/4878DFC6.40401@lachy.id.au</a>; lookupNamespaceURI, isDefaultNamespace <a href="http://html5.org/tools/web-apps-tracker?from=2125&amp;to=2126">http://html5.org/tools/web-apps-tracker?from=2125&amp;to=2126</a>
 
@@ -1582,7 +1582,7 @@ the <a href=#context-node>context node</a> on which the method was invoked.
 <p>The <dfn id=dom-element-children title=dom-Element-children><code>children</code></dfn> attribute
 must return an <a href=#htmlcollection><code>HTMLCollection</code></a> <a href=#concept-collection title=concept-collection>collection</a>, rooted at the <a href=#context-node>context
 node</a>, whose filter matches only <a href=#element><code>Element</code></a> nodes whose <a href=#dom-node-parentnode><code title=dom-Node-parentNode>parentNode</code></a> is the <a href=#context-node>context node</a>.
-<span class=XXX>Or a <a href=#nodelist><code>NodeList</code></a>?</span> 
+<span class=XXX title="">Or a <a href=#nodelist><code>NodeList</code></a>?</span>
 
 
 <h3 id=interface-documenttype><span class=secno>4.6 </span>Interface <a href=#documenttype><code>DocumentType</code></a></h3>
@@ -1739,7 +1739,7 @@ node in the <a href=#concept-collection title=concept-collection>collection</a>.
 on getting, return the number of nodes <a href=#represented-by-the-collection>represented by the
 collection</a>.
 
-<p><a href=#nodelist><code>NodeList</code></a>s are enumerable. <span class=XXX>Explain? <code title="">for ... in</code></span>
+<p><a href=#nodelist><code>NodeList</code></a>s are enumerable. <span class=XXX title="">Explain? <code title="">for ... in</code></span>
 
 
 <h3 id=interface-htmlcollection><span class=secno>5.2 </span>Interface <a href=#htmlcollection><code>HTMLCollection</code></a></h3>

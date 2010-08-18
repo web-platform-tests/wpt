@@ -42,7 +42,7 @@
 <h2 class="no-num no-toc">Issues</h2>
 
 <ul class=XXX>
- <li>innerHTML etc on all Elements / <code class="IDL fragment"><span>Document</span> implements <span data-anolis-spec=html>HTMLDocument</span>;</code>?
+ <li>innerHTML etc on all Elements / <code class="IDL fragment" title><span>Document</span> implements <span data-anolis-spec=html>HTMLDocument</span>;</code>?
   <a href=http://lists.w3.org/Archives/Public/public-html/2007Aug/0778.html>public-html/2007Aug/0778.html</a>,
   <a href=http://lists.w3.org/Archives/Public/public-webapi/2007Aug/0069.html>public-webapi/2007Aug/0069.html</a>,
   <a href=http://lists.w3.org/Archives/Public/public-webapi/2007Aug/0070.html>public-webapi/2007Aug/0070.html</a>
@@ -405,7 +405,7 @@ feature</span> with the version "2.0" associated with it.
     <tr><td><code>Comment</code><td><code title=dom-CharacterData-data>data</code>
     <tr><td><code>DocumentFragment</code><td>&mdash;
   </table>
- <li><p>If <var title>node</var> is an <code>Element</code> node, <span class=XXX>copy its attributes</span>.
+ <li><p>If <var title>node</var> is an <code>Element</code> node, <span class=XXX title>copy its attributes</span>.
  <li><p>If the <var title>clone children</var> flag is set, <span>clone</span> all the children of <var title>node</var> and append them to <var title>copy</var>, with the same <var title>new ownerDocument</var> and the <var title>clone children</var> flag being set.
  <li><p>Return <var title>copy</var>.
 </ol>
@@ -831,7 +831,7 @@ the (<var title>feature</var>, <var title>version</var>) tuple on the
 <p>The <dfn title=dom-Node-namespaceURI><code>namespaceURI</code></dfn> attribute, on getting, must return the namespace that is associated with the node, if there is one and it's not the empty string, or null otherwise.
 
 <p>The <dfn title=dom-Node-prefix><code>prefix</code></dfn> attribute, on getting, must return the prefix that is associated with the node, if there is one and it's not the empty string, or null otherwise.
-<span class=XXX>And on setting?</span> <!--On setting, it must run the following steps:
+<span class=XXX title>And on setting?</span> <!--On setting, it must run the following steps:
 
 <ol>
  <li><p>Let <var title>prefix</var> be the value being assigned.
@@ -856,7 +856,7 @@ method must return whether there are any attributes associated with the
 <span>context node</span>, if it is an <code>Element</code> node, and false
 otherwise.
 
-<p>The <dfn title=dom-Node-baseURI><code>baseURI</code></dfn> attribute must <span class=XXX>...</span>
+<p>The <dfn title=dom-Node-baseURI><code>baseURI</code></dfn> attribute must <span class=XXX title>...</span>
 
 <ol>
  <li value=1><dfn title=dom-Node-DOCUMENT_POSITION_DISCONNECTED><code>DOCUMENT_POSITION_DISCONNECTED</code></dfn>
@@ -874,7 +874,7 @@ otherwise.
 
 <p>The <dfn
 title=dom-Node-compareDocumentPosition><code>compareDocumentPosition(<var
-title>other</var>)</code></dfn> method must <span class=XXX>...</span>
+title>other</var>)</code></dfn> method must <span class=XXX title>...</span>
 
 <p>The <dfn title=dom-Node-textContent><code>textContent</code></dfn> attribute, on getting, must return a concatenation of the <code title=dom-CharacterData-data>data</code> of all the descendant <code>Text</code> nodes of the <span>context node</span>, in <span>tree order</span>. On setting, it must run the following steps:
 
@@ -892,13 +892,13 @@ title>other</var> is a reference to the same object as the <span>context
 node</span>, and false otherwise.
 
 <p>The <dfn title=dom-Node-lookupPrefix><code>lookupPrefix(<var
-title>namespaceURI</var>)</code></dfn> method must <span class=XXX>...</span>
+title>namespaceURI</var>)</code></dfn> method must <span class=XXX title>...</span>
 
 <p>The <dfn title=dom-Node-isDefaultNamespace><code>isDefaultNamespace(<var
-title>namespaceURI</var>)</code></dfn> method must <span class=XXX>...</span>
+title>namespaceURI</var>)</code></dfn> method must <span class=XXX title>...</span>
 
 <p>The <dfn title=dom-Node-lookupNamespaceURI><code>lookupNamespaceURI(<var
-title>prefix</var>)</code></dfn> method must <span class=XXX>...</span>
+title>prefix</var>)</code></dfn> method must <span class=XXX title>...</span>
 
 <p class=XXX>clarify lookupNamespaceURI <a href=http://www.w3.org/mid/4878DFC6.40401@lachy.id.au>http://www.w3.org/mid/4878DFC6.40401@lachy.id.au</a>; lookupNamespaceURI, isDefaultNamespace <a href="http://html5.org/tools/web-apps-tracker?from=2125&amp;to=2126">http://html5.org/tools/web-apps-tracker?from=2125&amp;to=2126</a>
 
@@ -1737,7 +1737,7 @@ must return an <code>HTMLCollection</code> <span
 title=concept-collection>collection</span>, rooted at the <span>context
 node</span>, whose filter matches only <code>Element</code> nodes whose <code
 title=dom-Node-parentNode>parentNode</code> is the <span>context node</span>.
-<span class=XXX>Or a <code>NodeList</code>?</span> 
+<span class=XXX title>Or a <code>NodeList</code>?</span>
 
 
 <h3>Interface <code>DocumentType</code></h3>
@@ -1913,7 +1913,7 @@ title=concept-collection>collection</span>, then the method must return null.
 on getting, return the number of nodes <span>represented by the
 collection</span>.
 
-<p><code>NodeList</code>s are enumerable. <span class=XXX>Explain? <code
+<p><code>NodeList</code>s are enumerable. <span class=XXX title>Explain? <code
 title>for ... in</code></span>
 
 

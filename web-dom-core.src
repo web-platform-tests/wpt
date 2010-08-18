@@ -391,7 +391,7 @@ feature</span> with the version "2.0" associated with it.
 <p>When a UA is to <dfn>clone</dfn> a <var title>node</var>, with a <var title>new ownerDocument</var> and with a <var title>clone children</var> flag, it must run the following steps:
 
 <ol>
- <li><p>If <var title>node</var> is a <code>DocumentType</code> node, raise a <code title=dom-DOMException-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</code> exception and abort these steps.
+ <li><p>If <var title>node</var> is a <code>DocumentType</code> node, raise a <code title=dom-DOMException-DATA_CLONE_ERR>DATA_CLONE_ERR</code> exception and abort these steps.
  <li>
   <p>Let <var title>copy</var> be a new <code>Node</code> that implements the same interfaces as <var title>node</var>, with <code title=dom-Node-ownerDocument>ownerDocument</code> set to <var title>new ownerDocument</var>, <code title="dom-Node-prefix">prefix</code>, <code title="dom-Node-localName">localName</code> and <code title="dom-Node-namespaceURI">namespaceURI</code> attributes set to the values of the attributes on <var title>node</var> with the same names, and other attributes set to the values of the attributes on <var title>node</var> with the same names depending on the type of <var title>node</var> according to the following table:</p>
   <table>
@@ -468,6 +468,7 @@ title>http://www.w3.org/2000/xmlns/</code>.
   const unsigned short <span title=dom-DOMException-URL_MISMATCH_ERR>URL_MISMATCH_ERR</span> = 21;
   const unsigned short <span title=dom-DOMException-QUOTA_EXCEEDED_ERR>QUOTA_EXCEEDED_ERR</span> = 22;
   const unsigned short <span title=dom-DOMException-TIMEOUT_ERR>TIMEOUT_ERR</span> = 23;
+  const unsigned short <span title=dom-DOMException-DATA_CLONE_ERR>DATA_CLONE_ERR</span> = 24;
   const unsigned short <span title=dom-DOMException-PARSE_ERR>PARSE_ERR</span> = 81;
   const unsigned short <span title=dom-DOMException-SERIALIZE_ERR>SERIALIZE_ERR</span> = 82;
   unsigned short <span title=dom-DOMException-code>code</span>;
@@ -502,6 +503,7 @@ must return the code for the exception, which must be one of the following:
  <li value="21"><dfn title=dom-DOMException-URL_MISMATCH_ERR><code>URL_MISMATCH_ERR</code></dfn></li>
  <li value="22"><dfn title=dom-DOMException-QUOTA_EXCEEDED_ERR><code>QUOTA_EXCEEDED_ERR</code></dfn></li>
  <li value="23"><dfn title=dom-DOMException-TIMEOUT_ERR><code>TIMEOUT_ERR</code></dfn></li>
+ <li value="24"><dfn title=dom-DOMException-DATA_CLONE_ERR><code>DATA_CLONE_ERR</code></dfn></li>
  <li value="81"><dfn title=dom-DOMException-PARSE_ERR><code>PARSE_ERR</code></dfn></li>
  <li value="82"><dfn title=dom-DOMException-SERIALIZE_ERR><code>SERIALIZE_ERR</code></dfn></li>
 </ol>

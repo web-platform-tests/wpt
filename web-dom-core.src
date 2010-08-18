@@ -66,6 +66,11 @@
 
 
 
+<h2 class="no-num no-toc">List of tables</h2>
+<div id=anolis-listoftables></div>
+
+
+
 <h2>Common infrastructure</h2>
 <h3>Terminology</h3>
 <p>The term <dfn>tree order</dfn> means a pre-order, depth-first traversal of DOM nodes involved (through the <code title=dom-Node-parentNode>parentNode</code>/<code title=dom-Node-childNodes>childNodes</code> relationship).
@@ -395,6 +400,7 @@ feature</span> with the version "2.0" associated with it.
  <li>
   <p>Let <var title>copy</var> be a new <code>Node</code> that implements the same interfaces as <var title>node</var>, with <code title=dom-Node-ownerDocument>ownerDocument</code> set to <var title>new ownerDocument</var>, <code title="dom-Node-prefix">prefix</code>, <code title="dom-Node-localName">localName</code> and <code title="dom-Node-namespaceURI">namespaceURI</code> attributes set to the values of the attributes on <var title>node</var> with the same names, and other attributes set to the values of the attributes on <var title>node</var> with the same names depending on the type of <var title>node</var> according to the following table:</p>
   <table>
+   <caption>Cloned attributes</caption>
    <thead>
     <tr><th>Type of <var title>node</var><th>Attributes
    <tbody>
@@ -614,16 +620,20 @@ must return the name of the exception constant as a string.</p>
 <p>The <dfn title=dom-Node-nodeName><code>nodeName</code></dfn>, <dfn title=dom-Node-nodeValue><code>nodeValue</code></dfn> and <dfn title=dom-Node-nodeType><code>nodeType</code></dfn> attributes must, on getting, return what is in the second, third and forth column, respectively, if the node also implements the interface in the first column on the same row in the following table:
 
 <table>
-<thead><tr><th>Interface<th><code title=dom-Node-nodeName>nodeName</code><th><code title=dom-Node-nodeValue>nodeValue</code><th><code title=dom-Node-nodeType>nodeType</code>
-<tbody>
-<tr><td><code>Element</code><td>same as <code title=dom-Element-tagName>tagName</code><td>null<td>1
-<tr><td><code>Attr</code><td>same as <code title=dom-Attr-name>name</code><td>same as <code title=dom-Attr-value>value</code><td>2
-<tr><td><code>Text</code><td>"<code title>#text</code>"<td>same as <code title=dom-CharacterData-data>data</code><td>3
-<tr><td><code>ProcessingInstruction</code><td>same as <code title=dom-ProcessingInstruction-target>target</code><td>same as <code title=dom-ProcessingInstruction-data>data</code><td>7
-<tr><td><code>Comment</code><td>"<code title>#comment</code>"<td>same as <code title=dom-CharacterData-data>data</code><td>8
-<tr><td><code>Document</code><td>"<code title>#document</code>"<td>null<td>9
-<tr><td><code>DocumentType</code><td>same as <code title=dom-DocumentType-name>name</code><td>null<td>10
-<tr><td><code>DocumentFragment</code><td>"<code title>#document-fragment</code>"<td>null<td>11
+ <caption>Value of <code title=dom-Node-nodeName>nodeName</code>, <code
+ title=dom-Node-nodeValue>nodeValue</code>, <code
+ title=dom-Node-nodeType>nodeType</code></caption>
+ <thead>
+  <tr><th>Interface<th><code title=dom-Node-nodeName>nodeName</code><th><code title=dom-Node-nodeValue>nodeValue</code><th><code title=dom-Node-nodeType>nodeType</code>
+ <tbody>
+  <tr><td><code>Element</code><td>same as <code title=dom-Element-tagName>tagName</code><td>null<td>1
+  <tr><td><code>Attr</code><td>same as <code title=dom-Attr-name>name</code><td>same as <code title=dom-Attr-value>value</code><td>2
+  <tr><td><code>Text</code><td>"<code title>#text</code>"<td>same as <code title=dom-CharacterData-data>data</code><td>3
+  <tr><td><code>ProcessingInstruction</code><td>same as <code title=dom-ProcessingInstruction-target>target</code><td>same as <code title=dom-ProcessingInstruction-data>data</code><td>7
+  <tr><td><code>Comment</code><td>"<code title>#comment</code>"<td>same as <code title=dom-CharacterData-data>data</code><td>8
+  <tr><td><code>Document</code><td>"<code title>#document</code>"<td>null<td>9
+  <tr><td><code>DocumentType</code><td>same as <code title=dom-DocumentType-name>name</code><td>null<td>10
+  <tr><td><code>DocumentFragment</code><td>"<code title>#document-fragment</code>"<td>null<td>11
 </table>
 
 <p>The <dfn title=dom-Node-parentNode><code>parentNode</code></dfn> attribute

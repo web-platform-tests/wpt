@@ -19,7 +19,7 @@
 <body class=draft>
 <div class=head id=head>
 <h1>Web DOM Core</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-date:-01-jan-1901>Work in Progress &mdash; Last Update 18 August 2010</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-18-august-2010>Work in Progress &mdash; Last Update 18 August 2010</h2>
 <dl>
  <dt>Editors
  <dd>Simon Pieters &lt;simonp@opera.com&gt;
@@ -78,7 +78,7 @@
      <li><a href=#space-separated-tokens><span class=secno>1.4.2 </span>Space-separated tokens</a></ol></li>
    <li><a href=#dom-features><span class=secno>1.5 </span>DOM features</a></li>
    <li><a href=#cloning-nodes><span class=secno>1.6 </span>Cloning nodes</a></li>
-   <li><a href=#legal-hierarchy><span class=secno>1.7 </span>Legal hierarchy</a></li>
+   <li><a href=#legal-hierarchy-0><span class=secno>1.7 </span>Legal hierarchy</a></li>
    <li><a href=#namespaces><span class=secno>1.8 </span>Namespaces</a></ol></li>
  <li><a href=#basic-types><span class=secno>2 </span>Basic types</a></li>
  <li><a href=#exceptions><span class=secno>3 </span>Exceptions</a>
@@ -112,6 +112,11 @@
  <li><a class=no-num href=#references>References</a></li>
  <li><a class=no-num href=#acknowledgements>Acknowledgements</a></ol>
 <!--end-toc-->
+
+
+
+<h2 class="no-num no-toc" id=list-of-tables>List of tables</h2>
+<div id=anolis-listoftables><ol><li><a href=#anolis-table-1>Cloned attributes</a><li><a href=#anolis-table-2>Value of nodeName, nodeValue, nodeType</a></ol></div>
 
 
 
@@ -412,7 +417,8 @@ feature</a> with the version "2.0" associated with it.
  <li><p>If <var title="">node</var> is a <a href=#documenttype><code>DocumentType</code></a> node, raise a <a href=#dom-domexception-data_clone_err><code title=dom-DOMException-DATA_CLONE_ERR>DATA_CLONE_ERR</code></a> exception and abort these steps.
  <li>
   <p>Let <var title="">copy</var> be a new <a href=#node><code>Node</code></a> that implements the same interfaces as <var title="">node</var>, with <a href=#dom-node-ownerdocument><code title=dom-Node-ownerDocument>ownerDocument</code></a> set to <var title="">new ownerDocument</var>, <a href=#dom-node-prefix><code title=dom-Node-prefix>prefix</code></a>, <a href=#dom-node-localname><code title=dom-Node-localName>localName</code></a> and <a href=#dom-node-namespaceuri><code title=dom-Node-namespaceURI>namespaceURI</code></a> attributes set to the values of the attributes on <var title="">node</var> with the same names, and other attributes set to the values of the attributes on <var title="">node</var> with the same names depending on the type of <var title="">node</var> according to the following table:</p>
-  <table>
+  <table id=anolis-table-1>
+   <caption>Table 1: Cloned attributes</caption>
    <thead>
     <tr><th>Type of <var title="">node</var><th>Attributes
    <tbody>
@@ -429,8 +435,8 @@ feature</a> with the version "2.0" associated with it.
 </ol>
 
 
-<h3 id=legal-hierarchy><span class=secno>1.7 </span>Legal hierarchy</h3>
-<p>A <a href=#node><code>Node</code></a> is said to have a <dfn id=legal-hierarchy-0>legal hierarchy</dfn> if all the following conditions are true:
+<h3 id=legal-hierarchy-0><span class=secno>1.7 </span>Legal hierarchy</h3>
+<p>A <a href=#node><code>Node</code></a> is said to have a <dfn id=legal-hierarchy>legal hierarchy</dfn> if all the following conditions are true:
 
 <ul>
  <li><p>The <a href=#node><code>Node</code></a> is a <a href=#document><code>Document</code></a> node or an <a href=#attr><code>Attr</code></a> node and has no parent node.
@@ -439,7 +445,7 @@ feature</a> with the version "2.0" associated with it.
  <li><p>The <a href=#node><code>Node</code></a> is an <a href=#attr><code>Attr</code></a> node, a <a href=#text><code>Text</code></a> node, a <a href=#processinginstruction><code>ProcessingInstruction</code></a> node, a <a href=#comment><code>Comment</code></a> node, or a <a href=#documenttype><code>DocumentType</code></a> node, and has no child nodes.
 </ul>
 
-<p>Before running the steps of an algorithm of a method or attribute in this specification, the user agent must check that running the algorithm will result in a <a href=#legal-hierarchy-0>legal hierarchy</a>. If it won't, then the user agent must instead raise a <a href=#dom-domexception-hierarchy_request_err><code title=dom-DOMException-HIERARCHY_REQUEST_ERR>HIERARCHY_REQUEST_ERR</code></a> exception.
+<p>Before running the steps of an algorithm of a method or attribute in this specification, the user agent must check that running the algorithm will result in a <a href=#legal-hierarchy>legal hierarchy</a>. If it won't, then the user agent must instead raise a <a href=#dom-domexception-hierarchy_request_err><code title=dom-DOMException-HIERARCHY_REQUEST_ERR>HIERARCHY_REQUEST_ERR</code></a> exception.
 
 
 <h3 id=namespaces><span class=secno>1.8 </span>Namespaces</h3>
@@ -628,17 +634,19 @@ must return the name of the exception constant as a string.</p>
 
 <p>The <dfn id=dom-node-nodename title=dom-Node-nodeName><code>nodeName</code></dfn>, <dfn id=dom-node-nodevalue title=dom-Node-nodeValue><code>nodeValue</code></dfn> and <dfn id=dom-node-nodetype title=dom-Node-nodeType><code>nodeType</code></dfn> attributes must, on getting, return what is in the second, third and forth column, respectively, if the node also implements the interface in the first column on the same row in the following table:
 
-<table>
-<thead><tr><th>Interface<th><a href=#dom-node-nodename><code title=dom-Node-nodeName>nodeName</code></a><th><a href=#dom-node-nodevalue><code title=dom-Node-nodeValue>nodeValue</code></a><th><a href=#dom-node-nodetype><code title=dom-Node-nodeType>nodeType</code></a>
-<tbody>
-<tr><td><a href=#element><code>Element</code></a><td>same as <a href=#dom-element-tagname><code title=dom-Element-tagName>tagName</code></a><td>null<td>1
-<tr><td><a href=#attr><code>Attr</code></a><td>same as <a href=#dom-attr-name><code title=dom-Attr-name>name</code></a><td>same as <a href=#dom-attr-value><code title=dom-Attr-value>value</code></a><td>2
-<tr><td><a href=#text><code>Text</code></a><td>"<code title="">#text</code>"<td>same as <a href=#dom-characterdata-data><code title=dom-CharacterData-data>data</code></a><td>3
-<tr><td><a href=#processinginstruction><code>ProcessingInstruction</code></a><td>same as <a href=#dom-processinginstruction-target><code title=dom-ProcessingInstruction-target>target</code></a><td>same as <a href=#dom-processinginstruction-data><code title=dom-ProcessingInstruction-data>data</code></a><td>7
-<tr><td><a href=#comment><code>Comment</code></a><td>"<code title="">#comment</code>"<td>same as <a href=#dom-characterdata-data><code title=dom-CharacterData-data>data</code></a><td>8
-<tr><td><a href=#document><code>Document</code></a><td>"<code title="">#document</code>"<td>null<td>9
-<tr><td><a href=#documenttype><code>DocumentType</code></a><td>same as <a href=#dom-documenttype-name><code title=dom-DocumentType-name>name</code></a><td>null<td>10
-<tr><td><a href=#documentfragment><code>DocumentFragment</code></a><td>"<code title="">#document-fragment</code>"<td>null<td>11
+<table id=anolis-table-2>
+ <caption>Table 2: Value of <a href=#dom-node-nodename><code title=dom-Node-nodeName>nodeName</code></a>, <a href=#dom-node-nodevalue><code title=dom-Node-nodeValue>nodeValue</code></a>, <a href=#dom-node-nodetype><code title=dom-Node-nodeType>nodeType</code></a></caption>
+ <thead>
+  <tr><th>Interface<th><a href=#dom-node-nodename><code title=dom-Node-nodeName>nodeName</code></a><th><a href=#dom-node-nodevalue><code title=dom-Node-nodeValue>nodeValue</code></a><th><a href=#dom-node-nodetype><code title=dom-Node-nodeType>nodeType</code></a>
+ <tbody>
+  <tr><td><a href=#element><code>Element</code></a><td>same as <a href=#dom-element-tagname><code title=dom-Element-tagName>tagName</code></a><td>null<td>1
+  <tr><td><a href=#attr><code>Attr</code></a><td>same as <a href=#dom-attr-name><code title=dom-Attr-name>name</code></a><td>same as <a href=#dom-attr-value><code title=dom-Attr-value>value</code></a><td>2
+  <tr><td><a href=#text><code>Text</code></a><td>"<code title="">#text</code>"<td>same as <a href=#dom-characterdata-data><code title=dom-CharacterData-data>data</code></a><td>3
+  <tr><td><a href=#processinginstruction><code>ProcessingInstruction</code></a><td>same as <a href=#dom-processinginstruction-target><code title=dom-ProcessingInstruction-target>target</code></a><td>same as <a href=#dom-processinginstruction-data><code title=dom-ProcessingInstruction-data>data</code></a><td>7
+  <tr><td><a href=#comment><code>Comment</code></a><td>"<code title="">#comment</code>"<td>same as <a href=#dom-characterdata-data><code title=dom-CharacterData-data>data</code></a><td>8
+  <tr><td><a href=#document><code>Document</code></a><td>"<code title="">#document</code>"<td>null<td>9
+  <tr><td><a href=#documenttype><code>DocumentType</code></a><td>same as <a href=#dom-documenttype-name><code title=dom-DocumentType-name>name</code></a><td>null<td>10
+  <tr><td><a href=#documentfragment><code>DocumentFragment</code></a><td>"<code title="">#document-fragment</code>"<td>null<td>11
 </table>
 
 <p>The <dfn id=dom-node-parentnode title=dom-Node-parentNode><code>parentNode</code></dfn> attribute

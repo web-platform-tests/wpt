@@ -10,7 +10,7 @@ policies and contribution forms [3].
 
 (function ()
 {
-    var debug = true;
+    var debug = false;
     // default timeout is 5 seconds, test can override if needed
     var default_timeout = 5000;
 

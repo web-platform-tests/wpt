@@ -10,7 +10,7 @@ policies and contribution forms [3].
 
 (function ()
 {
-    var debug = true;
+    var debug = false;
     // default timeout is 5 seconds, test can override if needed
     var default_timeout = 5000;
 
@@ -95,9 +95,9 @@ policies and contribution forms [3].
           */
          var message = make_message("assert_equals", description,
                                     [["{text}", "expected "],
-                                     ["span", {"class":"expected"}, expected],
+                                     ["span", {"class":"expected"}, String(expected)],
                                      ["{text}", "got "],
-                                     ["span", {"class":"actual"}, actual]]);
+                                     ["span", {"class":"actual"}, String(actual)]]);
          if (expected !== expected)
          {
              //NaN case
@@ -370,6 +370,10 @@ policies and contribution forms [3].
                  function()
                  {
                      this_obj.all_loaded = true;
+                     if (document.getElementById("log"))
+                     {
+                         add_completion_callback(output_results);
+                     }
                      if (this_obj.all_done())
                      {
                          this_obj.notify_results();
@@ -549,10 +553,7 @@ policies and contribution forms [3].
         log.appendChild(render(template, {tests:tests}));
 
     }
-    if (document.getElementById("log"))
-    {
-        add_completion_callback(output_results);
-    }
+
 
     /*
      * Template code
@@ -600,14 +601,14 @@ policies and contribution forms [3].
                 rv.push(components[i]);
                 if (components[i+1])
                 {
-	            rv.push(substitutions[components[i+1]]);
+                    rv.push(substitutions[components[i+1]]);
                 }
             }
             return rv;
         }
 
         var rv = [];
-        rv.push(do_substitution(template[0]).join(""));
+        rv.push(do_substitution(String(template[0])).join(""));
 
         if (template[0] === "{text}") {
             substitute_children(template.slice(1), rv);
@@ -650,7 +651,7 @@ policies and contribution forms [3].
                 }
                 else
                 {
-                    extend(rv, do_substitution(children[i]));
+                    extend(rv, do_substitution(String(children[i])));
                 }
             }
             return rv;
@@ -740,7 +741,7 @@ policies and contribution forms [3].
                                   function()
                                   {
                                       if (description) {
-                                          return [["span"], {"class":"description"}, description];
+                                          return ["span", {"class":"description"}, description];
                                       } else {
                                           return null;
                                       }

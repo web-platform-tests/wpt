@@ -470,29 +470,29 @@ policies and contribution forms [3].
     (function show_status() {
         var done_count = 0;
          function on_done(test, tests) {
-            var log = document.getElementById("log");
-            done_count++;
-            if (log)
-            {
-                if (log.lastChild) {
-                    log.removeChild(log.lastChild);
-                }
-                var nodes = render([["{text}", "Running, ${done} complete"],
-                                   function() {
-                                       if (tests.all_done) {
-                                           return ["{text}", "${pending} remain"];
-                                       } else {
-                                           return null;
-                                       }
-                                   }
-                                   ], {done:done_count,
-                                       pending:tests.num_pending});
-                forEach(nodes, function(node) {
-                            log.appendChild(node);
-                        });
-                log.normalize();
-            }
-        }
+             var log = document.getElementById("log");
+             done_count++;
+             if (log)
+             {
+                 if (log.lastChild) {
+                     log.removeChild(log.lastChild);
+                 }
+                 var nodes = render([["{text}", "Running, ${done} complete"],
+                                 function() {
+                                     if (tests.all_done) {
+                                         return ["{text}", " ${pending} remain"];
+                                     } else {
+                                         return null;
+                                     }
+                                 }
+                                    ], {done:done_count,
+                                        pending:tests.num_pending});
+                 forEach(nodes, function(node) {
+                             log.appendChild(node);
+                         });
+                 log.normalize();
+             }
+         }
          if (document.getElementById("log"))
          {
              add_result_callback(on_done);
@@ -735,7 +735,7 @@ policies and contribution forms [3].
         this.message = message;
     }
 
-    function make_message(function_name, description, error)
+    function make_message(function_name, description, error, substitutions)
     {
         var message = substitute([["span", {"class":"assert"}, "${function_name}:"],
                                   function()
@@ -747,7 +747,8 @@ policies and contribution forms [3].
                                       }
                                   },
                                   ["div", {"class":"error"}, error]
-                                 ], {function_name:function_name});
+                                 ], merge({function_name:function_name},
+                                         substitutions));
 
         return message;
     }
@@ -795,6 +796,20 @@ policies and contribution forms [3].
                 callback.call(thisObj, array[i], i, array);
             }
         }
+    }
+
+    function merge(a,b)
+    {
+        var rv = {};
+        var p;
+        for (p in a)
+        {
+            rv[p] = a[p];
+        }
+        for (p in b) {
+            rv[p] = b[p];
+        }
+        return rv;
     }
 
     function expose(object, name)

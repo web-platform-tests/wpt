@@ -520,7 +520,10 @@ policies and contribution forms [3].
             var stylesheet = document.createElement("link");
             stylesheet.setAttribute("rel", "stylesheet");
             stylesheet.setAttribute("href", prefix + "testharness.css");
-            document.getElementsByTagName("head")[0].appendChild(stylesheet);
+            var heads = document.getElementsByTagName("head");
+            if (heads) {
+                heads[0].appendChild(stylesheet);
+            }
         }
 
         var status_text = {};

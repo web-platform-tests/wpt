@@ -505,25 +505,22 @@ policies and contribution forms [3].
         while (log.lastChild) {
             log.removeChild(log.lastChild);
         }
-        var head = document.getElementsByTagName("head")[0];
         var prefix = null;
-        for (var i=0; i<head.childNodes.length; i++)
+        var scripts = document.getElementsByTagName("script");
+        for (var i=0; i<scripts.length; i++)
         {
-            var child = head.childNodes[i];
-            if (child.nodeName.toLowerCase() === "script")
+            var src = scripts[i].src;
+            if (src.slice(src.length - "testharness.js".length) === "testharness.js")
             {
-                var src = child.src;
-                if (src.slice(src.length - "testharness.js".length) === "testharness.js")
-                {
-                    prefix = src.slice(0, src.length - "testharness.js".length);
-                }
+                prefix = src.slice(0, src.length - "testharness.js".length);
+                break;
             }
         }
         if (prefix != null) {
             var stylesheet = document.createElement("link");
             stylesheet.setAttribute("rel", "stylesheet");
             stylesheet.setAttribute("href", prefix + "testharness.css");
-            head.appendChild(stylesheet);
+            document.getElementsByTagName("head")[0].appendChild(stylesheet);
         }
 
         var status_text = {};

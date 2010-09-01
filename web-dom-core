@@ -429,7 +429,20 @@ feature</a> with the version "2.0" associated with it.
     <tr><td><a href=#comment><code>Comment</code></a><td><a href=#dom-characterdata-data><code title=dom-CharacterData-data>data</code></a>
     <tr><td><a href=#documentfragment><code>DocumentFragment</code></a><td>&mdash;
   </table>
- <li><p>If <var title="">node</var> is an <a href=#element><code>Element</code></a> node, <span class=XXX title="">copy its attributes</span>.
+ <li>
+  <p>If <var title="">node</var> is an <a href=#element><code>Element</code></a> node, let <var title="">copy</var>'s <a href=#dom-node-attributes><code title=dom-Node-attributes>attributes</code></a> be a new
+  <a href=#namednodemap><code>NamedNodeMap</code></a>, and for each <a href=#attr><code>Attr</code></a> <var title="">old
+  attribute</var> in <var title="">node</var>'s <a href=#dom-node-attributes><code title=dom-Node-attributes>attributes</code></a>, run the following substeps:
+  <ol>
+   <li>Let <var title="">new attribute</var> be a new <a href=#concept-attribute title=concept-attribute>attribute</a>, with the <var title="">old
+   attribute</var>'s <a href=#concept-attribute-name title=concept-attribute-name>name</a> as its <a href=#concept-attribute-name title=concept-attribute-name>name</a> and <var title="">copy</var> as its
+   <a href=#concept-attribute-element title=concept-attribute-element>element</a>.
+   <li>Let <var title="">new attribute</var>'s <a href=#dom-node-prefix><code title=dom-Node-prefix>prefix</code></a> be the <var title="">old attribute</var>'s
+   <a href=#dom-node-prefix><code title=dom-Node-prefix>prefix</code></a>.
+   <li>Let the <var title="">new attribute</var>'s <a href=#dom-attr-value><code title=dom-Attr-value>value</code></a> be the <var title="">old attribute</var>'s
+   <a href=#dom-attr-value><code title=dom-Attr-value>value</code></a>.
+   <li>Append <var title="">new attribute</var> to the <var title="">copy</var>'s <a href=#dom-node-attributes><code title=dom-Node-attributes>attributes</code></a>.
+  </ol>
  <li><p>If the <var title="">clone children</var> flag is set, <a href=#clone>clone</a> all the children of <var title="">node</var> and append them to <var title="">copy</var>, with the same <var title="">new ownerDocument</var> and the <var title="">clone children</var> flag being set.
  <li><p>Return <var title="">copy</var>.
 </ol>

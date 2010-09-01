@@ -411,7 +411,27 @@ feature</span> with the version "2.0" associated with it.
     <tr><td><code>Comment</code><td><code title=dom-CharacterData-data>data</code>
     <tr><td><code>DocumentFragment</code><td>&mdash;
   </table>
- <li><p>If <var title>node</var> is an <code>Element</code> node, <span class=XXX title>copy its attributes</span>.
+ <li>
+  <p>If <var title>node</var> is an <code>Element</code> node, let <var
+  title>copy</var>'s <code title=dom-Node-attributes>attributes</code> be a new
+  <code>NamedNodeMap</code>, and for each <code>Attr</code> <var title>old
+  attribute</var> in <var title>node</var>'s <code
+  title=dom-Node-attributes>attributes</code>, run the following substeps:
+  <ol>
+   <li>Let <var title>new attribute</var> be a new <span
+   title=concept-attribute>attribute</span>, with the <var title>old
+   attribute</var>'s <span title=concept-attribute-name>name</span> as its <span
+   title=concept-attribute-name>name</span> and <var title>copy</var> as its
+   <span title=concept-attribute-element>element</span>.
+   <li>Let <var title>new attribute</var>'s <code
+   title=dom-Node-prefix>prefix</code> be the <var title>old attribute</var>'s
+   <code title=dom-Node-prefix>prefix</code>.
+   <li>Let the <var title>new attribute</var>'s <code
+   title=dom-Attr-value>value</code> be the <var title>old attribute</var>'s
+   <code title=dom-Attr-value>value</code>.
+   <li>Append <var title>new attribute</var> to the <var
+   title>copy</var>'s <code title=dom-Node-attributes>attributes</code>.
+  </ol>
  <li><p>If the <var title>clone children</var> flag is set, <span>clone</span> all the children of <var title>node</var> and append them to <var title>copy</var>, with the same <var title>new ownerDocument</var> and the <var title>clone children</var> flag being set.
  <li><p>Return <var title>copy</var>.
 </ol>

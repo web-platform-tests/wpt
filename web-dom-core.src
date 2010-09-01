@@ -1672,9 +1672,9 @@ title=concept-class-attribute>class attributes</span>.
   boolean <span title=dom-Element-hasAttributeNS>hasAttributeNS</span>(in DOMString namespaceURI, in DOMString localName);
 <!--
   <span>Attr</span> <span title=dom-Element-getAttributeNode>getAttributeNode</span>(in DOMString name);
+  <span>Attr</span> <span title=dom-Element-getAttributeNodeNS>getAttributeNodeNS</span>(in DOMString namespaceURI, in DOMString localName);
   <span>Attr</span> <span title=dom-Element-setAttributeNode>setAttributeNode</span>(in Attr newAttr);
   <span>Attr</span> <span title=dom-Element-removeAttributeNode>removeAttributeNode</span>(in Attr oldAttr);
-  <span>Attr</span> <span title=dom-Element-getAttributeNodeNS>getAttributeNodeNS</span>(in DOMString namespaceURI, in DOMString localName);
 -->
   <span>NodeList</span> <span title=dom-Element-getElementsByTagName>getElementsByTagName</span>(in DOMString name);
   <span>NodeList</span> <span title=dom-Element-getElementsByTagNameNS>getElementsByTagNameNS</span>(in DOMString namespaceURI, in DOMString localName);
@@ -2419,7 +2419,7 @@ replace the underlying string with the new value on setting.</p>
 
 
 
-<h2>Historical interfaces</h2>
+<h2>Historical</h2>
 <p>This specification does not define the following interfaces:
 <ul class=brief>
  <li><dfn><code>DOMUserData</code></dfn>
@@ -2438,6 +2438,53 @@ replace the underlying string with the new value on setting.</p>
  <li><dfn><code>Entity</code></dfn>
  <li><dfn><code>EntityReference</code></dfn>
 </ul>
+
+<p>This specification does not define the following interface members:</p>
+<dl>
+ <dt><code>Node</code></dt>
+ <dd>
+  <p><code>normalize()</code>
+  <p><code>getFeature()</code>
+  <p><code>getUserData()</code>
+  <p><code>setUserData()</code>
+ <dt><code>Document</code></dt>
+ <dd>
+  <p><code>createCDATASection()</code>
+  <p><code>createAttribute()</code>
+  <p><code>createAttributeNS()</code>
+  <p><code>xmlEncoding</code>
+  <p><code>xmlStandalone</code>
+  <p><code>xmlVersion</code>
+  <p><code>strictErrorChecking</code>
+  <p><code>domConfig</code>
+  <p><code>normalizeDocument()</code>
+  <p><code>renameNode()</code>
+ <dt><code>DOMImplementation</code>
+ <dd>
+  <p><code>getFeature()</code>
+ <dt><code>Attr</code>
+ <dd>
+  <p><code>schemaTypeInfo</code>
+  <p><code>isId</code>
+ <dt><code>Element</code>
+ <dd>
+  <p><code>getAttributeNode()</code>
+  <p><code>getAttributeNodeNS()</code>
+  <p><code>setAttributeNode()</code>
+  <p><code>removeAttributeNode()</code>
+  <p><code>schemaTypeInfo</code>
+  <p><code>setIdAttribute()</code>
+  <p><code>setIdAttributeNS()</code>
+  <p><code>setIdAttributeNode()</code>
+ <dt><code>DocumentType</code>
+ <dd>
+  <p><code>entities</code>
+  <p><code>notations</code>
+  <p><code>internalSubset</code>
+ <dt><code>Text</code>
+ <dd>
+  <p><code>isElementContentWhitespace</code>
+</dl>
 
 
 

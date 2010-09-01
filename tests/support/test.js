@@ -169,7 +169,6 @@ var Test = {
       }
       this.separate();
     }
-    this.finish();
   },
 
   "run" : function run(aTests) {

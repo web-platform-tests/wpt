@@ -1,0 +1,39 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Node.isEqualNode</title>
+<link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com"/>
+<link rel="help" href="../web-dom-core#dom-node-isequalnode"/>
+</head>
+<body>
+<script src="support/test.js"></script>
+<script><![CDATA[
+Test.run([function() {
+  Test.ok(!document.createElement("foo").isEqualNode(null), "Node is equal to null?");
+},
+function() {
+  Test.ok(!document.createAttribute("foo").isEqualNode(null), "Node is equal to null?");
+},
+function() {
+  Test.ok(!document.createTextNode("foo").isEqualNode(null), "Node is equal to null?");
+},
+function() {
+  Test.ok(!document.createCDATASection("foo").isEqualNode(null), "Node is equal to null?");
+},
+function() {
+  Test.ok(!document.createProcessingInstruction("foo", "bar").isEqualNode(null), "Node is equal to null?");
+},
+function() {
+  Test.ok(!document.createComment("foo").isEqualNode(null), "Node is equal to null?");
+},
+function() {
+  Test.ok(!document.isEqualNode(null), "Node is equal to null?");
+},
+function() {
+  Test.ok(!document.implementation.createDocumentType("html", "", "").isEqualNode(null), "Node is equal to null?");
+},
+function() {
+  Test.ok(!document.createDocumentFragment().isEqualNode(null), "Node is equal to null?");
+}]);
+]]></script>
+</body>
+</html>

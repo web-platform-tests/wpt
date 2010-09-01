@@ -679,7 +679,7 @@ must return the name of the exception constant as a string.</p>
 </ol>
 
 
-<p>The <dfn id=dom-node-nodename title=dom-Node-nodeName><code>nodeName</code></dfn>, <dfn id=dom-node-nodevalue title=dom-Node-nodeValue><code>nodeValue</code></dfn> and <dfn id=dom-node-nodetype title=dom-Node-nodeType><code>nodeType</code></dfn> attributes must, on getting, return what is in the second, third and forth column, respectively, if the node also implements the interface in the first column on the same row in the following table:
+<p>The <dfn id=dom-node-nodename title=dom-Node-nodeName><code>nodeName</code></dfn>, <dfn id=dom-node-nodevalue title=dom-Node-nodeValue><code>nodeValue</code></dfn> and <dfn id=dom-node-nodetype title=dom-Node-nodeType><code>nodeType</code></dfn> attributes must, on getting, return what is in the second, third and fourth column, respectively, if the node also implements the interface in the first column on the same row in the following table:
 
 <table id=anolis-table-2>
  <caption>Table 2: Value of <a href=#dom-node-nodename><code title=dom-Node-nodeName>nodeName</code></a>, <a href=#dom-node-nodevalue><code title=dom-Node-nodeValue>nodeValue</code></a>, <a href=#dom-node-nodetype><code title=dom-Node-nodeType>nodeType</code></a></caption>

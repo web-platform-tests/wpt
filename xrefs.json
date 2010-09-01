@@ -58,7 +58,6 @@
   "dom-document-createelementns": "dom-document-createelementns",
   "dom-document-createprocessinginstruction": "dom-document-createprocessinginstruction",
   "dom-document-createtextnode": "dom-document-createtextnode",
-  "dom-document-defaultview": "dom-document-defaultview",
   "dom-document-doctype": "dom-document-doctype",
   "dom-document-documentelement": "dom-document-documentelement",
   "dom-document-documenturi": "dom-document-documenturi",

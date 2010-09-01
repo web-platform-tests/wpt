@@ -19,7 +19,7 @@
 <body class=draft>
 <div class=head id=head>
 <h1>Web DOM Core</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-18-august-2010>Work in Progress &mdash; Last Update 18 August 2010</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-1-september-2010>Work in Progress &mdash; Last Update 1 September 2010</h2>
 <dl>
  <dt>Editors
  <dd>Simon Pieters &lt;simonp@opera.com&gt;
@@ -930,7 +930,6 @@ conditions are true, and must otherwise return false:
   readonly attribute <a href=#documenttype>DocumentType</a> <a href=#dom-document-doctype title=dom-Document-doctype>doctype</a>;
   readonly attribute <a href=#domimplementation>DOMImplementation</a> <a href=#dom-document-implementation title=dom-Document-implementation>implementation</a>;
   readonly attribute <a href=#element>Element</a> <a href=#dom-document-documentelement title=dom-Document-documentElement>documentElement</a>;
-  readonly attribute <a class=external data-anolis-spec=window href=http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#windowproxy>WindowProxy</a> <a href=#dom-document-defaultview title=dom-Document-defaultView>defaultView</a>;
 
   <a href=#element>Element</a> <a href=#dom-document-createelement title=dom-Document-createElement>createElement</a>([TreatNullAs=EmptyString] in DOMString tagName);
   <a href=#element>Element</a> <a href=#dom-document-createelementns title=dom-Document-createElementNS>createElementNS</a>(in DOMString namespaceURI, in DOMString qualifiedName);
@@ -983,13 +982,6 @@ specifications</a> define otherwise, the <a href=#document><code>Document</code>
 parser</a>, based on the presence, absence, or value of the DOCTYPE string.
 <a data-anolis-ref="" href=#refsHTML>[HTML]</a>
 
-<dl class=domintro>
- <dt><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#dom-document><var class=external data-anolis-spec=window title=dom-Window-document>document</var></a> .
-     <a href=#dom-document-defaultview><code title=dom-Document-defaultView>defaultView</code></a>
- <dd><p>Returns the <a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#window><code class=external data-anolis-spec=window>Window</code></a> object of the
-        <a class=external data-anolis-spec=html href=http://www.whatwg.org/html/#active-document>active document</a>.
-</dl>
-
 <p>The <dfn id=dom-document-doctype title=dom-Document-doctype><code>doctype</code></dfn> attribute must return the first child of the <a href=#document><code>Document</code></a> node that is a <a href=#documenttype><code>DocumentType</code></a> node, if there is one, or null otherwise.
 <p class=note>In both HTML and XML there will only ever be one
 <a href=#documenttype><code>DocumentType</code></a> node descendant of the <a href=#document><code>Document</code></a> node.
@@ -998,9 +990,6 @@ parser</a>, based on the presence, absence, or value of the DOCTYPE string.
 <p>The <dfn id=dom-document-implementation title=dom-Document-implementation><code>implementation</code></dfn> attribute must return the <a href=#domimplementation><code>DOMImplementation</code></a> object that is associated with the <a href=#document><code>Document</code></a> node.
 
 <p>The <dfn id=dom-document-documentelement title=dom-Document-documentElement><code>documentElement</code></dfn> attribute must return the first child of the <a href=#document><code>Document</code></a> node that is an <a href=#element><code>Element</code></a> node, if there is one, or null otherwise.
-
-<p>The <dfn id=dom-document-defaultview title=dom-Document-defaultView><code>defaultView</code></dfn>
-attribute must return the <a href=#context-node>context node</a>'s <a class=external data-anolis-spec=html href=http://www.whatwg.org/html/#browsing-context>browsing context</a>'s <a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#windowproxy><code class=external data-anolis-spec=window>WindowProxy</code></a> object.</p>
 
 <hr>
 

@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<body aaa=dddd bbb=ccc>...
+<script>
+w(document.body.attributes)
+var n = document.body.cloneNode(false)
+w(n)
+w(n.attributes[0])
+w(n.attributes == document.body.attributes)
+w(n.attributes === document.body.attributes)
+</script>

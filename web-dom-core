@@ -447,6 +447,8 @@ feature</a> with the version "2.0" associated with it.
 
 
 <h3 id=legal-hierarchy-0><span class=secno>1.7 </span>Legal hierarchy</h3>
+<p class=XXX>Simon says this section is buggy. Should we just remove it?
+
 <p>A <a href=#node><code>Node</code></a> is said to have a <dfn id=legal-hierarchy>legal hierarchy</dfn> if all the following conditions are true:
 
 <ul>

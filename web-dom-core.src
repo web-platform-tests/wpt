@@ -436,6 +436,8 @@ feature</span> with the version "2.0" associated with it.
 
 
 <h3>Legal hierarchy</h3>
+<p class=XXX>Simon says this section is buggy. Should we just remove it?
+
 <p>A <code>Node</code> is said to have a <dfn>legal hierarchy</dfn> if all the following conditions are true:
 
 <ul>

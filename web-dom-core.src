@@ -1412,13 +1412,87 @@ http://lists.w3.org/Archives/Public/www-dom/2003JulSep/0049.html -->
   <span>Document</span> <span title=dom-DOMImplementation-createHTMLDocument>createHTMLDocument</span>(in DOMString title);
 };</pre>
 
+<dl class=domintro>
+ <dt><var title>hasSupport</var> = <var title=dom-Window-document
+ data-anolis-spec=window>document</var> . <code
+ title=dom-Document-implementation>implementation</code> . <code
+ title=dom-DOMImplementation-hasFeature>hasFeature</code>(
+ <var title>feature</var>, <var title>version</var> )
+
+ <dd>
+  <p>Returns whether the user agent supports the version <var
+  title>version</var> of <var title>feature</var>. The empty string means any
+  version.
+</dl>
+
+<div class=impl>
+
 <p>The <dfn title=dom-DOMImplementation-hasFeature><code>hasFeature(<var
 title>feature</var>, <var title>version</var>)</code></dfn> method must return
 true if the user agent <span title=concept-support-DOMfeatureversion>supports</span>
 the (<var title>feature</var>, <var title>version</var>) tuple and false
 otherwise.
 
+</div>
+
 <hr>
+
+<dl class=domintro>
+ <dt><var title>doctype</var> = <var title=dom-Window-document
+ data-anolis-spec=window>document</var> . <code
+ title=dom-Document-implementation>implementation</code> . <code
+ title=dom-DOMImplementation-createDocumentType>createDocumentType</code>(
+ <var title>qualifiedName</var>, <var title>publicId</var>, <var
+ title>systemId</var> )
+
+ <dd>
+  <p>Returns a new <code>DocumentType</code>, with the given <var
+  title>qualifiedName</var>, <var title>publicId</var>, and <var
+  title>systemId</var>. If <var
+  title>qualifiedName</var> doesn't match the <code
+  data-anolis-spec=xml>Name</code> production in XML, an <code
+  title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
+  exception is raised, and if it doesn't match the <code
+  data-anolis-spec=xmlns>NCName</code> production in Namespaces in XML, a <code
+  title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception is raised.
+
+
+ <dt><var title>doc</var> = <var title=dom-Window-document
+ data-anolis-spec=window>document</var> . <code
+ title=dom-Document-implementation>implementation</code> . <code
+ title=dom-DOMImplementation-createDocument>createDocument</code>( <var
+ title>namespaceURI</var>, <var title>qualifiedName</var>, <var
+ title>doctype</var> )
+
+ <dd>
+  <p>Returns a new <code>Document</code>, with a new root
+  <code>Element</code> whose <code title=dom-Node-localName>localName</code> is
+  <var title>qualifiedName</var> and whose <code
+  title=dom-Node-namespaceURI>namespaceURI</code> is <var
+  title>namespaceURI</var> (unless <var title>qualifiedName</var> is the empty
+  string), and with <var title>doctype</var>, if it is given, as its <span
+  title=concept-doctype>doctype</span>.
+
+  <p>This method raises the same exceptions as the <code
+  title=dom-Document-createElementNS>createElementNS</code> method, when called
+  with the same arguments. If <var title>doctype</var> comes from another
+  <code>Document</code>, a <code
+  title=dom-DOMException-WRONG_DOCUMENT_ERR>WRONG_DOCUMENT_ERR</code> exception
+  is raised.
+
+
+ <dt><var title>doc</var> = <var title=dom-Window-document
+ data-anolis-spec=window>document</var> . <code
+ title=dom-Document-implementation>implementation</code> . <code
+ title=dom-DOMImplementation-createHTMLDocument>createHTMLDocument</code>(
+ <var title>title</var> )
+
+ <dd>
+  <p>Returns a new <code>Document</code>, with a basic DOM already
+  constructed with an appropriate <code title>title</code> element.
+</dl>
+
+<div class=impl>
 
 <p>The <dfn title=dom-DOMImplementation-createDocumentType><code>createDocumentType(<var title>qualifiedName</var>, <var title>publicId</var>, <var title>systemId</var>)</code></dfn> method must run the following steps:
 
@@ -1464,17 +1538,6 @@ otherwise.
 title=dom-DOMImplementation-createHTMLDocument>createHTMLDocument()</code>
 method.
 
-<dl class=domintro>
- <dt><var title>doc</var> = <var title=dom-Window-document
- data-anolis-spec=window>document</var> . <code
- title=dom-Document-implementation>implementation</code> . <code
- title=dom-DOMImplementation-createHTMLDocument>createHTMLDocument</code>(
- <var title>title</var> )
-
- <dd><p>Returns a new <code>Document</code>, with a basic DOM already
- constructed with an appropriate <code title>title</code> element.
-</dl>
-
 <p>The <dfn
 title=dom-DOMImplementation-createHTMLDocument><code>createHTMLDocument(<var
 title>title</var>)</code></dfn> method, when invoked, must run the following
@@ -1514,6 +1577,8 @@ steps:
 
  <li><p>Return <var title>doc</var>.</p></li>
 </ol>
+
+</div>
 
 
 <h3>Interface <code>Attr</code></h3>

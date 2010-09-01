@@ -1320,12 +1320,58 @@ http://lists.w3.org/Archives/Public/www-dom/2003JulSep/0049.html -->
   <a href=#document>Document</a> <a href=#dom-domimplementation-createhtmldocument title=dom-DOMImplementation-createHTMLDocument>createHTMLDocument</a>(in DOMString title);
 };</pre>
 
+<dl class=domintro>
+ <dt><var title="">hasSupport</var> = <a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#dom-document><var class=external data-anolis-spec=window title=dom-Window-document>document</var></a> . <a href=#dom-document-implementation><code title=dom-Document-implementation>implementation</code></a> . <a href=#dom-domimplementation-hasfeature><code title=dom-DOMImplementation-hasFeature>hasFeature</code></a>(
+ <var title="">feature</var>, <var title="">version</var> )
+
+ <dd>
+  <p>Returns whether the user agent supports the version <var title="">version</var> of <var title="">feature</var>. The empty string means any
+  version.
+</dl>
+
+<div class=impl>
+
 <p>The <dfn id=dom-domimplementation-hasfeature title=dom-DOMImplementation-hasFeature><code>hasFeature(<var title="">feature</var>, <var title="">version</var>)</code></dfn> method must return
 true if the user agent <a href=#concept-support-domfeatureversion title=concept-support-DOMfeatureversion>supports</a>
 the (<var title="">feature</var>, <var title="">version</var>) tuple and false
 otherwise.
 
+</div>
+
 <hr>
+
+<dl class=domintro>
+ <dt><var title="">doctype</var> = <a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#dom-document><var class=external data-anolis-spec=window title=dom-Window-document>document</var></a> . <a href=#dom-document-implementation><code title=dom-Document-implementation>implementation</code></a> . <a href=#dom-domimplementation-createdocumenttype><code title=dom-DOMImplementation-createDocumentType>createDocumentType</code></a>(
+ <var title="">qualifiedName</var>, <var title="">publicId</var>, <var title="">systemId</var> )
+
+ <dd>
+  <p>Returns a new <a href=#documenttype><code>DocumentType</code></a>, with the given <var title="">qualifiedName</var>, <var title="">publicId</var>, and <var title="">systemId</var>. If <var title="">qualifiedName</var> doesn't match the <a href=http://www.w3.org/TR/xml/#NT-Name><code class=external data-anolis-spec=xml>Name</code></a> production in XML, an <a href=#dom-domexception-invalid_character_err><code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code></a>
+  exception is raised, and if it doesn't match the <a href=http://www.w3.org/TR/xml-names/#NT-NCName><code class=external data-anolis-spec=xmlns>NCName</code></a> production in Namespaces in XML, a <a href=#dom-domexception-namespace_err><code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code></a> exception is raised.
+
+
+ <dt><var title="">doc</var> = <a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#dom-document><var class=external data-anolis-spec=window title=dom-Window-document>document</var></a> . <a href=#dom-document-implementation><code title=dom-Document-implementation>implementation</code></a> . <a href=#dom-domimplementation-createdocument><code title=dom-DOMImplementation-createDocument>createDocument</code></a>( <var title="">namespaceURI</var>, <var title="">qualifiedName</var>, <var title="">doctype</var> )
+
+ <dd>
+  <p>Returns a new <a href=#document><code>Document</code></a>, with a new root
+  <a href=#element><code>Element</code></a> whose <a href=#dom-node-localname><code title=dom-Node-localName>localName</code></a> is
+  <var title="">qualifiedName</var> and whose <a href=#dom-node-namespaceuri><code title=dom-Node-namespaceURI>namespaceURI</code></a> is <var title="">namespaceURI</var> (unless <var title="">qualifiedName</var> is the empty
+  string), and with <var title="">doctype</var>, if it is given, as its <a href=#concept-doctype title=concept-doctype>doctype</a>.
+
+  <p>This method raises the same exceptions as the <a href=#dom-document-createelementns><code title=dom-Document-createElementNS>createElementNS</code></a> method, when called
+  with the same arguments. If <var title="">doctype</var> comes from another
+  <a href=#document><code>Document</code></a>, a <a href=#dom-domexception-wrong_document_err><code title=dom-DOMException-WRONG_DOCUMENT_ERR>WRONG_DOCUMENT_ERR</code></a> exception
+  is raised.
+
+
+ <dt><var title="">doc</var> = <a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#dom-document><var class=external data-anolis-spec=window title=dom-Window-document>document</var></a> . <a href=#dom-document-implementation><code title=dom-Document-implementation>implementation</code></a> . <a href=#dom-domimplementation-createhtmldocument><code title=dom-DOMImplementation-createHTMLDocument>createHTMLDocument</code></a>(
+ <var title="">title</var> )
+
+ <dd>
+  <p>Returns a new <a href=#document><code>Document</code></a>, with a basic DOM already
+  constructed with an appropriate <code title="">title</code> element.
+</dl>
+
+<div class=impl>
 
 <p>The <dfn id=dom-domimplementation-createdocumenttype title=dom-DOMImplementation-createDocumentType><code>createDocumentType(<var title="">qualifiedName</var>, <var title="">publicId</var>, <var title="">systemId</var>)</code></dfn> method must run the following steps:
 
@@ -1365,14 +1411,6 @@ otherwise.
 <a href=#dom-domimplementation-createhtmldocument><code title=dom-DOMImplementation-createHTMLDocument>createHTMLDocument()</code></a>
 method.
 
-<dl class=domintro>
- <dt><var title="">doc</var> = <a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#dom-document><var class=external data-anolis-spec=window title=dom-Window-document>document</var></a> . <a href=#dom-document-implementation><code title=dom-Document-implementation>implementation</code></a> . <a href=#dom-domimplementation-createhtmldocument><code title=dom-DOMImplementation-createHTMLDocument>createHTMLDocument</code></a>(
- <var title="">title</var> )
-
- <dd><p>Returns a new <a href=#document><code>Document</code></a>, with a basic DOM already
- constructed with an appropriate <code title="">title</code> element.
-</dl>
-
 <p>The <dfn id=dom-domimplementation-createhtmldocument title=dom-DOMImplementation-createHTMLDocument><code>createHTMLDocument(<var title="">title</var>)</code></dfn> method, when invoked, must run the following
 steps:
 
@@ -1407,6 +1445,8 @@ steps:
 
  <li><p>Return <var title="">doc</var>.</li>
 </ol>
+
+</div>
 
 
 <h3 id=interface-attr><span class=secno>4.4 </span>Interface <a href=#attr><code>Attr</code></a></h3>

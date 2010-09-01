@@ -12,6 +12,7 @@ document.body.appendChild(results);
 
 var tests = [
     [null, null, null, null],
+    [null, "", null, null],
     [null, "foo", null, null],
     [null, "1foo", null, DOMException.INVALID_CHARACTER_ERR],
     [null, "f1oo", null, null],
@@ -26,6 +27,7 @@ var tests = [
     [null, "xmlns:foo", null, DOMException.NAMESPACE_ERR],
     [null, "xmlfoo:bar", null, DOMException.NAMESPACE_ERR],
     ["http://example.com/", null, null, null],
+    ["http://example.com/", "", null, null],
     ["http://example.com/", "foo", null, null],
     ["http://example.com/", "1foo", null, DOMException.INVALID_CHARACTER_ERR],
     ["http://example.com/", "f1oo", null, null],
@@ -40,6 +42,7 @@ var tests = [
     ["http://example.com/", "xmlns:foo", null, DOMException.NAMESPACE_ERR],
     ["http://example.com/", "xmlfoo:bar", null, null],
     ["/", null, null, null],
+    ["/", "", null, null],
     ["/", "foo", null, null],
     ["/", "1foo", null, DOMException.INVALID_CHARACTER_ERR],
     ["/", "f1oo", null, null],
@@ -54,6 +57,7 @@ var tests = [
     ["/", "xmlns:foo", null, DOMException.NAMESPACE_ERR],
     ["/", "xmlfoo:bar", null, null],
     ["http://www.w3.org/XML/1998/namespace", null, null, null],
+    ["http://www.w3.org/XML/1998/namespace", "", null, null],
     ["http://www.w3.org/XML/1998/namespace", "foo", null, null],
     ["http://www.w3.org/XML/1998/namespace", "1foo", null, DOMException.INVALID_CHARACTER_ERR],
     ["http://www.w3.org/XML/1998/namespace", "f1oo", null, null],
@@ -67,7 +71,8 @@ var tests = [
     ["http://www.w3.org/XML/1998/namespace", "xml:foo", null, null],
     ["http://www.w3.org/XML/1998/namespace", "xmlns:foo", null, DOMException.NAMESPACE_ERR],
     ["http://www.w3.org/XML/1998/namespace", "xmlfoo:bar", null, null],
-    ["http://www.w3.org/2000/xmlns/", null, null, DOMException.NAMESPACE_ERR],
+    ["http://www.w3.org/2000/xmlns/", null, null, null],
+    ["http://www.w3.org/2000/xmlns/", "", null, null],
     ["http://www.w3.org/2000/xmlns/", "foo", null, DOMException.NAMESPACE_ERR], // This crashes Opera.
     ["http://www.w3.org/2000/xmlns/", "1foo", null, DOMException.INVALID_CHARACTER_ERR],
     ["http://www.w3.org/2000/xmlns/", "f1oo", null, DOMException.NAMESPACE_ERR], // This crashes Opera.
@@ -82,6 +87,7 @@ var tests = [
     ["http://www.w3.org/2000/xmlns/", "xmlns:foo", null, null],
     ["http://www.w3.org/2000/xmlns/", "xmlfoo:bar", null, DOMException.NAMESPACE_ERR],
     ["foo:", null, null, null],
+    ["foo:", "", null, null],
     ["foo:", "foo", null, null],
     ["foo:", "1foo", null, DOMException.INVALID_CHARACTER_ERR],
     ["foo:", "f1oo", null, null],
@@ -118,7 +124,7 @@ catch(e)
 }
 
 var exceptions = {};
-for (i in DOMException)
+for (var i in DOMException)
 {
     if (typeof DOMException[i] == "number")
     {
@@ -138,7 +144,7 @@ function readable_exception(num)
 
 var resultsTbody = results.firstChild.tBodies[0];
 
-for (i in tests)
+for (var i in tests)
 {
     var test = tests[i];
     var row = resultsTbody.insertRow(-1);

@@ -1361,8 +1361,6 @@ otherwise.
  <li><p>Return <var title="">document</var>.
 </ol>
 
-<p class=XXX>exceptions for createDocument <a href=http://lists.w3.org/Archives/Public/www-dom/2005OctDec/0076.html>http://lists.w3.org/Archives/Public/www-dom/2005OctDec/0076.html</a>.
-
 <p><a href=#html-document title="HTML document">HTML documents</a> can be created using the
 <a href=#dom-domimplementation-createhtmldocument><code title=dom-DOMImplementation-createHTMLDocument>createHTMLDocument()</code></a>
 method.

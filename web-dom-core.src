@@ -1086,12 +1086,14 @@ class=informative>XML</span>
 
 <p>The <dfn title=dom-Document-createElementNS><code>createElementNS(<var>namespaceURI</var>, <var>qualifiedName</var>)</code></dfn> method must run the following steps:</p>
 <ol>
- <!-- DOM3 split this Name vs QName; browsers do not -->
  <li><p>If <var>qualifiedName</var> doesn't match the <code
- data-anolis-spec=xmlns>QName</code> production in Namespaces in XML, raise
- an
- <code title=dom-DOMException-INVALID_CHARACTER_ERR title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
+ data-anolis-spec=xml>Name</code> production in XML, raise an <code
+ title=dom-DOMException-INVALID_CHARACTER_ERR title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
  exception and abort these steps.
+ <li><p>If <var>qualifiedName</var> doesn't match the <code
+ data-anolis-spec=xmlns>QName</code> production in Namespaces in XML, raise a
+ <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and
+ abort these steps.
  <li><p>If <var>qualifiedName</var> contains a U+003E COLON (":") character, then split the string on the colon and let <var>prefix</var> be the part before the colon and <var>localName</var> the part after the colon. Otherwise, let <var>prefix</var> be null and <var>localName</var> be <var>qualifiedName</var>.
  <li><p>If <var>prefix</var> is not null and <var>namespaceURI</var> is an empty string, raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and abort these steps.
  <li><p>If <var>prefix</var> is "xml" and <var>namespaceURI</var> is not the <span>XML namespace</span>, raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and abort these steps.

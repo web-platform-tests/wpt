@@ -1045,6 +1045,7 @@ parser</span>, based on the presence, absence, or value of the DOCTYPE string.
 <span data-anolis-ref>HTML</span>
 
 <p>The <dfn title=dom-Document-doctype><code>doctype</code></dfn> attribute must return the first child of the <code>Document</code> node that is a <code>DocumentType</code> node, if there is one, or null otherwise.
+
 <p class=note>In both HTML and XML there will only ever be one
 <code>DocumentType</code> node descendant of the <code>Document</code> node.
 <span data-anolis-ref class=informative>HTML</span> <span data-anolis-ref
@@ -1173,6 +1174,8 @@ data-anolis-spec=xmlns>NCName</code> production in Namespaces in XML.-->
 <p>The <dfn
 title=dom-Document-getElementsByTagName><code>getElementsByTagName(<var
 title>localName</var>)</code></dfn> method must run the following steps:
+
+<p class="XXX">qualifiedName?</p>
 <ol>
  <li><p>If <var>localName</var> is just a U+002A ASTERISK ("*") character,
  return a <code>NodeList</code> rooted at the <span>context node</span>, whose
@@ -1274,13 +1277,12 @@ case-insensitive</span> manner, otherwise, the comparisons must be done in a
 <p>The <dfn title=dom-Document-getElementById><code>getElementById(<var
 title>elementId</var>)</code></dfn> method must return the first
 <code>Element</code> node, in <span>tree order</span>, in the <span>context
-node</span> whose <span title=concept-ID>ID</span> is <var
-title>elementId</var>, or null if there is none.
+node</span> whose <span title=concept-ID>ID</span> is <var>elementId</var>,
+or null if there is none.
 
 <hr>
 
-<p>The <dfn title=dom-Document-importNode><code>importNode(<var
-title>importedNode</var>, <var>deep</var>)</code></dfn> method must run
+<p>The <dfn title=dom-Document-importNode><code>importNode(<var>importedNode</var>, <var>deep</var>)</code></dfn> method must run
 the following steps:
 <ol>
  <!-- Similar text for adoptNode -->
@@ -1366,6 +1368,7 @@ the following steps:
 </dl>
 
 <p class=XXX><dfn title=dom-Document-inputEncoding>inputEncoding</dfn>
+<p class=XXX>define HTML5 concept of document character encoding here
 
 <p class=XXX><dfn title=dom-Document-documentURI>documentURI</dfn>
 Should document.documentURI really exist? be readonly?
@@ -1497,6 +1500,8 @@ otherwise.
 <p class=note>No check is performed that the <var>publicId</var> matches the <code title>PublicChar</code> production in XML or that the <var>systemId</var> doesn't contain both a quotation mark (") and an apostrophe (').
 
 <p>The <dfn title=dom-DOMImplementation-createDocument><code>createDocument(<var>namespaceURI</var>, <var>qualifiedName</var>, <var>doctype</var>)</code></dfn> method must run the following steps:
+
+<p class=XXX>make arguments optional?
 
 <ol>
  <li><p>Let <var>document</var> be a new <code>Document</code> node.
@@ -1687,8 +1692,7 @@ identifier (ID)</dfn> associated with them. User agents must associate the
 <code title=dom-Attr-value>value</code> of all <span
 title=concept-ID-attribute>ID attributes</span> in the <code>Element</code>
 node's <code title=dom-Node-attributes>attributes</code> with the
-<code>Element</code> node, unless it contains less than one character or
-contains any <span title="space character">space characters</span>.
+<code>Element</code> node, unless it contains less than one character.
 
 <p>Specifications may define <dfn>base URL change steps</dfn>.
 

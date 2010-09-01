@@ -476,17 +476,17 @@ title>http://www.w3.org/2000/xmlns/</code>.
   const unsigned short <span title=dom-DOMException-HIERARCHY_REQUEST_ERR>HIERARCHY_REQUEST_ERR</span> = 3;
   const unsigned short <span title=dom-DOMException-WRONG_DOCUMENT_ERR>WRONG_DOCUMENT_ERR</span> = 4;
   const unsigned short <span title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</span> = 5;
-  const unsigned short <span title=dom-DOMException-NO_DATA_ALLOWED_ERR>NO_DATA_ALLOWED_ERR</span> = 6;
+  const unsigned short <span title=dom-DOMException-NO_DATA_ALLOWED_ERR>NO_DATA_ALLOWED_ERR</span> = 6; // historical
   const unsigned short <span title=dom-DOMException-NO_MODIFICATION_ALLOWED_ERR>NO_MODIFICATION_ALLOWED_ERR</span> = 7;
   const unsigned short <span title=dom-DOMException-NOT_FOUND_ERR>NOT_FOUND_ERR</span> = 8;
   const unsigned short <span title=dom-DOMException-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</span> = 9;
-  const unsigned short <span title=dom-DOMException-INUSE_ATTRIBUTE_ERR>INUSE_ATTRIBUTE_ERR</span> = 10;
+  const unsigned short <span title=dom-DOMException-INUSE_ATTRIBUTE_ERR>INUSE_ATTRIBUTE_ERR</span> = 10; // historical
   const unsigned short <span title=dom-DOMException-INVALID_STATE_ERR>INVALID_STATE_ERR</span> = 11;
   const unsigned short <span title=dom-DOMException-SYNTAX_ERR>SYNTAX_ERR</span> = 12;
-  const unsigned short <span title=dom-DOMException-INVALID_MODIFICATION_ERR>INVALID_MODIFICATION_ERR</span> = 13;
+  const unsigned short <span title=dom-DOMException-INVALID_MODIFICATION_ERR>INVALID_MODIFICATION_ERR</span> = 13; // historical
   const unsigned short <span title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</span> = 14;
   const unsigned short <span title=dom-DOMException-INVALID_ACCESS_ERR>INVALID_ACCESS_ERR</span> = 15;
-  const unsigned short <span title=dom-DOMException-VALIDATION_ERR>VALIDATION_ERR</span> = 16;
+  const unsigned short <span title=dom-DOMException-VALIDATION_ERR>VALIDATION_ERR</span> = 16; // historical
   const unsigned short <span title=dom-DOMException-TYPE_MISMATCH_ERR>TYPE_MISMATCH_ERR</span> = 17;
   const unsigned short <span title=dom-DOMException-SECURITY_ERR>SECURITY_ERR</span> = 18;
   const unsigned short <span title=dom-DOMException-NETWORK_ERR>NETWORK_ERR</span> = 19;
@@ -506,35 +506,71 @@ title>http://www.w3.org/2000/xmlns/</code>.
 must return the code for the exception, which must be one of the following:
 
 <ol class="brief">
- <li value="1"><dfn title=dom-DOMException-INDEX_SIZE_ERR><code>INDEX_SIZE_ERR</code></dfn></li>
- <li value="2"><dfn title=dom-DOMException-DOMSTRING_SIZE_ERR><code>DOMSTRING_SIZE_ERR</code></dfn></li>
- <li value="3"><dfn title=dom-DOMException-HIERARCHY_REQUEST_ERR><code>HIERARCHY_REQUEST_ERR</code></dfn></li>
- <li value="4"><dfn title=dom-DOMException-WRONG_DOCUMENT_ERR><code>WRONG_DOCUMENT_ERR</code></dfn></li>
- <li value="5"><dfn title=dom-DOMException-INVALID_CHARACTER_ERR><code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code></dfn></li>
- <li value="6"><dfn title=dom-DOMException-NO_DATA_ALLOWED_ERR><code>NO_DATA_ALLOWED_ERR</code></dfn></li>
- <li value="7"><dfn title=dom-DOMException-NO_MODIFICATION_ALLOWED_ERR><code>NO_MODIFICATION_ALLOWED_ERR</code></dfn></li>
- <li value="8"><dfn title=dom-DOMException-NOT_FOUND_ERR><code>NOT_FOUND_ERR</code></dfn></li>
- <li value="9"><dfn title=dom-DOMException-NOT_SUPPORTED_ERR><code>NOT_SUPPORTED_ERR</code></dfn></li>
- <li value="10"><dfn title=dom-DOMException-INUSE_ATTRIBUTE_ERR><code>INUSE_ATTRIBUTE_ERR</code></dfn></li>
- <li value="11"><dfn title=dom-DOMException-INVALID_STATE_ERR><code>INVALID_STATE_ERR</code></dfn></li>
- <li value="12"><dfn title=dom-DOMException-SYNTAX_ERR><code title=dom-DOMException-SYNTAX_ERR>SYNTAX_ERR</code></dfn></li>
- <li value="13"><dfn title=dom-DOMException-INVALID_MODIFICATION_ERR><code>INVALID_MODIFICATION_ERR</code></dfn></li>
- <li value="14"><dfn title=dom-DOMException-NAMESPACE_ERR><code>NAMESPACE_ERR</code></dfn></li>
- <li value="15"><dfn title=dom-DOMException-INVALID_ACCESS_ERR><code>INVALID_ACCESS_ERR</code></dfn></li>
- <li value="16"><dfn title=dom-DOMException-VALIDATION_ERR><code>VALIDATION_ERR</code></dfn></li>
- <li value="17"><dfn title=dom-DOMException-TYPE_MISMATCH_ERR><code>TYPE_MISMATCH_ERR</code></dfn></li>
- <li value="18"><dfn title=dom-DOMException-SECURITY_ERR><code>SECURITY_ERR</code></dfn></li>
- <li value="19"><dfn title=dom-DOMException-NETWORK_ERR><code>NETWORK_ERR</code></dfn></li>
- <li value="20"><dfn title=dom-DOMException-ABORT_ERR><code>ABORT_ERR</code></dfn></li>
- <li value="21"><dfn title=dom-DOMException-URL_MISMATCH_ERR><code>URL_MISMATCH_ERR</code></dfn></li>
- <li value="22"><dfn title=dom-DOMException-QUOTA_EXCEEDED_ERR><code>QUOTA_EXCEEDED_ERR</code></dfn></li>
- <li value="23"><dfn title=dom-DOMException-TIMEOUT_ERR><code>TIMEOUT_ERR</code></dfn></li>
- <li value="24"><dfn title=dom-DOMException-DATA_CLONE_ERR><code>DATA_CLONE_ERR</code></dfn></li>
- <li value="81"><dfn title=dom-DOMException-PARSE_ERR><code>PARSE_ERR</code></dfn></li>
- <li value="82"><dfn title=dom-DOMException-SERIALIZE_ERR><code>SERIALIZE_ERR</code></dfn></li>
+ <li value="1"><dfn title=dom-DOMException-INDEX_SIZE_ERR><code>INDEX_SIZE_ERR</code></dfn>:
+ the index is not in the allowed range;
+ <li value="2"><dfn title=dom-DOMException-DOMSTRING_SIZE_ERR><code>DOMSTRING_SIZE_ERR</code></dfn>:
+ the text does not fit in a <code data-anolis-spec=webidl>DOMString</code>
+ (historical);
+ <li value="3"><dfn title=dom-DOMException-HIERARCHY_REQUEST_ERR><code>HIERARCHY_REQUEST_ERR</code></dfn>:
+ the operation would not result in a <span>legal hierarchy</span>;
+ <li value="4"><dfn title=dom-DOMException-WRONG_DOCUMENT_ERR><code>WRONG_DOCUMENT_ERR</code></dfn>:
+ the object is in the wrong <code>Document</code>, a call to <code
+ title=dom-Document-importNode>importNode</code> is required;
+ <li value="5"><dfn title=dom-DOMException-INVALID_CHARACTER_ERR><code>INVALID_CHARACTER_ERR</code></dfn>:
+ the string contains invalid characters;
+ <li value="6"><dfn title=dom-DOMException-NO_DATA_ALLOWED_ERR><code>NO_DATA_ALLOWED_ERR</code></dfn>:
+ data is specified for an object that does not support it (historical);
+ <li value="7"><dfn title=dom-DOMException-NO_MODIFICATION_ALLOWED_ERR><code>NO_MODIFICATION_ALLOWED_ERR</code></dfn>:
+ the object can not be modified;
+ <li value="8"><dfn title=dom-DOMException-NOT_FOUND_ERR><code>NOT_FOUND_ERR</code></dfn>:
+ the object can not be found here;
+ <li value="9"><dfn title=dom-DOMException-NOT_SUPPORTED_ERR><code>NOT_SUPPORTED_ERR</code></dfn>:
+ this operation is not supported;
+ <li value="10"><dfn title=dom-DOMException-INUSE_ATTRIBUTE_ERR><code>INUSE_ATTRIBUTE_ERR</code></dfn>:
+ the attribute is in use (historical)<!--createAttribute-->;
+ <li value="11"><dfn title=dom-DOMException-INVALID_STATE_ERR><code>INVALID_STATE_ERR</code></dfn>:
+ the object is in an invalid state;
+ <li value="12"><dfn title=dom-DOMException-SYNTAX_ERR><code>SYNTAX_ERR</code></dfn>:
+ the string did not match the expected pattern;
+ <li value="13"><dfn title=dom-DOMException-INVALID_MODIFICATION_ERR><code>INVALID_MODIFICATION_ERR</code></dfn>:
+ the object can not be modified (historical);
+ <li value="14"><dfn title=dom-DOMException-NAMESPACE_ERR><code>NAMESPACE_ERR</code></dfn>:
+ the operation is not allowed by <cite>Namespaces in XML</cite>; <span
+ data-anolis-ref>XMLNS</span>
+ <li value="15"><dfn title=dom-DOMException-INVALID_ACCESS_ERR><code>INVALID_ACCESS_ERR</code></dfn>:
+ the object doesn't support the operation or argument;
+ <li value="16"><dfn title=dom-DOMException-VALIDATION_ERR><code>VALIDATION_ERR</code></dfn>:
+ the operation is invalid (historical);
+ <li value="17"><dfn title=dom-DOMException-TYPE_MISMATCH_ERR><code>TYPE_MISMATCH_ERR</code></dfn>:
+ the type of the object doesn't match the expected type;
+ <!-- XHR -->
+ <li value="18"><dfn title=dom-DOMException-SECURITY_ERR><code>SECURITY_ERR</code></dfn>:
+ the operation is insecure;
+ <!-- XHR -->
+ <li value="19"><dfn title=dom-DOMException-NETWORK_ERR><code>NETWORK_ERR</code></dfn>:
+ a network error occurred;
+ <!-- XHR -->
+ <li value="20"><dfn title=dom-DOMException-ABORT_ERR><code>ABORT_ERR</code></dfn>:
+ the user aborted an operation;
+ <!-- Workers -->
+ <li value="21"><dfn title=dom-DOMException-URL_MISMATCH_ERR><code>URL_MISMATCH_ERR</code></dfn>:
+ the given URL doesn't match another URL;
+ <!-- HTML -->
+ <li value="22"><dfn title=dom-DOMException-QUOTA_EXCEEDED_ERR><code>QUOTA_EXCEEDED_ERR</code></dfn>:
+ the quota has been exceeded;
+ <!-- XHR2 -->
+ <li value="23"><dfn title=dom-DOMException-TIMEOUT_ERR><code>TIMEOUT_ERR</code></dfn>:
+ a timeout occurred;
+ <!-- HTML -->
+ <li value="24"><dfn title=dom-DOMException-DATA_CLONE_ERR><code>DATA_CLONE_ERR</code></dfn>:
+ the object can not be cloned;
+ <!-- DOMLS -->
+ <li value="81"><dfn title=dom-DOMException-PARSE_ERR><code>PARSE_ERR</code></dfn>:
+ an error occurred while parsing;
+ <!-- DOMLS -->
+ <li value="82"><dfn title=dom-DOMException-SERIALIZE_ERR><code>SERIALIZE_ERR</code></dfn>:
+ an error occurred while serializing.
 </ol>
-
-<p class=XXX>Add a description of those exceptions?
 
 <p>The <dfn title=dom-DOMException-message><code>message</code></dfn> exception
 member must return a User Agent-defined human readable string describing the

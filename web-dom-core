@@ -1705,16 +1705,17 @@ one, or the empty string otherwise.
            attribute DOMString <a href=#dom-processinginstruction-data title=dom-ProcessingInstruction-data>data</a>;
 };</pre>
 
-<p><a href=#processinginstruction><code>ProcessingInstruction</code></a> nodes represent <dfn id=concept-pi title=concept-PI>processing instructions</dfn>. They have a <dfn id=concept-pi-target title=concept-PI-target>target</dfn> and <dfn id=concept-pi-data title=concept-PI-data>data</dfn>
-associated with them when they are created.
+<p><a href=#processinginstruction><code>ProcessingInstruction</code></a> nodes represent <dfn id=concept-pi title=concept-PI>processing instructions</dfn>. They have a <dfn id=concept-pi-target title=concept-PI-target>target</dfn> associated with them when they are created,
+as well as some <dfn id=concept-pi-data title=concept-PI-data>data</dfn>.
 
-<p>The <dfn id=dom-processinginstruction-target title=dom-ProcessingInstruction-target>target</dfn> attribute
-must, on getting, return the <a href=#context-node title="context node">context node's</a>
-<a href=#concept-pi-target title=concept-PI-target>target</a>.
+<p>The <dfn id=dom-processinginstruction-target title=dom-ProcessingInstruction-target><code>target</code></dfn>
+attribute must, on getting, return the <a href=#context-node title="context node">context
+node's</a> <a href=#concept-pi-target title=concept-PI-target>target</a>.
 
-<p>The <dfn id=dom-processinginstruction-data title=dom-ProcessingInstruction-data>data</dfn> attribute
-must, on getting, return the <a href=#context-node title="context node">context node's</a>
-<a href=#concept-pi-data title=concept-PI-data>data</a>, and on setting, set the <a href=#context-node title="context node">context node's</a> <a href=#concept-pi-data title=concept-PI-data>data</a> to the new value.
+<p>The <dfn id=dom-processinginstruction-data title=dom-ProcessingInstruction-data><code>data</code></dfn>
+attribute must, on getting, return the <a href=#context-node title="context node">context
+node's</a> <a href=#concept-pi-data title=concept-PI-data>data</a>, and on setting, set the
+<a href=#context-node title="context node">context node's</a> <a href=#concept-pi-data title=concept-PI-data>data</a> to the new value.
 
 
 <h3 id=interface-characterdata><span class=secno>4.8 </span>Interface <a href=#characterdata><code>CharacterData</code></a></h3>

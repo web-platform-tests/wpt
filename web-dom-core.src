@@ -1897,17 +1897,17 @@ one, or the empty string otherwise.
 
 <p><code>ProcessingInstruction</code> nodes represent <dfn
 title=concept-PI>processing instructions</dfn>. They have a <dfn
-title=concept-PI-target>target</dfn> and <dfn title=concept-PI-data>data</dfn>
-associated with them when they are created.
+title=concept-PI-target>target</dfn> associated with them when they are created,
+as well as some <dfn title=concept-PI-data>data</dfn>.
 
-<p>The <dfn title=dom-ProcessingInstruction-target>target</code></dfn> attribute
-must, on getting, return the <span title="context node">context node's</span>
-<span title=concept-PI-target>target</span>.
+<p>The <dfn title=dom-ProcessingInstruction-target><code>target</code></dfn>
+attribute must, on getting, return the <span title="context node">context
+node's</span> <span title=concept-PI-target>target</span>.
 
-<p>The <dfn title=dom-ProcessingInstruction-data>data</code></dfn> attribute
-must, on getting, return the <span title="context node">context node's</span>
-<span title=concept-PI-data>data</span>, and on setting, set the <span
-title="context node">context node's</span> <span
+<p>The <dfn title=dom-ProcessingInstruction-data><code>data</code></dfn>
+attribute must, on getting, return the <span title="context node">context
+node's</span> <span title=concept-PI-data>data</span>, and on setting, set the
+<span title="context node">context node's</span> <span
 title=concept-PI-data>data</span> to the new value.
 
 

@@ -391,7 +391,7 @@ feature</span> with the version "2.0" associated with it.
 
 
 <h3>Cloning nodes</h3>
-<p>When a UA is to <dfn>clone</dfn> a <var>node</var>, with a <var>new ownerDocument</var> and with a <var>clone children</var> flag, it must run the following steps:
+<p>When a UA is to <dfn>clone</dfn> a <var>node</var>, with a <var>new ownerDocument</var> and with a <i>clone children flag</i>, it must run the following steps:
 
 <ol>
  <li><p>If <var>node</var> is a <code>DocumentType</code> node, raise a <code title=dom-DOMException-DATA_CLONE_ERR>DATA_CLONE_ERR</code> exception and abort these steps.
@@ -411,7 +411,7 @@ feature</span> with the version "2.0" associated with it.
   </table>
  <li>
   <p>If <var>node</var> is an <code>Element</code> node, let <var>copy</var>'s <code title=dom-Node-attributes>attributes</code> be a new <code>NamedNodeMap</code>, and for each <code>Attr</code> <var>old attribute</var> in <var>node</var>'s <code title=dom-Node-attributes>attributes</code>, <span>clone</span> it and append it to the <var>copy</var>'s <code title=dom-Node-attributes>attributes</code>.
- <li><p>If the <var>clone children</var> flag is set, <span>clone</span> all the children of <var>node</var> and append them to <var>copy</var>, with the same <var>new ownerDocument</var> and the <var>clone children</var> flag being set.
+ <li><p>If the <i>clone children flag</i> is set, <span>clone</span> all the children of <var>node</var> and append them to <var>copy</var>, with the same <var>new ownerDocument</var> and the <i>clone children flag</i> being set.
  <li><p>Return <var>copy</var>.
 </ol>
 
@@ -626,6 +626,10 @@ must return the name of the exception constant as a string.</p>
   DOMUserData setUserData(in DOMString key, in DOMUserData data, in UserDataHandler handler);
   DOMUserData getUserData(in DOMString key);-->
 };</pre>
+
+<p>The constants <code title=dom-Node-nodeType>nodeType</code> (as defined
+below) returns. The constants marked historical can no longer be returned,
+but are still exposed.</p>
 
 <ol>
  <li value=1><dfn title=dom-Node-ELEMENT_NODE><code>ELEMENT_NODE</code></dfn>
@@ -1302,13 +1306,10 @@ the following steps:
  title=dom-DOMException-SECURITY_ERR>SECURITY_ERR</code> exception and abort
  these steps. (can't get a reference to a node that you can't adopt anyway) -->
 
- <li><p>Return a <span>clone</span> of <var>importedNode</var>, with <var
- title>new ownerDocument</var> being the <span>context node</span>, and the <var
- title>clone children</var> flag set if <var>deep</var> is true.
+ <li><p>Return a <span>clone</span> of <var>importedNode</var>, with <var>new ownerDocument</var> being the <span>context node</span>, and the <i>clone children flag</i> set if <var>deep</var> is true.
 </ol>
 
-<p>The <dfn title=dom-Document-adoptNode><code>adoptNode(<var
-title>source</var>)</code></dfn> method must run the following steps:
+<p>The <dfn title=dom-Document-adoptNode><code>adoptNode(<var>source</var>)</code></dfn> method must run the following steps:
 
 <ol>
  <li><p>If <var>source</var> is a <code>Document</code> node or a

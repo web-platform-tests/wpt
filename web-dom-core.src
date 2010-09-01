@@ -1176,34 +1176,34 @@ data-anolis-spec=xmlns>NCName</code> production in Namespaces in XML.-->
 
 <p>The <dfn
 title=dom-Document-getElementsByTagName><code>getElementsByTagName(<var
-title>localName</var>)</code></dfn> method must run the following steps:
+title>tagName</var>)</code></dfn> method must run the following steps:
 
-<p class="XXX">qualifiedName?</p>
 <ol>
- <li><p>If <var>localName</var> is just a U+002A ASTERISK ("*") character,
+ <li><p>If <var>tagName</var> is just a U+002A ASTERISK ("*") character,
  return a <code>NodeList</code> rooted at the <span>context node</span>, whose
  filter matches only <code>Element</code> nodes.
 
- <li><p>Otherwise, if the <span>context node</span> is an <span>HTML
- document</span>, return a <code>NodeList</code> rooted at the <span>context
- node</span>, whose filter matches only the following nodes:
+ <li>
+  <p>Otherwise, if the <span>context node</span> is an
+  <span>HTML document</span>, return a <code>NodeList</code> rooted at the
+  <span>context node</span>, whose filter matches only the following nodes:
   <ul>
-   <li><code>Element</code> nodes in the <span>HTML namespace</span> that have a
-   <code title=dom-node-localName>localName</code> <span
-   title=case-sensitive>case-sensitively</span> equal to <var
-   title>localName</var>, <span>converted to lowercase</span>.
+   <li><code>Element</code> nodes in the <span>HTML namespace</span> that have a <code title=dom-Node-localName>localName</code>
+   <span title=case-sensitive>case-sensitively</span> equal to
+   <var>tagName</var>, <span>converted to lowercase</span>.
 
-   <li><code>Element</code> nodes, <em>not</em> in the <span>HTML
-   namespace</span>, that have a <code title=dom-node-localName>localName</code>
-   <span title=case-sensitive>case-sensitively</span> equal to <var
-   title>localName</var>.
+   <li><code>Element</code> nodes, <em>not</em> in the
+   <span>HTML namespace</span>, that have a
+   <code title=dom-Element-tagName>tagName</code>
+   <span title=case-sensitive>case-sensitively</span> equal to
+   <var>tagName</var>.
   </ul>
 
- <li><p>Otherwise, return a <code>NodeList</code> rooted at the <span>context
- node</span>, whose filter matches only <code>Element</code> nodes that have a
- <code title=dom-node-localName>localName</code> <span
- title=case-sensitive>case-sensitively</span> equal to <var
- title>localName</var>.
+ <li><p>Otherwise, return a <code>NodeList</code> rooted at the
+ <span>context node</span>, whose filter matches only <code>Element</code>
+ nodes that have a <code title=dom-Element-tagName>tagName</code>
+ <span title=case-sensitive>case-sensitively</span> equal to
+ <var>tagName</var>.
 </ol>
 
 <p>A new <code>NodeList</code> object must be returned each time.

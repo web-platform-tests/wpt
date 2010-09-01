@@ -144,8 +144,8 @@ be raised.
 <p>Except where otherwise specified, if a method with an argument that is a
 floating point number type (<code data-anolis-spec=webidl>float</code>) is
 passed an Infinity or Not-a-Number (NaN) value, a <code
-title=dom-DOMException-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</code> exception must
-be raised.
+title=dom-DOMException-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</code> exception
+must be raised.
 
 <p>Some of the terms used in this specification are defined in <cite>Web
 IDL</cite>, <cite>XML</cite>, <cite>Namespaces in XML</cite> and
@@ -1040,8 +1040,9 @@ as "almost standards" mode. Unless
 <span title=concept-no-quirks-mode>no-quirks mode</span>.
 
 <p class=note>The mode is only ever changed from the default if the
-<code>Document</code> node is created by the <span data-anolis-spec=html>HTML
-parser</span>, based on the presence, absence, or value of the DOCTYPE string.
+<code>Document</code> node is created by the
+<span data-anolis-spec=html>HTML parser</span>, based on the presence,
+absence, or value of the DOCTYPE string.
 <span data-anolis-ref>HTML</span>
 
 <p>The <dfn title=dom-Document-doctype><code>doctype</code></dfn> attribute must return the first child of the <code>Document</code> node that is a <code>DocumentType</code> node, if there is one, or null otherwise.
@@ -1298,14 +1299,6 @@ the following steps:
  (":") character, raise an <code
  title=dom-DOMException-INVALID_STATE_ERR>INVALID_STATE_ERR</code> and abort
  these steps.
-
- <!--<li><p>If <var>importedNode</var>'s <code
- title=dom-Node-ownerDocument>ownerDocument</code>'s <span>effective script
- origin</span> is not the <span title=same-origin
- data-anolis-spec=html>same</span> as the <span data-anolis-spec=html>effective
- script origin</span> of the <span>context node</span>, raise a <code
- title=dom-DOMException-SECURITY_ERR>SECURITY_ERR</code> exception and abort
- these steps. (can't get a reference to a node that you can't adopt anyway) -->
 
  <li><p>Return a <span>clone</span> of <var>importedNode</var>, with <var>new ownerDocument</var> being the <span>context node</span>, and the <i>clone children flag</i> set if <var>deep</var> is true.
 </ol>

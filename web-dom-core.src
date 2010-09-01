@@ -953,7 +953,6 @@ conditions are true, and must otherwise return false:
   readonly attribute <span>DocumentType</span> <span title=dom-Document-doctype>doctype</span>;
   readonly attribute <span>DOMImplementation</span> <span title=dom-Document-implementation>implementation</span>;
   readonly attribute <span>Element</span> <span title=dom-Document-documentElement>documentElement</span>;
-  readonly attribute <span data-anolis-spec=window>WindowProxy</span> <span title=dom-Document-defaultView>defaultView</span>;
 
   <span>Element</span> <span title=dom-Document-createElement>createElement</span>([TreatNullAs=EmptyString] in DOMString tagName);
   <span>Element</span> <span title=dom-Document-createElementNS>createElementNS</span>(in DOMString namespaceURI, in DOMString qualifiedName);
@@ -1006,13 +1005,6 @@ specifications</span> define otherwise, the <code>Document</code> must be in
 parser</span>, based on the presence, absence, or value of the DOCTYPE string.
 <span data-anolis-ref>HTML</span>
 
-<dl class=domintro>
- <dt><var title=dom-Window-document data-anolis-spec=window>document</var> .
-     <code title=dom-Document-defaultView>defaultView</code>
- <dd><p>Returns the <code data-anolis-spec=window>Window</code> object of the
-        <span data-anolis-spec=html>active document</span>.
-</dl>
-
 <p>The <dfn title=dom-Document-doctype><code>doctype</code></dfn> attribute must return the first child of the <code>Document</code> node that is a <code>DocumentType</code> node, if there is one, or null otherwise.
 <p class=note>In both HTML and XML there will only ever be one
 <code>DocumentType</code> node descendant of the <code>Document</code> node.
@@ -1022,11 +1014,6 @@ class=informative>XML</span>
 <p>The <dfn title=dom-Document-implementation><code>implementation</code></dfn> attribute must return the <code>DOMImplementation</code> object that is associated with the <code>Document</code> node.
 
 <p>The <dfn title=dom-Document-documentElement><code>documentElement</code></dfn> attribute must return the first child of the <code>Document</code> node that is an <code>Element</code> node, if there is one, or null otherwise.
-
-<p>The <dfn title=dom-Document-defaultView><code>defaultView</code></dfn>
-attribute must return the <span>context node</span>'s <span
-data-anolis-spec=html>browsing context</span>'s <code
-data-anolis-spec=window>WindowProxy</code> object.</p>
 
 <hr>
 

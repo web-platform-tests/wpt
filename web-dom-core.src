@@ -193,32 +193,32 @@ this specification.</p>
 <h3>Common microsyntaxes</h3>
 <h4>Common parser idioms</h4>
 <p>Some of the micro-parsers described below follow the pattern of
-having an <var title>input</var> variable that holds the string
-being parsed, and having a <var title>position</var> variable
+having an <var>input</var> variable that holds the string
+being parsed, and having a <var>position</var> variable
 pointing at the next character to parse in <var
 title="">input</var>.</p>
 
 <p>For parsers based on this pattern, a step that requires the user
 agent to <dfn>collect a sequence of characters</dfn> means that the
-following algorithm must be run, with <var title>characters</var>
+following algorithm must be run, with <var>characters</var>
 being the set of characters that can be collected:</p>
 
 <ol>
 
- <li><p>Let <var title>input</var> and <var
+ <li><p>Let <var>input</var> and <var
  title="">position</var> be the same variables as those of the same
  name in the algorithm that invoked these steps.</p></li>
 
- <li><p>Let <var title>result</var> be the empty string.</p></li>
+ <li><p>Let <var>result</var> be the empty string.</p></li>
 
- <li><p>While <var title>position</var> doesn't point past the
- end of <var title>input</var> and the character at <var
+ <li><p>While <var>position</var> doesn't point past the
+ end of <var>input</var> and the character at <var
  title="">position</var> is one of the <var
  title="">characters</var>, append that character to the end of <var
- title="">result</var> and advance <var title>position</var> to
- the next character in <var title>input</var>.</p></li>
+ title="">result</var> and advance <var>position</var> to
+ the next character in <var>input</var>.</p></li>
 
- <li><p>Return <var title>result</var>.</p></li>
+ <li><p>Return <var>result</var>.</p></li>
 
 </ol>
 
@@ -245,20 +245,20 @@ must use the following algorithm:</p>
 
 <ol>
 
- <li><p>Let <var title>input</var> be the string being
+ <li><p>Let <var>input</var> be the string being
  parsed.</p></li>
 
- <li><p>Let <var title>position</var> be a pointer into <var
+ <li><p>Let <var>position</var> be a pointer into <var
  title="">input</var>, initially pointing at the start of the
  string.</p></li>
 
- <li><p>Let <var title>tokens</var> be a list of tokens,
+ <li><p>Let <var>tokens</var> be a list of tokens,
  initially empty.</p></li>
 
  <li><p><span>Skip whitespace</span></p></li>
 
- <li><p>While <var title>position</var> is not past the end of
- <var title>input</var>:</p>
+ <li><p>While <var>position</var> is not past the end of
+ <var>input</var>:</p>
 
   <ol>
 
@@ -274,7 +274,7 @@ must use the following algorithm:</p>
 
  </li>
 
- <li><p>Return <var title>tokens</var>.</p></li>
+ <li><p>Return <var>tokens</var>.</p></li>
 
 </ol>
 
@@ -283,53 +283,53 @@ it must use the following algorithm:</p>
 
 <ol>
 
- <li><p>Let <var title>input</var> be the string being modified.
+ <li><p>Let <var>input</var> be the string being modified.
 
- <li><p>Let <var title>token</var> be the token being removed. It will not
+ <li><p>Let <var>token</var> be the token being removed. It will not
  contain any <span title="space character">space characters</span>.
 
- <li><p>Let <var title>output</var> be the output string, initially empty.
+ <li><p>Let <var>output</var> be the output string, initially empty.
 
- <li><p>Let <var title>position</var> be a pointer into <var title>input</var>,
+ <li><p>Let <var>position</var> be a pointer into <var>input</var>,
  initially pointing at the start of the string.
 
- <li><p><i title>Loop</i>: If <var title>position</var> is beyond the end of
- <var title>input</var>, abort these steps.
+ <li><p><i title>Loop</i>: If <var>position</var> is beyond the end of
+ <var>input</var>, abort these steps.
 
  <li>
-  <p>If the character at <var title>position</var> is a <span>space
+  <p>If the character at <var>position</var> is a <span>space
   character</span>:
 
   <ol>
-   <li><p>Append the character at <var title>position</var> to the end of <var
+   <li><p>Append the character at <var>position</var> to the end of <var
    title>output</var>.
 
-   <li><p>Advance <var title>position</var> so it points at the next character
-   in <var title>input</var>.
+   <li><p>Advance <var>position</var> so it points at the next character
+   in <var>input</var>.
 
    <li><p>Return to the step labeled <i title>loop</i>.
   </ol>
 
- <li><p>Otherwise, the character at <var title>position</var> is the first
+ <li><p>Otherwise, the character at <var>position</var> is the first
  character of a token. <span>Collect a sequence of characters</span> that are
  not <span title="space character">space characters</span>, and let that be <var
  title>s</var>.
 
  <li>
-  <p>If <var title>s</var> is exactly equal to <var title>token</var>, then:
+  <p>If <var>s</var> is exactly equal to <var>token</var>, then:
 
   <ol>
-   <li><p><span>Skip whitespace</span> (in <var title>input</var>).
+   <li><p><span>Skip whitespace</span> (in <var>input</var>).
 
    <li><p>Remove any <span title="space character">space characters</span>
-   currently at the end of <var title>output</var>.
+   currently at the end of <var>output</var>.
 
-   <li><p>If <var title>position</var> is not past the end of <var
-   title>input</var>, and <var title>output</var> is not the empty string,
-   append a single U+0020 SPACE character at the end of <var title>output</var>.
+   <li><p>If <var>position</var> is not past the end of <var
+   title>input</var>, and <var>output</var> is not the empty string,
+   append a single U+0020 SPACE character at the end of <var>output</var>.
   </ol>
 
- <li><p>Otherwise, append <var title>s</var> to the end of <var
+ <li><p>Otherwise, append <var>s</var> to the end of <var
  title>output</var>.
 
  <li><p>Return to the step labeled <i title>loop</i>.</p></li>
@@ -349,11 +349,11 @@ of the string, where such spaces are removed.</p>
 the user agent.
 
 <p>A <dfn title=concept-DOMfeatureversion>DOM feature version</dfn> is a (<var
-title>feature string</var>,&nbsp;<var title>version</var>) tuple, where <var
+title>feature string</var>,&nbsp;<var>version</var>) tuple, where <var
 title>feature string</var> is <span title=concept-DOMfeature>DOM feature</span>
-and <var title>version</var> is a <span>case-sensitive</span> string
+and <var>version</var> is a <span>case-sensitive</span> string
 representing a version number.
-<!--of the form "<var title>major</var>.<var title>minor</var>".-->
+<!--of the form "<var>major</var>.<var>minor</var>".-->
 
 <p>Specifications may define which <span title=concept-DOMfeature>DOM
 features</span> a user agent is to <dfn
@@ -363,10 +363,10 @@ and under which circumstances.
 
 <p>A user agent must <dfn title=concept-support-DOMfeatureversion>support</dfn>
 a <span title=concept-DOMfeatureversion>DOM feature version</span> (<var
-title>feature string</var>,&nbsp;<var title>version</var>) if it <span
+title>feature string</var>,&nbsp;<var>version</var>) if it <span
 title=concept-support-DOMfeature>supports</span> a <span
 title=concept-DOMfeature>DOM feature</span> that is a <span>ASCII
-case-insensitive</span> match for <var title>feature string</var> and <var
+case-insensitive</span> match for <var>feature string</var> and <var
 title>version</var> is in the associated list of versions.
 
 <p>A user agent must <span
@@ -374,7 +374,7 @@ title=concept-support-DOMfeatureversion>support</span> the (<var
 title>feature</var>,&nbsp;"") tuple if it <span
 title=concept-support-DOMfeature>supports</span> a <span
 title=concept-DOMfeature>DOM feature</span> that is a <span>ASCII
-case-insensitive</span> match for <var title>feature string</var>.
+case-insensitive</span> match for <var>feature string</var>.
 
 <p class=note>Authors are strongly discouraged from using <span
 title=concept-DOMfeature>DOM features</span>, as they are notoriously unreliable
@@ -391,16 +391,16 @@ feature</span> with the version "2.0" associated with it.
 
 
 <h3>Cloning nodes</h3>
-<p>When a UA is to <dfn>clone</dfn> a <var title>node</var>, with a <var title>new ownerDocument</var> and with a <var title>clone children</var> flag, it must run the following steps:
+<p>When a UA is to <dfn>clone</dfn> a <var>node</var>, with a <var>new ownerDocument</var> and with a <var>clone children</var> flag, it must run the following steps:
 
 <ol>
- <li><p>If <var title>node</var> is a <code>DocumentType</code> node, raise a <code title=dom-DOMException-DATA_CLONE_ERR>DATA_CLONE_ERR</code> exception and abort these steps.
+ <li><p>If <var>node</var> is a <code>DocumentType</code> node, raise a <code title=dom-DOMException-DATA_CLONE_ERR>DATA_CLONE_ERR</code> exception and abort these steps.
  <li>
-  <p>Let <var title>copy</var> be a new <code>Node</code> that implements the same interfaces as <var title>node</var>, with <code title=dom-Node-ownerDocument>ownerDocument</code> set to <var title>new ownerDocument</var>, <code title="dom-Node-prefix">prefix</code>, <code title="dom-Node-localName">localName</code> and <code title="dom-Node-namespaceURI">namespaceURI</code> attributes set to the values of the attributes on <var title>node</var> with the same names, and other attributes set to the values of the attributes on <var title>node</var> with the same names depending on the type of <var title>node</var> according to the following table:</p>
+  <p>Let <var>copy</var> be a new <code>Node</code> that implements the same interfaces as <var>node</var>, with <code title=dom-Node-ownerDocument>ownerDocument</code> set to <var>new ownerDocument</var>, <code title="dom-Node-prefix">prefix</code>, <code title="dom-Node-localName">localName</code> and <code title="dom-Node-namespaceURI">namespaceURI</code> attributes set to the values of the attributes on <var>node</var> with the same names, and other attributes set to the values of the attributes on <var>node</var> with the same names depending on the type of <var>node</var> according to the following table:</p>
   <table>
    <caption>Cloned attributes</caption>
    <thead>
-    <tr><th>Type of <var title>node</var><th>Attributes
+    <tr><th>Type of <var>node</var><th>Attributes
    <tbody>
     <tr><td><code>Element</code><td>&mdash;
     <tr><td><code>Attr</code><td><code title=dom-Attr-value>value</code>
@@ -410,9 +410,9 @@ feature</span> with the version "2.0" associated with it.
     <tr><td><code>DocumentFragment</code><td>&mdash;
   </table>
  <li>
-  <p>If <var title>node</var> is an <code>Element</code> node, let <var title>copy</var>'s <code title=dom-Node-attributes>attributes</code> be a new <code>NamedNodeMap</code>, and for each <code>Attr</code> <var title>old attribute</var> in <var title>node</var>'s <code title=dom-Node-attributes>attributes</code>, <span>clone</span> it and append it to the <var title>copy</var>'s <code title=dom-Node-attributes>attributes</code>.
- <li><p>If the <var title>clone children</var> flag is set, <span>clone</span> all the children of <var title>node</var> and append them to <var title>copy</var>, with the same <var title>new ownerDocument</var> and the <var title>clone children</var> flag being set.
- <li><p>Return <var title>copy</var>.
+  <p>If <var>node</var> is an <code>Element</code> node, let <var>copy</var>'s <code title=dom-Node-attributes>attributes</code> be a new <code>NamedNodeMap</code>, and for each <code>Attr</code> <var>old attribute</var> in <var>node</var>'s <code title=dom-Node-attributes>attributes</code>, <span>clone</span> it and append it to the <var>copy</var>'s <code title=dom-Node-attributes>attributes</code>.
+ <li><p>If the <var>clone children</var> flag is set, <span>clone</span> all the children of <var>node</var> and append them to <var>copy</var>, with the same <var>new ownerDocument</var> and the <var>clone children</var> flag being set.
+ <li><p>Return <var>copy</var>.
 </ol>
 
 
@@ -725,7 +725,7 @@ must, on getting, run the following steps:
 <p>The <dfn title=dom-Node-ownerDocument><code>ownerDocument</code></dfn> attribute must, on getting, return the <code>Document</code> node that the <span>context node</span> is associated with, or null if there is none.
 
 <p>The <dfn title=dom-Node-insertBefore><code>insertBefore(<var
-title>newChild</var>, <var title>refChild</var>)</code></dfn> method must run
+title>newChild</var>, <var>refChild</var>)</code></dfn> method must run
 the following steps:
 
 <ol>
@@ -734,44 +734,44 @@ the following steps:
  title=dom-DOMException-HIERARCHY_REQUEST_ERR>HIERARCHY_REQUEST_ERR</code> and
  abort these steps. <!-- See Mozilla bug 547798, 558973 -->
 
- <li><p>If <var title>newChild</var> is null, then raise a <code
+ <li><p>If <var>newChild</var> is null, then raise a <code
  title=dom-DOMException-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</code> exception and
  abort these steps.
 
- <li><p>If <var title>refChild</var> is not null and is not a child of the
+ <li><p>If <var>refChild</var> is not null and is not a child of the
  <span>context node</span>, then raise a <code
  title=dom-DOMException-NOT_FOUND_ERR>NOT_FOUND_ERR</code> exception and abort
  these steps. <!-- Do not adopt. -->
 
- <li><p>If <var title>newChild</var>'s
+ <li><p>If <var>newChild</var>'s
  <code title=dom-Node-ownerDocument>ownerDocument</code> is not equal to the
  <span>context node</span>'s
  <code title=dom-Node-ownerDocument>ownerDocument</code>, call the
  <span>context node</span>'s
  <code title=dom-Node-ownerDocument>ownerDocument</code>
  <code title=dom-Document-adoptNode>adoptNode</code> method with
- <var title>newChild</var> as its argument.
+ <var>newChild</var> as its argument.
 
  <!-- no security check -->
- <li><p>If <var title>newChild</var> is a <code>DocumentFragment</code> node,
- then while <var title>newChild</var>'s <code
+ <li><p>If <var>newChild</var> is a <code>DocumentFragment</code> node,
+ then while <var>newChild</var>'s <code
  title=dom-Node-firstChild>firstChild</code> is not null, call <code
  title=dom-Node-insertBefore>insertBefore</code> on the <span>context
- node</span> with <var title>newChild</var>'s <code
+ node</span> with <var>newChild</var>'s <code
  title=dom-Node-firstChild>firstChild</code> as first argument and <var
  title>refChild</var> as second argument.
 
- <li><p>Otherwise, if <var title>refChild</var> is null, append <var
+ <li><p>Otherwise, if <var>refChild</var> is null, append <var
  title>newChild</var> to the <span>context node</span>.
 
- <li><p>Otherwise insert <var title>newChild</var> in the <span>context
- node</span> as the previous sibling of <var title>refChild</var>.
+ <li><p>Otherwise insert <var>newChild</var> in the <span>context
+ node</span> as the previous sibling of <var>refChild</var>.
 
- <li><p>Return <var title>newChild</var>.
+ <li><p>Return <var>newChild</var>.
 </ol>
 
 <p>The <dfn title=dom-Node-replaceChild><code>replaceChild(<var
-title>newChild</var>, <var title>oldChild</var>)</code></dfn> method must run
+title>newChild</var>, <var>oldChild</var>)</code></dfn> method must run
 the following steps:
 
 <ol>
@@ -780,36 +780,36 @@ the following steps:
  title=dom-DOMException-HIERARCHY_REQUEST_ERR>HIERARCHY_REQUEST_ERR</code> and
  abort these steps. <!-- See Mozilla bug 547798, 558973 -->
 
- <li><p>If either <var title>newChild</var> or <var title>oldChild</var> is
+ <li><p>If either <var>newChild</var> or <var>oldChild</var> is
  null, then raise a <code
  title=dom-DOMException-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</code> exception and
  abort these steps.
 
- <li><p>If <var title>newChild</var>'s
+ <li><p>If <var>newChild</var>'s
  <code title=dom-Node-ownerDocument>ownerDocument</code> is not equal to the
  <span>context node</span>'s
  <code title=dom-Node-ownerDocument>ownerDocument</code>, call the
  <span>context node</span>'s
  <code title=dom-Node-ownerDocument>ownerDocument</code>
  <code title=dom-Document-adoptNode>adoptNode</code> method with
- <var title>newChild</var> as its argument.
+ <var>newChild</var> as its argument.
 
- <li><p>If <var title>oldChild</var> is not a child of the <span>context
+ <li><p>If <var>oldChild</var> is not a child of the <span>context
  node</span>, then raise a <code
  title=dom-DOMException-NOT_FOUND_ERR>NOT_FOUND_ERR</code>
  exception and abort these steps.
 
  <!-- no security check -->
- <li><p>Let <var title>refChild</var> be <var title>oldChild</var>'s
+ <li><p>Let <var>refChild</var> be <var>oldChild</var>'s
  <code title=dom-Node-nextSibling>nextSibling</code>.
 
- <li><p>Remove <var title>oldChild</var> from <span>context node</span>.
+ <li><p>Remove <var>oldChild</var> from <span>context node</span>.
 
  <li><p>Call <code title=dom-Node-insertBefore>insertBefore</code> on the
- <span>context node</span> with <var title>newChild</var> and <var
+ <span>context node</span> with <var>newChild</var> and <var
  title>refChild</var> as arguments, respectively.
 
- <li><p>Return <var title>newChild</var>.
+ <li><p>Return <var>newChild</var>.
 </ol>
 
 <p>The <dfn
@@ -818,19 +818,19 @@ title>oldChild</var>)</code></dfn> method must run the following steps:
 
 <ol>
  <!-- Attr nodes are okay -->
- <li><p>If <var title>oldChild</var> is null, then raise a <code
+ <li><p>If <var>oldChild</var> is null, then raise a <code
  title=dom-DOMException-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</code> exception and
  abort these steps.
 
- <li><p>If <var title>oldChild</var> is not a child of the <span>context
+ <li><p>If <var>oldChild</var> is not a child of the <span>context
  node</span>, then raise a <code
  title=dom-DOMException-NOT_FOUND_ERR>NOT_FOUND_ERR</code> exception and abort
  these steps.
  <!-- Including other documents. -->
 
- <li><p>Remove <var title>oldChild</var> from <span>context node</span>.
+ <li><p>Remove <var>oldChild</var> from <span>context node</span>.
 
- <li><p>Return <var title>oldChild</var>.
+ <li><p>Return <var>oldChild</var>.
 </ol>
 
 <p>The <dfn
@@ -843,38 +843,38 @@ title>newChild</var>)</code></dfn> method must run the following steps:
  title=dom-DOMException-HIERARCHY_REQUEST_ERR>HIERARCHY_REQUEST_ERR</code> and
  abort these steps. <!-- See Mozilla bug 547798, 558973 -->
 
- <li><p>If <var title>newChild</var> is null, then raise a <code
+ <li><p>If <var>newChild</var> is null, then raise a <code
  title=dom-DOMException-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</code> exception and
  abort these steps.
 
- <li><p>If <var title>newChild</var>'s
+ <li><p>If <var>newChild</var>'s
  <code title=dom-Node-ownerDocument>ownerDocument</code> is not equal to the
  <span>context node</span>'s
  <code title=dom-Node-ownerDocument>ownerDocument</code>, call the
  <span>context node</span>'s
  <code title=dom-Node-ownerDocument>ownerDocument</code>
  <code title=dom-Document-adoptNode>adoptNode</code> method with
- <var title>newChild</var> as its argument.
+ <var>newChild</var> as its argument.
 
  <!-- no security check -->
- <li><p>Append <var title>newChild</var> to the <span>context node</span>.
+ <li><p>Append <var>newChild</var> to the <span>context node</span>.
 
- <li><p>Return <var title>newChild</var>.
+ <li><p>Return <var>newChild</var>.
 </ol>
 
 <p>The <dfn title=dom-Node-hasChildNodes><code>hasChildNodes()</code></dfn> method must return false if the <span>context node</span>'s <code title=dom-Node-firstChild>firstChild</code> is null, and true otherwise.
 
 <p>The <dfn title=dom-Node-cloneNode><code>cloneNode(<var
 title>deep</var>)</code></dfn> method must return a <span>clone</span> of the
-<span>context node</span>, with <var title>new ownerDocument</var> being the
+<span>context node</span>, with <var>new ownerDocument</var> being the
 <span>context node</span>'s <code
-title=dom-Node-ownerDocument>ownerDocument</code>, and the <var title>clone
-children</var> flag set if <var title>deep</var> is true.
+title=dom-Node-ownerDocument>ownerDocument</code>, and the <var>clone
+children</var> flag set if <var>deep</var> is true.
 
 <p>The <dfn title=dom-Node-isSupported><code>isSupported(<var
-title>feature</var>, <var title>version</var>)</code></dfn> method must return
+title>feature</var>, <var>version</var>)</code></dfn> method must return
 true if the user agent <span title=concept-support-DOMfeatureversion>supports</span>
-the (<var title>feature</var>, <var title>version</var>) tuple on the
+the (<var>feature</var>, <var>version</var>) tuple on the
 <span>context node</span>, and false otherwise.
 
 <p>The <dfn title=dom-Node-namespaceURI><code>namespaceURI</code></dfn> attribute, on getting, must return the namespace that is associated with the node, if there is one and it's not the empty string, or null otherwise.
@@ -883,12 +883,12 @@ the (<var title>feature</var>, <var title>version</var>) tuple on the
 <span class=XXX title>And on setting?</span> <!--On setting, it must run the following steps:
 
 <ol>
- <li><p>Let <var title>prefix</var> be the value being assigned.
+ <li><p>Let <var>prefix</var> be the value being assigned.
  <li>
-  <p>If <var title>prefix</var> is not null, run the following substeps:
+  <p>If <var>prefix</var> is not null, run the following substeps:
   <ol>
-   <li><p>If <var title>prefix</var> doesn't match the <code data-anolis-spec=xml>Name</code> production in XML, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and abort these steps.
-   <li><p>If <var title>prefix</var> doesn't match the <code
+   <li><p>If <var>prefix</var> doesn't match the <code data-anolis-spec=xml>Name</code> production in XML, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and abort these steps.
+   <li><p>If <var>prefix</var> doesn't match the <code
    data-anolis-spec=xmlns>NCName</code> production in Namespaces in XML, raise a
    <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and
    abort these steps.
@@ -929,8 +929,8 @@ title>other</var>)</code></dfn> method must <span class=XXX title>...</span>
 
 <ol>
  <li><p>Remove all the child nodes of the <span>context node</span>.
- <li><p>Let <var title>data</var> be the value being assigned.
- <li><p>If <var title>data</var> is not the empty string, append a new <code>Text</code> node to the <span>context node</span> whose <code title=dom-CharacterData-data>data</code> is set to <var title>data</var>.
+ <li><p>Let <var>data</var> be the value being assigned.
+ <li><p>If <var>data</var> is not the empty string, append a new <code>Text</code> node to the <span>context node</span> whose <code title=dom-CharacterData-data>data</code> is set to <var>data</var>.
 </ol>
 
 <p class=XXX><a href="http://www.w3.org/mid/c9e12660808271343v58990698gabac29d2123a82ce@mail.gmail.com">http://www.w3.org/mid/c9e12660808271343v58990698gabac29d2123a82ce@mail.gmail.com</a>
@@ -956,18 +956,18 @@ title>arg</var>)</code></dfn> method must return true if all of the following
 conditions are true, and must otherwise return false:
 
 <ul>
- <li><p><var title>arg</var> is not null.
- <li><p><var title>arg</var>'s <code title=dom-Node-nodeType>nodeType</code> is the same as the <span>context node</span>'s <code title=dom-Node-nodeType>nodeType</code>.
- <li><p><var title>arg</var>'s <code title=dom-Node-nodeName>nodeName</code> is the same as the <span>context node</span>'s <code title=dom-Node-nodeName>nodeName</code>.
- <li><p><var title>arg</var>'s <code title=dom-Node-localName>localName</code> is the same as the <span>context node</span>'s <code title=dom-Node-localName>localName</code>.
- <li><p><var title>arg</var>'s <code title=dom-Node-namespaceURI>namespaceURI</code> is the same as the <span>context node</span>'s <code title=dom-Node-namespaceURI>namespaceURI</code>.
- <li><p><var title>arg</var>'s <code title=dom-Node-prefix>prefix</code> is the same as the <span>context node</span>'s <code title=dom-Node-prefix>prefix</code>.
- <li><p><var title>arg</var>'s <code title=dom-Node-nodeValue>nodeValue</code> is the same as the <span>context node</span>'s <code title=dom-Node-nodeValue>nodeValue</code>.
+ <li><p><var>arg</var> is not null.
+ <li><p><var>arg</var>'s <code title=dom-Node-nodeType>nodeType</code> is the same as the <span>context node</span>'s <code title=dom-Node-nodeType>nodeType</code>.
+ <li><p><var>arg</var>'s <code title=dom-Node-nodeName>nodeName</code> is the same as the <span>context node</span>'s <code title=dom-Node-nodeName>nodeName</code>.
+ <li><p><var>arg</var>'s <code title=dom-Node-localName>localName</code> is the same as the <span>context node</span>'s <code title=dom-Node-localName>localName</code>.
+ <li><p><var>arg</var>'s <code title=dom-Node-namespaceURI>namespaceURI</code> is the same as the <span>context node</span>'s <code title=dom-Node-namespaceURI>namespaceURI</code>.
+ <li><p><var>arg</var>'s <code title=dom-Node-prefix>prefix</code> is the same as the <span>context node</span>'s <code title=dom-Node-prefix>prefix</code>.
+ <li><p><var>arg</var>'s <code title=dom-Node-nodeValue>nodeValue</code> is the same as the <span>context node</span>'s <code title=dom-Node-nodeValue>nodeValue</code>.
 
- <li><p>Either <var title>arg</var>'s <code
+ <li><p>Either <var>arg</var>'s <code
  title=dom-Node-attributes>attributes</code> and the <span>context node</span>'s
  <code title=dom-Node-attributes>attributes</code> are both null or a bijection
- exists between the set of <var title>arg</var>'s <code
+ exists between the set of <var>arg</var>'s <code
  title=dom-Node-attributes>attributes</code> and the set of the <span>context
  node</span>'s <code title=dom-Node-attributes>attributes</code> so that every
  <code>Attr</code> node in the former is mapped to an <code>Attr</code> node in
@@ -975,8 +975,8 @@ conditions are true, and must otherwise return false:
  title=dom-Node-isEqualNode>isEqualNode</code> on the first <code>Attr</code>
  node with the second <code>Attr</code> node as its argument returns true.
 
- <li><p><var title>arg</var>'s <code title=dom-Node-childNodes>childNodes</code>' <code title=dom-NodeList-length>length</code> is the same as the <span>context node</span>'s <code title=dom-Node-childNodes>childNodes</code>' <code title=dom-NodeList-length>length</code>.
- <li><p>Calling <code title=dom-Node-isEqualNode>isEqualNode</code> on each child node of the <span>context node</span>, with the child node of the same index in <var title>arg</var> as argument returns true for every child node.
+ <li><p><var>arg</var>'s <code title=dom-Node-childNodes>childNodes</code>' <code title=dom-NodeList-length>length</code> is the same as the <span>context node</span>'s <code title=dom-Node-childNodes>childNodes</code>' <code title=dom-NodeList-length>length</code>.
+ <li><p>Calling <code title=dom-Node-isEqualNode>isEqualNode</code> on each child node of the <span>context node</span>, with the child node of the same index in <var>arg</var> as argument returns true for every child node.
 </ul>
 
 
@@ -1054,23 +1054,23 @@ class=informative>XML</span>
 
 <hr>
 
-<p>The <dfn title=dom-Document-createElement><code>createElement(<var title>tagName</var>)</code></dfn> method must run the following steps:</p>
+<p>The <dfn title=dom-Document-createElement><code>createElement(<var>tagName</var>)</code></dfn> method must run the following steps:</p>
 
 <ol>
- <li><p>If <var title>tagName</var> doesn't match the <code
+ <li><p>If <var>tagName</var> doesn't match the <code
  data-anolis-spec=xml>Name</code> production in XML, raise an <code
  title=dom-DOMException-INVALID_CHARACTER_ERR title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
  exception and abort these steps.
 
  <li><p>If the <span>context node</span> is an <span>HTML document</span>, let
- <var title>localName</var> be <var title>tagName</var>, <span>converted to
- lowercase</span>. Otherwise, let <var title>localName</var> be <var
+ <var>localName</var> be <var>tagName</var>, <span>converted to
+ lowercase</span>. Otherwise, let <var>localName</var> be <var
  title>tagName</var>.
 
  <li><p>Return a new <code>Element</code> node with no attributes, <code
  title=dom-Node-namespaceURI>namespaceURI</code> set to the <span>HTML
  namespace</span>, <code title=dom-Node-prefix>prefix</code> set to null, <code
- title=dom-Node-localName>localName</code> set to <var title>localName</var>,
+ title=dom-Node-localName>localName</code> set to <var>localName</var>,
  and <code title=dom-Node-ownerDocument>ownerDocument</code> set to the
  <span>context node</span>.
 </ol>
@@ -1078,37 +1078,37 @@ class=informative>XML</span>
 <p class=note>No check is performed that the local name will match the <code
 data-anolis-spec=xmlns>NCName</code> production in Namespaces in XML.
 
-<p>The <dfn title=dom-Document-createElementNS><code>createElementNS(<var title>namespaceURI</var>, <var title>qualifiedName</var>)</code></dfn> method must run the following steps:</p>
+<p>The <dfn title=dom-Document-createElementNS><code>createElementNS(<var>namespaceURI</var>, <var>qualifiedName</var>)</code></dfn> method must run the following steps:</p>
 <ol>
- <li><p>If <var title>qualifiedName</var> doesn't match the <code
+ <li><p>If <var>qualifiedName</var> doesn't match the <code
  data-anolis-spec=xml>Name</code> production in XML, raise an <code
  title=dom-DOMException-INVALID_CHARACTER_ERR title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
  exception and abort these steps.
- <li><p>If <var title>qualifiedName</var> doesn't match the <code
+ <li><p>If <var>qualifiedName</var> doesn't match the <code
  data-anolis-spec=xmlns>QName</code> production in Namespaces in XML, raise a
  <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and
  abort these steps.
- <li><p>If <var title>qualifiedName</var> contains a U+003E COLON (":") character, then split the string on the colon and let <var title>prefix</var> be the part before the colon and <var title>localName</var> the part after the colon. Otherwise, let <var title>prefix</var> be null and <var title>localName</var> be <var title>qualifiedName</var>.
- <li><p>If <var title>prefix</var> is not null and <var title>namespaceURI</var> is an empty string, raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and abort these steps.
- <li><p>If <var title>prefix</var> is "xml" and <var title>namespaceURI</var> is not the <span>XML namespace</span>, raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and abort these steps.
- <li><p>If <var title>qualifiedName</var> or <var title>prefix</var> is "xmlns" and <var title>namespaceURI</var> is not the <span>XMLNS namespace</span>, raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and abort these steps.
- <li><p>If <var title>namespaceURI</var> is the <span>XMLNS namespace</span> and neither <var title>qualifiedName</var> nor <var title>prefix</var> is "xmlns", raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and abort these steps.
- <li><p>Return a new <code>Element</code> node with no attributes, <code title=dom-Node-namespaceURI>namespaceURI</code> set to <var title>namespaceURI</var>, <code title=dom-Node-prefix>prefix</code> set to <var title>prefix</var>, <code title=dom-Node-localName>localName</code> set to <var title>localName</var>, and <code title=dom-Node-ownerDocument>ownerDocument</code> set to the <span>context node</span>.
+ <li><p>If <var>qualifiedName</var> contains a U+003E COLON (":") character, then split the string on the colon and let <var>prefix</var> be the part before the colon and <var>localName</var> the part after the colon. Otherwise, let <var>prefix</var> be null and <var>localName</var> be <var>qualifiedName</var>.
+ <li><p>If <var>prefix</var> is not null and <var>namespaceURI</var> is an empty string, raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and abort these steps.
+ <li><p>If <var>prefix</var> is "xml" and <var>namespaceURI</var> is not the <span>XML namespace</span>, raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and abort these steps.
+ <li><p>If <var>qualifiedName</var> or <var>prefix</var> is "xmlns" and <var>namespaceURI</var> is not the <span>XMLNS namespace</span>, raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and abort these steps.
+ <li><p>If <var>namespaceURI</var> is the <span>XMLNS namespace</span> and neither <var>qualifiedName</var> nor <var>prefix</var> is "xmlns", raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and abort these steps.
+ <li><p>Return a new <code>Element</code> node with no attributes, <code title=dom-Node-namespaceURI>namespaceURI</code> set to <var>namespaceURI</var>, <code title=dom-Node-prefix>prefix</code> set to <var>prefix</var>, <code title=dom-Node-localName>localName</code> set to <var>localName</var>, and <code title=dom-Node-ownerDocument>ownerDocument</code> set to the <span>context node</span>.
 </ol>
 
 <p>The <dfn title=dom-Document-createDocumentFragment><code>createDocumentFragment()</code></dfn> method must return a new <code>DocumentFragment</code> node with its <code title=dom-Node-ownerDocument>ownerDocument</code> set to the <span>context node</span>.
 
-<p>The <dfn title=dom-Document-createTextNode><code>createTextNode(<var title>data</var>)</code></dfn> method must return a new <code>Text</code> node with its <code title=dom-CharacterData-data>data</code> attribute set to <var title>data</var> and <code title=dom-Node-ownerDocument>ownerDocument</code> set to the <span>context node</span>.
+<p>The <dfn title=dom-Document-createTextNode><code>createTextNode(<var>data</var>)</code></dfn> method must return a new <code>Text</code> node with its <code title=dom-CharacterData-data>data</code> attribute set to <var>data</var> and <code title=dom-Node-ownerDocument>ownerDocument</code> set to the <span>context node</span>.
 <p class=note>No check is performed that the text node contains characters that
 match the <code data-anolis-spec=xml>Char</code> production in XML.
 
-<p>The <dfn title=dom-Document-createComment><code>createComment(<var title>data</var>)</code></dfn> method must return a new <code>Comment</code> node with its <code title=dom-CharacterData-data>data</code> attribute set to <var title>data</var> and <code title=dom-Node-ownerDocument>ownerDocument</code> set to the <span>context node</span>.
+<p>The <dfn title=dom-Document-createComment><code>createComment(<var>data</var>)</code></dfn> method must return a new <code>Comment</code> node with its <code title=dom-CharacterData-data>data</code> attribute set to <var>data</var> and <code title=dom-Node-ownerDocument>ownerDocument</code> set to the <span>context node</span>.
 <p class=note>No check is performed that the comment contains characters that
 match the <code data-anolis-spec=xml>Char</code> production in XML or that it
 contains two adjacent hyphens or ends with a hyphen.
 
 <p>The <dfn title=dom-Document-createProcessingInstruction><code
->createProcessingInstruction(<var title>target</var>, <var
+>createProcessingInstruction(<var>target</var>, <var
 title>data</var>)</code></dfn> method must run the following steps:
 
 <ol>
@@ -1116,22 +1116,22 @@ title>data</var>)</code></dfn> method must run the following steps:
  a <code title=dom-DOMException-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</code>
  exception and abort these steps.
 
- <li><p>If <var title>target</var> doesn't match the <!--<code
+ <li><p>If <var>target</var> doesn't match the <!--<code
  data-anolis-spec=xml>PITarget</code>--> <code data-anolis-spec=xml>Name</code>
  production in XML, raise an <code
  title=dom-DOMException-INVALID_CHARACTER_ERR title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
  exception and abort these steps. <!-- DOM3 didn't check for "xml" -->
 
- <li><p>If <var title>data</var> contains the string "<code title>?></code>",
+ <li><p>If <var>data</var> contains the string "<code title>?></code>",
  raise an <code
  title=dom-DOMException-INVALID_CHARACTER_ERR title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
  exception and abort these steps. <!-- Gecko does this. -->
 
- <!--<li><p>If <var title>target</var> contains a U+003A COLON (":") character, raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and abort these steps.--> <!-- DOM3 didn't check this -->
+ <!--<li><p>If <var>target</var> contains a U+003A COLON (":") character, raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and abort these steps.--> <!-- DOM3 didn't check this -->
 
  <li><p>Return a new <span title=concept-PI>processing instruction</span>, with
- <var title>target</var> as its <span title=concept-PI-target>target</span> and
- <var title>data</var> as its <span title=concept-PI-data>data</span>, and whose
+ <var>target</var> as its <span title=concept-PI-target>target</span> and
+ <var>data</var> as its <span title=concept-PI-data>data</span>, and whose
  <code title=dom-Node-ownerDocument>ownerDocument</code> is set to the
  <span>context node</span>.
 </ol>
@@ -1142,10 +1142,10 @@ contains "xml" or the colon, or that the data contains characters that match the
 
 <!--
 [createAttribute]
-<p>The <dfn title=dom-Document-createAttribute><code>createAttribute(<var title>name</var>)</code></dfn> method must run the following steps:</p>
+<p>The <dfn title=dom-Document-createAttribute><code>createAttribute(<var>name</var>)</code></dfn> method must run the following steps:</p>
 <ol>
- <li><p>If <var title>name</var> doesn't match the <code data-anolis-spec=xml>Name</code> production in XML, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and abort these steps.
- <li><p>Return a new <code>Attr</code> node with its <code title=dom-Node-namespaceURI>namespaceURI</code> set to null, <code title=dom-Node-prefix>prefix</code> set to null, <code title=dom-Node-localName>localName</code> set to <var title>name</var>, and <code title=dom-Node-ownerDocument>ownerDocument</code> set to the <span>context node</span>.
+ <li><p>If <var>name</var> doesn't match the <code data-anolis-spec=xml>Name</code> production in XML, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and abort these steps.
+ <li><p>Return a new <code>Attr</code> node with its <code title=dom-Node-namespaceURI>namespaceURI</code> set to null, <code title=dom-Node-prefix>prefix</code> set to null, <code title=dom-Node-localName>localName</code> set to <var>name</var>, and <code title=dom-Node-ownerDocument>ownerDocument</code> set to the <span>context node</span>.
 </ol>-->
 <!-- this is different from DOM3 -->
 <!--<p class=note>No check is performed that the local name will match the <code
@@ -1153,10 +1153,10 @@ data-anolis-spec=xmlns>NCName</code> production in Namespaces in XML.-->
 
 <hr>
 <dl class=domintro>
- <dt><var title>collection</var> = <var title>document</var> . <code
+ <dt><var>collection</var> = <var>document</var> . <code
  title=dom-Document-getElementsByClassName>getElementsByClassName(<var
  title>classes</var>)</code>
- <dt><var title>collection</var> = <var title>element</var> . <code
+ <dt><var>collection</var> = <var>element</var> . <code
  title=dom-Element-getElementsByClassName>getElementsByClassName(<var
  title>classes</var>)</code>
  <dd>
@@ -1172,7 +1172,7 @@ data-anolis-spec=xmlns>NCName</code> production in Namespaces in XML.-->
 title=dom-Document-getElementsByTagName><code>getElementsByTagName(<var
 title>localName</var>)</code></dfn> method must run the following steps:
 <ol>
- <li><p>If <var title>localName</var> is just a U+002A ASTERISK ("*") character,
+ <li><p>If <var>localName</var> is just a U+002A ASTERISK ("*") character,
  return a <code>NodeList</code> rooted at the <span>context node</span>, whose
  filter matches only <code>Element</code> nodes.
 
@@ -1207,12 +1207,12 @@ title>FOO</code> elements that aren't in the <span>HTML namespace</span>, and
 not <code title>FOO</code> elements that are in the <span>HTML namespace</span>.
 
 
-<p>The <dfn title=dom-Document-getElementsByTagNameNS><code>getElementsByTagNameNS(<var title>namespaceURI</var>, <var title>localName</var>)</code></dfn> method must run the following steps:
+<p>The <dfn title=dom-Document-getElementsByTagNameNS><code>getElementsByTagNameNS(<var>namespaceURI</var>, <var>localName</var>)</code></dfn> method must run the following steps:
 <ol>
- <li><p>If both <var title>namespaceURI</var> and <var title>localName</var> are just the character U+002A ASTERISK ("*"), return a <code>NodeList</code> rooted at the <span>context node</span>, whose filter matches only <code>Element</code> nodes.
- <li><p>Otherwise, if <var title>namespaceURI</var> is just the character U+002A ASTERISK ("*"), return a <code>NodeList</code> rooted at the <span>context node</span>, whose filter matches only <code>Element</code> nodes with the <code title=dom-Node-localName>localName</code> equal to <var title>localName</var>.
- <li><p>Otherwise, if <var title>localName</var> is just the character U+002A ASTERISK ("*"), return a <code>NodeList</code> rooted at the <span>context node</span>, whose filter matches only <code>Element</code> nodes with the <code title=dom-Node-namespaceURI>namespaceURI</code> equal to <var title>namespaceURI</var>.
- <li><p>Otherwise, return a <code>NodeList</code> rooted at the <span>context node</span>, whose filter matches only <code>Element</code> nodes that have a <code title=dom-Node-namespaceURI>namespaceURI</code> equal to <var title>namespaceURI</var> and a <code title=dom-Node-localName>localName</code> equal to <var title>localName</var> (both in a <span>case-sensitive</span> manner).
+ <li><p>If both <var>namespaceURI</var> and <var>localName</var> are just the character U+002A ASTERISK ("*"), return a <code>NodeList</code> rooted at the <span>context node</span>, whose filter matches only <code>Element</code> nodes.
+ <li><p>Otherwise, if <var>namespaceURI</var> is just the character U+002A ASTERISK ("*"), return a <code>NodeList</code> rooted at the <span>context node</span>, whose filter matches only <code>Element</code> nodes with the <code title=dom-Node-localName>localName</code> equal to <var>localName</var>.
+ <li><p>Otherwise, if <var>localName</var> is just the character U+002A ASTERISK ("*"), return a <code>NodeList</code> rooted at the <span>context node</span>, whose filter matches only <code>Element</code> nodes with the <code title=dom-Node-namespaceURI>namespaceURI</code> equal to <var>namespaceURI</var>.
+ <li><p>Otherwise, return a <code>NodeList</code> rooted at the <span>context node</span>, whose filter matches only <code>Element</code> nodes that have a <code title=dom-Node-namespaceURI>namespaceURI</code> equal to <var>namespaceURI</var> and a <code title=dom-Node-localName>localName</code> equal to <var>localName</var> (both in a <span>case-sensitive</span> manner).
 </ol>
 <p>A new <code>NodeList</code> object must be returned each time.
 
@@ -1225,7 +1225,7 @@ title=concept-class>classes</span>. When called, the method must return a <span
 title=concept-collection-live>live</span> <code>NodeList</code> object
 containing all the elements in the <span>context node</span>, in <span>tree
 order</span>, that have all the <span title=concept-class>classes</span>
-specified in the <var title>classNames</var> argument, having obtained the
+specified in the <var>classNames</var> argument, having obtained the
 <span title=concept-class>classes</span> by <span title="split a string on
 spaces">splitting the string on spaces</span>. (Duplicates are ignored.) If
 there are no tokens specified in the argument, then the method must return an
@@ -1278,12 +1278,12 @@ title>elementId</var>, or null if there is none.
 <hr>
 
 <p>The <dfn title=dom-Document-importNode><code>importNode(<var
-title>importedNode</var>, <var title>deep</var>)</code></dfn> method must run
+title>importedNode</var>, <var>deep</var>)</code></dfn> method must run
 the following steps:
 <ol>
  <!-- Similar text for adoptNode -->
  <li><p>If the <span>context node</span> is an <span>XML document</span>, then
- if <var title>importedNode</var> or any of its descendant nodes or any of its
+ if <var>importedNode</var> or any of its descendant nodes or any of its
  <code title=dom-Node-attributes>attributes</code> or any of the <code
  title=dom-Node-attributes>attributes</code> of any descendant
  <code>Element</code> nodes has a <code
@@ -1294,7 +1294,7 @@ the following steps:
  title=dom-DOMException-INVALID_STATE_ERR>INVALID_STATE_ERR</code> and abort
  these steps.
 
- <!--<li><p>If <var title>importedNode</var>'s <code
+ <!--<li><p>If <var>importedNode</var>'s <code
  title=dom-Node-ownerDocument>ownerDocument</code>'s <span>effective script
  origin</span> is not the <span title=same-origin
  data-anolis-spec=html>same</span> as the <span data-anolis-spec=html>effective
@@ -1302,23 +1302,23 @@ the following steps:
  title=dom-DOMException-SECURITY_ERR>SECURITY_ERR</code> exception and abort
  these steps. (can't get a reference to a node that you can't adopt anyway) -->
 
- <li><p>Return a <span>clone</span> of <var title>importedNode</var>, with <var
+ <li><p>Return a <span>clone</span> of <var>importedNode</var>, with <var
  title>new ownerDocument</var> being the <span>context node</span>, and the <var
- title>clone children</var> flag set if <var title>deep</var> is true.
+ title>clone children</var> flag set if <var>deep</var> is true.
 </ol>
 
 <p>The <dfn title=dom-Document-adoptNode><code>adoptNode(<var
 title>source</var>)</code></dfn> method must run the following steps:
 
 <ol>
- <li><p>If <var title>source</var> is a <code>Document</code> node or a
+ <li><p>If <var>source</var> is a <code>Document</code> node or a
  <code>DocumentType</code> node, raise a <code
  title=dom-DOMException-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</code> exception and
  abort these steps.
 
  <!-- Similar text for importNode -->
  <li><p>If the <span>context node</span> is an <span>XML document</span>, then
- if <var title>source</var> or any of its descendant nodes or any of its <code
+ if <var>source</var> or any of its descendant nodes or any of its <code
  title=dom-Node-attributes>attributes</code> or any of the <code
  title=dom-Node-attributes>attributes</code> of any descendant
  <code>Element</code> nodes has a <code
@@ -1329,35 +1329,35 @@ title>source</var>)</code></dfn> method must run the following steps:
  title=dom-DOMException-INVALID_STATE_ERR>INVALID_STATE_ERR</code> and abort
  these steps.
 
- <li><p>If <var title>source</var> is an <code>Element</code> node, it is
+ <li><p>If <var>source</var> is an <code>Element</code> node, it is
  <span>affected by a base URL change</span>.
 
  <!-- no security check -->
- <li><p>If <var title>source</var>'s <code
+ <li><p>If <var>source</var>'s <code
  title=dom-Node-parentNode>parentNode</code> is not null and its <code
  title=dom-Node-ownerDocument>ownerDocument</code> isn't equal to the
- <span>context node</span>, remove <var title>source</var> from its parent.
+ <span>context node</span>, remove <var>source</var> from its parent.
 
- <li><p>Set <var title>source</var>'s <code
+ <li><p>Set <var>source</var>'s <code
  title=dom-Node-ownerDocument>ownerDocument</code> to the <span>context
  node</span>.
 
- <li><p>If <var title>source</var> is an <code>Element</code> node,
+ <li><p>If <var>source</var> is an <code>Element</code> node,
  set the <code title=dom-Node-ownerDocument>ownerDocument</code> of all
  <code>Attr</code> in its <code title=dom-Node-attributes>attributes</code>
  to the <span>context node</span>.
 
- <li><p>For each child node of <var title>source</var>, call <code
+ <li><p>For each child node of <var>source</var>, call <code
  title=dom-Document-adoptNode>adoptNode</code> on the <span>context node</span>,
  with the child node as its argument.
 
- <li><p>Return <var title>source</var>.
+ <li><p>Return <var>source</var>.
 </ol>
 
 <hr>
 
 <dl class=domintro>
- <dt><var title>document</var> . <code title=dom-Document-compatMode>compatMode</code>
+ <dt><var>document</var> . <code title=dom-Document-compatMode>compatMode</code>
  <dd>
   <p>Returns the string "<code title>CSS1Compat</code>" if the <span>context
   node</span> is in <span title=concept-no-quirks-mode>no-quirks mode</span> or
@@ -1394,24 +1394,24 @@ http://lists.w3.org/Archives/Public/www-dom/2003JulSep/0049.html -->
 };</pre>
 
 <dl class=domintro>
- <dt><var title>hasSupport</var> = <var title=dom-Window-document
+ <dt><var>hasSupport</var> = <var title=dom-Window-document
  data-anolis-spec=window>document</var> . <code
  title=dom-Document-implementation>implementation</code> . <code
  title=dom-DOMImplementation-hasFeature>hasFeature</code>(
- <var title>feature</var>, <var title>version</var> )
+ <var>feature</var>, <var>version</var> )
 
  <dd>
   <p>Returns whether the user agent supports the version <var
-  title>version</var> of <var title>feature</var>. The empty string means any
+  title>version</var> of <var>feature</var>. The empty string means any
   version.
 </dl>
 
 <div class=impl>
 
 <p>The <dfn title=dom-DOMImplementation-hasFeature><code>hasFeature(<var
-title>feature</var>, <var title>version</var>)</code></dfn> method must return
+title>feature</var>, <var>version</var>)</code></dfn> method must return
 true if the user agent <span title=concept-support-DOMfeatureversion>supports</span>
-the (<var title>feature</var>, <var title>version</var>) tuple and false
+the (<var>feature</var>, <var>version</var>) tuple and false
 otherwise.
 
 </div>
@@ -1419,16 +1419,16 @@ otherwise.
 <hr>
 
 <dl class=domintro>
- <dt><var title>doctype</var> = <var title=dom-Window-document
+ <dt><var>doctype</var> = <var title=dom-Window-document
  data-anolis-spec=window>document</var> . <code
  title=dom-Document-implementation>implementation</code> . <code
  title=dom-DOMImplementation-createDocumentType>createDocumentType</code>(
- <var title>qualifiedName</var>, <var title>publicId</var>, <var
+ <var>qualifiedName</var>, <var>publicId</var>, <var
  title>systemId</var> )
 
  <dd>
   <p>Returns a new <code>DocumentType</code>, with the given <var
-  title>qualifiedName</var>, <var title>publicId</var>, and <var
+  title>qualifiedName</var>, <var>publicId</var>, and <var
   title>systemId</var>. If <var
   title>qualifiedName</var> doesn't match the <code
   data-anolis-spec=xml>Name</code> production in XML, an <code
@@ -1438,35 +1438,35 @@ otherwise.
   title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception is raised.
 
 
- <dt><var title>doc</var> = <var title=dom-Window-document
+ <dt><var>doc</var> = <var title=dom-Window-document
  data-anolis-spec=window>document</var> . <code
  title=dom-Document-implementation>implementation</code> . <code
  title=dom-DOMImplementation-createDocument>createDocument</code>( <var
- title>namespaceURI</var>, <var title>qualifiedName</var>, <var
+ title>namespaceURI</var>, <var>qualifiedName</var>, <var
  title>doctype</var> )
 
  <dd>
   <p>Returns a new <code>Document</code>, with a new root
   <code>Element</code> whose <code title=dom-Node-localName>localName</code> is
-  <var title>qualifiedName</var> and whose <code
+  <var>qualifiedName</var> and whose <code
   title=dom-Node-namespaceURI>namespaceURI</code> is <var
-  title>namespaceURI</var> (unless <var title>qualifiedName</var> is the empty
-  string), and with <var title>doctype</var>, if it is given, as its <span
+  title>namespaceURI</var> (unless <var>qualifiedName</var> is the empty
+  string), and with <var>doctype</var>, if it is given, as its <span
   title=concept-doctype>doctype</span>.
 
   <p>This method raises the same exceptions as the <code
   title=dom-Document-createElementNS>createElementNS</code> method, when called
-  with the same arguments. If <var title>doctype</var> comes from another
+  with the same arguments. If <var>doctype</var> comes from another
   <code>Document</code>, a <code
   title=dom-DOMException-WRONG_DOCUMENT_ERR>WRONG_DOCUMENT_ERR</code> exception
   is raised.
 
 
- <dt><var title>doc</var> = <var title=dom-Window-document
+ <dt><var>doc</var> = <var title=dom-Window-document
  data-anolis-spec=window>document</var> . <code
  title=dom-Document-implementation>implementation</code> . <code
  title=dom-DOMImplementation-createHTMLDocument>createHTMLDocument</code>(
- <var title>title</var> )
+ <var>title</var> )
 
  <dd>
   <p>Returns a new <code>Document</code>, with a basic DOM already
@@ -1475,43 +1475,43 @@ otherwise.
 
 <div class=impl>
 
-<p>The <dfn title=dom-DOMImplementation-createDocumentType><code>createDocumentType(<var title>qualifiedName</var>, <var title>publicId</var>, <var title>systemId</var>)</code></dfn> method must run the following steps:
+<p>The <dfn title=dom-DOMImplementation-createDocumentType><code>createDocumentType(<var>qualifiedName</var>, <var>publicId</var>, <var>systemId</var>)</code></dfn> method must run the following steps:
 
 <ol>
- <li><p>If <var title>qualifiedName</var> doesn't match the <code
+ <li><p>If <var>qualifiedName</var> doesn't match the <code
  data-anolis-spec=xml>Name</code> production in XML, raise an <code
  title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
  exception and abort these steps.
- <li><p>If <var title>qualifiedName</var> doesn't match the <code
+ <li><p>If <var>qualifiedName</var> doesn't match the <code
  data-anolis-spec=xmlns>NCName</code> production in Namespaces in XML, raise a
  <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and
  abort these steps.
- <!--<li><p>If <var title>publicId</var> contains a character that doesn't match the <code data-anolis-spec=xml>PubidChar</code> production in XML, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and abort these steps. --> <!-- DOM3 didn't check this -->
- <!--<li><p>If <var title>systemId</var> contains both a U+0022 QUOTATION MARK ('"') and a U+0027 APOSTROPHE ("'") character, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and abort these steps.--> <!-- DOM3 didn't check this -->
+ <!--<li><p>If <var>publicId</var> contains a character that doesn't match the <code data-anolis-spec=xml>PubidChar</code> production in XML, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and abort these steps. --> <!-- DOM3 didn't check this -->
+ <!--<li><p>If <var>systemId</var> contains both a U+0022 QUOTATION MARK ('"') and a U+0027 APOSTROPHE ("'") character, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and abort these steps.--> <!-- DOM3 didn't check this -->
  <li><p>Return a new <span title=concept-doctype>document type
- declaration</span>, with <var title>qualifiedName</var> as its <span
- title=concept-doctype-name>name</span>, <var title>publicId</var> as its <span
- title=concept-doctype-publicid>public ID</span>, and <var title>systemId</var>
+ declaration</span>, with <var>qualifiedName</var> as its <span
+ title=concept-doctype-name>name</span>, <var>publicId</var> as its <span
+ title=concept-doctype-publicid>public ID</span>, and <var>systemId</var>
  as its <span title=concept-doctype-systemid>system ID</span>, and with its
  <code title=dom-Node-ownerDocument>ownerDocument</code> set to null.
 </ol>
-<p class=note>No check is performed that the <var title>publicId</var> matches the <code title>PublicChar</code> production in XML or that the <var title>systemId</var> doesn't contain both a quotation mark (") and an apostrophe (').
+<p class=note>No check is performed that the <var>publicId</var> matches the <code title>PublicChar</code> production in XML or that the <var>systemId</var> doesn't contain both a quotation mark (") and an apostrophe (').
 
-<p>The <dfn title=dom-DOMImplementation-createDocument><code>createDocument(<var title>namespaceURI</var>, <var title>qualifiedName</var>, <var title>doctype</var>)</code></dfn> method must run the following steps:
+<p>The <dfn title=dom-DOMImplementation-createDocument><code>createDocument(<var>namespaceURI</var>, <var>qualifiedName</var>, <var>doctype</var>)</code></dfn> method must run the following steps:
 
 <ol>
- <li><p>Let <var title>document</var> be a new <code>Document</code> node.
- <li><p>Let <var title>element</var> be null.
- <li><p>If <var title>qualifiedName</var> is not the empty string, set <var title>element</var> to the result of invoking the <code title=dom-Document-createElementNS>createElementNS</code> method with the arguments <var title>namespaceURI</var> and <var title>qualifiedName</var> on <var title>document</var>. If that raised an exception, re-raise the same exception and abort these steps.
+ <li><p>Let <var>document</var> be a new <code>Document</code> node.
+ <li><p>Let <var>element</var> be null.
+ <li><p>If <var>qualifiedName</var> is not the empty string, set <var>element</var> to the result of invoking the <code title=dom-Document-createElementNS>createElementNS</code> method with the arguments <var>namespaceURI</var> and <var>qualifiedName</var> on <var>document</var>. If that raised an exception, re-raise the same exception and abort these steps.
  <li>
-  <p>If <var title>doctype</var> is not null, run the following substeps:
+  <p>If <var>doctype</var> is not null, run the following substeps:
   <ol>
-   <li><p>If the <var title>doctype</var>'s <code title=dom-Node-ownerDocument>ownerDocument</code> is not null, raise a <code title=dom-DOMException-WRONG_DOCUMENT_ERR>WRONG_DOCUMENT_ERR</code> exception and abort the overall set of steps.
-   <li><p>Set the <var title>doctype</var>'s <code title=dom-Node-ownerDocument>ownerDocument</code> to <var title>document</var>.
-   <li><p>Append <var title>doctype</var> to <var title>document</var>.
+   <li><p>If the <var>doctype</var>'s <code title=dom-Node-ownerDocument>ownerDocument</code> is not null, raise a <code title=dom-DOMException-WRONG_DOCUMENT_ERR>WRONG_DOCUMENT_ERR</code> exception and abort the overall set of steps.
+   <li><p>Set the <var>doctype</var>'s <code title=dom-Node-ownerDocument>ownerDocument</code> to <var>document</var>.
+   <li><p>Append <var>doctype</var> to <var>document</var>.
   </ol>
- <li><p>If <var title>element</var> is not null, append <var title>element</var> to <var title>document</var>.
- <li><p>Return <var title>document</var>.
+ <li><p>If <var>element</var> is not null, append <var>element</var> to <var>document</var>.
+ <li><p>Return <var>document</var>.
 </ol>
 
 <p><span title="HTML document">HTML documents</span> can be created using the
@@ -1525,19 +1525,19 @@ title>title</var>)</code></dfn> method, when invoked, must run the following
 steps:
 
 <ol>
- <li><p>Let <var title>doc</var> be a newly created <code>Document</code>
+ <li><p>Let <var>doc</var> be a newly created <code>Document</code>
  object.
 
- <li><p>Mark <var title>doc</var> as being an <span>HTML document</span>.
+ <li><p>Mark <var>doc</var> as being an <span>HTML document</span>.
 
  <li><p>Create a new <span title=concept-doctype>document type
  declaration</span>, with "<code title>html</code>" as its <span
  title=concept-doctype-name>name</span> and with its <code
  title=dom-Node-ownerDocument>ownerDocument</code> set to doc. Append the newly
- created node to <var title>doc</var>.
+ created node to <var>doc</var>.
 
  <li><p>Create an <code title>html</code> element in the <span>HTML
- namespace</span>, and append it to <var title>doc</var>.
+ namespace</span>, and append it to <var>doc</var>.
 
  <li><p>Create a <code title>head</code> element in the <span>HTML
  namespace</span>, and append it to the <code title>html</code> element created
@@ -1556,7 +1556,7 @@ steps:
  namespace</span>, and append it to the <code title>html</code> element created
  in the earlier step.
 
- <li><p>Return <var title>doc</var>.</p></li>
+ <li><p>Return <var>doc</var>.</p></li>
 </ol>
 
 </div>
@@ -1701,7 +1701,7 @@ defined in <span>other applicable specifications</span>.
 on getting, run the following steps:
 <ol>
  <li><p>If the <span>context node</span>'s <code
- title=dom-Node-prefix>prefix</code> is not null, let <var title>tagName</var>
+ title=dom-Node-prefix>prefix</code> is not null, let <var>tagName</var>
  be the concatenation of the <span>context node</span>'s <code
  title=dom-Node-prefix>prefix</code>, a U+003E COLON (":") character and its
  <code title=dom-Node-localName>localName</code>. Otherwise, let <var
@@ -1710,8 +1710,8 @@ on getting, run the following steps:
 
  <li><p>If the <span>context node</span> is in the <span>HTML namespace</span>
  and its <code title=dom-Node-ownerDocument>ownerDocument</code> is an
- <span>HTML document</span>, return <var title>tagName</var>, <span>converted to
- uppercase</span>. Otherwise, return <var title>tagName</var>.
+ <span>HTML document</span>, return <var>tagName</var>, <span>converted to
+ uppercase</span>. Otherwise, return <var>tagName</var>.
 </ol>
 
 <hr>
@@ -1721,7 +1721,7 @@ title>name</var>)</code></dfn> method must run the following steps:
 <ol>
  <li><p>If the <span>context node</span> is in the <span>HTML namespace</span>
  and its <code title=dom-Node-ownerDocument>ownerDocument</code> is an
- <span>HTML document</span>, let <var title>name</var> be <var title>name</var>,
+ <span>HTML document</span>, let <var>name</var> be <var>name</var>,
  <span>converted to lowercase</span>.
 
  <li><p>Return the value of the first attribute in the <span>context
@@ -1734,30 +1734,30 @@ title>name</var>)</code></dfn> method must run the following steps:
 <p class=XXX><dfn title=dom-Element-getAttributeNS>getAttributeNS</dfn> (might return null; Gecko and WebKit don't)
 
 <p>The <dfn title=dom-Element-setAttribute><code>setAttribute(<var
-title>name</var>, <var title>value</var>)</code></dfn> method must run the
+title>name</var>, <var>value</var>)</code></dfn> method must run the
 following steps:
 
 <ol>
- <li><p>If <var title>name</var> is empty or <var title>name</var> doesn't
+ <li><p>If <var>name</var> is empty or <var>name</var> doesn't
  match the <code data-anolis-spec=xml>Name</code> production in XML, raise an
  <code title=dom-DOMException-INVALID_CHARACTER_ERR title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
  exception and abort these steps.
 
- <li class=XXX><p>Do something about <var title>name</var> == "xmlns"?
+ <li class=XXX><p>Do something about <var>name</var> == "xmlns"?
  <a href=https://bugzilla.mozilla.org/show_bug.cgi?id=315805>Moz bug 315805</a>
 
  <li><p>If the <span>context node</span> is in the <span>HTML namespace</span>
  and its <code title=dom-Node-ownerDocument>ownerDocument</code> is an
- <span>HTML document</span>, let <var title>name</var> be <var title>name</var>,
+ <span>HTML document</span>, let <var>name</var> be <var>name</var>,
  <span>converted to lowercase</span>.
 
  <li><p>If the node doesn't have an attribute whose <span
  title=concept-attribute-name>name</span> <span
- title=case-sensitive>case-sensitively</span> equals <var title>name</var>,
- create an <code>Attr</code> node, with <var title>name</var> as its <span
+ title=case-sensitive>case-sensitively</span> equals <var>name</var>,
+ create an <code>Attr</code> node, with <var>name</var> as its <span
  title=concept-attribute-name>name</span> and the <span>context node</span> as
  its <span title=concept-attribute-element>element</span>. Set its <code
- title=dom-Attr-value>value</code> to <var title>value</var>. Append this node
+ title=dom-Attr-value>value</code> to <var>value</var>. Append this node
  to the <span title="context node">context node's</span> <code
  title=dom-Node-attributes>attributes</code>, as its last item.
 
@@ -1765,8 +1765,8 @@ following steps:
  attribute in the <span title="context node">context node's</span> <code
  title=dom-Node-attributes>attributes</code> whose <span
  title=concept-attribute-name>name</span> <span
- title=case-sensitive>case-sensitively</span> equals <var title>name</var>,
- in any namespace, to <var title>value</var>.
+ title=case-sensitive>case-sensitively</span> equals <var>name</var>,
+ in any namespace, to <var>value</var>.
 </ol>
 
 <p class=XXX><dfn title=dom-Element-setAttributeNS>setAttributeNS</dfn>
@@ -1806,7 +1806,7 @@ the <span>context node</span> on which the method was invoked.
 
 <p>The <dfn
 title=dom-Element-getElementsByTagNameNS><code>getElementsByTagNameNS(<var
-title>namespaceURI</var>, <var title>localName</var>)</code></dfn> method on the
+title>namespaceURI</var>, <var>localName</var>)</code></dfn> method on the
 <code>Element</code> interface must return a <span
 title=concept-collection-live>live</span> <code>NodeList</code> with the nodes
 that the <code
@@ -1909,27 +1909,27 @@ title=concept-PI-data>data</span> to the new value.
 <p>The <dfn title=dom-CharacterData-length><code>length</code></dfn> attribute must, on getting, return the number of UTF-16 code units represented by the node's data.
 
 <p>The <dfn title=dom-CharacterData-substringData><code>substringData(<var
-title>offset</var>, <var title>count</var>)</code></dfn> method must run the
+title>offset</var>, <var>count</var>)</code></dfn> method must run the
 following steps:
 
 <ol>
- <li><p>If <var title>offset</var> is negative or is greater than the
+ <li><p>If <var>offset</var> is negative or is greater than the
  <span>context node</span>'s <code title=dom-CharacterData-length>length</code>,
- or if <var title>count</var> is negative, raise an <code
+ or if <var>count</var> is negative, raise an <code
  title=dom-DOMException-INDEX_SIZE_ERR>INDEX_SIZE_ERR</code> exception and abort
  these steps.
 
- <li><p>If <span title><var title>offset</var>+<var title>count</var></span> is
+ <li><p>If <span title><var>offset</var>+<var>count</var></span> is
  greater than the <span>context node</span>'s <code
  title=dom-CharacterData-length>length</code>, return a <code
  data-anolis-spec=webidl>DOMString</code> whose value is the UTF-16 code units
- from the <var title>offset</var>th UTF-16 code unit to the end of <var
+ from the <var>offset</var>th UTF-16 code unit to the end of <var
  title>data</var>.
 
  <li><p>Return a <code data-anolis-spec=webidl>DOMString</code> whose value is
- the UTF-16 code units from the <var title>offset</var>th UTF-16 code unit to
- the <span title><var title>offset</var>+<var title>count</var></span>th UTF-16
- code unit in <var title>data</var>.
+ the UTF-16 code units from the <var>offset</var>th UTF-16 code unit to
+ the <span title><var>offset</var>+<var>count</var></span>th UTF-16
+ code unit in <var>data</var>.
 </ol>
 
 <p class=XXX><dfn title=dom-CharacterData-appendData>appendData</dfn>
@@ -2004,9 +2004,9 @@ title=concept-collection>collection</span>.
 };</pre>
 
 <p>The <dfn title=dom-NodeList-item><code>item(<var
-title>index</var>)</code></dfn> method must return the <var title>index</var>th
+title>index</var>)</code></dfn> method must return the <var>index</var>th
 node in the <span title=concept-collection>collection</span>. If there is no
-<var title>index</var>th node in the <span
+<var>index</var>th node in the <span
 title=concept-collection>collection</span>, then the method must return null.
 
 <p>The <dfn title=dom-NodeList-length><code>length</code></dfn> attribute must,
@@ -2033,22 +2033,22 @@ caller getter object <span title=dom-HTMLCollection-namedItem>namedItem</span>(i
 };</pre>
 
 <dl class=domintro>
- <dt><var title>collection</var> . <code title=dom-HTMLCollection-length>length</code>
+ <dt><var>collection</var> . <code title=dom-HTMLCollection-length>length</code>
  <dd>
   <p>Returns the number of elements in the collection.
 
- <dt><var title>element</var> = <var title>collection</var> . <code title=dom-HTMLCollection-item>item</code>(<var title>index</var>)
- <dt><var title>collection</var>[<var title>index</var>]
- <dt><var title>collection</var>(<var title>index</var>)
+ <dt><var>element</var> = <var>collection</var> . <code title=dom-HTMLCollection-item>item</code>(<var>index</var>)
+ <dt><var>collection</var>[<var>index</var>]
+ <dt><var>collection</var>(<var>index</var>)
  <dd>
-  <p>Returns the item with index <var title>index</var> from the collection. The items are sorted in <span>tree order</span>.
-  <p>Returns null if <var title>index</var> is out of range.
+  <p>Returns the item with index <var>index</var> from the collection. The items are sorted in <span>tree order</span>.
+  <p>Returns null if <var>index</var> is out of range.
 
- <dt><var title>element</var> = <var title>collection</var> . <code title=dom-HTMLCollection-namedItem>namedItem</code>(<var title>name</var>)</dt>
- <dt><var title>collection</var>[<var title>name</var>]</dt>
- <dt><var title>collection</var>(<var title>name</var>)</dt>
+ <dt><var>element</var> = <var>collection</var> . <code title=dom-HTMLCollection-namedItem>namedItem</code>(<var>name</var>)</dt>
+ <dt><var>collection</var>[<var>name</var>]</dt>
+ <dt><var>collection</var>(<var>name</var>)</dt>
  <dd>
-  <p>Returns the first item with <span title="concept-id">ID</span> or name <var title>name</var>
+  <p>Returns the first item with <span title="concept-id">ID</span> or name <var>name</var>
   from the collection.</p>
   <p>Returns null if no element with that <span title="concept-id">ID</span> or name could be found.</p>
   <p>Only <code title>a</code>, <code title>applet</code title>, <code title>area</code>,
@@ -2098,7 +2098,7 @@ requirements:</p>
  title>key</var>, or,
 
  <li>It is an element with an <span title=concept-id>ID</span>
- equal to <var title>key</var>.
+ equal to <var>key</var>.
 </ul>
 
 <p>If no such elements are found, then the method must return
@@ -2177,47 +2177,47 @@ ordinarily be treated in a case-insensitive manner.</p>
 
 <dl class="domintro">
 
- <dt><var title>tokenlist</var> . <code title="dom-DOMTokenList-length">length</code></dt>
+ <dt><var>tokenlist</var> . <code title="dom-DOMTokenList-length">length</code></dt>
  <dd>
   <p>Returns the number of tokens in the string.</p>
  </dd>
 
- <dt><var title>element</var> = <var title>tokenlist</var> . <code title="dom-DOMTokenList-item">item</code>(<var title>index</var>)</dt>
- <dt><var title>tokenlist</var>[<var title>index</var>]</dt>
+ <dt><var>element</var> = <var>tokenlist</var> . <code title="dom-DOMTokenList-item">item</code>(<var>index</var>)</dt>
+ <dt><var>tokenlist</var>[<var>index</var>]</dt>
  <dd>
-  <p>Returns the token with index <var title>index</var>. The tokens are returned in the order they are found in the underlying string.</p>
-  <p>Returns null if <var title>index</var> is out of range.</p>
+  <p>Returns the token with index <var>index</var>. The tokens are returned in the order they are found in the underlying string.</p>
+  <p>Returns null if <var>index</var> is out of range.</p>
  </dd>
 
- <dt><var title>hastoken</var> = <var title>tokenlist</var> . <code title="dom-DOMTokenList-contains">contains</code>(<var title>token</var>)</dt>
+ <dt><var>hastoken</var> = <var>tokenlist</var> . <code title="dom-DOMTokenList-contains">contains</code>(<var>token</var>)</dt>
  <dd>
-  <p>Returns true if the <var title>token</var> is present; false otherwise.</p>
-  <p>Throws a <code title=dom-DOMException-SYNTAX_ERR>SYNTAX_ERR</code> exception if <var title>token</var> is empty.</p>
-  <p>Throws an <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception if <var title>token</var> contains any spaces.</p>
+  <p>Returns true if the <var>token</var> is present; false otherwise.</p>
+  <p>Throws a <code title=dom-DOMException-SYNTAX_ERR>SYNTAX_ERR</code> exception if <var>token</var> is empty.</p>
+  <p>Throws an <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception if <var>token</var> contains any spaces.</p>
  </dd>
 
- <dt><var title>tokenlist</var> . <code title="dom-DOMTokenList-add">add</code>(<var title>token</var>)</dt>
+ <dt><var>tokenlist</var> . <code title="dom-DOMTokenList-add">add</code>(<var>token</var>)</dt>
  <dd>
-  <p>Adds <var title>token</var>, unless it is already present.</p>
-  <p>Throws a <code title=dom-DOMException-SYNTAX_ERR>SYNTAX_ERR</code> exception if <var title>token</var> is empty.</p>
-  <p>Throws an <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception if <var title>token</var> contains any spaces.</p>
+  <p>Adds <var>token</var>, unless it is already present.</p>
+  <p>Throws a <code title=dom-DOMException-SYNTAX_ERR>SYNTAX_ERR</code> exception if <var>token</var> is empty.</p>
+  <p>Throws an <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception if <var>token</var> contains any spaces.</p>
  </dd>
 
- <dt><var title>tokenlist</var> . <code title="dom-DOMTokenList-remove">remove</code>(<var title>token</var>)</dt>
+ <dt><var>tokenlist</var> . <code title="dom-DOMTokenList-remove">remove</code>(<var>token</var>)</dt>
  <dd>
-  <p>Removes <var title>token</var> if it is present.</p>
-  <p>Throws a <code title=dom-DOMException-SYNTAX_ERR>SYNTAX_ERR</code> exception if <var title>token</var> is empty.</p>
-  <p>Throws an <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception if <var title>token</var> contains any spaces.</p>
+  <p>Removes <var>token</var> if it is present.</p>
+  <p>Throws a <code title=dom-DOMException-SYNTAX_ERR>SYNTAX_ERR</code> exception if <var>token</var> is empty.</p>
+  <p>Throws an <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception if <var>token</var> contains any spaces.</p>
  </dd>
 
- <dt><var title>hastoken</var> = <var title>tokenlist</var> . <code title="dom-DOMTokenList-toggle">toggle</code>(<var title>token</var>)</dt>
+ <dt><var>hastoken</var> = <var>tokenlist</var> . <code title="dom-DOMTokenList-toggle">toggle</code>(<var>token</var>)</dt>
  <dd>
-  <p>Adds <var title>token</var> if it is not present, or removes
-  it if it is. Returns true if <var title>token</var> is now
+  <p>Adds <var>token</var> if it is not present, or removes
+  it if it is. Returns true if <var>token</var> is now
   present (it was added); returns false if it is not (it was
   removed).</p>
-  <p>Throws a <code title=dom-DOMException-SYNTAX_ERR>SYNTAX_ERR</code> exception if <var title>token</var> is empty.</p>
-  <p>Throws an <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception if <var title>token</var> contains any spaces.</p>
+  <p>Throws a <code title=dom-DOMException-SYNTAX_ERR>SYNTAX_ERR</code> exception if <var>token</var> is empty.</p>
+  <p>Throws an <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception if <var>token</var> contains any spaces.</p>
  </dd>
 
 </dl>
@@ -2240,8 +2240,8 @@ title="dom-DOMTokenList-length">length</var> is zero, in which case there are no
 title="">index</var>)</code></dfn> method must <span title="split a
 string on spaces">split the underlying string on spaces</span>,
 preserving the order of the tokens as found in the underlying
-string, and then return the <var title>index</var>th item in this
-list. If <var title>index</var> is equal to or greater than the
+string, and then return the <var>index</var>th item in this
+list. If <var>index</var> is equal to or greater than the
 number of tokens, then the method must return null.</p>
 
 <p class="example">For example, if the string is "<code title="">a b
@@ -2257,11 +2257,11 @@ algorithm:</p>
 
 <ol>
 
- <li>If the <var title>token</var> argument is the empty string,
+ <li>If the <var>token</var> argument is the empty string,
  then raise a <code title=dom-DOMException-SYNTAX_ERR>SYNTAX_ERR</code> exception and stop the
  algorithm.</li>
 
- <li>If the <var title>token</var> argument contains any <span
+ <li>If the <var>token</var> argument contains any <span
  title="space character">space characters</span>, then raise an
  <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and stop the
  algorithm.</li>
@@ -2270,7 +2270,7 @@ algorithm:</p>
  underlying string on spaces</span> to get the list of tokens in the
  object's underlying string.</li>
 
- <li>If the token indicated by <var title>token</var> is a
+ <li>If the token indicated by <var>token</var> is a
  <span>case-sensitive</span> match for one of the tokens in the
  object's underlying string then return true and stop this
  algorithm.</li>
@@ -2285,11 +2285,11 @@ algorithm:</p>
 
 <ol>
 
- <li>If the <var title>token</var> argument is the empty string,
+ <li>If the <var>token</var> argument is the empty string,
  then raise a <code title=dom-DOMException-SYNTAX_ERR>SYNTAX_ERR</code> exception and stop the
  algorithm.</li>
 
- <li>If the <var title>token</var> argument contains any <span
+ <li>If the <var>token</var> argument contains any <span
  title="space character">space characters</span>, then raise an
  <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and stop the
  algorithm.</li>
@@ -2298,7 +2298,7 @@ algorithm:</p>
  underlying string on spaces</span> to get the list of tokens in the
  object's underlying string.</li>
 
- <li>If the given <var title>token</var> is a
+ <li>If the given <var>token</var> is a
  <span>case-sensitive</span> match for one of the tokens in the
  <code>DOMTokenList</code> object's underlying string then stop the
  algorithm.</li>
@@ -2308,7 +2308,7 @@ algorithm:</p>
  string is not a <span>space character</span>, then append a U+0020
  SPACE character to the end of that string.</li>
 
- <li>Append the value of <var title>token</var> to the end of the
+ <li>Append the value of <var>token</var> to the end of the
  <code>DOMTokenList</code> object's underlying string.</li>
 
 </ol>
@@ -2319,17 +2319,17 @@ algorithm:</p>
 
 <ol>
 
- <li>If the <var title>token</var> argument is the empty string,
+ <li>If the <var>token</var> argument is the empty string,
  then raise a <code title=dom-DOMException-SYNTAX_ERR>SYNTAX_ERR</code> exception and stop the
  algorithm.</li>
 
- <li>If the <var title>token</var> argument contains any <span
+ <li>If the <var>token</var> argument contains any <span
  title="space character">space characters</span>, then raise an
  <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and stop the
  algorithm.</li>
 
  <li>Otherwise, <span title="remove a token from a string">remove
- the given <var title>token</var> from the underlying
+ the given <var>token</var> from the underlying
  string</span>.</li>
 
 </ol>
@@ -2340,11 +2340,11 @@ algorithm:</p>
 
 <ol>
 
- <li>If the <var title>token</var> argument is the empty string,
+ <li>If the <var>token</var> argument is the empty string,
  then raise a <code title=dom-DOMException-SYNTAX_ERR>SYNTAX_ERR</code> exception and stop the
  algorithm.</li>
 
- <li>If the <var title>token</var> argument contains any <span
+ <li>If the <var>token</var> argument contains any <span
  title="space character">space characters</span>, then raise an
  <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and stop the
  algorithm.</li>
@@ -2353,7 +2353,7 @@ algorithm:</p>
  underlying string on spaces</span> to get the list of tokens in the
  object's underlying string.</li>
 
- <li>If the given <var title>token</var> is a
+ <li>If the given <var>token</var> is a
  <span>case-sensitive</span> match for one of the tokens in the
  <code>DOMTokenList</code> object's underlying string then <span
  title="remove a token from a string">remove the given <var
@@ -2365,7 +2365,7 @@ algorithm:</p>
  string is not a <span>space character</span>, then append a U+0020
  SPACE character to the end of that string.</li>
 
- <li>Append the value of <var title>token</var> to the end of the
+ <li>Append the value of <var>token</var> to the end of the
  <code>DOMTokenList</code> object's underlying string.</li>
 
  <li>Return true.</li>
@@ -2391,7 +2391,7 @@ underlying string to be directly changed.</p>
 
 <dl class="domintro">
 
- <dt><var title>tokenlist</var> . <code title="dom-DOMSettableTokenList-value">value</code></dt>
+ <dt><var>tokenlist</var> . <code title="dom-DOMSettableTokenList-value">value</code></dt>
  <dd>
   <p>Returns the underlying string.</p>
   <p>Can be set, to change the underlying string.</p>

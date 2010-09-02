@@ -29,6 +29,35 @@ var oTestFrame;
 var iUrl=0;
 var oTests;
 var oLog  = new Array();
+var oTimer;
+var bTimerRunning;
+var iCallbacks;
+
+function CheckForResult()
+{
+    iCallbacks++;
+
+    try
+    {
+        oTestWindow = window.parent.document.getElementById('test').contentWindow;
+
+        if (oTestWindow.document.readyState == "complete")
+        {
+            oPass = oTestWindow.document.getElementsByClassName("pass");
+            oFail = oTestWindow.document.getElementsByClassName("fail");
+
+            if (oPass.length > 0 && oFail.length == 0)
+            {
+                log('Pass');
+            }  
+            else if( oFail.length > 0)
+            {
+                log('Fail');
+            }
+        }
+    }
+    catch(e){}
+}
 
 function init()
 {
@@ -56,6 +85,10 @@ function init()
             oTestFrame = window.parent.document.getElementById('test');
             oTestFrame.src = oTests[iUrl];
             document.getElementById('CurrentTest').innerHTML =  "Test #" + (iUrl+1) + "/" + (oTests.length-1) + "(" + oLog[iUrl] + ") " + oTests[iUrl];
+
+            oTimer = setInterval("CheckForResult()", 5000);
+            bTimerRunning = true;
+            iCallbacks = 0;
         }
     }; 
 
@@ -71,11 +104,22 @@ function log(result)
 
 function next()
 {
+    if (bTimerRunning)
+    {
+        clearInterval(oTimer);
+        bTimerRunning = false;
+        iCallbacks = 0;
+    }
+
     if (iUrl<(oTests.length-2))
     {
         iUrl++;
         oTestFrame.src = oTests[iUrl] ;
         document.getElementById('CurrentTest').innerHTML =  "Test #" + (iUrl+1) + "/" + (oTests.length-1) + "(" + oLog[iUrl] + ") " + oTests[iUrl];
+
+        oTimer = setInterval("CheckForResult()", 5000);
+        bTimerRunning = true;
+        iCallbacks = 0;
     }
     else
     {
@@ -86,6 +130,13 @@ function next()
 
 function last()
 {
+    if (bTimerRunning)
+    {
+        clearInterval(oTimer);
+        bTimerRunning = false;
+        iCallbacks = 0;
+    }
+
     if (iUrl>0)
     {
         iUrl--;

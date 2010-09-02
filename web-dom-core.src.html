@@ -1945,11 +1945,42 @@ steps:
 
 <p>The <dfn title=dom-CharacterData-appendData><code>appendData(<var>data</var>)</code></dfn> method must append <var>data</var> to the <span>context node</span>'s data.</p>
 
-<p class=XXX><dfn title=dom-CharacterData-insertData>insertData</dfn>
+<p>The <dfn title=dom-CharacterData-insertData><code>insertData(<var>offset</var>, <var>data</var>)</code></dfn> method must run these steps:</p>
 
-<p class=XXX><dfn title=dom-CharacterData-deleteData>deleteData</dfn>
+<ol>
+ <li><p>If <var>offset</var> is greater than the <span>context node</span>'s
+ <code title=dom-CharacterData-length>length</code>, raise an
+ <code title=dom-DOMException-INDEX_SIZE_ERR>INDEX_SIZE_ERR</code> exception
+ and terminate these steps.</p></li>
 
-<p class=XXX><dfn title=dom-CharacterData-replaceData>replaceData</dfn>
+ <li><p>Insert <var>data</var> into the <span>context node</span>'s data
+ after <var>offset</var> UTF-16 code units.</p></li>
+</ol>
+
+<p>The <dfn title=dom-CharacterData-deleteData><code>deleteData(<var>offset</var>, <var>count</var>)</code></dfn> method must run these steps:</p>
+
+<ol>
+ <li><p>If <var>offset</var> is greater than the <span>context node</span>'s
+ <code title=dom-CharacterData-length>length</code>, raise an
+ <code title=dom-DOMException-INDEX_SIZE_ERR>INDEX_SIZE_ERR</code> exception
+ and terminate these steps.</p></li>
+
+ <li><p>If <var>offset</var>+<var>count</var> is greater than the
+ <span>context node</span>'s
+ <code title=dom-CharacterData-length>length</code> let <var>count</var> be
+ <code title=dom-CharacterData-length>length</code>-<var>offset</var>.</p></li>
+
+ <li><p>Starting from <var>offset</var> UTF-16 code units remove
+ <var>count</var> UTF-16 code units from the <span>context node</span>'s
+ data.</p></li>
+</ol>
+
+<p>The <dfn title=dom-CharacterData-replaceData><code>replaceData(<var>offset</var>, <var>count</var>, <var>data</var>)</code></dfn> method must act as if
+the <code title=dom-CharacterData-deleteData>deleteData()</code> method is
+invoked with <var>offset</var> and <var>count</var> as arguments followed
+by the <code title=dom-CharacterData-insertData>insertData()</code> method
+with <var>offset</var> and <var>data</var> as arguments and re-raise any
+exceptions these methods might have raised.</p>
 
 
 <h3>Interface <code>Text</code></h3>

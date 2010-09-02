@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<title>CharacterData.deleteData</title>
+<link rel="author" title="annevk" href="mailto:annevk@opera.com">
+<link rel="help" href="../web-dom-core#dom-CharacterData-deleteData">
+<body>
+<script src="support/test.js"></script>
+<script>
+function offsetTooLong(node, offset) {
+  try {
+    node.deleteData(offset, 10)
+    Test.fail("No exception.")
+  } catch(e) {
+    Test.is(e.code, DOMException.INDEX_SIZE_ERR);
+  }
+}
+try {
+  var t = document.createTextNode("test")
+  offsetTooLong(t, 5)
+
+  var c = document.createComment("test")
+  offsetTooLong(c, 5)
+
+  t.deleteData(2, 10)
+  Test.is(t.data, "te")
+
+  c.deleteData(1, 1)
+  Test.is(c.data, "tst")
+} catch (e) {
+  Test.fail("Exception was thrown.")
+}
+Test.finish()
+</script>

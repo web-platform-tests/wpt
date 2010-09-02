@@ -25,6 +25,7 @@
  <dd>Simon Pieters &lt;simonp@opera.com&gt;
  <dd>Geoffrey Sneddon &lt;gsneddon@opera.com&gt;
  <dd>Ms2ger &lt;ms2ger@gmail.com&gt;
+ <dd>Anne van Kesteren &lt;annevk@opera.com&gt;
 
  <dt>PDF print version
  <dd><a href=web-dom-core.pdf>Letter</a>
@@ -60,51 +61,52 @@
 
 <!--begin-toc-->
 <ol class=toc>
- <li><a href=#common-infrastructure><span class=secno>1 </span>Common infrastructure</a>
+ <li><a href=#goals><span class=secno>1 </span>Goals</a></li>
+ <li><a href=#common-infrastructure><span class=secno>2 </span>Common infrastructure</a>
   <ol>
-   <li><a href=#terminology><span class=secno>1.1 </span>Terminology</a></li>
-   <li><a href=#conformance-requirements><span class=secno>1.2 </span>Conformance requirements</a>
+   <li><a href=#terminology><span class=secno>2.1 </span>Terminology</a></li>
+   <li><a href=#conformance-requirements><span class=secno>2.2 </span>Conformance requirements</a>
     <ol>
-     <li><a href=#dependencies><span class=secno>1.2.1 </span>Dependencies</a></li>
-     <li><a href=#extensibility><span class=secno>1.2.2 </span>Extensibility</a></ol></li>
-   <li><a href=#case-sensitivity><span class=secno>1.3 </span>Case-sensitivity</a></li>
-   <li><a href=#common-microsyntaxes><span class=secno>1.4 </span>Common microsyntaxes</a>
+     <li><a href=#dependencies><span class=secno>2.2.1 </span>Dependencies</a></li>
+     <li><a href=#extensibility><span class=secno>2.2.2 </span>Extensibility</a></ol></li>
+   <li><a href=#case-sensitivity><span class=secno>2.3 </span>Case-sensitivity</a></li>
+   <li><a href=#common-microsyntaxes><span class=secno>2.4 </span>Common microsyntaxes</a>
     <ol>
-     <li><a href=#common-parser-idioms><span class=secno>1.4.1 </span>Common parser idioms</a></li>
-     <li><a href=#space-separated-tokens><span class=secno>1.4.2 </span>Space-separated tokens</a></ol></li>
-   <li><a href=#dom-features><span class=secno>1.5 </span>DOM features</a></li>
-   <li><a href=#cloning-nodes><span class=secno>1.6 </span>Cloning nodes</a></li>
-   <li><a href=#legal-hierarchy><span class=secno>1.7 </span>Legal hierarchy</a></li>
-   <li><a href=#namespaces><span class=secno>1.8 </span>Namespaces</a></ol></li>
- <li><a href=#basic-types><span class=secno>2 </span>Basic types</a></li>
- <li><a href=#exceptions><span class=secno>3 </span>Exceptions</a>
+     <li><a href=#common-parser-idioms><span class=secno>2.4.1 </span>Common parser idioms</a></li>
+     <li><a href=#space-separated-tokens><span class=secno>2.4.2 </span>Space-separated tokens</a></ol></li>
+   <li><a href=#dom-features><span class=secno>2.5 </span>DOM features</a></li>
+   <li><a href=#cloning-nodes><span class=secno>2.6 </span>Cloning nodes</a></li>
+   <li><a href=#legal-hierarchy><span class=secno>2.7 </span>Legal hierarchy</a></li>
+   <li><a href=#namespaces><span class=secno>2.8 </span>Namespaces</a></ol></li>
+ <li><a href=#basic-types><span class=secno>3 </span>Basic types</a></li>
+ <li><a href=#exceptions><span class=secno>4 </span>Exceptions</a>
   <ol>
-   <li><a href=#exception-domexception><span class=secno>3.1 </span>Exception <code>DOMException</code></a></ol></li>
- <li><a href=#nodes><span class=secno>4 </span>Nodes</a>
+   <li><a href=#exception-domexception><span class=secno>4.1 </span>Exception <code>DOMException</code></a></ol></li>
+ <li><a href=#nodes><span class=secno>5 </span>Nodes</a>
   <ol>
-   <li><a href=#interface-node><span class=secno>4.1 </span>Interface <code>Node</code></a></li>
-   <li><a href=#interface-documentfragment><span class=secno>4.2 </span>Interface <code>DocumentFragment</code></a></li>
-   <li><a href=#interface-document><span class=secno>4.3 </span>Interface <code>Document</code></a>
+   <li><a href=#interface-node><span class=secno>5.1 </span>Interface <code>Node</code></a></li>
+   <li><a href=#interface-documentfragment><span class=secno>5.2 </span>Interface <code>DocumentFragment</code></a></li>
+   <li><a href=#interface-document><span class=secno>5.3 </span>Interface <code>Document</code></a>
     <ol>
-     <li><a href=#interface-domimplementation><span class=secno>4.3.1 </span>Interface <code>DOMImplementation</code></a></ol></li>
-   <li><a href=#interface-attr><span class=secno>4.4 </span>Interface <code>Attr</code></a></li>
-   <li><a href=#interface-element><span class=secno>4.5 </span>Interface <code>Element</code></a></li>
-   <li><a href=#interface-documenttype><span class=secno>4.6 </span>Interface <code>DocumentType</code></a></li>
-   <li><a href=#interface-processinginstruction><span class=secno>4.7 </span>Interface <code>ProcessingInstruction</code></a></li>
-   <li><a href=#interface-characterdata><span class=secno>4.8 </span>Interface <code>CharacterData</code></a></li>
-   <li><a href=#interface-text><span class=secno>4.9 </span>Interface <code>Text</code></a></li>
-   <li><a href=#interface-comment><span class=secno>4.10 </span>Interface <code>Comment</code></a></ol></li>
- <li><a href=#collections><span class=secno>5 </span>Collections</a>
+     <li><a href=#interface-domimplementation><span class=secno>5.3.1 </span>Interface <code>DOMImplementation</code></a></ol></li>
+   <li><a href=#interface-attr><span class=secno>5.4 </span>Interface <code>Attr</code></a></li>
+   <li><a href=#interface-element><span class=secno>5.5 </span>Interface <code>Element</code></a></li>
+   <li><a href=#interface-documenttype><span class=secno>5.6 </span>Interface <code>DocumentType</code></a></li>
+   <li><a href=#interface-processinginstruction><span class=secno>5.7 </span>Interface <code>ProcessingInstruction</code></a></li>
+   <li><a href=#interface-characterdata><span class=secno>5.8 </span>Interface <code>CharacterData</code></a></li>
+   <li><a href=#interface-text><span class=secno>5.9 </span>Interface <code>Text</code></a></li>
+   <li><a href=#interface-comment><span class=secno>5.10 </span>Interface <code>Comment</code></a></ol></li>
+ <li><a href=#collections><span class=secno>6 </span>Collections</a>
   <ol>
-   <li><a href=#interface-nodelist><span class=secno>5.1 </span>Interface <code>NodeList</code></a></li>
-   <li><a href=#interface-htmlcollection><span class=secno>5.2 </span>Interface <code>HTMLCollection</code></a></li>
-   <li><a href=#interface-namednodemap><span class=secno>5.3 </span>Interface <code>NamedNodeMap</code></a></ol></li>
- <li><a href=#lists><span class=secno>6 </span>Lists</a>
+   <li><a href=#interface-nodelist><span class=secno>6.1 </span>Interface <code>NodeList</code></a></li>
+   <li><a href=#interface-htmlcollection><span class=secno>6.2 </span>Interface <code>HTMLCollection</code></a></li>
+   <li><a href=#interface-namednodemap><span class=secno>6.3 </span>Interface <code>NamedNodeMap</code></a></ol></li>
+ <li><a href=#lists><span class=secno>7 </span>Lists</a>
   <ol>
-   <li><a href=#interface-domstringlist><span class=secno>6.1 </span>Interface <code>DOMStringList</code></a></li>
-   <li><a href=#interface-domtokenlist><span class=secno>6.2 </span>Interface <code>DOMTokenList</code></a></li>
-   <li><a href=#interface-domsettabletokenlist><span class=secno>6.3 </span>Interface <code>DOMSettableTokenList</code></a></ol></li>
- <li><a href=#historical><span class=secno>7 </span>Historical</a></li>
+   <li><a href=#interface-domstringlist><span class=secno>7.1 </span>Interface <code>DOMStringList</code></a></li>
+   <li><a href=#interface-domtokenlist><span class=secno>7.2 </span>Interface <code>DOMTokenList</code></a></li>
+   <li><a href=#interface-domsettabletokenlist><span class=secno>7.3 </span>Interface <code>DOMSettableTokenList</code></a></ol></li>
+ <li><a href=#historical><span class=secno>8 </span>Historical</a></li>
  <li><a class=no-num href=#references>References</a></li>
  <li><a class=no-num href=#acknowledgements>Acknowledgements</a></ol>
 <!--end-toc-->
@@ -115,9 +117,23 @@
 <div id=anolis-listoftables><ol><li><a href=#anolis-table-1>Cloned attributes</a><li><a href=#anolis-table-2>Value of nodeName, nodeValue, nodeType</a></ol></div>
 
 
+<h2 id=goals><span class=secno>1 </span>Goals</h2>
 
-<h2 id=common-infrastructure><span class=secno>1 </span>Common infrastructure</h2>
-<h3 id=terminology><span class=secno>1.1 </span>Terminology</h3>
+<ul>
+ <li>Align DOM Core with needs of ECMAScript first, everything else third. (Of course due to Web IDL it'll work, but compatibility with DOM Level 3 Core is not guaranteed.)</li>
+ <li>Align DOM Core with existing implementations.</li>
+ <li>Simplify DOM Core as much as possible.</li>
+ <li>Import bits of HTML5 that ought to be in DOM Core.</li>
+ <li>Prevent a dependency on HTML5.</li>
+</ul>
+
+<p>Obsoleting DOM Level 3 Core is not an explicit goal. It is a fine specification for Java servers.</p>
+
+<p>New features might be added, once everything else is sort of stable.</p>
+
+
+<h2 id=common-infrastructure><span class=secno>2 </span>Common infrastructure</h2>
+<h3 id=terminology><span class=secno>2.1 </span>Terminology</h3>
 <p>The term <dfn id=tree-order>tree order</dfn> means a pre-order, depth-first traversal of DOM nodes involved (through the <a href=#dom-node-parentnode><code title=dom-Node-parentNode>parentNode</code></a>/<a href=#dom-node-childnodes><code title=dom-Node-childNodes>childNodes</code></a> relationship).
 
 <p>The term <dfn id=context-node>context node</dfn> means the <a href=#node><code>Node</code></a> on which the method or attribute being discussed was called.
@@ -145,7 +161,7 @@ TABULATION (tab), U+000A LINE FEED (LF), U+000C FORM FEED (FF), and
 U+000D CARRIAGE RETURN (CR).</p>
 
 
-<h3 id=conformance-requirements><span class=secno>1.2 </span>Conformance requirements</h3>
+<h3 id=conformance-requirements><span class=secno>2.2 </span>Conformance requirements</h3>
 <p>All diagrams, examples, and notes in this specification are
 non-normative, as are all sections explicitly marked non-normative.
 Everything else in this specification is normative.</p>
@@ -177,7 +193,7 @@ out of memory, or to work around platform-specific limitations.</p>
 
 <p>Unless otherwise stated, string comparisons are done in a <a href=#case-sensitive>case-sensitive</a> manner.
 
-<h4 id=dependencies><span class=secno>1.2.1 </span>Dependencies</h4>
+<h4 id=dependencies><span class=secno>2.2.1 </span>Dependencies</h4>
 
 <p>The IDL fragments in this specification must be interpreted as
 required for conforming IDL fragments, as described in the Web IDL
@@ -194,10 +210,12 @@ passed an Infinity or Not-a-Number (NaN) value, a <a href=#dom-domexception-not_
 must be raised.
 
 <p>Some of the terms used in this specification are defined in <cite>Web
-IDL</cite>, <cite>XML</cite>, <cite>Namespaces in XML</cite> and
-<cite>HTML</cite>. <a data-anolis-ref="" href=#refsWEBIDL>[WEBIDL]</a> <a data-anolis-ref="" href=#refsXML>[XML]</a> <a data-anolis-ref="" href=#refsXMLNS>[XMLNS]</a> <a data-anolis-ref="" href=#refsHTML>[HTML]</a>
+IDL</cite>, <cite>XML</cite> and <cite>Namespaces in XML</cite>.
+<a data-anolis-ref="" href=#refsWEBIDL>[WEBIDL]</a>
+<a data-anolis-ref="" href=#refsXML>[XML]</a>
+<a data-anolis-ref="" href=#refsXMLNS>[XMLNS]</a>
 
-<h4 id=extensibility><span class=secno>1.2.2 </span>Extensibility</h4>
+<h4 id=extensibility><span class=secno>2.2.2 </span>Extensibility</h4>
 
 <p>Vendor-specific proprietary extensions to this specification are
 strongly discouraged. Authors must not use such extensions, as
@@ -224,7 +242,7 @@ this specification.</p>
 <!-- http://www.w3.org/mid/17E341CD-E790-422C-9F9A-69347EE01CEB@iki.fi -->
 
 
-<h3 id=case-sensitivity><span class=secno>1.3 </span>Case-sensitivity</h3>
+<h3 id=case-sensitivity><span class=secno>2.3 </span>Case-sensitivity</h3>
 <p>This specification defines several comparison operators for strings.
 <p>Comparing two strings in a <dfn id=case-sensitive>case-sensitive</dfn> manner means comparing them exactly, codepoint for codepoint.
 <p>Comparing two strings in a <dfn id=ascii-case-insensitive>ASCII case-insensitive</dfn> manner means comparing them exactly, codepoint for codepoint, except that the characters in the range U+0041 .. U+005A (i.e. LATIN CAPITAL LETTER A to LATIN CAPITAL LETTER Z) and the corresponding characters in the range U+0061 .. U+007A (i.e. LATIN SMALL LETTER A to LATIN SMALL LETTER Z) are considered to also match.
@@ -232,8 +250,8 @@ this specification.</p>
 <p><dfn id=converted-to-lowercase title="converted to lowercase">Converting a string to lowercase</dfn> means replacing all characters in the range U+0041 .. U+005A (i.e. LATIN CAPITAL LETTER A to LATIN CAPITAL LETTER Z) with the corresponding characters in the range U+0061 .. U+007A (i.e. LATIN SMALL LETTER A to LATIN SMALL LETTER Z).
 
 
-<h3 id=common-microsyntaxes><span class=secno>1.4 </span>Common microsyntaxes</h3>
-<h4 id=common-parser-idioms><span class=secno>1.4.1 </span>Common parser idioms</h4>
+<h3 id=common-microsyntaxes><span class=secno>2.4 </span>Common microsyntaxes</h3>
+<h4 id=common-parser-idioms><span class=secno>2.4.1 </span>Common parser idioms</h4>
 <p>Some of the micro-parsers described below follow the pattern of
 having an <var>input</var> variable that holds the string
 being parsed, and having a <var>position</var> variable
@@ -263,7 +281,7 @@ being the set of characters that can be collected:</p>
 must <a href=#collect-a-sequence-of-characters>collect a sequence of characters</a> that are <a href=#space-character title="space character">space characters</a>. The collected
 characters are not used.
 
-<h4 id=space-separated-tokens><span class=secno>1.4.2 </span>Space-separated tokens</h4>
+<h4 id=space-separated-tokens><span class=secno>2.4.2 </span>Space-separated tokens</h4>
 <p>A <dfn id=set-of-space-separated-tokens>set of space-separated tokens</dfn> is a string containing
 zero or more words separated by one or more <a href=#space-character title="space
 character">space characters</a>, where words consist of any
@@ -372,7 +390,7 @@ of the string, where such spaces are removed.</p>
 </div>
 
 
-<h3 id=dom-features><span class=secno>1.5 </span>DOM features</h3>
+<h3 id=dom-features><span class=secno>2.5 </span>DOM features</h3>
 <p>A <dfn id=concept-domfeature title=concept-DOMfeature>DOM feature</dfn> is a unique,
 <a href=#ascii-case-insensitive>ASCII case-insensitive</a> string that represents a certain feature of
 the user agent.
@@ -406,7 +424,7 @@ feature</a> with the version "2.0" associated with it.
 <!-- Chrome supports Core/1.0; Opera supports x/undefined -->
 
 
-<h3 id=cloning-nodes><span class=secno>1.6 </span>Cloning nodes</h3>
+<h3 id=cloning-nodes><span class=secno>2.6 </span>Cloning nodes</h3>
 <p>When a UA is to <dfn id=clone>clone</dfn> a <a href=#node><var>node</var></a>, with a <var>new ownerDocument</var> and with a <i>clone children flag</i>, it must run the following steps:
 
 <ol>
@@ -432,7 +450,7 @@ feature</a> with the version "2.0" associated with it.
 </ol>
 
 
-<h3 id=legal-hierarchy><span class=secno>1.7 </span>Legal hierarchy</h3>
+<h3 id=legal-hierarchy><span class=secno>2.7 </span>Legal hierarchy</h3>
 <p class=XXX>Simon says this section is buggy. Should we just remove it?
 
 <p>A <a href=#node><code>Node</code></a> is said to have a <dfn id=legal-hierarchy-0>legal hierarchy</dfn> if all the following conditions are true:
@@ -447,7 +465,7 @@ feature</a> with the version "2.0" associated with it.
 <p>Before running the steps of an algorithm of a method or attribute in this specification, the user agent must check that running the algorithm will result in a <a href=#legal-hierarchy-0>legal hierarchy</a>. If it won't, then the user agent must instead raise a <a href=#dom-domexception-hierarchy_request_err><code title=dom-DOMException-HIERARCHY_REQUEST_ERR>HIERARCHY_REQUEST_ERR</code></a> exception.
 
 
-<h3 id=namespaces><span class=secno>1.8 </span>Namespaces</h3>
+<h3 id=namespaces><span class=secno>2.8 </span>Namespaces</h3>
 <p>The <dfn id=html-namespace>HTML namespace</dfn> is <code title="">http://www.w3.org/1999/xhtml</code>.
 
 <p>The <dfn id=xml-namespace>XML namespace</dfn> is <code title="">http://www.w3.org/XML/1998/namespace</code>.
@@ -456,14 +474,14 @@ feature</a> with the version "2.0" associated with it.
 
 
 
-<h2 id=basic-types><span class=secno>2 </span>Basic types</h2>
+<h2 id=basic-types><span class=secno>3 </span>Basic types</h2>
 <p>A <dfn id=domtimestamp>DOMTimeStamp</dfn> represents a number of milliseconds.
 <pre class=idl>typedef unsigned long long DOMTimeStamp;</pre>
 
 
 
-<h2 id=exceptions><span class=secno>3 </span>Exceptions</h2>
-<h3 id=exception-domexception><span class=secno>3.1 </span>Exception <a href=#domexception><code>DOMException</code></a></h3>
+<h2 id=exceptions><span class=secno>4 </span>Exceptions</h2>
+<h3 id=exception-domexception><span class=secno>4.1 </span>Exception <a href=#domexception><code>DOMException</code></a></h3>
 <pre class=idl>exception <dfn id=domexception>DOMException</dfn> {
   const unsigned short <a href=#dom-domexception-index_size_err title=dom-DOMException-INDEX_SIZE_ERR>INDEX_SIZE_ERR</a> = 1;
   const unsigned short <a href=#dom-domexception-domstring_size_err title=dom-DOMException-DOMSTRING_SIZE_ERR>DOMSTRING_SIZE_ERR</a> = 2; // historical
@@ -573,8 +591,8 @@ must return the name of the exception constant as a string.</p>
 
 
 
-<h2 id=nodes><span class=secno>4 </span>Nodes</h2>
-<h3 id=interface-node><span class=secno>4.1 </span>Interface <a href=#node><code>Node</code></a></h3>
+<h2 id=nodes><span class=secno>5 </span>Nodes</h2>
+<h3 id=interface-node><span class=secno>5.1 </span>Interface <a href=#node><code>Node</code></a></h3>
 <pre class=idl>interface <dfn id=node>Node</dfn> {
 
   // NodeType
@@ -603,14 +621,14 @@ must return the name of the exception constant as a string.</p>
   readonly attribute <a href=#node>Node</a> <a href=#dom-node-nextsibling title=dom-Node-nextSibling>nextSibling</a>;
   readonly attribute <a href=#namednodemap>NamedNodeMap</a> <a href=#dom-node-attributes title=dom-Node-attributes>attributes</a>;
   readonly attribute <a href=#document>Document</a> <a href=#dom-node-ownerdocument title=dom-Node-ownerDocument>ownerDocument</a>;
-  <a href=#node>Node</a> <a href=#dom-node-insertbefore title=dom-Node-insertBefore>insertBefore</a>(in <a href=#node>Node</a> newChild, in <a href=#node>Node</a> refChild);
-  <a href=#node>Node</a> <a href=#dom-node-replacechild title=dom-Node-replaceChild>replaceChild</a>(in <a href=#node>Node</a> newChild, in <a href=#node>Node</a> oldChild);
-  <a href=#node>Node</a> <a href=#dom-node-removechild title=dom-Node-removeChild>removeChild</a>(in <a href=#node>Node</a> oldChild);
-  <a href=#node>Node</a> <a href=#dom-node-appendchild title=dom-Node-appendChild>appendChild</a>(in <a href=#node>Node</a> newChild);
+  <a href=#node>Node</a> <a href=#dom-node-insertbefore title=dom-Node-insertBefore>insertBefore</a>(<a href=#node>Node</a> newChild, <a href=#node>Node</a> refChild);
+  <a href=#node>Node</a> <a href=#dom-node-replacechild title=dom-Node-replaceChild>replaceChild</a>(<a href=#node>Node</a> newChild, <a href=#node>Node</a> oldChild);
+  <a href=#node>Node</a> <a href=#dom-node-removechild title=dom-Node-removeChild>removeChild</a>(<a href=#node>Node</a> oldChild);
+  <a href=#node>Node</a> <a href=#dom-node-appendchild title=dom-Node-appendChild>appendChild</a>(<a href=#node>Node</a> newChild);
   boolean <a href=#dom-node-haschildnodes title=dom-Node-hasChildNodes>hasChildNodes</a>();
-  <a href=#node>Node</a> <a href=#dom-node-clonenode title=dom-Node-cloneNode>cloneNode</a>(in boolean deep);<!--
+  <a href=#node>Node</a> <a href=#dom-node-clonenode title=dom-Node-cloneNode>cloneNode</a>(boolean deep);<!--
   void normalize();-->
-  boolean <a href=#dom-node-issupported title=dom-Node-isSupported>isSupported</a>([TreatNullAs=EmptyString] in DOMString feature, in DOMString version);
+  boolean <a href=#dom-node-issupported title=dom-Node-isSupported>isSupported</a>([TreatNullAs=EmptyString] DOMString feature, DOMString version);
   readonly attribute DOMString <a href=#dom-node-namespaceuri title=dom-Node-namespaceURI>namespaceURI</a>;
   readonly attribute DOMString <a href=#dom-node-prefix title=dom-Node-prefix>prefix</a>;
   readonly attribute DOMString <a href=#dom-node-localname title=dom-Node-localName>localName</a>;
@@ -625,17 +643,17 @@ must return the name of the exception constant as a string.</p>
   const unsigned short <a href=#dom-node-document_position_contained_by title=dom-Node-DOCUMENT_POSITION_CONTAINED_BY>DOCUMENT_POSITION_CONTAINED_BY</a> = 0x10;
   const unsigned short <a href=#dom-node-document_position_implementation_specific title=dom-Node-DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC>DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC</a> = 0x20;
 
-  unsigned short <a href=#dom-node-comparedocumentposition title=dom-Node-compareDocumentPosition>compareDocumentPosition</a>(in <a href=#node>Node</a> other);
+  unsigned short <a href=#dom-node-comparedocumentposition title=dom-Node-compareDocumentPosition>compareDocumentPosition</a>(<a href=#node>Node</a> other);
 
   [TreatNullAs=EmptyString] attribute DOMString <a href=#dom-node-textcontent title=dom-Node-textContent>textContent</a>;
-  boolean <a href=#dom-node-issamenode title=dom-Node-isSameNode>isSameNode</a>(in <a href=#node>Node</a> other);
-  DOMString <a href=#dom-node-lookupprefix title=dom-Node-lookupPrefix>lookupPrefix</a>(in DOMString namespaceURI);
-  boolean <a href=#dom-node-isdefaultnamespace title=dom-Node-isDefaultNamespace>isDefaultNamespace</a>(in DOMString namespaceURI);
-  DOMString <a href=#dom-node-lookupnamespaceuri title=dom-Node-lookupNamespaceURI>lookupNamespaceURI</a>(in DOMString prefix);
-  boolean <a href=#dom-node-isequalnode title=dom-Node-isEqualNode>isEqualNode</a>(in <a href=#node>Node</a> arg);<!--
-  DOMObject getFeature(in DOMString feature, in DOMString version);
-  DOMUserData setUserData(in DOMString key, in DOMUserData data, in UserDataHandler handler);
-  DOMUserData getUserData(in DOMString key);-->
+  boolean <a href=#dom-node-issamenode title=dom-Node-isSameNode>isSameNode</a>(<a href=#node>Node</a> other);
+  DOMString <a href=#dom-node-lookupprefix title=dom-Node-lookupPrefix>lookupPrefix</a>(DOMString namespaceURI);
+  boolean <a href=#dom-node-isdefaultnamespace title=dom-Node-isDefaultNamespace>isDefaultNamespace</a>(DOMString namespaceURI);
+  DOMString <a href=#dom-node-lookupnamespaceuri title=dom-Node-lookupNamespaceURI>lookupNamespaceURI</a>(DOMString prefix);
+  boolean <a href=#dom-node-isequalnode title=dom-Node-isEqualNode>isEqualNode</a>(<a href=#node>Node</a> arg);<!--
+  DOMObject getFeature(DOMString feature, DOMString version);
+  DOMUserData setUserData(DOMString key, DOMUserData data, UserDataHandler handler);
+  DOMUserData getUserData(DOMString key);-->
 };</pre>
 
 <p>The constants <a href=#dom-node-nodetype><code title=dom-Node-nodeType>nodeType</code></a> (as defined
@@ -956,36 +974,36 @@ conditions are true, and must otherwise return false:
 </ul>
 
 
-<h3 id=interface-documentfragment><span class=secno>4.2 </span>Interface <a href=#documentfragment><code>DocumentFragment</code></a></h3>
+<h3 id=interface-documentfragment><span class=secno>5.2 </span>Interface <a href=#documentfragment><code>DocumentFragment</code></a></h3>
 <pre class=idl>interface <dfn id=documentfragment>DocumentFragment</dfn> : <a href=#node>Node</a> {
 };</pre>
 
 
-<h3 id=interface-document><span class=secno>4.3 </span>Interface <a href=#document><code>Document</code></a></h3>
+<h3 id=interface-document><span class=secno>5.3 </span>Interface <a href=#document><code>Document</code></a></h3>
 <pre class=idl>interface <dfn id=document>Document</dfn> : <a href=#node>Node</a> {
   readonly attribute <a href=#documenttype>DocumentType</a> <a href=#dom-document-doctype title=dom-Document-doctype>doctype</a>;
   readonly attribute <a href=#domimplementation>DOMImplementation</a> <a href=#dom-document-implementation title=dom-Document-implementation>implementation</a>;
   readonly attribute <a href=#element>Element</a> <a href=#dom-document-documentelement title=dom-Document-documentElement>documentElement</a>;
 
-  <a href=#element>Element</a> <a href=#dom-document-createelement title=dom-Document-createElement>createElement</a>([TreatNullAs=EmptyString] in DOMString tagName);
-  <a href=#element>Element</a> <a href=#dom-document-createelementns title=dom-Document-createElementNS>createElementNS</a>(in DOMString namespaceURI, in DOMString qualifiedName);
+  <a href=#element>Element</a> <a href=#dom-document-createelement title=dom-Document-createElement>createElement</a>([TreatNullAs=EmptyString] DOMString tagName);
+  <a href=#element>Element</a> <a href=#dom-document-createelementns title=dom-Document-createElementNS>createElementNS</a>(DOMString namespaceURI, DOMString qualifiedName);
   <a href=#documentfragment>DocumentFragment</a> createDocumentFragment();
-  <a href=#text>Text</a> <a href=#dom-document-createtextnode title=dom-Document-createTextNode>createTextNode</a>(in DOMString data);
-  <a href=#comment>Comment</a> <a href=#dom-document-createcomment title=dom-Document-createComment>createComment</a>(in DOMString data);
-  <a href=#processinginstruction>ProcessingInstruction</a> <a href=#dom-document-createprocessinginstruction title=dom-Document-createProcessingInstruction>createProcessingInstruction</a>(in DOMString target, in DOMString data);<!--
-  CDATASection createCDATASection(in DOMString data);
-  EntityReference createEntityReference(in DOMString name);
-  <span>Attr</span> <span title=dom-Document-createAttribute>createAttribute</span>(in DOMString name);
-  <span>Attr</span> <span title=dom-Document-createAttributeNS>createAttributeNS</span>(in DOMString namespaceURI, in DOMString qualifiedName);
+  <a href=#text>Text</a> <a href=#dom-document-createtextnode title=dom-Document-createTextNode>createTextNode</a>(DOMString data);
+  <a href=#comment>Comment</a> <a href=#dom-document-createcomment title=dom-Document-createComment>createComment</a>(DOMString data);
+  <a href=#processinginstruction>ProcessingInstruction</a> <a href=#dom-document-createprocessinginstruction title=dom-Document-createProcessingInstruction>createProcessingInstruction</a>(DOMString target, DOMString data);<!--
+  CDATASection createCDATASection(DOMString data);
+  EntityReference createEntityReference(DOMString name);
+  <span>Attr</span> <span title=dom-Document-createAttribute>createAttribute</span>(DOMString name);
+  <span>Attr</span> <span title=dom-Document-createAttributeNS>createAttributeNS</span>(DOMString namespaceURI, DOMString qualifiedName);
     If adding this, search for [createAttribute]-->
 
-  <a href=#nodelist>NodeList</a> <a href=#dom-document-getelementsbytagname title=dom-Document-getElementsByTagName>getElementsByTagName</a>(in DOMString tagname);
-  <a href=#nodelist>NodeList</a> <a href=#dom-document-getelementsbytagnamens title=dom-Document-getElementsByTagNameNS>getElementsByTagNameNS</a>(in DOMString namespaceURI, in DOMString localName);
-  <a href=#nodelist>NodeList</a> <a href=#dom-document-getelementsbyclassname title=dom-Document-getElementsByClassName>getElementsByClassName</a>(in DOMString classNames);
-  <a href=#element>Element</a> <a href=#dom-document-getelementbyid title=dom-Document-getElementById>getElementById</a>(in DOMString elementId);
+  <a href=#nodelist>NodeList</a> <a href=#dom-document-getelementsbytagname title=dom-Document-getElementsByTagName>getElementsByTagName</a>(DOMString tagname);
+  <a href=#nodelist>NodeList</a> <a href=#dom-document-getelementsbytagnamens title=dom-Document-getElementsByTagNameNS>getElementsByTagNameNS</a>(DOMString namespaceURI, DOMString localName);
+  <a href=#nodelist>NodeList</a> <a href=#dom-document-getelementsbyclassname title=dom-Document-getElementsByClassName>getElementsByClassName</a>(DOMString classNames);
+  <a href=#element>Element</a> <a href=#dom-document-getelementbyid title=dom-Document-getElementById>getElementById</a>(DOMString elementId);
 
-  <a href=#node>Node</a> <a href=#dom-document-importnode title=dom-Document-importNode>importNode</a>(in <a href=#node>Node</a> importedNode, in boolean deep);
-  <a href=#node>Node</a> <a href=#dom-document-adoptnode title=dom-Document-adoptNode>adoptNode</a>(in <a href=#node>Node</a> source);
+  <a href=#node>Node</a> <a href=#dom-document-importnode title=dom-Document-importNode>importNode</a>(<a href=#node>Node</a> importedNode, boolean deep);
+  <a href=#node>Node</a> <a href=#dom-document-adoptnode title=dom-Document-adoptNode>adoptNode</a>(<a href=#node>Node</a> source);
 
   readonly attribute DOMString <a href=#dom-document-inputencoding title=dom-Document-inputEncoding>inputEncoding</a>;
            attribute DOMString <a href=#dom-document-documenturi title=dom-Document-documentURI>documentURI</a>;
@@ -996,7 +1014,7 @@ conditions are true, and must otherwise return false:
            attribute boolean strictErrorChecking;
   readonly attribute DOMConfiguration domConfig;
   void normalizeDocument();
-  Node renameNode(in Node n, in DOMString namespaceURI, in DOMString qualifiedName);-->
+  Node renameNode(Node n, DOMString namespaceURI, DOMString qualifiedName);-->
 };</pre>
 
 <p>A <a href=#document><code>Document</code></a> node is assumed to be an <dfn id=xml-document>XML document</dfn>
@@ -1018,7 +1036,7 @@ as "almost standards" mode. Unless
 <a href=#document><code>Document</code></a> node is created by the
 <a class=external data-anolis-spec=html href=http://www.whatwg.org/html/#html-parser>HTML parser</a>, based on the presence,
 absence, or value of the DOCTYPE string.
-<a data-anolis-ref="" href=#refsHTML>[HTML]</a>
+<a class=informative data-anolis-ref="" href=#refsHTML>[HTML]</a>
 
 <p>The <dfn id=dom-document-doctype title=dom-Document-doctype><code>doctype</code></dfn> attribute must return the first child of the <a href=#document><code>Document</code></a> node that is a <a href=#documenttype><code>DocumentType</code></a> node, if there is one, or null otherwise.
 
@@ -1306,16 +1324,16 @@ return the literal string "<code title="">BackCompat</code>".
 http://lists.w3.org/Archives/Public/www-dom/2003JulSep/0049.html -->
 
 
-<h4 id=interface-domimplementation><span class=secno>4.3.1 </span>Interface <a href=#domimplementation><code>DOMImplementation</code></a></h4>
+<h4 id=interface-domimplementation><span class=secno>5.3.1 </span>Interface <a href=#domimplementation><code>DOMImplementation</code></a></h4>
 <p>User agents must create a new <a href=#domimplementation><code>DOMImplementation</code></a> object whenever a new <a href=#document><code>Document</code></a> node is created and associate it with the that <a href=#document><code>Document</code></a> node.
 
 <pre class=idl>interface <dfn id=domimplementation>DOMImplementation</dfn> {
-  boolean <a href=#dom-domimplementation-hasfeature title=dom-DOMImplementation-hasFeature>hasFeature</a>(in DOMString feature, [TreatNullAs=EmptyString] in DOMString version);
+  boolean <a href=#dom-domimplementation-hasfeature title=dom-DOMImplementation-hasFeature>hasFeature</a>(DOMString feature, [TreatNullAs=EmptyString] DOMString version);
 
-  <a href=#documenttype>DocumentType</a> <a href=#dom-domimplementation-createdocumenttype title=dom-DOMImplementation-createDocumentType>createDocumentType</a>([TreatNullAs=EmptyString] in DOMString qualifiedName, in DOMString publicId, in DOMString systemId);
-  <a href=#document>Document</a> <a href=#dom-domimplementation-createdocument title=dom-DOMImplementation-createDocument>createDocument</a>([TreatNullAs=EmptyString] in DOMString namespaceURI, [TreatNullAs=EmptyString] in DOMString qualifiedName, in <a href=#documenttype>DocumentType</a> doctype);<!--
-  DOMObject getFeature(in DOMString feature, in DOMString version);-->
-  <a href=#document>Document</a> <a href=#dom-domimplementation-createhtmldocument title=dom-DOMImplementation-createHTMLDocument>createHTMLDocument</a>(in DOMString title);
+  <a href=#documenttype>DocumentType</a> <a href=#dom-domimplementation-createdocumenttype title=dom-DOMImplementation-createDocumentType>createDocumentType</a>([TreatNullAs=EmptyString] DOMString qualifiedName, DOMString publicId, DOMString systemId);
+  <a href=#document>Document</a> <a href=#dom-domimplementation-createdocument title=dom-DOMImplementation-createDocument>createDocument</a>([TreatNullAs=EmptyString] DOMString namespaceURI, [TreatNullAs=EmptyString] DOMString qualifiedName, <a href=#documenttype>DocumentType</a> doctype);<!--
+  DOMObject getFeature(DOMString feature, DOMString version);-->
+  <a href=#document>Document</a> <a href=#dom-domimplementation-createhtmldocument title=dom-DOMImplementation-createHTMLDocument>createHTMLDocument</a>(DOMString title);
 };</pre>
 
 <dl class=domintro>
@@ -1449,7 +1467,7 @@ steps:
 </div>
 
 
-<h3 id=interface-attr><span class=secno>4.4 </span>Interface <a href=#attr><code>Attr</code></a></h3>
+<h3 id=interface-attr><span class=secno>5.4 </span>Interface <a href=#attr><code>Attr</code></a></h3>
 
 <p class=XXX>Free <a href=#attr><code>Attr</code></a> from <a href=#node><code>Node</code></a>?</p>
 
@@ -1514,31 +1532,31 @@ are all <a href=#concept-class-attribute title=concept-class-attribute>class att
 <p class=note>This specification does not <!--normatively--> define the <a href=#concept-attribute-name title=concept-attribute-name>name</a> of <a href=#concept-id-attribute title=concept-id-attribute>ID</a> or <a href=#concept-class-attribute title=concept-class-attribute>class attributes</a>.
 
 
-<h3 id=interface-element><span class=secno>4.5 </span>Interface <a href=#element><code>Element</code></a></h3>
+<h3 id=interface-element><span class=secno>5.5 </span>Interface <a href=#element><code>Element</code></a></h3>
 <pre class=idl>interface <dfn id=element>Element</dfn> : <a href=#node>Node</a> {
   readonly attribute DOMString <a href=#dom-element-tagname title=dom-Element-tagName>tagName</a>;
 
-  DOMString? <a href=#dom-element-getattribute title=dom-Element-getAttribute>getAttribute</a>(in DOMString name);
-  DOMString? <a href=#dom-element-getattributens title=dom-Element-getAttributeNS>getAttributeNS</a>(in DOMString namespaceURI, in DOMString localName);
-  void <a href=#dom-element-setattribute title=dom-Element-setAttribute>setAttribute</a>(in DOMString name, in DOMString value);
-  void <a href=#dom-element-setattributens title=dom-Element-setAttributeNS>setAttributeNS</a>(in DOMString namespaceURI, in DOMString qualifiedName, in DOMString value);
-  void <a href=#dom-element-removeattribute title=dom-Element-removeAttribute>removeAttribute</a>(in DOMString name);
-  void <a href=#dom-element-removeattributens title=dom-Element-removeAttributeNS>removeAttributeNS</a>(in DOMString namespaceURI, in DOMString localName);
-  boolean <a href=#dom-element-hasattribute title=dom-Element-hasAttribute>hasAttribute</a>(in DOMString name);
-  boolean <a href=#dom-element-hasattributens title=dom-Element-hasAttributeNS>hasAttributeNS</a>(in DOMString namespaceURI, in DOMString localName);
+  DOMString? <a href=#dom-element-getattribute title=dom-Element-getAttribute>getAttribute</a>(DOMString name);
+  DOMString? <a href=#dom-element-getattributens title=dom-Element-getAttributeNS>getAttributeNS</a>(DOMString namespaceURI, DOMString localName);
+  void <a href=#dom-element-setattribute title=dom-Element-setAttribute>setAttribute</a>(DOMString name, DOMString value);
+  void <a href=#dom-element-setattributens title=dom-Element-setAttributeNS>setAttributeNS</a>(DOMString namespaceURI, DOMString qualifiedName, DOMString value);
+  void <a href=#dom-element-removeattribute title=dom-Element-removeAttribute>removeAttribute</a>(DOMString name);
+  void <a href=#dom-element-removeattributens title=dom-Element-removeAttributeNS>removeAttributeNS</a>(DOMString namespaceURI, DOMString localName);
+  boolean <a href=#dom-element-hasattribute title=dom-Element-hasAttribute>hasAttribute</a>(DOMString name);
+  boolean <a href=#dom-element-hasattributens title=dom-Element-hasAttributeNS>hasAttributeNS</a>(DOMString namespaceURI, DOMString localName);
 <!--
-  <span>Attr</span> <span title=dom-Element-getAttributeNode>getAttributeNode</span>(in DOMString name);
-  <span>Attr</span> <span title=dom-Element-getAttributeNodeNS>getAttributeNodeNS</span>(in DOMString namespaceURI, in DOMString localName);
-  <span>Attr</span> <span title=dom-Element-setAttributeNode>setAttributeNode</span>(in Attr newAttr);
-  <span>Attr</span> <span title=dom-Element-removeAttributeNode>removeAttributeNode</span>(in Attr oldAttr);
+  <span>Attr</span> <span title=dom-Element-getAttributeNode>getAttributeNode</span>(DOMString name);
+  <span>Attr</span> <span title=dom-Element-getAttributeNodeNS>getAttributeNodeNS</span>(DOMString namespaceURI, DOMString localName);
+  <span>Attr</span> <span title=dom-Element-setAttributeNode>setAttributeNode</span>(Attr newAttr);
+  <span>Attr</span> <span title=dom-Element-removeAttributeNode>removeAttributeNode</span>(Attr oldAttr);
 -->
-  <a href=#nodelist>NodeList</a> <a href=#dom-element-getelementsbytagname title=dom-Element-getElementsByTagName>getElementsByTagName</a>(in DOMString name);
-  <a href=#nodelist>NodeList</a> <a href=#dom-element-getelementsbytagnamens title=dom-Element-getElementsByTagNameNS>getElementsByTagNameNS</a>(in DOMString namespaceURI, in DOMString localName);
-  <a href=#nodelist>NodeList</a> <a href=#dom-element-getelementsbyclassname title=dom-Element-getElementsByClassName>getElementsByClassName</a>(in DOMString classNames);<!--
+  <a href=#nodelist>NodeList</a> <a href=#dom-element-getelementsbytagname title=dom-Element-getElementsByTagName>getElementsByTagName</a>(DOMString name);
+  <a href=#nodelist>NodeList</a> <a href=#dom-element-getelementsbytagnamens title=dom-Element-getElementsByTagNameNS>getElementsByTagNameNS</a>(DOMString namespaceURI, DOMString localName);
+  <a href=#nodelist>NodeList</a> <a href=#dom-element-getelementsbyclassname title=dom-Element-getElementsByClassName>getElementsByClassName</a>(DOMString classNames);<!--
   readonly attribute TypeInfo schemaTypeInfo;
-  void setIdAttribute(in DOMString name, in boolean isId);
-  void setIdAttributeNS(in DOMString namespaceURI, in DOMString localName, in boolean isId);
-  void setIdAttributeNode(in Attr idAttr, in boolean isId);-->
+  void setIdAttribute(DOMString name, boolean isId);
+  void setIdAttributeNS(DOMString namespaceURI, DOMString localName, boolean isId);
+  void setIdAttributeNode(Attr idAttr, boolean isId);-->
 
            attribute <a href=#htmlcollection>HTMLCollection</a> <a href=#dom-element-children title=dom-Element-children>children</a>;
 };</pre>
@@ -1670,7 +1688,7 @@ node</a>, whose filter matches only <a href=#element><code>Element</code></a> no
 <span class=XXX title="">Or a <a href=#nodelist><code>NodeList</code></a>?</span>
 
 
-<h3 id=interface-documenttype><span class=secno>4.6 </span>Interface <a href=#documenttype><code>DocumentType</code></a></h3>
+<h3 id=interface-documenttype><span class=secno>5.6 </span>Interface <a href=#documenttype><code>DocumentType</code></a></h3>
 <pre class=idl>interface <dfn id=documenttype>DocumentType</dfn> : <a href=#node>Node</a> {
   readonly attribute DOMString <a href=#dom-documenttype-name title=dom-DocumentType-name>name</a>;<!--
   readonly attribute NamedNodeMap entities;
@@ -1700,7 +1718,7 @@ node's</a> <a href=#concept-doctype-systemid title=concept-doctype-systemid>syst
 one, or the empty string otherwise.
 
 
-<h3 id=interface-processinginstruction><span class=secno>4.7 </span>Interface <a href=#processinginstruction><code>ProcessingInstruction</code></a></h3>
+<h3 id=interface-processinginstruction><span class=secno>5.7 </span>Interface <a href=#processinginstruction><code>ProcessingInstruction</code></a></h3>
 <pre class=idl>interface <dfn id=processinginstruction>ProcessingInstruction</dfn> : <a href=#node>Node</a> {
   readonly attribute DOMString <a href=#dom-processinginstruction-target title=dom-ProcessingInstruction-target>target</a>;
            attribute DOMString <a href=#dom-processinginstruction-data title=dom-ProcessingInstruction-data>data</a>;
@@ -1719,23 +1737,23 @@ node's</a> <a href=#concept-pi-data title=concept-PI-data>data</a>, and on setti
 <a href=#context-node title="context node">context node's</a> <a href=#concept-pi-data title=concept-PI-data>data</a> to the new value.
 
 
-<h3 id=interface-characterdata><span class=secno>4.8 </span>Interface <a href=#characterdata><code>CharacterData</code></a></h3>
+<h3 id=interface-characterdata><span class=secno>5.8 </span>Interface <a href=#characterdata><code>CharacterData</code></a></h3>
 <pre class=idl>interface <dfn id=characterdata>CharacterData</dfn> : <a href=#node>Node</a> {
   [TreatNullAs=EmptyString] attribute DOMString <a href=#dom-characterdata-data title=dom-CharacterData-data>data</a>;
   readonly attribute unsigned long <a href=#dom-characterdata-length title=dom-CharacterData-length>length</a>;
-  DOMString <a href=#dom-characterdata-substringdata title=dom-CharacterData-substringData>substringData</a>(in unsigned long offset, in unsigned long count);
-  void <a href=#dom-characterdata-appenddata title=dom-CharacterData-appendData>appendData</a>(in DOMString arg);
-  void <a href=#dom-characterdata-insertdata title=dom-CharacterData-insertData>insertData</a>(in unsigned long offset, in DOMString arg);
-  void <a href=#dom-characterdata-deletedata title=dom-CharacterData-deleteData>deleteData</a>(in unsigned long offset, in unsigned long count);
-  void <a href=#dom-characterdata-replacedata title=dom-CharacterData-replaceData>replaceData</a>(in unsigned long offset, in unsigned long count, in DOMString arg);
+  DOMString <a href=#dom-characterdata-substringdata title=dom-CharacterData-substringData>substringData</a>(unsigned long <var>offset</var>, unsigned long <var>count</var>);
+  void <a href=#dom-characterdata-appenddata title=dom-CharacterData-appendData>appendData</a>(DOMString <var>data</var>);
+  void <a href=#dom-characterdata-insertdata title=dom-CharacterData-insertData>insertData</a>(unsigned long <var>offset</var>, DOMString <var>data</var>);
+  void <a href=#dom-characterdata-deletedata title=dom-CharacterData-deleteData>deleteData</a>(unsigned long <var>offset</var>, unsigned long <var>count</var>);
+  void <a href=#dom-characterdata-replacedata title=dom-CharacterData-replaceData>replaceData</a>(unsigned long <var>offset</var>, unsigned long <var>count</var>, DOMString <var>data</var>);
 };</pre>
 
-<p>The <dfn id=dom-characterdata-data title=dom-CharacterData-data><code>data</code></dfn> attribute must, on getting, return the data of the node, and on setting, must change the node's data to the new value.
+<p>The <dfn id=dom-characterdata-data title=dom-CharacterData-data><code>data</code></dfn> attribute must return the data of the node, and on setting, must change the node's data to the new value.
 
-<p>The <dfn id=dom-characterdata-length title=dom-CharacterData-length><code>length</code></dfn> attribute must, on getting, return the number of UTF-16 code units represented by the node's data.
+<p>The <dfn id=dom-characterdata-length title=dom-CharacterData-length><code>length</code></dfn> attribute must return the number of UTF-16 code units represented by the node's data.
 
-<p>The <dfn id=dom-characterdata-substringdata title=dom-CharacterData-substringData><code>substringData(<var title="">offset</var>, <var>count</var>)</code></dfn> method must run the
-following steps:
+<p>The <dfn id=dom-characterdata-substringdata title=dom-CharacterData-substringData><code>substringData(<var title="">offset</var>, <var>count</var>)</code></dfn> method must run these
+steps:
 
 <ol>
  <li><p>If <var>offset</var> is negative or is greater than the
@@ -1753,21 +1771,52 @@ following steps:
  code unit in <var>data</var>.
 </ol>
 
-<p class=XXX><dfn id=dom-characterdata-appenddata title=dom-CharacterData-appendData>appendData</dfn>
+<p>The <dfn id=dom-characterdata-appenddata title=dom-CharacterData-appendData><code>appendData(<var>data</var>)</code></dfn> method must append <var>data</var> to the <a href=#context-node>context node</a>'s data.</p>
 
-<p class=XXX><dfn id=dom-characterdata-insertdata title=dom-CharacterData-insertData>insertData</dfn>
+<p>The <dfn id=dom-characterdata-insertdata title=dom-CharacterData-insertData><code>insertData(<var>offset</var>, <var>data</var>)</code></dfn> method must run these steps:</p>
 
-<p class=XXX><dfn id=dom-characterdata-deletedata title=dom-CharacterData-deleteData>deleteData</dfn>
+<ol>
+ <li><p>If <var>offset</var> is greater than the <a href=#context-node>context node</a>'s
+ <a href=#dom-characterdata-length><code title=dom-CharacterData-length>length</code></a>, raise an
+ <a href=#dom-domexception-index_size_err><code title=dom-DOMException-INDEX_SIZE_ERR>INDEX_SIZE_ERR</code></a> exception
+ and terminate these steps.</li>
 
-<p class=XXX><dfn id=dom-characterdata-replacedata title=dom-CharacterData-replaceData>replaceData</dfn>
+ <li><p>Insert <var>data</var> into the <a href=#context-node>context node</a>'s data
+ after <var>offset</var> UTF-16 code units.</li>
+</ol>
+
+<p>The <dfn id=dom-characterdata-deletedata title=dom-CharacterData-deleteData><code>deleteData(<var>offset</var>, <var>count</var>)</code></dfn> method must run these steps:</p>
+
+<ol>
+ <li><p>If <var>offset</var> is greater than the <a href=#context-node>context node</a>'s
+ <a href=#dom-characterdata-length><code title=dom-CharacterData-length>length</code></a>, raise an
+ <a href=#dom-domexception-index_size_err><code title=dom-DOMException-INDEX_SIZE_ERR>INDEX_SIZE_ERR</code></a> exception
+ and terminate these steps.</li>
+
+ <li><p>If <var>offset</var>+<var>count</var> is greater than the
+ <a href=#context-node>context node</a>'s
+ <a href=#dom-characterdata-length><code title=dom-CharacterData-length>length</code></a> let <var>count</var> be
+ <a href=#dom-characterdata-length><code title=dom-CharacterData-length>length</code></a>-<var>offset</var>.</li>
+
+ <li><p>Starting from <var>offset</var> UTF-16 code units remove
+ <var>count</var> UTF-16 code units from the <a href=#context-node>context node</a>'s
+ data.</li>
+</ol>
+
+<p>The <dfn id=dom-characterdata-replacedata title=dom-CharacterData-replaceData><code>replaceData(<var>offset</var>, <var>count</var>, <var>data</var>)</code></dfn> method must act as if
+the <a href=#dom-characterdata-deletedata><code title=dom-CharacterData-deleteData>deleteData()</code></a> method is
+invoked with <var>offset</var> and <var>count</var> as arguments followed
+by the <a href=#dom-characterdata-insertdata><code title=dom-CharacterData-insertData>insertData()</code></a> method
+with <var>offset</var> and <var>data</var> as arguments and re-raise any
+exceptions these methods might have raised.</p>
 
 
-<h3 id=interface-text><span class=secno>4.9 </span>Interface <a href=#text><code>Text</code></a></h3>
+<h3 id=interface-text><span class=secno>5.9 </span>Interface <a href=#text><code>Text</code></a></h3>
 <pre class=idl>interface <dfn id=text>Text</dfn> : <a href=#characterdata>CharacterData</a> {
-  <a href=#text>Text</a> <a href=#dom-text-splittext title=dom-Text-splitText>splitText</a>(in unsigned long offset);<!--
+  <a href=#text>Text</a> <a href=#dom-text-splittext title=dom-Text-splitText>splitText</a>(unsigned long offset);<!--
   readonly attribute boolean isElementContentWhitespace;-->
   readonly attribute DOMString <a href=#dom-text-wholetext title=dom-Text-wholeText>wholeText</a>;
-  <a href=#text>Text</a> <a href=#dom-text-replacewholetext title=dom-Text-replaceWholeText>replaceWholeText</a>(in DOMString content);
+  <a href=#text>Text</a> <a href=#dom-text-replacewholetext title=dom-Text-replaceWholeText>replaceWholeText</a>(DOMString content);
 };</pre>
 
 <p class=XXX><dfn id=dom-text-splittext title=dom-Text-splitText>splitText</dfn>
@@ -1780,13 +1829,13 @@ following steps:
 space, tab, newline -->
 
 
-<h3 id=interface-comment><span class=secno>4.10 </span>Interface <a href=#comment><code>Comment</code></a></h3>
+<h3 id=interface-comment><span class=secno>5.10 </span>Interface <a href=#comment><code>Comment</code></a></h3>
 <pre class=idl>interface <dfn id=comment>Comment</dfn> : <a href=#characterdata>CharacterData</a> {
 };</pre>
 
 
 
-<h2 id=collections><span class=secno>5 </span>Collections</h2>
+<h2 id=collections><span class=secno>6 </span>Collections</h2>
 <p>A <dfn id=concept-collection title=concept-collection>collection</dfn> is an object that represents
 a lists of DOM nodes. A <a href=#concept-collection title=concept-collection>collection</a> can be
 either <dfn id=concept-collection-live title=concept-collection-live>live</dfn> or <dfn id=concept-collection-static title=concept-collection-static>static</dfn>. Unless otherwise stated, a <a href=#concept-collection title=concept-collection>collection</a> must be <a href=#concept-collection-live title=concept-collection-live>live</a>.
@@ -1809,11 +1858,11 @@ order</a>.
 every time it is retrieved.
 
 
-<h3 id=interface-nodelist><span class=secno>5.1 </span>Interface <a href=#nodelist><code>NodeList</code></a></h3>
+<h3 id=interface-nodelist><span class=secno>6.1 </span>Interface <a href=#nodelist><code>NodeList</code></a></h3>
 <p>A <a href=#nodelist><code>NodeList</code></a> object is a kind of <a href=#concept-collection title=concept-collection>collection</a>.
 
 <pre class=idl>interface <dfn id=nodelist>NodeList</dfn> {
-  getter <a href=#node>Node</a> <a href=#dom-nodelist-item title=dom-NodeList-item>item</a>(in unsigned long index);
+  getter <a href=#node>Node</a> <a href=#dom-nodelist-item title=dom-NodeList-item>item</a>(unsigned long index);
   readonly attribute unsigned long <a href=#dom-nodelist-length title=dom-NodeList-length>length</a>;
 };</pre>
 
@@ -1828,7 +1877,7 @@ collection</a>.
 <p><a href=#nodelist><code>NodeList</code></a>s are enumerable. <span class=XXX title="">Explain? <code title="">for ... in</code></span>
 
 
-<h3 id=interface-htmlcollection><span class=secno>5.2 </span>Interface <a href=#htmlcollection><code>HTMLCollection</code></a></h3>
+<h3 id=interface-htmlcollection><span class=secno>6.2 </span>Interface <a href=#htmlcollection><code>HTMLCollection</code></a></h3>
 <p>The <a href=#htmlcollection><code>HTMLCollection</code></a> interface represents a generic <a href=#concept-collection title=concept-collection>collection</a> of elements.
 
 <p class=note>This interface is called <a href=#htmlcollection><code>HTMLCollection</code></a> for
@@ -1837,8 +1886,8 @@ it, which return other objects for historical reasons.
 
 <pre class=idl>interface <dfn id=htmlcollection>HTMLCollection</dfn> {
 readonly attribute unsigned long <a href=#dom-htmlcollection-length title=dom-HTMLCollection-length>length</a>;
-caller getter object <a href=#dom-htmlcollection-item title=dom-HTMLCollection-item>item</a>(in unsigned long index); // only returns Element
-caller getter object <a href=#dom-htmlcollection-nameditem title=dom-HTMLCollection-namedItem>namedItem</a>(in DOMString name); // only returns Element
+caller getter object <a href=#dom-htmlcollection-item title=dom-HTMLCollection-item>item</a>(unsigned long index); // only returns Element
+caller getter object <a href=#dom-htmlcollection-nameditem title=dom-HTMLCollection-namedItem>namedItem</a>(DOMString name); // only returns Element
 };</pre>
 
 <dl class=domintro>
@@ -1904,19 +1953,19 @@ requirements:</p>
 null.
 
 
-<h3 id=interface-namednodemap><span class=secno>5.3 </span>Interface <a href=#namednodemap><code>NamedNodeMap</code></a></h3>
+<h3 id=interface-namednodemap><span class=secno>6.3 </span>Interface <a href=#namednodemap><code>NamedNodeMap</code></a></h3>
 <p>A <a href=#namednodemap><code>NamedNodeMap</code></a> object is a kind of <a href=#concept-collection title=concept-collection>collection</a>, whose primary purpose is to expose
 <a href=#node><code>Node</code></a>s by name.
 
 <pre class=idl>interface <dfn id=namednodemap>NamedNodeMap</dfn> {
-  <a href=#node>Node</a> <a href=#dom-namednodemap-getnameditem title=dom-NamedNodeMap-getNamedItem>getNamedItem</a>(in DOMString name);
-  <a href=#node>Node</a> <a href=#dom-namednodemap-setnameditem title=dom-NamedNodeMap-setNamedItem>setNamedItem</a>(in <a href=#node>Node</a> arg);
-  <a href=#node>Node</a> <a href=#dom-namednodemap-removenameditem title=dom-NamedNodeMap-removeNamedItem>removeNamedItem</a>(in DOMString name);
-  <a href=#node>Node</a> <a href=#dom-namednodemap-item title=dom-NamedNodeMap-item>item</a>(in unsigned long index);
+  <a href=#node>Node</a> <a href=#dom-namednodemap-getnameditem title=dom-NamedNodeMap-getNamedItem>getNamedItem</a>(DOMString name);
+  <a href=#node>Node</a> <a href=#dom-namednodemap-setnameditem title=dom-NamedNodeMap-setNamedItem>setNamedItem</a>(<a href=#node>Node</a> arg);
+  <a href=#node>Node</a> <a href=#dom-namednodemap-removenameditem title=dom-NamedNodeMap-removeNamedItem>removeNamedItem</a>(DOMString name);
+  <a href=#node>Node</a> <a href=#dom-namednodemap-item title=dom-NamedNodeMap-item>item</a>(unsigned long index);
   readonly attribute unsigned long <a href=#dom-namednodemap-length title=dom-NamedNodeMap-length>length</a>;
-  <a href=#node>Node</a> <a href=#dom-namednodemap-getnameditemns title=dom-NamedNodeMap-getNamedItemNS>getNamedItemNS</a>(in DOMString namespaceURI, in DOMString localName);
-  <a href=#node>Node</a> <a href=#dom-namednodemap-setnameditemns title=dom-NamedNodeMap-setNamedItemNS>setNamedItemNS</a>(in <a href=#node>Node</a> arg);
-  <a href=#node>Node</a> <a href=#dom-namednodemap-removenameditemns title=dom-NamedNodeMap-removeNamedItemNS>removeNamedItemNS</a>(in DOMString namespaceURI, in DOMString localName);
+  <a href=#node>Node</a> <a href=#dom-namednodemap-getnameditemns title=dom-NamedNodeMap-getNamedItemNS>getNamedItemNS</a>(DOMString namespaceURI, DOMString localName);
+  <a href=#node>Node</a> <a href=#dom-namednodemap-setnameditemns title=dom-NamedNodeMap-setNamedItemNS>setNamedItemNS</a>(<a href=#node>Node</a> arg);
+  <a href=#node>Node</a> <a href=#dom-namednodemap-removenameditemns title=dom-NamedNodeMap-removeNamedItemNS>removeNamedItemNS</a>(DOMString namespaceURI, DOMString localName);
 };</pre>
 
 <p class=XXX><dfn id=dom-namednodemap-getnameditem title=dom-NamedNodeMap-getNamedItem>getNamedItem</dfn>
@@ -1939,12 +1988,12 @@ collection</a>.
 
 
 
-<h2 id=lists><span class=secno>6 </span>Lists</h2>
-<h3 id=interface-domstringlist><span class=secno>6.1 </span>Interface <a href=#domstringlist><code>DOMStringList</code></a></h3>
+<h2 id=lists><span class=secno>7 </span>Lists</h2>
+<h3 id=interface-domstringlist><span class=secno>7.1 </span>Interface <a href=#domstringlist><code>DOMStringList</code></a></h3>
 <pre class=idl>interface <dfn id=domstringlist>DOMStringList</dfn> {
-  DOMString <a href=#dom-domstringlist-item title=dom-DOMStringList-item>item</a>(in unsigned long index);
+  DOMString <a href=#dom-domstringlist-item title=dom-DOMStringList-item>item</a>(unsigned long index);
   readonly attribute unsigned long <a href=#dom-domstringlist-length title=dom-DOMStringList-length>length</a>;
-  boolean <a href=#dom-domstringlist-contains title=dom-DOMStringList-contains>contains</a>(in DOMString str);
+  boolean <a href=#dom-domstringlist-contains title=dom-DOMStringList-contains>contains</a>(DOMString str);
 };</pre>
 
 <p class=XXX><dfn id=dom-domstringlist-item title=dom-DOMStringList-item>item</dfn>
@@ -1954,7 +2003,7 @@ collection</a>.
 <p class=XXX><dfn id=dom-domstringlist-contains title=dom-DOMStringList-contains>contains</dfn>
 
 
-<h3 id=interface-domtokenlist><span class=secno>6.2 </span>Interface <a href=#domtokenlist><code>DOMTokenList</code></a></h3>
+<h3 id=interface-domtokenlist><span class=secno>7.2 </span>Interface <a href=#domtokenlist><code>DOMTokenList</code></a></h3>
 <p>The <a href=#domtokenlist><code>DOMTokenList</code></a> interface represents an interface
 to an underlying string that consists of a <a href=#set-of-space-separated-tokens>set of
 space-separated tokens</a>.</p>
@@ -1965,11 +2014,11 @@ ordinarily be treated in a case-insensitive manner.</p>
 
 <pre class=idl>interface <dfn id=domtokenlist>DOMTokenList</dfn> {
   readonly attribute unsigned long <a href=#dom-domtokenlist-length title=dom-DOMTokenList-length>length</a>;
-  getter DOMString <a href=#dom-domtokenlist-item title=dom-DOMTokenList-item>item</a>(in unsigned long index);
-  boolean <a href=#dom-domtokenlist-contains title=dom-DOMTokenList-contains>contains</a>(in DOMString token);
-  void <a href=#dom-domtokenlist-add title=dom-DOMTokenList-add>add</a>(in DOMString token);
-  void <a href=#dom-domtokenlist-remove title=dom-DOMTokenList-remove>remove</a>(in DOMString token);
-  boolean <a href=#dom-domtokenlist-toggle title=dom-DOMTokenList-toggle>toggle</a>(in DOMString token);
+  getter DOMString <a href=#dom-domtokenlist-item title=dom-DOMTokenList-item>item</a>(unsigned long index);
+  boolean <a href=#dom-domtokenlist-contains title=dom-DOMTokenList-contains>contains</a>(DOMString token);
+  void <a href=#dom-domtokenlist-add title=dom-DOMTokenList-add>add</a>(DOMString token);
+  void <a href=#dom-domtokenlist-remove title=dom-DOMTokenList-remove>remove</a>(DOMString token);
+  boolean <a href=#dom-domtokenlist-toggle title=dom-DOMTokenList-toggle>toggle</a>(DOMString token);
   <a href=#dom-domtokenlist-tostring title=dom-DOMTokenList-toString>stringifier</a> DOMString ();
 };</pre>
 
@@ -2159,7 +2208,7 @@ underlying string representation.</p>
 </div>
 
 
-<h3 id=interface-domsettabletokenlist><span class=secno>6.3 </span>Interface <a href=#domsettabletokenlist><code>DOMSettableTokenList</code></a></h3>
+<h3 id=interface-domsettabletokenlist><span class=secno>7.3 </span>Interface <a href=#domsettabletokenlist><code>DOMSettableTokenList</code></a></h3>
 
 <p>The <a href=#domsettabletokenlist><code>DOMSettableTokenList</code></a> interface is the same as the
 <a href=#domtokenlist><code>DOMTokenList</code></a> interface, except that it allows the
@@ -2194,7 +2243,7 @@ replace the underlying string with the new value on setting.</p>
 
 
 
-<h2 id=historical><span class=secno>7 </span>Historical</h2>
+<h2 id=historical><span class=secno>8 </span>Historical</h2>
 <p>This specification does not define the following interfaces:
 <ul class=brief>
  <li><dfn id=domuserdata><code>DOMUserData</code></dfn>
@@ -2270,7 +2319,7 @@ replace the underlying string with the new value on setting.</p>
 because the newer ones keep changing. -->
 
 <div id=anolis-references><dl><dt id=refsHTML>[HTML]
-<dd><cite><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage>HTML</a></cite>, I. Hickson. WHATWG.
+<dd>(Non-normative) <cite><a href=http://www.whatwg.org/specs/web-apps/current-work/multipage>HTML</a></cite>, I. Hickson. WHATWG.
 <dt id=refsMATHML>[MATHML]
 <dd>(Non-normative) <cite><a href=http://www.w3.org/TR/MathML/>Mathematical Markup Language (MathML)</a></cite>, D. Carlisle, P. Ion, R. Miner, N. Poppelier. W3C.
 <dt id=refsRFC2119>[RFC2119]

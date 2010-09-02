@@ -26,6 +26,7 @@
  <dd>Simon Pieters &lt;simonp@opera.com>
  <dd>Geoffrey Sneddon &lt;gsneddon@opera.com>
  <dd>Ms2ger &lt;ms2ger@gmail.com>
+ <dd>Anne van Kesteren &lt;annevk@opera.com>
 
  <dt>PDF print version
  <dd><a href=web-dom-core.pdf>Letter</a>
@@ -76,7 +77,7 @@
  <li>Prevent a dependency on HTML5.</li>
 </ul>
 
-<p>Obsoleting DOM Level 3 Core is not an explicit goal. It is fine specification for Java servers.</p>
+<p>Obsoleting DOM Level 3 Core is not an explicit goal. It is a fine specification for Java servers.</p>
 
 <p>New features might be added, once everything else is sort of stable.</p>
 
@@ -162,10 +163,10 @@ title=dom-DOMException-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</code> exception
 must be raised.
 
 <p>Some of the terms used in this specification are defined in <cite>Web
-IDL</cite>, <cite>XML</cite>, <cite>Namespaces in XML</cite> and
-<cite>HTML</cite>. <span data-anolis-ref>WEBIDL</span> <span
-data-anolis-ref>XML</span> <span data-anolis-ref>XMLNS</span> <span
-data-anolis-ref>HTML</span>
+IDL</cite>, <cite>XML</cite> and <cite>Namespaces in XML</cite>.
+<span data-anolis-ref>WEBIDL</span>
+<span data-anolis-ref>XML</span>
+<span data-anolis-ref>XMLNS</span>
 
 <h4>Extensibility</h4>
 
@@ -1057,7 +1058,7 @@ as "almost standards" mode. Unless
 <code>Document</code> node is created by the
 <span data-anolis-spec=html>HTML parser</span>, based on the presence,
 absence, or value of the DOCTYPE string.
-<span data-anolis-ref>HTML</span>
+<span data-anolis-ref class=informative>HTML</span>
 
 <p>The <dfn title=dom-Document-doctype><code>doctype</code></dfn> attribute must return the first child of the <code>Document</code> node that is a <code>DocumentType</code> node, if there is one, or null otherwise.
 
@@ -1738,7 +1739,7 @@ title>name</var>)</code></dfn> method must run the following steps:
  <li><p>Return the value of the first attribute in the <span>context
  node</span>'s <code title=dom-Node-attributes>attributes</code> whose <span
  title=concept-attribute-name>name</span> <span
- title=case-sensitive>case-sensitively</span> equals the first argument, any
+ title=case-sensitive>case-sensitively</span> equals the first argument, in any
  namespace, if the attribute is present, or null otherwise.
 </ol>
 

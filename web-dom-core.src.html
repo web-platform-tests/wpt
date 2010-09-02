@@ -604,14 +604,14 @@ must return the name of the exception constant as a string.</p>
   readonly attribute <span>Node</span> <span title=dom-Node-nextSibling>nextSibling</span>;
   readonly attribute <span>NamedNodeMap</span> <span title=dom-Node-attributes>attributes</span>;
   readonly attribute <span>Document</span> <span title=dom-Node-ownerDocument>ownerDocument</span>;
-  <span>Node</span> <span title=dom-Node-insertBefore>insertBefore</span>(in <span>Node</span> newChild, in <span>Node</span> refChild);
-  <span>Node</span> <span title=dom-Node-replaceChild>replaceChild</span>(in <span>Node</span> newChild, in <span>Node</span> oldChild);
-  <span>Node</span> <span title=dom-Node-removeChild>removeChild</span>(in <span>Node</span> oldChild);
-  <span>Node</span> <span title=dom-Node-appendChild>appendChild</span>(in <span>Node</span> newChild);
+  <span>Node</span> <span title=dom-Node-insertBefore>insertBefore</span>(<span>Node</span> newChild, <span>Node</span> refChild);
+  <span>Node</span> <span title=dom-Node-replaceChild>replaceChild</span>(<span>Node</span> newChild, <span>Node</span> oldChild);
+  <span>Node</span> <span title=dom-Node-removeChild>removeChild</span>(<span>Node</span> oldChild);
+  <span>Node</span> <span title=dom-Node-appendChild>appendChild</span>(<span>Node</span> newChild);
   boolean <span title=dom-Node-hasChildNodes>hasChildNodes</span>();
-  <span>Node</span> <span title=dom-Node-cloneNode>cloneNode</span>(in boolean deep);<!--
+  <span>Node</span> <span title=dom-Node-cloneNode>cloneNode</span>(boolean deep);<!--
   void normalize();-->
-  boolean <span title=dom-Node-isSupported>isSupported</span>([TreatNullAs=EmptyString] in DOMString feature, in DOMString version);
+  boolean <span title=dom-Node-isSupported>isSupported</span>([TreatNullAs=EmptyString] DOMString feature, DOMString version);
   readonly attribute DOMString <span title=dom-Node-namespaceURI>namespaceURI</span>;
   readonly attribute DOMString <span title=dom-Node-prefix>prefix</span>;
   readonly attribute DOMString <span title=dom-Node-localName>localName</span>;
@@ -626,17 +626,17 @@ must return the name of the exception constant as a string.</p>
   const unsigned short <span title=dom-Node-DOCUMENT_POSITION_CONTAINED_BY>DOCUMENT_POSITION_CONTAINED_BY</span> = 0x10;
   const unsigned short <span title=dom-Node-DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC>DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC</span> = 0x20;
 
-  unsigned short <span title=dom-Node-compareDocumentPosition>compareDocumentPosition</span>(in <span>Node</span> other);
+  unsigned short <span title=dom-Node-compareDocumentPosition>compareDocumentPosition</span>(<span>Node</span> other);
 
   [TreatNullAs=EmptyString] attribute DOMString <span title=dom-Node-textContent>textContent</span>;
-  boolean <span title=dom-Node-isSameNode>isSameNode</span>(in <span>Node</span> other);
-  DOMString <span title=dom-Node-lookupPrefix>lookupPrefix</span>(in DOMString namespaceURI);
-  boolean <span title=dom-Node-isDefaultNamespace>isDefaultNamespace</span>(in DOMString namespaceURI);
-  DOMString <span title=dom-Node-lookupNamespaceURI>lookupNamespaceURI</span>(in DOMString prefix);
-  boolean <span title=dom-Node-isEqualNode>isEqualNode</span>(in <span>Node</span> arg);<!--
-  DOMObject getFeature(in DOMString feature, in DOMString version);
-  DOMUserData setUserData(in DOMString key, in DOMUserData data, in UserDataHandler handler);
-  DOMUserData getUserData(in DOMString key);-->
+  boolean <span title=dom-Node-isSameNode>isSameNode</span>(<span>Node</span> other);
+  DOMString <span title=dom-Node-lookupPrefix>lookupPrefix</span>(DOMString namespaceURI);
+  boolean <span title=dom-Node-isDefaultNamespace>isDefaultNamespace</span>(DOMString namespaceURI);
+  DOMString <span title=dom-Node-lookupNamespaceURI>lookupNamespaceURI</span>(DOMString prefix);
+  boolean <span title=dom-Node-isEqualNode>isEqualNode</span>(<span>Node</span> arg);<!--
+  DOMObject getFeature(DOMString feature, DOMString version);
+  DOMUserData setUserData(DOMString key, DOMUserData data, UserDataHandler handler);
+  DOMUserData getUserData(DOMString key);-->
 };</pre>
 
 <p>The constants <code title=dom-Node-nodeType>nodeType</code> (as defined
@@ -1006,25 +1006,25 @@ conditions are true, and must otherwise return false:
   readonly attribute <span>DOMImplementation</span> <span title=dom-Document-implementation>implementation</span>;
   readonly attribute <span>Element</span> <span title=dom-Document-documentElement>documentElement</span>;
 
-  <span>Element</span> <span title=dom-Document-createElement>createElement</span>([TreatNullAs=EmptyString] in DOMString tagName);
-  <span>Element</span> <span title=dom-Document-createElementNS>createElementNS</span>(in DOMString namespaceURI, in DOMString qualifiedName);
+  <span>Element</span> <span title=dom-Document-createElement>createElement</span>([TreatNullAs=EmptyString] DOMString tagName);
+  <span>Element</span> <span title=dom-Document-createElementNS>createElementNS</span>(DOMString namespaceURI, DOMString qualifiedName);
   <span>DocumentFragment</span> createDocumentFragment();
-  <span>Text</span> <span title=dom-Document-createTextNode>createTextNode</span>(in DOMString data);
-  <span>Comment</span> <span title=dom-Document-createComment>createComment</span>(in DOMString data);
-  <span>ProcessingInstruction</span> <span title=dom-Document-createProcessingInstruction>createProcessingInstruction</span>(in DOMString target, in DOMString data);<!--
-  CDATASection createCDATASection(in DOMString data);
-  EntityReference createEntityReference(in DOMString name);
-  <span>Attr</span> <span title=dom-Document-createAttribute>createAttribute</span>(in DOMString name);
-  <span>Attr</span> <span title=dom-Document-createAttributeNS>createAttributeNS</span>(in DOMString namespaceURI, in DOMString qualifiedName);
+  <span>Text</span> <span title=dom-Document-createTextNode>createTextNode</span>(DOMString data);
+  <span>Comment</span> <span title=dom-Document-createComment>createComment</span>(DOMString data);
+  <span>ProcessingInstruction</span> <span title=dom-Document-createProcessingInstruction>createProcessingInstruction</span>(DOMString target, DOMString data);<!--
+  CDATASection createCDATASection(DOMString data);
+  EntityReference createEntityReference(DOMString name);
+  <span>Attr</span> <span title=dom-Document-createAttribute>createAttribute</span>(DOMString name);
+  <span>Attr</span> <span title=dom-Document-createAttributeNS>createAttributeNS</span>(DOMString namespaceURI, DOMString qualifiedName);
     If adding this, search for [createAttribute]-->
 
-  <span>NodeList</span> <span title=dom-Document-getElementsByTagName>getElementsByTagName</span>(in DOMString tagname);
-  <span>NodeList</span> <span title=dom-Document-getElementsByTagNameNS>getElementsByTagNameNS</span>(in DOMString namespaceURI, in DOMString localName);
-  <span>NodeList</span> <span title=dom-Document-getElementsByClassName>getElementsByClassName</span>(in DOMString classNames);
-  <span>Element</span> <span title=dom-Document-getElementById>getElementById</span>(in DOMString elementId);
+  <span>NodeList</span> <span title=dom-Document-getElementsByTagName>getElementsByTagName</span>(DOMString tagname);
+  <span>NodeList</span> <span title=dom-Document-getElementsByTagNameNS>getElementsByTagNameNS</span>(DOMString namespaceURI, DOMString localName);
+  <span>NodeList</span> <span title=dom-Document-getElementsByClassName>getElementsByClassName</span>(DOMString classNames);
+  <span>Element</span> <span title=dom-Document-getElementById>getElementById</span>(DOMString elementId);
 
-  <span>Node</span> <span title=dom-Document-importNode>importNode</span>(in <span>Node</span> importedNode, in boolean deep);
-  <span>Node</span> <span title=dom-Document-adoptNode>adoptNode</span>(in <span>Node</span> source);
+  <span>Node</span> <span title=dom-Document-importNode>importNode</span>(<span>Node</span> importedNode, boolean deep);
+  <span>Node</span> <span title=dom-Document-adoptNode>adoptNode</span>(<span>Node</span> source);
 
   readonly attribute DOMString <span title=dom-Document-inputEncoding>inputEncoding</span>;
            attribute DOMString <span title=dom-Document-documentURI>documentURI</span>;
@@ -1035,7 +1035,7 @@ conditions are true, and must otherwise return false:
            attribute boolean strictErrorChecking;
   readonly attribute DOMConfiguration domConfig;
   void normalizeDocument();
-  Node renameNode(in Node n, in DOMString namespaceURI, in DOMString qualifiedName);-->
+  Node renameNode(Node n, DOMString namespaceURI, DOMString qualifiedName);-->
 };</pre>
 
 <p>A <code>Document</code> node is assumed to be an <dfn>XML document</dfn>
@@ -1395,12 +1395,12 @@ http://lists.w3.org/Archives/Public/www-dom/2003JulSep/0049.html -->
 <p>User agents must create a new <code>DOMImplementation</code> object whenever a new <code>Document</code> node is created and associate it with the that <code>Document</code> node.
 
 <pre class=idl>interface <dfn>DOMImplementation</dfn> {
-  boolean <span title=dom-DOMImplementation-hasFeature>hasFeature</span>(in DOMString feature, [TreatNullAs=EmptyString] in DOMString version);
+  boolean <span title=dom-DOMImplementation-hasFeature>hasFeature</span>(DOMString feature, [TreatNullAs=EmptyString] DOMString version);
 
-  <span>DocumentType</span> <span title=dom-DOMImplementation-createDocumentType>createDocumentType</span>([TreatNullAs=EmptyString] in DOMString qualifiedName, in DOMString publicId, in DOMString systemId);
-  <span>Document</span> <span title=dom-DOMImplementation-createDocument>createDocument</span>([TreatNullAs=EmptyString] in DOMString namespaceURI, [TreatNullAs=EmptyString] in DOMString qualifiedName, in <span>DocumentType</span> doctype);<!--
-  DOMObject getFeature(in DOMString feature, in DOMString version);-->
-  <span>Document</span> <span title=dom-DOMImplementation-createHTMLDocument>createHTMLDocument</span>(in DOMString title);
+  <span>DocumentType</span> <span title=dom-DOMImplementation-createDocumentType>createDocumentType</span>([TreatNullAs=EmptyString] DOMString qualifiedName, DOMString publicId, DOMString systemId);
+  <span>Document</span> <span title=dom-DOMImplementation-createDocument>createDocument</span>([TreatNullAs=EmptyString] DOMString namespaceURI, [TreatNullAs=EmptyString] DOMString qualifiedName, <span>DocumentType</span> doctype);<!--
+  DOMObject getFeature(DOMString feature, DOMString version);-->
+  <span>Document</span> <span title=dom-DOMImplementation-createHTMLDocument>createHTMLDocument</span>(DOMString title);
 };</pre>
 
 <dl class=domintro>
@@ -1670,27 +1670,27 @@ title=concept-class-attribute>class attributes</span>.
 <pre class=idl>interface <dfn>Element</dfn> : <span>Node</span> {
   readonly attribute DOMString <span title=dom-Element-tagName>tagName</span>;
 
-  DOMString? <span title=dom-Element-getAttribute>getAttribute</span>(in DOMString name);
-  DOMString? <span title=dom-Element-getAttributeNS>getAttributeNS</span>(in DOMString namespaceURI, in DOMString localName);
-  void <span title=dom-Element-setAttribute>setAttribute</span>(in DOMString name, in DOMString value);
-  void <span title=dom-Element-setAttributeNS>setAttributeNS</span>(in DOMString namespaceURI, in DOMString qualifiedName, in DOMString value);
-  void <span title=dom-Element-removeAttribute>removeAttribute</span>(in DOMString name);
-  void <span title=dom-Element-removeAttributeNS>removeAttributeNS</span>(in DOMString namespaceURI, in DOMString localName);
-  boolean <span title=dom-Element-hasAttribute>hasAttribute</span>(in DOMString name);
-  boolean <span title=dom-Element-hasAttributeNS>hasAttributeNS</span>(in DOMString namespaceURI, in DOMString localName);
+  DOMString? <span title=dom-Element-getAttribute>getAttribute</span>(DOMString name);
+  DOMString? <span title=dom-Element-getAttributeNS>getAttributeNS</span>(DOMString namespaceURI, DOMString localName);
+  void <span title=dom-Element-setAttribute>setAttribute</span>(DOMString name, DOMString value);
+  void <span title=dom-Element-setAttributeNS>setAttributeNS</span>(DOMString namespaceURI, DOMString qualifiedName, DOMString value);
+  void <span title=dom-Element-removeAttribute>removeAttribute</span>(DOMString name);
+  void <span title=dom-Element-removeAttributeNS>removeAttributeNS</span>(DOMString namespaceURI, DOMString localName);
+  boolean <span title=dom-Element-hasAttribute>hasAttribute</span>(DOMString name);
+  boolean <span title=dom-Element-hasAttributeNS>hasAttributeNS</span>(DOMString namespaceURI, DOMString localName);
 <!--
-  <span>Attr</span> <span title=dom-Element-getAttributeNode>getAttributeNode</span>(in DOMString name);
-  <span>Attr</span> <span title=dom-Element-getAttributeNodeNS>getAttributeNodeNS</span>(in DOMString namespaceURI, in DOMString localName);
-  <span>Attr</span> <span title=dom-Element-setAttributeNode>setAttributeNode</span>(in Attr newAttr);
-  <span>Attr</span> <span title=dom-Element-removeAttributeNode>removeAttributeNode</span>(in Attr oldAttr);
+  <span>Attr</span> <span title=dom-Element-getAttributeNode>getAttributeNode</span>(DOMString name);
+  <span>Attr</span> <span title=dom-Element-getAttributeNodeNS>getAttributeNodeNS</span>(DOMString namespaceURI, DOMString localName);
+  <span>Attr</span> <span title=dom-Element-setAttributeNode>setAttributeNode</span>(Attr newAttr);
+  <span>Attr</span> <span title=dom-Element-removeAttributeNode>removeAttributeNode</span>(Attr oldAttr);
 -->
-  <span>NodeList</span> <span title=dom-Element-getElementsByTagName>getElementsByTagName</span>(in DOMString name);
-  <span>NodeList</span> <span title=dom-Element-getElementsByTagNameNS>getElementsByTagNameNS</span>(in DOMString namespaceURI, in DOMString localName);
-  <span>NodeList</span> <span title=dom-Element-getElementsByClassName>getElementsByClassName</span>(in DOMString classNames);<!--
+  <span>NodeList</span> <span title=dom-Element-getElementsByTagName>getElementsByTagName</span>(DOMString name);
+  <span>NodeList</span> <span title=dom-Element-getElementsByTagNameNS>getElementsByTagNameNS</span>(DOMString namespaceURI, DOMString localName);
+  <span>NodeList</span> <span title=dom-Element-getElementsByClassName>getElementsByClassName</span>(DOMString classNames);<!--
   readonly attribute TypeInfo schemaTypeInfo;
-  void setIdAttribute(in DOMString name, in boolean isId);
-  void setIdAttributeNS(in DOMString namespaceURI, in DOMString localName, in boolean isId);
-  void setIdAttributeNode(in Attr idAttr, in boolean isId);-->
+  void setIdAttribute(DOMString name, boolean isId);
+  void setIdAttributeNS(DOMString namespaceURI, DOMString localName, boolean isId);
+  void setIdAttributeNode(Attr idAttr, boolean isId);-->
 
            attribute <span>HTMLCollection</span> <span title=dom-Element-children>children</span>;
 };</pre>
@@ -1738,7 +1738,7 @@ title>name</var>)</code></dfn> method must run the following steps:
  <li><p>Return the value of the first attribute in the <span>context
  node</span>'s <code title=dom-Node-attributes>attributes</code> whose <span
  title=concept-attribute-name>name</span> <span
- title=case-sensitive>case-sensitively</span> equals the first argument, in any
+ title=case-sensitive>case-sensitively</span> equals the first argument, any
  namespace, if the attribute is present, or null otherwise.
 </ol>
 
@@ -1985,10 +1985,10 @@ exceptions these methods might have raised.</p>
 
 <h3>Interface <code>Text</code></h3>
 <pre class=idl>interface <dfn>Text</dfn> : <span>CharacterData</span> {
-  <span>Text</span> <span title=dom-Text-splitText>splitText</span>(in unsigned long offset);<!--
+  <span>Text</span> <span title=dom-Text-splitText>splitText</span>(unsigned long offset);<!--
   readonly attribute boolean isElementContentWhitespace;-->
   readonly attribute DOMString <span title=dom-Text-wholeText>wholeText</span>;
-  <span>Text</span> <span title=dom-Text-replaceWholeText>replaceWholeText</span>(in DOMString content);
+  <span>Text</span> <span title=dom-Text-replaceWholeText>replaceWholeText</span>(DOMString content);
 };</pre>
 
 <p class=XXX><dfn title=dom-Text-splitText>splitText</dfn>
@@ -2041,7 +2041,7 @@ every time it is retrieved.
 title=concept-collection>collection</span>.
 
 <pre class=idl>interface <dfn>NodeList</dfn> {
-  getter <span>Node</span> <span title=dom-NodeList-item>item</span>(in unsigned long index);
+  getter <span>Node</span> <span title=dom-NodeList-item>item</span>(unsigned long index);
   readonly attribute unsigned long <span title=dom-NodeList-length>length</span>;
 };</pre>
 
@@ -2070,8 +2070,8 @@ it, which return other objects for historical reasons.
 
 <pre class=idl>interface <dfn>HTMLCollection</dfn> {
 readonly attribute unsigned long <span title=dom-HTMLCollection-length>length</span>;
-caller getter object <span title=dom-HTMLCollection-item>item</span>(in unsigned long index); // only returns Element
-caller getter object <span title=dom-HTMLCollection-namedItem>namedItem</span>(in DOMString name); // only returns Element
+caller getter object <span title=dom-HTMLCollection-item>item</span>(unsigned long index); // only returns Element
+caller getter object <span title=dom-HTMLCollection-namedItem>namedItem</span>(DOMString name); // only returns Element
 };</pre>
 
 <dl class=domintro>
@@ -2153,14 +2153,14 @@ title=concept-collection>collection</span>, whose primary purpose is to expose
 <code>Node</code>s by name.
 
 <pre class=idl>interface <dfn>NamedNodeMap</dfn> {
-  <span>Node</span> <span title=dom-NamedNodeMap-getNamedItem>getNamedItem</span>(in DOMString name);
-  <span>Node</span> <span title=dom-NamedNodeMap-setNamedItem>setNamedItem</span>(in <span>Node</span> arg);
-  <span>Node</span> <span title=dom-NamedNodeMap-removeNamedItem>removeNamedItem</span>(in DOMString name);
-  <span>Node</span> <span title=dom-NamedNodeMap-item>item</span>(in unsigned long index);
+  <span>Node</span> <span title=dom-NamedNodeMap-getNamedItem>getNamedItem</span>(DOMString name);
+  <span>Node</span> <span title=dom-NamedNodeMap-setNamedItem>setNamedItem</span>(<span>Node</span> arg);
+  <span>Node</span> <span title=dom-NamedNodeMap-removeNamedItem>removeNamedItem</span>(DOMString name);
+  <span>Node</span> <span title=dom-NamedNodeMap-item>item</span>(unsigned long index);
   readonly attribute unsigned long <span title=dom-NamedNodeMap-length>length</span>;
-  <span>Node</span> <span title=dom-NamedNodeMap-getNamedItemNS>getNamedItemNS</span>(in DOMString namespaceURI, in DOMString localName);
-  <span>Node</span> <span title=dom-NamedNodeMap-setNamedItemNS>setNamedItemNS</span>(in <span>Node</span> arg);
-  <span>Node</span> <span title=dom-NamedNodeMap-removeNamedItemNS>removeNamedItemNS</span>(in DOMString namespaceURI, in DOMString localName);
+  <span>Node</span> <span title=dom-NamedNodeMap-getNamedItemNS>getNamedItemNS</span>(DOMString namespaceURI, DOMString localName);
+  <span>Node</span> <span title=dom-NamedNodeMap-setNamedItemNS>setNamedItemNS</span>(<span>Node</span> arg);
+  <span>Node</span> <span title=dom-NamedNodeMap-removeNamedItemNS>removeNamedItemNS</span>(DOMString namespaceURI, DOMString localName);
 };</pre>
 
 <p class=XXX><dfn title=dom-NamedNodeMap-getNamedItem>getNamedItem</dfn>
@@ -2186,9 +2186,9 @@ collection</span>.
 <h2>Lists</h2>
 <h3>Interface <code>DOMStringList</code></h3>
 <pre class=idl>interface <dfn>DOMStringList</dfn> {
-  DOMString <span title=dom-DOMStringList-item>item</span>(in unsigned long index);
+  DOMString <span title=dom-DOMStringList-item>item</span>(unsigned long index);
   readonly attribute unsigned long <span title=dom-DOMStringList-length>length</span>;
-  boolean <span title=dom-DOMStringList-contains>contains</span>(in DOMString str);
+  boolean <span title=dom-DOMStringList-contains>contains</span>(DOMString str);
 };</pre>
 
 <p class=XXX><dfn title=dom-DOMStringList-item>item</dfn>
@@ -2209,11 +2209,11 @@ ordinarily be treated in a case-insensitive manner.</p>
 
 <pre class="idl">interface <dfn>DOMTokenList</dfn> {
   readonly attribute unsigned long <span title="dom-DOMTokenList-length">length</span>;
-  getter DOMString <span title="dom-DOMTokenList-item">item</span>(in unsigned long index);
-  boolean <span title="dom-DOMTokenList-contains">contains</span>(in DOMString token);
-  void <span title="dom-DOMTokenList-add">add</span>(in DOMString token);
-  void <span title="dom-DOMTokenList-remove">remove</span>(in DOMString token);
-  boolean <span title="dom-DOMTokenList-toggle">toggle</span>(in DOMString token);
+  getter DOMString <span title="dom-DOMTokenList-item">item</span>(unsigned long index);
+  boolean <span title="dom-DOMTokenList-contains">contains</span>(DOMString token);
+  void <span title="dom-DOMTokenList-add">add</span>(DOMString token);
+  void <span title="dom-DOMTokenList-remove">remove</span>(DOMString token);
+  boolean <span title="dom-DOMTokenList-toggle">toggle</span>(DOMString token);
   <span title="dom-DOMTokenList-toString">stringifier</span> DOMString ();
 };</pre>
 

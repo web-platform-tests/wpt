@@ -6,22 +6,16 @@
 <script src="support/test.js"></script>
 <script>
 try {
-  // control test
+  // Text
   var t = document.createTextNode("test")
   Test.is(t.data, "test")
-
-  Test.separate()
 
   t.appendData("test")
   Test.is(t.data, "testtest")
 
-
-  // control test
-  Test.separate()
+  // Comment
   var c = document.createComment("test")
   Test.is(c.data, "test")
-
-  Test.separate()
 
   c.appendData("test")
   Test.is(c.data, "testtest")

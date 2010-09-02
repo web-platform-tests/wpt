@@ -1894,20 +1894,20 @@ title=concept-PI-data>data</span> to the new value.
 <pre class=idl>interface <dfn>CharacterData</dfn> : <span>Node</span> {
   [TreatNullAs=EmptyString] attribute DOMString <span title=dom-CharacterData-data>data</span>;
   readonly attribute unsigned long <span title=dom-CharacterData-length>length</span>;
-  DOMString <span title=dom-CharacterData-substringData>substringData</span>(in unsigned long offset, in unsigned long count);
-  void <span title=dom-CharacterData-appendData>appendData</span>(in DOMString arg);
-  void <span title=dom-CharacterData-insertData>insertData</span>(in unsigned long offset, in DOMString arg);
-  void <span title=dom-CharacterData-deleteData>deleteData</span>(in unsigned long offset, in unsigned long count);
-  void <span title=dom-CharacterData-replaceData>replaceData</span>(in unsigned long offset, in unsigned long count, in DOMString arg);
+  DOMString <span title=dom-CharacterData-substringData>substringData</span>(unsigned long <var>offset</var>, unsigned long <var>count</var>);
+  void <span title=dom-CharacterData-appendData>appendData</span>(DOMString <var>data</var>);
+  void <span title=dom-CharacterData-insertData>insertData</span>(unsigned long <var>offset</var>, DOMString <var>data</var>);
+  void <span title=dom-CharacterData-deleteData>deleteData</span>(unsigned long <var>offset</var>, unsigned long <var>count</var>);
+  void <span title=dom-CharacterData-replaceData>replaceData</span>(unsigned long <var>offset</var>, unsigned long <var>count</var>, DOMString <var>data</var>);
 };</pre>
 
-<p>The <dfn title=dom-CharacterData-data><code>data</code></dfn> attribute must, on getting, return the data of the node, and on setting, must change the node's data to the new value.
+<p>The <dfn title=dom-CharacterData-data><code>data</code></dfn> attribute must return the data of the node, and on setting, must change the node's data to the new value.
 
-<p>The <dfn title=dom-CharacterData-length><code>length</code></dfn> attribute must, on getting, return the number of UTF-16 code units represented by the node's data.
+<p>The <dfn title=dom-CharacterData-length><code>length</code></dfn> attribute must return the number of UTF-16 code units represented by the node's data.
 
 <p>The <dfn title=dom-CharacterData-substringData><code>substringData(<var
-title>offset</var>, <var>count</var>)</code></dfn> method must run the
-following steps:
+title>offset</var>, <var>count</var>)</code></dfn> method must run these
+steps:
 
 <ol>
  <li><p>If <var>offset</var> is negative or is greater than the
@@ -1929,7 +1929,7 @@ following steps:
  code unit in <var>data</var>.
 </ol>
 
-<p class=XXX><dfn title=dom-CharacterData-appendData>appendData</dfn>
+<p>The <dfn title=dom-CharacterData-appendData><code>appendData(<var>data</var>)</code></dfn> method must append <var>data</var> to the <span>context node</span>'s data.</p>
 
 <p class=XXX><dfn title=dom-CharacterData-insertData>insertData</dfn>
 

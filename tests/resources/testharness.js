@@ -233,7 +233,7 @@ policies and contribution forms [3].
         {
             func.call(this);
             assert(false, make_message("assert_throws", description,
-                                      "%{func} did not throw", {func:func}));
+                                      "${func} did not throw", {func:func}));
         }
         catch(e)
         {

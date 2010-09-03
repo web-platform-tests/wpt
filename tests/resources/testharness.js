@@ -426,7 +426,7 @@ policies and contribution forms [3].
                  });
         if(top !== window && top.start_callback)
         {
-            top.start_callback.call(test, this_obj);
+            top.start_callback.call(this_obj);
         }
     };
 

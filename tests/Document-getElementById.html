@@ -3,16 +3,12 @@
 <link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
 <link rel="help" href="../web-dom-core#dom-document-getelementbyid">
 <link rel="help" href="../web-dom-core#concept-id">
+<script src="testharness.js"></script>
 <body>
-<script src="support/test.js"></script>
-<div id="test">
+<div id="log"></div>
 <div id=""></div>
-</div>
 <script>
-try {
-  Test.is(document.getElementById(""), null);
-} catch (e) {
-  Test.fail("Exception was thrown.");
-}
-Test.finish();
+test(function() {
+  assert_equals(document.getElementById(""), null)
+})
 </script>

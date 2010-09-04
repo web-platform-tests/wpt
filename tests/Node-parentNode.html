@@ -2,13 +2,14 @@
 <title>Node.parentNode</title>
 <link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
 <link rel="help" href="../web-dom-core#dom-node-parentnode">
-<body>
-<script src="support/test.js"></script>
+<script src="testharness.js"></script>
+<div id="log"></div>
 <script>
-Test.run([function() {
-  var el = document.createElement("div");
-  el.setAttribute("foo", "bar");
-  var a = el.attributes[0];
-  Test.is(a.firstChild.parentNode, a);
-}]);
+test(function() {
+  // need to test for more node types
+  var el = document.createElement("div")
+  el.setAttribute("foo", "bar")
+  var a = el.attributes[0]
+  assert_equals(a.firstChild.parentNode, a)
+})
 </script>

@@ -2,22 +2,17 @@
 <title>Node.nodeName</title>
 <link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
 <link rel="help" href="../web-dom-core#dom-element-nodename">
-<body>
-<script src="support/test.js"></script>
+<script src="testharness.js"></script>
+<div id="log"></div>
 <script>
-var HTMLNS = "http://www.w3.org/1999/xhtml";
-var SVGNS = "http://www.w3.org/2000/svg";
-try {
-  var el = document.createElementNS(HTMLNS, "I");
-  Test.is(el.nodeName, "I");
-  el = document.createElementNS(HTMLNS, "i");
-  Test.is(el.nodeName, "I");
-  el = document.createElementNS(SVGNS, "svg");
-  Test.is(el.nodeName, "svg");
-  el = document.createElementNS(SVGNS, "SVG");
-  Test.is(el.nodeName, "SVG");
-} catch (e) {
-  Test.fail("Exception was thrown.");
-}
-Test.finish();
+test(function() {
+  // same as Element-tagName except nodeName ...
+  // XXX what about non-Element nodes
+  var HTMLNS = "http://www.w3.org/1999/xhtml",
+      SVGNS = "http://www.w3.org/2000/svg"
+  assert_equals(document.createElementNS(HTMLNS, "I").nodeName, "I")
+  assert_equals(document.createElementNS(HTMLNS, "i").nodeName, "I")
+  assert_equals(document.createElementNS(SVGNS, "svg").nodeName, "svg")
+  assert_equals(document.createElementNS(SVGNS, "SVG").nodeName, "SVG")
+})
 </script>

@@ -19,7 +19,7 @@
 <body class=draft>
 <div class=head id=head>
 <h1>Web DOM Core</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-2-september-2010>Work in Progress &mdash; Last Update 2 September 2010</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-4-september-2010>Work in Progress &mdash; Last Update 4 September 2010</h2>
 <dl>
  <dt>Editors
  <dd>Simon Pieters &lt;simonp@opera.com&gt;
@@ -507,8 +507,6 @@ feature</a> with the version "2.0" associated with it.
   const unsigned short <a href=#dom-domexception-quota_exceeded_err title=dom-DOMException-QUOTA_EXCEEDED_ERR>QUOTA_EXCEEDED_ERR</a> = 22;
   const unsigned short <a href=#dom-domexception-timeout_err title=dom-DOMException-TIMEOUT_ERR>TIMEOUT_ERR</a> = 23;
   const unsigned short <a href=#dom-domexception-data_clone_err title=dom-DOMException-DATA_CLONE_ERR>DATA_CLONE_ERR</a> = 24;
-  const unsigned short <a href=#dom-domexception-parse_err title=dom-DOMException-PARSE_ERR>PARSE_ERR</a> = 81;
-  const unsigned short <a href=#dom-domexception-serialize_err title=dom-DOMException-SERIALIZE_ERR>SERIALIZE_ERR</a> = 82;
   unsigned short <a href=#dom-domexception-code title=dom-DOMException-code>code</a>;
   DOMString <a href=#dom-domexception-message title=dom-DOMException-message>message</a>;
   DOMString <a href=#dom-domexception-name title=dom-DOMException-name>name</a>;
@@ -574,12 +572,6 @@ must return the code for the exception, which must be one of the following:
  <!-- HTML -->
  <li value=24><dfn id=dom-domexception-data_clone_err title=dom-DOMException-DATA_CLONE_ERR><code>DATA_CLONE_ERR</code></dfn>:
  the object can not be cloned;
- <!-- DOMLS -->
- <li value=81><dfn id=dom-domexception-parse_err title=dom-DOMException-PARSE_ERR><code>PARSE_ERR</code></dfn>:
- an error occurred while parsing;
- <!-- DOMLS -->
- <li value=82><dfn id=dom-domexception-serialize_err title=dom-DOMException-SERIALIZE_ERR><code>SERIALIZE_ERR</code></dfn>:
- an error occurred while serializing.
 </ol>
 
 <p>The <dfn id=dom-domexception-message title=dom-DOMException-message><code>message</code></dfn> exception

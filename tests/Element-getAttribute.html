@@ -2,55 +2,46 @@
 <title>Element.getAttribute</title>
 <link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
 <link rel="help" href="../web-dom-core#dom-Element-getAttribute">
-<body>
-<script src="support/test.js"></script>
+<script src="testharness.js"></script>
+<div id="log"></div>
 <script>
-try {
-  var el = document.createElement("foo");
-  Test.is(el.getAttribute("bar"), null);
+test(function() {
+  var el = document.createElement("foo")
+  assert_equals(el.getAttribute("bar"), null)
 
-  Test.separate();
-  el.setAttributeNS("ab", "attr", "pass");
-  el.setAttributeNS("kl", "attr", "fail");
-  Test.is(el.getAttribute("attr"), "pass");
+  el.setAttributeNS("ab", "attr", "pass")
+  el.setAttributeNS("kl", "attr", "fail")
+  assert_equals(el.getAttribute("attr"), "pass")
 
-  Test.separate();
   el.setAttribute("style", "color:#fff;")
-  Test.is(el.getAttribute("style"), "color:#fff;");
+  assert_equals(el.getAttribute("style"), "color:#fff;")
 
-  Test.separate();
-  el = document.createElement("div");
-  el.setAttributeNS("", "ALIGN", "left");
-  Test.is(el.getAttribute("ALIGN"), null);
-  Test.is(el.getAttribute("align"), null);
+  el = document.createElement("div")
+  el.setAttributeNS("", "ALIGN", "left")
+  assert_equals(el.getAttribute("ALIGN"), null)
+  assert_equals(el.getAttribute("align"), null)
 
-  Test.separate();
-  el.setAttributeNS("", "CHEEseCaKe", "tasty");
-  Test.is(el.getAttribute("CHEESECAKE"), null);
-  Test.is(el.getAttribute("CHEEseCaKe"), null);
-  Test.is(el.getAttribute("cheesecake"), null);
+  el.setAttributeNS("", "CHEEseCaKe", "tasty")
+  assert_equals(el.getAttribute("CHEESECAKE"), null)
+  assert_equals(el.getAttribute("CHEEseCaKe"), null)
+  assert_equals(el.getAttribute("cheesecake"), null)
 
-  Test.separate();
-  el = document.createElement("div");
-  el.setAttributeNS(null, "align", "left");
-  el.setAttributeNS("xx", "align", "right");
-  el.setAttributeNS(null, "foo", "left");
-  el.setAttributeNS("xx", "foo", "right");
-  document.body.appendChild(el);
-  Test.is(el.getAttribute("align"), "left");
-  Test.is(el.getAttribute("foo"), "left");
+  el = document.createElement("div")
+  el.setAttributeNS(null, "align", "left")
+  el.setAttributeNS("xx", "align", "right")
+  el.setAttributeNS(null, "foo", "left")
+  el.setAttributeNS("xx", "foo", "right")
+  document.body.appendChild(el)
+  assert_equals(el.getAttribute("align"), "left")
+  assert_equals(el.getAttribute("foo"), "left")
 
-  Test.separate();
-  el = document.createElement("div");
-  el.setAttributeNS("xx", "align", "right");
-  el.setAttributeNS(null, "align", "left");
-  el.setAttributeNS("xx", "foo", "right");
-  el.setAttributeNS(null, "foo", "left");
-  document.body.appendChild(el);
-  Test.is(el.getAttribute("align"), "right");
-  Test.is(el.getAttribute("foo"), "right");
-} catch (e) {
-  Test.fail("Exception was thrown.");
-}
-Test.finish();
+  el = document.createElement("div")
+  el.setAttributeNS("xx", "align", "right")
+  el.setAttributeNS(null, "align", "left")
+  el.setAttributeNS("xx", "foo", "right")
+  el.setAttributeNS(null, "foo", "left")
+  document.body.appendChild(el)
+  assert_equals(el.getAttribute("align"), "right")
+  assert_equals(el.getAttribute("foo"), "right")
+})
 </script>

@@ -3,48 +3,38 @@
 <title>Document.createProcessingInstruction</title>
 <link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com"/>
 <link rel="help" href="../web-dom-core#dom-document-createprocessinginstruction"/>
+<script src="testharness.js"></script>
 </head>
 <body>
-<script src="support/test.js"></script>
+<div id="log"/>
 <script>
-var invalid = [
-  ["A", "?>"],
-  ["\u00B7A", "x"],
-  ["\u00D7A", "x"],
-  ["A\u00D7", "x"],
-  ["\\A", "x"],
-  ["\f", "x"],
-  [0, "x"],
-  ["0", "x"]
-];
-var valid = [
-  ["xml:fail", "x"],
-  ["A\u00B7A", "x"],
-  ["a0", "x"]
-]
-try {
-  for (var i = 0, il = invalid.length; i &lt; il; ++i) {
-    try {
-      document.createProcessingInstruction(invalid[i][0], invalid[i][1]);
-      Test.fail("Should have thrown.");
-    } catch (e) {
-      Test.is(e.code, DOMException.INVALID_CHARACTER_ERR);
-    }
+test(function() {
+  var invalid = [
+        ["A", "?>"],
+        ["\u00B7A", "x"],
+        ["\u00D7A", "x"],
+        ["A\u00D7", "x"],
+        ["\\A", "x"],
+        ["\f", "x"],
+        [0, "x"],
+        ["0", "x"]
+      ],
+      valid = [
+        ["xml:fail", "x"],
+        ["A\u00B7A", "x"],
+        ["a0", "x"]
+      ]
+
+  for (var i = 0, il = invalid.length; i &lt; il; i++) {
+    assert_throws("INVALID_CHARACTER_ERR", function() { document.createProcessingInstruction(invalid[i][0], invalid[i][1]) })
   }
   for (var i = 0, il = valid.length; i &lt; il; ++i) {
-    try {
-      var pi = document.createProcessingInstruction(valid[i][0], valid[i][1]);
-      Test.is(pi.target, valid[i][0]);
-      Test.is(pi.data, valid[i][1]);
-      Test.is(pi.ownerDocument, document);
-    } catch (e) {
-      Test.fail("Exception was thrown.");
-    }
+    var pi = document.createProcessingInstruction(valid[i][0], valid[i][1]);
+    assert_equals(pi.target, valid[i][0]);
+    assert_equals(pi.data, valid[i][1]);
+    assert_equals(pi.ownerDocument, document);
   }
-} catch (e) {
-  Test.fail("Exception was thrown.");
-}
-Test.finish();
+})
 </script>
 </body>
 </html>

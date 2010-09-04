@@ -1,0 +1,27 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Node.isEqualNode</title>
+<link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com"/>
+<link rel="help" href="../web-dom-core#dom-node-isequalnode"/>
+<script src="testharness.js"/>
+</head>
+<body>
+<div id="log"/>
+<script>
+function isEqualNode(node) {
+  test(function() {
+    assert_false(node.isEqualNode(null))
+  })
+}
+isEqualNode(document.createElement("foo"))
+isEqualNode(document.createAttribute("foo"))
+isEqualNode(document.createTextNode("foo"))
+// XXX isEqualNode(document.createCDATASection("foo"))
+isEqualNode(document.createProcessingInstruction("foo", "bar"))
+isEqualNode(document.createComment("foo"))
+isEqualNode(document)
+isEqualNode(document.implementation.createDocumentType("html", "", ""))
+isEqualNode(document.createDocumentFragment())
+</script>
+</body>
+</html>

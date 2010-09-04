@@ -1,87 +1,44 @@
 <!DOCTYPE html>
 <title>Node.removeChild</title>
-<link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
-<link rel="help" href="../web-dom-core#dom-node-removechild">
-<link rel="help" href="http://dev.w3.org/2006/webapi/WebIDL/#es-interface">
-<body>
-<script src="support/test.js"></script>
+<script src="testharness.js"></script>
+<div id="log"></div>
+<iframe src=about:blank></iframe>
 <script>
-function testCrossDocument() {
-  try {
-    var s = this.contentDocument.createElement("a");
-    Test.is(s.ownerDocument, this.contentDocument);
-    try {
-      document.body.removeChild(s);
-      Test.fail("Exception should have been thrown.");
-    } catch (e) {
-      Test.is(e.code, DOMException.NOT_FOUND_ERR);
-    }
-    Test.is(s.ownerDocument, this.contentDocument);
+test(function() {
+  var frameDoc = frames[0].document,
+      s = frameDoc.createElement("a")
+  assert_equals(s.ownerDocument, frameDoc)
+  assert_throws("NOT_FOUND_ERR", function() { document.body.removeChild(s) })
+  assert_equals(s.ownerDocument, frameDoc)
 
-    s = this.contentDocument.createElement("b");
-    this.contentDocument.body.appendChild(s);
-    Test.is(s.ownerDocument, this.contentDocument);
-    try {
-      document.body.removeChild(s);
-      Test.fail("Exception should have been thrown.");
-    } catch (e) {
-      Test.is(e.code, DOMException.NOT_FOUND_ERR);
-    }
-    Test.is(s.ownerDocument, this.contentDocument);
-  } catch (e) {
-    Test.fail("Exception was thrown.");
-  }
-  Test.finish();
-}
+  s = frameDoc.createElement("b")
+  frameDoc.body.appendChild(s)
+  assert_equals(s.ownerDocument, frameDoc)
+  assert_throws("NOT_FOUND_ERR", function() { document.body.removeChild(s) })
+  assert_equals(s.ownerDocument, frameDoc)
 
-Test.runUntilFinish([function() {
-  var len = document.body.childNodes.length;
-  try {
-    document.body.removeChild(null);
-    Test.fail("Exception should have been thrown.");
-  } catch (e) {
-    Test.is(e.code, DOMException.NOT_SUPPORTED_ERR);
-  }
-  Test.is(document.body.childNodes.length, len);
+  var len = document.body.childNodes.length
+  assert_throws("NOT_SUPPORTED_ERR", function() { document.body.removeChild(null) }) // XXX breaks the framework?!
+  assert_equals(document.body.childNodes.length, len)
 
   try {
-    document.body.removeChild({'a':'b'});
-    Test.fail("Exception should have been thrown.");
+    document.body.removeChild({'a':'b'})
+    assert_unreached()
   } catch (e) {
-    Test.ok(e instanceof TypeError, "Should have thrown TypeError.");
+    assert_true(e instanceof TypeError)
   }
-  Test.is(document.body.childNodes.length, len);
-},
-function() {
-  document.body.setAttribute("abc", "fail");
-  var attr = document.body.attributes[0];
-  Test.ok(attr, "No attribute node?");
-  try {
-    attr.removeChild(attr.firstChild);
-  } catch (e) {
-    Test.fail("Exception was thrown.");
-  }
-  Test.is(document.body.getAttribute("abc"), "");
-  Test.is(document.body.hasAttribute("abc"), true);
-  Test.is(attr.value, "");
-  Test.is(attr.childNodes.length, 0);
-},
-function() {
-  attr.value = "pass";
-  try {
-    attr.removeChild(null);
-    Test.fail("Exception should have been thrown.");
-  } catch (e) {
-    Test.is(e.code, DOMException.NOT_SUPPORTED_ERR);
-  }
-  Test.is(attr.value, "pass");
-  Test.is(attr.childNodes.length, 1);
-  Test.is(attr.childNodes[0].nodeValue, "pass");
-},
-function() {
-  var iframe = document.createElement("iframe");
-  iframe.onload = testCrossDocument;
-  iframe.src = "support/document.html";
-  document.body.appendChild(iframe);
-}]);
+  assert_equals(document.body.childNodes.length, len)
+
+  document.body.setAttribute("abc", "test")
+  var attr = document.body.attributes[0]
+  assert_throws("NOT_SUPPORTED_ERR", function() { attr.removeChild(null) })
+  assert_equals(attr.value, "test")
+  assert_equals(attr.childNodes.length, 1)
+  assert_equals(attr.childNodes[0].nodeValue, "test")
+  attr.removeChild(attr.firstChild)
+  assert_equals(document.body.getAttribute("abc"), "")
+  assert_true(document.body.hasAttribute("abc"))
+  assert_equals(attr.value, "")
+  assert_equals(attr.childNodes.length, 0)
+})
 </script>

@@ -9,7 +9,7 @@
 // XXX need tests for qualified name matching
 test(function() {
   assert_true(document.getElementsByTagName("html") instanceof NodeList, "NodeList")
-  assert_false(document.getElementsByTagName("html") instanceof HTMLCollection), "HTMLCollection")
+  assert_false(document.getElementsByTagName("html") instanceof HTMLCollection, "HTMLCollection")
   assert_true(document.getElementsByTagName("html") !==
           document.getElementsByTagName("html"), "no caching")
   assert_equals(document.createElementNS("http://www.w3.org/1999/xhtml", "i").localName, "i") // Sanity

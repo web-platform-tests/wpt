@@ -1,66 +1,38 @@
 <!DOCTYPE html>
 <title>Node.insertBefore</title>
-<link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
-<link rel="help" href="../web-dom-core#dom-node-insertbefore">
-<link rel="help" href="http://dev.w3.org/2006/webapi/WebIDL/#es-interface">
-<body>
-<script src="support/test.js"></script>
+<script src="testharness.js"></script>
+<div id="log"></div>
+<iframe src=about:blank></iframe>
 <script>
-function testHRE(aNode) {
-  Test.ok(aNode, "No node?");
-  try {
-    aNode.insertBefore(document.createTextNode("fail"), null);
-    Test.fail("Exception should have been thrown.");
-  } catch (e) {
-    Test.is(e.code, DOMException.HIERARCHY_REQUEST_ERR);
-  }
-  try {
-    aNode.insertBefore(null, null);
-    Test.fail("Exception should have been thrown.");
-  } catch (e) {
-    Test.is(e.code, DOMException.HIERARCHY_REQUEST_ERR);
-  }
+function testHRE(node) {
+  test(function() {
+    assert_throws("HIERARCHY_REQUEST_ERR", function() { node.insertBefore(document.createTextNode("fail"), null) })
+    assert_throws("HIERARCHY_REQUEST_ERR", function() { node.insertBefore(null, null) })
+  })
 }
-</script>
-<script>
-try {
-  var len = document.body.childNodes.length;
-  try {
-    document.body.insertBefore(null, null);
-    Test.fail("Exception should have been thrown.");
-  } catch (e) {
-    Test.is(e.code, DOMException.NOT_SUPPORTED_ERR);
-  }
-  Test.is(document.body.childNodes.length, len);
+test(function() {
+  var len = document.body.childNodes.length
+  assert_throws("NOT_SUPPORTED_ERR", function() { document.body.insertBefore(null, null) }) // XXX test framework breaks
+  assert_equals(document.body.childNodes.length, len)
 
-  var len = document.body.childNodes.length;
-  try {
-    document.body.insertBefore(null, document.body.firstChild);
-    Test.fail("Exception should have been thrown.");
-  } catch (e) {
-    Test.is(e.code, DOMException.NOT_SUPPORTED_ERR);
-  }
-  Test.is(document.body.childNodes.length, len);
+  len = document.body.childNodes.length
+  assert_throws("NOT_SUPPORTED_ERR", function() { document.body.insertBefore(null, document.body.firstChild) })
+  assert_equals(document.body.childNodes.length, len)
 
   try {
-    document.body.insertBefore({'a':'b'}, document.body.firstChild);
-    Test.fail("Exception should have been thrown.");
+    document.body.insertBefore({'a':'b'}, document.body.firstChild)
+    assert_unreached()
   } catch (e) {
-    Test.ok(e instanceof TypeError, "Should have thrown TypeError.");
+    assert_true(e instanceof TypeError)
   }
 
-  Test.separate();
-  document.body.setAttribute("abc", "pass");
-  var attr = document.body.attributes[0];
-  testHRE(attr);
-  Test.is(attr.value, "pass");
-  Test.is(attr.childNodes.length, 1);
-  Test.is(attr.childNodes[0].nodeValue, "pass");
+  document.body.setAttribute("abc", "pass")
+  var attr = document.body.attributes[0]
+  testHRE(attr)
+  assert_equals(attr.value, "pass")
+  assert_equals(attr.childNodes.length, 1)
+  assert_equals(attr.childNodes[0].nodeValue, "pass")
 
-  Test.separate();
-  testHRE(document.createTextNode("Foo"));
-} catch (e) {
-  Test.fail("Exception was thrown.");
-}
-Test.finish();
+  testHRE(document.createTextNode("Foo"))
+})
 </script>

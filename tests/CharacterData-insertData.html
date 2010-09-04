@@ -2,31 +2,22 @@
 <title>CharacterData.insertData</title>
 <link rel="author" title="annevk" href="mailto:annevk@opera.com">
 <link rel="help" href="../web-dom-core#dom-CharacterData-insertData">
-<body>
-<script src="support/test.js"></script>
+<script src="testharness.js"></script>
+<div id="log"></div>
 <script>
-function offsetTooLong(node, offset) {
-  try {
-    node.insertData(offset, "x")
-    Test.fail("No exception.")
-  } catch(e) {
-    Test.is(e.code, DOMException.INDEX_SIZE_ERR);
-  }
+function testNode(node) {
+  test(function() {
+    assert_throws("INDEX_SIZE_ERR", function() { node.insertData(5, "x") })
+    assert_throws("INDEX_SIZE_ERR", function() { node.insertData(5, "") })
+    node.insertData(2, "X")
+    assert_equals(node.data, "teXst")
+    node.data = "test"
+    node.insertData(4, "ing")
+    assert_equals(node.data, "testing")
+  })
 }
-try {
-  var t = document.createTextNode("test")
-  offsetTooLong(t, 5)
-
-  var c = document.createComment("test")
-  offsetTooLong(c, 5)
-
-  t.insertData(2, "X")
-  Test.is(t.data, "teXst")
-
-  c.insertData(4, "ing")
-  Test.is(c.data, "testing")
-} catch (e) {
-  Test.fail("Exception was thrown.")
-}
-Test.finish()
+test(function() {
+  testNode(document.createTextNode("test"))
+  testNode(document.createComment("test"))
+})
 </script>

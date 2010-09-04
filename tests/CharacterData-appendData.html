@@ -2,26 +2,18 @@
 <title>CharacterData.appendData</title>
 <link rel="author" title="annevk" href="mailto:annevk@opera.com">
 <link rel="help" href="../web-dom-core#dom-CharacterData-appendData">
-<body>
-<script src="support/test.js"></script>
+<script src="testharness.js"></script>
+<div id="log"></div>
 <script>
-try {
-  // Text
-  var t = document.createTextNode("test")
-  Test.is(t.data, "test")
-
-  t.appendData("test")
-  Test.is(t.data, "testtest")
-
-  // Comment
-  var c = document.createComment("test")
-  Test.is(c.data, "test")
-
-  c.appendData("test")
-  Test.is(c.data, "testtest")
-
-} catch (e) {
-  Test.fail("Exception was thrown.")
+function testNode(node) {
+  test(function() {
+    assert_equals(node.data, "test")
+    node.appendData("test")
+    assert_equals(node.data, "testtest")
+  })
 }
-Test.finish()
+test(function() {
+  testNode(document.createTextNode("test"))
+  testNode(document.createComment("test"))
+})
 </script>

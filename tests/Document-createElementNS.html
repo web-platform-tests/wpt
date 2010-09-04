@@ -3,10 +3,10 @@
 <link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
 <link rel="author" title="annevk" href="mailto:annevk@opera.com">
 <link rel="help" href="../web-dom-core#dom-document-createelementns">
-<body>
-<script src="support/test.js"></script>
+<script src="testharness.js"></script>
+<div id="log"></div>
 <script>
-try {
+test(function() {
   var invalidNames = [
     "",
     "1foo",
@@ -21,21 +21,8 @@ try {
     "foo>",
     "<foo>",
     "f<oo"
-  ];
-  for (var i = 0, il = invalidNames.length; i < il; ++i) {
-    try {
-      var elt = document.createElementNS("", invalidNames[i]);
-      Test.fail("Should have thrown an exception.");
-    } catch (e) {
-      Test.ok(e instanceof DOMException, "Should have got a DOMException.");
-      Test.is(e.code, DOMException.INVALID_CHARACTER_ERR);
-    }
-  }
-} catch (e) {
-  Test.fail("Exception was thrown.");
-}
-try {
-  var invalidNSQNameCombinations = [
+  ],
+  invalidNSQNameCombinations = [
     ["", ":foo"],
     ["", "foo:"],
     ["", "foo:foo"],
@@ -44,18 +31,14 @@ try {
     ["http://oops/", "xmlns:foo"],
     ["http://www.w3.org/2000/xmlns/", "xml:foo"],
     ["http://www.w3.org/2000/xmlns/", "foo:xmlns"]
-  ];
-  for (var i = 0, il = invalidNSQNameCombinations.length; i < il; ++i) {
-    try {
-      var elt = document.createElementNS(invalidNSQNameCombinations[i][0], invalidNSQNameCombinations[i][1]);
-      Test.fail("Should have thrown an exception.");
-    } catch (e) {
-      Test.ok(e instanceof DOMException, "Should have got a DOMException.");
-      Test.is(e.code, DOMException.NAMESPACE_ERR);
-    }
+  ]
+
+  for (var i = 0, il = invalidNames.length; i < il; i++) {
+    assert_throws("INVALID_CHARACTER_ERR", function() { document.createElementNS("", invalidNames[i]) })
   }
-} catch (e) {
-  Test.fail("Exception was thrown.");
-}
-Test.finish();
+
+  for (var i = 0, il = invalidNSQNameCombinations.length; i < il; i++) {
+    assert_throws("NAMESPACE_ERR", function() { document.createElementNS(invalidNSQNameCombinations[i][0], invalidNSQNameCombinations[i][1]) })
+  }
+})
 </script>

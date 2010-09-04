@@ -2,74 +2,61 @@
 <title>Document.createElement</title>
 <link rel="author" title="Geoffrey Sneddon" href="http://gsnedders.com/">
 <link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
+<link rel="author" title="annevk" href="mailto:annevk@opera.com">
 <link rel="help" href="../web-dom-core#dom-document-createelement">
-<body>
-<script src="support/test.js"></script>
+<script src="testharness.js"></script>
+<div id="log"></div>
 <script>
-var HTMLNS = "http://www.w3.org/1999/xhtml";
-try {
-  var validtests = [
-    //[input, localName],
-    [undefined, "undefined"],
-    ["foo", "foo"],
-    ["f1oo", "f1oo"],
-    ["foo1", "foo1"],
-    ["f\u0300oo", "f\u0300oo"],
-    ["foo\u0300", "foo\u0300"],
-    [":foo", ":foo"],
-    ["f:oo", "f:oo"],
-    ["foo:", "foo:"],
-    ["xml", "xml"],
-    ["xmlns", "xmlns"],
-    ["xmlfoo", "xmlfoo"],
-    ["xml:foo", "xml:foo"],
-    ["xmlns:foo", "xmlns:foo"],
-    ["xmlfoo:bar", "xmlfoo:bar"],
-    ["svg", "svg"],
-    ["math", "math"],
-    ["FOO", "foo"]
-  ];
-  var invalidtests = [
-    "",
-    "1foo",
-    "\u0300foo",
-    "}foo",
-    "f}oo",
-    "foo}",
-    "\ufffffoo",
-    "f\uffffoo",
-    "foo\uffff",
-    "<foo",
-    "foo>",
-    "<foo>",
-    "f<oo"    
-  ];
+test(function() {
+  var HTMLNS = "http://www.w3.org/1999/xhtml",
+      valid = [
+        //[input, localName],
+        [undefined, "undefined"],
+        ["foo", "foo"],
+        ["f1oo", "f1oo"],
+        ["foo1", "foo1"],
+        ["f\u0300oo", "f\u0300oo"],
+        ["foo\u0300", "foo\u0300"],
+        [":foo", ":foo"],
+        ["f:oo", "f:oo"],
+        ["foo:", "foo:"],
+        ["xml", "xml"],
+        ["xmlns", "xmlns"],
+        ["xmlfoo", "xmlfoo"],
+        ["xml:foo", "xml:foo"],
+        ["xmlns:foo", "xmlns:foo"],
+        ["xmlfoo:bar", "xmlfoo:bar"],
+        ["svg", "svg"],
+        ["math", "math"],
+        ["FOO", "foo"]
+     ],
+     invalid = [
+       "",
+       "1foo",
+       "\u0300foo",
+       "}foo",
+       "f}oo",
+       "foo}",
+       "\ufffffoo",
+       "f\uffffoo",
+       "foo\uffff",
+       "<foo",
+       "foo>",
+       "<foo>",
+       "f<oo"
+     ]
 
-  for (var i = 0, il = validtests.length; i < il; ++i) {
-    var test = validtests[i];
-    try {
-      var elt = document.createElement(test[0]);
-      Test.ok(elt instanceof Element);
-      Test.is(elt.localName, test[1]);
-      Test.is(elt.tagName, test[1].toUpperCase());
-      Test.is(elt.prefix, null);
-      Test.is(elt.namespaceURI, HTMLNS);
-    } catch (e) {
-      Test.fail("Exception was thrown.");
-    }
-    Test.separate();
+  for (var i = 0, il = valid.length; i < il; i++) {
+    var test = valid[i],
+        elt = document.createElement(test[0])
+    assert_true(elt instanceof Element)
+    assert_equals(elt.localName, test[1])
+    assert_equals(elt.tagName, test[1].toUpperCase())
+    assert_equals(elt.prefix, null)
+    assert_equals(elt.namespaceURI, HTMLNS)
   }
-  for (var i = 0, il = invalidtests.length; i < il; ++i) {
-    try {
-      var elt = document.createElement(invalidtests[i]);
-      Test.fail("Should have thrown an exception.");
-    } catch (e) {
-      Test.ok(e instanceof DOMException, "Should have got a DOMException.");
-      Test.is(e.code, DOMException.INVALID_CHARACTER_ERR);
-    }
+  for (var i = 0, il = invalid.length; i < il; i++) {
+    assert_throws("INVALID_CHARACTER_ERR", function() { document.createElement(invalid[i]) })
   }
-} catch (e) {
-  Test.fail("Exception was thrown.");
-}
-Test.finish();
+})
 </script>

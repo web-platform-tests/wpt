@@ -2,31 +2,23 @@
 <title>Document.getElementsByTagName</title>
 <link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
 <link rel="help" href="../web-dom-core#dom-document-getelementsbytagname">
+<script src="testharness.js"></script>
 <body>
-<script src="support/test.js"></script>
+<div id="log"></div>
 <script>
-try {
-  Test.ok(document.getElementsByTagName("html") instanceof NodeList,
-          "Must return a NodeList.");
-  Test.ok(!(document.getElementsByTagName("html") instanceof HTMLCollection),
-          "Must not return an HTMLCollection.");
-
-  Test.separate();
-  Test.ok(document.getElementsByTagName("html") !==
-          document.getElementsByTagName("html"), "Must not cache gEBTN.");
-
-  Test.separate();
-  Test.is(document.createElementNS(gNS.HTML, "i").localName, "i"); // Sanity
-  var i = document.body.appendChild(document.createElementNS(gNS.HTML, "I"));
-  Test.is(i.localName, "I");
-  Test.is(i.tagName, "I");
-  Test.is(document.getElementsByTagName("I").length, 0);
-  Test.is(document.getElementsByTagName("i").length, 0);
-  Test.is(document.body.getElementsByTagName("I").length, 0);
-  Test.is(document.body.getElementsByTagName("i").length, 0);
-} catch (e) {
-  Test.fail("Exception was thrown.");
-}
 // XXX need tests for qualified name matching
-Test.finish();
+test(function() {
+  assert_true(document.getElementsByTagName("html") instanceof NodeList, "NodeList")
+  assert_false(document.getElementsByTagName("html") instanceof HTMLCollection), "HTMLCollection")
+  assert_true(document.getElementsByTagName("html") !==
+          document.getElementsByTagName("html"), "no caching")
+  assert_equals(document.createElementNS("http://www.w3.org/1999/xhtml", "i").localName, "i") // Sanity
+  var i = document.body.appendChild(document.createElementNS("http://www.w3.org/1999/xhtml", "I"))
+  assert_equals(i.localName, "I")
+  assert_equals(i.tagName, "I")
+  assert_equals(document.getElementsByTagName("I").length, 0)
+  assert_equals(document.getElementsByTagName("i").length, 0)
+  assert_equals(document.body.getElementsByTagName("I").length, 0)
+  assert_equals(document.body.getElementsByTagName("i").length, 0)
+})
 </script>

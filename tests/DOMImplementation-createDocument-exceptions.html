@@ -1,6 +1,8 @@
 <!doctype html>
 <title>DOMImplementation.createDocument(namespaceURI, qualifiedName, doctype) Exceptions</title>
 <link rel="author" title="gsneddon" href="mailto:gsneddon@opera.com>">
+<link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
+<link rel="author" title="annevk" href="mailto:annevk@opera.com">
 <link rel="help" href="../web-dom-core#domexception">
 <script src="testharness.js"></script>
 <div id="log"></div>
@@ -69,16 +71,16 @@ test(function() {
     ["http://www.w3.org/XML/1998/namespace", "xmlfoo:bar", null, null],
     ["http://www.w3.org/2000/xmlns/", null, null, null],
     ["http://www.w3.org/2000/xmlns/", "", null, null],
-    ["http://www.w3.org/2000/xmlns/", "foo", null, "NAMESPACE_ERR"], // This crashes Opera.
+    ["http://www.w3.org/2000/xmlns/", "foo", null, "NAMESPACE_ERR"],
     ["http://www.w3.org/2000/xmlns/", "1foo", null, "INVALID_CHARACTER_ERR"],
-    ["http://www.w3.org/2000/xmlns/", "f1oo", null, "NAMESPACE_ERR"], // This crashes Opera.
-    ["http://www.w3.org/2000/xmlns/", "foo1", null, "NAMESPACE_ERR"], // This crashes Opera.
+    ["http://www.w3.org/2000/xmlns/", "f1oo", null, "NAMESPACE_ERR"],
+    ["http://www.w3.org/2000/xmlns/", "foo1", null, "NAMESPACE_ERR"],
     ["http://www.w3.org/2000/xmlns/", ":foo", null, "NAMESPACE_ERR"],
     ["http://www.w3.org/2000/xmlns/", "f:oo", null, "NAMESPACE_ERR"],
     ["http://www.w3.org/2000/xmlns/", "foo:", null, "NAMESPACE_ERR"],
-    ["http://www.w3.org/2000/xmlns/", "xml", null, "NAMESPACE_ERR"], // This crashes Opera.
+    ["http://www.w3.org/2000/xmlns/", "xml", null, "NAMESPACE_ERR"],
     ["http://www.w3.org/2000/xmlns/", "xmlns", null, null],
-    ["http://www.w3.org/2000/xmlns/", "xmlfoo", null, "NAMESPACE_ERR"], // This crashes Opera.
+    ["http://www.w3.org/2000/xmlns/", "xmlfoo", null, "NAMESPACE_ERR"],
     ["http://www.w3.org/2000/xmlns/", "xml:foo", null, "NAMESPACE_ERR"],
     ["http://www.w3.org/2000/xmlns/", "xmlns:foo", null, null],
     ["http://www.w3.org/2000/xmlns/", "xmlfoo:bar", null, "NAMESPACE_ERR"],
@@ -102,26 +104,38 @@ test(function() {
   try { // XXX merge?!
     var tempTests = tests.concat([
       [null, null, document.implementation.createDocumentType("foo", "", ""), null],
-      [null, null, document.doctype, DOMException.WRONG_DOCUMENT_ERR], // This causes a horrible WebKit bug (now fixed in trunk).
-      [null, null, function(){ var foo = document.implementation.createDocumentType("foo", "", ""); document.implementation.createDocument(null, null, foo); return foo; }(), DOMException.WRONG_DOCUMENT_ERR], // DOCTYPE already associated with a document.
-      [null, null, function(){ var bar = document.implementation.createDocument(null, null, null); return bar.implementation.createDocumentType("bar", "", ""); }(), null], // DOCTYPE created by a different implementation.
-      [null, null, function(){ var bar = document.implementation.createDocument(null, null, null); var magic = bar.implementation.createDocumentType("bar", "", ""); bar.implementation.createDocument(null, null, magic); return magic; }(), DOMException.WRONG_DOCUMENT_ERR], // DOCTYPE created by a different implementation and already associated with a document.
+      [null, null, document.doctype, "WRONG_DOCUMENT_ERR"], // This causes a horrible WebKit bug (now fixed in trunk).
+      [null, null, function() {
+          var foo = document.implementation.createDocumentType("foo", "", "");
+          document.implementation.createDocument(null, null, foo);
+          return foo;
+       }(), "WRONG_DOCUMENT_ERR"], // DOCTYPE already associated with a document.
+      [null, null, function() {
+          var bar = document.implementation.createDocument(null, null, null);
+          return bar.implementation.createDocumentType("bar", "", "");
+       }(), null], // DOCTYPE created by a different implementation.
+      [null, null, function() {
+          var bar = document.implementation.createDocument(null, null, null);
+          var magic = bar.implementation.createDocumentType("bar", "", "");
+          bar.implementation.createDocument(null, null, magic);
+          return magic;
+       }(), "WRONG_DOCUMENT_ERR"], // DOCTYPE created by a different implementation and already associated with a document.
       [null, "foo", document.implementation.createDocumentType("foo", "", ""), null],
       ["foo", null, document.implementation.createDocumentType("foo", "", ""), null],
       ["foo", "bar", document.implementation.createDocumentType("foo", "", ""), null],
     ]);
     tests = tempTests;
-  } catch(e) {
+  } catch (e) {
     assert_unreached()
   }
 
-  for(var i in tests) {
+  for (var i in tests) {
     var test = tests[i];
     var namespaceURI = test[0];
     var qualifiedName = test[1];
     var doctype = test[2];
     var expected = test[3];
-    if(expected != null)
+    if (expected != null)
       assert_throws(expected, function() { document.implementation.createDocument(namespaceURI, qualifiedName, doctype) })
     else
       assert_equals(document.implementation.createDocument(namespaceURI, qualifiedName, doctype).nodeType, Node.DOCUMENT_NODE)

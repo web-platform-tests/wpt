@@ -894,6 +894,9 @@ the (<var>feature</var>, <var>version</var>) tuple on the
  <li><p class=XXX>Actually this doesn't match any browser. Let's try to drop it instead.
 </ol>-->
 
+<p class=note>Setting the <a href=#dom-node-prefix><code title=dom-Node-prefix>prefix</code></a> attribute is
+no longer supported.
+
 <p>The <dfn id=dom-node-localname title=dom-Node-localName><code>localName</code></dfn> attribute must return the local name that is associated with the node, if it has
 one, and null otherwise.
 

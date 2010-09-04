@@ -2,25 +2,21 @@
 <title>Node.hasAttributes</title>
 <link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
 <link rel="help" href="../web-dom-core#dom-node-hasattributes">
-<body>
-<script src="support/test.js"></script>
+<script src="testharness.js"></script>
+<div id="log"></div>
 <script>
-try {
-  var el = document.createElement("foo");
-  Test.is(el.hasAttributes(), false);
+test(function() {
+  var el = document.createElement("foo")
+  assert_false(el.hasAttributes())
   el.setAttribute("bar", "baz");
-  Test.is(el.hasAttributes(), true);
+  assert_true(el.hasAttributes())
   el.removeAttribute("bar");
-  Test.is(el.hasAttributes(), false);
+  assert_false(el.hasAttributes())
 
-  Test.separate();
-  Test.is(document.hasAttributes(), false);
-  Test.is(document.doctype.hasAttributes(), false);
-  Test.is(document.createDocumentFragment().hasAttributes(), false);
-  Test.is(document.createTextNode("A").hasAttributes(), false);
-  Test.is(document.createComment("A").hasAttributes(), false);
-} catch (e) {
-  Test.fail("Exception was thrown.");
-}
-Test.finish();
+  assert_false(document.hasAttributes())
+  assert_false(document.doctype.hasAttributes())
+  assert_false(document.createDocumentFragment().hasAttributes())
+  assert_false(document.createTextNode("A").hasAttributes())
+  assert_false(document.createComment("A").hasAttributes())
+})
 </script>

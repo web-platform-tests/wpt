@@ -1,76 +1,41 @@
 <!doctype html>
 <title>DOMException constants</title>
-<p>FAIL (Script did not run)</p>
+<link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
+<link rel="help" href="../web-dom-core#domexception">
+<script src="testharness.js"></script>
+<div id="log"></div>
 <script>
-var stat = document.getElementsByTagName("p")[0].firstChild,
-    results = document.createElement("div");
-
-results.innerHTML = "<table><thead><tr><th>Result</th><th>Constant</th><th>Expected</th><th>Got</th></tr></thead><tbody></tbody></table>";
-document.body.appendChild(results);
-
-results = results.firstChild.tBodies[0];
-
-var constants = [
-    {
-        "offset": 1,
-        "names": [
-            "INDEX_SIZE_ERR",
-            "DOMSTRING_SIZE_ERR",
-            "HIERARCHY_REQUEST_ERR",
-            "WRONG_DOCUMENT_ERR",
-            "INVALID_CHARACTER_ERR",
-            "NO_DATA_ALLOWED_ERR",
-            "NO_MODIFICATION_ALLOWED_ERR",
-            "NOT_FOUND_ERR",
-            "NOT_SUPPORTED_ERR",
-            "INUSE_ATTRIBUTE_ERR",
-            "INVALID_STATE_ERR",
-            "SYNTAX_ERR",
-            "INVALID_MODIFICATION_ERR",
-            "NAMESPACE_ERR",
-            "INVALID_ACCESS_ERR",
-            "VALIDATION_ERR",
-            "TYPE_MISMATCH_ERR",
-            "SECURITY_ERR",
-            "NETWORK_ERR",
-            "ABORT_ERR",
-            "URL_MISMATCH_ERR",
-            "QUOTA_EXCEEDED_ERR",
-            "TIMEOUT_ERR"
-        ]
-    }
-];
-
-var all_pass = true;
-
-for (i in constants)
-{
-    var constant_group = constants[i];
-    var offset = constant_group.offset;
-    for (j in constant_group["names"])
-    {
-        var row = results.insertRow(-1);
-        var name = constant_group.names[j];
-        var expected = Number(offset) + Number(j);
-        row.insertCell(-1).innerHTML = name;
-        row.insertCell(-1).innerHTML = expected;
-        
-        try
-        {
-            var got = eval("DOMException." + name);
-            row.insertCell(-1).innerHTML = got;
-            var pass = got === expected;
-        }
-        catch(e)
-        {
-            var pass = false;
-            row.insertCell(-1).innerHTML = e.name;
-        }
-
-        all_pass &= pass;
-        row.insertCell(0).innerHTML = pass ? "PASS" : "FAIL";
-    }
-}
-
-stat.data = all_pass ? "PASS" : "FAIL";
+test(function() {
+  var constants = [
+    "INDEX_SIZE_ERR",
+    "DOMSTRING_SIZE_ERR",
+    "HIERARCHY_REQUEST_ERR",
+    "WRONG_DOCUMENT_ERR",
+    "INVALID_CHARACTER_ERR",
+    "NO_DATA_ALLOWED_ERR",
+    "NO_MODIFICATION_ALLOWED_ERR",
+    "NOT_FOUND_ERR",
+    "NOT_SUPPORTED_ERR",
+    "INUSE_ATTRIBUTE_ERR",
+    "INVALID_STATE_ERR",
+    "SYNTAX_ERR",
+    "INVALID_MODIFICATION_ERR",
+    "NAMESPACE_ERR",
+    "INVALID_ACCESS_ERR",
+    "VALIDATION_ERR",
+    "TYPE_MISMATCH_ERR",
+    "SECURITY_ERR",
+    "NETWORK_ERR",
+    "ABORT_ERR",
+    "URL_MISMATCH_ERR",
+    "QUOTA_EXCEEDED_ERR",
+    "TIMEOUT_ERR",
+    "DATA_CLONE_ERR"
+  ]
+  for(var i = 0; i < constants.length; i++) {
+    var name = constants[i];
+    var expected = i + 1;
+    assert_equals(eval("DOMException." + name), expected, name)
+  }
+})
 </script>

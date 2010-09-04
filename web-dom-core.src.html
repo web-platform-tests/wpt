@@ -489,8 +489,6 @@ title>http://www.w3.org/2000/xmlns/</code>.
   const unsigned short <span title=dom-DOMException-QUOTA_EXCEEDED_ERR>QUOTA_EXCEEDED_ERR</span> = 22;
   const unsigned short <span title=dom-DOMException-TIMEOUT_ERR>TIMEOUT_ERR</span> = 23;
   const unsigned short <span title=dom-DOMException-DATA_CLONE_ERR>DATA_CLONE_ERR</span> = 24;
-  const unsigned short <span title=dom-DOMException-PARSE_ERR>PARSE_ERR</span> = 81;
-  const unsigned short <span title=dom-DOMException-SERIALIZE_ERR>SERIALIZE_ERR</span> = 82;
   unsigned short <span title=dom-DOMException-code>code</span>;
   DOMString <span title=dom-DOMException-message>message</span>;
   DOMString <span title=dom-DOMException-name>name</span>;
@@ -558,12 +556,6 @@ must return the code for the exception, which must be one of the following:
  <!-- HTML -->
  <li value="24"><dfn title=dom-DOMException-DATA_CLONE_ERR><code>DATA_CLONE_ERR</code></dfn>:
  the object can not be cloned;
- <!-- DOMLS -->
- <li value="81"><dfn title=dom-DOMException-PARSE_ERR><code>PARSE_ERR</code></dfn>:
- an error occurred while parsing;
- <!-- DOMLS -->
- <li value="82"><dfn title=dom-DOMException-SERIALIZE_ERR><code>SERIALIZE_ERR</code></dfn>:
- an error occurred while serializing.
 </ol>
 
 <p>The <dfn title=dom-DOMException-message><code>message</code></dfn> exception

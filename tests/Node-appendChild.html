@@ -1,82 +1,47 @@
 <!DOCTYPE html>
 <title>Node.appendChild</title>
-<link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
-<link rel="help" href="../web-dom-core#dom-node-appendchild">
-<link rel="help" href="http://dev.w3.org/2006/webapi/WebIDL/#es-interface">
-<body>
-<script src="support/test.js"></script>
+<script src="testharness.js"></script>
+<div id="log"></div>
+<iframe src=about:blank></iframe>
 <script>
 function testHRE(aNode) {
-  Test.ok(aNode, "No node?");
-  try {
-    aNode.appendChild(document.createTextNode("fail"));
-    Test.fail("Exception should have been thrown.");
-  } catch (e) {
-    Test.is(e.code, DOMException.HIERARCHY_REQUEST_ERR);
-  }
-  try {
-    aNode.appendChild(null);
-    Test.fail("Exception should have been thrown.");
-  } catch (e) {
-    Test.is(e.code, DOMException.HIERARCHY_REQUEST_ERR);
-  }
+  test(function() {
+    assert_throws("HIERARCHY_REQUEST_ERR", function() { node.appendChild(document.createTextNode("fail")) })
+    assert_throws("HIERARCHY_REQUEST_ERR", function() { node.appendChild(null) })
+  })
 }
-</script>
-<script>
-function testCrossDocument() {
-  try {
-    var s = this.contentDocument.createElement("a");
-    Test.is(s.ownerDocument, this.contentDocument);
-    document.body.appendChild(s);
-    Test.is(s.ownerDocument, document);
+test(function() {
+  var frameDoc = frames[0].document
+  var s = frameDoc.createElement("a")
+  assert_equals(s.ownerDocument, frameDoc)
+  document.body.appendChild(s)
+  assert_equals(s.ownerDocument, document)
 
-    s = this.contentDocument.createElement("b");
-    this.contentDocument.body.appendChild(s);
-    Test.is(s.ownerDocument, this.contentDocument);
-    document.body.appendChild(s);
-    Test.is(s.ownerDocument, document);
-  } catch (e) {
-    Test.fail("Exception was thrown.");
-  }
-  Test.finish();
-}
+  s = frameDoc.createElement("b")
+  frameDoc.body.appendChild(s)
+  assert_equals(s.ownerDocument, frameDoc)
+  document.body.appendChild(s)
+  assert_equals(s.ownerDocument, document)
 
-try {
-  var len = document.body.childNodes.length;
-  try {
-    document.body.appendChild(null);
-    Test.fail("Exception should have been thrown.");
-  } catch (e) {
-    Test.is(e.code, DOMException.NOT_SUPPORTED_ERR);
-  }
-  Test.is(document.body.childNodes.length, len);
+  var len = document.body.childNodes.length
+  assert_throws("NOT_SUPPORTED_ERR", function() { document.body.appendChild(null) }) // XXX framework fail
+  assert_equals(document.body.childNodes.length, len)
 
   try {
     document.body.appendChild({'a':'b'});
-    Test.fail("Exception should have been thrown.");
+    assert_unreached()
   } catch (e) {
-    Test.ok(e instanceof TypeError, "Should have thrown TypeError.");
+    assert_true(e instanceof TypeError)
   }
-  Test.is(document.body.childNodes.length, len);
+  assert_equals(document.body.childNodes.length, len)
 
-  Test.separate();
-  document.body.setAttribute("abc", "pass");
-  var attr = document.body.attributes[0];
-  Test.ok(attr, "No attribute node?");
+  document.body.setAttribute("abc", "pass")
+  var attr = document.body.attributes[0]
   testHRE(attr);
-  Test.is(attr.value, "pass");
-  Test.is(attr.childNodes.length, 1);
-  Test.is(attr.childNodes[0].nodeValue, "pass");
+  assert_equals(attr.value, "pass")
+  assert_equals(attr.childNodes.length, 1)
+  assert_equals(attr.childNodes[0].nodeValue, "pass")
 
-  Test.separate();
   testHRE(document.createTextNode("Foo"));
-
-  Test.separate();
-  var iframe = document.createElement("iframe");
-  iframe.onload = testCrossDocument;
-  iframe.src = "support/document";
-  document.body.appendChild(iframe);
-} catch (e) {
-  Test.fail("Exception was thrown.");
-}
+})
 </script>

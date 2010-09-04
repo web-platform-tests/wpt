@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<title>Element.setAttributeNS</title>
+<link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
+<link rel="help" href="../web-dom-core#dom-Element-setAttributeNS">
+<script src="testharness.js"></script>
+<div id="log"></div>
+<script>
+test(function() {
+  var el = document.createElement("foo");
+  el.setAttributeNS("a", "foo:bar", "blah");
+  assert_equals(attributes.length, 1);
+  assert_equals(attributes[0].localName, "bar");
+  assert_equals(attributes[0].namespaceURI, "a");
+  assert_equals(attributes[0].prefix, "foo");
+  assert_equals(attributes[0].nodeName, "foo:bar");
+  assert_equals(attributes[0].name, "foo:bar");
+
+  el.setAttributeNS("a", "quux:bar", "blah");
+  assert_equals(attributes.length, 1);
+  assert_equals(attributes[0].localName, "bar");
+  assert_equals(attributes[0].namespaceURI, "a");
+  assert_equals(attributes[0].prefix, "foo");
+  assert_equals(attributes[0].nodeName, "foo:bar");
+  assert_equals(attributes[0].name, "foo:bar");
+})
+</script>

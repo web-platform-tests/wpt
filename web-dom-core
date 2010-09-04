@@ -2259,47 +2259,53 @@ replace the underlying string with the new value on setting.</p>
 <dl>
  <dt><a href=#node><code>Node</code></a></dt>
  <dd>
-  <p><code>normalize()</code>
-  <p><code>getFeature()</code>
-  <p><code>getUserData()</code>
-  <p><code>setUserData()</code>
+  <p><dfn id=dom-node-normalize title=dom-Node-normalize><code>normalize()</code></dfn>
+  <p><dfn id=dom-node-getfeature title=dom-Node-getFeature><code>getFeature()</code></dfn>
+  <p><dfn id=dom-node-getuserdata title=dom-Node-getUserData><code>getUserData()</code></dfn>
+  <p><dfn id=dom-node-setuserdata title=dom-Node-setUserData><code>setUserData()</code></dfn>
+
  <dt><a href=#document><code>Document</code></a></dt>
  <dd>
-  <p><code>createCDATASection()</code>
-  <p><code>createAttribute()</code>
-  <p><code>createAttributeNS()</code>
-  <p><code>xmlEncoding</code>
-  <p><code>xmlStandalone</code>
-  <p><code>xmlVersion</code>
-  <p><code>strictErrorChecking</code>
-  <p><code>domConfig</code>
-  <p><code>normalizeDocument()</code>
-  <p><code>renameNode()</code>
+  <p><dfn id=dom-document-createcdatasection title=dom-Document-createCDATASection><code>createCDATASection()</code></dfn>
+  <p><dfn id=dom-document-createattribute title=dom-Document-createAttribute><code>createAttribute()</code></dfn>
+  <p><dfn id=dom-document-createattributens title=dom-Document-createAttributeNS><code>createAttributeNS()</code></dfn>
+  <p><dfn id=dom-document-xmlencoding title=dom-Document-xmlEncoding><code>xmlEncoding</code></dfn>
+  <p><dfn id=dom-document-xmlstandalone title=dom-Document-xmlStandalone><code>xmlStandalone</code></dfn>
+  <p><dfn id=dom-document-xmlversion title=dom-Document-xmlVersion><code>xmlVersion</code></dfn>
+  <p><dfn id=dom-document-stricterrorchecking title=dom-Document-strictErrorChecking><code>strictErrorChecking</code></dfn>
+  <p><dfn id=dom-document-domconfig title=dom-Document-domConfig><code>domConfig</code></dfn>
+  <p><dfn id=dom-document-normalizedocument title=dom-Document-normalizeDocument><code>normalizeDocument()</code></dfn>
+  <p><dfn id=dom-document-renamenode title=dom-Document-renameNode><code>renameNode()</code></dfn>
+
  <dt><a href=#domimplementation><code>DOMImplementation</code></a>
  <dd>
-  <p><code>getFeature()</code>
+  <p><dfn id=dom-domimplementation-getfeature title=dom-DOMImplementation-getFeature><code>getFeature()</code></dfn>
+
  <dt><a href=#attr><code>Attr</code></a>
  <dd>
-  <p><code>schemaTypeInfo</code>
-  <p><code>isId</code>
+  <p><dfn id=dom-attr-schematypeinfo title=dom-Attr-schemaTypeInfo><code>schemaTypeInfo</code></dfn>
+  <p><dfn id=dom-attr-isid title=dom-Attr-isId><code>isId</code></dfn>
+
  <dt><a href=#element><code>Element</code></a>
  <dd>
-  <p><code>getAttributeNode()</code>
-  <p><code>getAttributeNodeNS()</code>
-  <p><code>setAttributeNode()</code>
-  <p><code>removeAttributeNode()</code>
-  <p><code>schemaTypeInfo</code>
-  <p><code>setIdAttribute()</code>
-  <p><code>setIdAttributeNS()</code>
-  <p><code>setIdAttributeNode()</code>
+  <p><dfn id=dom-element-getattributenode title=dom-Element-getAttributeNode><code>getAttributeNode()</code></dfn>
+  <p><dfn id=dom-element-getattributenodens title=dom-Element-getAttributeNodeNS><code>getAttributeNodeNS()</code></dfn>
+  <p><dfn id=dom-element-setattributenode title=dom-Element-setAttributeNode><code>setAttributeNode()</code></dfn>
+  <p><dfn id=dom-element-removeattributenode title=dom-Element-removeAttributeNode><code>removeAttributeNode()</code></dfn>
+  <p><dfn id=dom-element-schematypeinfo title=dom-Element-schemaTypeInfo><code>schemaTypeInfo</code></dfn>
+  <p><dfn id=dom-element-setidattribute title=dom-Element-setIdAttribute><code>setIdAttribute()</code></dfn>
+  <p><dfn id=dom-element-setidattributens title=dom-Element-setIdAttributeNS><code>setIdAttributeNS()</code></dfn>
+  <p><dfn id=dom-element-setidattributenode title=dom-Element-setIdAttributeNode><code>setIdAttributeNode()</code></dfn>
+
  <dt><a href=#documenttype><code>DocumentType</code></a>
  <dd>
-  <p><code>entities</code>
-  <p><code>notations</code>
-  <p><code>internalSubset</code>
+  <p><dfn id=dom-documenttype-entities title=dom-DocumentType-entities><code>entities</code></dfn>
+  <p><dfn id=dom-documenttype-notations title=dom-DocumentType-notations><code>notations</code></dfn>
+  <p><dfn id=dom-documenttype-internalsubset title=dom-DocumentType-internalSubset><code>internalSubset</code></dfn>
+
  <dt><a href=#text><code>Text</code></a>
  <dd>
-  <p><code>isElementContentWhitespace</code>
+  <p><dfn id=dom-text-iselementcontentwhitespace title=dom-Text-isElementContentWhitespace><code>isElementContentWhitespace</code></dfn>
 </dl>
 
 

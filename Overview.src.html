@@ -1807,8 +1807,13 @@ method must run these steps:</p>
  false otherwise.
 </ol>
 
-
-<p class=XXX><dfn title=dom-Element-hasAttributeNS>hasAttributeNS</dfn>
+<p>The
+<dfn title=dom-Element-hasAttributeNS><code>hasAttributeNS(<var>namespaceURI</var>, <var>localName</var>)</code></dfn>
+method must return true if <span>context node</span>'s
+<code title=dom-Node-attributes>attributes</code> contains an attribute
+whose <code title=dom-Node-namespaceURI>namespaceURI</code> is
+<var>namespaceURI</var> and <code title=dom-Node-localName>localName</code>
+is <var>localName</var>, or false otherwise.</p>
 
 <!--<dfn title=dom-Element-getAttributeNode>getAttributeNode</dfn>: when the
 Element.getAttributeNode() method is invoked on an HTML element, the name

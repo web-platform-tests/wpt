@@ -243,7 +243,8 @@ policies and contribution forms [3].
             if (typeof code_or_object === "string")
             {
                 assert(e[code_or_object] !== undefined &&
-                       e.code === e[code_or_object],
+                       e.code === e[code_or_object] &&
+                       e.name === code_or_object,
                        make_message("assert_throws", description,
                            [["{text}", "${func} threw with"] ,
                             function() 
@@ -276,6 +277,10 @@ policies and contribution forms [3].
                                     {func:String(func), actual_number:e.code,
                                      expected:String(code_or_object),
                                      expected_number:e[code_or_object]}));
+                assert(e instanceof DOMException,
+                      make_message("assert_throws", description,
+                                   "thrown exception ${exception} was not a DOMException",
+                                  {exception:String(e)}));
             }
             else
             {

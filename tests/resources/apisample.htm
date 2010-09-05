@@ -46,6 +46,12 @@
     }
     test(basicAssertObjectEquals, "basic assert_object_equals test");
 
+    test(function()
+    {
+        var e = {code:0, name:"TEST_ERR", TEST_ERR:0}
+        assert_throws("TEST_ERR", function() {throw e});
+    }, "Test assert_throws with non-DOM-exception (should Fail)");
+
     async_test("test should timeout (fail) with the default of 5 seconds");
 
     async_test("test should timeout (fail) with a custom set timeout value of 1 second",

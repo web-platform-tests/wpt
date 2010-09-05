@@ -189,7 +189,7 @@ policies and contribution forms [3].
              "assert_exists", description,
              "expected property ${p} missing", {p:property_name});
 
-         assert(object.hasOwnProperty(property_name, message));
+         assert(object.hasOwnProperty(property_name), message);
     };
     expose(assert_exists, "assert_exists");
 
@@ -199,7 +199,7 @@ policies and contribution forms [3].
              "assert_not_exists", description,
              "unexpected property ${p} found", {p:property_name});
 
-         assert(!object.hasOwnProperty(property_name, message));
+         assert(!object.hasOwnProperty(property_name), message);
     };
     expose(assert_not_exists, "assert_not_exists");
 
@@ -233,7 +233,7 @@ policies and contribution forms [3].
         {
             func.call(this);
             assert(false, make_message("assert_throws", description,
-                                      "${func} did not throw", {func:func}));
+                                      "${func} did not throw", {func:String(func)}));
         }
         catch(e)
         {
@@ -245,16 +245,44 @@ policies and contribution forms [3].
                 assert(e[code_or_object] !== undefined &&
                        e.code === e[code_or_object],
                        make_message("assert_throws", description,
-                           "${func} has code ${actual} expected ${expected}",
-                                    {func:func, actual:e.code,
-                                     expected:code_or_object}));
+                           [["{text}", "${func} threw with"] ,
+                            function() 
+                            {
+                                var actual_name;
+                                for (var p in DOMException) 
+                                {
+                                    if (e.code === DOMException[p])
+                                    {
+                                        actual_name = p;
+                                        break;
+                                    }
+                                }
+                                if (actual_name)
+                                {
+                                    return ["{text}", " code " + actual_name + " (${actual_number})"];
+                                }
+                                else
+                                {
+                                    return ["{text}", " error number ${actual_number}"];
+                                }
+                            },
+                            ["{text}"," expected ${expected}"],
+                            function()
+                            {
+                                return e[code_or_object] ? 
+                                    ["{text}", " (${expected_number})"] : null;
+                            }
+                           ],
+                                    {func:String(func), actual_number:e.code,
+                                     expected:String(code_or_object),
+                                     expected_number:e[code_or_object]}));
             }
             else
             {
                 assert(e instanceof Object && "name" in e && e.name == code_or_object.name,
                        make_message("assert_throws", description,
                            "${func} threw ${actual} (${actual_name}) expected ${expected} (${expected_name})",
-                                    {func:func, actual:e, actual_name:e.name,
+                                    {func:String(func), actual:e, actual_name:e.name,
                                      expected:code_or_object,
                                      expected_name:code_or_object.name}));
             }

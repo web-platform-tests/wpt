@@ -1706,7 +1706,7 @@ identifier (ID)</dfn> associated with them. User agents must associate the
 <code title=dom-Attr-value>value</code> of all <span
 title=concept-ID-attribute>ID attributes</span> in the <code>Element</code>
 node's <code title=dom-Node-attributes>attributes</code> with the
-<code>Element</code> node, unless it contains less than one character.
+<code>Element</code> node, unless it is the empty string.
 
 <p>Specifications may define <dfn>base URL change steps</dfn>.
 
@@ -1733,18 +1733,19 @@ on getting, run the following steps:
 
 <hr>
 
-<p>The <dfn title=dom-Element-getAttribute><code>getAttribute(<var>name</var>)</code></dfn> method must run the following steps:
+<p>The <dfn title=dom-Element-getAttribute><code>getAttribute(<var>name</var>)</code></dfn> method must run these steps:
 <ol>
- <li><p>If the <span>context node</span> is in the <span>HTML namespace</span>
- and its <code title=dom-Node-ownerDocument>ownerDocument</code> is an
+ <li><p>If the <span>context node</span> is in the
+ <span>HTML namespace</span> and its
+ <code title=dom-Node-ownerDocument>ownerDocument</code> is an
  <span>HTML document</span>, let <var>name</var> be <var>name</var>,
  <span>converted to lowercase</span>.
 
- <li><p>Return the value of the first attribute in the <span>context
- node</span>'s <code title=dom-Node-attributes>attributes</code> whose <span
- title=concept-attribute-name>name</span> <span
- title=case-sensitive>case-sensitively</span> equals the first argument, in any
- namespace, if the attribute is present, or null otherwise.
+ <li><p>Return the value of the first attribute in the
+ <span>context node</span>'s
+ <code title=dom-Node-attributes>attributes</code> whose
+ <span title=concept-attribute-name>name</span> is <var>name</var>, if
+ the attribute is present, or null otherwise.
 </ol>
 
 <p>The <dfn title=dom-Element-getAttributeNS>getAttributeNS(<var>namespaceURI</var>, <var>localName</var></dfn> method must return the value of the attribute in
@@ -1791,7 +1792,21 @@ following steps:
 
 <p class=XXX><dfn title=dom-Element-removeAttributeNS>removeAttributeNS</dfn>
 
-<p class=XXX><dfn title=dom-Element-hasAttribute>hasAttribute</dfn>
+<p>The <dfn title=dom-Element-hasAttribute>hasAttribute(<var>name</var>)
+method must run these steps:</p>
+<ol>
+ <li><p>If the <span>context node</span> is in the
+ <span>HTML namespace</span> and its
+ <code title=dom-Node-ownerDocument>ownerDocument</code> is an
+ <span>HTML document</span>, let <var>name</var> be <var>name</var>,
+ <span>converted to lowercase</span>.
+
+ <li><p>Return true if <span>context node</span>'s
+ <code title=dom-Node-attributes>attributes</code> contains an attribute
+ whose <span title=concept-attribute-name>name</span> is <var>name</var>, or
+ false otherwise.
+</ol>
+
 
 <p class=XXX><dfn title=dom-Element-hasAttributeNS>hasAttributeNS</dfn>
 

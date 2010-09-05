@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<title>Element.hasAttribute</title>
+<script src="testharness.js"></script>
+<div id="log"></div>
+<script>
+test(function() {
+  var el = document.createElement("foo")
+  assert_equals(el.hasAttribute("bar"), false)
+
+  el.setAttributeNS("ab", "attr", "pass")
+  el.setAttributeNS("kl", "attr", "fail")
+  assert_equals(el.hasAttribute("attr"), true)
+
+  el.setAttribute("style", "color:#fff;")
+  assert_equals(el.hasAttribute("style"), true)
+
+  el = document.createElement("div")
+  el.setAttributeNS("", "ALIGN", "left")
+  assert_equals(el.hasAttribute("ALIGN"), false)
+  assert_equals(el.hasAttribute("align"), false)
+
+  el.setAttributeNS("", "CHEEseCaKe", "tasty")
+  assert_equals(el.hasAttribute("CHEESECAKE"), false)
+  assert_equals(el.hasAttribute("CHEEseCaKe"), false)
+  assert_equals(el.hasAttribute("cheesecake"), false)
+
+  el = document.createElement("div")
+  el.setAttributeNS(null, "align", "left")
+  el.setAttributeNS("xx", "align", "right")
+  el.setAttributeNS(null, "foo", "left")
+  el.setAttributeNS("xx", "foo", "right")
+  document.body.appendChild(el)
+  assert_equals(el.hasAttribute("align"), true)
+  assert_equals(el.hasAttribute("foo"), true)
+
+  el = document.createElement("div")
+  el.setAttributeNS("xx", "align", "right")
+  el.setAttributeNS(null, "align", "left")
+  el.setAttributeNS("xx", "foo", "right")
+  el.setAttributeNS(null, "foo", "left")
+  document.body.appendChild(el)
+  assert_equals(el.hasAttribute("align"), true)
+  assert_equals(el.hasAttribute("foo"), true)
+})
+</script>

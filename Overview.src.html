@@ -1015,25 +1015,25 @@ conditions are true, and must otherwise return false:
   readonly attribute <span>DOMImplementation</span> <span title=dom-Document-implementation>implementation</span>;
   readonly attribute <span>Element</span> <span title=dom-Document-documentElement>documentElement</span>;
 
-  <span>Element</span> <span title=dom-Document-createElement>createElement</span>([TreatNullAs=EmptyString] DOMString tagName);
+  <span>Element</span> <span title=dom-Document-createElement>createElement</span>([TreatNullAs=EmptyString] DOMString <var>localName</var>);
   <span>Element</span> <span title=dom-Document-createElementNS>createElementNS</span>(DOMString namespaceURI, DOMString qualifiedName);
-  <span>DocumentFragment</span> createDocumentFragment();
-  <span>Text</span> <span title=dom-Document-createTextNode>createTextNode</span>(DOMString data);
-  <span>Comment</span> <span title=dom-Document-createComment>createComment</span>(DOMString data);
-  <span>ProcessingInstruction</span> <span title=dom-Document-createProcessingInstruction>createProcessingInstruction</span>(DOMString target, DOMString data);<!--
+  <span>DocumentFragment</span> <span title=dom-Document-createDocumentFragment>createDocumentFragment</span>();
+  <span>Text</span> <span title=dom-Document-createTextNode>createTextNode</span>(DOMString <var>data</var>);
+  <span>Comment</span> <span title=dom-Document-createComment>createComment</span>(DOMString <var>data</var>);
+  <span>ProcessingInstruction</span> <span title=dom-Document-createProcessingInstruction>createProcessingInstruction</span>(DOMString <var>target</var>, DOMString <var>data</var>);<!--
   CDATASection createCDATASection(DOMString data);
   EntityReference createEntityReference(DOMString name);
   <span>Attr</span> <span title=dom-Document-createAttribute>createAttribute</span>(DOMString name);
   <span>Attr</span> <span title=dom-Document-createAttributeNS>createAttributeNS</span>(DOMString namespaceURI, DOMString qualifiedName);
     If adding this, search for [createAttribute]-->
 
-  <span>NodeList</span> <span title=dom-Document-getElementsByTagName>getElementsByTagName</span>(DOMString tagname);
-  <span>NodeList</span> <span title=dom-Document-getElementsByTagNameNS>getElementsByTagNameNS</span>(DOMString namespaceURI, DOMString localName);
-  <span>NodeList</span> <span title=dom-Document-getElementsByClassName>getElementsByClassName</span>(DOMString classNames);
-  <span>Element</span> <span title=dom-Document-getElementById>getElementById</span>(DOMString elementId);
+  <span>NodeList</span> <span title=dom-Document-getElementsByTagName>getElementsByTagName</span>(DOMString <var>qualifiedName</var>);
+  <span>NodeList</span> <span title=dom-Document-getElementsByTagNameNS>getElementsByTagNameNS</span>(DOMString <var>namespaceURI</var>, DOMString <var>localName</var>);
+  <span>NodeList</span> <span title=dom-Document-getElementsByClassName>getElementsByClassName</span>(DOMString <var>classNames</var>);
+  <span>Element</span> <span title=dom-Document-getElementById>getElementById</span>(DOMString <var>elementId</var>);
 
-  <span>Node</span> <span title=dom-Document-importNode>importNode</span>(<span>Node</span> importedNode, boolean deep);
-  <span>Node</span> <span title=dom-Document-adoptNode>adoptNode</span>(<span>Node</span> source);
+  <span>Node</span> <span title=dom-Document-importNode>importNode</span>(<span>Node</span> <var>importedNode</var>, boolean <var>deep</var>);
+  <span>Node</span> <span title=dom-Document-adoptNode>adoptNode</span>(<span>Node</span> <var>source</var>);
 
   readonly attribute DOMString <span title=dom-Document-inputEncoding>inputEncoding</span>;
            attribute DOMString <span title=dom-Document-documentURI>documentURI</span>;
@@ -1081,18 +1081,18 @@ class=informative>XML</span>
 
 <hr>
 
-<p>The <dfn title=dom-Document-createElement><code>createElement(<var>tagName</var>)</code></dfn> method must run the following steps:</p>
+<p>The <dfn title=dom-Document-createElement><code>createElement(<var>localName</var>)</code></dfn> method must run the these steps:</p>
 
 <ol>
- <li><p>If <var>tagName</var> doesn't match the <code
+ <li><p>If <var>localName</var> does not match the <code
  data-anolis-spec=xml>Name</code> production in XML, raise an <code
  title=dom-DOMException-INVALID_CHARACTER_ERR title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
- exception and abort these steps.
+ exception and terminate these steps.
 
  <li><p>If the <span>context node</span> is an <span>HTML document</span>,
- let <var>localName</var> be <var>tagName</var>,
- <span>converted to lowercase</span>. Otherwise, let <var>localName</var> be
- <var>tagName</var>.
+ let <var>localName</var> be <var>localName</var>,
+ <span>converted to lowercase</span>.
+ <!-- XXX why not do this everywhere? -->
 
  <li><p>Return a new <code>Element</code> node with no attributes,
  <code title=dom-Node-namespaceURI>namespaceURI</code> set to the
@@ -1106,7 +1106,7 @@ class=informative>XML</span>
 <p class=note>No check is performed that the local name will match the
 <code data-anolis-spec=xmlns>NCName</code> production in Namespaces in XML.
 
-<p>The <dfn title=dom-Document-createElementNS><code>createElementNS(<var>namespaceURI</var>, <var>qualifiedName</var>)</code></dfn> method must run the following steps:</p>
+<p>The <dfn title=dom-Document-createElementNS><code>createElementNS(<var>namespaceURI</var>, <var>qualifiedName</var>)</code></dfn> method must run these steps:</p>
 <ol>
  <li><p>If <var>qualifiedName</var> doesn't match the <code
  data-anolis-spec=xml>Name</code> production in XML, raise an <code
@@ -1116,7 +1116,10 @@ class=informative>XML</span>
  data-anolis-spec=xmlns>QName</code> production in Namespaces in XML, raise a
  <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and
  abort these steps.
- <li><p>If <var>qualifiedName</var> contains a U+003E COLON (":") character, then split the string on the colon and let <var>prefix</var> be the part before the colon and <var>localName</var> the part after the colon. Otherwise, let <var>prefix</var> be null and <var>localName</var> be <var>qualifiedName</var>.
+ <li><p>If <var>qualifiedName</var> contains a "<code>:</code>" (U+003E),
+ then split the string on it and let <var>prefix</var> be the part before
+ and <var>localName</var> the part after. Otherwise, let <var>prefix</var>
+ be null and <var>localName</var> be <var>qualifiedName</var>.
  <li><p>If <var>prefix</var> is not null and <var>namespaceURI</var> is an empty string, raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and abort these steps.
  <li><p>If <var>prefix</var> is "xml" and <var>namespaceURI</var> is not the <span>XML namespace</span>, raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and abort these steps.
  <li><p>If <var>qualifiedName</var> or <var>prefix</var> is "xmlns" and <var>namespaceURI</var> is not the <span>XMLNS namespace</span>, raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and abort these steps.
@@ -1124,7 +1127,11 @@ class=informative>XML</span>
  <li><p>Return a new <code>Element</code> node with no attributes, <code title=dom-Node-namespaceURI>namespaceURI</code> set to <var>namespaceURI</var>, <code title=dom-Node-prefix>prefix</code> set to <var>prefix</var>, <code title=dom-Node-localName>localName</code> set to <var>localName</var>, and <code title=dom-Node-ownerDocument>ownerDocument</code> set to the <span>context node</span>.
 </ol>
 
-<p>The <dfn title=dom-Document-createDocumentFragment><code>createDocumentFragment()</code></dfn> method must return a new <code>DocumentFragment</code> node with its <code title=dom-Node-ownerDocument>ownerDocument</code> set to the <span>context node</span>.
+<p>The
+<dfn title=dom-Document-createDocumentFragment><code>createDocumentFragment()</code></dfn>
+method must return a new <code>DocumentFragment</code> node with its
+<code title=dom-Node-ownerDocument>ownerDocument</code> set to the
+<span>context node</span>.
 
 <p>The <dfn title=dom-Document-createTextNode><code>createTextNode(<var>data</var>)</code></dfn> method must return a new <code>Text</code> node with its <code title=dom-CharacterData-data>data</code> attribute set to <var>data</var> and <code title=dom-Node-ownerDocument>ownerDocument</code> set to the <span>context node</span>.
 <p class=note>No check is performed that the text node contains characters that
@@ -1198,34 +1205,32 @@ data-anolis-spec=xmlns>NCName</code> production in Namespaces in XML.-->
 
 <p>The <dfn
 title=dom-Document-getElementsByTagName><code>getElementsByTagName(<var
-title>tagName</var>)</code></dfn> method must run the following steps:
+title>qualifiedName</var>)</code></dfn> method must run the following steps:
 
 <ol>
- <li><p>If <var>tagName</var> is just a U+002A ASTERISK ("*") character,
- return a <code>NodeList</code> rooted at the <span>context node</span>, whose
- filter matches only <code>Element</code> nodes.
+ <li><p>If <var>qualifiedName</var> is "<code>*</code>" (U+002A),
+ return a <code>NodeList</code> rooted at the <span>context node</span>,
+ whose filter matches only <code>Element</code> nodes.
 
  <li>
   <p>Otherwise, if the <span>context node</span> is an
   <span>HTML document</span>, return a <code>NodeList</code> rooted at the
   <span>context node</span>, whose filter matches only the following nodes:
+
   <ul>
-   <li><code>Element</code> nodes in the <span>HTML namespace</span> that have a <code title=dom-Node-localName>localName</code>
-   <span title=case-sensitive>case-sensitively</span> equal to
-   <var>tagName</var>, <span>converted to lowercase</span>.
+   <li><code>Element</code> nodes in the <span>HTML namespace</span> whose <code title=dom-Node-tagName>tagName</code> is
+   <var>qualifiedName</var>, <span>converted to lowercase</span>.
 
    <li><code>Element</code> nodes, <em>not</em> in the
-   <span>HTML namespace</span>, that have a
-   <code title=dom-Element-tagName>tagName</code>
-   <span title=case-sensitive>case-sensitively</span> equal to
-   <var>tagName</var>.
+   <span>HTML namespace</span>, whose
+   <code title=dom-Element-tagName>tagName</code> is
+   <var>qualifiedName</var>.
   </ul>
 
  <li><p>Otherwise, return a <code>NodeList</code> rooted at the
  <span>context node</span>, whose filter matches only <code>Element</code>
- nodes that have a <code title=dom-Element-tagName>tagName</code>
- <span title=case-sensitive>case-sensitively</span> equal to
- <var>tagName</var>.
+ nodes whose <code title=dom-Element-tagName>tagName</code> is
+ <var>qualifiedName</var>.
 </ol>
 
 <p>A new <code>NodeList</code> object must be returned each time.
@@ -1680,17 +1685,17 @@ title=concept-class-attribute>class attributes</span>.
   void <span title=dom-Element-setAttributeNS>setAttributeNS</span>(DOMString namespaceURI, DOMString qualifiedName, DOMString value);
   void <span title=dom-Element-removeAttribute>removeAttribute</span>(DOMString name);
   void <span title=dom-Element-removeAttributeNS>removeAttributeNS</span>(DOMString namespaceURI, DOMString localName);
-  boolean <span title=dom-Element-hasAttribute>hasAttribute</span>(DOMString name);
-  boolean <span title=dom-Element-hasAttributeNS>hasAttributeNS</span>(DOMString namespaceURI, DOMString localName);
+  boolean <span title=dom-Element-hasAttribute>hasAttribute</span>(DOMString <var>qualifiedName</var>);
+  boolean <span title=dom-Element-hasAttributeNS>hasAttributeNS</span>(DOMString <var>namespaceURI</var>, DOMString <var>localName</var>);
 <!--
   <span>Attr</span> <span title=dom-Element-getAttributeNode>getAttributeNode</span>(DOMString name);
   <span>Attr</span> <span title=dom-Element-getAttributeNodeNS>getAttributeNodeNS</span>(DOMString namespaceURI, DOMString localName);
   <span>Attr</span> <span title=dom-Element-setAttributeNode>setAttributeNode</span>(Attr newAttr);
   <span>Attr</span> <span title=dom-Element-removeAttributeNode>removeAttributeNode</span>(Attr oldAttr);
 -->
-  <span>NodeList</span> <span title=dom-Element-getElementsByTagName>getElementsByTagName</span>(DOMString name);
-  <span>NodeList</span> <span title=dom-Element-getElementsByTagNameNS>getElementsByTagNameNS</span>(DOMString namespaceURI, DOMString localName);
-  <span>NodeList</span> <span title=dom-Element-getElementsByClassName>getElementsByClassName</span>(DOMString classNames);<!--
+  <span>NodeList</span> <span title=dom-Element-getElementsByTagName>getElementsByTagName</span>(DOMString <var>qualifiedName</var>);
+  <span>NodeList</span> <span title=dom-Element-getElementsByTagNameNS>getElementsByTagNameNS</span>(DOMString <var>namespaceURI</var>, DOMString <var>localName</var>);
+  <span>NodeList</span> <span title=dom-Element-getElementsByClassName>getElementsByClassName</span>(DOMString <var>classNames</var>);<!--
   readonly attribute TypeInfo schemaTypeInfo;
   void setIdAttribute(DOMString name, boolean isId);
   void setIdAttributeNS(DOMString namespaceURI, DOMString localName, boolean isId);
@@ -1790,19 +1795,20 @@ following steps:
 
 <p class=XXX><dfn title=dom-Element-removeAttributeNS>removeAttributeNS</dfn>
 
-<p>The <dfn title=dom-Element-hasAttribute>hasAttribute(<var>name</var>)
+<p>The
+<dfn title=dom-Element-hasAttribute><code>hasAttribute(<var>qualifiedName</var>)</code></dfn>
 method must run these steps:</p>
 <ol>
  <li><p>If the <span>context node</span> is in the
  <span>HTML namespace</span> and its
  <code title=dom-Node-ownerDocument>ownerDocument</code> is an
- <span>HTML document</span>, let <var>name</var> be <var>name</var>,
+ <span>HTML document</span>, let <var>qualifiedName</var> be
  <span>converted to lowercase</span>.
 
  <li><p>Return true if <span>context node</span>'s
  <code title=dom-Node-attributes>attributes</code> contains an attribute
- whose <span title=concept-attribute-name>name</span> is <var>name</var>, or
- false otherwise.
+ whose <span title=concept-attribute-name>name</span> is
+ <var>qualifiedName</var>, or false otherwise.
 </ol>
 
 <p>The

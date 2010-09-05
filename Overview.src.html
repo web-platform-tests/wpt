@@ -632,9 +632,9 @@ must return the name of the exception constant as a string.</p>
   DOMUserData getUserData(DOMString key);-->
 };</pre>
 
-<p>The constants <code title=dom-Node-nodeType>nodeType</code> (as defined
-below) returns. The constants marked historical can no longer be returned,
-but are still exposed.</p>
+<p>These are the constants <code title=dom-Node-nodeType>nodeType</code> (as
+defined below) returns. The constants marked historical can no longer be
+returned, but are still exposed.</p>
 
 <ol>
  <li value=1><dfn title=dom-Node-ELEMENT_NODE><code>ELEMENT_NODE</code></dfn>
@@ -695,6 +695,7 @@ must, on getting, run the following steps:
  <li><p>Return the parent node of the <span>context node</span>.
 </ol>
 
+<!-- XXX really needed? Minefield does not have this -->
 <p>The <dfn title=dom-Node-parentElement><code>parentElement</code></dfn> attribute must, on getting, return the parent node of the <span>context node</span> if there is a parent and it is an element, or null otherwise.
 
 <p>The <dfn title=dom-Node-childNodes><code>childNodes</code></dfn> attribute must, on getting, return a <code>NodeList</code> rooted at the <span>context node</span> matching only child nodes.
@@ -918,6 +919,12 @@ otherwise.
 
 <p>The <dfn title=dom-Node-baseURI><code>baseURI</code></dfn> attribute must <span class=XXX title>...</span>
 
+<hr>
+
+<p>These are the constants
+<code title=dom-Node-compareDocumentPosition>compareDocumentPosition()</code>
+returns.</p>
+
 <ol>
  <li value=1><dfn title=dom-Node-DOCUMENT_POSITION_DISCONNECTED><code>DOCUMENT_POSITION_DISCONNECTED</code></dfn>
 
@@ -935,6 +942,9 @@ otherwise.
 <p>The <dfn
 title=dom-Node-compareDocumentPosition><code>compareDocumentPosition(<var
 title>other</var>)</code></dfn> method must <span class=XXX title>...</span>
+
+<hr>
+
 
 <p>The <dfn title=dom-Node-textContent><code>textContent</code></dfn> attribute, on getting, must return a concatenation of the <code title=dom-CharacterData-data>data</code> of all the descendant <code>Text</code> nodes of the <span>context node</span>, in <span>tree order</span>. On setting, it must run the following steps:
 
@@ -1723,8 +1733,7 @@ on getting, run the following steps:
 
 <hr>
 
-<p>The <dfn title=dom-Element-getAttribute><code>getAttribute(<var
-title>name</var>)</code></dfn> method must run the following steps:
+<p>The <dfn title=dom-Element-getAttribute><code>getAttribute(<var>name</var>)</code></dfn> method must run the following steps:
 <ol>
  <li><p>If the <span>context node</span> is in the <span>HTML namespace</span>
  and its <code title=dom-Node-ownerDocument>ownerDocument</code> is an
@@ -1738,10 +1747,10 @@ title>name</var>)</code></dfn> method must run the following steps:
  namespace, if the attribute is present, or null otherwise.
 </ol>
 
-<p class=XXX><dfn title=dom-Element-getAttributeNS>getAttributeNS</dfn> (might return null; Gecko and WebKit don't)
+<p>The <dfn title=dom-Element-getAttributeNS>getAttributeNS(<var>namespaceURI</var>, <var>localName</var></dfn> method must return the value of the attribute in
+the <span>context node</span>'s <code title=dom-Node-attributes>attributes</code> whose <code title=dom-Node-namespaceURI>namespaceURI</code> is <var>namespaceURI</var> and <code title=dom-Node-localName>localName</code> is <var>localName</var>, if the attribute is present, or null otherwise.</p>
 
-<p>The <dfn title=dom-Element-setAttribute><code>setAttribute(<var
-title>name</var>, <var>value</var>)</code></dfn> method must run the
+<p>The <dfn title=dom-Element-setAttribute><code>setAttribute(<var>name</var>, <var>value</var>)</code></dfn> method must run the
 following steps:
 
 <ol>

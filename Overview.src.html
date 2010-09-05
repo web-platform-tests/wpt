@@ -623,8 +623,8 @@ must return the name of the exception constant as a string.</p>
 
   [TreatNullAs=EmptyString] attribute DOMString <span title=dom-Node-textContent>textContent</span>;
   boolean <span title=dom-Node-isSameNode>isSameNode</span>(<span>Node</span> other);
-  DOMString <span title=dom-Node-lookupPrefix>lookupPrefix</span>(DOMString namespaceURI);
-  boolean <span title=dom-Node-isDefaultNamespace>isDefaultNamespace</span>(DOMString namespaceURI);
+  DOMString <span title=dom-Node-lookupPrefix>lookupPrefix</span>(DOMString namespace);
+  boolean <span title=dom-Node-isDefaultNamespace>isDefaultNamespace</span>(DOMString namespace);
   DOMString <span title=dom-Node-lookupNamespaceURI>lookupNamespaceURI</span>(DOMString prefix);
   boolean <span title=dom-Node-isEqualNode>isEqualNode</span>(<span>Node</span> arg);<!--
   DOMObject getFeature(DOMString feature, DOMString version);
@@ -962,11 +962,10 @@ title>other</var>)</code></dfn> method must return true if <var
 title>other</var> is a reference to the same object as the <span>context
 node</span>, and false otherwise.
 
-<p>The <dfn title=dom-Node-lookupPrefix><code>lookupPrefix(<var
-title>namespaceURI</var>)</code></dfn> method must <span class=XXX title>...</span>
+<p>The <dfn title=dom-Node-lookupPrefix><code>lookupPrefix(<var>namespace</var>)</code></dfn> method must <span class=XXX title>...</span>
 
 <p>The <dfn title=dom-Node-isDefaultNamespace><code>isDefaultNamespace(<var
-title>namespaceURI</var>)</code></dfn> method must <span class=XXX title>...</span>
+title>namespace</var>)</code></dfn> method must <span class=XXX title>...</span>
 
 <p>The <dfn title=dom-Node-lookupNamespaceURI><code>lookupNamespaceURI(<var
 title>prefix</var>)</code></dfn> method must <span class=XXX title>...</span>
@@ -1014,7 +1013,7 @@ conditions are true, and must otherwise return false:
   readonly attribute <span>Element</span> <span title=dom-Document-documentElement>documentElement</span>;
 
   <span>Element</span> <span title=dom-Document-createElement>createElement</span>([TreatNullAs=EmptyString] DOMString <var>localName</var>);
-  <span>Element</span> <span title=dom-Document-createElementNS>createElementNS</span>(DOMString namespaceURI, DOMString qualifiedName);
+  <span>Element</span> <span title=dom-Document-createElementNS>createElementNS</span>(DOMString <var>namespace</var>, DOMString <var>qualifiedName</var>);
   <span>DocumentFragment</span> <span title=dom-Document-createDocumentFragment>createDocumentFragment</span>();
   <span>Text</span> <span title=dom-Document-createTextNode>createTextNode</span>(DOMString <var>data</var>);
   <span>Comment</span> <span title=dom-Document-createComment>createComment</span>(DOMString <var>data</var>);
@@ -1022,11 +1021,11 @@ conditions are true, and must otherwise return false:
   CDATASection createCDATASection(DOMString data);
   EntityReference createEntityReference(DOMString name);
   <span>Attr</span> <span title=dom-Document-createAttribute>createAttribute</span>(DOMString name);
-  <span>Attr</span> <span title=dom-Document-createAttributeNS>createAttributeNS</span>(DOMString namespaceURI, DOMString qualifiedName);
+  <span>Attr</span> <span title=dom-Document-createAttributeNS>createAttributeNS</span>(DOMString namespace, DOMString qualifiedName);
     If adding this, search for [createAttribute]-->
 
   <span>NodeList</span> <span title=dom-Document-getElementsByTagName>getElementsByTagName</span>(DOMString <var>qualifiedName</var>);
-  <span>NodeList</span> <span title=dom-Document-getElementsByTagNameNS>getElementsByTagNameNS</span>(DOMString <var>namespaceURI</var>, DOMString <var>localName</var>);
+  <span>NodeList</span> <span title=dom-Document-getElementsByTagNameNS>getElementsByTagNameNS</span>(DOMString <var>namespace</var>, DOMString <var>localName</var>);
   <span>NodeList</span> <span title=dom-Document-getElementsByClassName>getElementsByClassName</span>(DOMString <var>classNames</var>);
   <span>Element</span> <span title=dom-Document-getElementById>getElementById</span>(DOMString <var>elementId</var>);
 
@@ -1042,7 +1041,7 @@ conditions are true, and must otherwise return false:
            attribute boolean strictErrorChecking;
   readonly attribute DOMConfiguration domConfig;
   void normalizeDocument();
-  Node renameNode(Node n, DOMString namespaceURI, DOMString qualifiedName);-->
+  Node renameNode(Node n, DOMString namespace, DOMString qualifiedName);-->
 };</pre>
 
 <p>A <code>Document</code> node is assumed to be an <dfn>XML document</dfn>
@@ -1104,7 +1103,7 @@ class=informative>XML</span>
 <p class=note>No check is performed that the local name will match the
 <code data-anolis-spec=xmlns>NCName</code> production in Namespaces in XML.
 
-<p>The <dfn title=dom-Document-createElementNS><code>createElementNS(<var>namespaceURI</var>, <var>qualifiedName</var>)</code></dfn> method must run these steps:</p>
+<p>The <dfn title=dom-Document-createElementNS><code>createElementNS(<var>namespace</var>, <var>qualifiedName</var>)</code></dfn> method must run these steps:</p>
 <ol>
  <li><p>If <var>qualifiedName</var> doesn't match the <code
  data-anolis-spec=xml>Name</code> production in XML, raise an <code
@@ -1118,11 +1117,11 @@ class=informative>XML</span>
  then split the string on it and let <var>prefix</var> be the part before
  and <var>localName</var> the part after. Otherwise, let <var>prefix</var>
  be null and <var>localName</var> be <var>qualifiedName</var>.
- <li><p>If <var>prefix</var> is not null and <var>namespaceURI</var> is an empty string, raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and terminate these steps.
- <li><p>If <var>prefix</var> is "xml" and <var>namespaceURI</var> is not the <span>XML namespace</span>, raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and terminate these steps.
- <li><p>If <var>qualifiedName</var> or <var>prefix</var> is "xmlns" and <var>namespaceURI</var> is not the <span>XMLNS namespace</span>, raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and terminate these steps.
- <li><p>If <var>namespaceURI</var> is the <span>XMLNS namespace</span> and neither <var>qualifiedName</var> nor <var>prefix</var> is "xmlns", raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and terminate these steps.
- <li><p>Return a new <code>Element</code> node with no attributes, <code title=dom-Node-namespaceURI>namespaceURI</code> set to <var>namespaceURI</var>, <code title=dom-Node-prefix>prefix</code> set to <var>prefix</var>, <code title=dom-Node-localName>localName</code> set to <var>localName</var>, and <code title=dom-Node-ownerDocument>ownerDocument</code> set to the <span>context node</span>.
+ <li><p>If <var>prefix</var> is not null and <var>namespace</var> is an empty string, raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and terminate these steps.
+ <li><p>If <var>prefix</var> is "xml" and <var>namespace</var> is not the <span>XML namespace</span>, raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and terminate these steps.
+ <li><p>If <var>qualifiedName</var> or <var>prefix</var> is "xmlns" and <var>namespace</var> is not the <span>XMLNS namespace</span>, raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and terminate these steps.
+ <li><p>If <var>namespace</var> is the <span>XMLNS namespace</span> and neither <var>qualifiedName</var> nor <var>prefix</var> is "xmlns", raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and terminate these steps.
+ <li><p>Return a new <code>Element</code> node with no attributes, <code title=dom-Node-namespaceURI>namespaceURI</code> set to <var>namespace</var>, <code title=dom-Node-prefix>prefix</code> set to <var>prefix</var>, <code title=dom-Node-localName>localName</code> set to <var>localName</var>, and <code title=dom-Node-ownerDocument>ownerDocument</code> set to the <span>context node</span>.
 </ol>
 
 <p>The
@@ -1240,12 +1239,12 @@ title>FOO</code> elements that aren't in the <span>HTML namespace</span>, and
 not <code title>FOO</code> elements that are in the <span>HTML namespace</span>.
 
 
-<p>The <dfn title=dom-Document-getElementsByTagNameNS><code>getElementsByTagNameNS(<var>namespaceURI</var>, <var>localName</var>)</code></dfn> method must run the following steps:
+<p>The <dfn title=dom-Document-getElementsByTagNameNS><code>getElementsByTagNameNS(<var>namespace</var>, <var>localName</var>)</code></dfn> method must run the following steps:
 <ol>
- <li><p>If both <var>namespaceURI</var> and <var>localName</var> are just the character U+002A ASTERISK ("*"), return a <code>NodeList</code> rooted at the <span>context node</span>, whose filter matches only <code>Element</code> nodes.
- <li><p>Otherwise, if <var>namespaceURI</var> is just the character U+002A ASTERISK ("*"), return a <code>NodeList</code> rooted at the <span>context node</span>, whose filter matches only <code>Element</code> nodes with the <code title=dom-Node-localName>localName</code> equal to <var>localName</var>.
- <li><p>Otherwise, if <var>localName</var> is just the character U+002A ASTERISK ("*"), return a <code>NodeList</code> rooted at the <span>context node</span>, whose filter matches only <code>Element</code> nodes with the <code title=dom-Node-namespaceURI>namespaceURI</code> equal to <var>namespaceURI</var>.
- <li><p>Otherwise, return a <code>NodeList</code> rooted at the <span>context node</span>, whose filter matches only <code>Element</code> nodes that have a <code title=dom-Node-namespaceURI>namespaceURI</code> equal to <var>namespaceURI</var> and a <code title=dom-Node-localName>localName</code> equal to <var>localName</var> (both in a <span>case-sensitive</span> manner).
+ <li><p>If both <var>namespace</var> and <var>localName</var> are just the character U+002A ASTERISK ("*"), return a <code>NodeList</code> rooted at the <span>context node</span>, whose filter matches only <code>Element</code> nodes.
+ <li><p>Otherwise, if <var>namespace</var> is just the character U+002A ASTERISK ("*"), return a <code>NodeList</code> rooted at the <span>context node</span>, whose filter matches only <code>Element</code> nodes with the <code title=dom-Node-localName>localName</code> equal to <var>localName</var>.
+ <li><p>Otherwise, if <var>localName</var> is just the character U+002A ASTERISK ("*"), return a <code>NodeList</code> rooted at the <span>context node</span>, whose filter matches only <code>Element</code> nodes with the <code title=dom-Node-namespaceURI>namespaceURI</code> equal to <var>namespace</var>.
+ <li><p>Otherwise, return a <code>NodeList</code> rooted at the <span>context node</span>, whose filter matches only <code>Element</code> nodes that have a <code title=dom-Node-namespaceURI>namespaceURI</code> equal to <var>namespace</var> and a <code title=dom-Node-localName>localName</code> equal to <var>localName</var> (both in a <span>case-sensitive</span> manner).
 </ol>
 <p>A new <code>NodeList</code> object must be returned each time.
 
@@ -1410,7 +1409,7 @@ http://lists.w3.org/Archives/Public/www-dom/2003JulSep/0049.html -->
   boolean <span title=dom-DOMImplementation-hasFeature>hasFeature</span>(DOMString feature, [TreatNullAs=EmptyString] DOMString version);
 
   <span>DocumentType</span> <span title=dom-DOMImplementation-createDocumentType>createDocumentType</span>([TreatNullAs=EmptyString] DOMString qualifiedName, DOMString publicId, DOMString systemId);
-  <span>Document</span> <span title=dom-DOMImplementation-createDocument>createDocument</span>([TreatNullAs=EmptyString] DOMString namespaceURI, [TreatNullAs=EmptyString] DOMString qualifiedName, <span>DocumentType</span> doctype);<!--
+  <span>Document</span> <span title=dom-DOMImplementation-createDocument>createDocument</span>([TreatNullAs=EmptyString] DOMString namespace, [TreatNullAs=EmptyString] DOMString qualifiedName, <span>DocumentType</span> doctype);<!--
   DOMObject getFeature(DOMString feature, DOMString version);-->
   <span>Document</span> <span title=dom-DOMImplementation-createHTMLDocument>createHTMLDocument</span>(DOMString title);
 };</pre>
@@ -1463,16 +1462,14 @@ otherwise.
  <dt><var>doc</var> = <var title=dom-Window-document
  data-anolis-spec=window>document</var> . <code
  title=dom-Document-implementation>implementation</code> . <code
- title=dom-DOMImplementation-createDocument>createDocument</code>( <var
- title>namespaceURI</var>, <var>qualifiedName</var>, <var
- title>doctype</var> )
+ title=dom-DOMImplementation-createDocument>createDocument</code>( <var>namespace</var>, <var>qualifiedName</var>, <var>doctype</var> )
 
  <dd>
   <p>Returns a new <code>Document</code>, with a new root
   <code>Element</code> whose <code title=dom-Node-localName>localName</code> is
   <var>qualifiedName</var> and whose <code
   title=dom-Node-namespaceURI>namespaceURI</code> is <var
-  title>namespaceURI</var> (unless <var>qualifiedName</var> is the empty
+  title>namespace</var> (unless <var>qualifiedName</var> is the empty
   string), and with <var>doctype</var>, if it is given, as its <span
   title=concept-doctype>doctype</span>.
 
@@ -1519,14 +1516,14 @@ otherwise.
 </ol>
 <p class=note>No check is performed that the <var>publicId</var> matches the <code title>PublicChar</code> production in XML or that the <var>systemId</var> doesn't contain both a quotation mark (") and an apostrophe (').
 
-<p>The <dfn title=dom-DOMImplementation-createDocument><code>createDocument(<var>namespaceURI</var>, <var>qualifiedName</var>, <var>doctype</var>)</code></dfn> method must run the following steps:
+<p>The <dfn title=dom-DOMImplementation-createDocument><code>createDocument(<var>namespace</var>, <var>qualifiedName</var>, <var>doctype</var>)</code></dfn> method must run the following steps:
 
 <p class=XXX>make arguments optional?
 
 <ol>
  <li><p>Let <var>document</var> be a new <code>Document</code> node.
  <li><p>Let <var>element</var> be null.
- <li><p>If <var>qualifiedName</var> is not the empty string, set <var>element</var> to the result of invoking the <code title=dom-Document-createElementNS>createElementNS</code> method with the arguments <var>namespaceURI</var> and <var>qualifiedName</var> on <var>document</var>. If that raised an exception, re-raise the same exception and terminate these steps.
+ <li><p>If <var>qualifiedName</var> is not the empty string, set <var>element</var> to the result of invoking the <code title=dom-Document-createElementNS>createElementNS</code> method with the arguments <var>namespace</var> and <var>qualifiedName</var> on <var>document</var>. If that raised an exception, re-raise the same exception and terminate these steps.
  <li>
   <p>If <var>doctype</var> is not null, run the following substeps:
   <ol>
@@ -1678,25 +1675,25 @@ title=concept-class-attribute>class attributes</span>.
   readonly attribute DOMString <span title=dom-Element-tagName>tagName</span>;
 
   DOMString? <span title=dom-Element-getAttribute>getAttribute</span>(DOMString <var>qualifiedName</var>);
-  DOMString? <span title=dom-Element-getAttributeNS>getAttributeNS</span>(DOMString <var>namespaceURI</var>, DOMString <var>localName</var>);
+  DOMString? <span title=dom-Element-getAttributeNS>getAttributeNS</span>(DOMString <var>namespace</var>, DOMString <var>localName</var>);
   void <span title=dom-Element-setAttribute>setAttribute</span>(DOMString <var>qualifiedName</var>, DOMString <var>value</var>);
-  void <span title=dom-Element-setAttributeNS>setAttributeNS</span>(DOMString <var>namespaceURI</var>, DOMString <var>qualifiedName</var>, DOMString <var>value</var>);
+  void <span title=dom-Element-setAttributeNS>setAttributeNS</span>(DOMString <var>namespace</var>, DOMString <var>qualifiedName</var>, DOMString <var>value</var>);
   void <span title=dom-Element-removeAttribute>removeAttribute</span>(DOMString <var>qualifiedName</var>);
-  void <span title=dom-Element-removeAttributeNS>removeAttributeNS</span>(DOMString <var>namespaceURI</var>, DOMString <var>localName</var>);
+  void <span title=dom-Element-removeAttributeNS>removeAttributeNS</span>(DOMString <var>namespace</var>, DOMString <var>localName</var>);
   boolean <span title=dom-Element-hasAttribute>hasAttribute</span>(DOMString <var>qualifiedName</var>);
-  boolean <span title=dom-Element-hasAttributeNS>hasAttributeNS</span>(DOMString <var>namespaceURI</var>, DOMString <var>localName</var>);
+  boolean <span title=dom-Element-hasAttributeNS>hasAttributeNS</span>(DOMString <var>namespace</var>, DOMString <var>localName</var>);
 <!--
   <span>Attr</span> <span title=dom-Element-getAttributeNode>getAttributeNode</span>(DOMString name);
-  <span>Attr</span> <span title=dom-Element-getAttributeNodeNS>getAttributeNodeNS</span>(DOMString namespaceURI, DOMString localName);
+  <span>Attr</span> <span title=dom-Element-getAttributeNodeNS>getAttributeNodeNS</span>(DOMString namespace, DOMString localName);
   <span>Attr</span> <span title=dom-Element-setAttributeNode>setAttributeNode</span>(Attr newAttr);
   <span>Attr</span> <span title=dom-Element-removeAttributeNode>removeAttributeNode</span>(Attr oldAttr);
 -->
   <span>NodeList</span> <span title=dom-Element-getElementsByTagName>getElementsByTagName</span>(DOMString <var>qualifiedName</var>);
-  <span>NodeList</span> <span title=dom-Element-getElementsByTagNameNS>getElementsByTagNameNS</span>(DOMString <var>namespaceURI</var>, DOMString <var>localName</var>);
+  <span>NodeList</span> <span title=dom-Element-getElementsByTagNameNS>getElementsByTagNameNS</span>(DOMString <var>namespace</var>, DOMString <var>localName</var>);
   <span>NodeList</span> <span title=dom-Element-getElementsByClassName>getElementsByClassName</span>(DOMString <var>classNames</var>);<!--
   readonly attribute TypeInfo schemaTypeInfo;
   void setIdAttribute(DOMString name, boolean isId);
-  void setIdAttributeNS(DOMString namespaceURI, DOMString localName, boolean isId);
+  void setIdAttributeNS(DOMString namespace, DOMString localName, boolean isId);
   void setIdAttributeNode(Attr idAttr, boolean isId);-->
 
            attribute <span>HTMLCollection</span> <span title=dom-Element-children>children</span>;
@@ -1750,12 +1747,12 @@ on getting, run the following steps:
 </ol>
 
 <p>The
-<dfn title=dom-Element-getAttributeNS><code>getAttributeNS(<var>namespaceURI</var>, <var>localName</var>)</code></dfn>
+<dfn title=dom-Element-getAttributeNS><code>getAttributeNS(<var>namespace</var>, <var>localName</var>)</code></dfn>
 method must return the value of the attribute in the
 <span>context node</span>'s
 <code title=dom-Node-attributes>attributes</code> whose
 <code title=dom-Node-namespaceURI>namespaceURI</code> is
-<var>namespaceURI</var> and <code title=dom-Node-localName>localName</code>
+<var>namespace</var> and <code title=dom-Node-localName>localName</code>
 is <var>localName</var>, if the attribute is present, or null otherwise.</p>
 
 <p>The
@@ -1817,11 +1814,11 @@ method must run these steps:</p>
 </ol>
 
 <p>The
-<dfn title=dom-Element-hasAttributeNS><code>hasAttributeNS(<var>namespaceURI</var>, <var>localName</var>)</code></dfn>
+<dfn title=dom-Element-hasAttributeNS><code>hasAttributeNS(<var>namespace</var>, <var>localName</var>)</code></dfn>
 method must return true if <span>context node</span>'s
 <code title=dom-Node-attributes>attributes</code> contains an attribute
 whose <code title=dom-Node-namespaceURI>namespaceURI</code> is
-<var>namespaceURI</var> and <code title=dom-Node-localName>localName</code>
+<var>namespace</var> and <code title=dom-Node-localName>localName</code>
 is <var>localName</var>, or false otherwise.</p>
 
 <!--<dfn title=dom-Element-getAttributeNode>getAttributeNode</dfn>: when the
@@ -1850,8 +1847,7 @@ the <span>context node</span> on which the method was invoked.
 
 
 <p>The <dfn
-title=dom-Element-getElementsByTagNameNS><code>getElementsByTagNameNS(<var
-title>namespaceURI</var>, <var>localName</var>)</code></dfn> method on the
+title=dom-Element-getElementsByTagNameNS><code>getElementsByTagNameNS(<var>namespace</var>, <var>localName</var>)</code></dfn> method on the
 <code>Element</code> interface must return a <span
 title=concept-collection-live>live</span> <code>NodeList</code> with the nodes
 that the <code
@@ -2192,9 +2188,9 @@ title=concept-collection>collection</span>, whose primary purpose is to expose
   <span>Node</span> <span title=dom-NamedNodeMap-removeNamedItem>removeNamedItem</span>(DOMString name);
   <span>Node</span> <span title=dom-NamedNodeMap-item>item</span>(unsigned long index);
   readonly attribute unsigned long <span title=dom-NamedNodeMap-length>length</span>;
-  <span>Node</span> <span title=dom-NamedNodeMap-getNamedItemNS>getNamedItemNS</span>(DOMString namespaceURI, DOMString localName);
+  <span>Node</span> <span title=dom-NamedNodeMap-getNamedItemNS>getNamedItemNS</span>(DOMString namespace, DOMString localName);
   <span>Node</span> <span title=dom-NamedNodeMap-setNamedItemNS>setNamedItemNS</span>(<span>Node</span> arg);
-  <span>Node</span> <span title=dom-NamedNodeMap-removeNamedItemNS>removeNamedItemNS</span>(DOMString namespaceURI, DOMString localName);
+  <span>Node</span> <span title=dom-NamedNodeMap-removeNamedItemNS>removeNamedItemNS</span>(DOMString namespace, DOMString localName);
 };</pre>
 
 <p class=XXX><dfn title=dom-NamedNodeMap-getNamedItem>getNamedItem</dfn>

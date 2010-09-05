@@ -127,7 +127,7 @@ data-anolis-ref>RFC2119</span></p>
 
 <p>Requirements phrased in the imperative as part of algorithms
 (such as "strip any leading space characters" or "return false and
-abort these steps") are to be interpreted with the meaning of the
+terminate these steps") are to be interpreted with the meaning of the
 key word ("must", "should", "may", etc) used in introducing the
 algorithm.</p>
 
@@ -309,7 +309,7 @@ it must use the following algorithm:</p>
  initially pointing at the start of the string.
 
  <li><p><i title>Loop</i>: If <var>position</var> is beyond the end of
- <var>input</var>, abort these steps.
+ <var>input</var>, terminate these steps.
 
  <li>
   <p>If the character at <var>position</var> is a <span>space
@@ -407,7 +407,7 @@ feature</span> with the version "2.0" associated with it.
 <p>When a UA is to <dfn>clone</dfn> a <var>node</var>, with a <var>new ownerDocument</var> and with a <i>clone children flag</i>, it must run the following steps:
 
 <ol>
- <li><p>If <var>node</var> is a <code>DocumentType</code> node, raise a <code title=dom-DOMException-DATA_CLONE_ERR>DATA_CLONE_ERR</code> exception and abort these steps.
+ <li><p>If <var>node</var> is a <code>DocumentType</code> node, raise a <code title=dom-DOMException-DATA_CLONE_ERR>DATA_CLONE_ERR</code> exception and terminate these steps.
  <li>
   <p>Let <var>copy</var> be a new <code>Node</code> that implements the same interfaces as <var>node</var>, with <code title=dom-Node-ownerDocument>ownerDocument</code> set to <var>new ownerDocument</var>, <code title="dom-Node-prefix">prefix</code>, <code title="dom-Node-localName">localName</code> and <code title="dom-Node-namespaceURI">namespaceURI</code> attributes set to the values of the attributes on <var>node</var> with the same names, and other attributes set to the values of the attributes on <var>node</var> with the same names depending on the type of <var>node</var> according to the following table:</p>
   <table>
@@ -687,10 +687,10 @@ must, on getting, run the following steps:
 
 <ol>
  <li><p>If the <span>context node</span> is an <code>Attr</code> node, return
- null and abort these steps.
+ null and terminate these steps.
 
  <li><p>If the <span>context node</span> doesn't have a parent node, return
- null and abort these steps.
+ null and terminate these steps.
 
  <li><p>Return the parent node of the <span>context node</span>.
 </ol>
@@ -709,10 +709,10 @@ attribute must, on getting, run the following steps:
 
 <ol>
  <li><p>If the <span>context node</span> is an <code>Attr</code> node, return
- null and abort these steps.
+ null and terminate these steps.
 
  <li><p>If the <span>context node</span> doesn't have a previous sibling node,
- return null and abort these steps.
+ return null and terminate these steps.
 
  <li><p>Return the previous sibling node of the <span>context node</span>.
 </ol>
@@ -722,10 +722,10 @@ must, on getting, run the following steps:
 
 <ol>
  <li><p>If the <span>context node</span> is an <code>Attr</code> node, return
- null and abort these steps.
+ null and terminate these steps.
 
  <li><p>If the <span>context node</span> doesn't have a next sibling node,
- return null and abort these steps.
+ return null and terminate these steps.
 
  <li><p>Return the next sibling node of the <span>context node</span>.
 </ol>
@@ -742,11 +742,11 @@ the following steps:
  <li><p>If the <span>context node</span> is an <code>Attr</code> node or a
  <code>Text</code> node, then raise a <code
  title=dom-DOMException-HIERARCHY_REQUEST_ERR>HIERARCHY_REQUEST_ERR</code> and
- abort these steps. <!-- See Mozilla bug 547798, 558973 -->
+ terminate these steps. <!-- See Mozilla bug 547798, 558973 -->
 
  <li><p>If <var>newChild</var> is null, then raise a <code
  title=dom-DOMException-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</code> exception and
- abort these steps.
+ terminate these steps.
 
  <li><p>If <var>refChild</var> is not null and is not a child of the
  <span>context node</span>, then raise a <code
@@ -788,12 +788,12 @@ the following steps:
  <li><p>If the <span>context node</span> is an <code>Attr</code> node or a
  <code>Text</code> node, then raise a <code
  title=dom-DOMException-HIERARCHY_REQUEST_ERR>HIERARCHY_REQUEST_ERR</code> and
- abort these steps. <!-- See Mozilla bug 547798, 558973 -->
+ terminate these steps. <!-- See Mozilla bug 547798, 558973 -->
 
  <li><p>If either <var>newChild</var> or <var>oldChild</var> is
  null, then raise a <code
  title=dom-DOMException-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</code> exception and
- abort these steps.
+ terminate these steps.
 
  <li><p>If <var>newChild</var>'s
  <code title=dom-Node-ownerDocument>ownerDocument</code> is not equal to the
@@ -807,7 +807,7 @@ the following steps:
  <li><p>If <var>oldChild</var> is not a child of the <span>context
  node</span>, then raise a <code
  title=dom-DOMException-NOT_FOUND_ERR>NOT_FOUND_ERR</code>
- exception and abort these steps.
+ exception and terminate these steps.
 
  <!-- no security check -->
  <li><p>Let <var>refChild</var> be <var>oldChild</var>'s
@@ -830,7 +830,7 @@ title>oldChild</var>)</code></dfn> method must run the following steps:
  <!-- Attr nodes are okay -->
  <li><p>If <var>oldChild</var> is null, then raise a <code
  title=dom-DOMException-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</code> exception and
- abort these steps.
+ terminate these steps.
 
  <li><p>If <var>oldChild</var> is not a child of the <span>context
  node</span>, then raise a <code
@@ -851,11 +851,11 @@ title>newChild</var>)</code></dfn> method must run the following steps:
  <li><p>If the <span>context node</span> is an <code>Attr</code> node or a
  <code>Text</code> node, then raise a <code
  title=dom-DOMException-HIERARCHY_REQUEST_ERR>HIERARCHY_REQUEST_ERR</code> and
- abort these steps. <!-- See Mozilla bug 547798, 558973 -->
+ terminate these steps. <!-- See Mozilla bug 547798, 558973 -->
 
  <li><p>If <var>newChild</var> is null, then raise a <code
  title=dom-DOMException-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</code> exception and
- abort these steps.
+ terminate these steps.
 
  <li><p>If <var>newChild</var>'s
  <code title=dom-Node-ownerDocument>ownerDocument</code> is not equal to the
@@ -897,11 +897,11 @@ the (<var>feature</var>, <var>version</var>) tuple on the
  <li>
   <p>If <var>prefix</var> is not null, run the following substeps:
   <ol>
-   <li><p>If <var>prefix</var> doesn't match the <code data-anolis-spec=xml>Name</code> production in XML, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and abort these steps.
+   <li><p>If <var>prefix</var> doesn't match the <code data-anolis-spec=xml>Name</code> production in XML, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and terminate these steps.
    <li><p>If <var>prefix</var> doesn't match the <code
    data-anolis-spec=xmlns>NCName</code> production in Namespaces in XML, raise a
    <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and
-   abort these steps.
+   terminate these steps.
   </ol>
  <li><p class=XXX>Actually this doesn't match any browser. Let's try to drop it instead.
 </ol>-->
@@ -1109,19 +1109,19 @@ class=informative>XML</span>
  <li><p>If <var>qualifiedName</var> doesn't match the <code
  data-anolis-spec=xml>Name</code> production in XML, raise an <code
  title=dom-DOMException-INVALID_CHARACTER_ERR title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
- exception and abort these steps.
+ exception and terminate these steps.
  <li><p>If <var>qualifiedName</var> doesn't match the <code
  data-anolis-spec=xmlns>QName</code> production in Namespaces in XML, raise a
  <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and
- abort these steps.
+ terminate these steps.
  <li><p>If <var>qualifiedName</var> contains a "<code>:</code>" (U+003E),
  then split the string on it and let <var>prefix</var> be the part before
  and <var>localName</var> the part after. Otherwise, let <var>prefix</var>
  be null and <var>localName</var> be <var>qualifiedName</var>.
- <li><p>If <var>prefix</var> is not null and <var>namespaceURI</var> is an empty string, raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and abort these steps.
- <li><p>If <var>prefix</var> is "xml" and <var>namespaceURI</var> is not the <span>XML namespace</span>, raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and abort these steps.
- <li><p>If <var>qualifiedName</var> or <var>prefix</var> is "xmlns" and <var>namespaceURI</var> is not the <span>XMLNS namespace</span>, raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and abort these steps.
- <li><p>If <var>namespaceURI</var> is the <span>XMLNS namespace</span> and neither <var>qualifiedName</var> nor <var>prefix</var> is "xmlns", raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and abort these steps.
+ <li><p>If <var>prefix</var> is not null and <var>namespaceURI</var> is an empty string, raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and terminate these steps.
+ <li><p>If <var>prefix</var> is "xml" and <var>namespaceURI</var> is not the <span>XML namespace</span>, raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and terminate these steps.
+ <li><p>If <var>qualifiedName</var> or <var>prefix</var> is "xmlns" and <var>namespaceURI</var> is not the <span>XMLNS namespace</span>, raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and terminate these steps.
+ <li><p>If <var>namespaceURI</var> is the <span>XMLNS namespace</span> and neither <var>qualifiedName</var> nor <var>prefix</var> is "xmlns", raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and terminate these steps.
  <li><p>Return a new <code>Element</code> node with no attributes, <code title=dom-Node-namespaceURI>namespaceURI</code> set to <var>namespaceURI</var>, <code title=dom-Node-prefix>prefix</code> set to <var>prefix</var>, <code title=dom-Node-localName>localName</code> set to <var>localName</var>, and <code title=dom-Node-ownerDocument>ownerDocument</code> set to the <span>context node</span>.
 </ol>
 
@@ -1147,20 +1147,20 @@ title>data</var>)</code></dfn> method must run the following steps:
 <ol>
  <li><p>If the <span>context node</span> is an <span>HTML document</span>, raise
  a <code title=dom-DOMException-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</code>
- exception and abort these steps.
+ exception and terminate these steps.
 
  <li><p>If <var>target</var> doesn't match the <!--<code
  data-anolis-spec=xml>PITarget</code>--> <code data-anolis-spec=xml>Name</code>
  production in XML, raise an <code
  title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
- exception and abort these steps. <!-- DOM3 didn't check for "xml" -->
+ exception and terminate these steps. <!-- DOM3 didn't check for "xml" -->
 
  <li><p>If <var>data</var> contains the string "<code title>?></code>",
  raise an <code
  title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
- exception and abort these steps. <!-- Gecko does this. -->
+ exception and terminate these steps. <!-- Gecko does this. -->
 
- <!--<li><p>If <var>target</var> contains a U+003A COLON (":") character, raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and abort these steps.--> <!-- DOM3 didn't check this -->
+ <!--<li><p>If <var>target</var> contains a U+003A COLON (":") character, raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and terminate these steps.--> <!-- DOM3 didn't check this -->
 
  <li><p>Return a new <span title=concept-PI>processing instruction</span>, with
  <var>target</var> as its <span title=concept-PI-target>target</span> and
@@ -1177,7 +1177,7 @@ contains "xml" or the colon, or that the data contains characters that match the
 [createAttribute]
 <p>The <dfn title=dom-Document-createAttribute><code>createAttribute(<var>name</var>)</code></dfn> method must run the following steps:</p>
 <ol>
- <li><p>If <var>name</var> doesn't match the <code data-anolis-spec=xml>Name</code> production in XML, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and abort these steps.
+ <li><p>If <var>name</var> doesn't match the <code data-anolis-spec=xml>Name</code> production in XML, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and terminate these steps.
  <li><p>Return a new <code>Attr</code> node with its <code title=dom-Node-namespaceURI>namespaceURI</code> set to null, <code title=dom-Node-prefix>prefix</code> set to null, <code title=dom-Node-localName>localName</code> set to <var>name</var>, and <code title=dom-Node-ownerDocument>ownerDocument</code> set to the <span>context node</span>.
 </ol>-->
 <!-- this is different from DOM3 -->
@@ -1335,7 +1335,7 @@ the following steps:
  <li><p>If <var>source</var> is a <code>Document</code> node or a
  <code>DocumentType</code> node, raise a <code
  title=dom-DOMException-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</code> exception and
- abort these steps.
+ terminate these steps.
 
  <!-- Similar text for importNode -->
  <li><p>If the <span>context node</span> is an <span>XML document</span>, then
@@ -1503,13 +1503,13 @@ otherwise.
  <li><p>If <var>qualifiedName</var> doesn't match the <code
  data-anolis-spec=xml>Name</code> production in XML, raise an <code
  title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
- exception and abort these steps.
+ exception and terminate these steps.
  <li><p>If <var>qualifiedName</var> doesn't match the <code
  data-anolis-spec=xmlns>NCName</code> production in Namespaces in XML, raise a
  <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and
- abort these steps.
- <!--<li><p>If <var>publicId</var> contains a character that doesn't match the <code data-anolis-spec=xml>PubidChar</code> production in XML, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and abort these steps. --> <!-- DOM3 didn't check this -->
- <!--<li><p>If <var>systemId</var> contains both a U+0022 QUOTATION MARK ('"') and a U+0027 APOSTROPHE ("'") character, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and abort these steps.--> <!-- DOM3 didn't check this -->
+ terminate these steps.
+ <!--<li><p>If <var>publicId</var> contains a character that doesn't match the <code data-anolis-spec=xml>PubidChar</code> production in XML, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and terminate these steps. --> <!-- DOM3 didn't check this -->
+ <!--<li><p>If <var>systemId</var> contains both a U+0022 QUOTATION MARK ('"') and a U+0027 APOSTROPHE ("'") character, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and terminate these steps.--> <!-- DOM3 didn't check this -->
  <li><p>Return a new <span title=concept-doctype>document type
  declaration</span>, with <var>qualifiedName</var> as its <span
  title=concept-doctype-name>name</span>, <var>publicId</var> as its <span
@@ -1526,7 +1526,7 @@ otherwise.
 <ol>
  <li><p>Let <var>document</var> be a new <code>Document</code> node.
  <li><p>Let <var>element</var> be null.
- <li><p>If <var>qualifiedName</var> is not the empty string, set <var>element</var> to the result of invoking the <code title=dom-Document-createElementNS>createElementNS</code> method with the arguments <var>namespaceURI</var> and <var>qualifiedName</var> on <var>document</var>. If that raised an exception, re-raise the same exception and abort these steps.
+ <li><p>If <var>qualifiedName</var> is not the empty string, set <var>element</var> to the result of invoking the <code title=dom-Document-createElementNS>createElementNS</code> method with the arguments <var>namespaceURI</var> and <var>qualifiedName</var> on <var>document</var>. If that raised an exception, re-raise the same exception and terminate these steps.
  <li>
   <p>If <var>doctype</var> is not null, run the following substeps:
   <ol>
@@ -1677,12 +1677,12 @@ title=concept-class-attribute>class attributes</span>.
 <pre class=idl>interface <dfn>Element</dfn> : <span>Node</span> {
   readonly attribute DOMString <span title=dom-Element-tagName>tagName</span>;
 
-  DOMString? <span title=dom-Element-getAttribute>getAttribute</span>(DOMString name);
-  DOMString? <span title=dom-Element-getAttributeNS>getAttributeNS</span>(DOMString namespaceURI, DOMString localName);
-  void <span title=dom-Element-setAttribute>setAttribute</span>(DOMString name, DOMString value);
-  void <span title=dom-Element-setAttributeNS>setAttributeNS</span>(DOMString namespaceURI, DOMString qualifiedName, DOMString value);
-  void <span title=dom-Element-removeAttribute>removeAttribute</span>(DOMString name);
-  void <span title=dom-Element-removeAttributeNS>removeAttributeNS</span>(DOMString namespaceURI, DOMString localName);
+  DOMString? <span title=dom-Element-getAttribute>getAttribute</span>(DOMString <var>qualifiedName</var>);
+  DOMString? <span title=dom-Element-getAttributeNS>getAttributeNS</span>(DOMString <var>namespaceURI</var>, DOMString <var>localName</var>);
+  void <span title=dom-Element-setAttribute>setAttribute</span>(DOMString <var>qualifiedName</var>, DOMString <var>value</var>);
+  void <span title=dom-Element-setAttributeNS>setAttributeNS</span>(DOMString <var>namespaceURI</var>, DOMString <var>qualifiedName</var>, DOMString <var>value</var>);
+  void <span title=dom-Element-removeAttribute>removeAttribute</span>(DOMString <var>qualifiedName</var>);
+  void <span title=dom-Element-removeAttributeNS>removeAttributeNS</span>(DOMString <var>namespaceURI</var>, DOMString <var>localName</var>);
   boolean <span title=dom-Element-hasAttribute>hasAttribute</span>(DOMString <var>qualifiedName</var>);
   boolean <span title=dom-Element-hasAttributeNS>hasAttributeNS</span>(DOMString <var>namespaceURI</var>, DOMString <var>localName</var>);
 <!--
@@ -1759,37 +1759,38 @@ method must return the value of the attribute in the
 is <var>localName</var>, if the attribute is present, or null otherwise.</p>
 
 <p>The
-<dfn title=dom-Element-setAttribute><code>setAttribute(<var>name</var>, <var>value</var>)</code></dfn>
+<dfn title=dom-Element-setAttribute><code>setAttribute(<var>qualifiedName</var>, <var>value</var>)</code></dfn>
 method must run these steps:
 
 <ol>
- <li><p>If <var>name</var> is empty or <var>name</var> doesn't
- match the <code data-anolis-spec=xml>Name</code> production in XML, raise an
+ <li><p>If <var>qualifiedName</var> does not match the
+ <code data-anolis-spec=xml>Name</code> production in XML, raise an
  <code title=dom-DOMException-INVALID_CHARACTER_ERR title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
- exception and abort these steps.
+ exception and terminate these steps.
 
- <li class=XXX><p>Do something about <var>name</var> == "xmlns"?
+ <li class=XXX><p>Do something about <var>qualifiedName</var> == "xmlns"?
  <a href=https://bugzilla.mozilla.org/show_bug.cgi?id=315805>Moz bug 315805</a>
 
- <li><p>If the <span>context node</span> is in the <span>HTML namespace</span>
- and its <code title=dom-Node-ownerDocument>ownerDocument</code> is an
- <span>HTML document</span>, let <var>name</var> be <span>converted to lowercase</span>.
+ <li><p>If the <span>context node</span> is in the
+ <span>HTML namespace</span> and its
+ <code title=dom-Node-ownerDocument>ownerDocument</code> is an
+ <span>HTML document</span>, let <var>qualifiedName</var> be
+ <span>converted to lowercase</span>.
 
  <li><p>If the node does not have an attribute whose <span
- title=concept-attribute-name>name</span> <span
- title=case-sensitive>case-sensitively</span> equals <var>name</var>,
- create an <code>Attr</code> node, with <var>name</var> as its <span
- title=concept-attribute-name>name</span> and the <span>context node</span> as
- its <span title=concept-attribute-element>element</span>. Set its <code
- title=dom-Attr-value>value</code> to <var>value</var>. Append this node
- to the <span title="context node">context node's</span> <code
- title=dom-Node-attributes>attributes</code>, as its last item.
+ title=concept-attribute-name>name</span> is <var>qualifiedName</var>,
+ create an <code>Attr</code> node, with <var>qualifiedName</var> as its
+ <span title=concept-attribute-name>name</span> and the
+ <span>context node</span> as its
+ <span title=concept-attribute-element>element</span>. Set its
+ <code title=dom-Attr-value>value</code> to <var>value</var>. Append this
+ node to the <span title="context node">context node's</span>
+ <code title=dom-Node-attributes>attributes</code>, as its last item.
 
- <li><p>Otherwise, set the <code title=dom-Attr-value>value</code> of the first
- attribute in the <span title="context node">context node's</span> <code
- title=dom-Node-attributes>attributes</code> whose <span
- title=concept-attribute-name>name</span> <span
- title=case-sensitive>case-sensitively</span> equals <var>name</var>,
+ <li><p>Otherwise, set the <code title=dom-Attr-value>value</code> of the
+ first attribute in the <span title="context node">context node's</span>
+ <code title=dom-Node-attributes>attributes</code> whose <span
+ title=concept-attribute-name>name</span> is <var>qualifiedName</var>,
  in any namespace, to <var>value</var>.
 </ol>
 

@@ -363,9 +363,7 @@ of the string, where such spaces are removed.</p>
 <span>ASCII case-insensitive</span> string that represents a certain feature of
 the user agent.
 
-<p>A <dfn title=concept-DOMfeatureversion>DOM feature version</dfn> is a (<var
-title>feature string</var>,&nbsp;<var>version</var>) tuple, where <var
-title>feature string</var> is <span title=concept-DOMfeature>DOM feature</span>
+<p>A <dfn title=concept-DOMfeatureversion>DOM feature version</dfn> is a (<var>feature</var>,&nbsp;<var>version</var>) tuple, where <var>feature</var> is <span title=concept-DOMfeature>DOM feature</span>
 and <var>version</var> is a <span>case-sensitive</span> string
 representing a version number.
 <!--of the form "<var>major</var>.<var>minor</var>".-->
@@ -373,15 +371,15 @@ representing a version number.
 <p>Specifications may define which <span title=concept-DOMfeature>DOM
 features</span> a user agent is to <dfn
 title=concept-support-DOMfeature>support</dfn>, as well as an associated list of
-one or more <span>case-sensitive</span> strings representing version numbers,
-and under which circumstances.
+one or more <span>case-sensitive</span> strings representing version numbers, and under which circumstances, when necessary for compatibility (i.e. because of historical use). Specifications must not introduce new <span title=concept-DOMfeature>DOM
+features</span> or new versions for existing features.
 
 <p>A user agent must <dfn title=concept-support-DOMfeatureversion>support</dfn>
 a <span title=concept-DOMfeatureversion>DOM feature version</span> (<var
-title>feature string</var>,&nbsp;<var>version</var>) if it <span
+title>feature</var>,&nbsp;<var>version</var>) if it <span
 title=concept-support-DOMfeature>supports</span> a <span
 title=concept-DOMfeature>DOM feature</span> that is a <span>ASCII
-case-insensitive</span> match for <var>feature string</var> and <var
+case-insensitive</span> match for <var>feature</var> and <var
 title>version</var> is in the associated list of versions.
 
 <p>A user agent must <span
@@ -389,7 +387,7 @@ title=concept-support-DOMfeatureversion>support</span> the (<var
 title>feature</var>,&nbsp;"") tuple if it <span
 title=concept-support-DOMfeature>supports</span> a <span
 title=concept-DOMfeature>DOM feature</span> that is a <span>ASCII
-case-insensitive</span> match for <var>feature string</var>.
+case-insensitive</span> match for <var>feature</var>.
 
 <p class=note>Authors are strongly discouraged from using <span
 title=concept-DOMfeature>DOM features</span>, as they are notoriously unreliable
@@ -459,8 +457,8 @@ title>http://www.w3.org/2000/xmlns/</code>.
 
 
 <h2>Basic types</h2>
-<p>A <dfn>DOMTimeStamp</dfn> represents a number of milliseconds.
-<pre class=idl>typedef unsigned long long DOMTimeStamp;</pre>
+<p>A <code>DOMTimeStamp</code> represents a number of milliseconds.
+<pre class=idl>typedef unsigned long long <dfn>DOMTimeStamp</dfn>;</pre>
 
 
 
@@ -1751,11 +1749,18 @@ on getting, run the following steps:
  the attribute is present, or null otherwise.
 </ol>
 
-<p>The <dfn title=dom-Element-getAttributeNS>getAttributeNS(<var>namespaceURI</var>, <var>localName</var></dfn> method must return the value of the attribute in
-the <span>context node</span>'s <code title=dom-Node-attributes>attributes</code> whose <code title=dom-Node-namespaceURI>namespaceURI</code> is <var>namespaceURI</var> and <code title=dom-Node-localName>localName</code> is <var>localName</var>, if the attribute is present, or null otherwise.</p>
+<p>The
+<dfn title=dom-Element-getAttributeNS><code>getAttributeNS(<var>namespaceURI</var>, <var>localName</var>)</code></dfn>
+method must return the value of the attribute in the
+<span>context node</span>'s
+<code title=dom-Node-attributes>attributes</code> whose
+<code title=dom-Node-namespaceURI>namespaceURI</code> is
+<var>namespaceURI</var> and <code title=dom-Node-localName>localName</code>
+is <var>localName</var>, if the attribute is present, or null otherwise.</p>
 
-<p>The <dfn title=dom-Element-setAttribute><code>setAttribute(<var>name</var>, <var>value</var>)</code></dfn> method must run the
-following steps:
+<p>The
+<dfn title=dom-Element-setAttribute><code>setAttribute(<var>name</var>, <var>value</var>)</code></dfn>
+method must run these steps:
 
 <ol>
  <li><p>If <var>name</var> is empty or <var>name</var> doesn't
@@ -1768,10 +1773,9 @@ following steps:
 
  <li><p>If the <span>context node</span> is in the <span>HTML namespace</span>
  and its <code title=dom-Node-ownerDocument>ownerDocument</code> is an
- <span>HTML document</span>, let <var>name</var> be <var>name</var>,
- <span>converted to lowercase</span>.
+ <span>HTML document</span>, let <var>name</var> be <span>converted to lowercase</span>.
 
- <li><p>If the node doesn't have an attribute whose <span
+ <li><p>If the node does not have an attribute whose <span
  title=concept-attribute-name>name</span> <span
  title=case-sensitive>case-sensitively</span> equals <var>name</var>,
  create an <code>Attr</code> node, with <var>name</var> as its <span

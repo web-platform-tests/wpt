@@ -585,6 +585,35 @@ policies and contribution forms [3].
 
     /*
      * Template code
+     * 
+     * A template is just a javascript structure. An element is represented as:
+     * 
+     * [tag_name, {attr_name:attr_value}, child1, child2]
+     * 
+     * the children can either be strings (which act like text nodes), other templates or 
+     * functions (see below)
+     * 
+     * A text node is represented as 
+     * 
+     * ["{text}", value]
+     * 
+     * String values have a simple substitution syntax; ${foo} represents a variable foo.
+     * 
+     * It is possible to embed logic in templates by using a function in a place where a 
+     * node would usually go. The function must either return part of a template or null.
+     * 
+     * In cases where a set of nodes are required as output rather than a single node
+     * with children it is possible to just use a list
+     * [node1, node2, node3]
+     * 
+     * Usage:
+     * 
+     * render(template, substitutions) - take a template and an object mapping 
+     * variable names to parameters and return either a DOM node or a list of DOM nodes
+     * 
+     * substitute(template, substitutions) - take a template and variable mapping object,
+     * make the variable substitutions and return the substituted template
+     * 
      */
 
     function is_single_node(template)
@@ -600,7 +629,9 @@ policies and contribution forms [3].
             {
                 var rv = substitute(replacement, substitutions);
                 return rv;
-            } else {
+            } 
+            else
+            {
                 return null;
             }
         }

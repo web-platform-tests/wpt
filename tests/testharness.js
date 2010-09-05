@@ -189,7 +189,7 @@ policies and contribution forms [3].
              "assert_exists", description,
              "expected property ${p} missing", {p:property_name});
 
-         assert(object.hasOwnProperty(property_name, message));
+         assert(object.hasOwnProperty(property_name), message);
     };
     expose(assert_exists, "assert_exists");
 
@@ -199,7 +199,7 @@ policies and contribution forms [3].
              "assert_not_exists", description,
              "unexpected property ${p} found", {p:property_name});
 
-         assert(!object.hasOwnProperty(property_name, message));
+         assert(!object.hasOwnProperty(property_name), message);
     };
     expose(assert_not_exists, "assert_not_exists");
 
@@ -233,7 +233,7 @@ policies and contribution forms [3].
         {
             func.call(this);
             assert(false, make_message("assert_throws", description,
-                                      "%{func} did not throw", {func:func}));
+                                      "${func} did not throw", {func:func}));
         }
         catch(e)
         {
@@ -247,7 +247,7 @@ policies and contribution forms [3].
                        make_message("assert_throws", description,
                            "${func} has code ${actual} expected ${expected}",
                                     {func:func, actual:e.code,
-                                     expected:code_or_object}));
+                                     expected:e[code_or_object]}));
             }
             else
             {

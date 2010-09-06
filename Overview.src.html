@@ -1183,10 +1183,10 @@ title>data</var>)</code></dfn> method must run the following steps:
 
  <!--<li><p>If <var>target</var> contains a U+003A COLON (":") character, raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and terminate these steps.--> <!-- DOM3 didn't check this -->
 
- <li><p>Return a new <span title=concept-PI>processing instruction</span>, with
- <var>target</var> as its <span title=concept-PI-target>target</span> and
- <var>data</var> as its <span title=concept-PI-data>data</span>, and whose
- <code title=dom-Node-ownerDocument>ownerDocument</code> is set to the
+ <li><p>Return a new <code>ProcessingInstruction</code>, with
+ <span title=concept-PI-target>target</span> set to <var>target</var>,
+ <span title=concept-PI-data>data</span> set to <var>data</var>, and
+ <code title=dom-Node-ownerDocument>ownerDocument</code> set to the
  <span>context node</span>.
 </ol>
 
@@ -1933,20 +1933,15 @@ attribute must return the <span>context node</span>'s <span title=concept-doctyp
            attribute DOMString <span title=dom-ProcessingInstruction-data>data</span>;
 };</pre>
 
-<p><code>ProcessingInstruction</code> nodes represent <dfn
-title=concept-PI>processing instructions</dfn>. They have a <dfn
-title=concept-PI-target>target</dfn> associated with them when they are created,
-as well as some <dfn title=concept-PI-data>data</dfn>.
+<p><code>ProcessingInstruction</code> nodes have an associated <dfn
+title=concept-PI-target>target</dfn> and <dfn title=concept-PI-data>data</dfn>. When a <code>ProcessingInstruction</code> node is created both are given.
 
 <p>The <dfn title=dom-ProcessingInstruction-target><code>target</code></dfn>
-attribute must, on getting, return the <span title="context node">context
-node's</span> <span title=concept-PI-target>target</span>.
+attribute must return the <span>context node</span>'s <span title=concept-PI-target>target</span>.
 
 <p>The <dfn title=dom-ProcessingInstruction-data><code>data</code></dfn>
-attribute must, on getting, return the <span title="context node">context
-node's</span> <span title=concept-PI-data>data</span>, and on setting, set the
-<span title="context node">context node's</span> <span
-title=concept-PI-data>data</span> to the new value.
+attribute must return the <span>context node</span>'s <span title=concept-PI-data>data</span>, and on setting, set the
+<span>context node</span>'s <span title=concept-PI-data>data</span> to the new value.
 
 
 <h3>Interface <code>CharacterData</code></h3>

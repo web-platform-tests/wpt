@@ -226,7 +226,7 @@ being the set of characters that can be collected:</p>
 
  <li><p>Let <var>result</var> be the empty string.</p></li>
 
- <li><p>While <var>position</var> doesn't point past the
+ <li><p>While <var>position</var> does not point past the
  end of <var>input</var> and the character at <var
  title="">position</var> is one of the <var
  title="">characters</var>, append that character to the end of <var
@@ -530,11 +530,11 @@ must return the code for the exception, which must be one of the following:
  the operation is not allowed by <cite>Namespaces in XML</cite>; <span
  data-anolis-ref>XMLNS</span>
  <li value="15"><dfn title=dom-DOMException-INVALID_ACCESS_ERR><code>INVALID_ACCESS_ERR</code></dfn>:
- the object doesn't support the operation or argument;
+ the object does not support the operation or argument;
  <li value="16"><dfn title=dom-DOMException-VALIDATION_ERR><code>VALIDATION_ERR</code></dfn>:
  the operation is invalid (historical);
  <li value="17"><dfn title=dom-DOMException-TYPE_MISMATCH_ERR><code>TYPE_MISMATCH_ERR</code></dfn>:
- the type of the object doesn't match the expected type;
+ the type of the object does not match the expected type;
  <!-- XHR -->
  <li value="18"><dfn title=dom-DOMException-SECURITY_ERR><code>SECURITY_ERR</code></dfn>:
  the operation is insecure;
@@ -546,7 +546,7 @@ must return the code for the exception, which must be one of the following:
  the user aborted an operation;
  <!-- Workers -->
  <li value="21"><dfn title=dom-DOMException-URL_MISMATCH_ERR><code>URL_MISMATCH_ERR</code></dfn>:
- the given URL doesn't match another URL;
+ the given URL does not match another URL;
  <!-- HTML -->
  <li value="22"><dfn title=dom-DOMException-QUOTA_EXCEEDED_ERR><code>QUOTA_EXCEEDED_ERR</code></dfn>:
  the quota has been exceeded;
@@ -622,11 +622,13 @@ must return the name of the exception constant as a string.</p>
   unsigned short <span title=dom-Node-compareDocumentPosition>compareDocumentPosition</span>(<span>Node</span> other);
 
   [TreatNullAs=EmptyString] attribute DOMString <span title=dom-Node-textContent>textContent</span>;
+
   boolean <span title=dom-Node-isSameNode>isSameNode</span>(<span>Node</span> other);
+  boolean <span title=dom-Node-isEqualNode>isEqualNode</span>(<span>Node</span> arg);
+
   DOMString <span title=dom-Node-lookupPrefix>lookupPrefix</span>(DOMString namespace);
   boolean <span title=dom-Node-isDefaultNamespace>isDefaultNamespace</span>(DOMString namespace);
-  DOMString <span title=dom-Node-lookupNamespaceURI>lookupNamespaceURI</span>(DOMString prefix);
-  boolean <span title=dom-Node-isEqualNode>isEqualNode</span>(<span>Node</span> arg);<!--
+  DOMString <span title=dom-Node-lookupNamespaceURI>lookupNamespaceURI</span>(DOMString prefix);<!--
   DOMObject getFeature(DOMString feature, DOMString version);
   DOMUserData setUserData(DOMString key, DOMUserData data, UserDataHandler handler);
   DOMUserData getUserData(DOMString key);-->
@@ -686,10 +688,10 @@ returned, but are still exposed.</p>
 must, on getting, run the following steps:
 
 <ol>
- <li><p>If the <span>context node</span> is an <code>Attr</code> node, return
- null and terminate these steps.
+ <li><p>If the <span>context node</span> is an <code>Attr</code> node,
+ return null and terminate these steps.
 
- <li><p>If the <span>context node</span> doesn't have a parent node, return
+ <li><p>If the <span>context node</span> does not have a parent node, return
  null and terminate these steps.
 
  <li><p>Return the parent node of the <span>context node</span>.
@@ -705,26 +707,25 @@ must, on getting, run the following steps:
 <p>The <dfn title=dom-Node-lastChild><code>lastChild</code></dfn> attribute must, on getting, return the last child node of the <span>context node</span>, or null if there is none.
 
 <p>The <dfn title=dom-Node-previousSibling><code>previousSibling</code></dfn>
-attribute must, on getting, run the following steps:
+attribute must run these steps:
 
 <ol>
- <li><p>If the <span>context node</span> is an <code>Attr</code> node, return
- null and terminate these steps.
-
- <li><p>If the <span>context node</span> doesn't have a previous sibling node,
+ <li><p>If the <span>context node</span> is an <code>Attr</code> node,
  return null and terminate these steps.
+
+ <li><p>If the <span>context node</span> does not have a previous sibling
+ node, return null and terminate these steps.
 
  <li><p>Return the previous sibling node of the <span>context node</span>.
 </ol>
 
-<p>The <dfn title=dom-Node-nextSibling><code>nextSibling</code></dfn> attribute
-must, on getting, run the following steps:
+<p>The <dfn title=dom-Node-nextSibling><code>nextSibling</code></dfn> attribute must run these steps:
 
 <ol>
- <li><p>If the <span>context node</span> is an <code>Attr</code> node, return
- null and terminate these steps.
+ <li><p>If the <span>context node</span> is an <code>Attr</code> node,
+ return null and terminate these steps.
 
- <li><p>If the <span>context node</span> doesn't have a next sibling node,
+ <li><p>If the <span>context node</span> does not have a next sibling node,
  return null and terminate these steps.
 
  <li><p>Return the next sibling node of the <span>context node</span>.
@@ -897,20 +898,21 @@ the (<var>feature</var>, <var>version</var>) tuple on the
  <li>
   <p>If <var>prefix</var> is not null, run the following substeps:
   <ol>
-   <li><p>If <var>prefix</var> doesn't match the <code data-anolis-spec=xml>Name</code> production in XML, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and terminate these steps.
-   <li><p>If <var>prefix</var> doesn't match the <code
+   <li><p>If <var>prefix</var> does not match the <code data-anolis-spec=xml>Name</code> production in XML, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and terminate these steps.
+   <li><p>If <var>prefix</var> does not match the <code
    data-anolis-spec=xmlns>NCName</code> production in Namespaces in XML, raise a
    <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and
    terminate these steps.
   </ol>
- <li><p class=XXX>Actually this doesn't match any browser. Let's try to drop it instead.
+ <li><p class=XXX>Actually this does not match any browser. Let's try to drop it instead.
 </ol>-->
 
-<p class=note>Setting the <code title=dom-Node-prefix>prefix</code> attribute is
-no longer supported.
+<p class=note>Setting the <code title=dom-Node-prefix>prefix</code>
+attribute is not supported. <!-- XXX kill this note at some point -->
 
-<p>The <dfn title=dom-Node-localName><code>localName</code></dfn> attribute must return the local name that is associated with the node, if it has
-one, and null otherwise.
+<p>The <dfn title=dom-Node-localName><code>localName</code></dfn> attribute
+must return the local name that is associated with the node, if it has one,
+and null otherwise.
 
 <p>The <dfn title=dom-Node-hasAttributes><code>hasAttributes()</code></dfn>
 method must return whether there are any attributes associated with the
@@ -957,10 +959,42 @@ title>other</var>)</code></dfn> method must <span class=XXX title>...</span>
 
 <p class=XXX>What does null mean? <a href="http://www.w3.org/mid/c9e12660808271343v58990698gabac29d2123a82ce@mail.gmail.com">http://www.w3.org/mid/c9e12660808271343v58990698gabac29d2123a82ce@mail.gmail.com</a>
 
-<p>The <dfn title=dom-Node-isSameNode><code>isSameNode(<var
-title>other</var>)</code></dfn> method must return true if <var
-title>other</var> is a reference to the same object as the <span>context
-node</span>, and false otherwise.
+<hr>
+
+<p>The
+<dfn title=dom-Node-isSameNode><code>isSameNode(<var>otherNode</var>)</code></dfn>
+method must return true if <var>otherNode</var> is a reference to the same
+object as the <span>context node</span>, and false otherwise.
+
+
+<p>The <dfn title=dom-Node-isEqualNode><code>isEqualNode(<var>otherNode</var>)</code></dfn> method must return true if all of the following
+conditions are true, and must otherwise return false:
+
+<ul>
+ <li><p><var>otherNode</var> is not null.
+ <li><p><var>otherNode</var>'s <code title=dom-Node-nodeType>nodeType</code> is the same as the <span>context node</span>'s <code title=dom-Node-nodeType>nodeType</code>.
+ <li><p><var>otherNode</var>'s <code title=dom-Node-nodeName>nodeName</code> is the same as the <span>context node</span>'s <code title=dom-Node-nodeName>nodeName</code>.
+ <li><p><var>otherNode</var>'s <code title=dom-Node-localName>localName</code> is the same as the <span>context node</span>'s <code title=dom-Node-localName>localName</code>.
+ <li><p><var>otherNode</var>'s <code title=dom-Node-namespaceURI>namespaceURI</code> is the same as the <span>context node</span>'s <code title=dom-Node-namespaceURI>namespaceURI</code>.
+ <li><p><var>otherNode</var>'s <code title=dom-Node-prefix>prefix</code> is the same as the <span>context node</span>'s <code title=dom-Node-prefix>prefix</code>.
+ <li><p><var>otherNode</var>'s <code title=dom-Node-nodeValue>nodeValue</code> is the same as the <span>context node</span>'s <code title=dom-Node-nodeValue>nodeValue</code>.
+
+ <li><p>Either <var>otherNode</var>'s <code
+ title=dom-Node-attributes>attributes</code> and the <span>context node</span>'s
+ <code title=dom-Node-attributes>attributes</code> are both null or a bijection
+ exists between the set of <var>otherNode</var>'s <code
+ title=dom-Node-attributes>attributes</code> and the set of the <span>context
+ node</span>'s <code title=dom-Node-attributes>attributes</code> so that every
+ <code>Attr</code> node in the former is mapped to an <code>Attr</code> node in
+ the latter for which calling <code
+ title=dom-Node-isEqualNode>isEqualNode</code> on the first <code>Attr</code>
+ node with the second <code>Attr</code> node as its argument returns true.
+
+ <li><p><var>otherNode</var>'s <code title=dom-Node-childNodes>childNodes</code>' <code title=dom-NodeList-length>length</code> is the same as the <span>context node</span>'s <code title=dom-Node-childNodes>childNodes</code>' <code title=dom-NodeList-length>length</code>.
+ <li><p>Calling <code title=dom-Node-isEqualNode>isEqualNode</code> on each child node of the <span>context node</span>, with the child node of the same index in <var>otherNode</var> as argument returns true for every child node.
+</ul>
+
+<hr>
 
 <p>The <dfn title=dom-Node-lookupPrefix><code>lookupPrefix(<var>namespace</var>)</code></dfn> method must <span class=XXX title>...</span>
 
@@ -971,34 +1005,6 @@ title>namespace</var>)</code></dfn> method must <span class=XXX title>...</span>
 title>prefix</var>)</code></dfn> method must <span class=XXX title>...</span>
 
 <p class=XXX>clarify lookupNamespaceURI <a href=http://www.w3.org/mid/4878DFC6.40401@lachy.id.au>http://www.w3.org/mid/4878DFC6.40401@lachy.id.au</a>; lookupNamespaceURI, isDefaultNamespace <a href="http://html5.org/tools/web-apps-tracker?from=2125&amp;to=2126">http://html5.org/tools/web-apps-tracker?from=2125&amp;to=2126</a>
-
-<p>The <dfn title=dom-Node-isEqualNode><code>isEqualNode(<var
-title>arg</var>)</code></dfn> method must return true if all of the following
-conditions are true, and must otherwise return false:
-
-<ul>
- <li><p><var>arg</var> is not null.
- <li><p><var>arg</var>'s <code title=dom-Node-nodeType>nodeType</code> is the same as the <span>context node</span>'s <code title=dom-Node-nodeType>nodeType</code>.
- <li><p><var>arg</var>'s <code title=dom-Node-nodeName>nodeName</code> is the same as the <span>context node</span>'s <code title=dom-Node-nodeName>nodeName</code>.
- <li><p><var>arg</var>'s <code title=dom-Node-localName>localName</code> is the same as the <span>context node</span>'s <code title=dom-Node-localName>localName</code>.
- <li><p><var>arg</var>'s <code title=dom-Node-namespaceURI>namespaceURI</code> is the same as the <span>context node</span>'s <code title=dom-Node-namespaceURI>namespaceURI</code>.
- <li><p><var>arg</var>'s <code title=dom-Node-prefix>prefix</code> is the same as the <span>context node</span>'s <code title=dom-Node-prefix>prefix</code>.
- <li><p><var>arg</var>'s <code title=dom-Node-nodeValue>nodeValue</code> is the same as the <span>context node</span>'s <code title=dom-Node-nodeValue>nodeValue</code>.
-
- <li><p>Either <var>arg</var>'s <code
- title=dom-Node-attributes>attributes</code> and the <span>context node</span>'s
- <code title=dom-Node-attributes>attributes</code> are both null or a bijection
- exists between the set of <var>arg</var>'s <code
- title=dom-Node-attributes>attributes</code> and the set of the <span>context
- node</span>'s <code title=dom-Node-attributes>attributes</code> so that every
- <code>Attr</code> node in the former is mapped to an <code>Attr</code> node in
- the latter for which calling <code
- title=dom-Node-isEqualNode>isEqualNode</code> on the first <code>Attr</code>
- node with the second <code>Attr</code> node as its argument returns true.
-
- <li><p><var>arg</var>'s <code title=dom-Node-childNodes>childNodes</code>' <code title=dom-NodeList-length>length</code> is the same as the <span>context node</span>'s <code title=dom-Node-childNodes>childNodes</code>' <code title=dom-NodeList-length>length</code>.
- <li><p>Calling <code title=dom-Node-isEqualNode>isEqualNode</code> on each child node of the <span>context node</span>, with the child node of the same index in <var>arg</var> as argument returns true for every child node.
-</ul>
 
 
 <h3>Interface <code>DocumentFragment</code></h3>
@@ -1164,7 +1170,7 @@ title>data</var>)</code></dfn> method must run the following steps:
  a <code title=dom-DOMException-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</code>
  exception and terminate these steps.
 
- <li><p>If <var>target</var> doesn't match the <!--<code
+ <li><p>If <var>target</var> does not match the <!--<code
  data-anolis-spec=xml>PITarget</code>--> <code data-anolis-spec=xml>Name</code>
  production in XML, raise an <code
  title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
@@ -1192,7 +1198,7 @@ contains "xml" or the colon, or that the data contains characters that match the
 [createAttribute]
 <p>The <dfn title=dom-Document-createAttribute><code>createAttribute(<var>name</var>)</code></dfn> method must run the following steps:</p>
 <ol>
- <li><p>If <var>name</var> doesn't match the <code data-anolis-spec=xml>Name</code> production in XML, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and terminate these steps.
+ <li><p>If <var>name</var> does not match the <code data-anolis-spec=xml>Name</code> production in XML, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and terminate these steps.
  <li><p>Return a new <code>Attr</code> node with its <code title=dom-Node-namespaceURI>namespaceURI</code> set to null, <code title=dom-Node-prefix>prefix</code> set to null, <code title=dom-Node-localName>localName</code> set to <var>name</var>, and <code title=dom-Node-ownerDocument>ownerDocument</code> set to the <span>context node</span>.
 </ol>-->
 <!-- this is different from DOM3 -->
@@ -1484,10 +1490,10 @@ otherwise.
   <p>Returns a new <code>DocumentType</code>, with the given <var
   title>qualifiedName</var>, <var>publicId</var>, and <var
   title>systemId</var>. If <var
-  title>qualifiedName</var> doesn't match the <code
+  title>qualifiedName</var> does not match the <code
   data-anolis-spec=xml>Name</code> production in XML, an <code
   title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
-  exception is raised, and if it doesn't match the <code
+  exception is raised, and if it does not match the <code
   data-anolis-spec=xmlns>NCName</code> production in Namespaces in XML, a <code
   title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception is raised.
 
@@ -1530,15 +1536,15 @@ otherwise.
 <p>The <dfn title=dom-DOMImplementation-createDocumentType><code>createDocumentType(<var>qualifiedName</var>, <var>publicId</var>, <var>systemId</var>)</code></dfn> method must run the following steps:
 
 <ol>
- <li><p>If <var>qualifiedName</var> doesn't match the <code
+ <li><p>If <var>qualifiedName</var> does not match the <code
  data-anolis-spec=xml>Name</code> production in XML, raise an <code
  title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
  exception and terminate these steps.
- <li><p>If <var>qualifiedName</var> doesn't match the <code
+ <li><p>If <var>qualifiedName</var> does not match the <code
  data-anolis-spec=xmlns>NCName</code> production in Namespaces in XML, raise a
  <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and
  terminate these steps.
- <!--<li><p>If <var>publicId</var> contains a character that doesn't match the <code data-anolis-spec=xml>PubidChar</code> production in XML, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and terminate these steps. --> <!-- DOM3 didn't check this -->
+ <!--<li><p>If <var>publicId</var> contains a character that does not match the <code data-anolis-spec=xml>PubidChar</code> production in XML, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and terminate these steps. --> <!-- DOM3 didn't check this -->
  <!--<li><p>If <var>systemId</var> contains both a U+0022 QUOTATION MARK ('"') and a U+0027 APOSTROPHE ("'") character, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and terminate these steps.--> <!-- DOM3 didn't check this -->
  <li><p>Return a new <span title=concept-doctype>document type
  declaration</span>, with <var>qualifiedName</var> as its <span
@@ -1547,7 +1553,7 @@ otherwise.
  as its <span title=concept-doctype-systemid>system ID</span>, and with its
  <code title=dom-Node-ownerDocument>ownerDocument</code> set to null.
 </ol>
-<p class=note>No check is performed that the <var>publicId</var> matches the <code title>PublicChar</code> production in XML or that the <var>systemId</var> doesn't contain both a quotation mark (") and an apostrophe (').
+<p class=note>No check is performed that the <var>publicId</var> matches the <code title>PublicChar</code> production in XML or that the <var>systemId</var> does not contain both a quotation mark (") and an apostrophe (').
 
 <p>The <dfn title=dom-DOMImplementation-createDocument><code>createDocument(<var>namespace</var>, <var>qualifiedName</var>, <var>doctype</var>)</code></dfn> method must run the following steps:
 

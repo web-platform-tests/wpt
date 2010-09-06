@@ -663,7 +663,7 @@ returned, but are still exposed.</p>
 </ol>
 
 
-<p>The <dfn title=dom-Node-nodeName><code>nodeName</code></dfn>, <dfn title=dom-Node-nodeValue><code>nodeValue</code></dfn> and <dfn title=dom-Node-nodeType><code>nodeType</code></dfn> attributes must, on getting, return what is in the second, third and fourth column, respectively, if the node also implements the interface in the first column on the same row in the following table:
+<p>The <dfn title=dom-Node-nodeName><code>nodeName</code></dfn>, <dfn title=dom-Node-nodeValue><code>nodeValue</code></dfn> and <dfn title=dom-Node-nodeType><code>nodeType</code></dfn> attributes must return what is in the second, third and fourth column, respectively, on the same row that lists, in the first column, the interface the <span>context node</span> implements:
 
 <table>
  <caption>Value of <code title=dom-Node-nodeName>nodeName</code>, <code
@@ -1339,6 +1339,8 @@ node</span> whose <span title=concept-ID>ID</span> is <var>elementId</var>,
 or null if there is none.
 
 <hr>
+
+<p class="XXX">the restrictions on importNode do not match createElement. bug/feature?</p>
 
 <p>The <dfn title=dom-Document-importNode><code>importNode(<var>importedNode</var>, <var>deep</var>)</code></dfn> method must run
 the following steps:

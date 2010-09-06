@@ -684,8 +684,8 @@ returned, but are still exposed.</p>
   <tr><td><code>DocumentFragment</code><td>"<code title>#document-fragment</code>"<td>null<td>11
 </table>
 
-<p>The <dfn title=dom-Node-parentNode><code>parentNode</code></dfn> attribute
-must, on getting, run the following steps:
+<p>The <dfn title=dom-Node-parentNode><code>parentNode</code></dfn>
+attribute must run these steps:
 
 <ol>
  <li><p>If the <span>context node</span> is an <code>Attr</code> node,
@@ -698,13 +698,13 @@ must, on getting, run the following steps:
 </ol>
 
 <!-- XXX really needed? Minefield does not have this -->
-<p>The <dfn title=dom-Node-parentElement><code>parentElement</code></dfn> attribute must, on getting, return the parent node of the <span>context node</span> if there is a parent and it is an element, or null otherwise.
+<p>The <dfn title=dom-Node-parentElement><code>parentElement</code></dfn> attribute must return the parent node of the <span>context node</span> if there is a parent and it is an element, or null otherwise.
 
-<p>The <dfn title=dom-Node-childNodes><code>childNodes</code></dfn> attribute must, on getting, return a <code>NodeList</code> rooted at the <span>context node</span> matching only child nodes.
+<p>The <dfn title=dom-Node-childNodes><code>childNodes</code></dfn> attribute must return a <code>NodeList</code> rooted at the <span>context node</span> matching only child nodes.
 
-<p>The <dfn title=dom-Node-firstChild><code>firstChild</code></dfn> attribute must, on getting, return the first child node of the <span>context node</span>, or null if there is none.
+<p>The <dfn title=dom-Node-firstChild><code>firstChild</code></dfn> attribute must return the first child node of the <span>context node</span>, or null if there is none.
 
-<p>The <dfn title=dom-Node-lastChild><code>lastChild</code></dfn> attribute must, on getting, return the last child node of the <span>context node</span>, or null if there is none.
+<p>The <dfn title=dom-Node-lastChild><code>lastChild</code></dfn> attribute must return the last child node of the <span>context node</span>, or null if there is none.
 
 <p>The <dfn title=dom-Node-previousSibling><code>previousSibling</code></dfn>
 attribute must run these steps:
@@ -731,13 +731,13 @@ attribute must run these steps:
  <li><p>Return the next sibling node of the <span>context node</span>.
 </ol>
 
-<p>The <dfn title=dom-Node-attributes><code>attributes</code></dfn> attribute must, on getting, return a <code>NamedNodeMap</code> of all the <code>Attr</code> nodes associated with the node of the <span>context node</span>, if it is an <code>Element</code> node, or null otherwise.
+<p>The <dfn title=dom-Node-attributes><code>attributes</code></dfn> attribute must return a <code>NamedNodeMap</code> of all the <code>Attr</code> nodes associated with the node of the <span>context node</span>, if it is an <code>Element</code> node, or null otherwise.
 
-<p>The <dfn title=dom-Node-ownerDocument><code>ownerDocument</code></dfn> attribute must, on getting, return the <code>Document</code> node that the <span>context node</span> is associated with, or null if there is none.
+<p>The <dfn title=dom-Node-ownerDocument><code>ownerDocument</code></dfn> attribute must return the <code>Document</code> node that the <span>context node</span> is associated with, or null if there is none.
 
 <p>The <dfn title=dom-Node-insertBefore><code>insertBefore(<var
 title>newChild</var>, <var>refChild</var>)</code></dfn> method must run
-the following steps:
+these steps:
 
 <ol>
  <li><p>If the <span>context node</span> is an <code>Attr</code> node or a
@@ -949,7 +949,7 @@ title>other</var>)</code></dfn> method must <span class=XXX title>...</span>
 <hr>
 
 
-<p>The <dfn title=dom-Node-textContent><code>textContent</code></dfn> attribute, on getting, must return a concatenation of the <code title=dom-CharacterData-data>data</code> of all the descendant <code>Text</code> nodes of the <span>context node</span>, in <span>tree order</span>. On setting, it must run the following steps:
+<p>The <dfn title=dom-Node-textContent><code>textContent</code></dfn> attribute must return a concatenation of the <code title=dom-CharacterData-data>data</code> of all the descendant <code>Text</code> nodes of the <span>context node</span>, in <span>tree order</span>. On setting, it must run these steps:
 
 <ol>
  <li><p>Remove all the child nodes of the <span>context node</span>.
@@ -1509,8 +1509,7 @@ otherwise.
   <var>qualifiedName</var> and whose <code
   title=dom-Node-namespaceURI>namespaceURI</code> is <var
   title>namespace</var> (unless <var>qualifiedName</var> is the empty
-  string), and with <var>doctype</var>, if it is given, as its <span
-  title=concept-doctype>doctype</span>.
+  string), and with <var>doctype</var>, if it is given, as its <code>DocumentType</code>.
 
   <p>This method raises the same exceptions as the <code
   title=dom-Document-createElementNS>createElementNS</code> method, when called
@@ -1546,8 +1545,7 @@ otherwise.
  terminate these steps.
  <!--<li><p>If <var>publicId</var> contains a character that does not match the <code data-anolis-spec=xml>PubidChar</code> production in XML, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and terminate these steps. --> <!-- DOM3 didn't check this -->
  <!--<li><p>If <var>systemId</var> contains both a U+0022 QUOTATION MARK ('"') and a U+0027 APOSTROPHE ("'") character, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and terminate these steps.--> <!-- DOM3 didn't check this -->
- <li><p>Return a new <span title=concept-doctype>document type
- declaration</span>, with <var>qualifiedName</var> as its <span
+ <li><p>Return a new <code>DocumentType</code>, with <var>qualifiedName</var> as its <span
  title=concept-doctype-name>name</span>, <var>publicId</var> as its <span
  title=concept-doctype-publicid>public ID</span>, and <var>systemId</var>
  as its <span title=concept-doctype-systemid>system ID</span>, and with its
@@ -1585,22 +1583,18 @@ steps:
 
  <li><p>Mark <var>doc</var> as being an <span>HTML document</span>.
 
- <li><p>Create a new <span title=concept-doctype>document type
- declaration</span>, with "<code title>html</code>" as its <span
+ <li><p>Create a new <code>DocumentType</code>, with "<code title>html</code>" as its <span
  title=concept-doctype-name>name</span> and with its <code
- title=dom-Node-ownerDocument>ownerDocument</code> set to doc. Append the newly
- created node to <var>doc</var>.
+ title=dom-Node-ownerDocument>ownerDocument</code> set to <var>doc</var>. Append the newly created node to <var>doc</var>.
 
  <li><p>Create an <code title>html</code> element in the <span>HTML
  namespace</span>, and append it to <var>doc</var>.
 
  <li><p>Create a <code title>head</code> element in the <span>HTML
- namespace</span>, and append it to the <code title>html</code> element created
- in the previous step.
+ namespace</span>, and append it to the <code title>html</code> element created in the previous step.
 
  <li><p>Create a <code title>title</code> element in the <span>HTML
- namespace</span>, and append it to the <code title>head</code> element created
- in the previous step.
+ namespace</span>, and append it to the <code title>head</code> element created in the previous step.
 
  <li><p>Create a <code>Text</code> node, and set its <code
  title=dom-CharacterData-data>data</code> attribute to the string given by the
@@ -1654,8 +1648,7 @@ the <span title=concept-attribute-name>name</span> associated with the
 <p>The <dfn title=dom-Attr-specified><code>specified</code></dfn> attribute must
 return true.
 
-<p>The <dfn title=dom-Attr-value><code>value</code></dfn> attribute, on getting,
-must return the same value as the <code
+<p>The <dfn title=dom-Attr-value><code>value</code></dfn> attribute must return the same value as the <code
 title=dom-Node-textContent>textContent</code> IDL attribute on the
 <span>context node</span>, and on setting, must act as if the <code
 title=dom-Node-textContent>textContent</code> IDL attribute on the
@@ -1920,25 +1913,18 @@ title=dom-Node-parentNode>parentNode</code> is the <span>context node</span>.
   readonly attribute DOMString internalSubset;-->
 };</pre>
 
-<p><code>DocumentType</code> nodes represent <dfn title=concept-doctype>document
-type declarations</dfn>. They have a <dfn title=concept-doctype-name>name</dfn>
-and potentially a <dfn title=concept-doctype-publicid>public ID</dfn>, and a
-<dfn title=concept-doctype-systemid>system ID</dfn> associated with them when
-they are created.
+<p><code>DocumentType</code> nodes have an associated <dfn title=concept-doctype-name>name</dfn>, <dfn title=concept-doctype-publicid>public ID</dfn>, and <dfn title=concept-doctype-systemid>system ID</dfn>.
 
-<p>The <dfn title=dom-DocumentType-name><code>name</code></dfn> attribute must,
-on getting, return the <span title="context node">context node's</span> <span
+<p>When a <code>DocumentType</code> node is created <span title=concept-doctype-name>name</span> is always given. Unless explicitly given when a <code>DocumentType</code> node is created, its <span title=concept-doctype-publicid>public ID</span> and <span title=concept-doctype-systemid>system ID</span> are the empty string.</p>
+
+<p>The <dfn title=dom-DocumentType-name><code>name</code></dfn> attribute must return the <span>context node</span>'s <span
 title=concept-doctype-name>name</span>.
 
 <p>The <dfn title=dom-DocumentType-publicId><code>publicId</code></dfn>
-attribute must, on getting, return the <span title="context node">context
-node's</span> <span title=concept-doctype-publicid>public ID</span>, if it has
-one, or the empty string otherwise.
+attribute must return the <span>context node</span>'s <span title=concept-doctype-publicid>public ID</span>.
 
 <p>The <dfn title=dom-DocumentType-systemId><code>systemId</code></dfn>
-attribute must, on getting, return the <span title="context node">context
-node's</span> <span title=concept-doctype-systemid>system ID</span>, if it has
-one, or the empty string otherwise.
+attribute must return the <span>context node</span>'s <span title=concept-doctype-systemid>system ID</span>.
 
 
 <h3>Interface <code>ProcessingInstruction</code></h3>

@@ -72,14 +72,14 @@
 <h2>Goals</h2>
 
 <ul>
- <li>Align DOM Core with needs of ECMAScript first, everything else third. (Of course due to Web IDL it'll work, but compatibility with DOM Level 3 Core is not guaranteed.)</li>
+ <li>Align DOM Core with needs of ECMAScript where possible.</li>
  <li>Align DOM Core with existing implementations.</li>
  <li>Simplify DOM Core as much as possible.</li>
  <li>Import bits of HTML5 that ought to be in DOM Core.</li>
  <li>Prevent a dependency on HTML5.</li>
 </ul>
 
-<p>Obsoleting DOM Level 3 Core is not an explicit goal. It is a fine specification for Java servers.</p>
+<p>Obsoleting DOM Level 3 Core is not a goal. It is a fine specification for Java servers. Web DOM Core presents an alternative.</p>
 
 <p>New features might be added, once everything else is sort of stable.</p>
 
@@ -697,8 +697,8 @@ attribute must run these steps:
  <li><p>Return the parent node of the <span>context node</span>.
 </ol>
 
-<!-- XXX really needed? Minefield does not have this -->
-<p>The <dfn title=dom-Node-parentElement><code>parentElement</code></dfn> attribute must return the parent node of the <span>context node</span> if there is a parent and it is an element, or null otherwise.
+<!-- XXX needed? Minefield does not have this -->
+<p>The <dfn title=dom-Node-parentElement><code>parentElement</code></dfn> attribute must return the parent node of the <span>context node</span> if there is a parent and it is an <code>Element</code> node, or null otherwise.
 
 <p>The <dfn title=dom-Node-childNodes><code>childNodes</code></dfn> attribute must return a <code>NodeList</code> rooted at the <span>context node</span> matching only child nodes.
 
@@ -2091,9 +2091,7 @@ node in the <span title=concept-collection>collection</span>. If there is no
 <var>index</var>th node in the <span
 title=concept-collection>collection</span>, then the method must return null.
 
-<p>The <dfn title=dom-NodeList-length><code>length</code></dfn> attribute must,
-on getting, return the number of nodes <span>represented by the
-collection</span>.
+<p>The <dfn title=dom-NodeList-length><code>length</code></dfn> attribute must return the number of nodes <span>represented by the collection</span>.
 
 <p><code>NodeList</code>s are enumerable. <span class=XXX title>Explain? <code
 title>for ... in</code></span>
@@ -2211,9 +2209,7 @@ title=concept-collection>collection</span>, whose primary purpose is to expose
 
 <p class=XXX><dfn title=dom-NamedNodeMap-item>item</dfn>
 
-<p>The <dfn title=dom-NamedNodeMap-length><code>length</code></dfn> attribute
-must, on getting, return the number of nodes <span>represented by the
-collection</span>.
+<p>The <dfn title=dom-NamedNodeMap-length><code>length</code></dfn> attribute must return the number of nodes <span>represented by the collection</span>.
 
 <p class=XXX><dfn title=dom-NamedNodeMap-getNamedItemNS>getNamedItemNS</dfn>
 
@@ -2491,8 +2487,7 @@ here.</p>
 
 <p>The <dfn
 title="dom-DOMSettableTokenList-value"><code>value</code></dfn>
-attribute must return the underlying string on getting, and must
-replace the underlying string with the new value on setting.</p>
+attribute must return the underlying string and, on setting must replace the underlying string with the new value.</p>
 
 </div>
 

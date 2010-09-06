@@ -1087,41 +1087,57 @@ class=informative>XML</span>
  exception and terminate these steps.
 
  <li><p>If the <span>context node</span> is an <span>HTML document</span>,
- let <var>localName</var> be <var>localName</var>,
- <span>converted to lowercase</span>.
- <!-- XXX why not do this everywhere? -->
+ let <var>localName</var> be <span>converted to lowercase</span>.
+ <!-- XXX why restrict this to HTML documents? -->
 
  <li><p>Return a new <code>Element</code> node with no attributes,
- <code title=dom-Node-namespaceURI>namespaceURI</code> set to the
- <span>HTML namespace</span>, <code title=dom-Node-prefix>prefix</code> set
- to null, <code title=dom-Node-localName>localName</code> set to
+ <span title=concept-element-namespace>namespace</span> set to the
+ <span>HTML namespace</span>,
+ <span title=concept-element-local-name>local name</span> set to
  <var>localName</var>, and
  <code title=dom-Node-ownerDocument>ownerDocument</code> set to the
  <span>context node</span>.
 </ol>
-<!-- this is very different from DOM3 -->
-<p class=note>No check is performed that the local name will match the
-<code data-anolis-spec=xmlns>NCName</code> production in Namespaces in XML.
 
 <p>The <dfn title=dom-Document-createElementNS><code>createElementNS(<var>namespace</var>, <var>qualifiedName</var>)</code></dfn> method must run these steps:</p>
 <ol>
- <li><p>If <var>qualifiedName</var> doesn't match the <code
- data-anolis-spec=xml>Name</code> production in XML, raise an <code
- title=dom-DOMException-INVALID_CHARACTER_ERR title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
+ <li><p>If <var>qualifiedName</var> does not match the <code
+ data-anolis-spec=xml>Name</code> production in XML, raise an
+ <code title=dom-DOMException-INVALID_CHARACTER_ERR title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
  exception and terminate these steps.
- <li><p>If <var>qualifiedName</var> doesn't match the <code
- data-anolis-spec=xmlns>QName</code> production in Namespaces in XML, raise a
- <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and
- terminate these steps.
+ <li><p>If <var>qualifiedName</var> does not match the <code
+ data-anolis-spec=xmlns>QName</code> production in Namespaces in XML, raise
+ a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception
+ and terminate these steps.
  <li><p>If <var>qualifiedName</var> contains a "<code>:</code>" (U+003E),
  then split the string on it and let <var>prefix</var> be the part before
  and <var>localName</var> the part after. Otherwise, let <var>prefix</var>
  be null and <var>localName</var> be <var>qualifiedName</var>.
- <li><p>If <var>prefix</var> is not null and <var>namespace</var> is an empty string, raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and terminate these steps.
- <li><p>If <var>prefix</var> is "xml" and <var>namespace</var> is not the <span>XML namespace</span>, raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and terminate these steps.
- <li><p>If <var>qualifiedName</var> or <var>prefix</var> is "xmlns" and <var>namespace</var> is not the <span>XMLNS namespace</span>, raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and terminate these steps.
- <li><p>If <var>namespace</var> is the <span>XMLNS namespace</span> and neither <var>qualifiedName</var> nor <var>prefix</var> is "xmlns", raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and terminate these steps.
- <li><p>Return a new <code>Element</code> node with no attributes, <code title=dom-Node-namespaceURI>namespaceURI</code> set to <var>namespace</var>, <code title=dom-Node-prefix>prefix</code> set to <var>prefix</var>, <code title=dom-Node-localName>localName</code> set to <var>localName</var>, and <code title=dom-Node-ownerDocument>ownerDocument</code> set to the <span>context node</span>.
+ <li><p>If <var>prefix</var> is not null and <var>namespace</var> is an
+ empty string, raise a
+ <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception
+ and terminate these steps.
+ <li><p>If <var>prefix</var> is "<code title>xml</code>" and
+ <var>namespace</var> is not the <span>XML namespace</span>, raise a
+ <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception
+ and terminate these steps.
+ <li><p>If <var>qualifiedName</var> or <var>prefix</var> is
+ "<code title>xmlns</code>" and <var>namespace</var> is not the
+ <span>XMLNS namespace</span>, raise a
+ <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception
+ and terminate these steps.
+ <li><p>If <var>namespace</var> is the <span>XMLNS namespace</span> and
+ neither <var>qualifiedName</var> nor <var>prefix</var> is
+ "<code title>xmlns</code>", raise a
+ <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception
+ and terminate these steps.
+ <li><p>Return a new <code>Element</code> node with no attributes,
+ <span title=concept-element-namespace>namespace</span> set to <var>namespace</var>,
+ <span title=concept-element-namespace-prefix>namespace prefix</span> set to
+ <var>prefix</var>, <span title=concept-element-local-name>local name</span>
+ set to <var>localName</var>, and
+ <code title=dom-Node-ownerDocument>ownerDocument</code> set to the
+ <span>context node</span>.
 </ol>
 
 <p>The
@@ -1202,10 +1218,10 @@ data-anolis-spec=xmlns>NCName</code> production in Namespaces in XML.-->
 
 <p>The <dfn
 title=dom-Document-getElementsByTagName><code>getElementsByTagName(<var
-title>qualifiedName</var>)</code></dfn> method must run the following steps:
+title>localName</var>)</code></dfn> method must run the following steps:
 
 <ol>
- <li><p>If <var>qualifiedName</var> is "<code>*</code>" (U+002A),
+ <li><p>If <var>localName</var> is "<code>*</code>" (U+002A),
  return a <code>NodeList</code> rooted at the <span>context node</span>,
  whose filter matches only <code>Element</code> nodes.
 
@@ -1215,22 +1231,22 @@ title>qualifiedName</var>)</code></dfn> method must run the following steps:
   <span>context node</span>, whose filter matches only the following nodes:
 
   <ul>
-   <li><code>Element</code> nodes in the <span>HTML namespace</span> whose <code title=dom-Node-tagName>tagName</code> is
-   <var>qualifiedName</var>, <span>converted to lowercase</span>.
+   <li><code>Element</code> nodes in the <span>HTML namespace</span> whose <span title=concept-element-local-name>local name</span> is
+   <var>localName</var> <span>converted to lowercase</span>.
 
    <li><code>Element</code> nodes, <em>not</em> in the
    <span>HTML namespace</span>, whose
-   <code title=dom-Element-tagName>tagName</code> is
-   <var>qualifiedName</var>.
+   <span title=concept-element-local-name>local name</span> is
+   <var>localName</var>.
   </ul>
 
  <li><p>Otherwise, return a <code>NodeList</code> rooted at the
  <span>context node</span>, whose filter matches only <code>Element</code>
- nodes whose <code title=dom-Element-tagName>tagName</code> is
- <var>qualifiedName</var>.
+ nodes whose <span title=concept-element-local-name>local name</span> is
+ <var>localName</var>.
 </ol>
 
-<p>A new <code>NodeList</code> object must be returned each time.
+<p class=XXX>A new <code>NodeList</code> object must be returned each time. XXX some impl cache
 
 <p class=note>Thus, in an <span>HTML document</span>, <code
 title>document.getElementsByTagName("FOO")</code> will match <code
@@ -1241,12 +1257,27 @@ not <code title>FOO</code> elements that are in the <span>HTML namespace</span>.
 
 <p>The <dfn title=dom-Document-getElementsByTagNameNS><code>getElementsByTagNameNS(<var>namespace</var>, <var>localName</var>)</code></dfn> method must run the following steps:
 <ol>
- <li><p>If both <var>namespace</var> and <var>localName</var> are just the character U+002A ASTERISK ("*"), return a <code>NodeList</code> rooted at the <span>context node</span>, whose filter matches only <code>Element</code> nodes.
- <li><p>Otherwise, if <var>namespace</var> is just the character U+002A ASTERISK ("*"), return a <code>NodeList</code> rooted at the <span>context node</span>, whose filter matches only <code>Element</code> nodes with the <code title=dom-Node-localName>localName</code> equal to <var>localName</var>.
- <li><p>Otherwise, if <var>localName</var> is just the character U+002A ASTERISK ("*"), return a <code>NodeList</code> rooted at the <span>context node</span>, whose filter matches only <code>Element</code> nodes with the <code title=dom-Node-namespaceURI>namespaceURI</code> equal to <var>namespace</var>.
- <li><p>Otherwise, return a <code>NodeList</code> rooted at the <span>context node</span>, whose filter matches only <code>Element</code> nodes that have a <code title=dom-Node-namespaceURI>namespaceURI</code> equal to <var>namespace</var> and a <code title=dom-Node-localName>localName</code> equal to <var>localName</var> (both in a <span>case-sensitive</span> manner).
+ <li><p>If both <var>namespace</var> and <var>localName</var> are
+ "<code>*</code>" (U+002A) return a <code>NodeList</code> rooted at the
+ <span>context node</span>, whose filter matches only <code>Element</code>
+ nodes.
+ <li><p>Otherwise, if just <var>namespace</var> is "<code>*</code>"
+ (U+002A), return a <code>NodeList</code> rooted at the
+ <span>context node</span>, whose filter matches only <code>Element</code>
+ nodes whose <span title=concept-element-local-name>local name</span> is
+ <var>localName</var>.
+ <li><p>Otherwise, if just <var>localName</var> is "<code>*</code>"
+ (U+002A), return a <code>NodeList</code> rooted at the
+ <span>context node</span>, whose filter matches only <code>Element</code>
+ nodes whose <span title=concept-element-namespace>namespace</span> is
+ <var>namespace</var>.
+ <li><p>Otherwise, return a <code>NodeList</code> rooted at the
+ <span>context node</span>, whose filter matches only <code>Element</code> nodes whose <span title=concept-element-namespace>namespace</span> is
+ <var>namespace</var> and
+ <span title=concept-element-local-name>local name</span> is
+ <var>localName</var>.
 </ol>
-<p>A new <code>NodeList</code> object must be returned each time.
+<p class=XXX>A new <code>NodeList</code> object must be returned each time. XXX some impl cache
 
 
 <p>The <dfn
@@ -1580,7 +1611,9 @@ steps:
 
 <h3>Interface <code>Attr</code></h3>
 
-<p class="XXX">Free <code>Attr</code> from <code>Node</code>?</p>
+<p class="XXX">Free <code>Attr</code> from <code>Node</code>? Hixie suggests
+nuking from orbit, including .attributes. Anyone interested in implementing
+and figuring out what breaks? Would certainly clean things up.</p>
 
 <pre class=idl>interface <dfn>Attr</dfn> : <span>Node</span> {
   readonly attribute DOMString <span title=dom-Attr-name>name</span>;
@@ -1699,6 +1732,10 @@ title=concept-class-attribute>class attributes</span>.
            attribute <span>HTMLCollection</span> <span title=dom-Element-children>children</span>;
 };</pre>
 
+<p><code>Element</code> nodes have an associated <dfn title=concept-element-namespace>namespace</dfn>, <dfn title=concept-element-namespace-prefix>namespace prefix</dfn>, <dfn title=concept-element-local-name>local name</dfn>, and <dfn title=concept-element-qualified-name>qualified name</dfn>.</p>
+
+<p>When an <code>Element</code> node is created its <span title=concept-element-local-name>local name</span> is always given. Unless explicitly given when an <code>Element</code> node is created, its <span title=concept-element-namespace>namespace</span> and <span title=concept-element-namespace-prefix>namespace prefix</span> are null and its <span title=concept-element-qualified-name>qualified name</span> is its <span title=concept-element-namespace-prefix>namespace prefix</span>, followed by a "<code>:</code>" (U+003A), followed by its <span title=concept-element-local-name>local name</span>, if its <span title=concept-element-namespace-prefix>namespace prefix</span> is not null, or otherwise <span title=concept-element-qualified-name>qualified name</span> is just its <span title=concept-element-local-name>local name</span>.</p>
+
 <p><code>Element</code> nodes can have a <dfn title=concept-id>unique
 identifier (ID)</dfn> associated with them. User agents must associate the
 <code title=dom-Attr-value>value</code> of all <span
@@ -1712,22 +1749,7 @@ node's <code title=dom-Node-attributes>attributes</code> with the
 change</dfn>, the user agent must run the <span>base URL change steps</span>, as
 defined in <span>other applicable specifications</span>.
 
-<p>The <dfn title=dom-Element-tagName><code>tagName</code></dfn> attribute must,
-on getting, run the following steps:
-<ol>
- <li><p>If the <span>context node</span>'s <code
- title=dom-Node-prefix>prefix</code> is not null, let <var>tagName</var>
- be the concatenation of the <span>context node</span>'s <code
- title=dom-Node-prefix>prefix</code>, a U+003E COLON (":") character and its
- <code title=dom-Node-localName>localName</code>. Otherwise, let <var
- title>tagName</var> be just the the <span>context node</span>'s <code
- title=dom-Node-localName>localName</code>.
-
- <li><p>If the <span>context node</span> is in the <span>HTML namespace</span>
- and its <code title=dom-Node-ownerDocument>ownerDocument</code> is an
- <span>HTML document</span>, return <var>tagName</var>, <span>converted to
- uppercase</span>. Otherwise, return <var>tagName</var>.
-</ol>
+<p>The <dfn title=dom-Element-tagName><code>tagName</code></dfn> attribute must return the <span>context node</span>'s <span title=concept-element-qualified-name>qualified name</span>, <span>converted to uppercase</span> if the <span>context node</span> is in the <span>HTML namespace</span> and its <code title=dom-Node-ownerDocument>ownerDocument</code> is an <span>HTML document</span>.</p>
 
 <hr>
 
@@ -1736,8 +1758,7 @@ on getting, run the following steps:
  <li><p>If the <span>context node</span> is in the
  <span>HTML namespace</span> and its
  <code title=dom-Node-ownerDocument>ownerDocument</code> is an
- <span>HTML document</span>, let <var>name</var> be <var>name</var>,
- <span>converted to lowercase</span>.
+ <span>HTML document</span>, let <var>name</var> be <span>converted to lowercase</span>.
 
  <li><p>Return the value of the first attribute in the
  <span>context node</span>'s
@@ -1835,7 +1856,7 @@ have its name converted to ASCII lowercase before the element is affected.
 
 <p>The <dfn
 title=dom-Element-getElementsByTagName><code>getElementsByTagName(<var
-title>name</var>)</code></dfn> method on the <code>Element</code>
+title>qualifiedName</var>)</code></dfn> method on the <code>Element</code>
 interface must return a <span title=concept-collection-live>live</span>
 <code>NodeList</code> with the nodes that the <code
 title=dom-Document-getElementsByTagName>getElementsByTagName</code>

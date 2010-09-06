@@ -627,8 +627,8 @@ must return the name of the exception constant as a string.</p>
   boolean <span title=dom-Node-isEqualNode>isEqualNode</span>(<span>Node</span> <var>otherNode</var>);
 
   DOMString <span title=dom-Node-lookupPrefix>lookupPrefix</span>([TreatNullAs=EmptyString] DOMString <var>namespace</var>);
-  boolean <span title=dom-Node-isDefaultNamespace>isDefaultNamespace</span>([TreatNullAs=EmptyString] DOMString <var>namespace</var>);
-  DOMString <span title=dom-Node-lookupNamespaceURI>lookupNamespaceURI</span>(DOMString <var>prefix</var>);<!--
+  DOMString <span title=dom-Node-lookupNamespaceURI>lookupNamespaceURI</span>(DOMString? <var>prefix</var>);
+  boolean <span title=dom-Node-isDefaultNamespace>isDefaultNamespace</span>([TreatNullAs=EmptyString] DOMString <var>namespace</var>);<!--
   DOMObject getFeature(DOMString feature, DOMString version);
   DOMUserData setUserData(DOMString key, DOMUserData data, UserDataHandler handler);
   DOMUserData getUserData(DOMString key);-->
@@ -1111,6 +1111,9 @@ method must run these steps:</p>
  <li><p>Let <var>defaultNamespace</var> be the result of invoking
  <code title=dom-Node-lookupNamespaceURI>lookupNamespaceURI</code> with null
  as argument on the <span>context node</span>.</p></li>
+
+ <li><p>If <var>defaultNamespace</var> is null let it be the empty
+ string.</p></li>
 
  <li><p>Return true if <var>defaultNamespace</var> is <var>namespace</var>,
  or false otherwise.</p></li>

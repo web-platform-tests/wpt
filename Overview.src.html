@@ -2146,9 +2146,28 @@ exceptions these methods might have raised.</p>
 
 <p class=XXX><dfn title=dom-Text-splitText>splitText</dfn>
 
-<p class=XXX><dfn title=dom-Text-wholeText>wholeText</dfn>
+<hr>
 
-<p class=XXX><dfn title=dom-Text-replaceWholeText>replaceWholeText</dfn>
+<p>The <dfn>adjacent <code>Text</code> nodes</dfn> of a node are the
+previous sibling <code>Text</code> node (if any) and its
+<span>adjacent <code>Text</code> nodes</span> and the next sibling
+<code>Text</code> node (if any) and its
+<span>adjacent <code>Text</code> nodes</span>, avoiding any duplicates.</p>
+
+<p>The <dfn title=dom-Text-wholeText><code>wholeText</code></dfn>
+attribute must return a concatenation of the
+<code title=dom-CharacterData-data>data</code> of all
+<span>adjacent <code>Text</code> nodes</span> of the
+<span>context node</span>, in <span>tree order</span>.</p>
+
+<p>The
+<dfn title=dom-Text-replaceWholeText><code>replaceWholeText(<var>data</var>)</code></dfn>
+method must remove all <span>adjacent <code>Text</code> nodes</span> of the
+<span>content node</span> and insert in their place a single
+<code>Text</code> node whose <code title=dom-CharacterData-data>data</code>
+is <var>data</var>.</p>
+
+<p class=XXX>Can we remove replaceWholeText() in favor of making wholeText no longer readonly? Do we even need this wholeText business?
 
 <!-- isElementContentWhitespace: Mozilla returns true if the node contains only
 space, tab, newline -->

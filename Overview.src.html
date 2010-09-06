@@ -623,12 +623,12 @@ must return the name of the exception constant as a string.</p>
 
   [TreatNullAs=EmptyString] attribute DOMString <span title=dom-Node-textContent>textContent</span>;
 
-  boolean <span title=dom-Node-isSameNode>isSameNode</span>(<span>Node</span> other);
-  boolean <span title=dom-Node-isEqualNode>isEqualNode</span>(<span>Node</span> arg);
+  boolean <span title=dom-Node-isSameNode>isSameNode</span>(<span>Node</span> <var>otherNode</var>);
+  boolean <span title=dom-Node-isEqualNode>isEqualNode</span>(<span>Node</span> <var>otherNode</var>);
 
-  DOMString <span title=dom-Node-lookupPrefix>lookupPrefix</span>(DOMString namespace);
-  boolean <span title=dom-Node-isDefaultNamespace>isDefaultNamespace</span>(DOMString namespace);
-  DOMString <span title=dom-Node-lookupNamespaceURI>lookupNamespaceURI</span>(DOMString prefix);<!--
+  DOMString <span title=dom-Node-lookupPrefix>lookupPrefix</span>([TreatNullAs=EmptyString] DOMString <var>namespace</var>);
+  boolean <span title=dom-Node-isDefaultNamespace>isDefaultNamespace</span>([TreatNullAs=EmptyString] DOMString <var>namespace</var>);
+  DOMString <span title=dom-Node-lookupNamespaceURI>lookupNamespaceURI</span>(DOMString <var>prefix</var>);<!--
   DOMObject getFeature(DOMString feature, DOMString version);
   DOMUserData setUserData(DOMString key, DOMUserData data, UserDataHandler handler);
   DOMUserData getUserData(DOMString key);-->
@@ -996,15 +996,125 @@ conditions are true, and must otherwise return false:
 
 <hr>
 
-<p>The <dfn title=dom-Node-lookupPrefix><code>lookupPrefix(<var>namespace</var>)</code></dfn> method must <span class=XXX title>...</span>
+<p>To <dfn>locate a namespace prefix</dfn> for an <var>element</var> using
+<var>namespace</var> run these steps:</p>
 
-<p>The <dfn title=dom-Node-isDefaultNamespace><code>isDefaultNamespace(<var
-title>namespace</var>)</code></dfn> method must <span class=XXX title>...</span>
+<ol>
+ <li><p>If <var>element</var>'s
+ <span title=concept-element-namespace>namespace</span> is
+ <var>namespace</var> and its
+ <span title=concept-element-namespace-prefix>namespace prefix</span> is not
+ null return its
+ <span title=concept-element-namespace-prefix>namespace prefix</span> and
+ terminate these steps.</p></li>
 
-<p>The <dfn title=dom-Node-lookupNamespaceURI><code>lookupNamespaceURI(<var
-title>prefix</var>)</code></dfn> method must <span class=XXX title>...</span>
+ <li><p>If there is an attribute associated with the <var>element</var>
+ whose namespace prefix is "<code title>xmlns</code>" and value is
+ <var>namespace</var> return its local name. Then terminate these steps.
+ (Continue if there was no such attribute.)</p></li>
+ <!-- XXX xref attribute terminology -->
 
-<p class=XXX>clarify lookupNamespaceURI <a href=http://www.w3.org/mid/4878DFC6.40401@lachy.id.au>http://www.w3.org/mid/4878DFC6.40401@lachy.id.au</a>; lookupNamespaceURI, isDefaultNamespace <a href="http://html5.org/tools/web-apps-tracker?from=2125&amp;to=2126">http://html5.org/tools/web-apps-tracker?from=2125&amp;to=2126</a>
+ <li><p>Return the result of running <span>locate a namespace prefix</span>
+ on its <code title=dom-Node-parentNode>parentNode</code> using
+ <var>namespace</var>, if <code title=dom-Node-parentNode>parentNode</code>
+ is an <code>Element</code> node, or null otherwise.</p></li>
+ <!-- XXX parentElement -->
+</ol>
+
+<p>To <dfn>locate a namespace</dfn> for a <var>node</var> using
+<var>prefix</var> depends on the <var>node</var>:</p>
+
+<dl class=switch>
+ <dt>If it is an <code>Element</code> node</dt>
+ <dd>
+  <ol>
+   <li><p>If its <span title=concept-element-namespace>namespace</span> is
+   not null and its
+   <span title=concept-element-namespace prefix>namespace prefix</span> is
+   <var>prefix</var> return
+   <span title=concept-element-namespace>namespace</span> and terminate
+   these steps.</p></li>
+
+   <li><p>If there is an attribute associated with the node whose
+   namespace prefix is "<code title>xmlns</code>" and local name is
+   <var>prefix</var> or whose namespace prefix is null and local name is
+   "<code title>xmlns</code>": return its value if it is not the empty
+   string and null if its value is the empty string. Then terminate these
+   steps. (Continue if there was no such attribute.)</p></li>
+   <!-- XXX xref attribute terminology -->
+
+   <li><p>Return the result of running <span>locate a namespace</span> on
+   its <code title=dom-Node-parentNode>parentNode</code> using
+   <var>prefix</var>, if <code title=dom-Node-parentNode>parentNode</code>
+   is an <code>Element</code> node, or null otherwise.</p></li>
+   <!-- XXX parentElement -->
+  </ol>
+ </dd>
+ <!--XXX If it is an <code>Attr</code> node-->
+ <dt>If it is a <code>Document</code> node</dt>
+ <dd><p>Return the result of running <span>locate a namespace</span> on its
+ <code title=dom-Document-documentElement>documentElement</code> using
+ <var>prefix</var>, if
+ <code title=dom-Document-documentElement>documentElement</code> is
+ not null, or null otherwise.</p></dd>
+ <dt>If it is a <code>DocumentType</code> node</dt>
+ <dt>If it is a <code>DocumentFragment</code> node</dt>
+ <dd><p>Return null.</p></dd>
+ <dt>Any other node</dt>
+ <dd><p>Return the result of running <span>locate a namespace</span> on
+ its <code title=dom-Node-parentNode>parentNode</code> using
+ <var>prefix</var>, if <code title=dom-Node-parentNode>parentNode</code> is
+ an <code>Element</code> node, or null otherwise.</p></dd>
+ <!-- XXX parentElement -->
+</dl>
+
+<p>The
+<dfn title=dom-Node-lookupPrefix><code>lookupPrefix(<var>namespace</var>)</code></dfn>
+method must run these steps:
+
+<ol>
+ <li><p>If <var>namespace</var> is the empty string return null.</p>
+
+ <li>
+  <p>Otherwise it depends on the <span>context node</span>:</p>
+
+  <dl class=switch>
+   <dt>If it is an <code>Element</code> node</dt>
+   <dd><p>Return the result of running
+   <span>locate a namespace prefix</span> for the node using
+   <var>namespace</var>.</p></dd>
+   <!--XXX If it is an <code>Attr</code> node-->
+   <dt>If it is a <code>Document</code> node</dt>
+   <dd><p>Return the result of <span>finding a namespace prefix</span> for
+   its <code title=dom-Document-documentElement>documentElement</code>, if
+   that is not null, or null otherwise.</p></dd>
+   <dt>If it is a <code>DocumentType</code> node</dt>
+   <dt>If it is a <code>DocumentFragment</code> node</dt>
+   <dd><p>Return null.</p></dd>
+   <dt>Any other node</dt>
+   <dd>Return the result of <span>finding a namespace prefix</span> for its
+   <code title=dom-Node-parentNode>parentNode</code>, if that is an
+   <code>Element</code> node, or null otherwise.</p></dd>
+  </dl>
+</ol>
+
+<p>The
+<dfn title=dom-Node-lookupNamespaceURI><code>lookupNamespaceURI(<var>prefix</var>)</code></dfn>
+method must return the result of running <span>locate a namespace</span> for
+the <span>context node</span> using <var>prefix</var>.</p>
+
+<p>The
+<dfn title=dom-Node-isDefaultNamespace><code>isDefaultNamespace(<var>namespace</var>)</code></dfn>
+method must run these steps:</p>
+
+<ol>
+ <li><p>Let <var>defaultNamespace</var> be the result of invoking
+ <code title=dom-Node-lookupNamespaceURI>lookupNamespaceURI</code> with null
+ as argument on the <span>context node</span>.</p></li>
+
+ <li><p>Return true if <var>defaultNamespace</var> is <var>namespace</var>,
+ or false otherwise.</p></li>
+</ol>
 
 
 <h3>Interface <code>DocumentFragment</code></h3>

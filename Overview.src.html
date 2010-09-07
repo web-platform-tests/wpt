@@ -1010,8 +1010,8 @@ conditions are true, and must otherwise return false:
 
  <li><p>If there is an attribute associated with the <var>element</var>
  whose namespace prefix is "<code title>xmlns</code>" and value is
- <var>namespace</var> return its local name. Then terminate these steps.
- (Continue if there was no such attribute.)</p></li>
+ <var>namespace</var> then return its local name and terminate these
+ steps.</p></li>
  <!-- XXX xref attribute terminology -->
 
  <li><p>Return the result of running <span>locate a namespace prefix</span>
@@ -1035,12 +1035,19 @@ conditions are true, and must otherwise return false:
    <span title=concept-element-namespace>namespace</span> and terminate
    these steps.</p></li>
 
-   <li><p>If there is an attribute associated with the node whose
-   namespace prefix is "<code title>xmlns</code>" and local name is
-   <var>prefix</var> or whose namespace prefix is null and local name is
-   "<code title>xmlns</code>": return its value if it is not the empty
-   string and null if its value is the empty string. Then terminate these
-   steps. (Continue if there was no such attribute.)</p></li>
+   <li>
+    <p>If there is an attribute associated with the node whose
+    namespace prefix is "<code title>xmlns</code>" and local name is
+    <var>prefix</var> or whose namespace prefix is null and local name is
+    "<code title>xmlns</code>":</p>
+
+    <ol>
+     <li><p>Let <var>value</var> be its value if it is not the empty string,
+     or null otherwise.</p></li>
+
+     <li><p>Return <var>value</var> and terminate these steps.</p></li>
+    </ol>
+   </li>
    <!-- XXX xref attribute terminology -->
 
    <li><p>Return the result of running <span>locate a namespace</span> on

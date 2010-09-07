@@ -424,7 +424,7 @@ feature</span> with the version "2.0" associated with it.
 
 
 <h3>Legal hierarchy</h3>
-<p class=XXX>Simon says this section is buggy. Should we just remove it?
+<p class=XXX>Simon says this section is buggy.
 
 <p>A <code>Node</code> is said to have a <dfn>legal hierarchy</dfn> if all the following conditions are true:
 
@@ -582,6 +582,8 @@ must return the name of the exception constant as a string.</p>
   readonly attribute DOMString <span title=dom-Node-nodeName>nodeName</span>;
            attribute DOMString <span title=dom-Node-nodeValue>nodeValue</span>;
   readonly attribute unsigned short <span title=dom-Node-nodeType>nodeType</span>;
+
+  readonly attribute <span>Document</span> <span title=dom-Node-ownerDocument>ownerDocument</span>;
   readonly attribute <span>Node</span> <span title=dom-Node-parentNode>parentNode</span>;
   readonly attribute <span>Element</span> <span title=dom-Node-parentElement>parentElement</span>;
   readonly attribute <span>NodeList</span> <span title=dom-Node-childNodes>childNodes</span>;
@@ -589,8 +591,10 @@ must return the name of the exception constant as a string.</p>
   readonly attribute <span>Node</span> <span title=dom-Node-lastChild>lastChild</span>;
   readonly attribute <span>Node</span> <span title=dom-Node-previousSibling>previousSibling</span>;
   readonly attribute <span>Node</span> <span title=dom-Node-nextSibling>nextSibling</span>;
+
+  boolean <span title=dom-Node-hasAttributes>hasAttributes</span>();
   readonly attribute <span>NamedNodeMap</span> <span title=dom-Node-attributes>attributes</span>;
-  readonly attribute <span>Document</span> <span title=dom-Node-ownerDocument>ownerDocument</span>;
+
   <span>Node</span> <span title=dom-Node-insertBefore>insertBefore</span>(<span>Node</span> newChild, <span>Node</span> refChild);
   <span>Node</span> <span title=dom-Node-replaceChild>replaceChild</span>(<span>Node</span> newChild, <span>Node</span> oldChild);
   <span>Node</span> <span title=dom-Node-removeChild>removeChild</span>(<span>Node</span> oldChild);
@@ -599,10 +603,11 @@ must return the name of the exception constant as a string.</p>
   <span>Node</span> <span title=dom-Node-cloneNode>cloneNode</span>(boolean deep);<!--
   void normalize();-->
   boolean <span title=dom-Node-isSupported>isSupported</span>([TreatNullAs=EmptyString] DOMString feature, DOMString version);
+
   readonly attribute DOMString <span title=dom-Node-namespaceURI>namespaceURI</span>;
   readonly attribute DOMString <span title=dom-Node-prefix>prefix</span>;
   readonly attribute DOMString <span title=dom-Node-localName>localName</span>;
-  boolean <span title=dom-Node-hasAttributes>hasAttributes</span>();
+
   readonly attribute DOMString <span title=dom-Node-baseURI>baseURI</span>;
 
   // DocumentPosition
@@ -678,6 +683,30 @@ returned, but are still exposed.</p>
   <tr><td><code>DocumentFragment</code><td>"<code title>#document-fragment</code>"<td>null<td>11
 </table>
 
+<p>Setting the <code title=dom-Node-nodeValue>nodeValue</code> attribute
+must do as described below, depending on the <span>context node</span>:</p>
+
+<dl class=switch>
+ <dt><code>Attr</code></dt>
+ <dd><p>Set the <span>context node</span>'s <code title=dom-Attr-value>value</code> attribute instead.</p></dd>
+
+ <dt><code>Text</code></dt>
+ <dd><p>Set the <span>context node</span>'s <code title=dom-CharacterData-data>data</code> attribute instead.</p></dd>
+
+ <dt><code>ProcessingInstruction</code></dt>
+ <dd><p>Set the <span>context node</span>'s <code title=dom-ProcessingInstruction-data>data</code> attribute instead.</p></dd>
+
+ <dt><code>Comment</code></dt>
+ <dd><p>Set the <span>context node</span>'s <code title=dom-CharacterData-data>data</code> attribute instead.</p></dd>
+
+ <dt>Any other node</dt>
+ <dd><p>Do nothing.</p></dd>
+</dl>
+
+<hr>
+
+<p>The <dfn title=dom-Node-ownerDocument><code>ownerDocument</code></dfn> attribute must return the <code>Document</code> node that the <span>context node</span> is associated with, or null if there is none.
+
 <p>The <dfn title=dom-Node-parentNode><code>parentNode</code></dfn>
 attribute must run these steps:
 
@@ -725,9 +754,16 @@ attribute must run these steps:
  <li><p>Return the next sibling node of the <span>context node</span>.
 </ol>
 
+<hr>
+
+<p>The <dfn title=dom-Node-hasAttributes><code>hasAttributes()</code></dfn>
+method must return whether there are any attributes associated with the
+<span>context node</span>, if it is an <code>Element</code> node, and false
+otherwise.
+
 <p>The <dfn title=dom-Node-attributes><code>attributes</code></dfn> attribute must return a <code>NamedNodeMap</code> of all the <code>Attr</code> nodes associated with the node of the <span>context node</span>, if it is an <code>Element</code> node, or null otherwise.
 
-<p>The <dfn title=dom-Node-ownerDocument><code>ownerDocument</code></dfn> attribute must return the <code>Document</code> node that the <span>context node</span> is associated with, or null if there is none.
+<hr>
 
 <p>The <dfn title=dom-Node-insertBefore><code>insertBefore(<var
 title>newChild</var>, <var>refChild</var>)</code></dfn> method must run
@@ -907,11 +943,6 @@ attribute is not supported. <!-- XXX kill this note at some point -->
 <p>The <dfn title=dom-Node-localName><code>localName</code></dfn> attribute
 must return the local name that is associated with the node, if it has one,
 and null otherwise.
-
-<p>The <dfn title=dom-Node-hasAttributes><code>hasAttributes()</code></dfn>
-method must return whether there are any attributes associated with the
-<span>context node</span>, if it is an <code>Element</code> node, and false
-otherwise.
 
 <p>The <dfn title=dom-Node-baseURI><code>baseURI</code></dfn> attribute must <span class=XXX title>...</span>
 

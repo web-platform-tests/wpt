@@ -40,21 +40,6 @@
 
 
 
-<h2 class="no-num no-toc">Issues</h2>
-
-<ul class=XXX>
- <li>This specification like DOM3Core currently talks about name. Specifications mostly use qualifiedName for DOM1Core methods. We should too.
- <li>Should define how XML maps to the DOM. Infoset?! And prolly how the DOM maps to XML. Maybe by using HTML5 XHTML5 section.
- <li>innerHTML etc on all Elements
-  <a href=http://lists.w3.org/Archives/Public/public-html/2007Aug/0778.html>public-html/2007Aug/0778.html</a>
-  <a href=http://lists.w3.org/Archives/Public/public-webapi/2007Aug/0070.html>public-webapi/2007Aug/0070.html</a>
- <li>\0 <a href=http://krijnhoetmer.nl/irc-logs/whatwg/20080321#l-312>http://krijnhoetmer.nl/irc-logs/whatwg/20080321#l-312</a>
- <li>[Reflect] <a href=http://krijnhoetmer.nl/irc-logs/whatwg/20090622#l-90>http://krijnhoetmer.nl/irc-logs/whatwg/20090622#l-90</a>
- <li>Perhaps we should move DOMStringMap to this spec...
-</ul>
-
-
-
 <h2 class="no-num no-toc">Abstract</h2>
 <p>This specification defines the DOM Core part of the Web platform. The Document Object Model is a language- and platform neutral interface that allows programs and scripts to dynamically access and update the content, structure and style of documents. Web DOM Core mostly subsets DOM3 Core, but redefines some things and adds some features that were widely implemented already.
 
@@ -67,6 +52,15 @@
 
 <h2 class="no-num no-toc">List of tables</h2>
 <div id=anolis-listoftables></div>
+
+
+<h2 class="no-num">Issues</h2>
+
+<ul class=XXX>
+ <li>\0 <a href=http://krijnhoetmer.nl/irc-logs/whatwg/20080321#l-312>http://krijnhoetmer.nl/irc-logs/whatwg/20080321#l-312</a>
+ <li>[Reflect] <a href=http://krijnhoetmer.nl/irc-logs/whatwg/20090622#l-90>http://krijnhoetmer.nl/irc-logs/whatwg/20090622#l-90</a>
+ <li>Perhaps we should move DOMStringMap to this spec...
+</ul>
 
 
 <h2>Goals</h2>
@@ -956,8 +950,6 @@ title>other</var>)</code></dfn> method must <span class=XXX title>...</span>
  <li><p>Let <var>data</var> be the value being assigned.
  <li><p>If <var>data</var> is not the empty string, append a new <code>Text</code> node to the <span>context node</span> whose <code title=dom-CharacterData-data>data</code> is set to <var>data</var>.
 </ol>
-
-<p class=XXX>What does null mean? <a href="http://www.w3.org/mid/c9e12660808271343v58990698gabac29d2123a82ce@mail.gmail.com">http://www.w3.org/mid/c9e12660808271343v58990698gabac29d2123a82ce@mail.gmail.com</a>
 
 <hr>
 

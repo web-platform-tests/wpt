@@ -1475,29 +1475,18 @@ method must run these steps:
  <code title=dom-DOMException-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</code>
  exception and terminate these steps.
 
- <li><p>If <var>source</var> is an <code>Element</code> node, it is
+ <li><p>If <var>node</var> is an <code>Element</code> node, it is
  <span>affected by a base URL change</span>.
 
- <!-- no security check -->
- <li><p>If <var>source</var>'s <code
- title=dom-Node-parentNode>parentNode</code> is not null and its <code
- title=dom-Node-ownerDocument>ownerDocument</code> isn't equal to the
- <span>context node</span>, remove <var>source</var> from its parent.
+ <li><p>If <var>node</var>'s <code
+ title=dom-Node-parentNode>parentNode</code> is not null, remove
+ <var>node</var> from its parent.
 
- <li><p>Set <var>source</var>'s <code
- title=dom-Node-ownerDocument>ownerDocument</code> to the <span>context
- node</span>.
+ <li><p>Set <code title=dom-Node-ownerDocument>ownerDocument</code> for
+ <var>node</var> and all its descendent nodes as well as any associated
+ <code>Attr</code> nodes to the <span>context node</span>.
 
- <li><p>If <var>source</var> is an <code>Element</code> node,
- set the <code title=dom-Node-ownerDocument>ownerDocument</code> of all
- <code>Attr</code> in its <code title=dom-Node-attributes>attributes</code>
- to the <span>context node</span>.
-
- <li><p>For each child node of <var>source</var>, call <code
- title=dom-Document-adoptNode>adoptNode</code> on the <span>context node</span>,
- with the child node as its argument.
-
- <li><p>Return <var>source</var>.
+ <li><p>Return <var>node</var>.
 </ol>
 
 <hr>

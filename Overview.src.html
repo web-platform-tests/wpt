@@ -1148,8 +1148,8 @@ method must run these steps:</p>
   <span>NodeList</span> <span title=dom-Document-getElementsByClassName>getElementsByClassName</span>(DOMString <var>classNames</var>);
   <span>Element</span> <span title=dom-Document-getElementById>getElementById</span>(DOMString <var>elementId</var>);
 
-  <span>Node</span> <span title=dom-Document-importNode>importNode</span>(<span>Node</span> <var>importedNode</var>, boolean <var>deep</var>);
-  <span>Node</span> <span title=dom-Document-adoptNode>adoptNode</span>(<span>Node</span> <var>source</var>);
+  <span>Node</span> <span title=dom-Document-importNode>importNode</span>(<span>Node</span> <var>node</var>, boolean <var>deep</var>);
+  <span>Node</span> <span title=dom-Document-adoptNode>adoptNode</span>(<span>Node</span> <var>node</var>);
 
   readonly attribute DOMString <span title=dom-Document-inputEncoding>inputEncoding</span>;
            attribute DOMString <span title=dom-Document-documentURI>documentURI</span>;
@@ -1276,7 +1276,7 @@ contains two adjacent hyphens or ends with a hyphen.
 
 <p>The <dfn title=dom-Document-createProcessingInstruction><code
 >createProcessingInstruction(<var>target</var>, <var
-title>data</var>)</code></dfn> method must run the following steps:
+title>data</var>)</code></dfn> method must run these steps:
 
 <ol>
  <li><p>If the <span>context node</span> is an <span>HTML document</span>, raise
@@ -1309,7 +1309,7 @@ contains "xml" or the colon, or that the data contains characters that match the
 
 <!--
 [createAttribute]
-<p>The <dfn title=dom-Document-createAttribute><code>createAttribute(<var>name</var>)</code></dfn> method must run the following steps:</p>
+<p>The <dfn title=dom-Document-createAttribute><code>createAttribute(<var>name</var>)</code></dfn> method must run these steps:</p>
 <ol>
  <li><p>If <var>name</var> does not match the <code data-anolis-spec=xml>Name</code> production in XML, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and terminate these steps.
  <li><p>Return a new <code>Attr</code> node with its <code title=dom-Node-namespaceURI>namespaceURI</code> set to null, <code title=dom-Node-prefix>prefix</code> set to null, <code title=dom-Node-localName>localName</code> set to <var>name</var>, and <code title=dom-Node-ownerDocument>ownerDocument</code> set to the <span>context node</span>.
@@ -1337,7 +1337,7 @@ data-anolis-spec=xmlns>NCName</code> production in Namespaces in XML.-->
 
 <p>The <dfn
 title=dom-Document-getElementsByTagName><code>getElementsByTagName(<var
-title>localName</var>)</code></dfn> method must run the following steps:
+title>localName</var>)</code></dfn> method must run these steps:
 
 <ol>
  <li><p>If <var>localName</var> is "<code>*</code>" (U+002A),
@@ -1374,7 +1374,7 @@ title>FOO</code> elements that aren't in the <span>HTML namespace</span>, and
 not <code title>FOO</code> elements that are in the <span>HTML namespace</span>.
 
 
-<p>The <dfn title=dom-Document-getElementsByTagNameNS><code>getElementsByTagNameNS(<var>namespace</var>, <var>localName</var>)</code></dfn> method must run the following steps:
+<p>The <dfn title=dom-Document-getElementsByTagNameNS><code>getElementsByTagNameNS(<var>namespace</var>, <var>localName</var>)</code></dfn> method must run these steps:
 <ol>
  <li><p>If both <var>namespace</var> and <var>localName</var> are
  "<code>*</code>" (U+002A) return a <code>NodeList</code> rooted at the
@@ -1459,47 +1459,21 @@ or null if there is none.
 
 <hr>
 
-<p class="XXX">the restrictions on importNode do not match createElement. bug/feature?</p>
+<p>The
+<dfn title=dom-Document-importNode><code>importNode(<var>node</var>, <var>deep</var>)</code></dfn>
+method must return a <span>clone</span> of <var>node</var>, with
+<var>new ownerDocument</var> being the <span>context node</span>, and the
+<i>clone children flag</i> set if <var>deep</var> is true.
 
-<p>The <dfn title=dom-Document-importNode><code>importNode(<var>importedNode</var>, <var>deep</var>)</code></dfn> method must run
-the following steps:
-<ol>
- <!-- Similar text for adoptNode -->
- <li><p>If the <span>context node</span> is an <span>XML document</span>, then
- if <var>importedNode</var> or any of its descendant nodes or any of its
- <code title=dom-Node-attributes>attributes</code> or any of the <code
- title=dom-Node-attributes>attributes</code> of any descendant
- <code>Element</code> nodes has a <code
- title=dom-Node-localName>localName</code><!-- or <code
- title=dom-Node-prefix>prefix</code>--> which either does not match the <code
- data-anolis-spec=xml>Name</code> production in XML or contains a U+003A COLON
- (":") character, raise an <code
- title=dom-DOMException-INVALID_STATE_ERR>INVALID_STATE_ERR</code> and abort
- these steps.
-
- <li><p>Return a <span>clone</span> of <var>importedNode</var>, with <var>new ownerDocument</var> being the <span>context node</span>, and the <i>clone children flag</i> set if <var>deep</var> is true.
-</ol>
-
-<p>The <dfn title=dom-Document-adoptNode><code>adoptNode(<var>source</var>)</code></dfn> method must run the following steps:
+<p>The
+<dfn title=dom-Document-adoptNode><code>adoptNode(<var>node</var>)</code></dfn>
+method must run these steps:
 
 <ol>
- <li><p>If <var>source</var> is a <code>Document</code> node or a
- <code>DocumentType</code> node, raise a <code
- title=dom-DOMException-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</code> exception and
- terminate these steps.
-
- <!-- Similar text for importNode -->
- <li><p>If the <span>context node</span> is an <span>XML document</span>, then
- if <var>source</var> or any of its descendant nodes or any of its <code
- title=dom-Node-attributes>attributes</code> or any of the <code
- title=dom-Node-attributes>attributes</code> of any descendant
- <code>Element</code> nodes has a <code
- title=dom-Node-localName>localName</code><!-- or <code
- title=dom-Node-prefix>prefix</code>--> which either does not match the <code
- data-anolis-spec=xml>Name</code> production in XML or contains a U+003A COLON
- (":") character, raise an <code
- title=dom-DOMException-INVALID_STATE_ERR>INVALID_STATE_ERR</code> and abort
- these steps.
+ <li><p>If <var>node</var> is a <code>Document</code> node or a
+ <code>DocumentType</code> node, raise a
+ <code title=dom-DOMException-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</code>
+ exception and terminate these steps.
 
  <li><p>If <var>source</var> is an <code>Element</code> node, it is
  <span>affected by a base URL change</span>.

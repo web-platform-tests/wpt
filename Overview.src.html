@@ -2138,34 +2138,43 @@ exceptions these methods might have raised.</p>
 
 <h3>Interface <code>Text</code></h3>
 <pre class=idl>interface <dfn>Text</dfn> : <span>CharacterData</span> {
-  <span>Text</span> <span title=dom-Text-splitText>splitText</span>(unsigned long offset);<!--
+  <span>Text</span> <span title=dom-Text-splitText>splitText</span>(unsigned long <var>offset</var>);<!--
   readonly attribute boolean isElementContentWhitespace;-->
   readonly attribute DOMString <span title=dom-Text-wholeText>wholeText</span>;
-  <span>Text</span> <span title=dom-Text-replaceWholeText>replaceWholeText</span>(DOMString content);
+  <span>Text</span> <span title=dom-Text-replaceWholeText>replaceWholeText</span>(DOMString <var>data</var>);
 };</pre>
 
 <p class=XXX><dfn title=dom-Text-splitText>splitText</dfn>
 
 <hr>
 
-<p>The <dfn>adjacent <code>Text</code> nodes</dfn> of a node are the
-previous sibling <code>Text</code> node (if any) and its
-<span>adjacent <code>Text</code> nodes</span> and the next sibling
+<p>The <dfn>contiguous <code>Text</code> nodes</dfn> of a node are the node
+itself, the previous sibling <code>Text</code> node (if any) and its
+<span>contiguous <code>Text</code> nodes</span>, and the next sibling
 <code>Text</code> node (if any) and its
-<span>adjacent <code>Text</code> nodes</span>, avoiding any duplicates.</p>
+<span>contiguous <code>Text</code> nodes</span>, avoiding any
+duplicates.</p>
 
 <p>The <dfn title=dom-Text-wholeText><code>wholeText</code></dfn>
 attribute must return a concatenation of the
-<code title=dom-CharacterData-data>data</code> of all
-<span>adjacent <code>Text</code> nodes</span> of the
+<code title=dom-CharacterData-data>data</code> of the
+<span>contiguous <code>Text</code> nodes</span> of the
 <span>context node</span>, in <span>tree order</span>.</p>
 
 <p>The
 <dfn title=dom-Text-replaceWholeText><code>replaceWholeText(<var>data</var>)</code></dfn>
-method must remove all <span>adjacent <code>Text</code> nodes</span> of the
-<span>content node</span> and insert in their place a single
-<code>Text</code> node whose <code title=dom-CharacterData-data>data</code>
-is <var>data</var>.</p>
+method must run these steps:</p>
+
+<ol>
+ <li><p>Remove the <span>contiguous <code>Text</code> nodes</span> of the
+ <span>content node</span>.</p></li>
+ <li><p>If <var>data</var> is not the empty string, insert a new
+ <code>Text</code> node whose
+ <code title=dom-CharacterData-data>data</code> is <var>data</var> at the
+ place of the removed nodes, return the new <code>Text</code> node, and
+ then terminate these steps.</p></li>
+ <li><p>Return null.</p></li>
+</ol>
 
 <p class=XXX>Can we remove replaceWholeText() in favor of making wholeText no longer readonly? Do we even need this wholeText business?
 

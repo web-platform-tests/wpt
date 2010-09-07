@@ -623,8 +623,8 @@ must return the name of the exception constant as a string.</p>
 
   [TreatNullAs=EmptyString] attribute DOMString <span title=dom-Node-textContent>textContent</span>;
 
-  boolean <span title=dom-Node-isSameNode>isSameNode</span>(<span>Node</span> <var>otherNode</var>);
-  boolean <span title=dom-Node-isEqualNode>isEqualNode</span>(<span>Node</span> <var>otherNode</var>);
+  boolean <span title=dom-Node-isSameNode>isSameNode</span>(<span>Node</span> <var>node</var>);
+  boolean <span title=dom-Node-isEqualNode>isEqualNode</span>(<span>Node</span> <var>node</var>);
 
   DOMString <span title=dom-Node-lookupPrefix>lookupPrefix</span>([TreatNullAs=EmptyString] DOMString <var>namespace</var>);
   DOMString <span title=dom-Node-lookupNamespaceURI>lookupNamespaceURI</span>(DOMString? <var>prefix</var>);
@@ -962,27 +962,27 @@ title>other</var>)</code></dfn> method must <span class=XXX title>...</span>
 <hr>
 
 <p>The
-<dfn title=dom-Node-isSameNode><code>isSameNode(<var>otherNode</var>)</code></dfn>
-method must return true if <var>otherNode</var> is a reference to the same
+<dfn title=dom-Node-isSameNode><code>isSameNode(<var>node</var>)</code></dfn>
+method must return true if <var>node</var> is a reference to the same
 object as the <span>context node</span>, and false otherwise.
 
 
-<p>The <dfn title=dom-Node-isEqualNode><code>isEqualNode(<var>otherNode</var>)</code></dfn> method must return true if all of the following
+<p>The <dfn title=dom-Node-isEqualNode><code>isEqualNode(<var>node</var>)</code></dfn> method must return true if all of the following
 conditions are true, and must otherwise return false:
 
 <ul>
- <li><p><var>otherNode</var> is not null.
- <li><p><var>otherNode</var>'s <code title=dom-Node-nodeType>nodeType</code> is the same as the <span>context node</span>'s <code title=dom-Node-nodeType>nodeType</code>.
- <li><p><var>otherNode</var>'s <code title=dom-Node-nodeName>nodeName</code> is the same as the <span>context node</span>'s <code title=dom-Node-nodeName>nodeName</code>.
- <li><p><var>otherNode</var>'s <code title=dom-Node-localName>localName</code> is the same as the <span>context node</span>'s <code title=dom-Node-localName>localName</code>.
- <li><p><var>otherNode</var>'s <code title=dom-Node-namespaceURI>namespaceURI</code> is the same as the <span>context node</span>'s <code title=dom-Node-namespaceURI>namespaceURI</code>.
- <li><p><var>otherNode</var>'s <code title=dom-Node-prefix>prefix</code> is the same as the <span>context node</span>'s <code title=dom-Node-prefix>prefix</code>.
- <li><p><var>otherNode</var>'s <code title=dom-Node-nodeValue>nodeValue</code> is the same as the <span>context node</span>'s <code title=dom-Node-nodeValue>nodeValue</code>.
+ <li><p><var>node</var> is not null.
+ <li><p><var>node</var>'s <code title=dom-Node-nodeType>nodeType</code> is the same as the <span>context node</span>'s <code title=dom-Node-nodeType>nodeType</code>.
+ <li><p><var>node</var>'s <code title=dom-Node-nodeName>nodeName</code> is the same as the <span>context node</span>'s <code title=dom-Node-nodeName>nodeName</code>.
+ <li><p><var>node</var>'s <code title=dom-Node-localName>localName</code> is the same as the <span>context node</span>'s <code title=dom-Node-localName>localName</code>.
+ <li><p><var>node</var>'s <code title=dom-Node-namespaceURI>namespaceURI</code> is the same as the <span>context node</span>'s <code title=dom-Node-namespaceURI>namespaceURI</code>.
+ <li><p><var>node</var>'s <code title=dom-Node-prefix>prefix</code> is the same as the <span>context node</span>'s <code title=dom-Node-prefix>prefix</code>.
+ <li><p><var>node</var>'s <code title=dom-Node-nodeValue>nodeValue</code> is the same as the <span>context node</span>'s <code title=dom-Node-nodeValue>nodeValue</code>.
 
- <li><p>Either <var>otherNode</var>'s <code
+ <li><p>Either <var>node</var>'s <code
  title=dom-Node-attributes>attributes</code> and the <span>context node</span>'s
  <code title=dom-Node-attributes>attributes</code> are both null or a bijection
- exists between the set of <var>otherNode</var>'s <code
+ exists between the set of <var>node</var>'s <code
  title=dom-Node-attributes>attributes</code> and the set of the <span>context
  node</span>'s <code title=dom-Node-attributes>attributes</code> so that every
  <code>Attr</code> node in the former is mapped to an <code>Attr</code> node in
@@ -990,8 +990,8 @@ conditions are true, and must otherwise return false:
  title=dom-Node-isEqualNode>isEqualNode</code> on the first <code>Attr</code>
  node with the second <code>Attr</code> node as its argument returns true.
 
- <li><p><var>otherNode</var>'s <code title=dom-Node-childNodes>childNodes</code>' <code title=dom-NodeList-length>length</code> is the same as the <span>context node</span>'s <code title=dom-Node-childNodes>childNodes</code>' <code title=dom-NodeList-length>length</code>.
- <li><p>Calling <code title=dom-Node-isEqualNode>isEqualNode</code> on each child node of the <span>context node</span>, with the child node of the same index in <var>otherNode</var> as argument returns true for every child node.
+ <li><p><var>node</var>'s <code title=dom-Node-childNodes>childNodes</code>' <code title=dom-NodeList-length>length</code> is the same as the <span>context node</span>'s <code title=dom-Node-childNodes>childNodes</code>' <code title=dom-NodeList-length>length</code>.
+ <li><p>Calling <code title=dom-Node-isEqualNode>isEqualNode</code> on each child node of the <span>context node</span>, with the child node of the same index in <var>node</var> as argument returns true for every child node.
 </ul>
 
 <hr>

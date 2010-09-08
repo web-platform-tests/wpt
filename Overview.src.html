@@ -622,6 +622,7 @@ node and its child nodes:</p>
   readonly attribute <span>Document</span> <span title=dom-Node-ownerDocument>ownerDocument</span>;
   readonly attribute <span>Node</span> <span title=dom-Node-parentNode>parentNode</span>;
   readonly attribute <span>Element</span> <span title=dom-Node-parentElement>parentElement</span>;
+  boolean <span title=dom-Node-hasChildNodes>hasChildNodes</span>();
   readonly attribute <span>NodeList</span> <span title=dom-Node-childNodes>childNodes</span>;
   readonly attribute <span>Node</span> <span title=dom-Node-firstChild>firstChild</span>;
   readonly attribute <span>Node</span> <span title=dom-Node-lastChild>lastChild</span>;
@@ -635,7 +636,6 @@ node and its child nodes:</p>
   <span>Node</span> <span title=dom-Node-replaceChild>replaceChild</span>(<span>Node</span> newChild, <span>Node</span> oldChild);
   <span>Node</span> <span title=dom-Node-removeChild>removeChild</span>(<span>Node</span> oldChild);
   <span>Node</span> <span title=dom-Node-appendChild>appendChild</span>(<span>Node</span> newChild);
-  boolean <span title=dom-Node-hasChildNodes>hasChildNodes</span>();
   <span>Node</span> <span title=dom-Node-cloneNode>cloneNode</span>(boolean deep);<!--
   void normalize();-->
 
@@ -844,6 +844,11 @@ attribute must run these steps:
 <!-- XXX needed? Minefield does not have this -->
 <p>The <dfn title=dom-Node-parentElement><code>parentElement</code></dfn> attribute must return the parent node of the <span>context node</span> if there is a parent and it is an <code>Element</code> node, or null otherwise.
 
+<p>The <dfn title=dom-Node-hasChildNodes><code>hasChildNodes()</code></dfn>
+method must return false if the <span>context node</span>'s
+<code title=dom-Node-firstChild>firstChild</code> is null, or true
+otherwise.
+
 <p>The <dfn title=dom-Node-childNodes><code>childNodes</code></dfn> attribute must return a <code>NodeList</code> rooted at the <span>context node</span> matching only child nodes.
 
 <p>The <dfn title=dom-Node-firstChild><code>firstChild</code></dfn> attribute must return the first child node of the <span>context node</span>, or null if there is none.
@@ -1037,11 +1042,6 @@ method must run these steps:
 
  <li><p>Return <var>newChild</var>.
 </ol>
-
-<p>The <dfn title=dom-Node-hasChildNodes><code>hasChildNodes()</code></dfn>
-method must return false if the <span>context node</span>'s
-<code title=dom-Node-firstChild>firstChild</code> is null, or true
-otherwise.
 
 <p>The
 <dfn title=dom-Node-cloneNode><code>cloneNode(<var>deep</var>)</code></dfn>

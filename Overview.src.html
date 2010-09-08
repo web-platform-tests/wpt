@@ -632,13 +632,13 @@ node and its child nodes:</p>
   boolean <span title=dom-Node-hasAttributes>hasAttributes</span>();
   readonly attribute <span>NamedNodeMap</span> <span title=dom-Node-attributes>attributes</span>;
 
-  <span>Node</span> <span title=dom-Node-insertBefore>insertBefore</span>(<span>Node</span> newChild, <span>Node</span> refChild);
-  <span>Node</span> <span title=dom-Node-replaceChild>replaceChild</span>(<span>Node</span> newChild, <span>Node</span> oldChild);
-  <span>Node</span> <span title=dom-Node-removeChild>removeChild</span>(<span>Node</span> oldChild);
-  <span>Node</span> <span title=dom-Node-appendChild>appendChild</span>(<span>Node</span> newChild);<!--
+  <span>Node</span> <span title=dom-Node-insertBefore>insertBefore</span>(<span>Node</span> <var>newChild</var>, <span>Node</span> <var>refChild</var>);
+  <span>Node</span> <span title=dom-Node-replaceChild>replaceChild</span>(<span>Node</span> <var>newChild</var>, <span>Node</span> <var>oldChild</var>);
+  <span>Node</span> <span title=dom-Node-removeChild>removeChild</span>(<span>Node</span> <var>oldChild</var>);
+  <span>Node</span> <span title=dom-Node-appendChild>appendChild</span>(<span>Node</span> <var>newChild</var>);<!--
   void normalize();-->
 
-  boolean <span title=dom-Node-isSupported>isSupported</span>([TreatNullAs=EmptyString] DOMString feature, DOMString version);
+  boolean <span title=dom-Node-isSupported>isSupported</span>([TreatNullAs=EmptyString] DOMString <var>feature</var>, DOMString <var>version</var>); <span class=XXX>// can we nuke this?</span>
 
   readonly attribute DOMString <span title=dom-Node-namespaceURI>namespaceURI</span>;
   readonly attribute DOMString <span title=dom-Node-prefix>prefix</span>;
@@ -653,9 +653,9 @@ node and its child nodes:</p>
   const unsigned short <span title=dom-Node-DOCUMENT_POSITION_CONTAINED_BY>DOCUMENT_POSITION_CONTAINED_BY</span> = 0x10;
   const unsigned short <span title=dom-Node-DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC>DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC</span> = 0x20;
 
-  unsigned short <span title=dom-Node-compareDocumentPosition>compareDocumentPosition</span>(<span>Node</span> other);
+  unsigned short <span title=dom-Node-compareDocumentPosition>compareDocumentPosition</span>(<span>Node</span> <var>other</var>);
 
-  <span>Node</span> <span title=dom-Node-cloneNode>cloneNode</span>(boolean deep);
+  <span>Node</span> <span title=dom-Node-cloneNode>cloneNode</span>(boolean <var>deep</var>);
   boolean <span title=dom-Node-isSameNode>isSameNode</span>(<span>Node</span> <var>node</var>);
   boolean <span title=dom-Node-isEqualNode>isEqualNode</span>(<span>Node</span> <var>node</var>);
 

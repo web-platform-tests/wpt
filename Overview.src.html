@@ -635,8 +635,7 @@ node and its child nodes:</p>
   <span>Node</span> <span title=dom-Node-insertBefore>insertBefore</span>(<span>Node</span> newChild, <span>Node</span> refChild);
   <span>Node</span> <span title=dom-Node-replaceChild>replaceChild</span>(<span>Node</span> newChild, <span>Node</span> oldChild);
   <span>Node</span> <span title=dom-Node-removeChild>removeChild</span>(<span>Node</span> oldChild);
-  <span>Node</span> <span title=dom-Node-appendChild>appendChild</span>(<span>Node</span> newChild);
-  <span>Node</span> <span title=dom-Node-cloneNode>cloneNode</span>(boolean deep);<!--
+  <span>Node</span> <span title=dom-Node-appendChild>appendChild</span>(<span>Node</span> newChild);<!--
   void normalize();-->
 
   boolean <span title=dom-Node-isSupported>isSupported</span>([TreatNullAs=EmptyString] DOMString feature, DOMString version);
@@ -647,7 +646,6 @@ node and its child nodes:</p>
 
   readonly attribute DOMString <span title=dom-Node-baseURI>baseURI</span>;
 
-  // DocumentPosition
   const unsigned short <span title=dom-Node-DOCUMENT_POSITION_DISCONNECTED>DOCUMENT_POSITION_DISCONNECTED</span> = 0x01;
   const unsigned short <span title=dom-Node-DOCUMENT_POSITION_PRECEDING>DOCUMENT_POSITION_PRECEDING</span> = 0x02;
   const unsigned short <span title=dom-Node-DOCUMENT_POSITION_FOLLOWING>DOCUMENT_POSITION_FOLLOWING</span> = 0x04;
@@ -657,6 +655,7 @@ node and its child nodes:</p>
 
   unsigned short <span title=dom-Node-compareDocumentPosition>compareDocumentPosition</span>(<span>Node</span> other);
 
+  <span>Node</span> <span title=dom-Node-cloneNode>cloneNode</span>(boolean deep);
   boolean <span title=dom-Node-isSameNode>isSameNode</span>(<span>Node</span> <var>node</var>);
   boolean <span title=dom-Node-isEqualNode>isEqualNode</span>(<span>Node</span> <var>node</var>);
 
@@ -1044,13 +1043,6 @@ method must run these steps:
 </ol>
 
 <p>The
-<dfn title=dom-Node-cloneNode><code>cloneNode(<var>deep</var>)</code></dfn>
-method must return a <span>clone</span> of the <span>context node</span>,
-with <var>new ownerDocument</var> being the <span>context node</span>'s
-<code title=dom-Node-ownerDocument>ownerDocument</code>, and the
-<i>clone children flag</i> set if <var>deep</var> is true.
-
-<p>The
 <dfn title=dom-Node-isSupported><code>isSupported(<var>feature</var>, <var>version</var>)</code></dfn>
 method must return true if the user agent
 <span title=concept-support-DOMfeatureversion>supports</span> the
@@ -1111,6 +1103,13 @@ title>other</var>)</code></dfn> method must <span class=XXX title>...</span>
 <!-- XXX @beverloo might figure this out; remove impl specific? -->
 
 <hr>
+
+<p>The
+<dfn title=dom-Node-cloneNode><code>cloneNode(<var>deep</var>)</code></dfn>
+method must return a <span>clone</span> of the <span>context node</span>,
+with <var>new ownerDocument</var> being the <span>context node</span>'s
+<code title=dom-Node-ownerDocument>ownerDocument</code>, and the
+<i>clone children flag</i> set if <var>deep</var> is true.
 
 <p>The
 <dfn title=dom-Node-isSameNode><code>isSameNode(<var>node</var>)</code></dfn>

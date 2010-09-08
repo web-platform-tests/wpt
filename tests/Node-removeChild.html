@@ -18,15 +18,10 @@ test(function() {
   assert_equals(s.ownerDocument, frameDoc)
 
   var len = document.body.childNodes.length
-  assert_throws("NOT_SUPPORTED_ERR", function() { document.body.removeChild(null) }) // XXX breaks the framework?!
+  assert_throws("NOT_SUPPORTED_ERR", function() { document.body.removeChild(null) })
   assert_equals(document.body.childNodes.length, len)
 
-  try {
-    document.body.removeChild({'a':'b'})
-    assert_unreached()
-  } catch (e) {
-    assert_true(e instanceof TypeError)
-  }
+  assert_throws(new TypeError(), document.body.removeChild({'a':'b'}))
   assert_equals(document.body.childNodes.length, len)
 
   document.body.setAttribute("abc", "test")

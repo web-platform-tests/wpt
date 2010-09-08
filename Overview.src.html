@@ -668,9 +668,8 @@ node and its child nodes:</p>
   DOMUserData getUserData(DOMString key);-->
 };</pre>
 
-<p>These are the constants <code title=dom-Node-nodeType>nodeType</code> (as
-defined below) returns. The constants marked historical can no longer be
-returned, but are still exposed.</p>
+<p>The <code title=dom-Node-nodeType>nodeType</code> attribute must return
+the type of the node, which must be one of the following:</p>
 
 <ol>
  <li value=1><dfn title=dom-Node-ELEMENT_NODE><code>ELEMENT_NODE</code></dfn>
@@ -698,25 +697,57 @@ returned, but are still exposed.</p>
  <li value=12><dfn title=dom-Node-NOTATION_NODE><code>NOTATION_NODE</code></dfn> (historical)
 </ol>
 
+<p class=note>The constants marked historical can no longer be returned, but
+are still exposed on the interface.</p>
 
-<p>The <dfn title=dom-Node-nodeName><code>nodeName</code></dfn>, <dfn title=dom-Node-nodeValue><code>nodeValue</code></dfn> and <dfn title=dom-Node-nodeType><code>nodeType</code></dfn> attributes must return what is in the second, third and fourth column, respectively, on the same row that lists, in the first column, the interface the <span>context node</span> implements:
 
-<table>
- <caption>Value of <code title=dom-Node-nodeName>nodeName</code>, <code
- title=dom-Node-nodeValue>nodeValue</code>, <code
- title=dom-Node-nodeType>nodeType</code></caption>
- <thead>
-  <tr><th>Interface<th><code title=dom-Node-nodeName>nodeName</code><th><code title=dom-Node-nodeValue>nodeValue</code><th><code title=dom-Node-nodeType>nodeType</code>
- <tbody>
-  <tr><td><code>Element</code><td>same as <code title=dom-Element-tagName>tagName</code><td>null<td>1
-  <tr><td><code>Attr</code><td>same as <code title=dom-Attr-name>name</code><td>same as <code title=dom-Attr-value>value</code><td>2
-  <tr><td><code>Text</code><td>"<code title>#text</code>"<td>same as <code title=dom-CharacterData-data>data</code><td>3
-  <tr><td><code>ProcessingInstruction</code><td>same as <code title=dom-ProcessingInstruction-target>target</code><td>same as <code title=dom-ProcessingInstruction-data>data</code><td>7
-  <tr><td><code>Comment</code><td>"<code title>#comment</code>"<td>same as <code title=dom-CharacterData-data>data</code><td>8
-  <tr><td><code>Document</code><td>"<code title>#document</code>"<td>null<td>9
-  <tr><td><code>DocumentType</code><td>same as <code title=dom-DocumentType-name>name</code><td>null<td>10
-  <tr><td><code>DocumentFragment</code><td>"<code title>#document-fragment</code>"<td>null<td>11
-</table>
+<p>The <dfn title=dom-Node-nodeName><code>nodeName</code></dfn> attribute
+must return the following, depending on the <span>context node</span>:</p>
+
+<dl class=switch>
+ <dt><code>Element</code></dt>
+ <dd><p>The <span>context node</span>'s
+ <code title=dom-Element-tagName>tagName</code> attribute.
+
+ <dt><code>Attr</code></dt>
+ <dd><p>The <span>context node</span>'s
+ <code title=dom-Attr-name>name</code> attribute.
+
+ <dt><code>Text</code></dt>
+ <dd><p>"<code title>#text</code>".
+
+ <dt><code>ProcessingInstruction</code></dt>
+ <dd><p>The <span>context node</span>'s
+ <code title=dom-ProcessingInstruction-target>target</code> attribute.
+
+ <dt><code>Comment</code></dt>
+ <dd><p>"<code title>#comment</code>".
+
+ <dt><code>Document</code></dt>
+ <dd><p>"<code title>#document</code>".
+
+ <dt><code>DocumentType</code></dt>
+ <dd><p>The <span>context node</span>'s
+ <code title=dom-DocumentType-name>name</code> attribute.
+
+ <dt><code>DocumentFragment</code></dt>
+ <dd><p>"<code title>#document-fragment</code>".
+</dl>
+
+<p>The <dfn title=dom-Node-nodeValue><code>nodeValue</code></dfn> attribute
+must return the following, depending on the <span>context node</span>:</p>
+
+<dl class=switch>
+ <dt><code>Attr</code></dt>
+ <dt><code>Text</code></dt>
+ <dt><code>Comment</code></dt>
+ <dt><code>ProcessingInstruction</code></dt>
+ <dd><p>The <span>context node</span>'s
+ <code title=dom-Node-textContent>textContent</code> attribute.
+
+ <dt>Any other node</dt>
+ <dd><p>Null.
+</dl>
 
 <p>Setting the <code title=dom-Node-nodeValue>nodeValue</code> attribute
 must do as described below, depending on the <span>context node</span>:</p>

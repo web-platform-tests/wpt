@@ -723,16 +723,12 @@ must do as described below, depending on the <span>context node</span>:</p>
 
 <dl class=switch>
  <dt><code>Attr</code></dt>
- <dd><p>Set the <span>context node</span>'s <code title=dom-Attr-value>value</code> attribute instead.</p></dd>
-
  <dt><code>Text</code></dt>
- <dd><p>Set the <span>context node</span>'s <code title=dom-CharacterData-data>data</code> attribute instead.</p></dd>
-
- <dt><code>ProcessingInstruction</code></dt>
- <dd><p>Set the <span>context node</span>'s <code title=dom-ProcessingInstruction-data>data</code> attribute instead.</p></dd>
-
  <dt><code>Comment</code></dt>
- <dd><p>Set the <span>context node</span>'s <code title=dom-CharacterData-data>data</code> attribute instead.</p></dd>
+ <dt><code>ProcessingInstruction</code></dt>
+ <dd><p>Set the <span>context node</span>'s
+ <code title=dom-Node-textContent>textContent</code> attribute to the given
+ value.</p></dd>
 
  <dt>Any other node</dt>
  <dd><p>Do nothing.</p></dd>
@@ -1027,13 +1023,64 @@ title>other</var>)</code></dfn> method must <span class=XXX title>...</span>
 <hr>
 
 
-<p>The <dfn title=dom-Node-textContent><code>textContent</code></dfn> attribute must return a concatenation of the <code title=dom-CharacterData-data>data</code> of all the descendant <code>Text</code> nodes of the <span>context node</span>, in <span>tree order</span>. On setting, it must run these steps:
+<p>The <dfn title=dom-Node-textContent><code>textContent</code></dfn>
+attribute must return the following, depending on the
+<span>context node</span>:</p>
 
-<ol>
- <li><p>Remove all the child nodes of the <span>context node</span>.
- <li><p>Let <var>data</var> be the value being assigned.
- <li><p>If <var>data</var> is not the empty string, append a new <code>Text</code> node to the <span>context node</span> whose <code title=dom-CharacterData-data>data</code> is set to <var>data</var>.
-</ol>
+<dl class=switch>
+ <dt><code>DocumentFragment</code></dt>
+ <dt><code>Element</code></dt>
+ <dt><code>Attr</code></dt>
+ <dd><p>The concatenation of the
+ <code title=dom-CharacterData-data>data</code> of all the descendant
+ <code>Text</code> nodes of the <span>context node</span>, in
+ <span>tree order</span>.</p></dd>
+
+ <dt><code>Text</code></dt>
+ <dt><code>Comment</code></dt>
+ <dd><p>The <span>context node</span>'s
+ <code title=dom-CharacterData-data>data</code> attribute.</p></dd>
+
+ <dt><code>ProcessingInstruction</code></dt>
+ <dd><p>The <span>context node</span>'s
+ <code title=dom-ProcessingInstruction-data>data</code> attribute.</p></dd>
+
+ <dt>Any other node</dt>
+ <dd>Null.</dd>
+</dl>
+
+<p>Setting the <code title=dom-Node-textContent>textContent</code>
+attribute must do as described below, depending on the
+<span>context node</span>:
+
+<dl class=switch>
+ <dt><code>DocumentFragment</code></dt>
+ <dt><code>Element</code></dt>
+ <dt><code>Attr</code></dt>
+ <dd>
+  <ol>
+   <li><p>Remove all the descendent nodes of the <span>context node</span>.
+   <li><p>Let <var>data</var> be the given value.
+   <li><p>If <var>data</var> is not the empty string, append a new
+   <code>Text</code> node to the <span>context node</span> whose
+   <code title=dom-CharacterData-data>data</code> is set to <var>data</var>.
+  </ol>
+ </dd>
+
+ <dt><code>Text</code></dt>
+ <dt><code>Comment</code></dt>
+ <dd><p>Set <span>context node</span>'s
+ <code title=dom-CharacterData-data>data</code> attribute to the given
+ value.</p></dd>
+
+ <dt><code>ProcessingInstruction</code></dt>
+ <dd><p>Set the <span>context node</span>'s
+ <code title=dom-ProcessingInstruction-data>data</code> attribute to the
+ given value.</p></dd>
+
+ <dt>Any other node</dt>
+ <dd>Do nothing.</dd>
+</dl>
 
 <hr>
 
@@ -1807,11 +1854,11 @@ the <span title=concept-attribute-name>name</span> associated with the
 <p>The <dfn title=dom-Attr-specified><code>specified</code></dfn> attribute must
 return true.
 
-<p>The <dfn title=dom-Attr-value><code>value</code></dfn> attribute must return the same value as the <code
-title=dom-Node-textContent>textContent</code> IDL attribute on the
-<span>context node</span>, and on setting, must act as if the <code
-title=dom-Node-textContent>textContent</code> IDL attribute on the
-<span>context node</span> had been set to the new value.
+<p>The <dfn title=dom-Attr-value><code>value</code></dfn> attribute must return the value of the <span>context node</span>'s
+<code title=dom-Node-textContent>textContent</code> attribute and on
+setting, must set the <span>context node</span>'s
+<code title=dom-Node-textContent>textContent</code> attribute to the given
+value.
 
 <p>The <dfn title=dom-Attr-ownerElement><code>ownerElement</code></dfn>
 attribute must return the <span title=concept-attribute-element>element</span>

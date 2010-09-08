@@ -17,6 +17,8 @@ test(function() {
   document.body.appendChild(s)
   assert_equals(s.ownerDocument, document)
 
+  assert_throws("HIERARCHY_REQUEST_ERR", function() { document.body.appendChild(frameDoc) })
+
   s = frameDoc.createElement("b")
   frameDoc.body.appendChild(s)
   assert_equals(s.ownerDocument, frameDoc)

@@ -10,13 +10,12 @@ function testHRE(node) {
   })
 }
 test(function() {
-  var len = document.body.childNodes.length
-  assert_throws("NOT_SUPPORTED_ERR", function() { document.body.insertBefore(null, null) }) // XXX test framework breaks
-  assert_equals(document.body.childNodes.length, len)
+  assert_throws("HIERARCHY_REQUEST_ERR", function() { document.body.insertBefore(document.body, document.getElementById("log")) })
+  assert_throws("HIERARCHY_REQUEST_ERR", function() { document.body.insertBefore(document.documentElement, document.getElementById("log")) })
 
-  len = document.body.childNodes.length
+  assert_throws("NOT_SUPPORTED_ERR", function() { document.body.insertBefore(null, null) })
+
   assert_throws("NOT_SUPPORTED_ERR", function() { document.body.insertBefore(null, document.body.firstChild) })
-  assert_equals(document.body.childNodes.length, len)
 
   assert_throws(new TypeError(), function() { document.body.insertBefore({'a':'b'}, document.body.firstChild) })
 

@@ -823,6 +823,11 @@ method must run these steps:
  <span>context node</span>, then raise a
  <code title=dom-DOMException-NOT_FOUND_ERR>NOT_FOUND_ERR</code> exception and terminate these steps.
 
+ <li><p>If <var>newChild</var> is an ancestor of the
+ <span>context node</span> raise a
+ <code title=dom-DOMException-HIERARCHY_REQUEST_ERR>HIERARCHY_REQUEST_ERR</code>
+ and terminate these steps.
+
  <li><p>If <var>newChild</var>'s
  <code title=dom-Node-ownerDocument>ownerDocument</code> is not equal to the
  <span>context node</span>'s
@@ -862,6 +867,16 @@ method must run these steps:
  title=dom-DOMException-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</code> exception and
  terminate these steps.
 
+ <li><p>If <var>oldChild</var> is not a child of the <span>context
+ node</span>, then raise a <code
+ title=dom-DOMException-NOT_FOUND_ERR>NOT_FOUND_ERR</code>
+ exception and terminate these steps.
+
+ <li><p>If <var>newChild</var> is an ancestor of the
+ <span>context node</span> raise a
+ <code title=dom-DOMException-HIERARCHY_REQUEST_ERR>HIERARCHY_REQUEST_ERR</code>
+ and terminate these steps.
+
  <li><p>If <var>newChild</var>'s
  <code title=dom-Node-ownerDocument>ownerDocument</code> is not equal to the
  <span>context node</span>'s
@@ -871,22 +886,14 @@ method must run these steps:
  <code title=dom-Document-adoptNode>adoptNode</code> method with
  <var>newChild</var> as its argument.
 
- <li><p>If <var>oldChild</var> is not a child of the <span>context
- node</span>, then raise a <code
- title=dom-DOMException-NOT_FOUND_ERR>NOT_FOUND_ERR</code>
- exception and terminate these steps.
-
- <!-- no security check -->
  <li><p>Let <var>refChild</var> be <var>oldChild</var>'s
  <code title=dom-Node-nextSibling>nextSibling</code>.
 
  <li><p>Remove <var>oldChild</var> from <span>context node</span>.
 
- <li><p>Call <code title=dom-Node-insertBefore>insertBefore</code> on the
- <span>context node</span> with <var>newChild</var> and <var>refChild</var>
- as arguments, respectively.
-
- <li><p>Return <var>newChild</var>.
+ <li><p>Return the result of invoking <span>context node</span>'s
+ <code title=dom-Node-insertBefore>insertBefore</code> with
+ <var>newChild</var> and <var>refChild</var> as arguments.
 </ol>
 
 <p>The
@@ -896,9 +903,9 @@ method must run these steps:
 
 <ol>
  <!-- Attr nodes are okay -->
- <li><p>If <var>oldChild</var> is null, then raise a <code
- title=dom-DOMException-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</code> exception and
- terminate these steps.
+ <li><p>If <var>oldChild</var> is null, then raise a
+ <code title=dom-DOMException-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</code>
+ exception and terminate these steps.
 
  <li><p>If <var>oldChild</var> is not a child of the <span>context
  node</span>, then raise a <code
@@ -913,7 +920,8 @@ method must run these steps:
 
 <p>The
 <dfn
-title=dom-Node-appendChild><code>appendChild(<var>newChild</var>)</code></dfn> method must run the following steps:
+title=dom-Node-appendChild><code>appendChild(<var>newChild</var>)</code></dfn>
+method must run these steps:
 
 <ol>
  <li><p>If the <span>context node</span> is an <code>Attr</code> node or a
@@ -925,6 +933,11 @@ title=dom-Node-appendChild><code>appendChild(<var>newChild</var>)</code></dfn> m
  title=dom-DOMException-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</code> exception and
  terminate these steps.
 
+ <li><p>If <var>newChild</var> is an ancestor of the
+ <span>context node</span> raise a
+ <code title=dom-DOMException-HIERARCHY_REQUEST_ERR>HIERARCHY_REQUEST_ERR</code>
+ and terminate these steps.
+
  <li><p>If <var>newChild</var>'s
  <code title=dom-Node-ownerDocument>ownerDocument</code> is not equal to the
  <span>context node</span>'s
@@ -934,13 +947,15 @@ title=dom-Node-appendChild><code>appendChild(<var>newChild</var>)</code></dfn> m
  <code title=dom-Document-adoptNode>adoptNode</code> method with
  <var>newChild</var> as its argument.
 
- <!-- no security check -->
  <li><p>Append <var>newChild</var> to the <span>context node</span>.
 
  <li><p>Return <var>newChild</var>.
 </ol>
 
-<p>The <dfn title=dom-Node-hasChildNodes><code>hasChildNodes()</code></dfn> method must return false if the <span>context node</span>'s <code title=dom-Node-firstChild>firstChild</code> is null, and true otherwise.
+<p>The <dfn title=dom-Node-hasChildNodes><code>hasChildNodes()</code></dfn>
+method must return false if the <span>context node</span>'s
+<code title=dom-Node-firstChild>firstChild</code> is null, or true
+otherwise.
 
 <p>The
 <dfn title=dom-Node-cloneNode><code>cloneNode(<var>deep</var>)</code></dfn>

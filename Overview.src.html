@@ -593,7 +593,7 @@ node and its child nodes:</p>
  <dt><code>Text</code></dt>
  <dd><p>No children.</p></dd>
 </dl>
-<p class=XXX>Attr / CDATASection</p>
+<p class=XXX>Attr</p>
 
 
 <h2>Nodes</h2>
@@ -614,9 +614,10 @@ node and its child nodes:</p>
   const unsigned short <span title=dom-Node-DOCUMENT_FRAGMENT_NODE>DOCUMENT_FRAGMENT_NODE</span> = 11;
   const unsigned short <span title=dom-Node-NOTATION_NODE>NOTATION_NODE</span> = 12; // historical
 
+  readonly attribute unsigned short <span title=dom-Node-nodeType>nodeType</span>;
   readonly attribute DOMString <span title=dom-Node-nodeName>nodeName</span>;
            attribute DOMString <span title=dom-Node-nodeValue>nodeValue</span>;
-  readonly attribute unsigned short <span title=dom-Node-nodeType>nodeType</span>;
+           attribute DOMString <span title=dom-Node-textContent>textContent</span>;
 
   readonly attribute <span>Document</span> <span title=dom-Node-ownerDocument>ownerDocument</span>;
   readonly attribute <span>Node</span> <span title=dom-Node-parentNode>parentNode</span>;
@@ -655,8 +656,6 @@ node and its child nodes:</p>
   const unsigned short <span title=dom-Node-DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC>DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC</span> = 0x20;
 
   unsigned short <span title=dom-Node-compareDocumentPosition>compareDocumentPosition</span>(<span>Node</span> other);
-
-  [TreatNullAs=EmptyString] attribute DOMString <span title=dom-Node-textContent>textContent</span>;
 
   boolean <span title=dom-Node-isSameNode>isSameNode</span>(<span>Node</span> <var>node</var>);
   boolean <span title=dom-Node-isEqualNode>isEqualNode</span>(<span>Node</span> <var>node</var>);
@@ -764,6 +763,65 @@ must do as described below, depending on the <span>context node</span>:</p>
 
  <dt>Any other node</dt>
  <dd><p>Do nothing.</p></dd>
+</dl>
+
+<p>The <dfn title=dom-Node-textContent><code>textContent</code></dfn>
+attribute must return the following, depending on the
+<span>context node</span>:</p>
+
+<dl class=switch>
+ <dt><code>DocumentFragment</code></dt>
+ <dt><code>Element</code></dt>
+ <dt><code>Attr</code></dt>
+ <dd><p>The concatenation of the
+ <code title=dom-CharacterData-data>data</code> of all the descendant
+ <code>Text</code> nodes of the <span>context node</span>, in
+ <span>tree order</span>.</p></dd>
+
+ <dt><code>Text</code></dt>
+ <dt><code>Comment</code></dt>
+ <dd><p>The <span>context node</span>'s
+ <code title=dom-CharacterData-data>data</code> attribute.</p></dd>
+
+ <dt><code>ProcessingInstruction</code></dt>
+ <dd><p>The <span>context node</span>'s
+ <code title=dom-ProcessingInstruction-data>data</code> attribute.</p></dd>
+
+ <dt>Any other node</dt>
+ <dd>Null.</dd>
+</dl>
+
+<p>Setting the <code title=dom-Node-textContent>textContent</code>
+attribute must do as described below, depending on the
+<span>context node</span>:
+
+<dl class=switch>
+ <dt><code>DocumentFragment</code></dt>
+ <dt><code>Element</code></dt>
+ <dt><code>Attr</code></dt>
+ <dd>
+  <ol>
+   <li><p>Remove all the descendent nodes of the <span>context node</span>.
+   <li><p>Let <var>data</var> be the given value.
+   <li><p>If <var>data</var> is not the empty string, append a new
+   <code>Text</code> node to the <span>context node</span> whose
+   <code title=dom-CharacterData-data>data</code> is set to <var>data</var>.
+  </ol>
+ </dd>
+
+ <dt><code>Text</code></dt>
+ <dt><code>Comment</code></dt>
+ <dd><p>Set <span>context node</span>'s
+ <code title=dom-CharacterData-data>data</code> attribute to the given
+ value.</p></dd>
+
+ <dt><code>ProcessingInstruction</code></dt>
+ <dd><p>Set the <span>context node</span>'s
+ <code title=dom-ProcessingInstruction-data>data</code> attribute to the
+ given value.</p></dd>
+
+ <dt>Any other node</dt>
+ <dd>Do nothing.</dd>
 </dl>
 
 <hr>
@@ -1051,68 +1109,6 @@ returns.</p>
 title=dom-Node-compareDocumentPosition><code>compareDocumentPosition(<var
 title>other</var>)</code></dfn> method must <span class=XXX title>...</span>
 <!-- XXX @beverloo might figure this out; remove impl specific? -->
-
-<hr>
-
-
-<p>The <dfn title=dom-Node-textContent><code>textContent</code></dfn>
-attribute must return the following, depending on the
-<span>context node</span>:</p>
-
-<dl class=switch>
- <dt><code>DocumentFragment</code></dt>
- <dt><code>Element</code></dt>
- <dt><code>Attr</code></dt>
- <dd><p>The concatenation of the
- <code title=dom-CharacterData-data>data</code> of all the descendant
- <code>Text</code> nodes of the <span>context node</span>, in
- <span>tree order</span>.</p></dd>
-
- <dt><code>Text</code></dt>
- <dt><code>Comment</code></dt>
- <dd><p>The <span>context node</span>'s
- <code title=dom-CharacterData-data>data</code> attribute.</p></dd>
-
- <dt><code>ProcessingInstruction</code></dt>
- <dd><p>The <span>context node</span>'s
- <code title=dom-ProcessingInstruction-data>data</code> attribute.</p></dd>
-
- <dt>Any other node</dt>
- <dd>Null.</dd>
-</dl>
-
-<p>Setting the <code title=dom-Node-textContent>textContent</code>
-attribute must do as described below, depending on the
-<span>context node</span>:
-
-<dl class=switch>
- <dt><code>DocumentFragment</code></dt>
- <dt><code>Element</code></dt>
- <dt><code>Attr</code></dt>
- <dd>
-  <ol>
-   <li><p>Remove all the descendent nodes of the <span>context node</span>.
-   <li><p>Let <var>data</var> be the given value.
-   <li><p>If <var>data</var> is not the empty string, append a new
-   <code>Text</code> node to the <span>context node</span> whose
-   <code title=dom-CharacterData-data>data</code> is set to <var>data</var>.
-  </ol>
- </dd>
-
- <dt><code>Text</code></dt>
- <dt><code>Comment</code></dt>
- <dd><p>Set <span>context node</span>'s
- <code title=dom-CharacterData-data>data</code> attribute to the given
- value.</p></dd>
-
- <dt><code>ProcessingInstruction</code></dt>
- <dd><p>Set the <span>context node</span>'s
- <code title=dom-ProcessingInstruction-data>data</code> attribute to the
- given value.</p></dd>
-
- <dt>Any other node</dt>
- <dd>Do nothing.</dd>
-</dl>
 
 <hr>
 

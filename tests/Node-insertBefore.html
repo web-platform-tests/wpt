@@ -18,7 +18,7 @@ test(function() {
   assert_throws("NOT_SUPPORTED_ERR", function() { document.body.insertBefore(null, document.body.firstChild) })
   assert_equals(document.body.childNodes.length, len)
 
-  assert_throws(new TypeError(), document.body.insertBefore({'a':'b'}, document.body.firstChild))
+  assert_throws(new TypeError(), function() { document.body.insertBefore({'a':'b'}, document.body.firstChild) })
 
   document.body.setAttribute("abc", "pass")
   var attr = document.body.attributes[0]

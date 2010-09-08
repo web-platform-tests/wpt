@@ -21,7 +21,7 @@ test(function() {
   assert_throws("NOT_SUPPORTED_ERR", function() { document.body.removeChild(null) })
   assert_equals(document.body.childNodes.length, len)
 
-  assert_throws(new TypeError(), document.body.removeChild({'a':'b'}))
+  assert_throws(new TypeError(), function() { document.body.removeChild({'a':'b'}) })
   assert_equals(document.body.childNodes.length, len)
 
   document.body.setAttribute("abc", "test")

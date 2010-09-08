@@ -561,6 +561,40 @@ must return the name of the exception constant as a string.</p>
 
 
 
+<h2>Nodes Model</h2>
+<p>The DOM represents a tree of <code>Node</code> objects. The following
+structure is imposed on this tree, represented as relationship between the
+node and its child nodes:</p>
+
+<dl>
+ <dt><code>Document</code></dt>
+ <dd>
+  <p>In <span>tree order</span>:</p>
+  <ol>
+   <li><p>Zero or more nodes each of which is either
+   <code>ProcessingInstruction</code> or <code>Comment</code>.</p></li>
+   <li><p>Optionally one <code>DocumentType</code> node.</p></li>
+   <li><p>Zero or more nodes each of which is either
+   <code>ProcessingInstruction</code> or <code>Comment</code>.</p></li>
+   <li><p>Optionally one <code>Element</code> node.</p></li>
+   <li><p>Zero or more nodes each of which is either
+   <code>ProcessingInstruction</code> or <code>Comment</code>.</p></li>
+  </ol>
+ </dd>
+ <dt><code>DocumentFragment</code>
+ <dt><code>Element</code></dt>
+ <dd><p>Zero or more nodes each of which is one of <code>Element</code>,
+ <code>ProcessingInstruction</code>, <code>Comment</code>, or
+ <code>Text</code>.</p></dd>
+ <dt><code>DocumentType</code></dt>
+ <dt><code>ProcessingInstruction</code></dt>
+ <dt><code>Comment</code></dt>
+ <dt><code>Text</code></dt>
+ <dd><p>No children.</p></dd>
+</dl>
+<p class=XXX>Attr / CDATASection</p>
+
+
 <h2>Nodes</h2>
 <h3>Interface <code>Node</code></h3>
 <pre class=idl>interface <dfn>Node</dfn> {
@@ -602,6 +636,7 @@ must return the name of the exception constant as a string.</p>
   boolean <span title=dom-Node-hasChildNodes>hasChildNodes</span>();
   <span>Node</span> <span title=dom-Node-cloneNode>cloneNode</span>(boolean deep);<!--
   void normalize();-->
+
   boolean <span title=dom-Node-isSupported>isSupported</span>([TreatNullAs=EmptyString] DOMString feature, DOMString version);
 
   readonly attribute DOMString <span title=dom-Node-namespaceURI>namespaceURI</span>;
@@ -757,7 +792,7 @@ attribute must run these steps:
 <hr>
 
 <p>The <dfn title=dom-Node-hasAttributes><code>hasAttributes()</code></dfn>
-method must return whether there are any attributes associated with the
+method must return true if there are any attributes associated with the
 <span>context node</span>, if it is an <code>Element</code> node, and false
 otherwise.
 
@@ -799,11 +834,9 @@ these steps:
  title=dom-Node-firstChild>firstChild</code> is not null, call <code
  title=dom-Node-insertBefore>insertBefore</code> on the <span>context
  node</span> with <var>newChild</var>'s <code
- title=dom-Node-firstChild>firstChild</code> as first argument and <var
- title>refChild</var> as second argument.
+ title=dom-Node-firstChild>firstChild</code> as first argument and <var>refChild</var> as second argument.
 
- <li><p>Otherwise, if <var>refChild</var> is null, append <var
- title>newChild</var> to the <span>context node</span>.
+ <li><p>Otherwise, if <var>refChild</var> is null, append <var>newChild</var> to the <span>context node</span>.
 
  <li><p>Otherwise insert <var>newChild</var> in the <span>context
  node</span> as the previous sibling of <var>refChild</var>.
@@ -811,9 +844,9 @@ these steps:
  <li><p>Return <var>newChild</var>.
 </ol>
 
-<p>The <dfn title=dom-Node-replaceChild><code>replaceChild(<var
-title>newChild</var>, <var>oldChild</var>)</code></dfn> method must run
-the following steps:
+<p>The
+<dfn title=dom-Node-replaceChild><code>replaceChild(<var>newChild</var>, <var>oldChild</var>)</code></dfn>
+method must run these steps:
 
 <ol>
  <li><p>If the <span>context node</span> is an <code>Attr</code> node or a
@@ -847,15 +880,16 @@ the following steps:
  <li><p>Remove <var>oldChild</var> from <span>context node</span>.
 
  <li><p>Call <code title=dom-Node-insertBefore>insertBefore</code> on the
- <span>context node</span> with <var>newChild</var> and <var
- title>refChild</var> as arguments, respectively.
+ <span>context node</span> with <var>newChild</var> and <var>refChild</var>
+ as arguments, respectively.
 
  <li><p>Return <var>newChild</var>.
 </ol>
 
-<p>The <dfn
-title=dom-Node-removeChild><code>removeChild(<var
-title>oldChild</var>)</code></dfn> method must run the following steps:
+<p>The
+<dfn
+title=dom-Node-removeChild><code>removeChild(<var>oldChild</var>)</code></dfn>
+method must run these steps:
 
 <ol>
  <!-- Attr nodes are okay -->
@@ -874,9 +908,9 @@ title>oldChild</var>)</code></dfn> method must run the following steps:
  <li><p>Return <var>oldChild</var>.
 </ol>
 
-<p>The <dfn
-title=dom-Node-appendChild><code>appendChild(<var
-title>newChild</var>)</code></dfn> method must run the following steps:
+<p>The
+<dfn
+title=dom-Node-appendChild><code>appendChild(<var>newChild</var>)</code></dfn> method must run the following steps:
 
 <ol>
  <li><p>If the <span>context node</span> is an <code>Attr</code> node or a
@@ -905,17 +939,18 @@ title>newChild</var>)</code></dfn> method must run the following steps:
 
 <p>The <dfn title=dom-Node-hasChildNodes><code>hasChildNodes()</code></dfn> method must return false if the <span>context node</span>'s <code title=dom-Node-firstChild>firstChild</code> is null, and true otherwise.
 
-<p>The <dfn title=dom-Node-cloneNode><code>cloneNode(<var
-title>deep</var>)</code></dfn> method must return a <span>clone</span> of the
-<span>context node</span>, with <var>new ownerDocument</var> being the
-<span>context node</span>'s <code
-title=dom-Node-ownerDocument>ownerDocument</code>, and the <var>clone
-children</var> flag set if <var>deep</var> is true.
+<p>The
+<dfn title=dom-Node-cloneNode><code>cloneNode(<var>deep</var>)</code></dfn>
+method must return a <span>clone</span> of the <span>context node</span>,
+with <var>new ownerDocument</var> being the <span>context node</span>'s
+<code title=dom-Node-ownerDocument>ownerDocument</code>, and the
+<i>clone children flag</i> set if <var>deep</var> is true.
 
-<p>The <dfn title=dom-Node-isSupported><code>isSupported(<var
-title>feature</var>, <var>version</var>)</code></dfn> method must return
-true if the user agent <span title=concept-support-DOMfeatureversion>supports</span>
-the (<var>feature</var>, <var>version</var>) tuple on the
+<p>The
+<dfn title=dom-Node-isSupported><code>isSupported(<var>feature</var>, <var>version</var>)</code></dfn>
+method must return true if the user agent
+<span title=concept-support-DOMfeatureversion>supports</span> the
+(<var>feature</var>,&nbsp;<var>version</var>) tuple on the
 <span>context node</span>, and false otherwise.
 
 <p>The <dfn title=dom-Node-namespaceURI><code>namespaceURI</code></dfn> attribute must return the namespace that is associated with the node, if there is one and it's not the empty string, or null otherwise.

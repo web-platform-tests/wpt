@@ -50,10 +50,6 @@
 
 
 
-<h2 class="no-num no-toc">List of tables</h2>
-<div id=anolis-listoftables></div>
-
-
 <h2 class="no-num">Issues</h2>
 
 <ul class=XXX>
@@ -398,24 +394,29 @@ feature</span> with the version "2.0" associated with it.
 
 
 <h3>Cloning nodes</h3>
-<p>When a UA is to <dfn>clone</dfn> a <var>node</var>, with a <var>new ownerDocument</var> and with a <i>clone children flag</i>, it must run the following steps:
+<p>To <dfn>clone</dfn> a <var>node</var>, with a
+<var>new ownerDocument</var> and with a <i>clone children flag</i>, these
+steps must be run:
 
 <ol>
  <li><p>If <var>node</var> is a <code>DocumentType</code> node, raise a <code title=dom-DOMException-DATA_CLONE_ERR>DATA_CLONE_ERR</code> exception and terminate these steps.
  <li>
-  <p>Let <var>copy</var> be a new <code>Node</code> that implements the same interfaces as <var>node</var>, with <code title=dom-Node-ownerDocument>ownerDocument</code> set to <var>new ownerDocument</var>, <code title="dom-Node-prefix">prefix</code>, <code title="dom-Node-localName">localName</code> and <code title="dom-Node-namespaceURI">namespaceURI</code> attributes set to the values of the attributes on <var>node</var> with the same names, and other attributes set to the values of the attributes on <var>node</var> with the same names depending on the type of <var>node</var> according to the following table:</p>
-  <table>
-   <caption>Cloned attributes</caption>
-   <thead>
-    <tr><th>Type of <var>node</var><th>Attributes
-   <tbody>
-    <tr><td><code>Element</code><td>&mdash;
-    <tr><td><code>Attr</code><td><code title=dom-Attr-value>value</code>
-    <tr><td><code>Text</code><td><code title=dom-CharacterData-data>data</code>
-    <tr><td><code>ProcessingInstruction</code><td><code title=dom-ProcessingInstruction-target>target</code>, <code title=dom-ProcessingInstruction-data>data</code>
-    <tr><td><code>Comment</code><td><code title=dom-CharacterData-data>data</code>
-    <tr><td><code>DocumentFragment</code><td>&mdash;
-  </table>
+  <p>Let <var>copy</var> be a new <code>Node</code> that implements the same interfaces as <var>node</var>, with <code title=dom-Node-ownerDocument>ownerDocument</code> set to <var>new ownerDocument</var>, <code title="dom-Node-prefix">prefix</code>, <code title="dom-Node-localName">localName</code> and <code title="dom-Node-namespaceURI">namespaceURI</code> attributes set to the values of the attributes on <var>node</var> with the same names, and other attributes set to the values of the attributes on <var>node</var> with the same names, depending on the <var>node</var>:</p>
+  <dl class=switch>
+   <dt><code>Attr</code>
+   <dd><p><code title=dom-Attr-value>value</code>
+
+   <dt><code>Text</code>
+   <dt><code>Comment</code>
+   <dd><p><code title=dom-CharacterData-data>data</code>
+
+   <dt><code>ProcessingInstruction</code>
+
+   <dd><p><code title=dom-ProcessingInstruction-target>target</code>, <code title=dom-ProcessingInstruction-data>data</code>
+
+   <dt>Any other node
+   <dd><p>&mdash;
+  </dl>
  <li>
   <p>If <var>node</var> is an <code>Element</code> node, let <var>copy</var>'s <code title=dom-Node-attributes>attributes</code> be a new <code>NamedNodeMap</code>, and for each <code>Attr</code> <var>old attribute</var> in <var>node</var>'s <code title=dom-Node-attributes>attributes</code>, <span>clone</span> it and append it to the <var>copy</var>'s <code title=dom-Node-attributes>attributes</code>.
  <li><p>If the <i>clone children flag</i> is set, <span>clone</span> all the children of <var>node</var> and append them to <var>copy</var>, with the same <var>new ownerDocument</var> and the <i>clone children flag</i> being set.

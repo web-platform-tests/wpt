@@ -907,10 +907,10 @@ method must run these steps:
  <code title=dom-DOMException-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</code>
  exception and terminate these steps.
 
- <li><p>If <var>oldChild</var> is not a child of the <span>context
- node</span>, then raise a <code
- title=dom-DOMException-NOT_FOUND_ERR>NOT_FOUND_ERR</code> exception and abort
- these steps.
+ <li><p>If <var>oldChild</var> is not a child of the
+ <span>context node</span>, then raise a
+ <code title=dom-DOMException-NOT_FOUND_ERR>NOT_FOUND_ERR</code> exception
+ and terminate these steps.
  <!-- Including other documents. -->
 
  <li><p>Remove <var>oldChild</var> from <span>context node</span>.
@@ -1723,7 +1723,7 @@ otherwise.
  <li>
   <p>If <var>doctype</var> is not null, run the following substeps:
   <ol>
-   <li><p>If the <var>doctype</var>'s <code title=dom-Node-ownerDocument>ownerDocument</code> is not null, raise a <code title=dom-DOMException-WRONG_DOCUMENT_ERR>WRONG_DOCUMENT_ERR</code> exception and abort the overall set of steps.
+   <li><p>If the <var>doctype</var>'s <code title=dom-Node-ownerDocument>ownerDocument</code> is not null, raise a <code title=dom-DOMException-WRONG_DOCUMENT_ERR>WRONG_DOCUMENT_ERR</code> exception and terminate the overall set of steps.
    <li><p>Set the <var>doctype</var>'s <code title=dom-Node-ownerDocument>ownerDocument</code> to <var>document</var>.
    <li><p>Append <var>doctype</var> to <var>document</var>.
   </ol>
@@ -2118,16 +2118,16 @@ attribute must return the <span>context node</span>'s <span title=concept-PI-dat
 
 <p>The <dfn title=dom-CharacterData-length><code>length</code></dfn> attribute must return the number of UTF-16 code units represented by the node's data.
 
-<p>The <dfn title=dom-CharacterData-substringData><code>substringData(<var
-title>offset</var>, <var>count</var>)</code></dfn> method must run these
-steps:
+<p>The
+<dfn title=dom-CharacterData-substringData><code>substringData(<var>offset</var>, <var>count</var>)</code></dfn>
+method must run these steps:
 
 <ol>
  <li><p>If <var>offset</var> is negative or is greater than the
  <span>context node</span>'s <code title=dom-CharacterData-length>length</code>,
- or if <var>count</var> is negative, raise an <code
- title=dom-DOMException-INDEX_SIZE_ERR>INDEX_SIZE_ERR</code> exception and abort
- these steps.
+ or if <var>count</var> is negative, raise an
+ <code title=dom-DOMException-INDEX_SIZE_ERR>INDEX_SIZE_ERR</code> exception
+ and terminate these steps.
 
  <li><p>If <span title><var>offset</var>+<var>count</var></span> is
  greater than the <span>context node</span>'s <code

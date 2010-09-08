@@ -1175,7 +1175,7 @@ conditions are true, and must otherwise return false:
 <var>prefix</var> depends on the <var>node</var>:</p>
 
 <dl class=switch>
- <dt>If it is an <code>Element</code> node</dt>
+ <dt><code>Element</code></dt>
  <dd>
   <ol>
    <li><p>If its <span title=concept-element-namespace>namespace</span> is
@@ -1207,15 +1207,15 @@ conditions are true, and must otherwise return false:
    <!-- XXX parentElement -->
   </ol>
  </dd>
- <!--XXX If it is an <code>Attr</code> node-->
- <dt>If it is a <code>Document</code> node</dt>
+ <!--XXX <code>Attr</code> -->
+ <dt><code>Document</code></dt>
  <dd><p>Return the result of running <span>locate a namespace</span> on its
  <code title=dom-Document-documentElement>documentElement</code> using
  <var>prefix</var>, if
  <code title=dom-Document-documentElement>documentElement</code> is
  not null, or null otherwise.</p></dd>
- <dt>If it is a <code>DocumentType</code> node</dt>
- <dt>If it is a <code>DocumentFragment</code> node</dt>
+ <dt><code>DocumentType</code></dt>
+ <dt><code>DocumentFragment</code></dt>
  <dd><p>Return null.</p></dd>
  <dt>Any other node</dt>
  <dd><p>Return the result of running <span>locate a namespace</span> on
@@ -1236,17 +1236,17 @@ method must run these steps:
   <p>Otherwise it depends on the <span>context node</span>:</p>
 
   <dl class=switch>
-   <dt>If it is an <code>Element</code> node</dt>
+   <dt><code>Element</code></dt>
    <dd><p>Return the result of running
    <span>locate a namespace prefix</span> for the node using
    <var>namespace</var>.</p></dd>
-   <!--XXX If it is an <code>Attr</code> node-->
-   <dt>If it is a <code>Document</code> node</dt>
+   <!--XXX <code>Attr</code> -->
+   <dt><code>Document</code></dt>
    <dd><p>Return the result of <span>finding a namespace prefix</span> for
    its <code title=dom-Document-documentElement>documentElement</code>, if
    that is not null, or null otherwise.</p></dd>
-   <dt>If it is a <code>DocumentType</code> node</dt>
-   <dt>If it is a <code>DocumentFragment</code> node</dt>
+   <dt><code>DocumentType</code></dt>
+   <dt><code>DocumentFragment</code></dt>
    <dd><p>Return null.</p></dd>
    <dt>Any other node</dt>
    <dd>Return the result of <span>finding a namespace prefix</span> for its

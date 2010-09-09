@@ -8,11 +8,13 @@
         <meta name="assert" content="Table caption is the width of the table's border box." />
         <style type="text/css">
             html { background: white; color: black; }
-            .test
+            .caption
             {
                 display: table-caption;
                 background: red;
                 border: solid lime 6px;
+                text-align: center;
+                width: 100px;
             }
             .table
             {
@@ -35,8 +37,9 @@
                 display: table-cell;
             }
             .container {
-              float: left;
               border: dotted silver;
+              position: relative;
+              height: 7em;
             }
             p {
               clear: both;
@@ -48,7 +51,7 @@
            blue box and no red.</p>
         <div class="container">
           <div class="table">
-              <div class="test">
+              <div class="caption">
                   <div>This is the table caption.</div>
               </div>
               <div class="row">
@@ -60,7 +63,7 @@
            blue box and no red.</p>
         <div class="container">
           <div class="table">
-              <div class="test">
+              <div class="caption">
                   <div>This is the table caption.</div>
               </div>
               <div class="row">
@@ -72,7 +75,7 @@
            blue box and no red.</p>
         <div class="container">
           <div class="table">
-              <div class="test">
+              <div class="caption">
                   <div>This is the table caption.</div>
               </div>
               <div class="row">
@@ -84,7 +87,7 @@
            blue box and no red.</p>
         <div class="container">
           <div class="table">
-              <div class="test">
+              <div class="caption">
                   <div>This is the table caption.</div>
               </div>
               <div class="row">

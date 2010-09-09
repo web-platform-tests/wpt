@@ -243,7 +243,8 @@ policies and contribution forms [3].
             if (typeof code_or_object === "string")
             {
                 assert(e[code_or_object] !== undefined &&
-                       e.code === e[code_or_object],
+                       e.code === e[code_or_object] &&
+                       e.name === code_or_object,
                        make_message("assert_throws", description,
                            [["{text}", "${func} threw with"] ,
                             function() 
@@ -276,14 +277,18 @@ policies and contribution forms [3].
                                     {func:String(func), actual_number:e.code,
                                      expected:String(code_or_object),
                                      expected_number:e[code_or_object]}));
+                assert(e instanceof DOMException,
+                      make_message("assert_throws", description,
+                                   "thrown exception ${exception} was not a DOMException",
+                                  {exception:String(e)}));
             }
             else
             {
                 assert(e instanceof Object && "name" in e && e.name == code_or_object.name,
                        make_message("assert_throws", description,
                            "${func} threw ${actual} (${actual_name}) expected ${expected} (${expected_name})",
-                                    {func:String(func), actual:e, actual_name:e.name,
-                                     expected:code_or_object,
+                                    {func:String(func), actual:String(e), actual_name:e.name,
+                                     expected:String(code_or_object),
                                      expected_name:code_or_object.name}));
             }
         }
@@ -585,6 +590,35 @@ policies and contribution forms [3].
 
     /*
      * Template code
+     * 
+     * A template is just a javascript structure. An element is represented as:
+     * 
+     * [tag_name, {attr_name:attr_value}, child1, child2]
+     * 
+     * the children can either be strings (which act like text nodes), other templates or 
+     * functions (see below)
+     * 
+     * A text node is represented as 
+     * 
+     * ["{text}", value]
+     * 
+     * String values have a simple substitution syntax; ${foo} represents a variable foo.
+     * 
+     * It is possible to embed logic in templates by using a function in a place where a 
+     * node would usually go. The function must either return part of a template or null.
+     * 
+     * In cases where a set of nodes are required as output rather than a single node
+     * with children it is possible to just use a list
+     * [node1, node2, node3]
+     * 
+     * Usage:
+     * 
+     * render(template, substitutions) - take a template and an object mapping 
+     * variable names to parameters and return either a DOM node or a list of DOM nodes
+     * 
+     * substitute(template, substitutions) - take a template and variable mapping object,
+     * make the variable substitutions and return the substituted template
+     * 
      */
 
     function is_single_node(template)
@@ -600,7 +634,9 @@ policies and contribution forms [3].
             {
                 var rv = substitute(replacement, substitutions);
                 return rv;
-            } else {
+            } 
+            else
+            {
                 return null;
             }
         }

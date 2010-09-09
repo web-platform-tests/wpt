@@ -53,8 +53,6 @@
 <h2 class="no-num">Issues</h2>
 
 <ul class=XXX>
- <li>\0 <a href=http://krijnhoetmer.nl/irc-logs/whatwg/20080321#l-312>http://krijnhoetmer.nl/irc-logs/whatwg/20080321#l-312</a>
- <li>[Reflect] <a href=http://krijnhoetmer.nl/irc-logs/whatwg/20090622#l-90>http://krijnhoetmer.nl/irc-logs/whatwg/20090622#l-90</a>
  <li>Perhaps we should move DOMStringMap to this spec...
 </ul>
 
@@ -595,6 +593,8 @@ node and its child nodes:</p>
 </dl>
 <p class=XXX>Attr</p>
 
+<!-- XXXhierarchy - make sure to expand DocumentFragment before checking -->
+
 
 <h2>Nodes</h2>
 <h3>Interface <code>Node</code></h3>
@@ -905,37 +905,44 @@ method must run these steps:
  and terminate these steps.
  <!-- XXX let Web IDL handle this instead? -->
 
- <li><p>Otherwise, if <var>refChild</var> is null, return the result of
- invoking <span>context node</span>'s
+ <li><p>If <var>refChild</var> is null, return the result of invoking
+ <span>context node</span>'s
  <code title=dom-Node-appendChild>appendChild</code> with
  <var>newChild</var> as argument and terminate these steps.
 
  <li><p>If <var>refChild</var> is not a child of the
  <span>context node</span>, then raise a
- <code title=dom-DOMException-NOT_FOUND_ERR>NOT_FOUND_ERR</code> exception and terminate these steps.
+ <code title=dom-DOMException-NOT_FOUND_ERR>NOT_FOUND_ERR</code> exception
+ and terminate these steps.
 
  <li><p>If <var>newChild</var> is the <span>context node</span> or an
  ancestor of the <span>context node</span> raise a
  <code title=dom-DOMException-HIERARCHY_REQUEST_ERR>HIERARCHY_REQUEST_ERR</code>
  and terminate these steps.
 
- <li><p>If <var>newChild</var>'s
- <code title=dom-Node-ownerDocument>ownerDocument</code> is not equal to the
+ <!-- XXXhierarchy -->
+
+ <li><p>If <var>newChild</var> is a <code>DocumentType</code> node and its
+ <code title=dom-Node-ownerDocument>ownerDocument</code> is not null raise a
+ <code title=dom-DOMException-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</code>
+ exception and terminate these steps.
+
+ <li><p>If <var>newChild</var> is a <code>DocumentType</code> node set its
+ <code title=dom-Node-ownerDocument>ownerDocument</code> to the
  <span>context node</span>'s
- <code title=dom-Node-ownerDocument>ownerDocument</code>, call the
+ <code title=dom-Node-ownerDocument>ownerDocument</code>.
+
+ <li><p>If <var>newChild</var> is not a <code>DocumentType</code> node let
+ <var>newChild</var> be the result of invoking the
  <span>context node</span>'s
  <code title=dom-Node-ownerDocument>ownerDocument</code>
  <code title=dom-Document-adoptNode>adoptNode</code> method with
  <var>newChild</var> as its argument.
- <!-- should always do adoptNode really but that does not work for
- DocumentType?! -->
 
  <li><p>If <var>newChild</var> is a <code>DocumentFragment</code> node,
- then while <var>newChild</var>'s <code
- title=dom-Node-firstChild>firstChild</code> is not null, call <code
- title=dom-Node-insertBefore>insertBefore</code> on the <span>context
- node</span> with <var>newChild</var>'s <code
- title=dom-Node-firstChild>firstChild</code> as first argument and <var>refChild</var> as second argument.
+ insert the children of <var>newChild</var> in the
+ <span>context node</span>, in <span>tree order</span>, so that the last
+ child becomes the previous sibling of <var>refChild</var>.
 
  <li><p>Otherwise insert <var>newChild</var> in the
  <span>context node</span> as the previous sibling of <var>refChild</var>.
@@ -959,20 +966,30 @@ method must run these steps:
  and terminate these steps.
  <!-- XXX let Web IDL handle this instead? -->
 
- <li><p>If <var>oldChild</var> is not a child of the <span>context
- node</span>, then raise a <code
- title=dom-DOMException-NOT_FOUND_ERR>NOT_FOUND_ERR</code>
- exception and terminate these steps.
+ <li><p>If <var>oldChild</var> is not a child of the
+ <span>context node</span>, then raise a
+ <code title=dom-DOMException-NOT_FOUND_ERR>NOT_FOUND_ERR</code> exception
+ and terminate these steps.
 
  <li><p>If <var>newChild</var> is the <span>context node</span> or an
  ancestor of the <span>context node</span> raise a
  <code title=dom-DOMException-HIERARCHY_REQUEST_ERR>HIERARCHY_REQUEST_ERR</code>
  and terminate these steps.
 
- <li><p>If <var>newChild</var>'s
- <code title=dom-Node-ownerDocument>ownerDocument</code> is not equal to the
+ <!-- XXXhierarchy -->
+
+ <li><p>If <var>newChild</var> is a <code>DocumentType</code> node and its
+ <code title=dom-Node-ownerDocument>ownerDocument</code> is not null raise a
+ <code title=dom-DOMException-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</code>
+ exception and terminate these steps.
+
+ <li><p>If <var>newChild</var> is a <code>DocumentType</code> node set its
+ <code title=dom-Node-ownerDocument>ownerDocument</code> to the
  <span>context node</span>'s
- <code title=dom-Node-ownerDocument>ownerDocument</code>, call the
+ <code title=dom-Node-ownerDocument>ownerDocument</code>.
+
+ <li><p>If <var>newChild</var> is not a <code>DocumentType</code> node let
+ <var>newChild</var> be the result of invoking the
  <span>context node</span>'s
  <code title=dom-Node-ownerDocument>ownerDocument</code>
  <code title=dom-Document-adoptNode>adoptNode</code> method with
@@ -981,10 +998,10 @@ method must run these steps:
  <li><p>Let <var>refChild</var> be <var>oldChild</var>'s
  <code title=dom-Node-nextSibling>nextSibling</code>.
 
- <li><p>Remove <var>oldChild</var> from <span>context node</span>.
+ <li><p>Remove <var>oldChild</var> from the <span>context node</span>.
 
- <li><p>Return the result of invoking <span>context node</span>'s
- <code title=dom-Node-insertBefore>insertBefore</code> with
+ <li><p>Return the result of invoking the <span>context node</span>'s
+ <code title=dom-Node-insertBefore>insertBefore</code> method with
  <var>newChild</var> and <var>refChild</var> as arguments.
 </ol>
 
@@ -1006,7 +1023,7 @@ method must run these steps:
  and terminate these steps.
  <!-- Including other documents. -->
 
- <li><p>Remove <var>oldChild</var> from <span>context node</span>.
+ <li><p>Remove <var>oldChild</var> from the <span>context node</span>.
 
  <li><p>Return <var>oldChild</var>.
 </ol>
@@ -1031,10 +1048,20 @@ method must run these steps:
  <code title=dom-DOMException-HIERARCHY_REQUEST_ERR>HIERARCHY_REQUEST_ERR</code>
  and terminate these steps.
 
- <li><p>If <var>newChild</var>'s
- <code title=dom-Node-ownerDocument>ownerDocument</code> is not equal to the
+ <!-- XXXhierarchy -->
+
+ <li><p>If <var>newChild</var> is a <code>DocumentType</code> node and its
+ <code title=dom-Node-ownerDocument>ownerDocument</code> is not null raise a
+ <code title=dom-DOMException-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</code>
+ exception and terminate these steps.
+
+ <li><p>If <var>newChild</var> is a <code>DocumentType</code> node set its
+ <code title=dom-Node-ownerDocument>ownerDocument</code> to the
  <span>context node</span>'s
- <code title=dom-Node-ownerDocument>ownerDocument</code>, call the
+ <code title=dom-Node-ownerDocument>ownerDocument</code>.
+
+ <li><p>If <var>newChild</var> is not a <code>DocumentType</code> node let
+ <var>newChild</var> be the result of invoking the
  <span>context node</span>'s
  <code title=dom-Node-ownerDocument>ownerDocument</code>
  <code title=dom-Document-adoptNode>adoptNode</code> method with

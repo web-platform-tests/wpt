@@ -5,14 +5,14 @@
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#propdef-z-index" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#z-index" />
-        <meta name="flags" content="" />
-        <meta name="assert" content="The 'z-index' property applies to elements with a display of 'table-row-group'." />
+        <meta name="flags" content="may" />
+        <meta name="assert" content="The 'z-index' property can apply to elements with a display of 'table-row-group'." />
         <style type="text/css">
             #test
             {
-                background: red;
+                background: green;
                 display: table-row-group;
-                z-index: -1;
+                z-index: 1;
             }
             #table
             {
@@ -28,7 +28,7 @@
             }
             #zindex
             {
-                background: green;
+                background: yellow;
                 top: -1in;
             }
             #test, #zindex
@@ -43,7 +43,7 @@
         </style>
     </head>
     <body>
-        <p>Test passes if there is no red visible on the page.</p>
+        <p>Test passes if there is a green or yellow box below.</p>
         <div id="table">
             <div id="test">
                 <div id="row">

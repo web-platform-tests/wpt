@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
-        <title>CSS Test: Border-bottom-width using 'ex' units with a nominal value with a plus sign, +7.5ex</title>
+        <title>CSS Test: Border-bottom-width using 'ex' units with a nominal value with a plus sign, +6ex</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#propdef-border-bottom-width" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#border-width-properties" />
@@ -11,26 +11,26 @@
             div
             {
                 display: inline-block;
-                font: 12pt ahem;
+                font: 20px/1 ahem;
                 width: 1in;
             }
             #reference
             {
-                background-color: black;
+                background-color: red;
                 height: 1in;
-                margin-left: 5px;
             }
             #test
             {
                 border-bottom-style: solid;
-                border-bottom-width: +7.5ex;
+                border-bottom-width: +6ex;
                 height: 0;
+                margin-left: -100px;
             }
         </style>
     </head>
     <body>
-        <p>Test passes if the two boxes below are the same height.</p>
-        <div id="test"></div>
+        <p>Test passes if there is no red visible on the page.</p>
         <div id="reference"></div>
+        <div id="test"></div>
     </body>
 </html>

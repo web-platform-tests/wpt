@@ -7,7 +7,7 @@
         <link rel="author" title="Elika Etemad" href="http://fantasai.inkedblade.net/contact" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/fonts.html#font-family-prop"/>
         <meta name="flags" content="ahem" />
-        <meta name="assert" content="Valid characters in font family names."/>
+        <meta name="assert" content="Font family names must be identifiers."/>
         <style type="text/css">
             div
             {
@@ -15,27 +15,27 @@
             }
             #div1
             {
-                font-family: 5testfoo, ahem;
+                font-family: 5testfoo, serif;
             }
             #div2
             {
-                font-family: testfoo 5-0, ahem;
+                font-family: testfoo 5-0, serif;
             }
             #div3
             {
-                font-family: test 5foo, ahem;
+                font-family: test 5foo, serif;
             }
             #div4
             {
-                font-family: testfoo -5, ahem;
+                font-family: testfoo -5, serif;
             }
             #div5
             {
-                font-family: testfoo -5bar, ahem;
+                font-family: testfoo -5bar, serif;
             }
             #div6
             {
-                font-family: testfoo 5_0, ahem;
+                font-family: testfoo 5_0, serif;
             }
             #div7
             {
@@ -47,7 +47,7 @@
             }
             #div9
             {
-                font-family: -5testfoo, ahem;
+                font-family: -5testfoo, serif;
             }
             #div10
             {

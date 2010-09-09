@@ -5,8 +5,8 @@
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#propdef-z-index" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#z-index" />
-        <meta name="flags" content="" />
-        <meta name="assert" content="The 'z-index' property applies to elements with a display of 'table-cell'." />
+        <meta name="flags" content="may" />
+        <meta name="assert" content="The 'z-index' property can apply to elements with a display of 'table-cell'." />
         <style type="text/css">
             #table
             {
@@ -18,13 +18,13 @@
             }
             #cell
             {
-                background: red;
+                background: green;
                 display: table-cell;
-                z-index: -1;
+                z-index: 1;
             }
             #zindex
             {
-                background: green;
+                background: yellow;
                 top: -1in;
             }
             #cell, #zindex
@@ -36,7 +36,7 @@
         </style>
     </head>
     <body>
-        <p>Test passes if there is no red visible on the page.</p>
+        <p>Test passes if there is a green or yellow box below.</p>
         <div id="table">
             <div id="row">
                 <div id="cell"></div>

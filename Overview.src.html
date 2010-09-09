@@ -422,21 +422,6 @@ steps must be run:
 </ol>
 
 
-<h3>Legal hierarchy</h3>
-<p class=XXX>Simon says this section is buggy.
-
-<p>A <code>Node</code> is said to have a <dfn>legal hierarchy</dfn> if all the following conditions are true:
-
-<ul>
- <li><p>The <code>Node</code> is a <code>Document</code> node or an <code>Attr</code> node and has no parent node.
- <li><p>The <code>Node</code> is a <code>Document</code> node and has no child <code>Text</code> nodes.
- <li><p>The <code>Node</code> is a <code>Document</code> node and has no more than one child <code>Element</code> node.
- <li><p>The <code>Node</code> is an <code>Attr</code> node, a <code>Text</code> node, a <code>ProcessingInstruction</code> node, a <code>Comment</code> node, or a <code>DocumentType</code> node, and has no child nodes.
-</ul>
-
-<p>Before running the steps of an algorithm of a method or attribute in this specification, the user agent must check that running the algorithm will result in a <span>legal hierarchy</span>. If it won't, then the user agent must instead raise a <code title=dom-DOMException-HIERARCHY_REQUEST_ERR>HIERARCHY_REQUEST_ERR</code> exception.
-
-
 <h3>Namespaces</h3>
 <p>The <dfn>HTML namespace</dfn> is <code
 title>http://www.w3.org/1999/xhtml</code>.
@@ -497,7 +482,7 @@ must return the code for the exception, which must be one of the following:
  the text does not fit in a <code data-anolis-spec=webidl>DOMString</code>
  (historical);
  <li value="3"><dfn title=dom-DOMException-HIERARCHY_REQUEST_ERR><code>HIERARCHY_REQUEST_ERR</code></dfn>:
- the operation would not result in a <span>legal hierarchy</span>;
+ the operation would yield an incorrect nodes model; <!-- XXXhierarchy -->
  <li value="4"><dfn title=dom-DOMException-WRONG_DOCUMENT_ERR><code>WRONG_DOCUMENT_ERR</code></dfn>:
  the object is in the wrong <code>Document</code>, a call to <code
  title=dom-Document-importNode>importNode</code> is required;

@@ -10,7 +10,7 @@
    div { font: 15px/1 Ahem; margin: 1em; }
    .two { width: 13em; height: 3em; background: green; }
    .two p { color: white; background: white url(support/swatch-red.png) 6em 0 no-repeat; }
-   .two span { padding-left: 4em; color: white; }
+   .two span { padding-left: 4em; }
   ]]></style>
  </head>
  <body>

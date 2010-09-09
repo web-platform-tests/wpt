@@ -7,9 +7,9 @@
   <link rel="author" title="CSS1 Test Suite Contributors" href="http://www.w3.org/Style/CSS/Test/CSS1/current/tsack.html"/>
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
   <style type="text/css"><![CDATA[
-   div { margin: 1em; }
-   .test { width: 10em; padding: 1em; padding: -5em; color: yellow; background: navy; }
-   .control { width: 10em; border: solid 1em navy; color: yellow; background: navy; }
+   div { margin: 1em; color: yellow; background: navy; }
+   .test { width: 10em; padding: 1em; padding: -5em; }
+   .control { width: 10em; border: solid 1em navy; }
   ]]></style>
  </head>
  <body>

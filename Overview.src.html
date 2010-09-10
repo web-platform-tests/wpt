@@ -50,13 +50,6 @@
 
 
 
-<h2 class="no-num">Issues</h2>
-
-<ul class=XXX>
- <li>Perhaps we should move DOMStringMap to this spec...
-</ul>
-
-
 <h2>Goals</h2>
 
 <ul>
@@ -70,6 +63,14 @@
 <p>Obsoleting DOM Level 3 Core is not a goal. It is a fine specification for Java servers. Web DOM Core presents an alternative.</p>
 
 <p>New features might be added, once everything else is sort of stable.</p>
+
+
+<h2>Issues</h2>
+
+<ul class=XXX>
+ <li>Move DOMStringMap here?
+ <li>Move Document.charset / Document.characterSet / Document.defaultCharset here?
+</ul>
 
 
 <h2>Common infrastructure</h2>
@@ -1323,7 +1324,6 @@ method must run these steps:</p>
   <span>Node</span> <span title=dom-Document-importNode>importNode</span>(<span>Node</span> <var>node</var>, boolean <var>deep</var>);
   <span>Node</span> <span title=dom-Document-adoptNode>adoptNode</span>(<span>Node</span> <var>node</var>);
 
-  readonly attribute DOMString <span title=dom-Document-inputEncoding>inputEncoding</span>;
            attribute DOMString <span title=dom-Document-documentURI>documentURI</span>;
   readonly attribute DOMString <span title=dom-Document-compatMode>compatMode</span>;<!--
   readonly attribute DOMString xmlEncoding;
@@ -1355,6 +1355,8 @@ as "almost standards" mode. Unless
 <span data-anolis-spec=html>HTML parser</span>, based on the presence,
 absence, or value of the DOCTYPE string.
 <span data-anolis-ref class=informative>HTML</span>
+
+<hr>
 
 <p>The <dfn title=dom-Document-doctype><code>doctype</code></dfn> attribute must return the first child of the <code>Document</code> node that is a <code>DocumentType</code> node, if there is one, or null otherwise.
 
@@ -1672,9 +1674,6 @@ method must run these steps:
   "<code title>BackCompat</code>", if the <code>Document</code> is in
   <span title=concept-quirks-mode>quirks mode</span>.
 </dl>
-
-<p class=XXX><dfn title=dom-Document-inputEncoding>inputEncoding</dfn> remove? Opera does not have it
-<p class=XXX>define HTML5 concept of document character encoding here
 
 <p class=XXX><dfn title=dom-Document-documentURI>documentURI</dfn>
 Should document.documentURI really exist? be readonly?
@@ -2808,6 +2807,7 @@ support them.</p>
   <p><dfn title=dom-Document-createCDATASection><code>createCDATASection()</code></dfn>
   <p><dfn title=dom-Document-createAttribute><code>createAttribute()</code></dfn>
   <p><dfn title=dom-Document-createAttributeNS><code>createAttributeNS()</code></dfn>
+  <p><dfn title=dom-Document-inputEncoding><code>inputEncoding</code></dfn>
   <p><dfn title=dom-Document-xmlEncoding><code>xmlEncoding</code></dfn>
   <p><dfn title=dom-Document-xmlStandalone><code>xmlStandalone</code></dfn>
   <p><dfn title=dom-Document-xmlVersion><code>xmlVersion</code></dfn>

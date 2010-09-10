@@ -585,8 +585,6 @@ node and its child nodes:</p>
 <h2>Nodes</h2>
 <h3>Interface <code>Node</code></h3>
 <pre class=idl>interface <dfn>Node</dfn> {
-
-  // NodeType
   const unsigned short <span title=dom-Node-ELEMENT_NODE>ELEMENT_NODE</span> = 1;
   const unsigned short <span title=dom-Node-ATTRIBUTE_NODE>ATTRIBUTE_NODE</span> = 2;
   const unsigned short <span title=dom-Node-TEXT_NODE>TEXT_NODE</span> = 3;
@@ -1075,7 +1073,10 @@ method must return true if the user agent
  <li>
   <p>If <var>prefix</var> is not null, run the following substeps:
   <ol>
-   <li><p>If <var>prefix</var> does not match the <code data-anolis-spec=xml>Name</code> production in XML, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and terminate these steps.
+   <li><p>If <var>prefix</var> does not match the
+   <code data-anolis-spec=xml>Name</code> production in XML, raise an
+   <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
+   exception and terminate these steps.
    <li><p>If <var>prefix</var> does not match the <code
    data-anolis-spec=xmlns>NCName</code> production in Namespaces in XML, raise a
    <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and
@@ -1196,7 +1197,7 @@ conditions are true, and must otherwise return false:
   <ol>
    <li><p>If its <span title=concept-element-namespace>namespace</span> is
    not null and its
-   <span title=concept-element-namespace prefix>namespace prefix</span> is
+   <span title=concept-element-namespace-prefix>namespace prefix</span> is
    <var>prefix</var> return
    <span title=concept-element-namespace>namespace</span> and terminate
    these steps.</p></li>
@@ -1265,8 +1266,8 @@ method must run these steps:
    <dt><code>DocumentFragment</code></dt>
    <dd><p>Return null.</p></dd>
    <dt>Any other node</dt>
-   <dd>Return the result of <span>finding a namespace prefix</span> for its
-   <code title=dom-Node-parentNode>parentNode</code>, if that is an
+   <dd><p>Return the result of <span>finding a namespace prefix</span> for
+   its <code title=dom-Node-parentNode>parentNode</code>, if that is an
    <code>Element</code> node, or null otherwise.</p></dd>
   </dl>
 </ol>
@@ -1375,8 +1376,9 @@ class=informative>XML</span>
 
 <ol>
  <li><p>If <var>localName</var> does not match the <code
- data-anolis-spec=xml>Name</code> production in XML, raise an <code
- title=dom-DOMException-INVALID_CHARACTER_ERR title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
+ data-anolis-spec=xml>Name</code> production in XML, raise an
+ <code
+ title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
  exception and terminate these steps.
 
  <li><p>If the <span>context node</span> is an <span>HTML document</span>,
@@ -1396,7 +1398,7 @@ class=informative>XML</span>
 <ol>
  <li><p>If <var>qualifiedName</var> does not match the <code
  data-anolis-spec=xml>Name</code> production in XML, raise an
- <code title=dom-DOMException-INVALID_CHARACTER_ERR title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
+ <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
  exception and terminate these steps.
  <li><p>If <var>qualifiedName</var> does not match the <code
  data-anolis-spec=xmlns>QName</code> production in Namespaces in XML, raise
@@ -1485,7 +1487,9 @@ contains "xml" or the colon, or that the data contains characters that match the
 [createAttribute]
 <p>The <dfn title=dom-Document-createAttribute><code>createAttribute(<var>name</var>)</code></dfn> method must run these steps:</p>
 <ol>
- <li><p>If <var>name</var> does not match the <code data-anolis-spec=xml>Name</code> production in XML, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and terminate these steps.
+ <li><p>If <var>name</var> does not match the <code data-anolis-spec=xml>Name</code> production in XML, raise an
+ <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
+ exception and terminate these steps.
  <li><p>Return a new <code>Attr</code> node with its <code title=dom-Node-namespaceURI>namespaceURI</code> set to null, <code title=dom-Node-prefix>prefix</code> set to null, <code title=dom-Node-localName>localName</code> set to <var>name</var>, and <code title=dom-Node-ownerDocument>ownerDocument</code> set to the <span>context node</span>.
 </ol>-->
 <!-- this is different from DOM3 -->
@@ -1790,8 +1794,12 @@ otherwise.
  data-anolis-spec=xmlns>NCName</code> production in Namespaces in XML, raise a
  <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and
  terminate these steps.
- <!--<li><p>If <var>publicId</var> contains a character that does not match the <code data-anolis-spec=xml>PubidChar</code> production in XML, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and terminate these steps. --> <!-- DOM3 didn't check this -->
- <!--<li><p>If <var>systemId</var> contains both a U+0022 QUOTATION MARK ('"') and a U+0027 APOSTROPHE ("'") character, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and terminate these steps.--> <!-- DOM3 didn't check this -->
+ <!--<li><p>If <var>publicId</var> contains a character that does not match the <code data-anolis-spec=xml>PubidChar</code> production in XML, raise an
+ <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
+ exception and terminate these steps. --> <!-- DOM3 didn't check this -->
+ <!--<li><p>If <var>systemId</var> contains both a U+0022 QUOTATION MARK ('"') and a U+0027 APOSTROPHE ("'") character, raise an
+ <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
+ exception and terminate these steps.--> <!-- DOM3 didn't check this -->
  <li><p>Return a new <code>DocumentType</code>, with <var>qualifiedName</var> as its <span
  title=concept-doctype-name>name</span>, <var>publicId</var> as its <span
  title=concept-doctype-publicid>public ID</span>, and <var>systemId</var>
@@ -2031,7 +2039,7 @@ method must run these steps:
 <ol>
  <li><p>If <var>qualifiedName</var> does not match the
  <code data-anolis-spec=xml>Name</code> production in XML, raise an
- <code title=dom-DOMException-INVALID_CHARACTER_ERR title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
+ <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
  exception and terminate these steps.
 
  <li class=XXX><p>Do something about <var>qualifiedName</var> == "xmlns"?
@@ -2323,37 +2331,39 @@ space, tab, newline -->
 
 
 <h2>Collections</h2>
-<p>A <dfn title=concept-collection>collection</dfn> is an object that represents
-a lists of DOM nodes. A <span title=concept-collection>collection</span> can be
-either <dfn title=concept-collection-live>live</dfn> or <dfn
-title=concept-collection-static>static</dfn>. Unless otherwise stated, a <span
-title=concept-collection>collection</span> must be <span
-title=concept-collection-live>live</span>.
+<p>A <dfn title=concept-collection>collection</dfn> is an object that
+represents a lists of DOM nodes. A
+<span title=concept-collection>collection</span> can be either
+<dfn title=concept-collection-live>live</dfn> or
+<dfn title=concept-collection-static>static</dfn>. Unless otherwise stated,
+a <span title=concept-collection>collection</span> must be
+<span title=concept-collection-live>live</span>.
 
 <p>If a <span title=concept-collection>collection</span> is <span
-title=concept-collection-live>live</span>, then the attributes and methods on
-that object must</span> operate on the actual underlying data, not a snapshot of
+title=concept-collection-live>live</span>, then the attributes and methods
+on that object must operate on the actual underlying data, not a snapshot of
 the data.
 
-<p>When a <span title=concept-collection>collection</span> is created, a filter
-and a root are associated with it.
+<p>When a <span title=concept-collection>collection</span> is created, a
+filter and a root are associated with it.
 
-<p>The <span title=concept-collection>collection</span> then <dfn
-title="represented by the collection">represents</dfn> a view of the subtree
-rooted at the <span title=concept-collection>collection's</span> root,
-containing only nodes that match the given filter. The view is linear. In the
-absence of specific requirements to the contrary, the nodes within the <span
-title=concept-collection>collection</span> must be sorted in <span>tree
-order</span>.
+<p>The <span title=concept-collection>collection</span> then
+<dfn title="represented by the collection">represents</dfn> a view of the
+subtree rooted at the <span title=concept-collection>collection's</span>
+root, containing only nodes that match the given filter. The view is linear.
+In the absence of specific requirements to the contrary, the nodes within
+the <span title=concept-collection>collection</span> must be sorted in
+<span>tree order</span>.
 
-<p>An attribute that returns a <span title=concept-collection-live>live</span>
+<p>An attribute that returns a
+<span title=concept-collection-live>live</span>
 <span title=concept-collection>collection</span> must return the same object
 every time it is retrieved.
 
 
 <h3>Interface <code>NodeList</code></h3>
-<p>A <code>NodeList</code> object is a kind of <span
-title=concept-collection>collection</span>.
+<p>A <code>NodeList</code> object is a kind of
+<span title=concept-collection>collection</span>.
 
 <pre class=idl>interface <dfn>NodeList</dfn> {
   getter <span>Node</span> <span title=dom-NodeList-item>item</span>(unsigned long index);
@@ -2406,11 +2416,13 @@ caller getter object <span title=dom-HTMLCollection-namedItem>namedItem</span>(D
   <p>Returns the first item with <span title="concept-id">ID</span> or name <var>name</var>
   from the collection.</p>
   <p>Returns null if no element with that <span title="concept-id">ID</span> or name could be found.</p>
-  <p>Only <code title>a</code>, <code title>applet</code title>, <code title>area</code>,
-  <code title>embed</code>, <code title>form</code>, <code title>frame</code>,
-  <code title>frameset</code>, <code title>iframe</code>, <code title>img</code>, and
-  <code title>object</code> elements in the <span>HTML namespace</span> can have a
-  name for the purpose of this method; their name is given by the value of their
+  <p>Only <code title>a</code>, <code title>applet</code>,
+  <code title>area</code>, <code title>embed</code>,
+  <code title>form</code>, <code title>frame</code>,
+  <code title>frameset</code>, <code title>iframe</code>,
+  <code title>img</code>, and <code title>object</code> elements in the
+  <span>HTML namespace</span> can have a name for the purpose of this
+  method; their name is given by the value of their
   <code title>name</code> attribute.</p>
  </dd>
 </dl>
@@ -2537,7 +2549,8 @@ numbers in the range zero to
 there are no
 <span data-anolis-spec=webidl>supported property indices</span>.</p>
 
-<p>The <dfn title=dom-DOMStringList-item><code>item(<var>index</var>)</dfn>
+<p>The
+<dfn title=dom-DOMStringList-item><code>item(<var>index</var>)</code></dfn>
 method must return the <var>index</var>th string in the list. If
 <var>index</var> is equal to or greater than the number of strings, then the
 method must return null.</p>

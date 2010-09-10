@@ -2495,18 +2495,57 @@ title=concept-collection>collection</span>, whose primary purpose is to expose
 
 
 <h2>Lists</h2>
+
 <h3>Interface <code>DOMStringList</code></h3>
+
+<p class="XXX">Only HTMLPropertiesCollection.names, DataTranser.types, Clipboard.types, and Document.styleSheetSets seem to use this API. Should they use something like DOMString[] instead if Web IDL introduces that?
+
 <pre class=idl>interface <dfn>DOMStringList</dfn> {
-  DOMString <span title=dom-DOMStringList-item>item</span>(unsigned long index);
   readonly attribute unsigned long <span title=dom-DOMStringList-length>length</span>;
-  boolean <span title=dom-DOMStringList-contains>contains</span>(DOMString str);
+  getter DOMString <span title=dom-DOMStringList-item>item</span>(unsigned long <var>index</var>);
+  boolean <span title=dom-DOMStringList-contains>contains</span>(DOMString <var>string</var>);
 };</pre>
 
-<p class=XXX><dfn title=dom-DOMStringList-item>item</dfn>
+<p>The <code>DOMStringList</code> interface represents an interface to an
+ordered list of strings.</p>
 
-<p class=XXX><dfn title=dom-DOMStringList-length>length</dfn>
+<dl class="domintro">
 
-<p class=XXX><dfn title=dom-DOMStringList-contains>contains</dfn>
+ <dt><var>stringlist</var> . <code title="dom-DOMStringList-length">length</code></dt>
+ <dd><p>Returns the number of tokens in the string.</dd>
+
+ <dt><var>string</var> = <var>stringlist</var> . <code title="dom-DOMStringList-item">item</code>(<var>index</var>)</dt>
+ <dt><var>stringlist</var>[<var>index</var>]</dt>
+ <dd>
+  <p>Returns the string with index <var>index</var>.
+  <p>Returns null if <var>index</var> is out of range.
+ </dd>
+
+ <dt><var>hasstring</var> = <var>stringlist</var> . <code title="dom-DOMStringList-contains">contains</code>(<var>string</var>)</dt>
+ <dd><p>Returns true if the <var>string</var> is present; false
+ otherwise.</p></dd>
+</dl>
+
+<p>The <dfn title="dom-DOMStringList-length"><code>length</code></dfn>
+attribute must return the number of strings in the list.</p>
+
+<p>The object's
+<span data-anolis-spec=webidl>supported property indices</span> are the
+numbers in the range zero to
+<code title="dom-DOMTokenList-length">length</code>&minus;1, unless the
+<code title="dom-DOMTokenList-length">length</code> is zero, in which case
+there are no
+<span data-anolis-spec=webidl>supported property indices</span>.</p>
+
+<p>The <dfn title=dom-DOMStringList-item><code>item(<var>index</var>)</dfn>
+method must return the <var>index</var>th string in the list. If
+<var>index</var> is equal to or greater than the number of strings, then the
+method must return null.</p>
+
+<p>The
+<dfn title=dom-DOMStringList-contains><code>contains(<var>string</var>)</code></dfn>
+method must return true if the list of strings contains <var>string</var>,
+or false otherwise.</p>
 
 
 <h3>Interface <code>DOMTokenList</code></h3>

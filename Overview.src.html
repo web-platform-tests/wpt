@@ -469,7 +469,10 @@ title>http://www.w3.org/2000/xmlns/</code>.
   const unsigned short <span title=dom-DOMException-URL_MISMATCH_ERR>URL_MISMATCH_ERR</span> = 21;
   const unsigned short <span title=dom-DOMException-QUOTA_EXCEEDED_ERR>QUOTA_EXCEEDED_ERR</span> = 22;
   const unsigned short <span title=dom-DOMException-TIMEOUT_ERR>TIMEOUT_ERR</span> = 23;
-  const unsigned short <span title=dom-DOMException-DATA_CLONE_ERR>DATA_CLONE_ERR</span> = 24;
+  const unsigned short <span title=dom-DOMException-NOT_READABLE_ERR>NOT_READABLE_ERR</span> = 24;
+  const unsigned short <span title=dom-DOMException-DATA_CLONE_ERR>DATA_CLONE_ERR</span> = 25;
+  const unsigned short <span title=dom-DOMException-ENCODING_ERR>ENCODING_ERR</span> = 26;
+
   unsigned short <span title=dom-DOMException-code>code</span>;
   DOMString <span title=dom-DOMException-message>message</span>;
   DOMString <span title=dom-DOMException-name>name</span>;
@@ -534,9 +537,16 @@ must return the code for the exception, which must be one of the following:
  <!-- XHR2 -->
  <li value="23"><dfn title=dom-DOMException-TIMEOUT_ERR><code>TIMEOUT_ERR</code></dfn>:
  a timeout occurred;
+ <!-- File API -->
+ <li value="24"><dfn title=dom-DOMException-NOT_READABLE_ERR><code>NOT_READABLE_ERR</code></dfn>:
+ the file cannot be read, typically due due to permission problems that occur
+ after a reference to a file has been acquired;
  <!-- HTML -->
- <li value="24"><dfn title=dom-DOMException-DATA_CLONE_ERR><code>DATA_CLONE_ERR</code></dfn>:
+ <li value="25"><dfn title=dom-DOMException-DATA_CLONE_ERR><code>DATA_CLONE_ERR</code></dfn>:
  the object can not be cloned;
+ <!-- File API -->
+ <li value="26"><dfn title=dom-DOMException-ENCODING_ERR><code>ENCODING_ERR</code></dfn>:
+ an error occurred while encoding the data.
 </ol>
 
 <p>The <dfn title=dom-DOMException-message><code>message</code></dfn> exception

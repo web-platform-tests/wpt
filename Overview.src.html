@@ -443,13 +443,6 @@ title>http://www.w3.org/XML/1998/namespace</code>.
 title>http://www.w3.org/2000/xmlns/</code>.
 
 
-
-<h2>Basic types</h2>
-<p>A <code>DOMTimeStamp</code> represents a number of milliseconds.
-<pre class=idl>typedef unsigned long long <dfn>DOMTimeStamp</dfn>;</pre>
-
-
-
 <h2>Exceptions</h2>
 <h3>Exception <code>DOMException</code></h3>
 <pre class=idl>exception <dfn>DOMException</dfn> {
@@ -2829,10 +2822,15 @@ attribute must return the underlying string and, on setting must replace the und
 
 
 <h2>Historical</h2>
+<!-- XXX make this Differences from DOM Level 3 Core? -->
 
-<p>The interfaces and interface members listed in this section are part of
-DOM Level 3 Core. Implementations conforming to this implementation will not
-support them.</p>
+<p><dfn><code>DOMString</code></dfn> and
+<dfn><code>DOMTimeStamp</code></dfn> originally defined in DOM Level 3 Core
+are now defined in Web IDL.
+
+<p>The remainder of interfaces and interface members listed in this section
+are part of DOM Level 3 Core. Implementations conforming to this
+specification will however not support them.</p>
 
 <p>Interfaces:</p>
 <ul class=brief>

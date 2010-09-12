@@ -1,14 +1,10 @@
 ANOLIS = anolis
-PRINCE = prince
 
-all: Overview.html web-dom-core.pdf xrefs.json
+all: Overview.html xrefs.json
 
-Overview.html: Overview.src.html cross-spec-refs references
+Overview.html: Overview.src.html cross-spec-refs references Makefile
 	$(ANOLIS) --output-encoding=ascii --omit-optional-tags --enable=xspecxref \
-	--enable=refs --enable=lof $< $@
+	--enable=refs $< $@
 
-web-dom-core.pdf: Overview.html
-	$(PRINCE) -i html $< -o $@
-
-xrefs.json: Overview.src.html
+xrefs.json: Overview.src.html Makefile
 	$(ANOLIS) --dump-xrefs $< /tmp/spec

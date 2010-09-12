@@ -19,7 +19,7 @@
 <body class=draft>
 <div class=head id=head>
 <h1>Web DOM Core</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-4-september-2010>Work in Progress &mdash; Last Update 4 September 2010</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-12-september-2010>Work in Progress &mdash; Last Update 12 September 2010</h2>
 <dl>
  <dt>Editors
  <dd>Simon Pieters &lt;simonp@opera.com&gt;
@@ -39,21 +39,11 @@
 
 
 
-<h2 class="no-num no-toc" id=issues>Issues</h2>
-
-<ul class=XXX>
- <li>innerHTML etc on all Elements
-  <a href=http://lists.w3.org/Archives/Public/public-html/2007Aug/0778.html>public-html/2007Aug/0778.html</a>
-  <a href=http://lists.w3.org/Archives/Public/public-webapi/2007Aug/0070.html>public-webapi/2007Aug/0070.html</a>
- <li>\0 <a href=http://krijnhoetmer.nl/irc-logs/whatwg/20080321#l-312>http://krijnhoetmer.nl/irc-logs/whatwg/20080321#l-312</a>
- <li>[Reflect] <a href=http://krijnhoetmer.nl/irc-logs/whatwg/20090622#l-90>http://krijnhoetmer.nl/irc-logs/whatwg/20090622#l-90</a>
- <li>Perhaps we should move DOMStringMap to this spec...
-</ul>
-
-
-
 <h2 class="no-num no-toc" id=abstract>Abstract</h2>
-<p>This specification defines the DOM Core part of the Web platform. The Document Object Model is a language- and platform neutral interface that allows programs and scripts to dynamically access and update the content, structure and style of documents. Web DOM Core mostly subsets DOM3 Core, but redefines some things and adds some features that were widely implemented already.
+
+<p>This specification defines the DOM Core part of the Web platform. The DOM
+is a language- and platform neutral interface that allows programs and scripts to dynamically access and update the content and structure of
+documents.
 
 
 
@@ -61,79 +51,89 @@
 
 <!--begin-toc-->
 <ol class=toc>
- <li><a href=#goals><span class=secno>1 </span>Goals</a></li>
- <li><a href=#common-infrastructure><span class=secno>2 </span>Common infrastructure</a>
+ <li><a class=no-num href=#goals>Goals</a></li>
+ <li><a class=no-num href=#issues>Issues</a></li>
+ <li><a href=#common-infrastructure><span class=secno>1 </span>Common infrastructure</a>
   <ol>
-   <li><a href=#terminology><span class=secno>2.1 </span>Terminology</a></li>
-   <li><a href=#conformance-requirements><span class=secno>2.2 </span>Conformance requirements</a>
+   <li><a href=#terminology><span class=secno>1.1 </span>Terminology</a></li>
+   <li><a href=#conformance-requirements><span class=secno>1.2 </span>Conformance requirements</a>
     <ol>
-     <li><a href=#dependencies><span class=secno>2.2.1 </span>Dependencies</a></li>
-     <li><a href=#extensibility><span class=secno>2.2.2 </span>Extensibility</a></ol></li>
-   <li><a href=#case-sensitivity><span class=secno>2.3 </span>Case-sensitivity</a></li>
-   <li><a href=#common-microsyntaxes><span class=secno>2.4 </span>Common microsyntaxes</a>
+     <li><a href=#dependencies><span class=secno>1.2.1 </span>Dependencies</a></li>
+     <li><a href=#extensibility><span class=secno>1.2.2 </span>Extensibility</a></ol></li>
+   <li><a href=#case-sensitivity><span class=secno>1.3 </span>Case-sensitivity</a></li>
+   <li><a href=#common-microsyntaxes><span class=secno>1.4 </span>Common microsyntaxes</a>
     <ol>
-     <li><a href=#common-parser-idioms><span class=secno>2.4.1 </span>Common parser idioms</a></li>
-     <li><a href=#space-separated-tokens><span class=secno>2.4.2 </span>Space-separated tokens</a></ol></li>
-   <li><a href=#dom-features><span class=secno>2.5 </span>DOM features</a></li>
-   <li><a href=#cloning-nodes><span class=secno>2.6 </span>Cloning nodes</a></li>
-   <li><a href=#legal-hierarchy><span class=secno>2.7 </span>Legal hierarchy</a></li>
-   <li><a href=#namespaces><span class=secno>2.8 </span>Namespaces</a></ol></li>
- <li><a href=#basic-types><span class=secno>3 </span>Basic types</a></li>
- <li><a href=#exceptions><span class=secno>4 </span>Exceptions</a>
+     <li><a href=#common-parser-idioms><span class=secno>1.4.1 </span>Common parser idioms</a></li>
+     <li><a href=#space-separated-tokens><span class=secno>1.4.2 </span>Space-separated tokens</a></ol></li>
+   <li><a href=#dom-features><span class=secno>1.5 </span>DOM features</a></li>
+   <li><a href=#cloning-nodes><span class=secno>1.6 </span>Cloning nodes</a></li>
+   <li><a href=#namespaces><span class=secno>1.7 </span>Namespaces</a></ol></li>
+ <li><a href=#exceptions><span class=secno>2 </span>Exceptions</a>
   <ol>
-   <li><a href=#exception-domexception><span class=secno>4.1 </span>Exception <code>DOMException</code></a></ol></li>
- <li><a href=#nodes><span class=secno>5 </span>Nodes</a>
+   <li><a href=#exception-domexception><span class=secno>2.1 </span>Exception <code>DOMException</code></a></ol></li>
+ <li><a href=#nodes-model><span class=secno>3 </span>Nodes Model</a></li>
+ <li><a href=#nodes><span class=secno>4 </span>Nodes</a>
   <ol>
-   <li><a href=#interface-node><span class=secno>5.1 </span>Interface <code>Node</code></a></li>
-   <li><a href=#interface-documentfragment><span class=secno>5.2 </span>Interface <code>DocumentFragment</code></a></li>
-   <li><a href=#interface-document><span class=secno>5.3 </span>Interface <code>Document</code></a>
+   <li><a href=#interface-node><span class=secno>4.1 </span>Interface <code>Node</code></a></li>
+   <li><a href=#interface-documentfragment><span class=secno>4.2 </span>Interface <code>DocumentFragment</code></a></li>
+   <li><a href=#interface-document><span class=secno>4.3 </span>Interface <code>Document</code></a>
     <ol>
-     <li><a href=#interface-domimplementation><span class=secno>5.3.1 </span>Interface <code>DOMImplementation</code></a></ol></li>
-   <li><a href=#interface-attr><span class=secno>5.4 </span>Interface <code>Attr</code></a></li>
-   <li><a href=#interface-element><span class=secno>5.5 </span>Interface <code>Element</code></a></li>
-   <li><a href=#interface-documenttype><span class=secno>5.6 </span>Interface <code>DocumentType</code></a></li>
-   <li><a href=#interface-processinginstruction><span class=secno>5.7 </span>Interface <code>ProcessingInstruction</code></a></li>
-   <li><a href=#interface-characterdata><span class=secno>5.8 </span>Interface <code>CharacterData</code></a></li>
-   <li><a href=#interface-text><span class=secno>5.9 </span>Interface <code>Text</code></a></li>
-   <li><a href=#interface-comment><span class=secno>5.10 </span>Interface <code>Comment</code></a></ol></li>
- <li><a href=#collections><span class=secno>6 </span>Collections</a>
+     <li><a href=#interface-domimplementation><span class=secno>4.3.1 </span>Interface <code>DOMImplementation</code></a></ol></li>
+   <li><a href=#interface-attr><span class=secno>4.4 </span>Interface <code>Attr</code></a></li>
+   <li><a href=#interface-element><span class=secno>4.5 </span>Interface <code>Element</code></a></li>
+   <li><a href=#interface-documenttype><span class=secno>4.6 </span>Interface <code>DocumentType</code></a></li>
+   <li><a href=#interface-processinginstruction><span class=secno>4.7 </span>Interface <code>ProcessingInstruction</code></a></li>
+   <li><a href=#interface-characterdata><span class=secno>4.8 </span>Interface <code>CharacterData</code></a></li>
+   <li><a href=#interface-text><span class=secno>4.9 </span>Interface <code>Text</code></a></li>
+   <li><a href=#interface-comment><span class=secno>4.10 </span>Interface <code>Comment</code></a></ol></li>
+ <li><a href=#collections><span class=secno>5 </span>Collections</a>
   <ol>
-   <li><a href=#interface-nodelist><span class=secno>6.1 </span>Interface <code>NodeList</code></a></li>
-   <li><a href=#interface-htmlcollection><span class=secno>6.2 </span>Interface <code>HTMLCollection</code></a></li>
-   <li><a href=#interface-namednodemap><span class=secno>6.3 </span>Interface <code>NamedNodeMap</code></a></ol></li>
- <li><a href=#lists><span class=secno>7 </span>Lists</a>
+   <li><a href=#interface-nodelist><span class=secno>5.1 </span>Interface <code>NodeList</code></a></li>
+   <li><a href=#interface-htmlcollection><span class=secno>5.2 </span>Interface <code>HTMLCollection</code></a></li>
+   <li><a href=#interface-namednodemap><span class=secno>5.3 </span>Interface <code>NamedNodeMap</code></a></ol></li>
+ <li><a href=#lists><span class=secno>6 </span>Lists</a>
   <ol>
-   <li><a href=#interface-domstringlist><span class=secno>7.1 </span>Interface <code>DOMStringList</code></a></li>
-   <li><a href=#interface-domtokenlist><span class=secno>7.2 </span>Interface <code>DOMTokenList</code></a></li>
-   <li><a href=#interface-domsettabletokenlist><span class=secno>7.3 </span>Interface <code>DOMSettableTokenList</code></a></ol></li>
- <li><a href=#historical><span class=secno>8 </span>Historical</a></li>
+   <li><a href=#interface-domstringlist><span class=secno>6.1 </span>Interface <code>DOMStringList</code></a></li>
+   <li><a href=#interface-domtokenlist><span class=secno>6.2 </span>Interface <code>DOMTokenList</code></a></li>
+   <li><a href=#interface-domsettabletokenlist><span class=secno>6.3 </span>Interface <code>DOMSettableTokenList</code></a></ol></li>
+ <li><a href=#historical><span class=secno>7 </span>Historical</a></li>
  <li><a class=no-num href=#references>References</a></li>
  <li><a class=no-num href=#acknowledgements>Acknowledgements</a></ol>
 <!--end-toc-->
 
 
 
-<h2 class="no-num no-toc" id=list-of-tables>List of tables</h2>
-<div id=anolis-listoftables><ol><li><a href=#anolis-table-1>Cloned attributes</a><li><a href=#anolis-table-2>Value of nodeName, nodeValue, nodeType</a></ol></div>
-
-
-<h2 id=goals><span class=secno>1 </span>Goals</h2>
+<h2 class=no-num id=goals>Goals</h2>
 
 <ul>
- <li>Align DOM Core with needs of ECMAScript first, everything else third. (Of course due to Web IDL it'll work, but compatibility with DOM Level 3 Core is not guaranteed.)</li>
+ <li>Align DOM Core with needs of ECMAScript where possible.</li>
  <li>Align DOM Core with existing implementations.</li>
  <li>Simplify DOM Core as much as possible.</li>
  <li>Import bits of HTML5 that ought to be in DOM Core.</li>
  <li>Prevent a dependency on HTML5.</li>
 </ul>
 
-<p>Obsoleting DOM Level 3 Core is not an explicit goal. It is a fine specification for Java servers.</p>
+<p>Obsoleting DOM Level 3 Core is not a goal. It is a fine specification for Java servers. Web DOM Core presents an alternative.</p>
 
 <p>New features might be added, once everything else is sort of stable.</p>
 
+<!--
+ Ideas:
+ - define id="" and class="" as applying to all elements
+ - import http://www.w3.org/TR/ElementTraversal/
+-->
 
-<h2 id=common-infrastructure><span class=secno>2 </span>Common infrastructure</h2>
-<h3 id=terminology><span class=secno>2.1 </span>Terminology</h3>
+
+<h2 class=no-num id=issues>Issues</h2>
+
+<ul class=XXX>
+ <li>Move DOMStringMap here?
+ <li>Move Document.charset / Document.characterSet / Document.defaultCharset here?
+</ul>
+
+
+<h2 id=common-infrastructure><span class=secno>1 </span>Common infrastructure</h2>
+<h3 id=terminology><span class=secno>1.1 </span>Terminology</h3>
 <p>The term <dfn id=tree-order>tree order</dfn> means a pre-order, depth-first traversal of DOM nodes involved (through the <a href=#dom-node-parentnode><code title=dom-Node-parentNode>parentNode</code></a>/<a href=#dom-node-childnodes><code title=dom-Node-childNodes>childNodes</code></a> relationship).
 
 <p>The term <dfn id=context-node>context node</dfn> means the <a href=#node><code>Node</code></a> on which the method or attribute being discussed was called.
@@ -161,7 +161,7 @@ TABULATION (tab), U+000A LINE FEED (LF), U+000C FORM FEED (FF), and
 U+000D CARRIAGE RETURN (CR).</p>
 
 
-<h3 id=conformance-requirements><span class=secno>2.2 </span>Conformance requirements</h3>
+<h3 id=conformance-requirements><span class=secno>1.2 </span>Conformance requirements</h3>
 <p>All diagrams, examples, and notes in this specification are
 non-normative, as are all sections explicitly marked non-normative.
 Everything else in this specification is normative.</p>
@@ -174,7 +174,7 @@ not appear in all uppercase letters in this specification. <a data-anolis-ref=""
 
 <p>Requirements phrased in the imperative as part of algorithms
 (such as "strip any leading space characters" or "return false and
-abort these steps") are to be interpreted with the meaning of the
+terminate these steps") are to be interpreted with the meaning of the
 key word ("must", "should", "may", etc) used in introducing the
 algorithm.</p>
 
@@ -193,7 +193,7 @@ out of memory, or to work around platform-specific limitations.</p>
 
 <p>Unless otherwise stated, string comparisons are done in a <a href=#case-sensitive>case-sensitive</a> manner.
 
-<h4 id=dependencies><span class=secno>2.2.1 </span>Dependencies</h4>
+<h4 id=dependencies><span class=secno>1.2.1 </span>Dependencies</h4>
 
 <p>The IDL fragments in this specification must be interpreted as
 required for conforming IDL fragments, as described in the Web IDL
@@ -215,7 +215,7 @@ IDL</cite>, <cite>XML</cite> and <cite>Namespaces in XML</cite>.
 <a data-anolis-ref="" href=#refsXML>[XML]</a>
 <a data-anolis-ref="" href=#refsXMLNS>[XMLNS]</a>
 
-<h4 id=extensibility><span class=secno>2.2.2 </span>Extensibility</h4>
+<h4 id=extensibility><span class=secno>1.2.2 </span>Extensibility</h4>
 
 <p>Vendor-specific proprietary extensions to this specification are
 strongly discouraged. Authors must not use such extensions, as
@@ -242,7 +242,7 @@ this specification.</p>
 <!-- http://www.w3.org/mid/17E341CD-E790-422C-9F9A-69347EE01CEB@iki.fi -->
 
 
-<h3 id=case-sensitivity><span class=secno>2.3 </span>Case-sensitivity</h3>
+<h3 id=case-sensitivity><span class=secno>1.3 </span>Case-sensitivity</h3>
 <p>This specification defines several comparison operators for strings.
 <p>Comparing two strings in a <dfn id=case-sensitive>case-sensitive</dfn> manner means comparing them exactly, codepoint for codepoint.
 <p>Comparing two strings in a <dfn id=ascii-case-insensitive>ASCII case-insensitive</dfn> manner means comparing them exactly, codepoint for codepoint, except that the characters in the range U+0041 .. U+005A (i.e. LATIN CAPITAL LETTER A to LATIN CAPITAL LETTER Z) and the corresponding characters in the range U+0061 .. U+007A (i.e. LATIN SMALL LETTER A to LATIN SMALL LETTER Z) are considered to also match.
@@ -250,8 +250,8 @@ this specification.</p>
 <p><dfn id=converted-to-lowercase title="converted to lowercase">Converting a string to lowercase</dfn> means replacing all characters in the range U+0041 .. U+005A (i.e. LATIN CAPITAL LETTER A to LATIN CAPITAL LETTER Z) with the corresponding characters in the range U+0061 .. U+007A (i.e. LATIN SMALL LETTER A to LATIN SMALL LETTER Z).
 
 
-<h3 id=common-microsyntaxes><span class=secno>2.4 </span>Common microsyntaxes</h3>
-<h4 id=common-parser-idioms><span class=secno>2.4.1 </span>Common parser idioms</h4>
+<h3 id=common-microsyntaxes><span class=secno>1.4 </span>Common microsyntaxes</h3>
+<h4 id=common-parser-idioms><span class=secno>1.4.1 </span>Common parser idioms</h4>
 <p>Some of the micro-parsers described below follow the pattern of
 having an <var>input</var> variable that holds the string
 being parsed, and having a <var>position</var> variable
@@ -269,7 +269,7 @@ being the set of characters that can be collected:</p>
 
  <li><p>Let <var>result</var> be the empty string.</li>
 
- <li><p>While <var>position</var> doesn't point past the
+ <li><p>While <var>position</var> does not point past the
  end of <var>input</var> and the character at <var title="">position</var> is one of the <var title="">characters</var>, append that character to the end of <var title="">result</var> and advance <var>position</var> to
  the next character in <var>input</var>.</li>
 
@@ -281,7 +281,7 @@ being the set of characters that can be collected:</p>
 must <a href=#collect-a-sequence-of-characters>collect a sequence of characters</a> that are <a href=#space-character title="space character">space characters</a>. The collected
 characters are not used.
 
-<h4 id=space-separated-tokens><span class=secno>2.4.2 </span>Space-separated tokens</h4>
+<h4 id=space-separated-tokens><span class=secno>1.4.2 </span>Space-separated tokens</h4>
 <p>A <dfn id=set-of-space-separated-tokens>set of space-separated tokens</dfn> is a string containing
 zero or more words separated by one or more <a href=#space-character title="space
 character">space characters</a>, where words consist of any
@@ -345,7 +345,7 @@ it must use the following algorithm:</p>
  initially pointing at the start of the string.
 
  <li><p><i title="">Loop</i>: If <var>position</var> is beyond the end of
- <var>input</var>, abort these steps.
+ <var>input</var>, terminate these steps.
 
  <li>
   <p>If the character at <var>position</var> is a <a href=#space-character>space
@@ -390,27 +390,27 @@ of the string, where such spaces are removed.</p>
 </div>
 
 
-<h3 id=dom-features><span class=secno>2.5 </span>DOM features</h3>
+<h3 id=dom-features><span class=secno>1.5 </span>DOM features</h3>
 <p>A <dfn id=concept-domfeature title=concept-DOMfeature>DOM feature</dfn> is a unique,
 <a href=#ascii-case-insensitive>ASCII case-insensitive</a> string that represents a certain feature of
 the user agent.
 
-<p>A <dfn id=concept-domfeatureversion title=concept-DOMfeatureversion>DOM feature version</dfn> is a (<var title="">feature string</var>,&nbsp;<var>version</var>) tuple, where <var title="">feature string</var> is <a href=#concept-domfeature title=concept-DOMfeature>DOM feature</a>
+<p>A <dfn id=concept-domfeatureversion title=concept-DOMfeatureversion>DOM feature version</dfn> is a (<var>feature</var>,&nbsp;<var>version</var>) tuple, where <var>feature</var> is <a href=#concept-domfeature title=concept-DOMfeature>DOM feature</a>
 and <var>version</var> is a <a href=#case-sensitive>case-sensitive</a> string
 representing a version number.
 <!--of the form "<var>major</var>.<var>minor</var>".-->
 
 <p>Specifications may define which <a href=#concept-domfeature title=concept-DOMfeature>DOM
 features</a> a user agent is to <dfn id=concept-support-domfeature title=concept-support-DOMfeature>support</dfn>, as well as an associated list of
-one or more <a href=#case-sensitive>case-sensitive</a> strings representing version numbers,
-and under which circumstances.
+one or more <a href=#case-sensitive>case-sensitive</a> strings representing version numbers, and under which circumstances, when necessary for compatibility (i.e. because of historical use). Specifications must not introduce new <a href=#concept-domfeature title=concept-DOMfeature>DOM
+features</a> or new versions for existing features.
 
 <p>A user agent must <dfn id=concept-support-domfeatureversion title=concept-support-DOMfeatureversion>support</dfn>
-a <a href=#concept-domfeatureversion title=concept-DOMfeatureversion>DOM feature version</a> (<var title="">feature string</var>,&nbsp;<var>version</var>) if it <a href=#concept-support-domfeature title=concept-support-DOMfeature>supports</a> a <a href=#concept-domfeature title=concept-DOMfeature>DOM feature</a> that is a <a href=#ascii-case-insensitive>ASCII
-case-insensitive</a> match for <var>feature string</var> and <var title="">version</var> is in the associated list of versions.
+a <a href=#concept-domfeatureversion title=concept-DOMfeatureversion>DOM feature version</a> (<var title="">feature</var>,&nbsp;<var>version</var>) if it <a href=#concept-support-domfeature title=concept-support-DOMfeature>supports</a> a <a href=#concept-domfeature title=concept-DOMfeature>DOM feature</a> that is a <a href=#ascii-case-insensitive>ASCII
+case-insensitive</a> match for <var>feature</var> and <var title="">version</var> is in the associated list of versions.
 
 <p>A user agent must <a href=#concept-support-domfeatureversion title=concept-support-DOMfeatureversion>support</a> the (<var title="">feature</var>,&nbsp;"") tuple if it <a href=#concept-support-domfeature title=concept-support-DOMfeature>supports</a> a <a href=#concept-domfeature title=concept-DOMfeature>DOM feature</a> that is a <a href=#ascii-case-insensitive>ASCII
-case-insensitive</a> match for <var>feature string</var>.
+case-insensitive</a> match for <var>feature</var>.
 
 <p class=note>Authors are strongly discouraged from using <a href=#concept-domfeature title=concept-DOMfeature>DOM features</a>, as they are notoriously unreliable
 and imprecise. Authors are encouraged to rely on explicit feature testing or
@@ -424,25 +424,30 @@ feature</a> with the version "2.0" associated with it.
 <!-- Chrome supports Core/1.0; Opera supports x/undefined -->
 
 
-<h3 id=cloning-nodes><span class=secno>2.6 </span>Cloning nodes</h3>
-<p>When a UA is to <dfn id=clone>clone</dfn> a <a href=#node><var>node</var></a>, with a <var>new ownerDocument</var> and with a <i>clone children flag</i>, it must run the following steps:
+<h3 id=cloning-nodes><span class=secno>1.6 </span>Cloning nodes</h3>
+<p>To <dfn id=clone>clone</dfn> a <a href=#node><var>node</var></a>, with a
+<var>new ownerDocument</var> and with a <i>clone children flag</i>, these
+steps must be run:
 
 <ol>
- <li><p>If <a href=#node><var>node</var></a> is a <a href=#documenttype><code>DocumentType</code></a> node, raise a <a href=#dom-domexception-data_clone_err><code title=dom-DOMException-DATA_CLONE_ERR>DATA_CLONE_ERR</code></a> exception and abort these steps.
+ <li><p>If <a href=#node><var>node</var></a> is a <a href=#documenttype><code>DocumentType</code></a> node, raise a <a href=#dom-domexception-data_clone_err><code title=dom-DOMException-DATA_CLONE_ERR>DATA_CLONE_ERR</code></a> exception and terminate these steps.
  <li>
-  <p>Let <var>copy</var> be a new <a href=#node><code>Node</code></a> that implements the same interfaces as <a href=#node><var>node</var></a>, with <a href=#dom-node-ownerdocument><code title=dom-Node-ownerDocument>ownerDocument</code></a> set to <var>new ownerDocument</var>, <a href=#dom-node-prefix><code title=dom-Node-prefix>prefix</code></a>, <a href=#dom-node-localname><code title=dom-Node-localName>localName</code></a> and <a href=#dom-node-namespaceuri><code title=dom-Node-namespaceURI>namespaceURI</code></a> attributes set to the values of the attributes on <a href=#node><var>node</var></a> with the same names, and other attributes set to the values of the attributes on <a href=#node><var>node</var></a> with the same names depending on the type of <a href=#node><var>node</var></a> according to the following table:</p>
-  <table id=anolis-table-1>
-   <caption>Table 1: Cloned attributes</caption>
-   <thead>
-    <tr><th>Type of <a href=#node><var>node</var></a><th>Attributes
-   <tbody>
-    <tr><td><a href=#element><code>Element</code></a><td>&mdash;
-    <tr><td><a href=#attr><code>Attr</code></a><td><a href=#dom-attr-value><code title=dom-Attr-value>value</code></a>
-    <tr><td><a href=#text><code>Text</code></a><td><a href=#dom-characterdata-data><code title=dom-CharacterData-data>data</code></a>
-    <tr><td><a href=#processinginstruction><code>ProcessingInstruction</code></a><td><a href=#dom-processinginstruction-target><code title=dom-ProcessingInstruction-target>target</code></a>, <a href=#dom-processinginstruction-data><code title=dom-ProcessingInstruction-data>data</code></a>
-    <tr><td><a href=#comment><code>Comment</code></a><td><a href=#dom-characterdata-data><code title=dom-CharacterData-data>data</code></a>
-    <tr><td><a href=#documentfragment><code>DocumentFragment</code></a><td>&mdash;
-  </table>
+  <p>Let <var>copy</var> be a new <a href=#node><code>Node</code></a> that implements the same interfaces as <a href=#node><var>node</var></a>, with <a href=#dom-node-ownerdocument><code title=dom-Node-ownerDocument>ownerDocument</code></a> set to <var>new ownerDocument</var>, <a href=#dom-node-prefix><code title=dom-Node-prefix>prefix</code></a>, <a href=#dom-node-localname><code title=dom-Node-localName>localName</code></a> and <a href=#dom-node-namespaceuri><code title=dom-Node-namespaceURI>namespaceURI</code></a> attributes set to the values of the attributes on <a href=#node><var>node</var></a> with the same names, and other attributes set to the values of the attributes on <a href=#node><var>node</var></a> with the same names, depending on the <a href=#node><var>node</var></a>:</p>
+  <dl class=switch>
+   <dt><a href=#attr><code>Attr</code></a>
+   <dd><p><a href=#dom-attr-value><code title=dom-Attr-value>value</code></a>
+
+   <dt><a href=#text><code>Text</code></a>
+   <dt><a href=#comment><code>Comment</code></a>
+   <dd><p><a href=#dom-characterdata-data><code title=dom-CharacterData-data>data</code></a>
+
+   <dt><a href=#processinginstruction><code>ProcessingInstruction</code></a>
+
+   <dd><p><a href=#dom-processinginstruction-target><code title=dom-ProcessingInstruction-target>target</code></a>, <a href=#dom-processinginstruction-data><code title=dom-ProcessingInstruction-data>data</code></a>
+
+   <dt>Any other node
+   <dd><p>&mdash;
+  </dl>
  <li>
   <p>If <a href=#node><var>node</var></a> is an <a href=#element><code>Element</code></a> node, let <var>copy</var>'s <a href=#dom-node-attributes><code title=dom-Node-attributes>attributes</code></a> be a new <a href=#namednodemap><code>NamedNodeMap</code></a>, and for each <a href=#attr><code>Attr</code></a> <var>old attribute</var> in <a href=#node><var>node</var></a>'s <a href=#dom-node-attributes><code title=dom-Node-attributes>attributes</code></a>, <a href=#clone>clone</a> it and append it to the <var>copy</var>'s <a href=#dom-node-attributes><code title=dom-Node-attributes>attributes</code></a>.
  <li><p>If the <i>clone children flag</i> is set, <a href=#clone>clone</a> all the children of <a href=#node><var>node</var></a> and append them to <var>copy</var>, with the same <var>new ownerDocument</var> and the <i>clone children flag</i> being set.
@@ -450,22 +455,7 @@ feature</a> with the version "2.0" associated with it.
 </ol>
 
 
-<h3 id=legal-hierarchy><span class=secno>2.7 </span>Legal hierarchy</h3>
-<p class=XXX>Simon says this section is buggy. Should we just remove it?
-
-<p>A <a href=#node><code>Node</code></a> is said to have a <dfn id=legal-hierarchy-0>legal hierarchy</dfn> if all the following conditions are true:
-
-<ul>
- <li><p>The <a href=#node><code>Node</code></a> is a <a href=#document><code>Document</code></a> node or an <a href=#attr><code>Attr</code></a> node and has no parent node.
- <li><p>The <a href=#node><code>Node</code></a> is a <a href=#document><code>Document</code></a> node and has no child <a href=#text><code>Text</code></a> nodes.
- <li><p>The <a href=#node><code>Node</code></a> is a <a href=#document><code>Document</code></a> node and has no more than one child <a href=#element><code>Element</code></a> node.
- <li><p>The <a href=#node><code>Node</code></a> is an <a href=#attr><code>Attr</code></a> node, a <a href=#text><code>Text</code></a> node, a <a href=#processinginstruction><code>ProcessingInstruction</code></a> node, a <a href=#comment><code>Comment</code></a> node, or a <a href=#documenttype><code>DocumentType</code></a> node, and has no child nodes.
-</ul>
-
-<p>Before running the steps of an algorithm of a method or attribute in this specification, the user agent must check that running the algorithm will result in a <a href=#legal-hierarchy-0>legal hierarchy</a>. If it won't, then the user agent must instead raise a <a href=#dom-domexception-hierarchy_request_err><code title=dom-DOMException-HIERARCHY_REQUEST_ERR>HIERARCHY_REQUEST_ERR</code></a> exception.
-
-
-<h3 id=namespaces><span class=secno>2.8 </span>Namespaces</h3>
+<h3 id=namespaces><span class=secno>1.7 </span>Namespaces</h3>
 <p>The <dfn id=html-namespace>HTML namespace</dfn> is <code title="">http://www.w3.org/1999/xhtml</code>.
 
 <p>The <dfn id=xml-namespace>XML namespace</dfn> is <code title="">http://www.w3.org/XML/1998/namespace</code>.
@@ -473,15 +463,8 @@ feature</a> with the version "2.0" associated with it.
 <p>The <dfn id=xmlns-namespace>XMLNS namespace</dfn> is <code title="">http://www.w3.org/2000/xmlns/</code>.
 
 
-
-<h2 id=basic-types><span class=secno>3 </span>Basic types</h2>
-<p>A <dfn id=domtimestamp>DOMTimeStamp</dfn> represents a number of milliseconds.
-<pre class=idl>typedef unsigned long long DOMTimeStamp;</pre>
-
-
-
-<h2 id=exceptions><span class=secno>4 </span>Exceptions</h2>
-<h3 id=exception-domexception><span class=secno>4.1 </span>Exception <a href=#domexception><code>DOMException</code></a></h3>
+<h2 id=exceptions><span class=secno>2 </span>Exceptions</h2>
+<h3 id=exception-domexception><span class=secno>2.1 </span>Exception <a href=#domexception><code>DOMException</code></a></h3>
 <pre class=idl>exception <dfn id=domexception>DOMException</dfn> {
   const unsigned short <a href=#dom-domexception-index_size_err title=dom-DOMException-INDEX_SIZE_ERR>INDEX_SIZE_ERR</a> = 1;
   const unsigned short <a href=#dom-domexception-domstring_size_err title=dom-DOMException-DOMSTRING_SIZE_ERR>DOMSTRING_SIZE_ERR</a> = 2; // historical
@@ -519,10 +502,10 @@ must return the code for the exception, which must be one of the following:
  <li value=1><dfn id=dom-domexception-index_size_err title=dom-DOMException-INDEX_SIZE_ERR><code>INDEX_SIZE_ERR</code></dfn>:
  the index is not in the allowed range;
  <li value=2><dfn id=dom-domexception-domstring_size_err title=dom-DOMException-DOMSTRING_SIZE_ERR><code>DOMSTRING_SIZE_ERR</code></dfn>:
- the text does not fit in a <a href=http://dev.w3.org/2006/webapi/WebIDL/#idl-DOMString><code class=external data-anolis-spec=webidl>DOMString</code></a>
+ the text does not fit in a <a href=#domstring><code class=external data-anolis-spec=webidl>DOMString</code></a>
  (historical);
  <li value=3><dfn id=dom-domexception-hierarchy_request_err title=dom-DOMException-HIERARCHY_REQUEST_ERR><code>HIERARCHY_REQUEST_ERR</code></dfn>:
- the operation would not result in a <a href=#legal-hierarchy-0>legal hierarchy</a>;
+ the operation would yield an incorrect nodes model; <!-- XXXhierarchy -->
  <li value=4><dfn id=dom-domexception-wrong_document_err title=dom-DOMException-WRONG_DOCUMENT_ERR><code>WRONG_DOCUMENT_ERR</code></dfn>:
  the object is in the wrong <a href=#document><code>Document</code></a>, a call to <a href=#dom-document-importnode><code title=dom-Document-importNode>importNode</code></a> is required;
  <li value=5><dfn id=dom-domexception-invalid_character_err title=dom-DOMException-INVALID_CHARACTER_ERR><code>INVALID_CHARACTER_ERR</code></dfn>:
@@ -546,11 +529,11 @@ must return the code for the exception, which must be one of the following:
  <li value=14><dfn id=dom-domexception-namespace_err title=dom-DOMException-NAMESPACE_ERR><code>NAMESPACE_ERR</code></dfn>:
  the operation is not allowed by <cite>Namespaces in XML</cite>; <a data-anolis-ref="" href=#refsXMLNS>[XMLNS]</a>
  <li value=15><dfn id=dom-domexception-invalid_access_err title=dom-DOMException-INVALID_ACCESS_ERR><code>INVALID_ACCESS_ERR</code></dfn>:
- the object doesn't support the operation or argument;
+ the object does not support the operation or argument;
  <li value=16><dfn id=dom-domexception-validation_err title=dom-DOMException-VALIDATION_ERR><code>VALIDATION_ERR</code></dfn>:
  the operation is invalid (historical);
  <li value=17><dfn id=dom-domexception-type_mismatch_err title=dom-DOMException-TYPE_MISMATCH_ERR><code>TYPE_MISMATCH_ERR</code></dfn>:
- the type of the object doesn't match the expected type;
+ the type of the object does not match the expected type;
  <!-- XHR -->
  <li value=18><dfn id=dom-domexception-security_err title=dom-DOMException-SECURITY_ERR><code>SECURITY_ERR</code></dfn>:
  the operation is insecure;
@@ -562,7 +545,7 @@ must return the code for the exception, which must be one of the following:
  the user aborted an operation;
  <!-- Workers -->
  <li value=21><dfn id=dom-domexception-url_mismatch_err title=dom-DOMException-URL_MISMATCH_ERR><code>URL_MISMATCH_ERR</code></dfn>:
- the given URL doesn't match another URL;
+ the given URL does not match another URL;
  <!-- HTML -->
  <li value=22><dfn id=dom-domexception-quota_exceeded_err title=dom-DOMException-QUOTA_EXCEEDED_ERR><code>QUOTA_EXCEEDED_ERR</code></dfn>:
  the quota has been exceeded;
@@ -583,11 +566,45 @@ must return the name of the exception constant as a string.</p>
 
 
 
-<h2 id=nodes><span class=secno>5 </span>Nodes</h2>
-<h3 id=interface-node><span class=secno>5.1 </span>Interface <a href=#node><code>Node</code></a></h3>
-<pre class=idl>interface <dfn id=node>Node</dfn> {
+<h2 id=nodes-model><span class=secno>3 </span>Nodes Model</h2>
+<p>The DOM represents a tree of <a href=#node><code>Node</code></a> objects. The following
+structure is imposed on this tree, represented as relationship between the
+node and its child nodes:</p>
 
-  // NodeType
+<dl>
+ <dt><a href=#document><code>Document</code></a></dt>
+ <dd>
+  <p>In <a href=#tree-order>tree order</a>:</p>
+  <ol>
+   <li><p>Zero or more nodes each of which is either
+   <a href=#processinginstruction><code>ProcessingInstruction</code></a> or <a href=#comment><code>Comment</code></a>.</li>
+   <li><p>Optionally one <a href=#documenttype><code>DocumentType</code></a> node.</li>
+   <li><p>Zero or more nodes each of which is either
+   <a href=#processinginstruction><code>ProcessingInstruction</code></a> or <a href=#comment><code>Comment</code></a>.</li>
+   <li><p>Optionally one <a href=#element><code>Element</code></a> node.</li>
+   <li><p>Zero or more nodes each of which is either
+   <a href=#processinginstruction><code>ProcessingInstruction</code></a> or <a href=#comment><code>Comment</code></a>.</li>
+  </ol>
+ </dd>
+ <dt><a href=#documentfragment><code>DocumentFragment</code></a>
+ <dt><a href=#element><code>Element</code></a></dt>
+ <dd><p>Zero or more nodes each of which is one of <a href=#element><code>Element</code></a>,
+ <a href=#processinginstruction><code>ProcessingInstruction</code></a>, <a href=#comment><code>Comment</code></a>, or
+ <a href=#text><code>Text</code></a>.</dd>
+ <dt><a href=#documenttype><code>DocumentType</code></a></dt>
+ <dt><a href=#processinginstruction><code>ProcessingInstruction</code></a></dt>
+ <dt><a href=#comment><code>Comment</code></a></dt>
+ <dt><a href=#text><code>Text</code></a></dt>
+ <dd><p>No children.</dd>
+</dl>
+<p class=XXX>Attr</p>
+
+<!-- XXXhierarchy - make sure to expand DocumentFragment before checking -->
+
+
+<h2 id=nodes><span class=secno>4 </span>Nodes</h2>
+<h3 id=interface-node><span class=secno>4.1 </span>Interface <a href=#node><code>Node</code></a></h3>
+<pre class=idl>interface <dfn id=node>Node</dfn> {
   const unsigned short <a href=#dom-node-element_node title=dom-Node-ELEMENT_NODE>ELEMENT_NODE</a> = 1;
   const unsigned short <a href=#dom-node-attribute_node title=dom-Node-ATTRIBUTE_NODE>ATTRIBUTE_NODE</a> = 2;
   const unsigned short <a href=#dom-node-text_node title=dom-Node-TEXT_NODE>TEXT_NODE</a> = 3;
@@ -601,33 +618,36 @@ must return the name of the exception constant as a string.</p>
   const unsigned short <a href=#dom-node-document_fragment_node title=dom-Node-DOCUMENT_FRAGMENT_NODE>DOCUMENT_FRAGMENT_NODE</a> = 11;
   const unsigned short <a href=#dom-node-notation_node title=dom-Node-NOTATION_NODE>NOTATION_NODE</a> = 12; // historical
 
+  readonly attribute unsigned short <span title=dom-Node-nodeType>nodeType</span>;
   readonly attribute DOMString <a href=#dom-node-nodename title=dom-Node-nodeName>nodeName</a>;
            attribute DOMString <a href=#dom-node-nodevalue title=dom-Node-nodeValue>nodeValue</a>;
-  readonly attribute unsigned short <a href=#dom-node-nodetype title=dom-Node-nodeType>nodeType</a>;
+           attribute DOMString <a href=#dom-node-textcontent title=dom-Node-textContent>textContent</a>;
+
+  readonly attribute <a href=#document>Document</a> <a href=#dom-node-ownerdocument title=dom-Node-ownerDocument>ownerDocument</a>;
   readonly attribute <a href=#node>Node</a> <a href=#dom-node-parentnode title=dom-Node-parentNode>parentNode</a>;
   readonly attribute <a href=#element>Element</a> <a href=#dom-node-parentelement title=dom-Node-parentElement>parentElement</a>;
+  boolean <a href=#dom-node-haschildnodes title=dom-Node-hasChildNodes>hasChildNodes</a>();
   readonly attribute <a href=#nodelist>NodeList</a> <a href=#dom-node-childnodes title=dom-Node-childNodes>childNodes</a>;
   readonly attribute <a href=#node>Node</a> <a href=#dom-node-firstchild title=dom-Node-firstChild>firstChild</a>;
   readonly attribute <a href=#node>Node</a> <a href=#dom-node-lastchild title=dom-Node-lastChild>lastChild</a>;
   readonly attribute <a href=#node>Node</a> <a href=#dom-node-previoussibling title=dom-Node-previousSibling>previousSibling</a>;
   readonly attribute <a href=#node>Node</a> <a href=#dom-node-nextsibling title=dom-Node-nextSibling>nextSibling</a>;
+
+  boolean <a href=#dom-node-hasattributes title=dom-Node-hasAttributes>hasAttributes</a>();
   readonly attribute <a href=#namednodemap>NamedNodeMap</a> <a href=#dom-node-attributes title=dom-Node-attributes>attributes</a>;
-  readonly attribute <a href=#document>Document</a> <a href=#dom-node-ownerdocument title=dom-Node-ownerDocument>ownerDocument</a>;
-  <a href=#node>Node</a> <a href=#dom-node-insertbefore title=dom-Node-insertBefore>insertBefore</a>(<a href=#node>Node</a> newChild, <a href=#node>Node</a> refChild);
-  <a href=#node>Node</a> <a href=#dom-node-replacechild title=dom-Node-replaceChild>replaceChild</a>(<a href=#node>Node</a> newChild, <a href=#node>Node</a> oldChild);
-  <a href=#node>Node</a> <a href=#dom-node-removechild title=dom-Node-removeChild>removeChild</a>(<a href=#node>Node</a> oldChild);
-  <a href=#node>Node</a> <a href=#dom-node-appendchild title=dom-Node-appendChild>appendChild</a>(<a href=#node>Node</a> newChild);
-  boolean <a href=#dom-node-haschildnodes title=dom-Node-hasChildNodes>hasChildNodes</a>();
-  <a href=#node>Node</a> <a href=#dom-node-clonenode title=dom-Node-cloneNode>cloneNode</a>(boolean deep);<!--
+
+  <a href=#node>Node</a> <a href=#dom-node-insertbefore title=dom-Node-insertBefore>insertBefore</a>(<a href=#node>Node</a> <var>newChild</var>, <a href=#node>Node</a> <var>refChild</var>);
+  <a href=#node>Node</a> <a href=#dom-node-replacechild title=dom-Node-replaceChild>replaceChild</a>(<a href=#node>Node</a> <var>newChild</var>, <a href=#node>Node</a> <var>oldChild</var>);
+  <a href=#node>Node</a> <a href=#dom-node-removechild title=dom-Node-removeChild>removeChild</a>(<a href=#node>Node</a> <var>oldChild</var>);
+  <a href=#node>Node</a> <a href=#dom-node-appendchild title=dom-Node-appendChild>appendChild</a>(<a href=#node>Node</a> <var>newChild</var>);<!--
   void normalize();-->
-  boolean <a href=#dom-node-issupported title=dom-Node-isSupported>isSupported</a>([TreatNullAs=EmptyString] DOMString feature, DOMString version);
+
   readonly attribute DOMString <a href=#dom-node-namespaceuri title=dom-Node-namespaceURI>namespaceURI</a>;
   readonly attribute DOMString <a href=#dom-node-prefix title=dom-Node-prefix>prefix</a>;
   readonly attribute DOMString <a href=#dom-node-localname title=dom-Node-localName>localName</a>;
-  boolean <a href=#dom-node-hasattributes title=dom-Node-hasAttributes>hasAttributes</a>();
+
   readonly attribute DOMString <a href=#dom-node-baseuri title=dom-Node-baseURI>baseURI</a>;
 
-  // DocumentPosition
   const unsigned short <a href=#dom-node-document_position_disconnected title=dom-Node-DOCUMENT_POSITION_DISCONNECTED>DOCUMENT_POSITION_DISCONNECTED</a> = 0x01;
   const unsigned short <a href=#dom-node-document_position_preceding title=dom-Node-DOCUMENT_POSITION_PRECEDING>DOCUMENT_POSITION_PRECEDING</a> = 0x02;
   const unsigned short <a href=#dom-node-document_position_following title=dom-Node-DOCUMENT_POSITION_FOLLOWING>DOCUMENT_POSITION_FOLLOWING</a> = 0x04;
@@ -635,22 +655,22 @@ must return the name of the exception constant as a string.</p>
   const unsigned short <a href=#dom-node-document_position_contained_by title=dom-Node-DOCUMENT_POSITION_CONTAINED_BY>DOCUMENT_POSITION_CONTAINED_BY</a> = 0x10;
   const unsigned short <a href=#dom-node-document_position_implementation_specific title=dom-Node-DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC>DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC</a> = 0x20;
 
-  unsigned short <a href=#dom-node-comparedocumentposition title=dom-Node-compareDocumentPosition>compareDocumentPosition</a>(<a href=#node>Node</a> other);
+  unsigned short <a href=#dom-node-comparedocumentposition title=dom-Node-compareDocumentPosition>compareDocumentPosition</a>(<a href=#node>Node</a> <var>other</var>);
 
-  [TreatNullAs=EmptyString] attribute DOMString <a href=#dom-node-textcontent title=dom-Node-textContent>textContent</a>;
-  boolean <a href=#dom-node-issamenode title=dom-Node-isSameNode>isSameNode</a>(<a href=#node>Node</a> other);
-  DOMString <a href=#dom-node-lookupprefix title=dom-Node-lookupPrefix>lookupPrefix</a>(DOMString namespaceURI);
-  boolean <a href=#dom-node-isdefaultnamespace title=dom-Node-isDefaultNamespace>isDefaultNamespace</a>(DOMString namespaceURI);
-  DOMString <a href=#dom-node-lookupnamespaceuri title=dom-Node-lookupNamespaceURI>lookupNamespaceURI</a>(DOMString prefix);
-  boolean <a href=#dom-node-isequalnode title=dom-Node-isEqualNode>isEqualNode</a>(<a href=#node>Node</a> arg);<!--
+  <a href=#node>Node</a> <a href=#dom-node-clonenode title=dom-Node-cloneNode>cloneNode</a>(boolean <var>deep</var>);
+  boolean <a href=#dom-node-issamenode title=dom-Node-isSameNode>isSameNode</a>(<a href=#node>Node</a> <a href=#node><var>node</var></a>);
+  boolean <a href=#dom-node-isequalnode title=dom-Node-isEqualNode>isEqualNode</a>(<a href=#node>Node</a> <a href=#node><var>node</var></a>);
+
+  DOMString <a href=#dom-node-lookupprefix title=dom-Node-lookupPrefix>lookupPrefix</a>([TreatNullAs=EmptyString] DOMString <var>namespace</var>);
+  DOMString <a href=#dom-node-lookupnamespaceuri title=dom-Node-lookupNamespaceURI>lookupNamespaceURI</a>(DOMString? <var>prefix</var>);
+  boolean <a href=#dom-node-isdefaultnamespace title=dom-Node-isDefaultNamespace>isDefaultNamespace</a>([TreatNullAs=EmptyString] DOMString <var>namespace</var>);<!--
   DOMObject getFeature(DOMString feature, DOMString version);
   DOMUserData setUserData(DOMString key, DOMUserData data, UserDataHandler handler);
   DOMUserData getUserData(DOMString key);-->
 };</pre>
 
-<p>The constants <a href=#dom-node-nodetype><code title=dom-Node-nodeType>nodeType</code></a> (as defined
-below) returns. The constants marked historical can no longer be returned,
-but are still exposed.</p>
+<p>The <code title=dom-Node-nodeType>nodeType</code> attribute must return
+the type of the node, which must be one of the following:</p>
 
 <ol>
  <li value=1><dfn id=dom-node-element_node title=dom-Node-ELEMENT_NODE><code>ELEMENT_NODE</code></dfn>
@@ -678,202 +698,376 @@ but are still exposed.</p>
  <li value=12><dfn id=dom-node-notation_node title=dom-Node-NOTATION_NODE><code>NOTATION_NODE</code></dfn> (historical)
 </ol>
 
+<p class=note>The constants marked historical can no longer be returned, but
+are still exposed on the interface.</p>
 
-<p>The <dfn id=dom-node-nodename title=dom-Node-nodeName><code>nodeName</code></dfn>, <dfn id=dom-node-nodevalue title=dom-Node-nodeValue><code>nodeValue</code></dfn> and <dfn id=dom-node-nodetype title=dom-Node-nodeType><code>nodeType</code></dfn> attributes must, on getting, return what is in the second, third and fourth column, respectively, if the node also implements the interface in the first column on the same row in the following table:
 
-<table id=anolis-table-2>
- <caption>Table 2: Value of <a href=#dom-node-nodename><code title=dom-Node-nodeName>nodeName</code></a>, <a href=#dom-node-nodevalue><code title=dom-Node-nodeValue>nodeValue</code></a>, <a href=#dom-node-nodetype><code title=dom-Node-nodeType>nodeType</code></a></caption>
- <thead>
-  <tr><th>Interface<th><a href=#dom-node-nodename><code title=dom-Node-nodeName>nodeName</code></a><th><a href=#dom-node-nodevalue><code title=dom-Node-nodeValue>nodeValue</code></a><th><a href=#dom-node-nodetype><code title=dom-Node-nodeType>nodeType</code></a>
- <tbody>
-  <tr><td><a href=#element><code>Element</code></a><td>same as <a href=#dom-element-tagname><code title=dom-Element-tagName>tagName</code></a><td>null<td>1
-  <tr><td><a href=#attr><code>Attr</code></a><td>same as <a href=#dom-attr-name><code title=dom-Attr-name>name</code></a><td>same as <a href=#dom-attr-value><code title=dom-Attr-value>value</code></a><td>2
-  <tr><td><a href=#text><code>Text</code></a><td>"<code title="">#text</code>"<td>same as <a href=#dom-characterdata-data><code title=dom-CharacterData-data>data</code></a><td>3
-  <tr><td><a href=#processinginstruction><code>ProcessingInstruction</code></a><td>same as <a href=#dom-processinginstruction-target><code title=dom-ProcessingInstruction-target>target</code></a><td>same as <a href=#dom-processinginstruction-data><code title=dom-ProcessingInstruction-data>data</code></a><td>7
-  <tr><td><a href=#comment><code>Comment</code></a><td>"<code title="">#comment</code>"<td>same as <a href=#dom-characterdata-data><code title=dom-CharacterData-data>data</code></a><td>8
-  <tr><td><a href=#document><code>Document</code></a><td>"<code title="">#document</code>"<td>null<td>9
-  <tr><td><a href=#documenttype><code>DocumentType</code></a><td>same as <a href=#dom-documenttype-name><code title=dom-DocumentType-name>name</code></a><td>null<td>10
-  <tr><td><a href=#documentfragment><code>DocumentFragment</code></a><td>"<code title="">#document-fragment</code>"<td>null<td>11
-</table>
+<p>The <dfn id=dom-node-nodename title=dom-Node-nodeName><code>nodeName</code></dfn> attribute
+must return the following, depending on the <a href=#context-node>context node</a>:</p>
 
-<p>The <dfn id=dom-node-parentnode title=dom-Node-parentNode><code>parentNode</code></dfn> attribute
-must, on getting, run the following steps:
+<dl class=switch>
+ <dt><a href=#element><code>Element</code></a></dt>
+ <dd><p>The <a href=#context-node>context node</a>'s
+ <a href=#dom-element-tagname><code title=dom-Element-tagName>tagName</code></a> attribute.
+
+ <dt><a href=#attr><code>Attr</code></a></dt>
+ <dd><p>The <a href=#context-node>context node</a>'s
+ <a href=#dom-attr-name><code title=dom-Attr-name>name</code></a> attribute.
+
+ <dt><a href=#text><code>Text</code></a></dt>
+ <dd><p>"<code title="">#text</code>".
+
+ <dt><a href=#processinginstruction><code>ProcessingInstruction</code></a></dt>
+ <dd><p>The <a href=#context-node>context node</a>'s
+ <a href=#dom-processinginstruction-target><code title=dom-ProcessingInstruction-target>target</code></a> attribute.
+
+ <dt><a href=#comment><code>Comment</code></a></dt>
+ <dd><p>"<code title="">#comment</code>".
+
+ <dt><a href=#document><code>Document</code></a></dt>
+ <dd><p>"<code title="">#document</code>".
+
+ <dt><a href=#documenttype><code>DocumentType</code></a></dt>
+ <dd><p>The <a href=#context-node>context node</a>'s
+ <a href=#dom-documenttype-name><code title=dom-DocumentType-name>name</code></a> attribute.
+
+ <dt><a href=#documentfragment><code>DocumentFragment</code></a></dt>
+ <dd><p>"<code title="">#document-fragment</code>".
+</dl>
+
+<p>The <dfn id=dom-node-nodevalue title=dom-Node-nodeValue><code>nodeValue</code></dfn> attribute
+must return the following, depending on the <a href=#context-node>context node</a>:</p>
+
+<dl class=switch>
+ <dt><a href=#attr><code>Attr</code></a></dt>
+ <dt><a href=#text><code>Text</code></a></dt>
+ <dt><a href=#comment><code>Comment</code></a></dt>
+ <dt><a href=#processinginstruction><code>ProcessingInstruction</code></a></dt>
+ <dd><p>The <a href=#context-node>context node</a>'s
+ <a href=#dom-node-textcontent><code title=dom-Node-textContent>textContent</code></a> attribute.
+
+ <dt>Any other node</dt>
+ <dd><p>Null.
+</dl>
+
+<p>Setting the <a href=#dom-node-nodevalue><code title=dom-Node-nodeValue>nodeValue</code></a> attribute
+must do as described below, depending on the <a href=#context-node>context node</a>:</p>
+
+<dl class=switch>
+ <dt><a href=#attr><code>Attr</code></a></dt>
+ <dt><a href=#text><code>Text</code></a></dt>
+ <dt><a href=#comment><code>Comment</code></a></dt>
+ <dt><a href=#processinginstruction><code>ProcessingInstruction</code></a></dt>
+ <dd><p>Set the <a href=#context-node>context node</a>'s
+ <a href=#dom-node-textcontent><code title=dom-Node-textContent>textContent</code></a> attribute to the given
+ value.</dd>
+
+ <dt>Any other node</dt>
+ <dd><p>Do nothing.</dd>
+</dl>
+
+<p>The <dfn id=dom-node-textcontent title=dom-Node-textContent><code>textContent</code></dfn>
+attribute must return the following, depending on the
+<a href=#context-node>context node</a>:</p>
+
+<dl class=switch>
+ <dt><a href=#documentfragment><code>DocumentFragment</code></a></dt>
+ <dt><a href=#element><code>Element</code></a></dt>
+ <dt><a href=#attr><code>Attr</code></a></dt>
+ <dd><p>The concatenation of the
+ <a href=#dom-characterdata-data><code title=dom-CharacterData-data>data</code></a> of all the descendant
+ <a href=#text><code>Text</code></a> nodes of the <a href=#context-node>context node</a>, in
+ <a href=#tree-order>tree order</a>.</dd>
+
+ <dt><a href=#text><code>Text</code></a></dt>
+ <dt><a href=#comment><code>Comment</code></a></dt>
+ <dd><p>The <a href=#context-node>context node</a>'s
+ <a href=#dom-characterdata-data><code title=dom-CharacterData-data>data</code></a> attribute.</dd>
+
+ <dt><a href=#processinginstruction><code>ProcessingInstruction</code></a></dt>
+ <dd><p>The <a href=#context-node>context node</a>'s
+ <a href=#dom-processinginstruction-data><code title=dom-ProcessingInstruction-data>data</code></a> attribute.</dd>
+
+ <dt>Any other node</dt>
+ <dd>Null.</dd>
+</dl>
+
+<p>Setting the <a href=#dom-node-textcontent><code title=dom-Node-textContent>textContent</code></a>
+attribute must do as described below, depending on the
+<a href=#context-node>context node</a>:
+
+<dl class=switch>
+ <dt><a href=#documentfragment><code>DocumentFragment</code></a></dt>
+ <dt><a href=#element><code>Element</code></a></dt>
+ <dt><a href=#attr><code>Attr</code></a></dt>
+ <dd>
+  <ol>
+   <li><p>Remove all the descendent nodes of the <a href=#context-node>context node</a>.
+   <li><p>Let <var>data</var> be the given value.
+   <li><p>If <var>data</var> is not the empty string, append a new
+   <a href=#text><code>Text</code></a> node to the <a href=#context-node>context node</a> whose
+   <a href=#dom-characterdata-data><code title=dom-CharacterData-data>data</code></a> is set to <var>data</var>.
+  </ol>
+ </dd>
+
+ <dt><a href=#text><code>Text</code></a></dt>
+ <dt><a href=#comment><code>Comment</code></a></dt>
+ <dd><p>Set <a href=#context-node>context node</a>'s
+ <a href=#dom-characterdata-data><code title=dom-CharacterData-data>data</code></a> attribute to the given
+ value.</dd>
+
+ <dt><a href=#processinginstruction><code>ProcessingInstruction</code></a></dt>
+ <dd><p>Set the <a href=#context-node>context node</a>'s
+ <a href=#dom-processinginstruction-data><code title=dom-ProcessingInstruction-data>data</code></a> attribute to the
+ given value.</dd>
+
+ <dt>Any other node</dt>
+ <dd>Do nothing.</dd>
+</dl>
+
+<hr>
+
+<p>The <dfn id=dom-node-ownerdocument title=dom-Node-ownerDocument><code>ownerDocument</code></dfn> attribute must return the <a href=#document><code>Document</code></a> node that the <a href=#context-node>context node</a> is associated with, or null if there is none.
+
+<p>The <dfn id=dom-node-parentnode title=dom-Node-parentNode><code>parentNode</code></dfn>
+attribute must run these steps:
 
 <ol>
- <li><p>If the <a href=#context-node>context node</a> is an <a href=#attr><code>Attr</code></a> node, return
- null and abort these steps.
+ <li><p>If the <a href=#context-node>context node</a> is an <a href=#attr><code>Attr</code></a> node,
+ return null and terminate these steps.
 
- <li><p>If the <a href=#context-node>context node</a> doesn't have a parent node, return
- null and abort these steps.
+ <li><p>If the <a href=#context-node>context node</a> does not have a parent node, return
+ null and terminate these steps.
 
  <li><p>Return the parent node of the <a href=#context-node>context node</a>.
 </ol>
 
-<p>The <dfn id=dom-node-parentelement title=dom-Node-parentElement><code>parentElement</code></dfn> attribute must, on getting, return the parent node of the <a href=#context-node>context node</a> if there is a parent and it is an element, or null otherwise.
+<!-- XXX needed? Minefield does not have this -->
+<p>The <dfn id=dom-node-parentelement title=dom-Node-parentElement><code>parentElement</code></dfn> attribute must return the parent node of the <a href=#context-node>context node</a> if there is a parent and it is an <a href=#element><code>Element</code></a> node, or null otherwise.
 
-<p>The <dfn id=dom-node-childnodes title=dom-Node-childNodes><code>childNodes</code></dfn> attribute must, on getting, return a <a href=#nodelist><code>NodeList</code></a> rooted at the <a href=#context-node>context node</a> matching only child nodes.
+<p>The <dfn id=dom-node-haschildnodes title=dom-Node-hasChildNodes><code>hasChildNodes()</code></dfn>
+method must return false if the <a href=#context-node>context node</a>'s
+<a href=#dom-node-firstchild><code title=dom-Node-firstChild>firstChild</code></a> is null, or true
+otherwise.
 
-<p>The <dfn id=dom-node-firstchild title=dom-Node-firstChild><code>firstChild</code></dfn> attribute must, on getting, return the first child node of the <a href=#context-node>context node</a>, or null if there is none.
+<p>The <dfn id=dom-node-childnodes title=dom-Node-childNodes><code>childNodes</code></dfn> attribute must return a <a href=#nodelist><code>NodeList</code></a> rooted at the <a href=#context-node>context node</a> matching only child nodes.
 
-<p>The <dfn id=dom-node-lastchild title=dom-Node-lastChild><code>lastChild</code></dfn> attribute must, on getting, return the last child node of the <a href=#context-node>context node</a>, or null if there is none.
+<p>The <dfn id=dom-node-firstchild title=dom-Node-firstChild><code>firstChild</code></dfn> attribute must return the first child node of the <a href=#context-node>context node</a>, or null if there is none.
+
+<p>The <dfn id=dom-node-lastchild title=dom-Node-lastChild><code>lastChild</code></dfn> attribute must return the last child node of the <a href=#context-node>context node</a>, or null if there is none.
 
 <p>The <dfn id=dom-node-previoussibling title=dom-Node-previousSibling><code>previousSibling</code></dfn>
-attribute must, on getting, run the following steps:
+attribute must run these steps:
 
 <ol>
- <li><p>If the <a href=#context-node>context node</a> is an <a href=#attr><code>Attr</code></a> node, return
- null and abort these steps.
+ <li><p>If the <a href=#context-node>context node</a> is an <a href=#attr><code>Attr</code></a> node,
+ return null and terminate these steps.
 
- <li><p>If the <a href=#context-node>context node</a> doesn't have a previous sibling node,
- return null and abort these steps.
+ <li><p>If the <a href=#context-node>context node</a> does not have a previous sibling
+ node, return null and terminate these steps.
 
  <li><p>Return the previous sibling node of the <a href=#context-node>context node</a>.
 </ol>
 
-<p>The <dfn id=dom-node-nextsibling title=dom-Node-nextSibling><code>nextSibling</code></dfn> attribute
-must, on getting, run the following steps:
+<p>The <dfn id=dom-node-nextsibling title=dom-Node-nextSibling><code>nextSibling</code></dfn> attribute must run these steps:
 
 <ol>
- <li><p>If the <a href=#context-node>context node</a> is an <a href=#attr><code>Attr</code></a> node, return
- null and abort these steps.
+ <li><p>If the <a href=#context-node>context node</a> is an <a href=#attr><code>Attr</code></a> node,
+ return null and terminate these steps.
 
- <li><p>If the <a href=#context-node>context node</a> doesn't have a next sibling node,
- return null and abort these steps.
+ <li><p>If the <a href=#context-node>context node</a> does not have a next sibling node,
+ return null and terminate these steps.
 
  <li><p>Return the next sibling node of the <a href=#context-node>context node</a>.
 </ol>
 
-<p>The <dfn id=dom-node-attributes title=dom-Node-attributes><code>attributes</code></dfn> attribute must, on getting, return a <a href=#namednodemap><code>NamedNodeMap</code></a> of all the <a href=#attr><code>Attr</code></a> nodes associated with the node of the <a href=#context-node>context node</a>, if it is an <a href=#element><code>Element</code></a> node, or null otherwise.
+<hr>
 
-<p>The <dfn id=dom-node-ownerdocument title=dom-Node-ownerDocument><code>ownerDocument</code></dfn> attribute must, on getting, return the <a href=#document><code>Document</code></a> node that the <a href=#context-node>context node</a> is associated with, or null if there is none.
+<p>The <dfn id=dom-node-hasattributes title=dom-Node-hasAttributes><code>hasAttributes()</code></dfn>
+method must return true if there are any attributes associated with the
+<a href=#context-node>context node</a>, if it is an <a href=#element><code>Element</code></a> node, and false
+otherwise.
 
-<p>The <dfn id=dom-node-insertbefore title=dom-Node-insertBefore><code>insertBefore(<var title="">newChild</var>, <var>refChild</var>)</code></dfn> method must run
-the following steps:
+<p>The <dfn id=dom-node-attributes title=dom-Node-attributes><code>attributes</code></dfn> attribute must return a <a href=#namednodemap><code>NamedNodeMap</code></a> of all the <a href=#attr><code>Attr</code></a> nodes associated with the node of the <a href=#context-node>context node</a>, if it is an <a href=#element><code>Element</code></a> node, or null otherwise.
+
+<hr>
+
+<p>The
+<dfn id=dom-node-insertbefore title=dom-Node-insertBefore><code>insertBefore(<var>newChild</var>, <var>refChild</var>)</code></dfn>
+method must run these steps:
 
 <ol>
  <li><p>If the <a href=#context-node>context node</a> is an <a href=#attr><code>Attr</code></a> node or a
- <a href=#text><code>Text</code></a> node, then raise a <a href=#dom-domexception-hierarchy_request_err><code title=dom-DOMException-HIERARCHY_REQUEST_ERR>HIERARCHY_REQUEST_ERR</code></a> and
- abort these steps. <!-- See Mozilla bug 547798, 558973 -->
+ <a href=#text><code>Text</code></a> node, then raise a
+ <a href=#dom-domexception-hierarchy_request_err><code title=dom-DOMException-HIERARCHY_REQUEST_ERR>HIERARCHY_REQUEST_ERR</code></a>
+ and terminate these steps. <!-- See Mozilla bug 547798, 558973 -->
 
- <li><p>If <var>newChild</var> is null, then raise a <a href=#dom-domexception-not_supported_err><code title=dom-DOMException-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</code></a> exception and
- abort these steps.
+ <li><p>If <var>newChild</var> is null, then raise a <a href=#dom-domexception-not_supported_err><code title=dom-DOMException-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</code></a> exception
+ and terminate these steps.
+ <!-- XXX let Web IDL handle this instead? -->
 
- <li><p>If <var>refChild</var> is not null and is not a child of the
- <a href=#context-node>context node</a>, then raise a <a href=#dom-domexception-not_found_err><code title=dom-DOMException-NOT_FOUND_ERR>NOT_FOUND_ERR</code></a> exception and abort
- these steps. <!-- Do not adopt. -->
-
- <li><p>If <var>newChild</var>'s
- <a href=#dom-node-ownerdocument><code title=dom-Node-ownerDocument>ownerDocument</code></a> is not equal to the
+ <li><p>If <var>refChild</var> is null, return the result of invoking
  <a href=#context-node>context node</a>'s
- <a href=#dom-node-ownerdocument><code title=dom-Node-ownerDocument>ownerDocument</code></a>, call the
+ <a href=#dom-node-appendchild><code title=dom-Node-appendChild>appendChild</code></a> with
+ <var>newChild</var> as argument and terminate these steps.
+
+ <li><p>If <var>refChild</var> is not a child of the
+ <a href=#context-node>context node</a>, then raise a
+ <a href=#dom-domexception-not_found_err><code title=dom-DOMException-NOT_FOUND_ERR>NOT_FOUND_ERR</code></a> exception
+ and terminate these steps.
+
+ <li><p>If <var>newChild</var> is the <a href=#context-node>context node</a> or an
+ ancestor of the <a href=#context-node>context node</a> raise a
+ <a href=#dom-domexception-hierarchy_request_err><code title=dom-DOMException-HIERARCHY_REQUEST_ERR>HIERARCHY_REQUEST_ERR</code></a>
+ and terminate these steps.
+
+ <!-- XXXhierarchy -->
+
+ <li><p>If <var>newChild</var> is a <a href=#documenttype><code>DocumentType</code></a> node and its
+ <a href=#dom-node-ownerdocument><code title=dom-Node-ownerDocument>ownerDocument</code></a> is not null raise a
+ <a href=#dom-domexception-not_supported_err><code title=dom-DOMException-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</code></a>
+ exception and terminate these steps.
+
+ <li><p>If <var>newChild</var> is a <a href=#documenttype><code>DocumentType</code></a> node set its
+ <a href=#dom-node-ownerdocument><code title=dom-Node-ownerDocument>ownerDocument</code></a> to the
+ <a href=#context-node>context node</a>'s
+ <a href=#dom-node-ownerdocument><code title=dom-Node-ownerDocument>ownerDocument</code></a>.
+
+ <li><p>If <var>newChild</var> is not a <a href=#documenttype><code>DocumentType</code></a> node let
+ <var>newChild</var> be the result of invoking the
  <a href=#context-node>context node</a>'s
  <a href=#dom-node-ownerdocument><code title=dom-Node-ownerDocument>ownerDocument</code></a>
  <a href=#dom-document-adoptnode><code title=dom-Document-adoptNode>adoptNode</code></a> method with
  <var>newChild</var> as its argument.
 
- <!-- no security check -->
  <li><p>If <var>newChild</var> is a <a href=#documentfragment><code>DocumentFragment</code></a> node,
- then while <var>newChild</var>'s <a href=#dom-node-firstchild><code title=dom-Node-firstChild>firstChild</code></a> is not null, call <a href=#dom-node-insertbefore><code title=dom-Node-insertBefore>insertBefore</code></a> on the <a href=#context-node>context
- node</a> with <var>newChild</var>'s <a href=#dom-node-firstchild><code title=dom-Node-firstChild>firstChild</code></a> as first argument and <var title="">refChild</var> as second argument.
+ insert the children of <var>newChild</var> in the
+ <a href=#context-node>context node</a>, in <a href=#tree-order>tree order</a>, so that the last
+ child becomes the previous sibling of <var>refChild</var>.
 
- <li><p>Otherwise, if <var>refChild</var> is null, append <var title="">newChild</var> to the <a href=#context-node>context node</a>.
-
- <li><p>Otherwise insert <var>newChild</var> in the <a href=#context-node>context
- node</a> as the previous sibling of <var>refChild</var>.
+ <li><p>Otherwise insert <var>newChild</var> in the
+ <a href=#context-node>context node</a> as the previous sibling of <var>refChild</var>.
 
  <li><p>Return <var>newChild</var>.
 </ol>
 
-<p>The <dfn id=dom-node-replacechild title=dom-Node-replaceChild><code>replaceChild(<var title="">newChild</var>, <var>oldChild</var>)</code></dfn> method must run
-the following steps:
+<p>The
+<dfn id=dom-node-replacechild title=dom-Node-replaceChild><code>replaceChild(<var>newChild</var>, <var>oldChild</var>)</code></dfn>
+method must run these steps:
 
 <ol>
  <li><p>If the <a href=#context-node>context node</a> is an <a href=#attr><code>Attr</code></a> node or a
  <a href=#text><code>Text</code></a> node, then raise a <a href=#dom-domexception-hierarchy_request_err><code title=dom-DOMException-HIERARCHY_REQUEST_ERR>HIERARCHY_REQUEST_ERR</code></a> and
- abort these steps. <!-- See Mozilla bug 547798, 558973 -->
+ terminate these steps. <!-- See Mozilla bug 547798, 558973 -->
 
  <li><p>If either <var>newChild</var> or <var>oldChild</var> is
- null, then raise a <a href=#dom-domexception-not_supported_err><code title=dom-DOMException-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</code></a> exception and
- abort these steps.
+ null, then raise a <a href=#dom-domexception-not_supported_err><code title=dom-DOMException-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</code></a> exception
+ and terminate these steps.
+ <!-- XXX let Web IDL handle this instead? -->
 
- <li><p>If <var>newChild</var>'s
- <a href=#dom-node-ownerdocument><code title=dom-Node-ownerDocument>ownerDocument</code></a> is not equal to the
+ <li><p>If <var>oldChild</var> is not a child of the
+ <a href=#context-node>context node</a>, then raise a
+ <a href=#dom-domexception-not_found_err><code title=dom-DOMException-NOT_FOUND_ERR>NOT_FOUND_ERR</code></a> exception
+ and terminate these steps.
+
+ <li><p>If <var>newChild</var> is the <a href=#context-node>context node</a> or an
+ ancestor of the <a href=#context-node>context node</a> raise a
+ <a href=#dom-domexception-hierarchy_request_err><code title=dom-DOMException-HIERARCHY_REQUEST_ERR>HIERARCHY_REQUEST_ERR</code></a>
+ and terminate these steps.
+
+ <!-- XXXhierarchy -->
+
+ <li><p>If <var>newChild</var> is a <a href=#documenttype><code>DocumentType</code></a> node and its
+ <a href=#dom-node-ownerdocument><code title=dom-Node-ownerDocument>ownerDocument</code></a> is not null raise a
+ <a href=#dom-domexception-not_supported_err><code title=dom-DOMException-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</code></a>
+ exception and terminate these steps.
+
+ <li><p>If <var>newChild</var> is a <a href=#documenttype><code>DocumentType</code></a> node set its
+ <a href=#dom-node-ownerdocument><code title=dom-Node-ownerDocument>ownerDocument</code></a> to the
  <a href=#context-node>context node</a>'s
- <a href=#dom-node-ownerdocument><code title=dom-Node-ownerDocument>ownerDocument</code></a>, call the
+ <a href=#dom-node-ownerdocument><code title=dom-Node-ownerDocument>ownerDocument</code></a>.
+
+ <li><p>If <var>newChild</var> is not a <a href=#documenttype><code>DocumentType</code></a> node let
+ <var>newChild</var> be the result of invoking the
  <a href=#context-node>context node</a>'s
  <a href=#dom-node-ownerdocument><code title=dom-Node-ownerDocument>ownerDocument</code></a>
  <a href=#dom-document-adoptnode><code title=dom-Document-adoptNode>adoptNode</code></a> method with
  <var>newChild</var> as its argument.
 
- <li><p>If <var>oldChild</var> is not a child of the <a href=#context-node>context
- node</a>, then raise a <a href=#dom-domexception-not_found_err><code title=dom-DOMException-NOT_FOUND_ERR>NOT_FOUND_ERR</code></a>
- exception and abort these steps.
-
- <!-- no security check -->
  <li><p>Let <var>refChild</var> be <var>oldChild</var>'s
  <a href=#dom-node-nextsibling><code title=dom-Node-nextSibling>nextSibling</code></a>.
 
- <li><p>Remove <var>oldChild</var> from <a href=#context-node>context node</a>.
+ <li><p>Remove <var>oldChild</var> from the <a href=#context-node>context node</a>.
 
- <li><p>Call <a href=#dom-node-insertbefore><code title=dom-Node-insertBefore>insertBefore</code></a> on the
- <a href=#context-node>context node</a> with <var>newChild</var> and <var title="">refChild</var> as arguments, respectively.
-
- <li><p>Return <var>newChild</var>.
+ <li><p>Return the result of invoking the <a href=#context-node>context node</a>'s
+ <a href=#dom-node-insertbefore><code title=dom-Node-insertBefore>insertBefore</code></a> method with
+ <var>newChild</var> and <var>refChild</var> as arguments.
 </ol>
 
-<p>The <dfn id=dom-node-removechild title=dom-Node-removeChild><code>removeChild(<var title="">oldChild</var>)</code></dfn> method must run the following steps:
+<p>The
+<dfn id=dom-node-removechild title=dom-Node-removeChild><code>removeChild(<var>oldChild</var>)</code></dfn>
+method must run these steps:
 
 <ol>
  <!-- Attr nodes are okay -->
- <li><p>If <var>oldChild</var> is null, then raise a <a href=#dom-domexception-not_supported_err><code title=dom-DOMException-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</code></a> exception and
- abort these steps.
+ <li><p>If <var>oldChild</var> is null, then raise a
+ <a href=#dom-domexception-not_supported_err><code title=dom-DOMException-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</code></a>
+ exception and terminate these steps.
+ <!-- XXX let Web IDL handle this instead? -->
 
- <li><p>If <var>oldChild</var> is not a child of the <a href=#context-node>context
- node</a>, then raise a <a href=#dom-domexception-not_found_err><code title=dom-DOMException-NOT_FOUND_ERR>NOT_FOUND_ERR</code></a> exception and abort
- these steps.
+ <li><p>If <var>oldChild</var> is not a child of the
+ <a href=#context-node>context node</a>, then raise a
+ <a href=#dom-domexception-not_found_err><code title=dom-DOMException-NOT_FOUND_ERR>NOT_FOUND_ERR</code></a> exception
+ and terminate these steps.
  <!-- Including other documents. -->
 
- <li><p>Remove <var>oldChild</var> from <a href=#context-node>context node</a>.
+ <li><p>Remove <var>oldChild</var> from the <a href=#context-node>context node</a>.
 
  <li><p>Return <var>oldChild</var>.
 </ol>
 
-<p>The <dfn id=dom-node-appendchild title=dom-Node-appendChild><code>appendChild(<var title="">newChild</var>)</code></dfn> method must run the following steps:
+<p>The
+<dfn id=dom-node-appendchild title=dom-Node-appendChild><code>appendChild(<var>newChild</var>)</code></dfn>
+method must run these steps:
 
 <ol>
  <li><p>If the <a href=#context-node>context node</a> is an <a href=#attr><code>Attr</code></a> node or a
  <a href=#text><code>Text</code></a> node, then raise a <a href=#dom-domexception-hierarchy_request_err><code title=dom-DOMException-HIERARCHY_REQUEST_ERR>HIERARCHY_REQUEST_ERR</code></a> and
- abort these steps. <!-- See Mozilla bug 547798, 558973 -->
+ terminate these steps. <!-- See Mozilla bug 547798, 558973 -->
 
  <li><p>If <var>newChild</var> is null, then raise a <a href=#dom-domexception-not_supported_err><code title=dom-DOMException-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</code></a> exception and
- abort these steps.
+ terminate these steps.
 
- <li><p>If <var>newChild</var>'s
- <a href=#dom-node-ownerdocument><code title=dom-Node-ownerDocument>ownerDocument</code></a> is not equal to the
+ <li><p>If <var>newChild</var> is the <a href=#context-node>context node</a> or an
+ ancestor of the <a href=#context-node>context node</a> raise a
+ <a href=#dom-domexception-hierarchy_request_err><code title=dom-DOMException-HIERARCHY_REQUEST_ERR>HIERARCHY_REQUEST_ERR</code></a>
+ and terminate these steps.
+
+ <!-- XXXhierarchy -->
+
+ <li><p>If <var>newChild</var> is a <a href=#documenttype><code>DocumentType</code></a> node and its
+ <a href=#dom-node-ownerdocument><code title=dom-Node-ownerDocument>ownerDocument</code></a> is not null raise a
+ <a href=#dom-domexception-not_supported_err><code title=dom-DOMException-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</code></a>
+ exception and terminate these steps.
+
+ <li><p>If <var>newChild</var> is a <a href=#documenttype><code>DocumentType</code></a> node set its
+ <a href=#dom-node-ownerdocument><code title=dom-Node-ownerDocument>ownerDocument</code></a> to the
  <a href=#context-node>context node</a>'s
- <a href=#dom-node-ownerdocument><code title=dom-Node-ownerDocument>ownerDocument</code></a>, call the
+ <a href=#dom-node-ownerdocument><code title=dom-Node-ownerDocument>ownerDocument</code></a>.
+
+ <li><p>If <var>newChild</var> is not a <a href=#documenttype><code>DocumentType</code></a> node let
+ <var>newChild</var> be the result of invoking the
  <a href=#context-node>context node</a>'s
  <a href=#dom-node-ownerdocument><code title=dom-Node-ownerDocument>ownerDocument</code></a>
  <a href=#dom-document-adoptnode><code title=dom-Document-adoptNode>adoptNode</code></a> method with
  <var>newChild</var> as its argument.
 
- <!-- no security check -->
  <li><p>Append <var>newChild</var> to the <a href=#context-node>context node</a>.
 
  <li><p>Return <var>newChild</var>.
 </ol>
 
-<p>The <dfn id=dom-node-haschildnodes title=dom-Node-hasChildNodes><code>hasChildNodes()</code></dfn> method must return false if the <a href=#context-node>context node</a>'s <a href=#dom-node-firstchild><code title=dom-Node-firstChild>firstChild</code></a> is null, and true otherwise.
-
-<p>The <dfn id=dom-node-clonenode title=dom-Node-cloneNode><code>cloneNode(<var title="">deep</var>)</code></dfn> method must return a <a href=#clone>clone</a> of the
-<a href=#context-node>context node</a>, with <var>new ownerDocument</var> being the
-<a href=#context-node>context node</a>'s <a href=#dom-node-ownerdocument><code title=dom-Node-ownerDocument>ownerDocument</code></a>, and the <var>clone
-children</var> flag set if <var>deep</var> is true.
-
-<p>The <dfn id=dom-node-issupported title=dom-Node-isSupported><code>isSupported(<var title="">feature</var>, <var>version</var>)</code></dfn> method must return
-true if the user agent <a href=#concept-support-domfeatureversion title=concept-support-DOMfeatureversion>supports</a>
-the (<var>feature</var>, <var>version</var>) tuple on the
-<a href=#context-node>context node</a>, and false otherwise.
+<hr>
 
 <p>The <dfn id=dom-node-namespaceuri title=dom-Node-namespaceURI><code>namespaceURI</code></dfn> attribute must return the namespace that is associated with the node, if there is one and it's not the empty string, or null otherwise.
 
@@ -885,27 +1079,32 @@ the (<var>feature</var>, <var>version</var>) tuple on the
  <li>
   <p>If <var>prefix</var> is not null, run the following substeps:
   <ol>
-   <li><p>If <var>prefix</var> doesn't match the <code data-anolis-spec=xml>Name</code> production in XML, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and abort these steps.
-   <li><p>If <var>prefix</var> doesn't match the <code
+   <li><p>If <var>prefix</var> does not match the
+   <code data-anolis-spec=xml>Name</code> production in XML, raise an
+   <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
+   exception and terminate these steps.
+   <li><p>If <var>prefix</var> does not match the <code
    data-anolis-spec=xmlns>NCName</code> production in Namespaces in XML, raise a
    <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and
-   abort these steps.
+   terminate these steps.
   </ol>
- <li><p class=XXX>Actually this doesn't match any browser. Let's try to drop it instead.
+ <li><p class=XXX>Actually this does not match any browser. Let's try to drop it instead.
 </ol>-->
 
-<p class=note>Setting the <a href=#dom-node-prefix><code title=dom-Node-prefix>prefix</code></a> attribute is
-no longer supported.
+<p class=note>Setting the <a href=#dom-node-prefix><code title=dom-Node-prefix>prefix</code></a>
+attribute is not supported. <!-- XXX kill this note at some point -->
 
-<p>The <dfn id=dom-node-localname title=dom-Node-localName><code>localName</code></dfn> attribute must return the local name that is associated with the node, if it has
-one, and null otherwise.
-
-<p>The <dfn id=dom-node-hasattributes title=dom-Node-hasAttributes><code>hasAttributes()</code></dfn>
-method must return whether there are any attributes associated with the
-<a href=#context-node>context node</a>, if it is an <a href=#element><code>Element</code></a> node, and false
-otherwise.
+<p>The <dfn id=dom-node-localname title=dom-Node-localName><code>localName</code></dfn> attribute
+must return the local name that is associated with the node, if it has one,
+and null otherwise.
 
 <p>The <dfn id=dom-node-baseuri title=dom-Node-baseURI><code>baseURI</code></dfn> attribute must <span class=XXX title="">...</span>
+
+<hr>
+
+<p>These are the constants
+<a href=#dom-node-comparedocumentposition><code title=dom-Node-compareDocumentPosition>compareDocumentPosition()</code></a>
+returns.</p>
 
 <ol>
  <li value=1><dfn id=dom-node-document_position_disconnected title=dom-Node-DOCUMENT_POSITION_DISCONNECTED><code>DOCUMENT_POSITION_DISCONNECTED</code></dfn>
@@ -922,85 +1121,212 @@ otherwise.
 </ol>
 
 <p>The <dfn id=dom-node-comparedocumentposition title=dom-Node-compareDocumentPosition><code>compareDocumentPosition(<var title="">other</var>)</code></dfn> method must <span class=XXX title="">...</span>
+<!-- XXX @beverloo might figure this out; remove impl specific? -->
 
-<p>The <dfn id=dom-node-textcontent title=dom-Node-textContent><code>textContent</code></dfn> attribute, on getting, must return a concatenation of the <a href=#dom-characterdata-data><code title=dom-CharacterData-data>data</code></a> of all the descendant <a href=#text><code>Text</code></a> nodes of the <a href=#context-node>context node</a>, in <a href=#tree-order>tree order</a>. On setting, it must run the following steps:
+<hr>
 
-<ol>
- <li><p>Remove all the child nodes of the <a href=#context-node>context node</a>.
- <li><p>Let <var>data</var> be the value being assigned.
- <li><p>If <var>data</var> is not the empty string, append a new <a href=#text><code>Text</code></a> node to the <a href=#context-node>context node</a> whose <a href=#dom-characterdata-data><code title=dom-CharacterData-data>data</code></a> is set to <var>data</var>.
-</ol>
+<p>The
+<dfn id=dom-node-clonenode title=dom-Node-cloneNode><code>cloneNode(<var>deep</var>)</code></dfn>
+method must return a <a href=#clone>clone</a> of the <a href=#context-node>context node</a>,
+with <var>new ownerDocument</var> being the <a href=#context-node>context node</a>'s
+<a href=#dom-node-ownerdocument><code title=dom-Node-ownerDocument>ownerDocument</code></a>, and the
+<i>clone children flag</i> set if <var>deep</var> is true.
 
-<p class=XXX>What does null mean? <a href=http://www.w3.org/mid/c9e12660808271343v58990698gabac29d2123a82ce@mail.gmail.com>http://www.w3.org/mid/c9e12660808271343v58990698gabac29d2123a82ce@mail.gmail.com</a>
+<p>The
+<dfn id=dom-node-issamenode title=dom-Node-isSameNode><code>isSameNode(<var>node</var>)</code></dfn>
+method must return true if <a href=#node><var>node</var></a> is a reference to the same
+object as the <a href=#context-node>context node</a>, or false otherwise.
 
-<p>The <dfn id=dom-node-issamenode title=dom-Node-isSameNode><code>isSameNode(<var title="">other</var>)</code></dfn> method must return true if <var title="">other</var> is a reference to the same object as the <a href=#context-node>context
-node</a>, and false otherwise.
-
-<p>The <dfn id=dom-node-lookupprefix title=dom-Node-lookupPrefix><code>lookupPrefix(<var title="">namespaceURI</var>)</code></dfn> method must <span class=XXX title="">...</span>
-
-<p>The <dfn id=dom-node-isdefaultnamespace title=dom-Node-isDefaultNamespace><code>isDefaultNamespace(<var title="">namespaceURI</var>)</code></dfn> method must <span class=XXX title="">...</span>
-
-<p>The <dfn id=dom-node-lookupnamespaceuri title=dom-Node-lookupNamespaceURI><code>lookupNamespaceURI(<var title="">prefix</var>)</code></dfn> method must <span class=XXX title="">...</span>
-
-<p class=XXX>clarify lookupNamespaceURI <a href=http://www.w3.org/mid/4878DFC6.40401@lachy.id.au>http://www.w3.org/mid/4878DFC6.40401@lachy.id.au</a>; lookupNamespaceURI, isDefaultNamespace <a href="http://html5.org/tools/web-apps-tracker?from=2125&amp;to=2126">http://html5.org/tools/web-apps-tracker?from=2125&amp;to=2126</a>
-
-<p>The <dfn id=dom-node-isequalnode title=dom-Node-isEqualNode><code>isEqualNode(<var title="">arg</var>)</code></dfn> method must return true if all of the following
-conditions are true, and must otherwise return false:
+<p>The
+<dfn id=dom-node-isequalnode title=dom-Node-isEqualNode><code>isEqualNode(<var>node</var>)</code></dfn>
+method must return true if all of the following conditions are true, or
+false otherwise:
 
 <ul>
- <li><p><var>arg</var> is not null.
- <li><p><var>arg</var>'s <a href=#dom-node-nodetype><code title=dom-Node-nodeType>nodeType</code></a> is the same as the <a href=#context-node>context node</a>'s <a href=#dom-node-nodetype><code title=dom-Node-nodeType>nodeType</code></a>.
- <li><p><var>arg</var>'s <a href=#dom-node-nodename><code title=dom-Node-nodeName>nodeName</code></a> is the same as the <a href=#context-node>context node</a>'s <a href=#dom-node-nodename><code title=dom-Node-nodeName>nodeName</code></a>.
- <li><p><var>arg</var>'s <a href=#dom-node-localname><code title=dom-Node-localName>localName</code></a> is the same as the <a href=#context-node>context node</a>'s <a href=#dom-node-localname><code title=dom-Node-localName>localName</code></a>.
- <li><p><var>arg</var>'s <a href=#dom-node-namespaceuri><code title=dom-Node-namespaceURI>namespaceURI</code></a> is the same as the <a href=#context-node>context node</a>'s <a href=#dom-node-namespaceuri><code title=dom-Node-namespaceURI>namespaceURI</code></a>.
- <li><p><var>arg</var>'s <a href=#dom-node-prefix><code title=dom-Node-prefix>prefix</code></a> is the same as the <a href=#context-node>context node</a>'s <a href=#dom-node-prefix><code title=dom-Node-prefix>prefix</code></a>.
- <li><p><var>arg</var>'s <a href=#dom-node-nodevalue><code title=dom-Node-nodeValue>nodeValue</code></a> is the same as the <a href=#context-node>context node</a>'s <a href=#dom-node-nodevalue><code title=dom-Node-nodeValue>nodeValue</code></a>.
+ <li><p><a href=#node><var>node</var></a> is not null.
+ <li><p><a href=#node><var>node</var></a>'s <code title=dom-Node-nodeType>nodeType</code> is the same as the <a href=#context-node>context node</a>'s <code title=dom-Node-nodeType>nodeType</code>.
+ <li><p><a href=#node><var>node</var></a>'s <a href=#dom-node-nodename><code title=dom-Node-nodeName>nodeName</code></a> is the same as the <a href=#context-node>context node</a>'s <a href=#dom-node-nodename><code title=dom-Node-nodeName>nodeName</code></a>.
+ <li><p><a href=#node><var>node</var></a>'s <a href=#dom-node-localname><code title=dom-Node-localName>localName</code></a> is the same as the <a href=#context-node>context node</a>'s <a href=#dom-node-localname><code title=dom-Node-localName>localName</code></a>.
+ <li><p><a href=#node><var>node</var></a>'s <a href=#dom-node-namespaceuri><code title=dom-Node-namespaceURI>namespaceURI</code></a> is the same as the <a href=#context-node>context node</a>'s <a href=#dom-node-namespaceuri><code title=dom-Node-namespaceURI>namespaceURI</code></a>.
+ <li><p><a href=#node><var>node</var></a>'s <a href=#dom-node-prefix><code title=dom-Node-prefix>prefix</code></a> is the same as the <a href=#context-node>context node</a>'s <a href=#dom-node-prefix><code title=dom-Node-prefix>prefix</code></a>.
+ <li><p><a href=#node><var>node</var></a>'s <a href=#dom-node-nodevalue><code title=dom-Node-nodeValue>nodeValue</code></a> is the same as the <a href=#context-node>context node</a>'s <a href=#dom-node-nodevalue><code title=dom-Node-nodeValue>nodeValue</code></a>.
 
- <li><p>Either <var>arg</var>'s <a href=#dom-node-attributes><code title=dom-Node-attributes>attributes</code></a> and the <a href=#context-node>context node</a>'s
+ <li><p>Either <a href=#node><var>node</var></a>'s <a href=#dom-node-attributes><code title=dom-Node-attributes>attributes</code></a> and the <a href=#context-node>context node</a>'s
  <a href=#dom-node-attributes><code title=dom-Node-attributes>attributes</code></a> are both null or a bijection
- exists between the set of <var>arg</var>'s <a href=#dom-node-attributes><code title=dom-Node-attributes>attributes</code></a> and the set of the <a href=#context-node>context
+ exists between the set of <a href=#node><var>node</var></a>'s <a href=#dom-node-attributes><code title=dom-Node-attributes>attributes</code></a> and the set of the <a href=#context-node>context
  node</a>'s <a href=#dom-node-attributes><code title=dom-Node-attributes>attributes</code></a> so that every
  <a href=#attr><code>Attr</code></a> node in the former is mapped to an <a href=#attr><code>Attr</code></a> node in
  the latter for which calling <a href=#dom-node-isequalnode><code title=dom-Node-isEqualNode>isEqualNode</code></a> on the first <a href=#attr><code>Attr</code></a>
  node with the second <a href=#attr><code>Attr</code></a> node as its argument returns true.
 
- <li><p><var>arg</var>'s <a href=#dom-node-childnodes><code title=dom-Node-childNodes>childNodes</code></a>' <a href=#dom-nodelist-length><code title=dom-NodeList-length>length</code></a> is the same as the <a href=#context-node>context node</a>'s <a href=#dom-node-childnodes><code title=dom-Node-childNodes>childNodes</code></a>' <a href=#dom-nodelist-length><code title=dom-NodeList-length>length</code></a>.
- <li><p>Calling <a href=#dom-node-isequalnode><code title=dom-Node-isEqualNode>isEqualNode</code></a> on each child node of the <a href=#context-node>context node</a>, with the child node of the same index in <var>arg</var> as argument returns true for every child node.
+ <li><p><a href=#node><var>node</var></a>'s <a href=#dom-node-childnodes><code title=dom-Node-childNodes>childNodes</code></a>' <a href=#dom-nodelist-length><code title=dom-NodeList-length>length</code></a> is the same as the <a href=#context-node>context node</a>'s <a href=#dom-node-childnodes><code title=dom-Node-childNodes>childNodes</code></a>' <a href=#dom-nodelist-length><code title=dom-NodeList-length>length</code></a>.
+ <li><p>Calling <a href=#dom-node-isequalnode><code title=dom-Node-isEqualNode>isEqualNode</code></a> on each child node of the <a href=#context-node>context node</a>, with the child node of the same index in <a href=#node><var>node</var></a> as argument returns true for every child node.
 </ul>
 
+<hr>
 
-<h3 id=interface-documentfragment><span class=secno>5.2 </span>Interface <a href=#documentfragment><code>DocumentFragment</code></a></h3>
+<p>To <dfn id=locate-a-namespace-prefix>locate a namespace prefix</dfn> for an <a href=#element><var>element</var></a> using
+<var>namespace</var> run these steps:</p>
+
+<ol>
+ <li><p>If <a href=#element><var>element</var></a>'s
+ <a href=#concept-element-namespace title=concept-element-namespace>namespace</a> is
+ <var>namespace</var> and its
+ <a href=#concept-element-namespace-prefix title=concept-element-namespace-prefix>namespace prefix</a> is not
+ null return its
+ <a href=#concept-element-namespace-prefix title=concept-element-namespace-prefix>namespace prefix</a> and
+ terminate these steps.</li>
+
+ <li><p>If there is an attribute associated with the <a href=#element><var>element</var></a>
+ whose namespace prefix is "<code title="">xmlns</code>" and value is
+ <var>namespace</var> then return its local name and terminate these
+ steps.</li>
+ <!-- XXX xref attribute terminology -->
+
+ <li><p>Return the result of running <a href=#locate-a-namespace-prefix>locate a namespace prefix</a>
+ on its <a href=#dom-node-parentnode><code title=dom-Node-parentNode>parentNode</code></a> using
+ <var>namespace</var>, if <a href=#dom-node-parentnode><code title=dom-Node-parentNode>parentNode</code></a>
+ is an <a href=#element><code>Element</code></a> node, or null otherwise.</li>
+ <!-- XXX parentElement -->
+</ol>
+
+<p>To <dfn id=locate-a-namespace>locate a namespace</dfn> for a <a href=#node><var>node</var></a> using
+<var>prefix</var> depends on the <a href=#node><var>node</var></a>:</p>
+
+<dl class=switch>
+ <dt><a href=#element><code>Element</code></a></dt>
+ <dd>
+  <ol>
+   <li><p>If its <a href=#concept-element-namespace title=concept-element-namespace>namespace</a> is
+   not null and its
+   <a href=#concept-element-namespace-prefix title=concept-element-namespace-prefix>namespace prefix</a> is
+   <var>prefix</var> return
+   <a href=#concept-element-namespace title=concept-element-namespace>namespace</a> and terminate
+   these steps.</li>
+
+   <li>
+    <p>If there is an attribute associated with the node whose
+    namespace prefix is "<code title="">xmlns</code>" and local name is
+    <var>prefix</var> or whose namespace prefix is null and local name is
+    "<code title="">xmlns</code>":</p>
+
+    <ol>
+     <li><p>Let <var>value</var> be its value if it is not the empty string,
+     or null otherwise.</li>
+
+     <li><p>Return <var>value</var> and terminate these steps.</li>
+    </ol>
+   </li>
+   <!-- XXX xref attribute terminology -->
+
+   <li><p>Return the result of running <a href=#locate-a-namespace>locate a namespace</a> on
+   its <a href=#dom-node-parentnode><code title=dom-Node-parentNode>parentNode</code></a> using
+   <var>prefix</var>, if <a href=#dom-node-parentnode><code title=dom-Node-parentNode>parentNode</code></a>
+   is an <a href=#element><code>Element</code></a> node, or null otherwise.</li>
+   <!-- XXX parentElement -->
+  </ol>
+ </dd>
+ <!--XXX <code>Attr</code> -->
+ <dt><a href=#document><code>Document</code></a></dt>
+ <dd><p>Return the result of running <a href=#locate-a-namespace>locate a namespace</a> on its
+ <a href=#dom-document-documentelement><code title=dom-Document-documentElement>documentElement</code></a> using
+ <var>prefix</var>, if
+ <a href=#dom-document-documentelement><code title=dom-Document-documentElement>documentElement</code></a> is
+ not null, or null otherwise.</dd>
+ <dt><a href=#documenttype><code>DocumentType</code></a></dt>
+ <dt><a href=#documentfragment><code>DocumentFragment</code></a></dt>
+ <dd><p>Return null.</dd>
+ <dt>Any other node</dt>
+ <dd><p>Return the result of running <a href=#locate-a-namespace>locate a namespace</a> on
+ its <a href=#dom-node-parentnode><code title=dom-Node-parentNode>parentNode</code></a> using
+ <var>prefix</var>, if <a href=#dom-node-parentnode><code title=dom-Node-parentNode>parentNode</code></a> is
+ an <a href=#element><code>Element</code></a> node, or null otherwise.</dd>
+ <!-- XXX parentElement -->
+</dl>
+
+<p>The
+<dfn id=dom-node-lookupprefix title=dom-Node-lookupPrefix><code>lookupPrefix(<var>namespace</var>)</code></dfn>
+method must run these steps:
+
+<ol>
+ <li><p>If <var>namespace</var> is the empty string return null.</p>
+
+ <li>
+  <p>Otherwise it depends on the <a href=#context-node>context node</a>:</p>
+
+  <dl class=switch>
+   <dt><a href=#element><code>Element</code></a></dt>
+   <dd><p>Return the result of running
+   <a href=#locate-a-namespace-prefix>locate a namespace prefix</a> for the node using
+   <var>namespace</var>.</dd>
+   <!--XXX <code>Attr</code> -->
+   <dt><a href=#document><code>Document</code></a></dt>
+   <dd><p>Return the result of <span>finding a namespace prefix</span> for
+   its <a href=#dom-document-documentelement><code title=dom-Document-documentElement>documentElement</code></a>, if
+   that is not null, or null otherwise.</dd>
+   <dt><a href=#documenttype><code>DocumentType</code></a></dt>
+   <dt><a href=#documentfragment><code>DocumentFragment</code></a></dt>
+   <dd><p>Return null.</dd>
+   <dt>Any other node</dt>
+   <dd><p>Return the result of <span>finding a namespace prefix</span> for
+   its <a href=#dom-node-parentnode><code title=dom-Node-parentNode>parentNode</code></a>, if that is an
+   <a href=#element><code>Element</code></a> node, or null otherwise.</dd>
+  </dl>
+</ol>
+
+<p>The
+<dfn id=dom-node-lookupnamespaceuri title=dom-Node-lookupNamespaceURI><code>lookupNamespaceURI(<var>prefix</var>)</code></dfn>
+method must return the result of running <a href=#locate-a-namespace>locate a namespace</a> for
+the <a href=#context-node>context node</a> using <var>prefix</var>.</p>
+
+<p>The
+<dfn id=dom-node-isdefaultnamespace title=dom-Node-isDefaultNamespace><code>isDefaultNamespace(<var>namespace</var>)</code></dfn>
+method must run these steps:</p>
+
+<ol>
+ <li><p>Let <var>defaultNamespace</var> be the result of invoking
+ <a href=#dom-node-lookupnamespaceuri><code title=dom-Node-lookupNamespaceURI>lookupNamespaceURI</code></a> with null
+ as argument on the <a href=#context-node>context node</a>.</li>
+
+ <li><p>If <var>defaultNamespace</var> is null let it be the empty
+ string.</li>
+
+ <li><p>Return true if <var>defaultNamespace</var> is <var>namespace</var>,
+ or false otherwise.</li>
+</ol>
+
+
+<h3 id=interface-documentfragment><span class=secno>4.2 </span>Interface <a href=#documentfragment><code>DocumentFragment</code></a></h3>
 <pre class=idl>interface <dfn id=documentfragment>DocumentFragment</dfn> : <a href=#node>Node</a> {
 };</pre>
 
 
-<h3 id=interface-document><span class=secno>5.3 </span>Interface <a href=#document><code>Document</code></a></h3>
+<h3 id=interface-document><span class=secno>4.3 </span>Interface <a href=#document><code>Document</code></a></h3>
 <pre class=idl>interface <dfn id=document>Document</dfn> : <a href=#node>Node</a> {
   readonly attribute <a href=#documenttype>DocumentType</a> <a href=#dom-document-doctype title=dom-Document-doctype>doctype</a>;
   readonly attribute <a href=#domimplementation>DOMImplementation</a> <a href=#dom-document-implementation title=dom-Document-implementation>implementation</a>;
   readonly attribute <a href=#element>Element</a> <a href=#dom-document-documentelement title=dom-Document-documentElement>documentElement</a>;
 
-  <a href=#element>Element</a> <a href=#dom-document-createelement title=dom-Document-createElement>createElement</a>([TreatNullAs=EmptyString] DOMString tagName);
-  <a href=#element>Element</a> <a href=#dom-document-createelementns title=dom-Document-createElementNS>createElementNS</a>(DOMString namespaceURI, DOMString qualifiedName);
-  <a href=#documentfragment>DocumentFragment</a> createDocumentFragment();
-  <a href=#text>Text</a> <a href=#dom-document-createtextnode title=dom-Document-createTextNode>createTextNode</a>(DOMString data);
-  <a href=#comment>Comment</a> <a href=#dom-document-createcomment title=dom-Document-createComment>createComment</a>(DOMString data);
-  <a href=#processinginstruction>ProcessingInstruction</a> <a href=#dom-document-createprocessinginstruction title=dom-Document-createProcessingInstruction>createProcessingInstruction</a>(DOMString target, DOMString data);<!--
+  <a href=#element>Element</a> <a href=#dom-document-createelement title=dom-Document-createElement>createElement</a>([TreatNullAs=EmptyString] DOMString <var>localName</var>);
+  <a href=#element>Element</a> <a href=#dom-document-createelementns title=dom-Document-createElementNS>createElementNS</a>(DOMString <var>namespace</var>, DOMString <var>qualifiedName</var>);
+  <a href=#documentfragment>DocumentFragment</a> <a href=#dom-document-createdocumentfragment title=dom-Document-createDocumentFragment>createDocumentFragment</a>();
+  <a href=#text>Text</a> <a href=#dom-document-createtextnode title=dom-Document-createTextNode>createTextNode</a>(DOMString <var>data</var>);
+  <a href=#comment>Comment</a> <a href=#dom-document-createcomment title=dom-Document-createComment>createComment</a>(DOMString <var>data</var>);
+  <a href=#processinginstruction>ProcessingInstruction</a> <a href=#dom-document-createprocessinginstruction title=dom-Document-createProcessingInstruction>createProcessingInstruction</a>(DOMString <var>target</var>, DOMString <var>data</var>);<!--
   CDATASection createCDATASection(DOMString data);
   EntityReference createEntityReference(DOMString name);
   <span>Attr</span> <span title=dom-Document-createAttribute>createAttribute</span>(DOMString name);
-  <span>Attr</span> <span title=dom-Document-createAttributeNS>createAttributeNS</span>(DOMString namespaceURI, DOMString qualifiedName);
+  <span>Attr</span> <span title=dom-Document-createAttributeNS>createAttributeNS</span>(DOMString namespace, DOMString qualifiedName);
     If adding this, search for [createAttribute]-->
 
-  <a href=#nodelist>NodeList</a> <a href=#dom-document-getelementsbytagname title=dom-Document-getElementsByTagName>getElementsByTagName</a>(DOMString tagname);
-  <a href=#nodelist>NodeList</a> <a href=#dom-document-getelementsbytagnamens title=dom-Document-getElementsByTagNameNS>getElementsByTagNameNS</a>(DOMString namespaceURI, DOMString localName);
-  <a href=#nodelist>NodeList</a> <a href=#dom-document-getelementsbyclassname title=dom-Document-getElementsByClassName>getElementsByClassName</a>(DOMString classNames);
-  <a href=#element>Element</a> <a href=#dom-document-getelementbyid title=dom-Document-getElementById>getElementById</a>(DOMString elementId);
+  <a href=#nodelist>NodeList</a> <a href=#dom-document-getelementsbytagname title=dom-Document-getElementsByTagName>getElementsByTagName</a>(DOMString <var>qualifiedName</var>);
+  <a href=#nodelist>NodeList</a> <a href=#dom-document-getelementsbytagnamens title=dom-Document-getElementsByTagNameNS>getElementsByTagNameNS</a>(DOMString <var>namespace</var>, DOMString <var>localName</var>);
+  <a href=#nodelist>NodeList</a> <a href=#dom-document-getelementsbyclassname title=dom-Document-getElementsByClassName>getElementsByClassName</a>(DOMString <var>classNames</var>);
+  <a href=#element>Element</a> <a href=#dom-document-getelementbyid title=dom-Document-getElementById>getElementById</a>(DOMString <var>elementId</var>);
 
-  <a href=#node>Node</a> <a href=#dom-document-importnode title=dom-Document-importNode>importNode</a>(<a href=#node>Node</a> importedNode, boolean deep);
-  <a href=#node>Node</a> <a href=#dom-document-adoptnode title=dom-Document-adoptNode>adoptNode</a>(<a href=#node>Node</a> source);
+  <a href=#node>Node</a> <a href=#dom-document-importnode title=dom-Document-importNode>importNode</a>(<a href=#node>Node</a> <a href=#node><var>node</var></a>, boolean <var>deep</var>);
+  <a href=#node>Node</a> <a href=#dom-document-adoptnode title=dom-Document-adoptNode>adoptNode</a>(<a href=#node>Node</a> <a href=#node><var>node</var></a>);
 
-  readonly attribute DOMString <a href=#dom-document-inputencoding title=dom-Document-inputEncoding>inputEncoding</a>;
            attribute DOMString <a href=#dom-document-documenturi title=dom-Document-documentURI>documentURI</a>;
   readonly attribute DOMString <a href=#dom-document-compatmode title=dom-Document-compatMode>compatMode</a>;<!--
   readonly attribute DOMString xmlEncoding;
@@ -1009,7 +1335,7 @@ conditions are true, and must otherwise return false:
            attribute boolean strictErrorChecking;
   readonly attribute DOMConfiguration domConfig;
   void normalizeDocument();
-  Node renameNode(Node n, DOMString namespaceURI, DOMString qualifiedName);-->
+  Node renameNode(Node n, DOMString namespace, DOMString qualifiedName);-->
 };</pre>
 
 <p>A <a href=#document><code>Document</code></a> node is assumed to be an <dfn id=xml-document>XML document</dfn>
@@ -1033,6 +1359,8 @@ as "almost standards" mode. Unless
 absence, or value of the DOCTYPE string.
 <a class=informative data-anolis-ref="" href=#refsHTML>[HTML]</a>
 
+<hr>
+
 <p>The <dfn id=dom-document-doctype title=dom-Document-doctype><code>doctype</code></dfn> attribute must return the first child of the <a href=#document><code>Document</code></a> node that is a <a href=#documenttype><code>DocumentType</code></a> node, if there is one, or null otherwise.
 
 <p class=note>In both HTML and XML there will only ever be one
@@ -1045,45 +1373,70 @@ absence, or value of the DOCTYPE string.
 
 <hr>
 
-<p>The <dfn id=dom-document-createelement title=dom-Document-createElement><code>createElement(<var>tagName</var>)</code></dfn> method must run the following steps:</p>
+<p>The <dfn id=dom-document-createelement title=dom-Document-createElement><code>createElement(<var>localName</var>)</code></dfn> method must run the these steps:</p>
 
 <ol>
- <li><p>If <var>tagName</var> doesn't match the <a href=http://www.w3.org/TR/xml/#NT-Name><code class=external data-anolis-spec=xml>Name</code></a> production in XML, raise an <a href=#dom-domexception-invalid_character_err><code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code></a>
- exception and abort these steps.
+ <li><p>If <var>localName</var> does not match the <a href=http://www.w3.org/TR/xml/#NT-Name><code class=external data-anolis-spec=xml>Name</code></a> production in XML, raise an
+ <a href=#dom-domexception-invalid_character_err><code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code></a>
+ exception and terminate these steps.
 
  <li><p>If the <a href=#context-node>context node</a> is an <a href=#html-document>HTML document</a>,
- let <var>localName</var> be <var>tagName</var>,
- <a href=#converted-to-lowercase>converted to lowercase</a>. Otherwise, let <var>localName</var> be
- <var>tagName</var>.
+ let <var>localName</var> be <a href=#converted-to-lowercase>converted to lowercase</a>.
+ <!-- XXX why restrict this to HTML documents? -->
 
  <li><p>Return a new <a href=#element><code>Element</code></a> node with no attributes,
- <a href=#dom-node-namespaceuri><code title=dom-Node-namespaceURI>namespaceURI</code></a> set to the
- <a href=#html-namespace>HTML namespace</a>, <a href=#dom-node-prefix><code title=dom-Node-prefix>prefix</code></a> set
- to null, <a href=#dom-node-localname><code title=dom-Node-localName>localName</code></a> set to
+ <a href=#concept-element-namespace title=concept-element-namespace>namespace</a> set to the
+ <a href=#html-namespace>HTML namespace</a>,
+ <a href=#concept-element-local-name title=concept-element-local-name>local name</a> set to
  <var>localName</var>, and
  <a href=#dom-node-ownerdocument><code title=dom-Node-ownerDocument>ownerDocument</code></a> set to the
  <a href=#context-node>context node</a>.
 </ol>
-<!-- this is very different from DOM3 -->
-<p class=note>No check is performed that the local name will match the
-<a href=http://www.w3.org/TR/xml-names/#NT-NCName><code class=external data-anolis-spec=xmlns>NCName</code></a> production in Namespaces in XML.
 
-<p>The <dfn id=dom-document-createelementns title=dom-Document-createElementNS><code>createElementNS(<var>namespaceURI</var>, <var>qualifiedName</var>)</code></dfn> method must run the following steps:</p>
+<p>The <dfn id=dom-document-createelementns title=dom-Document-createElementNS><code>createElementNS(<var>namespace</var>, <var>qualifiedName</var>)</code></dfn> method must run these steps:</p>
 <ol>
- <li><p>If <var>qualifiedName</var> doesn't match the <a href=http://www.w3.org/TR/xml/#NT-Name><code class=external data-anolis-spec=xml>Name</code></a> production in XML, raise an <a href=#dom-domexception-invalid_character_err><code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code></a>
- exception and abort these steps.
- <li><p>If <var>qualifiedName</var> doesn't match the <a href=http://www.w3.org/TR/xml-names/#NT-QName><code class=external data-anolis-spec=xmlns>QName</code></a> production in Namespaces in XML, raise a
- <a href=#dom-domexception-namespace_err><code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code></a> exception and
- abort these steps.
- <li><p>If <var>qualifiedName</var> contains a U+003E COLON (":") character, then split the string on the colon and let <var>prefix</var> be the part before the colon and <var>localName</var> the part after the colon. Otherwise, let <var>prefix</var> be null and <var>localName</var> be <var>qualifiedName</var>.
- <li><p>If <var>prefix</var> is not null and <var>namespaceURI</var> is an empty string, raise a <a href=#dom-domexception-namespace_err><code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code></a> exception and abort these steps.
- <li><p>If <var>prefix</var> is "xml" and <var>namespaceURI</var> is not the <a href=#xml-namespace>XML namespace</a>, raise a <a href=#dom-domexception-namespace_err><code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code></a> exception and abort these steps.
- <li><p>If <var>qualifiedName</var> or <var>prefix</var> is "xmlns" and <var>namespaceURI</var> is not the <a href=#xmlns-namespace>XMLNS namespace</a>, raise a <a href=#dom-domexception-namespace_err><code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code></a> exception and abort these steps.
- <li><p>If <var>namespaceURI</var> is the <a href=#xmlns-namespace>XMLNS namespace</a> and neither <var>qualifiedName</var> nor <var>prefix</var> is "xmlns", raise a <a href=#dom-domexception-namespace_err><code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code></a> exception and abort these steps.
- <li><p>Return a new <a href=#element><code>Element</code></a> node with no attributes, <a href=#dom-node-namespaceuri><code title=dom-Node-namespaceURI>namespaceURI</code></a> set to <var>namespaceURI</var>, <a href=#dom-node-prefix><code title=dom-Node-prefix>prefix</code></a> set to <var>prefix</var>, <a href=#dom-node-localname><code title=dom-Node-localName>localName</code></a> set to <var>localName</var>, and <a href=#dom-node-ownerdocument><code title=dom-Node-ownerDocument>ownerDocument</code></a> set to the <a href=#context-node>context node</a>.
+ <li><p>If <var>qualifiedName</var> does not match the <a href=http://www.w3.org/TR/xml/#NT-Name><code class=external data-anolis-spec=xml>Name</code></a> production in XML, raise an
+ <a href=#dom-domexception-invalid_character_err><code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code></a>
+ exception and terminate these steps.
+ <li><p>If <var>qualifiedName</var> does not match the <a href=http://www.w3.org/TR/xml-names/#NT-QName><code class=external data-anolis-spec=xmlns>QName</code></a> production in Namespaces in XML, raise
+ a <a href=#dom-domexception-namespace_err><code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code></a> exception
+ and terminate these steps.
+ <li><p>If <var>qualifiedName</var> contains a "<code>:</code>" (U+003E),
+ then split the string on it and let <var>prefix</var> be the part before
+ and <var>localName</var> the part after. Otherwise, let <var>prefix</var>
+ be null and <var>localName</var> be <var>qualifiedName</var>.
+ <li><p>If <var>prefix</var> is not null and <var>namespace</var> is an
+ empty string, raise a
+ <a href=#dom-domexception-namespace_err><code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code></a> exception
+ and terminate these steps.
+ <li><p>If <var>prefix</var> is "<code title="">xml</code>" and
+ <var>namespace</var> is not the <a href=#xml-namespace>XML namespace</a>, raise a
+ <a href=#dom-domexception-namespace_err><code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code></a> exception
+ and terminate these steps.
+ <li><p>If <var>qualifiedName</var> or <var>prefix</var> is
+ "<code title="">xmlns</code>" and <var>namespace</var> is not the
+ <a href=#xmlns-namespace>XMLNS namespace</a>, raise a
+ <a href=#dom-domexception-namespace_err><code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code></a> exception
+ and terminate these steps.
+ <li><p>If <var>namespace</var> is the <a href=#xmlns-namespace>XMLNS namespace</a> and
+ neither <var>qualifiedName</var> nor <var>prefix</var> is
+ "<code title="">xmlns</code>", raise a
+ <a href=#dom-domexception-namespace_err><code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code></a> exception
+ and terminate these steps.
+ <li><p>Return a new <a href=#element><code>Element</code></a> node with no attributes,
+ <a href=#concept-element-namespace title=concept-element-namespace>namespace</a> set to <var>namespace</var>,
+ <a href=#concept-element-namespace-prefix title=concept-element-namespace-prefix>namespace prefix</a> set to
+ <var>prefix</var>, <a href=#concept-element-local-name title=concept-element-local-name>local name</a>
+ set to <var>localName</var>, and
+ <a href=#dom-node-ownerdocument><code title=dom-Node-ownerDocument>ownerDocument</code></a> set to the
+ <a href=#context-node>context node</a>.
 </ol>
 
-<p>The <dfn id=dom-document-createdocumentfragment title=dom-Document-createDocumentFragment><code>createDocumentFragment()</code></dfn> method must return a new <a href=#documentfragment><code>DocumentFragment</code></a> node with its <a href=#dom-node-ownerdocument><code title=dom-Node-ownerDocument>ownerDocument</code></a> set to the <a href=#context-node>context node</a>.
+<p>The
+<dfn id=dom-document-createdocumentfragment title=dom-Document-createDocumentFragment><code>createDocumentFragment()</code></dfn>
+method must return a new <a href=#documentfragment><code>DocumentFragment</code></a> node with its
+<a href=#dom-node-ownerdocument><code title=dom-Node-ownerDocument>ownerDocument</code></a> set to the
+<a href=#context-node>context node</a>.
 
 <p>The <dfn id=dom-document-createtextnode title=dom-Document-createTextNode><code>createTextNode(<var>data</var>)</code></dfn> method must return a new <a href=#text><code>Text</code></a> node with its <a href=#dom-characterdata-data><code title=dom-CharacterData-data>data</code></a> attribute set to <var>data</var> and <a href=#dom-node-ownerdocument><code title=dom-Node-ownerDocument>ownerDocument</code></a> set to the <a href=#context-node>context node</a>.
 <p class=note>No check is performed that the text node contains characters that
@@ -1094,28 +1447,28 @@ match the <a href=http://www.w3.org/TR/xml/#NT-Char><code class=external data-an
 match the <a href=http://www.w3.org/TR/xml/#NT-Char><code class=external data-anolis-spec=xml>Char</code></a> production in XML or that it
 contains two adjacent hyphens or ends with a hyphen.
 
-<p>The <dfn id=dom-document-createprocessinginstruction title=dom-Document-createProcessingInstruction><code>createProcessingInstruction(<var>target</var>, <var title="">data</var>)</code></dfn> method must run the following steps:
+<p>The <dfn id=dom-document-createprocessinginstruction title=dom-Document-createProcessingInstruction><code>createProcessingInstruction(<var>target</var>, <var title="">data</var>)</code></dfn> method must run these steps:
 
 <ol>
  <li><p>If the <a href=#context-node>context node</a> is an <a href=#html-document>HTML document</a>, raise
  a <a href=#dom-domexception-not_supported_err><code title=dom-DOMException-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</code></a>
- exception and abort these steps.
+ exception and terminate these steps.
 
- <li><p>If <var>target</var> doesn't match the <!--<code
+ <li><p>If <var>target</var> does not match the <!--<code
  data-anolis-spec=xml>PITarget</code>--> <a href=http://www.w3.org/TR/xml/#NT-Name><code class=external data-anolis-spec=xml>Name</code></a>
  production in XML, raise an <a href=#dom-domexception-invalid_character_err><code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code></a>
- exception and abort these steps. <!-- DOM3 didn't check for "xml" -->
+ exception and terminate these steps. <!-- DOM3 didn't check for "xml" -->
 
  <li><p>If <var>data</var> contains the string "<code title="">?&gt;</code>",
  raise an <a href=#dom-domexception-invalid_character_err><code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code></a>
- exception and abort these steps. <!-- Gecko does this. -->
+ exception and terminate these steps. <!-- Gecko does this. -->
 
- <!--<li><p>If <var>target</var> contains a U+003A COLON (":") character, raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and abort these steps.--> <!-- DOM3 didn't check this -->
+ <!--<li><p>If <var>target</var> contains a U+003A COLON (":") character, raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and terminate these steps.--> <!-- DOM3 didn't check this -->
 
- <li><p>Return a new <a href=#concept-pi title=concept-PI>processing instruction</a>, with
- <var>target</var> as its <a href=#concept-pi-target title=concept-PI-target>target</a> and
- <var>data</var> as its <a href=#concept-pi-data title=concept-PI-data>data</a>, and whose
- <a href=#dom-node-ownerdocument><code title=dom-Node-ownerDocument>ownerDocument</code></a> is set to the
+ <li><p>Return a new <a href=#processinginstruction><code>ProcessingInstruction</code></a>, with
+ <a href=#concept-pi-target title=concept-PI-target>target</a> set to <var>target</var>,
+ <a href=#concept-pi-data title=concept-PI-data>data</a> set to <var>data</var>, and
+ <a href=#dom-node-ownerdocument><code title=dom-Node-ownerDocument>ownerDocument</code></a> set to the
  <a href=#context-node>context node</a>.
 </ol>
 
@@ -1125,9 +1478,11 @@ contains "xml" or the colon, or that the data contains characters that match the
 
 <!--
 [createAttribute]
-<p>The <dfn title=dom-Document-createAttribute><code>createAttribute(<var>name</var>)</code></dfn> method must run the following steps:</p>
+<p>The <dfn title=dom-Document-createAttribute><code>createAttribute(<var>name</var>)</code></dfn> method must run these steps:</p>
 <ol>
- <li><p>If <var>name</var> doesn't match the <code data-anolis-spec=xml>Name</code> production in XML, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and abort these steps.
+ <li><p>If <var>name</var> does not match the <code data-anolis-spec=xml>Name</code> production in XML, raise an
+ <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
+ exception and terminate these steps.
  <li><p>Return a new <code>Attr</code> node with its <code title=dom-Node-namespaceURI>namespaceURI</code> set to null, <code title=dom-Node-prefix>prefix</code> set to null, <code title=dom-Node-localName>localName</code> set to <var>name</var>, and <code title=dom-Node-ownerDocument>ownerDocument</code> set to the <span>context node</span>.
 </ol>-->
 <!-- this is different from DOM3 -->
@@ -1146,51 +1501,64 @@ data-anolis-spec=xmlns>NCName</code> production in Namespaces in XML.-->
   space-separated list of classes.
 </dl>
 
-<p>The <dfn id=dom-document-getelementsbytagname title=dom-Document-getElementsByTagName><code>getElementsByTagName(<var title="">tagName</var>)</code></dfn> method must run the following steps:
+<p>The <dfn id=dom-document-getelementsbytagname title=dom-Document-getElementsByTagName><code>getElementsByTagName(<var title="">localName</var>)</code></dfn> method must run these steps:
 
 <ol>
- <li><p>If <var>tagName</var> is just a U+002A ASTERISK ("*") character,
- return a <a href=#nodelist><code>NodeList</code></a> rooted at the <a href=#context-node>context node</a>, whose
- filter matches only <a href=#element><code>Element</code></a> nodes.
+ <li><p>If <var>localName</var> is "<code>*</code>" (U+002A),
+ return a <a href=#nodelist><code>NodeList</code></a> rooted at the <a href=#context-node>context node</a>,
+ whose filter matches only <a href=#element><code>Element</code></a> nodes.
 
  <li>
   <p>Otherwise, if the <a href=#context-node>context node</a> is an
   <a href=#html-document>HTML document</a>, return a <a href=#nodelist><code>NodeList</code></a> rooted at the
   <a href=#context-node>context node</a>, whose filter matches only the following nodes:
+
   <ul>
-   <li><a href=#element><code>Element</code></a> nodes in the <a href=#html-namespace>HTML namespace</a> that have a <a href=#dom-node-localname><code title=dom-Node-localName>localName</code></a>
-   <a href=#case-sensitive title=case-sensitive>case-sensitively</a> equal to
-   <var>tagName</var>, <a href=#converted-to-lowercase>converted to lowercase</a>.
+   <li><a href=#element><code>Element</code></a> nodes in the <a href=#html-namespace>HTML namespace</a> whose <a href=#concept-element-local-name title=concept-element-local-name>local name</a> is
+   <var>localName</var> <a href=#converted-to-lowercase>converted to lowercase</a>.
 
    <li><a href=#element><code>Element</code></a> nodes, <em>not</em> in the
-   <a href=#html-namespace>HTML namespace</a>, that have a
-   <a href=#dom-element-tagname><code title=dom-Element-tagName>tagName</code></a>
-   <a href=#case-sensitive title=case-sensitive>case-sensitively</a> equal to
-   <var>tagName</var>.
+   <a href=#html-namespace>HTML namespace</a>, whose
+   <a href=#concept-element-local-name title=concept-element-local-name>local name</a> is
+   <var>localName</var>.
   </ul>
 
  <li><p>Otherwise, return a <a href=#nodelist><code>NodeList</code></a> rooted at the
  <a href=#context-node>context node</a>, whose filter matches only <a href=#element><code>Element</code></a>
- nodes that have a <a href=#dom-element-tagname><code title=dom-Element-tagName>tagName</code></a>
- <a href=#case-sensitive title=case-sensitive>case-sensitively</a> equal to
- <var>tagName</var>.
+ nodes whose <a href=#concept-element-local-name title=concept-element-local-name>local name</a> is
+ <var>localName</var>.
 </ol>
 
-<p>A new <a href=#nodelist><code>NodeList</code></a> object must be returned each time.
+<p class=XXX>A new <a href=#nodelist><code>NodeList</code></a> object must be returned each time. XXX some impl cache
 
 <p class=note>Thus, in an <a href=#html-document>HTML document</a>, <code title="">document.getElementsByTagName("FOO")</code> will match <code title="">FOO</code> elements that aren't in the <a href=#html-namespace>HTML namespace</a>, and
 <code title="">foo</code> elements that are in the <a href=#html-namespace>HTML namespace</a>, but
 not <code title="">FOO</code> elements that are in the <a href=#html-namespace>HTML namespace</a>.
 
 
-<p>The <dfn id=dom-document-getelementsbytagnamens title=dom-Document-getElementsByTagNameNS><code>getElementsByTagNameNS(<var>namespaceURI</var>, <var>localName</var>)</code></dfn> method must run the following steps:
+<p>The <dfn id=dom-document-getelementsbytagnamens title=dom-Document-getElementsByTagNameNS><code>getElementsByTagNameNS(<var>namespace</var>, <var>localName</var>)</code></dfn> method must run these steps:
 <ol>
- <li><p>If both <var>namespaceURI</var> and <var>localName</var> are just the character U+002A ASTERISK ("*"), return a <a href=#nodelist><code>NodeList</code></a> rooted at the <a href=#context-node>context node</a>, whose filter matches only <a href=#element><code>Element</code></a> nodes.
- <li><p>Otherwise, if <var>namespaceURI</var> is just the character U+002A ASTERISK ("*"), return a <a href=#nodelist><code>NodeList</code></a> rooted at the <a href=#context-node>context node</a>, whose filter matches only <a href=#element><code>Element</code></a> nodes with the <a href=#dom-node-localname><code title=dom-Node-localName>localName</code></a> equal to <var>localName</var>.
- <li><p>Otherwise, if <var>localName</var> is just the character U+002A ASTERISK ("*"), return a <a href=#nodelist><code>NodeList</code></a> rooted at the <a href=#context-node>context node</a>, whose filter matches only <a href=#element><code>Element</code></a> nodes with the <a href=#dom-node-namespaceuri><code title=dom-Node-namespaceURI>namespaceURI</code></a> equal to <var>namespaceURI</var>.
- <li><p>Otherwise, return a <a href=#nodelist><code>NodeList</code></a> rooted at the <a href=#context-node>context node</a>, whose filter matches only <a href=#element><code>Element</code></a> nodes that have a <a href=#dom-node-namespaceuri><code title=dom-Node-namespaceURI>namespaceURI</code></a> equal to <var>namespaceURI</var> and a <a href=#dom-node-localname><code title=dom-Node-localName>localName</code></a> equal to <var>localName</var> (both in a <a href=#case-sensitive>case-sensitive</a> manner).
+ <li><p>If both <var>namespace</var> and <var>localName</var> are
+ "<code>*</code>" (U+002A) return a <a href=#nodelist><code>NodeList</code></a> rooted at the
+ <a href=#context-node>context node</a>, whose filter matches only <a href=#element><code>Element</code></a>
+ nodes.
+ <li><p>Otherwise, if just <var>namespace</var> is "<code>*</code>"
+ (U+002A), return a <a href=#nodelist><code>NodeList</code></a> rooted at the
+ <a href=#context-node>context node</a>, whose filter matches only <a href=#element><code>Element</code></a>
+ nodes whose <a href=#concept-element-local-name title=concept-element-local-name>local name</a> is
+ <var>localName</var>.
+ <li><p>Otherwise, if just <var>localName</var> is "<code>*</code>"
+ (U+002A), return a <a href=#nodelist><code>NodeList</code></a> rooted at the
+ <a href=#context-node>context node</a>, whose filter matches only <a href=#element><code>Element</code></a>
+ nodes whose <a href=#concept-element-namespace title=concept-element-namespace>namespace</a> is
+ <var>namespace</var>.
+ <li><p>Otherwise, return a <a href=#nodelist><code>NodeList</code></a> rooted at the
+ <a href=#context-node>context node</a>, whose filter matches only <a href=#element><code>Element</code></a> nodes whose <a href=#concept-element-namespace title=concept-element-namespace>namespace</a> is
+ <var>namespace</var> and
+ <a href=#concept-element-local-name title=concept-element-local-name>local name</a> is
+ <var>localName</var>.
 </ol>
-<p>A new <a href=#nodelist><code>NodeList</code></a> object must be returned each time.
+<p class=XXX>A new <a href=#nodelist><code>NodeList</code></a> object must be returned each time. XXX some impl cache
 
 
 <p>The <dfn id=dom-document-getelementsbyclassname title=dom-Document-getElementsByClassName><code>getElementsByClassName(<var title="">classNames</var>)</code></dfn> method takes a string that contains a
@@ -1241,55 +1609,33 @@ or null if there is none.
 
 <hr>
 
-<p>The <dfn id=dom-document-importnode title=dom-Document-importNode><code>importNode(<var>importedNode</var>, <var>deep</var>)</code></dfn> method must run
-the following steps:
-<ol>
- <!-- Similar text for adoptNode -->
- <li><p>If the <a href=#context-node>context node</a> is an <a href=#xml-document>XML document</a>, then
- if <var>importedNode</var> or any of its descendant nodes or any of its
- <a href=#dom-node-attributes><code title=dom-Node-attributes>attributes</code></a> or any of the <a href=#dom-node-attributes><code title=dom-Node-attributes>attributes</code></a> of any descendant
- <a href=#element><code>Element</code></a> nodes has a <a href=#dom-node-localname><code title=dom-Node-localName>localName</code></a><!-- or <code
- title=dom-Node-prefix>prefix</code>--> which either does not match the <a href=http://www.w3.org/TR/xml/#NT-Name><code class=external data-anolis-spec=xml>Name</code></a> production in XML or contains a U+003A COLON
- (":") character, raise an <a href=#dom-domexception-invalid_state_err><code title=dom-DOMException-INVALID_STATE_ERR>INVALID_STATE_ERR</code></a> and abort
- these steps.
+<p>The
+<dfn id=dom-document-importnode title=dom-Document-importNode><code>importNode(<var>node</var>, <var>deep</var>)</code></dfn>
+method must return a <a href=#clone>clone</a> of <a href=#node><var>node</var></a>, with
+<var>new ownerDocument</var> being the <a href=#context-node>context node</a>, and the
+<i>clone children flag</i> set if <var>deep</var> is true.
 
- <li><p>Return a <a href=#clone>clone</a> of <var>importedNode</var>, with <var>new ownerDocument</var> being the <a href=#context-node>context node</a>, and the <i>clone children flag</i> set if <var>deep</var> is true.
-</ol>
-
-<p>The <dfn id=dom-document-adoptnode title=dom-Document-adoptNode><code>adoptNode(<var>source</var>)</code></dfn> method must run the following steps:
+<p>The
+<dfn id=dom-document-adoptnode title=dom-Document-adoptNode><code>adoptNode(<var>node</var>)</code></dfn>
+method must run these steps:
 
 <ol>
- <li><p>If <var>source</var> is a <a href=#document><code>Document</code></a> node or a
- <a href=#documenttype><code>DocumentType</code></a> node, raise a <a href=#dom-domexception-not_supported_err><code title=dom-DOMException-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</code></a> exception and
- abort these steps.
+ <li><p>If <a href=#node><var>node</var></a> is a <a href=#document><code>Document</code></a> node or a
+ <a href=#documenttype><code>DocumentType</code></a> node, raise a
+ <a href=#dom-domexception-not_supported_err><code title=dom-DOMException-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</code></a>
+ exception and terminate these steps.
 
- <!-- Similar text for importNode -->
- <li><p>If the <a href=#context-node>context node</a> is an <a href=#xml-document>XML document</a>, then
- if <var>source</var> or any of its descendant nodes or any of its <a href=#dom-node-attributes><code title=dom-Node-attributes>attributes</code></a> or any of the <a href=#dom-node-attributes><code title=dom-Node-attributes>attributes</code></a> of any descendant
- <a href=#element><code>Element</code></a> nodes has a <a href=#dom-node-localname><code title=dom-Node-localName>localName</code></a><!-- or <code
- title=dom-Node-prefix>prefix</code>--> which either does not match the <a href=http://www.w3.org/TR/xml/#NT-Name><code class=external data-anolis-spec=xml>Name</code></a> production in XML or contains a U+003A COLON
- (":") character, raise an <a href=#dom-domexception-invalid_state_err><code title=dom-DOMException-INVALID_STATE_ERR>INVALID_STATE_ERR</code></a> and abort
- these steps.
-
- <li><p>If <var>source</var> is an <a href=#element><code>Element</code></a> node, it is
+ <li><p>If <a href=#node><var>node</var></a> is an <a href=#element><code>Element</code></a> node, it is
  <a href=#affected-by-a-base-url-change>affected by a base URL change</a>.
 
- <!-- no security check -->
- <li><p>If <var>source</var>'s <a href=#dom-node-parentnode><code title=dom-Node-parentNode>parentNode</code></a> is not null and its <a href=#dom-node-ownerdocument><code title=dom-Node-ownerDocument>ownerDocument</code></a> isn't equal to the
- <a href=#context-node>context node</a>, remove <var>source</var> from its parent.
+ <li><p>If <a href=#node><var>node</var></a>'s <a href=#dom-node-parentnode><code title=dom-Node-parentNode>parentNode</code></a> is not null, remove
+ <a href=#node><var>node</var></a> from its parent.
 
- <li><p>Set <var>source</var>'s <a href=#dom-node-ownerdocument><code title=dom-Node-ownerDocument>ownerDocument</code></a> to the <a href=#context-node>context
- node</a>.
+ <li><p>Set <a href=#dom-node-ownerdocument><code title=dom-Node-ownerDocument>ownerDocument</code></a> for
+ <a href=#node><var>node</var></a> and all its descendent nodes as well as any associated
+ <a href=#attr><code>Attr</code></a> nodes to the <a href=#context-node>context node</a>.
 
- <li><p>If <var>source</var> is an <a href=#element><code>Element</code></a> node,
- set the <a href=#dom-node-ownerdocument><code title=dom-Node-ownerDocument>ownerDocument</code></a> of all
- <a href=#attr><code>Attr</code></a> in its <a href=#dom-node-attributes><code title=dom-Node-attributes>attributes</code></a>
- to the <a href=#context-node>context node</a>.
-
- <li><p>For each child node of <var>source</var>, call <a href=#dom-document-adoptnode><code title=dom-Document-adoptNode>adoptNode</code></a> on the <a href=#context-node>context node</a>,
- with the child node as its argument.
-
- <li><p>Return <var>source</var>.
+ <li><p>Return <a href=#node><var>node</var></a>.
 </ol>
 
 <hr>
@@ -1304,9 +1650,6 @@ the following steps:
   <a href=#concept-quirks-mode title=concept-quirks-mode>quirks mode</a>.
 </dl>
 
-<p class=XXX><dfn id=dom-document-inputencoding title=dom-Document-inputEncoding>inputEncoding</dfn>
-<p class=XXX>define HTML5 concept of document character encoding here
-
 <p class=XXX><dfn id=dom-document-documenturi title=dom-Document-documentURI>documentURI</dfn>
 Should document.documentURI really exist? be readonly?
 
@@ -1319,14 +1662,14 @@ return the literal string "<code title="">BackCompat</code>".
 http://lists.w3.org/Archives/Public/www-dom/2003JulSep/0049.html -->
 
 
-<h4 id=interface-domimplementation><span class=secno>5.3.1 </span>Interface <a href=#domimplementation><code>DOMImplementation</code></a></h4>
+<h4 id=interface-domimplementation><span class=secno>4.3.1 </span>Interface <a href=#domimplementation><code>DOMImplementation</code></a></h4>
 <p>User agents must create a new <a href=#domimplementation><code>DOMImplementation</code></a> object whenever a new <a href=#document><code>Document</code></a> node is created and associate it with the that <a href=#document><code>Document</code></a> node.
 
 <pre class=idl>interface <dfn id=domimplementation>DOMImplementation</dfn> {
   boolean <a href=#dom-domimplementation-hasfeature title=dom-DOMImplementation-hasFeature>hasFeature</a>(DOMString feature, [TreatNullAs=EmptyString] DOMString version);
 
   <a href=#documenttype>DocumentType</a> <a href=#dom-domimplementation-createdocumenttype title=dom-DOMImplementation-createDocumentType>createDocumentType</a>([TreatNullAs=EmptyString] DOMString qualifiedName, DOMString publicId, DOMString systemId);
-  <a href=#document>Document</a> <a href=#dom-domimplementation-createdocument title=dom-DOMImplementation-createDocument>createDocument</a>([TreatNullAs=EmptyString] DOMString namespaceURI, [TreatNullAs=EmptyString] DOMString qualifiedName, <a href=#documenttype>DocumentType</a> doctype);<!--
+  <a href=#document>Document</a> <a href=#dom-domimplementation-createdocument title=dom-DOMImplementation-createDocument>createDocument</a>([TreatNullAs=EmptyString] DOMString namespace, [TreatNullAs=EmptyString] DOMString qualifiedName, <a href=#documenttype>DocumentType</a> doctype);<!--
   DOMObject getFeature(DOMString feature, DOMString version);-->
   <a href=#document>Document</a> <a href=#dom-domimplementation-createhtmldocument title=dom-DOMImplementation-createHTMLDocument>createHTMLDocument</a>(DOMString title);
 };</pre>
@@ -1356,17 +1699,17 @@ otherwise.
  <var>qualifiedName</var>, <var>publicId</var>, <var title="">systemId</var> )
 
  <dd>
-  <p>Returns a new <a href=#documenttype><code>DocumentType</code></a>, with the given <var title="">qualifiedName</var>, <var>publicId</var>, and <var title="">systemId</var>. If <var title="">qualifiedName</var> doesn't match the <a href=http://www.w3.org/TR/xml/#NT-Name><code class=external data-anolis-spec=xml>Name</code></a> production in XML, an <a href=#dom-domexception-invalid_character_err><code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code></a>
-  exception is raised, and if it doesn't match the <a href=http://www.w3.org/TR/xml-names/#NT-NCName><code class=external data-anolis-spec=xmlns>NCName</code></a> production in Namespaces in XML, a <a href=#dom-domexception-namespace_err><code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code></a> exception is raised.
+  <p>Returns a new <a href=#documenttype><code>DocumentType</code></a>, with the given <var title="">qualifiedName</var>, <var>publicId</var>, and <var title="">systemId</var>. If <var title="">qualifiedName</var> does not match the <a href=http://www.w3.org/TR/xml/#NT-Name><code class=external data-anolis-spec=xml>Name</code></a> production in XML, an <a href=#dom-domexception-invalid_character_err><code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code></a>
+  exception is raised, and if it does not match the <a href=http://www.w3.org/TR/xml-names/#NT-NCName><code class=external data-anolis-spec=xmlns>NCName</code></a> production in Namespaces in XML, a <a href=#dom-domexception-namespace_err><code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code></a> exception is raised.
 
 
- <dt><var>doc</var> = <a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#dom-document><var class=external data-anolis-spec=window title=dom-Window-document>document</var></a> . <a href=#dom-document-implementation><code title=dom-Document-implementation>implementation</code></a> . <a href=#dom-domimplementation-createdocument><code title=dom-DOMImplementation-createDocument>createDocument</code></a>( <var title="">namespaceURI</var>, <var>qualifiedName</var>, <var title="">doctype</var> )
+ <dt><var>doc</var> = <a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#dom-document><var class=external data-anolis-spec=window title=dom-Window-document>document</var></a> . <a href=#dom-document-implementation><code title=dom-Document-implementation>implementation</code></a> . <a href=#dom-domimplementation-createdocument><code title=dom-DOMImplementation-createDocument>createDocument</code></a>( <var>namespace</var>, <var>qualifiedName</var>, <var>doctype</var> )
 
  <dd>
   <p>Returns a new <a href=#document><code>Document</code></a>, with a new root
   <a href=#element><code>Element</code></a> whose <a href=#dom-node-localname><code title=dom-Node-localName>localName</code></a> is
-  <var>qualifiedName</var> and whose <a href=#dom-node-namespaceuri><code title=dom-Node-namespaceURI>namespaceURI</code></a> is <var title="">namespaceURI</var> (unless <var>qualifiedName</var> is the empty
-  string), and with <var>doctype</var>, if it is given, as its <a href=#concept-doctype title=concept-doctype>doctype</a>.
+  <var>qualifiedName</var> and whose <a href=#dom-node-namespaceuri><code title=dom-Node-namespaceURI>namespaceURI</code></a> is <var title="">namespace</var> (unless <var>qualifiedName</var> is the empty
+  string), and with <var>doctype</var>, if it is given, as its <a href=#documenttype><code>DocumentType</code></a>.
 
   <p>This method raises the same exceptions as the <a href=#dom-document-createelementns><code title=dom-Document-createElementNS>createElementNS</code></a> method, when called
   with the same arguments. If <var>doctype</var> comes from another
@@ -1387,42 +1730,39 @@ otherwise.
 <p>The <dfn id=dom-domimplementation-createdocumenttype title=dom-DOMImplementation-createDocumentType><code>createDocumentType(<var>qualifiedName</var>, <var>publicId</var>, <var>systemId</var>)</code></dfn> method must run the following steps:
 
 <ol>
- <li><p>If <var>qualifiedName</var> doesn't match the <a href=http://www.w3.org/TR/xml/#NT-Name><code class=external data-anolis-spec=xml>Name</code></a> production in XML, raise an <a href=#dom-domexception-invalid_character_err><code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code></a>
- exception and abort these steps.
- <li><p>If <var>qualifiedName</var> doesn't match the <a href=http://www.w3.org/TR/xml-names/#NT-NCName><code class=external data-anolis-spec=xmlns>NCName</code></a> production in Namespaces in XML, raise a
+ <li><p>If <var>qualifiedName</var> does not match the <a href=http://www.w3.org/TR/xml/#NT-Name><code class=external data-anolis-spec=xml>Name</code></a> production in XML, raise an <a href=#dom-domexception-invalid_character_err><code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code></a>
+ exception and terminate these steps.
+ <li><p>If <var>qualifiedName</var> does not match the <a href=http://www.w3.org/TR/xml-names/#NT-NCName><code class=external data-anolis-spec=xmlns>NCName</code></a> production in Namespaces in XML, raise a
  <a href=#dom-domexception-namespace_err><code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code></a> exception and
- abort these steps.
- <!--<li><p>If <var>publicId</var> contains a character that doesn't match the <code data-anolis-spec=xml>PubidChar</code> production in XML, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and abort these steps. --> <!-- DOM3 didn't check this -->
- <!--<li><p>If <var>systemId</var> contains both a U+0022 QUOTATION MARK ('"') and a U+0027 APOSTROPHE ("'") character, raise an <code title=dom-DOMException-INVALID_CHARACTER_ERR title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception and abort these steps.--> <!-- DOM3 didn't check this -->
- <li><p>Return a new <a href=#concept-doctype title=concept-doctype>document type
- declaration</a>, with <var>qualifiedName</var> as its <a href=#concept-doctype-name title=concept-doctype-name>name</a>, <var>publicId</var> as its <a href=#concept-doctype-publicid title=concept-doctype-publicid>public ID</a>, and <var>systemId</var>
+ terminate these steps.
+ <!--<li><p>If <var>publicId</var> contains a character that does not match the <code data-anolis-spec=xml>PubidChar</code> production in XML, raise an
+ <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
+ exception and terminate these steps. --> <!-- DOM3 didn't check this -->
+ <!--<li><p>If <var>systemId</var> contains both a U+0022 QUOTATION MARK ('"') and a U+0027 APOSTROPHE ("'") character, raise an
+ <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
+ exception and terminate these steps.--> <!-- DOM3 didn't check this -->
+ <li><p>Return a new <a href=#documenttype><code>DocumentType</code></a>, with <var>qualifiedName</var> as its <a href=#concept-doctype-name title=concept-doctype-name>name</a>, <var>publicId</var> as its <a href=#concept-doctype-publicid title=concept-doctype-publicid>public ID</a>, and <var>systemId</var>
  as its <a href=#concept-doctype-systemid title=concept-doctype-systemid>system ID</a>, and with its
  <a href=#dom-node-ownerdocument><code title=dom-Node-ownerDocument>ownerDocument</code></a> set to null.
 </ol>
-<p class=note>No check is performed that the <var>publicId</var> matches the <code title="">PublicChar</code> production in XML or that the <var>systemId</var> doesn't contain both a quotation mark (") and an apostrophe (').
+<p class=note>No check is performed that the <var>publicId</var> matches the <code title="">PublicChar</code> production in XML or that the <var>systemId</var> does not contain both a quotation mark (") and an apostrophe (').
 
-<p>The <dfn id=dom-domimplementation-createdocument title=dom-DOMImplementation-createDocument><code>createDocument(<var>namespaceURI</var>, <var>qualifiedName</var>, <var>doctype</var>)</code></dfn> method must run the following steps:
-
-<p class=XXX>make arguments optional?
+<p>The <dfn id=dom-domimplementation-createdocument title=dom-DOMImplementation-createDocument><code>createDocument(<var>namespace</var>, <var>qualifiedName</var>, <var>doctype</var>)</code></dfn> method must run the following steps:
 
 <ol>
  <li><p>Let <a href=#document><var>document</var></a> be a new <a href=#document><code>Document</code></a> node.
  <li><p>Let <a href=#element><var>element</var></a> be null.
- <li><p>If <var>qualifiedName</var> is not the empty string, set <a href=#element><var>element</var></a> to the result of invoking the <a href=#dom-document-createelementns><code title=dom-Document-createElementNS>createElementNS</code></a> method with the arguments <var>namespaceURI</var> and <var>qualifiedName</var> on <a href=#document><var>document</var></a>. If that raised an exception, re-raise the same exception and abort these steps.
+ <li><p>If <var>qualifiedName</var> is not the empty string, set <a href=#element><var>element</var></a> to the result of invoking the <a href=#dom-document-createelementns><code title=dom-Document-createElementNS>createElementNS</code></a> method with the arguments <var>namespace</var> and <var>qualifiedName</var> on <a href=#document><var>document</var></a>. If that raised an exception, re-raise the same exception and terminate these steps.
  <li>
   <p>If <var>doctype</var> is not null, run the following substeps:
   <ol>
-   <li><p>If the <var>doctype</var>'s <a href=#dom-node-ownerdocument><code title=dom-Node-ownerDocument>ownerDocument</code></a> is not null, raise a <a href=#dom-domexception-wrong_document_err><code title=dom-DOMException-WRONG_DOCUMENT_ERR>WRONG_DOCUMENT_ERR</code></a> exception and abort the overall set of steps.
+   <li><p>If the <var>doctype</var>'s <a href=#dom-node-ownerdocument><code title=dom-Node-ownerDocument>ownerDocument</code></a> is not null, raise a <a href=#dom-domexception-wrong_document_err><code title=dom-DOMException-WRONG_DOCUMENT_ERR>WRONG_DOCUMENT_ERR</code></a> exception and terminate the overall set of steps.
    <li><p>Set the <var>doctype</var>'s <a href=#dom-node-ownerdocument><code title=dom-Node-ownerDocument>ownerDocument</code></a> to <a href=#document><var>document</var></a>.
    <li><p>Append <var>doctype</var> to <a href=#document><var>document</var></a>.
   </ol>
  <li><p>If <a href=#element><var>element</var></a> is not null, append <a href=#element><var>element</var></a> to <a href=#document><var>document</var></a>.
  <li><p>Return <a href=#document><var>document</var></a>.
 </ol>
-
-<p><a href=#html-document title="HTML document">HTML documents</a> can be created using the
-<a href=#dom-domimplementation-createhtmldocument><code title=dom-DOMImplementation-createHTMLDocument>createHTMLDocument()</code></a>
-method.
 
 <p>The <dfn id=dom-domimplementation-createhtmldocument title=dom-DOMImplementation-createHTMLDocument><code>createHTMLDocument(<var title="">title</var>)</code></dfn> method, when invoked, must run the following
 steps:
@@ -1433,20 +1773,16 @@ steps:
 
  <li><p>Mark <var>doc</var> as being an <a href=#html-document>HTML document</a>.
 
- <li><p>Create a new <a href=#concept-doctype title=concept-doctype>document type
- declaration</a>, with "<code title="">html</code>" as its <a href=#concept-doctype-name title=concept-doctype-name>name</a> and with its <a href=#dom-node-ownerdocument><code title=dom-Node-ownerDocument>ownerDocument</code></a> set to doc. Append the newly
- created node to <var>doc</var>.
+ <li><p>Create a new <a href=#documenttype><code>DocumentType</code></a>, with "<code title="">html</code>" as its <a href=#concept-doctype-name title=concept-doctype-name>name</a> and with its <a href=#dom-node-ownerdocument><code title=dom-Node-ownerDocument>ownerDocument</code></a> set to <var>doc</var>. Append the newly created node to <var>doc</var>.
 
  <li><p>Create an <code title="">html</code> element in the <a href=#html-namespace>HTML
  namespace</a>, and append it to <var>doc</var>.
 
  <li><p>Create a <code title="">head</code> element in the <a href=#html-namespace>HTML
- namespace</a>, and append it to the <code title="">html</code> element created
- in the previous step.
+ namespace</a>, and append it to the <code title="">html</code> element created in the previous step.
 
  <li><p>Create a <code title="">title</code> element in the <a href=#html-namespace>HTML
- namespace</a>, and append it to the <code title="">head</code> element created
- in the previous step.
+ namespace</a>, and append it to the <code title="">head</code> element created in the previous step.
 
  <li><p>Create a <a href=#text><code>Text</code></a> node, and set its <a href=#dom-characterdata-data><code title=dom-CharacterData-data>data</code></a> attribute to the string given by the
  method's argument (which could be the empty string). Append it to the
@@ -1462,9 +1798,12 @@ steps:
 </div>
 
 
-<h3 id=interface-attr><span class=secno>5.4 </span>Interface <a href=#attr><code>Attr</code></a></h3>
+<h3 id=interface-attr><span class=secno>4.4 </span>Interface <a href=#attr><code>Attr</code></a></h3>
 
-<p class=XXX>Free <a href=#attr><code>Attr</code></a> from <a href=#node><code>Node</code></a>?</p>
+<p class=XXX>The tentative plan is to let <a href=#attr><code>Attr</code></a> no longer have
+child nodes and turn it into a very lightweight object that no longer
+inherits from <a href=#node><code>Node</code></a> &mdash;
+<a href=http://lists.w3.org/Archives/Public/public-webapps/2010JulSep/0797.html>http://lists.w3.org/Archives/Public/public-webapps/2010JulSep/0797.html</a>
 
 <pre class=idl>interface <dfn id=attr>Attr</dfn> : <a href=#node>Node</a> {
   readonly attribute DOMString <a href=#dom-attr-name title=dom-Attr-name>name</a>;
@@ -1489,10 +1828,11 @@ the <a href=#concept-attribute-name title=concept-attribute-name>name</a> associ
 <p>The <dfn id=dom-attr-specified title=dom-Attr-specified><code>specified</code></dfn> attribute must
 return true.
 
-<p>The <dfn id=dom-attr-value title=dom-Attr-value><code>value</code></dfn> attribute, on getting,
-must return the same value as the <a href=#dom-node-textcontent><code title=dom-Node-textContent>textContent</code></a> IDL attribute on the
-<a href=#context-node>context node</a>, and on setting, must act as if the <a href=#dom-node-textcontent><code title=dom-Node-textContent>textContent</code></a> IDL attribute on the
-<a href=#context-node>context node</a> had been set to the new value.
+<p>The <dfn id=dom-attr-value title=dom-Attr-value><code>value</code></dfn> attribute must return the value of the <a href=#context-node>context node</a>'s
+<a href=#dom-node-textcontent><code title=dom-Node-textContent>textContent</code></a> attribute and on
+setting, must set the <a href=#context-node>context node</a>'s
+<a href=#dom-node-textcontent><code title=dom-Node-textContent>textContent</code></a> attribute to the given
+value.
 
 <p>The <dfn id=dom-attr-ownerelement title=dom-Attr-ownerElement><code>ownerElement</code></dfn>
 attribute must return the <a href=#concept-attribute-element title=concept-attribute-element>element</a>
@@ -1527,40 +1867,44 @@ are all <a href=#concept-class-attribute title=concept-class-attribute>class att
 <p class=note>This specification does not <!--normatively--> define the <a href=#concept-attribute-name title=concept-attribute-name>name</a> of <a href=#concept-id-attribute title=concept-id-attribute>ID</a> or <a href=#concept-class-attribute title=concept-class-attribute>class attributes</a>.
 
 
-<h3 id=interface-element><span class=secno>5.5 </span>Interface <a href=#element><code>Element</code></a></h3>
+<h3 id=interface-element><span class=secno>4.5 </span>Interface <a href=#element><code>Element</code></a></h3>
 <pre class=idl>interface <dfn id=element>Element</dfn> : <a href=#node>Node</a> {
   readonly attribute DOMString <a href=#dom-element-tagname title=dom-Element-tagName>tagName</a>;
 
-  DOMString? <a href=#dom-element-getattribute title=dom-Element-getAttribute>getAttribute</a>(DOMString name);
-  DOMString? <a href=#dom-element-getattributens title=dom-Element-getAttributeNS>getAttributeNS</a>(DOMString namespaceURI, DOMString localName);
-  void <a href=#dom-element-setattribute title=dom-Element-setAttribute>setAttribute</a>(DOMString name, DOMString value);
-  void <a href=#dom-element-setattributens title=dom-Element-setAttributeNS>setAttributeNS</a>(DOMString namespaceURI, DOMString qualifiedName, DOMString value);
-  void <a href=#dom-element-removeattribute title=dom-Element-removeAttribute>removeAttribute</a>(DOMString name);
-  void <a href=#dom-element-removeattributens title=dom-Element-removeAttributeNS>removeAttributeNS</a>(DOMString namespaceURI, DOMString localName);
-  boolean <a href=#dom-element-hasattribute title=dom-Element-hasAttribute>hasAttribute</a>(DOMString name);
-  boolean <a href=#dom-element-hasattributens title=dom-Element-hasAttributeNS>hasAttributeNS</a>(DOMString namespaceURI, DOMString localName);
+  DOMString? <a href=#dom-element-getattribute title=dom-Element-getAttribute>getAttribute</a>(DOMString <var>qualifiedName</var>);
+  DOMString? <a href=#dom-element-getattributens title=dom-Element-getAttributeNS>getAttributeNS</a>(DOMString <var>namespace</var>, DOMString <var>localName</var>);
+  void <a href=#dom-element-setattribute title=dom-Element-setAttribute>setAttribute</a>(DOMString <var>qualifiedName</var>, DOMString <var>value</var>);
+  void <a href=#dom-element-setattributens title=dom-Element-setAttributeNS>setAttributeNS</a>(DOMString <var>namespace</var>, DOMString <var>qualifiedName</var>, DOMString <var>value</var>);
+  void <a href=#dom-element-removeattribute title=dom-Element-removeAttribute>removeAttribute</a>(DOMString <var>qualifiedName</var>);
+  void <a href=#dom-element-removeattributens title=dom-Element-removeAttributeNS>removeAttributeNS</a>(DOMString <var>namespace</var>, DOMString <var>localName</var>);
+  boolean <a href=#dom-element-hasattribute title=dom-Element-hasAttribute>hasAttribute</a>(DOMString <var>qualifiedName</var>);
+  boolean <a href=#dom-element-hasattributens title=dom-Element-hasAttributeNS>hasAttributeNS</a>(DOMString <var>namespace</var>, DOMString <var>localName</var>);
 <!--
   <span>Attr</span> <span title=dom-Element-getAttributeNode>getAttributeNode</span>(DOMString name);
-  <span>Attr</span> <span title=dom-Element-getAttributeNodeNS>getAttributeNodeNS</span>(DOMString namespaceURI, DOMString localName);
+  <span>Attr</span> <span title=dom-Element-getAttributeNodeNS>getAttributeNodeNS</span>(DOMString namespace, DOMString localName);
   <span>Attr</span> <span title=dom-Element-setAttributeNode>setAttributeNode</span>(Attr newAttr);
   <span>Attr</span> <span title=dom-Element-removeAttributeNode>removeAttributeNode</span>(Attr oldAttr);
 -->
-  <a href=#nodelist>NodeList</a> <a href=#dom-element-getelementsbytagname title=dom-Element-getElementsByTagName>getElementsByTagName</a>(DOMString name);
-  <a href=#nodelist>NodeList</a> <a href=#dom-element-getelementsbytagnamens title=dom-Element-getElementsByTagNameNS>getElementsByTagNameNS</a>(DOMString namespaceURI, DOMString localName);
-  <a href=#nodelist>NodeList</a> <a href=#dom-element-getelementsbyclassname title=dom-Element-getElementsByClassName>getElementsByClassName</a>(DOMString classNames);<!--
+  <a href=#nodelist>NodeList</a> <a href=#dom-element-getelementsbytagname title=dom-Element-getElementsByTagName>getElementsByTagName</a>(DOMString <var>qualifiedName</var>);
+  <a href=#nodelist>NodeList</a> <a href=#dom-element-getelementsbytagnamens title=dom-Element-getElementsByTagNameNS>getElementsByTagNameNS</a>(DOMString <var>namespace</var>, DOMString <var>localName</var>);
+  <a href=#nodelist>NodeList</a> <a href=#dom-element-getelementsbyclassname title=dom-Element-getElementsByClassName>getElementsByClassName</a>(DOMString <var>classNames</var>);<!--
   readonly attribute TypeInfo schemaTypeInfo;
   void setIdAttribute(DOMString name, boolean isId);
-  void setIdAttributeNS(DOMString namespaceURI, DOMString localName, boolean isId);
+  void setIdAttributeNS(DOMString namespace, DOMString localName, boolean isId);
   void setIdAttributeNode(Attr idAttr, boolean isId);-->
 
-           attribute <a href=#htmlcollection>HTMLCollection</a> <a href=#dom-element-children title=dom-Element-children>children</a>;
+  readonly attribute <a href=#htmlcollection>HTMLCollection</a> <a href=#dom-element-children title=dom-Element-children>children</a>;
 };</pre>
+
+<p><a href=#element><code>Element</code></a> nodes have an associated <dfn id=concept-element-namespace title=concept-element-namespace>namespace</dfn>, <dfn id=concept-element-namespace-prefix title=concept-element-namespace-prefix>namespace prefix</dfn>, <dfn id=concept-element-local-name title=concept-element-local-name>local name</dfn>, and <dfn id=concept-element-qualified-name title=concept-element-qualified-name>qualified name</dfn>.</p>
+
+<p>When an <a href=#element><code>Element</code></a> node is created its <a href=#concept-element-local-name title=concept-element-local-name>local name</a> is always given. Unless explicitly given when an <a href=#element><code>Element</code></a> node is created, its <a href=#concept-element-namespace title=concept-element-namespace>namespace</a> and <a href=#concept-element-namespace-prefix title=concept-element-namespace-prefix>namespace prefix</a> are null and its <a href=#concept-element-qualified-name title=concept-element-qualified-name>qualified name</a> is its <a href=#concept-element-namespace-prefix title=concept-element-namespace-prefix>namespace prefix</a>, followed by a "<code>:</code>" (U+003A), followed by its <a href=#concept-element-local-name title=concept-element-local-name>local name</a>, if its <a href=#concept-element-namespace-prefix title=concept-element-namespace-prefix>namespace prefix</a> is not null, or otherwise <a href=#concept-element-qualified-name title=concept-element-qualified-name>qualified name</a> is just its <a href=#concept-element-local-name title=concept-element-local-name>local name</a>.</p>
 
 <p><a href=#element><code>Element</code></a> nodes can have a <dfn id=concept-id title=concept-id>unique
 identifier (ID)</dfn> associated with them. User agents must associate the
 <a href=#dom-attr-value><code title=dom-Attr-value>value</code></a> of all <a href=#concept-id-attribute title=concept-ID-attribute>ID attributes</a> in the <a href=#element><code>Element</code></a>
 node's <a href=#dom-node-attributes><code title=dom-Node-attributes>attributes</code></a> with the
-<a href=#element><code>Element</code></a> node, unless it contains less than one character.
+<a href=#element><code>Element</code></a> node, unless it is the empty string.
 
 <p>Specifications may define <dfn id=base-url-change-steps>base URL change steps</dfn>.
 
@@ -1568,59 +1912,64 @@ node's <a href=#dom-node-attributes><code title=dom-Node-attributes>attributes</
 change</dfn>, the user agent must run the <a href=#base-url-change-steps>base URL change steps</a>, as
 defined in <a href=#other-applicable-specifications>other applicable specifications</a>.
 
-<p>The <dfn id=dom-element-tagname title=dom-Element-tagName><code>tagName</code></dfn> attribute must,
-on getting, run the following steps:
-<ol>
- <li><p>If the <a href=#context-node>context node</a>'s <a href=#dom-node-prefix><code title=dom-Node-prefix>prefix</code></a> is not null, let <var>tagName</var>
- be the concatenation of the <a href=#context-node>context node</a>'s <a href=#dom-node-prefix><code title=dom-Node-prefix>prefix</code></a>, a U+003E COLON (":") character and its
- <a href=#dom-node-localname><code title=dom-Node-localName>localName</code></a>. Otherwise, let <var title="">tagName</var> be just the the <a href=#context-node>context node</a>'s <a href=#dom-node-localname><code title=dom-Node-localName>localName</code></a>.
-
- <li><p>If the <a href=#context-node>context node</a> is in the <a href=#html-namespace>HTML namespace</a>
- and its <a href=#dom-node-ownerdocument><code title=dom-Node-ownerDocument>ownerDocument</code></a> is an
- <a href=#html-document>HTML document</a>, return <var>tagName</var>, <a href=#converted-to-uppercase>converted to
- uppercase</a>. Otherwise, return <var>tagName</var>.
-</ol>
+<p>The <dfn id=dom-element-tagname title=dom-Element-tagName><code>tagName</code></dfn> attribute must return the <a href=#context-node>context node</a>'s <a href=#concept-element-qualified-name title=concept-element-qualified-name>qualified name</a>, <a href=#converted-to-uppercase>converted to uppercase</a> if the <a href=#context-node>context node</a> is in the <a href=#html-namespace>HTML namespace</a> and its <a href=#dom-node-ownerdocument><code title=dom-Node-ownerDocument>ownerDocument</code></a> is an <a href=#html-document>HTML document</a>.</p>
 
 <hr>
 
-<p>The <dfn id=dom-element-getattribute title=dom-Element-getAttribute><code>getAttribute(<var title="">name</var>)</code></dfn> method must run the following steps:
+<p>The <dfn id=dom-element-getattribute title=dom-Element-getAttribute><code>getAttribute(<var>name</var>)</code></dfn> method must run these steps:
 <ol>
- <li><p>If the <a href=#context-node>context node</a> is in the <a href=#html-namespace>HTML namespace</a>
- and its <a href=#dom-node-ownerdocument><code title=dom-Node-ownerDocument>ownerDocument</code></a> is an
- <a href=#html-document>HTML document</a>, let <var>name</var> be <var>name</var>,
- <a href=#converted-to-lowercase>converted to lowercase</a>.
+ <li><p>If the <a href=#context-node>context node</a> is in the
+ <a href=#html-namespace>HTML namespace</a> and its
+ <a href=#dom-node-ownerdocument><code title=dom-Node-ownerDocument>ownerDocument</code></a> is an
+ <a href=#html-document>HTML document</a>, let <var>name</var> be <a href=#converted-to-lowercase>converted to lowercase</a>.
 
- <li><p>Return the value of the first attribute in the <a href=#context-node>context
- node</a>'s <a href=#dom-node-attributes><code title=dom-Node-attributes>attributes</code></a> whose <a href=#concept-attribute-name title=concept-attribute-name>name</a> <a href=#case-sensitive title=case-sensitive>case-sensitively</a> equals the first argument, in any
- namespace, if the attribute is present, or null otherwise.
+ <li><p>Return the value of the first attribute in the
+ <a href=#context-node>context node</a>'s
+ <a href=#dom-node-attributes><code title=dom-Node-attributes>attributes</code></a> whose
+ <a href=#concept-attribute-name title=concept-attribute-name>name</a> is <var>name</var>, if
+ the attribute is present, or null otherwise.
 </ol>
 
-<p class=XXX><dfn id=dom-element-getattributens title=dom-Element-getAttributeNS>getAttributeNS</dfn> (might return null; Gecko and WebKit don't)
+<p>The
+<dfn id=dom-element-getattributens title=dom-Element-getAttributeNS><code>getAttributeNS(<var>namespace</var>, <var>localName</var>)</code></dfn>
+method must return the value of the attribute in the
+<a href=#context-node>context node</a>'s
+<a href=#dom-node-attributes><code title=dom-Node-attributes>attributes</code></a> whose
+<a href=#dom-node-namespaceuri><code title=dom-Node-namespaceURI>namespaceURI</code></a> is
+<var>namespace</var> and <a href=#dom-node-localname><code title=dom-Node-localName>localName</code></a>
+is <var>localName</var>, if the attribute is present, or null otherwise.</p>
 
-<p>The <dfn id=dom-element-setattribute title=dom-Element-setAttribute><code>setAttribute(<var title="">name</var>, <var>value</var>)</code></dfn> method must run the
-following steps:
+<p>The
+<dfn id=dom-element-setattribute title=dom-Element-setAttribute><code>setAttribute(<var>qualifiedName</var>, <var>value</var>)</code></dfn>
+method must run these steps:
 
 <ol>
- <li><p>If <var>name</var> is empty or <var>name</var> doesn't
- match the <a href=http://www.w3.org/TR/xml/#NT-Name><code class=external data-anolis-spec=xml>Name</code></a> production in XML, raise an
+ <li><p>If <var>qualifiedName</var> does not match the
+ <a href=http://www.w3.org/TR/xml/#NT-Name><code class=external data-anolis-spec=xml>Name</code></a> production in XML, raise an
  <a href=#dom-domexception-invalid_character_err><code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code></a>
- exception and abort these steps.
+ exception and terminate these steps.
 
- <li class=XXX><p>Do something about <var>name</var> == "xmlns"?
+ <li class=XXX><p>Do something about <var>qualifiedName</var> == "xmlns"?
  <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=315805">Moz bug 315805</a>
 
- <li><p>If the <a href=#context-node>context node</a> is in the <a href=#html-namespace>HTML namespace</a>
- and its <a href=#dom-node-ownerdocument><code title=dom-Node-ownerDocument>ownerDocument</code></a> is an
- <a href=#html-document>HTML document</a>, let <var>name</var> be <var>name</var>,
+ <li><p>If the <a href=#context-node>context node</a> is in the
+ <a href=#html-namespace>HTML namespace</a> and its
+ <a href=#dom-node-ownerdocument><code title=dom-Node-ownerDocument>ownerDocument</code></a> is an
+ <a href=#html-document>HTML document</a>, let <var>qualifiedName</var> be
  <a href=#converted-to-lowercase>converted to lowercase</a>.
 
- <li><p>If the node doesn't have an attribute whose <a href=#concept-attribute-name title=concept-attribute-name>name</a> <a href=#case-sensitive title=case-sensitive>case-sensitively</a> equals <var>name</var>,
- create an <a href=#attr><code>Attr</code></a> node, with <var>name</var> as its <a href=#concept-attribute-name title=concept-attribute-name>name</a> and the <a href=#context-node>context node</a> as
- its <a href=#concept-attribute-element title=concept-attribute-element>element</a>. Set its <a href=#dom-attr-value><code title=dom-Attr-value>value</code></a> to <var>value</var>. Append this node
- to the <a href=#context-node title="context node">context node's</a> <a href=#dom-node-attributes><code title=dom-Node-attributes>attributes</code></a>, as its last item.
+ <li><p>If the node does not have an attribute whose <a href=#concept-attribute-name title=concept-attribute-name>name</a> is <var>qualifiedName</var>,
+ create an <a href=#attr><code>Attr</code></a> node, with <var>qualifiedName</var> as its
+ <a href=#concept-attribute-name title=concept-attribute-name>name</a> and the
+ <a href=#context-node>context node</a> as its
+ <a href=#concept-attribute-element title=concept-attribute-element>element</a>. Set its
+ <a href=#dom-attr-value><code title=dom-Attr-value>value</code></a> to <var>value</var>. Append this
+ node to the <a href=#context-node title="context node">context node's</a>
+ <a href=#dom-node-attributes><code title=dom-Node-attributes>attributes</code></a>, as its last item.
 
- <li><p>Otherwise, set the <a href=#dom-attr-value><code title=dom-Attr-value>value</code></a> of the first
- attribute in the <a href=#context-node title="context node">context node's</a> <a href=#dom-node-attributes><code title=dom-Node-attributes>attributes</code></a> whose <a href=#concept-attribute-name title=concept-attribute-name>name</a> <a href=#case-sensitive title=case-sensitive>case-sensitively</a> equals <var>name</var>,
+ <li><p>Otherwise, set the <a href=#dom-attr-value><code title=dom-Attr-value>value</code></a> of the
+ first attribute in the <a href=#context-node title="context node">context node's</a>
+ <a href=#dom-node-attributes><code title=dom-Node-attributes>attributes</code></a> whose <a href=#concept-attribute-name title=concept-attribute-name>name</a> is <var>qualifiedName</var>,
  in any namespace, to <var>value</var>.
 </ol>
 
@@ -1630,9 +1979,29 @@ following steps:
 
 <p class=XXX><dfn id=dom-element-removeattributens title=dom-Element-removeAttributeNS>removeAttributeNS</dfn>
 
-<p class=XXX><dfn id=dom-element-hasattribute title=dom-Element-hasAttribute>hasAttribute</dfn>
+<p>The
+<dfn id=dom-element-hasattribute title=dom-Element-hasAttribute><code>hasAttribute(<var>qualifiedName</var>)</code></dfn>
+method must run these steps:</p>
+<ol>
+ <li><p>If the <a href=#context-node>context node</a> is in the
+ <a href=#html-namespace>HTML namespace</a> and its
+ <a href=#dom-node-ownerdocument><code title=dom-Node-ownerDocument>ownerDocument</code></a> is an
+ <a href=#html-document>HTML document</a>, let <var>qualifiedName</var> be
+ <a href=#converted-to-lowercase>converted to lowercase</a>.
 
-<p class=XXX><dfn id=dom-element-hasattributens title=dom-Element-hasAttributeNS>hasAttributeNS</dfn>
+ <li><p>Return true if <a href=#context-node>context node</a>'s
+ <a href=#dom-node-attributes><code title=dom-Node-attributes>attributes</code></a> contains an attribute
+ whose <a href=#concept-attribute-name title=concept-attribute-name>name</a> is
+ <var>qualifiedName</var>, or false otherwise.
+</ol>
+
+<p>The
+<dfn id=dom-element-hasattributens title=dom-Element-hasAttributeNS><code>hasAttributeNS(<var>namespace</var>, <var>localName</var>)</code></dfn>
+method must return true if <a href=#context-node>context node</a>'s
+<a href=#dom-node-attributes><code title=dom-Node-attributes>attributes</code></a> contains an attribute
+whose <a href=#dom-node-namespaceuri><code title=dom-Node-namespaceURI>namespaceURI</code></a> is
+<var>namespace</var> and <a href=#dom-node-localname><code title=dom-Node-localName>localName</code></a>
+is <var>localName</var>, or false otherwise.</p>
 
 <!--<dfn title=dom-Element-getAttributeNode>getAttributeNode</dfn>: when the
 Element.getAttributeNode() method is invoked on an HTML element, the name
@@ -1646,7 +2015,7 @@ have its name converted to ASCII lowercase before the element is affected.
 
 <hr>
 
-<p>The <dfn id=dom-element-getelementsbytagname title=dom-Element-getElementsByTagName><code>getElementsByTagName(<var title="">name</var>)</code></dfn> method on the <a href=#element><code>Element</code></a>
+<p>The <dfn id=dom-element-getelementsbytagname title=dom-Element-getElementsByTagName><code>getElementsByTagName(<var title="">qualifiedName</var>)</code></dfn> method on the <a href=#element><code>Element</code></a>
 interface must return a <a href=#concept-collection-live title=concept-collection-live>live</a>
 <a href=#nodelist><code>NodeList</code></a> with the nodes that the <a href=#dom-document-getelementsbytagname><code title=dom-Document-getElementsByTagName>getElementsByTagName</code></a>
 method would return when called on the <a href=#context-node title="context node">context
@@ -1656,7 +2025,7 @@ the <a href=#context-node>context node</a> on which the method was invoked.
 <p>A new <a href=#nodelist><code>NodeList</code></a> object must be returned each time.
 
 
-<p>The <dfn id=dom-element-getelementsbytagnamens title=dom-Element-getElementsByTagNameNS><code>getElementsByTagNameNS(<var title="">namespaceURI</var>, <var>localName</var>)</code></dfn> method on the
+<p>The <dfn id=dom-element-getelementsbytagnamens title=dom-Element-getElementsByTagNameNS><code>getElementsByTagNameNS(<var>namespace</var>, <var>localName</var>)</code></dfn> method on the
 <a href=#element><code>Element</code></a> interface must return a <a href=#concept-collection-live title=concept-collection-live>live</a> <a href=#nodelist><code>NodeList</code></a> with the nodes
 that the <a href=#dom-document-getelementsbytagnamens><code title=dom-Document-getElementsByTagNameNS>getElementsByTagNameNS</code></a>
 method would return when called on the <a href=#context-node title="context node">context
@@ -1678,12 +2047,14 @@ the <a href=#context-node>context node</a> on which the method was invoked.
 <hr>
 
 <p>The <dfn id=dom-element-children title=dom-Element-children><code>children</code></dfn> attribute
-must return an <a href=#htmlcollection><code>HTMLCollection</code></a> <a href=#concept-collection title=concept-collection>collection</a>, rooted at the <a href=#context-node>context
-node</a>, whose filter matches only <a href=#element><code>Element</code></a> nodes whose <a href=#dom-node-parentnode><code title=dom-Node-parentNode>parentNode</code></a> is the <a href=#context-node>context node</a>.
-<span class=XXX title="">Or a <a href=#nodelist><code>NodeList</code></a>?</span>
+must return an <a href=#htmlcollection><code>HTMLCollection</code></a>
+<a href=#concept-collection title=concept-collection>collection</a>, rooted at the
+<a href=#context-node>context node</a>, whose filter matches only <a href=#element><code>Element</code></a>
+nodes whose <a href=#dom-node-parentnode><code title=dom-Node-parentNode>parentNode</code></a> is the
+<a href=#context-node>context node</a>.
 
 
-<h3 id=interface-documenttype><span class=secno>5.6 </span>Interface <a href=#documenttype><code>DocumentType</code></a></h3>
+<h3 id=interface-documenttype><span class=secno>4.6 </span>Interface <a href=#documenttype><code>DocumentType</code></a></h3>
 <pre class=idl>interface <dfn id=documenttype>DocumentType</dfn> : <a href=#node>Node</a> {
   readonly attribute DOMString <a href=#dom-documenttype-name title=dom-DocumentType-name>name</a>;<!--
   readonly attribute NamedNodeMap entities;
@@ -1693,46 +2064,36 @@ node</a>, whose filter matches only <a href=#element><code>Element</code></a> no
   readonly attribute DOMString internalSubset;-->
 };</pre>
 
-<p><a href=#documenttype><code>DocumentType</code></a> nodes represent <dfn id=concept-doctype title=concept-doctype>document
-type declarations</dfn>. They have a <dfn id=concept-doctype-name title=concept-doctype-name>name</dfn>
-and potentially a <dfn id=concept-doctype-publicid title=concept-doctype-publicid>public ID</dfn>, and a
-<dfn id=concept-doctype-systemid title=concept-doctype-systemid>system ID</dfn> associated with them when
-they are created.
+<p><a href=#documenttype><code>DocumentType</code></a> nodes have an associated <dfn id=concept-doctype-name title=concept-doctype-name>name</dfn>, <dfn id=concept-doctype-publicid title=concept-doctype-publicid>public ID</dfn>, and <dfn id=concept-doctype-systemid title=concept-doctype-systemid>system ID</dfn>.
 
-<p>The <dfn id=dom-documenttype-name title=dom-DocumentType-name><code>name</code></dfn> attribute must,
-on getting, return the <a href=#context-node title="context node">context node's</a> <a href=#concept-doctype-name title=concept-doctype-name>name</a>.
+<p>When a <a href=#documenttype><code>DocumentType</code></a> node is created <a href=#concept-doctype-name title=concept-doctype-name>name</a> is always given. Unless explicitly given when a <a href=#documenttype><code>DocumentType</code></a> node is created, its <a href=#concept-doctype-publicid title=concept-doctype-publicid>public ID</a> and <a href=#concept-doctype-systemid title=concept-doctype-systemid>system ID</a> are the empty string.</p>
+
+<p>The <dfn id=dom-documenttype-name title=dom-DocumentType-name><code>name</code></dfn> attribute must return the <a href=#context-node>context node</a>'s <a href=#concept-doctype-name title=concept-doctype-name>name</a>.
 
 <p>The <dfn id=dom-documenttype-publicid title=dom-DocumentType-publicId><code>publicId</code></dfn>
-attribute must, on getting, return the <a href=#context-node title="context node">context
-node's</a> <a href=#concept-doctype-publicid title=concept-doctype-publicid>public ID</a>, if it has
-one, or the empty string otherwise.
+attribute must return the <a href=#context-node>context node</a>'s <a href=#concept-doctype-publicid title=concept-doctype-publicid>public ID</a>.
 
 <p>The <dfn id=dom-documenttype-systemid title=dom-DocumentType-systemId><code>systemId</code></dfn>
-attribute must, on getting, return the <a href=#context-node title="context node">context
-node's</a> <a href=#concept-doctype-systemid title=concept-doctype-systemid>system ID</a>, if it has
-one, or the empty string otherwise.
+attribute must return the <a href=#context-node>context node</a>'s <a href=#concept-doctype-systemid title=concept-doctype-systemid>system ID</a>.
 
 
-<h3 id=interface-processinginstruction><span class=secno>5.7 </span>Interface <a href=#processinginstruction><code>ProcessingInstruction</code></a></h3>
+<h3 id=interface-processinginstruction><span class=secno>4.7 </span>Interface <a href=#processinginstruction><code>ProcessingInstruction</code></a></h3>
 <pre class=idl>interface <dfn id=processinginstruction>ProcessingInstruction</dfn> : <a href=#node>Node</a> {
   readonly attribute DOMString <a href=#dom-processinginstruction-target title=dom-ProcessingInstruction-target>target</a>;
            attribute DOMString <a href=#dom-processinginstruction-data title=dom-ProcessingInstruction-data>data</a>;
 };</pre>
 
-<p><a href=#processinginstruction><code>ProcessingInstruction</code></a> nodes represent <dfn id=concept-pi title=concept-PI>processing instructions</dfn>. They have a <dfn id=concept-pi-target title=concept-PI-target>target</dfn> associated with them when they are created,
-as well as some <dfn id=concept-pi-data title=concept-PI-data>data</dfn>.
+<p><a href=#processinginstruction><code>ProcessingInstruction</code></a> nodes have an associated <dfn id=concept-pi-target title=concept-PI-target>target</dfn> and <dfn id=concept-pi-data title=concept-PI-data>data</dfn>. When a <a href=#processinginstruction><code>ProcessingInstruction</code></a> node is created both are given.
 
 <p>The <dfn id=dom-processinginstruction-target title=dom-ProcessingInstruction-target><code>target</code></dfn>
-attribute must, on getting, return the <a href=#context-node title="context node">context
-node's</a> <a href=#concept-pi-target title=concept-PI-target>target</a>.
+attribute must return the <a href=#context-node>context node</a>'s <a href=#concept-pi-target title=concept-PI-target>target</a>.
 
 <p>The <dfn id=dom-processinginstruction-data title=dom-ProcessingInstruction-data><code>data</code></dfn>
-attribute must, on getting, return the <a href=#context-node title="context node">context
-node's</a> <a href=#concept-pi-data title=concept-PI-data>data</a>, and on setting, set the
-<a href=#context-node title="context node">context node's</a> <a href=#concept-pi-data title=concept-PI-data>data</a> to the new value.
+attribute must return the <a href=#context-node>context node</a>'s <a href=#concept-pi-data title=concept-PI-data>data</a>, and on setting, set the
+<a href=#context-node>context node</a>'s <a href=#concept-pi-data title=concept-PI-data>data</a> to the new value.
 
 
-<h3 id=interface-characterdata><span class=secno>5.8 </span>Interface <a href=#characterdata><code>CharacterData</code></a></h3>
+<h3 id=interface-characterdata><span class=secno>4.8 </span>Interface <a href=#characterdata><code>CharacterData</code></a></h3>
 <pre class=idl>interface <dfn id=characterdata>CharacterData</dfn> : <a href=#node>Node</a> {
   [TreatNullAs=EmptyString] attribute DOMString <a href=#dom-characterdata-data title=dom-CharacterData-data>data</a>;
   readonly attribute unsigned long <a href=#dom-characterdata-length title=dom-CharacterData-length>length</a>;
@@ -1747,20 +2108,22 @@ node's</a> <a href=#concept-pi-data title=concept-PI-data>data</a>, and on setti
 
 <p>The <dfn id=dom-characterdata-length title=dom-CharacterData-length><code>length</code></dfn> attribute must return the number of UTF-16 code units represented by the node's data.
 
-<p>The <dfn id=dom-characterdata-substringdata title=dom-CharacterData-substringData><code>substringData(<var title="">offset</var>, <var>count</var>)</code></dfn> method must run these
-steps:
+<p>The
+<dfn id=dom-characterdata-substringdata title=dom-CharacterData-substringData><code>substringData(<var>offset</var>, <var>count</var>)</code></dfn>
+method must run these steps:
 
 <ol>
  <li><p>If <var>offset</var> is negative or is greater than the
  <a href=#context-node>context node</a>'s <a href=#dom-characterdata-length><code title=dom-CharacterData-length>length</code></a>,
- or if <var>count</var> is negative, raise an <a href=#dom-domexception-index_size_err><code title=dom-DOMException-INDEX_SIZE_ERR>INDEX_SIZE_ERR</code></a> exception and abort
- these steps.
+ or if <var>count</var> is negative, raise an
+ <a href=#dom-domexception-index_size_err><code title=dom-DOMException-INDEX_SIZE_ERR>INDEX_SIZE_ERR</code></a> exception
+ and terminate these steps.
 
  <li><p>If <span title=""><var>offset</var>+<var>count</var></span> is
- greater than the <a href=#context-node>context node</a>'s <a href=#dom-characterdata-length><code title=dom-CharacterData-length>length</code></a>, return a <a href=http://dev.w3.org/2006/webapi/WebIDL/#idl-DOMString><code class=external data-anolis-spec=webidl>DOMString</code></a> whose value is the UTF-16 code units
+ greater than the <a href=#context-node>context node</a>'s <a href=#dom-characterdata-length><code title=dom-CharacterData-length>length</code></a>, return a <a href=#domstring><code class=external data-anolis-spec=webidl>DOMString</code></a> whose value is the UTF-16 code units
  from the <var>offset</var>th UTF-16 code unit to the end of <var title="">data</var>.
 
- <li><p>Return a <a href=http://dev.w3.org/2006/webapi/WebIDL/#idl-DOMString><code class=external data-anolis-spec=webidl>DOMString</code></a> whose value is
+ <li><p>Return a <a href=#domstring><code class=external data-anolis-spec=webidl>DOMString</code></a> whose value is
  the UTF-16 code units from the <var>offset</var>th UTF-16 code unit to
  the <span title=""><var>offset</var>+<var>count</var></span>th UTF-16
  code unit in <var>data</var>.
@@ -1806,55 +2169,91 @@ with <var>offset</var> and <var>data</var> as arguments and re-raise any
 exceptions these methods might have raised.</p>
 
 
-<h3 id=interface-text><span class=secno>5.9 </span>Interface <a href=#text><code>Text</code></a></h3>
+<h3 id=interface-text><span class=secno>4.9 </span>Interface <a href=#text><code>Text</code></a></h3>
 <pre class=idl>interface <dfn id=text>Text</dfn> : <a href=#characterdata>CharacterData</a> {
-  <a href=#text>Text</a> <a href=#dom-text-splittext title=dom-Text-splitText>splitText</a>(unsigned long offset);<!--
+  <a href=#text>Text</a> <a href=#dom-text-splittext title=dom-Text-splitText>splitText</a>(unsigned long <var>offset</var>);<!--
   readonly attribute boolean isElementContentWhitespace;-->
   readonly attribute DOMString <a href=#dom-text-wholetext title=dom-Text-wholeText>wholeText</a>;
-  <a href=#text>Text</a> <a href=#dom-text-replacewholetext title=dom-Text-replaceWholeText>replaceWholeText</a>(DOMString content);
+  <a href=#text>Text</a> <a href=#dom-text-replacewholetext title=dom-Text-replaceWholeText>replaceWholeText</a>(DOMString <var>data</var>);
 };</pre>
 
 <p class=XXX><dfn id=dom-text-splittext title=dom-Text-splitText>splitText</dfn>
 
-<p class=XXX><dfn id=dom-text-wholetext title=dom-Text-wholeText>wholeText</dfn>
+<hr>
 
-<p class=XXX><dfn id=dom-text-replacewholetext title=dom-Text-replaceWholeText>replaceWholeText</dfn>
+<p>The <dfn id=contiguous-text-nodes>contiguous <code>Text</code> nodes</dfn> of a node are the node
+itself, the previous sibling <a href=#text><code>Text</code></a> node (if any) and its
+<a href=#contiguous-text-nodes>contiguous <code>Text</code> nodes</a>, and the next sibling
+<a href=#text><code>Text</code></a> node (if any) and its
+<a href=#contiguous-text-nodes>contiguous <code>Text</code> nodes</a>, avoiding any
+duplicates.</p>
+
+<p>The <dfn id=dom-text-wholetext title=dom-Text-wholeText><code>wholeText</code></dfn>
+attribute must return a concatenation of the
+<a href=#dom-characterdata-data><code title=dom-CharacterData-data>data</code></a> of the
+<a href=#contiguous-text-nodes>contiguous <code>Text</code> nodes</a> of the
+<a href=#context-node>context node</a>, in <a href=#tree-order>tree order</a>.</p>
+
+<p>The
+<dfn id=dom-text-replacewholetext title=dom-Text-replaceWholeText><code>replaceWholeText(<var>data</var>)</code></dfn>
+method must run these steps:</p>
+
+<ol>
+ <li><p>Remove the <a href=#contiguous-text-nodes>contiguous <code>Text</code> nodes</a> of the
+ <span>content node</span>.</li>
+ <li><p>If <var>data</var> is not the empty string, insert a new
+ <a href=#text><code>Text</code></a> node whose
+ <a href=#dom-characterdata-data><code title=dom-CharacterData-data>data</code></a> is <var>data</var> at the
+ place of the removed nodes, return the new <a href=#text><code>Text</code></a> node, and
+ then terminate these steps.</li>
+ <li><p>Return null.</li>
+</ol>
+
+<p class=XXX>Can we remove replaceWholeText() in favor of making wholeText no longer readonly? Do we even need this wholeText business?
 
 <!-- isElementContentWhitespace: Mozilla returns true if the node contains only
 space, tab, newline -->
 
 
-<h3 id=interface-comment><span class=secno>5.10 </span>Interface <a href=#comment><code>Comment</code></a></h3>
+<h3 id=interface-comment><span class=secno>4.10 </span>Interface <a href=#comment><code>Comment</code></a></h3>
 <pre class=idl>interface <dfn id=comment>Comment</dfn> : <a href=#characterdata>CharacterData</a> {
 };</pre>
 
 
 
-<h2 id=collections><span class=secno>6 </span>Collections</h2>
-<p>A <dfn id=concept-collection title=concept-collection>collection</dfn> is an object that represents
-a lists of DOM nodes. A <a href=#concept-collection title=concept-collection>collection</a> can be
-either <dfn id=concept-collection-live title=concept-collection-live>live</dfn> or <dfn id=concept-collection-static title=concept-collection-static>static</dfn>. Unless otherwise stated, a <a href=#concept-collection title=concept-collection>collection</a> must be <a href=#concept-collection-live title=concept-collection-live>live</a>.
+<h2 id=collections><span class=secno>5 </span>Collections</h2>
+<p>A <dfn id=concept-collection title=concept-collection>collection</dfn> is an object that
+represents a lists of DOM nodes. A
+<a href=#concept-collection title=concept-collection>collection</a> can be either
+<dfn id=concept-collection-live title=concept-collection-live>live</dfn> or
+<dfn id=concept-collection-static title=concept-collection-static>static</dfn>. Unless otherwise stated,
+a <a href=#concept-collection title=concept-collection>collection</a> must be
+<a href=#concept-collection-live title=concept-collection-live>live</a>.
 
-<p>If a <a href=#concept-collection title=concept-collection>collection</a> is <a href=#concept-collection-live title=concept-collection-live>live</a>, then the attributes and methods on
-that object must operate on the actual underlying data, not a snapshot of
+<p>If a <a href=#concept-collection title=concept-collection>collection</a> is <a href=#concept-collection-live title=concept-collection-live>live</a>, then the attributes and methods
+on that object must operate on the actual underlying data, not a snapshot of
 the data.
 
-<p>When a <a href=#concept-collection title=concept-collection>collection</a> is created, a filter
-and a root are associated with it.
+<p>When a <a href=#concept-collection title=concept-collection>collection</a> is created, a
+filter and a root are associated with it.
 
-<p>The <a href=#concept-collection title=concept-collection>collection</a> then <dfn id=represented-by-the-collection title="represented by the collection">represents</dfn> a view of the subtree
-rooted at the <a href=#concept-collection title=concept-collection>collection's</a> root,
-containing only nodes that match the given filter. The view is linear. In the
-absence of specific requirements to the contrary, the nodes within the <a href=#concept-collection title=concept-collection>collection</a> must be sorted in <a href=#tree-order>tree
-order</a>.
+<p>The <a href=#concept-collection title=concept-collection>collection</a> then
+<dfn id=represented-by-the-collection title="represented by the collection">represents</dfn> a view of the
+subtree rooted at the <a href=#concept-collection title=concept-collection>collection's</a>
+root, containing only nodes that match the given filter. The view is linear.
+In the absence of specific requirements to the contrary, the nodes within
+the <a href=#concept-collection title=concept-collection>collection</a> must be sorted in
+<a href=#tree-order>tree order</a>.
 
-<p>An attribute that returns a <a href=#concept-collection-live title=concept-collection-live>live</a>
+<p>An attribute that returns a
+<a href=#concept-collection-live title=concept-collection-live>live</a>
 <a href=#concept-collection title=concept-collection>collection</a> must return the same object
 every time it is retrieved.
 
 
-<h3 id=interface-nodelist><span class=secno>6.1 </span>Interface <a href=#nodelist><code>NodeList</code></a></h3>
-<p>A <a href=#nodelist><code>NodeList</code></a> object is a kind of <a href=#concept-collection title=concept-collection>collection</a>.
+<h3 id=interface-nodelist><span class=secno>5.1 </span>Interface <a href=#nodelist><code>NodeList</code></a></h3>
+<p>A <a href=#nodelist><code>NodeList</code></a> object is a kind of
+<a href=#concept-collection title=concept-collection>collection</a>.
 
 <pre class=idl>interface <dfn id=nodelist>NodeList</dfn> {
   getter <a href=#node>Node</a> <a href=#dom-nodelist-item title=dom-NodeList-item>item</a>(unsigned long index);
@@ -1865,14 +2264,12 @@ every time it is retrieved.
 node in the <a href=#concept-collection title=concept-collection>collection</a>. If there is no
 <var>index</var>th node in the <a href=#concept-collection title=concept-collection>collection</a>, then the method must return null.
 
-<p>The <dfn id=dom-nodelist-length title=dom-NodeList-length><code>length</code></dfn> attribute must,
-on getting, return the number of nodes <a href=#represented-by-the-collection>represented by the
-collection</a>.
+<p>The <dfn id=dom-nodelist-length title=dom-NodeList-length><code>length</code></dfn> attribute must return the number of nodes <a href=#represented-by-the-collection>represented by the collection</a>.
 
 <p><a href=#nodelist><code>NodeList</code></a>s are enumerable. <span class=XXX title="">Explain? <code title="">for ... in</code></span>
 
 
-<h3 id=interface-htmlcollection><span class=secno>6.2 </span>Interface <a href=#htmlcollection><code>HTMLCollection</code></a></h3>
+<h3 id=interface-htmlcollection><span class=secno>5.2 </span>Interface <a href=#htmlcollection><code>HTMLCollection</code></a></h3>
 <p>The <a href=#htmlcollection><code>HTMLCollection</code></a> interface represents a generic <a href=#concept-collection title=concept-collection>collection</a> of elements.
 
 <p class=note>This interface is called <a href=#htmlcollection><code>HTMLCollection</code></a> for
@@ -1904,11 +2301,13 @@ caller getter object <a href=#dom-htmlcollection-nameditem title=dom-HTMLCollect
   <p>Returns the first item with <a href=#concept-id title=concept-id>ID</a> or name <var>name</var>
   from the collection.</p>
   <p>Returns null if no element with that <a href=#concept-id title=concept-id>ID</a> or name could be found.</p>
-  <p>Only <code title="">a</code>, <code title="">applet</code>, <code title="">area</code>,
-  <code title="">embed</code>, <code title="">form</code>, <code title="">frame</code>,
-  <code title="">frameset</code>, <code title="">iframe</code>, <code title="">img</code>, and
-  <code title="">object</code> elements in the <a href=#html-namespace>HTML namespace</a> can have a
-  name for the purpose of this method; their name is given by the value of their
+  <p>Only <code title="">a</code>, <code title="">applet</code>,
+  <code title="">area</code>, <code title="">embed</code>,
+  <code title="">form</code>, <code title="">frame</code>,
+  <code title="">frameset</code>, <code title="">iframe</code>,
+  <code title="">img</code>, and <code title="">object</code> elements in the
+  <a href=#html-namespace>HTML namespace</a> can have a name for the purpose of this
+  method; their name is given by the value of their
   <code title="">name</code> attribute.</p>
  </dd>
 </dl>
@@ -1948,7 +2347,13 @@ requirements:</p>
 null.
 
 
-<h3 id=interface-namednodemap><span class=secno>6.3 </span>Interface <a href=#namednodemap><code>NamedNodeMap</code></a></h3>
+<h3 id=interface-namednodemap><span class=secno>5.3 </span>Interface <a href=#namednodemap><code>NamedNodeMap</code></a></h3>
+<p class=XXX>Since <a href=#dom-node-attributes><code title=dom-Node-attributes>attributes</code></a> is the
+only remaining API using this interface and the tentative plan is to change
+<a href=#attr><code>Attr</code></a> we also plan to remove this interface and replace it with
+a lightweight <code>AttrMap</code> or some such &mdash;
+<a href=http://lists.w3.org/Archives/Public/public-webapps/2010JulSep/0797.html>http://lists.w3.org/Archives/Public/public-webapps/2010JulSep/0797.html</a>
+
 <p>A <a href=#namednodemap><code>NamedNodeMap</code></a> object is a kind of <a href=#concept-collection title=concept-collection>collection</a>, whose primary purpose is to expose
 <a href=#node><code>Node</code></a>s by name.
 
@@ -1958,9 +2363,9 @@ null.
   <a href=#node>Node</a> <a href=#dom-namednodemap-removenameditem title=dom-NamedNodeMap-removeNamedItem>removeNamedItem</a>(DOMString name);
   <a href=#node>Node</a> <a href=#dom-namednodemap-item title=dom-NamedNodeMap-item>item</a>(unsigned long index);
   readonly attribute unsigned long <a href=#dom-namednodemap-length title=dom-NamedNodeMap-length>length</a>;
-  <a href=#node>Node</a> <a href=#dom-namednodemap-getnameditemns title=dom-NamedNodeMap-getNamedItemNS>getNamedItemNS</a>(DOMString namespaceURI, DOMString localName);
+  <a href=#node>Node</a> <a href=#dom-namednodemap-getnameditemns title=dom-NamedNodeMap-getNamedItemNS>getNamedItemNS</a>(DOMString namespace, DOMString localName);
   <a href=#node>Node</a> <a href=#dom-namednodemap-setnameditemns title=dom-NamedNodeMap-setNamedItemNS>setNamedItemNS</a>(<a href=#node>Node</a> arg);
-  <a href=#node>Node</a> <a href=#dom-namednodemap-removenameditemns title=dom-NamedNodeMap-removeNamedItemNS>removeNamedItemNS</a>(DOMString namespaceURI, DOMString localName);
+  <a href=#node>Node</a> <a href=#dom-namednodemap-removenameditemns title=dom-NamedNodeMap-removeNamedItemNS>removeNamedItemNS</a>(DOMString namespace, DOMString localName);
 };</pre>
 
 <p class=XXX><dfn id=dom-namednodemap-getnameditem title=dom-NamedNodeMap-getNamedItem>getNamedItem</dfn>
@@ -1971,9 +2376,7 @@ null.
 
 <p class=XXX><dfn id=dom-namednodemap-item title=dom-NamedNodeMap-item>item</dfn>
 
-<p>The <dfn id=dom-namednodemap-length title=dom-NamedNodeMap-length><code>length</code></dfn> attribute
-must, on getting, return the number of nodes <a href=#represented-by-the-collection>represented by the
-collection</a>.
+<p>The <dfn id=dom-namednodemap-length title=dom-NamedNodeMap-length><code>length</code></dfn> attribute must return the number of nodes <a href=#represented-by-the-collection>represented by the collection</a>.
 
 <p class=XXX><dfn id=dom-namednodemap-getnameditemns title=dom-NamedNodeMap-getNamedItemNS>getNamedItemNS</dfn>
 
@@ -1983,22 +2386,62 @@ collection</a>.
 
 
 
-<h2 id=lists><span class=secno>7 </span>Lists</h2>
-<h3 id=interface-domstringlist><span class=secno>7.1 </span>Interface <a href=#domstringlist><code>DOMStringList</code></a></h3>
+<h2 id=lists><span class=secno>6 </span>Lists</h2>
+
+<h3 id=interface-domstringlist><span class=secno>6.1 </span>Interface <a href=#domstringlist><code>DOMStringList</code></a></h3>
+
+<p class=XXX>Only HTMLPropertiesCollection.names, DataTranser.types, Clipboard.types, and Document.styleSheetSets seem to use this API. Should they use something like DOMString[] instead if Web IDL introduces that?
+
 <pre class=idl>interface <dfn id=domstringlist>DOMStringList</dfn> {
-  DOMString <a href=#dom-domstringlist-item title=dom-DOMStringList-item>item</a>(unsigned long index);
   readonly attribute unsigned long <a href=#dom-domstringlist-length title=dom-DOMStringList-length>length</a>;
-  boolean <a href=#dom-domstringlist-contains title=dom-DOMStringList-contains>contains</a>(DOMString str);
+  getter DOMString <a href=#dom-domstringlist-item title=dom-DOMStringList-item>item</a>(unsigned long <var>index</var>);
+  boolean <a href=#dom-domstringlist-contains title=dom-DOMStringList-contains>contains</a>(DOMString <var>string</var>);
 };</pre>
 
-<p class=XXX><dfn id=dom-domstringlist-item title=dom-DOMStringList-item>item</dfn>
+<p>The <a href=#domstringlist><code>DOMStringList</code></a> interface represents an interface to an
+ordered list of strings.</p>
 
-<p class=XXX><dfn id=dom-domstringlist-length title=dom-DOMStringList-length>length</dfn>
+<dl class=domintro>
 
-<p class=XXX><dfn id=dom-domstringlist-contains title=dom-DOMStringList-contains>contains</dfn>
+ <dt><var>stringlist</var> . <a href=#dom-domstringlist-length><code title=dom-DOMStringList-length>length</code></a></dt>
+ <dd><p>Returns the number of tokens in the string.</dd>
+
+ <dt><var>string</var> = <var>stringlist</var> . <a href=#dom-domstringlist-item><code title=dom-DOMStringList-item>item</code></a>(<var>index</var>)</dt>
+ <dt><var>stringlist</var>[<var>index</var>]</dt>
+ <dd>
+  <p>Returns the string with index <var>index</var>.
+  <p>Returns null if <var>index</var> is out of range.
+ </dd>
+
+ <dt><var>hasstring</var> = <var>stringlist</var> . <a href=#dom-domstringlist-contains><code title=dom-DOMStringList-contains>contains</code></a>(<var>string</var>)</dt>
+ <dd><p>Returns true if the <var>string</var> is present; false
+ otherwise.</dd>
+</dl>
+
+<p>The <dfn id=dom-domstringlist-length title=dom-DOMStringList-length><code>length</code></dfn>
+attribute must return the number of strings in the list.</p>
+
+<p>The object's
+<a class=external data-anolis-spec=webidl href=http://dev.w3.org/2006/webapi/WebIDL/#dfn-supported-property-indices>supported property indices</a> are the
+numbers in the range zero to
+<a href=#dom-domtokenlist-length><code title=dom-DOMTokenList-length>length</code></a>&minus;1, unless the
+<a href=#dom-domtokenlist-length><code title=dom-DOMTokenList-length>length</code></a> is zero, in which case
+there are no
+<a class=external data-anolis-spec=webidl href=http://dev.w3.org/2006/webapi/WebIDL/#dfn-supported-property-indices>supported property indices</a>.</p>
+
+<p>The
+<dfn id=dom-domstringlist-item title=dom-DOMStringList-item><code>item(<var>index</var>)</code></dfn>
+method must return the <var>index</var>th string in the list. If
+<var>index</var> is equal to or greater than the number of strings, then the
+method must return null.</p>
+
+<p>The
+<dfn id=dom-domstringlist-contains title=dom-DOMStringList-contains><code>contains(<var>string</var>)</code></dfn>
+method must return true if the list of strings contains <var>string</var>,
+or false otherwise.</p>
 
 
-<h3 id=interface-domtokenlist><span class=secno>7.2 </span>Interface <a href=#domtokenlist><code>DOMTokenList</code></a></h3>
+<h3 id=interface-domtokenlist><span class=secno>6.2 </span>Interface <a href=#domtokenlist><code>DOMTokenList</code></a></h3>
 <p>The <a href=#domtokenlist><code>DOMTokenList</code></a> interface represents an interface
 to an underlying string that consists of a <a href=#set-of-space-separated-tokens>set of
 space-separated tokens</a>.</p>
@@ -2203,7 +2646,7 @@ underlying string representation.</p>
 </div>
 
 
-<h3 id=interface-domsettabletokenlist><span class=secno>7.3 </span>Interface <a href=#domsettabletokenlist><code>DOMSettableTokenList</code></a></h3>
+<h3 id=interface-domsettabletokenlist><span class=secno>6.3 </span>Interface <a href=#domsettabletokenlist><code>DOMSettableTokenList</code></a></h3>
 
 <p>The <a href=#domsettabletokenlist><code>DOMSettableTokenList</code></a> interface is the same as the
 <a href=#domtokenlist><code>DOMTokenList</code></a> interface, except that it allows the
@@ -2231,15 +2674,24 @@ interface, except for the <a href=#dom-domsettabletokenlist-value><code title=do
 here.</p>
 
 <p>The <dfn id=dom-domsettabletokenlist-value title=dom-DOMSettableTokenList-value><code>value</code></dfn>
-attribute must return the underlying string on getting, and must
-replace the underlying string with the new value on setting.</p>
+attribute must return the underlying string and, on setting must replace the underlying string with the new value.</p>
 
 </div>
 
 
 
-<h2 id=historical><span class=secno>8 </span>Historical</h2>
-<p>This specification does not define the following interfaces:
+<h2 id=historical><span class=secno>7 </span>Historical</h2>
+<!-- XXX make this Differences from DOM Level 3 Core? -->
+
+<p><dfn id=domstring><code>DOMString</code></dfn> and
+<dfn id=domtimestamp><code>DOMTimeStamp</code></dfn> originally defined in DOM Level 3 Core
+are now defined in Web IDL.
+
+<p>The remainder of interfaces and interface members listed in this section
+are part of DOM Level 3 Core. Implementations conforming to this
+specification will however not support them.</p>
+
+<p>Interfaces:</p>
 <ul class=brief>
  <li><dfn id=domuserdata><code>DOMUserData</code></dfn>
  <li><dfn id=domobject><code>DOMObject</code></dfn>
@@ -2258,11 +2710,12 @@ replace the underlying string with the new value on setting.</p>
  <li><dfn id=entityreference><code>EntityReference</code></dfn>
 </ul>
 
-<p>This specification does not define the following interface members:</p>
+<p>Interface members:</p>
 <dl>
  <dt><a href=#node><code>Node</code></a></dt>
  <dd>
   <p><dfn id=dom-node-normalize title=dom-Node-normalize><code>normalize()</code></dfn>
+  <p><dfn id=dom-node-issupported title=dom-Node-isSupported><code>isSupported</code></dfn>
   <p><dfn id=dom-node-getfeature title=dom-Node-getFeature><code>getFeature()</code></dfn>
   <p><dfn id=dom-node-getuserdata title=dom-Node-getUserData><code>getUserData()</code></dfn>
   <p><dfn id=dom-node-setuserdata title=dom-Node-setUserData><code>setUserData()</code></dfn>
@@ -2272,6 +2725,7 @@ replace the underlying string with the new value on setting.</p>
   <p><dfn id=dom-document-createcdatasection title=dom-Document-createCDATASection><code>createCDATASection()</code></dfn>
   <p><dfn id=dom-document-createattribute title=dom-Document-createAttribute><code>createAttribute()</code></dfn>
   <p><dfn id=dom-document-createattributens title=dom-Document-createAttributeNS><code>createAttributeNS()</code></dfn>
+  <p><dfn id=dom-document-inputencoding title=dom-Document-inputEncoding><code>inputEncoding</code></dfn>
   <p><dfn id=dom-document-xmlencoding title=dom-Document-xmlEncoding><code>xmlEncoding</code></dfn>
   <p><dfn id=dom-document-xmlstandalone title=dom-Document-xmlStandalone><code>xmlStandalone</code></dfn>
   <p><dfn id=dom-document-xmlversion title=dom-Document-xmlVersion><code>xmlVersion</code></dfn>

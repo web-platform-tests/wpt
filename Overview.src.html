@@ -1865,7 +1865,10 @@ steps:
 
 <h3>Interface <code>Attr</code></h3>
 
-<p class="XXX">Free <code>Attr</code> from <code>Node</code>? </p>
+<p class=XXX>The tentative plan is to let <code>Attr</code> no longer have
+child nodes and turn it into a very lightweight object that no longer
+inherits from <code>Node</code> &mdash;
+<a href=http://lists.w3.org/Archives/Public/public-webapps/2010JulSep/0797.html>http://lists.w3.org/Archives/Public/public-webapps/2010JulSep/0797.html</a>
 
 <pre class=idl>interface <dfn>Attr</dfn> : <span>Node</span> {
   readonly attribute DOMString <span title=dom-Attr-name>name</span>;
@@ -2468,6 +2471,12 @@ null.
 
 
 <h3>Interface <code>NamedNodeMap</code></h3>
+<p class=XXX>Since <code title=dom-Node-attributes>attributes</code> is the
+only remaining API using this interface and the tentative plan is to change
+<code>Attr</code> we also plan to remove this interface and replace it with
+a lightweight <code>AttrMap</code> or some such &mdash;
+<a href=http://lists.w3.org/Archives/Public/public-webapps/2010JulSep/0797.html>http://lists.w3.org/Archives/Public/public-webapps/2010JulSep/0797.html</a>
+
 <p>A <code>NamedNodeMap</code> object is a kind of <span
 title=concept-collection>collection</span>, whose primary purpose is to expose
 <code>Node</code>s by name.

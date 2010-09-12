@@ -628,8 +628,6 @@ node and its child nodes:</p>
   <span>Node</span> <span title=dom-Node-appendChild>appendChild</span>(<span>Node</span> <var>newChild</var>);<!--
   void normalize();-->
 
-  boolean <span title=dom-Node-isSupported>isSupported</span>([TreatNullAs=EmptyString] DOMString <var>feature</var>, DOMString <var>version</var>); <span class=XXX>// can we nuke this?</span>
-
   readonly attribute DOMString <span title=dom-Node-namespaceURI>namespaceURI</span>;
   readonly attribute DOMString <span title=dom-Node-prefix>prefix</span>;
   readonly attribute DOMString <span title=dom-Node-localName>localName</span>;
@@ -1062,12 +1060,7 @@ method must run these steps:
  <li><p>Return <var>newChild</var>.
 </ol>
 
-<p>The
-<dfn title=dom-Node-isSupported><code>isSupported(<var>feature</var>, <var>version</var>)</code></dfn>
-method must return true if the user agent
-<span title=concept-support-DOMfeatureversion>supports</span> the
-(<var>feature</var>,&nbsp;<var>version</var>) tuple on the
-<span>context node</span>, and false otherwise.
+<hr>
 
 <p>The <dfn title=dom-Node-namespaceURI><code>namespaceURI</code></dfn> attribute must return the namespace that is associated with the node, if there is one and it's not the empty string, or null otherwise.
 
@@ -1816,8 +1809,6 @@ otherwise.
 
 <p>The <dfn title=dom-DOMImplementation-createDocument><code>createDocument(<var>namespace</var>, <var>qualifiedName</var>, <var>doctype</var>)</code></dfn> method must run the following steps:
 
-<p class=XXX>make arguments optional?
-
 <ol>
  <li><p>Let <var>document</var> be a new <code>Document</code> node.
  <li><p>Let <var>element</var> be null.
@@ -1874,9 +1865,7 @@ steps:
 
 <h3>Interface <code>Attr</code></h3>
 
-<p class="XXX">Free <code>Attr</code> from <code>Node</code>? Hixie suggests
-nuking from orbit, including .attributes. Anyone interested in implementing
-and figuring out what breaks? Would certainly clean things up.</p>
+<p class="XXX">Free <code>Attr</code> from <code>Node</code>? </p>
 
 <pre class=idl>interface <dfn>Attr</dfn> : <span>Node</span> {
   readonly attribute DOMString <span title=dom-Attr-name>name</span>;
@@ -2856,6 +2845,7 @@ support them.</p>
  <dt><code>Node</code></dt>
  <dd>
   <p><dfn title=dom-Node-normalize><code>normalize()</code></dfn>
+  <p><dfn title=dom-Node-isSupported><code>isSupported</code></dfn>
   <p><dfn title=dom-Node-getFeature><code>getFeature()</code></dfn>
   <p><dfn title=dom-Node-getUserData><code>getUserData()</code></dfn>
   <p><dfn title=dom-Node-setUserData><code>setUserData()</code></dfn>

@@ -5,12 +5,13 @@
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
   <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/box/ib/006.html" type="text/html"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#display-prop" />
-  <meta name="flags" content="dom"/>
+  <meta name="flags" content="dom interact"/>
   <style type="text/css">
    body { color: blue; }
    .inline { display: inline; }
    .block { display: block; }
   </style>
+  <meta http-equiv="Content-Script-Type" content="text/javascript"/>
   <script type="text/javascript">
    function clicked() {
      document.getElementById('test').className = document.getElementById('test').className == 'inline' ? 'block' : 'inline';

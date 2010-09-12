@@ -126,15 +126,17 @@ test(function() {
   }
 
   for (var i in tests) {
-    var test = tests[i];
-    var namespaceURI = test[0];
-    var qualifiedName = test[1];
-    var doctype = test[2];
-    var expected = test[3];
-    if (expected != null)
-      assert_throws(expected, function() { document.implementation.createDocument(namespaceURI, qualifiedName, doctype) })
-    else
-      assert_equals(document.implementation.createDocument(namespaceURI, qualifiedName, doctype).nodeType, Node.DOCUMENT_NODE)
+    test(function() {
+      var test = tests[i],
+          namespaceURI = test[0],
+          qualifiedName = test[1],
+          doctype = test[2],
+          expected = test[3]
+      if (expected != null)
+        assert_throws(expected, function() { document.implementation.createDocument(namespaceURI, qualifiedName, doctype) })
+      else
+        assert_equals(document.implementation.createDocument(namespaceURI, qualifiedName, doctype).nodeType, Node.DOCUMENT_NODE)
+    })
   }
 })
 </script>

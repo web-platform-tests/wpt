@@ -41,7 +41,10 @@
 
 
 <h2 class="no-num no-toc">Abstract</h2>
-<p>This specification defines the DOM Core part of the Web platform. The Document Object Model is a language- and platform neutral interface that allows programs and scripts to dynamically access and update the content, structure and style of documents. Web DOM Core mostly subsets DOM3 Core, but redefines some things and adds some features that were widely implemented already.
+
+<p>This specification defines the DOM Core part of the Web platform. The DOM
+is a language- and platform neutral interface that allows programs and scripts to dynamically access and update the content and structure of
+documents.
 
 
 
@@ -1130,11 +1133,12 @@ with <var>new ownerDocument</var> being the <span>context node</span>'s
 <p>The
 <dfn title=dom-Node-isSameNode><code>isSameNode(<var>node</var>)</code></dfn>
 method must return true if <var>node</var> is a reference to the same
-object as the <span>context node</span>, and false otherwise.
+object as the <span>context node</span>, or false otherwise.
 
-
-<p>The <dfn title=dom-Node-isEqualNode><code>isEqualNode(<var>node</var>)</code></dfn> method must return true if all of the following
-conditions are true, and must otherwise return false:
+<p>The
+<dfn title=dom-Node-isEqualNode><code>isEqualNode(<var>node</var>)</code></dfn>
+method must return true if all of the following conditions are true, or
+false otherwise:
 
 <ul>
  <li><p><var>node</var> is not null.

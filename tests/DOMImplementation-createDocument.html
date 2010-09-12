@@ -132,10 +132,22 @@ test(function() {
           qualifiedName = test[1],
           doctype = test[2],
           expected = test[3]
-      if (expected != null)
+      if (expected != null) {
         assert_throws(expected, function() { document.implementation.createDocument(namespaceURI, qualifiedName, doctype) })
-      else
-        assert_equals(document.implementation.createDocument(namespaceURI, qualifiedName, doctype).nodeType, Node.DOCUMENT_NODE)
+      } else {
+        var doc = document.implementation.createDocument(namespaceURI, qualifiedName, doctype)
+        assert_equals(doc.nodeType, Node.DOCUMENT_NODE)
+        assert_equals(doc.nodeType, doc.DOCUMENT_NODE)
+        if(!qualifiedName) {
+          assert_equals(doc.documentElement, null)
+        }
+        if(!doctype) {
+          assert_equals(doc.doctype, null)
+        }
+        if(!qualifiedName && !doctype) {
+          assert_equals(doc.childNodes.length, 0)
+        }
+      }
     })
   }
 })

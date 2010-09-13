@@ -2281,7 +2281,7 @@ it, which return other objects for historical reasons.
 
 <pre class=idl>interface <dfn id=htmlcollection>HTMLCollection</dfn> {
 readonly attribute unsigned long <a href=#dom-htmlcollection-length title=dom-HTMLCollection-length>length</a>;
-caller getter object <a href=#dom-htmlcollection-item title=dom-HTMLCollection-item>item</a>(unsigned long index); // only returns Element
+caller getter <a href=#element>Element</a> <a href=#dom-htmlcollection-item title=dom-HTMLCollection-item>item</a>(unsigned long index);
 caller getter object <a href=#dom-htmlcollection-nameditem title=dom-HTMLCollection-namedItem>namedItem</a>(DOMString name); // only returns Element
 };</pre>
 

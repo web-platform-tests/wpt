@@ -19,12 +19,9 @@
 <body class=draft>
 <div class=head id=head>
 <h1>Web DOM Core</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-12-september-2010>Work in Progress &mdash; Last Update 12 September 2010</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-13-september-2010>Work in Progress &mdash; Last Update 13 September 2010</h2>
 <dl>
- <dt>Editors
- <dd>Simon Pieters &lt;simonp@opera.com&gt;
- <dd>Geoffrey Sneddon &lt;gsneddon@opera.com&gt;
- <dd>Ms2ger &lt;ms2ger@gmail.com&gt;
+ <dt>Editor
  <dd>Anne van Kesteren &lt;annevk@opera.com&gt;
 
  <dt>Version history
@@ -124,6 +121,9 @@ to dynamically access and update the content and structure of documents.
 <h2 class=no-num id=issues>Issues</h2>
 
 <ul class=XXX>
+ <li>Node.baseURI</li>
+ <li>Node.compareDocumentPosition</li>
+ <li>Document.documentURI</li>
  <li>Move DOMStringMap here?
  <li>Move Document.charset / Document.characterSet / Document.defaultCharset here?
 </ul>
@@ -491,12 +491,12 @@ steps must be run:
   const unsigned short <a href=#dom-domexception-encoding_err title=dom-DOMException-ENCODING_ERR>ENCODING_ERR</a> = 26;
 
   unsigned short <a href=#dom-domexception-code title=dom-DOMException-code>code</a>;
-  DOMString <a href=#dom-domexception-message title=dom-DOMException-message>message</a>;
   DOMString <a href=#dom-domexception-name title=dom-DOMException-name>name</a>;
 };</pre>
 
-<p>The <dfn id=dom-domexception-code title=dom-DOMException-code><code>code</code></dfn> exception member
-must return the code for the exception, which must be one of the following:
+<p>The <dfn id=dom-domexception-code title=dom-DOMException-code><code>code</code></dfn> exception
+field must return the code for the exception, which must be one of the
+following:
 
 <ol class=brief>
  <li value=1><dfn id=dom-domexception-index_size_err title=dom-DOMException-INDEX_SIZE_ERR><code>INDEX_SIZE_ERR</code></dfn>:
@@ -564,12 +564,8 @@ must return the code for the exception, which must be one of the following:
  an error occurred while encoding the data.
 </ol>
 
-<p>The <dfn id=dom-domexception-message title=dom-DOMException-message><code>message</code></dfn> exception
-member must return a user-agent-defined human-readable string describing the
-exception.
-
-<p>The <dfn id=dom-domexception-name title=dom-DOMException-name><code>name</code></dfn> exception member
-must return the name of the exception constant as a string.</p>
+<p>The <dfn id=dom-domexception-name title=dom-DOMException-name><code>name</code></dfn> exception
+field must return the name of the exception constant as a string.</p>
 
 
 
@@ -625,7 +621,7 @@ node and its child nodes:</p>
   const unsigned short <a href=#dom-node-document_fragment_node title=dom-Node-DOCUMENT_FRAGMENT_NODE>DOCUMENT_FRAGMENT_NODE</a> = 11;
   const unsigned short <a href=#dom-node-notation_node title=dom-Node-NOTATION_NODE>NOTATION_NODE</a> = 12; // historical
 
-  readonly attribute unsigned short <span title=dom-Node-nodeType>nodeType</span>;
+  readonly attribute unsigned short <a href=#dom-node-nodetype title=dom-Node-nodeType>nodeType</a>;
   readonly attribute DOMString <a href=#dom-node-nodename title=dom-Node-nodeName>nodeName</a>;
            attribute DOMString <a href=#dom-node-nodevalue title=dom-Node-nodeValue>nodeValue</a>;
            attribute DOMString <a href=#dom-node-textcontent title=dom-Node-textContent>textContent</a>;
@@ -676,8 +672,8 @@ node and its child nodes:</p>
   DOMUserData getUserData(DOMString key);-->
 };</pre>
 
-<p>The <code title=dom-Node-nodeType>nodeType</code> attribute must return
-the type of the node, which must be one of the following:</p>
+<p>The <dfn id=dom-node-nodetype title=dom-Node-nodeType><code>nodeType</code></dfn> attribute
+must return the type of the node, which must be one of the following:</p>
 
 <ol>
  <li value=1><dfn id=dom-node-element_node title=dom-Node-ELEMENT_NODE><code>ELEMENT_NODE</code></dfn>
@@ -1151,7 +1147,7 @@ false otherwise:
 
 <ul>
  <li><p><a href=#node><var>node</var></a> is not null.
- <li><p><a href=#node><var>node</var></a>'s <code title=dom-Node-nodeType>nodeType</code> is the same as the <a href=#context-node>context node</a>'s <code title=dom-Node-nodeType>nodeType</code>.
+ <li><p><a href=#node><var>node</var></a>'s <a href=#dom-node-nodetype><code title=dom-Node-nodeType>nodeType</code></a> is the same as the <a href=#context-node>context node</a>'s <a href=#dom-node-nodetype><code title=dom-Node-nodeType>nodeType</code></a>.
  <li><p><a href=#node><var>node</var></a>'s <a href=#dom-node-nodename><code title=dom-Node-nodeName>nodeName</code></a> is the same as the <a href=#context-node>context node</a>'s <a href=#dom-node-nodename><code title=dom-Node-nodeName>nodeName</code></a>.
  <li><p><a href=#node><var>node</var></a>'s <a href=#dom-node-localname><code title=dom-Node-localName>localName</code></a> is the same as the <a href=#context-node>context node</a>'s <a href=#dom-node-localname><code title=dom-Node-localName>localName</code></a>.
  <li><p><a href=#node><var>node</var></a>'s <a href=#dom-node-namespaceuri><code title=dom-Node-namespaceURI>namespaceURI</code></a> is the same as the <a href=#context-node>context node</a>'s <a href=#dom-node-namespaceuri><code title=dom-Node-namespaceURI>namespaceURI</code></a>.
@@ -2799,17 +2795,21 @@ because the newer ones keep changing. -->
 
 
 <h2 class=no-num id=acknowledgements>Acknowledgements</h2>
+
 <p>Thanks to
 
-Anne van Kesteren,
 Dethe Elza,
-and
-Henri Sivonen,
+Jonas Sicking, and
+Henri Sivonen
 
 for their useful comments.
 
-<p>Special thanks to Ian Hickson for first specifying some parts of this
-specification in HTML. <a class=informative data-anolis-ref="" href=#refsHTML>[HTML]</a>
+<p>Special thanks to Geoffrey Sneddon, Ms2ger, and Simon Pieters for editing
+the initial 80% of this specification and their useful comments.</p>
+
+<p>Special thanks also to Ian Hickson for first specifying some parts of
+this specification in HTML and his useful comments.
+<a class=informative data-anolis-ref="" href=#refsHTML>[HTML]</a>
 
 
 <script src=http://www.whatwg.org/specs/web-apps/current-work/dfn.js></script>

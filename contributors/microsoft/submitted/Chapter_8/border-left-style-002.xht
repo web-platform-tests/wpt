@@ -6,10 +6,11 @@
         <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#propdef-border-left-style" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#border-style-properties" />
         <meta name="flags" content="" />
-        <meta name="assert" content="The 'border-left-style' property set to 'hidden' does not render any border for non-table elements." />
+        <meta name="assert" content="The 'border-left-style' property set to 'hidden' computes to 'none' and does not render any border for non-table elements." />
         <style type="text/css">
             div
             {
+                border-left-style: solid;
                 border-left-style: hidden;
                 border-left-width: 3px;
                 height: 1in;

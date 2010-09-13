@@ -22,10 +22,7 @@
 <h1>Web DOM Core</h1>
 <h2 class="no-num no-toc">Work in Progress &mdash; Last Update [DATE: 01 Jan 1901]</h2>
 <dl>
- <dt>Editors
- <dd>Simon Pieters &lt;simonp@opera.com>
- <dd>Geoffrey Sneddon &lt;gsneddon@opera.com>
- <dd>Ms2ger &lt;ms2ger@gmail.com>
+ <dt>Editor
  <dd>Anne van Kesteren &lt;annevk@opera.com>
 
  <dt>Version history
@@ -74,6 +71,9 @@ to dynamically access and update the content and structure of documents.
 <h2 class=no-num>Issues</h2>
 
 <ul class=XXX>
+ <li>Node.baseURI</li>
+ <li>Node.compareDocumentPosition</li>
+ <li>Document.documentURI</li>
  <li>Move DOMStringMap here?
  <li>Move Document.charset / Document.characterSet / Document.defaultCharset here?
 </ul>
@@ -475,7 +475,7 @@ title>http://www.w3.org/2000/xmlns/</code>.
 };</pre>
 
 <p>The <dfn title=dom-DOMException-code><code>code</code></dfn> exception
-member must return the code for the exception, which must be one of the
+field must return the code for the exception, which must be one of the
 following:
 
 <ol class="brief">
@@ -547,7 +547,7 @@ following:
 </ol>
 
 <p>The <dfn title=dom-DOMException-name><code>name</code></dfn> exception
-member must return the name of the exception constant as a string.</p>
+field must return the name of the exception constant as a string.</p>
 
 
 
@@ -2922,17 +2922,21 @@ because the newer ones keep changing. -->
 
 
 <h2 class=no-num>Acknowledgements</h2>
+
 <p>Thanks to
 
-Anne van Kesteren,
 Dethe Elza,
-and
-Henri Sivonen,
+Jonas Sicking, and
+Henri Sivonen
 
 for their useful comments.
 
-<p>Special thanks to Ian Hickson for first specifying some parts of this
-specification in HTML. <span data-anolis-ref class=informative>HTML</span>
+<p>Special thanks to Geoffrey Sneddon, ms2ger, and Simon Pieters for editing
+the initial 80% of this specification and their useful comments.</p>
+
+<p>Special thanks also to Ian Hickson for first specifying some parts of
+this specification in HTML and his useful comments.
+<span data-anolis-ref class=informative>HTML</span>
 
 
 <script src="http://www.whatwg.org/specs/web-apps/current-work/dfn.js"></script>

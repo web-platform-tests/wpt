@@ -6,39 +6,26 @@
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
         <link rel="help" href="http://dev.w3.org/csswg/css3-fonts/#font-prop-desc" />
         <meta name="flags" content="" />
-        <meta name="assert" content="font-style descriptor is allowed in @font-face rule." />
+        <meta name="assert" content="font-matching algorithm allows font-style:normal fallback to an italic face if no other face is available." />
         <style type="text/css">
             @font-face
             {
-                font-family: MyTestFont;
+                font-family: TestFont;
                 src: local(Arial);
-				font-style: italic;
+                font-style: italic;
             }
-            #test1
+            #test
             {
-                font-family: MyTestFont;
-				font-style: italic;
-            }
-			#test2
-            {
-                font-family: MyTestFont;
-				font-style: oblique;
-            }
-			#test3
-            {
-                font-family: MyTestFont;
-				font-style: normal;
-            }
+                font-family: TestFont;
+                font-style: normal;
+            }            
         </style>
     </head>
     <body>
-        <p>Test passes if the following three statements are true: 
-		<br> 1) the first two lines are in different font face from the last two lines. 
-		<br> 2) the first two lines both slants to the right side. 
-		<br> 3) the last two lines are both upright.</p>
-        <div id="test1">ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz</div>
-		<div id="test2">ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz</div>
-		<div id="test3">ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz</div>
-		<div id="reference">ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz</div>
+        <p>Test passes if the following two statements are true: 
+        <br/> 1). The two lines below are in different font face.
+        <br/> 2). The first line is in upright face.
+        <div id="test">ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz</div> 
+        <div id="reference">ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz</div>
     </body>
 </html>

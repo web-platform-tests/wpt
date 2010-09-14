@@ -19,7 +19,7 @@
 <body class=draft>
 <div class=head id=head>
 <h1>Web DOM Core</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-13-september-2010>Work in Progress &mdash; Last Update 13 September 2010</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-14-september-2010>Work in Progress &mdash; Last Update 14 September 2010</h2>
 <dl>
  <dt>Editor
  <dd>Anne van Kesteren &lt;annevk@opera.com&gt;
@@ -1264,14 +1264,16 @@ method must run these steps:
    <var>namespace</var>.</dd>
    <!--XXX <code>Attr</code> -->
    <dt><a href=#document><code>Document</code></a></dt>
-   <dd><p>Return the result of <span>finding a namespace prefix</span> for
+   <dd><p>Return the result of <a href=#locate-a-namespace-prefix title="locate a namespace prefix">locating
+   a namespace prefix</a> for
    its <a href=#dom-document-documentelement><code title=dom-Document-documentElement>documentElement</code></a>, if
    that is not null, or null otherwise.</dd>
    <dt><a href=#documenttype><code>DocumentType</code></a></dt>
    <dt><a href=#documentfragment><code>DocumentFragment</code></a></dt>
    <dd><p>Return null.</dd>
    <dt>Any other node</dt>
-   <dd><p>Return the result of <span>finding a namespace prefix</span> for
+   <dd><p>Return the result of <a href=#locate-a-namespace-prefix title="locate a namespace prefix">locating
+   a namespace prefix</a> for
    its <a href=#dom-node-parentnode><code title=dom-Node-parentNode>parentNode</code></a>, if that is an
    <a href=#element><code>Element</code></a> node, or null otherwise.</dd>
   </dl>
@@ -2203,7 +2205,7 @@ method must run these steps:</p>
 
 <ol>
  <li><p>Remove the <a href=#contiguous-text-nodes>contiguous <code>Text</code> nodes</a> of the
- <span>content node</span>.</li>
+ <a href=#context-node>context node</a>.</li>
  <li><p>If <var>data</var> is not the empty string, insert a new
  <a href=#text><code>Text</code></a> node whose
  <a href=#dom-characterdata-data><code title=dom-CharacterData-data>data</code></a> is <var>data</var> at the

@@ -1258,14 +1258,16 @@ method must run these steps:
    <var>namespace</var>.</p></dd>
    <!--XXX <code>Attr</code> -->
    <dt><code>Document</code></dt>
-   <dd><p>Return the result of <span>finding a namespace prefix</span> for
+   <dd><p>Return the result of <span title="locate a namespace prefix">locating
+   a namespace prefix</span> for
    its <code title=dom-Document-documentElement>documentElement</code>, if
    that is not null, or null otherwise.</p></dd>
    <dt><code>DocumentType</code></dt>
    <dt><code>DocumentFragment</code></dt>
    <dd><p>Return null.</p></dd>
    <dt>Any other node</dt>
-   <dd><p>Return the result of <span>finding a namespace prefix</span> for
+   <dd><p>Return the result of <span title="locate a namespace prefix">locating
+   a namespace prefix</span> for
    its <code title=dom-Node-parentNode>parentNode</code>, if that is an
    <code>Element</code> node, or null otherwise.</p></dd>
   </dl>
@@ -2307,7 +2309,7 @@ method must run these steps:</p>
 
 <ol>
  <li><p>Remove the <span>contiguous <code>Text</code> nodes</span> of the
- <span>content node</span>.</p></li>
+ <span>context node</span>.</p></li>
  <li><p>If <var>data</var> is not the empty string, insert a new
  <code>Text</code> node whose
  <code title=dom-CharacterData-data>data</code> is <var>data</var> at the

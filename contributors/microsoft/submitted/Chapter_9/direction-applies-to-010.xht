@@ -8,6 +8,10 @@
         <meta name="flags" content="ahem" />
         <meta name="assert" content="The 'direction' property applies to elements with a display of list-item." />
         <style type="text/css">
+            body
+            {
+                margin-left: 1em;
+            }
             div
             {
                 background: orange;
@@ -15,13 +19,12 @@
                 display: list-item;
                 font: 0.5in/1em ahem;
                 height: 1in;
-                list-style: none;
                 width: 1in;
             }
         </style>
     </head>
     <body>
-        <p>Test passes if there is a box in the upper-right corner of the orange box.</p>
+        <p>Test passes if there is a box in the upper-right corner of the orange box and there is a marker bullet on the right-hand side of the boxes.</p>
         <div>X</div>
     </body>
 </html>

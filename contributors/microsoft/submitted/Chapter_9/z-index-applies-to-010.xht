@@ -8,6 +8,10 @@
         <meta name="flags" content="" />
         <meta name="assert" content="The 'z-index' property applies to elements with a display of list-item." />
         <style type="text/css">
+            body
+            {
+                margin-left: 1em;
+            }
             #div1
             {
                 background: green;
@@ -28,7 +32,7 @@
         </style>
     </head>
     <body>
-        <p>Test passes if there is no red visible on the page.</p>
+        <p>Test passes if there is no red visible on the page and there is a marker bullet on the left-hand side of the box.</p>
         <div id="div1"></div>
         <div id="zindex"></div>
     </body>

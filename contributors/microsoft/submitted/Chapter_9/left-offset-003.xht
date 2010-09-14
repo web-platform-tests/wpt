@@ -10,29 +10,29 @@
         <style type="text/css">
             #container
             {
+                border: solid blue;
                 height: 1in;
-                padding-right: 0.25in;
+                padding-left: 0.25in;
                 position: relative;
                 width: 1in;
             }
             #div1
             {
-                background: white;
+                background: black;
                 height: 0.5in;
                 position: absolute;
-                left: 0.5in;
+                left: 0.75in;
                 width: 0.5in;
             }
             #div2
             {
-                background: blue;
                 height: 1in;
                 width: 1in;
             }
         </style>
     </head>
     <body>
-        <p>Test passes if there is a box below with top-right corner missing.</p>
+        <p>Test passes if there is a black box in the upper-right corner of the blue box.</p>
         <div id="container">
             <div id="div1"></div>
             <div id="div2"></div>

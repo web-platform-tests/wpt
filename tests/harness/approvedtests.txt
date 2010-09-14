@@ -131,10 +131,7 @@ http://test.w3.org/html/tests/approved/video/video_012.htm
 http://test.w3.org/html/tests/approved/video/video_013.htm
 http://test.w3.org/html/tests/approved/xhtml5/area_noref.xhtml
 http://test.w3.org/html/tests/approved/xhtml5/body_link.xhtml
-http://test.w3.org/html/tests/approved/xhtml5/body_text_00ffff.xhtml
-http://test.w3.org/html/tests/approved/xhtml5/colgroup_valign_bottom.xhtml
-http://test.w3.org/html/tests/approved/xhtml5/colgroup_valign_top.xhtml
-http://test.w3.org/html/tests/approved/xhtml5/html_style_in_comment.xhtml
+http://test.w3.org/html/tests/approved/xhtml5/body_text_00ffff.xhtmlhttp://test.w3.org/html/tests/approved/xhtml5/html_style_in_comment.xhtml
 http://test.w3.org/html/tests/approved/xhtml5/img_border_percent.xhtml
 http://test.w3.org/html/tests/approved/xhtml5/object_border_perc.xhtml
 http://test.w3.org/html/tests/approved/xhtml5/object_border_pixel.xhtml

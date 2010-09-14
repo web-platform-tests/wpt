@@ -6,16 +6,16 @@
 function testHRE(node) {
   test(function() {
     assert_throws("HIERARCHY_REQUEST_ERR", function() { node.insertBefore(document.createTextNode("fail"), null) })
-    assert_throws("HIERARCHY_REQUEST_ERR", function() { node.insertBefore(null, null) })
+    assert_throws(new TypeError(), function() { node.insertBefore(null, null) })
   })
 }
 test(function() {
   assert_throws("HIERARCHY_REQUEST_ERR", function() { document.body.insertBefore(document.body, document.getElementById("log")) })
   assert_throws("HIERARCHY_REQUEST_ERR", function() { document.body.insertBefore(document.documentElement, document.getElementById("log")) })
 
-  assert_throws("NOT_SUPPORTED_ERR", function() { document.body.insertBefore(null, null) })
+  assert_throws(new TypeError(), function() { document.body.insertBefore(null, null) })
 
-  assert_throws("NOT_SUPPORTED_ERR", function() { document.body.insertBefore(null, document.body.firstChild) })
+  assert_throws(new TypeError(), function() { document.body.insertBefore(null, document.body.firstChild) })
 
   assert_throws(new TypeError(), function() { document.body.insertBefore({'a':'b'}, document.body.firstChild) })
 

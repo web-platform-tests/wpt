@@ -4,10 +4,10 @@
 <div id="log"></div>
 <iframe src=about:blank></iframe>
 <script>
-function testHRE(aNode) {
+function testHRE(node) {
   test(function() {
     assert_throws("HIERARCHY_REQUEST_ERR", function() { node.appendChild(document.createTextNode("fail")) })
-    assert_throws("HIERARCHY_REQUEST_ERR", function() { node.appendChild(null) })
+    assert_throws(new TypeError(), function() { node.appendChild(null) })
   })
 }
 test(function() {
@@ -25,12 +25,9 @@ test(function() {
   document.body.appendChild(s)
   assert_equals(s.ownerDocument, document)
 
-  var len = document.body.childNodes.length
-  assert_throws("NOT_SUPPORTED_ERR", function() { document.body.appendChild(null) })
-  assert_equals(document.body.childNodes.length, len)
+  assert_throws(new TypeError(), function() { document.body.appendChild(null) })
 
   assert_throws(new TypeError(), function() { document.body.appendChild({'a':'b'}) })
-  assert_equals(document.body.childNodes.length, len)
 
   document.body.setAttribute("abc", "pass")
   var attr = document.body.attributes[0]

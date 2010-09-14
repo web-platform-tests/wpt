@@ -17,12 +17,9 @@ test(function() {
   assert_throws("NOT_FOUND_ERR", function() { document.body.removeChild(s) })
   assert_equals(s.ownerDocument, frameDoc)
 
-  var len = document.body.childNodes.length
-  assert_throws("NOT_SUPPORTED_ERR", function() { document.body.removeChild(null) })
-  assert_equals(document.body.childNodes.length, len)
+  assert_throws(new TypeError(), function() { document.body.removeChild(null) })
 
   assert_throws(new TypeError(), function() { document.body.removeChild({'a':'b'}) })
-  assert_equals(document.body.childNodes.length, len)
 
   document.body.setAttribute("abc", "test")
   var attr = document.body.attributes[0]

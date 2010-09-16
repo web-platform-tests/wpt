@@ -13,7 +13,7 @@
   ]]></style>
  </head>
  <body>
-  <p>There should be a solid blue line to the right of every occurance of the word "<span class="test">THERE &#x2799;</span>".</p>
+  <p>There should be a solid blue line to the right of every occurence of the word "<span class="test">THERE &#x2799;</span>".</p>
   <table class="test">
    <tr>
     <td colspan="2">

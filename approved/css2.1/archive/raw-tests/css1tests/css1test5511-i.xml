@@ -11,10 +11,10 @@
   ]]></style>
  </head>
  <body>
-  <p class="one">
+  <p>
    <span class="two"> This box should have a thin top border.</span>
   </p>
-  <p class="one">
+  <p>
    There should be no red on this line. <span class="three">&#x00A0;&#x00A0;&#x00A0;</span>
   </p>
  </body>

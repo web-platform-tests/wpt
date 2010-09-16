@@ -1907,50 +1907,6 @@ value.
 attribute must return the <span title=concept-attribute-element>element</span>
 associated with the <span>context node</span><!- -, if there is one, or null
 otherwise [createAttribute]- ->.
-
-<hr>
-
-<p>This specification further defines two special types of <span
-title=concept-attribute>attributes</span>: <span title=concept-ID-attribute>ID
-attributes</span> and <span title=concept-class-attribute>class
-attributes</span>.
-
-<p><dfn title=concept-ID-attribute>ID attributes</dfn> must have a
-<code title=dom-Attr-value>value</code> that contains at least one character and
-does not contain any <span title="space character">space characters</span>. The
-<code title=dom-Attr-value>value</code> must be unique amongst all the <span
-title=concept-id>IDs</span> in the element's <span>home subtree</span>.
-
-<p class=note>For example, the <code title=attr-id
-data-anolis-spec=html>id</code> attribute in HTML is an <span
-title=concept-ID-attribute>ID attribute</span>, as well as the <code
-title>id</code> attributes in MathML and SVG. <span data-anolis-ref
-class=informative>HTML</span> <span data-anolis-ref
-class=informative>MATHML</span> <span data-anolis-ref
-class=informative>SVG</span>
-
-<p><dfn title=concept-class-attribute>Class attributes</dfn> must have a
-<code title=dom-Attr-value>value</code> that is a <span>set of space-separated
-tokens</span> representing the various <dfn title=concept-class>classes</dfn>
-that the element belongs to.
-
-<p>The <span title=concept-class>classes</span> that an <code>Element</code>
-node has associated with it is the set of all the <span
-title=concept-class>classes</span> returned when the value of the <span
-title=concept-class-attribute>class attribute</span> is <span
-title="split a string on spaces">split on spaces</span>. (Duplicates are
-ignored.)
-
-<p class=note>The <code title>class</code> attributes in HTML, MathML and SVG
-are all <span title=concept-class-attribute>class attributes</span>. <span
-data-anolis-ref class=informative>HTML</span> <span data-anolis-ref
-class=informative>MATHML</span> <span data-anolis-ref
-class=informative>SVG</span>
-
-<p class=note>This specification does not define the <span
-title=concept-attribute-name>name</span> of <span
-title=concept-id-attribute>ID</span> or <span
-title=concept-class-attribute>class attributes</span>.
 -->
 
 
@@ -1987,12 +1943,17 @@ title=concept-class-attribute>class attributes</span>.
 
 <p>When an <code>Element</code> node is created its <span title=concept-element-local-name>local name</span> is always given. Unless explicitly given when an <code>Element</code> node is created, its <span title=concept-element-namespace>namespace</span> and <span title=concept-element-namespace-prefix>namespace prefix</span> are null and its <span title=concept-element-qualified-name>qualified name</span> is its <span title=concept-element-namespace-prefix>namespace prefix</span>, followed by a "<code>:</code>" (U+003A), followed by its <span title=concept-element-local-name>local name</span>, if its <span title=concept-element-namespace-prefix>namespace prefix</span> is not null, or otherwise <span title=concept-element-qualified-name>qualified name</span> is just its <span title=concept-element-local-name>local name</span>.</p>
 
-<p><code>Element</code> nodes can have a <dfn title=concept-id>unique
-identifier (ID)</dfn> associated with them. User agents must associate the
-<code title=dom-Attr-value>value</code> of all <span
-title=concept-ID-attribute>ID attributes</span> in the <code>Element</code>
-node's <code title=dom-Node-attributes>attributes</code> with the
-<code>Element</code> node, unless it is the empty string.
+<p><code>Element</code> nodes also have an associated collection of
+<code>Attr</code> objects, often called attributes.
+
+<p><code>Element</code> nodes can have a
+<dfn title=concept-id>unique identifier (ID)</dfn> and
+<dfn title=concept-class>classes</dfn> associated with them.
+
+<p class=XXX>I think rather than leaving this up to markup specifications we
+should just state that id="" sets the ID and class="" sets the classes. We
+can then also define Element.id, Element.className, and Element.classList
+here. It would simplify a lot of stuff.
 
 <p>Specifications may define <dfn>base URL change steps</dfn>.
 

@@ -2022,14 +2022,14 @@ method must run these steps:
  <span>HTML document</span>, let <var>qualifiedName</var> be
  <span>converted to lowercase</span>.
 
- <li><p>If the node does not have an <code>Attr</code> whose
+ <li><p>If the node does not have an <code>Attr</code> object whose
  <span title=concept-attr-name>name</span> is <var>qualifiedName</var>,
  create an <code>Attr</code> object, whose
  <span title=concept-attr-local-name>local name</span> is <var>qualifiedName</var> and <span title=concept-attr-value>value</span> is <var>value</var>. Append this object to the <span>context node</span>'s
  <code title=dom-Element-attributes>attributes</code>, as its last item.
 
  <li><p>Otherwise, set the <span title=concept-attr-value>value</span> of
- the first <code>Attr</code> in the <span>context node</span>'s
+ the first <code>Attr</code> object in the <span>context node</span>'s
  <code title=dom-Element-attributes>attributes</code> whose
  <span title=concept-attr-qualified-name>qualified name</span> is
  <var>qualifiedName</var>, to <var>value</var>.
@@ -2037,9 +2037,22 @@ method must run these steps:
 
 <p class=XXX><dfn title=dom-Element-setAttributeNS>setAttributeNS</dfn>
 
-<p class=XXX><dfn title=dom-Element-removeAttribute>removeAttribute</dfn>
+<p>The
+<dfn title=dom-Element-removeAttribute><code>removeAttribute(<var>qualifiedName</var>)</code></dfn> method must remove the first <code>Attr</code> object in the
+<span>context node</span>'s
+<code title=dom-Element-attributes>attributes</code> whose
+<span title=concept-attr-qualified-name>qualified name</span> is
+<var>qualifiedName</var>.
 
-<p class=XXX><dfn title=dom-Element-removeAttributeNS>removeAttributeNS</dfn>
+<p>The
+<dfn title=dom-Element-removeAttributeNS><code>removeAttributeNS(<var>namespace</var>, <var>localName</var>)</code></dfn>
+method must remove the <code>Attr</code> object in the
+<span>context node</span>'s
+<code title=dom-Element-attributes>attributes</code> whose
+<span title=concept-attr-namespace>namespace</span> is
+<var>namespace</var> and
+<span title=concept-attr-local-name>local name</span> is
+<var>localName</var>
 
 <p>The
 <dfn title=dom-Element-hasAttribute><code>hasAttribute(<var>qualifiedName</var>)</code></dfn>

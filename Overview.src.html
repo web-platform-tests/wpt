@@ -602,11 +602,17 @@ node and its child nodes:</p>
   const unsigned short <span title=dom-Node-DOCUMENT_TYPE_NODE>DOCUMENT_TYPE_NODE</span> = 10;
   const unsigned short <span title=dom-Node-DOCUMENT_FRAGMENT_NODE>DOCUMENT_FRAGMENT_NODE</span> = 11;
   const unsigned short <span title=dom-Node-NOTATION_NODE>NOTATION_NODE</span> = 12; // historical
-
   readonly attribute unsigned short <span title=dom-Node-nodeType>nodeType</span>;
+
+  readonly attribute DOMString <span title=dom-Node-namespaceURI>namespaceURI</span>;
+  readonly attribute DOMString <span title=dom-Node-prefix>prefix</span>;
+  readonly attribute DOMString <span title=dom-Node-localName>localName</span>;
   readonly attribute DOMString <span title=dom-Node-nodeName>nodeName</span>;
-           attribute DOMString <span title=dom-Node-nodeValue>nodeValue</span>;
-           attribute DOMString <span title=dom-Node-textContent>textContent</span>;
+
+  readonly attribute DOMString <span title=dom-Node-baseURI>baseURI</span>;
+
+  boolean <span title=dom-Node-hasAttributes>hasAttributes</span>();
+  readonly attribute <span>NamedNodeMap</span> <span title=dom-Node-attributes>attributes</span>;
 
   readonly attribute <span>Document</span> <span title=dom-Node-ownerDocument>ownerDocument</span>;
   readonly attribute <span>Node</span> <span title=dom-Node-parentNode>parentNode</span>;
@@ -618,29 +624,21 @@ node and its child nodes:</p>
   readonly attribute <span>Node</span> <span title=dom-Node-previousSibling>previousSibling</span>;
   readonly attribute <span>Node</span> <span title=dom-Node-nextSibling>nextSibling</span>;
 
-  boolean <span title=dom-Node-hasAttributes>hasAttributes</span>();
-  readonly attribute <span>NamedNodeMap</span> <span title=dom-Node-attributes>attributes</span>;
-
-  <span>Node</span> <span title=dom-Node-insertBefore>insertBefore</span>([NoNull] <span>Node</span> <var>newChild</var>, <span>Node</span> <var>refChild</var>);
-  <span>Node</span> <span title=dom-Node-replaceChild>replaceChild</span>([NoNull] <span>Node</span> <var>newChild</var>, [NoNull] <span>Node</span> <var>oldChild</var>);
-  <span>Node</span> <span title=dom-Node-removeChild>removeChild</span>([NoNull] <span>Node</span> [NoNull] <var>oldChild</var>);
-  <span>Node</span> <span title=dom-Node-appendChild>appendChild</span>([NoNull] <span>Node</span> <var>newChild</var>);<!--
-  void normalize();-->
-
-  readonly attribute DOMString <span title=dom-Node-namespaceURI>namespaceURI</span>;
-  readonly attribute DOMString <span title=dom-Node-prefix>prefix</span>;
-  readonly attribute DOMString <span title=dom-Node-localName>localName</span>;
-
-  readonly attribute DOMString <span title=dom-Node-baseURI>baseURI</span>;
-
   const unsigned short <span title=dom-Node-DOCUMENT_POSITION_DISCONNECTED>DOCUMENT_POSITION_DISCONNECTED</span> = 0x01;
   const unsigned short <span title=dom-Node-DOCUMENT_POSITION_PRECEDING>DOCUMENT_POSITION_PRECEDING</span> = 0x02;
   const unsigned short <span title=dom-Node-DOCUMENT_POSITION_FOLLOWING>DOCUMENT_POSITION_FOLLOWING</span> = 0x04;
   const unsigned short <span title=dom-Node-DOCUMENT_POSITION_CONTAINS>DOCUMENT_POSITION_CONTAINS</span> = 0x08;
   const unsigned short <span title=dom-Node-DOCUMENT_POSITION_CONTAINED_BY>DOCUMENT_POSITION_CONTAINED_BY</span> = 0x10;
   const unsigned short <span title=dom-Node-DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC>DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC</span> = 0x20;
-
   unsigned short <span title=dom-Node-compareDocumentPosition>compareDocumentPosition</span>(<span>Node</span> <var>other</var>);
+
+           attribute DOMString <span title=dom-Node-nodeValue>nodeValue</span>;
+           attribute DOMString <span title=dom-Node-textContent>textContent</span>;
+  <span>Node</span> <span title=dom-Node-insertBefore>insertBefore</span>([NoNull] <span>Node</span> <var>newChild</var>, <span>Node</span> <var>refChild</var>);
+  <span>Node</span> <span title=dom-Node-replaceChild>replaceChild</span>([NoNull] <span>Node</span> <var>newChild</var>, [NoNull] <span>Node</span> <var>oldChild</var>);
+  <span>Node</span> <span title=dom-Node-removeChild>removeChild</span>([NoNull] <span>Node</span> [NoNull] <var>oldChild</var>);
+  <span>Node</span> <span title=dom-Node-appendChild>appendChild</span>([NoNull] <span>Node</span> <var>newChild</var>);<!--
+  void normalize();-->
 
   <span>Node</span> <span title=dom-Node-cloneNode>cloneNode</span>(boolean <var>deep</var>);
   boolean <span title=dom-Node-isSameNode>isSameNode</span>(<span>Node</span> <var>node</var>);
@@ -686,6 +684,36 @@ must return the type of the node, which must be one of the following:</p>
 <p class=note>The constants marked historical can no longer be returned, but
 are still exposed on the interface.</p>
 
+<hr>
+
+<p>The <dfn title=dom-Node-namespaceURI><code>namespaceURI</code></dfn> attribute must return the namespace that is associated with the node, if there is one and it's not the empty string, or null otherwise.
+
+<p>The <dfn title=dom-Node-prefix><code>prefix</code></dfn> attribute must return the prefix that is associated with the node, if there is one and it's not the empty string, or null otherwise.
+<!--XXX support setting? - - On setting, it must run the following steps:
+
+<ol>
+ <li><p>Let <var>prefix</var> be the value being assigned.
+ <li>
+  <p>If <var>prefix</var> is not null, run the following substeps:
+  <ol>
+   <li><p>If <var>prefix</var> does not match the
+   <code data-anolis-spec=xml>Name</code> production in XML, raise an
+   <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
+   exception and terminate these steps.
+   <li><p>If <var>prefix</var> does not match the <code
+   data-anolis-spec=xmlns>NCName</code> production in Namespaces in XML, raise a
+   <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and
+   terminate these steps.
+  </ol>
+ <li><p class=XXX>Actually this does not match any browser. Let's try to drop it instead.
+</ol>-->
+
+<p class=note>Setting the <code title=dom-Node-prefix>prefix</code>
+attribute is not supported. <!-- XXX kill this note at some point -->
+
+<p>The <dfn title=dom-Node-localName><code>localName</code></dfn> attribute
+must return the local name that is associated with the node, if it has one,
+and null otherwise.
 
 <p>The <dfn title=dom-Node-nodeName><code>nodeName</code></dfn> attribute
 must return the following, depending on the <span>context node</span>:</p>
@@ -719,6 +747,102 @@ must return the following, depending on the <span>context node</span>:</p>
  <dt><code>DocumentFragment</code></dt>
  <dd><p>"<code title>#document-fragment</code>".
 </dl>
+
+<hr>
+
+<p>The <dfn title=dom-Node-baseURI><code>baseURI</code></dfn> attribute must <span class=XXX title>...</span>
+
+<hr>
+
+<p>The <dfn title=dom-Node-hasAttributes><code>hasAttributes()</code></dfn>
+method must return true if there are any attributes associated with the
+<span>context node</span>, if it is an <code>Element</code> node, and false
+otherwise.
+
+<p>The <dfn title=dom-Node-attributes><code>attributes</code></dfn> attribute must return a <code>NamedNodeMap</code> of all the <code>Attr</code> nodes associated with the node of the <span>context node</span>, if it is an <code>Element</code> node, or null otherwise.
+
+<hr>
+
+<p>The <dfn title=dom-Node-ownerDocument><code>ownerDocument</code></dfn> attribute must return the <code>Document</code> node that the <span>context node</span> is associated with, or null if there is none.
+
+<p>The <dfn title=dom-Node-parentNode><code>parentNode</code></dfn>
+attribute must run these steps:
+
+<ol>
+ <li><p>If the <span>context node</span> is an <code>Attr</code> node,
+ return null and terminate these steps.
+
+ <li><p>If the <span>context node</span> does not have a parent node, return
+ null and terminate these steps.
+
+ <li><p>Return the parent node of the <span>context node</span>.
+</ol>
+
+<!-- XXX needed? Minefield does not have this -->
+<p>The <dfn title=dom-Node-parentElement><code>parentElement</code></dfn> attribute must return the parent node of the <span>context node</span> if there is a parent and it is an <code>Element</code> node, or null otherwise.
+
+<p>The <dfn title=dom-Node-hasChildNodes><code>hasChildNodes()</code></dfn>
+method must return false if the <span>context node</span>'s
+<code title=dom-Node-firstChild>firstChild</code> is null, or true
+otherwise.
+
+<p>The <dfn title=dom-Node-childNodes><code>childNodes</code></dfn> attribute must return a <code>NodeList</code> rooted at the <span>context node</span> matching only child nodes.
+
+<p>The <dfn title=dom-Node-firstChild><code>firstChild</code></dfn> attribute must return the first child node of the <span>context node</span>, or null if there is none.
+
+<p>The <dfn title=dom-Node-lastChild><code>lastChild</code></dfn> attribute must return the last child node of the <span>context node</span>, or null if there is none.
+
+<p>The <dfn title=dom-Node-previousSibling><code>previousSibling</code></dfn>
+attribute must run these steps:
+
+<ol>
+ <li><p>If the <span>context node</span> is an <code>Attr</code> node,
+ return null and terminate these steps.
+
+ <li><p>If the <span>context node</span> does not have a previous sibling
+ node, return null and terminate these steps.
+
+ <li><p>Return the previous sibling node of the <span>context node</span>.
+</ol>
+
+<p>The <dfn title=dom-Node-nextSibling><code>nextSibling</code></dfn> attribute must run these steps:
+
+<ol>
+ <li><p>If the <span>context node</span> is an <code>Attr</code> node,
+ return null and terminate these steps.
+
+ <li><p>If the <span>context node</span> does not have a next sibling node,
+ return null and terminate these steps.
+
+ <li><p>Return the next sibling node of the <span>context node</span>.
+</ol>
+
+<hr>
+
+<p>These are the constants
+<code title=dom-Node-compareDocumentPosition>compareDocumentPosition()</code>
+returns.</p>
+
+<ol>
+ <li value=1><dfn title=dom-Node-DOCUMENT_POSITION_DISCONNECTED><code>DOCUMENT_POSITION_DISCONNECTED</code></dfn>
+
+ <li value=2><dfn title=dom-Node-DOCUMENT_POSITION_PRECEDING><code>DOCUMENT_POSITION_PRECEDING</code></dfn>
+
+ <li value=4><dfn title=dom-Node-DOCUMENT_POSITION_FOLLOWING><code>DOCUMENT_POSITION_FOLLOWING</code></dfn>
+
+ <li value=8><dfn title=dom-Node-DOCUMENT_POSITION_CONTAINS><code>DOCUMENT_POSITION_CONTAINS</code></dfn>
+
+ <li value=16><dfn title=dom-Node-DOCUMENT_POSITION_CONTAINED_BY><code>DOCUMENT_POSITION_CONTAINED_BY</code></dfn>
+
+ <li value=32><dfn title=dom-Node-DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC><code>DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC</code></dfn>
+</ol>
+
+<p>The <dfn
+title=dom-Node-compareDocumentPosition><code>compareDocumentPosition(<var
+title>other</var>)</code></dfn> method must <span class=XXX title>...</span>
+<!-- XXX @beverloo might figure this out; remove impl specific? -->
+
+<hr>
 
 <p>The <dfn title=dom-Node-nodeValue><code>nodeValue</code></dfn> attribute
 must return the following, depending on the <span>context node</span>:</p>
@@ -809,73 +933,6 @@ attribute must do as described below, depending on the
  <dt>Any other node</dt>
  <dd>Do nothing.</dd>
 </dl>
-
-<hr>
-
-<p>The <dfn title=dom-Node-ownerDocument><code>ownerDocument</code></dfn> attribute must return the <code>Document</code> node that the <span>context node</span> is associated with, or null if there is none.
-
-<p>The <dfn title=dom-Node-parentNode><code>parentNode</code></dfn>
-attribute must run these steps:
-
-<ol>
- <li><p>If the <span>context node</span> is an <code>Attr</code> node,
- return null and terminate these steps.
-
- <li><p>If the <span>context node</span> does not have a parent node, return
- null and terminate these steps.
-
- <li><p>Return the parent node of the <span>context node</span>.
-</ol>
-
-<!-- XXX needed? Minefield does not have this -->
-<p>The <dfn title=dom-Node-parentElement><code>parentElement</code></dfn> attribute must return the parent node of the <span>context node</span> if there is a parent and it is an <code>Element</code> node, or null otherwise.
-
-<p>The <dfn title=dom-Node-hasChildNodes><code>hasChildNodes()</code></dfn>
-method must return false if the <span>context node</span>'s
-<code title=dom-Node-firstChild>firstChild</code> is null, or true
-otherwise.
-
-<p>The <dfn title=dom-Node-childNodes><code>childNodes</code></dfn> attribute must return a <code>NodeList</code> rooted at the <span>context node</span> matching only child nodes.
-
-<p>The <dfn title=dom-Node-firstChild><code>firstChild</code></dfn> attribute must return the first child node of the <span>context node</span>, or null if there is none.
-
-<p>The <dfn title=dom-Node-lastChild><code>lastChild</code></dfn> attribute must return the last child node of the <span>context node</span>, or null if there is none.
-
-<p>The <dfn title=dom-Node-previousSibling><code>previousSibling</code></dfn>
-attribute must run these steps:
-
-<ol>
- <li><p>If the <span>context node</span> is an <code>Attr</code> node,
- return null and terminate these steps.
-
- <li><p>If the <span>context node</span> does not have a previous sibling
- node, return null and terminate these steps.
-
- <li><p>Return the previous sibling node of the <span>context node</span>.
-</ol>
-
-<p>The <dfn title=dom-Node-nextSibling><code>nextSibling</code></dfn> attribute must run these steps:
-
-<ol>
- <li><p>If the <span>context node</span> is an <code>Attr</code> node,
- return null and terminate these steps.
-
- <li><p>If the <span>context node</span> does not have a next sibling node,
- return null and terminate these steps.
-
- <li><p>Return the next sibling node of the <span>context node</span>.
-</ol>
-
-<hr>
-
-<p>The <dfn title=dom-Node-hasAttributes><code>hasAttributes()</code></dfn>
-method must return true if there are any attributes associated with the
-<span>context node</span>, if it is an <code>Element</code> node, and false
-otherwise.
-
-<p>The <dfn title=dom-Node-attributes><code>attributes</code></dfn> attribute must return a <code>NamedNodeMap</code> of all the <code>Attr</code> nodes associated with the node of the <span>context node</span>, if it is an <code>Element</code> node, or null otherwise.
-
-<hr>
 
 <p>The
 <dfn title=dom-Node-insertBefore><code>insertBefore(<var>newChild</var>, <var>refChild</var>)</code></dfn>
@@ -1038,64 +1095,6 @@ method must run these steps:
 
  <li><p>Return <var>newChild</var>.
 </ol>
-
-<hr>
-
-<p>The <dfn title=dom-Node-namespaceURI><code>namespaceURI</code></dfn> attribute must return the namespace that is associated with the node, if there is one and it's not the empty string, or null otherwise.
-
-<p>The <dfn title=dom-Node-prefix><code>prefix</code></dfn> attribute must return the prefix that is associated with the node, if there is one and it's not the empty string, or null otherwise.
-<!--XXX support setting? - - On setting, it must run the following steps:
-
-<ol>
- <li><p>Let <var>prefix</var> be the value being assigned.
- <li>
-  <p>If <var>prefix</var> is not null, run the following substeps:
-  <ol>
-   <li><p>If <var>prefix</var> does not match the
-   <code data-anolis-spec=xml>Name</code> production in XML, raise an
-   <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
-   exception and terminate these steps.
-   <li><p>If <var>prefix</var> does not match the <code
-   data-anolis-spec=xmlns>NCName</code> production in Namespaces in XML, raise a
-   <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and
-   terminate these steps.
-  </ol>
- <li><p class=XXX>Actually this does not match any browser. Let's try to drop it instead.
-</ol>-->
-
-<p class=note>Setting the <code title=dom-Node-prefix>prefix</code>
-attribute is not supported. <!-- XXX kill this note at some point -->
-
-<p>The <dfn title=dom-Node-localName><code>localName</code></dfn> attribute
-must return the local name that is associated with the node, if it has one,
-and null otherwise.
-
-<p>The <dfn title=dom-Node-baseURI><code>baseURI</code></dfn> attribute must <span class=XXX title>...</span>
-
-<hr>
-
-<p>These are the constants
-<code title=dom-Node-compareDocumentPosition>compareDocumentPosition()</code>
-returns.</p>
-
-<ol>
- <li value=1><dfn title=dom-Node-DOCUMENT_POSITION_DISCONNECTED><code>DOCUMENT_POSITION_DISCONNECTED</code></dfn>
-
- <li value=2><dfn title=dom-Node-DOCUMENT_POSITION_PRECEDING><code>DOCUMENT_POSITION_PRECEDING</code></dfn>
-
- <li value=4><dfn title=dom-Node-DOCUMENT_POSITION_FOLLOWING><code>DOCUMENT_POSITION_FOLLOWING</code></dfn>
-
- <li value=8><dfn title=dom-Node-DOCUMENT_POSITION_CONTAINS><code>DOCUMENT_POSITION_CONTAINS</code></dfn>
-
- <li value=16><dfn title=dom-Node-DOCUMENT_POSITION_CONTAINED_BY><code>DOCUMENT_POSITION_CONTAINED_BY</code></dfn>
-
- <li value=32><dfn title=dom-Node-DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC><code>DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC</code></dfn>
-</ol>
-
-<p>The <dfn
-title=dom-Node-compareDocumentPosition><code>compareDocumentPosition(<var
-title>other</var>)</code></dfn> method must <span class=XXX title>...</span>
-<!-- XXX @beverloo might figure this out; remove impl specific? -->
 
 <hr>
 

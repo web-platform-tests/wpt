@@ -425,10 +425,11 @@ steps must be run:
    <dd><p>&mdash;
   </dl>
  <li>
+  <p>If <var>node</var> is an <code>Element</code> node also copy it
+  associated collection of <code>Attr</code> objects.
   <!--AttrExodus
   <p>If <var>node</var> is an <code>Element</code> node, let <var>copy</var>'s <code title=dom-Node-attributes>attributes</code> be a new <code>NamedNodeMap</code>, and for each <code>Attr</code> <var>old attribute</var> in <var>node</var>'s <code title=dom-Node-attributes>attributes</code>, <span>clone</span> it and append it to the <var>copy</var>'s <code title=dom-Node-attributes>attributes</code>.
   -->
-  <!-- XXXAttr -->
  <li><p>If the <i>clone children flag</i> is set, <span>clone</span> all the children of <var>node</var> and append them to <var>copy</var>, with the same <var>new ownerDocument</var> and the <i>clone children flag</i> being set.
  <li><p>Return <var>copy</var>.
 </ol>
@@ -1140,6 +1141,11 @@ false otherwise:
  <li><p><var>node</var>'s <code title=dom-Node-prefix>prefix</code> is the same as the <span>context node</span>'s <code title=dom-Node-prefix>prefix</code>.
  <li><p><var>node</var>'s <code title=dom-Node-nodeValue>nodeValue</code> is the same as the <span>context node</span>'s <code title=dom-Node-nodeValue>nodeValue</code>.
 
+ <li><p>If <span>context node</span> is an <code>Element</code> node a
+ bijection exists between its and <var>node</var>'s collection of associated
+ <code>Attr</code> objects so that every <code>Attr</code> object in the
+ former has all its members equal to the <code>Attr</code> it is mapped to
+ in the latter.
  <!-- AttrExodus
  <li><p>Either <var>node</var>'s <code
  title=dom-Node-attributes>attributes</code> and the <span>context node</span>'s
@@ -1152,7 +1158,6 @@ false otherwise:
  title=dom-Node-isEqualNode>isEqualNode</code> on the first <code>Attr</code>
  node with the second <code>Attr</code> node as its argument returns true.
  -->
- <!-- XXXAttr -->
 
  <li><p><var>node</var>'s <code title=dom-Node-childNodes>childNodes</code>' <code title=dom-NodeList-length>length</code> is the same as the <span>context node</span>'s <code title=dom-Node-childNodes>childNodes</code>' <code title=dom-NodeList-length>length</code>.
  <li><p>Calling <code title=dom-Node-isEqualNode>isEqualNode</code> on each child node of the <span>context node</span>, with the child node of the same index in <var>node</var> as argument returns true for every child node.
@@ -2864,6 +2869,10 @@ specification will however not support them.</p>
 <dl>
  <dt><code>Node</code></dt>
  <dd>
+  <!--AttrExodus-->
+  <p><dfn title=dom-Node-hasAttributes><code>hasAttributes()</code></dfn>
+  <p><dfn title=dom-Node-attributes><code>attributes</code></dfn>
+
   <p><dfn title=dom-Node-normalize><code>normalize()</code></dfn>
   <p><dfn title=dom-Node-isSupported><code>isSupported</code></dfn>
   <p><dfn title=dom-Node-getFeature><code>getFeature()</code></dfn>
@@ -2890,8 +2899,12 @@ specification will however not support them.</p>
 
  <dt><code>Attr</code>
  <dd>
+  <p>No longer inherits from <code>Node</code> and therefore completely
+  changed.
+  <!--AttrExodus
   <p><dfn title=dom-Attr-schemaTypeInfo><code>schemaTypeInfo</code></dfn>
   <p><dfn title=dom-Attr-isId><code>isId</code></dfn>
+  -->
 
  <dt><code>Element</code>
  <dd>

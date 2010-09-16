@@ -1952,6 +1952,7 @@ title=concept-class-attribute>class attributes</span>.
   <span>Attr</span> <span title=dom-Element-setAttributeNode>setAttributeNode</span>(Attr newAttr);
   <span>Attr</span> <span title=dom-Element-removeAttributeNode>removeAttributeNode</span>(Attr oldAttr);
 -->
+  readonly attribute <span>HTMLCollection</span> <span title=dom-Element-children>children</span>;
   <span>NodeList</span> <span title=dom-Element-getElementsByTagName>getElementsByTagName</span>(DOMString <var>qualifiedName</var>);
   <span>NodeList</span> <span title=dom-Element-getElementsByTagNameNS>getElementsByTagNameNS</span>(DOMString <var>namespace</var>, DOMString <var>localName</var>);
   <span>NodeList</span> <span title=dom-Element-getElementsByClassName>getElementsByClassName</span>(DOMString <var>classNames</var>);<!--
@@ -1959,8 +1960,6 @@ title=concept-class-attribute>class attributes</span>.
   void setIdAttribute(DOMString name, boolean isId);
   void setIdAttributeNS(DOMString namespace, DOMString localName, boolean isId);
   void setIdAttributeNode(Attr idAttr, boolean isId);-->
-
-  readonly attribute <span>HTMLCollection</span> <span title=dom-Element-children>children</span>;
 };</pre>
 
 <p><code>Element</code> nodes have an associated <dfn title=concept-element-namespace>namespace</dfn>, <dfn title=concept-element-namespace-prefix>namespace prefix</dfn>, <dfn title=concept-element-local-name>local name</dfn>, and <dfn title=concept-element-qualified-name>qualified name</dfn>.</p>
@@ -2085,6 +2084,13 @@ have its name converted to ASCII lowercase before the element is affected.
 
 <hr>
 
+<p>The <dfn title=dom-Element-children><code>children</code></dfn> attribute
+must return an <code>HTMLCollection</code>
+<span title=concept-collection>collection</span>, rooted at the
+<span>context node</span>, whose filter matches only <code>Element</code>
+nodes whose <code title=dom-Node-parentNode>parentNode</code> is the
+<span>context node</span>.
+
 <p>The <dfn
 title=dom-Element-getElementsByTagName><code>getElementsByTagName(<var
 title>qualifiedName</var>)</code></dfn> method on the <code>Element</code>
@@ -2123,14 +2129,6 @@ passed the same argument, excluding any elements that are not descendants of
 the <span>context node</span> on which the method was invoked.
 <p>A new <code>NodeList</code> object must be returned each time.
 
-<hr>
-
-<p>The <dfn title=dom-Element-children><code>children</code></dfn> attribute
-must return an <code>HTMLCollection</code>
-<span title=concept-collection>collection</span>, rooted at the
-<span>context node</span>, whose filter matches only <code>Element</code>
-nodes whose <code title=dom-Node-parentNode>parentNode</code> is the
-<span>context node</span>.
 
 
 <h3>Interface <code>DocumentType</code></h3>

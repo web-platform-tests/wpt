@@ -621,10 +621,10 @@ node and its child nodes:</p>
   boolean <span title=dom-Node-hasAttributes>hasAttributes</span>();
   readonly attribute <span>NamedNodeMap</span> <span title=dom-Node-attributes>attributes</span>;
 
-  <span>Node</span> <span title=dom-Node-insertBefore>insertBefore</span>(<span>Node</span> <var>newChild</var>, <span>Node</span>? <var>refChild</var>);
-  <span>Node</span> <span title=dom-Node-replaceChild>replaceChild</span>(<span>Node</span> <var>newChild</var>, <span>Node</span> <var>oldChild</var>);
-  <span>Node</span> <span title=dom-Node-removeChild>removeChild</span>(<span>Node</span> <var>oldChild</var>);
-  <span>Node</span> <span title=dom-Node-appendChild>appendChild</span>(<span>Node</span> <var>newChild</var>);<!--
+  <span>Node</span> <span title=dom-Node-insertBefore>insertBefore</span>([NoNull] <span>Node</span> <var>newChild</var>, <span>Node</span> <var>refChild</var>);
+  <span>Node</span> <span title=dom-Node-replaceChild>replaceChild</span>([NoNull] <span>Node</span> <var>newChild</var>, [NoNull] <span>Node</span> <var>oldChild</var>);
+  <span>Node</span> <span title=dom-Node-removeChild>removeChild</span>([NoNull] <span>Node</span> [NoNull] <var>oldChild</var>);
+  <span>Node</span> <span title=dom-Node-appendChild>appendChild</span>([NoNull] <span>Node</span> <var>newChild</var>);<!--
   void normalize();-->
 
   readonly attribute DOMString <span title=dom-Node-namespaceURI>namespaceURI</span>;

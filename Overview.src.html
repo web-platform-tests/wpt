@@ -404,12 +404,14 @@ feature</span> with the version "2.0" associated with it.
 steps must be run:
 
 <ol>
- <li><p>If <var>node</var> is a <code>DocumentType</code> node, raise a <code title=dom-DOMException-DATA_CLONE_ERR>DATA_CLONE_ERR</code> exception and terminate these steps.
+ <li><p>If <var>node</var> is a <code>DocumentType</code> node, raise a <code title=dom-DOMException-DATA_CLONE_ERR>DATA_CLONE_ERR</code> exception and terminate these steps. <!--XXX wrong? -->
  <li>
   <p>Let <var>copy</var> be a new <code>Node</code> that implements the same interfaces as <var>node</var>, with <code title=dom-Node-ownerDocument>ownerDocument</code> set to <var>new ownerDocument</var>, <code title="dom-Node-prefix">prefix</code>, <code title="dom-Node-localName">localName</code> and <code title="dom-Node-namespaceURI">namespaceURI</code> attributes set to the values of the attributes on <var>node</var> with the same names, and other attributes set to the values of the attributes on <var>node</var> with the same names, depending on the <var>node</var>:</p>
   <dl class=switch>
+   <!--AttrExodus
    <dt><code>Attr</code>
    <dd><p><code title=dom-Attr-value>value</code>
+   -->
 
    <dt><code>Text</code>
    <dt><code>Comment</code>
@@ -423,7 +425,10 @@ steps must be run:
    <dd><p>&mdash;
   </dl>
  <li>
+  <!--AttrExodus
   <p>If <var>node</var> is an <code>Element</code> node, let <var>copy</var>'s <code title=dom-Node-attributes>attributes</code> be a new <code>NamedNodeMap</code>, and for each <code>Attr</code> <var>old attribute</var> in <var>node</var>'s <code title=dom-Node-attributes>attributes</code>, <span>clone</span> it and append it to the <var>copy</var>'s <code title=dom-Node-attributes>attributes</code>.
+  -->
+  <!-- XXXAttr -->
  <li><p>If the <i>clone children flag</i> is set, <span>clone</span> all the children of <var>node</var> and append them to <var>copy</var>, with the same <var>new ownerDocument</var> and the <i>clone children flag</i> being set.
  <li><p>Return <var>copy</var>.
 </ol>
@@ -582,7 +587,7 @@ node and its child nodes:</p>
  <dt><code>Text</code></dt>
  <dd><p>No children.</p></dd>
 </dl>
-<p class=XXX>Attr</p>
+<!--AttrExodus -->
 
 <!-- XXXhierarchy - make sure to expand DocumentFragment before checking -->
 
@@ -611,10 +616,11 @@ node and its child nodes:</p>
 
   readonly attribute DOMString <span title=dom-Node-baseURI>baseURI</span>;
 
+  <!--Attr Exodus
   boolean <span title=dom-Node-hasAttributes>hasAttributes</span>();
   readonly attribute <span>NamedNodeMap</span> <span title=dom-Node-attributes>attributes</span>;
 
-  readonly attribute <span>Document</span> <span title=dom-Node-ownerDocument>ownerDocument</span>;
+  -->readonly attribute <span>Document</span> <span title=dom-Node-ownerDocument>ownerDocument</span>;
   readonly attribute <span>Node</span> <span title=dom-Node-parentNode>parentNode</span>;
   readonly attribute <span>Element</span> <span title=dom-Node-parentElement>parentElement</span>;
   boolean <span title=dom-Node-hasChildNodes>hasChildNodes</span>();
@@ -723,9 +729,11 @@ must return the following, depending on the <span>context node</span>:</p>
  <dd><p>The <span>context node</span>'s
  <code title=dom-Element-tagName>tagName</code> attribute.
 
+ <!--AttrExodus
  <dt><code>Attr</code></dt>
  <dd><p>The <span>context node</span>'s
  <code title=dom-Attr-name>name</code> attribute.
+ -->
 
  <dt><code>Text</code></dt>
  <dd><p>"<code title>#text</code>".
@@ -752,6 +760,7 @@ must return the following, depending on the <span>context node</span>:</p>
 
 <p>The <dfn title=dom-Node-baseURI><code>baseURI</code></dfn> attribute must <span class=XXX title>...</span>
 
+<!--AttrExodus
 <hr>
 
 <p>The <dfn title=dom-Node-hasAttributes><code>hasAttributes()</code></dfn>
@@ -760,6 +769,7 @@ method must return true if there are any attributes associated with the
 otherwise.
 
 <p>The <dfn title=dom-Node-attributes><code>attributes</code></dfn> attribute must return a <code>NamedNodeMap</code> of all the <code>Attr</code> nodes associated with the node of the <span>context node</span>, if it is an <code>Element</code> node, or null otherwise.
+-->
 
 <hr>
 
@@ -769,8 +779,10 @@ otherwise.
 attribute must run these steps:
 
 <ol>
+ <!-- AttrExodus
  <li><p>If the <span>context node</span> is an <code>Attr</code> node,
  return null and terminate these steps.
+ -->
 
  <li><p>If the <span>context node</span> does not have a parent node, return
  null and terminate these steps.
@@ -796,8 +808,10 @@ otherwise.
 attribute must run these steps:
 
 <ol>
+ <!-- AttrExodus
  <li><p>If the <span>context node</span> is an <code>Attr</code> node,
  return null and terminate these steps.
+ -->
 
  <li><p>If the <span>context node</span> does not have a previous sibling
  node, return null and terminate these steps.
@@ -808,8 +822,10 @@ attribute must run these steps:
 <p>The <dfn title=dom-Node-nextSibling><code>nextSibling</code></dfn> attribute must run these steps:
 
 <ol>
+ <!-- AttrExodus
  <li><p>If the <span>context node</span> is an <code>Attr</code> node,
  return null and terminate these steps.
+ -->
 
  <li><p>If the <span>context node</span> does not have a next sibling node,
  return null and terminate these steps.
@@ -848,7 +864,7 @@ title>other</var>)</code></dfn> method must <span class=XXX title>...</span>
 must return the following, depending on the <span>context node</span>:</p>
 
 <dl class=switch>
- <dt><code>Attr</code></dt>
+ <!--AttrExodus <dt><code>Attr</code></dt> -->
  <dt><code>Text</code></dt>
  <dt><code>Comment</code></dt>
  <dt><code>ProcessingInstruction</code></dt>
@@ -863,7 +879,7 @@ must return the following, depending on the <span>context node</span>:</p>
 must do as described below, depending on the <span>context node</span>:</p>
 
 <dl class=switch>
- <dt><code>Attr</code></dt>
+ <!--AttrExodus <dt><code>Attr</code></dt> -->
  <dt><code>Text</code></dt>
  <dt><code>Comment</code></dt>
  <dt><code>ProcessingInstruction</code></dt>
@@ -882,7 +898,7 @@ attribute must return the following, depending on the
 <dl class=switch>
  <dt><code>DocumentFragment</code></dt>
  <dt><code>Element</code></dt>
- <dt><code>Attr</code></dt>
+ <!--AttrExodus <dt><code>Attr</code></dt> -->
  <dd><p>The concatenation of the
  <code title=dom-CharacterData-data>data</code> of all the descendant
  <code>Text</code> nodes of the <span>context node</span>, in
@@ -908,7 +924,7 @@ attribute must do as described below, depending on the
 <dl class=switch>
  <dt><code>DocumentFragment</code></dt>
  <dt><code>Element</code></dt>
- <dt><code>Attr</code></dt>
+ <!--AttrExodus <dt><code>Attr</code></dt> -->
  <dd>
   <ol>
    <li><p>Remove all the descendent nodes of the <span>context node</span>.
@@ -939,7 +955,7 @@ attribute must do as described below, depending on the
 method must run these steps:
 
 <ol>
- <li><p>If the <span>context node</span> is an <code>Attr</code> node or a
+ <li><p>If the <span>context node</span> is<!-- AttrExodus an <code>Attr</code> node or--> a
  <code>Text</code> node, then raise a
  <code title=dom-DOMException-HIERARCHY_REQUEST_ERR>HIERARCHY_REQUEST_ERR</code>
  and terminate these steps. <!-- See Mozilla bug 547798, 558973 -->
@@ -994,7 +1010,7 @@ method must run these steps:
 method must run these steps:
 
 <ol>
- <li><p>If the <span>context node</span> is an <code>Attr</code> node or a
+ <li><p>If the <span>context node</span> is<!--AttrExodus an <code>Attr</code> node or--> a
  <code>Text</code> node, then raise a <code
  title=dom-DOMException-HIERARCHY_REQUEST_ERR>HIERARCHY_REQUEST_ERR</code> and
  terminate these steps. <!-- See Mozilla bug 547798, 558973 -->
@@ -1062,7 +1078,7 @@ title=dom-Node-appendChild><code>appendChild(<var>newChild</var>)</code></dfn>
 method must run these steps:
 
 <ol>
- <li><p>If the <span>context node</span> is an <code>Attr</code> node or a
+ <li><p>If the <span>context node</span> is<!--AttrExodus an <code>Attr</code> node or--> a
  <code>Text</code> node, then raise a <code
  title=dom-DOMException-HIERARCHY_REQUEST_ERR>HIERARCHY_REQUEST_ERR</code> and
  terminate these steps. <!-- See Mozilla bug 547798, 558973 -->
@@ -1124,6 +1140,7 @@ false otherwise:
  <li><p><var>node</var>'s <code title=dom-Node-prefix>prefix</code> is the same as the <span>context node</span>'s <code title=dom-Node-prefix>prefix</code>.
  <li><p><var>node</var>'s <code title=dom-Node-nodeValue>nodeValue</code> is the same as the <span>context node</span>'s <code title=dom-Node-nodeValue>nodeValue</code>.
 
+ <!-- AttrExodus
  <li><p>Either <var>node</var>'s <code
  title=dom-Node-attributes>attributes</code> and the <span>context node</span>'s
  <code title=dom-Node-attributes>attributes</code> are both null or a bijection
@@ -1134,6 +1151,8 @@ false otherwise:
  the latter for which calling <code
  title=dom-Node-isEqualNode>isEqualNode</code> on the first <code>Attr</code>
  node with the second <code>Attr</code> node as its argument returns true.
+ -->
+ <!-- XXXAttr -->
 
  <li><p><var>node</var>'s <code title=dom-Node-childNodes>childNodes</code>' <code title=dom-NodeList-length>length</code> is the same as the <span>context node</span>'s <code title=dom-Node-childNodes>childNodes</code>' <code title=dom-NodeList-length>length</code>.
  <li><p>Calling <code title=dom-Node-isEqualNode>isEqualNode</code> on each child node of the <span>context node</span>, with the child node of the same index in <var>node</var> as argument returns true for every child node.
@@ -1235,7 +1254,7 @@ method must run these steps:
    <dd><p>Return the result of running
    <span>locate a namespace prefix</span> for the node using
    <var>namespace</var>.</p></dd>
-   <!--XXX <code>Attr</code> -->
+   <!--AttrExodus <code>Attr</code> -->
    <dt><code>Document</code></dt>
    <dd><p>Return the result of <span title="locate a namespace prefix">locating
    a namespace prefix</span> for
@@ -1660,8 +1679,8 @@ method must run these steps:
  <var>node</var> from its parent.
 
  <li><p>Set <code title=dom-Node-ownerDocument>ownerDocument</code> for
- <var>node</var> and all its descendent nodes as well as any associated
- <code>Attr</code> nodes to the <span>context node</span>.
+ <var>node</var> and all its descendent nodes<!--AttrExodus as well as any associated
+ <code>Attr</code> nodes--> to the <span>context node</span>.
 
  <li><p>Return <var>node</var>.
 </ol>
@@ -1839,7 +1858,7 @@ steps:
 
 </div>
 
-
+<!-- AttrExodus
 <h3>Interface <code>Attr</code></h3>
 
 <p class=XXX>The tentative plan is to let <code>Attr</code> no longer have
@@ -1851,18 +1870,18 @@ inherits from <code>Node</code> &mdash;
   readonly attribute DOMString <span title=dom-Attr-name>name</span>;
   readonly attribute boolean <span title=dom-Attr-specified>specified</span>;
            attribute DOMString <span title=dom-Attr-value>value</span>;
-  readonly attribute <span>Element</span> <span title=dom-Attr-ownerElement>ownerElement</span>;<!--
+  readonly attribute <span>Element</span> <span title=dom-Attr-ownerElement>ownerElement</span>;<!- -
   readonly attribute TypeInfo schemaTypeInfo;
-  readonly attribute boolean isId;-->
+  readonly attribute boolean isId;- ->
 };</pre>
 
 <p><code>Attr</code> nodes represent <dfn
 title=concept-attribute>attributes</dfn>. They have a <dfn
 title=concept-attribute-name>name</dfn> and an <dfn
 title=concept-attribute-element>element</dfn> associated with them when they are
-created<!--, or when they are passed as the argument to the <code
+created<!- -, or when they are passed as the argument to the <code
 title=dom-Element-setAttributeNode>setAttributeNode</code> method.
-[createAttribute]-->. <code>Attr</code> nodes are not considered part of the
+[createAttribute]- ->. <code>Attr</code> nodes are not considered part of the
 document tree, so their <code title=dom-Node-parentNode>parentNode</code>, <code
 title=dom-Node-previousSibling>previousSibling</code> and <code
 title=dom-Node-nextSibling>nextSibling</code> attributes return null. Also, its
@@ -1886,8 +1905,8 @@ value.
 
 <p>The <dfn title=dom-Attr-ownerElement><code>ownerElement</code></dfn>
 attribute must return the <span title=concept-attribute-element>element</span>
-associated with the <span>context node</span><!--, if there is one, or null
-otherwise [createAttribute]-->.
+associated with the <span>context node</span><!- -, if there is one, or null
+otherwise [createAttribute]- ->.
 
 <hr>
 
@@ -1928,16 +1947,18 @@ data-anolis-ref class=informative>HTML</span> <span data-anolis-ref
 class=informative>MATHML</span> <span data-anolis-ref
 class=informative>SVG</span>
 
-<p class=note>This specification does not <!--normatively--> define the <span
+<p class=note>This specification does not define the <span
 title=concept-attribute-name>name</span> of <span
 title=concept-id-attribute>ID</span> or <span
 title=concept-class-attribute>class attributes</span>.
+-->
 
 
 <h3>Interface <code>Element</code></h3>
 <pre class=idl>interface <dfn>Element</dfn> : <span>Node</span> {
   readonly attribute DOMString <span title=dom-Element-tagName>tagName</span>;
 
+  readonly <span>Attr</span>[] <span title=dom-Element-attributes>attributes</span>;
   DOMString? <span title=dom-Element-getAttribute>getAttribute</span>(DOMString <var>qualifiedName</var>);
   DOMString? <span title=dom-Element-getAttributeNS>getAttributeNS</span>(DOMString <var>namespace</var>, DOMString <var>localName</var>);
   void <span title=dom-Element-setAttribute>setAttribute</span>(DOMString <var>qualifiedName</var>, DOMString <var>value</var>);
@@ -1979,9 +2000,17 @@ node's <code title=dom-Node-attributes>attributes</code> with the
 change</dfn>, the user agent must run the <span>base URL change steps</span>, as
 defined in <span>other applicable specifications</span>.
 
+<hr>
+
 <p>The <dfn title=dom-Element-tagName><code>tagName</code></dfn> attribute must return the <span>context node</span>'s <span title=concept-element-qualified-name>qualified name</span>, <span>converted to uppercase</span> if the <span>context node</span> is in the <span>HTML namespace</span> and its <code title=dom-Node-ownerDocument>ownerDocument</code> is an <span>HTML document</span>.</p>
 
 <hr>
+
+<!-- all members in this subsection are affected by AttrExodus -->
+
+<p>The <dfn title=dom-Element-attributes><code>attributes</code></dfn>
+attribute must return a read only array<!--XXX WebIDL--> of the
+<span>context node</span>'s associated <code>Attr</code> objects.
 
 <p>The <dfn title=dom-Element-getAttribute><code>getAttribute(<var>name</var>)</code></dfn> method must run these steps:
 <ol>
@@ -1990,21 +2019,23 @@ defined in <span>other applicable specifications</span>.
  <code title=dom-Node-ownerDocument>ownerDocument</code> is an
  <span>HTML document</span>, let <var>name</var> be <span>converted to lowercase</span>.
 
- <li><p>Return the value of the first attribute in the
- <span>context node</span>'s
- <code title=dom-Node-attributes>attributes</code> whose
- <span title=concept-attribute-name>name</span> is <var>name</var>, if
- the attribute is present, or null otherwise.
+ <li><p>Return the <span title=concept-attr-value>value</span> of the first
+ <code>Attr</code> in the <span>context node</span>'s
+ <code title=dom-Element-attributes>attributes</code> whose
+ <span title=concept-attr-qualified-name>qualified name</span> is
+ <var>name</var>, if the <code>Attr</code> is present, or null otherwise.
 </ol>
 
 <p>The
 <dfn title=dom-Element-getAttributeNS><code>getAttributeNS(<var>namespace</var>, <var>localName</var>)</code></dfn>
-method must return the value of the attribute in the
-<span>context node</span>'s
-<code title=dom-Node-attributes>attributes</code> whose
-<code title=dom-Node-namespaceURI>namespaceURI</code> is
-<var>namespace</var> and <code title=dom-Node-localName>localName</code>
-is <var>localName</var>, if the attribute is present, or null otherwise.</p>
+method must return the <span title=concept-attr-value>value</span> of the
+<code>Attr</code> in the <span>context node</span>'s
+<code title=dom-Element-attributes>attributes</code> whose
+<span title=concept-attr-namespace>namespace</span> is
+<var>namespace</var> and
+<span title=concept-attr-local-name>local name</span> is
+<var>localName</var>, if the <code>Attr</code> is present, or null
+otherwise.</p>
 
 <p>The
 <dfn title=dom-Element-setAttribute><code>setAttribute(<var>qualifiedName</var>, <var>value</var>)</code></dfn>
@@ -2025,21 +2056,17 @@ method must run these steps:
  <span>HTML document</span>, let <var>qualifiedName</var> be
  <span>converted to lowercase</span>.
 
- <li><p>If the node does not have an attribute whose <span
- title=concept-attribute-name>name</span> is <var>qualifiedName</var>,
- create an <code>Attr</code> node, with <var>qualifiedName</var> as its
- <span title=concept-attribute-name>name</span> and the
- <span>context node</span> as its
- <span title=concept-attribute-element>element</span>. Set its
- <code title=dom-Attr-value>value</code> to <var>value</var>. Append this
- node to the <span title="context node">context node's</span>
- <code title=dom-Node-attributes>attributes</code>, as its last item.
+ <li><p>If the node does not have an <code>Attr</code> whose
+ <span title=concept-attr-name>name</span> is <var>qualifiedName</var>,
+ create an <code>Attr</code> object, whose
+ <span title=concept-attr-local-name>local name</span> is <var>qualifiedName</var> and <span title=concept-attr-value>value</span> is <var>value</var>. Append this object to the <span>context node</span>'s
+ <code title=dom-Element-attributes>attributes</code>, as its last item.
 
- <li><p>Otherwise, set the <code title=dom-Attr-value>value</code> of the
- first attribute in the <span title="context node">context node's</span>
- <code title=dom-Node-attributes>attributes</code> whose <span
- title=concept-attribute-name>name</span> is <var>qualifiedName</var>,
- in any namespace, to <var>value</var>.
+ <li><p>Otherwise, set the <span title=concept-attr-value>value</span> of
+ the first <code>Attr</code> in the <span>context node</span>'s
+ <code title=dom-Element-attributes>attributes</code> whose
+ <span title=concept-attr-qualified-name>qualified name</span> is
+ <var>qualifiedName</var>, to <var>value</var>.
 </ol>
 
 <p class=XXX><dfn title=dom-Element-setAttributeNS>setAttributeNS</dfn>
@@ -2059,18 +2086,20 @@ method must run these steps:</p>
  <span>converted to lowercase</span>.
 
  <li><p>Return true if <span>context node</span>'s
- <code title=dom-Node-attributes>attributes</code> contains an attribute
- whose <span title=concept-attribute-name>name</span> is
+ <code title=dom-Element-attributes>attributes</code> contains an
+ <code>Attr</code> whose
+ <span title=concept-attr-qualified-name>qualified name</span> is
  <var>qualifiedName</var>, or false otherwise.
 </ol>
 
 <p>The
 <dfn title=dom-Element-hasAttributeNS><code>hasAttributeNS(<var>namespace</var>, <var>localName</var>)</code></dfn>
 method must return true if <span>context node</span>'s
-<code title=dom-Node-attributes>attributes</code> contains an attribute
-whose <code title=dom-Node-namespaceURI>namespaceURI</code> is
-<var>namespace</var> and <code title=dom-Node-localName>localName</code>
-is <var>localName</var>, or false otherwise.</p>
+<code title=dom-Element-attributes>attributes</code> contains an
+<code>Attr</code> whose <span title=concept-attr-namespace>namespace</span>
+is <var>namespace</var> and
+<span title=concept-attr-local-name>local name</span> is
+<var>localName</var>, or false otherwise.</p>
 
 <!--<dfn title=dom-Element-getAttributeNode>getAttributeNode</dfn>: when the
 Element.getAttributeNode() method is invoked on an HTML element, the name
@@ -2130,6 +2159,47 @@ the <span>context node</span> on which the method was invoked.
 <p>A new <code>NodeList</code> object must be returned each time.
 
 
+<h4>Interface <code>Attr</code></h4>
+<pre class=idl>interface <dfn>Attr</dfn> {
+  readonly attribute DOMString? <span title=dom-Attr-namespaceURI>namespaceURI</span>;
+  readonly attribute DOMString? <span title=dom-Attr-prefix>prefix</span>;
+  readonly attribute DOMString <span title=dom-Attr-localName>localName</span>;
+  readonly attribute DOMString <span title=dom-Attr-name>name</span>;
+           attribute DOMString <span title=dom-Attr-value>value</span>;
+};</pre>
+
+<p>Just like <code>Element</code> nodes, <code>Attr</code> objects have an associated <dfn title=concept-attr-namespace>namespace</dfn>, <dfn title=concept-attr-namespace-prefix>namespace prefix</dfn>, <dfn title=concept-attr-local-name>local name</dfn>, and <dfn title=concept-attr-qualified-name>qualified name</dfn>.</p>
+
+<p>When an <code>Attr</code> object is created its <span title=concept-attr-local-name>local name</span> is always given. Unless explicitly given when an <code>Attr</code> object is created, its <span title=concept-attr-namespace>namespace</span> and <span title=concept-attr-namespace-prefix>namespace prefix</span> are null and its <span title=concept-attr-qualified-name>qualified name</span> is its <span title=concept-attr-namespace-prefix>namespace prefix</span>, followed by a "<code>:</code>" (U+003A), followed by its <span title=concept-attr-local-name>local name</span>, if its <span title=concept-attr-namespace-prefix>namespace prefix</span> is not null, or otherwise <span title=concept-attr-qualified-name>qualified name</span> is just its <span title=concept-attr-local-name>local name</span>.</p>
+
+<p><code>Attr</code> objects also have an associated
+<dfn title=concept-attr-value>value</dfn>, which is always given when an
+<code>Attr</code> object is created.</p>
+
+<hr>
+
+<p>The <dfn title=dom-Attr-namespaceURI><code>namespaceURI</code></dfn>
+attribute must return the
+<span title=concept-attr-namespace>namespace</span>.
+
+<p>The <dfn title=dom-Attr-prefix><code>prefix</code></dfn> attribute must
+return the
+<span title=concept-attr-namespace-prefix>namespace prefix</span>.
+
+<p>The <dfn title=dom-Attr-localName><code>localName</code></dfn> attribute
+must return the <span title=concept-attr-local-name>local name</span>.
+
+<p>The <dfn title=dom-Attr-name><code>name</code></dfn> attribute must
+return the <span title=concept-attr-qualified-name>qualified name</span>.
+
+<p>The <dfn title=dom-Attr-name><code>name</code></dfn> attribute must
+return the <span title=concept-attr-qualified-name>qualified name</span>.
+
+<p>The <dfn title=dom-Attr-value><code>value</code></dfn> attribute must
+return the <span title=concept-attr-value>value</span>.
+
+<p>Setting the <code title=dom-Attr-value>value</code> attribute must set
+<span title=concept-attr-value>value</span> to the given value.
 
 <h3>Interface <code>DocumentType</code></h3>
 <pre class=idl>interface <dfn>DocumentType</dfn> : <span>Node</span> {
@@ -2444,7 +2514,7 @@ requirements:</p>
 <p>If no such elements are found, then the method must return
 null.
 
-
+<!-- AttrExodus
 <h3>Interface <code>NamedNodeMap</code></h3>
 <p class=XXX>Since <code title=dom-Node-attributes>attributes</code> is the
 only remaining API using this interface and the tentative plan is to change
@@ -2482,7 +2552,7 @@ title=concept-collection>collection</span>, whose primary purpose is to expose
 <p class=XXX><dfn title=dom-NamedNodeMap-setNamedItemNS>setNamedItemNS</dfn>
 
 <p class=XXX><dfn title=dom-NamedNodeMap-removeNamedItemNS>removeNamedItemNS</dfn>
-
+-->
 
 
 <h2>Lists</h2>

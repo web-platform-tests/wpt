@@ -12,12 +12,19 @@
 == first-letter-nested-005.xht first-letter-nested-001-ref.xht
 == first-letter-nested-006.xht first-letter-nested-001-ref.xht
 == first-letter-nested-007.xht first-letter-nested-001-ref.xht
+
 == first-letter-quote-001.xht first-letter-quote-001-ref.xht
 == first-letter-quote-002.xht first-letter-quote-001-ref.xht 
 == first-letter-quote-003.xht first-letter-quote-001-ref.xht 
 == first-letter-quote-004.xht first-letter-quote-001-ref.xht
 == first-letter-quote-005.xht first-letter-quote-001-ref.xht 
 == first-letter-quote-006.xht first-letter-quote-001-ref.xht
+
+# work around bug 509685
+== first-letter-quote-003.xht first-letter-quote-002.xht
+== first-letter-quote-004.xht first-letter-quote-002.xht
+== first-letter-quote-005.xht first-letter-quote-002.xht
+
 == first-letter-dynamic-001.xht first-letter-dynamic-001-ref.xht 
 == first-letter-dynamic-002.xht first-letter-dynamic-002-ref.xht
 == first-letter-dynamic-003a.xht first-letter-dynamic-003-ref.xht

@@ -5,3 +5,4 @@ include normal-flow/reftest.list
 include syntax/reftest.list
 include tables/reftest.list
 include text/reftest.list
+

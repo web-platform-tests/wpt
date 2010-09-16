@@ -1,3 +1,4 @@
-include block-in-inline.lists
+include block-in-inline.list
 include inline-block.list
 include inline-table.list
+

@@ -643,7 +643,7 @@ node and its child nodes:</p>
            attribute DOMString <span title=dom-Node-textContent>textContent</span>;
   <span>Node</span> <span title=dom-Node-insertBefore>insertBefore</span>([NoNull] <span>Node</span> <var>newChild</var>, <span>Node</span> <var>refChild</var>);
   <span>Node</span> <span title=dom-Node-replaceChild>replaceChild</span>([NoNull] <span>Node</span> <var>newChild</var>, [NoNull] <span>Node</span> <var>oldChild</var>);
-  <span>Node</span> <span title=dom-Node-removeChild>removeChild</span>([NoNull] <span>Node</span> [NoNull] <var>oldChild</var>);
+  <span>Node</span> <span title=dom-Node-removeChild>removeChild</span>([NoNull] <span>Node</span>, [NoNull] <var>oldChild</var>);
   <span>Node</span> <span title=dom-Node-appendChild>appendChild</span>([NoNull] <span>Node</span> <var>newChild</var>);<!--
   void normalize();-->
 
@@ -2171,9 +2171,6 @@ must return the <span title=concept-attr-local-name>local name</span>.
 <p>The <dfn title=dom-Attr-name><code>name</code></dfn> attribute must
 return the <span title=concept-attr-qualified-name>qualified name</span>.
 
-<p>The <dfn title=dom-Attr-name><code>name</code></dfn> attribute must
-return the <span title=concept-attr-qualified-name>qualified name</span>.
-
 <p>The <dfn title=dom-Attr-value><code>value</code></dfn> attribute must
 return the <span title=concept-attr-value>value</span>.
 
@@ -2861,21 +2858,22 @@ specification will however not support them.</p>
 
 <p>Interfaces:</p>
 <ul class=brief>
- <li><dfn><code>DOMUserData</code></dfn>
- <li><dfn><code>DOMObject</code></dfn>
- <li><dfn><code>NameList</code></dfn>
- <li><dfn><code>DOMImplementationList</code></dfn>
- <li><dfn><code>DOMImplementationSource</code></dfn>
- <li><dfn><code>TypeInfo</code></dfn>
- <li><dfn><code>UserDataHandler</code></dfn>
+ <li><dfn><code>CDATASection</code></dfn>
+ <li><dfn><code>DOMConfiguration</code></dfn>
  <li><dfn><code>DOMError</code></dfn>
  <li><dfn><code>DOMErrorHandler</code></dfn>
+ <li><dfn><code>DOMImplementationList</code></dfn>
+ <li><dfn><code>DOMImplementationSource</code></dfn>
  <li><dfn><code>DOMLocator</code></dfn>
- <li><dfn><code>DOMConfiguration</code></dfn>
- <li><dfn><code>CDATASection</code></dfn>
- <li><dfn><code>Notation</code></dfn>
+ <li><dfn><code>DOMObject</code></dfn>
+ <li><dfn><code>DOMUserData</code></dfn>
  <li><dfn><code>Entity</code></dfn>
  <li><dfn><code>EntityReference</code></dfn>
+ <li><dfn><code>NamedNodeMap</code></dfn> <!--AttrExodus-->
+ <li><dfn><code>NameList</code></dfn>
+ <li><dfn><code>Notation</code></dfn>
+ <li><dfn><code>TypeInfo</code></dfn>
+ <li><dfn><code>UserDataHandler</code></dfn>
 </ul>
 
 <p>Interface members:</p>

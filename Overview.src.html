@@ -1281,9 +1281,16 @@ method must run these steps:</p>
 
 <h3>Interface <code>Document</code></h3>
 <pre class=idl>interface <dfn>Document</dfn> : <span>Node</span> {
-  readonly attribute <span>DocumentType</span> <span title=dom-Document-doctype>doctype</span>;
   readonly attribute <span>DOMImplementation</span> <span title=dom-Document-implementation>implementation</span>;
+           attribute DOMString <span title=dom-Document-documentURI>documentURI</span>;
+  readonly attribute DOMString <span title=dom-Document-compatMode>compatMode</span>;
+
+  readonly attribute <span>DocumentType</span> <span title=dom-Document-doctype>doctype</span>;
   readonly attribute <span>Element</span> <span title=dom-Document-documentElement>documentElement</span>;
+  <span>NodeList</span> <span title=dom-Document-getElementsByTagName>getElementsByTagName</span>(DOMString <var>qualifiedName</var>);
+  <span>NodeList</span> <span title=dom-Document-getElementsByTagNameNS>getElementsByTagNameNS</span>(DOMString <var>namespace</var>, DOMString <var>localName</var>);
+  <span>NodeList</span> <span title=dom-Document-getElementsByClassName>getElementsByClassName</span>(DOMString <var>classNames</var>);
+  <span>Element</span> <span title=dom-Document-getElementById>getElementById</span>(DOMString <var>elementId</var>);
 
   <span>Element</span> <span title=dom-Document-createElement>createElement</span>([TreatNullAs=EmptyString] DOMString <var>localName</var>);
   <span>Element</span> <span title=dom-Document-createElementNS>createElementNS</span>(DOMString <var>namespace</var>, DOMString <var>qualifiedName</var>);
@@ -1297,16 +1304,8 @@ method must run these steps:</p>
   <span>Attr</span> <span title=dom-Document-createAttributeNS>createAttributeNS</span>(DOMString namespace, DOMString qualifiedName);
     If adding this, search for [createAttribute]-->
 
-  <span>NodeList</span> <span title=dom-Document-getElementsByTagName>getElementsByTagName</span>(DOMString <var>qualifiedName</var>);
-  <span>NodeList</span> <span title=dom-Document-getElementsByTagNameNS>getElementsByTagNameNS</span>(DOMString <var>namespace</var>, DOMString <var>localName</var>);
-  <span>NodeList</span> <span title=dom-Document-getElementsByClassName>getElementsByClassName</span>(DOMString <var>classNames</var>);
-  <span>Element</span> <span title=dom-Document-getElementById>getElementById</span>(DOMString <var>elementId</var>);
-
   <span>Node</span> <span title=dom-Document-importNode>importNode</span>(<span>Node</span> <var>node</var>, boolean <var>deep</var>);
-  <span>Node</span> <span title=dom-Document-adoptNode>adoptNode</span>(<span>Node</span> <var>node</var>);
-
-           attribute DOMString <span title=dom-Document-documentURI>documentURI</span>;
-  readonly attribute DOMString <span title=dom-Document-compatMode>compatMode</span>;<!--
+  <span>Node</span> <span title=dom-Document-adoptNode>adoptNode</span>(<span>Node</span> <var>node</var>);<!--
   readonly attribute DOMString xmlEncoding;
            attribute boolean xmlStandalone;
            attribute DOMString <span title=dom-Document-xmlVersion>xmlVersion</span>;
@@ -1339,16 +1338,175 @@ absence, or value of the DOCTYPE string.
 
 <hr>
 
-<p>The <dfn title=dom-Document-doctype><code>doctype</code></dfn> attribute must return the first child of the <code>Document</code> node that is a <code>DocumentType</code> node, if there is one, or null otherwise.
-
-<p class=note>In both HTML and XML there will only ever be one
-<code>DocumentType</code> node descendant of the <code>Document</code> node.
-<span data-anolis-ref class=informative>HTML</span> <span data-anolis-ref
-class=informative>XML</span>
+<dl class=domintro>
+ <dt><var>document</var> . <code title=dom-Document-compatMode>compatMode</code>
+ <dd>
+  <p>Returns the string "<code title>CSS1Compat</code>" if the <span>context
+  node</span> is in <span title=concept-no-quirks-mode>no-quirks mode</span> or
+  <span title=concept-limited-quirks-mode>limited-quirks mode</span>, and
+  "<code title>BackCompat</code>", if the <code>Document</code> is in
+  <span title=concept-quirks-mode>quirks mode</span>.
+</dl>
 
 <p>The <dfn title=dom-Document-implementation><code>implementation</code></dfn> attribute must return the <code>DOMImplementation</code> object that is associated with the <code>Document</code> node.
 
-<p>The <dfn title=dom-Document-documentElement><code>documentElement</code></dfn> attribute must return the first child of the <code>Document</code> node that is an <code>Element</code> node, if there is one, or null otherwise.
+<p class=XXX><dfn title=dom-Document-documentURI>documentURI</dfn>
+Should document.documentURI really exist? be readonly?
+
+<p>The <dfn title=dom-Document-compatMode><code>compatMode</code></dfn> IDL
+attribute must return the literal string "<code title>CSS1Compat</code>" unless
+the <span>context node</span> is in <span
+title=concept-quirks-mode>quirks mode</span>, in which case it must instead
+return the literal string "<code title>BackCompat</code>".
+
+<!-- <dfn title=dom-Document-xmlVersion>xmlVersion</dfn>
+http://lists.w3.org/Archives/Public/www-dom/2003JulSep/0049.html -->
+
+<hr>
+
+<dl class=domintro>
+ <dt><var>collection</var> = <var>document</var> . <code
+ title=dom-Document-getElementsByClassName>getElementsByClassName(<var
+ title>classes</var>)</code>
+ <dt><var>collection</var> = <var>element</var> . <code
+ title=dom-Element-getElementsByClassName>getElementsByClassName(<var
+ title>classes</var>)</code>
+ <dd>
+  <p>Returns a <code>NodeList</code> of the elements in the object
+  on which the method was invoked (a <code>Document</code> or an
+  <code>Element</code>) that have all the classes given by <var
+  title="">classes</var>.
+  <p>The <var title="">classes</var> argument is interpreted as a
+  space-separated list of classes.
+</dl>
+
+<p>The <dfn title=dom-Document-doctype><code>doctype</code></dfn> attribute must return the child of the <code>Document</code> node that is a <code>DocumentType</code> node, if there is one, or null otherwise.
+
+<p>The
+<dfn title=dom-Document-documentElement><code>documentElement</code></dfn>
+attribute must return the child of the <code>Document</code> node that is an
+<code>Element</code> node, if there is one, or null otherwise.
+
+<p>The <dfn
+title=dom-Document-getElementsByTagName><code>getElementsByTagName(<var
+title>localName</var>)</code></dfn> method must run these steps:
+
+<ol>
+ <li><p>If <var>localName</var> is "<code>*</code>" (U+002A),
+ return a <code>NodeList</code> rooted at the <span>context node</span>,
+ whose filter matches only <code>Element</code> nodes.
+
+ <li>
+  <p>Otherwise, if the <span>context node</span> is an
+  <span>HTML document</span>, return a <code>NodeList</code> rooted at the
+  <span>context node</span>, whose filter matches only the following nodes:
+
+  <ul>
+   <li><code>Element</code> nodes in the <span>HTML namespace</span> whose <span title=concept-element-local-name>local name</span> is
+   <var>localName</var> <span>converted to lowercase</span>.
+
+   <li><code>Element</code> nodes, <em>not</em> in the
+   <span>HTML namespace</span>, whose
+   <span title=concept-element-local-name>local name</span> is
+   <var>localName</var>.
+  </ul>
+
+ <li><p>Otherwise, return a <code>NodeList</code> rooted at the
+ <span>context node</span>, whose filter matches only <code>Element</code>
+ nodes whose <span title=concept-element-local-name>local name</span> is
+ <var>localName</var>.
+</ol>
+
+<p class=XXX>A new <code>NodeList</code> object must be returned each time. XXX some impl cache
+
+<p class=note>Thus, in an <span>HTML document</span>, <code
+title>document.getElementsByTagName("FOO")</code> will match <code
+title>FOO</code> elements that aren't in the <span>HTML namespace</span>, and
+<code title>foo</code> elements that are in the <span>HTML namespace</span>, but
+not <code title>FOO</code> elements that are in the <span>HTML namespace</span>.
+
+
+<p>The <dfn title=dom-Document-getElementsByTagNameNS><code>getElementsByTagNameNS(<var>namespace</var>, <var>localName</var>)</code></dfn> method must run these steps:
+<ol>
+ <li><p>If both <var>namespace</var> and <var>localName</var> are
+ "<code>*</code>" (U+002A) return a <code>NodeList</code> rooted at the
+ <span>context node</span>, whose filter matches only <code>Element</code>
+ nodes.
+ <li><p>Otherwise, if just <var>namespace</var> is "<code>*</code>"
+ (U+002A), return a <code>NodeList</code> rooted at the
+ <span>context node</span>, whose filter matches only <code>Element</code>
+ nodes whose <span title=concept-element-local-name>local name</span> is
+ <var>localName</var>.
+ <li><p>Otherwise, if just <var>localName</var> is "<code>*</code>"
+ (U+002A), return a <code>NodeList</code> rooted at the
+ <span>context node</span>, whose filter matches only <code>Element</code>
+ nodes whose <span title=concept-element-namespace>namespace</span> is
+ <var>namespace</var>.
+ <li><p>Otherwise, return a <code>NodeList</code> rooted at the
+ <span>context node</span>, whose filter matches only <code>Element</code> nodes whose <span title=concept-element-namespace>namespace</span> is
+ <var>namespace</var> and
+ <span title=concept-element-local-name>local name</span> is
+ <var>localName</var>.
+</ol>
+<p class=XXX>A new <code>NodeList</code> object must be returned each time. XXX some impl cache
+
+
+<p>The <dfn
+title=dom-Document-getElementsByClassName><code>getElementsByClassName(<var
+title>classNames</var>)</code></dfn> method takes a string that contains a
+<span>set of space-separated tokens</span> representing <span
+title=concept-class>classes</span>. When called, the method must return a <span
+title=concept-collection-live>live</span> <code>NodeList</code> object
+containing all the elements in the <span>context node</span>, in <span>tree
+order</span>, that have all the <span title=concept-class>classes</span>
+specified in the <var>classNames</var> argument, having obtained the
+<span title=concept-class>classes</span> by <span title="split a string on
+spaces">splitting the string on spaces</span>. (Duplicates are ignored.) If
+there are no tokens specified in the argument, then the method must return an
+empty <code>NodeList</code>. If the document is in <span
+title=concept-quirks-mode>quirks mode</span>, then the comparisons for the <span
+title=concept-class>classes</span> must be done in an <span>ASCII
+case-insensitive</span> manner, otherwise, the comparisons must be done in a
+<span>case-sensitive</span> manner.
+<p>A new <code>NodeList</code> object must be returned each time.
+
+<div class="example">
+ <p>Given the following XHTML fragment:</p>
+
+ <pre>&lt;div id="example"&gt;
+  &lt;p id="p1" class="aaa bbb"/&gt;
+  &lt;p id="p2" class="aaa ccc"/&gt;
+  &lt;p id="p3" class="bbb ccc"/&gt;
+&lt;/div&gt;</pre>
+
+ <p>A call to <code
+ title=dom-Element-getElementsByClassName>document.getElementById('example').getElementsByClassName('aaa')</code>
+ would return a <code>NodeList</code> with the two paragraphs <code
+ title="">p1</code> and <code title="">p2</code> in it.</p>
+
+ <p>A call to <code
+ title=dom-Element-getElementsByClassName>getElementsByClassName('ccc&nbsp;bbb')</code> would only
+ return one node, however, namely <code title="">p3</code>. A call
+ to <code
+ title=dom-Element-getElementsByClassName>document.getElementById('example').getElementsByClassName('bbb&nbsp;&nbsp;ccc&nbsp;')</code>
+ would return the same thing.</p>
+
+ <p>A call to <code
+ title=dom-Element-getElementsByClassName>getElementsByClassName('aaa,bbb')</code> would return no
+ nodes; none of the elements above are in the "aaa,bbb" class.</p>
+</div>
+
+<!-- v2:
+>         * xGetParentElementByClassName(rootElement, className, tagName) -
+> Navigates upwards until we hit a parent element with the given class name and
+> optional tag name.
+-->
+
+<p>The <dfn title=dom-Document-getElementById><code>getElementById(<var
+title>elementId</var>)</code></dfn> method must return the first
+<code>Element</code> node, in <span>tree order</span>, in the <span>context
+node</span> whose <span title=concept-ID>ID</span> is <var>elementId</var>,
+or null if there is none.
 
 <hr>
 
@@ -1477,145 +1635,6 @@ contains "xml" or the colon, or that the data contains characters that match the
 data-anolis-spec=xmlns>NCName</code> production in Namespaces in XML.-->
 
 <hr>
-<dl class=domintro>
- <dt><var>collection</var> = <var>document</var> . <code
- title=dom-Document-getElementsByClassName>getElementsByClassName(<var
- title>classes</var>)</code>
- <dt><var>collection</var> = <var>element</var> . <code
- title=dom-Element-getElementsByClassName>getElementsByClassName(<var
- title>classes</var>)</code>
- <dd>
-  <p>Returns a <code>NodeList</code> of the elements in the object
-  on which the method was invoked (a <code>Document</code> or an
-  <code>Element</code>) that have all the classes given by <var
-  title="">classes</var>.
-  <p>The <var title="">classes</var> argument is interpreted as a
-  space-separated list of classes.
-</dl>
-
-<p>The <dfn
-title=dom-Document-getElementsByTagName><code>getElementsByTagName(<var
-title>localName</var>)</code></dfn> method must run these steps:
-
-<ol>
- <li><p>If <var>localName</var> is "<code>*</code>" (U+002A),
- return a <code>NodeList</code> rooted at the <span>context node</span>,
- whose filter matches only <code>Element</code> nodes.
-
- <li>
-  <p>Otherwise, if the <span>context node</span> is an
-  <span>HTML document</span>, return a <code>NodeList</code> rooted at the
-  <span>context node</span>, whose filter matches only the following nodes:
-
-  <ul>
-   <li><code>Element</code> nodes in the <span>HTML namespace</span> whose <span title=concept-element-local-name>local name</span> is
-   <var>localName</var> <span>converted to lowercase</span>.
-
-   <li><code>Element</code> nodes, <em>not</em> in the
-   <span>HTML namespace</span>, whose
-   <span title=concept-element-local-name>local name</span> is
-   <var>localName</var>.
-  </ul>
-
- <li><p>Otherwise, return a <code>NodeList</code> rooted at the
- <span>context node</span>, whose filter matches only <code>Element</code>
- nodes whose <span title=concept-element-local-name>local name</span> is
- <var>localName</var>.
-</ol>
-
-<p class=XXX>A new <code>NodeList</code> object must be returned each time. XXX some impl cache
-
-<p class=note>Thus, in an <span>HTML document</span>, <code
-title>document.getElementsByTagName("FOO")</code> will match <code
-title>FOO</code> elements that aren't in the <span>HTML namespace</span>, and
-<code title>foo</code> elements that are in the <span>HTML namespace</span>, but
-not <code title>FOO</code> elements that are in the <span>HTML namespace</span>.
-
-
-<p>The <dfn title=dom-Document-getElementsByTagNameNS><code>getElementsByTagNameNS(<var>namespace</var>, <var>localName</var>)</code></dfn> method must run these steps:
-<ol>
- <li><p>If both <var>namespace</var> and <var>localName</var> are
- "<code>*</code>" (U+002A) return a <code>NodeList</code> rooted at the
- <span>context node</span>, whose filter matches only <code>Element</code>
- nodes.
- <li><p>Otherwise, if just <var>namespace</var> is "<code>*</code>"
- (U+002A), return a <code>NodeList</code> rooted at the
- <span>context node</span>, whose filter matches only <code>Element</code>
- nodes whose <span title=concept-element-local-name>local name</span> is
- <var>localName</var>.
- <li><p>Otherwise, if just <var>localName</var> is "<code>*</code>"
- (U+002A), return a <code>NodeList</code> rooted at the
- <span>context node</span>, whose filter matches only <code>Element</code>
- nodes whose <span title=concept-element-namespace>namespace</span> is
- <var>namespace</var>.
- <li><p>Otherwise, return a <code>NodeList</code> rooted at the
- <span>context node</span>, whose filter matches only <code>Element</code> nodes whose <span title=concept-element-namespace>namespace</span> is
- <var>namespace</var> and
- <span title=concept-element-local-name>local name</span> is
- <var>localName</var>.
-</ol>
-<p class=XXX>A new <code>NodeList</code> object must be returned each time. XXX some impl cache
-
-
-<p>The <dfn
-title=dom-Document-getElementsByClassName><code>getElementsByClassName(<var
-title>classNames</var>)</code></dfn> method takes a string that contains a
-<span>set of space-separated tokens</span> representing <span
-title=concept-class>classes</span>. When called, the method must return a <span
-title=concept-collection-live>live</span> <code>NodeList</code> object
-containing all the elements in the <span>context node</span>, in <span>tree
-order</span>, that have all the <span title=concept-class>classes</span>
-specified in the <var>classNames</var> argument, having obtained the
-<span title=concept-class>classes</span> by <span title="split a string on
-spaces">splitting the string on spaces</span>. (Duplicates are ignored.) If
-there are no tokens specified in the argument, then the method must return an
-empty <code>NodeList</code>. If the document is in <span
-title=concept-quirks-mode>quirks mode</span>, then the comparisons for the <span
-title=concept-class>classes</span> must be done in an <span>ASCII
-case-insensitive</span> manner, otherwise, the comparisons must be done in a
-<span>case-sensitive</span> manner.
-<p>A new <code>NodeList</code> object must be returned each time.
-
-<div class="example">
- <p>Given the following XHTML fragment:</p>
-
- <pre>&lt;div id="example"&gt;
-  &lt;p id="p1" class="aaa bbb"/&gt;
-  &lt;p id="p2" class="aaa ccc"/&gt;
-  &lt;p id="p3" class="bbb ccc"/&gt;
-&lt;/div&gt;</pre>
-
- <p>A call to <code
- title=dom-Element-getElementsByClassName>document.getElementById('example').getElementsByClassName('aaa')</code>
- would return a <code>NodeList</code> with the two paragraphs <code
- title="">p1</code> and <code title="">p2</code> in it.</p>
-
- <p>A call to <code
- title=dom-Element-getElementsByClassName>getElementsByClassName('ccc&nbsp;bbb')</code> would only
- return one node, however, namely <code title="">p3</code>. A call
- to <code
- title=dom-Element-getElementsByClassName>document.getElementById('example').getElementsByClassName('bbb&nbsp;&nbsp;ccc&nbsp;')</code>
- would return the same thing.</p>
-
- <p>A call to <code
- title=dom-Element-getElementsByClassName>getElementsByClassName('aaa,bbb')</code> would return no
- nodes; none of the elements above are in the "aaa,bbb" class.</p>
-</div>
-
-<!-- v2:
->         * xGetParentElementByClassName(rootElement, className, tagName) -
-> Navigates upwards until we hit a parent element with the given class name and
-> optional tag name.
--->
-
-
-<p>The <dfn title=dom-Document-getElementById><code>getElementById(<var
-title>elementId</var>)</code></dfn> method must return the first
-<code>Element</code> node, in <span>tree order</span>, in the <span>context
-node</span> whose <span title=concept-ID>ID</span> is <var>elementId</var>,
-or null if there is none.
-
-<hr>
 
 <p>The
 <dfn title=dom-Document-importNode><code>importNode(<var>node</var>, <var>deep</var>)</code></dfn>
@@ -1648,29 +1667,6 @@ method must run these steps:
 </ol>
 
 <hr>
-
-<dl class=domintro>
- <dt><var>document</var> . <code title=dom-Document-compatMode>compatMode</code>
- <dd>
-  <p>Returns the string "<code title>CSS1Compat</code>" if the <span>context
-  node</span> is in <span title=concept-no-quirks-mode>no-quirks mode</span> or
-  <span title=concept-limited-quirks-mode>limited-quirks mode</span>, and
-  "<code title>BackCompat</code>", if the <code>Document</code> is in
-  <span title=concept-quirks-mode>quirks mode</span>.
-</dl>
-
-<p class=XXX><dfn title=dom-Document-documentURI>documentURI</dfn>
-Should document.documentURI really exist? be readonly?
-
-<p>The <dfn title=dom-Document-compatMode><code>compatMode</code></dfn> IDL
-attribute must return the literal string "<code title>CSS1Compat</code>" unless
-the <span>context node</span> is in <span
-title=concept-quirks-mode>quirks mode</span>, in which case it must instead
-return the literal string "<code title>BackCompat</code>".
-
-<!-- <dfn title=dom-Document-xmlVersion>xmlVersion</dfn>
-http://lists.w3.org/Archives/Public/www-dom/2003JulSep/0049.html -->
-
 
 <h4>Interface <code>DOMImplementation</code></h4>
 <p>User agents must create a new <code>DOMImplementation</code> object whenever a new <code>Document</code> node is created and associate it with the that <code>Document</code> node.

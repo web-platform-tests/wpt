@@ -399,6 +399,7 @@ feature</span> with the version "2.0" associated with it.
 
 
 <h3>Cloning nodes</h3>
+<p class=XXX>This needs a rewrite
 <p>To <dfn>clone</dfn> a <var>node</var>, with a
 <var>new ownerDocument</var> and with a <i>clone children flag</i>, these
 steps must be run:
@@ -608,16 +609,16 @@ node and its child nodes:</p>
   const unsigned short <span title=dom-Node-DOCUMENT_TYPE_NODE>DOCUMENT_TYPE_NODE</span> = 10;
   const unsigned short <span title=dom-Node-DOCUMENT_FRAGMENT_NODE>DOCUMENT_FRAGMENT_NODE</span> = 11;
   const unsigned short <span title=dom-Node-NOTATION_NODE>NOTATION_NODE</span> = 12; // historical
-  readonly attribute unsigned short <span title=dom-Node-nodeType>nodeType</span>;
+  readonly attribute unsigned short <span title=dom-Node-nodeType>nodeType</span>;<!-- NodeExodus
 
   readonly attribute DOMString <span title=dom-Node-namespaceURI>namespaceURI</span>;
   readonly attribute DOMString <span title=dom-Node-prefix>prefix</span>;
-  readonly attribute DOMString <span title=dom-Node-localName>localName</span>;
+  readonly attribute DOMString <span title=dom-Node-localName>localName</span>;-->
   readonly attribute DOMString <span title=dom-Node-nodeName>nodeName</span>;
 
   readonly attribute DOMString <span title=dom-Node-baseURI>baseURI</span>;
 
-  <!--Attr Exodus
+  <!--AttrExodus
   boolean <span title=dom-Node-hasAttributes>hasAttributes</span>();
   readonly attribute <span>NamedNodeMap</span> <span title=dom-Node-attributes>attributes</span>;
 
@@ -691,12 +692,13 @@ must return the type of the node, which must be one of the following:</p>
 <p class=note>The constants marked historical can no longer be returned, but
 are still exposed on the interface.</p>
 
+<!-- NodeExodus
 <hr>
 
 <p>The <dfn title=dom-Node-namespaceURI><code>namespaceURI</code></dfn> attribute must return the namespace that is associated with the node, if there is one and it's not the empty string, or null otherwise.
 
 <p>The <dfn title=dom-Node-prefix><code>prefix</code></dfn> attribute must return the prefix that is associated with the node, if there is one and it's not the empty string, or null otherwise.
-<!--XXX support setting? - - On setting, it must run the following steps:
+<!- -XXX support setting? - - On setting, it must run the following steps:
 
 <ol>
  <li><p>Let <var>prefix</var> be the value being assigned.
@@ -713,14 +715,11 @@ are still exposed on the interface.</p>
    terminate these steps.
   </ol>
  <li><p class=XXX>Actually this does not match any browser. Let's try to drop it instead.
-</ol>-->
-
-<p class=note>Setting the <code title=dom-Node-prefix>prefix</code>
-attribute is not supported. <!-- XXX kill this note at some point -->
+</ol>- ->
 
 <p>The <dfn title=dom-Node-localName><code>localName</code></dfn> attribute
 must return the local name that is associated with the node, if it has one,
-and null otherwise.
+and null otherwise.-->
 
 <p>The <dfn title=dom-Node-nodeName><code>nodeName</code></dfn> attribute
 must return the following, depending on the <span>context node</span>:</p>
@@ -1919,6 +1918,9 @@ otherwise [createAttribute]- ->.
 
 <h3>Interface <code>Element</code></h3>
 <pre class=idl>interface <dfn>Element</dfn> : <span>Node</span> {
+  readonly attribute DOMString <span title=dom-Element-namespaceURI>namespaceURI</span>;
+  readonly attribute DOMString <span title=dom-Element-prefix>prefix</span>;
+  readonly attribute DOMString <span title=dom-Element-localName>localName</span>;
   readonly attribute DOMString <span title=dom-Element-tagName>tagName</span>;
 
   readonly <span>Attr</span>[] <span title=dom-Element-attributes>attributes</span>;
@@ -1970,7 +1972,24 @@ defined in <span>other applicable specifications</span>.
 
 <hr>
 
-<p>The <dfn title=dom-Element-tagName><code>tagName</code></dfn> attribute must return the <span>context node</span>'s <span title=concept-element-qualified-name>qualified name</span>, <span>converted to uppercase</span> if the <span>context node</span> is in the <span>HTML namespace</span> and its <code title=dom-Node-ownerDocument>ownerDocument</code> is an <span>HTML document</span>.</p>
+<p>The <dfn title=dom-Element-namespaceURI><code>namespaceURI</code></dfn>
+attribute must return the <span>context node</span>'s
+<span title=concept-element-namespace>namespace</span>.
+
+<p>The <dfn title=dom-Element-prefix><code>prefix</code></dfn> attribute must return the <span>context node</span>'s
+<span title=concept-element-namespace-prefix>namespace prefix</span>.
+
+<p>The <dfn title=dom-Element-localName><code>localName</code></dfn>
+attribute must return the <span>context node</span>'s
+<span title=concept-element-local-name>local name</span>.
+
+<p>The <dfn title=dom-Element-tagName><code>tagName</code></dfn> attribute
+must return the <span>context node</span>'s
+<span title=concept-element-qualified-name>qualified name</span>,
+<span>converted to uppercase</span> if the <span>context node</span> is in
+the <span>HTML namespace</span> and its
+<code title=dom-Node-ownerDocument>ownerDocument</code> is an
+<span>HTML document</span>.</p>
 
 <hr>
 
@@ -2886,6 +2905,12 @@ specification will however not support them.</p>
   <!--AttrExodus-->
   <p><dfn title=dom-Node-hasAttributes><code>hasAttributes()</code></dfn>
   <p><dfn title=dom-Node-attributes><code>attributes</code></dfn>
+
+  <!--NodeExodus-->
+  <p><dfn title=dom-Node-namespaceURI><code>namespaceURI</code></dfn>
+  <p><dfn title=dom-Node-prefix><code>prefix</code></dfn>
+  <p><dfn title=dom-Node-localName><code>localName</code></dfn>
+
 
   <p><dfn title=dom-Node-normalize><code>normalize()</code></dfn>
   <p><dfn title=dom-Node-isSupported><code>isSupported</code></dfn>

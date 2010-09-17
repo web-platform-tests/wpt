@@ -399,7 +399,6 @@ feature</span> with the version "2.0" associated with it.
 
 
 <h3>Cloning nodes</h3>
-<p class=XXX>This needs a rewrite
 <p>To <dfn>clone</dfn> a <var>node</var>, with a
 <var>new ownerDocument</var> and with a <i>clone children flag</i>, these
 steps must be run:
@@ -407,8 +406,16 @@ steps must be run:
 <ol>
  <li><p>If <var>node</var> is a <code>DocumentType</code> node, raise a <code title=dom-DOMException-DATA_CLONE_ERR>DATA_CLONE_ERR</code> exception and terminate these steps. <!--XXX wrong? -->
  <li>
-  <p>Let <var>copy</var> be a new <code>Node</code> that implements the same interfaces as <var>node</var>, with <code title=dom-Node-ownerDocument>ownerDocument</code> set to <var>new ownerDocument</var>, <code title="dom-Node-prefix">prefix</code>, <code title="dom-Node-localName">localName</code> and <code title="dom-Node-namespaceURI">namespaceURI</code> attributes set to the values of the attributes on <var>node</var> with the same names, and other attributes set to the values of the attributes on <var>node</var> with the same names, depending on the <var>node</var>:</p>
+  <p>Let <var>copy</var> be a new <code>Node</code> that implements the same interfaces as <var>node</var>, with <code title=dom-Node-ownerDocument>ownerDocument</code> set to
+  <var>new ownerDocument</var>. Also copy the following, depending on the
+  <var>node</var>:</p>
   <dl class=switch>
+   <dt><code>Element</code></dt>
+   <dd><p>Its <span title=concept-element-namespace>namespace</span>,
+   <span title=concept-element-namespace-prefix>namespace prefix</span>,
+   <span title=concept-element-local-name>local name</span>, and its
+   associated collection of <code>Attr</code> objects.</p></dd>
+
    <!--AttrExodus
    <dt><code>Attr</code>
    <dd><p><code title=dom-Attr-value>value</code>
@@ -416,21 +423,16 @@ steps must be run:
 
    <dt><code>Text</code>
    <dt><code>Comment</code>
-   <dd><p><code title=dom-CharacterData-data>data</code>
+   <dd><p>Its <code title=dom-CharacterData-data>data</code>.
 
    <dt><code>ProcessingInstruction</code>
 
-   <dd><p><code title=dom-ProcessingInstruction-target>target</code>, <code title=dom-ProcessingInstruction-data>data</code>
+   <dd><p>Its <span title=concept-PI-target>target</span> and
+   <span title=concept-PI-data>data</span>.
 
    <dt>Any other node
    <dd><p>&mdash;
   </dl>
- <li>
-  <p>If <var>node</var> is an <code>Element</code> node also copy it
-  associated collection of <code>Attr</code> objects.
-  <!--AttrExodus
-  <p>If <var>node</var> is an <code>Element</code> node, let <var>copy</var>'s <code title=dom-Node-attributes>attributes</code> be a new <code>NamedNodeMap</code>, and for each <code>Attr</code> <var>old attribute</var> in <var>node</var>'s <code title=dom-Node-attributes>attributes</code>, <span>clone</span> it and append it to the <var>copy</var>'s <code title=dom-Node-attributes>attributes</code>.
-  -->
  <li><p>If the <i>clone children flag</i> is set, <span>clone</span> all the children of <var>node</var> and append them to <var>copy</var>, with the same <var>new ownerDocument</var> and the <i>clone children flag</i> being set.
  <li><p>Return <var>copy</var>.
 </ol>
@@ -1135,29 +1137,38 @@ false otherwise:
  <li><p><var>node</var> is not null.
  <li><p><var>node</var>'s <code title=dom-Node-nodeType>nodeType</code> is the same as the <span>context node</span>'s <code title=dom-Node-nodeType>nodeType</code>.
  <li><p><var>node</var>'s <code title=dom-Node-nodeName>nodeName</code> is the same as the <span>context node</span>'s <code title=dom-Node-nodeName>nodeName</code>.
- <li><p><var>node</var>'s <code title=dom-Node-localName>localName</code> is the same as the <span>context node</span>'s <code title=dom-Node-localName>localName</code>.
- <li><p><var>node</var>'s <code title=dom-Node-namespaceURI>namespaceURI</code> is the same as the <span>context node</span>'s <code title=dom-Node-namespaceURI>namespaceURI</code>.
- <li><p><var>node</var>'s <code title=dom-Node-prefix>prefix</code> is the same as the <span>context node</span>'s <code title=dom-Node-prefix>prefix</code>.
  <li><p><var>node</var>'s <code title=dom-Node-nodeValue>nodeValue</code> is the same as the <span>context node</span>'s <code title=dom-Node-nodeValue>nodeValue</code>.
+ <li>
+  <p>The following are also equal, depending on <var>node</var>:</p>
+  <dl class=switch>
+   <dt><code>DocumentType</code></dt>
+   <dd><p>Its <span title=concept-doctype-name>name</span>,
+   <span title=concept-doctype-publicid>public ID</span>, and
+   <span title=concept-doctype-systemid>system ID</span>.
 
- <li><p>If <span>context node</span> is an <code>Element</code> node a
- bijection exists between its and <var>node</var>'s collection of associated
- <code>Attr</code> objects so that every <code>Attr</code> object in the
- former has all its members equal to the <code>Attr</code> it is mapped to
- in the latter.
- <!-- AttrExodus
- <li><p>Either <var>node</var>'s <code
- title=dom-Node-attributes>attributes</code> and the <span>context node</span>'s
- <code title=dom-Node-attributes>attributes</code> are both null or a bijection
- exists between the set of <var>node</var>'s <code
- title=dom-Node-attributes>attributes</code> and the set of the <span>context
- node</span>'s <code title=dom-Node-attributes>attributes</code> so that every
- <code>Attr</code> node in the former is mapped to an <code>Attr</code> node in
- the latter for which calling <code
- title=dom-Node-isEqualNode>isEqualNode</code> on the first <code>Attr</code>
- node with the second <code>Attr</code> node as its argument returns true.
- -->
+   <dt><code>Element</code></dt>
+   <dd><p>Its <span title=concept-element-namespace>namespace</span>,
+   <span title=concept-element-namespace-prefix>namespace prefix</span>,
+   <span title=concept-element-local-name>local name</span>, and its
+   associated collection of <code>Attr</code> objects.</p></dd>
 
+   <!--AttrExodus
+   <dt><code>Attr</code>
+   <dd><p><code title=dom-Attr-value>value</code>
+   -->
+
+   <dt><code>Text</code>
+   <dt><code>Comment</code>
+   <dd><p>Its <code title=dom-CharacterData-data>data</code>.
+
+   <dt><code>ProcessingInstruction</code>
+
+   <dd><p>Its <span title=concept-PI-target>target</span> and
+   <span title=concept-PI-data>data</span>.
+
+   <dt>Any other node
+   <dd><p>&mdash;
+  </dl>
  <li><p><var>node</var>'s <code title=dom-Node-childNodes>childNodes</code>' <code title=dom-NodeList-length>length</code> is the same as the <span>context node</span>'s <code title=dom-Node-childNodes>childNodes</code>' <code title=dom-NodeList-length>length</code>.
  <li><p>Calling <code title=dom-Node-isEqualNode>isEqualNode</code> on each child node of the <span>context node</span>, with the child node of the same index in <var>node</var> as argument returns true for every child node.
 </ul>

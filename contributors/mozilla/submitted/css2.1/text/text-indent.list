@@ -3,9 +3,9 @@
 
 # Also need to test intrinsic widths (bug 368155).
 
-!= text-indent-113.xht text-indent-114.xht
 == text-indent-113.xht text-indent-113-ref-margin.xht
 == text-indent-114.xht text-indent-114-ref.xht
+!= text-indent-113.xht text-indent-114.xht
 == text-indent-115.xht text-indent-115-ref-block-margin.xht
 == text-indent-115.xht text-indent-115-ref-inline-margin.xht
 == text-indent-percent-001.xht text-indent-percent-001-ref.xht

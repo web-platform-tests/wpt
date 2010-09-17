@@ -1571,16 +1571,18 @@ is none.
  <span>context node</span>.
 </ol>
 
-<p>The <dfn title=dom-Document-createElementNS><code>createElementNS(<var>namespace</var>, <var>qualifiedName</var>)</code></dfn> method must run these steps:</p>
+<p>The
+<dfn title=dom-Document-createElementNS><code>createElementNS(<var>namespace</var>, <var>qualifiedName</var>)</code></dfn>
+method must run these steps:</p>
 <ol>
- <li><p>If <var>qualifiedName</var> does not match the <code
- data-anolis-spec=xml>Name</code> production in XML, raise an
+ <li><p>If <var>qualifiedName</var> does not match the
+ <code data-anolis-spec=xml>Name</code> production in XML, raise an
  <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
  exception and terminate these steps.
- <li><p>If <var>qualifiedName</var> does not match the <code
- data-anolis-spec=xmlns>QName</code> production in Namespaces in XML, raise
- a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception
- and terminate these steps.
+ <li><p>If <var>qualifiedName</var> does not match the
+ <code data-anolis-spec=xmlns>QName</code> production in Namespaces in XML,
+ raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code>
+ exception and terminate these steps.
  <li><p>If <var>qualifiedName</var> contains a "<code>:</code>" (U+003E),
  then split the string on it and let <var>prefix</var> be the part before
  and <var>localName</var> the part after. Otherwise, let <var>prefix</var>
@@ -2048,14 +2050,17 @@ method must run these steps:
  <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
  exception and terminate these steps.
 
- <li class=XXX><p>Do something about <var>qualifiedName</var> == "xmlns"?
- <a href=https://bugzilla.mozilla.org/show_bug.cgi?id=315805>Moz bug 315805</a>
-
  <li><p>If the <span>context node</span> is in the
  <span>HTML namespace</span> and its
  <code title=dom-Node-ownerDocument>ownerDocument</code> is an
  <span>HTML document</span>, let <var>qualifiedName</var> be
  <span>converted to lowercase</span>.
+
+ <!-- https://bugzilla.mozilla.org/show_bug.cgi?id=315805 -->
+ <li><p>If <var>qualifiedName</var> starts with
+ "<code title>xmlns</code>", raise a
+ <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> and
+ terminate these steps. <!--XXX define "starts with"? -->
 
  <li><p>If the node does not have an <code>Attr</code> object whose
  <span title=concept-attr-name>name</span> is <var>qualifiedName</var>,
@@ -2070,7 +2075,62 @@ method must run these steps:
  <var>qualifiedName</var>, to <var>value</var>.
 </ol>
 
-<p class=XXX><dfn title=dom-Element-setAttributeNS>setAttributeNS</dfn>
+<p>The
+<dfn title=dom-Element-setAttributeNS><code>setAttributeNS(<var>namespace</var>, <var>qualifiedName</var>)</code></dfn>
+method must run these steps:</p>
+
+<ol>
+ <li><p>If <var>qualifiedName</var> does not match the
+ <code data-anolis-spec=xml>Name</code> production in XML, raise an
+ <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
+ exception and terminate these steps.
+ <li><p>If <var>qualifiedName</var> does not match the
+ <code data-anolis-spec=xmlns>QName</code> production in Namespaces in XML,
+ raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code>
+ exception and terminate these steps.
+ <li><p>If <var>qualifiedName</var> contains a "<code>:</code>" (U+003E),
+ then split the string on it and let <var>prefix</var> be the part before
+ and <var>localName</var> the part after. Otherwise, let <var>prefix</var>
+ be null and <var>localName</var> be <var>qualifiedName</var>.
+ <li><p>If <var>prefix</var> is not null and <var>namespace</var> is an
+ empty string, raise a
+ <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception
+ and terminate these steps.
+ <li><p>If <var>prefix</var> is "<code title>xml</code>" and
+ <var>namespace</var> is not the <span>XML namespace</span>, raise a
+ <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception
+ and terminate these steps.
+ <li><p>If <var>qualifiedName</var> or <var>prefix</var> is
+ "<code title>xmlns</code>" and <var>namespace</var> is not the
+ <span>XMLNS namespace</span>, raise a
+ <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception
+ and terminate these steps.
+ <li><p>If <var>namespace</var> is the <span>XMLNS namespace</span> and
+ neither <var>qualifiedName</var> nor <var>prefix</var> is
+ "<code title>xmlns</code>", raise a
+ <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception
+ and terminate these steps.
+ <li><p>If the node does not have an <code>Attr</code> object whose
+ <span title=concept-attr-namespace>namespace</span> is <var>namespace</var>
+ and <span title=concept-attr-local-name>local name</span> is
+ <var>localName</var>, create an <code>Attr</code> object, whose
+ <span title=concept-attr-namespace>namespace</span> is
+ <var>namespace</var>,
+ <span title=concept-attr-namespace-prefix>namespace prefix</span> is
+ <var>prefix</var>, <span title=concept-attr-local-name>local name</span> is
+ <var>localName</var>, and <span title=concept-attr-value>value</span> is <var>value</var>. Append this object to the <span>context node</span>'s
+ <code title=dom-Element-attributes>attributes</code>, as its last item.
+
+ <li><p>Otherwise, set the <span title=concept-attr-value>value</span> of
+ the <code>Attr</code> object in the <span>context node</span>'s
+ <code title=dom-Element-attributes>attributes</code> whose
+ <span title=concept-attr-namespace>namespace</span> is
+ <var>namespace</var>, and
+ <span title=concept-attr-local-name>local name</span> is
+ <var>localName</var>, to <var>value</var>, and set its
+ <span title=concept-attr-namespace-prefix>namespace prefix</span> to
+ <var>prefix</var>.</p></li>
+</ol>
 
 <p>The
 <dfn title=dom-Element-removeAttribute><code>removeAttribute(<var>qualifiedName</var>)</code></dfn> method must remove the first <code>Attr</code> object in the

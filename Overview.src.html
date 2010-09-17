@@ -404,7 +404,10 @@ feature</span> with the version "2.0" associated with it.
 steps must be run:
 
 <ol>
- <li><p>If <var>node</var> is a <code>DocumentType</code> node, raise a <code title=dom-DOMException-DATA_CLONE_ERR>DATA_CLONE_ERR</code> exception and terminate these steps. <!--XXX wrong? -->
+ <li><p>If <var>node</var> is a <code>Document</code> or
+ <code>DocumentType</code> node, raise a
+ <code title=dom-DOMException-DATA_CLONE_ERR>DATA_CLONE_ERR</code> exception
+ and terminate these steps. <!--XXX wrong? -->
  <li>
   <p>Let <var>copy</var> be a new <code>Node</code> that implements the same interfaces as <var>node</var>, with <code title=dom-Node-ownerDocument>ownerDocument</code> set to
   <var>new ownerDocument</var>. Also copy the following, depending on the

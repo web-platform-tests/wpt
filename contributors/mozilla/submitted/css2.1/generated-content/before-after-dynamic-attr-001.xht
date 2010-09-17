@@ -4,7 +4,7 @@
     <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
     <link rel="help" href="http://www.w3.org/TR/CSS21/generate.html#content" />
     <meta name="flags" content="dom" />
-<style>
+<style type="text/css">
 body {
   font-family:sans-serif;
 }
@@ -15,7 +15,7 @@ body::after {
   content:attr(my-attr-2);
 }
 </style>
-<script>
+<script type="text/javascript">
 function fixupDOM() {
   document.body.setAttribute("my-attr", "before");
   document.body.setAttribute("my-attr-2", "after!");

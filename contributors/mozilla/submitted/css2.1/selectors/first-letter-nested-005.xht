@@ -4,7 +4,7 @@
   <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
   <link rel="help" href="http://www.w3.org/TR/CSS21/selector.html#first-letter" />
   <meta name="flags" content="dom" />
-  <style>
+  <style type="text/css">
   div { color: black; }
   div:first-letter { color: green; }
   </style>
@@ -13,7 +13,7 @@
   <div>
     <span></span>
   </div>
-  <script>
+  <script type="text/javascript">
     document.body.offsetWidth;
     document.getElementsByTagName("span")[0].
       appendChild(document.createTextNode("This is text"));

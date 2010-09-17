@@ -5,14 +5,14 @@
 <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#containing-block-details" />
 <meta name="assert" content="If there is no such ancestor, the containing block is the initial containing block." />
 <meta name="flags" content="dom" />
-<style>
+<style type="text/css">
 html { margin:10px; border:20px solid black; padding:30px; }
 body { height:10000px; margin:0; }
 div { position:absolute; width:100px; height:100px; }
 </style>
 </head>
 <body>
-<script>
+<script type="text/javascript">
 window.scrollTo(0,50);
 </script>
 <div style="top:0; background:yellow;"></div>

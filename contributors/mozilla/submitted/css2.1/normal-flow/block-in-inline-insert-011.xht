@@ -4,14 +4,14 @@
     <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
     <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level" />
     <meta name="flags" content="dom" />
-  <script>
+  <script type="text/javascript">
    function doit() {
      var newNode = document.createElement("span");
      newNode.appendChild(document.createTextNode("Nine"));
      document.getElementById("target").appendChild(newNode);
    }
   </script>
-  <style>
+  <style type="text/css">
    body &gt; span { border: 3px solid blue }
    body &gt; span &gt; span { border: 3px solid cyan }
   </style>

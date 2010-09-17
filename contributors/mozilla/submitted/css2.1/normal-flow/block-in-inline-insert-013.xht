@@ -4,12 +4,12 @@
     <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
     <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level" />
     <meta name="flags" content="dom" />
-    <style>
+    <style type="text/css">
       #i { border: 2px solid; }
       #i::before { display: block; content: "One"; }
       #i::after { content: "Three"; }
     </style>
-    <script>
+    <script type="text/javascript">
       function doTest() {
         var i = document.getElementById("i");
         i.insertBefore(document.createTextNode("Two"), i.firstChild);

@@ -4,7 +4,7 @@
     <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
     <link rel="help" href="http://www.w3.org/TR/CSS21/generate.html#content" />
     <meta name="flags" content="dom" />
-<style>
+<style type="text/css">
 body::before {
   content:"Before";
   border:inherit;
@@ -14,7 +14,7 @@ body::before {
   content:"After";
 }
 </style>
-<script>
+<script type="text/javascript">
 function fixupDOM() {
   document.body.setAttribute("style", "border:2px solid red;");
   document.body.className = "cl";

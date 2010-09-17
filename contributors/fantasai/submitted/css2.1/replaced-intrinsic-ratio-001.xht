@@ -1,0 +1,30 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>CSS Test: Auto Width for Replaced Element with Intrinsic Ratio Only</title>
+  <link rel="author" title="Elika J. Etemad" href="http://fantasai.inkedblade.net/contact"/>
+  <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#inline-replaced-width"/>
+  <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#inline-replaced-height"/>
+  <meta name="flags" content="svg"/>
+  <style type="text/css">
+   body { width: 500px; border: 1px silver dashed; }
+   table, p { border-spacing: 0; border-collapse: collapse; margin: 0.5em 0; padding: 0; }
+   td { padding: 0; }
+   #img3 { display: block; }
+   object, #p4 { border: thick blue solid; }
+   object { background: red; }
+   #p4 { height: 1em; }
+   #p5 { width: 15em; float: left; }
+   #t5 { width: 15em; display: table-cell; }
+  </style>
+ </head>
+ <body>
+  <p>The following six blue boxes should be of the same width. There should be no red.
+     <object id="img1" type="image/svg+xml" data="support/intrinsic-ratio.svg">This test won't work because you do not have images enabled.</object></p>
+  <p id="p4"></p>
+  <p><object id="img2" type="image/svg+xml" data="support/intrinsic-ratio.svg">This test won't work because you do not have images enabled.</object></p>
+  <p><object id="img3" type="image/svg+xml" data="support/intrinsic-ratio.svg">This test won't work because you do not have images enabled.</object></p>
+  <table><tr><td id="t5"><object id="img5" type="image/svg+xml" data="support/intrinsic-ratio.svg">This test won't work because you do not have images enabled.</object></td></tr></table>
+  <p id="p6"><object id="img6" type="image/svg+xml" data="support/intrinsic-ratio.svg">This test won't work because you do not have images enabled.</object></p>
+ </body>
+</html>

@@ -5,6 +5,8 @@
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
   <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/box/inline/013.html" type="text/html"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#inline-boxes" />
+  <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#float-position"/>
+  <meta name="flags" content="image"/>
   <style type="text/css">
    div { font: 64px/1 monospace; }
    #control1 { position: absolute; top: 100px; }
@@ -18,7 +20,7 @@
   <div id="control1">PASS</div>
   <div id="control2">FAIL</div>
   <div id="container">
-   <img src="support/1x1-white.png"/> <!-- this should generate a line box 64px high -->
+   <img src="support/1x1-white.png" alt="(image test failed)"/> <!-- this should generate a line box 64px high -->
    <div id="test">XXXX</div> <!-- this will overlap the PASS if it ends up on the previous line, otherwise it will overlap the fail -->
   </div>
  </body>

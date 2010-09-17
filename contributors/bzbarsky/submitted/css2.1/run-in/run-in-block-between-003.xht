@@ -6,14 +6,14 @@
   <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#run-in"/>
   <meta name="flags" content="dom" />
   <meta name="assert"
-        content="Tests that run-ins run in if a block is dynamically removed
-                 from between them and the block."/>
+        content="Run-ins run into a following block even if there was another
+                 block between that was dynamically removed."/>
   <style type="text/css"><![CDATA[
     div { display: block; }
     .run-in { display: run-in; font-weight: bold }
     #target { border: 2px solid black; }
   ]]></style>
-  <script><![CDATA[
+  <script type="text/javascript"><![CDATA[
     function flushLayout(elt) {
       elt.offsetWidth; /* Just undefined on non-elements, but that's ok */
       for (var i = 0; i < elt.childNodes.length; ++i) {

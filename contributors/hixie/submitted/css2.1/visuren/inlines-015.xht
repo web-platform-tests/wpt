@@ -5,6 +5,7 @@
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
   <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/box/inline/015.html" type="text/html"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#inline-boxes" />
+  <meta name="flags" content="image"/>
   <style type="text/css">
    div { background: red; height: 64px; width: 128px; }
    table { background: green; width: 100%; padding: 0; border: 0; border-spacing: 0; margin: 0; }
@@ -16,7 +17,7 @@
   <div>
    <table>
     <tr> <!-- same as 014 but without spaces around the image -->
-     <td><img src="support/1x1-white.png"/></td>
+     <td><img src="support/1x1-white.png" alt="(image test failed)"/></td>
     </tr>
    </table>
   </div>

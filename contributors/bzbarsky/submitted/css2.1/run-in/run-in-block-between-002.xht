@@ -6,14 +6,14 @@
   <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#run-in"/>
   <meta name="flags" content="dom" />
   <meta name="assert"
-        content="Tests that run-ins don't run in if there's a dynamically
-                 inserted block between them and the block."/>
+        content="Run-ins run into a following block even if the block is
+                 dynamically inserted and empty."/>
   <style type="text/css"><![CDATA[
     div { display: block; }
     .run-in { display: run-in; font-weight: bold }
     #target { border: 2px solid black; }
   ]]></style>
-  <script><![CDATA[
+  <script type="text/javascript"><![CDATA[
     function flushLayout(elt) {
       elt.offsetWidth; /* Just undefined on non-elements, but that's ok */
       for (var i = 0; i < elt.childNodes.length; ++i) {

@@ -4,7 +4,11 @@
   <title>CSS Test: Inline box model: space collapsing, padding, white-space, et al</title>
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
   <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/box/inline/016.html" type="text/html"/>
+  <link rel="help" href="http://www.w3.org/TR/CSS21/text.html#white-space-model"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#inline-boxes" />
+  <meta name="flags" content="ahem"/>
+  <meta name="assert" content="If a space (U+0020) at the beginning of a line
+    has 'white-space' set to 'normal', then it is removed, even if there's padding."/>
   <style type="text/css">
    .ahem { display: inline; font: 900 1em/1 Ahem, sans-serif; background: red; color: white; }   
    div { width: 4em; background: teal; color: aqua; margin: 1em; font: 2em/1 Ahem; }
@@ -13,7 +17,6 @@
   </style>
  </head>
  <body>
-  <p class="ahem">Ahem_font_required_for_this_test._See_directory_listing_for_details.</p>
   <p>The following two blocks should be identical.</p>
   <div class="test"><span> XX</span></div>
   <div class="control"><span> XX</span></div>

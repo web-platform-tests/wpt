@@ -4,14 +4,15 @@
   <title>CSS Test: CSS Inline Box Model: Layering Model</title>
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
   <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/box/inline/001.html" type="text/html"/>
-  <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#inline-boxes" />
+  <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#line-height"/>
+  <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#inline-formatting"/>
   <style type="text/css">
    img { border-bottom: 1em solid green; vertical-align: text-bottom; }
    span { background: red; }
   </style>
  </head>
  <body>
-  <p>There should be a cat sitting on a green bar below.</p>
-  <p>Test: <span><img src="support/cat.png" alt="image"/></span></p>
+  <p>Test passes if there is a cat sitting on a green bar below and no red.</p>
+  <p><span><img src="support/cat.png" alt="image"/></span></p>
  </body>
 </html>

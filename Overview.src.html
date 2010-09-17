@@ -1440,14 +1440,14 @@ title>localName</var>)</code></dfn> method must run these steps:
  nodes whose <span title=concept-element-local-name>local name</span> is
  <var>localName</var>.
 </ol>
+<p>When invoked with the same argument the same <code>NodeList</code> object may be returned as returned by an earlier call.</p>
 
-<p class=XXX>A new <code>NodeList</code> object must be returned each time. XXX some impl cache
-
-<p class=note>Thus, in an <span>HTML document</span>, <code
-title>document.getElementsByTagName("FOO")</code> will match <code
-title>FOO</code> elements that aren't in the <span>HTML namespace</span>, and
-<code title>foo</code> elements that are in the <span>HTML namespace</span>, but
-not <code title>FOO</code> elements that are in the <span>HTML namespace</span>.
+<p class=note>Thus, in an <span>HTML document</span>,
+<code title>document.getElementsByTagName("FOO")</code> will match
+<code title>FOO</code> elements that are not in the
+<span>HTML namespace</span>, and <code title>foo</code> elements that are in
+the <span>HTML namespace</span>, but not <code title>FOO</code> elements
+that are in the <span>HTML namespace</span>.
 
 
 <p>The <dfn title=dom-Document-getElementsByTagNameNS><code>getElementsByTagNameNS(<var>namespace</var>, <var>localName</var>)</code></dfn> method must run these steps:
@@ -1472,7 +1472,8 @@ not <code title>FOO</code> elements that are in the <span>HTML namespace</span>.
  <span title=concept-element-local-name>local name</span> is
  <var>localName</var>.
 </ol>
-<p class=XXX>A new <code>NodeList</code> object must be returned each time. XXX some impl cache
+<p>When invoked with the same argument the same <code>NodeList</code> object may be returned as returned by an earlier call.</p>
+
 
 
 <p>The <dfn
@@ -1492,7 +1493,7 @@ title=concept-quirks-mode>quirks mode</span>, then the comparisons for the <span
 title=concept-class>classes</span> must be done in an <span>ASCII
 case-insensitive</span> manner, otherwise, the comparisons must be done in a
 <span>case-sensitive</span> manner.
-<p>A new <code>NodeList</code> object must be returned each time.
+<p>When invoked with the same argument the same <code>NodeList</code> object may be returned as returned by an earlier call.</p>
 
 <div class="example">
  <p>Given the following XHTML fragment:</p>
@@ -1526,11 +1527,12 @@ case-insensitive</span> manner, otherwise, the comparisons must be done in a
 > optional tag name.
 -->
 
-<p>The <dfn title=dom-Document-getElementById><code>getElementById(<var
-title>elementId</var>)</code></dfn> method must return the first
-<code>Element</code> node, in <span>tree order</span>, in the <span>context
-node</span> whose <span title=concept-ID>ID</span> is <var>elementId</var>,
-or null if there is none.
+<p>The
+<dfn title=dom-Document-getElementById><code>getElementById(<var>elementId</var>)</code></dfn>
+method must return the first <code>Element</code> node, in
+<span>tree order</span>, in the <span>context node</span> whose
+<span title=concept-ID>ID</span> is <var>elementId</var>, or null if there
+is none.
 
 <hr>
 
@@ -2099,17 +2101,18 @@ must return an <code>HTMLCollection</code>
 nodes whose <code title=dom-Node-parentNode>parentNode</code> is the
 <span>context node</span>.
 
-<p>The <dfn
+<p>The
+<dfn
 title=dom-Element-getElementsByTagName><code>getElementsByTagName(<var
-title>qualifiedName</var>)</code></dfn> method on the <code>Element</code>
-interface must return a <span title=concept-collection-live>live</span>
-<code>NodeList</code> with the nodes that the <code
-title=dom-Document-getElementsByTagName>getElementsByTagName</code>
-method would return when called on the <span title="context node">context
-node's</span> <code title=dom-Node-ownerDocument>ownerDocument</code> and
-passed the same argument, excluding any elements that are not descendants of
-the <span>context node</span> on which the method was invoked.
-<p>A new <code>NodeList</code> object must be returned each time.
+title>qualifiedName</var>)</code></dfn>
+method on the <code>Element</code> interface must return a
+<span title=concept-collection-live>live</span> <code>NodeList</code> with the nodes that the
+<code title=dom-Document-getElementsByTagName>getElementsByTagName</code>
+method would return when called on the <span>context node</span>'s
+<code title=dom-Node-ownerDocument>ownerDocument</code> and passed the same
+argument, excluding any elements that are not descendants of the
+<span>context node</span> on which the method was invoked.
+<p>When invoked with the same argument the same <code>NodeList</code> object may be returned as returned by an earlier call.</p>
 
 
 <p>The <dfn
@@ -2122,7 +2125,7 @@ method would return when called on the <span title="context node">context
 node's</span> <code title=dom-Node-ownerDocument>ownerDocument</code> and
 passed the same arguments, excluding any elements that are not descendants of
 the <span>context node</span> on which the method was invoked.
-<p>A new <code>NodeList</code> object must be returned each time.
+<p>When invoked with the same argument the same <code>NodeList</code> object may be returned as returned by an earlier call.</p>
 
 
 <p>The <dfn
@@ -2135,7 +2138,7 @@ method would return when called on the <span title="context node">context
 node's</span> <code title=dom-Node-ownerDocument>ownerDocument</code> and
 passed the same argument, excluding any elements that are not descendants of
 the <span>context node</span> on which the method was invoked.
-<p>A new <code>NodeList</code> object must be returned each time.
+<p>When invoked with the same argument the same <code>NodeList</code> object may be returned as returned by an earlier call.</p>
 
 
 <h4>Interface <code>Attr</code></h4>

@@ -39,7 +39,7 @@ policies and contribution forms [3].
         return prefix + suffix;
     }
 
-  function test(func, name, properties)
+    function test(func, name, properties)
     {
         var test_name = name ? name : next_default_name();
         properties = properties ? properties : {};
@@ -68,8 +68,8 @@ policies and contribution forms [3].
     expose(on_event, 'on_event');
 
     /*
-    * Assertions
-    */
+     * Assertions
+     */
 
     function assert_true(actual, description)
     {
@@ -247,10 +247,10 @@ policies and contribution forms [3].
                        e.name === code_or_object,
                        make_message("assert_throws", description,
                            [["{text}", "${func} threw with"] ,
-                            function() 
+                            function()
                             {
                                 var actual_name;
-                                for (var p in DOMException) 
+                                for (var p in DOMException)
                                 {
                                     if (e.code === DOMException[p])
                                     {
@@ -270,7 +270,7 @@ policies and contribution forms [3].
                             ["{text}"," expected ${expected}"],
                             function()
                             {
-                                return e[code_or_object] ? 
+                                return e[code_or_object] ?
                                     ["{text}", " (${expected_number})"] : null;
                             }
                            ],
@@ -347,7 +347,8 @@ policies and contribution forms [3].
                 return;
             }
             this.status = status.FAIL;
-            this.message = e.message;
+            this.message = (typeof e.message === "string") ?
+                ["span", {}, e.message] : this.message = e.message;
             this.done();
             if (debug) {
                 throw e;
@@ -439,7 +440,7 @@ policies and contribution forms [3].
 
         if(top !== window && top.result_callback)
         {
-            top.result_callback.call(test, this_obj);
+            top.result_callback.call(this_obj, test);
         }
 
         if (this.all_done())
@@ -590,35 +591,35 @@ policies and contribution forms [3].
 
     /*
      * Template code
-     * 
+     *
      * A template is just a javascript structure. An element is represented as:
-     * 
+     *
      * [tag_name, {attr_name:attr_value}, child1, child2]
-     * 
-     * the children can either be strings (which act like text nodes), other templates or 
+     *
+     * the children can either be strings (which act like text nodes), other templates or
      * functions (see below)
-     * 
-     * A text node is represented as 
-     * 
+     *
+     * A text node is represented as
+     *
      * ["{text}", value]
-     * 
+     *
      * String values have a simple substitution syntax; ${foo} represents a variable foo.
-     * 
-     * It is possible to embed logic in templates by using a function in a place where a 
+     *
+     * It is possible to embed logic in templates by using a function in a place where a
      * node would usually go. The function must either return part of a template or null.
-     * 
+     *
      * In cases where a set of nodes are required as output rather than a single node
      * with children it is possible to just use a list
      * [node1, node2, node3]
-     * 
+     *
      * Usage:
-     * 
-     * render(template, substitutions) - take a template and an object mapping 
+     *
+     * render(template, substitutions) - take a template and an object mapping
      * variable names to parameters and return either a DOM node or a list of DOM nodes
-     * 
+     *
      * substitute(template, substitutions) - take a template and variable mapping object,
      * make the variable substitutions and return the substituted template
-     * 
+     *
      */
 
     function is_single_node(template)
@@ -634,7 +635,7 @@ policies and contribution forms [3].
             {
                 var rv = substitute(replacement, substitutions);
                 return rv;
-            } 
+            }
             else
             {
                 return null;

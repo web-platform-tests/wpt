@@ -96,7 +96,7 @@ policies and contribution forms [3].
          var message = make_message("assert_equals", description,
                                     [["{text}", "expected "],
                                      ["span", {"class":"expected"}, String(expected)],
-                                     ["{text}", "got "],
+                                     ["{text}", ", got "],
                                      ["span", {"class":"actual"}, String(actual)]]);
          if (expected !== expected)
          {
@@ -348,7 +348,7 @@ policies and contribution forms [3].
             }
             this.status = status.FAIL;
             this.message = (typeof e.message === "string") ?
-                ["span", {}, e.message] : this.message = e.message;
+                ["span", {}, e.message] : e.message;
             this.done();
             if (debug) {
                 throw e;
@@ -802,7 +802,7 @@ policies and contribution forms [3].
 
     function make_message(function_name, description, error, substitutions)
     {
-        var message = substitute([["span", {"class":"assert"}, "${function_name}:"],
+        var message = substitute([["span", {"class":"assert"}, "${function_name}: "],
                                   function()
                                   {
                                       if (description) {

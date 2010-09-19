@@ -6,19 +6,19 @@
 test(function() {
   var el = document.createElement("foo");
   el.setAttributeNS("a", "foo:bar", "blah");
-  assert_equals(attributes.length, 1);
-  assert_equals(attributes[0].localName, "bar");
-  assert_equals(attributes[0].namespaceURI, "a");
-  assert_equals(attributes[0].prefix, "foo");
-  assert_equals(attributes[0].nodeName, "foo:bar");
-  assert_equals(attributes[0].name, "foo:bar");
+  assert_equals(el.attributes.length, 1);
+  assert_equals(el.attributes[0].localName, "bar");
+  assert_equals(el.attributes[0].namespaceURI, "a");
+  assert_equals(el.attributes[0].prefix, "foo");
+  assert_equals(el.attributes[0].nodeName, "foo:bar");
+  assert_equals(el.attributes[0].name, "foo:bar");
 
   el.setAttributeNS("a", "quux:bar", "blah");
-  assert_equals(attributes.length, 1);
-  assert_equals(attributes[0].localName, "bar");
-  assert_equals(attributes[0].namespaceURI, "a");
-  assert_equals(attributes[0].prefix, "foo");
-  assert_equals(attributes[0].nodeName, "foo:bar");
-  assert_equals(attributes[0].name, "foo:bar");
+  assert_equals(el.attributes.length, 1);
+  assert_equals(el.attributes[0].localName, "bar");
+  assert_equals(el.attributes[0].namespaceURI, "a");
+  assert_equals(el.attributes[0].prefix, "foo");
+  assert_equals(el.attributes[0].nodeName, "foo:bar");
+  assert_equals(el.attributes[0].name, "foo:bar");
 })
 </script>

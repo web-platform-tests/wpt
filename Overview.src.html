@@ -649,7 +649,7 @@ node and its child nodes:</p>
            attribute DOMString <span title=dom-Node-textContent>textContent</span>;
   <span>Node</span> <span title=dom-Node-insertBefore>insertBefore</span>([NoNull] <span>Node</span> <var>newChild</var>, <span>Node</span> <var>refChild</var>);
   <span>Node</span> <span title=dom-Node-replaceChild>replaceChild</span>([NoNull] <span>Node</span> <var>newChild</var>, [NoNull] <span>Node</span> <var>oldChild</var>);
-  <span>Node</span> <span title=dom-Node-removeChild>removeChild</span>([NoNull] <span>Node</span>, [NoNull] <var>oldChild</var>);
+  <span>Node</span> <span title=dom-Node-removeChild>removeChild</span>([NoNull] <span>Node</span> <var>oldChild</var>);
   <span>Node</span> <span title=dom-Node-appendChild>appendChild</span>([NoNull] <span>Node</span> <var>newChild</var>);<!--
   void normalize();-->
 
@@ -1939,7 +1939,7 @@ otherwise [createAttribute]- ->.
   readonly attribute DOMString <span title=dom-Element-localName>localName</span>;
   readonly attribute DOMString <span title=dom-Element-tagName>tagName</span>;
 
-  readonly <span>Attr</span>[] <span title=dom-Element-attributes>attributes</span>;
+  readonly attribute <span>Attr</span>[] <span title=dom-Element-attributes>attributes</span>;
   DOMString? <span title=dom-Element-getAttribute>getAttribute</span>(DOMString <var>qualifiedName</var>);
   DOMString? <span title=dom-Element-getAttributeNS>getAttributeNS</span>(DOMString <var>namespace</var>, DOMString <var>localName</var>);
   void <span title=dom-Element-setAttribute>setAttribute</span>(DOMString <var>qualifiedName</var>, DOMString <var>value</var>);

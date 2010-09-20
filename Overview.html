@@ -19,7 +19,7 @@
 <body class=draft>
 <div class=head id=head>
 <h1>Web DOM Core</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-19-september-2010>Work in Progress &mdash; Last Update 19 September 2010</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-20-september-2010>Work in Progress &mdash; Last Update 20 September 2010</h2>
 <dl>
  <dt>Editor
  <dd>Anne van Kesteren &lt;annevk@opera.com&gt;
@@ -667,7 +667,7 @@ node and its child nodes:</p>
            attribute DOMString <a href=#dom-node-textcontent title=dom-Node-textContent>textContent</a>;
   <a href=#node>Node</a> <a href=#dom-node-insertbefore title=dom-Node-insertBefore>insertBefore</a>([NoNull] <a href=#node>Node</a> <var>newChild</var>, <a href=#node>Node</a> <var>refChild</var>);
   <a href=#node>Node</a> <a href=#dom-node-replacechild title=dom-Node-replaceChild>replaceChild</a>([NoNull] <a href=#node>Node</a> <var>newChild</var>, [NoNull] <a href=#node>Node</a> <var>oldChild</var>);
-  <a href=#node>Node</a> <a href=#dom-node-removechild title=dom-Node-removeChild>removeChild</a>([NoNull] <a href=#node>Node</a>, [NoNull] <var>oldChild</var>);
+  <a href=#node>Node</a> <a href=#dom-node-removechild title=dom-Node-removeChild>removeChild</a>([NoNull] <a href=#node>Node</a> <var>oldChild</var>);
   <a href=#node>Node</a> <a href=#dom-node-appendchild title=dom-Node-appendChild>appendChild</a>([NoNull] <a href=#node>Node</a> <var>newChild</var>);<!--
   void normalize();-->
 
@@ -1889,7 +1889,7 @@ otherwise [createAttribute]- ->.
   readonly attribute DOMString <a href=#dom-element-localname title=dom-Element-localName>localName</a>;
   readonly attribute DOMString <a href=#dom-element-tagname title=dom-Element-tagName>tagName</a>;
 
-  readonly <a href=#attr>Attr</a>[] <a href=#dom-element-attributes title=dom-Element-attributes>attributes</a>;
+  readonly attribute <a href=#attr>Attr</a>[] <a href=#dom-element-attributes title=dom-Element-attributes>attributes</a>;
   DOMString? <a href=#dom-element-getattribute title=dom-Element-getAttribute>getAttribute</a>(DOMString <var>qualifiedName</var>);
   DOMString? <a href=#dom-element-getattributens title=dom-Element-getAttributeNS>getAttributeNS</a>(DOMString <var>namespace</var>, DOMString <var>localName</var>);
   void <a href=#dom-element-setattribute title=dom-Element-setAttribute>setAttribute</a>(DOMString <var>qualifiedName</var>, DOMString <var>value</var>);

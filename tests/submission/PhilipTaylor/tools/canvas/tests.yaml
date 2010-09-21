@@ -805,7 +805,7 @@
               @moz-UniversalBrowserRead;
               @assert data_hi.length > data_lo.length;
               @assert pixel 25,25 ==~ 0,0,255,255 +/- 8;
-              @assert pixel 75,25 ==~ 0,0,255,255 +/- 8;
+              @assert pixel 75,25 ==~ 0,0,255,255 +/- 32;
           });
           img_lo.src = data_lo;
       };

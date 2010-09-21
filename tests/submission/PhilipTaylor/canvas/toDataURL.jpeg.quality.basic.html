@@ -46,7 +46,7 @@ if (!data.match(/^data:image\/jpeg[;,]/)) {
           
           _assert(data_hi.length > data_lo.length, "data_hi.length > data_lo.length");
           _assertPixelApprox(canvas, 25,25, 0,0,255,255, "25,25", "0,0,255,255", 8);
-          _assertPixelApprox(canvas, 75,25, 0,0,255,255, "75,25", "0,0,255,255", 8);
+          _assertPixelApprox(canvas, 75,25, 0,0,255,255, "75,25", "0,0,255,255", 32);
       });
       img_lo.src = data_lo;
   };

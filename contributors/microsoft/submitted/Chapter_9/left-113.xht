@@ -13,6 +13,10 @@
                 height: 1in;
                 position: relative;
             }
+            #wrapper
+            {
+                width: 5in;
+            }
             #div1
             {
                 border-left: 1in solid red;
@@ -29,8 +33,10 @@
     </head>
     <body>
         <p>Test passes if there is no red visible on the page.</p>
-        <div id="div1">
-            <div></div>
+        <div id="wrapper">
+            <div id="div1">
+                <div></div>
+            </div>
         </div>
     </body>
 </html>

@@ -603,7 +603,7 @@ node and its child nodes:</p>
 <h3>Interface <code>Node</code></h3>
 <pre class=idl>interface <dfn>Node</dfn> {
   const unsigned short <span title=dom-Node-ELEMENT_NODE>ELEMENT_NODE</span> = 1;
-  const unsigned short <span title=dom-Node-ATTRIBUTE_NODE>ATTRIBUTE_NODE</span> = 2;
+  const unsigned short <span title=dom-Node-ATTRIBUTE_NODE>ATTRIBUTE_NODE</span> = 2; // historical
   const unsigned short <span title=dom-Node-TEXT_NODE>TEXT_NODE</span> = 3;
   const unsigned short <span title=dom-Node-CDATA_SECTION_NODE>CDATA_SECTION_NODE</span> = 4; // historical
   const unsigned short <span title=dom-Node-ENTITY_REFERENCE_NODE>ENTITY_REFERENCE_NODE</span> = 5; // historical
@@ -671,7 +671,7 @@ must return the type of the node, which must be one of the following:</p>
 <ol>
  <li value=1><dfn title=dom-Node-ELEMENT_NODE><code>ELEMENT_NODE</code></dfn>
 
- <li value=2><dfn title=dom-Node-ATTRIBUTE_NODE><code>ATTRIBUTE_NODE</code></dfn>
+ <li value=2><dfn title=dom-Node-ATTRIBUTE_NODE><code>ATTRIBUTE_NODE</code></dfn> (historical)
 
  <li value=3><dfn title=dom-Node-TEXT_NODE><code>TEXT_NODE</code></dfn>
 

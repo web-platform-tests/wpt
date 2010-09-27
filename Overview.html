@@ -19,7 +19,7 @@
 <body class=draft>
 <div class=head id=head>
 <h1>Web DOM Core</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-20-september-2010>Work in Progress &mdash; Last Update 20 September 2010</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-27-september-2010>Work in Progress &mdash; Last Update 27 September 2010</h2>
 <dl>
  <dt>Editor
  <dd>Anne van Kesteren &lt;annevk@opera.com&gt;
@@ -621,7 +621,7 @@ node and its child nodes:</p>
 <h3 id=interface-node><span class=secno>4.1 </span>Interface <a href=#node><code>Node</code></a></h3>
 <pre class=idl>interface <dfn id=node>Node</dfn> {
   const unsigned short <a href=#dom-node-element_node title=dom-Node-ELEMENT_NODE>ELEMENT_NODE</a> = 1;
-  const unsigned short <a href=#dom-node-attribute_node title=dom-Node-ATTRIBUTE_NODE>ATTRIBUTE_NODE</a> = 2;
+  const unsigned short <a href=#dom-node-attribute_node title=dom-Node-ATTRIBUTE_NODE>ATTRIBUTE_NODE</a> = 2; // historical
   const unsigned short <a href=#dom-node-text_node title=dom-Node-TEXT_NODE>TEXT_NODE</a> = 3;
   const unsigned short <a href=#dom-node-cdata_section_node title=dom-Node-CDATA_SECTION_NODE>CDATA_SECTION_NODE</a> = 4; // historical
   const unsigned short <a href=#dom-node-entity_reference_node title=dom-Node-ENTITY_REFERENCE_NODE>ENTITY_REFERENCE_NODE</a> = 5; // historical
@@ -689,7 +689,7 @@ must return the type of the node, which must be one of the following:</p>
 <ol>
  <li value=1><dfn id=dom-node-element_node title=dom-Node-ELEMENT_NODE><code>ELEMENT_NODE</code></dfn>
 
- <li value=2><dfn id=dom-node-attribute_node title=dom-Node-ATTRIBUTE_NODE><code>ATTRIBUTE_NODE</code></dfn>
+ <li value=2><dfn id=dom-node-attribute_node title=dom-Node-ATTRIBUTE_NODE><code>ATTRIBUTE_NODE</code></dfn> (historical)
 
  <li value=3><dfn id=dom-node-text_node title=dom-Node-TEXT_NODE><code>TEXT_NODE</code></dfn>
 
@@ -2026,7 +2026,7 @@ method must run these steps:
 </ol>
 
 <p>The
-<dfn id=dom-element-setattributens title=dom-Element-setAttributeNS><code>setAttributeNS(<var>namespace</var>, <var>qualifiedName</var>)</code></dfn>
+<dfn id=dom-element-setattributens title=dom-Element-setAttributeNS><code>setAttributeNS(<var>namespace</var>, <var>qualifiedName</var>, <var>value</var>)</code></dfn>
 method must run these steps:</p>
 
 <ol>

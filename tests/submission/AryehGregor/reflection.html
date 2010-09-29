@@ -1,0 +1,20 @@
+<!doctype html>
+<title>HTML5 reflection tests</title>
+<p>These tests are available in <a href=http://aryeh.name/gitweb.cgi?p=tests>a
+git repository</a>.  They're currently quite incomplete and might change
+rapidly.  Note that most of what's tested is pretty basic, so any browser that
+scores lower than 70 or 80% probably doesn't work at all on the web; one bug
+might cause hundreds of failures; unsupported features generally cause fewer
+failures than supported features with even a minor bug; so overall, the exact
+numbers and percentages are not very interesting.  The interesting part is the
+list of failures, since every failure indicates either a test bug, a spec bug,
+or a browser bug.  I keep a <a href=bugs_filed.txt>list of bugs</a> that I've
+filed as a result of these tests.
+
+<p>Filter out errors matching a regex (operates on HTML not text, you have to manually escape entities): <input oninput="maskErrors(this.value)">
+
+<p>Passed: <span id=passed>0</span> (<span id=percent></span>%).  Failed: <span id=failed>0</span>.  Time to complete: <span id=time>0</span> s.
+
+<div id=errors></div>
+
+<script src="reflection.js"></script>

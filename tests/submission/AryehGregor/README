@@ -1,0 +1,6 @@
+These tests are undergoing steady work and don't need to be reviewed yet.  They
+were originally developed in a separate git repository, and history can be
+found at <http://aryeh.name/gitweb.cgi?p=tests>.  The tests are currently based
+on the WHATWG version of the HTML5 spec, so they include some features that are
+part of some non-HTML5 standard at the W3C, and some features that aren't yet
+in any W3C standard.

@@ -1,16 +1,16 @@
 <!DOCTYPE html>
-<title>Canvas test: 2d.getcontext.shared</title>
+<title>Canvas test: 2d.path.arc.default</title>
 <meta name="author" content="Philip Taylor">
 <script src="../common/canvas-tests.js"></script>
 <link rel="stylesheet" href="../common/canvas-tests.css">
 <body class="show_output">
 
-<h1><a href="index.2d.html">2d</a>.<a href="index.2d.getcontext.html">getcontext</a>.shared</h1>
-<p class="desc">getContext('2d') returns objects which share canvas state</p>
+<h1><a href="index.2d.html">2d</a>.<a href="index.2d.path.html">path</a>.<a href="index.2d.path.arc.html">arc</a>.default</h1>
+<p class="desc">arc() with missing last argument defaults to clockwise</p>
 
 <div class="refs">Spec references:
 <ul>
-<li><a href="../annotated-spec/canvas.html#testrefs.context.unique">context.unique</a>
+<li><a href="../annotated-spec/canvas.html#testrefs.2d.path.arc.omitted">2d.path.arc.omitted</a>
 </ul>
 </div>
 
@@ -21,10 +21,13 @@
 <script>
 _addTest(function(canvas, ctx) {
 
-var ctx2 = canvas.getContext('2d');
-ctx.fillStyle = '#f00';
-ctx2.fillStyle = '#0f0';
+ctx.fillStyle = '#0f0';
 ctx.fillRect(0, 0, 100, 50);
+ctx.fillStyle = '#f00';
+ctx.beginPath();
+ctx.moveTo(100, 0);
+ctx.arc(100, 0, 150, -Math.PI, Math.PI/2);
+ctx.fill();
 _assertPixel(canvas, 50,25, 0,255,0,255, "50,25", "0,255,0,255");
 
 

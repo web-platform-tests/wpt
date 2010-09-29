@@ -8,6 +8,13 @@
   code: |
     @assert canvas.getContext('2d') !== null;
 
+- name: 2d.getcontext.extraargs
+  desc: The 2D context ignores extra getContext arguments
+  testing:
+    - context.2d.extraargs
+  code: |
+    @assert canvas.getContext('2d', false, {}, [], 1, "2") !== null;
+
 - name: 2d.type.exists
   DISABLED: need to check with WebIDL
   desc: The 2D context interface is a property of 'window'
@@ -84,14 +91,14 @@
 - name: 2d.getcontext.unique
   desc: getContext('2d') returns the same object
   testing:
-    - context.2d.unique
+    - context.unique
   code: |
     @assert canvas.getContext('2d') === canvas.getContext('2d');
 
 - name: 2d.getcontext.shared
   desc: getContext('2d') returns objects which share canvas state
   testing:
-    - context.2d.unique
+    - context.unique
   code: |
     var ctx2 = canvas.getContext('2d');
     ctx.fillStyle = '#f00';
@@ -217,7 +224,7 @@
     @assert throws TypeError ctx.arc(0, 0); @moz-todo
     @assert throws TypeError ctx.arc(0, 0, 1); @moz-todo
     @assert throws TypeError ctx.arc(0, 0, 1, 0); @moz-todo
-    @assert throws TypeError ctx.arc(0, 0, 1, 0, 0); @moz-todo
+    // (5th argument to arc is optional)
     if (ctx.isPointInPath) {
         @assert throws TypeError ctx.isPointInPath(); @moz-todo
         @assert throws TypeError ctx.isPointInPath(0); @moz-todo
@@ -1901,6 +1908,27 @@
     @assert pixel 50,25 ==~ 0,255,0,255;
   expected: green
 
+- name: 2d.gradient.object.current
+  testing:
+    - 2d.currentColor.gradient
+  code: |
+    canvas.setAttribute('style', 'color: #f00');
+
+    ctx.fillStyle = '#f00';
+    ctx.fillRect(0, 0, 100, 50);
+
+    var g = ctx.createLinearGradient(0, 0, 100, 0);
+    g.addColorStop(0, 'currentColor');
+    g.addColorStop(1, 'currentColor');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, 100, 50);
+    @assert pixel 50,25 ==~ 0,0,0,255;
+  expected: |
+    size 100 50
+    cr.set_source_rgb(0, 0, 0)
+    cr.rectangle(0, 0, 100, 50)
+    cr.fill()
+
 - name: 2d.gradient.object.invalidoffset
   testing:
     - 2d.gradient.invalidoffset
@@ -2670,15 +2698,24 @@
     @assert ctx.createPattern(img, 'repeat') === null;
     img.src = "";
 
-- name: 2d.pattern.image.incomplete3
-  DISABLED: Depends on unspecified 'complete' behaviour
+- name: 2d.pattern.image.incomplete.empty
   testing:
-    - 2d.pattern.incomplete.image
+    - 2d.pattern.incomplete.image.nosrc
   images:
     - green.png
   code: |
     var img = document.getElementById('green.png');
     img.src = "";
+    @assert ctx.createPattern(img, 'repeat') === null;
+
+- name: 2d.pattern.image.incomplete.omitted
+  testing:
+    - 2d.pattern.incomplete.image.nosrc
+  images:
+    - green.png
+  code: |
+    var img = document.getElementById('green.png');
+    img.removeAttribute('src');
     @assert ctx.createPattern(img, 'repeat') === null;
 
 - name: 2d.pattern.image.incomplete4
@@ -5242,10 +5279,7 @@
     cr.rectangle(0, 25, 1, 25)
     cr.fill()
     for x in range(1, 100):
-        if x < 8:
-            sigma = x/2.0
-        else:
-            sigma = math.sqrt(x*2)
+        sigma = x/2.0
         filter = [math.exp(-i*i / (2*sigma*sigma)) / (math.sqrt(2*math.pi)*sigma) for i in range(-24, 26)]
         accum = [0]
         for f in filter:
@@ -5264,12 +5298,12 @@
     ctx.fillRect(0, 0, 100, 50);
     ctx.shadowColor = '#00f';
     ctx.shadowOffsetY = 0;
-    ctx.shadowBlur = 555.6;
+    ctx.shadowBlur = 100;
     ctx.fillRect(-200, -200, 200, 400);
   expected: |
     size 100 50
     import math
-    sigma = math.sqrt(555.6*2)
+    sigma = 100.0/2
     filter = [math.exp(-i*i / (2*sigma*sigma)) / (math.sqrt(2*math.pi)*sigma) for i in range(-200, 100)]
     accum = [0]
     for f in filter:
@@ -6760,6 +6794,21 @@
     ctx.arc(-100, 0, 25, -Math.PI/2, Math.PI/2, true);
     ctx.lineTo(100, 25);
     ctx.stroke();
+    @assert pixel 50,25 == 0,255,0,255;
+  expected: green
+
+- name: 2d.path.arc.default
+  desc: arc() with missing last argument defaults to clockwise
+  testing:
+    - 2d.path.arc.omitted
+  code: |
+    ctx.fillStyle = '#0f0';
+    ctx.fillRect(0, 0, 100, 50);
+    ctx.fillStyle = '#f00';
+    ctx.beginPath();
+    ctx.moveTo(100, 0);
+    ctx.arc(100, 0, 150, -Math.PI, Math.PI/2);
+    ctx.fill();
     @assert pixel 50,25 == 0,255,0,255;
   expected: green
 
@@ -8673,6 +8722,7 @@
   expected: green
 
 - name: 2d.drawImage.outsidesource
+  TODO: fix this to match the current spec (transparent black outside source)
   testing:
     - 2d.drawImage.outsidesource
   mozilla: { throws }
@@ -8707,6 +8757,34 @@
   expected: green
 
 # TODO: see 2d.pattern.image.incomplete2,3,4 and repeat them here once they're fixed
+
+- name: 2d.drawImage.image.incomplete.empty
+  testing:
+    - 2d.drawImage.incomplete.image.nosrc
+  images:
+    - red.png
+  code: |
+    ctx.fillStyle = '#0f0';
+    ctx.fillRect(0, 0, 100, 50);
+    var img = document.getElementById('red.png');
+    img.src = "";
+    ctx.drawImage(img, 0, 0);
+    @assert pixel 50,25 ==~ 0,255,0,255;
+  expected: green
+
+- name: 2d.drawImage.image.incomplete.omitted
+  testing:
+    - 2d.drawImage.incomplete.image.nosrc
+  images:
+    - red.png
+  code: |
+    ctx.fillStyle = '#0f0';
+    ctx.fillRect(0, 0, 100, 50);
+    var img = document.getElementById('red.png');
+    img.removeAttribute('src');
+    ctx.drawImage(img, 0, 0);
+    @assert pixel 50,25 ==~ 0,255,0,255;
+  expected: green
 
 - name: 2d.drawImage.broken
   testing:

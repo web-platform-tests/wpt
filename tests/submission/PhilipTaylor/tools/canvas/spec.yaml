@@ -29,14 +29,14 @@ assertions:
   - id: size.reflect
     text: "The width and height IDL attributes *must* reflect the respective content attributes of the same name<^>."
 
-  - id: context.2d
-    text: "If getContext() is called with that exact string for its contextId argument, then the UA *must* return a reference to an object implementing CanvasRenderingContext2D<^>."
-  - id: context.empty
-    text: "When the UA is passed an empty string<^> <...> then it *must* return null."
   - id: context.unrecognised
-    text: "When the UA is passed <...> a string specifying a context that it does not support<^>, then it *must* return null."
-  - id: context.casesensitive
-    text: "String comparisons *must* be case-sensitive<^>."
+    text: "If contextId is not the name of a context supported by the user agent, return null and abort these steps<^>."
+  - id: context.unique
+    text: "If the getContext() method has already been invoked on this element for the same contextId, return the same object as was returned that time, and abort these steps<^>."
+  - id: context.2d
+    text: "When the getContext() method of a canvas element is is to return a new object for the contextId 2d, the user agent *must* return a new CanvasRenderingContext2D object<^>."
+  - id: context.2d.extraargs
+    text: "When the getContext() method of a canvas element is is to return a new object for the contextId 2d, the user agent *must* return a new CanvasRenderingContext2D object. Any additional arguments are ignored<^>."
 
   - id: toDataURL.noarguments
     text: "The toDataURL() method *must*, when called with no arguments, return a data: URL containing a representation of the image as a PNG file<^>."
@@ -64,9 +64,6 @@ assertions:
   - id: toDataURL.arguments
     text: "Other arguments *must* be ignored and must not cause the user agent to raise an exception<^>."
 
-  - id: context.2d.unique
-    text: "calling the getContext() method with the 2d argument a second time *must* return the same object<^>."
-
   - id: 2d.coordinatespace
     text: "flat Cartesian surface whose origin (0,0) is at the top left corner, with the coordinate space having x values increasing when going right, and y values increasing when going down<^>."
   - id: context.2d.type
@@ -84,6 +81,8 @@ assertions:
     text: "Whenever the CSS value currentColor is used as a color in this API, the \"computed value of the 'color' property\" for the purposes of determining the computed value of the currentColor keyword is the computed value of the 'color' property on the element in question at the time that the color is specified<^>"
   - id: 2d.currentColor.outofdoc
     text: "If the computed value of the 'color' property is undefined for a particular case (e.g. because the element is not in a Document), then the \"computed value of the 'color' property\" for the purposes of determining the computed value of the currentColor keyword is fully opaque black<^>."
+  - id: 2d.currentColor.gradient
+    text: "In the case of addColorStop() on CanvasGradient, the \"computed value of the 'color' property\" for the purposes of determining the computed value of the currentColor keyword is always fully opaque black<^> (there is no associated element)."
 
   - id: 2d.state.transformation
     text: "The current transformation matrix<^>."
@@ -271,13 +270,14 @@ assertions:
   - id: 2d.pattern.exact
     text: "User agents *must* recognize the four values described above exactly (e.g. they must not do case folding)<^>."
   - id: 2d.pattern.return
-    text: "The method *must* return a CanvasPattern object suitably initialized<^>."
+    text: "the method *must* return a CanvasPattern object suitably initialized<^>."
   - id: 2d.pattern.wrongtype
     previously: [ 2, "createPattern" ]
     text: "The image argument is an instance of either HTMLImageElement, HTMLCanvasElement, or HTMLVideoElement. If the image is of the wrong type or null, the implementation *must* raise a TYPE_MISMATCH_ERR exception<^>."
   - id: 2d.pattern.incomplete.image
-    previously: [ 6, "createPattern" ]
-    text: "If the image argument is an HTMLImageElement object whose complete attribute is false<^>, <...> then the implementation *must* return null."
+    text: "If the image argument is an HTMLImageElement object whose complete attribute is false<^> <...> then the implementation *must* return null."
+  - id: 2d.pattern.incomplete.image.nosrc
+    text: "If the image argument is an HTMLImageElement object whose complete attribute is false or whose src attribute is omitted or empty<^>, <...> then the implementation *must* return null."
   - id: 2d.pattern.incomplete.video
     previously: [ 6, "createPattern" ]
     text: "If the image argument is <...> an HTMLVideoElement object whose readyState attribute is either HAVE_NOTHING or HAVE_METADATA<^>, then the implementation *must* return null."
@@ -578,8 +578,9 @@ assertions:
     previously: [ 2, "dw and dh" ]
     text: "The image argument is an instance of either HTMLImageElement, HTMLCanvasElement, or HTMLVideoElement. If the image is of the wrong type or null, the implementation *must* raise a TYPE_MISMATCH_ERR exception<^>."
   - id: 2d.drawImage.incomplete.image
-    previously: [ 6, "dw and dh" ]
-    text: "If the image argument is an HTMLImageElement object whose complete attribute is false<^>, <...> then the implementation *must* return without drawing anything."
+    text: "If the image argument is an HTMLImageElement object whose complete attribute is false<^> <...> then the implementation *must* return without drawing anything."
+  - id: 2d.drawImage.incomplete.image.nosrc
+    text: "If the image argument is an HTMLImageElement object whose complete attribute is false or whose src attribute is omitted or empty<^>, <...> then the implementation *must* return without drawing anything."
   - id: 2d.drawImage.incomplete.video
     previously: [ 6, "dw and dh" ]
     text: "If the image argument is <...> an HTMLVideoElement object whose readyState attribute is either HAVE_NOTHING or HAVE_METADATA<^>, then the implementation *must* return without drawing anything."

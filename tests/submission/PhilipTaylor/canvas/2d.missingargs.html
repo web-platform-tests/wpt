@@ -228,9 +228,7 @@ try { var _thrown = false;
 try { var _thrown = false;
   ctx.arc(0, 0, 1, 0);
 } catch (e) { if (!(e instanceof TypeError)) _fail("Failed assertion: expected exception of type TypeError, got: "+e); _thrown = true; } finally { _assert(_thrown, "should throw exception of type TypeError: ctx.arc(0, 0, 1, 0)"); }
-try { var _thrown = false;
-  ctx.arc(0, 0, 1, 0, 0);
-} catch (e) { if (!(e instanceof TypeError)) _fail("Failed assertion: expected exception of type TypeError, got: "+e); _thrown = true; } finally { _assert(_thrown, "should throw exception of type TypeError: ctx.arc(0, 0, 1, 0, 0)"); }
+// (5th argument to arc is optional)
 if (ctx.isPointInPath) {
     try { var _thrown = false;
   ctx.isPointInPath();

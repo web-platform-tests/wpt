@@ -674,6 +674,11 @@ def write_annotated_spec():
     matched_assertions = {}
 
     def process_element(e):
+        if e.nodeType == e.ELEMENT_NODE and (e.getAttribute('class') == 'impl' or e.hasAttribute('data-component')):
+            for c in e.childNodes:
+                process_element(c)
+            return
+
         t, offsets = getNodeText(e)
         for id, pattern, keyword, previously in spec_assertion_patterns:
             m = pattern.search(t)
@@ -735,11 +740,7 @@ def write_annotated_spec():
                 t, offsets = getNodeText(e)
 
     for e in doc.getElementsByTagName('body')[0].childNodes:
-        if e.nodeType == e.ELEMENT_NODE and e.getAttribute('class') == 'impl':
-            for c in e.childNodes:
-                process_element(c)
-        else:
-            process_element(e)
+        process_element(e)
 
     for s in spec_assertions:
         if s['id'] not in matched_assertions:

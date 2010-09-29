@@ -422,7 +422,7 @@
 - name: context.emptystring
   desc: getContext with empty string returns null
   testing:
-    - context.empty
+    - context.unrecognised
   mozilla: { throws, bug: 401788 }
   code: |
     @assert canvas.getContext("") === null;
@@ -462,7 +462,7 @@
 - name: context.casesensitive
   desc: Context name "2D" is unrecognised; matching is case sensitive
   testing:
-    - context.casesensitive
+    - context.unrecognised
   mozilla: { throws, bug: 401788 }
   code: |
     @assert canvas.getContext('2D') === null;

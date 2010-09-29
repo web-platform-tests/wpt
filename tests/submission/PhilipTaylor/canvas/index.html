@@ -5,7 +5,7 @@
 <h1><code>&lt;canvas&gt;</code> tests</h1>
 
 <ul class="testlist">
- <li><h3><a href="index.all.html">.*</a></h3><p>797 tests</p>
+ <li><h3><a href="index.all.html">.*</a></h3><p>804 tests</p>
  <ul>
   <li><h3><a href="index.fallback.html">fallback.*</a></h3><p>3 tests</p>
   <ul>
@@ -172,15 +172,16 @@
     </ul>
    </ul>
   </ul>
-  <li><h3><a href="index.2d.html">2d.*</a></h3><p>704 tests</p>
+  <li><h3><a href="index.2d.html">2d.*</a></h3><p>711 tests</p>
   <ul>
    <li><a href="2d.voidreturn.html">2d.voidreturn</a>
    <li><a href="2d.missingargs.html">2d.missingargs</a>
    <li><a href="2d.coordinatespace.html">2d.coordinatespace</a>
    <li><a href="2d.scaled.html">2d.scaled</a>
-   <li><h3><a href="index.2d.getcontext.html">2d.getcontext.*</a></h3><p>3 tests</p>
+   <li><h3><a href="index.2d.getcontext.html">2d.getcontext.*</a></h3><p>4 tests</p>
    <ul>
     <li><a href="2d.getcontext.exists.html">2d.getcontext.exists</a>
+    <li><a href="2d.getcontext.extraargs.html">2d.getcontext.extraargs</a>
     <li><a href="2d.getcontext.unique.html">2d.getcontext.unique</a>
     <li><a href="2d.getcontext.shared.html">2d.getcontext.shared</a>
    </ul>
@@ -494,15 +495,16 @@
    <ul>
     <li><a href="2d.strokeStyle.default.html">2d.strokeStyle.default</a>
    </ul>
-   <li><h3><a href="index.2d.gradient.html">2d.gradient.*</a></h3><p>44 tests</p>
+   <li><h3><a href="index.2d.gradient.html">2d.gradient.*</a></h3><p>45 tests</p>
    <ul>
     <li><a href="2d.gradient.empty.html">2d.gradient.empty</a>
-    <li><h3><a href="index.2d.gradient.object.html">2d.gradient.object.*</a></h3><p>6 tests</p>
+    <li><h3><a href="index.2d.gradient.object.html">2d.gradient.object.*</a></h3><p>7 tests</p>
     <ul>
      <li><a href="2d.gradient.object.return.html">2d.gradient.object.return</a>
      <li><a href="2d.gradient.object.update.html">2d.gradient.object.update</a>
      <li><a href="2d.gradient.object.compare.html">2d.gradient.object.compare</a>
      <li><a href="2d.gradient.object.crosscanvas.html">2d.gradient.object.crosscanvas</a>
+     <li><a href="2d.gradient.object.current.html">2d.gradient.object.current</a>
      <li><a href="2d.gradient.object.invalidoffset.html">2d.gradient.object.invalidoffset</a>
      <li><a href="2d.gradient.object.invalidcolour.html">2d.gradient.object.invalidcolour</a>
     </ul>
@@ -562,7 +564,7 @@
      </ul>
     </ul>
    </ul>
-   <li><h3><a href="index.2d.pattern.html">2d.pattern.*</a></h3><p>40 tests</p>
+   <li><h3><a href="index.2d.pattern.html">2d.pattern.*</a></h3><p>42 tests</p>
    <ul>
     <li><a href="2d.pattern.crosscanvas.html">2d.pattern.crosscanvas</a>
     <li><h3><a href="index.2d.pattern.basic.html">2d.pattern.basic.*</a></h3><p>5 tests</p>
@@ -573,13 +575,18 @@
      <li><a href="2d.pattern.basic.zerocanvas.html">2d.pattern.basic.zerocanvas</a>
      <li><a href="2d.pattern.basic.nocontext.html">2d.pattern.basic.nocontext</a>
     </ul>
-    <li><h3><a href="index.2d.pattern.image.html">2d.pattern.image.*</a></h3><p>5 tests</p>
+    <li><h3><a href="index.2d.pattern.image.html">2d.pattern.image.*</a></h3><p>7 tests</p>
     <ul>
      <li><a href="2d.pattern.image.undefined.html">2d.pattern.image.undefined</a>
      <li><a href="2d.pattern.image.null.html">2d.pattern.image.null</a>
      <li><a href="2d.pattern.image.string.html">2d.pattern.image.string</a>
      <li><a href="2d.pattern.image.incomplete.html">2d.pattern.image.incomplete</a>
      <li><a href="2d.pattern.image.broken.html">2d.pattern.image.broken</a>
+     <li><h3><a href="index.2d.pattern.image.incomplete.html">2d.pattern.image.incomplete.*</a></h3><p>2 tests</p>
+     <ul>
+      <li><a href="2d.pattern.image.incomplete.empty.html">2d.pattern.image.incomplete.empty</a>
+      <li><a href="2d.pattern.image.incomplete.omitted.html">2d.pattern.image.incomplete.omitted</a>
+     </ul>
     </ul>
     <li><h3><a href="index.2d.pattern.repeat.html">2d.pattern.repeat.*</a></h3><p>6 tests</p>
     <ul>
@@ -858,7 +865,7 @@
      <li><a href="2d.strokeRect.zero.5.html">2d.strokeRect.zero.5</a>
     </ul>
    </ul>
-   <li><h3><a href="index.2d.path.html">2d.path.*</a></h3><p>130 tests</p>
+   <li><h3><a href="index.2d.path.html">2d.path.*</a></h3><p>131 tests</p>
    <ul>
     <li><a href="2d.path.initial.html">2d.path.initial</a>
     <li><a href="2d.path.beginPath.html">2d.path.beginPath</a>
@@ -945,11 +952,12 @@
       <li><a href="2d.path.arcTo.zero.2.html">2d.path.arcTo.zero.2</a>
      </ul>
     </ul>
-    <li><h3><a href="index.2d.path.arc.html">2d.path.arc.*</a></h3><p>27 tests</p>
+    <li><h3><a href="index.2d.path.arc.html">2d.path.arc.*</a></h3><p>28 tests</p>
     <ul>
      <li><a href="2d.path.arc.empty.html">2d.path.arc.empty</a>
      <li><a href="2d.path.arc.nonempty.html">2d.path.arc.nonempty</a>
      <li><a href="2d.path.arc.end.html">2d.path.arc.end</a>
+     <li><a href="2d.path.arc.default.html">2d.path.arc.default</a>
      <li><a href="2d.path.arc.negative.html">2d.path.arc.negative</a>
      <li><a href="2d.path.arc.zeroradius.html">2d.path.arc.zeroradius</a>
      <li><a href="2d.path.arc.nonfinite.html">2d.path.arc.nonfinite</a>
@@ -1102,7 +1110,7 @@
      </ul>
     </ul>
    </ul>
-   <li><h3><a href="index.2d.drawImage.html">2d.drawImage.*</a></h3><p>31 tests</p>
+   <li><h3><a href="index.2d.drawImage.html">2d.drawImage.*</a></h3><p>33 tests</p>
    <ul>
     <li><a href="2d.drawImage.3arg.html">2d.drawImage.3arg</a>
     <li><a href="2d.drawImage.5arg.html">2d.drawImage.5arg</a>
@@ -1137,6 +1145,14 @@
     <ul>
      <li><a href="2d.drawImage.self.1.html">2d.drawImage.self.1</a>
      <li><a href="2d.drawImage.self.2.html">2d.drawImage.self.2</a>
+    </ul>
+    <li><h3><a href="index.2d.drawImage.image.html">2d.drawImage.image.*</a></h3><p>2 tests</p>
+    <ul>
+     <li><h3><a href="index.2d.drawImage.image.incomplete.html">2d.drawImage.image.incomplete.*</a></h3><p>2 tests</p>
+     <ul>
+      <li><a href="2d.drawImage.image.incomplete.empty.html">2d.drawImage.image.incomplete.empty</a>
+      <li><a href="2d.drawImage.image.incomplete.omitted.html">2d.drawImage.image.incomplete.omitted</a>
+     </ul>
     </ul>
     <li><h3><a href="index.2d.drawImage.animated.html">2d.drawImage.animated.*</a></h3><p>3 tests</p>
     <ul>

@@ -1,16 +1,16 @@
 <!DOCTYPE html>
-<title>Canvas test: context.casesensitive</title>
+<title>Canvas test: 2d.getcontext.extraargs</title>
 <meta name="author" content="Philip Taylor">
 <script src="../common/canvas-tests.js"></script>
 <link rel="stylesheet" href="../common/canvas-tests.css">
 <body class="show_output">
 
-<h1><a href="index.context.html">context</a>.casesensitive</h1>
-<p class="desc">Context name "2D" is unrecognised; matching is case sensitive</p>
+<h1><a href="index.2d.html">2d</a>.<a href="index.2d.getcontext.html">getcontext</a>.extraargs</h1>
+<p class="desc">The 2D context ignores extra getContext arguments</p>
 
 <div class="refs">Spec references:
 <ul>
-<li><a href="../annotated-spec/canvas.html#testrefs.context.unrecognised">context.unrecognised</a>
+<li><a href="../annotated-spec/canvas.html#testrefs.context.2d.extraargs">context.2d.extraargs</a>
 </ul>
 </div>
 
@@ -21,7 +21,7 @@
 <script>
 _addTest(function(canvas, ctx) {
 
-_assertSame(canvas.getContext('2D'), null, "canvas.getContext('2D')", "null");
+_assertDifferent(canvas.getContext('2d', false, {}, [], 1, "2"), null, "canvas.getContext('2d', false, {}, [], 1, \"2\")", "null");
 
 
 });

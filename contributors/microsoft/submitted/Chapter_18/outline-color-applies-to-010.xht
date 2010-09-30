@@ -8,23 +8,20 @@
         <meta name="flags" content="" />
         <meta name="assert" content="The 'outline-color' property applies to elements with a display of list-item." />
         <style type="text/css">
-            body
-            {
-                margin-left: 50px;
-            }
             div
             {
                 height: 1in;
                 display: list-item;
+                margin-left: 2em;
                 outline-color: blue;
                 outline-style: solid;
-                outline-width: 10px;
+                outline-width: 5px;
                 width: 1in;
             }
         </style>
     </head>
     <body>
-        <p>Test passes if the box below is blue.</p>
+        <p>Test passes if the box below is blue and there is a marker bullet on the left-hand side of the box.</p>
         <div></div>
     </body>
 </html>

@@ -8,25 +8,29 @@
         <meta name="flags" content="invalid" />
         <meta name="assert" content="The 'outline-width' property does not support a negative length value in 'ex' units and is ignored." />
         <style type="text/css">
+            div
+            {
+                font: 20px/1 ahem;
+                height: 1em;
+                width: 300px;
+            }
             #test
             {
                 margin: 1em 0 0 1em;
                 outline: solid green;
                 outline-width: 1em;
                 outline-width: -1ex;
-                width: 300px;
             }
             #reference
             {
                 border: solid green 1em;
-                margin-top: 2em;
-                width: 300px;
+                margin-top: 25px;
             }
         </style>
     </head>
     <body>
         <p>Test passes if the two boxes look the same.</p>
-        <div id="test">Filler Text</div>
-        <div id="reference">Filler Text</div>
+        <div id="test"></div>
+        <div id="reference"></div>
     </body>
 </html>

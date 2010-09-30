@@ -12,6 +12,11 @@
             {
                 position: relative;
             }
+            #parent
+            {
+                height: 1in;
+                margin-top: 2in;
+            }
             #div1
             {
                 border-top: 1in solid red;
@@ -27,8 +32,10 @@
     </head>
     <body>
         <p>Test passes if there is no red visible on the page.</p>
-        <div id="div1">
-            <div id="div2"></div>
+        <div id="parent">
+            <div id="div1">
+                <div id="div2"></div>
+            </div>
         </div>
     </body>
 </html>

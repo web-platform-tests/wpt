@@ -7,9 +7,13 @@
         <meta name="flags" content="ahem" />
         <meta name="assert" content="The 'em' unit is equal to the computed value of the 'font-size' property of the element on which it is used." />
         <style type="text/css">
+            #parent
+            {
+                font: 20px/1 ahem;
+            }
             #div1
             {
-                font-size: 300%;
+                font-size: 500%;
             }
             #test
             {
@@ -19,16 +23,24 @@
             }
             div
             {
-                font-family: ahem;
-                margin-top: 10px;
+                margin-top: 5px;
+            }
+            #reference
+            {
+                background: black;
+                height: 100px;
+                width: 100px;
             }
         </style>
     </head>
     <body>
-        <p>Test passes if the two boxes below are the same size.</p>
-        <div id="div1">
-            <div id="test"></div>
-            <div>X</div>
+        <p>Test passes if the three boxes below are the same size.</p>
+        <div id="parent">
+            <div id="div1">
+                <div id="test"></div>
+                <div>X</div>
+                <div id="reference"></div>
+            </div>
         </div>
     </body>
 </html>

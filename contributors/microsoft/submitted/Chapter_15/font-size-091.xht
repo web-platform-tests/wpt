@@ -8,21 +8,25 @@
         <meta name="flags" content="ahem" />
         <meta name="assert" content="The 'font-size' property sets a minimum plus one length value in percentages." />
         <style type="text/css">
-            #div1
+            #reference
             {
-                font: 1in/1em ahem;
+                font: 50px/1em ahem;
             }
-            div div
+            #parent
+            {
+                font: 5000px/60px ahem;
+            }
+            #test
             {
                 font-size: 1%;
             }
         </style>
     </head>
     <body>
-        <p>Test passes if there is a large box above a tiny box below.</p>
-        <div id="div1">
-            X
-            <div>X</div>
+        <p>Test passes if the two boxes below are the same size.</p>
+        <div id="reference">X</div>
+        <div id="parent">
+            <div id="test">X</div>
         </div>
     </body>
 </html>

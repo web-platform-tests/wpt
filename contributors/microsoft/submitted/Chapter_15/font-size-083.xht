@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
-        <title>CSS Test: Font-size using 'ex' units with a nominal value, 7.5ex</title>
+        <title>CSS Test: Font-size using 'ex' units with a nominal value, 6ex</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/fonts.html#propdef-font-size" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/fonts.html#font-size-props" />
@@ -11,26 +11,30 @@
             div
             {
                 font-family: ahem;
+                font-size: 20px;
                 line-height: 1em;
                 position: relative;
             }
             #div2
             {
-                font-size: 7.5ex;
+                background-color: red;
+                color: black;
+                font-size: 6ex;
                 width: 1in;
             }
             #div3
             {
-                border-top: 7.5ex solid black;
-                left: 1.1in;
+                background-color: black;
+                height: 6ex;
+                left: 100px;
                 position: absolute;
                 top: 0;
-                width: 7.5ex;
+                width: 6ex;
             }
         </style>
     </head>
     <body>
-        <p>Test passes if the two boxes below are the same size.</p>
+        <p>Test passes if the two boxes below are the same size and there is no red visible on the page.</p>
         <div id="div1">
             <div id="div2">X</div>
             <div id="div3"></div>

@@ -7,19 +7,36 @@
   <link rel="help" href="http://www.w3.org/TR/html5/video.html#the-source-element" />
   <meta name="assert" content="'media' attribute is 'all' by default." />
   <script type="text/javascript" src="../common/media.js"></script>
-  
+  <script type="text/javascript">
+
+function do_play(event)
+{
+    var vid = document.getElementById("video0");
+    
+    if (vid.currentSrc.indexOf("movie_300") > 0)
+    {
+        passTest();
+    }
+    else
+    {
+        failTest();
+    }
+}
+
+</script>
 </head>
 <body>
 <pre>
 'media' attribute is 'all' by default.
 </pre>
+<p style="color: blue;">Wait until the text "Waiting ..." does not appear in the "Test Result" column below.</p>
 <table id='testtable' border='1'>
   <tr>
     <td>Test Result</td>
     <td>Test Assertion</td>
   </tr>
   <tr>
-    <td id='test_0_result'>FAIL</td>
+    <td id='test_0_result'>Waiting ...</td>
     <td id='test_0_assertion'>Test passes if the text 'PASS' appears to the left and the text 'Your browser does not support media elements.' does not appear anywhere on this page.</td>
   </tr>
 </table>
@@ -33,17 +50,25 @@ by default the media resource is suitable for all media.
 </pre>
 <div id='testcontent'>
 
-<video>
-  <source id="source0" src="broken-uri" type="fictional/type" />
-  Your browser does not support media elements.
+<video id="video0" autoplay onplay="do_play(event);">
+    <script type="text/javascript">
+    
+        document.write(
+            "<source src='" + getVideoURI("http://media.w3.org/2010/05/video/movie_300") + "'" + 
+            " type='application/octet-stream' />"
+            );
+        document.write(
+            "<source src='" + getVideoURI("http://media.w3.org/2010/05/video/movie_5") + "'" + 
+            " type='application/octet-stream' media='all' />"
+            );
+    
+    </script>
+    Your browser does not support media elements.
 </video>
 <script type="text/javascript">    
         try
         {
-if (document.getElementById("source0").media == "all")
-{
-    passTest();
-}
+setFailTimeout(30000);
         }
         catch(ex)
         {

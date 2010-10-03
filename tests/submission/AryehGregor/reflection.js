@@ -882,6 +882,7 @@ var elements = {
 	"rp": [],
 	"rt": [],
 	"ruby": [],
+	"s": [],
 	"samp": [],
 	"script": ["src", "type", "charset", "async", "defer"],
 	"section": [],

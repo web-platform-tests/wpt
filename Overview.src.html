@@ -1,37 +1,56 @@
-<!doctype html>
-<meta charset=UTF-8>
-<title>Web DOM Core</title>
-<link rel=stylesheet href=http://www.whatwg.org/style/specification>
-<style>
- pre, code { font-family:monospace, sans-serif; }
- h2 code, h3 code, h4 code,
- h2 :link, h3 :link, h4 :link,
- h2 :visited, h3 :visited, h4 :visited
- { font:inherit; color:inherit; font-style:italic; }
- @media print {
-   [data-anolis-spec]::after {
-     content: "[" attr(data-anolis-spec) "]";
-     font-size: 0.6em;
-     vertical-align: super;
-     text-transform: uppercase;
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html lang="en-US">
+ <head>
+  <meta charset=UTF-8>
+  <title>Web DOM Core</title>
+  <style type="text/css">
+   .example { margin-left:1em; padding-left:1em; border-left:double; color:#222; background:#fcfcfc }
+   .example code strong { color:inherit; background:#ff0 }
+   .note { margin-left:2em; font-weight:bold; font-style:italic; color:green }
+   .note pre { font-weight:normal; font-style:normal }
+   .warning { margin-left:2em; font-weight:bold; font-style:italic; color:red }
+   p.warning::before { content:"Warning: " }
+   pre > code, li > code { color:inherit; background:transparent }
+   p.note::before { content:"Note: " }
+   .XXX { padding:.5em; border:solid #f00 }
+   p.XXX::before { content:"Issue: " }
+   dl.switch { padding-left:2em }
+   dl.switch > dt { text-indent:-1.5em }
+   dl.switch > dt:before { content:'\21AA'; padding:0 0.5em 0 0; display:inline-block; width:1em; text-align:right; line-height:0.5em }
+   em.ct { text-transform:lowercase; font-variant:small-caps; font-style:normal }
+   dfn { font-weight:bold; font-style:normal }
+   code { color:orangered; }
+   code :link, code :visited { color:inherit }
+   hr:not(.top) { display:block; background:none; border:none; padding:0; margin:2em 0; height:auto }
+   @media print {
+     [data-anolis-spec]::after { content:"[" attr(data-anolis-spec) "]"; font-size:.6em; vertical-align:super; text-transform:uppercase }
    }
- }
-</style>
-<body class=draft>
-<div class=head id=head>
-<h1>Web DOM Core</h1>
-<h2 class="no-num no-toc">Work in Progress &mdash; Last Update [DATE: 01 Jan 1901]</h2>
-<dl>
- <dt>Editor
- <dd>Anne van Kesteren &lt;annevk@opera.com>
+  </style>
+  <link rel=stylesheet href="http://www.w3.org/StyleSheets/TR/W3C-[STATUS]">
+ </head>
+ <body>
 
- <dt>Version history
- <dd><a href=http://bitbucket.org/ms2ger/web-dom-core/>http://bitbucket.org/ms2ger/web-dom-core</a>
- <dd><a href=http://hg.gsnedders.com/web-dom-core>http://hg.gsnedders.com/web-dom-core</a>
- <dd><a href=http://simon.html5.org/specs/web-dom-core>http://simon.html5.org/specs/web-dom-core</a>
-</dl>
+<div class=head>
+ <p><a href="http://www.w3.org/"><img src="http://www.w3.org/Icons/w3c_home" alt="W3C" height="48" width="72"></a></p>
+ <h1>Web DOM Core</h1>
+ <h2 class="no-num no-toc">[LONGSTATUS] [DATE: 01 Jan 1901]</h2>
+
+ <dl>
+  <dt>This Version:</dt>
+  <dd><a href="[VERSION]/">http://www.w3.org/TR/[YEAR]/WD-domcore-[CDATE]/</a></dd>
+
+  <dt>Latest Version:</dt>
+  <dd><a href="http://www.w3.org/TR/domcore/">http://www.w3.org/TR/domcore/</a></dd>
+
+  <dt>Latest Editor Draft:</dt>
+  <dd><a href="http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html">http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html</a></dd>
+
+  <dt>Editor:</dt>
+  <dd><a href="http://annevankesteren.nl/">Anne van Kesteren</a>
+    (<a href="http://www.opera.com/">Opera Software ASA</a>)
+    &lt;<a href="mailto:annevk@opera.com">annevk@opera.com</a>></dd>
+ </dl>
 </div>
-
 
 
 <h2 class="no-num no-toc">Abstract</h2>
@@ -3073,6 +3092,3 @@ the initial 80% of this specification and their useful comments.</p>
 <p>Special thanks also to Ian Hickson for first specifying some parts of
 this specification in HTML and his useful comments.
 <span data-anolis-ref class=informative>HTML</span>
-
-
-<script src="http://www.whatwg.org/specs/web-apps/current-work/dfn.js"></script>

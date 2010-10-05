@@ -4,24 +4,31 @@
   <meta charset=UTF-8>
   <title>Web DOM Core</title>
   <style type="text/css">
-   .example { margin-left:1em; padding-left:1em; border-left:double; color:#222; background:#fcfcfc }
-   .example code strong { color:inherit; background:#ff0 }
-   .note { margin-left:2em; font-weight:bold; font-style:italic; color:green }
-   .note pre { font-weight:normal; font-style:normal }
-   .warning { margin-left:2em; font-weight:bold; font-style:italic; color:red }
-   p.warning::before { content:"Warning: " }
-   pre > code, li > code { color:inherit; background:transparent }
+   pre.idl { border:solid thin; background:#eee; color:#000; padding:0.5em }
+   pre.idl :link, pre.idl :visited { color:inherit; background:transparent }
+   pre code { color:inherit; background:transparent }
+   div.example { margin-left:1em; padding-left:1em; border-left:double; color:#222; background:#fcfcfc }
+   .note { margin-left:2em; font-weight:bold; font-style:italic; color:#008000 }
    p.note::before { content:"Note: " }
    .XXX { padding:.5em; border:solid #f00 }
    p.XXX::before { content:"Issue: " }
    dl.switch { padding-left:2em }
    dl.switch > dt { text-indent:-1.5em }
    dl.switch > dt:before { content:'\21AA'; padding:0 0.5em 0 0; display:inline-block; width:1em; text-align:right; line-height:0.5em }
+   dl.domintro { color: green; margin: 2em 0 2em 2em; padding: 0.5em 1em; border: none; background: #DDFFDD; }
+   dl.domintro dt, dl.domintro dt * { color: black; text-decoration: none; }
+   dl.domintro dd { margin: 0.5em 0 1em 2em; padding: 0; }
+   dl.domintro dd p { margin: 0.5em 0; }
+   dl.domintro:before { display: table; margin: -1em -0.5em -0.5em auto; width: auto; content: 'This box is non-normative. Implementation requirements are given below this box.'; color: red; border: solid 2px; background: white; padding: 0 0.25em; }
    em.ct { text-transform:lowercase; font-variant:small-caps; font-style:normal }
    dfn { font-weight:bold; font-style:normal }
-   code { color:orangered; }
+   code { color:orangered }
    code :link, code :visited { color:inherit }
    hr:not(.top) { display:block; background:none; border:none; padding:0; margin:2em 0; height:auto }
+   table { border-collapse:collapse; border-style:hidden hidden none hidden }
+   table thead { border-bottom:solid }
+   table tbody th:first-child { border-left:solid }
+   table td, table th { border-left:solid; border-right:solid; border-bottom:solid thin; vertical-align:top; padding:0.2em }
    @media print {
      [data-anolis-spec]::after { content:"[" attr(data-anolis-spec) "]"; font-size:.6em; vertical-align:super; text-transform:uppercase }
    }

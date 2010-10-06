@@ -8,6 +8,75 @@ policies and contribution forms [3].
 [3] http://www.w3.org/2004/10/27-testcases
 */
 
+/*
+ * == Introducion ==
+ * This file provides a framework for writing testcases. It is intended
+ * to provide a convenient API for making common assertions, and to work
+ * both for testing synchronous and asynchronous DOM features in a way that
+ * promotes clear, robust, tests.
+ *
+ * == Basic Usage ==
+ *
+ * To use this file, import the script into the test document:
+ * <script src="http://test.w3.org/resources/jsharness.js"></script>
+ *
+ * Within each file one may define one or more tests. Each test is atomic
+ * in the sense that a single test has a single result (pass/fail/timeout).
+ * Within each test one may have a number of asserts. The test fails at the
+ * first failing assert, and the remainder of the test is (typically) not run
+ *
+ * If the file containing the tests is a HTML file with an element of id "log"
+ * this will be populated with a table containing the test results after all
+ * the tests have run.
+ *
+ * == Synchronous Tests ==
+ *
+ * To create a sunchronous test use the test() function:
+ *
+ * test(test_function, name)
+ *
+ * test_function is a function that contains the code to test. For example a
+ * trivial passing test would be:
+ *
+ * test(function() {assert_true(true)}, "assert_true with true)"
+ *
+ * The function passed in is run in the test() call.
+ *
+ * == Asynchronous Tests ==
+ *
+ * Testing asynchronous features is somewhat more complex since the result of
+ * a test may depend on one or more events or other callbacks. The API provided
+ * for testing these features is indended to be rather low-level but hopefully
+ * applicable to many situations.
+ *
+ * To create a test, one starts by getting a Test object using async_test:
+ *
+ * var t = async_test("Simple async test")
+ *
+ * Assertions can be added to the test by calling the step method of the test
+ * object with a function containing the test assertions:
+ *
+ * t.step(function() {assert_true(true)});
+ *
+ * When all the steps are complete, the done() method must be called:
+ *
+ * t.done();
+ *
+ * == Making assertions ==
+ *
+ * Functions for making assertions start assert_
+ * The best way to get a list is to look in this file for functions names
+ * matching that pattern. The general signature is
+ *
+ * assert_something(actual, expected, description)
+ *
+ * although not all assertions precisely match this pattern e.g. assert_true only
+ * takes actual and description as arguments.
+ *
+ * The description parameter is used to present more useful error messages when a
+ * test fails
+ */
+
 (function ()
 {
     var debug = false;
@@ -247,10 +316,10 @@ policies and contribution forms [3].
                        e.name === code_or_object,
                        make_message("assert_throws", description,
                            [["{text}", "${func} threw with"] ,
-                            function() 
+                            function()
                             {
                                 var actual_name;
-                                for (var p in DOMException) 
+                                for (var p in DOMException)
                                 {
                                     if (e.code === DOMException[p])
                                     {
@@ -270,7 +339,7 @@ policies and contribution forms [3].
                             ["{text}"," expected ${expected}"],
                             function()
                             {
-                                return e[code_or_object] ? 
+                                return e[code_or_object] ?
                                     ["{text}", " (${expected_number})"] : null;
                             }
                            ],
@@ -590,35 +659,35 @@ policies and contribution forms [3].
 
     /*
      * Template code
-     * 
+     *
      * A template is just a javascript structure. An element is represented as:
-     * 
+     *
      * [tag_name, {attr_name:attr_value}, child1, child2]
-     * 
-     * the children can either be strings (which act like text nodes), other templates or 
+     *
+     * the children can either be strings (which act like text nodes), other templates or
      * functions (see below)
-     * 
-     * A text node is represented as 
-     * 
+     *
+     * A text node is represented as
+     *
      * ["{text}", value]
-     * 
+     *
      * String values have a simple substitution syntax; ${foo} represents a variable foo.
-     * 
-     * It is possible to embed logic in templates by using a function in a place where a 
+     *
+     * It is possible to embed logic in templates by using a function in a place where a
      * node would usually go. The function must either return part of a template or null.
-     * 
+     *
      * In cases where a set of nodes are required as output rather than a single node
      * with children it is possible to just use a list
      * [node1, node2, node3]
-     * 
+     *
      * Usage:
-     * 
-     * render(template, substitutions) - take a template and an object mapping 
+     *
+     * render(template, substitutions) - take a template and an object mapping
      * variable names to parameters and return either a DOM node or a list of DOM nodes
-     * 
+     *
      * substitute(template, substitutions) - take a template and variable mapping object,
      * make the variable substitutions and return the substituted template
-     * 
+     *
      */
 
     function is_single_node(template)
@@ -634,7 +703,7 @@ policies and contribution forms [3].
             {
                 var rv = substitute(replacement, substitutions);
                 return rv;
-            } 
+            }
             else
             {
                 return null;

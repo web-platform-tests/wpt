@@ -811,7 +811,15 @@ var elements = {
 	],
 	"input": [
 		// Conforming
-		"accept", "alt", "autocomplete", "max", "min", "multiple", "pattern", "placeholder", "required", "src", ["unsigned long", "size", 20], "step", "maxLength", "readOnly", "defaultChecked", "defaultValue", ["enum", "type", {"values": ["hidden", "text", "search", "tel", "url", "email", "password", "datetime", "date", "month", "week", "time", "datetime-local", "number", "range", "color", "checkbox", "radio", "file", "submit", "image", "reset", "button"], "missing": "text"}, "formAction", "formEnctype", "formMethod", "formNoValidate", "formTarget"],
+		"accept", "alt", "autocomplete", "max", "min", "multiple", "pattern",
+		"placeholder", "required", "src", ["limited unsigned long", "size", 20],
+		"step", "maxLength", "readOnly", "defaultChecked", "defaultValue",
+		["enum", "type", {"values": ["hidden", "text", "search", "tel", "url",
+			"email", "password", "datetime", "date", "month", "week", "time",
+			"datetime-local", "number", "range", "color", "checkbox", "radio",
+			"file", "submit", "image", "reset", "button"], "missing": "text"},
+		"formAction", "formEnctype", "formMethod", "formNoValidate",
+		"formTarget"],
 		// Obsolete
 		"align", "useMap",
 	],

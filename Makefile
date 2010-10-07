@@ -8,3 +8,8 @@ Overview.html: Overview.src.html cross-spec-refs references Makefile
 
 xrefs.json: Overview.src.html Makefile
 	$(ANOLIS) --dump-xrefs $< /tmp/spec
+
+publish: Overview.src.html cross-spec-refs references Makefile
+	$(ANOLIS) --output-encoding=ascii --omit-optional-tags --quote-attr-values \
+	--w3c-compat --enable=xspecxref --enable=refs --pubdate="$(PUBDATE)" \
+	$< Overview.html

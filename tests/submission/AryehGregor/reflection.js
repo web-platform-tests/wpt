@@ -728,8 +728,7 @@ var elements = {
 	"blockquote": ["cite"],
 	"body": [
 		// Obsolete
-		// http://www.w3.org/Bugs/Public/show_bug.cgi?id=10836
-		"text", "bgColor", /*"background",*/ "link", "vLink", "aLink",
+		"text", "bgColor", "background", "link", "vLink", "aLink",
 	],
 	"br": [
 		// Obsolete
@@ -796,15 +795,13 @@ var elements = {
 		// Conforming
 		"src", "srcdoc", "name", "seamless", "height", "width",
 		// Obsolete
-		// http://www.w3.org/Bugs/Public/show_bug.cgi?id=10836
-		"align", "frameBorder", /*"longDesc",*/ "marginHeight", "marginWidth", "scrolling",
+		"align", "frameBorder", "longDesc", "marginHeight", "marginWidth", "scrolling",
 	],
 	"img": [
 		// Conforming
 		"alt", "src", "useMap", "isMap",
 		// Obsolete
-		// http://www.w3.org/Bugs/Public/show_bug.cgi?id=10836
-		"name", "align", "border", "hspace", /*"longDesc",*/ "vspace",
+		"name", "align", "border", "hspace", "longDesc", "vspace",
 	],
 	"input": [
 		// Conforming
@@ -858,8 +855,7 @@ var elements = {
 		// Conforming
 		"data", "type", "name", "useMap", "height", "width",
 		// Obsolete
-		// http://www.w3.org/Bugs/Public/show_bug.cgi?id=10836
-		"align", "archive", "border", /*"code", "codeBase",*/ "codeType", "declare", "hspace", "standby", "vspace",
+		"align", "archive", "border", "code", "codeBase", "codeType", "declare", "hspace", "standby", "vspace",
 	],
 	"ol": [
 		// Conforming
@@ -911,7 +907,6 @@ var elements = {
 		// Obsolete
 		"abbr", "align", "axis", "bgColor", "ch", "chOff", "height", "noWrap", "vAlign", "width",
 	],
-	// http://www.w3.org/Bugs/Public/show_bug.cgi?id=10345
 	"textarea": ["cols", "placeholder", "required", "rows", "wrap", "maxLength", "readOnly"],
 	"tfoot": [/* Obsolete */ "align", "ch", "chOff", "vAlign"],
 	"th": [
@@ -931,12 +926,10 @@ var elements = {
 	"wbr": [],
 
 	// Obsolete elements
-	// http://www.w3.org/Bugs/Public/show_bug.cgi?id=10836
-	"applet": ["align", "alt", "archive", "code", "height", "hspace", "name", /*"object",*/ "vspace", "width", /*"codeBase"*/],
+	"applet": ["align", "alt", "archive", "code", "height", "hspace", "name", "object", "vspace", "width", "codeBase"],
 	"marquee": ["behavior", "direction", "height", "hspace", "vspace", "width", "bgColor", "trueSpeed", ["unsigned long", "scrollAmount", 6], ["unsigned long", "scrollDelay", 85]],
 	"frameset": [["string", "cols"], ["string", "rows"]],
-	// http://www.w3.org/Bugs/Public/show_bug.cgi?id=10836
-	"frame": ["name", "scrolling", "src", "frameBorder", /*"longDesc",*/ "marginHeight", "marginWidth", "noResize"],
+	"frame": ["name", "scrolling", "src", "frameBorder", "longDesc", "marginHeight", "marginWidth", "noResize"],
 	"basefont": ["color", "face", ["long", "size"]],
 	"dir": ["compact"],
 	"font": ["color", "face", ["string", "size"]],
@@ -1023,13 +1016,16 @@ var attribs = {
 	// Obsolete attributes
 	"ch": ["string", "char"],
 	"chOff": ["string", "charoff"],
+	"codeBase": "url",
 	"compact": "boolean",
 	"declare": "boolean",
 	"hspace": "unsigned long",
+	"longDesc": "url",
 	"noHref": "boolean",
 	"noResize": "boolean",
 	"noShade": "boolean",
 	"noWrap": "boolean",
+	"object": "url",
 	"trueSpeed": "boolean",
 	"vspace": "unsigned long",
 };
@@ -1085,7 +1081,7 @@ for (var element in elements) {
 			domAttrName = idlAttrName;
 		}
 		if (["string", "boolean", "url", "urls"].indexOf(type) != -1) {
-			reflects("type", idlAttrName, element, domAttrName);
+			reflects(type, idlAttrName, element, domAttrName);
 		} else if (type == "enum") {
 			// Enumerated attribute that is limited only to known values
 			reflectsEnum(element, domAttrName, idlAttrName, data);

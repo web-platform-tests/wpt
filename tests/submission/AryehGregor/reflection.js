@@ -745,13 +745,11 @@ var elements = {
 	"code": [],
 	"col": [
 		// Conforming
-		// http://www.w3.org/Bugs/Public/show_bug.cgi?id=10345
-		// "span",
+		"span",
 		// Obsolete
 		"align", "width", "ch", "chOff", "vAlign",
 	],
-	// http://www.w3.org/Bugs/Public/show_bug.cgi?id=10345
-	"colgroup": [/*"span"*/],
+	"colgroup": ["span"],
 	"command": [["enum", "type", {"values": ["command", "checkbox", "radio"], "missing": "command"}], "label", "icon", "disabled", "checked", "radiogroup"],
 	"datalist": [],
 	"dd": [],
@@ -805,9 +803,8 @@ var elements = {
 		// Conforming
 		"alt", "src", "useMap", "isMap",
 		// Obsolete
-		// http://www.w3.org/Bugs/Public/show_bug.cgi?id=10345
 		// http://www.w3.org/Bugs/Public/show_bug.cgi?id=10836
-		"name", "align", "border", /*"hspace", "longDesc", "vspace",*/
+		"name", "align", "border", "hspace", /*"longDesc",*/ "vspace",
 	],
 	"input": [
 		// Conforming
@@ -861,9 +858,8 @@ var elements = {
 		// Conforming
 		"data", "type", "name", "useMap", "height", "width",
 		// Obsolete
-		// http://www.w3.org/Bugs/Public/show_bug.cgi?id=10345
 		// http://www.w3.org/Bugs/Public/show_bug.cgi?id=10836
-		"align", "archive", "border", /*"code", "codeBase",*/ "codeType", "declare", /*"hspace",*/ "standby", /*"vspace",*/
+		"align", "archive", "border", /*"code", "codeBase",*/ "codeType", "declare", "hspace", "standby", "vspace",
 	],
 	"ol": [
 		// Conforming
@@ -883,8 +879,7 @@ var elements = {
 		// Obsolete
 		"type", "valueType",
 	],
-	// http://www.w3.org/Bugs/Public/show_bug.cgi?id=10345
-	"pre": [/* Obsolete */ /*["unsigned long", "width"]*/],
+	"pre": [/* Obsolete */ ["unsigned long", "width"]],
 	"progress": [["double", "max"], ["double", "value"]],
 	"q": [],
 	"rp": [],
@@ -912,18 +907,16 @@ var elements = {
 	"tbody": [/* Obsolete */ "align", "ch", "chOff", "vAlign"],
 	"td": [
 		// Conforming
-		// http://www.w3.org/Bugs/Public/show_bug.cgi?id=10345
-		/*"colSpan", "rowSpan",*/ "headers",
+		"colSpan", "rowSpan", "headers",
 		// Obsolete
 		"abbr", "align", "axis", "bgColor", "ch", "chOff", "height", "noWrap", "vAlign", "width",
 	],
 	// http://www.w3.org/Bugs/Public/show_bug.cgi?id=10345
-	"textarea": [/*"cols", <-- should default to 20*/ "placeholder", "required", /*"rows", <-- should default to 2*/ "wrap", "maxLength", "readOnly"],
+	"textarea": ["cols", "placeholder", "required", "rows", "wrap", "maxLength", "readOnly"],
 	"tfoot": [/* Obsolete */ "align", "ch", "chOff", "vAlign"],
 	"th": [
 		// Conforming
-		// http://www.w3.org/Bugs/Public/show_bug.cgi?id=10345
-		"scope", /*"colSpan", "rowSpan",*/ "headers",
+		"scope", "colSpan", "rowSpan", "headers",
 		// Obsolete
 		"abbr", "align", "axis", "bgColor", "ch", "chOff", "height", "noWrap", "vAlign", "width",
 	],
@@ -938,10 +931,9 @@ var elements = {
 	"wbr": [],
 
 	// Obsolete elements
-	// http://www.w3.org/Bugs/Public/show_bug.cgi?id=10345
 	// http://www.w3.org/Bugs/Public/show_bug.cgi?id=10836
-	"applet": ["align", "alt", "archive", "code", "height", /*"hspace",*/ "name", /*"object", "vspace",*/ "width", /*"codeBase"*/],
-	"marquee": ["behavior", "direction", "height", /*"hspace", "vspace",*/ "width", "bgColor", "trueSpeed", ["unsigned long", "scrollAmount", 6], ["unsigned long", "scrollDelay", 85]],
+	"applet": ["align", "alt", "archive", "code", "height", "hspace", "name", /*"object",*/ "vspace", "width", /*"codeBase"*/],
+	"marquee": ["behavior", "direction", "height", "hspace", "vspace", "width", "bgColor", "trueSpeed", ["unsigned long", "scrollAmount", 6], ["unsigned long", "scrollDelay", 85]],
 	"frameset": [["string", "cols"], ["string", "rows"]],
 	// http://www.w3.org/Bugs/Public/show_bug.cgi?id=10836
 	"frame": ["name", "scrolling", "src", "frameBorder", /*"longDesc",*/ "marginHeight", "marginWidth", "noResize"],
@@ -973,8 +965,7 @@ var attribs = {
 	"autofocus": "boolean",
 	"autoplay": "boolean",
 	"cite": "url",
-	// http://www.w3.org/Bugs/Public/show_bug.cgi?id=10344
-	"cols": /*"limited*/ "unsigned long",
+	"cols": ["limited unsigned long", "cols", 20],
 	"colSpan": "unsigned long",
 	"controls": "boolean",
 	"data": "url",
@@ -1016,16 +1007,14 @@ var attribs = {
 	"relList": ["tokenlist", "rel"],
 	"required": "boolean",
 	"reversed": "boolean",
-	// http://www.w3.org/Bugs/Public/show_bug.cgi?id=10344
-	"rows": /*"limited*/ "unsigned long",
+	"rows": ["limited unsigned long", "rows", 2],
 	"rowSpan": "unsigned long",
 	"scoped": "boolean",
 	"seamless": "boolean",
 	"shape": ["enum", "shape", {"values": ["circle", "circ", "default", "poly", "polygon", "rect", "rectangle"], "noncanon": {"circ": "circle", "polygon": "poly", "rectangle": "rect"}, "missing": "rect"}],
 	"size": "unsigned long",
 	"sizes": "settable tokenlist",
-	// http://www.w3.org/Bugs/Public/show_bug.cgi?id=10344
-	"span": /*"limited*/ "unsigned long",
+	"span": "limited unsigned long",
 	"src": "url",
 	// TODO: The default value should be the number of elements if the
 	// reversed attribute is set.

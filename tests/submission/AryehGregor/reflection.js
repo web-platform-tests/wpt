@@ -848,7 +848,7 @@ var elements = {
 		// Obsolete
 		"scheme",
 	],
-	"meter": [["double", "min"], ["double", "max"], ["double", "value"], ["double", "low"], ["double", "high"], ["double", "optimum"]],
+	"meter": [["double", "min"], ["double", "max"], ["double", "low"], ["double", "high"], ["double", "optimum"]],
 	"nav": [],
 	"noscript": [],
 	"object": [
@@ -876,7 +876,7 @@ var elements = {
 		"type", "valueType",
 	],
 	"pre": [/* Obsolete */ ["unsigned long", "width"]],
-	"progress": [["double", "max"], ["double", "value"]],
+	"progress": [["double", "max"]],
 	"q": [],
 	"rp": [],
 	"rt": [],

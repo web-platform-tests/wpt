@@ -11,5 +11,6 @@ xrefs.json: Overview.src.html Makefile
 
 publish: Overview.src.html cross-spec-refs references Makefile
 	$(ANOLIS) --output-encoding=ascii --omit-optional-tags --quote-attr-values \
-	--w3c-compat --enable=xspecxref --enable=refs --pubdate="$(PUBDATE)" \
+	--w3c-compat --enable=xspecxref --enable=refs \
+	--pubdate="$(PUBDATE)" --w3c-status=WD \
 	$< Overview.html

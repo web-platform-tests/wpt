@@ -1,9 +1,0 @@
-{
-  "specs" :
-    [ "html"
-    , "webidl"
-    , "window"
-    , "xml"
-    , "xmlns"
-    ]
-}

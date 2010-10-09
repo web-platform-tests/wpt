@@ -38,11 +38,11 @@
 <div class="head">
  <!--begin-logo--><p><a href="http://www.w3.org/"><img alt="W3C" src="http://www.w3.org/Icons/w3c_home"></a></p><!--end-logo-->
  <h1>Web DOM Core</h1>
- <h2 class="no-num no-toc" id="editor-s-draft-8-october-2010">Editor's Draft 8 October 2010</h2>
+ <h2 class="no-num no-toc" id="editor-s-draft-9-october-2010">Editor's Draft 9 October 2010</h2>
 
  <dl>
   <dt>This Version:
-  <dd><a href="http://www.w3.org/TR/2010/WD-domcore-20101008/">http://www.w3.org/TR/2010/WD-domcore-20101008/</a>
+  <dd><a href="http://www.w3.org/TR/2010/WD-domcore-20101009/">http://www.w3.org/TR/2010/WD-domcore-20101009/</a>
 
   <dt>Latest Published Version:
   <dd><a href="http://www.w3.org/TR/domcore/">http://www.w3.org/TR/domcore/</a></dd>
@@ -77,7 +77,7 @@ publications and the latest revision of this technical report can be found in
 the <a href="http://www.w3.org/TR/">W3C technical reports index</a> at
 http://www.w3.org/TR/.</em>
 
-<p>This is the 8 October 2010 Editor's Draft of Web DOM Core. Please send
+<p>This is the 9 October 2010 Editor's Draft of Web DOM Core. Please send
 comments to
 <a href="mailto:public-webapps@w3.org?subject=%5BDOMCore%5D%20">public-webapps@w3.org</a>
 (<a href="http://lists.w3.org/Archives/Public/public-webapps/">archived</a>)
@@ -1779,7 +1779,7 @@ method must run these steps:
 };</pre>
 
 <dl class="domintro">
- <dt><var title="">hasSupport</var> = <var class="external" title="dom-Window-document"><a href="http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#dom-document">document</a></var> . <code title="dom-Document-implementation"><a href="#dom-document-implementation">implementation</a></code> . <code title="dom-DOMImplementation-hasFeature"><a href="#dom-domimplementation-hasfeature">hasFeature</a></code>(
+ <dt><var title="">hasSupport</var> = <var title="">document</var> . <code title="dom-Document-implementation"><a href="#dom-document-implementation">implementation</a></code> . <code title="dom-DOMImplementation-hasFeature"><a href="#dom-domimplementation-hasfeature">hasFeature</a></code>(
  <var title="">feature</var>, <var title="">version</var> )
 
  <dd>
@@ -1799,7 +1799,7 @@ otherwise.
 <hr>
 
 <dl class="domintro">
- <dt><var title="">doctype</var> = <var class="external" title="dom-Window-document"><a href="http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#dom-document">document</a></var> . <code title="dom-Document-implementation"><a href="#dom-document-implementation">implementation</a></code> . <code title="dom-DOMImplementation-createDocumentType"><a href="#dom-domimplementation-createdocumenttype">createDocumentType</a></code>(
+ <dt><var title="">doctype</var> = <var title="">document</var> . <code title="dom-Document-implementation"><a href="#dom-document-implementation">implementation</a></code> . <code title="dom-DOMImplementation-createDocumentType"><a href="#dom-domimplementation-createdocumenttype">createDocumentType</a></code>(
  <var title="">qualifiedName</var>, <var title="">publicId</var>, <var title="">systemId</var> )
 
  <dd>
@@ -1807,7 +1807,7 @@ otherwise.
   exception is raised, and if it does not match the <code class="external"><a href="http://www.w3.org/TR/xml-names/#NT-NCName">NCName</a></code> production in Namespaces in XML, a <code title="dom-DOMException-NAMESPACE_ERR"><a href="#dom-domexception-namespace_err">NAMESPACE_ERR</a></code> exception is raised.
 
 
- <dt><var title="">doc</var> = <var class="external" title="dom-Window-document"><a href="http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#dom-document">document</a></var> . <code title="dom-Document-implementation"><a href="#dom-document-implementation">implementation</a></code> . <code title="dom-DOMImplementation-createDocument"><a href="#dom-domimplementation-createdocument">createDocument</a></code>( <var title="">namespace</var>, <var title="">qualifiedName</var>, <var title="">doctype</var> )
+ <dt><var title="">doc</var> = <var title="">document</var> . <code title="dom-Document-implementation"><a href="#dom-document-implementation">implementation</a></code> . <code title="dom-DOMImplementation-createDocument"><a href="#dom-domimplementation-createdocument">createDocument</a></code>( <var title="">namespace</var>, <var title="">qualifiedName</var>, <var title="">doctype</var> )
 
  <dd>
   <p>Returns a new <code><a href="#document">Document</a></code>, with a new root
@@ -1821,7 +1821,7 @@ otherwise.
   is raised.
 
 
- <dt><var title="">doc</var> = <var class="external" title="dom-Window-document"><a href="http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#dom-document">document</a></var> . <code title="dom-Document-implementation"><a href="#dom-document-implementation">implementation</a></code> . <code title="dom-DOMImplementation-createHTMLDocument"><a href="#dom-domimplementation-createhtmldocument">createHTMLDocument</a></code>(
+ <dt><var title="">doc</var> = <var title="">document</var> . <code title="dom-Document-implementation"><a href="#dom-document-implementation">implementation</a></code> . <code title="dom-DOMImplementation-createHTMLDocument"><a href="#dom-domimplementation-createhtmldocument">createHTMLDocument</a></code>(
  <var title="">title</var> )
 
  <dd>

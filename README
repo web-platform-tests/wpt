@@ -1,0 +1,6 @@
+To generate Overview.html:
+
+Ensure you have anolis <ssh://hg@bitbucket.org/ms2ger/anolis> installed.
+
+$ hg clone ssh://hg@bitbucket.org/ms2ger/specification-data data
+$ make

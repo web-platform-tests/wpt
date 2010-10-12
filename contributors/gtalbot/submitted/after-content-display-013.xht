@@ -15,8 +15,11 @@
   <style type="text/css"><![CDATA[
   div:after
   {
-  content: "Filler text ";
+  background-color: red;
+  color: yellow;
+  content: ".\0D FAIL";
   display: table-column;
+  font-size: 2em;
   }
   ]]></style>
 
@@ -24,7 +27,7 @@
 
  <body>
 
-  <p>Test passes if there is one and only one "Filler Text" below.</p>
+  <p>Test passes if there is <strong>one "Filler text"</strong> below and no red.</p>
 
   <div>Filler text</div>
 

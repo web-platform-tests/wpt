@@ -15,8 +15,11 @@
   <style type="text/css"><![CDATA[
   div:before
   {
-  content: "Filler text ";
+  background-color: red;
+  color: yellow;
+  content: ".\0D FAIL";
   display: none;
+  font-size: 2em;
   }
   ]]></style>
 
@@ -24,9 +27,9 @@
 
  <body>
 
-  <p>Test passes if there is one and only one "Filler Text" below.</p>
+  <p>Test passes if there is <strong>only one line of text</strong> below and no red.</p>
 
-  <div>Filler text</div>
+  <div>One line</div>
 
  </body>
 </html>

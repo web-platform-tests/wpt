@@ -41,13 +41,13 @@
 <p><a href="http://www.w3.org/"><img alt="W3C" src="http://www.w3.org/Icons/w3c_home"></a></p>
 <!--end-logo-->
  <h1>Web DOM Core</h1>
- <h2 class="no-num no-toc" id="editor-s-draft-10-october-2010">Editor's Draft 10 October 2010</h2>
+ <h2 class="no-num no-toc" id="editor-s-draft-13-october-2010">Editor's Draft 13 October 2010</h2>
 
  <dl>
   <dt>This Version:
   <dd><a href="http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html">http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html</a>
 <!--
-  <dd><a href="http://www.w3.org/TR/2010/WD-domcore-20101010/">http://www.w3.org/TR/2010/WD-domcore-20101010/</a>
+  <dd><a href="http://www.w3.org/TR/2010/WD-domcore-20101013/">http://www.w3.org/TR/2010/WD-domcore-20101013/</a>
 -->
 
   <dt>Latest Published Version:
@@ -86,7 +86,7 @@ publications and the latest revision of this technical report can be found in
 the <a href="http://www.w3.org/TR/">W3C technical reports index</a> at
 http://www.w3.org/TR/.</em>
 
-<p>This is the 10 October 2010 Editor's Draft of Web DOM Core. Please send
+<p>This is the 13 October 2010 Editor's Draft of Web DOM Core. Please send
 comments to
 <a href="mailto:public-webapps@w3.org?subject=%5BDOMCore%5D%20">public-webapps@w3.org</a>
 (<a href="http://lists.w3.org/Archives/Public/public-webapps/">archived</a>)
@@ -578,10 +578,7 @@ steps must be run:
   const unsigned short <a href="#dom-domexception-url_mismatch_err" title="dom-DOMException-URL_MISMATCH_ERR">URL_MISMATCH_ERR</a> = 21;
   const unsigned short <a href="#dom-domexception-quota_exceeded_err" title="dom-DOMException-QUOTA_EXCEEDED_ERR">QUOTA_EXCEEDED_ERR</a> = 22;
   const unsigned short <a href="#dom-domexception-timeout_err" title="dom-DOMException-TIMEOUT_ERR">TIMEOUT_ERR</a> = 23;
-  const unsigned short <a href="#dom-domexception-not_readable_err" title="dom-DOMException-NOT_READABLE_ERR">NOT_READABLE_ERR</a> = 24;
-  const unsigned short <a href="#dom-domexception-data_clone_err" title="dom-DOMException-DATA_CLONE_ERR">DATA_CLONE_ERR</a> = 25;
-  const unsigned short <a href="#dom-domexception-encoding_err" title="dom-DOMException-ENCODING_ERR">ENCODING_ERR</a> = 26;
-
+  const unsigned short <a href="#dom-domexception-data_clone_err" title="dom-DOMException-DATA_CLONE_ERR">DATA_CLONE_ERR</a> = 24;
   unsigned short <a href="#dom-domexception-code" title="dom-DOMException-code">code</a>;
   DOMString <a href="#dom-domexception-name" title="dom-DOMException-name">name</a>;
 };</pre>
@@ -644,16 +641,9 @@ following:
  <!-- XHR2 -->
  <li value="23"><dfn id="dom-domexception-timeout_err" title="dom-DOMException-TIMEOUT_ERR"><code>TIMEOUT_ERR</code></dfn>:
  a timeout occurred;
- <!-- File API -->
- <li value="24"><dfn id="dom-domexception-not_readable_err" title="dom-DOMException-NOT_READABLE_ERR"><code>NOT_READABLE_ERR</code></dfn>:
- the file cannot be read, typically due due to permission problems that occur
- after a reference to a file has been acquired;
  <!-- HTML -->
- <li value="25"><dfn id="dom-domexception-data_clone_err" title="dom-DOMException-DATA_CLONE_ERR"><code>DATA_CLONE_ERR</code></dfn>:
+ <li value="24"><dfn id="dom-domexception-data_clone_err" title="dom-DOMException-DATA_CLONE_ERR"><code>DATA_CLONE_ERR</code></dfn>:
  the object can not be cloned;
- <!-- File API -->
- <li value="26"><dfn id="dom-domexception-encoding_err" title="dom-DOMException-ENCODING_ERR"><code>ENCODING_ERR</code></dfn>:
- an error occurred while encoding the data.
 </ol>
 
 <p>The <dfn id="dom-domexception-name" title="dom-DOMException-name"><code>name</code></dfn> exception

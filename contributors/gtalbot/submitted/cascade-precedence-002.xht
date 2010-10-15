@@ -4,47 +4,25 @@
 
  <head>
 
-  <title>CSS Test: cascades, inheritance and table-cell horizontal alignment</title>
+  <title>CSS Test: cascade mechanism has precedence over inheritance - font styling</title>
 
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
   <link rel="author" title="James Hopkins" href="james(a)idreamincode.co.uk" />
   <link rel="help" href="http://www.w3.org/TR/CSS21/cascade.html#specified-value" />
   <link rel="help" href="http://www.w3.org/TR/CSS21/cascade.html#inheritance" />
-  <link rel="help" href="http://www.w3.org/TR/html4/struct/tables.html#h-11.3.2" />
-  <meta name="flags" content="" />
-  <meta name="assert" content="When determining the specified value of a property, the cascade mechanism of (user agent, author, user) style sheets has precedence. If no value results from such mechanism, then the property may inherit from its parent. In this testcase, it is presumed that table cell headers are specified to be aligned in the center in user agents style sheets. Center is the default horizontal alignment value for table header cells." />
+  <meta content="" name="flags" />
+  <meta content="When determining the specified value of a property, the cascade mechanism of (user agent, author, user) style sheets has precedence. If no value results from such mechanism, then the property may inherit from its parent. In this testcase, it is presumed that i elements are specified in the user agents style sheets to italicize their text content." name="assert" />
 
   <style type="text/css"><![CDATA[
-  table
-  {
-  border: blue solid thin;
-  width: 100%;
-  }
-
-  thead {text-align: right;}
-  ]]></style>
-
+  div {font-style: normal;}
+  ]]></style>
  </head>
 
  <body>
 
-  <p>Test is passed if the words "Filler text" below are aligned in the center inside the rectangle with a thin blue border.</p>
+  <p>Test is passed if the sentence below is italic.</p>
 
-  <table>
-
-   <thead>
-    <tr>
-     <th>Filler text</th>
-    </tr>
-   </thead>
-
-   <tbody>
-    <tr>
-     <td></td>
-    </tr>
-   </tbody>
-
-  </table>
+  <div><i>This text should be italic.</i></div>
 
  </body>
 </html>

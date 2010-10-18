@@ -11,11 +11,13 @@
    * { background: transparent; margin: 0; }
    html { margin: 5em auto;
           height: 35px; width: 35px;
-          border: solid 10px green;
+          border: solid 10px red;
           background: transparent url(support/swatch-red.png) no-repeat center; }
    body { background: transparent; height: 15px; width: 15px;
           border: 10px solid green; }
-   div { background: green; height: 15px; width: 15px; border: solid 19px red;
+   div { background: red url(support/swatch-green.png) center no-repeat;
+         height: 15px; width: 15px; padding: 9px;
+         border: solid 10px green;
          position: absolute; margin-top: -19px; margin-left: -19px; z-index: -1; }
    p { position: absolute; top: 0; left: 0; margin: 1em; }
   </style>
@@ -24,7 +26,8 @@
    <p>There should be a completely-filled green square and no red.</p>
   <!--
 
-   The <div> should be under the <html> box but above the canvas.
+   The <div> should be under the <body> box but above the canvas and <html>
+   backdrop.
 
    !-->
   <div></div>

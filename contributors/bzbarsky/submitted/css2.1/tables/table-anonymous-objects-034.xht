@@ -30,7 +30,7 @@
 <body onload="doTest()">
 <p>There should be no red below, except for antialiasing issues.</p>
 <div style="position: relative; font-size: 2em;">
-<div style="position: absolute; z-index: 2; top: 0; color: green; padding: 1px;">
+<div style="position: absolute; width: 100%; z-index: 2; top: 0; color: green;">
 
 <table style="width: 100%;" border="5">
   <tr>
@@ -41,7 +41,7 @@
   </tr>
 </table>
 </div>
-<div style="position: relative; z-index: 1; color: red; padding: 1px;">
+<div style="position: absolute; width: 100%; z-index: 1; top: 0; color: red;">
 
 <table style="width: 100%;" border="5">
   <tr>

@@ -8,31 +8,35 @@
         <meta name="flags" content="ahem" />
         <meta name="assert" content="The 'white-space' property applies to display: list-item elements." />
         <style type="text/css">
+            body
+            {
+                margin-left: 2em;
+            }
             div
             {
                 font: 16px/1em ahem;
             }
-            #div1
+            #test
             {
                 display: list-item;
                 white-space: pre;
             }
-            #div2, #div3
+            #ref1, #ref2
             {
                 background: black;
                 display: inline-block;
                 height: 1em;
                 width: 2em;
             }
-            #div3
+            #ref2
             {
                 margin-left: 3em;
             }
         </style>
     </head>
     <body>
-        <p>Test passes if there are only two boxes below.</p>
-        <div id="div1">XX   XX</div>
-        <div id="div2"></div><div id="div3"></div>
+        <p>Test passes if there are two squares below and the left most square has a marker bullet on the left-hand side.</p>
+        <div id="test">XX   XX</div>
+        <div id="ref1"></div><div id="ref2"></div>
     </body>
 </html>

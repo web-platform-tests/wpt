@@ -8,6 +8,10 @@
         <meta name="flags" content="ahem" />
         <meta name="assert" content="The 'letter-spacing' property is applied to 'display: list-item' elements." />
         <style type="text/css">
+            body
+            {
+                margin-left: 1em;
+            }
             div
             {
                 font: 16px/1em ahem;
@@ -26,7 +30,7 @@
         </style>
     </head>
     <body>
-        <p>Test passes if there are six black boxes below and the last black box ends when the blue box ends.</p>
+        <p>Test passes if there are six black boxes below, the last black box ends when the blue box ends and there is a marker bullet on the left-hand side of the left most black box.</p>
         <div id="div1">XXXXXX</div>
         <div id="div2"></div>
     </body>

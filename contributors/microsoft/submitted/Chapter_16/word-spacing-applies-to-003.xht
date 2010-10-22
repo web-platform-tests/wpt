@@ -8,6 +8,10 @@
         <meta name="flags" content="ahem" />
         <meta name="assert" content="The 'word-spacing' property applies to 'display: list-item' elements." />
         <style type="text/css">
+            body
+            {
+                margin-left: 2em;
+            }
             div
             {
                 font: 16px/1em ahem;
@@ -26,7 +30,7 @@
         </style>
     </head>
     <body>
-        <p>Test passes if there are two black boxes below and the last black box ends when the blue box ends.</p>
+        <p>Test passes if there are two black boxes below and the last black box ends when the blue box ends. There also needs to be a marker bullet on the left-hand side of the left most black box.</p>
         <div>
             <div>XXXXX XXXXXX</div>
         </div>

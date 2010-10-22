@@ -5,12 +5,12 @@
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#propdef-line-height" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#leading" />
-        <meta name="flags" content="ahem" />
+        <meta name="flags" content="ahem invalid should" />
         <meta name="assert" content="The 'line-height' property sets a minimum minus one length value in pixels." />
         <style type="text/css">
             div
             {
-                font: 12pt ahem;
+                font: 1in ahem;
                 position: relative;
                 width: 1em;
             }
@@ -32,18 +32,18 @@
             {
                 background: blue;
                 color: blue;
-                left: 1.2em;
+                left: 1em;
                 line-height: -1px;
             }
             #div4
             {
                 height: 1em;
-                left: 2.4em;
+                left: 2em;
             }
         </style>
     </head>
     <body>
-        <p>Test passes if the middle blue box is the same height as one of the outer black boxes.</p>
+        <p>Test passes if the height of the blue box is similar to the height of the black boxes. It is acceptable to have the blue box height be shorter or taller than the height of either of the black boxes. The black boxes represent the recommended settings for 'line-height'.</p>
         <div id="div1">
             <div id="div2"></div>
             <div id="div3">X</div>

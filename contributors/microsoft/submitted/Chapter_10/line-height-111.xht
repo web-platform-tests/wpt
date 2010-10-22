@@ -5,45 +5,41 @@
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#propdef-line-height" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#leading" />
-        <meta name="flags" content="ahem" />
+        <meta name="flags" content="ahem should" />
         <meta name="assert" content="The 'line-height' property set to 'normal' uses the default line-height." />
         <style type="text/css">
             div
             {
-                font: 1em ahem;
-                position: relative;
-                width: 1em;
+                font: 100px ahem;
             }
             div div
             {
                 background: black;
+                float: left;
+                width: 1em;
             }
-            #div2
+            #test
             {
+                background: blue;
+                color: blue;
                 line-height: normal;
             }
-            #div3
+            #one
             {
                 height: 1em;
-                left: 1.2em;
-                position: absolute;
-                top: 0;
             }
-            #div4
+            #onepointtwo
             {
                 height: 1.2em;
-                left: 2.4em;
-                position: absolute;
-                top: 0;
             }
         </style>
     </head>
     <body>
-        <p>Test passes if the two boxes below are the same height.</p>
-        <div id="div1">
-            <div id="div2">X</div>
-            <div id="div3"></div>
-            <div id="div4"></div>
+        <p>Test passes if the height of the blue box is similar to the height of the black boxes. It is acceptable to have the blue box height be shorter or taller than the height of either of the black boxes. The black boxes represent the recommended settings for 'line-height'.</p>
+        <div>
+            <div id="onepointtwo"></div>
+            <div id="test">X</div>
+            <div id="one"></div>
         </div>
     </body>
 </html>

@@ -9,29 +9,36 @@
         <style type="text/css">
             table
             {
-                height: 100px;
+                border-collapse: collapse;
+                border-spacing: 0;
+                height: 200px;
             }
             td
             {
+                padding: 0;
                 vertical-align: baseline;
             }
             div, button
             {
-                background: black;
-                border: solid;
+                background: white;
+                border: none;
+                color: green;
+                font: 64px serif;
+                padding: 0;
+                margin: 0;
+            }
+            div
+            {
+                margin-left: -10px;
             }
         </style>
     </head>
     <body>
-        <p>Test passes if the bottom of the black boxes are aligned.</p>
+        <p>Test passes if there is a single continuous, unbroken line below.</p>
         <table>
             <tr>
-                <td>
-                    <button>Button</button>
-                </td>
-                <td>
-                    <div>FillerText</div>
-                </td>
+                <td><button>__________</button></td>
+                <td><div>__________</div></td>
             </tr>
         </table>
     </body>

@@ -8,16 +8,20 @@
         <meta name="flags" content="" />
         <meta name="assert" content="Caption-side does not apply to 'display: list-item' elements." />
         <style type="text/css">
+            div
+            {
+                margin-left: 2em;
+            }
             span
             {
-                background: blue;
+                background: orange;
                 caption-side: bottom;
                 display: list-item;
             }
         </style>
     </head>
     <body>
-        <p>Test passes if there are three lines of "Filler Text" below and the middle line has a blue background.</p>
+        <p>Test passes if there are three lines of "Filler Text" below and the middle "Filler Text" has a orange background and a marker bullet on the left-hand side.</p>
         <div>
             Filler Text
             <span>Filler Text</span>

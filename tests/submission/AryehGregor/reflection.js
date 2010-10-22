@@ -723,7 +723,7 @@ var elements = {
 	"aside": [],
 	"audio": ["src", "preload", "loop", "autoplay", "controls"],
 	"b": [],
-	"base": ["href", "target"],
+	"base": ["target"],
 	"bdo": [],
 	"blockquote": ["cite"],
 	"body": [

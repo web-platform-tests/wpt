@@ -8,6 +8,12 @@
         <meta name="flags" content="ahem" />
         <meta name="assert" content="The 'font-size' property applies to 'display: list-item' elements." />
         <style type="text/css">
+            div
+            {
+                font-family: ahem;
+                font-size: 1in;
+                margin-left: 2em;
+            }
             #div1
             {
                 background: orange;
@@ -17,13 +23,11 @@
             #div2
             {
                 display: list-item;
-                font-family: ahem;
-                font-size: 1in;
             }
         </style>
     </head>
     <body>
-        <p>Test passes if the boxes below are the same size.</p>
+        <p>Test passes if the boxes below are the same size and the bottom box has a marker bullet on the left-hand side.</p>
         <div id="div1"></div>
         <div id="div2">X</div>
     </body>

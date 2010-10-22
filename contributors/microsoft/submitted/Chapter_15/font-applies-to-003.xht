@@ -8,6 +8,10 @@
         <meta name="flags" content="" />
         <meta name="assert" content="The 'font' property applies to 'display: list-item' elements." />
         <style type="text/css">
+            body
+            {
+                margin-left: 2em;
+            }
             div
             {
                 font: italic small-caps bold 16px sans-serif;
@@ -19,7 +23,7 @@
         </style>
     </head>
     <body>
-        <p>Test passes if the lines of "Filler Text" below match.</p>
+        <p>Test passes if the lines of "Filler Text" below match styles and the bottom "Filler Text" has a marker bullet on the left-hand side.</p>
         <div>Filler Text</div>
         <div id="div1">Filler Text</div>
     </body>

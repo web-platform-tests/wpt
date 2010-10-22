@@ -10,6 +10,7 @@
             div
             {
                 border: solid 5px black;
+                font: 16px serif;
                 margin: 10px;
                 width: 550px;
             }
@@ -23,12 +24,17 @@
                 height: 0.5in;
                 width: 1in;
             }
+            span span
+            {
+                display: inline-block;
+                width: 550px;
+            }
         </style>
     </head>
     <body>
-        <p>Test passes if the orange box is to the left of the second line of text and the blue box is to the right of the second line of text.</p>
+        <p>Test passes if the orange box is to the left of the "Filler Text" and the blue box is to the right of the "Filler Text".</p>
         <div>
-            <span>Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text</span>
+            <span><span></span>Filler Text Filler text Filler Text</span>
             <img alt="blue box" src="../support/blue15x15.png" />
             <span id="span1"></span>
         </div>

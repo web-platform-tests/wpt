@@ -8,6 +8,10 @@
         <meta name="flags" content="" />
         <meta name="assert" content="The 'content' property properly handles a 'no-open-quote' value." />
         <style type="text/css">
+            div:lang(en)
+            {
+                quotes: '"' '"' "'" "'";
+            }
             .noopen:before
             {
                 content: no-open-quote;
@@ -25,7 +29,7 @@
     </head>
     <body>
         <p>Test passes if there is a single quote (') in the blue box below.</p>
-        <div id="div1" class="noopen">
+        <div id="div1" class="noopen" lang="en">
             <div id="div2" class="noopen"></div>
         </div>
     </body>

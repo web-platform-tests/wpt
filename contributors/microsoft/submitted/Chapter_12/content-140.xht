@@ -10,17 +10,19 @@
         <style type="text/css">
             ol:before
             {
-                content: attr(start);
                 color: green;
+                content: attr(start);
             }
             ol
             {
                 border: 2px solid black;
+                color: white;
+                font-size: 25px;
             }
         </style>
     </head>
     <body>
-        <p>Test passes if the number "1" appears in the box below.</p>
+        <p>Test passes if there is a green number "1" in the box below.</p>
         <ol start="1">
             <li></li>
         </ol>

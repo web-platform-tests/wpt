@@ -8,6 +8,10 @@
         <meta name="flags" content="" />
         <meta name="assert" content="The 'content' property properly handles a 'no-close-quote' value." />
         <style type="text/css">
+            div:lang(en)
+            {
+                quotes: '"' '"' "'" "'";
+            }
             .spans:before
             {
                 content: open-quote;
@@ -28,7 +32,7 @@
     </head>
     <body>
         <p>Test passes if there are 3 quotes (" ' ") in the blue box.</p>
-        <div id="wrapper">
+        <div id="wrapper" lang="en">
             <span id="span1" class="spans">
                 <span id="span2" class="spans"></span>
             </span>

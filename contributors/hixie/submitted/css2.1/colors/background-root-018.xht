@@ -5,21 +5,22 @@
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
   <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/background/15.html" type="text/html"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/colors.html#background"/>
+  <meta name="flags" content="image"/>
 <style type="text/css">
-   body { border: solid lime; background: white url(support/cat.png); color: black; }
-   html { border: solid blue; background: transparent; color: black; }
-   p { font: 900 1.75em Verdana, sans-serif; }
+   body { border: solid gray; background: red url(support/cat.png); color: black; }
+   html { border: solid thick blue; background: transparent; color: black; }
+   span { background: yellow; font-size: larger; }
    * { margin: 1em; padding: 1em; }
+   em, span { margin: 0; padding: 0; }
 </style>
 
 </head>
 <body>
-<p> There should be lots of cats in the background, covering the
-entire canvas. One of the cats should start exactly at the top left
-corner of the hollow blue box (the HTML box). Ignore the green box, it
-merely marks out the BODY box. There should not be a thick white
-border around the blue box. </p>
-
+<p><span>There should be lots of cats in the background, covering the
+entire page, excluding the yellow background of this text, but
+<em>including the area outside the blue box</em>.
+One of the cats should start exactly inside the top left
+corner of the blue box (the HTML box).</span></p>
 
 </body>
 </html>

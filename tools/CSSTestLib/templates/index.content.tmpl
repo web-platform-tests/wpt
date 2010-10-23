@@ -11,12 +11,15 @@
  <p>This build exists to aid in test suite development and contains unreviewed
    tests. <strong>The pass/fail results of these tests are not reliable
    indications of conformance.</strong>
+[% ELSE %]
+ <p>Since the test suite may contain errors, the pass/fail results of these
+   tests are not necessarily reliable indications of conformance.
+[% END %]
    Please check the latest version of the
    <a href="http://www.w3.org/TR/CSS21/">CSS2.1 specification</a> and the
    <a href="http://www.w3.org/Style/css2-updates/CR-CSS21-20070719-errata.html">errata
    list</a> before assuming a failure is due to an implementation bug and
    not a test suite bug.</p>
-[% END %]
 
 [% UNLESS official %]
  <p>You can find the <a href="[% suites.$suite.officialUrl %]">official
@@ -65,6 +68,12 @@
   <p>Some of the font-related tests also require
    <a href="http://www.w3.org/Style/CSS/Test/Fonts/">special fonts</a>.
    These tests are marked with the 'font' flag in their metadata.
+
+<h2 id="implement">Implementation Reports</h2>
+  <p>An <a href="implement-report-TEMPLATE.data">implementation report template</a>
+    is available to help with creating implementation reports. See also the
+    <a href="http://lists.w3.org/Archives/Public/public-css-testsuite/2010Aug/0020.html">explanation</a>
+    of its format.</p>
 
 <h2 id="common">Common Assumptions</h2>
 

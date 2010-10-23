@@ -88,7 +88,6 @@
   }
   .assert, .assert > li {
     list-style-type: none;
-    font-size: smaller;
     font-style: italic;
     color: gray;
     margin: 0;

@@ -1,5 +1,5 @@
 id	reference	title	flags	links	assertion
-[% FOREACH test IN tests %]
+[% FOREACH test IN tests.sort('name') %]
 [%+ test.file.replace('\.[a-z]+$', '') +%]	
 [%- test.references.0.relpath +%]	
 [%- test.title FILTER collapse +%]	

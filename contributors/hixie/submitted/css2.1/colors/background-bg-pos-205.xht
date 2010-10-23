@@ -3,25 +3,25 @@
 <head>
 <title>CSS Test: Background Position: bottom right and the scrolling viewport</title>
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
+  <link rel="author" title="Elika J. Etemad" href="http://fantasai.inkedblade.net/contact"/>
   <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/background/bg-pos-3.html" type="text/html"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/colors.html#background"/>
   <meta content="image scroll" name="flags" />
 <style type="text/css">
-   html { background: bottom right url(support/diamond.png) scroll white no-repeat; color: black; }
+   html { background: bottom right url(support/swatch-orange.png) scroll white no-repeat; color: black; }
    html, body { margin: 0; border: 0; padding: 0; }
    p { margin: 2em; }
-   pre { line-height: 3em; letter-spacing: 3em; color: silver; white-space: normal; margin: -5em; }
+   .inner { line-height: 3em; letter-spacing: 3em; color: silver; white-space: normal; margin: -5em; }
+   .platform { background: blue; height: 3em; margin-right: 5em; }
 </style>
 
 </head>
 <body>
-<p>There should be a single fuchsia diamond near the bottom right of the
-document, over the filler text near the bottom. (To check this, you
-will have to scroll the viewport.) It should not be at the exact
-bottom right corner of the document; as there should be 4em of text
-past the end of each side of the HTML element (except the top).</p>
+<p>Scroll to the bottom right corner of the page. There should be a
+single orange square in the bottom right of the document, sitting
+on top of the blue platform at its rightmost edge.</p>
 
-<pre>this is filler text this is filler text this is filler text this
+<div class="inner">this is filler text this is filler text this is filler text this
 is filler text this is filler text this is filler text this is filler
 text this is filler text this is filler text this is filler text this
 is filler text this is filler text this is filler text this is filler
@@ -101,6 +101,6 @@ text this is filler text this is filler text this is filler text this
 is filler text this is filler text this is filler text this is filler
 text this is filler text this is filler text this is filler text this
 is filler text this is filler text this is filler text this is filler
-text<p></p>
-</pre></body>
+text<div class="platform"></div><p></p>
+</div></body>
 </html>

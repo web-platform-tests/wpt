@@ -3,9 +3,9 @@
 <head>
 <title>CSS Test: page-break-inside: paged media</title>
 <link rel="author" title="Tom Clancy" href="mailto:tclancy@revenution.com"/>
+<link rel="author" title="Elika J. Etemad" href="http://fantasai.inkedblade.net/contact"/>
 <link rel="help" href="http://www.w3.org/TR/CSS21/page.html#page-break-props"/>
 <meta name="assert" content="The 'page-break-inside' property applies to paged media only."/>
-<meta name="flags" content="paged" />
 <style type="text/css">
 	@page {margin: 7%;}
 	html, body {
@@ -18,24 +18,26 @@
 		padding: 0;
 	}
 	div {
-		page-break-inside: avoid;
 		height: 100%;
 	}
-	p#pusher {
+	#pusher {
 		height: 100%;
 		margin-bottom: -2em;
 	}
-	p#skinny {
+	#test {
 		width: 1em;
-		widows: 4;
-		orphans: 4;
+		page-break-inside: avoid;
 	}
 </style>
 </head>
 <body>
 	<div>
-		<p id="pusher">On screen, the 'c' below this text must be hidden until you scroll, but, when printed, all content should appear on one page.</p>
-		<p id="skinny">a b c</p>
+		<p id="pusher">On screen, only 'Line&nbsp;C' below this sentence must be hidden until you scroll, but, when paginated, all three lines should appear together on the second page.</p>
+		<div id="test">
+			<p>Line&nbsp;A</p> 
+			<p>Line&nbsp;B</p>
+			<p>Line&nbsp;C</p>
+		</div>
 	</div>
 </body>
 </html>

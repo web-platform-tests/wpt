@@ -13,7 +13,6 @@
 		padding: 0;
 		orphans: 1;
 		widows: 1;
-		page-break-inside: inherit;
 	}
 	html, body {
 		height:100%;
@@ -24,31 +23,26 @@
 	}
 	div#takeTwo {page-break-before: always}
 	div.backUp {margin-top: -4em;}
-	div#break1 {
-		width: 0;
-	}
 	div#break2 {
 		page-break-inside: avoid;
 		page-break-inside: auto;
-		width: 0;
 	}
-	p {
-        margin: 1em;
-}
-	
+	.breaker {
+		width: 0;
+		font-weight: bold;
+		color: blue;
+	}	
 </style>
 </head>
 <body>
 	<div class="spacers">
-	  <p>This test produces four pages of output.</p>  
-	  <p>The letters a, b, c, d, e, f, and g follow and should span two pages.</p>
+	  <p>This test produces four pages of output. The blue numbers must correspond to the page number they appear on.</p>  
 	</div>
-
 	<div class="spacers backUp"></div>
-	<div id="break1">a b c d e f g</div>
+	<div class="breaker" id="break1">1 1 1 1 2 2 2 2</div>
 	
-	<div class="spacers" id="takeTwo">The text below should span two pages in exactly the same manner as the previous two pages.</div>
+	<div class="spacers backup" id="takeTwo"></div>
 	<div class="spacers backUp"></div>
-	<div id="break2">a b c d e f g</div>
+	<div class="breaker" id="break2">3 3 3 3 4 4 4 4</div>
 </body>
 </html>

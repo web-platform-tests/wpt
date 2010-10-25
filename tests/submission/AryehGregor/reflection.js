@@ -734,7 +734,7 @@ var elements = {
 		// Obsolete
 		"clear"
 	],
-	"button": [["string", "value"], ["enum", "type", {"values": ["submit", "reset", "button"], "missing": "submit"}], "formAction", "formEnctype", "formMethod", "formNoValidate", "formTarget"],
+	"button": [["string", "value"], ["enum", "type", {"values": ["submit", "reset", "button"], "missing": "submit"}], "formAction", "formEnctype", "formMethod", "formNoValidate", "formTarget", "autofocus", "name", "disabled"],
 	"canvas": [["unsigned long", "width", 300], ["unsigned long", "height", 150]],
 	"caption": [
 		// Obsolete
@@ -771,7 +771,7 @@ var elements = {
 		// Obsolete
 		"name", "align",
 	],
-	"fieldset": [],
+	"fieldset": ["name", "disabled"],
 	"figcaption": [],
 	"figure": [],
 	"footer": [],
@@ -816,13 +816,13 @@ var elements = {
 			"datetime-local", "number", "range", "color", "checkbox", "radio",
 			"file", "submit", "image", "reset", "button"], "missing": "text"},
 		"formAction", "formEnctype", "formMethod", "formNoValidate",
-		"formTarget"],
+		"formTarget", "autofocus", "name", "disabled"],
 		// Obsolete
 		"align", "useMap",
 	],
 	"ins": ["cite", "dateTime"],
 	"kbd": [],
-	"keygen": ["challenge", "keytype"],
+	"keygen": ["challenge", "keytype", "autofocus", "name", "disabled"],
 	"label": ["htmlFor"],
 	"legend": [/* Obsolete */ "align"],
 	"li": [
@@ -870,7 +870,7 @@ var elements = {
 	"option": ["disabled", "label", "defaultSelected"],
 	// TODO: Add htmlFor as a settable tokenlist, but the syntax doesn't
 	// support this right now . . .
-	"output": [/*"htmlFor"*/],
+	"output": [/*"htmlFor",*/ "name"],
 	"p": [/* Obsolete */ "align"],
 	"param": [
 		// Conforming
@@ -888,7 +888,7 @@ var elements = {
 	"samp": [],
 	"script": ["src", "type", "charset", "async", "defer"],
 	"section": [],
-	"select": ["multiple", ["limited unsigned long", "size"]],
+	"select": ["multiple", ["limited unsigned long", "size"], "autofocus", "name", "disabled"],
 	"small": [],
 	"source": ["src", "type", "media"],
 	"span": [],
@@ -910,7 +910,7 @@ var elements = {
 		// Obsolete
 		"abbr", "align", "axis", "bgColor", "ch", "chOff", "height", "noWrap", "vAlign", "width",
 	],
-	"textarea": ["cols", "placeholder", "required", "rows", "wrap", "maxLength", "readOnly"],
+	"textarea": ["cols", "placeholder", "required", "rows", "wrap", "maxLength", "readOnly", "autofocus", "name", "disabled"],
 	"tfoot": [/* Obsolete */ "align", "ch", "chOff", "vAlign"],
 	"th": [
 		// Conforming
@@ -940,11 +940,6 @@ var elements = {
 	// Global attributes should exist even on unknown elements
 	"undefinedelement": [],
 };
-// Add form-associated attributes programmatically to avoid lots of duplication.
-var formAssociated = ["button", "fieldset", "input", "keygen", "label", "meter", "object", "output", "progress", "select", "textarea"];
-for (var i = 0; i < formAssociated.length; i++) {
-	elements[formAssociated[i]] = elements[formAssociated[i]].concat("name", "disabled", "autofocus");
-}
 /**
  * Maps an IDL attribute name to its type.  If the IDL attribute name differs
  * from the content attribute name, a two-element array of ["type", "content

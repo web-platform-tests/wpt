@@ -363,7 +363,7 @@ class XHTMLSource(FileSource):
                                       resolve_entities=False,
                                       escape_invisible='named',
                                       omit_optional_tags=False,
-                                      minimize_boolean_attributes=True,
+                                      minimize_boolean_attributes=False,
                                       quote_attr_values=True)
 
     # lxml fixup for eating whitespace outside root element

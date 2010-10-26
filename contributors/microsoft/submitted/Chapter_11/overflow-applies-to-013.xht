@@ -6,11 +6,12 @@
         <link rel="help" href="http://www.w3.org/TR/CSS21/visufx.html#propdef-overflow" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/visufx.html#overflow" />
         <meta name="flags" content="ahem" />
-        <meta name="assert" content="The 'overflow' property does not apply to elements with 'display' set to 'table'." />
+        <meta name="assert" content="The 'overflow' property does apply to elements with 'display' set to 'table'." />
         <style type="text/css">
             #table
             {
-                border: 5px solid blue;
+                border: 5px solid transparent;
+                color: white;
                 display: table;
                 font: 20px/1em ahem;
                 height: 5em;

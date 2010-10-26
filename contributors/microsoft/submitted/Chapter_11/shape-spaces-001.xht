@@ -9,14 +9,18 @@
         <style type="text/css">
             div
             {
-                clip: rect(8px 9px 20px 8px);
+                border: 10px solid green;
+                background: red;
+                clip: rect(5px 50px 8px 0);
+                color: yellow;
+                height: 100px;
                 position: absolute;
-                color: red;
+                width: 100px;
             }
         </style>
     </head>
     <body>
-        <p>Test passes if there is no red visible on the page.</p>
+        <p>Test passes if there is a single horizontal green line below and no red visible on the page.</p>
         <div>FAIL</div>
     </body>
 </html>

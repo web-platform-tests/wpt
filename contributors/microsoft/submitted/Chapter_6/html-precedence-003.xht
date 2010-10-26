@@ -7,6 +7,10 @@
         <meta name="flags" content="userstyle" />
         <meta name="assert" content="The 'font' element's 'color' attribute trumps the user stylesheet's universal selector. They have the same specificity but the font element is a virtual author rule." />
         <style type="text/css">
+            p
+            {
+                color: black;
+            }
             div
             {
                 color: red;

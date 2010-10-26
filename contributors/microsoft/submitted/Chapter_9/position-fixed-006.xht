@@ -18,7 +18,7 @@
         <p>Test passes if the word "fixed" or "static" is below this text.</p>
         <script type="text/javascript">
             var el = document.getElementById('test');
-            document.write(window.getComputedStyle(el, null).position);
+            document.body.appendChild(document.createTextNode(window.getComputedStyle(el, null).position));
         </script>
     </body>
 </html>

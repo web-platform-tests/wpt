@@ -808,7 +808,7 @@ var elements = {
 		// FIXME: autocomplete for input is different from form; this requires
 		// implementing a notion of "state with no associated keyword" for
 		// enums.
-		"accept", "alt", /*"autocomplete"*/, "max", "min", "multiple", "pattern",
+		"accept", "alt", /*"autocomplete",*/ "max", "min", "multiple", "pattern",
 		"placeholder", "required", "src", ["limited unsigned long", "size", 20],
 		"step", "maxLength", "readOnly", "defaultChecked", "defaultValue",
 		["enum", "type", {"values": ["hidden", "text", "search", "tel", "url",

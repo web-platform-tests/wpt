@@ -12,31 +12,37 @@
             {
                 border-collapse: collapse;
             }
-            table
+            #table
             {
                 border-spacing: 3px;
                 border-style: none;
+                display: table;
             }
-            td
+            .row
+            {
+                display: table-row;
+            }
+            .cell
             {
                 background: black;
                 border: 3px solid black;
+                display: table-cell;
             }
         </style>
     </head>
     <body>
         <p>Test passes if there is a single box below.</p>
         <div id="container">
-            <table>
-                <tr>
-                    <td>XXXXX</td>
-                    <td>XXXXX</td>
-                </tr>
-                <tr>
-                    <td>XXXXX</td>
-                    <td>XXXXX</td>
-                </tr>
-            </table>
+            <div id="table">
+                <div class="row">
+                    <div class="cell">XXXXX</div>
+                    <div class="cell">XXXXX</div>
+                </div>
+                <div class="row">
+                    <div class="cell">XXXXX</div>
+                    <div class="cell">XXXXX</div>
+                </div>
+            </div>
         </div>
     </body>
 </html>

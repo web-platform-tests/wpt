@@ -11,6 +11,8 @@
             #table
             {
                 display: table;
+                height: 100px;
+                width: 100px;
             }
             .test
             {
@@ -21,19 +23,27 @@
             }
             #top
             {
-                border-bottom: 10px dotted orange;
+                border-bottom: 10px solid blue;
+            }
+            #tr
+            {
+                
+                display: table-row;
             }
             #bottom
             {
-                border-top: 10px solid blue;
+                display: table-cell;
+                border-top: 10px dotted orange;
             }
         </style>
     </head>
     <body>
-        <p>Test passes if there is a dotted orange line below.</p>
+        <p>Test passes if below there is a horizontal solid blue line above a dotted orange line.</p>
         <div id="table">
             <div id="top" class="test"></div>
-            <div id="bottom" class="test"></div>
+            <div id="tr">
+                <div id="bottom"></div>
+            </div>
         </div>
     </body>
 </html>

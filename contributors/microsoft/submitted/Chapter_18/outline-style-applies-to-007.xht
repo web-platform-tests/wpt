@@ -8,7 +8,16 @@
         <meta name="flags" content="" />
         <meta name="assert" content="The 'outline-style' property applies to elements with a display of table-cell." />
         <style type="text/css">
-            div
+            #table
+            {
+                display: table;
+                table-layout: fixed;
+            }
+            #row
+            {
+                display: table-row;
+            }
+            #cell
             {
                 display: table-cell;
                 height: 1in;
@@ -22,5 +31,10 @@
     <body>
         <p>Test passes if the box below has a dotted border.</p>
         <div></div>
+        <div id="table">
+            <div id="row">
+                <div id="cell"></div>
+            </div>
+        </div>
     </body>
 </html>

@@ -1,11 +1,11 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
-        <title>CSS Test: Absolutely positioned non-replaced elements with over-constrained values ignore the 'left' value when direction is right-to-left</title>
+        <title>CSS Test: Absolutely positioned non-replaced elements with left, width, right and margin-left not auto</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#abs-non-replaced-width" />
         <meta name="flags" content="ahem" />
-        <meta name="assert" content="If 'left', 'width' and 'right' are all not 'auto', 'margin-right' is 'auto' and the values are over-constrained, ignore the value for 'left' when the direction is 'rtl' and solve for 'left'." />
+        <meta name="assert" content="If 'left', 'width', 'right' and 'margin-right' are all not 'auto' and 'margin-right' is 'auto', then solve the equation for 'margin-right'." />
         <style type="text/css">
             #div1
             {
@@ -18,13 +18,13 @@
             div div
             {
                 /* left + margin-left + border-left-width + padding-left + width + padding-right + border-right-width + margin-right + right = width of containing block */
-                /*solve + 0           + 0                 + 0            + 1in   + 0             + 0                  + 1in          + 1in = 2in */
+                /* 1in  + 1in         + 0                 + 0            + 1in   + 0             + 0                  + solve        + 1in = 2in */
                 background: red;
                 color: blue;
                 font: 1in/1em ahem;
-                left: 1in; /* value is ignored and then solved for, resulting in -1 */
+                left: 1in;
                 margin-left: 1in;
-                margin-right: auto; /* set value to 0 */
+                margin-right: auto; /* value is solved to -2 */
                 position: absolute;
                 right: 1in;
                 width: 1in;

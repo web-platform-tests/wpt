@@ -1,8 +1,8 @@
 <testresults>
  <browser>
   <ua>Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; WOW64; Trident/5.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0; MS-RTC LM 8; InfoPath.3; .NET4.0C; .NET4.0E)</ua>
-  <browsername>Internet Explorer 9 Platform Preview 4</browsername>
-  <dateran>Wed Aug 4 20:11:07 PDT 2010</dateran>
+  <browsername>Internet Explorer Platform Preview 5</browsername>
+  <dateran>Wed Oct 27 16:56:31 PDT 2010</dateran>
  </browser>
  <tests>
   <test>
@@ -59,10 +59,34 @@
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/canvas_text_font_001.htm</uri>
-   <result>Fail</result>
+   <result>Pass</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/canvas_transformations_scale_001.htm</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/context.casesensitive.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/context.emptystring.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/context.unrecognised.badname.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/context.unrecognised.badsuffix.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/context.unrecognised.nullsuffix.html</uri>
+   <result>Fail</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/context.unrecognised.unicode.html</uri>
    <result>Pass</result>
   </test>
   <test>
@@ -75,6 +99,42 @@
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/fallback.nested.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/initial.colour.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/initial.reset.2dstate.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/initial.reset.clip.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/initial.reset.different.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/initial.reset.gradient.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/initial.reset.path.html</uri>
+   <result>Fail</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/initial.reset.pattern.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/initial.reset.same.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/initial.reset.transform.html</uri>
    <result>Pass</result>
   </test>
   <test>
@@ -238,6 +298,50 @@
    <result>Pass</result>
   </test>
   <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/toDataURL.arguments.1.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/toDataURL.arguments.2.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/toDataURL.arguments.3.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/toDataURL.bogustype.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/toDataURL.default.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/toDataURL.lowercase.ascii.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/toDataURL.lowercase.unicode.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/toDataURL.nocontext.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/toDataURL.png.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/toDataURL.unrecognised.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/toDataURL.zerosize.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/type.delete.html</uri>
    <result>Fail</result>
   </test>
@@ -259,6 +363,270 @@
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/type.replace.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/toDataURL.png.primarycolours.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/toDataURL.png.complexcolours.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/toDataURL.jpeg.primarycolours.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/toDataURL.jpeg.alpha.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/toDataURL.jpeg.quality.basic.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/toDataURL.jpeg.quality.notnumber.html</uri>
+   <result>Fail</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/toDataURL.jpeg.quality.outsiderange.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/security.dataURI.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/security.reset.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/security.drawImage.image.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/security.drawImage.canvas.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/security.pattern.create.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/security.pattern.cross.html</uri>
+   <result>Fail</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/security.pattern.canvas.timing.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/security.pattern.canvas.fillStyle.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/security.pattern.canvas.strokeStyle.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/security.pattern.image.fillStyle.html</uri>
+   <result>Fail</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/security.pattern.image.strokeStyle.html</uri>
+   <result>Fail</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/2d.voidreturn.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/2d.coordinatespace.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/2d.scaled.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/2d.getcontext.exists.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/2d.getcontext.unique.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/2d.getcontext.shared.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/2d.canvas.reference.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/2d.state.saverestore.strokeStyle.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/2d.state.saverestore.fillStyle.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/2d.state.saverestore.globalAlpha.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/2d.state.saverestore.lineWidth.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/2d.state.saverestore.lineCap.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/2d.state.saverestore.lineJoin.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/2d.state.saverestore.miterLimit.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/2d.state.saverestore.shadowOffsetX.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/2d.state.saverestore.shadowOffsetY.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/2d.state.saverestore.shadowBlur.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/2d.state.saverestore.shadowColor.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/2d.state.saverestore.globalCompositeOperation.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/2d.state.saverestore.font.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/2d.state.saverestore.textAlign.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/2d.state.saverestore.textBaseline.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/2d.state.saverestore.transformation.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/2d.state.saverestore.clip.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/2d.state.saverestore.path.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/2d.state.saverestore.bitmap.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/2d.state.saverestore.stack.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/2d.state.saverestore.stackdepth.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/2d.state.saverestore.underflow.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/2d.transformation.order.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/getElementsByClassName/001.htm</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/getElementsByClassName/002.htm</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/getElementsByClassName/003.htm</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/getElementsByClassName/004.htm</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/getElementsByClassName/005.htm</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/getElementsByClassName/006.htm</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/getElementsByClassName/007.htm</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/getElementsByClassName/008.htm</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/getElementsByClassName/009.htm</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/getElementsByClassName/010.xml</uri>
+   <result>Fail</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/getElementsByClassName/011.xml</uri>
+   <result>Fail</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/getElementsByClassName/012.htm</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/getElementsByClassName/013.htm</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/getElementsByClassName/014.htm</uri>
+   <result>Fail</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/getElementsByClassName/015.htm</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/getElementsByClassName/016.htm</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/getElementsByClassName/017.htm</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/getElementsByClassName/018.htm</uri>
    <result>Pass</result>
   </test>
   <test>
@@ -326,12 +694,16 @@
    <result>Pass</result>
   </test>
   <test>
+   <uri>http://test.w3.org/html/tests/approved/video/video_006.htm</uri>
+   <result>Pass</result>
+  </test>
+  <test>
    <uri>http://test.w3.org/html/tests/approved/video/video_007.htm</uri>
-   <result>Fail</result>
+   <result>Pass</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/video/video_008.htm</uri>
-   <result>Fail</result>
+   <result>Pass</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/video/video_009.htm</uri>
@@ -363,14 +735,6 @@
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/xhtml5/body_text_00ffff.xhtml</uri>
-   <result>Pass</result>
-  </test>
-  <test>
-   <uri>http://test.w3.org/html/tests/approved/xhtml5/colgroup_valign_bottom.xhtml</uri>
-   <result>Pass</result>
-  </test>
-  <test>
-   <uri>http://test.w3.org/html/tests/approved/xhtml5/colgroup_valign_top.xhtml</uri>
    <result>Pass</result>
   </test>
   <test>

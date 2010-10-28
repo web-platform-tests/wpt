@@ -1,11 +1,11 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
-        <title>CSS Test: Absolutely positioned non-replaced elements with over-constrained values ignore the 'left' value when direction is left-to-right</title>
+        <title>CSS Test: Absolutely positioned non-replaced elements with over-constrained values ignore the 'right' value when direction is left-to-right</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#abs-non-replaced-width" />
         <meta name="flags" content="ahem" />
-        <meta name="assert" content="When direction is left-to-right and values are over-constrained, the width becomes shrink-to-fit and the value for 'left' is ignored." />
+        <meta name="assert" content="If 'left', 'width' and 'right' are all not 'auto', 'margin-left' is 'auto' and the values are over-constrained, ignore the value for 'right' when the direction is 'ltr' and solve for 'right'." />
         <style type="text/css">
             #div1
             {
@@ -13,18 +13,20 @@
                 direction: ltr;
                 height: 2in;
                 position: relative;
-                width: 3in;
+                width: 2in;
             }
             div div
             {
+                /* left + margin-left + border-left-width + padding-left + width + padding-right + border-right-width + margin-right + right = width of containing block */
+                /* 1in  + 0           + 0                 + 0            + 1in   + 0             + 0                  + 1in          + solve = 2in */
                 background: red;
                 color: blue;
                 font: 1in/1em ahem;
                 left: 1in;
-                margin-left: auto;
+                margin-left: auto; /* set value to 0 */
                 margin-right: 1in;
                 position: absolute;
-                right: 1in;
+                right: 1in; /* value is ignored and then solved for, resulting in -1 */
                 width: 1in;
             }
         </style>

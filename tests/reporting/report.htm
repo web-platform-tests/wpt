@@ -46,10 +46,18 @@ function addBrowserResult(browser)
         {
              if ( browser.results[k].name == oTable.rows[j].cells[0].innerHTML)
              {
-                 oCell = oTable.rows[j].insertCell(-1);
+                 if ( oTable.rows[0].cells.length > oTable.rows[j].cells.length)
+                 {
+                     oCell = oTable.rows[j].insertCell(-1);
+                 }
                  oCell.innerHTML = Math.round(((browser.results[k].pass/(browser.results[k].fail+browser.results[k].pass))*100)*100)/100 + "%";
                  bFound = true;
                  break;
+             }
+             if (!bFound && oTable.rows[0].cells.length > oTable.rows[j].cells.length)
+             {
+                 oCell = oTable.rows[j].insertCell(-1);
+                 oCell.innerHTML = 'No Results';
              }
         }
         if(!bFound)
@@ -83,7 +91,7 @@ function addBrowserDetails(browser)
 
     // create a new Cell in the first row...
     var oCell = oTable.rows[0].insertCell(-1);
-    oCell.innerHTML = browser.name;
+    oCell.innerHTML = browser.name + '<br>(' + browser.dateran + ')';
     
     bFound = false;
     
@@ -94,10 +102,18 @@ function addBrowserDetails(browser)
         {
              if ( browser.details[k].name == oTable.rows[j].cells[0].innerHTML)
              {
-                 oCell = oTable.rows[j].insertCell(-1);
+                 if ( oTable.rows[0].cells.length > oTable.rows[j].cells.length)
+                 {
+                     oCell = oTable.rows[j].insertCell(-1);
+                 }
                  oCell.innerHTML = "<a href='"+ browser.details[k].uri + "'>" + browser.details[k].result + "</a>";
                  bFound = true;
                  break;
+             }
+             if (!bFound && oTable.rows[0].cells.length > oTable.rows[j].cells.length)
+             {
+                 oCell = oTable.rows[j].insertCell(-1);
+                 oCell.innerHTML = 'No Result';
              }
         }
         if(!bFound)
@@ -109,7 +125,7 @@ function addBrowserDetails(browser)
                 oCell = oRow.insertCell(-1);
                 if (i!=0)
                 {
-                    oCell.innerHTML = 'No Results';
+                    oCell.innerHTML = 'No Result';
                 }
                 else
                 {

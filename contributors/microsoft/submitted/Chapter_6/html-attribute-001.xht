@@ -1,39 +1,36 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
-        <title>CSS Test: Attribute 'align' vs. CSS 'text-align' specificity</title>
+        <title>CSS Test: Attribute 'align' vs. CSS 'caption-side' specificity</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/cascade.html#preshint" />
         <meta name="flags" content="" />
         <meta name="assert" content="Attribute 'align' has a specificity of zero and is overridden by CSS." />
         <style type="text/css">
-            p
+            div
             {
-                text-align: left;
+                border: 1px solid black;
+                float: left;
             }
             table
             {
-                width: 100%;
+                width: 300px;
             }
             *
             {
-                text-align: center;
+                caption-side: bottom;
             }
         </style>
     </head>
     <body>
-        <p>Test passes if the "Filler Text" below is centered on the page.</p>
-        <table>
-            <caption align="left">Filler Text</caption>
-            <tr>
-                <td></td>
-            </tr>
-        </table>
-        <table>
-            <caption align="right">Filler Text</caption>
-            <tr>
-                <td></td>
-            </tr>
-        </table>
+        <p>Test passes if the word "Below" is below the word "Above" and the word "Below" is centered inside the box.</p>
+        <div>
+            <table>
+                <caption align="right">Below</caption>
+                <tr>
+                    <td>Above</td>
+                </tr>
+            </table>
+        </div>
     </body>
 </html>

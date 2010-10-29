@@ -6,12 +6,14 @@
         <link rel="help" href="http://www.w3.org/TR/CSS21/visufx.html#propdef-overflow" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/visufx.html#overflow" />
         <meta name="flags" content="ahem" />
-        <meta name="assert" content="The 'overflow' property does not apply to elements with 'display' set to 'inline-table'." />
+        <meta name="assert" content="The 'overflow' property does apply to elements with 'display' set to 'inline-table'." />
         <style type="text/css">
             #table
             {
-                border: 5px solid blue;
+                border: 5px solid transparent;
+                color: white;
                 display: inline-table;
+                table-layout: fixed;
                 font: 20px/1em ahem;
                 height: 5em;
                 overflow: hidden;
@@ -29,12 +31,12 @@
             }
             #span2
             {
-                color: green;
+                color: red;
             }
         </style>
     </head>
     <body>
-        <p>Test passes if there is a green box below.</p>
+        <p>Test passes if there is no red visible on the page.</p>
         <div id="table">
             <div id="row">
                 <div id="cell"><span>XXXXX</span><span id="span2">XXXXX</span></div>

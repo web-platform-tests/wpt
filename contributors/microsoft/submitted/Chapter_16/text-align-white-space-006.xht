@@ -5,7 +5,7 @@
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/text.html#alignment-prop" />
         <meta name="flags" content="ahem" />
-        <meta name="assert" content="Setting 'text-align' to 'justify' and 'white-space' to 'pre-line', text-align is computed to its initial value." />
+        <meta name="assert" content="Setting 'text-align' to 'justify' and 'white-space' to 'pre-line', 'text-align' remains 'justified'." />
         <style type="text/css">
             div
             {
@@ -37,9 +37,9 @@
     <body>
         <p>Test passes if there is no red visible on the page.</p>
         <div>
-            <div><span class="green">xx</span><span class="red">xxx</span><span class="green">x</span><span class="red">xxx</span>
-                <span class="green">xx</span><span class="red">xxx</span><span class="green">x</span><span class="red">xxx</span>
-                <span class="green">xx</span><span class="red">xxx</span><span class="green">x</span><span class="red">xxx</span>
+            <div><span class="red">xxx</span><span class="green">xxx</span><span class="red">xxx</span>
+                <span class="red">xxx</span><span class="green">xxx</span><span class="red">xxx</span>
+                <span class="red">xxx</span><span class="green">xxx</span><span class="red">xxx</span>
                 <span class="green">xx</span><span class="red">xxx</span><span class="green">x</span><span class="red">xxx</span></div>
             <div id="test">XXX XXX XXX XXX XXX XXX XXX XXX</div>
         </div>

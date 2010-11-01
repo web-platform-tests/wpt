@@ -1,0 +1,4 @@
+<Files ~ "^plaintext.css$">
+ForceType text/plain
+</Files>
+

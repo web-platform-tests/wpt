@@ -15,27 +15,32 @@
             }
             #div3
             {
+                border-top: 2px solid blue;
+                height: 48px;
                 position: absolute;
-                top: 44px;
+                top: 38px;
+                width: 48px;
+                z-index: 1;
             }
             #span1
             {
-                color: red;
+                color: orange;
                 vertical-align: sub;
             }
             #span2
             {
+                color: white;
                 font: 96px/1em ahem;
             }
         </style>
     </head>
     <body>
-        <p>Test passes if there is a small and large box on the page and there is no red visible on the page.</p>
+        <p>Test passes if there is vertical white space between the bottom of the blue line and the top of the orange square.</p>
         <div id="div1">
             <div id="div2">
                 <span id="span1">X</span><span id="span2">X</span>
             </div>
-            <div id="div3">X</div>
+            <div id="div3"></div>
         </div>
     </body>
 </html>

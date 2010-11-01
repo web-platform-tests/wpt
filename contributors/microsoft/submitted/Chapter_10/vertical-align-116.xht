@@ -10,32 +10,37 @@
         <style type="text/css">
             div
             {
-                font: 0.5in/1em ahem;
+                font: 48px/1em ahem;
                 position: relative;
             }
             #div3
             {
+                border-top: 2px solid blue;
+                height: 48px;
                 position: absolute;
-                top: 0.6in;
+                top: 86px;
+                width: 48px;
+                z-index: 1;
             }
             #span1
             {
-                color: red;
+                color: orange;
                 vertical-align: super;
             }
             #span2
             {
-                font: 1.5in/1em ahem;
+                color: white;
+                font: 96px/1em ahem;
             }
         </style>
     </head>
     <body>
-        <p>Test passes if there is a small and large box on the page and there is no red visible on the page.</p>
+        <p>Test passes if there is vertical white space between the top of the blue line and the bottom of the orange square.</p>
         <div id="div1">
             <div id="div2">
                 <span id="span1">X</span><span id="span2">X</span>
             </div>
-            <div id="div3">X</div>
+            <div id="div3"></div>
         </div>
     </body>
 </html>

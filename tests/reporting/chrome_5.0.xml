@@ -1,8 +1,8 @@
 <testresults>
  <browser>
-  <ua>Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US) AppleWebKit/534.7 (KHTML, like Gecko) Chrome/7.0.517.41 Safari/534.7</ua>
-  <browsername>Google Chrome 7.0.517.41 beta</browsername>
-  <dateran>Tue Oct 19 2010 22:09:21 GMT+0200 (Romance Daylight Time)</dateran>
+  <ua>Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/534.12 (KHTML, like Gecko) Chrome/9.0.571.0 Safari/534.12</ua>
+  <browsername>Chromium 9.0.571.0 (64851)</browsername>
+  <dateran>Wed Nov 03 2010 04:41:34 GMT+0300 (Russia Standard Time)</dateran>
  </browser>
  <tests>
   <test>
@@ -171,7 +171,7 @@
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/size.attributes.parse.hex.html</uri>
-   <result>Fail</result>
+   <result>Pass</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/size.attributes.parse.junk.html</uri>
@@ -211,7 +211,7 @@
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/size.attributes.parse.zero.html</uri>
-   <result>Fail</result>
+   <result>Pass</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/size.attributes.reflect.setcontent.html</uri>
@@ -223,7 +223,7 @@
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/size.attributes.reflect.setidlzero.html</uri>
-   <result>Fail</result>
+   <result>Pass</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/size.attributes.removed.html</uri>
@@ -251,7 +251,7 @@
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/size.attributes.setAttribute.hex.html</uri>
-   <result>Fail</result>
+   <result>Pass</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/size.attributes.setAttribute.junk.html</uri>
@@ -259,7 +259,7 @@
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/size.attributes.setAttribute.minus.html</uri>
-   <result>Fail</result>
+   <result>Pass</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/size.attributes.setAttribute.octal.html</uri>
@@ -291,7 +291,7 @@
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/size.attributes.setAttribute.zero.html</uri>
-   <result>Fail</result>
+   <result>Pass</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/size.attributes.style.html</uri>
@@ -299,23 +299,23 @@
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/toDataURL.arguments.1.html</uri>
-   <result>Fail</result>
+   <result>Pass</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/toDataURL.arguments.2.html</uri>
-   <result>Fail</result>
+   <result>Pass</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/toDataURL.arguments.3.html</uri>
-   <result>Fail</result>
+   <result>Pass</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/toDataURL.bogustype.html</uri>
-   <result>Fail</result>
+   <result>Pass</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/toDataURL.default.html</uri>
-   <result>Fail</result>
+   <result>Pass</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/toDataURL.lowercase.ascii.html</uri>
@@ -395,7 +395,7 @@
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/security.dataURI.html</uri>
-   <result>Fail</result>
+   <result>Pass</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/security.reset.html</uri>
@@ -419,7 +419,7 @@
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/security.pattern.canvas.timing.html</uri>
-   <result>Fail</result>
+   <result>Pass</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/security.pattern.canvas.fillStyle.html</uri>
@@ -527,19 +527,19 @@
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/2d.state.saverestore.transformation.html</uri>
-   <result>Fail</result>
+   <result>Pass</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/2d.state.saverestore.clip.html</uri>
-   <result>Fail</result>
+   <result>Pass</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/2d.state.saverestore.path.html</uri>
-   <result>Fail</result>
+   <result>Pass</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/2d.state.saverestore.bitmap.html</uri>
-   <result>Fail</result>
+   <result>Pass</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/2d.state.saverestore.stack.html</uri>
@@ -554,8 +554,108 @@
    <result>Pass</result>
   </test>
   <test>
-   <uri>http://test.w3.org/html/tests/approved/canvas/2d.transformation.order.html</uri>
+   <uri>http://test.w3.org/html/tests/approved/canvas/2d.transformation.order.html.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/2d.transformation.scale.basic.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/2d.transformation.scale.zero.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/2d.transformation.scale.negative.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/2d.transformation.scale.large.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/2d.transformation.scale.nonfinite.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/2d.transformation.scale.multiple.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/2d.transformation.rotate.zero.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/2d.transformation.rotate.radians.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/2d.transformation.rotate.direction.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/2d.transformation.rotate.wrap.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/2d.transformation.rotate.wrapnegative.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/2d.transformation.rotate.nonfinite.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/2d.transformation.translate.basic.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/2d.transformation.translate.nonfinite.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/2d.transformation.transform.identity.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/2d.transformation.transform.skewed.html</uri>
    <result>Fail</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/2d.transformation.transform.multiply.html</uri>
+   <result>Fail</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/2d.transformation.transform.nonfinite.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/2d.transformation.setTransform.skewed.html</uri>
+   <result>Fail</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/2d.transformation.setTransform.multiple.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/2d.transformation.setTransform.nonfinite.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/2d.composite.globalAlpha.range.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/2d.composite.globalAlpha.invalid.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/2d.composite.globalAlpha.default.html</uri>
+   <result>Pass</result>
+  </test>
+  <test>
+   <uri>http://test.w3.org/html/tests/approved/canvas/2d.composite.globalAlpha.fill.html</uri>
+   <result>Pass</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/getElementsByClassName/001.htm</uri>
@@ -683,7 +783,7 @@
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/video/video_003.htm</uri>
-   <result>Pass</result>
+   <result>Fail</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/video/video_004.htm</uri>
@@ -755,3 +855,7 @@
   </test>
  </tests>
 </testresults>
+
+
+
+

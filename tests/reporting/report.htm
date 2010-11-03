@@ -29,6 +29,14 @@ function cleanWhitespace(node)
     }
 }
 
+function addTotalNumber(browser)
+{
+    iNumber = document.getElementById('oTotalNumber');
+    if (browser.results.length > 1) {
+      iNumber.innerHTML = "" + browser.results[0].length;
+    }
+}
+
 function addBrowserResult(browser)
 {
     oTable = document.getElementById('oTestResults');
@@ -246,6 +254,7 @@ function processXmlFile()
                 
                addBrowserResult(browser);
                addBrowserDetails(browser);
+               addTotalNumber(browser);
             }catch(e){}
 
             // Need to process next xml file
@@ -407,6 +416,10 @@ If you have feedback about the tests please send email
 to <a href='mailto:public-html-testsuite@w3.org'>public-html-testsuite@w3.org</a>
 list.</p>
 <center>
+<p>
+The test suite contains <span id='itotalNumber'>0</span> tests. That's not enough and we need your help.
+</p>
+
 <table id='oTestResults'>
 </table>
 

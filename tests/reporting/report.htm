@@ -34,7 +34,7 @@ function addTotalNumber(browser)
     iNumber = document.getElementById('iTotalNumber');
     if (browser.results.length > 1)
     {
-      iNumber.innerHTML = "" + browser.results[0].length;
+      iNumber.innerHTML = "" + document.getElementById('oTestResults').rows.length;
     }
 }
 

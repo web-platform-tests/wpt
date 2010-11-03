@@ -1,8 +1,8 @@
 <testresults>
  <browser>
-  <ua>Mozilla/5.0 (Windows NT 6.1; WOW64; rv:2.0b6) Gecko/20100101 Firefox/4.0b6</ua>
-  <browsername>Firefox 4 Beta 6</browsername>
-  <dateran>Thu Oct 28 2010 11:54:10 GMT-0700 (Pacific Daylight Time)</dateran>
+  <ua>Mozilla/5.0 (Windows NT 6.1; WOW64; rv:2.0b8pre) Gecko/20101101 Firefox/4.0b8pre</ua>
+  <browsername>Firefox 4.0b8pre</browsername>
+  <dateran>Tue Nov 02 2010 04:52:31 GMT+0100</dateran>
  </browser>
  <tests>
   <test>
@@ -555,7 +555,7 @@
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/2d.transformation.order.html.html</uri>
-   <result>No Result</result>
+   <result>Pass</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/canvas/2d.transformation.scale.basic.html</uri>
@@ -695,11 +695,11 @@
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/getElementsByClassName/010.xml</uri>
-   <result>No Result</result>
+   <result>Pass</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/getElementsByClassName/011.xml</uri>
-   <result>Fail</result>
+   <result>Pass</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/getElementsByClassName/012.htm</uri>
@@ -803,7 +803,7 @@
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/video/video_008.htm</uri>
-   <result>Fail</result>
+   <result>Pass</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/video/video_009.htm</uri>

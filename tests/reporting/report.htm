@@ -31,8 +31,9 @@ function cleanWhitespace(node)
 
 function addTotalNumber(browser)
 {
-    iNumber = document.getElementById('oTotalNumber');
-    if (browser.results.length > 1) {
+    iNumber = document.getElementById('iTotalNumber');
+    if (browser.results.length > 1)
+    {
       iNumber.innerHTML = "" + browser.results[0].length;
     }
 }
@@ -417,7 +418,7 @@ to <a href='mailto:public-html-testsuite@w3.org'>public-html-testsuite@w3.org</a
 list.</p>
 <center>
 <p>
-The test suite contains <span id='itotalNumber'>0</span> tests. That's not enough and we need your help.
+The test suite contains <span id='iTotalNumber'>0</span> tests. That's not enough and we need your help.
 </p>
 
 <table id='oTestResults'>

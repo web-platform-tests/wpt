@@ -5,6 +5,7 @@
   <link rel="author" title="Elika J. Etemad" href="http://fantasai.inkedblade.net/contact"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#inline-replaced-width"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#inline-replaced-height"/>
+  <link rel="help" href="http://www.w3.org/TR/SVGTiny12/coords.html#IntrinsicSizing"/>
   <meta name="flags" content="svg"/>
   <style type="text/css">
    body { width: 15em; border: 1px silver dashed; }
@@ -22,15 +23,15 @@
 
    /* controls */
    object { background: red; }
-   object, .control { border: 1em blue solid; }
+   object, .control { border: 1em blue solid; margin: 0 1em; }
 
-   .control { background: green; margin: 1em auto; }
+   .control { background: green; }
    .inst { height: auto; margin: 1em 0; }
   </style>
  </head>
  <body>
   <p class="inst">The following six blue boxes must be of the same width. There must be no red.</p>
-<!--  <p class="control">&nbsp;</p> -->
+  <p class="control">&nbsp;</p>
   <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
     <!-- sizing is against containing block, not available space -->
     <object id="img1" type="image/svg+xml" data="support/intrinsic-ratio.svg">This test won't work because you do not have images enabled.</object></p>

@@ -6,6 +6,7 @@
 var g_arrTestResultXml = new Array();
 var g_arrBrowsers = new Array();
 var g_iProcessedCounter = 0;
+var g_arrApprovedTests;
 
 notWhitespace = /\S/;
 
@@ -29,15 +30,6 @@ function cleanWhitespace(node)
     }
 }
 
-function addTotalNumber(browser)
-{
-    iNumber = document.getElementById('iTotalNumber');
-    if (browser.results.length > 1)
-    {
-      iNumber.innerHTML = "" + document.getElementById('oTestDetails').rows.length-1;
-    }
-}
-
 function addBrowserResult(browser)
 {
     oTable = document.getElementById('oTestResults');
@@ -45,53 +37,29 @@ function addBrowserResult(browser)
     // create a new Cell in the first row...
     oCell = oTable.rows[0].insertCell(-1);
     oCell.innerHTML = browser.name;
-    
     bFound = false;
-    
     // for each result - if a feature exists add result, else add new row and add result
     for (var k=0;k<browser.results.length;k++)
     {
         for (var j=1;j<oTable.rows.length;j++)
         {
-             if ( browser.results[k].name == oTable.rows[j].cells[0].innerHTML)
-             {
-                 if ( oTable.rows[0].cells.length > oTable.rows[j].cells.length)
-                 {
-                     oCell = oTable.rows[j].insertCell(-1);
-                 }
-                 oCell.innerHTML = Math.round(((browser.results[k].pass/(browser.results[k].fail+browser.results[k].pass))*100)*100)/100 + "%";
-                 bFound = true;
-                 break;
-             }
-             if (!bFound && oTable.rows[0].cells.length > oTable.rows[j].cells.length)
+        
+             if ( browser.results[k].name.toLowerCase() == oTable.rows[j].cells[0].innerHTML)
              {
                  oCell = oTable.rows[j].insertCell(-1);
-                 oCell.innerHTML = 'No Results';
+
+                 oCell.innerHTML = Math.round(((browser.results[k].pass/(browser.results[k].fail+browser.results[k].pass))*100)*100)/100 + "%";
+                 bFound = true;
              }
+
         }
-        if(!bFound)
+        if (!bFound)
         {
-            oRow = oTable.insertRow(-1);
-            var oCell;
-            
-            for( var i=0;i<oTable.rows[0].cells.length;i++)
-            {
-                oCell = oRow.insertCell(-1);
-                if (i!=0)
-                {
-                    oCell.innerHTML = 'No Results';
-                }
-                else
-                {
-                    oCell.innerHTML = browser.results[k].name;
-                }
-            }
-            oCell.innerHTML = Math.round(((browser.results[k].pass/(browser.results[k].fail+browser.results[k].pass))*100)*100)/100 + "%";
+            oCell = oTable.rows[j].insertCell(-1);
+            oCell.innerHTML = 'No Results';
+            bFound = false;
         }
-        
-        bFound = false;
     }
-    
 }
 
 function addBrowserDetails(browser)
@@ -101,58 +69,28 @@ function addBrowserDetails(browser)
     // create a new Cell in the first row...
     var oCell = oTable.rows[0].insertCell(-1);
     oCell.innerHTML = browser.name + '<br>(' + browser.dateran + ')';
-    
-    bFound = false;
-    
-    // for each result - if a tests exists add result, else add new row and add result
-    for (var k=0;k<browser.details.length;k++)
+
+    for (var j=1;j<oTable.rows.length;j++)
     {
-        for (var j=1;j<oTable.rows.length;j++)
+        oCell = oTable.rows[j].insertCell(-1);
+        oCell.innerHTML = 'No Result';
+        
+        for (var k=0;k<browser.details.length;k++)
         {
-             if ( browser.details[k].name == oTable.rows[j].cells[0].innerHTML)
-             {
-                 if ( oTable.rows[0].cells.length > oTable.rows[j].cells.length)
-                 {
-                     oCell = oTable.rows[j].insertCell(-1);
-                 }
-                 oCell.innerHTML = "<a href='"+ browser.details[k].uri + "'>" + browser.details[k].result + "</a>";
-                 bFound = true;
-                 break;
-             }
-             if (!bFound && oTable.rows[0].cells.length > oTable.rows[j].cells.length)
-             {
-                 oCell = oTable.rows[j].insertCell(-1);
-                 oCell.innerHTML = 'No Result';
-             }
-        }
-        if(!bFound)
-        {
-            oRow = oTable.insertRow(-1);
+            var name = oTable.rows[j].cells[0].innerHTML.split('\n');
             
-            for( var i=0;i<oTable.rows[0].cells.length;i++)
+            if ( browser.details[k].name == (name[0] + ")") || browser.details[k].name == oTable.rows[j].cells[0].innerHTML)
             {
-                oCell = oRow.insertCell(-1);
-                if (i!=0)
-                {
-                    oCell.innerHTML = 'No Result';
-                }
-                else
-                {
-                    oCell.innerHTML = browser.details[k].name;
-                }
+                oCell.innerHTML = "<a href='"+ browser.details[k].uri + "'>" + browser.details[k].result + "</a>";
             }
-            oCell.innerHTML = "<a href='"+ browser.details[k].uri + "'>" + browser.details[k].result + "</a>";
- 
-        } 
-       
-        bFound = false;
+        }
     }
-    
+
 }
 
 function processXmlFile()
 {  
-    xmlhttp = new XMLHttpRequest();
+    var xmlhttp = new XMLHttpRequest();
 
     xmlhttp.onreadystatechange  = function()
     { 
@@ -255,7 +193,7 @@ function processXmlFile()
                 
                addBrowserResult(browser);
                addBrowserDetails(browser);
-               addTotalNumber(browser);
+
             }catch(e){}
 
             // Need to process next xml file
@@ -273,7 +211,8 @@ function processXmlFile()
 function processTestResults()
 {
     items = document.getElementsByTagName('iframe')[0].contentDocument.getElementsByTagName('a');
-
+    var temp = "";
+    
     for (var i = 0;i<items.length;i++)
     {
         if(items[i].href.match(/.xml/))
@@ -299,6 +238,21 @@ function processTestResults()
     oCell.setAttribute("bgColor","#1c6ca7");
     oCell.setAttribute("style","color: #FFFFFF;");
 
+    // add all the features 
+    for (var i=0;i<g_arrApprovedTests.length;i++)
+    {
+        arrURI = g_arrApprovedTests[i].split(/\//);
+        
+        if(arrURI[arrURI.length-2] != temp)
+        {
+            oRow = oTable.insertRow(-1);
+            oCell = oRow.insertCell(-1);
+            oCell.innerHTML = arrURI[arrURI.length-2].toLowerCase();
+            
+            temp = arrURI[arrURI.length-2];
+        }
+    }
+    
     oTable = document.getElementById('oTestDetails');
     oTable.setAttribute("bgColor","#eeeeee"); 
     oTable.setAttribute("style", "font-family: Helvetica Neue,Helvetica,Arial,Verdana,Geneva,sans-serif; color: #47587c; font-size: small;");
@@ -310,31 +264,64 @@ function processTestResults()
     oRow = oTable.insertRow(-1);
     oCell = oRow.insertCell(-1);
     
-    oCell.innerHTML = "Test";
+    oCell.innerHTML = "Tests";
     oCell.setAttribute("bgColor","#1c6ca7");
     oCell.setAttribute("style","color: #FFFFFF;");
 
+    // add all the Tests
+    for (var i=0;i<g_arrApprovedTests.length;i++)
+    {
+        arrURI = g_arrApprovedTests[i].split(/\//);
+        
+        oRow = oTable.insertRow(-1);
+        oCell = oRow.insertCell(-1);
+        
+        oCell.innerHTML = arrURI[arrURI.length-2] + "(" + arrURI[arrURI.length-1] + ")";
 
+    }
+    
     processXmlFile();
 }
 
 function getTestResultXmlFiles()
 {
-    oIframe = document.createElement('iframe');
+    // points to location of the approvedtest.txt file
+    var uri = "http://test.w3.org/html/tests/harness/approvedtests.txt";
+    //var uri = "http://localhost/html5/tests.txt";
+   
+    var xmlhttp = new XMLHttpRequest();
+
+    xmlhttp.onreadystatechange  = function()
+    { 
+        if(xmlhttp.readyState  == 4)
+        {
+            var fileData = xmlhttp.responseText;
+            g_arrApprovedTests = fileData.split('\n');
+
+            document.getElementById('iTotalNumber').innerHTML = g_arrApprovedTests.length;
+
+            oIframe = document.createElement('iframe');
     
-    document.body.appendChild(oIframe);
+            document.body.appendChild(oIframe);
 
-    if(window.addEventListener)
-    {
-        oIframe.onload = processTestResults;
-    }
-    else
-    {
-        oIframe.attachEvent('onload', processTestResults);
-    }
+            if(window.addEventListener)
+            {
+                oIframe.onload = processTestResults;
+            }
+            else
+            {
+                oIframe.attachEvent('onload', processTestResults);
+            }
 
-    // points to location of xml files
-    oIframe.src = 'http://test.w3.org/html/tests/reporting/';
+            // points to location of xml files
+            oIframe.src = 'http://test.w3.org/html/tests/reporting/';
+            // for testing
+            //oIframe.src = 'http://localhost/results/';
+        }
+    }; 
+
+    xmlhttp.open("GET", uri, true);
+    xmlhttp.send(null);
 }
 </script>
 <style>

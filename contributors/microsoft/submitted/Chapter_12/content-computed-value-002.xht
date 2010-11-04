@@ -7,7 +7,7 @@
         <meta name="flags" content="dom" />
         <meta name="assert" content="When the 'content' property is set to 'normal' the values computes to 'none'." />
         <style type="text/css">
-            div:before
+            div:after
             {
                 content: normal;
             }
@@ -20,7 +20,7 @@
         <script type="text/javascript">
             <![CDATA[
             var testEl = document.getElementById('test');
-            var propertyValue = window.getComputedStyle(testEl, 'before').content;
+            var propertyValue = window.getComputedStyle(testEl, ':after').content;
             var newTextNode = document.createTextNode(propertyValue);
             document.getElementById("result").appendChild(newTextNode);
             ]]>

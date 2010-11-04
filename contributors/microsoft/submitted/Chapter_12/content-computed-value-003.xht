@@ -20,7 +20,7 @@
         <script type="text/javascript">
             <![CDATA[
             var testEl = document.getElementById('test');
-            var propertyValue = window.getComputedStyle(testEl, 'after').content;
+            var propertyValue = window.getComputedStyle(testEl, ':after').content;
             var newTextNode = document.createTextNode(propertyValue);
             document.getElementById("result").appendChild(newTextNode);
             ]]>

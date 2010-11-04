@@ -135,7 +135,7 @@ http://test.w3.org/html/tests/approved/canvas/2d.state.saverestore.bitmap.html
 http://test.w3.org/html/tests/approved/canvas/2d.state.saverestore.stack.html
 http://test.w3.org/html/tests/approved/canvas/2d.state.saverestore.stackdepth.html
 http://test.w3.org/html/tests/approved/canvas/2d.state.saverestore.underflow.html
-http://test.w3.org/html/tests/approved/canvas/2d.transformation.order.html.html
+http://test.w3.org/html/tests/approved/canvas/2d.transformation.order.html
 http://test.w3.org/html/tests/approved/canvas/2d.transformation.scale.basic.html
 http://test.w3.org/html/tests/approved/canvas/2d.transformation.scale.zero.html
 http://test.w3.org/html/tests/approved/canvas/2d.transformation.scale.negative.html

@@ -18,7 +18,7 @@ policies and contribution forms [3].
  * == Basic Usage ==
  *
  * To use this file, import the script into the test document:
- * <script src="http://test.w3.org/resources/jsharness.js"></script>
+ * <script src="http://test.w3.org/resources/testharness.js"></script>
  *
  * Within each file one may define one or more tests. Each test is atomic
  * in the sense that a single test has a single result (pass/fail/timeout).

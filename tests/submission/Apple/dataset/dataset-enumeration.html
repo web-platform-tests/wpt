@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Dataset - Enumeration</title>
+    <script src="../../../resources/testharness.js"></script>
+    <script src="../../../resources/testharnessreport.js"></script>
+  </head>
+  <body>
+    <h1>Dataset - Enumeration</h1>
+    <div id="log"></div>
+    <script>
+      test(function() {
+        function testEnumaration(array)
+        {
+          var d = document.createElement("div");
+          for (var i = 0; i < array.length; ++i)
+            d.setAttribute(array[i], "value");
+
+          var count = 0;
+          for (var item in d.dataset)
+            count++;
+
+          return count;
+        }
+
+        assert_equals(testEnumaration(['data-foo', 'data-bar', 'data-baz']), 3);
+        assert_equals(testEnumaration(['data-foo', 'data-bar', 'dataFoo']), 2);
+        assert_equals(testEnumaration(['data-foo', 'data-bar', 'style']), 2);
+        assert_equals(testEnumaration(['data-foo', 'data-bar', 'data-']), 3);
+      });
+    </script>
+  </body>
+</html>

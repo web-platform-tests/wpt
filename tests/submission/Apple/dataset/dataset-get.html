@@ -9,36 +9,35 @@
     <h1>Dataset - Enumeration</h1>
     <div id="log"></div>
     <script>
-      test(function() {
-        function testGet(attr, expected)
-        {
-          var d = document.createElement("div");
-          d.setAttribute(attr, "value");
-          return d.dataset[expected] == "value";
-        }
+      function testGet(attr, expected)
+      {
+        var d = document.createElement("div");
+        d.setAttribute(attr, "value");
+        return d.dataset[expected] == "value";
+      }
 
-        assert_true(testGet('data-foo', 'foo'));
-        assert_true(testGet('data-foo-bar', 'fooBar'));
-        assert_true(testGet('data--', '-'));
-        assert_true(testGet('data--foo', 'Foo'));
-        assert_true(testGet('data---foo', '-Foo'));
-        assert_true(testGet('data-Foo', 'foo'));
-        assert_true(testGet('data-', ''));
-        assert_true(testGet('data-\xE0', '\xE0'));
+      test(function() { assert_true(testGet('data-foo', 'foo')); });
+      test(function() { assert_true(testGet('data-foo-bar', 'fooBar')); });
+      test(function() { assert_true(testGet('data--', '-')); });
+      test(function() { assert_true(testGet('data--foo', 'Foo')); });
+      test(function() { assert_true(testGet('data---foo', '-Foo')); });
+      test(function() { assert_true(testGet('data-Foo', 'foo')); });
+      test(function() { assert_true(testGet('data-', '')); });
+      test(function() { assert_true(testGet('data-\xE0', '\xE0')); });
 
-        function matchesNothingInDataset(attr)
-        {
-          var d = document.createElement("div");
-          d.setAttribute(attr, "value");
+      function matchesNothingInDataset(attr)
+      {
+        var d = document.createElement("div");
+        d.setAttribute(attr, "value");
 
-          var count = 0;
-          for (var item in d.dataset)
-            count++;
-          return count == 0;
-        }
+        var count = 0;
+        for (var item in d.dataset)
+          count++;
+        return count == 0;
+      }
 
-        assert_true(matchesNothingInDataset('dataFoo'));
-      });
+      test(function() { assert_true(matchesNothingInDataset('dataFoo')); });
+
     </script>
   </body>
 </html>

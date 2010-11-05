@@ -9,25 +9,23 @@
     <h1>Dataset - Delete</h1>
     <div id="log"></div>
     <script>
-      test(function() {
-        function testDelete(attr, prop)
-        {
-          var d = document.createElement("div");
-          d.setAttribute(attr, "value");
-          delete d.dataset[prop];
-          return d.getAttribute(attr) != "value";
-        }
+      function testDelete(attr, prop)
+      {
+        var d = document.createElement("div");
+        d.setAttribute(attr, "value");
+        delete d.dataset[prop];
+        return d.getAttribute(attr) != "value";
+      }
 
-        assert_true(testDelete('data-foo', 'foo'));
-        assert_true(testDelete('data-foo-bar', 'fooBar'));
-        assert_true(testDelete('data--', '-'));
-        assert_true(testDelete('data--foo', 'Foo'));
-        assert_true(testDelete('data---foo', '-Foo'));
-        assert_true(testDelete('data-', ''));
-        assert_true(testDelete('data-\xE0', '\xE0'));
+      test(function() { assert_true(testDelete('data-foo', 'foo')); });
+      test(function() { assert_true(testDelete('data-foo-bar', 'fooBar')); });
+      test(function() { assert_true(testDelete('data--', '-')); });
+      test(function() { assert_true(testDelete('data--foo', 'Foo')); });
+      test(function() { assert_true(testDelete('data---foo', '-Foo')); });
+      test(function() { assert_true(testDelete('data-', '')); });
+      test(function() { assert_true(testDelete('data-\xE0', '\xE0')); });
+      test(function() { assert_throws("SYNTAX_ERR", function() { testDelete('dummy', '-foo') }); });
 
-        assert_throws("SYNTAX_ERR", function() { testDelete('dummy', '-foo') });
-      });
     </script>
   </body>
 </html>

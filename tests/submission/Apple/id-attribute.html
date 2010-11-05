@@ -2,6 +2,7 @@
 <html>
 <head>
 <title>The id attribute</title>
+<meta charset=utf8>
 <style>
 
 #abcd {
@@ -29,6 +30,11 @@
    z-index: 5;
 }
 
+#åèiöú {
+   position: absolute;
+   z-index: 6;
+}
+
 </style>
 </head>
 <body onload="load_test_attr.done()">
@@ -37,34 +43,43 @@
 <i id="abcd"></i>
 <i id="ABCD"></i>
 <i id="a b"></i>
+<i id="åèiöú"></i>
 <script src="../../resources/testharness.js"></script>
 <script>
     // id is associated for purposes of getElementById
     test(function() {
         assert_equals(document.getElementById("abcd"), document.getElementsByTagName("i")[0]);
-    }, "user agents must associate the element with an id value for purposes of getElementById");
+    }, "User agents must associate the element with an id value for purposes of getElementById.");
 
     test(function() {
         assert_equals(document.getElementById("ABCD"), document.getElementsByTagName("i")[1]);
-    }, "association is exact and therefore case-sensitive");
+    }, "Association is exact and therefore case-sensitive for getElementById.");
 
     test(function() {
         assert_equals(document.getElementById("a b"), document.getElementsByTagName("i")[2]);
-    }, "test that space are allowed in an id and still make an association");
+    }, "Spaces are allowed in an id and still make an association for getElementByID.");
+
+    test(function() {
+        assert_equals(document.getElementById("åèiöú"), document.getElementsByTagName("i")[3]);
+    }, "Non-ASCII is allowed in an id and still make an association for getElementById.");
 
 
     // id is associated for purposes of CSS
     test(function() {
         assert_equals(document.defaultView.getComputedStyle(document.getElementById("abcd"), false).zIndex, "1");
-    }, "user agents must associate the element with an id value for purposes of CSS");
+    }, "User agents must associate the element with an id value for purposes of CSS.");
 
     test(function() {
         assert_equals(document.defaultView.getComputedStyle(document.getElementById("ABCD"), false).zIndex, "2");
-    }, "association for CSS is exact and therefore case-sensitive");
+    }, "Association for CSS is exact and therefore case-sensitive.");
 
     test(function() {  
         assert_equals(document.defaultView.getComputedStyle(document.getElementById("a b"), false).zIndex, "3");
-    }, "test that space are allowed in an id and still make an association");
+    }, "Spaces are allowed in an id and still make an association.");
+
+    test(function() {
+        assert_equals(document.defaultView.getComputedStyle(document.getElementById("åèiöú"), false).zIndex, "6");
+    }, "Non-ASCII is allowed in an id and still make an association for CSS.");
 
 
     // id IDL attribute reflects the content attribute
@@ -72,46 +87,42 @@
 
     test(function() {
         assert_equals(firstSpan.id, "abcd");
-    }, "the id IDL attribute must reflect the id content attribute, for getting");
+    }, "The id IDL attribute must reflect the id content attribute, for getting.");
 
     test(function() {
         firstSpan.id = "xyz";
         assert_equals(firstSpan.getAttribute("id"), "xyz");
-    }, "the id IDL attribute must reflect the id content attribute, for setting via IDL attribute");
+    }, "The id IDL attribute must reflect the id content attribute, for setting via IDL attribute.");
 
     test(function() {
         assert_equals(document.getElementById("xyz"), firstSpan);
-    }, "after setting id via id attribute, getElementById find the element by the new id");
+    }, "After setting id via id attribute, getElementById find the element by the new id.");
 
     test(function() {
         assert_equals(document.getElementById("abcd"), null);
-    }, "after setting id via id attribute, getElementById doesn't find the element by the old id");
+    }, "After setting id via id attribute, getElementById doesn't find the element by the old id.");
 
     test(function() {
         assert_equals(document.defaultView.getComputedStyle(firstSpan, false).zIndex, "4");
-    }, "after setting id via id attribute, CSS association is via the new ID");
-
+    }, "After setting id via id attribute, CSS association is via the new ID.");
 
     test(function() {
         firstSpan.setAttribute("id", "foobar");
         assert_equals(firstSpan.id, "foobar");
-    }, "the id IDL attribute must reflect the id content attribute, for setting via setAttribute");
+    }, "The id IDL attribute must reflect the id content attribute, for setting via setAttribute.");
 
     test(function() {
         assert_equals(document.getElementById("foobar"), firstSpan);
-    }, "after setting id via setAttribute attribute, getElementById find the element by the new id");
+    }, "After setting id via setAttribute attribute, getElementById find the element by the new id.");
 
     test(function() {
         assert_equals(document.getElementById("xyz"), null);
-    }, "after setting id via setAttribute attribute, getElementById doesn't find the element by the old id");
+    }, "After setting id via setAttribute attribute, getElementById doesn't find the element by the old id.");
 
     test(function() {
         assert_equals(document.defaultView.getComputedStyle(firstSpan, false).zIndex, "5");
-    }, "after setting id via setAttribute attribute, CSS association is via the new ID");
+    }, "After setting id via setAttribute attribute, CSS association is via the new ID.");
 
 </script>
 </body>
 </html>
-
-
- 

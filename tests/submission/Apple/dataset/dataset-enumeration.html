@@ -10,7 +10,7 @@
     <div id="log"></div>
     <script>
       test(function() {
-        function testEnumaration(array)
+        function testEnumeration(array)
         {
           var d = document.createElement("div");
           for (var i = 0; i < array.length; ++i)
@@ -23,10 +23,10 @@
           return count;
         }
 
-        assert_equals(testEnumaration(['data-foo', 'data-bar', 'data-baz']), 3);
-        assert_equals(testEnumaration(['data-foo', 'data-bar', 'dataFoo']), 2);
-        assert_equals(testEnumaration(['data-foo', 'data-bar', 'style']), 2);
-        assert_equals(testEnumaration(['data-foo', 'data-bar', 'data-']), 3);
+        assert_equals(testEnumeration(['data-foo', 'data-bar', 'data-baz']), 3);
+        assert_equals(testEnumeration(['data-foo', 'data-bar', 'dataFoo']), 2);
+        assert_equals(testEnumeration(['data-foo', 'data-bar', 'style']), 2);
+        assert_equals(testEnumeration(['data-foo', 'data-bar', 'data-']), 3);
       });
     </script>
   </body>

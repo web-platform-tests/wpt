@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Dataset - Delete</title>
+    <script src="../../../resources/testharness.js"></script>
+    <script src="../../../resources/testharnessreport.js"></script>
+  </head>
+  <body>
+    <h1>Dataset - Delete</h1>
+    <div id="log"></div>
+    <script>
+      test(function() {
+        function testDelete(attr, prop)
+        {
+          var d = document.createElement("div");
+          d.setAttribute(attr, "value");
+          delete d.dataset[prop];
+          return d.getAttribute(attr) != "value";
+        }
+
+        assert_true(testDelete('data-foo', 'foo'));
+        assert_true(testDelete('data-foo-bar', 'fooBar'));
+        assert_true(testDelete('data--', '-'));
+        assert_true(testDelete('data--foo', 'Foo'));
+        assert_true(testDelete('data---foo', '-Foo'));
+        assert_true(testDelete('data-', ''));
+        assert_true(testDelete('data-\xE0', '\xE0'));
+
+        assert_throws("SYNTAX_ERR", function() { testDelete('dummy', '-foo') });
+      });
+    </script>
+  </body>
+</html>

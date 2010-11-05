@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Dataset - Set</title>
+    <script src="../../../resources/testharness.js"></script>
+    <script src="../../../resources/testharnessreport.js"></script>
+  </head>
+  <body>
+    <h1>Dataset - Set</h1>
+    <div id="log"></div>
+    <script>
+      test(function() {
+        function testSet(prop, expected)
+        {
+          var d = document.createElement("div");
+          d.dataset[prop] = "value";
+          return d.getAttribute(expected) == "value";
+        }
+
+        assert_true(testSet('foo', 'data-foo'));
+        assert_true(testSet('fooBar', 'data-foo-bar'));
+        assert_true(testSet('-', 'data--'));
+        assert_true(testSet('Foo', 'data--foo'));
+        assert_true(testSet('-Foo', 'data---foo'));
+        assert_true(testSet('', 'data-'));
+        assert_true(testSet('\xE0', 'data-\xE0'));
+
+        assert_throws('SYNTAX_ERR', function() { testSet('-foo', 'dummy') });
+        assert_throws('INVALID_CHARACTER_ERR', function() { testSet('foo\x20', 'dummy') });
+        assert_throws('INVALID_CHARACTER_ERR', function() { testSet('foo\uF900', 'dummy') });
+      });
+    </script>
+  </body>
+</html>

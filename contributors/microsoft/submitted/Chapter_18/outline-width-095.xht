@@ -8,34 +8,54 @@
         <meta name="flags" content="" />
         <meta name="assert" content="The 'outline-width' property supports a value of 'inherit' and gets its computed value from its parent." />
         <style type="text/css">
-            #div1
+            #parent
             {
-                margin: 50px 0 0 20px;
-                outline-color: white;
-                outline-style: solid;
-                outline-width: 20px;
-                width: 300px;
+                margin: 5em 0 0 1em;
+                position: relative;
+            }
+            #abs
+            {
+                border: 1em solid white;
+                position: absolute;
+                top: -2em;
+                left: -1em;
+                height: 4em;
+                width: 22em;
             }
             div div
             {
-                outline-color: black;
+                width: 20em;
+            }
+            #div1
+            {
+                margin-left: 1em;
+                outline-color: invert;
+                outline-style: solid;
+                outline-width: 1em;
+            }
+            #div1 div
+            {
+                outline-color: orange;
                 outline-style: solid;
                 outline-width: inherit;
-                width: 300px;
+                height: 2em;
             }
             #div2
             {
-                border: solid blue 20px;
-                margin-top: 40px;
-                width: 300px;
+                border: solid blue 1em;
+                margin-top: 3em;
+                height: 2em;
             }
         </style>
     </head>
     <body>
-    <p>Test passes if the boxes below are the same size.</p>
-        <div id="div1">
-            <div>Filler Text</div>
+    <p>Test passes if there are two boxes, either both blue or one orange one blue and the two boxes are the same size.</p>
+        <div id="parent">
+            <div id="abs"></div>
+            <div id="div1">
+                <div>Filler Text</div>
+            </div>
+            <div id="div2">Filler Text</div>
         </div>
-        <div id="div2">Filler Text</div>
     </body>
 </html>

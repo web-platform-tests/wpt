@@ -22,10 +22,10 @@
         return count;
       }
 
-      test(function() { assert_equals(testEnumeration(['data-foo', 'data-bar', 'data-baz']), 3); });
-      test(function() { assert_equals(testEnumeration(['data-foo', 'data-bar', 'dataFoo']), 2); });
-      test(function() { assert_equals(testEnumeration(['data-foo', 'data-bar', 'style']), 2); });
-      test(function() { assert_equals(testEnumeration(['data-foo', 'data-bar', 'data-']), 3); });
+      test(function() { assert_equals(testEnumeration(['data-foo', 'data-bar', 'data-baz']), 3); },
+        "A dataset should be enumeratable.");
+      test(function() { assert_equals(testEnumeration(['data-foo', 'data-bar', 'dataFoo']), 2); },
+        "Only attributes who qualify as dataset properties should be enumeratable in the dataset.");
     </script>
   </body>
 </html>

@@ -7,6 +7,10 @@
     <meta name="flags" content=""/>
     <meta name="assert" content="bidi-override should be applied when specified on list item"/>
     <style type="text/css"><![CDATA[
+      ul
+      {
+          width: 200px;
+      }
       .override {
       direction: rtl;
       unicode-bidi: bidi-override;
@@ -16,7 +20,7 @@
   
   <body>
     <p>
-      The list item should be "abc" (and you should be able to scroll to see the list marker if it is rendered outside the viewport):
+      The list item should be "abc" and have a marker on the right-hand side.
     </p>
     <ul>
       <li class="override">

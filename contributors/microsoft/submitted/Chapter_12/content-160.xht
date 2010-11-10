@@ -11,18 +11,18 @@
             #div1
             {
                 background: white;
-                color: white;
-                content: "FAIL FAIL";
+                color: blue;
+                content: "PASS";
             }
             div:before
             {
-                color: red;
+                color: green;
                 content: inherit;
             }
         </style>
     </head>
     <body>
-        <p>Test passes if there is no red visible on the page.</p>
+        <p>Test passes if there is nothing displayed below or the word "PASS" appears twice, once in green text and once in blue text.</p>
         <div id="div1">
             <div></div>
         </div>

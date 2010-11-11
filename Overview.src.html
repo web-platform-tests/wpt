@@ -319,6 +319,25 @@ title="space character">space characters</span>.</p>
 may have leading or trailing <span title="space character">space
 characters</span>.</p>
 
+<p>An <dfn>unordered set of unique space-separated tokens</dfn> is a
+<span>set of space-separated tokens</span> where none of the tokens
+are duplicated.</p>
+
+<p>An <dfn>ordered set of unique space-separated tokens</dfn> is a
+<span>set of space-separated tokens</span> where none of the tokens
+are duplicated but where the order of the tokens is meaningful.</p>
+
+<p><span title="set of space-separated tokens">Sets of
+space-separated tokens</span> sometimes have a defined set of
+allowed values. When a set of allowed values is defined, the tokens
+must all be from that list of allowed values; other values are
+non-conforming. If no such set of allowed values is provided, then
+all values are conforming.</p>
+
+<p class="note">How tokens in a <span>set of space-separated
+tokens</span> are to be compared (e.g. case-sensitively or not) is
+defined on a per-set basis.</p>
+
 <div class="impl">
 
 <p>When a user agent has to <dfn>split a string on spaces</dfn>, it

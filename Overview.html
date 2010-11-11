@@ -41,7 +41,7 @@
 <p><a href="http://www.w3.org/"><img alt="W3C" height="48" src="http://www.w3.org/Icons/w3c_home" width="72"></a></p>
 <!--end-logo-->
  <h1>Web DOM Core</h1>
- <h2 class="no-num no-toc" id="editor-s-draft-17-october-2010">Editor's Draft 17 October 2010</h2>
+ <h2 class="no-num no-toc" id="editor-s-draft-11-november-2010">Editor's Draft 11 November 2010</h2>
 
  <dl>
   <dt>This Version:
@@ -79,7 +79,7 @@ publications and the latest revision of this technical report can be found in
 the <a href="http://www.w3.org/TR/">W3C technical reports index</a> at
 http://www.w3.org/TR/.</em>
 
-<p>This is the 17 October 2010 Editor's Draft of Web DOM Core. Please send
+<p>This is the 11 November 2010 Editor's Draft of Web DOM Core. Please send
 comments to
 <a href="mailto:public-webapps@w3.org?subject=%5BDOMCore%5D%20">public-webapps@w3.org</a>
 (<a href="http://lists.w3.org/Archives/Public/public-webapps/">archived</a>)
@@ -360,6 +360,25 @@ of any string of one or more characters, none of which are <a href="#space-chara
 <p>A string containing a <a href="#set-of-space-separated-tokens">set of space-separated tokens</a>
 may have leading or trailing <a href="#space-character" title="space character">space
 characters</a>.</p>
+
+<p>An <dfn id="unordered-set-of-unique-space-separated-tokens">unordered set of unique space-separated tokens</dfn> is a
+<a href="#set-of-space-separated-tokens">set of space-separated tokens</a> where none of the tokens
+are duplicated.</p>
+
+<p>An <dfn id="ordered-set-of-unique-space-separated-tokens">ordered set of unique space-separated tokens</dfn> is a
+<a href="#set-of-space-separated-tokens">set of space-separated tokens</a> where none of the tokens
+are duplicated but where the order of the tokens is meaningful.</p>
+
+<p><a href="#set-of-space-separated-tokens" title="set of space-separated tokens">Sets of
+space-separated tokens</a> sometimes have a defined set of
+allowed values. When a set of allowed values is defined, the tokens
+must all be from that list of allowed values; other values are
+non-conforming. If no such set of allowed values is provided, then
+all values are conforming.</p>
+
+<p class="note">How tokens in a <a href="#set-of-space-separated-tokens">set of space-separated
+tokens</a> are to be compared (e.g. case-sensitively or not) is
+defined on a per-set basis.</p>
 
 <div class="impl">
 

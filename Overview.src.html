@@ -2479,9 +2479,46 @@ exceptions these methods might have raised.</p>
   <span>Text</span> <span title=dom-Text-replaceWholeText>replaceWholeText</span>(DOMString <var title>data</var>);
 };</pre>
 
-<p class=XXX><dfn title=dom-Text-splitText>splitText</dfn>
+<p>The <dfn title=dom-Text-splitText><code>splitText(<var title>offset</var>)</dfn>
+method must run the following steps:
 
-<hr>
+<ol>
+  <li>If <var title>offset</var> is greater than the <span>context node</span>'s
+  <code title=dom-CharacterData-length>length</code>, raise an
+  <code title=dom-DOMException-INDEX_SIZE_ERR>INDEX_SIZE_ERR</code> exception
+  and abort these steps.
+
+  <li>Let <var title>length</var> be the <span>context node</span>'s
+  <span title><code title=dom-CharacterData-length>length</code> &minus;
+  <var title>offset</var></span>.
+
+  <li>Call the <span>context node</span>'s
+  <code title=dom-CharacterData-substringData>substringData</code> method with
+  <var title>offset</var> and <var title>length</var> as its arguments.
+  If this raised an exception, abort these steps. Otherwise, let
+  <var>new data</var> be the value returned.
+
+  <li>Call the <span>context node</span>'s
+  <code title=dom-CharacterData-deleteData>deleteData</code> method with
+  <var title>offset</var> and <var title>length</var> as its arguments.
+  If this raised an exception, abort these steps.
+
+  <li>Let <var title>new node</var> be a new <code>Text</code> object, with the
+  same <code title=dom-Node-ownerDocument>ownerDocument</code> as the
+  <span>context node</code>. Set <var title>new node</var>'s
+  <code title=dom-CharacterData-data>data</code> to <var title>new string</var>.
+
+  <li>Let <var title>parent</var> be the <span>context node</span>'s
+  <code title=dom-Node-parentNode>parentNode</code>. If <var title>parent</var>
+  is null, return <var title>new node</var> and abort these steps.
+
+  <li>Call <var title>parent</var>'s
+  <code title=dom-Node-insertBefore>insertBefore</code> method with
+  <var title>new node</var> and the <span>context node</span>'s
+  <code title=dom-Node-nextSibling>nextSibling</code> as its argument.
+
+  <li>Return <var title>new node</var>.
+</ol>
 
 <p>The <dfn>contiguous <code>Text</code> nodes</dfn> of a node are the node
 itself, the previous sibling <code>Text</code> node (if any) and its

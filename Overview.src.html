@@ -48,7 +48,7 @@
   <dd class=publish><a href="http://www.w3.org/TR/[YEAR]/WD-domcore-[CDATE]/">http://www.w3.org/TR/[YEAR]/WD-domcore-[CDATE]/</a>
 
   <dt>Latest Version:
-  <dd><a href="http://www.w3.org/TR/domcore/">http://www.w3.org/TR/domcore/</a></dd>
+  <dd><a href="http://www.w3.org/TR/domcore/">http://www.w3.org/TR/domcore/</a>
 
   <dt class=publish>Latest Editor's Draft:
   <dd class=publish><a href="http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html">http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html</a>
@@ -120,16 +120,16 @@ document as other than work in progress.
 <h2 class=no-num>Goals</h2>
 
 <ul>
- <li>Align DOM Core with needs of ECMAScript where possible.</li>
- <li>Align DOM Core with existing implementations.</li>
- <li>Simplify DOM Core as much as possible.</li>
- <li>Import bits of HTML5 that ought to be in DOM Core.</li>
- <li>Prevent a dependency on HTML5.</li>
+ <li>Align DOM Core with needs of ECMAScript where possible.
+ <li>Align DOM Core with existing implementations.
+ <li>Simplify DOM Core as much as possible.
+ <li>Import bits of HTML5 that ought to be in DOM Core.
+ <li>Prevent a dependency on HTML5.
 </ul>
 
-<p>Obsoleting DOM Level 3 Core is not a goal. It is a fine specification for Java servers. Web DOM Core presents an alternative.</p>
+<p>Obsoleting DOM Level 3 Core is not a goal. It is a fine specification for Java servers. Web DOM Core presents an alternative.
 
-<p>New features might be added, once everything else is sort of stable.</p>
+<p>New features might be added, once everything else is sort of stable.
 
 <!--
  Ideas:
@@ -141,9 +141,9 @@ document as other than work in progress.
 <h2 class=no-num>Issues</h2>
 
 <ul class=XXX>
- <li>Node.baseURI</li>
- <li>Node.compareDocumentPosition</li>
- <li>Document.documentURI</li>
+ <li>Node.baseURI
+ <li>Node.compareDocumentPosition
+ <li>Document.documentURI
  <li>Move DOMStringMap here?
  <li>Move Document.charset / Document.characterSet / Document.defaultCharset here?
 </ul>
@@ -161,7 +161,7 @@ ancestor element node of whatever node is being discussed, or the
 node itself if it has no ancestors. When the node is a part of the
 document, then the node's <span>root element</span> is indeed the
 document's root element; however, if the node is not currently part
-of the document tree, the root element will be an orphaned node.</p>
+of the document tree, the root element will be an orphaned node.
 
 <p>When an element's <span>root element</span> is the root element
 of a <code>Document</code>, it is said to be <dfn>in a
@@ -175,37 +175,37 @@ node's <span>root element</span>. When a node is <span>in a
 <p>The <dfn title="space character">space characters</dfn>, for the
 purposes of this specification, are U+0020 SPACE, U+0009 CHARACTER
 TABULATION (tab), U+000A LINE FEED (LF), U+000C FORM FEED (FF), and
-U+000D CARRIAGE RETURN (CR).</p>
+U+000D CARRIAGE RETURN (CR).
 
 
 <h3>Conformance requirements</h3>
 <p>All diagrams, examples, and notes in this specification are
 non-normative, as are all sections explicitly marked non-normative.
-Everything else in this specification is normative.</p>
+Everything else in this specification is normative.
 
 <p>The key words "MUST", "MUST NOT", "REQUIRED", <!--"SHALL", "SHALL
 NOT",--> "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and
 "OPTIONAL" in the normative parts of this document are to be
 interpreted as described in RFC2119. For readability, these words do
 not appear in all uppercase letters in this specification. <span
-data-anolis-ref>RFC2119</span></p>
+data-anolis-ref>RFC2119</span>
 
 <p>Requirements phrased in the imperative as part of algorithms
 (such as "strip any leading space characters" or "return false and
 terminate these steps") are to be interpreted with the meaning of the
 key word ("must", "should", "may", etc) used in introducing the
-algorithm.</p>
+algorithm.
 
 <p>Conformance requirements phrased as algorithms or specific steps
 may be implemented in any manner, so long as the end result is
 equivalent. (In particular, the algorithms defined in this
 specification are intended to be easy to follow, and not intended to
-be performant.)</p>
+be performant.)
 
 <p id="hardwareLimitations">User agents may impose
 implementation-specific limits on otherwise unconstrained inputs,
 e.g. to prevent denial of service attacks, to guard against running
-out of memory, or to work around platform-specific limitations.</p>
+out of memory, or to work around platform-specific limitations.
 
 <p>When a method or an attribute is said to call another method or attribute, the user agent must invoke its internal API for that attribute or method so that e.g. the author can't change the behavior by overriding attributes or methods with custom properties or functions in ECMAScript.
 
@@ -241,13 +241,13 @@ IDL</cite>, <cite>XML</cite> and <cite>Namespaces in XML</cite>.
 strongly discouraged. Authors must not use such extensions, as
 doing so reduces interoperability and fragments the user base,
 allowing only users of specific user agents to access the content in
-question.</p>
+question.
 
 <p>If vendor-specific extensions are needed, the members should be
 prefixed by vendor-specific strings to prevent clashes with future
 versions of this specification. Extensions must be defined so that
 the use of extensions neither contradicts nor causes the
-non-conformance of functionality defined in the specification.</p>
+non-conformance of functionality defined in the specification.
 <!-- thanks to QA Framework -->
 
 <p>When vendor-neutral extensions to this specification are needed,
@@ -258,7 +258,7 @@ specification to their activities decides that they will recognise
 the requirements of such an extension specification, it becomes an
 <dfn title="other applicable specifications">applicable
 specification</dfn> for the purposes of conformance requirements in
-this specification.</p>
+this specification.
 <!-- http://www.w3.org/mid/17E341CD-E790-422C-9F9A-69347EE01CEB@iki.fi -->
 
 
@@ -276,30 +276,28 @@ this specification.</p>
 having an <var title>input</var> variable that holds the string
 being parsed, and having a <var title>position</var> variable
 pointing at the next character to parse in <var
-title="">input</var>.</p>
+title="">input</var>.
 
 <p>For parsers based on this pattern, a step that requires the user
 agent to <dfn>collect a sequence of characters</dfn> means that the
 following algorithm must be run, with <var title>characters</var>
-being the set of characters that can be collected:</p>
+being the set of characters that can be collected:
 
 <ol>
-
  <li><p>Let <var title>input</var> and <var
  title="">position</var> be the same variables as those of the same
- name in the algorithm that invoked these steps.</p></li>
+ name in the algorithm that invoked these steps.
 
- <li><p>Let <var title>result</var> be the empty string.</p></li>
+ <li><p>Let <var title>result</var> be the empty string.
 
  <li><p>While <var title>position</var> does not point past the
  end of <var title>input</var> and the character at <var
  title="">position</var> is one of the <var
  title="">characters</var>, append that character to the end of <var
  title="">result</var> and advance <var title>position</var> to
- the next character in <var title>input</var>.</p></li>
+ the next character in <var title>input</var>.
 
- <li><p>Return <var title>result</var>.</p></li>
-
+ <li><p>Return <var title>result</var>.
 </ol>
 
 <p>The step <dfn>skip whitespace</dfn> means that the user agent
@@ -313,76 +311,69 @@ characters are not used.
 zero or more words (known as tokens) separated by one or more <span
 title="space character">space characters</span>, where words consist
 of any string of one or more characters, none of which are <span
-title="space character">space characters</span>.</p>
+title="space character">space characters</span>.
 
 <p>A string containing a <span>set of space-separated tokens</span>
 may have leading or trailing <span title="space character">space
-characters</span>.</p>
+characters</span>.
 
 <p>An <dfn>unordered set of unique space-separated tokens</dfn> is a
 <span>set of space-separated tokens</span> where none of the tokens
-are duplicated.</p>
+are duplicated.
 
 <p>An <dfn>ordered set of unique space-separated tokens</dfn> is a
 <span>set of space-separated tokens</span> where none of the tokens
-are duplicated but where the order of the tokens is meaningful.</p>
+are duplicated but where the order of the tokens is meaningful.
 
 <p><span title="set of space-separated tokens">Sets of
 space-separated tokens</span> sometimes have a defined set of
 allowed values. When a set of allowed values is defined, the tokens
 must all be from that list of allowed values; other values are
 non-conforming. If no such set of allowed values is provided, then
-all values are conforming.</p>
+all values are conforming.
 
 <p class="note">How tokens in a <span>set of space-separated
 tokens</span> are to be compared (e.g. case-sensitively or not) is
-defined on a per-set basis.</p>
+defined on a per-set basis.
 
 <div class="impl">
 
 <p>When a user agent has to <dfn>split a string on spaces</dfn>, it
-must use the following algorithm:</p>
+must use the following algorithm:
 
 <ol>
-
  <li><p>Let <var title>input</var> be the string being
- parsed.</p></li>
+ parsed.
 
  <li><p>Let <var title>position</var> be a pointer into <var
  title="">input</var>, initially pointing at the start of the
- string.</p></li>
+ string.
 
  <li><p>Let <var title>tokens</var> be a list of tokens,
- initially empty.</p></li>
+ initially empty.
 
- <li><p><span>Skip whitespace</span></p></li>
+ <li><p><span>Skip whitespace</span>.
 
  <li><p>While <var title>position</var> is not past the end of
- <var title>input</var>:</p>
+ <var title>input</var>:
 
   <ol>
-
    <li><p><span>Collect a sequence of characters</span> that are not
-   <span title="space character">space characters</span>.</p></li>
+   <span title="space character">space characters</span>.
 
    <li><p>Add the string collected in the previous step to <var
-   title="">tokens</var>.</p></li>
+   title="">tokens</var>.
 
-   <li><p><span>Skip whitespace</span></p></li>
-
+   <li><p><span>Skip whitespace</span>.
   </ol>
 
- </li>
-
- <li><p>Return <var title>tokens</var>.</p></li>
-
+ <li><p>Return <var title>tokens</var>.
 </ol>
 
 <p>When a user agent has to <dfn>remove a token from a string</dfn>,
-it must use the following algorithm:</p>
+it must use the following algorithm:
 
 <ol>
-
  <li><p>Let <var title>input</var> be the string being modified.
 
  <li><p>Let <var title>token</var> be the token being removed. It will not
@@ -432,13 +423,13 @@ it must use the following algorithm:</p>
  <li><p>Otherwise, append <var title>s</var> to the end of <var
  title>output</var>.
 
- <li><p>Return to the step labeled <i title>loop</i>.</p></li>
+ <li><p>Return to the step labeled <i title>loop</i>.
 </ol>
 
 <p class="note">This causes any occurrences of the token to be
 removed from the string, and any spaces that were surrounding the
 token to be collapsed to a single space, except at the start and end
-of the string, where such spaces are removed.</p>
+of the string, where such spaces are removed.
 
 </div>
 
@@ -501,13 +492,13 @@ steps must be run:
  <li>
   <p>Let <var title>copy</var> be a new <code>Node</code> that implements the same interfaces as <var title>node</var>, with <code title=dom-Node-ownerDocument>ownerDocument</code> set to
   <var title>new ownerDocument</var>. Also copy the following, depending on the
-  <var title>node</var>:</p>
+  <var title>node</var>:
   <dl class=switch>
-   <dt><code>Element</code></dt>
+   <dt><code>Element</code>
    <dd><p>Its <span title=concept-element-namespace>namespace</span>,
    <span title=concept-element-namespace-prefix>namespace prefix</span>,
    <span title=concept-element-local-name>local name</span>, and its
-   associated collection of <code>Attr</code> objects.</p></dd>
+   associated collection of <code>Attr</code> objects.
 
    <!--AttrExodus
    <dt><code>Attr</code>
@@ -639,40 +630,40 @@ following:
 </ol>
 
 <p>The <dfn title=dom-DOMException-name><code>name</code></dfn> exception
-field must return the name of the exception constant as a string.</p>
+field must return the name of the exception constant as a string.
 
 
 
 <h2>Nodes Model</h2>
 <p>The DOM represents a tree of <code>Node</code> objects. The following
 structure is imposed on this tree, represented as relationship between the
-node and its child nodes:</p>
+node and its child nodes:
 
 <dl>
- <dt><code>Document</code></dt>
+ <dt><code>Document</code>
  <dd>
-  <p>In <span>tree order</span>:</p>
+  <p>In <span>tree order</span>:
   <ol>
    <li><p>Zero or more nodes each of which is either
-   <code>ProcessingInstruction</code> or <code>Comment</code>.</p></li>
-   <li><p>Optionally one <code>DocumentType</code> node.</p></li>
+   <code>ProcessingInstruction</code> or <code>Comment</code>.
+   <li><p>Optionally one <code>DocumentType</code> node.
    <li><p>Zero or more nodes each of which is either
-   <code>ProcessingInstruction</code> or <code>Comment</code>.</p></li>
-   <li><p>Optionally one <code>Element</code> node.</p></li>
+   <code>ProcessingInstruction</code> or <code>Comment</code>.
+   <li><p>Optionally one <code>Element</code> node.
    <li><p>Zero or more nodes each of which is either
-   <code>ProcessingInstruction</code> or <code>Comment</code>.</p></li>
+   <code>ProcessingInstruction</code> or <code>Comment</code>.
   </ol>
- </dd>
+
  <dt><code>DocumentFragment</code>
- <dt><code>Element</code></dt>
+ <dt><code>Element</code>
  <dd><p>Zero or more nodes each of which is one of <code>Element</code>,
  <code>ProcessingInstruction</code>, <code>Comment</code>, or
- <code>Text</code>.</p></dd>
- <dt><code>DocumentType</code></dt>
- <dt><code>ProcessingInstruction</code></dt>
- <dt><code>Comment</code></dt>
- <dt><code>Text</code></dt>
- <dd><p>No children.</p></dd>
+ <code>Text</code>.
+ <dt><code>DocumentType</code>
+ <dt><code>ProcessingInstruction</code>
+ <dt><code>Comment</code>
+ <dt><code>Text</code>
+ <dd><p>No children.
 </dl>
 <!--AttrExodus -->
 
@@ -746,7 +737,7 @@ node and its child nodes:</p>
 };</pre>
 
 <p>The <dfn title=dom-Node-nodeType><code>nodeType</code></dfn> attribute
-must return the type of the node, which must be one of the following:</p>
+must return the type of the node, which must be one of the following:
 
 <ol>
  <li value=1><dfn title=dom-Node-ELEMENT_NODE><code>ELEMENT_NODE</code></dfn>
@@ -775,7 +766,7 @@ must return the type of the node, which must be one of the following:</p>
 </ol>
 
 <p class=note>The constants marked historical can no longer be returned, but
-are still exposed on the interface.</p>
+are still exposed on the interface.
 
 <!-- NodeExodus
 <hr>
@@ -807,37 +798,37 @@ must return the local name that is associated with the node, if it has one,
 and null otherwise.-->
 
 <p>The <dfn title=dom-Node-nodeName><code>nodeName</code></dfn> attribute
-must return the following, depending on the <span>context node</span>:</p>
+must return the following, depending on the <span>context node</span>:
 
 <dl class=switch>
- <dt><code>Element</code></dt>
+ <dt><code>Element</code>
  <dd><p>The <span>context node</span>'s
  <code title=dom-Element-tagName>tagName</code> attribute.
 
  <!--AttrExodus
- <dt><code>Attr</code></dt>
+ <dt><code>Attr</code>
  <dd><p>The <span>context node</span>'s
  <code title=dom-Attr-name>name</code> attribute.
  -->
 
- <dt><code>Text</code></dt>
+ <dt><code>Text</code>
  <dd><p>"<code title>#text</code>".
 
- <dt><code>ProcessingInstruction</code></dt>
+ <dt><code>ProcessingInstruction</code>
  <dd><p>The <span>context node</span>'s
  <code title=dom-ProcessingInstruction-target>target</code> attribute.
 
- <dt><code>Comment</code></dt>
+ <dt><code>Comment</code>
  <dd><p>"<code title>#comment</code>".
 
- <dt><code>Document</code></dt>
+ <dt><code>Document</code>
  <dd><p>"<code title>#document</code>".
 
- <dt><code>DocumentType</code></dt>
+ <dt><code>DocumentType</code>
  <dd><p>The <span>context node</span>'s
  <code title=dom-DocumentType-name>name</code> attribute.
 
- <dt><code>DocumentFragment</code></dt>
+ <dt><code>DocumentFragment</code>
  <dd><p>"<code title>#document-fragment</code>".
 </dl>
 
@@ -922,7 +913,7 @@ attribute must run these steps:
 
 <p>These are the constants
 <code title=dom-Node-compareDocumentPosition>compareDocumentPosition()</code>
-returns.</p>
+returns.
 
 <ol>
  <li value=1><dfn title=dom-Node-DOCUMENT_POSITION_DISCONNECTED><code>DOCUMENT_POSITION_DISCONNECTED</code></dfn>
@@ -946,60 +937,60 @@ title>other</var>)</code></dfn> method must <span class=XXX title>...</span>
 <hr>
 
 <p>The <dfn title=dom-Node-nodeValue><code>nodeValue</code></dfn> attribute
-must return the following, depending on the <span>context node</span>:</p>
+must return the following, depending on the <span>context node</span>:
 
 <dl class=switch>
- <!--AttrExodus <dt><code>Attr</code></dt> -->
- <dt><code>Text</code></dt>
- <dt><code>Comment</code></dt>
- <dt><code>ProcessingInstruction</code></dt>
+ <!--AttrExodus <dt><code>Attr</code> -->
+ <dt><code>Text</code>
+ <dt><code>Comment</code>
+ <dt><code>ProcessingInstruction</code>
  <dd><p>The <span>context node</span>'s
  <code title=dom-Node-textContent>textContent</code> attribute.
 
- <dt>Any other node</dt>
+ <dt>Any other node
  <dd><p>Null.
 </dl>
 
 <p>Setting the <code title=dom-Node-nodeValue>nodeValue</code> attribute
-must do as described below, depending on the <span>context node</span>:</p>
+must do as described below, depending on the <span>context node</span>:
 
 <dl class=switch>
- <!--AttrExodus <dt><code>Attr</code></dt> -->
- <dt><code>Text</code></dt>
- <dt><code>Comment</code></dt>
- <dt><code>ProcessingInstruction</code></dt>
+ <!--AttrExodus <dt><code>Attr</code> -->
+ <dt><code>Text</code>
+ <dt><code>Comment</code>
+ <dt><code>ProcessingInstruction</code>
  <dd><p>Set the <span>context node</span>'s
  <code title=dom-Node-textContent>textContent</code> attribute to the given
- value.</p></dd>
+ value.
 
- <dt>Any other node</dt>
- <dd><p>Do nothing.</p></dd>
+ <dt>Any other node
+ <dd><p>Do nothing.
 </dl>
 
 <p>The <dfn title=dom-Node-textContent><code>textContent</code></dfn>
 attribute must return the following, depending on the
-<span>context node</span>:</p>
+<span>context node</span>:
 
 <dl class=switch>
- <dt><code>DocumentFragment</code></dt>
- <dt><code>Element</code></dt>
- <!--AttrExodus <dt><code>Attr</code></dt> -->
+ <dt><code>DocumentFragment</code>
+ <dt><code>Element</code>
+ <!--AttrExodus <dt><code>Attr</code> -->
  <dd><p>The concatenation of the
  <code title=dom-CharacterData-data>data</code> of all the descendant
  <code>Text</code> nodes of the <span>context node</span>, in
- <span>tree order</span>.</p></dd>
+ <span>tree order</span>.
 
- <dt><code>Text</code></dt>
- <dt><code>Comment</code></dt>
+ <dt><code>Text</code>
+ <dt><code>Comment</code>
  <dd><p>The <span>context node</span>'s
- <code title=dom-CharacterData-data>data</code> attribute.</p></dd>
+ <code title=dom-CharacterData-data>data</code> attribute.
 
- <dt><code>ProcessingInstruction</code></dt>
+ <dt><code>ProcessingInstruction</code>
  <dd><p>The <span>context node</span>'s
- <code title=dom-ProcessingInstruction-data>data</code> attribute.</p></dd>
+ <code title=dom-ProcessingInstruction-data>data</code> attribute.
 
- <dt>Any other node</dt>
- <dd>Null.</dd>
+ <dt>Any other node
+ <dd>Null.
 </dl>
 
 <p>Setting the <code title=dom-Node-textContent>textContent</code>
@@ -1007,9 +998,9 @@ attribute must do as described below, depending on the
 <span>context node</span>:
 
 <dl class=switch>
- <dt><code>DocumentFragment</code></dt>
- <dt><code>Element</code></dt>
- <!--AttrExodus <dt><code>Attr</code></dt> -->
+ <dt><code>DocumentFragment</code>
+ <dt><code>Element</code>
+ <!--AttrExodus <dt><code>Attr</code> -->
  <dd>
   <ol>
    <li><p>Remove all the descendent nodes of the <span>context node</span>.
@@ -1018,21 +1009,20 @@ attribute must do as described below, depending on the
    <code>Text</code> node to the <span>context node</span> whose
    <code title=dom-CharacterData-data>data</code> is set to <var title>data</var>.
   </ol>
- </dd>
 
- <dt><code>Text</code></dt>
- <dt><code>Comment</code></dt>
+ <dt><code>Text</code>
+ <dt><code>Comment</code>
  <dd><p>Set <span>context node</span>'s
  <code title=dom-CharacterData-data>data</code> attribute to the given
- value.</p></dd>
+ value.
 
- <dt><code>ProcessingInstruction</code></dt>
+ <dt><code>ProcessingInstruction</code>
  <dd><p>Set the <span>context node</span>'s
  <code title=dom-ProcessingInstruction-data>data</code> attribute to the
- given value.</p></dd>
+ given value.
 
- <dt>Any other node</dt>
- <dd>Do nothing.</dd>
+ <dt>Any other node
+ <dd>Do nothing.
 </dl>
 
 <p>The
@@ -1222,18 +1212,18 @@ false otherwise:
  <li><p><var title>node</var>'s <code title=dom-Node-nodeName>nodeName</code> is the same as the <span>context node</span>'s <code title=dom-Node-nodeName>nodeName</code>.
  <li><p><var title>node</var>'s <code title=dom-Node-nodeValue>nodeValue</code> is the same as the <span>context node</span>'s <code title=dom-Node-nodeValue>nodeValue</code>.
  <li>
-  <p>The following are also equal, depending on <var title>node</var>:</p>
+  <p>The following are also equal, depending on <var title>node</var>:
   <dl class=switch>
-   <dt><code>DocumentType</code></dt>
+   <dt><code>DocumentType</code>
    <dd><p>Its <span title=concept-doctype-name>name</span>,
    <span title=concept-doctype-publicid>public ID</span>, and
    <span title=concept-doctype-systemid>system ID</span>.
 
-   <dt><code>Element</code></dt>
+   <dt><code>Element</code>
    <dd><p>Its <span title=concept-element-namespace>namespace</span>,
    <span title=concept-element-namespace-prefix>namespace prefix</span>,
    <span title=concept-element-local-name>local name</span>, and its
-   associated collection of <code>Attr</code> objects.</p></dd>
+   associated collection of <code>Attr</code> objects.
 
    <!--AttrExodus
    <dt><code>Attr</code>
@@ -1259,7 +1249,7 @@ false otherwise:
 <hr>
 
 <p>To <dfn>locate a namespace prefix</dfn> for an <var title>element</var> using
-<var title>namespace</var> run these steps:</p>
+<var title>namespace</var> run these steps:
 
 <ol>
  <li><p>If <var title>element</var>'s
@@ -1268,26 +1258,26 @@ false otherwise:
  <span title=concept-element-namespace-prefix>namespace prefix</span> is not
  null return its
  <span title=concept-element-namespace-prefix>namespace prefix</span> and
- terminate these steps.</p></li>
+ terminate these steps.
 
  <li><p>If there is an attribute associated with the <var title>element</var>
  whose namespace prefix is "<code title>xmlns</code>" and value is
  <var title>namespace</var> then return its local name and terminate these
- steps.</p></li>
+ steps.
  <!-- XXX xref attribute terminology -->
 
  <li><p>Return the result of running <span>locate a namespace prefix</span>
  on its <code title=dom-Node-parentNode>parentNode</code> using
  <var title>namespace</var>, if <code title=dom-Node-parentNode>parentNode</code>
- is an <code>Element</code> node, or null otherwise.</p></li>
+ is an <code>Element</code> node, or null otherwise.
  <!-- XXX parentElement -->
 </ol>
 
 <p>To <dfn>locate a namespace</dfn> for a <var title>node</var> using
-<var title>prefix</var> depends on the <var title>node</var>:</p>
+<var title>prefix</var> depends on the <var title>node</var>:
 
 <dl class=switch>
- <dt><code>Element</code></dt>
+ <dt><code>Element</code>
  <dd>
   <ol>
    <li><p>If its <span title=concept-element-namespace>namespace</span> is
@@ -1295,45 +1285,45 @@ false otherwise:
    <span title=concept-element-namespace-prefix>namespace prefix</span> is
    <var title>prefix</var> return
    <span title=concept-element-namespace>namespace</span> and terminate
-   these steps.</p></li>
+   these steps.
 
    <li>
     <p>If there is an attribute associated with the node whose
     namespace prefix is "<code title>xmlns</code>" and local name is
     <var title>prefix</var> or whose namespace prefix is null and local name is
-    "<code title>xmlns</code>":</p>
+    "<code title>xmlns</code>":
 
     <ol>
      <li><p>Let <var title>value</var> be its value if it is not the empty string,
-     or null otherwise.</p></li>
+     or null otherwise.
 
-     <li><p>Return <var title>value</var> and terminate these steps.</p></li>
+     <li><p>Return <var title>value</var> and terminate these steps.
     </ol>
-   </li>
+
    <!-- XXX xref attribute terminology -->
 
    <li><p>Return the result of running <span>locate a namespace</span> on
    its <code title=dom-Node-parentNode>parentNode</code> using
    <var title>prefix</var>, if <code title=dom-Node-parentNode>parentNode</code>
-   is an <code>Element</code> node, or null otherwise.</p></li>
+   is an <code>Element</code> node, or null otherwise.
    <!-- XXX parentElement -->
   </ol>
- </dd>
+
  <!--XXX <code>Attr</code> -->
- <dt><code>Document</code></dt>
+ <dt><code>Document</code>
  <dd><p>Return the result of running <span>locate a namespace</span> on its
  <code title=dom-Document-documentElement>documentElement</code> using
  <var title>prefix</var>, if
  <code title=dom-Document-documentElement>documentElement</code> is
- not null, or null otherwise.</p></dd>
- <dt><code>DocumentType</code></dt>
- <dt><code>DocumentFragment</code></dt>
- <dd><p>Return null.</p></dd>
- <dt>Any other node</dt>
+ not null, or null otherwise.
+ <dt><code>DocumentType</code>
+ <dt><code>DocumentFragment</code>
+ <dd><p>Return null.
+ <dt>Any other node
  <dd><p>Return the result of running <span>locate a namespace</span> on
  its <code title=dom-Node-parentNode>parentNode</code> using
  <var title>prefix</var>, if <code title=dom-Node-parentNode>parentNode</code> is
- an <code>Element</code> node, or null otherwise.</p></dd>
+ an <code>Element</code> node, or null otherwise.
  <!-- XXX parentElement -->
 </dl>
 
@@ -1342,52 +1332,55 @@ false otherwise:
 method must run these steps:
 
 <ol>
- <li><p>If <var title>namespace</var> is the empty string return null.</p>
+ <li><p>If <var title>namespace</var> is the empty string return null.
 
  <li>
-  <p>Otherwise it depends on the <span>context node</span>:</p>
+  <p>Otherwise it depends on the <span>context node</span>:
 
   <dl class=switch>
-   <dt><code>Element</code></dt>
-   <dd><p>Return the result of running
-   <span>locate a namespace prefix</span> for the node using
-   <var title>namespace</var>.</p></dd>
+   <dt><code>Element</code>
+   <dd><p>Return the result of
+   <span title="locate a namespace prefix">locating a namespace prefix</span>
+   for the node using <var title>namespace</var>.
+
    <!--AttrExodus <code>Attr</code> -->
-   <dt><code>Document</code></dt>
-   <dd><p>Return the result of <span title="locate a namespace prefix">locating
-   a namespace prefix</span> for
-   its <code title=dom-Document-documentElement>documentElement</code>, if
-   that is not null, or null otherwise.</p></dd>
-   <dt><code>DocumentType</code></dt>
-   <dt><code>DocumentFragment</code></dt>
-   <dd><p>Return null.</p></dd>
-   <dt>Any other node</dt>
-   <dd><p>Return the result of <span title="locate a namespace prefix">locating
-   a namespace prefix</span> for
-   its <code title=dom-Node-parentNode>parentNode</code>, if that is an
-   <code>Element</code> node, or null otherwise.</p></dd>
+   <dt><code>Document</code>
+   <dd><p>Return the result of
+   <span title="locate a namespace prefix">locating a namespace prefix</span>
+   for its <code title=dom-Document-documentElement>documentElement</code>, if
+   that is not null, or null otherwise.
+
+   <dt><code>DocumentType</code>
+   <dt><code>DocumentFragment</code>
+   <dd><p>Return null.
+
+   <dt>Any other node
+   <dd><p>Return the result of
+   <span title="locate a namespace prefix">locating a namespace prefix</span>
+   for its <code title=dom-Node-parentNode>parentNode</code>, if that is an
+   <code>Element</code> node, or null otherwise.
   </dl>
 </ol>
 
 <p>The
 <dfn title=dom-Node-lookupNamespaceURI><code>lookupNamespaceURI(<var title>prefix</var>)</code></dfn>
 method must return the result of running <span>locate a namespace</span> for
-the <span>context node</span> using <var title>prefix</var>.</p>
+the <span>context node</span> using <var title>prefix</var>.
 
 <p>The
 <dfn title=dom-Node-isDefaultNamespace><code>isDefaultNamespace(<var title>namespace</var>)</code></dfn>
-method must run these steps:</p>
+method must run these steps:
 
 <ol>
  <li><p>Let <var title>defaultNamespace</var> be the result of invoking
  <code title=dom-Node-lookupNamespaceURI>lookupNamespaceURI</code> with null
- as argument on the <span>context node</span>.</p></li>
+ as argument on the <span>context node</span>.
 
  <li><p>If <var title>defaultNamespace</var> is null let it be the empty
- string.</p></li>
+ string.
 
  <li><p>Return true if <var title>defaultNamespace</var> is <var title>namespace</var>,
- or false otherwise.</p></li>
+ or false otherwise.
 </ol>
 
 
@@ -1533,7 +1526,7 @@ title>localName</var>)</code></dfn> method must run these steps:
  nodes whose <span title=concept-element-local-name>local name</span> is
  <var title>localName</var>.
 </ol>
-<p>When invoked with the same argument the same <code>NodeList</code> object may be returned as returned by an earlier call.</p>
+<p>When invoked with the same argument the same <code>NodeList</code> object may be returned as returned by an earlier call.
 
 <p class=note>Thus, in an <span>HTML document</span>,
 <code title>document.getElementsByTagName("FOO")</code> will match
@@ -1565,7 +1558,7 @@ that are in the <span>HTML namespace</span>.
  <span title=concept-element-local-name>local name</span> is
  <var title>localName</var>.
 </ol>
-<p>When invoked with the same argument the same <code>NodeList</code> object may be returned as returned by an earlier call.</p>
+<p>When invoked with the same argument the same <code>NodeList</code> object may be returned as returned by an earlier call.
 
 
 
@@ -1586,10 +1579,10 @@ title=concept-quirks-mode>quirks mode</span>, then the comparisons for the <span
 title=concept-class>classes</span> must be done in an <span>ASCII
 case-insensitive</span> manner, otherwise, the comparisons must be done in a
 <span>case-sensitive</span> manner.
-<p>When invoked with the same argument the same <code>NodeList</code> object may be returned as returned by an earlier call.</p>
+<p>When invoked with the same argument the same <code>NodeList</code> object may be returned as returned by an earlier call.
 
 <div class="example">
- <p>Given the following XHTML fragment:</p>
+ <p>Given the following XHTML fragment:
 
  <pre>&lt;div id="example"&gt;
   &lt;p id="p1" class="aaa bbb"/&gt;
@@ -1600,18 +1593,18 @@ case-insensitive</span> manner, otherwise, the comparisons must be done in a
  <p>A call to <code
  title=dom-Element-getElementsByClassName>document.getElementById('example').getElementsByClassName('aaa')</code>
  would return a <code>NodeList</code> with the two paragraphs <code
- title="">p1</code> and <code title="">p2</code> in it.</p>
+ title="">p1</code> and <code title="">p2</code> in it.
 
  <p>A call to <code
  title=dom-Element-getElementsByClassName>getElementsByClassName('ccc&nbsp;bbb')</code> would only
  return one node, however, namely <code title="">p3</code>. A call
  to <code
  title=dom-Element-getElementsByClassName>document.getElementById('example').getElementsByClassName('bbb&nbsp;&nbsp;ccc&nbsp;')</code>
- would return the same thing.</p>
+ would return the same thing.
 
  <p>A call to <code
  title=dom-Element-getElementsByClassName>getElementsByClassName('aaa,bbb')</code> would return no
- nodes; none of the elements above are in the "aaa,bbb" class.</p>
+ nodes; none of the elements above are in the "aaa,bbb" class.
 </div>
 
 <!-- v2:
@@ -1629,7 +1622,7 @@ is none.
 
 <hr>
 
-<p>The <dfn title=dom-Document-createElement><code>createElement(<var title>localName</var>)</code></dfn> method must run the these steps:</p>
+<p>The <dfn title=dom-Document-createElement><code>createElement(<var title>localName</var>)</code></dfn> method must run the these steps:
 
 <ol>
  <li><p>If <var title>localName</var> does not match the <code
@@ -1653,7 +1646,7 @@ is none.
 
 <p>The
 <dfn title=dom-Document-createElementNS><code>createElementNS(<var title>namespace</var>, <var title>qualifiedName</var>)</code></dfn>
-method must run these steps:</p>
+method must run these steps:
 <ol>
  <li><p>If <var title>qualifiedName</var> does not match the
  <code data-anolis-spec=xml>Name</code> production in XML, throw an
@@ -1740,11 +1733,11 @@ title>data</var>)</code></dfn> method must run these steps:
 
 <p class=note>No check is performed that the processing instruction target
 contains "xml" or the colon, or that the data contains characters that match the
-<code data-anolis-spec=xml>Char</code> production in XML.</p>
+<code data-anolis-spec=xml>Char</code> production in XML.
 
 <!--
 [createAttribute]
-<p>The <dfn title=dom-Document-createAttribute><code>createAttribute(<var title>name</var>)</code></dfn> method must run these steps:</p>
+<p>The <dfn title=dom-Document-createAttribute><code>createAttribute(<var title>name</var>)</code></dfn> method must run these steps:
 <ol>
  <li><p>If <var title>name</var> does not match the <code data-anolis-spec=xml>Name</code> production in XML, throw an
  <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
@@ -1969,7 +1962,7 @@ steps:
  namespace</span>, and append it to the <code title>html</code> element created
  in the earlier step.
 
- <li><p>Return <var title>doc</var>.</p></li>
+ <li><p>Return <var title>doc</var>.
 </ol>
 
 </div>
@@ -2058,9 +2051,9 @@ otherwise [createAttribute]- ->.
   void setIdAttributeNode(Attr idAttr, boolean isId);-->
 };</pre>
 
-<p><code>Element</code> nodes have an associated <dfn title=concept-element-namespace>namespace</dfn>, <dfn title=concept-element-namespace-prefix>namespace prefix</dfn>, <dfn title=concept-element-local-name>local name</dfn>, and <dfn title=concept-element-qualified-name>qualified name</dfn>.</p>
+<p><code>Element</code> nodes have an associated <dfn title=concept-element-namespace>namespace</dfn>, <dfn title=concept-element-namespace-prefix>namespace prefix</dfn>, <dfn title=concept-element-local-name>local name</dfn>, and <dfn title=concept-element-qualified-name>qualified name</dfn>.
 
-<p>When an <code>Element</code> node is created its <span title=concept-element-local-name>local name</span> is always given. Unless explicitly given when an <code>Element</code> node is created, its <span title=concept-element-namespace>namespace</span> and <span title=concept-element-namespace-prefix>namespace prefix</span> are null and its <span title=concept-element-qualified-name>qualified name</span> is its <span title=concept-element-namespace-prefix>namespace prefix</span>, followed by a "<code>:</code>" (U+003A), followed by its <span title=concept-element-local-name>local name</span>, if its <span title=concept-element-namespace-prefix>namespace prefix</span> is not null, or otherwise <span title=concept-element-qualified-name>qualified name</span> is just its <span title=concept-element-local-name>local name</span>.</p>
+<p>When an <code>Element</code> node is created its <span title=concept-element-local-name>local name</span> is always given. Unless explicitly given when an <code>Element</code> node is created, its <span title=concept-element-namespace>namespace</span> and <span title=concept-element-namespace-prefix>namespace prefix</span> are null and its <span title=concept-element-qualified-name>qualified name</span> is its <span title=concept-element-namespace-prefix>namespace prefix</span>, followed by a "<code>:</code>" (U+003A), followed by its <span title=concept-element-local-name>local name</span>, if its <span title=concept-element-namespace-prefix>namespace prefix</span> is not null, or otherwise <span title=concept-element-qualified-name>qualified name</span> is just its <span title=concept-element-local-name>local name</span>.
 
 <p><code>Element</code> nodes also have an associated collection of
 <code>Attr</code> objects, often called attributes.
@@ -2099,7 +2092,7 @@ must return the <span>context node</span>'s
 <span>converted to uppercase</span> if the <span>context node</span> is in
 the <span>HTML namespace</span> and its
 <code title=dom-Node-ownerDocument>ownerDocument</code> is an
-<span>HTML document</span>.</p>
+<span>HTML document</span>.
 
 <hr>
 
@@ -2132,7 +2125,7 @@ method must return the <span title=concept-attr-value>value</span> of the
 <var title>namespace</var> and
 <span title=concept-attr-local-name>local name</span> is
 <var title>localName</var>, if the <code>Attr</code> is present, or null
-otherwise.</p>
+otherwise.
 
 <p>The
 <dfn title=dom-Element-setAttribute><code>setAttribute(<var title>qualifiedName</var>, <var title>value</var>)</code></dfn>
@@ -2171,7 +2164,7 @@ method must run these steps:
 
 <p>The
 <dfn title=dom-Element-setAttributeNS><code>setAttributeNS(<var title>namespace</var>, <var title>qualifiedName</var>, <var title>value</var>)</code></dfn>
-method must run these steps:</p>
+method must run these steps:
 
 <ol>
  <li><p>If <var title>qualifiedName</var> does not match the
@@ -2223,7 +2216,7 @@ method must run these steps:</p>
  <span title=concept-attr-local-name>local name</span> is
  <var title>localName</var>, to <var title>value</var>, and set its
  <span title=concept-attr-namespace-prefix>namespace prefix</span> to
- <var title>prefix</var>.</p></li>
+ <var title>prefix</var>.
 </ol>
 
 <p>The
@@ -2245,7 +2238,7 @@ method must remove the <code>Attr</code> object in the
 
 <p>The
 <dfn title=dom-Element-hasAttribute><code>hasAttribute(<var title>qualifiedName</var>)</code></dfn>
-method must run these steps:</p>
+method must run these steps:
 <ol>
  <li><p>If the <span>context node</span> is in the
  <span>HTML namespace</span> and its
@@ -2267,7 +2260,7 @@ method must return true if <span>context node</span>'s
 <code>Attr</code> whose <span title=concept-attr-namespace>namespace</span>
 is <var title>namespace</var> and
 <span title=concept-attr-local-name>local name</span> is
-<var title>localName</var>, or false otherwise.</p>
+<var title>localName</var>, or false otherwise.
 
 <!--<dfn title=dom-Element-getAttributeNode>getAttributeNode</dfn>: when the
 Element.getAttributeNode() method is invoked on an HTML element, the name
@@ -2300,7 +2293,7 @@ method would return when called on the <span>context node</span>'s
 argument, excluding any elements that are not descendants of the
 <span>context node</span> on which the method was invoked.
 <p>When invoked with the same argument the same <code>NodeList</code> object
-may be returned as returned by an earlier call.</p>
+may be returned as returned by an earlier call.
 
 
 <p>The
@@ -2314,7 +2307,7 @@ method would return when called on the <span>context node</span>'s
 passed the same arguments, excluding any elements that are not descendants
 of the <span>context node</span> on which the method was invoked.
 <p>When invoked with the same argument the same <code>NodeList</code> object
-may be returned as returned by an earlier call.</p>
+may be returned as returned by an earlier call.
 
 
 <p>The <dfn
@@ -2328,7 +2321,7 @@ method would return when called on the <span>context node</span>'s
 passed the same argument, excluding any elements that are not descendants of
 the <span>context node</span> on which the method was invoked.
 <p>When invoked with the same argument the same <code>NodeList</code> object
-may be returned as returned by an earlier call.</p>
+may be returned as returned by an earlier call.
 
 
 <h4>Interface <code>Attr</code></h4>
@@ -2340,13 +2333,13 @@ may be returned as returned by an earlier call.</p>
            attribute DOMString <span title=dom-Attr-value>value</span>;
 };</pre>
 
-<p>Just like <code>Element</code> nodes, <code>Attr</code> objects have an associated <dfn title=concept-attr-namespace>namespace</dfn>, <dfn title=concept-attr-namespace-prefix>namespace prefix</dfn>, <dfn title=concept-attr-local-name>local name</dfn>, and <dfn title=concept-attr-qualified-name>qualified name</dfn>.</p>
+<p>Just like <code>Element</code> nodes, <code>Attr</code> objects have an associated <dfn title=concept-attr-namespace>namespace</dfn>, <dfn title=concept-attr-namespace-prefix>namespace prefix</dfn>, <dfn title=concept-attr-local-name>local name</dfn>, and <dfn title=concept-attr-qualified-name>qualified name</dfn>.
 
-<p>When an <code>Attr</code> object is created its <span title=concept-attr-local-name>local name</span> is always given. Unless explicitly given when an <code>Attr</code> object is created, its <span title=concept-attr-namespace>namespace</span> and <span title=concept-attr-namespace-prefix>namespace prefix</span> are null and its <span title=concept-attr-qualified-name>qualified name</span> is its <span title=concept-attr-namespace-prefix>namespace prefix</span>, followed by a "<code>:</code>" (U+003A), followed by its <span title=concept-attr-local-name>local name</span>, if its <span title=concept-attr-namespace-prefix>namespace prefix</span> is not null, or otherwise <span title=concept-attr-qualified-name>qualified name</span> is just its <span title=concept-attr-local-name>local name</span>.</p>
+<p>When an <code>Attr</code> object is created its <span title=concept-attr-local-name>local name</span> is always given. Unless explicitly given when an <code>Attr</code> object is created, its <span title=concept-attr-namespace>namespace</span> and <span title=concept-attr-namespace-prefix>namespace prefix</span> are null and its <span title=concept-attr-qualified-name>qualified name</span> is its <span title=concept-attr-namespace-prefix>namespace prefix</span>, followed by a "<code>:</code>" (U+003A), followed by its <span title=concept-attr-local-name>local name</span>, if its <span title=concept-attr-namespace-prefix>namespace prefix</span> is not null, or otherwise <span title=concept-attr-qualified-name>qualified name</span> is just its <span title=concept-attr-local-name>local name</span>.
 
 <p><code>Attr</code> objects also have an associated
 <dfn title=concept-attr-value>value</dfn>, which is always given when an
-<code>Attr</code> object is created.</p>
+<code>Attr</code> object is created.
 
 <hr>
 
@@ -2382,7 +2375,7 @@ return the <span title=concept-attr-value>value</span>.
 
 <p><code>DocumentType</code> nodes have an associated <dfn title=concept-doctype-name>name</dfn>, <dfn title=concept-doctype-publicid>public ID</dfn>, and <dfn title=concept-doctype-systemid>system ID</dfn>.
 
-<p>When a <code>DocumentType</code> node is created <span title=concept-doctype-name>name</span> is always given. Unless explicitly given when a <code>DocumentType</code> node is created, its <span title=concept-doctype-publicid>public ID</span> and <span title=concept-doctype-systemid>system ID</span> are the empty string.</p>
+<p>When a <code>DocumentType</code> node is created <span title=concept-doctype-name>name</span> is always given. Unless explicitly given when a <code>DocumentType</code> node is created, its <span title=concept-doctype-publicid>public ID</span> and <span title=concept-doctype-systemid>system ID</span> are the empty string.
 
 <p>The <dfn title=dom-DocumentType-name><code>name</code></dfn> attribute must return the <span>context node</span>'s <span
 title=concept-doctype-name>name</span>.
@@ -2449,36 +2442,36 @@ method must run these steps:
  code unit in <var title>data</var>.
 </ol>
 
-<p>The <dfn title=dom-CharacterData-appendData><code>appendData(<var title>data</var>)</code></dfn> method must append <var title>data</var> to the <span>context node</span>'s data.</p>
+<p>The <dfn title=dom-CharacterData-appendData><code>appendData(<var title>data</var>)</code></dfn> method must append <var title>data</var> to the <span>context node</span>'s data.
 
-<p>The <dfn title=dom-CharacterData-insertData><code>insertData(<var title>offset</var>, <var title>data</var>)</code></dfn> method must run these steps:</p>
+<p>The <dfn title=dom-CharacterData-insertData><code>insertData(<var title>offset</var>, <var title>data</var>)</code></dfn> method must run these steps:
 
 <ol>
  <li><p>If <var title>offset</var> is greater than the <span>context node</span>'s
  <code title=dom-CharacterData-length>length</code>, throw an
  <code title=dom-DOMException-INDEX_SIZE_ERR>INDEX_SIZE_ERR</code> exception
- and terminate these steps.</p></li>
+ and terminate these steps.
 
  <li><p>Insert <var title>data</var> into the <span>context node</span>'s data
- after <var title>offset</var> UTF-16 code units.</p></li>
+ after <var title>offset</var> UTF-16 code units.
 </ol>
 
-<p>The <dfn title=dom-CharacterData-deleteData><code>deleteData(<var title>offset</var>, <var title>count</var>)</code></dfn> method must run these steps:</p>
+<p>The <dfn title=dom-CharacterData-deleteData><code>deleteData(<var title>offset</var>, <var title>count</var>)</code></dfn> method must run these steps:
 
 <ol>
  <li><p>If <var title>offset</var> is greater than the <span>context node</span>'s
  <code title=dom-CharacterData-length>length</code>, throw an
  <code title=dom-DOMException-INDEX_SIZE_ERR>INDEX_SIZE_ERR</code> exception
- and terminate these steps.</p></li>
+ and terminate these steps.
 
  <li><p>If <var title>offset</var>+<var title>count</var> is greater than the
  <span>context node</span>'s
  <code title=dom-CharacterData-length>length</code> let <var title>count</var> be
- <code title=dom-CharacterData-length>length</code>-<var title>offset</var>.</p></li>
+ <code title=dom-CharacterData-length>length</code>-<var title>offset</var>.
 
  <li><p>Starting from <var title>offset</var> UTF-16 code units remove
  <var title>count</var> UTF-16 code units from the <span>context node</span>'s
- data.</p></li>
+ data.
 </ol>
 
 <p>The
@@ -2545,27 +2538,27 @@ itself, the previous sibling <code>Text</code> node (if any) and its
 <span>contiguous <code>Text</code> nodes</span>, and the next sibling
 <code>Text</code> node (if any) and its
 <span>contiguous <code>Text</code> nodes</span>, avoiding any
-duplicates.</p>
+duplicates.
 
 <p>The <dfn title=dom-Text-wholeText><code>wholeText</code></dfn>
 attribute must return a concatenation of the
 <code title=dom-CharacterData-data>data</code> of the
 <span>contiguous <code>Text</code> nodes</span> of the
-<span>context node</span>, in <span>tree order</span>.</p>
+<span>context node</span>, in <span>tree order</span>.
 
 <p>The
 <dfn title=dom-Text-replaceWholeText><code>replaceWholeText(<var title>data</var>)</code></dfn>
-method must run these steps:</p>
+method must run these steps:
 
 <ol>
  <li><p>Remove the <span>contiguous <code>Text</code> nodes</span> of the
- <span>context node</span>.</p></li>
+ <span>context node</span>.
  <li><p>If <var title>data</var> is not the empty string, insert a new
  <code>Text</code> node whose
  <code title=dom-CharacterData-data>data</code> is <var title>data</var> at the
  place of the removed nodes, return the new <code>Text</code> node, and
- then terminate these steps.</p></li>
- <li><p>Return null.</p></li>
+ then terminate these steps.
+ <li><p>Return null.
 </ol>
 
 <p class=XXX>Can we remove replaceWholeText() in favor of making wholeText no longer readonly? Do we even need this wholeText business?
@@ -2659,13 +2652,13 @@ it, which return other objects for historical reasons.
   <p>Returns the item with index <var title>index</var> from the collection. The items are sorted in <span>tree order</span>.
   <p>Returns null if <var title>index</var> is out of range.
 
- <dt><var title>element</var> = <var title>collection</var> . <code title=dom-HTMLCollection-namedItem>namedItem</code>(<var title>name</var>)</dt>
- <dt><var title>collection</var>[<var title>name</var>]</dt>
- <dt><var title>collection</var>(<var title>name</var>)</dt>
+ <dt><var title>element</var> = <var title>collection</var> . <code title=dom-HTMLCollection-namedItem>namedItem</code>(<var title>name</var>)
+ <dt><var title>collection</var>[<var title>name</var>]
+ <dt><var title>collection</var>(<var title>name</var>)
  <dd>
   <p>Returns the first item with <span title="concept-id">ID</span> or name <var title>name</var>
-  from the collection.</p>
-  <p>Returns null if no element with that <span title="concept-id">ID</span> or name could be found.</p>
+  from the collection.
+  <p>Returns null if no element with that <span title="concept-id">ID</span> or name could be found.
   <p>Only <code title>a</code>, <code title>applet</code>,
   <code title>area</code>, <code title>embed</code>,
   <code title>form</code>, <code title>frame</code>,
@@ -2673,8 +2666,7 @@ it, which return other objects for historical reasons.
   <code title>img</code>, and <code title>object</code> elements in the
   <span>HTML namespace</span> can have a name for the purpose of this
   method; their name is given by the value of their
-  <code title>name</code> attribute.</p>
- </dd>
+  <code title>name</code> attribute.
 </dl>
 
 <p>The object's <span data-anolis-spec=webidl>supported property indices</span>
@@ -2704,7 +2696,7 @@ attribute, plus the list of <span title=concept-id>IDs</span> that the elements
 <p>The <dfn title=dom-HTMLCollection-namedItem><code>namedItem(<var
 title>key</var>)</code></dfn> method must return the first node in the
 <span title=concept-collection>collection</span> that matches the following
-requirements:</p>
+requirements:
 
 <ul>
  <li>It is an <code title>a</code>, <code title>applet</code>, <code
@@ -2775,27 +2767,25 @@ title=concept-collection>collection</span>, whose primary purpose is to expose
 };</pre>
 
 <p>The <code>DOMStringList</code> interface represents an interface to an
-ordered list of strings.</p>
+ordered list of strings.
 
 <dl class="domintro">
+ <dt><var title>stringlist</var> . <code title="dom-DOMStringList-length">length</code>
+ <dd><p>Returns the number of tokens in the string.
 
- <dt><var title>stringlist</var> . <code title="dom-DOMStringList-length">length</code></dt>
- <dd><p>Returns the number of tokens in the string.</dd>
-
- <dt><var title>string</var> = <var title>stringlist</var> . <code title="dom-DOMStringList-item">item</code>(<var title>index</var>)</dt>
- <dt><var title>stringlist</var>[<var title>index</var>]</dt>
+ <dt><var title>string</var> = <var title>stringlist</var> . <code title="dom-DOMStringList-item">item</code>(<var title>index</var>)
+ <dt><var title>stringlist</var>[<var title>index</var>]
  <dd>
   <p>Returns the string with index <var title>index</var>.
   <p>Returns null if <var title>index</var> is out of range.
- </dd>
 
- <dt><var title>hasstring</var> = <var title>stringlist</var> . <code title="dom-DOMStringList-contains">contains</code>(<var title>string</var>)</dt>
+ <dt><var title>hasstring</var> = <var title>stringlist</var> . <code title="dom-DOMStringList-contains">contains</code>(<var title>string</var>)
  <dd><p>Returns true if the <var title>string</var> is present; false
- otherwise.</p></dd>
+ otherwise.
 </dl>
 
 <p>The <dfn title="dom-DOMStringList-length"><code>length</code></dfn>
-attribute must return the number of strings in the list.</p>
+attribute must return the number of strings in the list.
 
 <p>The object's
 <span data-anolis-spec=webidl>supported property indices</span> are the
@@ -2803,28 +2793,28 @@ numbers in the range zero to
 <code title="dom-DOMTokenList-length">length</code>&minus;1, unless the
 <code title="dom-DOMTokenList-length">length</code> is zero, in which case
 there are no
-<span data-anolis-spec=webidl>supported property indices</span>.</p>
+<span data-anolis-spec=webidl>supported property indices</span>.
 
 <p>The
 <dfn title=dom-DOMStringList-item><code>item(<var title>index</var>)</code></dfn>
 method must return the <var title>index</var>th string in the list. If
 <var title>index</var> is equal to or greater than the number of strings, then the
-method must return null.</p>
+method must return null.
 
 <p>The
 <dfn title=dom-DOMStringList-contains><code>contains(<var title>string</var>)</code></dfn>
 method must return true if the list of strings contains <var title>string</var>,
-or false otherwise.</p>
+or false otherwise.
 
 
 <h3>Interface <code>DOMTokenList</code></h3>
 <p>The <code>DOMTokenList</code> interface represents an interface
 to an underlying string that consists of a <span>set of
-space-separated tokens</span>.</p>
+space-separated tokens</span>.
 
 <p class="note"><code>DOMTokenList</code> objects are always
 <span>case-sensitive</span>, even when the underlying string might
-ordinarily be treated in a case-insensitive manner.</p>
+ordinarily be treated in a case-insensitive manner.
 
 <pre class="idl">interface <dfn>DOMTokenList</dfn> {
   readonly attribute unsigned long <span title="dom-DOMTokenList-length">length</span>;
@@ -2837,50 +2827,42 @@ ordinarily be treated in a case-insensitive manner.</p>
 };</pre>
 
 <dl class="domintro">
-
- <dt><var title>tokenlist</var> . <code title="dom-DOMTokenList-length">length</code></dt>
+ <dt><var title>tokenlist</var> . <code title="dom-DOMTokenList-length">length</code>
  <dd>
-  <p>Returns the number of tokens in the string.</p>
- </dd>
+  <p>Returns the number of tokens in the string.
 
- <dt><var title>element</var> = <var title>tokenlist</var> . <code title="dom-DOMTokenList-item">item</code>(<var title>index</var>)</dt>
- <dt><var title>tokenlist</var>[<var title>index</var>]</dt>
+ <dt><var title>element</var> = <var title>tokenlist</var> . <code title="dom-DOMTokenList-item">item</code>(<var title>index</var>)
+ <dt><var title>tokenlist</var>[<var title>index</var>]
  <dd>
-  <p>Returns the token with index <var title>index</var>. The tokens are returned in the order they are found in the underlying string.</p>
-  <p>Returns null if <var title>index</var> is out of range.</p>
- </dd>
+  <p>Returns the token with index <var title>index</var>. The tokens are returned in the order they are found in the underlying string.
+  <p>Returns null if <var title>index</var> is out of range.
 
- <dt><var title>hastoken</var> = <var title>tokenlist</var> . <code title="dom-DOMTokenList-contains">contains</code>(<var title>token</var>)</dt>
+ <dt><var title>hastoken</var> = <var title>tokenlist</var> . <code title="dom-DOMTokenList-contains">contains</code>(<var title>token</var>)
  <dd>
-  <p>Returns true if the <var title>token</var> is present; false otherwise.</p>
-  <p>Throws a <code title=dom-DOMException-SYNTAX_ERR>SYNTAX_ERR</code> exception if <var title>token</var> is empty.</p>
-  <p>Throws an <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception if <var title>token</var> contains any spaces.</p>
- </dd>
+  <p>Returns true if the <var title>token</var> is present; false otherwise.
+  <p>Throws a <code title=dom-DOMException-SYNTAX_ERR>SYNTAX_ERR</code> exception if <var title>token</var> is empty.
+  <p>Throws an <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception if <var title>token</var> contains any spaces.
 
- <dt><var title>tokenlist</var> . <code title="dom-DOMTokenList-add">add</code>(<var title>token</var>)</dt>
+ <dt><var title>tokenlist</var> . <code title="dom-DOMTokenList-add">add</code>(<var title>token</var>)
  <dd>
-  <p>Adds <var title>token</var>, unless it is already present.</p>
-  <p>Throws a <code title=dom-DOMException-SYNTAX_ERR>SYNTAX_ERR</code> exception if <var title>token</var> is empty.</p>
-  <p>Throws an <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception if <var title>token</var> contains any spaces.</p>
- </dd>
+  <p>Adds <var title>token</var>, unless it is already present.
+  <p>Throws a <code title=dom-DOMException-SYNTAX_ERR>SYNTAX_ERR</code> exception if <var title>token</var> is empty.
+  <p>Throws an <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception if <var title>token</var> contains any spaces.
 
- <dt><var title>tokenlist</var> . <code title="dom-DOMTokenList-remove">remove</code>(<var title>token</var>)</dt>
+ <dt><var title>tokenlist</var> . <code title="dom-DOMTokenList-remove">remove</code>(<var title>token</var>)
  <dd>
-  <p>Removes <var title>token</var> if it is present.</p>
-  <p>Throws a <code title=dom-DOMException-SYNTAX_ERR>SYNTAX_ERR</code> exception if <var title>token</var> is empty.</p>
-  <p>Throws an <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception if <var title>token</var> contains any spaces.</p>
- </dd>
+  <p>Removes <var title>token</var> if it is present.
+  <p>Throws a <code title=dom-DOMException-SYNTAX_ERR>SYNTAX_ERR</code> exception if <var title>token</var> is empty.
+  <p>Throws an <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception if <var title>token</var> contains any spaces.
 
- <dt><var title>hastoken</var> = <var title>tokenlist</var> . <code title="dom-DOMTokenList-toggle">toggle</code>(<var title>token</var>)</dt>
+ <dt><var title>hastoken</var> = <var title>tokenlist</var> . <code title="dom-DOMTokenList-toggle">toggle</code>(<var title>token</var>)
  <dd>
   <p>Adds <var title>token</var> if it is not present, or removes
   it if it is. Returns true if <var title>token</var> is now
   present (it was added); returns false if it is not (it was
-  removed).</p>
-  <p>Throws a <code title=dom-DOMException-SYNTAX_ERR>SYNTAX_ERR</code> exception if <var title>token</var> is empty.</p>
-  <p>Throws an <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception if <var title>token</var> contains any spaces.</p>
- </dd>
-
+  removed).
+  <p>Throws a <code title=dom-DOMException-SYNTAX_ERR>SYNTAX_ERR</code> exception if <var title>token</var> is empty.
+  <p>Throws an <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code> exception if <var title>token</var> contains any spaces.
 </dl>
 
 <div class="impl">
@@ -2889,13 +2871,13 @@ ordinarily be treated in a case-insensitive manner.</p>
 attribute must return the number of tokens that result from <span
 title="split a string on spaces">splitting the underlying string on
 spaces</span>. This is the <var
-title="dom-DOMTokenList-length">length</var>.</p>
+title="dom-DOMTokenList-length">length</var>.
 
 <p>The object's <span data-anolis-spec=webidl>supported property
 indices</span> are the numbers in the range zero to <span title=""><var
 title="dom-DOMTokenList-length">length</var>&minus;1</span>, unless the <var
 title="dom-DOMTokenList-length">length</var> is zero, in which case there are no
-<span data-anolis-spec=webidl>supported property indices</span>.</p>
+<span data-anolis-spec=webidl>supported property indices</span>.
 
 <p>The <dfn title="dom-DOMTokenList-item"><code>item(<var
 title="">index</var>)</code></dfn> method must <span title="split a
@@ -2903,21 +2885,20 @@ string on spaces">split the underlying string on spaces</span>,
 preserving the order of the tokens as found in the underlying
 string, and then return the <var title>index</var>th item in this
 list. If <var title>index</var> is equal to or greater than the
-number of tokens, then the method must return null.</p>
+number of tokens, then the method must return null.
 
 <p class="example">For example, if the string is "<code title="">a b
 a c</code>" then there are four tokens: the token with index 0 is
 "<code title="">a</code>", the token with index 1 is "<code
 title="">b</code>", the token with index 2 is "<code
 title="">a</code>", and the token with index 3 is "<code
-title="">c</code>".</p>
+title="">c</code>".
 
 <p>The <dfn title="dom-DOMTokenList-contains"><code>contains(<var
 title="">token</var>)</code></dfn> method must run the following
-algorithm:</p>
+algorithm:
 
 <ol>
-
  <li>If the <var title>token</var> argument is the empty string, then throw a
  <code title=dom-DOMException-SYNTAX_ERR>SYNTAX_ERR</code> exception and
  terminate these steps.
@@ -2936,15 +2917,13 @@ algorithm:</p>
  underlying string then return true and terminate these steps.
 
  <li>Otherwise, return false.
-
 </ol>
 
 <p>The <dfn title="dom-DOMTokenList-add"><code>add(<var
 title="">token</var>)</code></dfn> method must run the following
-algorithm:</p>
+algorithm:
 
 <ol>
-
  <li>If the <var title>token</var> argument is the empty string, then throw a
  <code title=dom-DOMException-SYNTAX_ERR>SYNTAX_ERR</code> exception and
  terminate these steps.
@@ -2969,15 +2948,13 @@ algorithm:</p>
 
  <li>Append the value of <var title>token</var> to the end of the
  <code>DOMTokenList</code> object's underlying string.
-
 </ol>
 
 <p>The <dfn title="dom-DOMTokenList-remove"><code>remove(<var
 title="">token</var>)</code></dfn> method must run the following
-algorithm:</p>
+algorithm:
 
 <ol>
-
  <li>If the <var title>token</var> argument is the empty string, then throw a
  <code title=dom-DOMException-SYNTAX_ERR>SYNTAX_ERR</code> exception and
  terminate these steps.
@@ -2989,15 +2966,13 @@ algorithm:</p>
 
  <li>Otherwise,
  <span title="remove a token from a string">remove the given <var title>token</var> from the underlying string</span>.
-
 </ol>
 
 <p>The <dfn title="dom-DOMTokenList-toggle"><code>toggle(<var
 title="">token</var>)</code></dfn> method must run the following
-algorithm:</p>
+algorithm:
 
 <ol>
-
  <li>If the <var title>token</var> argument is the empty string, then throw a
  <code title=dom-DOMException-SYNTAX_ERR>SYNTAX_ERR</code> exception and
  terminate these steps.
@@ -3026,12 +3001,11 @@ algorithm:</p>
  <code>DOMTokenList</code> object's underlying string.
 
  <li>Return true.
-
 </ol>
 
 <p>Objects implementing the <code>DOMTokenList</code> interface must
 <dfn title="dom-DOMTokenList-toString">stringify</dfn> to the object's
-underlying string representation.</p>
+underlying string representation.
 
 </div>
 
@@ -3040,20 +3014,17 @@ underlying string representation.</p>
 
 <p>The <code>DOMSettableTokenList</code> interface is the same as the
 <code>DOMTokenList</code> interface, except that it allows the
-underlying string to be directly changed.</p>
+underlying string to be directly changed.
 
 <pre class="idl">interface <dfn>DOMSettableTokenList</dfn> : <span>DOMTokenList</span> {
             attribute DOMString <span title="dom-DOMSettableTokenList-value">value</span>;
 };</pre>
 
 <dl class="domintro">
-
- <dt><var title>tokenlist</var> . <code title="dom-DOMSettableTokenList-value">value</code></dt>
+ <dt><var title>tokenlist</var> . <code title="dom-DOMSettableTokenList-value">value</code>
  <dd>
-  <p>Returns the underlying string.</p>
-  <p>Can be set, to change the underlying string.</p>
- </dd>
-
+  <p>Returns the underlying string.
+  <p>Can be set, to change the underlying string.
 </dl>
 
 <div class="impl">
@@ -3062,11 +3033,11 @@ underlying string to be directly changed.</p>
 interface must act as defined for the <code>DOMTokenList</code>
 interface, except for the <code
 title="dom-DOMSettableTokenList-value">value</code> attribute defined
-here.</p>
+here.
 
 <p>The <dfn
 title="dom-DOMSettableTokenList-value"><code>value</code></dfn>
-attribute must return the underlying string and, on setting must replace the underlying string with the new value.</p>
+attribute must return the underlying string and, on setting must replace the underlying string with the new value.
 
 </div>
 
@@ -3081,9 +3052,9 @@ are now defined in Web IDL.
 
 <p>The remainder of interfaces and interface members listed in this section
 are part of DOM Level 3 Core. Implementations conforming to this
-specification will however not support them.</p>
+specification will however not support them.
 
-<p>Interfaces:</p>
+<p>Interfaces:
 <ul class=brief>
  <li><dfn><code>CDATASection</code></dfn>
  <li><dfn><code>DOMConfiguration</code></dfn>
@@ -3103,9 +3074,9 @@ specification will however not support them.</p>
  <li><dfn><code>UserDataHandler</code></dfn>
 </ul>
 
-<p>Interface members:</p>
+<p>Interface members:
 <dl>
- <dt><code>Node</code></dt>
+ <dt><code>Node</code>
  <dd>
   <!--AttrExodus-->
   <p><dfn title=dom-Node-hasAttributes><code>hasAttributes()</code></dfn>
@@ -3123,7 +3094,7 @@ specification will however not support them.</p>
   <p><dfn title=dom-Node-getUserData><code>getUserData()</code></dfn>
   <p><dfn title=dom-Node-setUserData><code>setUserData()</code></dfn>
 
- <dt><code>Document</code></dt>
+ <dt><code>Document</code>
  <dd>
   <p><dfn title=dom-Document-createCDATASection><code>createCDATASection()</code></dfn>
   <p><dfn title=dom-Document-createAttribute><code>createAttribute()</code></dfn>
@@ -3194,7 +3165,7 @@ Henri Sivonen
 for their useful comments.
 
 <p>Special thanks to Geoffrey Sneddon, Ms2ger, and Simon Pieters for editing
-the initial 80% of this specification and their useful comments.</p>
+the initial 80% of this specification and their useful comments.
 
 <p>Special thanks also to Ian Hickson for first specifying some parts of
 this specification in HTML and his useful comments.

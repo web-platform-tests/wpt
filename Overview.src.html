@@ -2486,7 +2486,7 @@ method must run the following steps:
   <li>If <var title>offset</var> is greater than the <span>context node</span>'s
   <code title=dom-CharacterData-length>length</code>, raise an
   <code title=dom-DOMException-INDEX_SIZE_ERR>INDEX_SIZE_ERR</code> exception
-  and abort these steps.
+  and terminate these steps.
 
   <li>Let <var title>length</var> be the <span>context node</span>'s
   <span title><code title=dom-CharacterData-length>length</code> &minus;
@@ -2495,13 +2495,13 @@ method must run the following steps:
   <li>Call the <span>context node</span>'s
   <code title=dom-CharacterData-substringData>substringData</code> method with
   <var title>offset</var> and <var title>length</var> as its arguments.
-  If this raised an exception, abort these steps. Otherwise, let
+  If this raised an exception, terminate these steps. Otherwise, let
   <var>new data</var> be the value returned.
 
   <li>Call the <span>context node</span>'s
   <code title=dom-CharacterData-deleteData>deleteData</code> method with
   <var title>offset</var> and <var title>length</var> as its arguments.
-  If this raised an exception, abort these steps.
+  If this raised an exception, terminate these steps.
 
   <li>Let <var title>new node</var> be a new <code>Text</code> object, with the
   same <code title=dom-Node-ownerDocument>ownerDocument</code> as the
@@ -2510,7 +2510,7 @@ method must run the following steps:
 
   <li>Let <var title>parent</var> be the <span>context node</span>'s
   <code title=dom-Node-parentNode>parentNode</code>. If <var title>parent</var>
-  is null, return <var title>new node</var> and abort these steps.
+  is null, return <var title>new node</var> and terminate these steps.
 
   <li>Call <var title>parent</var>'s
   <code title=dom-Node-insertBefore>insertBefore</code> method with

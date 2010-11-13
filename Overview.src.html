@@ -264,10 +264,20 @@ this specification.
 
 <h3>Case-sensitivity</h3>
 <p>This specification defines several comparison operators for strings.
+
 <p>Comparing two strings in a <dfn>case-sensitive</dfn> manner means comparing them exactly, codepoint for codepoint.
+
 <p>Comparing two strings in a <dfn>ASCII case-insensitive</dfn> manner means comparing them exactly, codepoint for codepoint, except that the characters in the range U+0041 .. U+005A (i.e. LATIN CAPITAL LETTER A to LATIN CAPITAL LETTER Z) and the corresponding characters in the range U+0061 .. U+007A (i.e. LATIN SMALL LETTER A to LATIN SMALL LETTER Z) are considered to also match.
+
 <p><dfn title="converted to uppercase">Converting a string to uppercase</dfn> means replacing all characters in the range U+0061 .. U+007A (i.e. LATIN SMALL LETTER A to LATIN SMALL LETTER Z) with the corresponding characters in the range U+0041 .. U+005A (i.e. LATIN CAPITAL LETTER A to LATIN CAPITAL LETTER Z).
+
 <p><dfn title="converted to lowercase">Converting a string to lowercase</dfn> means replacing all characters in the range U+0041 .. U+005A (i.e. LATIN CAPITAL LETTER A to LATIN CAPITAL LETTER Z) with the corresponding characters in the range U+0061 .. U+007A (i.e. LATIN SMALL LETTER A to LATIN SMALL LETTER Z).
+
+<p>A string <var title>pattern</var> is a <dfn>prefix match</dfn> for a string
+<var title>s</var> when <var title>pattern</var> is not longer than
+<var title>s</var> and truncating <var title>s</var> to
+<var title>pattern</var>'s length leaves the two strings as matches of each
+other.
 
 
 <h3>Common microsyntaxes</h3>
@@ -475,8 +485,8 @@ feature</span> with the version "2.0" associated with it.
 
 <h3>Cloning nodes</h3>
 <p>To <dfn>clone</dfn> a <var title>node</var>, with a
-<var title>new ownerDocument</var> and with a <i>clone children flag</i>, these
-steps must be run:
+<var title>new ownerDocument</var> and with a
+<dfn><i>clone children flag</i></dfn>, these steps must be run:
 
 <ol>
  <li><p>If <var title>node</var> is a <code>Document</code> or
@@ -768,7 +778,7 @@ are still exposed on the interface.
 <p>The <dfn title=dom-Node-namespaceURI><code>namespaceURI</code></dfn> attribute must return the namespace that is associated with the node, if there is one and it's not the empty string, or null otherwise.
 
 <p>The <dfn title=dom-Node-prefix><code>prefix</code></dfn> attribute must return the prefix that is associated with the node, if there is one and it's not the empty string, or null otherwise.
-<!- -XXX support setting? - - On setting, it must run the following steps:
+<!- - support setting? - - On setting, it must run the following steps:
 
 <ol>
  <li><p>Let <var title>prefix</var> be the value being assigned.
@@ -784,7 +794,7 @@ are still exposed on the interface.
    <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and
    terminate these steps.
   </ol>
- <li><p class=XXX>Actually this does not match any browser. Let's try to drop it instead.
+ <li><p>Actually this does not match any browser. Let's try to drop it instead.
 </ol>- ->
 
 <p>The <dfn title=dom-Node-localName><code>localName</code></dfn> attribute
@@ -1254,17 +1264,18 @@ false otherwise:
  <span title=concept-element-namespace-prefix>namespace prefix</span> and
  terminate these steps.
 
- <li><p>If there is an attribute associated with the <var title>element</var>
- whose namespace prefix is "<code title>xmlns</code>" and value is
- <var title>namespace</var> then return its local name and terminate these
+ <li><p>If, in <var title>element</var>'s
+ <code title=dom-Element-attributes>attributes</code>, there is an
+ <code>Attr</code> whose
+ <span title=concept-attr-namespace-prefix>namespace prefix</span> is
+ "<code title>xmlns</code>" and <span title=concept-attr-value>value</span>
+ is <var title>namespace</var> then return its
+ <span title=concept-attr-local-name>local name</span> and terminate these
  steps.
- <!-- XXX xref attribute terminology -->
 
  <li><p>Return the result of running <span>locate a namespace prefix</span>
- on its <code title=dom-Node-parentNode>parentNode</code> using
- <var title>namespace</var>, if <code title=dom-Node-parentNode>parentNode</code>
- is an <code>Element</code> node, or null otherwise.
- <!-- XXX parentElement -->
+ on its <code title=dom-Node-parentElement>parentElement</code> using
+ <var title>namespace</var>, if that is not null, or null otherwise.
 </ol>
 
 <p>To <dfn>locate a namespace</dfn> for a <var title>node</var> using
@@ -1281,44 +1292,47 @@ false otherwise:
    <span title=concept-element-namespace>namespace</span> and terminate
    these steps.
 
-   <li>
-    <p>If there is an attribute associated with the node whose
-    namespace prefix is "<code title>xmlns</code>" and local name is
-    <var title>prefix</var> or whose namespace prefix is null and local name is
-    "<code title>xmlns</code>":
+   <li><p>If, in its <code title=dom-Element-attributes>attributes</code>, there
+   is an <code>Attr</code>
+
+   whose <span title=concept-attr-namespace-prefix>namespace prefix</span>
+   is "<code title>xmlns</code>" and
+   <span title=concept-attr-local-name>local name</span> is
+   <var title>prefix</var> or
+
+   whose <span title=concept-attr-namespace-prefix>namespace prefix</span>
+   is null and <span title=concept-attr-local-name>local name</span> is
+   "<code title>xmlns</code>":
 
     <ol>
-     <li><p>Let <var title>value</var> be its value if it is not the empty string,
-     or null otherwise.
+     <li><p>Let <var title>value</var> be its
+     <span title=concept-attr-value>value</span> if it is not the empty
+     string, or null otherwise.
 
      <li><p>Return <var title>value</var> and terminate these steps.
     </ol>
 
-   <!-- XXX xref attribute terminology -->
-
    <li><p>Return the result of running <span>locate a namespace</span> on
-   its <code title=dom-Node-parentNode>parentNode</code> using
-   <var title>prefix</var>, if <code title=dom-Node-parentNode>parentNode</code>
-   is an <code>Element</code> node, or null otherwise.
-   <!-- XXX parentElement -->
+   its <code title=dom-Node-parentElement>parentElement</code> using
+   <var title>prefix</var>, if that is not null, or null otherwise.
   </ol>
 
- <!--XXX <code>Attr</code> -->
+ <!--AttrExodus <code>Attr</code> -->
  <dt><code>Document</code>
  <dd><p>Return the result of running <span>locate a namespace</span> on its
  <code title=dom-Document-documentElement>documentElement</code> using
  <var title>prefix</var>, if
  <code title=dom-Document-documentElement>documentElement</code> is
  not null, or null otherwise.
+
  <dt><code>DocumentType</code>
  <dt><code>DocumentFragment</code>
  <dd><p>Return null.
+
  <dt>Any other node
- <dd><p>Return the result of running <span>locate a namespace</span> on
- its <code title=dom-Node-parentNode>parentNode</code> using
- <var title>prefix</var>, if <code title=dom-Node-parentNode>parentNode</code> is
- an <code>Element</code> node, or null otherwise.
- <!-- XXX parentElement -->
+ <dd><p>Return the result of running <span>locate a namespace</span> on its
+ <code title=dom-Node-parentElement>parentElement</code> using
+ <var title>prefix</var>, if that is not null, or null otherwise.
 </dl>
 
 <p>The
@@ -1963,7 +1977,7 @@ steps:
 <!-- AttrExodus
 <h3>Interface <code>Attr</code></h3>
 
-<p class=XXX>The tentative plan is to let <code>Attr</code> no longer have
+<p>The tentative plan is to let <code>Attr</code> no longer have
 child nodes and turn it into a very lightweight object that no longer
 inherits from <code>Node</code> &mdash;
 <a href=http://lists.w3.org/Archives/Public/public-webapps/2010JulSep/0797.html>http://lists.w3.org/Archives/Public/public-webapps/2010JulSep/0797.html</a>
@@ -2130,23 +2144,25 @@ method must run these steps:
  <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
  exception and terminate these steps.
 
- <li><p>If the <span>context node</span> is in the
- <span>HTML namespace</span> and its
- <code title=dom-Node-ownerDocument>ownerDocument</code> is an
+ <li><p>If the <span>context node</span> is in the <span>HTML namespace</span>
+ and its <code title=dom-Node-ownerDocument>ownerDocument</code> is an
  <span>HTML document</span>, let <var title>qualifiedName</var> be
  <span>converted to lowercase</span>.
 
  <!-- https://bugzilla.mozilla.org/show_bug.cgi?id=315805 -->
- <li><p>If <var title>qualifiedName</var> starts with
- "<code title>xmlns</code>", throw a
+ <li><p>If "<code title>xmlns</code>" is a <span>prefix match</span> for
+ <var title>qualifiedName</var>, throw a
  <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> and
- terminate these steps. <!--XXX define "starts with"? -->
+ terminate these steps.
 
  <li><p>If the node does not have an <code>Attr</code> object whose
- <span title=concept-attr-name>name</span> is <var title>qualifiedName</var>,
- create an <code>Attr</code> object, whose
- <span title=concept-attr-local-name>local name</span> is <var title>qualifiedName</var> and <span title=concept-attr-value>value</span> is <var title>value</var>. Append this object to the <span>context node</span>'s
- <code title=dom-Element-attributes>attributes</code>, as its last item.
+ <span title=concept-attr-local-name>local name</span> is
+ <var title>qualifiedName</var>, create an <code>Attr</code> object, whose
+ <span title=concept-attr-local-name>local name</span> is
+ <var title>qualifiedName</var> and <span title=concept-attr-value>value</span>
+ is <var title>value</var>. Append this object to the
+ <span>context node</span>'s
+ <code title=dom-Element-attributes>attributes</code>.
 
  <li><p>Otherwise, set the <span title=concept-attr-value>value</span> of
  the first <code>Attr</code> object in the <span>context node</span>'s
@@ -2485,7 +2501,8 @@ exceptions these methods might have thrown.
   <span>Text</span> <span title=dom-Text-replaceWholeText>replaceWholeText</span>(DOMString <var title>data</var>);
 };</pre>
 
-<p>The <dfn title=dom-Text-splitText><code>splitText(<var title>offset</var>)</dfn>
+<p>The
+<dfn title=dom-Text-splitText><code>splitText(<var title>offset</var>)</code></dfn>
 method must run the following steps:
 
 <ol>
@@ -2502,7 +2519,7 @@ method must run the following steps:
   <code title=dom-CharacterData-substringData>substringData</code> method with
   <var title>offset</var> and <var title>length</var> as its arguments.
   If this threw an exception, terminate these steps. Otherwise, let
-  <var>new data</var> be the value returned.
+  <var title>new data</var> be the value returned.
 
   <li>Call the <span>context node</span>'s
   <code title=dom-CharacterData-deleteData>deleteData</code> method with
@@ -2511,8 +2528,8 @@ method must run the following steps:
 
   <li>Let <var title>new node</var> be a new <code>Text</code> object, with the
   same <code title=dom-Node-ownerDocument>ownerDocument</code> as the
-  <span>context node</code>. Set <var title>new node</var>'s
-  <code title=dom-CharacterData-data>data</code> to <var title>new string</var>.
+  <span>context node</span>. Set <var title>new node</var>'s
+  <code title=dom-CharacterData-data>data</code> to <var title>new data</var>.
 
   <li>Let <var title>parent</var> be the <span>context node</span>'s
   <code title=dom-Node-parentNode>parentNode</code>. If <var title>parent</var>
@@ -2708,7 +2725,7 @@ null.
 
 <!-- AttrExodus
 <h3>Interface <code>NamedNodeMap</code></h3>
-<p class=XXX>Since <code title=dom-Node-attributes>attributes</code> is the
+<p>Since <code title=dom-Node-attributes>attributes</code> is the
 only remaining API using this interface and the tentative plan is to change
 <code>Attr</code> we also plan to remove this interface and replace it with
 a lightweight <code>AttrMap</code> or some such &mdash;
@@ -2729,21 +2746,21 @@ title=concept-collection>collection</span>, whose primary purpose is to expose
   <span>Node</span> <span title=dom-NamedNodeMap-removeNamedItemNS>removeNamedItemNS</span>(DOMString namespace, DOMString localName);
 };</pre>
 
-<p class=XXX><dfn title=dom-NamedNodeMap-getNamedItem>getNamedItem</dfn>
+<p><dfn title=dom-NamedNodeMap-getNamedItem>getNamedItem</dfn>
 
-<p class=XXX><dfn title=dom-NamedNodeMap-setNamedItem>setNamedItem</dfn>
+<p><dfn title=dom-NamedNodeMap-setNamedItem>setNamedItem</dfn>
 
-<p class=XXX><dfn title=dom-NamedNodeMap-removeNamedItem>removeNamedItem</dfn>
+<p><dfn title=dom-NamedNodeMap-removeNamedItem>removeNamedItem</dfn>
 
-<p class=XXX><dfn title=dom-NamedNodeMap-item>item</dfn>
+<p><dfn title=dom-NamedNodeMap-item>item</dfn>
 
 <p>The <dfn title=dom-NamedNodeMap-length><code>length</code></dfn> attribute must return the number of nodes <span>represented by the collection</span>.
 
-<p class=XXX><dfn title=dom-NamedNodeMap-getNamedItemNS>getNamedItemNS</dfn>
+<p><dfn title=dom-NamedNodeMap-getNamedItemNS>getNamedItemNS</dfn>
 
-<p class=XXX><dfn title=dom-NamedNodeMap-setNamedItemNS>setNamedItemNS</dfn>
+<p><dfn title=dom-NamedNodeMap-setNamedItemNS>setNamedItemNS</dfn>
 
-<p class=XXX><dfn title=dom-NamedNodeMap-removeNamedItemNS>removeNamedItemNS</dfn>
+<p><dfn title=dom-NamedNodeMap-removeNamedItemNS>removeNamedItemNS</dfn>
 -->
 
 

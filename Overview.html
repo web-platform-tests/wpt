@@ -272,12 +272,12 @@ specification. <a href="#refsWEBIDL">[WEBIDL]</a>
 <p id="float-nan">Except where otherwise specified, if an IDL attribute that is a
 floating point number type (<code class="external"><a href="http://dev.w3.org/2006/webapi/WebIDL/#idl-float">float</a></code>) is
 assigned an Infinity or Not-a-Number (NaN) value, a <code title="dom-DOMException-NOT_SUPPORTED_ERR"><a href="#dom-domexception-not_supported_err">NOT_SUPPORTED_ERR</a></code> exception must
-be raised.
+be thrown.
 
 <p>Except where otherwise specified, if a method with an argument that is a
 floating point number type (<code class="external"><a href="http://dev.w3.org/2006/webapi/WebIDL/#idl-float">float</a></code>) is
 passed an Infinity or Not-a-Number (NaN) value, a <code title="dom-DOMException-NOT_SUPPORTED_ERR"><a href="#dom-domexception-not_supported_err">NOT_SUPPORTED_ERR</a></code> exception
-must be raised.
+must be thrown.
 
 <p>Some of the terms used in this specification are defined in <cite>Web
 IDL</cite>, <cite>XML</cite> and <cite>Namespaces in XML</cite>.
@@ -520,7 +520,7 @@ steps must be run:
 
 <ol>
  <li><p>If <var title="">node</var> is a <code><a href="#document">Document</a></code> or
- <code><a href="#documenttype">DocumentType</a></code> node, raise a
+ <code><a href="#documenttype">DocumentType</a></code> node, throw a
  <code title="dom-DOMException-DATA_CLONE_ERR"><a href="#dom-domexception-data_clone_err">DATA_CLONE_ERR</a></code> exception
  and terminate these steps. <!--XXX wrong? -->
  <li>
@@ -811,11 +811,11 @@ are still exposed on the interface.</p>
   <p>If <var title>prefix</var> is not null, run the following substeps:
   <ol>
    <li><p>If <var title>prefix</var> does not match the
-   <code data-anolis-spec=xml>Name</code> production in XML, raise an
+   <code data-anolis-spec=xml>Name</code> production in XML, throw an
    <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
    exception and terminate these steps.
    <li><p>If <var title>prefix</var> does not match the <code
-   data-anolis-spec=xmlns>NCName</code> production in Namespaces in XML, raise a
+   data-anolis-spec=xmlns>NCName</code> production in Namespaces in XML, throw a
    <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and
    terminate these steps.
   </ol>
@@ -1059,7 +1059,7 @@ method must run these steps:
 
 <ol>
  <li><p>If the <a href="#context-node">context node</a> is<!-- AttrExodus an <code>Attr</code> node or--> a
- <code><a href="#text">Text</a></code> node, then raise a
+ <code><a href="#text">Text</a></code> node, then throw a
  <code title="dom-DOMException-HIERARCHY_REQUEST_ERR"><a href="#dom-domexception-hierarchy_request_err">HIERARCHY_REQUEST_ERR</a></code>
  and terminate these steps. <!-- See Mozilla bug 547798, 558973 -->
 
@@ -1069,19 +1069,19 @@ method must run these steps:
  <var title="">newChild</var> as argument and terminate these steps.
 
  <li><p>If <var title="">refChild</var> is not a child of the
- <a href="#context-node">context node</a>, then raise a
+ <a href="#context-node">context node</a>, then throw a
  <code title="dom-DOMException-NOT_FOUND_ERR"><a href="#dom-domexception-not_found_err">NOT_FOUND_ERR</a></code> exception
  and terminate these steps.
 
  <li><p>If <var title="">newChild</var> is the <a href="#context-node">context node</a> or an
- ancestor of the <a href="#context-node">context node</a> raise a
+ ancestor of the <a href="#context-node">context node</a> throw a
  <code title="dom-DOMException-HIERARCHY_REQUEST_ERR"><a href="#dom-domexception-hierarchy_request_err">HIERARCHY_REQUEST_ERR</a></code>
  and terminate these steps.
 
  <!-- XXXhierarchy -->
 
  <li><p>If <var title="">newChild</var> is a <code><a href="#documenttype">DocumentType</a></code> node and its
- <code title="dom-Node-ownerDocument"><a href="#dom-node-ownerdocument">ownerDocument</a></code> is not null raise a
+ <code title="dom-Node-ownerDocument"><a href="#dom-node-ownerdocument">ownerDocument</a></code> is not null throw a
  <code title="dom-DOMException-NOT_SUPPORTED_ERR"><a href="#dom-domexception-not_supported_err">NOT_SUPPORTED_ERR</a></code>
  exception and terminate these steps.
 
@@ -1114,23 +1114,23 @@ method must run these steps:
 
 <ol>
  <li><p>If the <a href="#context-node">context node</a> is<!--AttrExodus an <code>Attr</code> node or--> a
- <code><a href="#text">Text</a></code> node, then raise a <code title="dom-DOMException-HIERARCHY_REQUEST_ERR"><a href="#dom-domexception-hierarchy_request_err">HIERARCHY_REQUEST_ERR</a></code> and
+ <code><a href="#text">Text</a></code> node, then throw a <code title="dom-DOMException-HIERARCHY_REQUEST_ERR"><a href="#dom-domexception-hierarchy_request_err">HIERARCHY_REQUEST_ERR</a></code> and
  terminate these steps. <!-- See Mozilla bug 547798, 558973 -->
 
  <li><p>If <var title="">oldChild</var> is not a child of the
- <a href="#context-node">context node</a>, then raise a
+ <a href="#context-node">context node</a>, then throw a
  <code title="dom-DOMException-NOT_FOUND_ERR"><a href="#dom-domexception-not_found_err">NOT_FOUND_ERR</a></code> exception
  and terminate these steps.
 
  <li><p>If <var title="">newChild</var> is the <a href="#context-node">context node</a> or an
- ancestor of the <a href="#context-node">context node</a> raise a
+ ancestor of the <a href="#context-node">context node</a> throw a
  <code title="dom-DOMException-HIERARCHY_REQUEST_ERR"><a href="#dom-domexception-hierarchy_request_err">HIERARCHY_REQUEST_ERR</a></code>
  and terminate these steps.
 
  <!-- XXXhierarchy -->
 
  <li><p>If <var title="">newChild</var> is a <code><a href="#documenttype">DocumentType</a></code> node and its
- <code title="dom-Node-ownerDocument"><a href="#dom-node-ownerdocument">ownerDocument</a></code> is not null raise a
+ <code title="dom-Node-ownerDocument"><a href="#dom-node-ownerdocument">ownerDocument</a></code> is not null throw a
  <code title="dom-DOMException-NOT_SUPPORTED_ERR"><a href="#dom-domexception-not_supported_err">NOT_SUPPORTED_ERR</a></code>
  exception and terminate these steps.
 
@@ -1163,7 +1163,7 @@ method must run these steps:
 <ol>
  <!-- Attr nodes are okay -->
  <li><p>If <var title="">oldChild</var> is not a child of the
- <a href="#context-node">context node</a>, then raise a
+ <a href="#context-node">context node</a>, then throw a
  <code title="dom-DOMException-NOT_FOUND_ERR"><a href="#dom-domexception-not_found_err">NOT_FOUND_ERR</a></code> exception
  and terminate these steps.
  <!-- Including other documents. -->
@@ -1179,18 +1179,18 @@ method must run these steps:
 
 <ol>
  <li><p>If the <a href="#context-node">context node</a> is<!--AttrExodus an <code>Attr</code> node or--> a
- <code><a href="#text">Text</a></code> node, then raise a <code title="dom-DOMException-HIERARCHY_REQUEST_ERR"><a href="#dom-domexception-hierarchy_request_err">HIERARCHY_REQUEST_ERR</a></code> and
+ <code><a href="#text">Text</a></code> node, then throw a <code title="dom-DOMException-HIERARCHY_REQUEST_ERR"><a href="#dom-domexception-hierarchy_request_err">HIERARCHY_REQUEST_ERR</a></code> and
  terminate these steps. <!-- See Mozilla bug 547798, 558973 -->
 
  <li><p>If <var title="">newChild</var> is the <a href="#context-node">context node</a> or an
- ancestor of the <a href="#context-node">context node</a> raise a
+ ancestor of the <a href="#context-node">context node</a> throw a
  <code title="dom-DOMException-HIERARCHY_REQUEST_ERR"><a href="#dom-domexception-hierarchy_request_err">HIERARCHY_REQUEST_ERR</a></code>
  and terminate these steps.
 
  <!-- XXXhierarchy -->
 
  <li><p>If <var title="">newChild</var> is a <code><a href="#documenttype">DocumentType</a></code> node and its
- <code title="dom-Node-ownerDocument"><a href="#dom-node-ownerdocument">ownerDocument</a></code> is not null raise a
+ <code title="dom-Node-ownerDocument"><a href="#dom-node-ownerdocument">ownerDocument</a></code> is not null throw a
  <code title="dom-DOMException-NOT_SUPPORTED_ERR"><a href="#dom-domexception-not_supported_err">NOT_SUPPORTED_ERR</a></code>
  exception and terminate these steps.
 
@@ -1627,7 +1627,7 @@ is none.
 <p>The <dfn id="dom-document-createelement" title="dom-Document-createElement"><code>createElement(<var title="">localName</var>)</code></dfn> method must run the these steps:</p>
 
 <ol>
- <li><p>If <var title="">localName</var> does not match the <code class="external"><a href="http://www.w3.org/TR/xml/#NT-Name">Name</a></code> production in XML, raise an
+ <li><p>If <var title="">localName</var> does not match the <code class="external"><a href="http://www.w3.org/TR/xml/#NT-Name">Name</a></code> production in XML, throw an
  <code title="dom-DOMException-INVALID_CHARACTER_ERR"><a href="#dom-domexception-invalid_character_err">INVALID_CHARACTER_ERR</a></code>
  exception and terminate these steps.
 
@@ -1649,33 +1649,33 @@ is none.
 method must run these steps:</p>
 <ol>
  <li><p>If <var title="">qualifiedName</var> does not match the
- <code class="external"><a href="http://www.w3.org/TR/xml/#NT-Name">Name</a></code> production in XML, raise an
+ <code class="external"><a href="http://www.w3.org/TR/xml/#NT-Name">Name</a></code> production in XML, throw an
  <code title="dom-DOMException-INVALID_CHARACTER_ERR"><a href="#dom-domexception-invalid_character_err">INVALID_CHARACTER_ERR</a></code>
  exception and terminate these steps.
  <li><p>If <var title="">qualifiedName</var> does not match the
  <code class="external"><a href="http://www.w3.org/TR/xml-names/#NT-QName">QName</a></code> production in Namespaces in XML,
- raise a <code title="dom-DOMException-NAMESPACE_ERR"><a href="#dom-domexception-namespace_err">NAMESPACE_ERR</a></code>
+ throw a <code title="dom-DOMException-NAMESPACE_ERR"><a href="#dom-domexception-namespace_err">NAMESPACE_ERR</a></code>
  exception and terminate these steps.
  <li><p>If <var title="">qualifiedName</var> contains a "<code>:</code>" (U+003E),
  then split the string on it and let <var title="">prefix</var> be the part before
  and <var title="">localName</var> the part after. Otherwise, let <var title="">prefix</var>
  be null and <var title="">localName</var> be <var title="">qualifiedName</var>.
  <li><p>If <var title="">prefix</var> is not null and <var title="">namespace</var> is an
- empty string, raise a
+ empty string, throw a
  <code title="dom-DOMException-NAMESPACE_ERR"><a href="#dom-domexception-namespace_err">NAMESPACE_ERR</a></code> exception
  and terminate these steps.
  <li><p>If <var title="">prefix</var> is "<code title="">xml</code>" and
- <var title="">namespace</var> is not the <a href="#xml-namespace">XML namespace</a>, raise a
+ <var title="">namespace</var> is not the <a href="#xml-namespace">XML namespace</a>, throw a
  <code title="dom-DOMException-NAMESPACE_ERR"><a href="#dom-domexception-namespace_err">NAMESPACE_ERR</a></code> exception
  and terminate these steps.
  <li><p>If <var title="">qualifiedName</var> or <var title="">prefix</var> is
  "<code title="">xmlns</code>" and <var title="">namespace</var> is not the
- <a href="#xmlns-namespace">XMLNS namespace</a>, raise a
+ <a href="#xmlns-namespace">XMLNS namespace</a>, throw a
  <code title="dom-DOMException-NAMESPACE_ERR"><a href="#dom-domexception-namespace_err">NAMESPACE_ERR</a></code> exception
  and terminate these steps.
  <li><p>If <var title="">namespace</var> is the <a href="#xmlns-namespace">XMLNS namespace</a> and
  neither <var title="">qualifiedName</var> nor <var title="">prefix</var> is
- "<code title="">xmlns</code>", raise a
+ "<code title="">xmlns</code>", throw a
  <code title="dom-DOMException-NAMESPACE_ERR"><a href="#dom-domexception-namespace_err">NAMESPACE_ERR</a></code> exception
  and terminate these steps.
  <li><p>Return a new <code><a href="#element">Element</a></code> node with no attributes,
@@ -1705,20 +1705,20 @@ contains two adjacent hyphens or ends with a hyphen.
 <p>The <dfn id="dom-document-createprocessinginstruction" title="dom-Document-createProcessingInstruction"><code>createProcessingInstruction(<var title="">target</var>, <var title="">data</var>)</code></dfn> method must run these steps:
 
 <ol>
- <li><p>If the <a href="#context-node">context node</a> is an <a href="#html-document">HTML document</a>, raise
+ <li><p>If the <a href="#context-node">context node</a> is an <a href="#html-document">HTML document</a>, throw
  a <code title="dom-DOMException-NOT_SUPPORTED_ERR"><a href="#dom-domexception-not_supported_err">NOT_SUPPORTED_ERR</a></code>
  exception and terminate these steps.
 
  <li><p>If <var title="">target</var> does not match the <!--<code
  data-anolis-spec=xml>PITarget</code>--> <code class="external"><a href="http://www.w3.org/TR/xml/#NT-Name">Name</a></code>
- production in XML, raise an <code title="dom-DOMException-INVALID_CHARACTER_ERR"><a href="#dom-domexception-invalid_character_err">INVALID_CHARACTER_ERR</a></code>
+ production in XML, throw an <code title="dom-DOMException-INVALID_CHARACTER_ERR"><a href="#dom-domexception-invalid_character_err">INVALID_CHARACTER_ERR</a></code>
  exception and terminate these steps. <!-- DOM3 didn't check for "xml" -->
 
  <li><p>If <var title="">data</var> contains the string "<code title="">?&gt;</code>",
- raise an <code title="dom-DOMException-INVALID_CHARACTER_ERR"><a href="#dom-domexception-invalid_character_err">INVALID_CHARACTER_ERR</a></code>
+ throw an <code title="dom-DOMException-INVALID_CHARACTER_ERR"><a href="#dom-domexception-invalid_character_err">INVALID_CHARACTER_ERR</a></code>
  exception and terminate these steps. <!-- Gecko does this. -->
 
- <!--<li><p>If <var title>target</var> contains a U+003A COLON (":") character, raise a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and terminate these steps.--> <!-- DOM3 didn't check this -->
+ <!--<li><p>If <var title>target</var> contains a U+003A COLON (":") character, throw a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception and terminate these steps.--> <!-- DOM3 didn't check this -->
 
  <li><p>Return a new <code><a href="#processinginstruction">ProcessingInstruction</a></code>, with
  <a href="#concept-pi-target" title="concept-PI-target">target</a> set to <var title="">target</var>,
@@ -1735,7 +1735,7 @@ contains "xml" or the colon, or that the data contains characters that match the
 [createAttribute]
 <p>The <dfn title=dom-Document-createAttribute><code>createAttribute(<var title>name</var>)</code></dfn> method must run these steps:</p>
 <ol>
- <li><p>If <var title>name</var> does not match the <code data-anolis-spec=xml>Name</code> production in XML, raise an
+ <li><p>If <var title>name</var> does not match the <code data-anolis-spec=xml>Name</code> production in XML, throw an
  <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
  exception and terminate these steps.
  <li><p>Return a new <code>Attr</code> node with its <code title=dom-Node-namespaceURI>namespaceURI</code> set to null, <code title=dom-Node-prefix>prefix</code> set to null, <code title=dom-Node-localName>localName</code> set to <var title>name</var>, and <code title=dom-Node-ownerDocument>ownerDocument</code> set to the <span>context node</span>.
@@ -1758,7 +1758,7 @@ method must run these steps:
 
 <ol>
  <li><p>If <var title="">node</var> is a <code><a href="#document">Document</a></code> node or a
- <code><a href="#documenttype">DocumentType</a></code> node, raise a
+ <code><a href="#documenttype">DocumentType</a></code> node, throw a
  <code title="dom-DOMException-NOT_SUPPORTED_ERR"><a href="#dom-domexception-not_supported_err">NOT_SUPPORTED_ERR</a></code>
  exception and terminate these steps.
 
@@ -1815,7 +1815,7 @@ otherwise.
 
  <dd>
   <p>Returns a new <code><a href="#documenttype">DocumentType</a></code>, with the given <var title="">qualifiedName</var>, <var title="">publicId</var>, and <var title="">systemId</var>. If <var title="">qualifiedName</var> does not match the <code class="external"><a href="http://www.w3.org/TR/xml/#NT-Name">Name</a></code> production in XML, an <code title="dom-DOMException-INVALID_CHARACTER_ERR"><a href="#dom-domexception-invalid_character_err">INVALID_CHARACTER_ERR</a></code>
-  exception is raised, and if it does not match the <code class="external"><a href="http://www.w3.org/TR/xml-names/#NT-NCName">NCName</a></code> production in Namespaces in XML, a <code title="dom-DOMException-NAMESPACE_ERR"><a href="#dom-domexception-namespace_err">NAMESPACE_ERR</a></code> exception is raised.
+  exception is thrown, and if it does not match the <code class="external"><a href="http://www.w3.org/TR/xml-names/#NT-NCName">NCName</a></code> production in Namespaces in XML, a <code title="dom-DOMException-NAMESPACE_ERR"><a href="#dom-domexception-namespace_err">NAMESPACE_ERR</a></code> exception is thrown.
 
 
  <dt><var title="">doc</var> = <var title="">document</var> . <code title="dom-Document-implementation"><a href="#dom-document-implementation">implementation</a></code> . <code title="dom-DOMImplementation-createDocument"><a href="#dom-domimplementation-createdocument">createDocument</a></code>( <var title="">namespace</var>, <var title="">qualifiedName</var>, <var title="">doctype</var> )
@@ -1826,10 +1826,10 @@ otherwise.
   <var title="">qualifiedName</var> and whose <code title="dom-Node-namespaceURI"><a href="#dom-node-namespaceuri">namespaceURI</a></code> is <var title="">namespace</var> (unless <var title="">qualifiedName</var> is the empty
   string), and with <var title="">doctype</var>, if it is given, as its <code><a href="#documenttype">DocumentType</a></code>.
 
-  <p>This method raises the same exceptions as the <code title="dom-Document-createElementNS"><a href="#dom-document-createelementns">createElementNS</a></code> method, when called
+  <p>This method throws the same exceptions as the <code title="dom-Document-createElementNS"><a href="#dom-document-createelementns">createElementNS</a></code> method, when called
   with the same arguments. If <var title="">doctype</var> comes from another
   <code><a href="#document">Document</a></code>, a <code title="dom-DOMException-WRONG_DOCUMENT_ERR"><a href="#dom-domexception-wrong_document_err">WRONG_DOCUMENT_ERR</a></code> exception
-  is raised.
+  is thrown.
 
 
  <dt><var title="">doc</var> = <var title="">document</var> . <code title="dom-Document-implementation"><a href="#dom-document-implementation">implementation</a></code> . <code title="dom-DOMImplementation-createHTMLDocument"><a href="#dom-domimplementation-createhtmldocument">createHTMLDocument</a></code>(
@@ -1845,15 +1845,15 @@ otherwise.
 <p>The <dfn id="dom-domimplementation-createdocumenttype" title="dom-DOMImplementation-createDocumentType"><code>createDocumentType(<var title="">qualifiedName</var>, <var title="">publicId</var>, <var title="">systemId</var>)</code></dfn> method must run the following steps:
 
 <ol>
- <li><p>If <var title="">qualifiedName</var> does not match the <code class="external"><a href="http://www.w3.org/TR/xml/#NT-Name">Name</a></code> production in XML, raise an <code title="dom-DOMException-INVALID_CHARACTER_ERR"><a href="#dom-domexception-invalid_character_err">INVALID_CHARACTER_ERR</a></code>
+ <li><p>If <var title="">qualifiedName</var> does not match the <code class="external"><a href="http://www.w3.org/TR/xml/#NT-Name">Name</a></code> production in XML, throw an <code title="dom-DOMException-INVALID_CHARACTER_ERR"><a href="#dom-domexception-invalid_character_err">INVALID_CHARACTER_ERR</a></code>
  exception and terminate these steps.
- <li><p>If <var title="">qualifiedName</var> does not match the <code class="external"><a href="http://www.w3.org/TR/xml-names/#NT-NCName">NCName</a></code> production in Namespaces in XML, raise a
+ <li><p>If <var title="">qualifiedName</var> does not match the <code class="external"><a href="http://www.w3.org/TR/xml-names/#NT-NCName">NCName</a></code> production in Namespaces in XML, throw a
  <code title="dom-DOMException-NAMESPACE_ERR"><a href="#dom-domexception-namespace_err">NAMESPACE_ERR</a></code> exception and
  terminate these steps.
- <!--<li><p>If <var title>publicId</var> contains a character that does not match the <code data-anolis-spec=xml>PubidChar</code> production in XML, raise an
+ <!--<li><p>If <var title>publicId</var> contains a character that does not match the <code data-anolis-spec=xml>PubidChar</code> production in XML, throw an
  <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
  exception and terminate these steps. --> <!-- DOM3 didn't check this -->
- <!--<li><p>If <var title>systemId</var> contains both a U+0022 QUOTATION MARK ('"') and a U+0027 APOSTROPHE ("'") character, raise an
+ <!--<li><p>If <var title>systemId</var> contains both a U+0022 QUOTATION MARK ('"') and a U+0027 APOSTROPHE ("'") character, throw an
  <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
  exception and terminate these steps.--> <!-- DOM3 didn't check this -->
  <li><p>Return a new <code><a href="#documenttype">DocumentType</a></code>, with <var title="">qualifiedName</var> as its <a href="#concept-doctype-name" title="concept-doctype-name">name</a>, <var title="">publicId</var> as its <a href="#concept-doctype-publicid" title="concept-doctype-publicid">public ID</a>, and <var title="">systemId</var>
@@ -1866,16 +1866,34 @@ otherwise.
 
 <ol>
  <li><p>Let <var title="">document</var> be a new <code><a href="#document">Document</a></code> node.
+
  <li><p>Let <var title="">element</var> be null.
- <li><p>If <var title="">qualifiedName</var> is not the empty string, set <var title="">element</var> to the result of invoking the <code title="dom-Document-createElementNS"><a href="#dom-document-createelementns">createElementNS</a></code> method with the arguments <var title="">namespace</var> and <var title="">qualifiedName</var> on <var title="">document</var>. If that raised an exception, re-raise the same exception and terminate these steps.
+
+ <li><p>If <var title="">qualifiedName</var> is not the empty string, set
+ <var title="">element</var> to the result of invoking the
+ <code title="dom-Document-createElementNS"><a href="#dom-document-createelementns">createElementNS</a></code> method with the
+ arguments <var title="">namespace</var> and <var title="">qualifiedName</var> on
+ <var title="">document</var>. If that threw an exception, terminate these steps.
+
  <li>
   <p>If <var title="">doctype</var> is not null, run the following substeps:
+
   <ol>
-   <li><p>If the <var title="">doctype</var>'s <code title="dom-Node-ownerDocument"><a href="#dom-node-ownerdocument">ownerDocument</a></code> is not null, raise a <code title="dom-DOMException-WRONG_DOCUMENT_ERR"><a href="#dom-domexception-wrong_document_err">WRONG_DOCUMENT_ERR</a></code> exception and terminate the overall set of steps.
-   <li><p>Set the <var title="">doctype</var>'s <code title="dom-Node-ownerDocument"><a href="#dom-node-ownerdocument">ownerDocument</a></code> to <var title="">document</var>.
+   <li><p>If the <var title="">doctype</var>'s
+   <code title="dom-Node-ownerDocument"><a href="#dom-node-ownerdocument">ownerDocument</a></code> is not null, throw a
+   <code title="dom-DOMException-WRONG_DOCUMENT_ERR"><a href="#dom-domexception-wrong_document_err">WRONG_DOCUMENT_ERR</a></code>
+   exception and terminate the overall set of steps.
+
+   <li><p>Set the <var title="">doctype</var>'s
+   <code title="dom-Node-ownerDocument"><a href="#dom-node-ownerdocument">ownerDocument</a></code> to
+   <var title="">document</var>.
+
    <li><p>Append <var title="">doctype</var> to <var title="">document</var>.
   </ol>
- <li><p>If <var title="">element</var> is not null, append <var title="">element</var> to <var title="">document</var>.
+
+ <li><p>If <var title="">element</var> is not null, append <var title="">element</var>
+ to <var title="">document</var>.
+
  <li><p>Return <var title="">document</var>.
 </ol>
 
@@ -2078,7 +2096,7 @@ method must run these steps:
 
 <ol>
  <li><p>If <var title="">qualifiedName</var> does not match the
- <code class="external"><a href="http://www.w3.org/TR/xml/#NT-Name">Name</a></code> production in XML, raise an
+ <code class="external"><a href="http://www.w3.org/TR/xml/#NT-Name">Name</a></code> production in XML, throw an
  <code title="dom-DOMException-INVALID_CHARACTER_ERR"><a href="#dom-domexception-invalid_character_err">INVALID_CHARACTER_ERR</a></code>
  exception and terminate these steps.
 
@@ -2090,7 +2108,7 @@ method must run these steps:
 
  <!-- https://bugzilla.mozilla.org/show_bug.cgi?id=315805 -->
  <li><p>If <var title="">qualifiedName</var> starts with
- "<code title="">xmlns</code>", raise a
+ "<code title="">xmlns</code>", throw a
  <code title="dom-DOMException-NAMESPACE_ERR"><a href="#dom-domexception-namespace_err">NAMESPACE_ERR</a></code> and
  terminate these steps. <!--XXX define "starts with"? -->
 
@@ -2113,33 +2131,33 @@ method must run these steps:</p>
 
 <ol>
  <li><p>If <var title="">qualifiedName</var> does not match the
- <code class="external"><a href="http://www.w3.org/TR/xml/#NT-Name">Name</a></code> production in XML, raise an
+ <code class="external"><a href="http://www.w3.org/TR/xml/#NT-Name">Name</a></code> production in XML, throw an
  <code title="dom-DOMException-INVALID_CHARACTER_ERR"><a href="#dom-domexception-invalid_character_err">INVALID_CHARACTER_ERR</a></code>
  exception and terminate these steps.
  <li><p>If <var title="">qualifiedName</var> does not match the
  <code class="external"><a href="http://www.w3.org/TR/xml-names/#NT-QName">QName</a></code> production in Namespaces in XML,
- raise a <code title="dom-DOMException-NAMESPACE_ERR"><a href="#dom-domexception-namespace_err">NAMESPACE_ERR</a></code>
+ throw a <code title="dom-DOMException-NAMESPACE_ERR"><a href="#dom-domexception-namespace_err">NAMESPACE_ERR</a></code>
  exception and terminate these steps.
  <li><p>If <var title="">qualifiedName</var> contains a "<code>:</code>" (U+003E),
  then split the string on it and let <var title="">prefix</var> be the part before
  and <var title="">localName</var> the part after. Otherwise, let <var title="">prefix</var>
  be null and <var title="">localName</var> be <var title="">qualifiedName</var>.
  <li><p>If <var title="">prefix</var> is not null and <var title="">namespace</var> is an
- empty string, raise a
+ empty string, throw a
  <code title="dom-DOMException-NAMESPACE_ERR"><a href="#dom-domexception-namespace_err">NAMESPACE_ERR</a></code> exception
  and terminate these steps.
  <li><p>If <var title="">prefix</var> is "<code title="">xml</code>" and
- <var title="">namespace</var> is not the <a href="#xml-namespace">XML namespace</a>, raise a
+ <var title="">namespace</var> is not the <a href="#xml-namespace">XML namespace</a>, throw a
  <code title="dom-DOMException-NAMESPACE_ERR"><a href="#dom-domexception-namespace_err">NAMESPACE_ERR</a></code> exception
  and terminate these steps.
  <li><p>If <var title="">qualifiedName</var> or <var title="">prefix</var> is
  "<code title="">xmlns</code>" and <var title="">namespace</var> is not the
- <a href="#xmlns-namespace">XMLNS namespace</a>, raise a
+ <a href="#xmlns-namespace">XMLNS namespace</a>, throw a
  <code title="dom-DOMException-NAMESPACE_ERR"><a href="#dom-domexception-namespace_err">NAMESPACE_ERR</a></code> exception
  and terminate these steps.
  <li><p>If <var title="">namespace</var> is the <a href="#xmlns-namespace">XMLNS namespace</a> and
  neither <var title="">qualifiedName</var> nor <var title="">prefix</var> is
- "<code title="">xmlns</code>", raise a
+ "<code title="">xmlns</code>", throw a
  <code title="dom-DOMException-NAMESPACE_ERR"><a href="#dom-domexception-namespace_err">NAMESPACE_ERR</a></code> exception
  and terminate these steps.
  <li><p>If the node does not have an <code><a href="#attr">Attr</a></code> object whose
@@ -2364,7 +2382,7 @@ method must run these steps:
 <ol>
  <li><p>If <var title="">offset</var> is greater than the
  <a href="#context-node">context node</a>'s <code title="dom-CharacterData-length"><a href="#dom-characterdata-length">length</a></code>,
- raise an <code title="dom-DOMException-INDEX_SIZE_ERR"><a href="#dom-domexception-index_size_err">INDEX_SIZE_ERR</a></code>
+ throw an <code title="dom-DOMException-INDEX_SIZE_ERR"><a href="#dom-domexception-index_size_err">INDEX_SIZE_ERR</a></code>
  exception and terminate these steps.
 
  <li><p>If <span title=""><var title="">offset</var>+<var title="">count</var></span> is
@@ -2383,7 +2401,7 @@ method must run these steps:
 
 <ol>
  <li><p>If <var title="">offset</var> is greater than the <a href="#context-node">context node</a>'s
- <code title="dom-CharacterData-length"><a href="#dom-characterdata-length">length</a></code>, raise an
+ <code title="dom-CharacterData-length"><a href="#dom-characterdata-length">length</a></code>, throw an
  <code title="dom-DOMException-INDEX_SIZE_ERR"><a href="#dom-domexception-index_size_err">INDEX_SIZE_ERR</a></code> exception
  and terminate these steps.</li>
 
@@ -2395,7 +2413,7 @@ method must run these steps:
 
 <ol>
  <li><p>If <var title="">offset</var> is greater than the <a href="#context-node">context node</a>'s
- <code title="dom-CharacterData-length"><a href="#dom-characterdata-length">length</a></code>, raise an
+ <code title="dom-CharacterData-length"><a href="#dom-characterdata-length">length</a></code>, throw an
  <code title="dom-DOMException-INDEX_SIZE_ERR"><a href="#dom-domexception-index_size_err">INDEX_SIZE_ERR</a></code> exception
  and terminate these steps.</li>
 
@@ -2409,12 +2427,14 @@ method must run these steps:
  data.</li>
 </ol>
 
-<p>The <dfn id="dom-characterdata-replacedata" title="dom-CharacterData-replaceData"><code>replaceData(<var title="">offset</var>, <var title="">count</var>, <var title="">data</var>)</code></dfn> method must act as if
-the <code title="dom-CharacterData-deleteData"><a href="#dom-characterdata-deletedata">deleteData()</a></code> method is
-invoked with <var title="">offset</var> and <var title="">count</var> as arguments followed
-by the <code title="dom-CharacterData-insertData"><a href="#dom-characterdata-insertdata">insertData()</a></code> method
-with <var title="">offset</var> and <var title="">data</var> as arguments and re-raise any
-exceptions these methods might have raised.</p>
+<p>The
+<dfn id="dom-characterdata-replacedata" title="dom-CharacterData-replaceData"><code>replaceData(<var title="">offset</var>, <var title="">count</var>, <var title="">data</var>)</code></dfn>
+method must act as if the
+<code title="dom-CharacterData-deleteData"><a href="#dom-characterdata-deletedata">deleteData()</a></code> method is invoked
+with <var title="">offset</var> and <var title="">count</var> as arguments followed by
+the <code title="dom-CharacterData-insertData"><a href="#dom-characterdata-insertdata">insertData()</a></code> method with
+<var title="">offset</var> and <var title="">data</var> as arguments and re-throw any
+exceptions these methods might have thrown.
 
 
 <h3 id="interface-text"><span class="secno">4.8 </span>Interface <code><a href="#text">Text</a></code></h3>
@@ -2430,7 +2450,7 @@ method must run the following steps:
 
 </code><ol><code>
   <li>If <var title="">offset</var> is greater than the <a href="#context-node">context node</a>'s
-  <code title="dom-CharacterData-length"><a href="#dom-characterdata-length">length</a></code>, raise an
+  <code title="dom-CharacterData-length"><a href="#dom-characterdata-length">length</a></code>, throw an
   <code title="dom-DOMException-INDEX_SIZE_ERR"><a href="#dom-domexception-index_size_err">INDEX_SIZE_ERR</a></code> exception
   and terminate these steps.
 
@@ -2441,13 +2461,13 @@ method must run the following steps:
   <li>Call the <a href="#context-node">context node</a>'s
   <code title="dom-CharacterData-substringData"><a href="#dom-characterdata-substringdata">substringData</a></code> method with
   <var title="">offset</var> and <var title="">length</var> as its arguments.
-  If this raised an exception, terminate these steps. Otherwise, let
+  If this threw an exception, terminate these steps. Otherwise, let
   <var>new data</var> be the value returned.
 
   <li>Call the <a href="#context-node">context node</a>'s
   <code title="dom-CharacterData-deleteData"><a href="#dom-characterdata-deletedata">deleteData</a></code> method with
   <var title="">offset</var> and <var title="">length</var> as its arguments.
-  If this raised an exception, terminate these steps.
+  If this threw an exception, terminate these steps.
 
   </code><li><code>Let <var title="">new node</var> be a new <code><a href="#text">Text</a></code> object, with the
   same <code title="dom-Node-ownerDocument"><a href="#dom-node-ownerdocument">ownerDocument</a></code> as the
@@ -2819,24 +2839,24 @@ algorithm:</p>
 
 <ol>
 
- <li>If the <var title="">token</var> argument is the empty string,
- then raise a <code title="dom-DOMException-SYNTAX_ERR"><a href="#dom-domexception-syntax_err">SYNTAX_ERR</a></code> exception and stop the
- algorithm.</li>
+ <li>If the <var title="">token</var> argument is the empty string, then throw a
+ <code title="dom-DOMException-SYNTAX_ERR"><a href="#dom-domexception-syntax_err">SYNTAX_ERR</a></code> exception and
+ terminate these steps.
 
- <li>If the <var title="">token</var> argument contains any <a href="#space-character" title="space character">space characters</a>, then raise an
- <code title="dom-DOMException-INVALID_CHARACTER_ERR"><a href="#dom-domexception-invalid_character_err">INVALID_CHARACTER_ERR</a></code> exception and stop the
- algorithm.</li>
+ <li>If the <var title="">token</var> argument contains any
+ <a href="#space-character" title="space character">space characters</a>, then throw an
+ <code title="dom-DOMException-INVALID_CHARACTER_ERR"><a href="#dom-domexception-invalid_character_err">INVALID_CHARACTER_ERR</a></code>
+ exception and terminate these steps.
 
- <li>Otherwise, <a href="#split-a-string-on-spaces" title="split a string on spaces">split the
- underlying string on spaces</a> to get the list of tokens in the
- object's underlying string.</li>
+ <li>Otherwise,
+ <a href="#split-a-string-on-spaces" title="split a string on spaces">split the underlying string on spaces</a>
+ to get the list of tokens in the object's underlying string.
 
  <li>If the token indicated by <var title="">token</var> is a
- <a href="#case-sensitive">case-sensitive</a> match for one of the tokens in the
- object's underlying string then return true and stop this
- algorithm.</li>
+ <a href="#case-sensitive">case-sensitive</a> match for one of the tokens in the object's
+ underlying string then return true and terminate these steps.
 
- <li>Otherwise, return false.</li>
+ <li>Otherwise, return false.
 
 </ol>
 
@@ -2845,30 +2865,30 @@ algorithm:</p>
 
 <ol>
 
- <li>If the <var title="">token</var> argument is the empty string,
- then raise a <code title="dom-DOMException-SYNTAX_ERR"><a href="#dom-domexception-syntax_err">SYNTAX_ERR</a></code> exception and stop the
- algorithm.</li>
+ <li>If the <var title="">token</var> argument is the empty string, then throw a
+ <code title="dom-DOMException-SYNTAX_ERR"><a href="#dom-domexception-syntax_err">SYNTAX_ERR</a></code> exception and
+ terminate these steps.
 
- <li>If the <var title="">token</var> argument contains any <a href="#space-character" title="space character">space characters</a>, then raise an
- <code title="dom-DOMException-INVALID_CHARACTER_ERR"><a href="#dom-domexception-invalid_character_err">INVALID_CHARACTER_ERR</a></code> exception and stop the
- algorithm.</li>
+ <li>If the <var title="">token</var> argument contains any
+ <a href="#space-character" title="space character">space characters</a>, then throw an
+ <code title="dom-DOMException-INVALID_CHARACTER_ERR"><a href="#dom-domexception-invalid_character_err">INVALID_CHARACTER_ERR</a></code>
+ exception and terminate these steps.
 
- <li>Otherwise, <a href="#split-a-string-on-spaces" title="split a string on spaces">split the
- underlying string on spaces</a> to get the list of tokens in the
- object's underlying string.</li>
+ <li>Otherwise,
+ <a href="#split-a-string-on-spaces" title="split a string on spaces">split the underlying string on spaces</a>
+ to get the list of tokens in the object's underlying string.
 
- <li>If the given <var title="">token</var> is a
- <a href="#case-sensitive">case-sensitive</a> match for one of the tokens in the
- <code><a href="#domtokenlist">DOMTokenList</a></code> object's underlying string then stop the
- algorithm.</li>
+ <li>If the given <var title="">token</var> is a <a href="#case-sensitive">case-sensitive</a> match
+ for one of the tokens in the <code><a href="#domtokenlist">DOMTokenList</a></code> object's underlying
+ string then terminate these steps.
 
- <li>Otherwise, if the <code><a href="#domtokenlist">DOMTokenList</a></code> object's underlying
- string is not the empty string and the last character of that
- string is not a <a href="#space-character">space character</a>, then append a U+0020
- SPACE character to the end of that string.</li>
+ <li>Otherwise, if the <code><a href="#domtokenlist">DOMTokenList</a></code> object's underlying string is
+ not the empty string and the last character of that string is not a
+ <a href="#space-character">space character</a>, then append a U+0020 SPACE character to the end
+ of that string.
 
  <li>Append the value of <var title="">token</var> to the end of the
- <code><a href="#domtokenlist">DOMTokenList</a></code> object's underlying string.</li>
+ <code><a href="#domtokenlist">DOMTokenList</a></code> object's underlying string.
 
 </ol>
 
@@ -2877,17 +2897,17 @@ algorithm:</p>
 
 <ol>
 
- <li>If the <var title="">token</var> argument is the empty string,
- then raise a <code title="dom-DOMException-SYNTAX_ERR"><a href="#dom-domexception-syntax_err">SYNTAX_ERR</a></code> exception and stop the
- algorithm.</li>
+ <li>If the <var title="">token</var> argument is the empty string, then throw a
+ <code title="dom-DOMException-SYNTAX_ERR"><a href="#dom-domexception-syntax_err">SYNTAX_ERR</a></code> exception and
+ terminate these steps.
 
- <li>If the <var title="">token</var> argument contains any <a href="#space-character" title="space character">space characters</a>, then raise an
- <code title="dom-DOMException-INVALID_CHARACTER_ERR"><a href="#dom-domexception-invalid_character_err">INVALID_CHARACTER_ERR</a></code> exception and stop the
- algorithm.</li>
+ <li>If the <var title="">token</var> argument contains any
+ <a href="#space-character" title="space character">space characters</a>, then throw an
+ <code title="dom-DOMException-INVALID_CHARACTER_ERR"><a href="#dom-domexception-invalid_character_err">INVALID_CHARACTER_ERR</a></code>
+ exception and terminate these steps.
 
- <li>Otherwise, <a href="#remove-a-token-from-a-string" title="remove a token from a string">remove
- the given <var title="">token</var> from the underlying
- string</a>.</li>
+ <li>Otherwise,
+ <a href="#remove-a-token-from-a-string" title="remove a token from a string">remove the given <var title="">token</var> from the underlying string</a>.
 
 </ol>
 
@@ -2896,32 +2916,34 @@ algorithm:</p>
 
 <ol>
 
- <li>If the <var title="">token</var> argument is the empty string,
- then raise a <code title="dom-DOMException-SYNTAX_ERR"><a href="#dom-domexception-syntax_err">SYNTAX_ERR</a></code> exception and stop the
- algorithm.</li>
+ <li>If the <var title="">token</var> argument is the empty string, then throw a
+ <code title="dom-DOMException-SYNTAX_ERR"><a href="#dom-domexception-syntax_err">SYNTAX_ERR</a></code> exception and
+ terminate these steps.
 
- <li>If the <var title="">token</var> argument contains any <a href="#space-character" title="space character">space characters</a>, then raise an
- <code title="dom-DOMException-INVALID_CHARACTER_ERR"><a href="#dom-domexception-invalid_character_err">INVALID_CHARACTER_ERR</a></code> exception and stop the
- algorithm.</li>
+ <li>If the <var title="">token</var> argument contains any
+ <a href="#space-character" title="space character">space characters</a>, then throw an
+ <code title="dom-DOMException-INVALID_CHARACTER_ERR"><a href="#dom-domexception-invalid_character_err">INVALID_CHARACTER_ERR</a></code>
+ exception and terminate these steps.
 
- <li>Otherwise, <a href="#split-a-string-on-spaces" title="split a string on spaces">split the
- underlying string on spaces</a> to get the list of tokens in the
- object's underlying string.</li>
+ <li>Otherwise,
+ <a href="#split-a-string-on-spaces" title="split a string on spaces">split the underlying string on spaces</a>
+ to get the list of tokens in the object's underlying string.
 
- <li>If the given <var title="">token</var> is a
- <a href="#case-sensitive">case-sensitive</a> match for one of the tokens in the
- <code><a href="#domtokenlist">DOMTokenList</a></code> object's underlying string then <a href="#remove-a-token-from-a-string" title="remove a token from a string">remove the given <var title="">token</var> from the underlying string</a> and stop the
- algorithm, returning false.</li>
+ <li>If the given <var title="">token</var> is a <a href="#case-sensitive">case-sensitive</a> match
+ for one of the tokens in the <code><a href="#domtokenlist">DOMTokenList</a></code> object's underlying
+ string then
+ <a href="#remove-a-token-from-a-string" title="remove a token from a string">remove the given <var title="">token</var> from the underlying string</a>,
+ return false and terminate these steps.
 
- <li>Otherwise, if the <code><a href="#domtokenlist">DOMTokenList</a></code> object's underlying
- string is not the empty string and the last character of that
- string is not a <a href="#space-character">space character</a>, then append a U+0020
- SPACE character to the end of that string.</li>
+ <li>Otherwise, if the <code><a href="#domtokenlist">DOMTokenList</a></code> object's underlying string is
+ not the empty string and the last character of that string is not a
+ <a href="#space-character">space character</a>, then append a U+0020 SPACE character to the end
+ of that string.
 
  <li>Append the value of <var title="">token</var> to the end of the
- <code><a href="#domtokenlist">DOMTokenList</a></code> object's underlying string.</li>
+ <code><a href="#domtokenlist">DOMTokenList</a></code> object's underlying string.
 
- <li>Return true.</li>
+ <li>Return true.
 
 </ol>
 

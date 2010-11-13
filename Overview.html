@@ -322,25 +322,27 @@ this specification.
 
 <h3 id="common-microsyntaxes"><span class="secno">1.4 </span>Common microsyntaxes</h3>
 <h4 id="common-parser-idioms"><span class="secno">1.4.1 </span>Common parser idioms</h4>
-<p>Some of the micro-parsers described below follow the pattern of
-having an <var title="">input</var> variable that holds the string
-being parsed, and having a <var title="">position</var> variable
-pointing at the next character to parse in <var title="">input</var>.
+<p>Some of the micro-parsers described below follow the pattern of having an
+<var title="">input</var> variable that holds the string being parsed, and having a
+<var title="">position</var> variable pointing at the next character to parse in
+<var title="">input</var>.
 
-<p>For parsers based on this pattern, a step that requires the user
-agent to <dfn id="collect-a-sequence-of-characters">collect a sequence of characters</dfn> means that the
-following algorithm must be run, with <var title="">characters</var>
-being the set of characters that can be collected:
+<p>For parsers based on this pattern, a step that requires the user agent to
+<dfn id="collect-a-sequence-of-characters">collect a sequence of characters</dfn> means that the following algorithm
+must be run, with <var title="">characters</var> being the set of characters that
+can be collected:
 
 <ol>
- <li><p>Let <var title="">input</var> and <var title="">position</var> be the same variables as those of the same
- name in the algorithm that invoked these steps.
+ <li><p>Let <var title="">input</var> and <var title="">position</var> be the same
+ variables as those of the same name in the algorithm that invoked these steps.
 
  <li><p>Let <var title="">result</var> be the empty string.
 
- <li><p>While <var title="">position</var> does not point past the
- end of <var title="">input</var> and the character at <var title="">position</var> is one of the <var title="">characters</var>, append that character to the end of <var title="">result</var> and advance <var title="">position</var> to
- the next character in <var title="">input</var>.
+ <li><p>While <var title="">position</var> does not point past the end of
+ <var title="">input</var> and the character at <var title="">position</var> is one of
+ the <var title="">characters</var>, append that character to the end of
+ <var title="">result</var> and advance <var title="">position</var> to the next
+ character in <var title="">input</var>.
 
  <li><p>Return <var title="">result</var>.
 </ol>
@@ -384,14 +386,12 @@ defined on a per-set basis.
 must use the following algorithm:
 
 <ol>
- <li><p>Let <var title="">input</var> be the string being
- parsed.
+ <li><p>Let <var title="">input</var> be the string being parsed.
 
- <li><p>Let <var title="">position</var> be a pointer into <var title="">input</var>, initially pointing at the start of the
- string.
+ <li><p>Let <var title="">position</var> be a pointer into <var title="">input</var>,
+ initially pointing at the start of the string.
 
- <li><p>Let <var title="">tokens</var> be a list of tokens,
- initially empty.
+ <li><p>Let <var title="">tokens</var> be a list of tokens, initially empty.
 
  <li><p><a href="#skip-whitespace">Skip whitespace</a>.
 
@@ -402,7 +402,8 @@ must use the following algorithm:
    <li><p><a href="#collect-a-sequence-of-characters">Collect a sequence of characters</a> that are not
    <a href="#space-character" title="space character">space characters</a>.
 
-   <li><p>Add the string collected in the previous step to <var title="">tokens</var>.
+   <li><p>Add the string collected in the previous step to
+   <var title="">tokens</var>.
 
    <li><p><a href="#skip-whitespace">Skip whitespace</a>.
   </ol>
@@ -1491,11 +1492,11 @@ http://lists.w3.org/Archives/Public/www-dom/2003JulSep/0049.html -->
  <dt><var title="">collection</var> = <var title="">document</var> . <code title="dom-Document-getElementsByClassName"><a href="#dom-document-getelementsbyclassname">getElementsByClassName(<var title="">classes</var>)</a></code>
  <dt><var title="">collection</var> = <var title="">element</var> . <code title="dom-Element-getElementsByClassName"><a href="#dom-element-getelementsbyclassname">getElementsByClassName(<var title="">classes</var>)</a></code>
  <dd>
-  <p>Returns a <code><a href="#nodelist">NodeList</a></code> of the elements in the object
-  on which the method was invoked (a <code><a href="#document">Document</a></code> or an
-  <code><a href="#element">Element</a></code>) that have all the classes given by <var title="">classes</var>.
-  <p>The <var title="">classes</var> argument is interpreted as a
-  space-separated list of classes.
+  <p>Returns a <code><a href="#nodelist">NodeList</a></code> of the elements in the object on which the
+  method was invoked (a <code><a href="#document">Document</a></code> or an <code><a href="#element">Element</a></code>) that
+  have all the classes given by <var title="">classes</var>.
+  <p>The <var title="">classes</var> argument is interpreted as a space-separated
+  list of classes.
 </dl>
 
 <p>The <dfn id="dom-document-doctype" title="dom-Document-doctype"><code>doctype</code></dfn> attribute must return the child of the <code><a href="#document">Document</a></code> node that is a <code><a href="#documenttype">DocumentType</a></code> node, if there is one, or null otherwise.
@@ -1590,16 +1591,21 @@ case-insensitive</a> manner, otherwise, the comparisons must be done in a
   &lt;p id="p3" class="bbb ccc"/&gt;
 &lt;/div&gt;</pre>
 
- <p>A call to <code title="dom-Element-getElementsByClassName"><a href="#dom-element-getelementsbyclassname">document.getElementById('example').getElementsByClassName('aaa')</a></code>
- would return a <code><a href="#nodelist">NodeList</a></code> with the two paragraphs <code title="">p1</code> and <code title="">p2</code> in it.
+ <p>A call to
+ <code title="dom-Element-getElementsByClassName"><a href="#dom-element-getelementsbyclassname">document.getElementById('example').getElementsByClassName('aaa')</a></code>
+ would return a <code><a href="#nodelist">NodeList</a></code> with the two paragraphs
+ <code title="">p1</code> and <code title="">p2</code> in it.
 
- <p>A call to <code title="dom-Element-getElementsByClassName"><a href="#dom-element-getelementsbyclassname">getElementsByClassName('ccc&nbsp;bbb')</a></code> would only
- return one node, however, namely <code title="">p3</code>. A call
- to <code title="dom-Element-getElementsByClassName"><a href="#dom-element-getelementsbyclassname">document.getElementById('example').getElementsByClassName('bbb&nbsp;&nbsp;ccc&nbsp;')</a></code>
+ <p>A call to
+ <code title="dom-Element-getElementsByClassName"><a href="#dom-element-getelementsbyclassname">getElementsByClassName('ccc&nbsp;bbb')</a></code>
+ would only return one node, however, namely <code title="">p3</code>. A call to
+ <code title="dom-Element-getElementsByClassName"><a href="#dom-element-getelementsbyclassname">document.getElementById('example').getElementsByClassName('bbb&nbsp;&nbsp;ccc&nbsp;')</a></code>
  would return the same thing.
 
- <p>A call to <code title="dom-Element-getElementsByClassName"><a href="#dom-element-getelementsbyclassname">getElementsByClassName('aaa,bbb')</a></code> would return no
- nodes; none of the elements above are in the "aaa,bbb" class.
+ <p>A call to
+ <code title="dom-Element-getElementsByClassName"><a href="#dom-element-getelementsbyclassname">getElementsByClassName('aaa,bbb')</a></code>
+ would return no nodes; none of the elements above are in the
+ <code title="">aaa,bbb</code> class.
 </div>
 
 <!-- v2:
@@ -2801,23 +2807,29 @@ ordinarily be treated in a case-insensitive manner.
 attribute must return the number of tokens that result from <a href="#split-a-string-on-spaces" title="split a string on spaces">splitting the underlying string on
 spaces</a>. This is the <var title="dom-DOMTokenList-length"><a href="#dom-domtokenlist-length">length</a></var>.
 
-<p>The object's <a class="external" href="http://dev.w3.org/2006/webapi/WebIDL/#dfn-supported-property-indices">supported property
-indices</a> are the numbers in the range zero to <span title=""><var title="dom-DOMTokenList-length"><a href="#dom-domtokenlist-length">length</a></var>&minus;1</span>, unless the <var title="dom-DOMTokenList-length"><a href="#dom-domtokenlist-length">length</a></var> is zero, in which case there are no
+<p>The object's <a class="external" href="http://dev.w3.org/2006/webapi/WebIDL/#dfn-supported-property-indices">supported property indices</a>
+are the numbers in the range zero to
+<span title=""><var title="dom-DOMTokenList-length"><a href="#dom-domtokenlist-length">length</a></var>&minus;1</span>,
+unless the <var title="dom-DOMTokenList-length"><a href="#dom-domtokenlist-length">length</a></var> is zero, in which
+case there are no
 <a class="external" href="http://dev.w3.org/2006/webapi/WebIDL/#dfn-supported-property-indices">supported property indices</a>.
 
-<p>The <dfn id="dom-domtokenlist-item" title="dom-DOMTokenList-item"><code>item(<var title="">index</var>)</code></dfn> method must <a href="#split-a-string-on-spaces" title="split a
-string on spaces">split the underlying string on spaces</a>,
-preserving the order of the tokens as found in the underlying
-string, and then return the <var title="">index</var>th item in this
-list. If <var title="">index</var> is equal to or greater than the
-number of tokens, then the method must return null.
+<p>The
+<dfn id="dom-domtokenlist-item" title="dom-DOMTokenList-item"><code>item(<var title="">index</var>)</code></dfn>
+method must
+<a href="#split-a-string-on-spaces" title="split a string on spaces">split the underlying string on spaces</a>,
+preserving the order of the tokens as found in the underlying string, and then
+return the <var title="">index</var>th item in this list. If <var title="">index</var>
+is equal to or greater than the number of tokens, then the method must return null.
 
-<p class="example">For example, if the string is "<code title="">a b
-a c</code>" then there are four tokens: the token with index 0 is
-"<code title="">a</code>", the token with index 1 is "<code title="">b</code>", the token with index 2 is "<code title="">a</code>", and the token with index 3 is "<code title="">c</code>".
+<p class="example">For example, if the string is "<code title="">a b a c</code>"
+then there are four tokens: the token with index 0 is "<code title="">a</code>",
+the token with index 1 is "<code title="">b</code>", the token with index 2 is
+"<code title="">a</code>", and the token with index 3 is "<code title="">c</code>".
 
-<p>The <dfn id="dom-domtokenlist-contains" title="dom-DOMTokenList-contains"><code>contains(<var title="">token</var>)</code></dfn> method must run the following
-algorithm:
+<p>The
+<dfn id="dom-domtokenlist-contains" title="dom-DOMTokenList-contains"><code>contains(<var title="">token</var>)</code></dfn>
+method must run the following algorithm:
 
 <ol>
  <li>If the <var title="">token</var> argument is the empty string, then throw a
@@ -2840,8 +2852,9 @@ algorithm:
  <li>Otherwise, return false.
 </ol>
 
-<p>The <dfn id="dom-domtokenlist-add" title="dom-DOMTokenList-add"><code>add(<var title="">token</var>)</code></dfn> method must run the following
-algorithm:
+<p>The
+<dfn id="dom-domtokenlist-add" title="dom-DOMTokenList-add"><code>add(<var title="">token</var>)</code></dfn>
+method must run the following algorithm:
 
 <ol>
  <li>If the <var title="">token</var> argument is the empty string, then throw a
@@ -2870,8 +2883,9 @@ algorithm:
  <code><a href="#domtokenlist">DOMTokenList</a></code> object's underlying string.
 </ol>
 
-<p>The <dfn id="dom-domtokenlist-remove" title="dom-DOMTokenList-remove"><code>remove(<var title="">token</var>)</code></dfn> method must run the following
-algorithm:
+<p>The
+<dfn id="dom-domtokenlist-remove" title="dom-DOMTokenList-remove"><code>remove(<var title="">token</var>)</code></dfn>
+method must run the following algorithm:
 
 <ol>
  <li>If the <var title="">token</var> argument is the empty string, then throw a
@@ -2887,8 +2901,9 @@ algorithm:
  <a href="#remove-a-token-from-a-string" title="remove a token from a string">remove the given <var title="">token</var> from the underlying string</a>.
 </ol>
 
-<p>The <dfn id="dom-domtokenlist-toggle" title="dom-DOMTokenList-toggle"><code>toggle(<var title="">token</var>)</code></dfn> method must run the following
-algorithm:
+<p>The
+<dfn id="dom-domtokenlist-toggle" title="dom-DOMTokenList-toggle"><code>toggle(<var title="">token</var>)</code></dfn>
+method must run the following algorithm:
 
 <ol>
  <li>If the <var title="">token</var> argument is the empty string, then throw a

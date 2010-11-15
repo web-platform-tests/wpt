@@ -325,7 +325,7 @@
     var c = document.createElement('canvas');
     var d = ctx.canvas;
     @assert c !== d;
-    try { ctx.canvas = c; } catch (e) {} // TODO: not sure whether this should throw or not...
+    ctx.canvas = c;
     @assert ctx.canvas === d;
 
 - meta: |

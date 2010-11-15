@@ -1067,7 +1067,7 @@
     def to_css((r,g,b,a)):
         return 'rgba(%d,%d,%d,%f)' % (r, g, b, a)
     def to_test((r,g,b,a)):
-        return '%d,%d,%d,%d' % (r, g, b, int(a*255))
+        return '%d,%d,%d,%d' % (round(r), round(g), round(b), round(a*255))
     def to_cairo((r,g,b,a)):
         return '%f,%f,%f,%f' % (r/255., g/255., b/255., a)
 

@@ -7,21 +7,16 @@
         <meta name="flags" content="nonHTML" />
         <meta name="assert" content="Verify in XHTML that attr(x) does not select the attribute when the case does not match" />
         <style type="text/css">
-            #test
-            {
-                border: 1px solid blue;
-                width: 100px;
-                height: 100px;
-            }
             #test:before
             {
-                color: red;
+                background: red;
+                color: yellow;
                 content: attr(Title);
             }
         </style>
     </head>
     <body>
-        <div>Pass if there is nothing displayed wihtin the blue box</div>
+        <div>Test Passes if there is no red visible on the page.</div>
         <div id="test" title="FAIL"></div>
     </body>
 </html>

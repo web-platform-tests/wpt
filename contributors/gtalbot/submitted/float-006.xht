@@ -7,7 +7,7 @@
   <title>CSS Test: floats - zero height empty float</title>
 
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
-  <!--  http://test.csswg.org/suites/css2.1/20100727/html4/floats-107.htm -->
+  <!-- Inspired by http://test.csswg.org/suites/css2.1/20100727/html4/floats-107.htm -->
   <link rel="help" title="Section 9.5 Floats" href="http://www.w3.org/TR/CSS21/visuren.html#floats" />
   <meta content="A zero-height (margin-box) empty float without border and without padding will not require the line box to be shortened; in such case, the zero-height (margin-box) empty float will slide in or will fit in at the top of the line box." name="assert" />
   <meta content="" name="flags" />
@@ -30,7 +30,7 @@
    #zero-height-first-float
    {
    float: left;
-   width: 18em; /* or any other width number which would represent less than the document box width*/
+   width: 18em; /* or any other width number which would represent less than the document box width */
    }
    
    #red-overlapped-second-float
@@ -46,7 +46,7 @@
 
  <body>
 
-  <p>Test is passed if there is a green rectangle below and if there is no red.</p>
+  <p>Test passes if there is a filled green rectangle and no red.</p>
 
   <div id="rel-pos-containing-block">
    <div id="green-overlapping-abs-pos"></div>

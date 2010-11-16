@@ -11,7 +11,7 @@
   <link rel="help" title="6.2.1 The 'inherit' value" href="http://www.w3.org/TR/CSS21/cascade.html#value-def-inherit" />
   <link rel="help" title="4.3.2 Length" href="http://www.w3.org/TR/CSS21/syndata.html#length-units" />
   <meta content="" name="flags" />
-  <meta content="Absolutely positioned boxes can be dimensioned and positioned solely by setting offset 'top', 'right', 'bottom' and 'left' property values with percentage unit and then with inherit keyword. 'inherit' on a offset property makes such offset property take the same computed value as the offset property of the nearest positioned ancestor; in the case of a percentage value - like in this testcase - , the computed value is the specified percentage value of such nearest positioned ancestor. " name="assert" />
+  <meta content="Absolutely positioned boxes can be dimensioned and positioned solely by setting offset 'top', 'right', 'bottom' and 'left' property values with percentage unit and then with inherit keyword. 'inherit' on a offset property makes such offset property take the same computed value as the offset property of the nearest positioned ancestor; in the case of a percentage value, the computed value is the specified percentage value of such nearest positioned ancestor." name="assert" />
 
   <style type="text/css"><![CDATA[
   body {margin: 8px;}
@@ -77,7 +77,7 @@
   */
 
   /*
-  max(8px, 16px) (margin collapsing between body's margin-top and p's margin-top)
+      16px (max(8px, 16px): margin collapsing between body's margin-top and p's margin-top)
   +   20px (first line)
   +   20px (second line)
   +   16px (p's margin-bottom)
@@ -92,8 +92,8 @@
 
   <body>
 
-  <p>Test passes if there is a bright green<br />
-  rectangle below and if there is no red.</p>
+  <p>Test passes if there is a filled <br />
+  bright green rectangle and no red.</p>
 
   <div id="rel-pos-grand-parent">
     <div id="abs-pos-parent">

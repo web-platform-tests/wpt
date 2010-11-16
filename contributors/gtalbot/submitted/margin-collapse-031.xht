@@ -12,8 +12,24 @@
   <meta name="assert" content="The top margin of an in-flow block-level element is adjoining to its first in-flow block-level child's top margin if the element has no top border, no top padding, and the child has no clearance." />
 
   <style type="text/css"><![CDATA[
-  #parent-block-container {background-color: red; width: 100%;}
-  #child-block {background-color: lime; margin: 180px 0px;}
+  body
+  {
+  background-color: white;
+  margin: 8px;
+  }
+  
+  div#parent-block-container
+  {
+  background-color: red;
+  margin: 0px;
+  width: 100%;
+  }
+
+  div#child-block
+  {
+  background-color: lime;
+  margin: 100px 0px;
+  }
   ]]></style>
 
  </head>

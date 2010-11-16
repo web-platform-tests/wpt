@@ -24,14 +24,14 @@
   
   div#grand-parent
   {
-  border: white solid 6px; /* Such border prevents margin collapsing among vertical margins */
   width: 600px;
   }
 
   div#parent
   {
   background-color: lime;
-  border: white solid 6px; /* Such border prevents margin collapsing among vertical margins */
+  border: white solid 6px;
+  /* Such border prevents margin collapsing between #parent's vertical margins and #child's vertical margins */  
   font-size: 28px;
   margin: 2em 3em 1em 4em; /* 56px 84px 28px 112px */
   }
@@ -45,32 +45,30 @@
 
   div#abs-pos-overlapping-lime
   {
-  left: 244px;
+  left: 238px;
   position: absolute;
-  top: 196px;
+  top: 174px;
   }
+
 
   /*
        8px (body's margin-left)
-   +   6px (#grand-parent's border-left) 
    + 112px (#parent's margin-left) 
    +   6px (#parent's border-left) 
    + 112px (#child's margin-left) 
   ==================
-     244px
+     238px
   */
 
   /* 
-  max(8px, 16px) (margin collapsing between body's margin-top and p's margin-top) 
-  +   20px (first line) 
-  +   20px (second line) 
-  +   16px (p's margin-bottom) 
-  +    6px (#grand-parent's border-top) 
-  +  56px (#parent's margin-top) 
-  +    6px (#parent's border-top) 
-  +  56px (#child's margin-top) 
+      16px (max(8px, 16px): body's margin-top collapses with p's margin-top) 
+   +  20px (first line) 
+   +  20px (second line) 
+   +  56px (max(16px, 56px): p's margin-bottom collapses with #parent's margin-top) 
+   +   6px (#parent's border-top) 
+   +  56px (#child's margin-top) 
   ==================
-     196px 
+     174px 
   */
   ]]></style>
 
@@ -78,8 +76,8 @@
 
  <body>
 
-  <p>Test passes if there is a bright green<br />
-  rectangle below and if there is no red.</p>
+  <p>Test passes if there is a filled bright<br />
+  green rectangle and if there is no red.</p>
 
   <div id="grand-parent">
     <div id="parent">

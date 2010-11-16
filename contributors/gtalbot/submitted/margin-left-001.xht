@@ -9,22 +9,14 @@
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
   <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#margin-properties" />
   <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#blockwidth" />
-  <meta name="flags" content="" />
-  <meta name="assert" content="margin-left: 0 should apply to hr element since it is a block-level element" />
+  <meta content="" name="flags" />
+  <meta content="'margin-left: 0px' should apply to hr element since it is a block-level element" name="assert" />
 
   <style type="text/css"><![CDATA[
-  hr
+  hr, div#control
   {
   background-color: black;
-  border: none;
-  height: 1em;
-  margin-left: 0px;
-  width: 33%;
-  }
-  
-  #control
-  {
-  background-color: black;
+  border-style: none;
   height: 1em;
   margin-left: 0px;
   width: 33%;

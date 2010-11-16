@@ -10,8 +10,8 @@
   <link rel="author" title="Hilbrand Edskes" href="http://edskes.com/" />
   <link rel="help" href="http://www.w3.org/TR/CSS21/visufx.html#overflow" />
   <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#min-max-heights" />
-  <meta name="flags" content="ahem" />
-  <meta name="assert" content="Any space taken up by the scrollbars should be taken out of (subtracted from the dimensions of) the containing block formed by the element with the scrollbars." />
+  <meta content="ahem" name="flags" />
+  <meta content="Any space taken up by the scrollbars should be taken out of (subtracted from the dimensions of) the containing block formed by the element with the scrollbars." name="assert" />
 
   <style type="text/css"><![CDATA[
   div#test-red-overlapped
@@ -38,7 +38,7 @@
 
   <p>PREREQUISITE: User agent needs to support scrollbars as the scrolling mechanism. If it does not, then this test case does not apply to this user agent.</p>
 
-  <p>Below, there should be a wide green rectangle appearing across the page. There should be no red in this page.</p>
+  <p>Test passes if there is a wide green rectangle across the page and <strong>no red</strong>.</p>
 
   <div id="test-red-overlapped">X</div>
 

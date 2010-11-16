@@ -4,13 +4,13 @@
 
  <head>
 
-  <title>CSS Test: font-family</title>
+  <title>CSS Test: font-family - unquoted font-family names with parentheses or curly braces</title>
 
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
   <link rel="help" href="http://www.w3.org/TR/CSS21/fonts.html#font-family-prop" />
   <link rel="help" href="http://www.w3.org/TR/CSS21/syndata.html#rule-sets" />
-  <meta name="flags" content="ahem invalid" />
-  <meta name="assert" content="Unquoted font-family names must not contain unescaped parentheses or unescaped curly braces" />
+  <meta content="ahem invalid" name="flags" />
+  <meta content="Unquoted font-family names must not contain unescaped parentheses or unescaped curly braces" name="assert" />
 
   <style type="text/css"><![CDATA[
   p#first-test {font-family: Ahem, foo(bar), sans-serif;}
@@ -26,7 +26,7 @@
 
  <body>
 
-  <p>There should be no black stripe below.</p>
+  <p>Test passes if there is <strong>no black stripe</strong>.</p>
 
   <p id="first-test">First test Passed</p>
 

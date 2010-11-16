@@ -9,8 +9,8 @@
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
   <link rel="author" title="Marc Pacheco" href="http://marc.baffl.co.uk/contact.php" />
   <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#border-style-properties" />
-  <meta name="flags" content="" />
-  <meta name="assert" content="'border-style: hidden' must apply to all elements, including elements with display table-column-group. 'hidden' (border-style) is the same as 'none': the computed border width is zero." />
+  <meta content="" name="flags" />
+  <meta content="'border-style: hidden' must apply to all elements, including elements with display table-column-group. 'hidden' (border-style) is the same as 'none': the computed border width is zero." name="assert" />
 
   <style type="text/css"><![CDATA[
   #table
@@ -43,7 +43,7 @@
 
  <body>
 
-  <p>There should be no red below, not even thin red lines.</p>
+  <p>There should be <strong>no red</strong>, not even thin red lines.</p>
 
   <div id="table">
    <div id="test">

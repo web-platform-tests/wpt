@@ -1,0 +1,21 @@
+<!doctype html>
+<html>
+ <head>
+  <title>video.loop - existence test</title>
+  <script src="../../../../resources/testharness.js"></script>
+  <script src="../../../../resources/testharnessreport.js"></script>
+ </head>
+ <body>
+  <p><a href="http://dev.w3.org/html5/spec/Overview.html#dom-media-loop">spec reference</a></p>
+  <video id="video">
+  </video>
+  <div id="log"></div>
+  <script>
+test(function() {
+ assert_true(
+  "loop" in document.getElementById("video"),
+  "videoElement.loop property exists");
+});
+  </script>
+ </body>
+</html>

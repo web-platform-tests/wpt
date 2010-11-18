@@ -5,6 +5,7 @@
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
   <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/background/position/002.html" type="text/html"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/colors.html#background"/>
+  <meta name="flags" content="invalid"/>
   <style type="text/css">
    .case { float: left; border: solid; margin: 0.2em; } /* 150 x 100 */
    .test { background: #FFFFCC url(support/ring.png) no-repeat; padding: 16px; }
@@ -50,7 +51,7 @@
    .case.r11 .test { background-position: 108px 0%; }
 
    .negative .control { background-position: 0% 0%; }
-   .positive .control { background-position: 50%, 0%; } /* CSS3 background supports comma */
+   .negative3 .control { background-position: 50% 50%; } /* CSS3 background supports comma */
    .case.t1 .test { background-position: right bottom bottom; }
    .case.t2 .test { background-position: bottom right bottom; }
    .case.t3 .test { background-position: bottom 100%; }
@@ -60,7 +61,11 @@
    .case.t7 .test { background-position: center 50% center; }
    .case.t8 .test { background-position: 50% 50% 50%; }
    .case.t9 .test { background-position: center 50% 50%; }
-   .case.t10 .test { background-position: 50%, center; } /* CSS3 background supports comma */
+   .case.t10 .test { background-position: 50%, 100%; } /* CSS3 background supports comma */
+      /* This test makes sure the comma either is
+           a) invalid per CSS2.1
+           b) handled correctly per CSS3
+         and NOT parsed as a valid separator of x and y offsets. */
    .case.t11 .test { background-position: bottom 54px; }
    .case.t12 .test { background-position: 50 50%; }
    .case.t13 .test { background-position: bottom 100; }
@@ -114,7 +119,7 @@
   <div class="case negative t7"><div class="test"><div class="control"></div></div></div>
   <div class="case negative t8"><div class="test"><div class="control"></div></div></div>
   <div class="case negative t9"><div class="test"><div class="control"></div></div></div>
-  <div class="case negative positive t10"><div class="test"><div class="control"></div></div></div>
+  <div class="case negative negative3 t10"><div class="test"><div class="control"></div></div></div>
   <div class="case negative t11"><div class="test"><div class="control"></div></div></div>
   <div class="case negative t12"><div class="test"><div class="control"></div></div></div>
   <div class="case negative t13"><div class="test"><div class="control"></div></div></div>

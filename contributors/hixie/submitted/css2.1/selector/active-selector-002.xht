@@ -17,17 +17,21 @@
    body { margin: 0; padding: 0; }
    p { margin: 1em 0; }
 
+   /* Make the metadata links invisible */
+   [rel="author"], [rel="alternate"], [rel="help"] { display: none; }
+
    /* The test */
-   link:before { content: '1. Clicking these links, or activating them with the keyboard, should make them go green in exactly the same way.'; }
+   link:before { content: '1. Link A'; }
+   p:active, span:active { color: yellow; border: red solid thick; background: red; }
    .test { color: blue; }
-   :active { color: yellow; border: red solid thick; background: red; }
    :link:active, :visited:active { color: white; background: green; border: green solid thick; }
 
   </style>
   <link class="test" href="#test" rel="bookmark"/>
  </head>
  <body>
-  <p><a class="test" href="#test">2. Clicking these links, or activating them with the keyboard, should make them go green in exactly the same way.</a></p>
-  <p><a class="test" href="#test"><span>3. Clicking these links, or activating them with the keyboard, should make them go green in exactly the same way.</span></a></p>
+  <div><a class="test" href="#test">2. Link B</a></div>
+  <div><a class="test" href="#test"><span>3. Link C</span></a></div>
+  <p>Clicking the links above, or activating them with the keyboard, should make them go green in exactly the same way.</p>
  </body>
 </html>

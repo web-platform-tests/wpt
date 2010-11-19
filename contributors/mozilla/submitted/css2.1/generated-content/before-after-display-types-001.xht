@@ -7,24 +7,24 @@
 <style type="text/css">
 div { counter-reset:ctr; quotes:"\0022" "\0022" "\0022" "\0022"}
 
-div::before {
+div:before {
   content:counter(ctr) url(support/square-outline-32x32.png) open-quote "Before " attr(class);
   counter-increment:ctr;
 }
-div::after {
+div:after {
   content:counter(ctr) url(support/square-outline-32x32.png) "After " attr(class) close-quote;
   counter-increment:ctr;
 }
 
-.block::before, .block::after { display:block; }
-.inline::before, .inline::after { display:inline; }
-.inline-block::before, .inline-block::after { display:inline-block; }
-.table::before, .table::after { display:table; }
-.inline-table::before, .inline-table::after { display:inline-table; }
-.table-row-group::before, .table-row-group::after { display:table-row-group; }
-.table-row::before, .table-row::after { display:table-row; }
-.table-cell::before, .table-cell::after { display:table-cell; }
-.table-caption::before, .table-caption::after { display:table-caption; }
+.block:before, .block:after { display:block; }
+.inline:before, .inline:after { display:inline; }
+.inline-block:before, .inline-block:after { display:inline-block; }
+.table:before, .table:after { display:table; }
+.inline-table:before, .inline-table:after { display:inline-table; }
+.table-row-group:before, .table-row-group:after { display:table-row-group; }
+.table-row:before, .table-row:after { display:table-row; }
+.table-cell:before, .table-cell:after { display:table-cell; }
+.table-caption:before, .table-caption:after { display:table-caption; }
 
 div { border:1px solid green; margin:5px; }
 </style>

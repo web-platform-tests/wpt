@@ -7,29 +7,29 @@
 <style type="text/css">
 div { counter-reset:ctr; quotes:"\0022" "\0022" "\0022" "\0022"; }
 
-.gen::before {
+.gen:before {
   content:counter(ctr) url(support/square-outline-32x32.png) open-quote "Before " attr(class);
   counter-increment:ctr;
 }
-.gen::after {
+.gen:after {
   content:counter(ctr) url(support/square-outline-32x32.png) "After " attr(class) close-quote;
   counter-increment:ctr;
 }
 
-.abs::before {
+.abs:before {
   position:absolute;
   left:0;
 }
-.abs::after {
+.abs:after {
   position:absolute;
   right:0;
 }
 
-.rel::before {
+.rel:before {
   position:relative;
   top:-10px;
 }
-.rel::after {
+.rel:after {
   position:relative;
   top:10px;
 }

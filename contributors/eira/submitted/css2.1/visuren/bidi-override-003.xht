@@ -7,18 +7,19 @@
     <meta name="flags" content=""/>
     <meta name="assert" content="bidi-override should not be applied to list item when specified on ul"/>
     <style type="text/css"><![CDATA[
+      ul, li { margin: 1em 2em; padding: 0; }
       .override {
-      direction: rtl;
-      unicode-bidi: bidi-override;
+        direction: rtl;
+        unicode-bidi: bidi-override;
       }
     ]]></style>
   </head>
   
   <body>
-    <p>The list item should be "abc":</p>
+    <p>Test passes if the word PASS appears below (followed by a bullet on the right).</p>
     <ul class="override">
       <li>
-	abc
+	PASS
       </li>
     </ul>
     

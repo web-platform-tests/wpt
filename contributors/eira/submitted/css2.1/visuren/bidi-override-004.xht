@@ -7,24 +7,19 @@
     <meta name="flags" content=""/>
     <meta name="assert" content="bidi-override should be applied when specified on list item"/>
     <style type="text/css"><![CDATA[
-      ul
-      {
-          width: 200px;
-      }
+      ul, li { margin: 1em 2em; padding: 0; }
       .override {
-      direction: rtl;
-      unicode-bidi: bidi-override;
+        direction: rtl;
+        unicode-bidi: bidi-override;
       }
     ]]></style>
   </head>
   
   <body>
-    <p>
-      The list item should be "abc" and have a marker on the right-hand side.
-    </p>
+    <p>Test passes if the word PASS appears below (followed by a bullet on the right).</p>
     <ul>
       <li class="override">
-	cba
+	SSAP
       </li>
     </ul>
     

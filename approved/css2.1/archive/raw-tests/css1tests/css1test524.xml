@@ -12,10 +12,10 @@
   ]]></style>
  </head>
  <body>
-  <p class="one"> This Paragraph should be in Small Caps. </p>
+  <p class="one">This sentence Should be In small Caps with Every other Word capitalized. </p>
   <p class="one">
-   This Sentence should be in Small Caps.
-   <span class="two">This Sentence should be Normal.</span>
+   This sentence Should be In small Caps with Every other Word capitalized.
+   <span class="two">This sentence Should be In normal Mixed case (Every other Word capitalized).</span>
   </p>
  </body>
 </html>

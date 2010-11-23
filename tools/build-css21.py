@@ -86,5 +86,5 @@ for path in unreviewed:
 # Build
 data = join('approved', 'css2.1', 'data')
 indexer = Indexer(suite, join(data, 'sections.dat'), 2, templatePathList=[data],
-                  extraData={ 'devel' : True, 'official' : True })
+                  extraData={ 'devel' : False, 'official' : True })
 suite.buildInto(join('dist', 'css2.1'), indexer)

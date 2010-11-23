@@ -9,7 +9,8 @@
 <meta name='flags' content='' />
 <meta name="assert" content="When direction:rtl and unicode-bidi:bidi-override is set on a block element containing block and inline elements, and CSS is used to change the block element to an inline element, the direction of all the text will be overridden." />
 <style type='text/css'>
-.test { direction: rtl; unicode-bidi: bidi-override; } .test div { display: inline; }
+.test { direction: rtl; unicode-bidi: bidi-override; }
+.test div { display: inline; unicode-bidi: normal; } /* default HTML stylesheet sets unicode-bidi */
 
 /* the CSS below is not part of the test */
 .test { font-size: 28px; font-family: serif; }

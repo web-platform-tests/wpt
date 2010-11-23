@@ -5,7 +5,7 @@
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
   <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/box/float/wrapping/001.html" type="text/html"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#floats" />
-  <meta name="flags" content="animated"/>
+  <meta name="flags" content="ahem animated"/>
     <style type="text/css">
    .control { display: inline; font: 1em/1 Ahem, sans-serif; background: red; color: white; }
 
@@ -40,8 +40,6 @@
   </style>
  </head>
  <body class="test">
-  <div class="control">Ahem_font_required_for_this_test.</div>
-
   <p>If scripting is supported: there should be only a single static jumble below with the word
   "Control" blinking steadily. If there are two squares, or if the
   square is animated, then the test has failed.</p>
@@ -50,7 +48,7 @@
    patterned squares below.</p>
 
   <script type="text/javascript">
-   var body = document.getElementsByTagName('BODY')[0];
+   var body = document.body;
    var timer;
    function toggle() {
      body.className = body.className == 'a' ? 'b' : 'a';
@@ -73,13 +71,12 @@
      3 444 55555555 66666 777777777
    </div>
 
-   <pre class="ahem">
-############
+   <pre class="ahem">############
 #AA1       #
 #AA        #
-#222222222 #
+#B222222222#
 #BCDEEF3   #
-#BC EE444  #
+# C EE444  #
 # C55555555#
 # C66666   #
 # C        #

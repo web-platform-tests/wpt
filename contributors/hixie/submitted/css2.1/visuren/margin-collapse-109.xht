@@ -3,25 +3,33 @@
 <head>
   <title>CSS Test: Margin Collapsing: in flow (used padding)</title>
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
+  <link rek="author" title="Elika J. Etemad" href="http://fantasai.inkedblade.net/contact"/>
   <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/box/block/margin-collapse/009.html" type="text/html"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#collapsing-margins"/>
+  <meta name="assert" content="This tests that emptiness is based on the
+    computed values of padding."/>
   <style type="text/css">
-   table { border-spacing: 0; font-size: 50px; border: solid; background: red; }
+   table { border-spacing: 0; font-size: 50px; border: solid white; background: red; }
    td { padding: 0; }
-   .test, .control { background: orange; }
+
+   /* colors */
+   .test, .control { background: lime; }
+   .a { background: aqua; color: aqua; }
+   .b { background: yellow; color: yellow; }
 
    /* test */
-   .test .a { background: lime; margin: 0 0 1em 0; }
-   .test .c { background: red; margin: 1em 0 1em 0; padding-bottom: 0.04px; } /* computed: 0.04px; actual: 0px; */
-   .test .b { background: yellow; margin: 1em 0 0 0; }
+   .test .a { margin: 0 0 1em 0; }
+   .test .c { margin: 1em 0 1em 0;
+              padding-bottom: 0.04px; }
+   .test .b { margin: 1em 0 0 0; }
 
    /* control */
-   .control .a { margin: 0 0 2em; background: lime; }
-   .control .b { margin: 2em 0 0; background: yellow; }
+   .control .a { margin: 0 0 2em; }
+   .control .c { padding-bottom: 0.04px; }
   </style>
  </head>
  <body>
-  <p>The pattern below should be a stack of horizontal bars with no red.</p>
+  <p>The pattern below should be a stack of three perfect rectangles with no red.</p>
   <table>
    <tr>
     <td>
@@ -39,7 +47,6 @@
     </td>
    </tr>
   </table>
-  <p>This tests that emptiness is based on the computed values of content/padding/border.</p>
   <p>This test is meaningless if you don't pass <a href="margin-collapse-106">margin-collapse-106</a>.</p>
  
 

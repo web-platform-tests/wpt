@@ -1034,10 +1034,10 @@ attribute must do as described below, depending on the
 method must run these steps:
 
 <ol>
- <li><p>If the <span>context node</span> is<!-- AttrExodus an <code>Attr</code> node or--> a
- <code>Text</code> node, then throw a
+ <li><p>If the <span>context node</span> is not a <code>Document</code>,
+ <code>DocumentFragment</code> or <code>Element</code>, throw a
  <code title=dom-DOMException-HIERARCHY_REQUEST_ERR>HIERARCHY_REQUEST_ERR</code>
- and terminate these steps. <!-- See Mozilla bug 547798, 558973 -->
+ and terminate these steps.
 
  <li><p>If <var title>refChild</var> is null, return the result of invoking
  <span>context node</span>'s
@@ -1089,10 +1089,10 @@ method must run these steps:
 method must run these steps:
 
 <ol>
- <li><p>If the <span>context node</span> is<!--AttrExodus an <code>Attr</code> node or--> a
- <code>Text</code> node, then throw a <code
- title=dom-DOMException-HIERARCHY_REQUEST_ERR>HIERARCHY_REQUEST_ERR</code> and
- terminate these steps. <!-- See Mozilla bug 547798, 558973 -->
+ <li><p>If the <span>context node</span> is not a <code>Document</code>,
+ <code>DocumentFragment</code> or <code>Element</code>, throw a
+ <code title=dom-DOMException-HIERARCHY_REQUEST_ERR>HIERARCHY_REQUEST_ERR</code>
+ and terminate these steps.
 
  <li><p>If <var title>oldChild</var> is not a child of the
  <span>context node</span>, then throw a
@@ -1139,7 +1139,11 @@ title=dom-Node-removeChild><code>removeChild(<var title>oldChild</var>)</code></
 method must run these steps:
 
 <ol>
- <!-- Attr nodes are okay -->
+ <li><p>If the <span>context node</span> is not a <code>Document</code>,
+ <code>DocumentFragment</code> or <code>Element</code>, throw a
+ <code title=dom-DOMException-HIERARCHY_REQUEST_ERR>HIERARCHY_REQUEST_ERR</code>
+ and terminate these steps.
+
  <li><p>If <var title>oldChild</var> is not a child of the
  <span>context node</span>, then throw a
  <code title=dom-DOMException-NOT_FOUND_ERR>NOT_FOUND_ERR</code> exception
@@ -1157,10 +1161,10 @@ title=dom-Node-appendChild><code>appendChild(<var title>newChild</var>)</code></
 method must run these steps:
 
 <ol>
- <li><p>If the <span>context node</span> is<!--AttrExodus an <code>Attr</code> node or--> a
- <code>Text</code> node, then throw a <code
- title=dom-DOMException-HIERARCHY_REQUEST_ERR>HIERARCHY_REQUEST_ERR</code> and
- terminate these steps. <!-- See Mozilla bug 547798, 558973 -->
+ <li><p>If the <span>context node</span> is not a <code>Document</code>,
+ <code>DocumentFragment</code> or <code>Element</code>, throw a
+ <code title=dom-DOMException-HIERARCHY_REQUEST_ERR>HIERARCHY_REQUEST_ERR</code>
+ and terminate these steps.
 
  <li><p>If <var title>newChild</var> is the <span>context node</span> or an
  ancestor of the <span>context node</span> throw a

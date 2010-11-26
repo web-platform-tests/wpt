@@ -9,12 +9,19 @@
   <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
   <link rel="help" href="http://www.w3.org/TR/CSS21/selector.html#default-attrs" />
   <link rel="help" href="http://www.w3.org/TR/CSS21/selector.html#matching-attrs" />
-  <meta name="flags" content="" />
-  <meta name="assert" content="Default attribute values may be declared in an external resource such as a DTD. In such case, the default attributes may or may not appear in the document tree. When default attributes appear in the document tree, then their correspondent default values must be included." />
+  <meta content="" name="flags" />
+  <meta content="Default attribute values may be declared in an external resource such as a DTD. In such case, the default attributes may or may not appear in the document tree. When default attributes appear in the document tree, then their correspondent default values must be included." name="assert" />
 
   <style type="text/css"><![CDATA[
-  td {background-color: green; height: 100px; width: 100px;}
+  td
+  {
+  background-color: green;
+  height: 100px;
+  width: 100px;
+  }
+
   td[colspan] {background-color: red;}
+
   td[colspan="1"] {background-color: green;}
   ]]></style>
 
@@ -22,7 +29,7 @@
 
  <body>
 
-  <p>There should be a green square and no red</p>
+  <p>Test passes if there is a green square and <strong>no red</strong></p>
 
   <table>
     <tr>

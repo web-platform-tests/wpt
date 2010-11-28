@@ -29,13 +29,8 @@ test(function() {
 
   assert_throws(new TypeError(), function() { document.body.appendChild({'a':'b'}) })
 
-  document.body.setAttribute("abc", "pass")
-  var attr = document.body.attributes[0]
-  testHRE(attr);
-  assert_equals(attr.value, "pass")
-  assert_equals(attr.childNodes.length, 1)
-  assert_equals(attr.childNodes[0].nodeValue, "pass")
-
   testHRE(document.createTextNode("Foo"));
+  testHRE(document.createComment("Foo"));
+  testHRE(document.doctype);
 })
 </script>

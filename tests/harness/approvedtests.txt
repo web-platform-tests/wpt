@@ -192,7 +192,6 @@ http://test.w3.org/html/tests/approved/foreigncontent/foreign_content_013.html
 http://test.w3.org/html/tests/approved/video/video_000.htm
 http://test.w3.org/html/tests/approved/video/video_001.htm
 http://test.w3.org/html/tests/approved/video/video_002.htm
-http://test.w3.org/html/tests/approved/video/video_003.htm
 http://test.w3.org/html/tests/approved/video/video_004.htm
 http://test.w3.org/html/tests/approved/video/video_005.htm
 http://test.w3.org/html/tests/approved/video/video_006.htm

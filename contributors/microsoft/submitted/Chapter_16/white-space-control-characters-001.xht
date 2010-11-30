@@ -15,6 +15,10 @@
             {
                 white-space: normal;
             }
+            span
+            {
+                background: black;
+            }
             #div2
             {
                 background: blue;
@@ -24,8 +28,8 @@
         </style>
     </head>
     <body>
-        <p>Test passes if there are two solid black boxes on the page and the last black box ends when the blue box ends.</p>
-        <div id="div1">X &#x98; X</div>
+        <p>Test passes if the black box is the same width or wider than the blue box.</p>
+        <div id="div1"><span>X &#x98; XX</span></div>
         <div id="div2"></div>
     </body>
 </html>

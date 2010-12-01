@@ -10,10 +10,10 @@ testname    result
   [% SET skipXML = 1 IF flag == 'HTMLonly' %]
 [% END %]
 [% UNLESS skipHTML +%]
-html4/[% test.name +%]	?
+html4/[% test.name +%].htm	?
 [% END %]
 [% UNLESS skipXML +%]
-xhtml1/[% test.name +%]	?
+xhtml1/[% test.name +%].xht	?
 [% END %]
 [% END %]
 

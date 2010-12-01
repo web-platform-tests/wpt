@@ -6,14 +6,14 @@
   <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/box/block/margin-collapse/064.html" type="text/html"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#collapsing-margins"/>
   <style type="text/css">
-   .outer { margin: 1em; background: red; }
+   .outer { margin: 1em; background: red; height: 4.5em; }
    .border { border: solid; width: 10em; }
    .box { margin: 0; background: yellow; }
-   .float { margin: 0; width: 5em; background: aqua; float: right; }
-   .clear { margin: 3em 0 0 0; background: orange; clear: both; }
+   .float { margin: 0; width: 5em; height: 1.5em; background: orange; float: right; }
+   .clear { margin-top: 3em; height: 1.5em; background: aqua; clear: both; }
    .control { border: solid; width: 10em; background: yellow; margin: 1em; }
-   .control .a { margin: 0 0 0 auto; width: 5em; background: aqua; }
-   .control .b { background: orange; }
+   .control .a { margin: 0 0 0 auto; width: 5em; height: 1.5em; background: orange; }
+   .control .b { margin-top: 1.5em; height: 1.5em; background: aqua; }
   </style>
  </head>
  <body>

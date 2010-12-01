@@ -7,8 +7,9 @@
   <link rel="author" title="CSS1 Test Suite Contributors" href="http://www.w3.org/Style/CSS/Test/CSS1/current/tsack.html"/>
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
   <style type="text/css"><![CDATA[
-   ul { list-style: url(support/swatch-white.png) disc outside; margin: 0; padding: 3em; color: red; line-height: 0; }
-   li { margin: 0; padding: 0; background: url(support/swatch-red.png) no-repeat 15px 0px; }
+   ul { list-style: url(support/swatch-green.png) square outside;
+        margin: 3em; padding: 15px; color: red; }
+   li { margin: 0; padding: 0.1em 4em; border: solid blue; }
    img { margin: 0 0 0 15px; }
    span { color: black; }
   ]]></style>
@@ -16,7 +17,7 @@
  </head>
  <body>
   <ul class="two">
-   <li><img src="support/swatch-green.png" alt=""/> <span>&#x21E6; There should be a green square to the left, and no red.</span></li>
+    <li><span>&#x21E6; There should be a green square to the left <em>outside this blue box</em>, and no red.</span></li>
   </ul>
  </body>
 </html>

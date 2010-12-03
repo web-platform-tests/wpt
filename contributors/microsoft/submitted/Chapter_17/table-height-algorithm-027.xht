@@ -4,22 +4,20 @@
         <title>CSS Test: In-flow boxes are considered scrolled to origin position when finding a baseline</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#height-layout" />
-        <meta name="flags" content="" />
+        <meta name="flags" content="ahem" />
         <meta name="assert" content="In-flow boxes are considered to be scrolled to their origin position when finding a baseline." />
         <style type="text/css">
-            *
-            {
-                font: 10pt serif;
-            }
             table
             {
                 border-spacing: 0;
+                color: blue;
+                font: 20px Ahem;
             }
             td
             {
-                border: 1px solid black;
+                padding: 0;
                 vertical-align: baseline;
-                width: 100px;
+                width: 5em;
             }
             div
             {
@@ -29,21 +27,21 @@
             }
             span
             {
-                color: black;
+                color: blue;
             }
         </style>
     </head>
     <body>
-        <p>Test passes if the bottom of the "Filler Text" below is aligned.</p>
+        <p>Test passes if there is a single blue box below with no jagged edges.</p>
         <table>
             <tr>
+                <td>XXXXX</td>
                 <td>
                     <div>
-                        <span>Filler Text</span>
-                        Filler Text Filler Text Filler Text Filler Text
+                        <span>XXXX</span>
+                        XXXX XXXX XXXX
                     </div>
                 </td>
-                <td>Filler Text</td>
             </tr>
         </table>
     </body>

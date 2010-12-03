@@ -1,4 +1,4 @@
 all:
-	python first-letter-characters-001-generator.py
+	python first-letter-characters-generator.py
 
 

@@ -30,7 +30,7 @@ class UnicodeTestGenerator:
     # config
     fileheader = open("first-letter-characters.tmpl").read()
     filefooter = "</body></html>"
-    fileprefix = "first-letter-punctuation-before-"
+    fileprefix = "first-letter-punct-before-"
     filesuffix = ".xht"
     blocksize = 1024
     linesize = 256

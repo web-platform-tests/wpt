@@ -2,10 +2,10 @@
                       "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-  <title>CSS Test: Bidi paragraph boundaries: Forced Line Breaks</title>
+  <title>CSS Test: Bidi paragraph boundaries: Forced Line Breaks (Unicode)</title>
   <link rel="author" title="Elika J. Etemad" href="http://fantasai.inkedblade.net/contact"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/text.html#indentation-prop"/>
-  <meta name="flags" content=""/>
+  <meta name="flags" content="may"/>
   <meta name="assert" content="Forced line breaks of class B (but not class WS)
         break bidi paragraphs."/>
   <style type="text/css"><![CDATA[
@@ -55,11 +55,10 @@
     </div>
   </div>
 
-  <!-- preserved source line break breaks bidi paragraph -->
+  <!-- paragraph separator breaks bidi paragraph -->
   <div class="set">
     <div class="test">
-      <div class="pre">&#x05D0; + - &times; &divide; &nbsp;
-&nbsp; + - &times; &divide; &#x05EA;</div>
+      <div class="pre">&#x05D0; + - &times; &divide; &nbsp;&#x2029;&nbsp; + - &times; &divide; &#x05EA;</div>
     </div>
     <div class="control">
       <div><bdo dir="ltr">&#x05D0; + - &times; &divide; &nbsp;</bdo></div>
@@ -67,17 +66,20 @@
     </div>
   </div>
 
-  <!-- <br> on shaky ground since HTML4 said it's an LS, but HTML5 will
-       likely side with PS due to better bidi safety; leaving as PS for now -->
+  <!-- line separator does not break bidi paragraph -->
   <div class="set">
     <div class="test">
-      &#x05D0; + - &times; &divide; &nbsp;<br/>
-      &nbsp; + - &times; &divide; &#x05EA;
+      <div class="pre">&rlm;&nbsp; + - &times; &divide; &#x05D0;&#x2028;&nbsp; + - &times; &divide; &#x05EA;</div>
     </div>
     <div class="control">
       <div><bdo dir="ltr">&#x05D0; + - &times; &divide; &nbsp;</bdo></div>
       <div><bdo dir="ltr">&nbsp; + - &times; &divide; &#x05EA;</bdo></div>
     </div>
   </div>
+
+<!--
+PS &#x2029;
+LS &#x2028;
+-->
 </body>
 </html>

@@ -5,6 +5,7 @@
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
   <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/background/06.html" type="text/html"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/colors.html#background"/>
+  <meta name="flags" content="image"/>
 <style type="text/css">
    body { border: solid lime; background: green url(support/square-white.png) repeat-y top left; color: white; }
    html { border: solid blue; background: transparent repeat-x; color: yellow; }
@@ -13,10 +14,11 @@
 
 </head>
 <body>
-<p> This is the body. It should have a green background with a green
-border, and around it should be a blue box with a line of squares
-going down its left hand side, just inside the border.</p>
-
+<p>There should be a blue rectangle enclosing the bright green rectangle
+enclosing this text. Just inside the left hand edge of the blue rectangle
+should be a line of squares, which should continue up and down the entire
+height of the page. The rest of the page, around, between, and inside the
+boxes, should be green.</p>
 
 </body>
 </html>

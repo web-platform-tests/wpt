@@ -4,6 +4,7 @@ CharacterData-deleteData.html
 CharacterData-insertData.html
 CharacterData-replaceData.html
 Document-adoptNode.html
+Document-createComment.html
 Document-createElement.html
 Document-createElementNS.html
 Document-createProcessingInstruction.html

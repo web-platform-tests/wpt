@@ -6,7 +6,7 @@
   <link rel="author" title="CSS1 Test Suite Contributors" href="http://www.w3.org/Style/CSS/Test/CSS1/current/tsack.html"/>
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
   <style type="text/css"><![CDATA[
-  .gutter { width: 9em; background: blue; border: solid blue;
+  .gutter { width: 9em; background: blue; border: 0.2em solid blue;
             margin-left: auto; /* CSS1 agents */
             position: absolute; top: 0; right: 0; bottom: 0; z-index: -1; /* CSS2 agents */ }
    p, ul { color: navy; }

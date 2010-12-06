@@ -10,9 +10,10 @@ policies and contribution forms [3].
 
 /*
  * == Introducion ==
- * This file provides a framework for writing testcases. It is intended
- * to provide a convenient API for making common assertions, and to work
- * both for testing synchronous and asynchronous DOM features in a way that
+ *
+ * This file provides a framework for writing testcases. It is intended to
+ * provide a convenient API for making common assertions, and to work both
+ * for testing synchronous and asynchronous DOM features in a way that
  * promotes clear, robust, tests.
  *
  * == Basic Usage ==
@@ -23,7 +24,7 @@ policies and contribution forms [3].
  * Within each file one may define one or more tests. Each test is atomic
  * in the sense that a single test has a single result (pass/fail/timeout).
  * Within each test one may have a number of asserts. The test fails at the
- * first failing assert, and the remainder of the test is (typically) not run
+ * first failing assert, and the remainder of the test is (typically) not run.
  *
  * If the file containing the tests is a HTML file with an element of id "log"
  * this will be populated with a table containing the test results after all
@@ -38,7 +39,7 @@ policies and contribution forms [3].
  * test_function is a function that contains the code to test. For example a
  * trivial passing test would be:
  *
- * test(function() {assert_true(true)}, "assert_true with true)"
+ * test(function() {assert_true(true)}, "assert_true with true")
  *
  * The function passed in is run in the test() call.
  *
@@ -70,11 +71,35 @@ policies and contribution forms [3].
  *
  * assert_something(actual, expected, description)
  *
- * although not all assertions precisely match this pattern e.g. assert_true only
- * takes actual and description as arguments.
+ * although not all assertions precisely match this pattern e.g. assert_true
+ * only takes actual and description as arguments.
  *
- * The description parameter is used to present more useful error messages when a
- * test fails
+ * The description parameter is used to present more useful error messages when
+ * a test fails
+ *
+ * == Generating tests ==
+ *
+ * There are scenarios in which is is desirable to create a large number of
+ * (synchronous) tests that are internally similar but vary in the parameters
+ * used. To make this easier, the generate_tests function allows a single
+ * function to be called with each set of parameters in a list:
+ *
+ * generate_tests(test_function, parameter_lists)
+ *
+ * For example:
+ *
+ * generate_tests(assert_equals, [
+ *     ["Sum one and one", 1+1, 2],
+ *     ["Sum one and zero", 1+0, 1]
+ *     ])
+ *
+ * Is equivalent to:
+ *
+ * test(function() {assert_equals(1+1, 2)}, "Sum one and one")
+ * test(function() {assert_equals(1+0, 1)}, "Sum one and zero")
+ *
+ * Note that the first item in each parameter list corresponds to the name of
+ * the test.
  */
 
 (function ()
@@ -127,6 +152,17 @@ policies and contribution forms [3].
         return test_obj;
     }
 
+    function generate_tests(func, args) {
+        forEach(args, function(x)
+                {
+                    var name = x[0];
+                    test(function()
+                         {
+                             func.apply(this, x.slice(1));
+                         }, name);
+                });
+    }
+
     function on_event(object, event, callback)
     {
       object.addEventListener(event, callback, false);
@@ -134,6 +170,7 @@ policies and contribution forms [3].
 
     expose(test, 'test');
     expose(async_test, 'async_test');
+    expose(generate_tests, 'generate_tests');
     expose(on_event, 'on_event');
 
     /*

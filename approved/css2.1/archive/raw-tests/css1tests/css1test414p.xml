@@ -6,26 +6,33 @@
   <link rel="author" title="CSS1 Test Suite Contributors" href="http://www.w3.org/Style/CSS/Test/CSS1/current/tsack.html"/>
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
   <style type="text/css"><![CDATA[
-   p { color: navy; }
-   div { border: 5px solid purple; padding: 1em; margin: 1em; color: silver; font: 1em/1.3 serif; }
-   div p { width: 7em; padding: 1em; margin: 0; }
-   div .a { border: solid aqua; background-color: teal; color: white; }
-   div p.a { float: left; }
-   div .b { border: solid fuchsia; background-color: purple; color: white; }
-   div p.b { float: right; }
-   div .c { border: solid yellow; background-color: orange; color: white; }
-   div p.c { float: left; }
-   div .d { border: solid lime; background-color: green; color: white; }
-   div p.d { float: left; }
+  .gutter { width: 9em; background: blue; border: solid blue;
+            margin-left: auto; /* CSS1 agents */
+            position: absolute; top: 0; right: 0; bottom: 0; z-index: -1; /* CSS2 agents */ }
+   p, ul { color: navy; }
+   .test { position: relative; font: 1em/1.4 serif;
+           border: 5px solid gray; margin: 1em; color: silver; }
+   .test p { width: 7em; padding: 1em; margin: 0; }
+   .test p, .test span { color: white; border: solid 0.2em; }
+   .test .a { border-color: aqua; background-color: teal; }
+   .test p.a { float: left; }
+   .test .b { border-color: fuchsia; background-color: purple; }
+   .test p.b { float: right; }
+   .test .c { border-color: yellow; background-color: orange; }
+   .test p.c { float: left; }
+   .test .d { border-color: lime; background-color: green; }
+   .test p.d { float: left; }
   ]]></style>
  </head>
  <body>
-  <p>The big coloured boxes should be level with the top of the small
-  coloured boxes of the same color (unless there is not enough room
-  for the big box to fit on the small box's line after the small box,
-  in which case the big box should be as high as possible below the
-  small box).</p>
-  <div>
+   <p>Test passes if for each matching pair of colored boxes either:</p>
+   <ul>
+     <li>the top of the small box is level with the top of the big box <em>or</em></li>
+     <li>the top of the big box is level with the bottom of the the small box
+       and the small box crosses into the lefthand region marked by the blue box</li>
+   </ul>
+  <div class="test">
+   <div class="gutter"></div>
    dummy text dummy text dummy text dummy text dummy text dummy text
    dummy text
    <span class="a">A</span>

@@ -7,12 +7,15 @@
   <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#inline-boxes" />
   <meta name="flags" content="interact"/>
   <style type="text/css">
-   p { font: 2em/2 sans-serif; }
-   span { border: solid; }
+   div { font: 2em/2 sans-serif; }
+   span { border: thick solid blue; padding: 0 1em; }
   </style>
  </head>
  <body>
-  <div>This is a more obvious version of <a href="inlines-004">the X grid</a> test.</div>
-  <p> <span>Resize</span> <span>the</span> <span>window</span> <span>so</span> <span>that</span> <span>this</span> <span>wraps</span> </p>
+  <p>Slowly resize the window, causing the text below to wrap into multiple
+   lines at different points in the text. At all points in time, each word
+   should be enclosed in a blue rectangle and there should be no stray
+   pieces of blue rectangle anywhere else on the page.</p>
+  <div> <span>Resize</span> <span>the</span> <span>window</span> <span>so</span> <span>that</span> <span>this</span> <span>wraps</span> </div>
  </body>
 </html>

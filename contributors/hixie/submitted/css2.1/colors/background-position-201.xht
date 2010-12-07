@@ -18,6 +18,10 @@
      position: absolute; left: 0; top: 20em;
      margin: -20px 0 0 -20px;
    }
+   #control {
+     border: blue solid;
+     width: 24em;
+   }
   </style>
   <script type="text/javascript">
    var position = 0; /* 0 .. 2*PI */
@@ -30,19 +34,21 @@
        document.styleSheets[0].cssRules[0].style.backgroundPosition = (sin(position) + 1) * 50 + '% ' + (cos(position) + 1) * 50 + '%';
        document.styleSheets[0].cssRules[1].style.left = (sin(position) + 1) * 10 + 'em';
        document.styleSheets[0].cssRules[1].style.top = (cos(position) + 1) * 10 + 'em';
-       document.getElementById('status').firstChild.data = document.styleSheets[0].cssRules[0].style.backgroundPosition;
+       // document.getElementById('status').firstChild.data = document.styleSheets[0].cssRules[0].style.backgroundPosition;
      }
    }
   </script>
  </head>
  <body onload="var query = location.search; if (query) { query = query.substring(1, query.length); } else { query = 10 } setInterval(test, query)">
-  <p>There should be a circle with a diamond inside below. The diamond
-  and the circle should both be moving along smoothly. However, the
-  diamond should be moving around the edge of the outer circle, so
-  that it is always on the side of the circle that points towards the
-  center of the large circle that they are going around.</p>
+  <p>There should be a circle with a diamond inside the blue box below.
+    The diamond and the orange circle should be appear to be moving in
+    a circle, around a common center point. The radius of motion of the
+    diamond should be slightly shorter than that of the orange circle
+    (measuring the radius to the center of each shape), so that the
+    diamond is always near the side of the circle closer to the center
+    of motion.</p>
   <div id="control"><div id="test"><img src="support/ring.png" alt="O" id="ring" /></div></div>
-  <p>Position: <span id="status">0% 0%</span></p>
+  <!-- <p>Position: <span id="status">0% 0%</span></p> -->
  
 
 </body>

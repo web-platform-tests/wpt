@@ -13,8 +13,9 @@
 .test { text-transform: lowercase; }
 
 /* the CSS below is not part of the test */
-.test { font-size: 130%; line-height: 2.5em; }
-.test span { margin-right: 1em; white-space: nowrap; }</style>
+.test { font-size: 130%;  }
+.test span { white-space: nowrap; display: block; text-align: center;
+             width: 5em; display: inline-block; }</style>
 <script type='text/javascript'>
 //<![CDATA[
 function setFontFamily () {var fontName = document.getElementById( 'fontName' ).value;	var divs = document.getElementsByTagName('div');	var i = 0; var div;	while (i < divs.length) {	 	div = divs.item(i);		if (div.className == 'test') { 			div.style.fontFamily = fontName; 			}		i++;		}	}
@@ -25,7 +26,154 @@ function setFontFamily () {var fontName = document.getElementById( 'fontName' ).
 <p class="instructions">Test passes if the left-hand character in each pair matches the right-hand one.</p>
 
 
-<div class="test"><span>Ά ά</span> <span>Έ έ</span> <span>Ή ή</span> <span>Ί ί</span> <span>Α α</span> <span>Β β</span> <span>Γ γ</span> <span>Δ δ</span> <span>Ε ε</span> <span>Ζ ζ</span> <span>Η η</span> <span>Θ θ</span> <span>Ι ι</span> <span>Κ κ</span> <span>Λ λ</span> <span>Μ μ</span> <span>Ν ν</span> <span>Ξ ξ</span> <span>Ο ο</span> <span>Π π</span> <span>Ρ ρ</span> <span>Σ ς</span> <span>Σ σ</span> <span>Τ τ</span> <span>Υ υ</span> <span>Φ φ</span> <span>Χ χ</span> <span>Ψ ψ</span> <span>Ω ω</span> <span>Ϊ ϊ</span> <span>Ϋ ϋ</span> <span>Ό ό</span> <span>Ύ ύ</span> <span>Ώ ώ</span> <span>Β ϐ</span> <span>Θ ϑ</span> <span>Φ ϕ</span> <span>Π ϖ</span> <span>Ϙ ϙ</span> <span>Ϛ ϛ</span> <span>Ϝ ϝ</span> <span>Ϟ ϟ</span> <span>Ϡ ϡ</span> <span>Κ ϰ</span> <span>Ρ ϱ</span> <span>Ϲ ϲ</span> <span>Ε ϵ</span> <span>Ϸ ϸ</span> <span>Ϻ ϻ</span> <span>Ἀ ἀ</span> <span>Ἁ ἁ</span> <span>Ἂ ἂ</span> <span>Ἃ ἃ</span> <span>Ἄ ἄ</span> <span>Ἅ ἅ</span> <span>Ἆ ἆ</span> <span>Ἇ ἇ</span> <span>Ἐ ἐ</span> <span>Ἑ ἑ</span> <span>Ἒ ἒ</span> <span>Ἓ ἓ</span> <span>Ἔ ἔ</span> <span>Ἕ ἕ</span> <span>Ἠ ἠ</span> <span>Ἡ ἡ</span> <span>Ἢ ἢ</span> <span>Ἣ ἣ</span> <span>Ἤ ἤ</span> <span>Ἥ ἥ</span> <span>Ἦ ἦ</span> <span>Ἧ ἧ</span> <span>Ἰ ἰ</span> <span>Ἱ ἱ</span> <span>Ἲ ἲ</span> <span>Ἳ ἳ</span> <span>Ἴ ἴ</span> <span>Ἵ ἵ</span> <span>Ἶ ἶ</span> <span>Ἷ ἷ</span> <span>Ὀ ὀ</span> <span>Ὁ ὁ</span> <span>Ὂ ὂ</span> <span>Ὃ ὃ</span> <span>Ὄ ὄ</span> <span>Ὅ ὅ</span> <span>Ὑ ὑ</span> <span>Ὓ ὓ</span> <span>Ὕ ὕ</span> <span>Ὗ ὗ</span> <span>Ὠ ὠ</span> <span>Ὡ ὡ</span> <span>Ὢ ὢ</span> <span>Ὣ ὣ</span> <span>Ὤ ὤ</span> <span>Ὥ ὥ</span> <span>Ὦ ὦ</span> <span>Ὧ ὧ</span> <span>Ὰ ὰ</span> <span>Ά ά</span> <span>Ὲ ὲ</span> <span>Έ έ</span> <span>Ὴ ὴ</span> <span>Ή ή</span> <span>Ὶ ὶ</span> <span>Ί ί</span> <span>Ὸ ὸ</span> <span>Ό ό</span> <span>Ὺ ὺ</span> <span>Ύ ύ</span> <span>Ὼ ὼ</span> <span>Ώ ώ</span> <span>ᾈ ᾀ</span> <span>ᾉ ᾁ</span> <span>ᾊ ᾂ</span> <span>ᾋ ᾃ</span> <span>ᾌ ᾄ</span> <span>ᾍ ᾅ</span> <span>ᾎ ᾆ</span> <span>ᾏ ᾇ</span> <span>ᾘ ᾐ</span> <span>ᾙ ᾑ</span> <span>ᾚ ᾒ</span> <span>ᾛ ᾓ</span> <span>ᾜ ᾔ</span> <span>ᾝ ᾕ</span> <span>ᾞ ᾖ</span> <span>ᾟ ᾗ</span> <span>ᾨ ᾠ</span> <span>ᾩ ᾡ</span> <span>ᾪ ᾢ</span> <span>ᾫ ᾣ</span> <span>ᾬ ᾤ</span> <span>ᾭ ᾥ</span> <span>ᾮ ᾦ</span> <span>ᾯ ᾧ</span> <span>Ᾰ ᾰ</span> <span>Ᾱ ᾱ</span> <span>ᾼ ᾳ</span> <span>Ι ι</span> <span>ῌ ῃ</span> <span>Ῐ ῐ</span> <span>Ῑ ῑ</span> <span>Ῠ ῠ</span> <span>Ῡ ῡ</span> <span>Ῥ ῥ</span> <span>ῼ ῳ</span></div>
+<div class="test">
+<span>Ά ά</span>
+<span>Έ έ</span>
+<span>Ή ή</span>
+<span>Ί ί</span>
+<span>Α α</span>
+<span>Β β</span>
+<span>Γ γ</span>
+<span>Δ δ</span>
+<span>Ε ε</span>
+<span>Ζ ζ</span>
+<span>Η η</span>
+<span>Θ θ</span>
+<span>Ι ι</span>
+<span>Κ κ</span>
+<span>Λ λ</span>
+<span>Μ μ</span>
+<span>Ν ν</span>
+<span>Ξ ξ</span>
+<span>Ο ο</span>
+<span>Π π</span>
+<span>Ρ ρ</span>
+<span>Σ ς</span>
+<span>Σ σ</span>
+<span>Τ τ</span>
+<span>Υ υ</span>
+<span>Φ φ</span>
+<span>Χ χ</span>
+<span>Ψ ψ</span>
+<span>Ω ω</span>
+<span>Ϊ ϊ</span>
+<span>Ϋ ϋ</span>
+<span>Ό ό</span>
+<span>Ύ ύ</span>
+<span>Ώ ώ</span>
+<span>Β ϐ</span>
+<span>Θ ϑ</span>
+<span>Φ ϕ</span>
+<span>Π ϖ</span>
+<span>Ϙ ϙ</span>
+<span>Ϛ ϛ</span>
+<span>Ϝ ϝ</span>
+<span>Ϟ ϟ</span>
+<span>Ϡ ϡ</span>
+<span>Κ ϰ</span>
+<span>Ρ ϱ</span>
+<span>Ϲ ϲ</span>
+<span>Ε ϵ</span>
+<span>Ϸ ϸ</span>
+<span>Ϻ ϻ</span>
+<span>Ἀ ἀ</span>
+<span>Ἁ ἁ</span>
+<span>Ἂ ἂ</span>
+<span>Ἃ ἃ</span>
+<span>Ἄ ἄ</span>
+<span>Ἅ ἅ</span>
+<span>Ἆ ἆ</span>
+<span>Ἇ ἇ</span>
+<span>Ἐ ἐ</span>
+<span>Ἑ ἑ</span>
+<span>Ἒ ἒ</span>
+<span>Ἓ ἓ</span>
+<span>Ἔ ἔ</span>
+<span>Ἕ ἕ</span>
+<span>Ἠ ἠ</span>
+<span>Ἡ ἡ</span>
+<span>Ἢ ἢ</span>
+<span>Ἣ ἣ</span>
+<span>Ἤ ἤ</span>
+<span>Ἥ ἥ</span>
+<span>Ἦ ἦ</span>
+<span>Ἧ ἧ</span>
+<span>Ἰ ἰ</span>
+<span>Ἱ ἱ</span>
+<span>Ἲ ἲ</span>
+<span>Ἳ ἳ</span>
+<span>Ἴ ἴ</span>
+<span>Ἵ ἵ</span>
+<span>Ἶ ἶ</span>
+<span>Ἷ ἷ</span>
+<span>Ὀ ὀ</span>
+<span>Ὁ ὁ</span>
+<span>Ὂ ὂ</span>
+<span>Ὃ ὃ</span>
+<span>Ὄ ὄ</span>
+<span>Ὅ ὅ</span>
+<span>Ὑ ὑ</span>
+<span>Ὓ ὓ</span>
+<span>Ὕ ὕ</span>
+<span>Ὗ ὗ</span>
+<span>Ὠ ὠ</span>
+<span>Ὡ ὡ</span>
+<span>Ὢ ὢ</span>
+<span>Ὣ ὣ</span>
+<span>Ὤ ὤ</span>
+<span>Ὥ ὥ</span>
+<span>Ὦ ὦ</span>
+<span>Ὧ ὧ</span>
+<span>Ὰ ὰ</span>
+<span>Ά ά</span>
+<span>Ὲ ὲ</span>
+<span>Έ έ</span>
+<span>Ὴ ὴ</span>
+<span>Ή ή</span>
+<span>Ὶ ὶ</span>
+<span>Ί ί</span>
+<span>Ὸ ὸ</span>
+<span>Ό ό</span>
+<span>Ὺ ὺ</span>
+<span>Ύ ύ</span>
+<span>Ὼ ὼ</span>
+<span>Ώ ώ</span>
+<span>ᾈ ᾀ</span>
+<span>ᾉ ᾁ</span>
+<span>ᾊ ᾂ</span>
+<span>ᾋ ᾃ</span>
+<span>ᾌ ᾄ</span>
+<span>ᾍ ᾅ</span>
+<span>ᾎ ᾆ</span>
+<span>ᾏ ᾇ</span>
+<span>ᾘ ᾐ</span>
+<span>ᾙ ᾑ</span>
+<span>ᾚ ᾒ</span>
+<span>ᾛ ᾓ</span>
+<span>ᾜ ᾔ</span>
+<span>ᾝ ᾕ</span>
+<span>ᾞ ᾖ</span>
+<span>ᾟ ᾗ</span>
+<span>ᾨ ᾠ</span>
+<span>ᾩ ᾡ</span>
+<span>ᾪ ᾢ</span>
+<span>ᾫ ᾣ</span>
+<span>ᾬ ᾤ</span>
+<span>ᾭ ᾥ</span>
+<span>ᾮ ᾦ</span>
+<span>ᾯ ᾧ</span>
+<span>Ᾰ ᾰ</span>
+<span>Ᾱ ᾱ</span>
+<span>ᾼ ᾳ</span>
+<span>Ι ι</span>
+<span>ῌ ῃ</span>
+<span>Ῐ ῐ</span>
+<span>Ῑ ῑ</span>
+<span>Ῠ ῠ</span>
+<span>Ῡ ῡ</span>
+<span>Ῥ ῥ</span>
+<span>ῼ ῳ</span>
+</div>
 
 
 <p id='fontChange' style='display: none;' class='notes'>If you are unable to see font glyphs for certain characters using the browsers default font you can apply a specific font by typing its name in the following box: <input class='css' name='fontName' id='fontName' value='' type='text' /> <button class='notes' type='button' onclick='setFontFamily()'>Apply</button></p><script type='text/javascript'>if (document.getElementById) {document.getElementById('fontChange').style.display = 'block'}</script></body>

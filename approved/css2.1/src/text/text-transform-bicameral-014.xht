@@ -14,7 +14,8 @@
 
 /* the CSS below is not part of the test */
 .test { font-size: 130%; line-height: 2.5em; }
-.test span { margin-right: 1em; white-space: nowrap; }</style>
+.test span { white-space: nowrap; display: block; text-align: center;
+             width: 5em; display: inline-block; }</style>
 <script type='text/javascript'>
 //<![CDATA[
 function setFontFamily () {var fontName = document.getElementById( 'fontName' ).value;	var divs = document.getElementsByTagName('div');	var i = 0; var div;	while (i < divs.length) {	 	div = divs.item(i);		if (div.className == 'test') { 			div.style.fontFamily = fontName; 			}		i++;		}	}
@@ -25,7 +26,46 @@ function setFontFamily () {var fontName = document.getElementById( 'fontName' ).
 <p class="instructions">Test passes if the left-hand character in each pair matches the right-hand one.</p>
 
 
-<div class="test"><span>Ա ա</span> <span>Բ բ</span> <span>Գ գ</span> <span>Դ դ</span> <span>Ե ե</span> <span>Զ զ</span> <span>Է է</span> <span>Ը ը</span> <span>Թ թ</span> <span>Ժ ժ</span> <span>Ի ի</span> <span>Լ լ</span> <span>Խ խ</span> <span>Ծ ծ</span> <span>Կ կ</span> <span>Հ հ</span> <span>Ձ ձ</span> <span>Ղ ղ</span> <span>Ճ ճ</span> <span>Մ մ</span> <span>Յ յ</span> <span>Ն ն</span> <span>Շ շ</span> <span>Ո ո</span> <span>Չ չ</span> <span>Պ պ</span> <span>Ջ ջ</span> <span>Ռ ռ</span> <span>Ս ս</span> <span>Վ վ</span> <span>Տ տ</span> <span>Ր ր</span> <span>Ց ց</span> <span>Ւ ւ</span> <span>Փ փ</span> <span>Ք ք</span> <span>Օ օ</span> <span>Ֆ ֆ</span></div>
+<div class="test">
+<span>Ա ա</span>
+<span>Բ բ</span>
+<span>Գ գ</span>
+<span>Դ դ</span>
+<span>Ե ե</span>
+<span>Զ զ</span>
+<span>Է է</span>
+<span>Ը ը</span>
+<span>Թ թ</span>
+<span>Ժ ժ</span>
+<span>Ի ի</span>
+<span>Լ լ</span>
+<span>Խ խ</span>
+<span>Ծ ծ</span>
+<span>Կ կ</span>
+<span>Հ հ</span>
+<span>Ձ ձ</span>
+<span>Ղ ղ</span>
+<span>Ճ ճ</span>
+<span>Մ մ</span>
+<span>Յ յ</span>
+<span>Ն ն</span>
+<span>Շ շ</span>
+<span>Ո ո</span>
+<span>Չ չ</span>
+<span>Պ պ</span>
+<span>Ջ ջ</span>
+<span>Ռ ռ</span>
+<span>Ս ս</span>
+<span>Վ վ</span>
+<span>Տ տ</span>
+<span>Ր ր</span>
+<span>Ց ց</span>
+<span>Ւ ւ</span>
+<span>Փ փ</span>
+<span>Ք ք</span>
+<span>Օ օ</span>
+<span>Ֆ ֆ</span>
+</div>
 
 
 <p id='fontChange' style='display: none;' class='notes'>If you are unable to see font glyphs for certain characters using the browsers default font you can apply a specific font by typing its name in the following box: <input class='css' name='fontName' id='fontName' value='' type='text' /> <button class='notes' type='button' onclick='setFontFamily()'>Apply</button></p><script type='text/javascript'>if (document.getElementById) {document.getElementById('fontChange').style.display = 'block'}</script></body>

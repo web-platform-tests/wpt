@@ -6,6 +6,7 @@
   <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/parsing/core-syntax/002.html" type="text/html"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/syndata.html#parsing-errors" />
   <style type="text/css">
+   .instruct { color: black; background: white; }
    p {
        color: green;
        /* no "}" */
@@ -15,6 +16,7 @@
   </style>
  </head>
  <body>
-  <p>This line <span>should</span> be <span class="test">all green</span>.</p>
+  <p class="instruct">There must be no red.</p>
+  <p>This sentence <span>must</span> be <span class="test">green</span>.</p>
  </body>
 </html>

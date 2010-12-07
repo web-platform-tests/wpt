@@ -14,7 +14,7 @@
 
 /* the CSS below is not part of the test */
 .test { font-size: 130%; line-height: 2.5em; }
-.test span { white-space: nowrap; display: block; text-align: center;
+.test div { white-space: nowrap; text-align: center;
              width: 5em; display: inline-block; }</style>
 <script type='text/javascript'>
 //<![CDATA[
@@ -26,7 +26,7 @@ function setFontFamily () {var fontName = document.getElementById( 'fontName' ).
 <p class="instructions">Test passes if the right-hand character in each pair matches the left-hand one.</p>
 
 
-<div class="test" xml:lang="tr"><span>I ı</span> <span>İ i</span></div>
+<div class="test" xml:lang="tr"><div>I ı</div> <div>İ i</div></div>
 
 
 <p id='fontChange' style='display: none;' class='notes'>If you are unable to see font glyphs for certain characters using the browsers default font you can apply a specific font by typing its name in the following box: <input class='css' name='fontName' id='fontName' value='' type='text' /> <button class='notes' type='button' onclick='setFontFamily()'>Apply</button></p><script type='text/javascript'>if (document.getElementById) {document.getElementById('fontChange').style.display = 'block'}</script></body>

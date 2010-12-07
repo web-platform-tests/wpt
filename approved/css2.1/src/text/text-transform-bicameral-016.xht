@@ -10,7 +10,7 @@
 <meta name='flags' content='' />
 <meta name="assert" content="The UA will lowercase Unicode Roman numerals when text-transform is set to lowercase." />
 <style type='text/css'>
-.test { text-transform: lowercase; }
+.test span { text-transform: lowercase; }
 
 /* the CSS below is not part of the test */
 .test { font-size: 130%; line-height: 2.5em; }
@@ -27,22 +27,22 @@ function setFontFamily () {var fontName = document.getElementById( 'fontName' ).
 
 
 <div class="test">
-<div>Ⅰ ⅰ</div>
-<div>Ⅱ ⅱ</div>
-<div>Ⅲ ⅲ</div>
-<div>Ⅳ ⅳ</div>
-<div>Ⅴ ⅴ</div>
-<div>Ⅵ ⅵ</div>
-<div>Ⅶ ⅶ</div>
-<div>Ⅷ ⅷ</div>
-<div>Ⅸ ⅸ</div>
-<div>Ⅹ ⅹ</div>
-<div>Ⅺ ⅺ</div>
-<div>Ⅻ ⅻ</div>
-<div>Ⅼ ⅼ</div>
-<div>Ⅽ ⅽ</div>
-<div>Ⅾ ⅾ</div>
-<div>Ⅿ ⅿ</div>
+<div><span>Ⅰ</span> ⅰ</div>
+<div><span>Ⅱ</span> ⅱ</div>
+<div><span>Ⅲ</span> ⅲ</div>
+<div><span>Ⅳ</span> ⅳ</div>
+<div><span>Ⅴ</span> ⅴ</div>
+<div><span>Ⅵ</span> ⅵ</div>
+<div><span>Ⅶ</span> ⅶ</div>
+<div><span>Ⅷ</span> ⅷ</div>
+<div><span>Ⅸ</span> ⅸ</div>
+<div><span>Ⅹ</span> ⅹ</div>
+<div><span>Ⅺ</span> ⅺ</div>
+<div><span>Ⅻ</span> ⅻ</div>
+<div><span>Ⅼ</span> ⅼ</div>
+<div><span>Ⅽ</span> ⅽ</div>
+<div><span>Ⅾ</span> ⅾ</div>
+<div><span>Ⅿ</span> ⅿ</div>
 </div>
 
 

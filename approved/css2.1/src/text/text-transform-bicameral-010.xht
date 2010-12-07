@@ -10,7 +10,7 @@
 <meta name='flags' content='' />
 <meta name="assert" content="The UA will lowercase Unicode Coptic when text-transform is set to lowercase." />
 <style type='text/css'>
-.test { text-transform: lowercase; }
+.test span { text-transform: lowercase; }
 
 /* the CSS below is not part of the test */
 .test { font-size: 130%; line-height: 2.5em; }
@@ -27,13 +27,13 @@ function setFontFamily () {var fontName = document.getElementById( 'fontName' ).
 
 
 <div class="test">
-<div>Ϣ ϣ</div>
-<div>Ϥ ϥ</div>
-<div>Ϧ ϧ</div>
-<div>Ϩ ϩ</div>
-<div>Ϫ ϫ</div>
-<div>Ϭ ϭ</div>
-<div>Ϯ ϯ</div>
+<div><span>Ϣ</span> ϣ</div>
+<div><span>Ϥ</span> ϥ</div>
+<div><span>Ϧ</span> ϧ</div>
+<div><span>Ϩ</span> ϩ</div>
+<div><span>Ϫ</span> ϫ</div>
+<div><span>Ϭ</span> ϭ</div>
+<div><span>Ϯ</span> ϯ</div>
 </div>
 
 

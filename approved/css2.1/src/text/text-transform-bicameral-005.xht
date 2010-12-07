@@ -10,7 +10,7 @@
 <meta name='flags' content='' />
 <meta name="assert" content="When the language is declared to be Turkish, the UA will use Turkish-specific rules when text-transform is set to uppercase." />
 <style type='text/css'>
-.test { text-transform: uppercase; }
+.test span { text-transform: uppercase; }
 
 /* the CSS below is not part of the test */
 .test { font-size: 130%; line-height: 2.5em; }
@@ -26,7 +26,7 @@ function setFontFamily () {var fontName = document.getElementById( 'fontName' ).
 <p class="instructions">Test passes if the right-hand character in each pair matches the left-hand one.</p>
 
 
-<div class="test" xml:lang="tr"><div>I ı</div> <div>İ i</div></div>
+<div class="test" xml:lang="tr"><div><span>I</span> ı</div> <div><span>İ</span> i</div></div>
 
 
 <p id='fontChange' style='display: none;' class='notes'>If you are unable to see font glyphs for certain characters using the browsers default font you can apply a specific font by typing its name in the following box: <input class='css' name='fontName' id='fontName' value='' type='text' /> <button class='notes' type='button' onclick='setFontFamily()'>Apply</button></p><script type='text/javascript'>if (document.getElementById) {document.getElementById('fontChange').style.display = 'block'}</script></body>

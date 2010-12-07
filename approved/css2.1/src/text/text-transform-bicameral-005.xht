@@ -26,7 +26,7 @@ function setFontFamily () {var fontName = document.getElementById( 'fontName' ).
 <p class="instructions">Test passes if the right-hand character in each pair matches the left-hand one.</p>
 
 
-<div class="test" xml:lang="tr"><div><span>I</span> ı</div> <div><span>İ</span> i</div></div>
+<div class="test" xml:lang="tr"><div>I <span>ı</span></div> <div>İ <span>i</span></div></div>
 
 
 <p id='fontChange' style='display: none;' class='notes'>If you are unable to see font glyphs for certain characters using the browsers default font you can apply a specific font by typing its name in the following box: <input class='css' name='fontName' id='fontName' value='' type='text' /> <button class='notes' type='button' onclick='setFontFamily()'>Apply</button></p><script type='text/javascript'>if (document.getElementById) {document.getElementById('fontChange').style.display = 'block'}</script></body>

@@ -6,3 +6,7 @@ build:
 
 clobber:
 	rm -rf tests
+
+install:
+	cp tests/* ../src/css1/
+

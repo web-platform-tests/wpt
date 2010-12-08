@@ -10,32 +10,19 @@
         <style type="text/css">
             #wrapper
             {
-                position: relative;
+                font: 1in serif;
             }
-            #test
+            #test span
             {
                 font: small-caps 1in serif;
                 line-height: 1em;
             }
-            #reference
-            {
-                color: orange;
-                font-family: serif;
-                font-size: 1in;
-                height: 1in;
-                left: 0;
-                line-height: 1em;
-                position: absolute;
-                top: 0;
-                width: 1in;
-            }
         </style>
     </head>
     <body>
-        <p>Test passes if the first black "x" is taller and wider than the first orange "x" and shorter than the second orange "X". The second black "X" need to also be the same height as the second orange "X".</p>
+        <p>Test passes if letters "E" below larger than this text, are capatalized, and the left "E" is smaller than the right.</p>
         <div id="wrapper">
-            <div id="test">xX</div>
-            <div id="reference">xX</div>
+            <div id="test"><span>e</span>E</div>
         </div>
     </body>
 </html>

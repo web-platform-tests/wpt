@@ -3,28 +3,29 @@
  <head>
   <title>CSS Test: pseudo_page grammar (white space before)</title>
   <link rel="author" title="Melinda Grant" href="mailto:melinda.grant@hp.com" />
+  <link rel="help" href="http://www.w3.org/TR/CSS21/page.html#page-box"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/grammar.html#page-selectors" />
   <link rel="help" href="http://www.w3.org/TR/css3-page/#syntax-page-selector" />
   <meta name="flags" content="paged" />
   <meta name="assert" content="A pseudo-page specifier within a page context may or may not be preceded by white space." />
   <style type="text/css">
     @page {
-	margin: 10%;    /* This makes the header big enough to hold the file name when printed on 4x6 in media. */
-    }	  
+      margin: 10%;    /* This makes the header big enough to hold the file name when printed on 4x6 in media. */
+    }
     @page :right {
       margin-left: 50%;
     }
     @page:left{
-	    margin-right: 50%;
-	  }
+      margin-right: 50%;
+    }
     body {
-	page-break-before: right;
+      page-break-before: right;
     }
     p {
-	page-break-after: always;
+      page-break-after: always;
     }
     span {
-	color: gray;
+      color: gray;
     }
   
    </style>

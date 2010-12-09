@@ -3,26 +3,29 @@
   <head>
     <title>CSS Test: unicode-bidi: bidi-override in alt text</title>
     <link rel="author" title="Eira Monstad, Opera Software ASA" href="mailto:public-testsuites@opera.com"/>
+    <link rel="author" title="Elika J. Etemad" href="http://fantasai.inkedblade.net/contact"/>
     <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#propdef-unicode-bidi"/>
-    <meta name="assert" content="unicode-bidi should be applied to image alt text"/>
+    <meta name="assert" content="If alt text is not treated as replaced content, then unicode-bidi applies to image alt text."/>
     <style type="text/css"><![CDATA[
       .rtol {
-      direction: rtl;
-      unicode-bidi: bidi-override;
+        direction: rtl;
+        unicode-bidi: bidi-override;
       }
       img {
-      color:blue;
+        color:blue;
+        width: 0; /* If alt text is treated as replaced content, then this makes it invisible. */
+                  /* (The rendering of replaced content is out-of-scope for CSS.) */
       }
     ]]></style>
   </head>
   
   <body>
     
-    <p>The three lines below should be identical, and say "Three lines of readable text".</p>
+    <p>The three lines below should be <strong>identical</strong>.</p>
     
-    <p>Three lines of <img src="" alt="readable"/> text</p>
-    <p>Three lines of <span class="rtol"><img src="" alt="readable"/></span> text</p>
-    <p>Three lines of <img src="" alt="elbadaer" class="rtol"/> text</p>
+    <p>Three lines of <img src="" alt="readable" width="0"/> text</p>
+    <p>Three lines of <span class="rtol"><img src="" alt="elbadaer" width="0"/></span> text</p>
+    <p>Three lines of <img src="" alt="elbadaer" class="rtol" width="0"/> text</p>
 
   </body>
 </html>

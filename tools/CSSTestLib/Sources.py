@@ -11,7 +11,7 @@ import re
 import html5lib # Warning: This uses a patched version of html5lib
 from lxml import etree
 from lxml.etree import ParseError
-from Utils import getMimeFromExt, escapeToNamedASCII, pathInsideBase, basepath
+from Utils import getMimeFromExt, escapeToNamedASCII, basepath, isPathInsideBase, relativeURL
 
 class SourceCache:
   """Cache for FileSource objects. Supports one FileSource object
@@ -255,11 +255,11 @@ class ReftestManifest(ConfigSource):
             raise ReftestFilepathError("Manifest Error in %s: "
                                        "Reftest reference file %s does not exist." \
                                        % (src, record[0][1]))
-          elif not pathInsideBase(record[1][0]):
+          elif not isPathInsideBase(record[1][0]):
             raise ReftestFilepathError("Manifest Error in %s: "
                                        "Reftest test replath %s not within relpath root." \
                                        % (src, record[1][0]))
-          elif not pathInsideBase(record[1][1]):
+          elif not isPathInsideBase(record[1][1]):
             raise ReftestFilepathError("Manifest Error in %s: "
                                        "Reftest test replath %s not within relpath root." \
                                        % (src, record[1][1]))
@@ -423,9 +423,10 @@ class CSSTestSource(XHTMLSource):
 
   def setReftest(self, referenceSource, match='=='):
     """Sets test to be a reftest, with reference source referenceSource."""
-    self.refs.append((match, referenceSource))
     if match == '==':
       self.augmentHead(reference=referenceSource)
+    # augment before appending to avoid double augment via validate()
+    self.refs.append((match, referenceSource))
 
   def isReftest(self):
     return bool(self.refs)
@@ -557,11 +558,12 @@ class CSSTestSource(XHTMLSource):
     """
     self.validate()
     if next:
-      next = os.path.relpath(next.relpath, self.relpath)
+      next = relativeURL(self.relpath, next.relpath)
       self.injectHeadTag('<link rel="next" href="%s"/>' % next, 'next')
     if prev:
-      prev = os.path.relpath(prev.relpath, self.relpath)
+      prev = relativeURL(self.relpath, prev.relpath)
       self.injectHeadTag('<link rel="prev" href="%s"/>' % prev, 'prev')
     if reference:
-      reference = os.path.relpath(reference.relpath, self.relpath)
+      reference = relativeURL(self.relpath, reference.relpath)
       self.injectHeadTag('<link rel="reference" href="%s"/>' % reference, 'ref')
+

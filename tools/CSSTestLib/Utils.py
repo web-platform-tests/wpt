@@ -14,9 +14,11 @@ os.environ['XML_CATALOG_FILES'] = os.path.join(CSSTestLib.__path__[0], 'catalog/
 import os.path
 
 def basepath(path):
+  """ Returns the path part of os.path.split.
+  """
   return os.path.split(path)[0]
 
-def pathInsideBase(path, base=''):
+def isPathInsideBase(path, base=''):
   path = os.path.normpath(path)
   if base:
     base = os.path.normpath(base)
@@ -30,7 +32,17 @@ def pathInsideBase(path, base=''):
     return not pathlist[0].startswith(os.path.pardir)
   return not path.startswith(os.path.pardir)
 
+def relativeURL(start, end):
+  """ Returns relative URL from `start` to `end`.
+  """
+  if isPathInsideBase(end, start):
+    os.path.relpath(end, start)
+  else:
+    os.path.relpath(end, basepath(start))
+
 def listfiles(path):
+  """ Returns a list of all files in a directory.
+  """
   try:
     _,_,files = os.walk(path).next()
   except StopIteration, e:
@@ -38,6 +50,8 @@ def listfiles(path):
   return files
 
 def listdirs(path):
+  """ Returns a list of all subdirectories in a directory.
+  """
   try:
     _,dirs,_ = os.walk(path).next()
   except StopIteration, e:

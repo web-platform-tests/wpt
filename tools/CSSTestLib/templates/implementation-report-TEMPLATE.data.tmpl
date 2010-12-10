@@ -5,7 +5,7 @@ testname    result
 [% FOREACH test IN tests.sort(name) %]
 [% SET skipHTML = 0 %]
 [% SET skipXML = 0 %]
-[% FOREACH flag IN entry.flags %]
+[% FOREACH flag IN test.flags %]
   [% SET skipHTML = 1 IF flag == 'nonHTML' %]
   [% SET skipXML = 1 IF flag == 'HTMLonly' %]
 [% END %]

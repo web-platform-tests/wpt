@@ -228,12 +228,12 @@ class ReftestManifest(ConfigSource):
     return basepath(self.relpath)
 
   stripRE = re.compile(r'#.*')
-  parseRE = re.compile(r'^\s*==\s*(\S+)\s+(\S+)')
+  parseRE = re.compile(r'^\s*([=!]=)\s*(\S+)\s+(\S+)')
 
   def __iter__(self):
     """Parse the reftest manifest files represented by this ReftestManifest
        and return path information about each reftest pair as
-         ((test-sourcepath, ref-sourcepath), (test-relpath, ref-relpath))
+         ((test-sourcepath, ref-sourcepath), (test-relpath, ref-relpath), reftype)
        Raises a ReftestFilepathError if any sources file do not exist or
        if any relpaths point higher than the relpath root.
     """
@@ -244,8 +244,9 @@ class ReftestManifest(ConfigSource):
         line = self.stripRE.sub('', line)
         m = self.parseRE.search(line)
         if m:
-          record = ((join(srcbase, m.group(1)), join(srcbase, m.group(2))), \
-                    (join(relbase, m.group(1)), join(relbase, m.group(2))))
+          record = ((join(srcbase, m.group(2)), join(srcbase, m.group(3))), \
+                    (join(relbase, m.group(2)), join(relbase, m.group(3))), \
+                    m.group(1))
           if not exists(record[0][0]):
             raise ReftestFilepathError("Manifest Error in %s: "
                                        "Reftest test file %s does not exist." \
@@ -325,26 +326,27 @@ class XHTMLSource(FileSource):
     if self.tree is None:
       self.parse()
 
-  def injectHeadTag(tagSnippet):
+  def injectHeadTag(self, tagSnippet, tagCode = None):
     """Inject (prepend) <head> data given in `tagSnippet`, which should be
        a single (XHTML-closed) element. Throws an exception if `tagSnippet`
-       is invalid.
+       is invalid. Injected element is tagged with `tagCode`, which can be
+       used to clear it with clearInjectedTags later.
     """
     snippet = etree.XML(tagSnippet)
     self.validate()
-    head = self.tree.getroot().find('head')
-    assert head
+    head = self.tree.getroot().find(xhtmlns+'head')
     snippet.tail = head.text
-    snippet.isCSSTestLibInjection = True
     head.insert(0, snippet)
+    self.injectedTags[snippet] = tagCode or True
 
-  def clearInjectedTags():
-    if self.tree:
-      head = self.tree.getroot().find('head')
-      if head:
-        for e in head.iterchildren():
-          if e.isCSSTestLibInjection:
-            head.remove(e)
+  def clearInjectedTags(self, tagCode = None):
+    """Clears all injected elements from the tree, or clears injected
+       elements tagged with `tagCode` if `tagCode` is given.
+    """
+    if not self.injectedTags or not self.tree: return
+    for snippet in self.injectedTags:
+      snippet.getparent().remove(snippet)
+      del self.injectedTags[snippet]
 
   def serializeXHTML(self):
     if self.tree is None:
@@ -422,6 +424,8 @@ class CSSTestSource(XHTMLSource):
   def setReftest(self, referenceSource, match='=='):
     """Sets test to be a reftest, with reference source referenceSource."""
     self.refs.append((match, referenceSource))
+    if match == '==':
+      self.augmentHead(reference=referenceSource)
 
   def isReftest(self):
     return bool(self.refs)
@@ -434,10 +438,10 @@ class CSSTestSource(XHTMLSource):
 
   def parse(self):
     XHTMLSource.parse(self)
+    self.injectedTags = {}
     for ref in self.refs:
       if (ref[0] == '=='):
-        self.injectHeadTag('<link rel="reference" href="%s"/>'
-                           % relpath(ref[1].relpath, self.relpath))
+        self.augmentHead(reference=ref[1])
 
   # See http://wiki.csswg.org/test/css2.1/format for more info on metadata
   def getMetadata(self):
@@ -450,7 +454,7 @@ class CSSTestSource(XHTMLSource):
          - links   [list of url strings]
          - name    [string]
          - title   [string]
-         - references [list of (matchType, relpath) for reference; None if not reftest]
+         - references [list of (reftype, relpath) per reference; None if not reftest]
        Strings are given in UTF-8.
     """
 
@@ -546,14 +550,18 @@ class CSSTestSource(XHTMLSource):
       return flag in data['flags']
     return False
 
-  def augmentHead(next=None, prev=None):
-    """Add extra useful metadata to the head.
-         * Adds next/prev links to paths given
-         * Adds link to reference if reftest
+  def augmentHead(self, next=None, prev=None, reference=None):
+    """Add extra useful metadata to the head. All arguments are optional.
+         * Adds next/prev links to  next/prev Sources given
+         * Adds reference link to reference Source given
     """
     self.validate()
     if next:
-      self.injectHeadTag('<link rel="next" href="%s"/>' % next)
+      next = os.path.relpath(next.relpath, self.relpath)
+      self.injectHeadTag('<link rel="next" href="%s"/>' % next, 'next')
     if prev:
-      self.injectHeadTag('<link rel="prev" href="%s"/>' % prev)
-
+      prev = os.path.relpath(prev.relpath, self.relpath)
+      self.injectHeadTag('<link rel="prev" href="%s"/>' % prev, 'prev')
+    if reference:
+      reference = os.path.relpath(reference.relpath, self.relpath)
+      self.injectHeadTag('<link rel="reference" href="%s"/>' % reference, 'ref')

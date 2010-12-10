@@ -9,6 +9,9 @@ from os.path import join, exists, splitext, dirname
 from Sources import CSSTestSource, XHTMLSource
 
 class ExtensionMap:
+  """ Given a file extension mapping (e.g. {'.xht' : '.htm'}), provides
+      a translate function for paths.
+  """
   def __init__(self, extMap):
     self.extMap = extMap
 

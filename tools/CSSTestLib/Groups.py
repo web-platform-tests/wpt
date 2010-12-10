@@ -185,10 +185,10 @@ class ReftestGroup(TestGroup):
     self.manifest = ReftestManifest(join(importDir, manifestPath), manifestDest)
 
     # Import tests
-    for (testsrc, refsrc), (testrel, refrel) in self.manifest:
+    for (testsrc, refsrc), (testrel, refrel), reftype in self.manifest:
       test = self.tests.add(testsrc, testrel, True)
       ref = self.refs.add(refsrc, refrel, False)
-      test.setReftest(ref)
+      test.setReftest(ref, reftype)
 
   def merge(self, other):
     """Merge ReftestGroup `other`'s contents into this ReftestGroup and

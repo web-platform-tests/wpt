@@ -16,6 +16,7 @@ from os.path import join, exists, abspath
 from template import Template
 import CSSTestLib
 from Utils import listfiles
+from OutputFormats import ExtensionMap
 import shutil
 
 class Section:
@@ -124,6 +125,7 @@ class Indexer:
     data['specroot']     = self.suite.specroot
     data['contributors'] = self.contributors
     data['tests']        = self.alltests
+    data['extmap']       = ExtensionMap({'.xht':''})
     data['formats']      = self.suite.formats
 
     # Copy simple copy files
@@ -158,11 +160,12 @@ class Indexer:
     data['suitetitle'] = self.suite.title
     data['suite']      = self.suite.name
     data['specroot']   = self.suite.specroot
+    
     data['indexext']   = format.indexExt
     data['isXML']      = format.indexExt.startswith('.x')
     data['formatdir']  = format.formatDirName
     data['extmap']     = format.extMap
-    data['tests']        = self.alltests
+    data['tests']      = self.alltests
 
     # Generate indices:
 

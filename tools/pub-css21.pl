@@ -74,7 +74,7 @@ push @dirs, 'contributors/gtalbot/submitted';
 push @dirs, 'contributors/hixie/submitted/css2.1/[bcfgmptuvz]*';
 push @dirs, 'contributors/hixie/submitted/css2.1/selector';
 push @dirs, 'contributors/hixie/submitted/css2.1/syndata';
-push @dirs, 'contributors/hixie/submitted/css2.1-reftest/*/reftest.list';
+push @dirs, 'contributors/hixie/submitted/css2.1-reftests/*/reftest.list';
 
 ###############################################################################
 # i18n WG (Richard Ishida)

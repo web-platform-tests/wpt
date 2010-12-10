@@ -1,10 +1,11 @@
-id	reference	title	flags	links	assertion
+id	references	title	flags	links	assertion
 [% FOREACH test IN tests.sort('name') %]
 [%+ test.file.replace('\.[a-z]+$', '') +%]	
-[%- test.references.0.relpath +%]	
+[%- FOREACH ref IN test.references.sort -%]
+  [%- '!' IF ref.type == '!=' %][% extmap.translate(ref.relpath) %][% ',' IF not loop.last() -%]
+[%- END +%]	
 [%- test.title FILTER collapse +%]	
 [%- test.flags.join(',') +%]	
 [%- test.links.join(',').replace(specroot, '') +%]	
 [%- test.asserts.join(' ') FILTER collapse +%]
 [% END %]
-

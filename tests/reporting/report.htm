@@ -243,7 +243,7 @@ function processTestResults()
     {
         arrURI = g_arrApprovedTests[i].split(/\//);
         
-        if(arrURI[arrURI.length-2] != temp)
+        if(arrURI.length == 8 && arrURI[arrURI.length-2] != temp)
         {
             oRow = oTable.insertRow(-1);
             oCell = oRow.insertCell(-1);

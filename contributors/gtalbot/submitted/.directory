@@ -1,7 +1,9 @@
 [Dolphin]
 AdditionalInfo=2
 ShowPreview=true
-Timestamp=2010,11,1,11,54,25
+SortOrder=1
+Sorting=2
+Timestamp=2010,12,10,20,2,59
 ViewMode=1
 
 [Settings]

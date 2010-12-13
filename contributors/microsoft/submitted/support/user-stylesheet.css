@@ -45,7 +45,7 @@
 {
     color: green;
 }
-#user-stylesheet-010:first-child
+#user-stylesheet-010 > *:first-child
 {
     color: green;
 }

@@ -36,9 +36,9 @@ def relativeURL(start, end):
   """ Returns relative URL from `start` to `end`.
   """
   if isPathInsideBase(end, start):
-    os.path.relpath(end, start)
+    return os.path.relpath(end, start)
   else:
-    os.path.relpath(end, basepath(start))
+    return os.path.relpath(end, basepath(start))
 
 def listfiles(path):
   """ Returns a list of all files in a directory.

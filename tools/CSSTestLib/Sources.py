@@ -379,7 +379,8 @@ class XHTMLSource(FileSource):
        Write contents as string `output` instead if specified.
     """
     if not output:
-      if not self.error: # can shortcut as copy if no error
+      if not self.error and not getattr(self, 'injectedTags', False):
+        # can shortcut as copy
         return FileSource.write(self, format)
       else:
         output = self.serializeXHTML()

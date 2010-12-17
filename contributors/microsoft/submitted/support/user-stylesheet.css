@@ -1,7 +1,7 @@
 ﻿#user-stylesheet-indication
 {
     /* Used by the harness to display and indication there is a user-stylesheet applied */
-    display: block;
+    display: block!important;
 }
 #user-stylesheet
 {

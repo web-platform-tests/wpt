@@ -39,7 +39,7 @@ class UnicodeTestGenerator:
         self.linecount += 1
         if self.linecount == self.linesize:
             self.linecount = 0
-            self.out.write("<br/>\n")
+            self.out.write("<hr/>\n")
         if ispunct:
             classname = "  extend  "
         else:

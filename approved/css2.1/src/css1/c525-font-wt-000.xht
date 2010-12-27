@@ -7,6 +7,7 @@
   <link rel="author" title="Elika J. Etemad" href="http://fantasai.inkedblade.net/contact"/>
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
   <style type="text/css"><![CDATA[
+  p { margin: 0.5em 0; }
    p, h4 { color: navy; }
    .bold {font-weight: bold;}
    .bolder {font-weight: bolder;}
@@ -14,7 +15,7 @@
    .normal { font-weight: normal; }
 
    .one { font-weight: 100; }
-   .two { font-weight: 200; ]
+   .two { font-weight: 200; }
    .three { font-weight: 300; }
    .four { font-weight: 400; }
    .five { font-weight: 500; }
@@ -36,8 +37,10 @@
   <p> <b>This sentence should be lighter than normal (or the same).</b> </p>
   <p class="bold">
    This sentence should be bold.
-   <span class="nine"> This sentence should be normal.</span>
+   <span class="normal"> This sentence should be normal.</span>
   </p>
+
+  <hr/>
 
   <p>For the following nine lines, each must be bolder or the same as the previous:</p>
   <p class="one">Line 1 (Lightest)</p>

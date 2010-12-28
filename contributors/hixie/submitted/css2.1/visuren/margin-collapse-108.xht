@@ -3,7 +3,7 @@
 <head>
   <title>CSS Test: Margin Collapsing: in flow (used border)</title>
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
-  <link rek="author" title="Elika J. Etemad" href="http://fantasai.inkedblade.net/contact"/>
+  <link rel="author" title="Elika J. Etemad" href="http://fantasai.inkedblade.net/contact"/>
   <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/box/block/margin-collapse/008.html" type="text/html"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#collapsing-margins"/>
   <meta name="assert" content="This tests that emptiness is based on the
@@ -25,7 +25,7 @@
 
    /* control */
    .control .a { margin: 0 0 2em; }
-   .control .b { border-top: solid lime 0.04px; }
+   .control .c { border-bottom: solid lime 0.04px; }
   </style>
  </head>
  <body>
@@ -42,6 +42,7 @@
     <td>
      <div class="control">
       <div class="a">A</div>
+      <div class="c"></div>
       <div class="b">B</div>
      </div>
     </td>

@@ -22,9 +22,10 @@
 
    /* The test */
    link:before { content: '1. Link A'; }
-   p:active, span:active { color: yellow; border: red solid thick; background: red; }
+   /* Disabled due to http://www.w3.org/Bugs/Public/show_bug.cgi?id=11343
+      p:active, span:active { color: yellow; border: red solid thick; background: red; } */
    .test { color: blue; }
-   :link:active, :visited:active { color: white; background: green; border: green solid thick; }
+   a:active, link:active { color: white; background: green; border: green solid thick; }
 
    /* Informative status message */
    .msg { background: white; color: white; line-height: 1.2 }

@@ -17,13 +17,29 @@
             }
             td
             {
-                border: 5px dashed black;
+                border: 5px dashed lime;
                 height: 3em;
                 width: 3em;
             }
             #center, #table1 td
             {
-                border: 5px solid black;
+                border: 5px solid lime;
+            }
+            #top
+            {
+                border-top: 5px dashed red;
+            }
+            #left
+            {
+                border-left: 5px dashed red;
+            }
+            #bottom
+            {
+                border-bottom: 5px dashed red;
+            }
+            #right
+            {
+                border-right: 5px dashed red;
             }
         </style>
     </head>
@@ -37,17 +53,17 @@
         <table>
             <tr>
                 <td>dashed</td>
-                <td>dashed</td>
+                <td id="bottom">dashed</td>
                 <td>dashed</td>
             </tr>
             <tr>
-                <td>dashed</td>
+                <td id="right">dashed</td>
                 <td id="center">solid</td>
-                <td>dashed</td>
+                <td id="left">dashed</td>
             </tr>
             <tr>
                 <td>dashed</td>
-                <td>dashed</td>
+                <td id="top">dashed</td>
                 <td>dashed</td>
             </tr>
         </table>

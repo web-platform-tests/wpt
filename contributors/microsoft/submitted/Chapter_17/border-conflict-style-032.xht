@@ -17,13 +17,29 @@
             }
             td
             {
-                border: 5px groove black;
+                border: 5px groove lime;
                 height: 3em;
                 width: 3em;
             }
             #center, #table1 td
             {
-                border: 5px dotted black;
+                border: 5px dotted lime;
+            }
+            #top
+            {
+                border-top: 5px groove red;
+            }
+            #left
+            {
+                border-left: 5px groove red;
+            }
+            #bottom
+            {
+                border-bottom: 5px groove red;
+            }
+            #right
+            {
+                border-right: 5px groove red;
             }
         </style>
     </head>
@@ -37,17 +53,17 @@
         <table>
             <tr>
                 <td>groove</td>
-                <td>groove</td>
+                <td id="bottom">groove</td>
                 <td>groove</td>
             </tr>
             <tr>
-                <td>groove</td>
+                <td id="right">groove</td>
                 <td id="center">dotted</td>
-                <td>groove</td>
+                <td id="left">groove</td>
             </tr>
             <tr>
                 <td>groove</td>
-                <td>groove</td>
+                <td id="top">groove</td>
                 <td>groove</td>
             </tr>
         </table>

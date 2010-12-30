@@ -17,13 +17,29 @@
             }
             td
             {
-                border: 5px dotted black;
+                border: 5px dotted lime;
                 height: 3em;
                 width: 3em;
             }
             #center, #table1 td
             {
-                border: 5px solid black;
+                border: 5px solid lime;
+            }
+            #top
+            {
+                border-top: 5px dotted red;
+            }
+            #left
+            {
+                border-left: 5px dotted red;
+            }
+            #bottom
+            {
+                border-bottom: 5px dotted red;
+            }
+            #right
+            {
+                border-right: 5px dotted red;
             }
         </style>
     </head>
@@ -37,17 +53,17 @@
         <table>
             <tr>
                 <td>dotted</td>
-                <td>dotted</td>
+                <td id="bottom">dotted</td>
                 <td>dotted</td>
             </tr>
             <tr>
-                <td>dotted</td>
+                <td id="right">dotted</td>
                 <td id="center">solid</td>
-                <td>dotted</td>
+                <td id="left">dotted</td>
             </tr>
             <tr>
                 <td>dotted</td>
-                <td>dotted</td>
+                <td id="top">dotted</td>
                 <td>dotted</td>
             </tr>
         </table>

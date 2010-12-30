@@ -719,6 +719,7 @@ var elements = {
 	"audio": ["src", "preload", "loop", "autoplay", "controls"],
 	"b": [],
 	"base": ["target"],
+	"bdi": [],
 	"bdo": [],
 	"blockquote": ["cite"],
 	"body": [
@@ -811,7 +812,7 @@ var elements = {
 			"datetime-local", "number", "range", "color", "checkbox", "radio",
 			"file", "submit", "image", "reset", "button"], "missing": "text"},
 		"formAction", "formEnctype", "formMethod", "formNoValidate",
-		"formTarget", "autofocus", "name", "disabled"],
+		"formTarget", "autofocus", "name", "disabled"], "dirname",
 		// Obsolete
 		"align", "useMap",
 	],
@@ -905,11 +906,16 @@ var elements = {
 		// Obsolete
 		"abbr", "align", "axis", "bgColor", "ch", "chOff", "height", "noWrap", "vAlign", "width",
 	],
-	"textarea": ["cols", "placeholder", "required", "rows", "wrap", "maxLength", "readOnly", "autofocus", "name", "disabled"],
+	"textarea": ["cols", "placeholder", "required", "rows", "wrap",
+		"maxLength", "readOnly", "autofocus", "name", "disabled", "dirname"],
 	"tfoot": [/* Obsolete */ "align", "ch", "chOff", "vAlign"],
 	"th": [
 		// Conforming
-		"scope", "colSpan", "rowSpan", "headers",
+		// TODO: double-check that the way we're treating missing value
+		// defaults is consistent here.  scope has an auto state with no
+		// associated keyword, which is the missing value default -- is this
+		// the right syntax for that?
+		["enum", "scope", {"values": ["row", "col", "rowgroup", "colgroup"]}], "colSpan", "rowSpan", "headers",
 		// Obsolete
 		"abbr", "align", "axis", "bgColor", "ch", "chOff", "height", "noWrap", "vAlign", "width",
 	],
@@ -917,10 +923,10 @@ var elements = {
 	"time": ["dateTime", "pubDate"],
 	"title": [],
 	"tr": [/* Obsolete */ "align", "bgColor", "ch", "chOff", "vAlign"],
-	"track": ["kind", "label", "src", "srclang"],
+	"track": ["kind", "label", "src", "srclang", ["boolean", "default"]],
 	"ul": [/* Obsolete */ "compact", "type"],
 	"var": [],
-	"video": ["poster", "src", "preload", "loop", "autoplay", "controls", ["unsigned long", "height"], ["unsigned long", "width"]],
+	"video": ["audio", "poster", "src", "preload", "loop", "autoplay", "controls", ["unsigned long", "height"], ["unsigned long", "width"]],
 	"wbr": [],
 
 	// Obsolete elements
@@ -947,6 +953,7 @@ var attribs = {
 	"action": "url",
 	"formAction": "url",
 	"async": "boolean",
+	"audio": "settable tokenlist",
 	"autocomplete": ["enum", "autocomplete", {"values": ["on", "off"], "missing": "on"}],
 	"autofocus": "boolean",
 	"autoplay": "boolean",
@@ -1030,7 +1037,7 @@ for (var element in elements) {
 	ReflectionTests.reflects("string", "title", element);
 	ReflectionTests.reflects("string", "lang", element);
 	ReflectionTests.reflects("string", "className", element, "class");
-	ReflectionTests.reflects({"type": "enum", "keywords": ["ltr", "rtl"]}, "dir", element);
+	ReflectionTests.reflects({"type": "enum", "keywords": ["ltr", "rtl", "auto"]}, "dir", element);
 	ReflectionTests.reflects("boolean", "hidden", element);
 	ReflectionTests.reflects("string", "accessKey", element);
 	ReflectionTests.reflects("boolean", "itemScope", element);

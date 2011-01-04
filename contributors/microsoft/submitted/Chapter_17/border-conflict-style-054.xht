@@ -22,13 +22,29 @@
             }
             td
             {
-                border: 5px inset black;
+                border: 5px inset lime;
                 height: 3em;
                 width: 3em;
             }
             #center, #table1 td
             {
-                border: 5px groove black;
+                border: 5px groove lime;
+            }
+            #top
+            {
+                border-top: 5px inset red;
+            }
+            #left
+            {
+                border-left: 5px inset red;
+            }
+            #bottom
+            {
+                border-bottom: 5px inset red;
+            }
+            #right
+            {
+                border-right: 5px inset red;
             }
         </style>
     </head>
@@ -42,17 +58,17 @@
         <table>
             <tr>
                 <td>inset</td>
-                <td>inset</td>
+                <td id="bottom">inset</td>
                 <td>inset</td>
             </tr>
             <tr>
-                <td>inset</td>
+                <td id="right">inset</td>
                 <td id="center">groove</td>
-                <td>inset</td>
+                <td id="left">inset</td>
             </tr>
             <tr>
                 <td>inset</td>
-                <td>inset</td>
+                <td id="top">inset</td>
                 <td>inset</td>
             </tr>
         </table>

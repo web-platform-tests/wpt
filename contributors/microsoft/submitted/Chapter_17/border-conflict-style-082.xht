@@ -17,13 +17,29 @@
             }
             td
             {
-                border: 5px ridge black;
+                border: 5px ridge lime;
                 height: 3em;
                 width: 3em;
             }
             #center, #table1 td
             {
-                border: 5px dotted black;
+                border: 5px dotted lime;
+            }
+            #top
+            {
+                border-top: 5px ridge red;
+            }
+            #left
+            {
+                border-left: 5px ridge red;
+            }
+            #bottom
+            {
+                border-bottom: 5px ridge red;
+            }
+            #right
+            {
+                border-right: 5px ridge red;
             }
         </style>
     </head>
@@ -37,17 +53,17 @@
         <table>
             <tr>
                 <td>ridge</td>
-                <td>ridge</td>
+                <td id="bottom">ridge</td>
                 <td>ridge</td>
             </tr>
             <tr>
-                <td>ridge</td>
+                <td id="right">ridge</td>
                 <td id="center">dotted</td>
-                <td>ridge</td>
+                <td id="left">ridge</td>
             </tr>
             <tr>
                 <td>ridge</td>
-                <td>ridge</td>
+                <td id="top">ridge</td>
                 <td>ridge</td>
             </tr>
         </table>

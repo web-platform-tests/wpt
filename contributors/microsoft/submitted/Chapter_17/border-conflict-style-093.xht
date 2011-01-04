@@ -17,13 +17,29 @@
             }
             td
             {
-                border: 5px solid black;
+                border: 5px solid lime;
                 height: 3em;
                 width: 3em;
             }
             #center, #table1 td
             {
-                border: 5px double black;
+                border: 5px double lime;
+            }
+            #top
+            {
+                border-top: 5px solid red;
+            }
+            #left
+            {
+                border-left: 5px solid red;
+            }
+            #bottom
+            {
+                border-bottom: 5px solid red;
+            }
+            #right
+            {
+                border-right: 5px solid red;
             }
         </style>
     </head>
@@ -37,17 +53,17 @@
         <table>
             <tr>
                 <td>solid</td>
-                <td>solid</td>
+                <td id="bottom">solid</td>
                 <td>solid</td>
             </tr>
             <tr>
-                <td>solid</td>
+                <td id="right">solid</td>
                 <td id="center">double</td>
-                <td>solid</td>
+                <td id="left">solid</td>
             </tr>
             <tr>
                 <td>solid</td>
-                <td>solid</td>
+                <td id="top">solid</td>
                 <td>solid</td>
             </tr>
         </table>

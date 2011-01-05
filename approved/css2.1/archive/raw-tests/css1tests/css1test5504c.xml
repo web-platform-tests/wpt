@@ -5,14 +5,15 @@
   <link rel="help" href="http://www.w3.org/TR/REC-CSS1#margin-left"/>
   <link rel="author" title="CSS1 Test Suite Contributors" href="http://www.w3.org/Style/CSS/Test/CSS1/current/tsack.html"/>
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
-  <meta name="flags" content="scroll should"/>
+  <meta name="flags" content="image scroll should"/>
   <style type="text/css"><![CDATA[
-   html { margin: 0; padding: 8px; }
+   html { margin: 0; padding: 0; }
    body { margin: 0; padding: 0; }
-   .five { margin-left: -10px; color: navy; }
+   .five { margin-left: -2em; padding-left: 2em; color: navy;
+           background: url(support/swatch-green.png) no-repeat left; }
   ]]></style>
  </head>
  <body>
-  <p class="five"> &#x00A0;&#x00A0;This page should have a horizontal scroll bar. </p> <!-- or should it? dum-dum-dummm.... -->
+  <p class="five">Test passes if you can scroll to the left and see a green box.</p>
  </body>
 </html>

@@ -43,41 +43,151 @@ function btoaLookup(idx) {
 	// Throw INVALID_CHARACTER_ERR exception here -- won't be hit in the tests.
 }
 
-function testBtoa(input) {
-	for (var i = 0; i < input.length; i++) {
-		if (input.charCodeAt(i) > 255) {
-			assert_throws("INVALID_CHARACTER_ERR",
-				function() { btoa(input) }
-			);
+function myatob(s) {
+	var out = "";
+	s = s.replace(/=*$/, "");
+	var bits = [];
+	for (var i = 0; i < s.length; i += 4) {
+		bits[0] = atobLookup(s[i]);
+		bits[1] = atobLookup(s[i + 1]);
+		bits[2] = atobLookup(s[i + 2]);
+		bits[3] = atobLookup(s[i + 3]);
+
+		// The final block can legitimately be 2, 3, or 4 characters long after
+		// we strip the "=" padding.
+		out += String.fromCharCode((bits[0] << 2) | (bits[1] >> 4));
+		if (bits[2] === undefined) {
+			break;
 		}
-		return;
+		out += String.fromCharCode(((bits[1] << 4) | (bits[2] >> 2)) & 0xff);
+		if (bits[3] === undefined) {
+			break;
+		}
+		out += String.fromCharCode(((bits[2] << 6) | bits[3]) & 0xff);
 	}
-	assert_equals(btoa(input), mybtoa(input));
+	return out;
 }
 
-var tests = [];
-for (var i = 0; i < 258; i++) {
-	tests.push(["Correct btoa output for code point " + i, String.fromCharCode(i)]);
+function atobLookup(chr) {
+	if (chr === undefined) {
+		return undefined;
+	}
+	if (/[A-Z]/.test(chr)) {
+		return chr.charCodeAt(0) - "A".charCodeAt(0);
+	}
+	if (/[a-z]/.test(chr)) {
+		return chr.charCodeAt(0) - "a".charCodeAt(0) + 26;
+	}
+	if (/[0-9]/.test(chr)) {
+		return chr.charCodeAt(0) - "0".charCodeAt(0) + 52;
+	}
+	if (chr == "+") {
+		return 62;
+	}
+	if (chr == "/") {
+		return 63;
+	}
+	// Throw exception; should not be hit in tests
 }
-tests.push(["Correct btoa output for code point 10000", String.fromCharCode(10000)]);
-tests.push(["Correct btoa output for code point 65534", String.fromCharCode(65534)]);
-tests.push(["Correct btoa output for code point 65535", String.fromCharCode(65535)]);
+
+function btoaException(input) {
+	for (var i = 0; i < input.length; i++) {
+		if (input.charCodeAt(i) > 255) {
+			return true;
+		}
+	}
+	return false;
+}
+
+function testBtoa(input) {
+	if (btoaException(input)) {
+		assert_throws("INVALID_CHARACTER_ERR",
+			function() { btoa(input) }
+		);
+	} else {
+		assert_equals(btoa(input), mybtoa(input));
+		assert_equals(atob(btoa(input)), input);
+	}
+}
+
+var tests = ["עברית", "", "a", "ab", "abc", "abcd", "abcde",
+	// This one is thrown in because IE9 seems to fail atob(btoa()) on it.  Or
+	// possibly to fail btoa().  I actually can't tell what's happening here,
+	// but it doesn't hurt.
+	"\xff\xff\xc0",
+];
+for (var i = 0; i < 258; i++) {
+	tests.push(String.fromCharCode(i));
+}
+tests.push(String.fromCharCode(10000));
+tests.push(String.fromCharCode(65534));
+tests.push(String.fromCharCode(65535));
+
+// This is supposed to be U+10000.
+tests.push(String.fromCharCode(0xd800, 0xdc00));
+tests = tests.map(
+	function(elem) {
+		if (btoaException(elem)) {
+			return ['btoa("' + elem + '") throws exception', elem];
+		}
+		return ['btoa("' + elem + '") == "' + mybtoa(elem) + '"', elem];
+	}
+);
 
 var everything = "";
 for (var i = 0; i < 256; i++) {
 	everything += String.fromCharCode(i);
 }
-tests.push(["Correct btoa output for first 256 characters concatenated", everything]);
-
-tests.push(["Correct btoa output for עברית", "עברית"]);
-tests.push(["Correct btoa output for empty string", ""]);
-tests.push(["Correct btoa output for a", "a"]);
-tests.push(["Correct btoa output for ab", "ab"]);
-tests.push(["Correct btoa output for abc", "abc"]);
-tests.push(["Correct btoa output for abcd", "abcd"]);
-tests.push(["Correct btoa output for abcde", "abcde"]);
-
-tests.push(["Correct btoa output for code point 0x10001", String.fromCharCode(0xd840, 0xdc00)]);
+tests.push(["btoa applied to first 256 code points concatenated should work", everything]);
 
 generate_tests(testBtoa, tests);
+
+/**
+ *
+ */
+function atobException(input) {
+	return !/^([+/0-9A-Za-z]{4})*([+/0-9A-Za-z]{2}(==)?|[+/0-9A-Za-z]{3}=?)?$/.test(input);
+}
+
+function testAtob(input) {
+	if (atobException(input)) {
+		assert_throws("INVALID_CHARACTER_ERR",
+			function() { atob(input) }
+		);
+	} else {
+		assert_equals(atob(input), myatob(input));
+	}
+}
+
+var tests = ["", "abcd", " abcd", "abcd ", "abcd===", " abcd===", "abcd=== ",
+	"abcd ===", "a", "ab", "abc", "abcde", String.fromCharCode(0xd800, 0xdc00),
+	"=", "==", "===", "====", "=====",
+	"a=", "a==", "a===", "a====", "a=====",
+	"ab=", "ab==", "ab===", "ab====", "ab=====",
+	"abc=", "abc==", "abc===", "abc====", "abc=====",
+	"abcd=", "abcd==", "abcd===", "abcd====", "abcd=====",
+	"abcde=", "abcde==", "abcde===", "abcde====", "abcde=====",
+	"ab\ncd",
+	// Test if any bits are set at the end.  These should all be fine, since
+	// they end with A, which becomes 0:
+	"A", "/A", "//A", "///A", "////A",
+	// These are all bad, since they end in / (= 63, all bits set) but their
+	// length isn't a multiple of four characters, so they can't be output by
+	// btoa().  Thus one might expect some UAs to throw exceptions or otherwise
+	// object, since they could never be output by btoa(), so they're good to
+	// test.
+	"/", "A/", "AA/", "AAAA/",
+	// But this one is possible:
+	"AAA/",
+];
+tests = tests.map(
+	function(elem) {
+		if (atobException(elem)) {
+			return ['atob("' + elem + '") throws exception', elem];
+		}
+		return ['atob("' + elem + '") == "' + myatob(elem) + '"', elem];
+	}
+);
+
+generate_tests(testAtob, tests);
 </script>

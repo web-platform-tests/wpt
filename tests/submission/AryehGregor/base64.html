@@ -142,9 +142,6 @@ tests.push(["btoa applied to first 256 code points concatenated should work", ev
 
 generate_tests(testBtoa, tests);
 
-/**
- *
- */
 function atobException(input) {
 	return !/^([+/0-9A-Za-z]{4})*([+/0-9A-Za-z]{2}(==)?|[+/0-9A-Za-z]{3}=?)?$/.test(input);
 }
@@ -167,6 +164,7 @@ var tests = ["", "abcd", " abcd", "abcd ", "abcd===", " abcd===", "abcd=== ",
 	"abc=", "abc==", "abc===", "abc====", "abc=====",
 	"abcd=", "abcd==", "abcd===", "abcd====", "abcd=====",
 	"abcde=", "abcde==", "abcde===", "abcde====", "abcde=====",
+	"=a", "=a=", "a=b", "a=b=", "ab=c", "ab=c=", "abc=d", "abc=d=",
 	"ab\ncd",
 	// Test if any bits are set at the end.  These should all be fine, since
 	// they end with A, which becomes 0:

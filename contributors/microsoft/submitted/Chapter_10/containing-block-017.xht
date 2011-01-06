@@ -3,44 +3,62 @@
     <head>
         <title>CSS Test: Containing Blocks - Block-level elements position based on left-to-right direction and parent element is relative</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="author" title="Alan Gresley" href="alan{at}css-class.com" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#containing-block-details" />
         <meta name="flags" content="" />
         <meta name="assert" content="The containing block of an absolutely positioned block-level element is formed by the padding edge of its nearest (closest) positioned ancestor element." />
         <style type="text/css">
             div
             {
-                border: solid black;
-                padding: 1in;
-                position: relative;
-                width: 3in;
-            }
-            span
-            {
-                display: block;
-            }
-            #span1
-            {
+                border: 10px solid teal;
                 direction: ltr;
-                height: 1in;
-                width: 1in;
-                padding: 1in;
+                padding: 100px;
+                width: 720px;
             }
-            span span
+            #first-box
             {
-                background: blue;
-                height: 1in;
+                background: aqua;
+                color: silver;
+            }
+            #last-box
+            {
+                background: yellow;
+                color: silver;
+            }
+            .position
+            {
+                height: 50px;
                 position: absolute;
-                right: 0;
+                width: 50px;
+            }
+            .top-left
+            {
+                background: orange;
+                left: 0;
+                top: 0;
+            }
+            .bottom-right
+            {
+                background: orange;
                 bottom: 0;
-                width: 1in;
+                right: 0;
+            }
+            #test
+            {
+                border: 5px solid black;
+                padding: 50px;
+                position: relative;
             }
         </style>
     </head>
     <body>
-        <p>Test passes if the blue box is in the lower-right corner of the black box.</p>
+        <p>Test passes if orange boxes are touching, but not overlapping, the inside corners of the black box.</p>
         <div>
-            <span id="span1">
-                <span></span>
+            <span id="test">
+                <span id="first-box">Filler Text Filler Text Filler Text Filler Text</span>
+                <span class="position bottom-right">bottom-right</span>
+                <span class="position top-left">top-left</span>
+                <span id="last-box">Filler Text Filler Text Filler Text Filler Text</span>
             </span>
         </div>
     </body>

@@ -41,7 +41,7 @@
 <p><a href="http://www.w3.org/"><img alt="W3C" height="48" src="http://www.w3.org/Icons/w3c_home" width="72"></a></p>
 <!--end-logo-->
  <h1>Web DOM Core</h1>
- <h2 class="no-num no-toc" id="editor-s-draft-25-november-2010">Editor's Draft 25 November 2010</h2>
+ <h2 class="no-num no-toc" id="editor-s-draft-7-january-2011">Editor's Draft 7 January 2011</h2>
 
  <dl>
   <dt>This Version:
@@ -59,7 +59,7 @@
  </dl>
 
 <!--begin-copyright-->
-<p class="copyright"><a href="http://www.w3.org/Consortium/Legal/ipr-notice#Copyright">Copyright</a> &copy; 2010 <a href="http://www.w3.org/"><abbr title="World Wide Web Consortium">W3C</abbr></a><sup>&reg;</sup> (<a href="http://www.csail.mit.edu/"><abbr title="Massachusetts Institute of Technology">MIT</abbr></a>, <a href="http://www.ercim.eu/"><abbr title="European Research Consortium for Informatics and Mathematics">ERCIM</abbr></a>, <a href="http://www.keio.ac.jp/">Keio</a>), All Rights Reserved. W3C <a href="http://www.w3.org/Consortium/Legal/ipr-notice#Legal_Disclaimer">liability</a>, <a href="http://www.w3.org/Consortium/Legal/ipr-notice#W3C_Trademarks">trademark</a> and <a href="http://www.w3.org/Consortium/Legal/copyright-documents">document use</a> rules apply.</p>
+<p class="copyright"><a href="http://www.w3.org/Consortium/Legal/ipr-notice#Copyright">Copyright</a> &copy; 2011 <a href="http://www.w3.org/"><abbr title="World Wide Web Consortium">W3C</abbr></a><sup>&reg;</sup> (<a href="http://www.csail.mit.edu/"><abbr title="Massachusetts Institute of Technology">MIT</abbr></a>, <a href="http://www.ercim.eu/"><abbr title="European Research Consortium for Informatics and Mathematics">ERCIM</abbr></a>, <a href="http://www.keio.ac.jp/">Keio</a>), All Rights Reserved. W3C <a href="http://www.w3.org/Consortium/Legal/ipr-notice#Legal_Disclaimer">liability</a>, <a href="http://www.w3.org/Consortium/Legal/ipr-notice#W3C_Trademarks">trademark</a> and <a href="http://www.w3.org/Consortium/Legal/copyright-documents">document use</a> rules apply.</p>
 <!--end-copyright-->
 </div>
 
@@ -79,7 +79,7 @@ publications and the latest revision of this technical report can be found in
 the <a href="http://www.w3.org/TR/">W3C technical reports index</a> at
 http://www.w3.org/TR/.</em>
 
-<p>This is the 25 November 2010 Editor's Draft of Web DOM Core. Please send
+<p>This is the 7 January 2011 Editor's Draft of Web DOM Core. Please send
 comments to
 <a href="mailto:public-webapps@w3.org?subject=%5BDOMCore%5D%20">public-webapps@w3.org</a>
 (<a href="http://lists.w3.org/Archives/Public/public-webapps/">archived</a>)
@@ -581,7 +581,7 @@ feature</a> with the version "2.0" associated with it.
   const unsigned short <a href="#dom-domexception-inuse_attribute_err" title="dom-DOMException-INUSE_ATTRIBUTE_ERR">INUSE_ATTRIBUTE_ERR</a> = 10; // historical
   const unsigned short <a href="#dom-domexception-invalid_state_err" title="dom-DOMException-INVALID_STATE_ERR">INVALID_STATE_ERR</a> = 11;
   const unsigned short <a href="#dom-domexception-syntax_err" title="dom-DOMException-SYNTAX_ERR">SYNTAX_ERR</a> = 12;
-  const unsigned short <a href="#dom-domexception-invalid_modification_err" title="dom-DOMException-INVALID_MODIFICATION_ERR">INVALID_MODIFICATION_ERR</a> = 13; // historical
+  const unsigned short <a href="#dom-domexception-invalid_modification_err" title="dom-DOMException-INVALID_MODIFICATION_ERR">INVALID_MODIFICATION_ERR</a> = 13;
   const unsigned short <a href="#dom-domexception-namespace_err" title="dom-DOMException-NAMESPACE_ERR">NAMESPACE_ERR</a> = 14;
   const unsigned short <a href="#dom-domexception-invalid_access_err" title="dom-DOMException-INVALID_ACCESS_ERR">INVALID_ACCESS_ERR</a> = 15;
   const unsigned short <a href="#dom-domexception-validation_err" title="dom-DOMException-VALIDATION_ERR">VALIDATION_ERR</a> = 16; // historical
@@ -628,7 +628,7 @@ following:
  <li value="12"><dfn id="dom-domexception-syntax_err" title="dom-DOMException-SYNTAX_ERR"><code>SYNTAX_ERR</code></dfn>:
  the string did not match the expected pattern;
  <li value="13"><dfn id="dom-domexception-invalid_modification_err" title="dom-DOMException-INVALID_MODIFICATION_ERR"><code>INVALID_MODIFICATION_ERR</code></dfn>:
- the object can not be modified (historical);
+ the object can not be modified in this way;
  <li value="14"><dfn id="dom-domexception-namespace_err" title="dom-DOMException-NAMESPACE_ERR"><code>NAMESPACE_ERR</code></dfn>:
  the operation is not allowed by <cite>Namespaces in XML</cite>; <a href="#refsXMLNS">[XMLNS]</a>
  <li value="15"><dfn id="dom-domexception-invalid_access_err" title="dom-DOMException-INVALID_ACCESS_ERR"><code>INVALID_ACCESS_ERR</code></dfn>:
@@ -3103,17 +3103,22 @@ specification will however not support them.
 <h3 class="no-num" id="normative-references">Normative references</h3>
 <div id="anolis-references-normative"><dl><dt id="refsRFC2119">[RFC2119]
 <dd><cite><a href="http://www.ietf.org/rfc/rfc2119.txt">Key words for use in RFCs to Indicate Requirement Levels</a></cite>, S. Bradner. IETF.
+
 <dt id="refsWEBIDL">[WEBIDL]
 <dd><cite><a href="http://dev.w3.org/2006/webapi/WebIDL/">Web IDL</a></cite>, C. McCormack and S. Weinig. W3C.
+
 <dt id="refsXML">[XML]
 <dd><cite><a href="http://www.w3.org/TR/xml/">Extensible Markup Language</a></cite>, T. Bray, J. Paoli, C. Sperberg-McQueen et al.. W3C.
+
 <dt id="refsXMLNS">[XMLNS]
 <dd><cite><a href="http://www.w3.org/TR/xml-names/">Namespaces in XML</a></cite>, T. Bray, D. Hollander, A. Layman et al.. W3C.
+
 </dl></div>
 
 <h3 class="no-num" id="informative-references">Informative references</h3>
 <div id="anolis-references-informative"><dl><dt id="refsHTML">[HTML]
 <dd><cite><a href="http://www.whatwg.org/specs/web-apps/current-work/multipage">HTML</a></cite>, I. Hickson. WHATWG.
+
 </dl></div>
 
 

@@ -6,6 +6,7 @@
 import shutil
 import filecmp
 import os.path
+import Utils
 from os.path import exists, join
 from Sources import SourceCache, SourceSet, ConfigSource, ReftestManifest
 from Utils import listfiles
@@ -56,7 +57,7 @@ class TestGroup:
               dirs.remove(dir)
           for name in files:
             sourcepath = join(root, name)
-            relpath = os.path.relpath(sourcepath, importDir)
+            relpath = Utils.relpath(sourcepath, importDir)
             self.support.add(sourcepath, relpath)
 
   def sourceCache(self):

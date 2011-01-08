@@ -10,7 +10,7 @@
         <style type="text/css">
             div
             {
-                font: 12pt Ahem;
+                font: 20px/1 Ahem;
                 position: relative;
                 width: 1em;
             }
@@ -24,10 +24,17 @@
             }
             #div3
             {
-                height: 15pt;
-                left: 1.2em;
+                left: 1.1em;
                 position: absolute;
                 top: -0.4em;
+            }
+            #div4
+            {
+                height: 20px;
+            }
+            #div5
+            {
+                height: 1mm;
             }
         </style>
     </head>
@@ -35,7 +42,10 @@
         <p>Test passes if the two boxes below are the same height.</p>
         <div id="div1">
             <div id="div2">X X</div>
-            <div id="div3"></div>
+            <div id="div3">
+                <div id="div4"></div>
+                <div id="div5"></div>
+            </div>
         </div>
     </body>
 </html>

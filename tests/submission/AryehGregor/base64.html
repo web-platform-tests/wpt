@@ -143,7 +143,16 @@ tests.push(["btoa applied to first 256 code points concatenated should work", ev
 generate_tests(testBtoa, tests);
 
 function atobException(input) {
-	return !/^([+/0-9A-Za-z]{4})*([+/0-9A-Za-z]{2}(==)?|[+/0-9A-Za-z]{3}=?)?$/.test(input);
+	if (input.length % 4 == 0 && /==?$/.test(input)) {
+		input = input.replace(/==?$/, "");
+	}
+	if (input.length % 4 == 1) {
+		return true;
+	}
+	if (!/^[+\/0-9A-Za-z]*$/.test(input)) {
+		return true;
+	}
+	return false;
 }
 
 function testAtob(input) {

@@ -4,14 +4,15 @@
         <title>CSS Test: Specifying em/ex on the root element</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/syndata.html#length-units" />
-        <meta name="flags" content="" />
+        <meta name="flags" content="ahem" />
         <meta name="assert" content="Units 'em' and 'ex' refer to the initial value of the property when specified on the root element of a document." />
         <style type="text/css">
-            body
+            html
             {
                 border: 1px solid;
-                margin-left: 30em;
-                margin-top: 30ex;
+                font: 20px/1 Ahem;
+                margin-left: 20em;
+                margin-top: 20ex;
             }
             div
             {
@@ -22,16 +23,20 @@
                 background: orange;
                 height: 20px;
                 left: 0;
-                top: 30ex;
-                width: 30em;
+                top: 320px;
+                width: 400px;
             }
             #div2
             {
                 background: blue;
-                height: 30ex;
-                left: 30em;
+                height: 320px;
+                left: 400px;
                 top: 0;
                 width: 20px;
+            }
+            p
+            {
+                font: 16px serif;
             }
         </style>
     </head>

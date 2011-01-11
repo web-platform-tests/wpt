@@ -28,11 +28,13 @@ test(function() {
     "URL_MISMATCH_ERR",
     "QUOTA_EXCEEDED_ERR",
     "TIMEOUT_ERR",
+    null,
     "DATA_CLONE_ERR"
   ]
   for (var i = 0; i < constants.length; i++) {
     var name = constants[i];
-    assert_equals(DOMException[name], i + 1, name)
+    if (name)
+      assert_equals(DOMException[name], i + 1, name)
   }
 })
 </script>

@@ -8,11 +8,11 @@
         <meta name="flags" content="" />
         <meta name="assert" content="The 'font' shorthand property accepts and sets font-variant, font-size and font-family." />
         <style type="text/css">
-            #wrapper
+            div
             {
                 font: 1in serif;
             }
-            #test span
+            span
             {
                 font: small-caps 1in serif;
                 line-height: 1em;
@@ -20,9 +20,7 @@
         </style>
     </head>
     <body>
-        <p>Test passes if letters "E" below larger than this text, are capatalized, and the left "E" is smaller than the right.</p>
-        <div id="wrapper">
-            <div id="test"><span>e</span>E</div>
-        </div>
+        <p>Test passes if letters "E" below are larger than this text, are capitalized, and if the left "E" is smaller than the right "E".</p>
+        <div><span>e</span>E</div>
     </body>
 </html>

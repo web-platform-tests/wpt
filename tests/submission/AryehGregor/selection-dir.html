@@ -52,7 +52,7 @@ function testDirection() {
 	}, "removeRange()/addRange() successful");
 	test(function() {
 		assert_equals(selection.anchorNode, p);
-		assert_equals(selection.anchorNode, p);
+		assert_equals(selection.focusNode, p);
 	}, "Expected node is selected after remove/addRange()");
 	test(function() {
 		var actualOffsets = [selection.anchorOffset, selection.focusOffset].sort();
@@ -79,7 +79,7 @@ function testDirection() {
 	}, "removeAllRanges() successful");
 	test(function() {
 		assert_equals(selection.anchorNode, p);
-		assert_equals(selection.anchorNode, p);
+		assert_equals(selection.focusNode, p);
 	}, "Expected node is selected after removeAllRanges()");
 	test(function() {
 		var actualOffsets = [selection.anchorOffset, selection.focusOffset].sort();

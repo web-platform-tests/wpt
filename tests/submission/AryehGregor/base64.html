@@ -8,10 +8,10 @@
 function mybtoa(s) {
 	var out = "";
 	for (var i = 0; i < s.length; i += 3) {
-		out += btoaLookup((s.charCodeAt(i) & 0xfc) >> 2);
-		out += btoaLookup( ((s.charCodeAt(i) & 0x03) << 4) | ((s.charCodeAt(i + 1) & 0xf0) >> 4) );
+		out += btoaLookup(s.charCodeAt(i) >> 2);
+		out += btoaLookup( ((s.charCodeAt(i) & 0x03) << 4) | (s.charCodeAt(i + 1) >> 4) );
 		if (i + 1 < s.length) {
-			out += btoaLookup( ((s.charCodeAt(i + 1) & 0x0f) << 2) | ((s.charCodeAt(i + 2) & 0xc0) >> 6) );
+			out += btoaLookup( ((s.charCodeAt(i + 1) & 0x0f) << 2) | (s.charCodeAt(i + 2) >> 6) );
 		} else {
 			out += '=';
 		}
@@ -43,35 +43,38 @@ function btoaLookup(idx) {
 	// Throw INVALID_CHARACTER_ERR exception here -- won't be hit in the tests.
 }
 
-function myatob(s) {
-	var out = "";
-	s = s.replace(/=*$/, "");
-	var bits = [];
-	for (var i = 0; i < s.length; i += 4) {
-		bits[0] = atobLookup(s[i]);
-		bits[1] = atobLookup(s[i + 1]);
-		bits[2] = atobLookup(s[i + 2]);
-		bits[3] = atobLookup(s[i + 3]);
-
-		// The final block can legitimately be 2, 3, or 4 characters long after
-		// we strip the "=" padding.
-		out += String.fromCharCode((bits[0] << 2) | (bits[1] >> 4));
-		if (bits[2] === undefined) {
-			break;
-		}
-		out += String.fromCharCode(((bits[1] << 4) | (bits[2] >> 2)) & 0xff);
-		if (bits[3] === undefined) {
-			break;
-		}
-		out += String.fromCharCode(((bits[2] << 6) | bits[3]) & 0xff);
+function myatob(input) {
+	if (input.length % 4 == 0 && /==?$/.test(input)) {
+		input = input.replace(/==?$/, "");
 	}
-	return out;
+	// Throw exceptions here in some cases -- won't be hit in the tests.
+	var output = "";
+	// We append bits via left-shift and or.
+	var buffer = 0;
+	var accumulatedBits = 0;
+	for (var i = 0; i < input.length; i++) {
+		buffer <<= 6;
+		buffer |= atobLookup(input[i]);
+		accumulatedBits += 6;
+		if (accumulatedBits == 24) {
+			output += String.fromCharCode((buffer & 0xff0000) >> 16);
+			output += String.fromCharCode((buffer & 0xff00) >> 8);
+			output += String.fromCharCode(buffer & 0xff);
+			buffer = accumulatedBits = 0;
+		}
+	}
+	if (accumulatedBits == 12) {
+		buffer >>= 4;
+		output += String.fromCharCode(buffer);
+	} else if (accumulatedBits == 18) {
+		buffer >>= 2;
+		output += String.fromCharCode((buffer & 0xff00) >> 8);
+		output += String.fromCharCode(buffer & 0xff);
+	}
+	return output;
 }
 
 function atobLookup(chr) {
-	if (chr === undefined) {
-		return undefined;
-	}
 	if (/[A-Z]/.test(chr)) {
 		return chr.charCodeAt(0) - "A".charCodeAt(0);
 	}

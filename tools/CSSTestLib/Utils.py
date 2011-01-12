@@ -37,7 +37,7 @@ def relpath(start, end):
      same as a relative URL; see relativeURL()."""
   try:
     return os.path.relpath(start, end)
-  except NameError:
+  except AttributeError:
     # This function is copied directly from the Python 2.6 source
     # code, and is therefore under a different license.
 

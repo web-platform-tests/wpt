@@ -41,7 +41,7 @@
 <p><a href="http://www.w3.org/"><img alt="W3C" height="48" src="http://www.w3.org/Icons/w3c_home" width="72"></a></p>
 <!--end-logo-->
  <h1>Web DOM Core</h1>
- <h2 class="no-num no-toc" id="editor-s-draft-11-january-2011">Editor's Draft 11 January 2011</h2>
+ <h2 class="no-num no-toc" id="editor-s-draft-12-january-2011">Editor's Draft 12 January 2011</h2>
 
  <dl>
   <dt>This Version:
@@ -79,7 +79,7 @@ publications and the latest revision of this technical report can be found in
 the <a href="http://www.w3.org/TR/">W3C technical reports index</a> at
 http://www.w3.org/TR/.</em>
 
-<p>This is the 11 January 2011 Editor's Draft of Web DOM Core. Please send
+<p>This is the 12 January 2011 Editor's Draft of Web DOM Core. Please send
 comments to
 <a href="mailto:public-webapps@w3.org?subject=%5BDOMCore%5D%20">public-webapps@w3.org</a>
 (<a href="http://lists.w3.org/Archives/Public/public-webapps/">archived</a>)
@@ -2204,11 +2204,20 @@ method must run these steps:
 </ol>
 
 <p>The
-<dfn id="dom-element-removeattribute" title="dom-Element-removeAttribute"><code>removeAttribute(<var title="">qualifiedName</var>)</code></dfn> method must remove the first <code><a href="#attr">Attr</a></code> object in the
-<a href="#context-node">context node</a>'s
-<code title="dom-Element-attributes"><a href="#dom-element-attributes">attributes</a></code> whose
-<a href="#concept-attr-qualified-name" title="concept-attr-qualified-name">qualified name</a> is
-<var title="">qualifiedName</var>.
+<dfn id="dom-element-removeattribute" title="dom-Element-removeAttribute"><code>removeAttribute(<var title="">qualifiedName</var>)</code></dfn>
+method must run the following steps:
+<ol>
+ <li><p>If the <a href="#context-node">context node</a> is in the <a href="#html-namespace">HTML namespace</a>
+ and its <code title="dom-Node-ownerDocument"><a href="#dom-node-ownerdocument">ownerDocument</a></code> is an
+ <a href="#html-document">HTML document</a>, let <var title="">qualifiedName</var> be
+ <a href="#converted-to-lowercase">converted to lowercase</a>.
+
+ <li><p>Remove the first <code><a href="#attr">Attr</a></code> object in the
+ <a href="#context-node">context node</a>'s
+ <code title="dom-Element-attributes"><a href="#dom-element-attributes">attributes</a></code> whose
+ <a href="#concept-attr-qualified-name" title="concept-attr-qualified-name">qualified name</a> is
+ <var title="">qualifiedName</var>.
+</ol>
 
 <p>The
 <dfn id="dom-element-removeattributens" title="dom-Element-removeAttributeNS"><code>removeAttributeNS(<var title="">namespace</var>, <var title="">localName</var>)</code></dfn>

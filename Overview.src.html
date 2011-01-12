@@ -2233,11 +2233,20 @@ method must run these steps:
 </ol>
 
 <p>The
-<dfn title=dom-Element-removeAttribute><code>removeAttribute(<var title>qualifiedName</var>)</code></dfn> method must remove the first <code>Attr</code> object in the
-<span>context node</span>'s
-<code title=dom-Element-attributes>attributes</code> whose
-<span title=concept-attr-qualified-name>qualified name</span> is
-<var title>qualifiedName</var>.
+<dfn title=dom-Element-removeAttribute><code>removeAttribute(<var title>qualifiedName</var>)</code></dfn>
+method must run the following steps:
+<ol>
+ <li><p>If the <span>context node</span> is in the <span>HTML namespace</span>
+ and its <code title=dom-Node-ownerDocument>ownerDocument</code> is an
+ <span>HTML document</span>, let <var title>qualifiedName</var> be
+ <span>converted to lowercase</span>.
+
+ <li><p>Remove the first <code>Attr</code> object in the
+ <span>context node</span>'s
+ <code title=dom-Element-attributes>attributes</code> whose
+ <span title=concept-attr-qualified-name>qualified name</span> is
+ <var title>qualifiedName</var>.
+</ol>
 
 <p>The
 <dfn title=dom-Element-removeAttributeNS><code>removeAttributeNS(<var title>namespace</var>, <var title>localName</var>)</code></dfn>

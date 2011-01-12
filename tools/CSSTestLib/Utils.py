@@ -12,6 +12,7 @@ os.environ['XML_CATALOG_FILES'] = os.path.join(CSSTestLib.__path__[0], 'catalog/
 ###### File path manipulation ######
 
 import os.path
+from os.path import sep, pardir
 
 def basepath(path):
   """ Returns the path part of os.path.split.
@@ -32,11 +33,11 @@ def isPathInsideBase(path, base=''):
     return not pathlist[0].startswith(os.path.pardir)
   return not path.startswith(os.path.pardir)
 
-def relpath(start, end):
+def relpath(path, start):
   """Return relative path from start to end. WARNING: this is not the
      same as a relative URL; see relativeURL()."""
   try:
-    return os.path.relpath(start, end)
+    return os.path.relpath(start, path)
   except AttributeError:
     # This function is copied directly from the Python 2.6 source
     # code, and is therefore under a different license.

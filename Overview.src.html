@@ -572,7 +572,7 @@ title>http://www.w3.org/2000/xmlns/</code>.
 field must return the code for the exception, which must be one of the
 following:
 
-<ol class="brief">
+<ul class="brief">
  <li><dfn title=dom-DOMException-INDEX_SIZE_ERR><code>INDEX_SIZE_ERR</code></dfn> (1):
  the index is not in the allowed range;
  <li><dfn title=dom-DOMException-DOMSTRING_SIZE_ERR><code>DOMSTRING_SIZE_ERR</code></dfn> (2):
@@ -631,7 +631,7 @@ following:
  <!-- HTML -->
  <li><dfn title=dom-DOMException-DATA_CLONE_ERR><code>DATA_CLONE_ERR</code></dfn> (25):
  the object can not be cloned;
-</ol>
+</ul>
 
 <p>The <dfn title=dom-DOMException-name><code>name</code></dfn> exception
 field must return the name of the exception constant as a string.
@@ -743,7 +743,7 @@ node and its child nodes:
 <p>The <dfn title=dom-Node-nodeType><code>nodeType</code></dfn> attribute
 must return the type of the node, which must be one of the following:
 
-<ol>
+<ul>
  <li><dfn title=dom-Node-ELEMENT_NODE><code>ELEMENT_NODE</code></dfn> (1);
 
  <li><dfn title=dom-Node-ATTRIBUTE_NODE><code>ATTRIBUTE_NODE</code></dfn> (2, historical);
@@ -767,7 +767,7 @@ must return the type of the node, which must be one of the following:
  <li><dfn title=dom-Node-DOCUMENT_FRAGMENT_NODE><code>DOCUMENT_FRAGMENT_NODE</code></dfn> (11);
 
  <li><dfn title=dom-Node-NOTATION_NODE><code>NOTATION_NODE</code></dfn> (12, historical).
-</ol>
+</ul>
 
 <p class=note>The constants marked historical can no longer be returned, but
 are still exposed on the interface.
@@ -919,7 +919,7 @@ attribute must run these steps:
 <code title=dom-Node-compareDocumentPosition>compareDocumentPosition()</code>
 returns.
 
-<ol>
+<ul>
  <li><dfn title=dom-Node-DOCUMENT_POSITION_DISCONNECTED><code>DOCUMENT_POSITION_DISCONNECTED</code></dfn> (1);
 
  <li><dfn title=dom-Node-DOCUMENT_POSITION_PRECEDING><code>DOCUMENT_POSITION_PRECEDING</code></dfn> (2);
@@ -931,7 +931,7 @@ returns.
  <li><dfn title=dom-Node-DOCUMENT_POSITION_CONTAINED_BY><code>DOCUMENT_POSITION_CONTAINED_BY</code></dfn> (16);
 
  <li><dfn title=dom-Node-DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC><code>DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC</code></dfn> (32).
-</ol>
+</ul>
 
 <p>The <dfn
 title=dom-Node-compareDocumentPosition><code>compareDocumentPosition(<var

@@ -41,7 +41,7 @@
 <p><a href="http://www.w3.org/"><img alt="W3C" height="48" src="http://www.w3.org/Icons/w3c_home" width="72"></a></p>
 <!--end-logo-->
  <h1>Web DOM Core</h1>
- <h2 class="no-num no-toc" id="editor-s-draft-13-january-2011">Editor's Draft 13 January 2011</h2>
+ <h2 class="no-num no-toc" id="editor-s-draft-15-january-2011">Editor's Draft 15 January 2011</h2>
 
  <dl>
   <dt>This Version:
@@ -79,7 +79,7 @@ publications and the latest revision of this technical report can be found in
 the <a href="http://www.w3.org/TR/">W3C technical reports index</a> at
 http://www.w3.org/TR/.</em>
 
-<p>This is the 13 January 2011 Editor's Draft of Web DOM Core. Please send
+<p>This is the 15 January 2011 Editor's Draft of Web DOM Core. Please send
 comments to
 <a href="mailto:public-webapps@w3.org?subject=%5BDOMCore%5D%20">public-webapps@w3.org</a>
 (<a href="http://lists.w3.org/Archives/Public/public-webapps/">archived</a>)
@@ -206,19 +206,24 @@ document as other than work in progress.
 <h3 id="terminology"><span class="secno">1.1 </span>Terminology</h3>
 <p>The term <dfn id="tree-order">tree order</dfn> means a pre-order, depth-first traversal of DOM nodes involved (through the <code title="dom-Node-parentNode"><a href="#dom-node-parentnode">parentNode</a></code>/<code title="dom-Node-childNodes"><a href="#dom-node-childnodes">childNodes</a></code> relationship).
 
-<p>The term <dfn id="context-node">context node</dfn> means the <code><a href="#node">Node</a></code> on which the method or attribute being discussed was called.
+<p>The term <dfn id="context-node">context node</dfn> means the <code><a href="#node">Node</a></code> on which the
+method or attribute being discussed was called.
 
-<p>The term <dfn id="root-element">root element</dfn>, when not explicitly qualified
-as referring to the document's root element, means the furthest
-ancestor element node of whatever node is being discussed, or the
-node itself if it has no ancestors. When the node is a part of the
-document, then the node's <a href="#root-element">root element</a> is indeed the
-document's root element; however, if the node is not currently part
-of the document tree, the root element will be an orphaned node.
+<p>The <dfn id="root-element-of-a-document-object">root element of a <code>Document</code> object</dfn> is that
+<code><a href="#document">Document</a></code>'s first <code><a href="#element">Element</a></code> child, if any. If it does not
+have one, the <code><a href="#document">Document</a></code> has no root element.
 
-<p>When an element's <a href="#root-element">root element</a> is the root element
-of a <code><a href="#document">Document</a></code>, it is said to be <dfn id="in-a-document">in a
-<code>Document</code></dfn>.
+<p>The term <dfn id="root-element">root element</dfn>, when not referring to the
+<a href="#root-element-of-a-document-object">root element of a <code>Document</code> object</a>, means the furthest
+ancestor element node of whatever node is being discussed, or the node itself if
+it has no ancestors. When the node is a part of the document, then the node's
+<a href="#root-element">root element</a> is indeed the document's root element; however, if the
+node is not currently part of the document tree, the root element will be an
+orphaned node.
+
+<p>When an element's <a href="#root-element">root element</a> is the
+<a href="#root-element-of-a-document-object">root element of a <code>Document</code> object</a>, it is said to be
+<dfn id="in-a-document">in a <code>Document</code></dfn>.
 
 <p>A node's <dfn id="home-subtree">home subtree</dfn> is the subtree rooted at that
 node's <a href="#root-element">root element</a>. When a node is <a href="#in-a-document">in a

@@ -1,3 +1,4 @@
+# This patch is against html5lib revision 1591:334d59049eb7
 diff --git a/python/html5lib/constants.py b/python/html5lib/constants.py
 --- a/python/html5lib/constants.py
 +++ b/python/html5lib/constants.py

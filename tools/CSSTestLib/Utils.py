@@ -37,7 +37,7 @@ def relpath(path, start):
   """Return relative path from start to end. WARNING: this is not the
      same as a relative URL; see relativeURL()."""
   try:
-    return os.path.relpath(start, path)
+    return os.path.relpath(path, start)
   except AttributeError:
     # This function is copied directly from the Python 2.6 source
     # code, and is therefore under a different license.

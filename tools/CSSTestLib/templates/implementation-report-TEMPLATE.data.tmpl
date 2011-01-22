@@ -17,4 +17,6 @@ html4/[% test.name +%].htm	?
 xhtml1/[% test.name +%].xht	?	
 [% END %]
 [% END %]
-
+[% FOREACH test IN addtests.sort() +%]
+[%+ test %]	?	
+[% END %]

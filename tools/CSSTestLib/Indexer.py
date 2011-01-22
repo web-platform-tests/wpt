@@ -55,7 +55,7 @@ class Indexer:
     self.suite      = suite
     self.splitlevel = splitlevel
     self.extraData  = extraData
-    self.overviewCopyExtPat = re.compile('.*%s$' % '|'.join(overviewCopyExts))
+    self.overviewCopyExtPat = re.compile('.*(%s)$' % '|'.join(overviewCopyExts))
     self.overviewTmplNames = overviewTmplNames if overviewTmplNames is not None \
       else ['index.html.tmpl', 'index.xht.tmpl', 'testinfo.data.tmpl',
             'implementation-report-TEMPLATE.data.tmpl']
@@ -108,7 +108,7 @@ class Indexer:
     f.write(o.encode('utf-8'))
     f.close()
 
-  def writeOverview(self, destDir, errorOut=sys.stderr):
+  def writeOverview(self, destDir, errorOut=sys.stderr, addTests=[]):
     """Write format-agnostic pages such as test suite overview pages,
        test data files, and error reports.
 
@@ -116,6 +116,9 @@ class Indexer:
        an output handle such as sys.stderr, a tuple of
        (template filename string, output filename string)
        or None to suppress error output.
+
+       `addTests` is a list of additional test paths, relative to the
+       overview root; it is intended for indexing raw tests
     """
 
     # Set common values
@@ -127,6 +130,7 @@ class Indexer:
     data['tests']        = self.alltests
     data['extmap']       = ExtensionMap({'.xht':''})
     data['formats']      = self.suite.formats
+    data['addtests']     = addTests
 
     # Copy simple copy files
     for tmplDir in reversed(self.templatePath):

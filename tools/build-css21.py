@@ -6,36 +6,7 @@
 import os.path
 skipDirs = ('support')
 reftestPath = 'reftest.list'
-groupmap = {
-    'http://www.w3.org/TR/CSS21/about.html'    : 'about',
-    'http://www.w3.org/TR/CSS21/box.html#box-dimensions'              : 'box-model',
-    'http://www.w3.org/TR/CSS21/box.html#mpb-examples'                : 'box-model',
-    'http://www.w3.org/TR/CSS21/box.html#margin-properties'           : 'box-margins',
-    'http://www.w3.org/TR/CSS21/box.html#collapsing-margins'          : 'box-margins',
-    'http://www.w3.org/TR/CSS21/box.html#padding-properties'          : 'box-padding',
-    'http://www.w3.org/TR/CSS21/box.html#border-properties'           : 'box-borders',
-    'http://www.w3.org/TR/CSS21/box.html#border-width-properties'     : 'box-borders',
-    'http://www.w3.org/TR/CSS21/box.html#border-color-properties'     : 'box-borders',
-    'http://www.w3.org/TR/CSS21/box.html#border-style-properties'     : 'box-borders',
-    'http://www.w3.org/TR/CSS21/box.html#border-shorthand-properties' : 'box-borders',
-    'http://www.w3.org/TR/CSS21/box.html#bidi-box-model'              : 'box-model',
-    'http://www.w3.org/TR/CSS21/cascade.html'  : 'cascade',
-    'http://www.w3.org/TR/CSS21/colors.html'   : 'colors',
-    'http://www.w3.org/TR/CSS21/conform.html'  : 'conform',
-    'http://www.w3.org/TR/CSS21/fonts.html'    : 'fonts',
-    'http://www.w3.org/TR/CSS21/generate.html' : 'generate',
-    'http://www.w3.org/TR/CSS21/intro.html'    : 'intro',
-    'http://www.w3.org/TR/CSS21/media.html'    : 'media',
-    'http://www.w3.org/TR/CSS21/page.html'     : 'page',
-    'http://www.w3.org/TR/CSS21/selector.html' : 'selector',
-    'http://www.w3.org/TR/CSS21/syndata.html'  : 'syndata',
-    'http://www.w3.org/TR/CSS21/tables.html'   : 'tables',
-    'http://www.w3.org/TR/CSS21/text.html'     : 'text',
-    'http://www.w3.org/TR/CSS21/visudet.html'  : 'visudet',
-    'http://www.w3.org/TR/CSS21/visufx.html'   : 'visufx',
-    'http://www.w3.org/TR/CSS21/visuren.html'  : 'visuren',
-    'http://www.w3.org/TR/CSS21/zindex.html'   : 'zindex',
-  }
+rawDirs = {'other-formats':'other'}
 
 import sys
 from os.path import join, exists, basename
@@ -59,11 +30,14 @@ suite = CSSTestSuite('css2.1', 'CSS2.1 Test Suite', 'http://www.w3.org/TR/CSS21/
 root = join('approved', 'css2.1', 'src')
 dirs = listdirs(root)
 for dir in dirs:
-  if dir in skipDirs: continue
+  if dir in skipDirs or rawDirs.has_key(dir): continue
   testroot = join(root, dir)
   suite.addSelftestsByExt(testroot, '.xht')
   if exists(join(testroot, reftestPath)):
     suite.addReftests(testroot, reftestPath)
+for src, dst in rawDirs.items():
+  if exists(join(root,src)):
+    suite.addRaw(join(root,src), dst)
 
 # Add unreviewed tests
 for path in unreviewed:

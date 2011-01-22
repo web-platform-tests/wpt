@@ -4,8 +4,12 @@
 # Licensed under BSD 3-Clause: <http://www.w3.org/Consortium/Legal/2008/03-bsd-license>
 
 import OutputFormats
-from Groups import CSSTestGroup, SelftestGroup, ReftestGroup
+import Utils
+from Groups import CSSTestGroup, SelftestGroup, ReftestGroup, excludeDirs
 from Sources import SourceCache
+from shutil import copytree, rmtree
+from os.path import join
+import os
 
 class CSSTestSuite:
   """Representation of a standard CSS test suite."""
@@ -20,6 +24,7 @@ class CSSTestSuite:
     self.groups = {}
     self.sourcecache = SourceCache()
     self.formats = ('html4', 'xhtml1') # FIXME, hardcoded list is lame
+    self.rawgroups = {}
 
   def addSelftestsByExt(self, dir, ext, groupName='', groupTitle=''):
     """Add tests from directory `dir` by file extension (via `ext`, e.g. ext='.xht').
@@ -54,6 +59,13 @@ class CSSTestSuite:
     else:
       self.groups[group.name] = CSSTestGroup(group)
 
+  def addRaw(self, dir, relpath):
+    """Add the contents of directory `dir` to the test suite by copying
+       (not processing). Note this means such tests will not be indexed.
+       `relpath` gives the directory's path within the build destination.
+    """
+    self.rawgroups[dir] = relpath
+
   def buildInto(self, dest, indexer):
     """Builds test suite through all OutputFormats into directory at path `dest`
        or through OutputFormat destination `dest`, using Indexer `indexer`.
@@ -66,10 +78,27 @@ class CSSTestSuite:
                  OutputFormats.HTMLFormat(dest),
                  OutputFormats.XHTMLPrintFormat(dest, self.title),
                 )
-    for group in self.groups.itervalues():
-      indexer.indexGroup(group)
-    indexer.writeOverview(dest)
+
     for format in formats:
       for group in self.groups.itervalues():
         group.build(format)
       indexer.writeIndex(format)
+
+    rawtests = []
+    for src, relpath in self.rawgroups.items():
+      copytree(src, join(dest,relpath))
+      for (root, dirs, files) in os.walk(join(dest,relpath)):
+        for xdir in excludeDirs:
+          if xdir in dirs:
+            dirs.remove(xdir)
+            rmtree(join(root,xdir))
+        rawtests.extend(
+          [join(Utils.relpath(root,dest),file)
+           for file in files]
+        )
+
+    for group in self.groups.itervalues():
+      indexer.indexGroup(group)
+    rawtests.sort()
+    indexer.writeOverview(dest, addTests=rawtests)
+    

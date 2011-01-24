@@ -41,7 +41,7 @@
 <p><a href="http://www.w3.org/"><img height="48" width="72" alt="W3C" src="http://www.w3.org/Icons/w3c_home"></a></p>
 <!--end-logo-->
  <h1>Web DOM Core</h1>
- <h2 class="no-num no-toc" id="editor-s-draft-22-january-2011">Editor's Draft 22 January 2011</h2>
+ <h2 class="no-num no-toc" id="editor-s-draft-24-january-2011">Editor's Draft 24 January 2011</h2>
 
  <dl>
   <dt>This Version:
@@ -79,7 +79,7 @@ publications and the latest revision of this technical report can be found in
 the <a href="http://www.w3.org/TR/">W3C technical reports index</a> at
 http://www.w3.org/TR/.</em>
 
-<p>This is the 22 January 2011 Editor's Draft of Web DOM Core. Please send
+<p>This is the 24 January 2011 Editor's Draft of Web DOM Core. Please send
 comments to
 <a href="mailto:public-webapps@w3.org?subject=%5BDOMCore%5D%20">public-webapps@w3.org</a>
 (<a href="http://lists.w3.org/Archives/Public/public-webapps/">archived</a>)
@@ -2135,8 +2135,8 @@ method must run these steps:
  <code title="dom-DOMException-NAMESPACE_ERR"><a href="#dom-domexception-namespace_err">NAMESPACE_ERR</a></code> and
  terminate these steps.
 
- <li><p>If the node does not have an <code><a href="#attr">Attr</a></code> object whose
- <a title="concept-attr-local-name" href="#concept-attr-local-name">local name</a> is
+ <li><p>If the <a href="#context-node">context node</a> does not have an <code><a href="#attr">Attr</a></code>
+ object whose <a title="concept-attr-local-name" href="#concept-attr-local-name">local name</a> is
  <var title="">qualifiedName</var>, create an <code><a href="#attr">Attr</a></code> object, whose
  <a title="concept-attr-local-name" href="#concept-attr-local-name">local name</a> is
  <var title="">qualifiedName</var> and <a title="concept-attr-value" href="#concept-attr-value">value</a>
@@ -2160,42 +2160,58 @@ method must run these steps:
  <code class="external"><a href="http://www.w3.org/TR/xml/#NT-Name">Name</a></code> production in XML, throw an
  <code title="dom-DOMException-INVALID_CHARACTER_ERR"><a href="#dom-domexception-invalid_character_err">INVALID_CHARACTER_ERR</a></code>
  exception and terminate these steps.
+
  <li><p>If <var title="">qualifiedName</var> does not match the
  <code class="external"><a href="http://www.w3.org/TR/xml-names/#NT-QName">QName</a></code> production in Namespaces in XML,
  throw a <code title="dom-DOMException-NAMESPACE_ERR"><a href="#dom-domexception-namespace_err">NAMESPACE_ERR</a></code>
  exception and terminate these steps.
+
  <li><p>If <var title="">qualifiedName</var> contains a "<code>:</code>" (U+003E),
  then split the string on it and let <var title="">prefix</var> be the part before
- and <var title="">localName</var> the part after. Otherwise, let <var title="">prefix</var>
- be null and <var title="">localName</var> be <var title="">qualifiedName</var>.
- <li><p>If <var title="">prefix</var> is not null and <var title="">namespace</var> is an
- empty string, throw a
+ and <var title="">localName</var> the part after. Otherwise, let
+ <var title="">prefix</var> be null and <var title="">localName</var> be
+ <var title="">qualifiedName</var>.
+
+ <li><p>If <var title="">namespace</var> is the empty string, let
+ <var title="">namespace</var> be null.
+
+ <li><p>If <var title="">prefix</var> is not null and <var title="">namespace</var> is
+ null, throw a
  <code title="dom-DOMException-NAMESPACE_ERR"><a href="#dom-domexception-namespace_err">NAMESPACE_ERR</a></code> exception
  and terminate these steps.
+
  <li><p>If <var title="">prefix</var> is "<code title="">xml</code>" and
  <var title="">namespace</var> is not the <a href="#xml-namespace">XML namespace</a>, throw a
  <code title="dom-DOMException-NAMESPACE_ERR"><a href="#dom-domexception-namespace_err">NAMESPACE_ERR</a></code> exception
  and terminate these steps.
+
  <li><p>If <var title="">qualifiedName</var> or <var title="">prefix</var> is
  "<code title="">xmlns</code>" and <var title="">namespace</var> is not the
  <a href="#xmlns-namespace">XMLNS namespace</a>, throw a
  <code title="dom-DOMException-NAMESPACE_ERR"><a href="#dom-domexception-namespace_err">NAMESPACE_ERR</a></code> exception
  and terminate these steps.
+
  <li><p>If <var title="">namespace</var> is the <a href="#xmlns-namespace">XMLNS namespace</a> and
  neither <var title="">qualifiedName</var> nor <var title="">prefix</var> is
  "<code title="">xmlns</code>", throw a
  <code title="dom-DOMException-NAMESPACE_ERR"><a href="#dom-domexception-namespace_err">NAMESPACE_ERR</a></code> exception
  and terminate these steps.
- <li><p>If the node does not have an <code><a href="#attr">Attr</a></code> object whose
- <a title="concept-attr-namespace" href="#concept-attr-namespace">namespace</a> is <var title="">namespace</var>
- and <a title="concept-attr-local-name" href="#concept-attr-local-name">local name</a> is
+
+ <li><p>If the <a href="#context-node">context node</a>'s
+ <code title="dom-Element-attributes"><a href="#dom-element-attributes">attributes</a></code> does not contain an
+ <code><a href="#attr">Attr</a></code> object whose
+ <a title="concept-attr-namespace" href="#concept-attr-namespace">namespace</a> is
+ <var title="">namespace</var> and
+ <a title="concept-attr-local-name" href="#concept-attr-local-name">local name</a> is
  <var title="">localName</var>, create an <code><a href="#attr">Attr</a></code> object, whose
  <a title="concept-attr-namespace" href="#concept-attr-namespace">namespace</a> is
  <var title="">namespace</var>,
  <a title="concept-attr-namespace-prefix" href="#concept-attr-namespace-prefix">namespace prefix</a> is
- <var title="">prefix</var>, <a title="concept-attr-local-name" href="#concept-attr-local-name">local name</a> is
- <var title="">localName</var>, and <a title="concept-attr-value" href="#concept-attr-value">value</a> is <var title="">value</var>. Append this object to the <a href="#context-node">context node</a>'s
- <code title="dom-Element-attributes"><a href="#dom-element-attributes">attributes</a></code>, as its last item.
+ <var title="">prefix</var>, <a title="concept-attr-local-name" href="#concept-attr-local-name">local name</a>
+ is <var title="">localName</var>, and <a title="concept-attr-value" href="#concept-attr-value">value</a>
+ is <var title="">value</var>. Append this object to the
+ <a href="#context-node">context node</a>'s
+ <code title="dom-Element-attributes"><a href="#dom-element-attributes">attributes</a></code>.
 
  <li><p>Otherwise, set the <a title="concept-attr-value" href="#concept-attr-value">value</a> of
  the <code><a href="#attr">Attr</a></code> object in the <a href="#context-node">context node</a>'s

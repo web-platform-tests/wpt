@@ -20,9 +20,9 @@ DOMImplementation-createDocumentType.html
 DOMImplementation-createHTMLDocument.html
 DOMImplementation-hasFeature.html
 Element-getAttribute.html
-Element-getAttributeNS.html
 Element-hasAttribute.html
 Element-hasAttributeNS.html
+Element-removeAttributeNS.html
 Element-setAttribute.html
 Element-setAttributeNS.html
 Element-tagName.html

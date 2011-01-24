@@ -1,24 +1,114 @@
 <!DOCTYPE html>
 <title>Element.setAttributeNS</title>
 <script src="testharness.js"></script>
+<script src="attributes.js"></script>
+<script src="productions.js"></script>
 <div id="log"></div>
 <script>
-test(function() {
-  var el = document.createElement("foo");
-  el.setAttributeNS("a", "foo:bar", "blah");
-  assert_equals(el.attributes.length, 1);
-  assert_equals(el.attributes[0].localName, "bar");
-  assert_equals(el.attributes[0].namespaceURI, "a");
-  assert_equals(el.attributes[0].prefix, "foo");
-  assert_equals(el.attributes[0].nodeName, "foo:bar");
-  assert_equals(el.attributes[0].name, "foo:bar");
+var XML = "http://www.w3.org/XML/1998/namespace"
+var XMLNS = "http://www.w3.org/2000/xmlns/"
 
-  el.setAttributeNS("a", "quux:bar", "blah");
-  assert_equals(el.attributes.length, 1);
-  assert_equals(el.attributes[0].localName, "bar");
-  assert_equals(el.attributes[0].namespaceURI, "a");
-  assert_equals(el.attributes[0].prefix, "foo");
-  assert_equals(el.attributes[0].nodeName, "foo:bar");
-  assert_equals(el.attributes[0].name, "foo:bar");
-})
+// Step 1
+test(function() {
+  var el = document.createElement("foo")
+  for (var i = 0, il = invalid_names.length; i < il; ++i) {
+    assert_throws("INVALID_CHARACTER_ERR",
+                  function() { el.setAttributeNS("a", invalid_names[i], "fail") })
+  }
+}, "When qualifiedName does not match the Name production, an " +
+   "INVALID_CHARACTER_ERR exception is to be thrown.")
+
+// Step 2
+test(function() {
+  var el = document.createElement("foo")
+  for (var i = 0, il = invalid_qnames.length; i < il; ++i) {
+    assert_throws("NAMESPACE_ERR",
+                  function() { el.setAttributeNS("a", invalid_qnames[i], "fail") },
+                  "Expected exception for " + invalid_qnames[i] + ".")
+  }
+}, "When qualifiedName does not match the QName production, an " +
+   "NAMESPACE_ERR exception is to be thrown.")
+
+// Step 3
+test(function() {
+  var el = document.createElement("foo")
+  el.setAttributeNS(null, "aa", "bb")
+  el.setAttributeNS("", "xx", "bb")
+  attributes_are(el, [["aa", "bb"],
+                      ["xx", "bb"]])
+}, "null and the empty string should result in a null namespace.")
+
+// Step 4
+test(function() {
+  var el = document.createElement("foo")
+  assert_throws("NAMESPACE_ERR",
+                function() { el.setAttributeNS("", "aa:bb", "fail") })
+  assert_throws("NAMESPACE_ERR",
+                function() { el.setAttributeNS(null, "aa:bb", "fail") })
+}, "A namespace is required to use a prefix.")
+
+// Step 5
+test(function() {
+  var el = document.createElement("foo")
+  assert_throws("NAMESPACE_ERR",
+                function() { el.setAttributeNS("a", "xml:bb", "fail") })
+}, "The xml prefix should not be allowed for arbitrary namespaces")
+test(function() {
+  var el = document.createElement("foo")
+  el.setAttributeNS(XML, "a:bb", "pass")
+  assert_equals(el.attributes.length, 1)
+  attr_is(el.attributes[0], "pass", "bb", XML, "a", "a:bb")
+}, "XML-namespaced attributes don't need an xml prefix")
+
+// Step 6
+test(function() {
+  var el = document.createElement("foo")
+  assert_throws("NAMESPACE_ERR",
+                function() { el.setAttributeNS("a", "xmlns:bb", "fail") })
+}, "The xmlns prefix should not be allowed for arbitrary namespaces")
+test(function() {
+  var el = document.createElement("foo")
+  assert_throws("NAMESPACE_ERR",
+                function() { el.setAttributeNS("a", "xmlns", "fail") })
+}, "The xmlns qualified name should not be allowed for arbitrary namespaces")
+test(function() {
+  var el = document.createElement("foo")
+  el.setAttributeNS("ns", "a:xmlns", "pass")
+  assert_equals(el.attributes.length, 1)
+  attr_is(el.attributes[0], "pass", "xmlns", "ns", "a", "a:xmlns")
+}, "xmlns should be allowed as local name")
+
+// Step 7
+test(function() {
+  var el = document.createElement("foo")
+  assert_throws("NAMESPACE_ERR",
+                function() { el.setAttributeNS(XMLNS, "a:xmlns", "fail") })
+  assert_throws("NAMESPACE_ERR",
+                function() { el.setAttributeNS(XMLNS, "b:foo", "fail") })
+}, "The XMLNS namespace should require xmlns as prefix or qualified name")
+test(function() {
+  var el = document.createElement("foo")
+  el.setAttributeNS(XMLNS, "xmlns:a", "pass")
+  assert_equals(el.attributes.length, 1)
+  attr_is(el.attributes[0], "pass", "a", XMLNS, "xmlns", "xmlns:a")
+}, "xmlns should be allowed as prefix in the XMLNS namespace")
+test(function() {
+  var el = document.createElement("foo")
+  el.setAttributeNS(XMLNS, "xmlns", "pass")
+  assert_equals(el.attributes.length, 1)
+  attr_is(el.attributes[0], "pass", "xmlns", XMLNS, null, "xmlns")
+}, "xmlns should be allowed as qualified name in the XMLNS namespace")
+
+// Step 8-9
+test(function() {
+  var el = document.createElement("foo")
+  el.setAttributeNS("a", "foo:bar", "X")
+  assert_equals(el.attributes.length, 1)
+  attr_is(el.attributes[0], "X", "bar", "a", "foo", "foo:bar")
+
+  el.setAttributeNS("a", "quux:bar", "Y")
+  assert_equals(el.attributes.length, 1)
+  attr_is(el.attributes[0], "Y", "bar", "a", "foo", "foo:bar")
+  el.removeAttributeNS("a", "bar")
+}, "Setting the same attribute with another prefix should not change the prefix")
 </script>

@@ -2164,8 +2164,8 @@ method must run these steps:
  <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> and
  terminate these steps.
 
- <li><p>If the node does not have an <code>Attr</code> object whose
- <span title=concept-attr-local-name>local name</span> is
+ <li><p>If the <span>context node</span> does not have an <code>Attr</code>
+ object whose <span title=concept-attr-local-name>local name</span> is
  <var title>qualifiedName</var>, create an <code>Attr</code> object, whose
  <span title=concept-attr-local-name>local name</span> is
  <var title>qualifiedName</var> and <span title=concept-attr-value>value</span>
@@ -2189,42 +2189,58 @@ method must run these steps:
  <code data-anolis-spec=xml>Name</code> production in XML, throw an
  <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
  exception and terminate these steps.
+
  <li><p>If <var title>qualifiedName</var> does not match the
  <code data-anolis-spec=xmlns>QName</code> production in Namespaces in XML,
  throw a <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code>
  exception and terminate these steps.
+
  <li><p>If <var title>qualifiedName</var> contains a "<code>:</code>" (U+003E),
  then split the string on it and let <var title>prefix</var> be the part before
- and <var title>localName</var> the part after. Otherwise, let <var title>prefix</var>
- be null and <var title>localName</var> be <var title>qualifiedName</var>.
- <li><p>If <var title>prefix</var> is not null and <var title>namespace</var> is an
- empty string, throw a
+ and <var title>localName</var> the part after. Otherwise, let
+ <var title>prefix</var> be null and <var title>localName</var> be
+ <var title>qualifiedName</var>.
+
+ <li><p>If <var title>namespace</var> is the empty string, let
+ <var title>namespace</var> be null.
+
+ <li><p>If <var title>prefix</var> is not null and <var title>namespace</var> is
+ null, throw a
  <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception
  and terminate these steps.
+
  <li><p>If <var title>prefix</var> is "<code title>xml</code>" and
  <var title>namespace</var> is not the <span>XML namespace</span>, throw a
  <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception
  and terminate these steps.
+
  <li><p>If <var title>qualifiedName</var> or <var title>prefix</var> is
  "<code title>xmlns</code>" and <var title>namespace</var> is not the
  <span>XMLNS namespace</span>, throw a
  <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception
  and terminate these steps.
+
  <li><p>If <var title>namespace</var> is the <span>XMLNS namespace</span> and
  neither <var title>qualifiedName</var> nor <var title>prefix</var> is
  "<code title>xmlns</code>", throw a
  <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception
  and terminate these steps.
- <li><p>If the node does not have an <code>Attr</code> object whose
- <span title=concept-attr-namespace>namespace</span> is <var title>namespace</var>
- and <span title=concept-attr-local-name>local name</span> is
+
+ <li><p>If the <span>context node</span>'s
+ <code title=dom-Element-attributes>attributes</code> does not contain an
+ <code>Attr</code> object whose
+ <span title=concept-attr-namespace>namespace</span> is
+ <var title>namespace</var> and
+ <span title=concept-attr-local-name>local name</span> is
  <var title>localName</var>, create an <code>Attr</code> object, whose
  <span title=concept-attr-namespace>namespace</span> is
  <var title>namespace</var>,
  <span title=concept-attr-namespace-prefix>namespace prefix</span> is
- <var title>prefix</var>, <span title=concept-attr-local-name>local name</span> is
- <var title>localName</var>, and <span title=concept-attr-value>value</span> is <var title>value</var>. Append this object to the <span>context node</span>'s
- <code title=dom-Element-attributes>attributes</code>, as its last item.
+ <var title>prefix</var>, <span title=concept-attr-local-name>local name</span>
+ is <var title>localName</var>, and <span title=concept-attr-value>value</span>
+ is <var title>value</var>. Append this object to the
+ <span>context node</span>'s
+ <code title=dom-Element-attributes>attributes</code>.
 
  <li><p>Otherwise, set the <span title=concept-attr-value>value</span> of
  the <code>Attr</code> object in the <span>context node</span>'s

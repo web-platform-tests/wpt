@@ -191,10 +191,8 @@ policies and contribution forms [3].
           * are the same object
           */
          var message = make_message("assert_equals", description,
-                                    [["{text}", "expected "],
-                                     ["span", {"class":"expected"}, String(expected)],
-                                     ["{text}", "got "],
-                                     ["span", {"class":"actual"}, String(actual)]]);
+                                    "expected ${expected} but got ${actual}",
+                                    {expected:String(expected), actual:String(actual)});
          if (expected !== expected)
          {
              //NaN case

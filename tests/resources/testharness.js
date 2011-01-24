@@ -108,15 +108,6 @@ policies and contribution forms [3].
     // default timeout is 5 seconds, test can override if needed
     var default_timeout = 5000;
 
-    // tests either pass, fail or timeout
-    var status =
-    {
-        PASS: 0,
-        FAIL: 1,
-        TIMEOUT: 2
-    };
-    expose(status, 'status');
-
     /*
     * API functions
     */
@@ -428,7 +419,14 @@ policies and contribution forms [3].
        this.timeout_id = setTimeout(function() { this_obj.timeout(); }, timeout);
 
        tests.push(this);
-   }
+    }
+
+    Test.prototype = {
+        PASS:0,
+        FAIL:1,
+        TIMEOUT:2
+    };
+
 
     Test.prototype.step = function(func, this_obj)
     {
@@ -452,7 +450,7 @@ policies and contribution forms [3].
             {
                 return;
             }
-            this.status = status.FAIL;
+            this.status = this.FAIL;
             this.message = e.message;
             this.done();
             if (debug) {
@@ -463,7 +461,7 @@ policies and contribution forms [3].
 
     Test.prototype.timeout = function()
     {
-        this.status = status.TIMEOUT;
+        this.status = this.TIMEOUT;
         this.timeout_id = null;
         this.message = "Test timed out";
         this.done();
@@ -478,7 +476,7 @@ policies and contribution forms [3].
         clearTimeout(this.timeout_id);
         if (this.status == null)
         {
-            this.status = status.PASS;
+            this.status = this.PASS;
         }
         this.is_done = true;
         tests.done(this);
@@ -666,9 +664,9 @@ policies and contribution forms [3].
         }
 
         var status_text = {};
-        status_text[status.PASS] = "Pass";
-        status_text[status.FAIL] = "Fail";
-        status_text[status.TIMEOUT] = "Timeout";
+        status_text[Test.prototype.PASS] = "Pass";
+        status_text[Test.prototype.FAIL] = "Fail";
+        status_text[Test.prototype.TIMEOUT] = "Timeout";
 
         var template = ["table", {"id":"results"},
                         ["tr", {},

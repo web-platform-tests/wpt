@@ -12,7 +12,6 @@
 		height: 100%;
 		line-height: 1;
 		font-size: 20px;
-		widows: 5;
 	}
 	* {
 		margin:0;
@@ -28,13 +27,16 @@
 	.test {
 		color: blue;
 	}
+	html {
+		widows: 5;
+	}
 
 </style>
 </head>
 <body>
 	<div class="spacer">This test requires 2 pages. The blue text must
-		denote accurate page numbers. Lines A-E must appear on the next
-		page.</div>
+		denote accurate page numbers. Lines A-B must appear on this page;
+		lines C-G must appear on the next page.</div>
 
 	<div class="spacer backup"></div>
 	<div class="test">

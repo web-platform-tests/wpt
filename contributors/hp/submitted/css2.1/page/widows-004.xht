@@ -3,6 +3,7 @@
 <head>
 <title>CSS Test: widows property syntax - positive integer</title>
 <link rel="author" title="Tom Clancy" href="mailto:tclancy@revenution.com"/>
+<link rel="author" title="Elika J. Etemad" href="http://fantasai.inkedblade.net/contact"/>
 <link rel="help" href="http://www.w3.org/TR/CSS21/page.html#break-inside"/>
 <link rel="help" href="http://www.w3.org/TR/css3-page/#breaks-inside"/>
 <meta name="flags" content="paged" />
@@ -26,9 +27,9 @@
 
 	.test {
 		widows: 5;
-		widows: 1.0;
-		widows: 1em;
-		widows: -1;
+		widows: 2.0;
+		widows: 2em;
+		widows: -2;
 		widows: 0;
 		color: blue;
 	}
@@ -37,8 +38,8 @@
 </head>
 <body>
 	<div class="spacer">This test requires 2 pages. The blue text must
-		denote accurate page numbers. Lines A-E must appear on the next
-		page.</div>
+		denote accurate page numbers. Lines A-B must appear on this page;
+		lines C-G must appear on the next page.</div>
 
 	<div class="spacer backup"></div>
 	<div class="test">

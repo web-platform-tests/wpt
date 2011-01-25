@@ -41,7 +41,7 @@
 <p><a href="http://www.w3.org/"><img height="48" width="72" alt="W3C" src="http://www.w3.org/Icons/w3c_home"></a></p>
 <!--end-logo-->
  <h1>Web DOM Core</h1>
- <h2 class="no-num no-toc" id="editor-s-draft-24-january-2011">Editor's Draft 24 January 2011</h2>
+ <h2 class="no-num no-toc" id="editor-s-draft-25-january-2011">Editor's Draft 25 January 2011</h2>
 
  <dl>
   <dt>This Version:
@@ -79,7 +79,7 @@ publications and the latest revision of this technical report can be found in
 the <a href="http://www.w3.org/TR/">W3C technical reports index</a> at
 http://www.w3.org/TR/.</em>
 
-<p>This is the 24 January 2011 Editor's Draft of Web DOM Core. Please send
+<p>This is the 25 January 2011 Editor's Draft of Web DOM Core. Please send
 comments to
 <a href="mailto:public-webapps@w3.org?subject=%5BDOMCore%5D%20">public-webapps@w3.org</a>
 (<a href="http://lists.w3.org/Archives/Public/public-webapps/">archived</a>)
@@ -671,10 +671,9 @@ field must return the name of the exception constant as a string.
 
 
 <h2 id="nodes-model"><span class="secno">3 </span>Nodes Model</h2>
-<p>The DOM represents a tree of <code><a href="#node">Node</a></code> objects. The following
-structure is imposed on this tree, represented as relationship between the
-node and its child nodes:
-
+<p><code><a href="#node">Node</a></code> objects (simply called <dfn title="concept-node" id="concept-node">nodes</dfn>) form a tree-based structure. Each node, except for <code><a href="#document">Document</a></code> objects, has zero or one <dfn title="concept-parent-node" id="concept-parent-node">parent nodes</dfn>. A <code><a href="#document">Document</a></code> object cannot have a <a title="concept-parent-node" href="#concept-parent-node">parent node</a>.</p>
+<p>A node <var>A</var> is a <dfn title="concept-child-node" id="concept-child-node">child node</dfn> of a node <var>B</var> if and only if <var>B</var> is the <a title="concept-parent-node" href="#concept-parent-node">parent node</a> of <var>A</var>.</p>
+<p>The tree-based structure is constrained by the following node hierarchy expressed as a relationship between the type of node and its allowed <span title="concpet-child-node">child nodes</span>:</p>
 <dl>
  <dt><code><a href="#document">Document</a></code>
  <dd>
@@ -689,7 +688,6 @@ node and its child nodes:
    <li><p>Zero or more nodes each of which is either
    <code><a href="#processinginstruction">ProcessingInstruction</a></code> or <code><a href="#comment">Comment</a></code>.
   </ol>
-
  <dt><code><a href="#documentfragment">DocumentFragment</a></code>
  <dt><code><a href="#element">Element</a></code>
  <dd><p>Zero or more nodes each of which is one of <code><a href="#element">Element</a></code>,
@@ -699,8 +697,18 @@ node and its child nodes:
  <dt><code><a href="#processinginstruction">ProcessingInstruction</a></code>
  <dt><code><a href="#comment">Comment</a></code>
  <dt><code><a href="#text">Text</a></code>
- <dd><p>No children.
+ <dd><p>None.
 </dl>
+<p>A node, or the <span title="concpet-child-node">child nodes</span> in case of a <code><a href="#documentfragment">DocumentFragment</a></code> object, are said to <dfn id="violate-the-node-hierarchy">violate the node hierarchy</dfn> of another node if inserting them within the other node's
+<a href="#home-subtree">home subtree</a> would violate the constraints listed above.</p>
+<p class="note">Operations that would cause a node to <a href="#violate-the-node-hierarchy">violate the node hierarchy</a> of another node will throw a <code title="dom-DOMException-HIERARCHY_REQUEST_ERR"><a href="#dom-domexception-hierarchy_request_err">HIERARCHY_REQUEST_ERR</a></code>.</p>
+<p>Besides <a title="concept-parent-node" href="#concept-parent-node">parent node</a> and <a title="concept-child-node" href="#concept-child-node">child node</a> various other terms are used for tree-based structures.</p>
+<p>A node <var>A</var> is called a <dfn title="concept-descendant-node" id="concept-descendant-node">descendant node</dfn> of a node <var>B</var>, if either <var>A</var> is a <a title="concept-child-node" href="#concept-child-node">child node</a> of <var>B</var> or <var>A</var> is a <a title="concept-child-node" href="#concept-child-node">child node</a> of a node <var>C</var> that is a <a title="concept-descendant-node" href="#concept-descendant-node">descendant node</a> of <var>B</var>.</p>
+<p>A node <var>A</var> is called an <dfn title="concept-ancestor-node" id="concept-ancestor-node">ancestor node</dfn> of a node <var>B</var> if and only if <var>B</var> is a <a title="concept-descendant-node" href="#concept-descendant-node">descendant node</a> of <var>A</var>.</p>
+<p>A node <var>A</var> is called a <dfn title="concept-sibling-node" id="concept-sibling-node">sibling node</dfn> of a node <var>B</var>, if and only if <var>B</var> and <var>A</var> share the same <a title="concept-parent-node" href="#concept-parent-node">parent node</a>.
+<var>A</var> is a <dfn title="concept-preceding-sibling-node" id="concept-preceding-sibling-node">preceding sibling node</dfn> of <var>B</var> if <var>A</var> and <var>B</var> are <a title="concept-sibling-node" href="#concept-sibling-node">siblings</a> and <var>A</var> comes before <var>B</var> in their shared parent node.
+<var>A</var> is a <dfn title="concept-following-sibling-node" id="concept-following-sibling-node">following sibling node</dfn> of <var>B</var> if <var>A</var> and <var>B</var> are <a title="concept-sibling-node" href="#concept-sibling-node">siblings</a> and <var>A</var> comes after <var>B</var> in their shared parent node.
+
 <!--AttrExodus -->
 
 <!-- XXXhierarchy - make sure to expand DocumentFragment before checking -->

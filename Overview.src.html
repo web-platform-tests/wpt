@@ -644,10 +644,9 @@ field must return the name of the exception constant as a string.
 
 
 <h2>Nodes Model</h2>
-<p>The DOM represents a tree of <code>Node</code> objects. The following
-structure is imposed on this tree, represented as relationship between the
-node and its child nodes:
-
+<p><code>Node</code> objects (simple called <dfn title=concept-node>nodes</dfn>) form a tree-based structure. Each node, except the <code>Document</code> object, can have at most one <dfn title=concept-parent-node>parent node</dfn>. The <code>Document</code> object cannot have a <span title=concept-parent-node>parent node</span>.</p>
+<p>A node <var>A</var> is called the <dfn title=concept-child-node>child node</dfn> of a node <var>B</var> if and only if <var>B</var> is the <span title=concept-parent-node>parent node</span> of <var>A</var>.</p>
+<p>The tree-based structure is constrained by the following node hierarchy expressed as a relationship between the type of node and its allowed <span title=concpet-child-node>child nodes</span>:</p>
 <dl>
  <dt><code>Document</code>
  <dd>
@@ -662,7 +661,6 @@ node and its child nodes:
    <li><p>Zero or more nodes each of which is either
    <code>ProcessingInstruction</code> or <code>Comment</code>.
   </ol>
-
  <dt><code>DocumentFragment</code>
  <dt><code>Element</code>
  <dd><p>Zero or more nodes each of which is one of <code>Element</code>,
@@ -674,6 +672,14 @@ node and its child nodes:
  <dt><code>Text</code>
  <dd><p>No children.
 </dl>
+<p>A node, or the <span title=concpet-child-node>child nodes</span> in case of a <code>DocumentFragment</code> object, are said to <dfn>violate the node hierarchy</dfn> of another node if inserting them within the other node's
+<span>home subtree</span> would violate the constraints listed above.</p>
+<p class="note">Operations that would <span>violate the node hierarchy</span> will throw a <code title=dom-DOMException-HIERARCHY_REQUEST_ERR>HIERARCHY_REQUEST_ERR</code>.</p>
+<p>Besides <span title=concept-parent-node>parent node</span> and <span title=concept-child-node>child node</span> there are various other terms that are useful for tree-based structures.</p>
+<p>A node <var>A</var> is called a <dfn title=concept-descendant-node>descendant node</dfn> of a node <var>B</var>, if either <var>A</var> is a <span title=concept-child-node>child node</span> of <var>B</var> or <var>A</var> is a <span title=concept-child-node>child node</span> of a node <var>C</var> that is a <span title=concept-descendant-node>descendant node</span> of <var>B</var>.</p>
+<p>A node <var>A</var> is called an <dfn title=concept-ancestor-node>ancestor node</dfn> of a node <var>B</var> if and only if <var>B</var> is a <span title=concept-descendant-node>descendant node</span> of <var>A</var>.</p>
+<p>A node <var>A</var> is called a <dfn title=concept-node-sibling>sibling node</dfn> of a node <var>B</var>, if and only if <var>B</var> and <var>A</var> share the same <span title=concept-parent-node>parent node</span>. <var>A</var> is a <dfn title=concept-preceding-sibling-node>preceding sibling node</dfn> if it comes before <var>B</var> in <var>A</var>'s <span>home subtree</span> and <var>A</var> and <var>B</var> are <span title=concept-sibling-node>siblings</span>. <var>B</var> is a <dfn title=concept-following-sibling-node>following sibling node</dfn> if it comes after <var>A</var> in <var>A</var>'s <span>home subtree</span> and <var>A</var> and <var>B</var> are <span title=concept-sibling-node>siblings</span>.
+
 <!--AttrExodus -->
 
 <!-- XXXhierarchy - make sure to expand DocumentFragment before checking -->

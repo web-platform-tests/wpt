@@ -4,60 +4,71 @@
         <title>CSS Test: Containing Blocks - Block-level elements position based on right-to-left direction and parent element is relative</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
         <link rel="author" title="Alan Gresley" href="alan{at}css-class.com" />
+        <link rel="author" title="Elika J. Etemad" href="http://fantasai.inkedblade.net/contact"/>
         <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#containing-block-details" />
         <meta name="flags" content="dom interact" />
         <meta name="assert" content="The containing block of an absolutely positioned block-level element is formed by the padding edge of its nearest (closest) positioned ancestor element." />
         <style type="text/css">
             div
             {
-                border: 10px solid teal;
+                border: solid silver;
                 direction: rtl;
+                margin-bottom: 20px;
                 padding: 100px;
+                width: 450px;
             }
-            #first-box
+            #first-box, #last-box
             {
-                background: aqua;
-                color: silver;
-            }
-            #last-box
-            {
-                background: yellow;
                 color: silver;
             }
             .position
             {
-                height: 50px;
+                height: 30px;
                 position: absolute;
-                width: 50px;
+                width: 30px;
+            }
+            #tr-control
+            {
+                border-top: 30px solid red;
+                margin-left: 20px;
+                margin-right: -50px;
+                padding: 20px 15px;
+            }
+            #bl-control
+            {
+                border-bottom: 30px solid red;
+                margin-left: -50px;
+                margin-right: 20px;
+                padding: 20px 15px;
             }
             .top-right
             {
-                background: orange;
+                background: green;
                 right: 0;
                 top: 0;
             }
             .bottom-left
             {
-                background: orange;
-                left: 0;
+                background: green;
                 bottom: 0;
+                left: 0;
             }
             #test
             {
-                border: 5px solid black;
+                border: 5px solid silver;
                 padding: 50px;
                 position: relative;
             }
         </style>
     </head>
     <body>
-        <p>Test passes if orange boxes are touching, but not overlapping, the inside corners of the black box and after pressing this <button onclick="document.getElementById('resize').style.width = '450px';">Resize</button> button the orange boxes remain in the corners of the black box.</p>
-        <div id="resize">
+        <p>Test passes if there is no red visible on the page.</p>
+        <div>
             <span id="test">
-                <span id="first-box">Filler Text Filler Text Filler Text Filler Text</span>
-                <span class="position bottom-left">bottom-left</span>
-                <span class="position top-right">top-right</span>
-                <span id="last-box">Filler Text Filler Text Filler Text Filler Text</span>
+                <span id="first-box"><span id="tr-control"></span>Filler Text Filler Text Filler Text Filler Text</span>
+                <span class="position bottom-left">BL</span>
+                <span class="position top-right">TR</span>
+                <span id="last-box">Filler Text Filler Text Filler Text Filler Text<span id="bl-control"></span></span>
             </span>
         </div>
     </body>

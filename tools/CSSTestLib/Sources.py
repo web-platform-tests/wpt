@@ -227,6 +227,7 @@ class ReftestManifest(ConfigSource):
     """
     return basepath(self.relpath)
 
+  baseRE = re.compile(r'^#\s*relstrip\s+(\S+)\s*')
   stripRE = re.compile(r'#.*')
   parseRE = re.compile(r'^\s*([=!]=)\s*(\S+)\s+(\S+)')
 
@@ -237,16 +238,22 @@ class ReftestManifest(ConfigSource):
        Raises a ReftestFilepathError if any sources file do not exist or
        if any relpaths point higher than the relpath root.
     """
+    striplist = []
     for src in self.sourcepath:
       relbase = basepath(self.relpath)
       srcbase = basepath(src)
       for line in open(src):
+        strip = self.baseRE.search(line)
+        if strip:
+          striplist.append(strip.group(1))
         line = self.stripRE.sub('', line)
         m = self.parseRE.search(line)
         if m:
           record = ((join(srcbase, m.group(2)), join(srcbase, m.group(3))), \
                     (join(relbase, m.group(2)), join(relbase, m.group(3))), \
                     m.group(1))
+          for strip in striplist:
+            # strip relrecord
           if not exists(record[0][0]):
             raise ReftestFilepathError("Manifest Error in %s: "
                                        "Reftest test file %s does not exist." \

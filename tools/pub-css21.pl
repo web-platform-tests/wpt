@@ -111,6 +111,10 @@ push @dirs, 'contributors/microsoft/submitted'; # grab support files
 push @dirs, 'contributors/microsoft/submitted/Chapter*';
 print `perl -pi -e 's#\.\./support/#support/#g' contributors/microsoft/submitted/Chapter*/*.xht contributors/microsoft/submitted/support/*.css`;
 
+###############################################################################
+# Opera
+push @dirs, 'contributors/gsnedders/submitted/css2.1/reftest.list';
+
 $dirlist = join ' ', @dirs;
 print `python tools/build-css21.py $dirlist 2>&1`;
 print `find dist/css2.1 -type f -exec chmod 644 {} \\;`;

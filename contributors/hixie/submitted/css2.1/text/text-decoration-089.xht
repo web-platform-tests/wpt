@@ -8,20 +8,18 @@
   <style type="text/css">
    div { color: orange; text-decoration: underline; }
    span { vertical-align: bottom; color: gray; }
-   .super { vertical-align: super; }
-   .up { vertical-align: 0.5em; }
+   .inline-block { display: inline-block; width: 5em; border: solid blue; }
   </style>
  </head>
  <body>
-  <p>There should only be one solid orange line under the following
-  text. If the line is broken at any point, or if there are two
-  underlines anywhere, then the test has failed.</p>
+  <p>There should be a single orange line below, underneath the words
+  <em>LINE A</em> and <em>LINE B</em> that disappears within the blue box.
+  If there are any lines under, inside, above, or on the blue box, then the
+  test has failed.</p>
   <div>
-   <span> Test </span>
-   <span class="super"> test test test </span>
-   <span> test </span>
-   <span class="up"> test test </span>
-   <span> test. </span>
+   <span>LINE A</span>
+   <span class="inline-block">CLEAR CLEAR CLEAR</span>
+   <span>LINE B</span>
   </div>
  </body>
 </html>

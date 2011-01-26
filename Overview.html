@@ -41,7 +41,7 @@
 <p><a href="http://www.w3.org/"><img height="48" width="72" alt="W3C" src="http://www.w3.org/Icons/w3c_home"></a></p>
 <!--end-logo-->
  <h1>Web DOM Core</h1>
- <h2 class="no-num no-toc" id="editor-s-draft-25-january-2011">Editor's Draft 25 January 2011</h2>
+ <h2 class="no-num no-toc" id="editor-s-draft-26-january-2011">Editor's Draft 26 January 2011</h2>
 
  <dl>
   <dt>This Version:
@@ -59,7 +59,7 @@
  </dl>
 
 <!--begin-copyright-->
-<p class="copyright"><a href="http://www.w3.org/Consortium/Legal/ipr-notice#Copyright">Copyright</a> &COPY; 2011 <a href="http://www.w3.org/"><abbr title="World Wide Web Consortium">W3C</abbr></a><sup>&reg;</sup> (<a href="http://www.csail.mit.edu/"><abbr title="Massachusetts Institute of Technology">MIT</abbr></a>, <a href="http://www.ercim.eu/"><abbr title="European Research Consortium for Informatics and Mathematics">ERCIM</abbr></a>, <a href="http://www.keio.ac.jp/">Keio</a>), All Rights Reserved. W3C <a href="http://www.w3.org/Consortium/Legal/ipr-notice#Legal_Disclaimer">liability</a>, <a href="http://www.w3.org/Consortium/Legal/ipr-notice#W3C_Trademarks">trademark</a> and <a href="http://www.w3.org/Consortium/Legal/copyright-documents">document use</a> rules apply.</p>
+<p class="copyright"><a href="http://www.w3.org/Consortium/Legal/ipr-notice#Copyright">Copyright</a> &copy; 2011 <a href="http://www.w3.org/"><abbr title="World Wide Web Consortium">W3C</abbr></a><sup>&reg;</sup> (<a href="http://www.csail.mit.edu/"><abbr title="Massachusetts Institute of Technology">MIT</abbr></a>, <a href="http://www.ercim.eu/"><abbr title="European Research Consortium for Informatics and Mathematics">ERCIM</abbr></a>, <a href="http://www.keio.ac.jp/">Keio</a>), All Rights Reserved. W3C <a href="http://www.w3.org/Consortium/Legal/ipr-notice#Legal_Disclaimer">liability</a>, <a href="http://www.w3.org/Consortium/Legal/ipr-notice#W3C_Trademarks">trademark</a> and <a href="http://www.w3.org/Consortium/Legal/copyright-documents">document use</a> rules apply.</p>
 <!--end-copyright-->
 </div>
 
@@ -79,7 +79,7 @@ publications and the latest revision of this technical report can be found in
 the <a href="http://www.w3.org/TR/">W3C technical reports index</a> at
 http://www.w3.org/TR/.</em>
 
-<p>This is the 25 January 2011 Editor's Draft of Web DOM Core. Please send
+<p>This is the 26 January 2011 Editor's Draft of Web DOM Core. Please send
 comments to
 <a href="mailto:public-webapps@w3.org?subject=%5BDOMCore%5D%20">public-webapps@w3.org</a>
 (<a href="http://lists.w3.org/Archives/Public/public-webapps/">archived</a>)
@@ -491,7 +491,7 @@ of the string, where such spaces are removed.
 <a href="#ascii-case-insensitive">ASCII case-insensitive</a> string that represents a certain feature of
 the user agent.
 
-<p>A <dfn title="concept-DOMfeatureversion" id="concept-domfeatureversion">DOM feature version</dfn> is a (<var title="">feature</var>,&NonBreakingSpace;<var title="">version</var>) tuple, where <var title="">feature</var> is <a title="concept-DOMfeature" href="#concept-domfeature">DOM feature</a>
+<p>A <dfn title="concept-DOMfeatureversion" id="concept-domfeatureversion">DOM feature version</dfn> is a (<var title="">feature</var>,&nbsp;<var title="">version</var>) tuple, where <var title="">feature</var> is <a title="concept-DOMfeature" href="#concept-domfeature">DOM feature</a>
 and <var title="">version</var> is a <a href="#case-sensitive">case-sensitive</a> string
 representing a version number.
 <!--of the form "<var title>major</var>.<var title>minor</var>".-->
@@ -502,10 +502,10 @@ one or more <a href="#case-sensitive">case-sensitive</a> strings representing ve
 features</a> or new versions for existing features.
 
 <p>A user agent must <dfn title="concept-support-DOMfeatureversion" id="concept-support-domfeatureversion">support</dfn>
-a <a title="concept-DOMfeatureversion" href="#concept-domfeatureversion">DOM feature version</a> (<var title="">feature</var>,&NonBreakingSpace;<var title="">version</var>) if it <a title="concept-support-DOMfeature" href="#concept-support-domfeature">supports</a> a <a title="concept-DOMfeature" href="#concept-domfeature">DOM feature</a> that is a <a href="#ascii-case-insensitive">ASCII
+a <a title="concept-DOMfeatureversion" href="#concept-domfeatureversion">DOM feature version</a> (<var title="">feature</var>,&nbsp;<var title="">version</var>) if it <a title="concept-support-DOMfeature" href="#concept-support-domfeature">supports</a> a <a title="concept-DOMfeature" href="#concept-domfeature">DOM feature</a> that is a <a href="#ascii-case-insensitive">ASCII
 case-insensitive</a> match for <var title="">feature</var> and <var title="">version</var> is in the associated list of versions.
 
-<p>A user agent must <a title="concept-support-DOMfeatureversion" href="#concept-support-domfeatureversion">support</a> the (<var title="">feature</var>,&NonBreakingSpace;"") tuple if it <a title="concept-support-DOMfeature" href="#concept-support-domfeature">supports</a> a <a title="concept-DOMfeature" href="#concept-domfeature">DOM feature</a> that is a <a href="#ascii-case-insensitive">ASCII
+<p>A user agent must <a title="concept-support-DOMfeatureversion" href="#concept-support-domfeatureversion">support</a> the (<var title="">feature</var>,&nbsp;"") tuple if it <a title="concept-support-DOMfeature" href="#concept-support-domfeature">supports</a> a <a title="concept-DOMfeature" href="#concept-domfeature">DOM feature</a> that is a <a href="#ascii-case-insensitive">ASCII
 case-insensitive</a> match for <var title="">feature</var>.
 
 <p class="note">Authors are strongly discouraged from using <a title="concept-DOMfeature" href="#concept-domfeature">DOM features</a>, as they are notoriously unreliable
@@ -1630,9 +1630,9 @@ case-insensitive</a> manner, otherwise, the comparisons must be done in a
  <code title="">p1</code> and <code title="">p2</code> in it.
 
  <p>A call to
- <code title="dom-Element-getElementsByClassName"><a href="#dom-element-getelementsbyclassname">getElementsByClassName('ccc&NonBreakingSpace;bbb')</a></code>
+ <code title="dom-Element-getElementsByClassName"><a href="#dom-element-getelementsbyclassname">getElementsByClassName('ccc&nbsp;bbb')</a></code>
  would only return one node, however, namely <code title="">p3</code>. A call to
- <code title="dom-Element-getElementsByClassName"><a href="#dom-element-getelementsbyclassname">document.getElementById('example').getElementsByClassName('bbb&NonBreakingSpace;&NonBreakingSpace;ccc&NonBreakingSpace;')</a></code>
+ <code title="dom-Element-getElementsByClassName"><a href="#dom-element-getelementsbyclassname">document.getElementById('example').getElementsByClassName('bbb&nbsp;&nbsp;ccc&nbsp;')</a></code>
  would return the same thing.
 
  <p>A call to

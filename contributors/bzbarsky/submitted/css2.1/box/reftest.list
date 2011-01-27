@@ -7,3 +7,5 @@
 == rtl-span-only-ib.xht left-rtl-ref.xht
 == ltr-span-only-ib.xht right-ltr-ref.xht
 == rtl-linebreak.xht rtl-linebreak-ref.xht
+!= rtl-linebreak.xht rtl-linebreak-notref1.xht
+!= rtl-linebreak.xht rtl-linebreak-notref2.xht

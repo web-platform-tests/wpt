@@ -8,23 +8,53 @@
         <meta name="flags" content="" />
         <meta name="assert" content="The 'border-top-width' property supports a minimum plus one length value in millimeters that sets the width of the top border." />
         <style type="text/css">
-            #wrapper
+            div
+            {
+                width: 50px;
+            }
+            .ref1, .ref2
+            {
+                position: absolute;
+            }
+            .ref1
             {
                 background: red;
-                height: 1mm;
+                height: 3px;
+                z-index: -1;
             }
-            #test
+            .ref2
+            {
+                background: green;
+                height: 4px;
+            }
+            .test1, .test2
             {
                 border-top-style: solid;
                 border-top-width: 1mm;
                 height: 0;
             }
+            .test1
+            {
+                border-top-color: green;
+            }
+            .test2
+            {
+                border-top-color: red;
+            }
+            #parent
+            {
+                background: red;
+                height: 7px;
+            }
         </style>
     </head>
     <body>
-        <p>Test passes if there is a line below and there is no red visible on the page.</p>
-        <div id="wrapper">
-            <div id="test"></div>
+        <p>Test passes if there is a short solid green box below and there is no red visible on the page.</p>
+        <div id="parent">
+            <div class="ref1"></div>
+            <div class="test1"></div>
+            <div class="ref2"></div>
+            <div class="test2"></div>
         </div>
     </body>
 </html>

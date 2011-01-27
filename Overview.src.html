@@ -2075,9 +2075,9 @@ otherwise [createAttribute]- ->.
   void setIdAttributeNode(Attr idAttr, boolean isId);-->
 };</pre>
 
-<p><code>Element</code> nodes have an associated <dfn title=concept-element-namespace>namespace</dfn>, <dfn title=concept-element-namespace-prefix>namespace prefix</dfn>, <dfn title=concept-element-local-name>local name</dfn>, and <dfn title=concept-element-qualified-name>qualified name</dfn>.
+<p><code>Element</code> nodes have an associated <dfn title=concept-element-namespace>namespace</dfn>, <dfn title=concept-element-namespace-prefix>namespace prefix</dfn>, <dfn title=concept-element-local-name>local name</dfn>.
 
-<p>When an <code>Element</code> node is created its <span title=concept-element-local-name>local name</span> is always given. Unless explicitly given when an <code>Element</code> node is created, its <span title=concept-element-namespace>namespace</span> and <span title=concept-element-namespace-prefix>namespace prefix</span> are null and its <span title=concept-element-qualified-name>qualified name</span> is its <span title=concept-element-namespace-prefix>namespace prefix</span>, followed by a "<code>:</code>" (U+003A), followed by its <span title=concept-element-local-name>local name</span>, if its <span title=concept-element-namespace-prefix>namespace prefix</span> is not null, or otherwise <span title=concept-element-qualified-name>qualified name</span> is just its <span title=concept-element-local-name>local name</span>.
+<p>When an <code>Element</code> node is created its <span title=concept-element-local-name>local name</span> is always given. Unless explicitly given when an <code>Element</code> node is created, its <span title=concept-element-namespace>namespace</span> and <span title=concept-element-namespace-prefix>namespace prefix</span> are null.
 
 <p><code>Element</code> nodes also have an associated collection of
 <code>Attr</code> objects, often called attributes.
@@ -2111,12 +2111,24 @@ attribute must return the <span>context node</span>'s
 <span title=concept-element-local-name>local name</span>.
 
 <p>The <dfn title=dom-Element-tagName><code>tagName</code></dfn> attribute
-must return the <span>context node</span>'s
-<span title=concept-element-qualified-name>qualified name</span>,
-<span>converted to uppercase</span> if the <span>context node</span> is in
-the <span>HTML namespace</span> and its
-<code title=dom-Node-ownerDocument>ownerDocument</code> is an
-<span>HTML document</span>.
+must run these steps:
+<ol>
+ <li><p>If <span>context node</span>'s
+ <span title=concept-element-namespace-prefix>namespace prefix</span> is not
+ null, let <var title>qualified name</var> be its
+ <span title=concept-element-namespace-prefix>namespace prefix</span>, followed
+ by a "<code>:</code>" (U+003A), followed by its
+ <span title=concept-element-local-name>local name</span>. Otherwise, let
+ <var title>qualified name</var> be its
+ <span title=concept-element-local-name>local name</span>.
+
+ <li><p>If the <span>context node</span> is in the <span>HTML namespace</span> and
+ its <code title=dom-Node-ownerDocument>ownerDocument</code> is an
+ <span>HTML document</span>, let <var title>qualified name</var> be
+ <span>converted to uppercase</span>.
+
+ <li><p>Return <var title>qualified name</var>.
+</ol>
 
 <hr>
 

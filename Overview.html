@@ -41,7 +41,7 @@
 <p><a href="http://www.w3.org/"><img height="48" width="72" alt="W3C" src="http://www.w3.org/Icons/w3c_home"></a></p>
 <!--end-logo-->
  <h1>Web DOM Core</h1>
- <h2 class="no-num no-toc" id="editor-s-draft-26-january-2011">Editor's Draft 26 January 2011</h2>
+ <h2 class="no-num no-toc" id="editor-s-draft-27-january-2011">Editor's Draft 27 January 2011</h2>
 
  <dl>
   <dt>This Version:
@@ -79,7 +79,7 @@ publications and the latest revision of this technical report can be found in
 the <a href="http://www.w3.org/TR/">W3C technical reports index</a> at
 http://www.w3.org/TR/.</em>
 
-<p>This is the 26 January 2011 Editor's Draft of Web DOM Core. Please send
+<p>This is the 27 January 2011 Editor's Draft of Web DOM Core. Please send
 comments to
 <a href="mailto:public-webapps@w3.org?subject=%5BDOMCore%5D%20">public-webapps@w3.org</a>
 (<a href="http://lists.w3.org/Archives/Public/public-webapps/">archived</a>)
@@ -2046,9 +2046,9 @@ otherwise [createAttribute]- ->.
   void setIdAttributeNode(Attr idAttr, boolean isId);-->
 };</pre>
 
-<p><code><a href="#element">Element</a></code> nodes have an associated <dfn title="concept-element-namespace" id="concept-element-namespace">namespace</dfn>, <dfn title="concept-element-namespace-prefix" id="concept-element-namespace-prefix">namespace prefix</dfn>, <dfn title="concept-element-local-name" id="concept-element-local-name">local name</dfn>, and <dfn title="concept-element-qualified-name" id="concept-element-qualified-name">qualified name</dfn>.
+<p><code><a href="#element">Element</a></code> nodes have an associated <dfn title="concept-element-namespace" id="concept-element-namespace">namespace</dfn>, <dfn title="concept-element-namespace-prefix" id="concept-element-namespace-prefix">namespace prefix</dfn>, <dfn title="concept-element-local-name" id="concept-element-local-name">local name</dfn>.
 
-<p>When an <code><a href="#element">Element</a></code> node is created its <a title="concept-element-local-name" href="#concept-element-local-name">local name</a> is always given. Unless explicitly given when an <code><a href="#element">Element</a></code> node is created, its <a title="concept-element-namespace" href="#concept-element-namespace">namespace</a> and <a title="concept-element-namespace-prefix" href="#concept-element-namespace-prefix">namespace prefix</a> are null and its <a title="concept-element-qualified-name" href="#concept-element-qualified-name">qualified name</a> is its <a title="concept-element-namespace-prefix" href="#concept-element-namespace-prefix">namespace prefix</a>, followed by a "<code>:</code>" (U+003A), followed by its <a title="concept-element-local-name" href="#concept-element-local-name">local name</a>, if its <a title="concept-element-namespace-prefix" href="#concept-element-namespace-prefix">namespace prefix</a> is not null, or otherwise <a title="concept-element-qualified-name" href="#concept-element-qualified-name">qualified name</a> is just its <a title="concept-element-local-name" href="#concept-element-local-name">local name</a>.
+<p>When an <code><a href="#element">Element</a></code> node is created its <a title="concept-element-local-name" href="#concept-element-local-name">local name</a> is always given. Unless explicitly given when an <code><a href="#element">Element</a></code> node is created, its <a title="concept-element-namespace" href="#concept-element-namespace">namespace</a> and <a title="concept-element-namespace-prefix" href="#concept-element-namespace-prefix">namespace prefix</a> are null.
 
 <p><code><a href="#element">Element</a></code> nodes also have an associated collection of
 <code><a href="#attr">Attr</a></code> objects, often called attributes.
@@ -2082,12 +2082,24 @@ attribute must return the <a href="#context-node">context node</a>'s
 <a title="concept-element-local-name" href="#concept-element-local-name">local name</a>.
 
 <p>The <dfn title="dom-Element-tagName" id="dom-element-tagname"><code>tagName</code></dfn> attribute
-must return the <a href="#context-node">context node</a>'s
-<a title="concept-element-qualified-name" href="#concept-element-qualified-name">qualified name</a>,
-<a href="#converted-to-uppercase">converted to uppercase</a> if the <a href="#context-node">context node</a> is in
-the <a href="#html-namespace">HTML namespace</a> and its
-<code title="dom-Node-ownerDocument"><a href="#dom-node-ownerdocument">ownerDocument</a></code> is an
-<a href="#html-document">HTML document</a>.
+must run these steps:
+<ol>
+ <li><p>If <a href="#context-node">context node</a>'s
+ <a title="concept-element-namespace-prefix" href="#concept-element-namespace-prefix">namespace prefix</a> is not
+ null, let <var title="">qualified name</var> be its
+ <a title="concept-element-namespace-prefix" href="#concept-element-namespace-prefix">namespace prefix</a>, followed
+ by a "<code>:</code>" (U+003A), followed by its
+ <a title="concept-element-local-name" href="#concept-element-local-name">local name</a>. Otherwise, let
+ <var title="">qualified name</var> be its
+ <a title="concept-element-local-name" href="#concept-element-local-name">local name</a>.
+
+ <li><p>If the <a href="#context-node">context node</a> is in the <a href="#html-namespace">HTML namespace</a> and
+ its <code title="dom-Node-ownerDocument"><a href="#dom-node-ownerdocument">ownerDocument</a></code> is an
+ <a href="#html-document">HTML document</a>, let <var title="">qualified name</var> be
+ <a href="#converted-to-uppercase">converted to uppercase</a>.
+
+ <li><p>Return <var title="">qualified name</var>.
+</ol>
 
 <hr>
 

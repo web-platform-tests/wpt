@@ -798,7 +798,6 @@ http://test.w3.org/html/tests/approved/foreigncontent/foreign_content_010.html
 http://test.w3.org/html/tests/approved/foreigncontent/foreign_content_011.html
 http://test.w3.org/html/tests/approved/foreigncontent/foreign_content_013.html
 http://test.w3.org/html/tests/approved/foreigncontent/math-parse01.html
-http://test.w3.org/html/tests/approved/foreigncontent/math-parse02.html
 http://test.w3.org/html/tests/approved/video/video_000.htm
 http://test.w3.org/html/tests/approved/video/video_001.htm
 http://test.w3.org/html/tests/approved/video/video_002.htm

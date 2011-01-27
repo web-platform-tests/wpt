@@ -252,7 +252,7 @@ class ReftestManifest(ConfigSource):
           record = ((join(srcbase, m.group(2)), join(srcbase, m.group(3))), \
                     (join(relbase, m.group(2)), join(relbase, m.group(3))), \
                     m.group(1))
-          for strip in striplist:
+#          for strip in striplist:
             # strip relrecord
           if not exists(record[0][0]):
             raise ReftestFilepathError("Manifest Error in %s: "

@@ -113,7 +113,7 @@ print `perl -pi -e 's#\.\./support/#support/#g' contributors/microsoft/submitted
 
 ###############################################################################
 # Opera
-push @dirs, 'contributors/gsnedders/submitted/css2.1/reftest.list';
+# push @dirs, 'contributors/gsnedders/submitted/css2.1/reftest.list';
 
 $dirlist = join ' ', @dirs;
 print `python tools/build-css21.py $dirlist 2>&1`;

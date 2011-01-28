@@ -10,25 +10,42 @@
         <style type="text/css">
             div
             {
-                height: 1in;
+                height: 50px;
                 width: 0;
             }
-            #div1
+            .parent1
             {
-                border-left: 2.54cm solid red;
+                background: red;
+                min-width: 37px
+            }
+            .test1, .test2
+            {
                 padding-left: 1cm;
             }
-            div div
+            .test1
             {
-                border-left: 2.54cm solid black;
-                margin-left: -3.54cm;
+                background: green;
+            }
+            .test2
+            {
+                background: red;
+            }
+            .child1
+            {
+                background: green;
+                left: -38px;
+                position: relative;
+                width: 38px;
             }
         </style>
     </head>
     <body>
         <p>Test passes if there is no red visible on the page.</p>
-        <div id="div1">
-            <div></div>
+        <div class="parent1">
+            <div class="test1"></div>
+        </div>
+        <div class="test2">
+            <div class="child1"></div>
         </div>
     </body>
 </html>

@@ -1,4 +1,4 @@
-id	references	title	flags	links	credits	assertion
+id	references	title	flags	links	revision	credits	assertion
 [% FOREACH test IN tests.sort('name') %]
 [%+ test.file.replace('\.[a-z]+$', '') +%]	
 [%- FOREACH ref IN test.references.sort -%]
@@ -7,6 +7,7 @@ id	references	title	flags	links	credits	assertion
 [%- test.title FILTER collapse +%]	
 [%- test.flags.join(',') +%]	
 [%- test.links.join(',').replace(specroot, '') +%]	
+[%- test.revision +%]	
 [%- FOREACH credit IN test.credits -%]
 `[% credit.0 %]`<[% credit.1 %]>[% ',' IF not loop.last() -%]
 [%- END +%]	

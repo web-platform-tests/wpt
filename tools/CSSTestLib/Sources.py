@@ -9,6 +9,7 @@ import filecmp
 import shutil
 import re
 import html5lib # Warning: This uses a patched version of html5lib
+import pysvn
 from lxml import etree
 from lxml.etree import ParseError
 from Utils import getMimeFromExt, escapeToNamedASCII, basepath, isPathInsideBase, relativeURL
@@ -164,6 +165,15 @@ class FileSource:
     """Clears all cached data, preserves computed data."""
     pass
 
+  def revisionOf(self, path, relpath=None):
+    """Get last committed svn revision of file.
+       Accepts optional relative path to target.
+    """
+    if relpath:
+      path = os.path.join(os.path.dirname(path), relpath)
+    return pysvn.Client().status(path)[0].entry.commit_revision.number
+
+    
 class ConfigSource(FileSource):
   """Object representing a text-based configuration file.
      Capable of merging multiple config-file contents.
@@ -444,6 +454,19 @@ class CSSTestSource(XHTMLSource):
 
   def isSelftest(self):
     return self.selftest
+    
+  def revision(self):
+    """Returns svn revision number of last commit.
+       If test is a reftest, revision will be latest of test or references
+       XXX also needs to account for other dependencies, ie: stylesheet, images, fonts
+    """
+    revision = self.revisionOf(self.sourcepath)
+    for ref in self.refs:
+      refRevision = self.revisionOf(self.sourcepath, ref[1].relpath)
+      if revision < refRevision:
+        revision = refRevision
+    return revision
+
 
   def parse(self):
     XHTMLSource.parse(self)
@@ -464,6 +487,7 @@ class CSSTestSource(XHTMLSource):
          - name    [string]
          - title   [string]
          - references [list of (reftype, relpath) per reference; None if not reftest]
+         - revision   [svn revision number of last commit]
        Strings are given in UTF-8.
     """
 
@@ -489,6 +513,7 @@ class CSSTestSource(XHTMLSource):
             'title'   : '',
             'references' : [{'type':ref[0], 'relpath':ref[1].relpath.encode('utf-8')}
                             for ref in self.refs] if self.refs else None,
+            'revision' : self.revision,
             'selftest' : self.isSelftest
            }
     def tokenMatch(token, string):

@@ -79,6 +79,9 @@ class CSSTestSuite:
                  OutputFormats.XHTMLPrintFormat(dest, self.title),
                 )
 
+    for group in self.groups.itervalues():
+      indexer.indexGroup(group)
+
     for format in formats:
       for group in self.groups.itervalues():
         group.build(format)
@@ -97,8 +100,6 @@ class CSSTestSuite:
            for file in files]
         )
 
-    for group in self.groups.itervalues():
-      indexer.indexGroup(group)
     rawtests.sort()
     indexer.writeOverview(dest, addTests=rawtests)
     

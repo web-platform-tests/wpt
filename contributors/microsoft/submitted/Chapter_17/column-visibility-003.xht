@@ -3,46 +3,46 @@
     <head>
         <title>CSS Test: Spanning cell that intersects a 'visibility: collapse' column</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
-        <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#columns" />
-        <meta name="flags" content="" />
-        <meta name="assert" content="Contents of a cell which spans through a collapsed column are clipped." />
+        <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#dynamic-effects" />
+        <meta name="flags" content="ahem" />
+        <meta name="assert" content="Contents of a spanned cell which intersect with a collapsed column are clipped." />
         <style type="text/css">
-            #col
+            table
+            {
+                font: 128px/1 Ahem;
+            }
+            col#collapsed-column
             {
                 visibility: collapse;
             }
             td
             {
-                height: 1em;
-                width: 5em;
+                color: green;
+                padding: 0;
+                width: 1em;
             }
-            #cell1
+            .column-intersection
             {
-                background: white;
-                white-space: nowrap;
-            }
-            .red
-            {
-                background: red;
+                color: red;
             }
         </style>
     </head>
     <body>
-        <p>Test passes if there is no red visible on the page.</p>
+        <p>Test passes if there is a green square below and no red visible on the page.</p>
         <table>
             <col />
             <col />
-            <col id="col" />
+            <col id="collapsed-column" />
             <col />
             <tr>
                 <td></td>
-                <td colspan="2" id="cell1">Filler Text&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="red">FAIL FAIL</span></td>
+                <td colspan="2">P<span class="column-intersection">F</span></td>
                 <td></td>
             </tr>
             <tr>
                 <td></td>
                 <td></td>
-                <td class="red"></td>
+                <td class="column-intersection">F</td>
                 <td></td>
             </tr>
         </table>

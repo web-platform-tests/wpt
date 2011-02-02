@@ -20,6 +20,7 @@
     }
     .relpos {
       position: relative;
+      display: inline;
       color: yellow;
       left: 2em;
     }
@@ -66,12 +67,12 @@
 <body>
   <p>The patterns in the two silver boxes below must be identical.</p>
   <div class="container">
-    A<span class="relpos">B
+    A<div class="relpos">B
     <div class="block"><div class="float inblock"></div></div>
     <div class="float L"></div>
     <div class="float R"></div>
     <div></div>
-    B</span>A
+    B</div>A
   </div>
   <div class="container">
     A&nbsp;&nbsp;<span class="controlB">B</span>

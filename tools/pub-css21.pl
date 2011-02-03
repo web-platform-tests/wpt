@@ -27,7 +27,7 @@ rmtree('dist/css2.1');
 push @dirs, 'contributors/bzbarsky/submitted/css2.1/visuren';
 push @dirs, 'contributors/bzbarsky/submitted/css2.1/tables';
 push @dirs, 'contributors/bzbarsky/submitted/css2.1/box/reftest.list';
-push @dirs, 'contributors/bzbarsky/submitted/css2.1/run-in/reftest.list';
+#push @dirs, 'contributors/bzbarsky/submitted/css2.1/run-in/reftest.list';
 
 ###############################################################################
 # John Daggett

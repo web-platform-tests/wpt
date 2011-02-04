@@ -3,17 +3,19 @@
  <head>
   <title>CSS Test: Dynamic letter-spacing changes</title>
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
+  <link rel="author" title="Elika J. Etemad" href="http://fantasai.inkedblade.net/contact"/>
   <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/text/letter-spacing/001.html" type="text/html"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/text.html#spacing-props" />
   <style type="text/css">
-   #b { color: blue; }
-   #test span { font-weight: bold; }
+   #test, #control { color: blue; font-weight: bold; border: solid silver thick; }
+   #control { letter-spacing: 7em; }
   </style>
  </head>
- <body onload="document.getElementById('test').style.letterSpacing = '7em'">
-  <p>The word "fail" should not appear below; there should be just a few letters dotted around.</p>
-  <p id="b">
-   <span id="test"><span>ft ae is lt e d</span></span>
+ <body onload="document.getElementById('alter').style.letterSpacing = '7em'">
+  <p>The contents of the two silver boxes must be identical.</p>
+  <p id="control">ab cd ef gh i j</p>
+  <p id="test">
+   <span id="alter"><span>ab cd ef gh i j</span></span>
   </p>
  </body>
 </html>

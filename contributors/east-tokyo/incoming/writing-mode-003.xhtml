@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+  <title>CSS Test: DESCRIPTION OF TEST</title>
+  <link rel="author" title="EAST Co., Ltd" href="http://www.est.co.jp/"/>
+  <link rel="help" href="http://www.w3.org/TR/css3-writing-modes/#writing-mode"/>
+  <meta name="flags" content="" />
+  <meta name="assert" content=""/>
+  <style type="text/css"><![CDATA[
+    #div1 p {
+        writing-mode: vertical-lr;
+    }
+  ]]></style>
+  </head>
+  <body>
+    <p>次のテキストが縦書きの行が左から右へ進行する。</p>
+    <div id="div1">
+        <p>縦書きで左のブロックに表示されます</p>
+		<p>縦書きで右のブロックに表示されます</p>
+    </div>
+  </body>
+</html>

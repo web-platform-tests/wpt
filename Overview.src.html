@@ -642,6 +642,79 @@ following:
 field must return the name of the exception constant as a string.
 
 
+<!--
+<h2>Events</h2>
+
+Event
+ - name (type)
+ - target
+ - nodes path
+ - cancelable
+ - bubbles
+ - phase { capture, target, bubble }
+ - timeStamp
+ - default action
+   - preventDefault()
+   - defaultPrevented
+ - initializing events
+
+EventTarget
+  - listeners
+    - EventListener callback
+  - dispatch
+
+document.createEvent()
+
+
+
+An <dfn>event</dfn> allows for signaling that something has occurred. E.g. that an image has completed downloading.
+
+An <dfn>event target</dfn> is an object upon which an <span>event</span> is <span>dispatched</span> when something has occurred.
+
+
+
+
+When dispatching an event on a node follow these steps:
+ * set event target to the node
+ * let "propagation path" be a static ordered list of nodes consisting of the furthest ancestor to the node
+ * set event phase to capture
+ * for each node in "propagation path":
+   * if "stop propagation flag" is true terminate these steps
+   * if node is equal to the event target set event phase to target
+   * "invoke the listeners" for the node
+ * if "event bubbles" is true these sub steps:
+   * set event phase to bubble
+   * reverse the order of "propagation path", and then for each node in
+     "propagation path" excluding the first one (the event target):
+     * if "stop propagation flag" is true terminate these steps
+     * "invoke the listeners" for the node
+ * report whether the event was canceled
+   - useful for e.g. HTML
+ * XXX reset event flags so the Event object is reusable
+
+(XXX lets leave activation behavior to some other spec. HTML for now.)
+
+
+When dispatching an event on a non-node "invoke the listeners" for that object.
+ * report whether the event was canceled
+ * XXX reset event flags so the Event object is reusable
+
+XXX merge this with the above algorithm maybe?
+
+
+When "invoke the listeners" for a object:
+ * if there is no event target let object be the event target
+ * let object be the event current target
+ * as long as the "stop immediate propagation flag" is false run the next listener
+
+   - listener could remove itself I suppose; should be noop, i.e. should not
+     interfere with picking the next listener
+
+
+EventTarget; managing event listeners and dispatching events
+-->
+
+
 
 <h2>Nodes Model</h2>
 <p><code>Node</code> objects (simply called <dfn title=concept-node>nodes</dfn>) form a tree-based structure. Each node, except for <code>Document</code> objects, has zero or one <dfn title=concept-parent-node>parent nodes</dfn>. A <code>Document</code> object cannot have a <span title=concept-parent-node>parent node</span>.</p>

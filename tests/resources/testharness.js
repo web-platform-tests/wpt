@@ -258,8 +258,8 @@ policies and contribution forms [3].
     var default_test_timeout = 2000;
 
     /*
-    * API functions
-    */
+     * API functions
+     */
 
     var name_counter = 0;
     function next_default_name()
@@ -336,8 +336,8 @@ policies and contribution forms [3].
     expose(on_event, 'on_event');
 
     /*
-    * Convert a value to a nice, human-readable string
-    */
+     * Convert a value to a nice, human-readable string
+     */
     function format_value(val)
     {
         if (val === null)
@@ -442,8 +442,8 @@ policies and contribution forms [3].
     }
 
     /*
-    * Assertions
-    */
+     * Assertions
+     */
 
     function assert_true(actual, description)
     {
@@ -580,7 +580,7 @@ policies and contribution forms [3].
     expose(_assert_own_property("assert_exists"), "assert_exists");
     expose(_assert_own_property("assert_own_property"), "assert_own_property");
 
-    function assert_not_exists (object, property_name, description)
+    function assert_not_exists(object, property_name, description)
     {
         var message = make_message(
             "assert_not_exists", description,
@@ -812,9 +812,9 @@ policies and contribution forms [3].
     };
 
 
-   /*
-    * Harness
-    */
+    /*
+     * Harness
+     */
 
     function TestsStatus()
     {
@@ -1438,7 +1438,7 @@ policies and contribution forms [3].
 
     function make_message(function_name, description, error, substitutions)
     {
-        var message = substitute([["span", {"class":"assert"}, "${function_name}:"],
+        var message = substitute([["span", {"class":"assert"}, "${function_name}: "],
                                   function()
                                   {
                                       if (description) {

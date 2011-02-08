@@ -1,0 +1,128 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<title>CSS Test: text-transform - large-kana - basic cases</title>
+		<link rel="author" title="Satoshi Umehara" href="mailto:umehara@est.co.jp"/>
+		<link rel="help" href="http://www.w3.org/TR/css3-text/#text-transform"/>
+		<meta name="flags" content=""/>
+		<meta name="assert" content="The UA should transform small-kana to large-kana when text-transform is set to large-kana."/>
+		<style type="text/css">
+			<![CDATA[
+				.test {
+					text-transform: large-kana;
+					color: Green;
+				}
+				/* the CSS below is not part of the test */
+				.test {
+					font-size: 130%;
+					line-height: 2.5em;
+				}
+				.test span {
+					margin-right: 1em;
+					white-space: nowrap;
+				}
+			]]>
+		</style>
+		<script type="text/javascript">
+			//
+				<![CDATA[
+					// Set Font Family to 'IPAMincho'
+					function setFontFamily () {
+						var fontName = 'IPAMincho';
+						var divs = document.getElementsByTagName('div');
+						var i = 0;
+						var div;
+						while (i < divs.length) {
+							div = divs.item(i);
+							if (div.className == 'test') {
+								div.style.fontFamily = fontName;
+							}
+							i++;
+						}
+					}
+				]]>
+			//
+		</script>
+	</head>
+	<body>
+		<p class="instructions">
+			Test passes if the right-hand character in each pair matches the left-hand one.
+		</p>
+		<div class="test">
+			<span>あ あ</span>
+			<span>い い</span>
+			<span>う う</span>
+			<span>え え</span>
+			<span>お お</span>
+		</div>
+		<div class="test">
+			<span>あ ぁ</span>
+			<span>い ぃ</span>
+			<span>う ぅ</span>
+			<span>え ぇ</span>
+			<span>お ぉ</span>
+		</div>
+		<div class="test">
+			<span>つ っ</span>
+			<span>や ゃ</span>
+			<span>ゆ ゅ</span>
+			<span>よ ょ</span>
+			<span>わ ゎ</span>
+		</div>
+		<div class="test">
+			<span>ア ア</span>
+			<span>イ イ</span>
+			<span>ウ ウ</span>
+			<span>エ エ</span>
+			<span>オ オ</span>
+		</div>
+		<div class="test">
+			<span>ア ァ</span>
+			<span>イ ィ</span>
+			<span>ウ ゥ</span>
+			<span>エ ェ</span>
+			<span>オ ォ</span>
+		</div>
+		<div class="test">
+			<span>ツ ッ</span>
+			<span>ヤ ャ</span>
+			<span>ユ ュ</span>
+			<span>ヨ ョ</span>
+			<span>ワ ヮ</span>
+		</div>
+		<div class="test">
+			<span>カ ヵ</span>
+			<span>ケ ヶ</span>
+		</div>
+		<div class="test">
+			<span>A A</span>
+			<span>B B</span>
+			<span>C C</span>
+
+			<span>X X</span>
+			<span>Y Y</span>
+			<span>Z Z</span>
+		</div>
+		<div class="test">
+			<span>a a</span>
+			<span>b b</span>
+			<span>c c</span>
+
+			<span>x x</span>
+			<span>y y</span>
+			<span>z z</span>
+		</div>
+		<p id="fontChange" style="display: none;" class="notes">
+			If you are unable to see font glyphs for certain characters using the browsers default font, install the <a href="http://ossipedia.ipa.go.jp/ipafont/">IPA Font(http://ossipedia.ipa.go.jp/ipafont/)</a> and apply it.
+			<button class="notes" type="button" onclick="setFontFamily()">
+				Apply
+			</button>
+		</p>
+		<script type="text/javascript">
+			if (document.getElementById) {
+				document.getElementById('fontChange').style.display = 'block'
+			}
+		</script>
+	</body>
+</html>

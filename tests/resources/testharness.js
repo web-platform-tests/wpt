@@ -437,7 +437,6 @@ policies and contribution forms [3].
             {
                 assert(e[code_or_object] !== undefined &&
                        e.code === e[code_or_object] &&
-                       e.name === code_or_object,
                        make_message("assert_throws", description,
                            [["{text}", "${func} threw with"] ,
                             function()

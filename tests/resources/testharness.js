@@ -134,6 +134,47 @@ policies and contribution forms [3].
  *
  * Note that the first item in each parameter list corresponds to the name of
  * the test.
+ *
+ * == Callback API ==
+ *
+ * The framework provides callbacks corresponding to 3 events:
+ *
+ * start - happens when the first Test is created
+ * result - happens when a test result is recieved
+ * complete - happens when all results are recieved
+ *
+ * The page defining the tests may add callbacks for these events by calling
+ * the following methods:
+ *
+ *   add_start_callback(callback) - callback called with no arguments
+ *   add_result_callback(callback) - callback called with a test argument
+ *   add_completion_callback(callback) - callback called with an array of tests
+ *                                       and an status object
+ *
+ * tests have the following properties:
+ *   status: A status code. This can be compared to the PASS, FAIL, TIMEOUT and
+ *           NOTRUN properties on the test object
+ *   message: A message indicating the reason for failure. In the future this
+ *            will always be a string
+ *
+ *  The status object gives the overall status of the harness. It has the
+ *  following properties:
+ *    status: Can be compared to the OK, ERROR and TIMEOUT properties
+ *    message: An error message set when the status is ERROR
+ *
+ * == External API ==
+ *
+ * In order to collect the results of multiple pages containing tests, the test
+ * harness will, when loaded in a nested browsing context, attempt to call
+ * certain functions in the top level browsing context:
+ *
+ * start - top.start_callback
+ * result - top.result_callback
+ * complete - top.completion_callback
+ *
+ * These are given the same arguments as the corresponding internal callbacks
+ * described above.
+ *
  */
 
 (function ()

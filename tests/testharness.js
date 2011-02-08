@@ -8,6 +8,100 @@ policies and contribution forms [3].
 [3] http://www.w3.org/2004/10/27-testcases
 */
 
+/*
+ * == Introducion ==
+ *
+ * This file provides a framework for writing testcases. It is intended to
+ * provide a convenient API for making common assertions, and to work both
+ * for testing synchronous and asynchronous DOM features in a way that
+ * promotes clear, robust, tests.
+ *
+ * == Basic Usage ==
+ *
+ * To use this file, import the script into the test document:
+ * <script src="http://test.w3.org/resources/testharness.js"></script>
+ *
+ * Within each file one may define one or more tests. Each test is atomic
+ * in the sense that a single test has a single result (pass/fail/timeout).
+ * Within each test one may have a number of asserts. The test fails at the
+ * first failing assert, and the remainder of the test is (typically) not run.
+ *
+ * If the file containing the tests is a HTML file with an element of id "log"
+ * this will be populated with a table containing the test results after all
+ * the tests have run.
+ *
+ * == Synchronous Tests ==
+ *
+ * To create a sunchronous test use the test() function:
+ *
+ * test(test_function, name)
+ *
+ * test_function is a function that contains the code to test. For example a
+ * trivial passing test would be:
+ *
+ * test(function() {assert_true(true)}, "assert_true with true")
+ *
+ * The function passed in is run in the test() call.
+ *
+ * == Asynchronous Tests ==
+ *
+ * Testing asynchronous features is somewhat more complex since the result of
+ * a test may depend on one or more events or other callbacks. The API provided
+ * for testing these features is indended to be rather low-level but hopefully
+ * applicable to many situations.
+ *
+ * To create a test, one starts by getting a Test object using async_test:
+ *
+ * var t = async_test("Simple async test")
+ *
+ * Assertions can be added to the test by calling the step method of the test
+ * object with a function containing the test assertions:
+ *
+ * t.step(function() {assert_true(true)});
+ *
+ * When all the steps are complete, the done() method must be called:
+ *
+ * t.done();
+ *
+ * == Making assertions ==
+ *
+ * Functions for making assertions start assert_
+ * The best way to get a list is to look in this file for functions names
+ * matching that pattern. The general signature is
+ *
+ * assert_something(actual, expected, description)
+ *
+ * although not all assertions precisely match this pattern e.g. assert_true
+ * only takes actual and description as arguments.
+ *
+ * The description parameter is used to present more useful error messages when
+ * a test fails
+ *
+ * == Generating tests ==
+ *
+ * There are scenarios in which is is desirable to create a large number of
+ * (synchronous) tests that are internally similar but vary in the parameters
+ * used. To make this easier, the generate_tests function allows a single
+ * function to be called with each set of parameters in a list:
+ *
+ * generate_tests(test_function, parameter_lists)
+ *
+ * For example:
+ *
+ * generate_tests(assert_equals, [
+ *     ["Sum one and one", 1+1, 2],
+ *     ["Sum one and zero", 1+0, 1]
+ *     ])
+ *
+ * Is equivalent to:
+ *
+ * test(function() {assert_equals(1+1, 2)}, "Sum one and one")
+ * test(function() {assert_equals(1+0, 1)}, "Sum one and zero")
+ *
+ * Note that the first item in each parameter list corresponds to the name of
+ * the test.
+ */
+
 (function ()
 {
     var debug = false;
@@ -58,6 +152,17 @@ policies and contribution forms [3].
         return test_obj;
     }
 
+    function generate_tests(func, args) {
+        forEach(args, function(x)
+                {
+                    var name = x[0];
+                    test(function()
+                         {
+                             func.apply(this, x.slice(1));
+                         }, name);
+                });
+    }
+
     function on_event(object, event, callback)
     {
       object.addEventListener(event, callback, false);
@@ -65,6 +170,7 @@ policies and contribution forms [3].
 
     expose(test, 'test');
     expose(async_test, 'async_test');
+    expose(generate_tests, 'generate_tests');
     expose(on_event, 'on_event');
 
     /*
@@ -276,7 +382,6 @@ policies and contribution forms [3].
                                     {func:String(func), actual_number:e.code,
                                      expected:String(code_or_object),
                                      expected_number:e[code_or_object]}));
-                assert_equals(e.name, code_or_object);
                 assert(e instanceof DOMException,
                       make_message("assert_throws", description,
                                    "thrown exception ${exception} was not a DOMException",

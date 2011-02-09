@@ -644,7 +644,6 @@ following:
 field must return the name of the exception constant as a string.
 
 
-<!--
 <h2>Events</h2>
 
 <h3>Interface <code>Event</code></h3>
@@ -676,6 +675,9 @@ field must return the name of the exception constant as a string.
 
 <p>Each <span title=concept-event>event</span> has an associated <dfn>stop propagation flag</dfn> and <dfn>stop immediate propagation flag</dfn> that are initially unset.</p>
 
+<!--
+XXX add CustomEvent here?!
+-->
 
 <h3>Interface <code>EventTarget</code></h3>
 
@@ -698,9 +700,11 @@ of <span title=concept-event-listener>event listeners</span>.
 
 
 <h3>Dispatching Events</h3>
+<!-- XXX could call this processing model; should it be a subsection? -->
 
 <p>To <dfn title=concept-event-dispatch>dispatch</dfn> an
-<span title=concept-event>event</span> these steps must be run:</p>
+<span title=concept-event>event</span> run these steps:</p>
+<!-- other specifications turn this into a requirement  -->
 
 <ol>
  <li><p>Let <var>e</var> be the <span title=concept-event>event</span> that
@@ -748,18 +752,32 @@ of <span title=concept-event-listener>event listeners</span>.
  <li class=XXX>report whether the event was canceled
  <li class=XXX>initialize the event (reset flags)
 </ol>
+<!-- XXX lets leave activation behavior to some other spec. HTML for now. -->
 
-(XXX lets leave activation behavior to some other spec. HTML for now.)
+<p>To <dfn>invoke</dfn> the <span title=concept-event-listener>event listeners</span> for an object run these steps:</p>
+<ol>
+ <li><p>Let <var>e</var> be the <span title=concept-event>event</span> for
+ which the <span title=concept-event-listener>event listeners</span> are
+ invoked.
+ <li><p>If <var>e</var> does not yet have an
+ <span title=concept-event-target>event target</span>, let
+ <span title=concept-event-target>event target</span> be the object for
+ which these steps are run.
+ <li><p>Let
+ <span title=concept-event-current-target>event current target</span> be the
+ object for which these steps are run.
+ <li><p>As long as <var>e</var>'s <span>stop immediate propagation flag</span> is unset
+ go through the list <span title=concept-event-listener>event listeners</span>
+ associated with the
+ <span title=concept-event-current-target>event current target</span> and
+ run them one-at-a-time.
+ <!-- XXX find better wording? -->
+</ol>
 
-
-When "invoke" the listeners for a object:
- * if there is no event target let object be the event target
- * let object be the event current target
- * as long as the "stop immediate propagation flag" is false run the next listener
-
-   - listener could remove itself I suppose; should be noop, i.e. should not
-     interfere with picking the next listener
-
+<p class=note>The list of
+<span title=concept-event-listener>event listeners</span> can be manipulated
+while <span title=concept-event-listener>event listeners</span> are being
+run.</p>
 
 
 <h3>Creating Events</h3>
@@ -768,11 +786,9 @@ When "invoke" the listeners for a object:
 it was thought better to describe the
 <code title=dom-Document-createEvent>createEvent()</code> method here.
 
-document.createEvent()
+<p class=XXX>document.createEvent()</p>
 
 <p class=XXX>We should do something about synthetic events for Web Workers too I think. Maybe that gives a chance to introduce a much simpler model? (We should carefully consider whether that is worth it though. How frequently are synthetic events used?)
-
--->
 
 
 

@@ -60,6 +60,8 @@
   <dd><a href="http://annevankesteren.nl/">Anne van Kesteren</a>
     (<a href="http://www.opera.com/">Opera Software ASA</a>)
     &lt;<a href="mailto:annevk@opera.com">annevk@opera.com</a>>
+  <dd>Ms2ger (<a href="http://www.mozilla.org/">Mozilla Foundation</a>)
+    &lt;<a href="mailto:ms2ger@gmail.com">ms2ger@gmail.com</a>>
  </dl>
 <!--copyright-->
 </div>
@@ -645,34 +647,56 @@ field must return the name of the exception constant as a string.
 <!--
 <h2>Events</h2>
 
-Event
- - name (type)
- - target
- - nodes path
- - cancelable
- - bubbles
- - phase { capture, target, bubble }
- - timeStamp
- - default action
-   - preventDefault()
-   - defaultPrevented
- - initializing events
+<h3>Interface <code>Event</code></h3>
 
-EventTarget
-  - listeners
-    - EventListener callback
-  - dispatch
+<pre class="idl">interface <dfn>Event</dfn> {
+  const unsigned short <span title="dom-Event-CAPTURING_PHASE">CAPTURING_PHASE</span> = 1;
+  const unsigned short <span title="dom-Event-AT_TARGET">AT_TARGET</span> = 2;
+  const unsigned short <span title="dom-Event-BUBBLING_PHASE">BUBBLING_PHASE</span> = 3;
+  readonly attribute unsigned short <span title="dom-Event-eventPhase">eventPhase</span>;
 
-document.createEvent()
+  readonly attribute DOMString type;
+  readonly attribute EventTarget target;
+  readonly attribute EventTarget currentTarget;
+  readonly attribute boolean bubbles;
+  readonly attribute boolean isTrusted;
+  readonly attribute DOMTimeStamp timeStamp;
+
+  void stopPropagation();
+  void stopImmediatePropagation();
+
+  readonly attribute boolean cancelable;
+  void preventDefault();
+  readonly attribute boolean defaultPrevented;
+
+  void initEvent(DOMString eventTypeArg, boolean canBubbleArg, boolean cancelableArg);
+};</pre>
+
+<p>An <dfn title=concept-event>event</dfn> allows for signaling that something has occurred. E.g. that an image has completed downloading.
 
 
 
-An <dfn>event</dfn> allows for signaling that something has occurred. E.g. that an image has completed downloading.
+<h3>Interface <code>EventTarget</code></h3>
 
-An <dfn>event target</dfn> is an object upon which an <span>event</span> is <span>dispatched</span> when something has occurred.
+<pre class=idl>interface <dfn>EventTarget</dfn> {
+  void <span title=dom-EventTarget-addEventListener>addEventListener</span>(DOMString <var>type</var>, <span>EventListener</span> <var>listener</var>, optional boolean <var>useCapture</var>);
+  void <span title=dom-EventTarget-removeEventListener>removeEventListener</span>(DOMString <var>type</var>, <span>EventListener</span> <var>listener</var>, optional boolean <var>useCapture</var>);
+  boolean <span title=dom-EventTarget-dispatchEvent>dispatchEvent</span>(<span>Event</span> <var>event</var>);
+};
+
+interface <dfn>EventListener</dfn> {
+  void <span title=dom-EventListener-handleEvent>handleEvent</span>(<span>Event</span> <var>event</var>);
+};</pre>
+
+<p>An <dfn title=concept-event-target>event target</dfn> is an object upon
+which an <span title=concept-event>event</span> is <span>dispatched</span>
+when something has occurred. Each
+<span title=concept-event-target>event target</span> has an associated list
+of <span title=concept-event-listener>event listeners</span>.
 
 
 
+<h3>Dispatching Events</h3>
 
 When dispatching an event on a node follow these steps:
  * set event target to the node
@@ -711,7 +735,17 @@ When "invoke the listeners" for a object:
      interfere with picking the next listener
 
 
-EventTarget; managing event listeners and dispatching events
+
+<h3>Creating Events</h3>
+
+<p class=note>Although the <code>Document</code> object is introduced later
+it was thought better to describe the
+<code title=dom-Document-createEvent>createEvent()</code> method here.
+
+document.createEvent()
+
+<p class=XXX>We should do something about synthetic events for Web Workers too I think. Maybe that gives a chance to introduce a much simpler model? (We should carefully consider whether that is worth it though. How frequently are synthetic events used?)
+
 -->
 
 
@@ -3300,8 +3334,7 @@ Henri Sivonen
 
 for their useful comments.
 
-<p>Special thanks to Geoffrey Sneddon, Ms2ger, and Simon Pieters for editing
-the initial 80% of this specification and their useful comments.
+<p>Special thanks to Geoffrey Sneddon, and Simon Pieters for editing the initial version of this specification and their useful comments.
 
 <p>Special thanks also to Ian Hickson for first specifying some parts of
 this specification in HTML and his useful comments.

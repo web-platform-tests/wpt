@@ -649,14 +649,15 @@ field must return the name of the exception constant as a string.
 <h3>Interface <code>Event</code></h3>
 
 <pre class="idl">interface <dfn>Event</dfn> {
+  readonly attribute DOMString <span title=dom-Event-type>type</span>;
+  readonly attribute <span>EventTarget</span> <span title=dom-Event-target>target</span>;
+  readonly attribute <span>EventTarget</span> <span title=dom-Event-currentTarget>currentTarget</span>;
+
   const unsigned short <span title=dom-Event-CAPTURING_PHASE>CAPTURING_PHASE</span> = 1;
   const unsigned short <span title=dom-Event-AT_TARGET>AT_TARGET</span> = 2;
   const unsigned short <span title=dom-Event-BUBBLING_PHASE>BUBBLING_PHASE</span> = 3;
   readonly attribute unsigned short <span title=dom-Event-eventPhase>eventPhase</span>;
 
-  readonly attribute DOMString <span title=dom-Event-type>type</span>;
-  readonly attribute <span>EventTarget</span> <span title=dom-Event-target>target</span>;
-  readonly attribute <span>EventTarget</span> <span title=dom-Event-currentTarget>currentTarget</span>;
   readonly attribute boolean <span title=dom-Event-bubbles>bubbles</span>;
   readonly attribute boolean <span title=dom-Event-isTrusted>isTrusted</span>;
   readonly attribute DOMTimeStamp <span title=dom-Event-timeStamp>timeStamp</span>;
@@ -671,9 +672,26 @@ field must return the name of the exception constant as a string.
   void <span title=dom-Event-initEvent>initEvent</span>(DOMString <var>type</var>, boolean <var>bubbles</var>, boolean <var>cancelable</var>);
 };</pre>
 
-<p>An <dfn title=concept-event>event</dfn> allows for signaling that something has occurred. E.g. that an image has completed downloading.
+<p>An <dfn title=concept-event>event</dfn> allows for signaling that something has occurred. E.g. that an image has completed downloading. Each
+event has a <dfn title=concept-event-name>name</dfn>.</p>
+<!-- XXX set when initializing the event -->
+
+<!-- "phase" capture/target/bubble -->
 
 <p>Each <span title=concept-event>event</span> has an associated <dfn>stop propagation flag</dfn> and <dfn>stop immediate propagation flag</dfn> that are initially unset.</p>
+
+
+<!-- XXX should "event target" be defined here? "event current target" -->
+
+<!-- "bubbles" "cancelable" "canceled" "trusted" "timestamp" -->
+
+
+<p>The <dfn title=dom-Event-type><code>type</code></dfn> attribute must
+return the <span title=concept-event-name>name</span>.</p>
+<!-- XXX need "context event" here like context node?! -->
+
+
+<!-- initialize an event -->
 
 <!--
 XXX add CustomEvent here?!
@@ -697,6 +715,13 @@ when something has occurred. Each
 <span title=concept-event-target>event target</span> has an associated list
 of <span title=concept-event-listener>event listeners</span>.
 
+<p>An <dfn title=concept-event-listener>event listener</dfn> is a handler
+for a specific <span title=concept-event>event</span>. Each
+<span title=concept-event-listener>event listener</span> consists of a
+<b>name</b> (of the <span title=concept-event>event</span>), a
+<b>handler</b>, and a <b>capture flag</b> indicating whether the
+<b>handler</b> needs to be invoked during the capture phase of the
+<span title=concept-event>event</span>. <!-- XXX "capture phase" -->
 
 
 <h3>Dispatching Events</h3>
@@ -772,6 +797,7 @@ of <span title=concept-event-listener>event listeners</span>.
  <span title=concept-event-current-target>event current target</span> and
  run them one-at-a-time.
  <!-- XXX find better wording? -->
+ <!-- need to define "run" take into account "capture flag" -->
 </ol>
 
 <p class=note>The list of

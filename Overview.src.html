@@ -650,30 +650,31 @@ field must return the name of the exception constant as a string.
 <h3>Interface <code>Event</code></h3>
 
 <pre class="idl">interface <dfn>Event</dfn> {
-  const unsigned short <span title="dom-Event-CAPTURING_PHASE">CAPTURING_PHASE</span> = 1;
-  const unsigned short <span title="dom-Event-AT_TARGET">AT_TARGET</span> = 2;
-  const unsigned short <span title="dom-Event-BUBBLING_PHASE">BUBBLING_PHASE</span> = 3;
-  readonly attribute unsigned short <span title="dom-Event-eventPhase">eventPhase</span>;
+  const unsigned short <span title=dom-Event-CAPTURING_PHASE>CAPTURING_PHASE</span> = 1;
+  const unsigned short <span title=dom-Event-AT_TARGET>AT_TARGET</span> = 2;
+  const unsigned short <span title=dom-Event-BUBBLING_PHASE>BUBBLING_PHASE</span> = 3;
+  readonly attribute unsigned short <span title=dom-Event-eventPhase>eventPhase</span>;
 
-  readonly attribute DOMString type;
-  readonly attribute EventTarget target;
-  readonly attribute EventTarget currentTarget;
-  readonly attribute boolean bubbles;
-  readonly attribute boolean isTrusted;
-  readonly attribute DOMTimeStamp timeStamp;
+  readonly attribute DOMString <span title=dom-Event-type>type</span>;
+  readonly attribute <span>EventTarget</span> <span title=dom-Event-target>target</span>;
+  readonly attribute <span>EventTarget</span> <span title=dom-Event-currentTarget>currentTarget</span>;
+  readonly attribute boolean <span title=dom-Event-bubbles>bubbles</span>;
+  readonly attribute boolean <span title=dom-Event-isTrusted>isTrusted</span>;
+  readonly attribute DOMTimeStamp <span title=dom-Event-timeStamp>timeStamp</span>;
 
-  void stopPropagation();
-  void stopImmediatePropagation();
+  void <span title=dom-Event-stopPropagation>stopPropagation</span>();
+  void <span title=dom-Event-stopImmediatePropagation>stopImmediatePropagation</span>();
 
-  readonly attribute boolean cancelable;
-  void preventDefault();
-  readonly attribute boolean defaultPrevented;
+  readonly attribute boolean <span title=dom-Event-cancelable>cancelable</span>;
+  void <span title=dom-Event-preventDefault>preventDefault</span>();
+  readonly attribute boolean <span title=dom-Event-defaultPrevented>defaultPrevented</span>;
 
-  void initEvent(DOMString eventTypeArg, boolean canBubbleArg, boolean cancelableArg);
+  void <span title=dom-Event-initEvent>initEvent</span>(DOMString <var>type</var>, boolean <var>bubbles</var>, boolean <var>cancelable</var>);
 };</pre>
 
 <p>An <dfn title=concept-event>event</dfn> allows for signaling that something has occurred. E.g. that an image has completed downloading.
 
+<p>Each <span title=concept-event>event</span> has an associated <dfn>stop propagation flag</dfn> and <dfn>stop immediate propagation flag</dfn> that are initially unset.</p>
 
 
 <h3>Interface <code>EventTarget</code></h3>
@@ -698,35 +699,60 @@ of <span title=concept-event-listener>event listeners</span>.
 
 <h3>Dispatching Events</h3>
 
-When dispatching an event on a node follow these steps:
- * set event target to the node
- * let "propagation path" be a static ordered list of nodes consisting of the furthest ancestor to the node
- * set event phase to capture
- * for each node in "propagation path":
-   * if "stop propagation flag" is true terminate these steps
-   * if node is equal to the event target set event phase to target
-   * "invoke the listeners" for the node
- * if "event bubbles" is true these sub steps:
-   * set event phase to bubble
-   * reverse the order of "propagation path", and then for each node in
-     "propagation path" excluding the first one (the event target):
-     * if "stop propagation flag" is true terminate these steps
-     * "invoke the listeners" for the node
- * report whether the event was canceled
-   - useful for e.g. HTML
- * XXX reset event flags so the Event object is reusable
+<p>To <dfn title=concept-event-dispatch>dispatch</dfn> an
+<span title=concept-event>event</span> these steps must be run:</p>
+
+<ol>
+ <li><p>Let <var>e</var> be the <span title=concept-event>event</span> that
+ is dispatched.
+ <li><p>Set <var>e</var>'s <span title=concept-event-target>event target</span>
+ to the object on which <var>e</var> is dispatched.
+ <li>
+  <dl>
+   <dt>If <var>e</var>'s <span title=concept-event-target>event target</span> is a <span title=concept-node>node</span>
+   <dd>
+    <ol>
+     <li><p>Let <var>event path</var> be a static ordered list of all
+     <span title=concept-ancestor-node>ancestor nodes</span> of
+     <var>e</var>'s <span title=concept-event-target>event target</span>
+     in <span>tree order</span>.</li>
+     <li><p>Set <var>e</var>'s <span title=concept-event-phase>event phase</span> to capture. XXX
+     <li><p>For each <span title=concept-node>node</span> in the
+     <var>event path</var> <span title=XXX>invoke</span> its
+     <span title=concept-event-listener>event listeners</span> as long as
+     <var>e</var>'s <span>stop proagation flag</span> is unset.</li>
+     <li><p>Set <var>e</var>'s <span title=concept-event-phase>event phase</span> to target. XXX
+     <li><p><span title=XXX>Invoke</span> <var>e</var>'s
+     <span title=concept-event-target>event target</span>
+     <span title=concept-event-listener>event listeners</span> if
+     <var>e</var>'s <span>stop proagation flag</span> is unset.
+     <li>
+      <p>If <var>e</var>'s <span title=concept-event-bubbles>bubbles</span>
+      run these steps:</p>
+      <ol>
+       <li><p>Set <var>e</var>'s <span title=concept-event-phase>event phase</span> to bubble. XXX
+       <li><p>Reverse the order of <var>event path</var>.
+       <li><p>For each <span title=concept-node>node</span> in the
+       <var>event path</var> <span title=XXX>invoke</span> its
+       <span title=concept-event-listener>event listeners</span> as long as
+       <var>e</var>'s <span>stop proagation flag</span> is unset.</li>
+      </ol>
+    </ol>
+   </dd>
+   <dt>Otherwise</dt>
+   <dd><p><span title=XXX>Invoke</span> <var>e</var>'s
+   <span title=concept-event-target>event target</span>
+   <span title=concept-event-listener>event listeners</span>.</p></dd>
+  </dl>
+ </li>
+ <li class=XXX>report whether the event was canceled
+ <li class=XXX>initialize the event (reset flags)
+</ol>
 
 (XXX lets leave activation behavior to some other spec. HTML for now.)
 
 
-When dispatching an event on a non-node "invoke the listeners" for that object.
- * report whether the event was canceled
- * XXX reset event flags so the Event object is reusable
-
-XXX merge this with the above algorithm maybe?
-
-
-When "invoke the listeners" for a object:
+When "invoke" the listeners for a object:
  * if there is no event target let object be the event target
  * let object be the event current target
  * as long as the "stop immediate propagation flag" is false run the next listener

@@ -3203,7 +3203,7 @@
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/foreigncontent/math-parse01.html</uri>
-   <result>Pass</result>
+   <result>Fail</result>
   </test>
   <test>
    <uri>http://test.w3.org/html/tests/approved/video/video_000.htm</uri>

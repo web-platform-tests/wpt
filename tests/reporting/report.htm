@@ -6,6 +6,7 @@
 var g_arrTestResultXml = new Array();
 var g_arrBrowsers = new Array();
 var g_iProcessedCounter = 0;
+var g_bUpdateFeatureNames = false;
 var g_arrApprovedTests;
 
 notWhitespace = /\S/;
@@ -92,40 +93,36 @@ function processXmlFile()
 {  
     var xmlhttp = new XMLHttpRequest();
 
-    xmlhttp.onreadystatechange  = function()
-    { 
-        if(xmlhttp.readyState  == 4)
-        {
-           try
-           {            
+    xmlhttp.onreadystatechange = function () {
+        if (xmlhttp.readyState == 4) {
+            try {
                 xmlDom = xmlhttp.responseXML;
-                
+
                 cleanWhitespace(xmlDom);
-                
+
                 browser = new Object();
-                browser.ua      = xmlDom.getElementsByTagName('ua')[0].firstChild.nodeValue;
-                browser.name    = xmlDom.getElementsByTagName('browsername')[0].firstChild.nodeValue;
+                browser.ua = xmlDom.getElementsByTagName('ua')[0].firstChild.nodeValue;
+                browser.name = xmlDom.getElementsByTagName('browsername')[0].firstChild.nodeValue;
                 browser.dateran = xmlDom.getElementsByTagName('dateran')[0].firstChild.nodeValue;
                 browser.results = new Array();
                 browser.details = new Array();
-                
+
                 oTests = xmlDom.getElementsByTagName('test');
                 var oLastObject;
-                
-                for (var i=0;i<oTests.length;i++)
-                {
+
+                for (var i = 0; i < oTests.length; i++) {
                     // split and find feature name - e.g. 'canvas' in this uri
                     //"http://test.w3.org/html/tests/approved/canvas/canvastest.htm"
                     arrURI = xmlDom.getElementsByTagName('test')[i].firstChild.firstChild.nodeValue.split(/\//);
                     // the name is 2nd to the last
-                    name = arrURI[arrURI.length-2];
-                    
+                    name = arrURI[arrURI.length - 2];
+
                     result = xmlDom.getElementsByTagName('test')[i].firstChild.nextSibling.firstChild.nodeValue;
 
                     details = new Object();
                     details.uri = xmlDom.getElementsByTagName('test')[i].firstChild.firstChild.nodeValue;
 
-                    details.name = name + "(" + arrURI[arrURI.length-1] + ")";
+                    details.name = name + "(" + arrURI[arrURI.length - 1] + ")";
                     details.result = result;
 
                     browser.details.push(details);
@@ -134,70 +131,64 @@ function processXmlFile()
                     // set pass/fail data 
                     // else find it in the array, if not found the add it to the array
                     // 
-                    if ( oLastObject && name == oLastObject.name)
-                    {
-                        if (result == "Pass")
-                        {
+                    if (oLastObject && name == oLastObject.name) {
+                        if (result == "Pass") {
                             oLastObject.pass++;
                         }
-                        else if (result == "Fail")
-                        {
+                        else if (result == "Fail") {
                             oLastObject.fail++;
                         }
                     }
-                    else
-                    {
-                         bFound = false;
-                         
-                         for (var j=0;j<browser.results.length;j++)
-                         {
-                            if(browser.results[j].name == name)
-                            {
-                                if (result == "Pass")
-                                {
+                    else {
+                        bFound = false;
+
+                        for (var j = 0; j < browser.results.length; j++) {
+                            if (browser.results[j].name == name) {
+                                if (result == "Pass") {
                                     browser.results[j].pass++;
                                 }
-                                else if (result == "Fail")
-                                {
+                                else if (result == "Fail") {
                                     browser.results[j].fail++;
                                 }
                                 oLastObject = browser.results[j];
                                 bFound = true;
                                 break;
                             }
-                         }
-                         
-                         if(!bFound)
-                         {
+                        }
+
+                        if (!bFound) {
                             newResult = new Object();
                             newResult.name = name;
                             newResult.pass = 0;
                             newResult.fail = 0;
-                            
-                            if (result == "Pass")
-                            {
+
+                            if (result == "Pass") {
                                 newResult.pass++;
                             }
-                            else if (result == "Fail")
-                            {
+                            else if (result == "Fail") {
                                 newResult.fail++;
                             }
                             browser.results.push(newResult);
-                            oLastObject = browser.results[browser.results.length-1];
-                         }                         
+                            oLastObject = browser.results[browser.results.length - 1];
+                        }
 
                     }
                 }
-                
-                g_arrBrowsers.push(browser);
-                
-               addBrowserResult(browser);
-               addBrowserDetails(browser);
 
-            }catch(e){}
+                g_arrBrowsers.push(browser);
+
+                addBrowserResult(browser);
+                addBrowserDetails(browser);
+
+            } catch (e) { }
 
             // Need to process next xml file
             processXmlFile();
+
+            if ( g_iProcessedCounter == g_arrTestResultXml.length)
+            {
+                UpdateFeatureNames();
+            }
         }
     }; 
 
@@ -206,6 +197,46 @@ function processXmlFile()
         xmlhttp.open("GET", g_arrTestResultXml[g_iProcessedCounter++], true);
         xmlhttp.send(null);
     }
+}
+
+function UpdateFeatureNames()
+{
+    if (g_bUpdateFeatureNames == true)
+    {
+        cells = document.getElementById('oTestResults').rows.length;
+        for (var i = 1; i < cells; i++) {
+            var name = document.getElementById('oTestResults').rows[i].cells[0].innerHTML;
+            var newname;
+
+            switch (name) {
+                case "attributes":
+                    newname = "Attributes";
+                    break;
+                case "audio":
+                    newname = "Audio";
+                    break;
+                case "canvas":
+                    newname = "Canvas";
+                    break;
+                case "getelementsbyclassname":
+                    newname = "getElementsByClassName";
+                    break;
+                case "foreigncontent":
+                    newname = "Foreign Content";
+                    break;
+                case "video":
+                    newname = "Video";
+                    break;
+                case "xhtml5":
+                    newname = "XHTML";
+                    break;
+                default:
+                    newname = name;
+            }
+            document.getElementById('oTestResults').rows[i].cells[0].innerHTML = newname;
+        }
+    }
+    g_bUpdateFeatureNames = true;
 }
 
 function processTestResults()
@@ -287,7 +318,7 @@ function getTestResultXmlFiles()
 {
     // points to location of the approvedtest.txt file
     var uri = "http://test.w3.org/html/tests/harness/approvedtests.txt";
-    //var uri = "http://localhost/html5/tests.txt";
+    //var uri = "http://localhost/approvedtests.txt";
    
     var xmlhttp = new XMLHttpRequest();
 
@@ -316,7 +347,7 @@ function getTestResultXmlFiles()
             // points to location of xml files
             oIframe.src = 'http://test.w3.org/html/tests/reporting/';
             // for testing
-            //oIframe.src = 'http://localhost/results/';
+            //oIframe.src = 'http://localhost/reporting/';
         }
     }; 
 

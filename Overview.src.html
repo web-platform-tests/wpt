@@ -658,26 +658,41 @@ field must return the name of the exception constant as a string.
   const unsigned short <span title=dom-Event-BUBBLING_PHASE>BUBBLING_PHASE</span> = 3;
   readonly attribute unsigned short <span title=dom-Event-eventPhase>eventPhase</span>;
 
-  readonly attribute boolean <span title=dom-Event-bubbles>bubbles</span>;
-  readonly attribute boolean <span title=dom-Event-isTrusted>isTrusted</span>;
-  readonly attribute DOMTimeStamp <span title=dom-Event-timeStamp>timeStamp</span>;
-
   void <span title=dom-Event-stopPropagation>stopPropagation</span>();
   void <span title=dom-Event-stopImmediatePropagation>stopImmediatePropagation</span>();
 
+  readonly attribute boolean <span title=dom-Event-bubbles>bubbles</span>;
   readonly attribute boolean <span title=dom-Event-cancelable>cancelable</span>;
   void <span title=dom-Event-preventDefault>preventDefault</span>();
   readonly attribute boolean <span title=dom-Event-defaultPrevented>defaultPrevented</span>;
+
+  readonly attribute boolean <span title=dom-Event-isTrusted>isTrusted</span>;
+  readonly attribute DOMTimeStamp <span title=dom-Event-timeStamp>timeStamp</span>;
 
   void <span title=dom-Event-initEvent>initEvent</span>(DOMString <var>type</var>, boolean <var>bubbles</var>, boolean <var>cancelable</var>);
 };</pre>
 
 <p>An <dfn title=concept-event>event</dfn> allows for signaling that something has occurred. E.g. that an image has completed downloading.</p>
 
-<p>Each <span title=concept-event>event</span> has a <dfn title=concept-event-name>name</dfn>.</p>
+<p>Each <span title=concept-event>event</span> has a <dfn title=concept-event-name>name</dfn> that can be any sequence of code units,
+but not the empty string. The
+<dfn title=dom-Event-type><code>type</code></dfn> attribute must
+return the <span title=concept-event-name>name</span>.</p>
 <!-- XXX set when initializing the event -->
 
-<p>Each <span title=concept-event>event</span> has a <dfn title=concept-event-phase>phase</dfn>. The
+<p>Each <span title=concept-event>event</span> has an associated
+<dfn title=concept-event-target>target</dfn> and
+<dfn title=concept-event-current-target>current target</dfn> identified
+while <span title=concept-event-dispatch>dispatching</span> the
+<span title=concept-event>event</span>. The
+<dfn title=dom-Event-target><code>target</code></dfn> attribute must return
+the <span title=concept-event-target>target</span> and the
+<dfn title=dom-Event-currentTarget><code>currentTarget</code></dfn>
+attribute must return the
+<span title=concept-event-current-target>current target</span>.
+
+<p>Each <span title=concept-event>event</span> has a
+<dfn title=concept-event-phase>phase</dfn>. The
 <dfn title=dom-Event-eventPhase><code>eventPhase</code></dfn> attribute must
 return the current <span title=concept-event-phase>phase</span>, which must
 be one of the following:</p>
@@ -692,25 +707,38 @@ be one of the following:</p>
  its <span title=concept-event-target>target</span>.
 </dl>
 
-
 <p>Each <span title=concept-event>event</span> has the following associated
 flags that are all initially unset:</p>
 <ul>
- <li><dfn>bubble flag</dfn>
- <li><dfn>cancel flag</dfn>
  <li><dfn>propagation flag</dfn>
  <li><dfn>immediate propagation flag</dfn>
+ <li><dfn>bubble flag</dfn>
+ <li><dfn>cancel flag</dfn>
+ <li><dfn>canceled flag</dfn>
 </ul>
+<p>When the
+<dfn title=dom-Event-stopPropagation><code>stopPropagation()</code></dfn>
+method is invoked the <span>propagation flag</span> must be set.</p>
+<p>When the
+<dfn title=dom-Event-stopImmediatePropagation><code>stopImmediatePropagation()</code></dfn>
+method is invoked the <span>immediate propagation flag</span> must be
+set.</p>
+<p>The <dfn title=dom-Event-bubbles><code>bubbles</code></dfn> attribute
+must return true if the <span>bubble flag</span> is set and false otherwise.
+<p>The <dfn title=dom-Event-cancelable><code>cancelable</code></dfn>
+attribute must return true if the <span>cancel flag</span> is set and false
+otherwise.
+<p>When the
+<dfn title=dom-Event-preventDefault><code>preventDefault()</code></dfn>
+method is invoked and the <span>cancel flag</span> is set the
+<span>canceled flag</span> must be set.
+<p>The <dfn title=dom-Event-defaultPrevented><code>defaultPrevented</code></dfn>
+attribute must return true if the <span>canceled flag</span> is set and
+false otherwise.
 
-<p>Each <span title=concept-event>event</span> has an associated
-<dfn title=concept-event-target>target</dfn> and <dfn title=concept-event-current-target>current target</dfn>
 
-<!-- "bubbles" "cancelable" "canceled" "trusted" "timestamp" -->
+<!-- "trusted" "timestamp" -->
 
-
-<p>The <dfn title=dom-Event-type><code>type</code></dfn> attribute must
-return the <span title=concept-event-name>name</span>.</p>
-<!-- XXX need "context event" here like context node?! -->
 
 
 <!-- initialize an event -->
@@ -771,12 +799,12 @@ for a specific <span title=concept-event>event</span>. Each
      <li><p>For each <span title=concept-node>node</span> in the
      <var>event path</var> <span title=XXX>invoke</span> its
      <span title=concept-event-listener>event listeners</span> as long as
-     <var>e</var>'s <span>stop proagation flag</span> is unset.</li>
+     <var>e</var>'s <span>propagation flag</span> is unset.</li>
      <li><p>Set <var>e</var>'s <span title=concept-event-phase>phase</span> to <span title=dom-Event-AT_TARGET>AT_TARGET</span>.
      <li><p><span title=XXX>Invoke</span> <var>e</var>'s
      <span title=concept-event-target>event target</span>
      <span title=concept-event-listener>event listeners</span> if
-     <var>e</var>'s <span>stop proagation flag</span> is unset.
+     <var>e</var>'s <span>propagation flag</span> is unset.
      <li>
       <p>If <var>e</var>'s <span title=concept-event-bubbles>bubbles</span>
       run these steps:</p>
@@ -786,7 +814,7 @@ for a specific <span title=concept-event>event</span>. Each
        <li><p>For each <span title=concept-node>node</span> in the
        <var>event path</var> <span title=XXX>invoke</span> its
        <span title=concept-event-listener>event listeners</span> as long as
-       <var>e</var>'s <span>stop proagation flag</span> is unset.</li>
+       <var>e</var>'s <span>propagation flag</span> is unset.</li>
       </ol>
     </ol>
    </dd>
@@ -815,8 +843,8 @@ for a specific <span title=concept-event>event</span>. Each
  <li><p>Let
  <span title=concept-event-current-target>current target</span> be the
  object for which these steps are run.
- <li><p>As long as <var>e</var>'s <span>stop immediate propagation flag</span> is unset
- go through the list <span title=concept-event-listener>event listeners</span>
+ <li><p>As long as <var>e</var>'s <span>immediate propagation flag</span> is
+ unset go through the list <span title=concept-event-listener>event listeners</span>
  associated with the
  <span title=concept-event-current-target>current target</span> and
  run them one-at-a-time.

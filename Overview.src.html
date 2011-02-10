@@ -672,16 +672,38 @@ field must return the name of the exception constant as a string.
   void <span title=dom-Event-initEvent>initEvent</span>(DOMString <var>type</var>, boolean <var>bubbles</var>, boolean <var>cancelable</var>);
 };</pre>
 
-<p>An <dfn title=concept-event>event</dfn> allows for signaling that something has occurred. E.g. that an image has completed downloading. Each
-event has a <dfn title=concept-event-name>name</dfn>.</p>
+<p>An <dfn title=concept-event>event</dfn> allows for signaling that something has occurred. E.g. that an image has completed downloading.</p>
+
+<p>Each <span title=concept-event>event</span> has a <dfn title=concept-event-name>name</dfn>.</p>
 <!-- XXX set when initializing the event -->
 
-<!-- "phase" capture/target/bubble -->
+<p>Each <span title=concept-event>event</span> has a <dfn title=concept-event-phase>phase</dfn>. The
+<dfn title=dom-Event-eventPhase><code>eventPhase</code></dfn> attribute must
+return the current <span title=concept-event-phase>phase</span>, which must
+be one of the following:</p>
+<dl>
+ <dt><dfn title=dom-Event-CAPTURING_PHASE><code>CAPTURING_PHASE</code></dfn> (numeric value 1)</dt>
+ <dd><p>When an <span title=concept-event>event</span> is <span title=concept-event-dispatch>dispatched</span> on a <span title=concept-node>node</span> it will be in this phase before it reaches
+ its <span title=concept-event-target>target</span>.
+ <dt><dfn title=dom-Event-AT_TARGET><code>AT_TARGET</code></dfn> (numeric value 2)
+ <dd><p>When an <span title=concept-event>event</span> is <span title=concept-event-dispatch>dispatched</span> it will be in this phase on its <span title=concept-event-target>target</span>.
+ <dt><dfn title=dom-Event-BUBBLING_PHASE><code>BUBBLING_PHASE</code></dfn> (numeric value 3)
+ <dd><p>When an <span title=concept-event>event</span> is <span title=concept-event-dispatch>dispatched</span> on a <span title=concept-node>node</span> it will be in this phase after it reaches
+ its <span title=concept-event-target>target</span>.
+</dl>
 
-<p>Each <span title=concept-event>event</span> has an associated <dfn>stop propagation flag</dfn> and <dfn>stop immediate propagation flag</dfn> that are initially unset.</p>
 
+<p>Each <span title=concept-event>event</span> has the following associated
+flags that are all initially unset:</p>
+<ul>
+ <li><dfn>bubble flag</dfn>
+ <li><dfn>cancel flag</dfn>
+ <li><dfn>propagation flag</dfn>
+ <li><dfn>immediate propagation flag</dfn>
+</ul>
 
-<!-- XXX should "event target" be defined here? "event current target" -->
+<p>Each <span title=concept-event>event</span> has an associated
+<dfn title=concept-event-target>target</dfn> and <dfn title=concept-event-current-target>current target</dfn>
 
 <!-- "bubbles" "cancelable" "canceled" "trusted" "timestamp" -->
 
@@ -709,11 +731,10 @@ interface <dfn>EventListener</dfn> {
   void <span title=dom-EventListener-handleEvent>handleEvent</span>(<span>Event</span> <var>event</var>);
 };</pre>
 
-<p>An <dfn title=concept-event-target>event target</dfn> is an object upon
-which an <span title=concept-event>event</span> is <span>dispatched</span>
-when something has occurred. Each
-<span title=concept-event-target>event target</span> has an associated list
-of <span title=concept-event-listener>event listeners</span>.
+<p><code>EventTarget</code> is an object upon which an
+<span title=concept-event>event</span> is <span>dispatched</span>
+when something has occurred. Each <code>EventTarget</code> has an associated
+list of <span title=concept-event-listener>event listeners</span>.
 
 <p>An <dfn title=concept-event-listener>event listener</dfn> is a handler
 for a specific <span title=concept-event>event</span>. Each
@@ -734,23 +755,24 @@ for a specific <span title=concept-event>event</span>. Each
 <ol>
  <li><p>Let <var>e</var> be the <span title=concept-event>event</span> that
  is dispatched.
- <li><p>Set <var>e</var>'s <span title=concept-event-target>event target</span>
+ <li><p>Set <var>e</var>'s <span title=concept-event-target>target</span>
  to the object on which <var>e</var> is dispatched.
  <li>
   <dl>
-   <dt>If <var>e</var>'s <span title=concept-event-target>event target</span> is a <span title=concept-node>node</span>
+   <dt>If <var>e</var>'s <span title=concept-event-target>target</span> is a
+   <span title=concept-node>node</span>
    <dd>
     <ol>
      <li><p>Let <var>event path</var> be a static ordered list of all
      <span title=concept-ancestor-node>ancestor nodes</span> of
-     <var>e</var>'s <span title=concept-event-target>event target</span>
-     in <span>tree order</span>.</li>
-     <li><p>Set <var>e</var>'s <span title=concept-event-phase>event phase</span> to capture. XXX
+     <var>e</var>'s <span title=concept-event-target>target</span> in
+     <span>tree order</span>.</li>
+     <li><p>Set <var>e</var>'s <span title=concept-event-phase>phase</span> to <span title=dom-Event-CAPTURE_PHASE>CAPTURE_PHASE</span>.
      <li><p>For each <span title=concept-node>node</span> in the
      <var>event path</var> <span title=XXX>invoke</span> its
      <span title=concept-event-listener>event listeners</span> as long as
      <var>e</var>'s <span>stop proagation flag</span> is unset.</li>
-     <li><p>Set <var>e</var>'s <span title=concept-event-phase>event phase</span> to target. XXX
+     <li><p>Set <var>e</var>'s <span title=concept-event-phase>phase</span> to <span title=dom-Event-AT_TARGET>AT_TARGET</span>.
      <li><p><span title=XXX>Invoke</span> <var>e</var>'s
      <span title=concept-event-target>event target</span>
      <span title=concept-event-listener>event listeners</span> if
@@ -759,7 +781,7 @@ for a specific <span title=concept-event>event</span>. Each
       <p>If <var>e</var>'s <span title=concept-event-bubbles>bubbles</span>
       run these steps:</p>
       <ol>
-       <li><p>Set <var>e</var>'s <span title=concept-event-phase>event phase</span> to bubble. XXX
+       <li><p>Set <var>e</var>'s <span title=concept-event-phase>phase</span> to <span title=dom-Event-BUBBLING_PHASE>BUBBLING_PHASE</span>.
        <li><p>Reverse the order of <var>event path</var>.
        <li><p>For each <span title=concept-node>node</span> in the
        <var>event path</var> <span title=XXX>invoke</span> its
@@ -769,8 +791,10 @@ for a specific <span title=concept-event>event</span>. Each
     </ol>
    </dd>
    <dt>Otherwise</dt>
-   <dd><p><span title=XXX>Invoke</span> <var>e</var>'s
-   <span title=concept-event-target>event target</span>
+   <dd><p>Set <var>e</var>'s <span title=concept-event-phase>phase</span> to
+   <span title=dom-Event-AT_TARGET>AT_TARGET</span> and then
+   <span title=XXX>Invoke</span> <var>e</var>'s
+   <span title=concept-event-target>target</span>'s
    <span title=concept-event-listener>event listeners</span>.</p></dd>
   </dl>
  </li>
@@ -784,17 +808,17 @@ for a specific <span title=concept-event>event</span>. Each
  <li><p>Let <var>e</var> be the <span title=concept-event>event</span> for
  which the <span title=concept-event-listener>event listeners</span> are
  invoked.
- <li><p>If <var>e</var> does not yet have an
- <span title=concept-event-target>event target</span>, let
- <span title=concept-event-target>event target</span> be the object for
+ <li><p>If <var>e</var> does not yet have a
+ <span title=concept-event-target>target</span>, let
+ <span title=concept-event-target>target</span> be the object for
  which these steps are run.
  <li><p>Let
- <span title=concept-event-current-target>event current target</span> be the
+ <span title=concept-event-current-target>current target</span> be the
  object for which these steps are run.
  <li><p>As long as <var>e</var>'s <span>stop immediate propagation flag</span> is unset
  go through the list <span title=concept-event-listener>event listeners</span>
  associated with the
- <span title=concept-event-current-target>event current target</span> and
+ <span title=concept-event-current-target>current target</span> and
  run them one-at-a-time.
  <!-- XXX find better wording? -->
  <!-- need to define "run" take into account "capture flag" -->

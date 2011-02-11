@@ -719,11 +719,11 @@ flags that are all initially unset:</p>
 </ul>
 <p>When the
 <dfn title=dom-Event-stopPropagation><code>stopPropagation()</code></dfn>
-method is invoked the <span>propagation flag</span> must be set.</p>
+method is invoked the <span>propagation flag</span> must be set.
 <p>When the
 <dfn title=dom-Event-stopImmediatePropagation><code>stopImmediatePropagation()</code></dfn>
-method is invoked the <span>immediate propagation flag</span> must be
-set.</p>
+method is invoked both the <span>propagation flag</span> and
+<span>immediate propagation flag</span> must be set.
 <p>The <dfn title=dom-Event-bubbles><code>bubbles</code></dfn> attribute
 must return true if the <span>bubble flag</span> is set and false otherwise.
 <p>The <dfn title=dom-Event-cancelable><code>cancelable</code></dfn>
@@ -825,12 +825,13 @@ list of <span title=concept-event-listener>event listeners</span>, whose
      <span>tree order</span>.</li>
      <li><p>Set <var>e</var>'s <span title=concept-event-phase>phase</span> to <span title=dom-Event-CAPTURE_PHASE>CAPTURE_PHASE</span>.
      <li><p>For each <span title=concept-node>node</span> in the
-     <var>event path</var> <span title=XXX>invoke</span> its
+     <var>event path</var>
+     <span title=concept-event-listener-invoke>invoke</span> its
      <span title=concept-event-listener>event listeners</span> as long as
      <var>e</var>'s <span>propagation flag</span> is unset.</li>
      <li><p>Set <var>e</var>'s <span title=concept-event-phase>phase</span> to <span title=dom-Event-AT_TARGET>AT_TARGET</span>.
-     <li><p><span title=XXX>Invoke</span> <var>e</var>'s
-     <span title=concept-event-target>event target</span>
+     <li><p><span title=concept-event-listener-invoke>Invoke</span>
+     <var>e</var>'s <span title=concept-event-target>event target</span>
      <span title=concept-event-listener>event listeners</span> if
      <var>e</var>'s <span>propagation flag</span> is unset.
      <li>
@@ -840,7 +841,8 @@ list of <span title=concept-event-listener>event listeners</span>, whose
        <li><p>Set <var>e</var>'s <span title=concept-event-phase>phase</span> to <span title=dom-Event-BUBBLING_PHASE>BUBBLING_PHASE</span>.
        <li><p>Reverse the order of <var>event path</var>.
        <li><p>For each <span title=concept-node>node</span> in the
-       <var>event path</var> <span title=XXX>invoke</span> its
+       <var>event path</var>
+       <span title=concept-event-listener-invoke>invoke</span> its
        <span title=concept-event-listener>event listeners</span> as long as
        <var>e</var>'s <span>propagation flag</span> is unset.</li>
       </ol>
@@ -849,7 +851,7 @@ list of <span title=concept-event-listener>event listeners</span>, whose
    <dt>Otherwise</dt>
    <dd><p>Set <var>e</var>'s <span title=concept-event-phase>phase</span> to
    <span title=dom-Event-AT_TARGET>AT_TARGET</span> and then
-   <span title=XXX>Invoke</span> the
+   <span title=concept-event-listener-invoke>invoke</span> the
    <span title=concept-event-listener>event listeners</span> of
    <var>e</var>'s <span title=concept-event-target>target</span>.</p></dd>
   </dl>
@@ -857,9 +859,9 @@ list of <span title=concept-event-listener>event listeners</span>, whose
  <li class=XXX>report whether the event was canceled
  <li class=XXX>initialize the event (reset flags)
 </ol>
-<!-- XXX lets leave activation behavior to some other spec. HTML for now. -->
 
-<p>To <dfn>invoke</dfn> the <span title=concept-event-listener>event listeners</span> for an object run these steps:</p>
+
+<p>To <dfn title=concept-event-listener-invoke>invoke</dfn> the <span title=concept-event-listener>event listeners</span> for an object run these steps:</p>
 <ol>
  <li><p>Let <var>e</var> be the <span title=concept-event>event</span> for
  which the <span title=concept-event-listener>event listeners</span> are
@@ -871,13 +873,27 @@ list of <span title=concept-event-listener>event listeners</span>, whose
  <li><p>Let
  <span title=concept-event-current-target>current target</span> be the
  object for which these steps are run.
- <li><p>As long as <var>e</var>'s <span>immediate propagation flag</span> is
- unset go through the list <span title=concept-event-listener>event listeners</span>
- associated with the
- <span title=concept-event-current-target>current target</span> and
- run them one-at-a-time.
- <!-- XXX find better wording? -->
- <!-- need to define "run" take into account "capture flag" -->
+ <li>
+  <p>Then run these substeps for each
+  <span title=concept-event-listener>event listener</span> associated with
+  the <span title=concept-event-current-target>current target</span>:</p>
+  <ol>
+   <li>If <var>e</var>'s <span>immediate propagation flag</span> is set
+   terminate the <span title=concept-event-listener-invoke>invoke</span>
+   algorithm.
+   <li>Let <var>l</var> be the
+   <span title=concept-event-listener>event listener</span>.
+   <li>If <var>e</var>'s <span title=concept-event-name>name</span> is not
+   <var>l</var>'s <b>name</b> terminate these substeps (and run them for the
+   next <span title=concept-event-listener>event listener</span>).
+   <li>If <var>e</var>'s <span title=concept-event-phase>phase</span> is
+   <span title=dom-Event-CAPTURE_PHASE>CAPTURE_PHASE</span> and
+   <var>l</var>'s <b>capture</b> is false terminate these substeps (and run
+   them for the next
+   <span title=concept-event-listener>event listener</span>).
+   <li>Run <var>l</var>'s <b>listener</b>.
+  </ol>
+ </li>
 </ol>
 
 <p class=note>The list of

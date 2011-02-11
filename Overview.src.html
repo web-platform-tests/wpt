@@ -715,6 +715,7 @@ flags that are all initially unset:</p>
  <li><dfn>bubble flag</dfn>
  <li><dfn>cancel flag</dfn>
  <li><dfn>canceled flag</dfn>
+ <li><dfn>trusted flag</dfn>
 </ul>
 <p>When the
 <dfn title=dom-Event-stopPropagation><code>stopPropagation()</code></dfn>
@@ -736,8 +737,12 @@ method is invoked and the <span>cancel flag</span> is set the
 attribute must return true if the <span>canceled flag</span> is set and
 false otherwise.
 
+<p>The <dfn title=dom-Event-isTrusted><code>isTrusted</code></dfn> attribute
+must return true if the <span>trusted flag</span> is set and false
+otherwise.
 
-<!-- "trusted" "timestamp" -->
+<p>The <dfn title=dom-Event-timeStamp><code>timeStamp</code></dfn>
+attribute must be useless. <span class=XXX>Come on!</span>
 
 
 

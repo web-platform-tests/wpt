@@ -750,8 +750,8 @@ XXX add CustomEvent here?!
 <h3>Interface <code>EventTarget</code></h3>
 
 <pre class=idl>interface <dfn>EventTarget</dfn> {
-  void <span title=dom-EventTarget-addEventListener>addEventListener</span>(DOMString <var>type</var>, <span>EventListener</span> <var>listener</var>, optional boolean <var>useCapture</var>);
-  void <span title=dom-EventTarget-removeEventListener>removeEventListener</span>(DOMString <var>type</var>, <span>EventListener</span> <var>listener</var>, optional boolean <var>useCapture</var>);
+  void <span title=dom-EventTarget-addEventListener>addEventListener</span>(DOMString <var>type</var>, <span>EventListener</span> <var>listener</var>, optional boolean <var>capture</var>);
+  void <span title=dom-EventTarget-removeEventListener>removeEventListener</span>(DOMString <var>type</var>, <span>EventListener</span> <var>listener</var>, optional boolean <var>capture</var>);
   boolean <span title=dom-EventTarget-dispatchEvent>dispatchEvent</span>(<span>Event</span> <var>event</var>);
 };
 
@@ -767,10 +767,33 @@ list of <span title=concept-event-listener>event listeners</span>.
 <p>An <dfn title=concept-event-listener>event listener</dfn> is a handler
 for a specific <span title=concept-event>event</span>. Each
 <span title=concept-event-listener>event listener</span> consists of a
-<b>name</b> (of the <span title=concept-event>event</span>), a
-<b>handler</b>, and a <b>capture flag</b> indicating whether the
-<b>handler</b> needs to be invoked during the capture phase of the
-<span title=concept-event>event</span>. <!-- XXX "capture phase" -->
+<b>name</b> (of the <span title=concept-event>event</span>),
+<b>listener</b>, and <b>capture</b> variable.
+
+<p>When the
+<dfn title=dom-EventTarget-addEventListener><code>addEventListener(<var>type</var>, <var>listener</var>, <var>capture</var>)</code></dfn>
+method is invoked the steps must be run:</p>
+<ol>
+ <li><p>If <var>type</var> is the empty string or <var>listener</var> is
+ null terminate these steps.
+ <li><p>If <var>capture</var> is omitted let <var>capture</var> be false.
+ <li><p>Append an <span title=concept-event-listener>event listener</span>
+ to the associated list of
+ <span title=concept-event-listener>event listeners</span> with <b>name</b>
+ set to <var>type</var>, <b>listener</b> set to <var>listener</var>, and
+ <b>capture</b> set to <var>capture</var>, unless there
+ already is an <span title=concept-event-listener>event listener</span> in
+ that list with the same <b>name</b>, <b>listener</b>, and <b>capture</b>.
+</ol>
+
+<p>When the
+<dfn title=dom-EventTarget-removeEventListener><code>removeEventListener(<var>type</var>, <var>listener</var>, <var>capture</var>)</code></dfn>
+method is invoked the
+<span title=concept-event-listener>event listener</span> from the associated
+list of <span title=concept-event-listener>event listeners</span>, whose
+<b>name</b> is <var>name</var>, <b>listener</b> is <var>listener</var>, and
+<var>capture</var> is <b>capture</b>, must be removed (if any).</p>
+
 
 
 <h3>Dispatching Events</h3>

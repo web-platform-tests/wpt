@@ -1,1 +1,5 @@
-{}
+{
+  "command-bold": "command-bold",
+  "split-text-node": "split-text-node",
+  "wrap-range-in-tag": "wrap-range-in-tag"
+}

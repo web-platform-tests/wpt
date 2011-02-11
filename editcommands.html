@@ -1,0 +1,218 @@
+<!DOCTYPE html><meta charset=utf-8>
+<title>Editing Commands</title>
+<link href=http://www.whatwg.org/style/specification rel=stylesheet>
+<style>
+ pre, code { font-family:monospace, sans-serif; }
+ h2 code, h3 code, h4 code,
+ h2 :link, h3 :link, h4 :link,
+ h2 :visited, h3 :visited, h4 :visited
+ { font:inherit; color:inherit; font-style:italic; }
+ @media print {
+   :not([data-anolis-spec]) > [data-anolis-spec]::after {
+     content: "[" attr(data-anolis-spec) "]";
+     font-size: 0.6em;
+     vertical-align: super;
+     text-transform: uppercase;
+   }
+ }
+</style>
+<body class=draft>
+<div class=head id=head>
+<h1>Editing Commands</h1>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-11-february-2011>Work in Progress &mdash; Last Update 11 February 2011</h2>
+<dl>
+ <dt>Editor
+ <dd>Aryeh Gregor &lt;ayg+spec@aryeh.name&gt;
+
+ <dt>Version history
+ <dd><a href="http://aryeh.name/gitweb.cgi?p=editcommands">http://aryeh.name/gitweb.cgi?p=editcommands</a>
+</dl>
+</div>
+
+
+<h2 class=no-num id=table-of-contents>Table of contents</h2>
+
+<!--begin-toc-->
+<ol class=toc>
+ <li><a class=no-num href=#table-of-contents>Table of contents</a></li>
+ <li><a href=#introduction><span class=secno>1 </span>Introduction</a></li>
+ <li><a href=#definitions><span class=secno>2 </span>Definitions</a></li>
+ <li><a href=#commands><span class=secno>3 </span>Commands</a></li>
+ <li><a class=no-num href=#references>References</a></ol>
+<!--end-toc-->
+
+
+<h2 id=introduction><span class=secno>1 </span>Introduction</h2>
+<p>This specification defines commands to edit HTML documents programmatically.
+The APIs specified here were originally introduced in Microsoft's Internet
+Explorer, but have subsequently been copied by other browsers in a haphazard
+and imprecise fashion.  Although the behavior specified here does not exactly
+match any browser at the time of writing, it can serve as a target to converge
+to in the future.
+
+<p>Where the reasoning behind the specification is of interest, such as when
+major preexisting rendering engines are known not to match it, the reasoning is
+included in HTML comments so as not to distract the reader.
+
+
+<h2 id=definitions><span class=secno>2 </span>Definitions</h2>
+<p>When a user agent is to <dfn id=split-text-node title=split-text-node>split a <code class=external data-anolis-spec=domcore>Text</code> node</dfn> <var title="">node</var>, it must
+run the following steps:
+
+<ol>
+  <li>Let <var title="">prefix</var> be the substring of <var title="">node</var>'s
+  <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-data><code class=external data-anolis-spec=domcore title=dom-CharacterData-data>data</code></a>
+  of length <var title="">offset</var> beginning at offset 0.
+
+  <li>Let <var title="">prefix node</var> be a new <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> node whose <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-data><code class=external data-anolis-spec=domcore title=dom-CharacterData-data>data</code></a> is equal to
+  <var title="">prefix</var> and whose <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument><code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument>ownerDocument</code></a> is equal to <var title="">node</var>'s.
+  
+  <li>Insert <var title="">prefix node</var> in <var title="">node</var>'s parent as
+  the previous sibling of <var title="">node</var>.
+
+  <li>Let <var title="">suffix</var> be the substring of <var title="">node</var>'s
+  <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-data><code class=external data-anolis-spec=domcore title=dom-CharacterData-data>data</code></a>
+  beginning at offset <var title="">offset</var> and continuing to the end of the
+  string.
+
+  <li>Let <var title="">suffix node</var> be a new <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> node whose <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-data><code class=external data-anolis-spec=domcore title=dom-CharacterData-data>data</code></a> is equal to
+  <var title="">suffix</var> and whose <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument><code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument>ownerDocument</code></a> is equal to <var title="">node</var>'s.
+  
+  <li>Insert <var title="">suffix node</var> in <var title="">node</var>'s parent as
+  the previous sibling of <var title="">node</var>.
+
+  <li>Delete <var title="">node</var> from its parent.
+
+  <li>Return (<var title="">prefix node</var>, <var title="">suffix node</var>).
+</ol>
+
+<p>When a user agent is to <dfn id=wrap-range-in-tag title=wrap-range-in-tag>wrap a <code class=external data-anolis-spec=domrange>Range</code> <var title="">range</var> in a tag <var title="">tag</var></dfn>, it must run the following steps:
+
+<p class=XXX>This is totally made up and I have no idea yet if it matches
+browsers and/or is even vaguely coherent.
+
+<ol>
+  <li>Let <var title="">start node</var>, <var title="">start offset</var>, <var title="">end node</var>, and <var title="">end offset</var> be the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> and <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>nodes</a> and
+  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offsets</a> of <var title="">range</var>,
+  respectively.
+
+  <li>Let <var title="">document</var> be the <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument><code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument>ownerDocument</code></a> of <var title="">start
+  node</var>.
+
+  <li>If <var title="">start node</var> is a <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a>, <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#processinginstruction><code class=external data-anolis-spec=domcore>ProcessingInstruction</code></a>, or <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#comment><code class=external data-anolis-spec=domcore>Comment</code></a>, and it has no parent, abort these
+  steps.
+
+  <p class=XXX>Figure out something sensible here.  Doesn't make sense except
+  in IE, since other browsers fail if it's not contentEditable.  What does IE
+  do?  What do we expect?
+
+  <li>If <var title="">start node</var> is a <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> node and <var title="">start offset</var>
+  is neither 0 nor the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> of <var title="">start node</var>, <a href=#split-text-node title=split-text-node>split <var title="">start node</var></a> and set <var title="">start node</var> to the second returned node.  Set <var title="">start
+  offset</var> to 0.
+
+  <li>If <var title="">start node</var> is a <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> node and <var title="">start offset</var>
+  is 0, set <var title="">start offset</var> to the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index of</a> <var title="">start node</var> in its parent, then set <var title="">start node</var> to
+  its parent.
+
+  <li>If <var title="">start node</var> is a <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> node and <var title="">start offset</var>
+  is the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> of <var title="">start node</var>, or if
+  <var title="">start node</var> is a <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#comment><code class=external data-anolis-spec=domcore>Comment</code></a> or <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#processinginstruction><code class=external data-anolis-spec=domcore>ProcessingInstruction</code></a>, set <var title="">start
+  offset</var> to one plus the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index of</a> <var title="">start node</var> in its
+  parent, then set <var title="">start node</var> to its parent.
+
+  <li>If <var title="">end node</var> is a <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> node and <var title="">end offset</var> is
+  neither 0 nor the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> of <var title="">end node</var>, <a href=#split-text-node title=split-text-node>split <var title="">end node</var></a> and set <var title="">end node</var> to the first returned node.  Set <var title="">end
+  offset</var> to the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> of the new <var title="">end node</var>.
+
+  <li>If <var title="">end node</var> is a <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> node and <var title="">end offset</var> is
+  the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a>
+  of <var title="">end node</var>, set <var title="">end offset</var> to one plus the
+  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index of</a> <var title="">end node</var> in its parent, then set <var title="">end node</var> to its
+  parent.
+
+  <li>If <var title="">end node</var> is a <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> node and <var title="">end offset</var> is
+  0, or if <var title="">end node</var> is a <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#comment><code class=external data-anolis-spec=domcore>Comment</code></a> or <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#processinginstruction><code class=external data-anolis-spec=domcore>ProcessingInstruction</code></a>, set <var title="">end
+  offset</var> to the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index of</a> <var title="">end node</var> in its
+  parent, then set <var title="">end node</var> to its parent.
+
+  <p class=note>The previous several steps have ensured that <var title="">start
+  node</var> and <var title="">end node</var> are not <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a>, <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#comment><code class=external data-anolis-spec=domcore>Comment</code></a>, or <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#processinginstruction><code class=external data-anolis-spec=domcore>ProcessingInstruction</code></a> nodes, so <var title="">start offset</var> and <var title="">end offset</var> now represent node
+  offsets instead of character offsets.
+
+  <li>Let <var title="">node</var> equal <var title="">start node</var> and let <var title="">offset</var> equal <var title="">start offset</var>.
+
+  <li>Repeat the following steps until aborted:
+  <ol>
+	<li><i id=wrap-algorithm-start title="">Start</i>: If <var title="">node</var> is
+	after <var title="">end node</var> in <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#tree-order>tree
+	order</a>, or if <var title="">node</var> equals <var title="">end node</var>
+	and <var title="">offset</var> is greater than or equal to <var title="">end
+	offset</var>, abort this subalgorithm.
+
+    <li>Let <var title="">element</var> be a new <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a> with no attributes, <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-namespace title=concept-element-namespace>namespace</a>
+	set to the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#html-namespace>HTML namespace</a>, <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a>
+	set to <var title="">tag</var>, and <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument><code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument>ownerDocument</code></a> set to <var title="">document</var>.
+
+	<li>While <var title="">node</var> has a child with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> <var title="">offset</var>, and that child is a <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> node whose <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-data><code class=external data-anolis-spec=domcore title=dom-CharacterData-data>data</code></a> is only
+	<a class=external data-anolis-spec=html href=http://www.whatwg.org/html/#space-character title="space character">space characters</a>
+	or that child is a <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#comment><code class=external data-anolis-spec=domcore>Comment</code></a> or that
+	child is a <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#processinginstruction><code class=external data-anolis-spec=domcore>ProcessingInstruction</code></a>,
+	increment <var title="">offset</var>.
+	<!-- This avoids wrapping whitespace-only text nodes, which agrees with
+	WebKit.  IE9 wraps the whitespace-only text nodes, and Gecko tries to do
+	something crazy like add CSS attributes instead of elements. -->
+
+	<li>If <var title="">offset</var> is equal to <var title="">node</var>'s number
+	of children, let <var title="">node</var> equal the first <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> in <var title="">document</var> that is
+	after all of <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-descendant-node title=concept-descendant-node>descendants</a> in <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#tree-order>tree order</a>, and let <var title="">offset</var>
+	equal zero.  Continue from <i title=""><a href=#wrap-algorithm-start>start</a></i>.
+
+	<li>Let <var title="">child</var> be the child of <var title="">node</var> with
+	<a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> <var title="">offset</var>.
+
+	<li>If <var title="">child</var> is an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a> which is not part of the <a class=external data-anolis-spec=html href=http://www.whatwg.org/html/#content-models title="content models">content model</a> of <var title="">element</var>:
+	
+	<ol>
+	  <li>Create a new <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> (<var title="">child</var>, 0), <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> (<var title="">child</var>, <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> of <var title="">child</var>), and <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-root title=concept-range-root>root</a> the same as <var title="">range</var>'s
+	  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-root title=concept-range-root>root</a>.
+      
+	  <li><a href=#wrap-range-in-tag title=wrap-range-in-tag>Wrap that <code class=external data-anolis-spec=domrange>Range</code> in <var title="">tag</var></a>.
+
+	  <li>Increment <var title="">offset</var>.
+
+	  <li>Continue from <i title=""><a href=#wrap-algorithm-start>start</a></i>.
+	</ol>
+
+	<li>Append <var title="">element</var> to <var title="">node</var> as the
+	previous sibling of <var title="">child</var>.
+
+	<li>While the child of <var title="">node</var> has a child with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> <var title="">offset</var>, and while that child is not an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a> or is an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a> but is part of the <a class=external data-anolis-spec=html href=http://www.whatwg.org/html/#content-models title="content models">content model</a> of <var title="">element</var>, change that child's parent to <var title="">element</var>
+	and increment <var title="">offset</var>.
+
+	<p class=XXX>What exactly does it mean to change the child's parent?  E.g.,
+	what happens if this occurs to a video that's playing?  Is there a precise
+	spec somewhere?
+  </ol>
+</ol>
+
+
+<h2 id=commands><span class=secno>3 </span>Commands</h2>
+<dl>
+<dt><code title=""><dfn id=command-bold title=command-bold>bold</dfn></code>
+<dd>The user agent must <a href=#wrap-range-in-tag title=wrap-range-in-tag>wrap each <code class=external data-anolis-spec=domrange>Range</code></a> of the current <a href=http://html5.org/specs/dom-range.html#selection><code class=external data-anolis-spec=domrange>Selection</code></a> in a "b" tag.
+
+<p class=XXX>Be clearer.  What's the "current Selection", and what does it mean
+to wrap "each Range"?  What if there are overlapping Ranges?
+</dl>
+
+
+<h2 class=no-num id=references>References</h2><!--REFS-->
+<p>All references are normative unless marked "Non-normative".</p>
+<div id=anolis-references><dl></dl></div>
+
+
+<!--
+<h2 class=no-num>Acknowledgements</h2>
+<p>...
+-->
+<script src=http://www.whatwg.org/specs/web-apps/current-work/dfn.js></script>

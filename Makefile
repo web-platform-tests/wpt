@@ -1,8 +1,8 @@
 ANOLIS = anolis
 
-all: execcommand.html xrefs.json
+all: editcommands.html xrefs.json
 
-execcommand.html: source.html data Makefile
+editcommands.html: source.html data Makefile
 	$(ANOLIS) --output-encoding=ascii --omit-optional-tags --enable=xspecxref \
 	--enable=refs --use-strict $< $@
 

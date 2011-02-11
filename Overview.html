@@ -41,7 +41,7 @@
 <p><a href="http://www.w3.org/"><img height="48" width="72" alt="W3C" src="http://www.w3.org/Icons/w3c_home"></a></p>
 <!--end-logo-->
  <h1>Web DOM Core</h1>
- <h2 class="no-num no-toc" id="editor-s-draft-27-january-2011">Editor's Draft 27 January 2011</h2>
+ <h2 class="no-num no-toc" id="editor-s-draft-11-february-2011">Editor's Draft 11 February 2011</h2>
 
  <dl>
   <dt>This Version:
@@ -56,6 +56,8 @@
   <dd><a href="http://annevankesteren.nl/">Anne van Kesteren</a>
     (<a href="http://www.opera.com/">Opera Software ASA</a>)
     &lt;<a href="mailto:annevk@opera.com">annevk@opera.com</a>&gt;
+  <dd>Ms2ger (<a href="http://www.mozilla.org/">Mozilla Foundation</a>)
+    &lt;<a href="mailto:ms2ger@gmail.com">ms2ger@gmail.com</a>&gt;
  </dl>
 
 <!--begin-copyright-->
@@ -79,7 +81,7 @@ publications and the latest revision of this technical report can be found in
 the <a href="http://www.w3.org/TR/">W3C technical reports index</a> at
 http://www.w3.org/TR/.</em>
 
-<p>This is the 27 January 2011 Editor's Draft of Web DOM Core. Please send
+<p>This is the 11 February 2011 Editor's Draft of Web DOM Core. Please send
 comments to
 <a href="mailto:public-webapps@w3.org?subject=%5BDOMCore%5D%20">public-webapps@w3.org</a>
 (<a href="http://lists.w3.org/Archives/Public/public-webapps/">archived</a>)
@@ -135,32 +137,38 @@ document as other than work in progress.
  <li><a href="#exceptions"><span class="secno">2 </span>Exceptions</a>
   <ol class="toc">
    <li><a href="#exception-domexception"><span class="secno">2.1 </span>Exception <code>DOMException</code></a></ol></li>
- <li><a href="#nodes-model"><span class="secno">3 </span>Nodes Model</a></li>
- <li><a href="#nodes"><span class="secno">4 </span>Nodes</a>
+ <li><a href="#events"><span class="secno">3 </span>Events</a>
   <ol class="toc">
-   <li><a href="#interface-node"><span class="secno">4.1 </span>Interface <code>Node</code></a></li>
-   <li><a href="#interface-documentfragment"><span class="secno">4.2 </span>Interface <code>DocumentFragment</code></a></li>
-   <li><a href="#interface-document"><span class="secno">4.3 </span>Interface <code>Document</code></a>
+   <li><a href="#interface-event"><span class="secno">3.1 </span>Interface <code>Event</code></a></li>
+   <li><a href="#interface-eventtarget"><span class="secno">3.2 </span>Interface <code>EventTarget</code></a></li>
+   <li><a href="#dispatching-events"><span class="secno">3.3 </span>Dispatching Events</a></li>
+   <li><a href="#creating-events"><span class="secno">3.4 </span>Creating Events</a></ol></li>
+ <li><a href="#nodes-model"><span class="secno">4 </span>Nodes Model</a></li>
+ <li><a href="#nodes"><span class="secno">5 </span>Nodes</a>
+  <ol class="toc">
+   <li><a href="#interface-node"><span class="secno">5.1 </span>Interface <code>Node</code></a></li>
+   <li><a href="#interface-documentfragment"><span class="secno">5.2 </span>Interface <code>DocumentFragment</code></a></li>
+   <li><a href="#interface-document"><span class="secno">5.3 </span>Interface <code>Document</code></a>
     <ol class="toc">
-     <li><a href="#interface-domimplementation"><span class="secno">4.3.1 </span>Interface <code>DOMImplementation</code></a></ol></li>
-   <li><a href="#interface-element"><span class="secno">4.4 </span>Interface <code>Element</code></a>
+     <li><a href="#interface-domimplementation"><span class="secno">5.3.1 </span>Interface <code>DOMImplementation</code></a></ol></li>
+   <li><a href="#interface-element"><span class="secno">5.4 </span>Interface <code>Element</code></a>
     <ol class="toc">
-     <li><a href="#interface-attr"><span class="secno">4.4.1 </span>Interface <code>Attr</code></a></ol></li>
-   <li><a href="#interface-documenttype"><span class="secno">4.5 </span>Interface <code>DocumentType</code></a></li>
-   <li><a href="#interface-processinginstruction"><span class="secno">4.6 </span>Interface <code>ProcessingInstruction</code></a></li>
-   <li><a href="#interface-characterdata"><span class="secno">4.7 </span>Interface <code>CharacterData</code></a></li>
-   <li><a href="#interface-text"><span class="secno">4.8 </span>Interface <code>Text</code></a></li>
-   <li><a href="#interface-comment"><span class="secno">4.9 </span>Interface <code>Comment</code></a></ol></li>
- <li><a href="#collections"><span class="secno">5 </span>Collections</a>
+     <li><a href="#interface-attr"><span class="secno">5.4.1 </span>Interface <code>Attr</code></a></ol></li>
+   <li><a href="#interface-documenttype"><span class="secno">5.5 </span>Interface <code>DocumentType</code></a></li>
+   <li><a href="#interface-processinginstruction"><span class="secno">5.6 </span>Interface <code>ProcessingInstruction</code></a></li>
+   <li><a href="#interface-characterdata"><span class="secno">5.7 </span>Interface <code>CharacterData</code></a></li>
+   <li><a href="#interface-text"><span class="secno">5.8 </span>Interface <code>Text</code></a></li>
+   <li><a href="#interface-comment"><span class="secno">5.9 </span>Interface <code>Comment</code></a></ol></li>
+ <li><a href="#collections"><span class="secno">6 </span>Collections</a>
   <ol class="toc">
-   <li><a href="#interface-nodelist"><span class="secno">5.1 </span>Interface <code>NodeList</code></a></li>
-   <li><a href="#interface-htmlcollection"><span class="secno">5.2 </span>Interface <code>HTMLCollection</code></a></ol></li>
- <li><a href="#lists"><span class="secno">6 </span>Lists</a>
+   <li><a href="#interface-nodelist"><span class="secno">6.1 </span>Interface <code>NodeList</code></a></li>
+   <li><a href="#interface-htmlcollection"><span class="secno">6.2 </span>Interface <code>HTMLCollection</code></a></ol></li>
+ <li><a href="#lists"><span class="secno">7 </span>Lists</a>
   <ol class="toc">
-   <li><a href="#interface-domstringlist"><span class="secno">6.1 </span>Interface <code>DOMStringList</code></a></li>
-   <li><a href="#interface-domtokenlist"><span class="secno">6.2 </span>Interface <code>DOMTokenList</code></a></li>
-   <li><a href="#interface-domsettabletokenlist"><span class="secno">6.3 </span>Interface <code>DOMSettableTokenList</code></a></ol></li>
- <li><a href="#historical"><span class="secno">7 </span>Historical</a></li>
+   <li><a href="#interface-domstringlist"><span class="secno">7.1 </span>Interface <code>DOMStringList</code></a></li>
+   <li><a href="#interface-domtokenlist"><span class="secno">7.2 </span>Interface <code>DOMTokenList</code></a></li>
+   <li><a href="#interface-domsettabletokenlist"><span class="secno">7.3 </span>Interface <code>DOMSettableTokenList</code></a></ol></li>
+ <li><a href="#historical"><span class="secno">8 </span>Historical</a></li>
  <li><a class="no-num" href="#references">References</a>
   <ol class="toc">
    <li><a class="no-num" href="#normative-references">Normative references</a></li>
@@ -669,8 +677,256 @@ following:
 field must return the name of the exception constant as a string.
 
 
+<h2 id="events"><span class="secno">3 </span>Events</h2>
 
-<h2 id="nodes-model"><span class="secno">3 </span>Nodes Model</h2>
+<h3 id="interface-event"><span class="secno">3.1 </span>Interface <code><a href="#event">Event</a></code></h3>
+
+<pre class="idl">interface <dfn id="event">Event</dfn> {
+  readonly attribute DOMString <a title="dom-Event-type" href="#dom-event-type">type</a>;
+  readonly attribute <a href="#eventtarget">EventTarget</a> <a title="dom-Event-target" href="#dom-event-target">target</a>;
+  readonly attribute <a href="#eventtarget">EventTarget</a> <a title="dom-Event-currentTarget" href="#dom-event-currenttarget">currentTarget</a>;
+
+  const unsigned short <a title="dom-Event-CAPTURING_PHASE" href="#dom-event-capturing_phase">CAPTURING_PHASE</a> = 1;
+  const unsigned short <a title="dom-Event-AT_TARGET" href="#dom-event-at_target">AT_TARGET</a> = 2;
+  const unsigned short <a title="dom-Event-BUBBLING_PHASE" href="#dom-event-bubbling_phase">BUBBLING_PHASE</a> = 3;
+  readonly attribute unsigned short <a title="dom-Event-eventPhase" href="#dom-event-eventphase">eventPhase</a>;
+
+  void <a title="dom-Event-stopPropagation" href="#dom-event-stoppropagation">stopPropagation</a>();
+  void <a title="dom-Event-stopImmediatePropagation" href="#dom-event-stopimmediatepropagation">stopImmediatePropagation</a>();
+
+  readonly attribute boolean <a title="dom-Event-bubbles" href="#dom-event-bubbles">bubbles</a>;
+  readonly attribute boolean <a title="dom-Event-cancelable" href="#dom-event-cancelable">cancelable</a>;
+  void <a title="dom-Event-preventDefault" href="#dom-event-preventdefault">preventDefault</a>();
+  readonly attribute boolean <a title="dom-Event-defaultPrevented" href="#dom-event-defaultprevented">defaultPrevented</a>;
+
+  readonly attribute boolean <span title="dom-Event-isTrusted">isTrusted</span>;
+  readonly attribute DOMTimeStamp <span title="dom-Event-timeStamp">timeStamp</span>;
+
+  void <span title="dom-Event-initEvent">initEvent</span>(DOMString <var>type</var>, boolean <var>bubbles</var>, boolean <var>cancelable</var>);
+};</pre>
+
+<p>An <dfn title="concept-event" id="concept-event">event</dfn> allows for signaling that something has occurred. E.g. that an image has completed downloading.</p>
+
+<p>Each <a title="concept-event" href="#concept-event">event</a> has a <dfn title="concept-event-name" id="concept-event-name">name</dfn> that can be any sequence of code units,
+but not the empty string. The
+<dfn title="dom-Event-type" id="dom-event-type"><code>type</code></dfn> attribute must
+return the <a title="concept-event-name" href="#concept-event-name">name</a>.</p>
+<!-- XXX set when initializing the event -->
+
+<p>Each <a title="concept-event" href="#concept-event">event</a> has an associated
+<dfn title="concept-event-target" id="concept-event-target">target</dfn> and
+<dfn title="concept-event-current-target" id="concept-event-current-target">current target</dfn> identified
+while <a title="concept-event-dispatch" href="#concept-event-dispatch">dispatching</a> the
+<a title="concept-event" href="#concept-event">event</a>. The
+<dfn title="dom-Event-target" id="dom-event-target"><code>target</code></dfn> attribute must return
+the <a title="concept-event-target" href="#concept-event-target">target</a> and the
+<dfn title="dom-Event-currentTarget" id="dom-event-currenttarget"><code>currentTarget</code></dfn>
+attribute must return the
+<a title="concept-event-current-target" href="#concept-event-current-target">current target</a>.
+
+<p>Each <a title="concept-event" href="#concept-event">event</a> has a
+<dfn title="concept-event-phase" id="concept-event-phase">phase</dfn>. The
+<dfn title="dom-Event-eventPhase" id="dom-event-eventphase"><code>eventPhase</code></dfn> attribute must
+return the current <a title="concept-event-phase" href="#concept-event-phase">phase</a>, which must
+be one of the following:</p>
+<dl>
+ <dt><dfn title="dom-Event-CAPTURING_PHASE" id="dom-event-capturing_phase"><code>CAPTURING_PHASE</code></dfn> (numeric value 1)</dt>
+ <dd><p>When an <a title="concept-event" href="#concept-event">event</a> is <a title="concept-event-dispatch" href="#concept-event-dispatch">dispatched</a> on a <a title="concept-node" href="#concept-node">node</a> it will be in this phase before it reaches
+ its <a title="concept-event-target" href="#concept-event-target">target</a>.
+ <dt><dfn title="dom-Event-AT_TARGET" id="dom-event-at_target"><code>AT_TARGET</code></dfn> (numeric value 2)
+ <dd><p>When an <a title="concept-event" href="#concept-event">event</a> is <a title="concept-event-dispatch" href="#concept-event-dispatch">dispatched</a> it will be in this phase on its <a title="concept-event-target" href="#concept-event-target">target</a>.
+ <dt><dfn title="dom-Event-BUBBLING_PHASE" id="dom-event-bubbling_phase"><code>BUBBLING_PHASE</code></dfn> (numeric value 3)
+ <dd><p>When an <a title="concept-event" href="#concept-event">event</a> is <a title="concept-event-dispatch" href="#concept-event-dispatch">dispatched</a> on a <a title="concept-node" href="#concept-node">node</a> it will be in this phase after it reaches
+ its <a title="concept-event-target" href="#concept-event-target">target</a>.
+</dl>
+
+<p>Each <a title="concept-event" href="#concept-event">event</a> has the following associated
+flags that are all initially unset:</p>
+<ul>
+ <li><dfn id="propagation-flag">propagation flag</dfn>
+ <li><dfn id="immediate-propagation-flag">immediate propagation flag</dfn>
+ <li><dfn id="bubble-flag">bubble flag</dfn>
+ <li><dfn id="cancel-flag">cancel flag</dfn>
+ <li><dfn id="canceled-flag">canceled flag</dfn>
+</ul>
+<p>When the
+<dfn title="dom-Event-stopPropagation" id="dom-event-stoppropagation"><code>stopPropagation()</code></dfn>
+method is invoked the <a href="#propagation-flag">propagation flag</a> must be set.</p>
+<p>When the
+<dfn title="dom-Event-stopImmediatePropagation" id="dom-event-stopimmediatepropagation"><code>stopImmediatePropagation()</code></dfn>
+method is invoked the <a href="#immediate-propagation-flag">immediate propagation flag</a> must be
+set.</p>
+<p>The <dfn title="dom-Event-bubbles" id="dom-event-bubbles"><code>bubbles</code></dfn> attribute
+must return true if the <a href="#bubble-flag">bubble flag</a> is set and false otherwise.
+<p>The <dfn title="dom-Event-cancelable" id="dom-event-cancelable"><code>cancelable</code></dfn>
+attribute must return true if the <a href="#cancel-flag">cancel flag</a> is set and false
+otherwise.
+<p>When the
+<dfn title="dom-Event-preventDefault" id="dom-event-preventdefault"><code>preventDefault()</code></dfn>
+method is invoked and the <a href="#cancel-flag">cancel flag</a> is set the
+<a href="#canceled-flag">canceled flag</a> must be set.
+<p>The <dfn title="dom-Event-defaultPrevented" id="dom-event-defaultprevented"><code>defaultPrevented</code></dfn>
+attribute must return true if the <a href="#canceled-flag">canceled flag</a> is set and
+false otherwise.
+
+
+<!-- "trusted" "timestamp" -->
+
+
+
+<!-- initialize an event -->
+
+<!--
+XXX add CustomEvent here?!
+-->
+
+<h3 id="interface-eventtarget"><span class="secno">3.2 </span>Interface <code><a href="#eventtarget">EventTarget</a></code></h3>
+
+<pre class="idl">interface <dfn id="eventtarget">EventTarget</dfn> {
+  void <a title="dom-EventTarget-addEventListener" href="#dom-eventtarget-addeventlistener">addEventListener</a>(DOMString <var>type</var>, <a href="#eventlistener">EventListener</a> <var>listener</var>, optional boolean <var>capture</var>);
+  void <a title="dom-EventTarget-removeEventListener" href="#dom-eventtarget-removeeventlistener">removeEventListener</a>(DOMString <var>type</var>, <a href="#eventlistener">EventListener</a> <var>listener</var>, optional boolean <var>capture</var>);
+  boolean <span title="dom-EventTarget-dispatchEvent">dispatchEvent</span>(<a href="#event">Event</a> <var><a href="#event">event</a></var>);
+};
+
+interface <dfn id="eventlistener">EventListener</dfn> {
+  void <span title="dom-EventListener-handleEvent">handleEvent</span>(<a href="#event">Event</a> <var><a href="#event">event</a></var>);
+};</pre>
+
+<p><code><a href="#eventtarget">EventTarget</a></code> is an object upon which an
+<a title="concept-event" href="#concept-event">event</a> is <span>dispatched</span>
+when something has occurred. Each <code><a href="#eventtarget">EventTarget</a></code> has an associated
+list of <a title="concept-event-listener" href="#concept-event-listener">event listeners</a>.
+
+<p>An <dfn title="concept-event-listener" id="concept-event-listener">event listener</dfn> is a handler
+for a specific <a title="concept-event" href="#concept-event">event</a>. Each
+<a title="concept-event-listener" href="#concept-event-listener">event listener</a> consists of a
+<b>name</b> (of the <a title="concept-event" href="#concept-event">event</a>),
+<b>listener</b>, and <b>capture</b> variable.
+
+<p>When the
+<dfn title="dom-EventTarget-addEventListener" id="dom-eventtarget-addeventlistener"><code>addEventListener(<var>type</var>, <var>listener</var>, <var>capture</var>)</code></dfn>
+method is invoked the steps must be run:</p>
+<ol>
+ <li><p>If <var>type</var> is the empty string or <var>listener</var> is
+ null terminate these steps.
+ <li><p>If <var>capture</var> is omitted let <var>capture</var> be false.
+ <li><p>Append an <a title="concept-event-listener" href="#concept-event-listener">event listener</a>
+ to the associated list of
+ <a title="concept-event-listener" href="#concept-event-listener">event listeners</a> with <b>name</b>
+ set to <var>type</var>, <b>listener</b> set to <var>listener</var>, and
+ <b>capture</b> set to <var>capture</var>, unless there
+ already is an <a title="concept-event-listener" href="#concept-event-listener">event listener</a> in
+ that list with the same <b>name</b>, <b>listener</b>, and <b>capture</b>.
+</ol>
+
+<p>When the
+<dfn title="dom-EventTarget-removeEventListener" id="dom-eventtarget-removeeventlistener"><code>removeEventListener(<var>type</var>, <var>listener</var>, <var>capture</var>)</code></dfn>
+method is invoked the
+<a title="concept-event-listener" href="#concept-event-listener">event listener</a> from the associated
+list of <a title="concept-event-listener" href="#concept-event-listener">event listeners</a>, whose
+<b>name</b> is <var>name</var>, <b>listener</b> is <var>listener</var>, and
+<var>capture</var> is <b>capture</b>, must be removed (if any).</p>
+
+
+
+<h3 id="dispatching-events"><span class="secno">3.3 </span>Dispatching Events</h3>
+<!-- XXX could call this processing model; should it be a subsection? -->
+
+<p>To <dfn title="concept-event-dispatch" id="concept-event-dispatch">dispatch</dfn> an
+<a title="concept-event" href="#concept-event">event</a> run these steps:</p>
+<!-- other specifications turn this into a requirement  -->
+
+<ol>
+ <li><p>Let <var>e</var> be the <a title="concept-event" href="#concept-event">event</a> that
+ is dispatched.
+ <li><p>Set <var>e</var>'s <a title="concept-event-target" href="#concept-event-target">target</a>
+ to the object on which <var>e</var> is dispatched.
+ <li>
+  <dl>
+   <dt>If <var>e</var>'s <a title="concept-event-target" href="#concept-event-target">target</a> is a
+   <a title="concept-node" href="#concept-node">node</a>
+   <dd>
+    <ol>
+     <li><p>Let <var>event path</var> be a static ordered list of all
+     <a title="concept-ancestor-node" href="#concept-ancestor-node">ancestor nodes</a> of
+     <var>e</var>'s <a title="concept-event-target" href="#concept-event-target">target</a> in
+     <a href="#tree-order">tree order</a>.</li>
+     <li><p>Set <var>e</var>'s <a title="concept-event-phase" href="#concept-event-phase">phase</a> to <span title="dom-Event-CAPTURE_PHASE">CAPTURE_PHASE</span>.
+     <li><p>For each <a title="concept-node" href="#concept-node">node</a> in the
+     <var>event path</var> <span title="XXX">invoke</span> its
+     <a title="concept-event-listener" href="#concept-event-listener">event listeners</a> as long as
+     <var>e</var>'s <a href="#propagation-flag">propagation flag</a> is unset.</li>
+     <li><p>Set <var>e</var>'s <a title="concept-event-phase" href="#concept-event-phase">phase</a> to <a title="dom-Event-AT_TARGET" href="#dom-event-at_target">AT_TARGET</a>.
+     <li><p><span title="XXX">Invoke</span> <var>e</var>'s
+     <a title="concept-event-target" href="#concept-event-target">event target</a>
+     <a title="concept-event-listener" href="#concept-event-listener">event listeners</a> if
+     <var>e</var>'s <a href="#propagation-flag">propagation flag</a> is unset.
+     <li>
+      <p>If <var>e</var>'s <span title="concept-event-bubbles">bubbles</span>
+      run these steps:</p>
+      <ol>
+       <li><p>Set <var>e</var>'s <a title="concept-event-phase" href="#concept-event-phase">phase</a> to <a title="dom-Event-BUBBLING_PHASE" href="#dom-event-bubbling_phase">BUBBLING_PHASE</a>.
+       <li><p>Reverse the order of <var>event path</var>.
+       <li><p>For each <a title="concept-node" href="#concept-node">node</a> in the
+       <var>event path</var> <span title="XXX">invoke</span> its
+       <a title="concept-event-listener" href="#concept-event-listener">event listeners</a> as long as
+       <var>e</var>'s <a href="#propagation-flag">propagation flag</a> is unset.</li>
+      </ol>
+    </ol>
+   </dd>
+   <dt>Otherwise</dt>
+   <dd><p>Set <var>e</var>'s <a title="concept-event-phase" href="#concept-event-phase">phase</a> to
+   <a title="dom-Event-AT_TARGET" href="#dom-event-at_target">AT_TARGET</a> and then
+   <span title="XXX">Invoke</span> the
+   <a title="concept-event-listener" href="#concept-event-listener">event listeners</a> of
+   <var>e</var>'s <a title="concept-event-target" href="#concept-event-target">target</a>.</dd>
+  </dl>
+ </li>
+ <li class="XXX">report whether the event was canceled
+ <li class="XXX">initialize the event (reset flags)
+</ol>
+<!-- XXX lets leave activation behavior to some other spec. HTML for now. -->
+
+<p>To <dfn id="invoke">invoke</dfn> the <a title="concept-event-listener" href="#concept-event-listener">event listeners</a> for an object run these steps:</p>
+<ol>
+ <li><p>Let <var>e</var> be the <a title="concept-event" href="#concept-event">event</a> for
+ which the <a title="concept-event-listener" href="#concept-event-listener">event listeners</a> are
+ invoked.
+ <li><p>If <var>e</var> does not yet have a
+ <a title="concept-event-target" href="#concept-event-target">target</a>, let
+ <a title="concept-event-target" href="#concept-event-target">target</a> be the object for
+ which these steps are run.
+ <li><p>Let
+ <a title="concept-event-current-target" href="#concept-event-current-target">current target</a> be the
+ object for which these steps are run.
+ <li><p>As long as <var>e</var>'s <a href="#immediate-propagation-flag">immediate propagation flag</a> is
+ unset go through the list <a title="concept-event-listener" href="#concept-event-listener">event listeners</a>
+ associated with the
+ <a title="concept-event-current-target" href="#concept-event-current-target">current target</a> and
+ run them one-at-a-time.
+ <!-- XXX find better wording? -->
+ <!-- need to define "run" take into account "capture flag" -->
+</ol>
+
+<p class="note">The list of
+<a title="concept-event-listener" href="#concept-event-listener">event listeners</a> can be manipulated
+while <a title="concept-event-listener" href="#concept-event-listener">event listeners</a> are being
+run.</p>
+
+
+<h3 id="creating-events"><span class="secno">3.4 </span>Creating Events</h3>
+
+<p class="note">Although the <code><a href="#document">Document</a></code> object is introduced later
+it was thought better to describe the
+<code title="dom-Document-createEvent">createEvent()</code> method here.
+
+<p class="XXX">document.createEvent()</p>
+
+<p class="XXX">We should do something about synthetic events for Web Workers too I think. Maybe that gives a chance to introduce a much simpler model? (We should carefully consider whether that is worth it though. How frequently are synthetic events used?)
+
+
+
+<h2 id="nodes-model"><span class="secno">4 </span>Nodes Model</h2>
 <p><code><a href="#node">Node</a></code> objects (simply called <dfn title="concept-node" id="concept-node">nodes</dfn>) form a tree-based structure. Each node, except for <code><a href="#document">Document</a></code> objects, has zero or one <dfn title="concept-parent-node" id="concept-parent-node">parent nodes</dfn>. A <code><a href="#document">Document</a></code> object cannot have a <a title="concept-parent-node" href="#concept-parent-node">parent node</a>.</p>
 <p>A node <var>A</var> is a <dfn title="concept-child-node" id="concept-child-node">child node</dfn> of a node <var>B</var> if and only if <var>B</var> is the <a title="concept-parent-node" href="#concept-parent-node">parent node</a> of <var>A</var>.</p>
 <p>The tree-based structure is constrained by the following node hierarchy expressed as a relationship between the type of node and its allowed <span title="concpet-child-node">child nodes</span>:</p>
@@ -714,8 +970,8 @@ field must return the name of the exception constant as a string.
 <!-- XXXhierarchy - make sure to expand DocumentFragment before checking -->
 
 
-<h2 id="nodes"><span class="secno">4 </span>Nodes</h2>
-<h3 id="interface-node"><span class="secno">4.1 </span>Interface <code><a href="#node">Node</a></code></h3>
+<h2 id="nodes"><span class="secno">5 </span>Nodes</h2>
+<h3 id="interface-node"><span class="secno">5.1 </span>Interface <code><a href="#node">Node</a></code></h3>
 <pre class="idl">interface <dfn id="node">Node</dfn> {
   const unsigned short <a title="dom-Node-ELEMENT_NODE" href="#dom-node-element_node">ELEMENT_NODE</a> = 1;
   const unsigned short <a title="dom-Node-ATTRIBUTE_NODE" href="#dom-node-attribute_node">ATTRIBUTE_NODE</a> = 2; // historical
@@ -1432,12 +1688,12 @@ method must run these steps:
 </ol>
 
 
-<h3 id="interface-documentfragment"><span class="secno">4.2 </span>Interface <code><a href="#documentfragment">DocumentFragment</a></code></h3>
+<h3 id="interface-documentfragment"><span class="secno">5.2 </span>Interface <code><a href="#documentfragment">DocumentFragment</a></code></h3>
 <pre class="idl">interface <dfn id="documentfragment">DocumentFragment</dfn> : <a href="#node">Node</a> {
 };</pre>
 
 
-<h3 id="interface-document"><span class="secno">4.3 </span>Interface <code><a href="#document">Document</a></code></h3>
+<h3 id="interface-document"><span class="secno">5.3 </span>Interface <code><a href="#document">Document</a></code></h3>
 <pre class="idl">interface <dfn id="document">Document</dfn> : <a href="#node">Node</a> {
   readonly attribute <a href="#domimplementation">DOMImplementation</a> <a title="dom-Document-implementation" href="#dom-document-implementation">implementation</a>;
            attribute DOMString <a title="dom-Document-documentURI" href="#dom-document-documenturi">documentURI</a>;
@@ -1809,7 +2065,7 @@ method must run these steps:
 
 <hr>
 
-<h4 id="interface-domimplementation"><span class="secno">4.3.1 </span>Interface <code><a href="#domimplementation">DOMImplementation</a></code></h4>
+<h4 id="interface-domimplementation"><span class="secno">5.3.1 </span>Interface <code><a href="#domimplementation">DOMImplementation</a></code></h4>
 <p>User agents must create a new <code><a href="#domimplementation">DOMImplementation</a></code> object whenever a new <code><a href="#document">Document</a></code> node is created and associate it with the that <code><a href="#document">Document</a></code> node.
 
 <pre class="idl">interface <dfn id="domimplementation">DOMImplementation</dfn> {
@@ -2014,7 +2270,7 @@ otherwise [createAttribute]- ->.
 -->
 
 
-<h3 id="interface-element"><span class="secno">4.4 </span>Interface <code><a href="#element">Element</a></code></h3>
+<h3 id="interface-element"><span class="secno">5.4 </span>Interface <code><a href="#element">Element</a></code></h3>
 <pre class="idl">interface <dfn id="element">Element</dfn> : <a href="#node">Node</a> {
   readonly attribute DOMString <a title="dom-Element-namespaceURI" href="#dom-element-namespaceuri">namespaceURI</a>;
   readonly attribute DOMString <a title="dom-Element-prefix" href="#dom-element-prefix">prefix</a>;
@@ -2353,7 +2609,7 @@ the <a href="#context-node">context node</a> on which the method was invoked.
 may be returned as returned by an earlier call.
 
 
-<h4 id="interface-attr"><span class="secno">4.4.1 </span>Interface <code><a href="#attr">Attr</a></code></h4>
+<h4 id="interface-attr"><span class="secno">5.4.1 </span>Interface <code><a href="#attr">Attr</a></code></h4>
 <pre class="idl">interface <dfn id="attr">Attr</dfn> {
   readonly attribute DOMString? <a title="dom-Attr-namespaceURI" href="#dom-attr-namespaceuri">namespaceURI</a>;
   readonly attribute DOMString? <a title="dom-Attr-prefix" href="#dom-attr-prefix">prefix</a>;
@@ -2392,7 +2648,7 @@ return the <a title="concept-attr-value" href="#concept-attr-value">value</a>.
 <p>Setting the <code title="dom-Attr-value"><a href="#dom-attr-value">value</a></code> attribute must set
 <a title="concept-attr-value" href="#concept-attr-value">value</a> to the given value.
 
-<h3 id="interface-documenttype"><span class="secno">4.5 </span>Interface <code><a href="#documenttype">DocumentType</a></code></h3>
+<h3 id="interface-documenttype"><span class="secno">5.5 </span>Interface <code><a href="#documenttype">DocumentType</a></code></h3>
 <pre class="idl">interface <dfn id="documenttype">DocumentType</dfn> : <a href="#node">Node</a> {
   readonly attribute DOMString <a title="dom-DocumentType-name" href="#dom-documenttype-name">name</a>;<!--
   readonly attribute NamedNodeMap entities;
@@ -2415,7 +2671,7 @@ attribute must return the <a href="#context-node">context node</a>'s <a title="c
 attribute must return the <a href="#context-node">context node</a>'s <a title="concept-doctype-systemid" href="#concept-doctype-systemid">system ID</a>.
 
 
-<h3 id="interface-processinginstruction"><span class="secno">4.6 </span>Interface <code><a href="#processinginstruction">ProcessingInstruction</a></code></h3>
+<h3 id="interface-processinginstruction"><span class="secno">5.6 </span>Interface <code><a href="#processinginstruction">ProcessingInstruction</a></code></h3>
 <pre class="idl">interface <dfn id="processinginstruction">ProcessingInstruction</dfn> : <a href="#node">Node</a> {
   readonly attribute DOMString <a title="dom-ProcessingInstruction-target" href="#dom-processinginstruction-target">target</a>;
            attribute DOMString <a title="dom-ProcessingInstruction-data" href="#dom-processinginstruction-data">data</a>;
@@ -2431,7 +2687,7 @@ attribute must return the <a href="#context-node">context node</a>'s <a title="c
 <a href="#context-node">context node</a>'s <a title="concept-PI-data" href="#concept-pi-data">data</a> to the new value.
 
 
-<h3 id="interface-characterdata"><span class="secno">4.7 </span>Interface <code><a href="#characterdata">CharacterData</a></code></h3>
+<h3 id="interface-characterdata"><span class="secno">5.7 </span>Interface <code><a href="#characterdata">CharacterData</a></code></h3>
 <pre class="idl">interface <dfn id="characterdata">CharacterData</dfn> : <a href="#node">Node</a> {
   [TreatNullAs=EmptyString] attribute DOMString <a title="dom-CharacterData-data" href="#dom-characterdata-data">data</a>;
   readonly attribute unsigned long <a title="dom-CharacterData-length" href="#dom-characterdata-length">length</a>;
@@ -2508,7 +2764,7 @@ the <code title="dom-CharacterData-insertData"><a href="#dom-characterdata-inser
 exceptions these methods might have thrown.
 
 
-<h3 id="interface-text"><span class="secno">4.8 </span>Interface <code><a href="#text">Text</a></code></h3>
+<h3 id="interface-text"><span class="secno">5.8 </span>Interface <code><a href="#text">Text</a></code></h3>
 <pre class="idl">interface <dfn id="text">Text</dfn> : <a href="#characterdata">CharacterData</a> {
   <a href="#text">Text</a> <a title="dom-Text-splitText" href="#dom-text-splittext">splitText</a>(unsigned long <var title="">offset</var>);<!--
   readonly attribute boolean isElementContentWhitespace;-->
@@ -2592,13 +2848,13 @@ method must run these steps:
 space, tab, newline -->
 
 
-<h3 id="interface-comment"><span class="secno">4.9 </span>Interface <code><a href="#comment">Comment</a></code></h3>
+<h3 id="interface-comment"><span class="secno">5.9 </span>Interface <code><a href="#comment">Comment</a></code></h3>
 <pre class="idl">interface <dfn id="comment">Comment</dfn> : <a href="#characterdata">CharacterData</a> {
 };</pre>
 
 
 
-<h2 id="collections"><span class="secno">5 </span>Collections</h2>
+<h2 id="collections"><span class="secno">6 </span>Collections</h2>
 <p>A <dfn title="concept-collection" id="concept-collection">collection</dfn> is an object that
 represents a lists of DOM nodes. A
 <a title="concept-collection" href="#concept-collection">collection</a> can be either
@@ -2628,7 +2884,7 @@ the <a title="concept-collection" href="#concept-collection">collection</a> must
 every time it is retrieved.
 
 
-<h3 id="interface-nodelist"><span class="secno">5.1 </span>Interface <code><a href="#nodelist">NodeList</a></code></h3>
+<h3 id="interface-nodelist"><span class="secno">6.1 </span>Interface <code><a href="#nodelist">NodeList</a></code></h3>
 <p>A <code><a href="#nodelist">NodeList</a></code> object is a kind of
 <a title="concept-collection" href="#concept-collection">collection</a>.
 
@@ -2646,7 +2902,7 @@ node in the <a title="concept-collection" href="#concept-collection">collection<
 <p><code><a href="#nodelist">NodeList</a></code>s are enumerable. <span class="XXX" title="">Explain? <code title="">for ... in</code></span>
 
 
-<h3 id="interface-htmlcollection"><span class="secno">5.2 </span>Interface <code><a href="#htmlcollection">HTMLCollection</a></code></h3>
+<h3 id="interface-htmlcollection"><span class="secno">6.2 </span>Interface <code><a href="#htmlcollection">HTMLCollection</a></code></h3>
 <p>The <code><a href="#htmlcollection">HTMLCollection</a></code> interface represents a generic <a title="concept-collection" href="#concept-collection">collection</a> of elements.
 
 <p class="note">This interface is called <code><a href="#htmlcollection">HTMLCollection</a></code> for
@@ -2763,9 +3019,9 @@ title=concept-collection>collection</span>, whose primary purpose is to expose
 -->
 
 
-<h2 id="lists"><span class="secno">6 </span>Lists</h2>
+<h2 id="lists"><span class="secno">7 </span>Lists</h2>
 
-<h3 id="interface-domstringlist"><span class="secno">6.1 </span>Interface <code><a href="#domstringlist">DOMStringList</a></code></h3>
+<h3 id="interface-domstringlist"><span class="secno">7.1 </span>Interface <code><a href="#domstringlist">DOMStringList</a></code></h3>
 
 <p class="XXX">Only HTMLPropertiesCollection.names, DataTranser.types, Clipboard.types, and Document.styleSheetSets seem to use this API. Should they use something like DOMString[] instead if Web IDL introduces that?
 
@@ -2816,7 +3072,7 @@ method must return true if the list of strings contains <var title="">string</va
 or false otherwise.
 
 
-<h3 id="interface-domtokenlist"><span class="secno">6.2 </span>Interface <code><a href="#domtokenlist">DOMTokenList</a></code></h3>
+<h3 id="interface-domtokenlist"><span class="secno">7.2 </span>Interface <code><a href="#domtokenlist">DOMTokenList</a></code></h3>
 <p>The <code><a href="#domtokenlist">DOMTokenList</a></code> interface represents an interface
 to an underlying string that consists of a <a href="#set-of-space-separated-tokens">set of
 space-separated tokens</a>.
@@ -3016,7 +3272,7 @@ underlying string representation.
 </div>
 
 
-<h3 id="interface-domsettabletokenlist"><span class="secno">6.3 </span>Interface <code><a href="#domsettabletokenlist">DOMSettableTokenList</a></code></h3>
+<h3 id="interface-domsettabletokenlist"><span class="secno">7.3 </span>Interface <code><a href="#domsettabletokenlist">DOMSettableTokenList</a></code></h3>
 
 <p>The <code><a href="#domsettabletokenlist">DOMSettableTokenList</a></code> interface is the same as the
 <code><a href="#domtokenlist">DOMTokenList</a></code> interface, except that it allows the
@@ -3047,7 +3303,7 @@ attribute must return the underlying string and, on setting must replace the und
 
 
 
-<h2 id="historical"><span class="secno">7 </span>Historical</h2>
+<h2 id="historical"><span class="secno">8 </span>Historical</h2>
 <!-- XXX make this Differences from DOM Level 3 Core? -->
 
 <p><dfn id="domstring"><code>DOMString</code></dfn> and
@@ -3183,8 +3439,7 @@ Henri Sivonen
 
 for their useful comments.
 
-<p>Special thanks to Geoffrey Sneddon, Ms2ger, and Simon Pieters for editing
-the initial 80% of this specification and their useful comments.
+<p>Special thanks to Geoffrey Sneddon, and Simon Pieters for editing the initial version of this specification and their useful comments.
 
 <p>Special thanks also to Ian Hickson for first specifying some parts of
 this specification in HTML and his useful comments.

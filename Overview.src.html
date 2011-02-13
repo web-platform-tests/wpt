@@ -722,6 +722,8 @@ be one of the following:</p>
  <dd><p>When an <span title=concept-event>event</span> is <span title=concept-event-dispatch>dispatched</span> on a <span title=concept-node>node</span> it will be in this phase after it reaches
  its <span title=concept-event-target>target</span>.
 </dl>
+<p>Initially the <span title=concept-event-phase>phase</span> is
+<span title=dom-Event-AT_TARGET>AT_TARGET</span>.
 
 <p>Each <span title=concept-event>event</span> has the following associated
 flags that are all initially unset:</p>
@@ -748,7 +750,7 @@ attribute must return true if the <span>cancel flag</span> is set and false
 otherwise.
 <p>When the
 <dfn title=dom-Event-preventDefault><code>preventDefault()</code></dfn>
-method is invoked and the <span>cancel flag</span> is set the
+method is invoked and the <span>cancel flag</span> is set, the
 <span>canceled flag</span> must be set.
 <p>The <dfn title=dom-Event-defaultPrevented><code>defaultPrevented</code></dfn>
 attribute must return true if the <span>canceled flag</span> is set and
@@ -830,14 +832,13 @@ list of <span title=concept-event-listener>event listeners</span>, whose
  <li><p>If <var>event</var>'s <span>dispatch flag</span> is set throw an
  <code title=dom-DOMException-INVALID_STATE_ERR>INVALID_STATE_ERR</code>
  exception and terminate these steps.
- <li><p>Unset <var>event</var>'s <span>trusted flag</span>
+ <li><p>Unset <var>event</var>'s <span>trusted flag</span>.
  <li><p><span title=concept-event-dispatch>Dispatch</span> the
  <var>event</var> and return the value that returns.
 </ol>
 
 
 <h3>Dispatching Events</h3>
-<!-- XXX could call this processing model; should it be a subsection? -->
 
 <p>To <dfn title=concept-event-dispatch>dispatch</dfn> an
 <span title=concept-event>event</span> run these steps:</p>
@@ -849,8 +850,6 @@ list of <span title=concept-event-listener>event listeners</span>, whose
  <li><p>Set <var>e</var>'s <span>dispatch flag</span>.
  <li><p>Unset <var>e</var>'s <span>propagation flag</span>,
  <span>immediate propagation flag</span>, and <span>canceled flag</span>.
- <!-- XXX DOM3Events says this happens after dispatching but I think that is
- wrong -->
  <li><p>Set <var>e</var>'s <span title=concept-event-target>target</span>
  to the object on which <var>e</var> is dispatched.
  <li>

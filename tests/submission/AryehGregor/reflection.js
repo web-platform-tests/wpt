@@ -4,6 +4,11 @@ ReflectionTests.start = new Date().getTime();
 ReflectionTests.passed = document.getElementById("passed");
 ReflectionTests.failed = document.getElementById("failed");
 
+// Should we report a failure for unexpected exceptions, or just rethrow them?
+// The original test framework reports an exception, but testharness.js doesn't
+// want that.
+ReflectionTests.catchUnexpectedExceptions = true;
+
 /**
  * If question === answer, output a success, else report a failure with the
  * given description.  Currently success and failure both increment counters,
@@ -19,6 +24,25 @@ ReflectionTests.test = function(expected, actual, description) {
 		this.reportFailure(description + ' (expected ' + this.stringRep(actual) + ', got ' + this.stringRep(expected) + ')');
 		return false;
 	}
+}
+
+/**
+ * If calling fn causes a DOMException of the type given by the string
+ * exceptionName (e.g., "INDEX_SIZE_ERR"), output a success.  Otherwise, report
+ * a failure with the given description.
+ */
+ReflectionTests.testException = function(exceptionName, fn, description) {
+	try {
+		fn();
+	} catch (e) {
+		if (e instanceof DOMException && e.code == eval("DOMException." + exceptionName)) {
+			this.increment(this.passed);
+			return true;
+		}
+	}
+	this.increment(this.failed);
+	this.reportFailure(description);
+	return false;
 }
 
 ReflectionTests.currentTestInfo = {};
@@ -610,38 +634,38 @@ ReflectionTests.reflects = function(data, idlName, idlObj, domName, domObj) {
 			this.test(idlObj[idlName], domExpected[i], "setAttribute() to " + this.stringRep(domTests[i]) + " followed by IDL get");
 			this.increment(this.passed);
 		} catch (err) {
-			this.failure("Exception thrown during tests with setAttribute() to " + this.stringRep(domTests[i]));
+			if (this.catchUnexpectedExceptions) {
+				this.failure("Exception thrown during tests with setAttribute() to " + this.stringRep(domTests[i]));
+			} else {
+				throw err;
+			}
 		}
 	}
 
 	for (var i = 0; i < idlTests.length; i++) {
-		try {
-			idlObj[idlName] = idlTests[i];
-			if (idlDomExpected[i] === null) {
-				// This means we expect an INDEX_SIZE_ERR exception, so we
-				// shouldn't reach this line.
-				this.failure("No exception thrown during tests with IDL set to " + this.stringRep(idlTests[i]));
-				continue;
-			}
-			if (data.type == "boolean" && idlTests[i] == false) {
-				// Special case yay
-				this.test(domObj.hasAttribute(domName), false, "IDL set to " + this.stringRep(idlTests[i]) + " followed by hasAttribute()");
-			} else if (idlDomExpected[i] !== null) {
-				this.test(domObj.getAttribute(domName), idlDomExpected[i] + "", "IDL set to " + this.stringRep(idlTests[i]) + " followed by getAttribute()");
-			}
-			if (idlIdlExpected[i] !== null) {
-				this.test(idlObj[idlName], idlIdlExpected[i], "IDL set to " + this.stringRep(idlTests[i]) + " followed by IDL get");
-			}
-			this.increment(this.passed);
-		} catch (err) {
-			if (idlDomExpected[i] === null) {
-				if (!(err instanceof DOMException)) {
-					this.failure("Expected DOMException with IDL set to " + this.stringRep(idlTests[i]) + ", got some other exception");
-				} else {
-					this.test(err.code, DOMException.INDEX_SIZE_ERR, "DOMException error code on IDL set to " + this.stringRep(idlTests[i]));
+		if (idlDomExpected[i] === null) {
+			this.testException("INDEX_SIZE_ERR", function() {
+				idlObj[idlName] = idlTests[i];
+			}, "IDL set to " + this.stringRep(idlTests[i]) + " must throw INDEX_SIZE_ERR");
+		} else {
+			try {
+				idlObj[idlName] = idlTests[i];
+				if (data.type == "boolean" && idlTests[i] == false) {
+					// Special case yay
+					this.test(domObj.hasAttribute(domName), false, "IDL set to " + this.stringRep(idlTests[i]) + " followed by hasAttribute()");
+				} else if (idlDomExpected[i] !== null) {
+					this.test(domObj.getAttribute(domName), idlDomExpected[i] + "", "IDL set to " + this.stringRep(idlTests[i]) + " followed by getAttribute()");
 				}
-			} else {
-				this.failure("Exception thrown during tests with IDL set to " + this.stringRep(idlTests[i]));
+				if (idlIdlExpected[i] !== null) {
+					this.test(idlObj[idlName], idlIdlExpected[i], "IDL set to " + this.stringRep(idlTests[i]) + " followed by IDL get");
+				}
+				this.increment(this.passed);
+			} catch (err) {
+				if (this.catchUnexpectedExceptions) {
+					this.failure("Exception thrown during tests with IDL set to " + this.stringRep(idlTests[i]));
+				} else {
+					throw err;
+				}
 			}
 		}
 	}

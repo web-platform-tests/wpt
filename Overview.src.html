@@ -687,7 +687,7 @@ field must return the name of the exception constant as a string.
   readonly attribute boolean <span title=dom-Event-isTrusted>isTrusted</span>;
   readonly attribute DOMTimeStamp <span title=dom-Event-timeStamp>timeStamp</span>;
 
-  void <span title=dom-Event-initEvent>initEvent</span>(DOMString <var>type</var>, optional boolean <var>bubbles</var>, optional boolean <var>cancelable</var>);
+  void <span title=dom-Event-initEvent>initEvent</span>(DOMString <var title>type</var>, optional boolean <var title>bubbles</var>, optional boolean <var title>cancelable</var>);
 };</pre>
 
 <p>An <dfn title=concept-event>event</dfn> allows for signaling that something has occurred. E.g. that an image has completed downloading.</p>
@@ -764,15 +764,15 @@ otherwise.
 attribute must be useless. <span class=XXX>Come on!</span>
 <!-- http://www.w3.org/2008/webapps/track/issues/172 -->
 
-<p>When the <dfn title=dom-Event-initEvent><code>initEvent(<var>type</var>, <var>bubbles</var>, <var>cancelable</var>)</code></dfn>
+<p>When the <dfn title=dom-Event-initEvent><code>initEvent(<var title>type</var>, <var title>bubbles</var>, <var title>cancelable</var>)</code></dfn>
 method is invoked these steps must be run:</p>
 
 <ol>
  <li><p>If the <span>dispatch flag</span> is set terminate these steps.
- <li><p>Set <span title=event-name>name</span> to <var>type</var>.
- <li><p>If the <var>bubbles</var> argument is not omitted and is true set
+ <li><p>Set <span title=event-name>name</span> to <var title>type</var>.
+ <li><p>If the <var title>bubbles</var> argument is not omitted and is true set
  the <span>bubble flag</span>.
- <li><p>If the <var>cancelable</var> argument is not omitted and is true set
+ <li><p>If the <var title>cancelable</var> argument is not omitted and is true set
  the <span>cancel flag</span>.
 </ol>
 
@@ -780,7 +780,7 @@ method is invoked these steps must be run:</p>
 
 <pre class=idl>interface <dfn>CustomEvent</dfn> : <span>Event</span> {
   readonly attribute object <span title=dom-CustomEvent-detail>detail</span>;
-  void <span title=dom-CustomEvent-initCustomEvent>initCustomEvent</span>(DOMString <var>type</var>, optional boolean <var>bubbles</var>, <var>cancelable</var>, object <var>detail</var>);
+  void <span title=dom-CustomEvent-initCustomEvent>initCustomEvent</span>(DOMString <var title>type</var>, optional boolean <var title>bubbles</var>, <var title>cancelable</var>, object <var title>detail</var>);
 };</pre>
 
 <p><span title=concept-event>Events</span> of type <code>CustomEvent</code>
@@ -791,14 +791,14 @@ have an associated <dfn title=concept-CustomEvent-detail>detail</dfn>
 variable. The <dfn title=dom-CustomEvent-detail><code>detail</code></dfn>
 attribute must return <span title=concept-CustomEvent-detail>detail</span>.
 
-<p>When the <dfn title=dom-CustomEvent-initCustomEvent><code>initCustomEvent(<var>type</var>, <var>bubbles</var>, <var>cancelable</var>, <var>detail</var>)</code></dfn>
+<p>When the <dfn title=dom-CustomEvent-initCustomEvent><code>initCustomEvent(<var title>type</var>, <var title>bubbles</var>, <var title>cancelable</var>, <var title>detail</var>)</code></dfn>
 method is invoked these steps must be run:</p>
 
 <ol>
  <li><p>If the <span>dispatch flag</span> is set terminate these steps.
  <li><p>Invoke <code title=dom-Event-initEvent>initEvent()</code> with the
  first three arguments.</li>
- <li><p>Set <span title=concept-CustomEvent-detail>detail</span> to <var>detail</var>.
+ <li><p>Set <span title=concept-CustomEvent-detail>detail</span> to <var title>detail</var>.
 </ol>
 
 <!-- XXX maybe we should make this init business even simpler in terms of having to define it? -->
@@ -807,13 +807,13 @@ method is invoked these steps must be run:</p>
 <h3>Interface <code>EventTarget</code></h3>
 
 <pre class=idl>interface <dfn>EventTarget</dfn> {
-  void <span title=dom-EventTarget-addEventListener>addEventListener</span>(DOMString <var>type</var>, <span>EventListener</span> <var>listener</var>, optional boolean <var>capture</var>);
-  void <span title=dom-EventTarget-removeEventListener>removeEventListener</span>(DOMString <var>type</var>, <span>EventListener</span> <var>listener</var>, optional boolean <var>capture</var>);
-  boolean <span title=dom-EventTarget-dispatchEvent>dispatchEvent</span>(<span>Event</span> <var>event</var>);
+  void <span title=dom-EventTarget-addEventListener>addEventListener</span>(DOMString <var title>type</var>, <span>EventListener</span> <var title>listener</var>, optional boolean <var title>capture</var>);
+  void <span title=dom-EventTarget-removeEventListener>removeEventListener</span>(DOMString <var title>type</var>, <span>EventListener</span> <var title>listener</var>, optional boolean <var title>capture</var>);
+  boolean <span title=dom-EventTarget-dispatchEvent>dispatchEvent</span>(<span>Event</span> <var title>event</var>);
 };
 
 interface <dfn>EventListener</dfn> {
-  void <span title=dom-EventListener-handleEvent>handleEvent</span>(<span>Event</span> <var>event</var>);
+  void <span title=dom-EventListener-handleEvent>handleEvent</span>(<span>Event</span> <var title>event</var>);
 };</pre>
 
 <p><code>EventTarget</code> is an object upon which an
@@ -828,39 +828,39 @@ for a specific <span title=concept-event>event</span>. Each
 <b>listener</b>, and <b>capture</b> variable.
 
 <p>When the
-<dfn title=dom-EventTarget-addEventListener><code>addEventListener(<var>type</var>, <var>listener</var>, <var>capture</var>)</code></dfn>
+<dfn title=dom-EventTarget-addEventListener><code>addEventListener(<var title>type</var>, <var title>listener</var>, <var title>capture</var>)</code></dfn>
 method is invoked these steps must be run:
 <ol>
- <li><p>If <var>listener</var> is null terminate these steps.
- <li><p>If <var>capture</var> is omitted let <var>capture</var> be false.
+ <li><p>If <var title>listener</var> is null terminate these steps.
+ <li><p>If <var title>capture</var> is omitted let <var title>capture</var> be false.
  <li><p>Append an <span title=concept-event-listener>event listener</span>
  to the associated list of
  <span title=concept-event-listener>event listeners</span> with <b>name</b>
- set to <var>type</var>, <b>listener</b> set to <var>listener</var>, and
- <b>capture</b> set to <var>capture</var>, unless there
+ set to <var title>type</var>, <b>listener</b> set to <var title>listener</var>, and
+ <b>capture</b> set to <var title>capture</var>, unless there
  already is an <span title=concept-event-listener>event listener</span> in
  that list with the same <b>name</b>, <b>listener</b>, and <b>capture</b>.
 </ol>
 
-<p>When the <dfn title=dom-EventTarget-removeEventListener><code>removeEventListener(<var>type</var>, <var>listener</var>, <var>capture</var>)</code></dfn> method is invoked these steps must be run:
+<p>When the <dfn title=dom-EventTarget-removeEventListener><code>removeEventListener(<var title>type</var>, <var title>listener</var>, <var title>capture</var>)</code></dfn> method is invoked these steps must be run:
 <ol>
- <li><p>If <var>capture</var> is omitted let <var>capture</var> be false.
+ <li><p>If <var title>capture</var> is omitted let <var title>capture</var> be false.
  <li><p>Remove an <span title=concept-event-listener>event listener</span>
  from the associated list of
  <span title=concept-event-listener>event listeners</span>, whose
- <b>name</b> is <var>name</var>, <b>listener</b> is <var>listener</var>, and
- <b>capture</b> is <var>capture</var>.</p>
+ <b>name</b> is <var title>name</var>, <b>listener</b> is <var title>listener</var>, and
+ <b>capture</b> is <var title>capture</var>.</p>
 </ol>
 
 <p>When the
-<dfn title=dom-EventTarget-dispatchEvent><code>dispatchEvent(<var>event</var>)</code></dfn> method is invoked these steps must be run:
+<dfn title=dom-EventTarget-dispatchEvent><code>dispatchEvent(<var title>event</var>)</code></dfn> method is invoked these steps must be run:
 <ol>
- <li><p>If <var>event</var>'s <span>dispatch flag</span> is set throw an
+ <li><p>If <var title>event</var>'s <span>dispatch flag</span> is set throw an
  <code title=dom-DOMException-INVALID_STATE_ERR>INVALID_STATE_ERR</code>
  exception and terminate these steps.
- <li><p>Unset <var>event</var>'s <span>trusted flag</span>.
+ <li><p>Unset <var title>event</var>'s <span>trusted flag</span>.
  <li><p><span title=concept-event-dispatch>Dispatch</span> the
- <var>event</var> and return the value that returns.
+ <var title>event</var> and return the value that returns.
 </ol>
 
 
@@ -871,68 +871,68 @@ method is invoked these steps must be run:
 <!-- other specifications turn this into a requirement  -->
 
 <ol>
- <li><p>Let <var>e</var> be the <span title=concept-event>event</span> that
+ <li><p>Let <var title>e</var> be the <span title=concept-event>event</span> that
  is dispatched.
- <li><p>Set <var>e</var>'s <span>dispatch flag</span>.
- <li><p>Unset <var>e</var>'s <span>propagation flag</span>,
+ <li><p>Set <var title>e</var>'s <span>dispatch flag</span>.
+ <li><p>Unset <var title>e</var>'s <span>propagation flag</span>,
  <span>immediate propagation flag</span>, and <span>canceled flag</span>.
- <li><p>Set <var>e</var>'s <span title=concept-event-target>target</span>
- to the object on which <var>e</var> is dispatched.
+ <li><p>Set <var title>e</var>'s <span title=concept-event-target>target</span>
+ to the object on which <var title>e</var> is dispatched.
  <li>
   <dl>
-   <dt>If <var>e</var>'s <span title=concept-event-target>target</span> is a
+   <dt>If <var title>e</var>'s <span title=concept-event-target>target</span> is a
    <span title=concept-node>node</span>
    <dd>
     <ol>
-     <li><p>Let <var>event path</var> be a static ordered list of all
+     <li><p>Let <var title>event path</var> be a static ordered list of all
      <span title=concept-ancestor-node>ancestor nodes</span> of
-     <var>e</var>'s <span title=concept-event-target>target</span> in
+     <var title>e</var>'s <span title=concept-event-target>target</span> in
      <span>tree order</span>.</li>
-     <li><p>Set <var>e</var>'s <span title=concept-event-phase>phase</span> to <span title=dom-Event-CAPTURING_PHASE>CAPTURING_PHASE</span>.
+     <li><p>Set <var title>e</var>'s <span title=concept-event-phase>phase</span> to <span title=dom-Event-CAPTURING_PHASE>CAPTURING_PHASE</span>.
      <li><p>For each <span title=concept-node>node</span> in the
-     <var>event path</var>
+     <var title>event path</var>
      <span title=concept-event-listener-invoke>invoke</span> its
      <span title=concept-event-listener>event listeners</span> as long as
-     <var>e</var>'s <span>propagation flag</span> is unset.</li>
-     <li><p>Set <var>e</var>'s <span title=concept-event-phase>phase</span> to <span title=dom-Event-AT_TARGET>AT_TARGET</span>.
+     <var title>e</var>'s <span>propagation flag</span> is unset.</li>
+     <li><p>Set <var title>e</var>'s <span title=concept-event-phase>phase</span> to <span title=dom-Event-AT_TARGET>AT_TARGET</span>.
      <li><p><span title=concept-event-listener-invoke>Invoke</span>
-     <var>e</var>'s <span title=concept-event-target>event target</span>
+     <var title>e</var>'s <span title=concept-event-target>event target</span>
      <span title=concept-event-listener>event listeners</span> if
-     <var>e</var>'s <span>propagation flag</span> is unset.
+     <var title>e</var>'s <span>propagation flag</span> is unset.
      <li>
-      <p>If <var>e</var>'s <span>bubble flag</span> is set run these
+      <p>If <var title>e</var>'s <span>bubble flag</span> is set run these
       substeps:</p>
       <ol>
-       <li><p>Set <var>e</var>'s <span title=concept-event-phase>phase</span> to <span title=dom-Event-BUBBLING_PHASE>BUBBLING_PHASE</span>.
-       <li><p>Reverse the order of <var>event path</var>.
+       <li><p>Set <var title>e</var>'s <span title=concept-event-phase>phase</span> to <span title=dom-Event-BUBBLING_PHASE>BUBBLING_PHASE</span>.
+       <li><p>Reverse the order of <var title>event path</var>.
        <li><p>For each <span title=concept-node>node</span> in the
-       <var>event path</var>
+       <var title>event path</var>
        <span title=concept-event-listener-invoke>invoke</span> its
        <span title=concept-event-listener>event listeners</span> as long as
-       <var>e</var>'s <span>propagation flag</span> is unset.</li>
+       <var title>e</var>'s <span>propagation flag</span> is unset.</li>
       </ol>
     </ol>
    </dd>
    <dt>Otherwise</dt>
-   <dd><p>Set <var>e</var>'s <span title=concept-event-phase>phase</span> to
+   <dd><p>Set <var title>e</var>'s <span title=concept-event-phase>phase</span> to
    <span title=dom-Event-AT_TARGET>AT_TARGET</span> and then
    <span title=concept-event-listener-invoke>invoke</span> the
    <span title=concept-event-listener>event listeners</span> of
-   <var>e</var>'s <span title=concept-event-target>target</span>.</p></dd>
+   <var title>e</var>'s <span title=concept-event-target>target</span>.</p></dd>
   </dl>
  </li>
- <li><p>Unset <var>e</var>'s <span>dispatch flag</span>.
- <li><p>Return true if <var>e</var>'s <span>canceled flag</span> is set and
+ <li><p>Unset <var title>e</var>'s <span>dispatch flag</span>.
+ <li><p>Return true if <var title>e</var>'s <span>canceled flag</span> is set and
  false otherwise.
 </ol>
 
 
 <p>To <dfn title=concept-event-listener-invoke>invoke</dfn> the <span title=concept-event-listener>event listeners</span> for an object run these steps:</p>
 <ol>
- <li><p>Let <var>e</var> be the <span title=concept-event>event</span> for
+ <li><p>Let <var title>e</var> be the <span title=concept-event>event</span> for
  which the <span title=concept-event-listener>event listeners</span> are
  invoked.
- <li><p>If <var>e</var> does not yet have a
+ <li><p>If <var title>e</var> does not yet have a
  <span title=concept-event-target>target</span>, let
  <span title=concept-event-target>target</span> be the object for
  which these steps are run.
@@ -944,25 +944,25 @@ method is invoked these steps must be run:
   <span title=concept-event-listener>event listener</span> associated with
   the <span title=concept-event-current-target>current target</span>:</p>
   <ol>
-   <li>If <var>e</var>'s <span>immediate propagation flag</span> is set
+   <li>If <var title>e</var>'s <span>immediate propagation flag</span> is set
    terminate the <span title=concept-event-listener-invoke>invoke</span>
    algorithm.
-   <li>Let <var>l</var> be the
+   <li>Let <var title>l</var> be the
    <span title=concept-event-listener>event listener</span>.
-   <li>If <var>e</var>'s <span title=concept-event-name>name</span> is not
-   <var>l</var>'s <b>name</b> terminate these substeps (and run them for the
+   <li>If <var title>e</var>'s <span title=concept-event-name>name</span> is not
+   <var title>l</var>'s <b>name</b> terminate these substeps (and run them for the
    next <span title=concept-event-listener>event listener</span>).
-   <li>If <var>e</var>'s <span title=concept-event-phase>phase</span> is
+   <li>If <var title>e</var>'s <span title=concept-event-phase>phase</span> is
    <span title=dom-Event-CAPTURING_PHASE>CAPTURING_PHASE</span> and
-   <var>l</var>'s <b>capture</b> is false terminate these substeps (and run
+   <var title>l</var>'s <b>capture</b> is false terminate these substeps (and run
    them for the next
    <span title=concept-event-listener>event listener</span>).
-   <li>If <var>e</var>'s <span title=concept-event-phase>phase</span> is
+   <li>If <var title>e</var>'s <span title=concept-event-phase>phase</span> is
    <span title=dom-Event-BUBBLING_PHASE>BUBBLING_PHASE</span> and
-   <var>l</var>'s <b>capture</b> is true terminate these substeps (and run
+   <var title>l</var>'s <b>capture</b> is true terminate these substeps (and run
    them for the next
    <span title=concept-event-listener>event listener</span>).
-   <li>Run <var>l</var>'s <b>listener</b>.
+   <li>Run <var title>l</var>'s <b>listener</b>.
   </ol>
  </li>
 </ol>
@@ -979,13 +979,13 @@ run.</p>
 it was thought better to describe its
 <code title=dom-Document-createEvent>createEvent()</code> method here.
 
-<p>When the <dfn title=dom-Document-createEvent><code>createEvent(<var>interface</var>)</code></dfn> methed is invoked these steps must be run:
+<p>When the <dfn title=dom-Document-createEvent><code>createEvent(<var title>interface</var>)</code></dfn> methed is invoked these steps must be run:
 
 <ol>
  <li>
-  <p>If <var>interface</var> is an <span>ASCII case-insensitive</span>
+  <p>If <var title>interface</var> is an <span>ASCII case-insensitive</span>
   match for any of the strings in the first column in the following table
-  let <var>interface</var> be the string in the second column on the same
+  let <var title>interface</var> be the string in the second column on the same
   row as the matching string:</p>
   <table>
    <tr><td>"<code title>htmlevents</code>"<td>"<code title>event</code>"
@@ -995,14 +995,14 @@ it was thought better to describe its
   </table>
   <!-- XXX WebKit/Gecko (IE?) support "events" -> "event". Add it or make sure it's not supported? -->
  </li>
- <li><p>If <var>interface</var> is <em>not</em> an
+ <li><p>If <var title>interface</var> is <em>not</em> an
  <span>ASCII case-insensitive</span> match for "<code title>event</code>" or
  for the name of an interface that inherits from the <code>Event</code>
  interface and is supported by the user agent, throw a
  <code title=dom-DOMException-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</code> and
  terminate these steps.
  <li><p>Create an <span title=concept-event>event</span> implementing the
- interface whose name <var>interface</var> is an
+ interface whose name <var title>interface</var> is an
  <span>ASCII case-insensitive</span> match for and return it.
 </ol>
 
@@ -1011,7 +1011,7 @@ it was thought better to describe its
 
 <h2>Nodes Model</h2>
 <p><code>Node</code> objects (simply called <dfn title=concept-node>nodes</dfn>) form a tree-based structure. Each node, except for <code>Document</code> objects, has zero or one <dfn title=concept-parent-node>parent nodes</dfn>. A <code>Document</code> object cannot have a <span title=concept-parent-node>parent node</span>.</p>
-<p>A node <var>A</var> is a <dfn title=concept-child-node>child node</dfn> of a node <var>B</var> if and only if <var>B</var> is the <span title=concept-parent-node>parent node</span> of <var>A</var>.</p>
+<p>A node <var title>A</var> is a <dfn title=concept-child-node>child node</dfn> of a node <var title>B</var> if and only if <var title>B</var> is the <span title=concept-parent-node>parent node</span> of <var title>A</var>.</p>
 <p>The tree-based structure is constrained by the following node hierarchy expressed as a relationship between the type of node and its allowed <span title=concpet-child-node>child nodes</span>:</p>
 <dl>
  <dt><code>Document</code>
@@ -1042,11 +1042,11 @@ it was thought better to describe its
 <span>home subtree</span> would violate the constraints listed above.</p>
 <p class="note">Operations that would cause a node to <span>violate the node hierarchy</span> of another node will throw a <code title=dom-DOMException-HIERARCHY_REQUEST_ERR>HIERARCHY_REQUEST_ERR</code>.</p>
 <p>Besides <span title=concept-parent-node>parent node</span> and <span title=concept-child-node>child node</span> various other terms are used for tree-based structures.</p>
-<p>A node <var>A</var> is called a <dfn title=concept-descendant-node>descendant node</dfn> of a node <var>B</var>, if either <var>A</var> is a <span title=concept-child-node>child node</span> of <var>B</var> or <var>A</var> is a <span title=concept-child-node>child node</span> of a node <var>C</var> that is a <span title=concept-descendant-node>descendant node</span> of <var>B</var>.</p>
-<p>A node <var>A</var> is called an <dfn title=concept-ancestor-node>ancestor node</dfn> of a node <var>B</var> if and only if <var>B</var> is a <span title=concept-descendant-node>descendant node</span> of <var>A</var>.</p>
-<p>A node <var>A</var> is called a <dfn title=concept-sibling-node>sibling node</dfn> of a node <var>B</var>, if and only if <var>B</var> and <var>A</var> share the same <span title=concept-parent-node>parent node</span>.
-<var>A</var> is a <dfn title=concept-preceding-sibling-node>preceding sibling node</dfn> of <var>B</var> if <var>A</var> and <var>B</var> are <span title=concept-sibling-node>siblings</span> and <var>A</var> comes before <var>B</var> in their shared parent node.
-<var>A</var> is a <dfn title=concept-following-sibling-node>following sibling node</dfn> of <var>B</var> if <var>A</var> and <var>B</var> are <span title=concept-sibling-node>siblings</span> and <var>A</var> comes after <var>B</var> in their shared parent node.
+<p>A node <var title>A</var> is called a <dfn title=concept-descendant-node>descendant node</dfn> of a node <var title>B</var>, if either <var title>A</var> is a <span title=concept-child-node>child node</span> of <var title>B</var> or <var title>A</var> is a <span title=concept-child-node>child node</span> of a node <var title>C</var> that is a <span title=concept-descendant-node>descendant node</span> of <var title>B</var>.</p>
+<p>A node <var title>A</var> is called an <dfn title=concept-ancestor-node>ancestor node</dfn> of a node <var title>B</var> if and only if <var title>B</var> is a <span title=concept-descendant-node>descendant node</span> of <var title>A</var>.</p>
+<p>A node <var title>A</var> is called a <dfn title=concept-sibling-node>sibling node</dfn> of a node <var title>B</var>, if and only if <var title>B</var> and <var title>A</var> share the same <span title=concept-parent-node>parent node</span>.
+<var title>A</var> is a <dfn title=concept-preceding-sibling-node>preceding sibling node</dfn> of <var title>B</var> if <var title>A</var> and <var title>B</var> are <span title=concept-sibling-node>siblings</span> and <var title>A</var> comes before <var title>B</var> in their shared parent node.
+<var title>A</var> is a <dfn title=concept-following-sibling-node>following sibling node</dfn> of <var title>B</var> if <var title>A</var> and <var title>B</var> are <span title=concept-sibling-node>siblings</span> and <var title>A</var> comes after <var title>B</var> in their shared parent node.
 
 <!--AttrExodus -->
 
@@ -1815,7 +1815,7 @@ method must run these steps:
   void normalizeDocument();
   Node renameNode(Node n, DOMString namespace, DOMString qualifiedName);-->
 
-  <span>Event</span> <span title=dom-Document-createEvent>createEvent</span>(DOMString <var>interface</var>);
+  <span>Event</span> <span title=dom-Document-createEvent>createEvent</span>(DOMString <var title>interface</var>);
 };</pre>
 
 <p>A <code>Document</code> node is assumed to be an <dfn>XML document</dfn>

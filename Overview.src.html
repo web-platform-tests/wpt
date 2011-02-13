@@ -698,8 +698,9 @@ return the <span title=concept-event-name>name</span>.</p>
 
 <p>Each <span title=concept-event>event</span> has an associated
 <dfn title=concept-event-target>target</dfn> and
-<dfn title=concept-event-current-target>current target</dfn> identified
-while <span title=concept-event-dispatch>dispatching</span> the
+<dfn title=concept-event-current-target>current target</dfn> which are both
+initially null and then set while
+<span title=concept-event-dispatch>dispatching</span> the
 <span title=concept-event>event</span>. The
 <dfn title=dom-Event-target><code>target</code></dfn> attribute must return
 the <span title=concept-event-target>target</span> and the
@@ -855,8 +856,8 @@ method is invoked these steps must be run:
 <p>When the
 <dfn title=dom-EventTarget-dispatchEvent><code>dispatchEvent(<var title>event</var>)</code></dfn> method is invoked these steps must be run:
 <ol>
- <li><p>If <var title>event</var>'s <span>dispatch flag</span> is set throw an
- <code title=dom-DOMException-INVALID_STATE_ERR>INVALID_STATE_ERR</code>
+ <li><p>If <var title>event</var>'s <span>dispatch flag</span> is set throw
+ an <code title=dom-DOMException-INVALID_STATE_ERR>INVALID_STATE_ERR</code>
  exception and terminate these steps.
  <li><p>Unset <var title>event</var>'s <span>trusted flag</span>.
  <li><p><span title=concept-event-dispatch>Dispatch</span> the
@@ -922,8 +923,8 @@ method is invoked these steps must be run:
   </dl>
  </li>
  <li><p>Unset <var title>e</var>'s <span>dispatch flag</span>.
- <li><p>Return true if <var title>e</var>'s <span>canceled flag</span> is set and
- false otherwise.
+ <li><p>Return true if <var title>e</var>'s <span>canceled flag</span> is
+ set and false otherwise.
 </ol>
 
 
@@ -944,25 +945,28 @@ method is invoked these steps must be run:
   <span title=concept-event-listener>event listener</span> associated with
   the <span title=concept-event-current-target>current target</span>:</p>
   <ol>
-   <li>If <var title>e</var>'s <span>stop immediate propagation flag</span> is set
-   terminate the <span title=concept-event-listener-invoke>invoke</span>
-   algorithm.
-   <li>Let <var title>l</var> be the
+   <li><p>If <var title>e</var>'s
+   <span>stop immediate propagation flag</span> is set, terminate the
+   <span title=concept-event-listener-invoke>invoke</span> algorithm.
+   <li><p>Let <var title>l</var> be the
    <span title=concept-event-listener>event listener</span>.
-   <li>If <var title>e</var>'s <span title=concept-event-name>name</span> is not
-   <var title>l</var>'s <b>name</b> terminate these substeps (and run them for the
-   next <span title=concept-event-listener>event listener</span>).
-   <li>If <var title>e</var>'s <span title=concept-event-phase>phase</span> is
+   <li><p>If <var title>e</var>'s <span title=concept-event-name>name</span>
+   is not <var title>l</var>'s <b>name</b>, terminate these substeps (and
+   run them for the next
+   <span title=concept-event-listener>event listener</span>).
+   <li><p>If <var title>e</var>'s
+   <span title=concept-event-phase>phase</span> is
    <span title=dom-Event-CAPTURING_PHASE>CAPTURING_PHASE</span> and
-   <var title>l</var>'s <b>capture</b> is false terminate these substeps (and run
-   them for the next
-   <span title=concept-event-listener>event listener</span>).
-   <li>If <var title>e</var>'s <span title=concept-event-phase>phase</span> is
+   <var title>l</var>'s <b>capture</b> is false, terminate these substeps
+   (and run them for the next <span title=concept-event-listener>event
+   listener</span>).
+   <li><p>If <var title>e</var>'s
+   <span title=concept-event-phase>phase</span> is
    <span title=dom-Event-BUBBLING_PHASE>BUBBLING_PHASE</span> and
-   <var title>l</var>'s <b>capture</b> is true terminate these substeps (and run
-   them for the next
+   <var title>l</var>'s <b>capture</b> is true, terminate these substeps
+   (and run them for the next
    <span title=concept-event-listener>event listener</span>).
-   <li>Run <var title>l</var>'s <b>listener</b>.
+   <li><p>Run <var title>l</var>'s <b>listener</b>.
   </ol>
  </li>
 </ol>

@@ -648,6 +648,21 @@ field must return the name of the exception constant as a string.
 
 <h2>Events</h2>
 
+<!--
+  for when the "hey look at my version of DOM Events" email goes out:
+
+  - no restrictions on event.type (allow empty string)
+  - no need for initEvent
+  - make most initEvent arguments optional
+  - better defined what everything returns when you create an event, when
+    you initialize it, and when you dispatch it
+  - propagation/canceled flags are cleared before dispatching rather than
+    after as to not affect defaultPrevented
+  - changed preventDefault to make sense
+  - changed dispatchEvent return value to make sense
+  - set trusted to false in dispatchEvent, not createEvent
+-->
+
 <h3>Interface <code>Event</code></h3>
 
 <pre class="idl">interface <dfn>Event</dfn> {
@@ -871,7 +886,8 @@ list of <span title=concept-event-listener>event listeners</span>, whose
   </dl>
  </li>
  <li><p>Unset <var>e</var>'s <span>dispatch flag</span>.
- <li class=XXX>report whether the event was canceled
+ <li><p>Return true if <var>e</var>'s <span>canceled flag</span> is set and
+ false otherwise.
 </ol>
 
 

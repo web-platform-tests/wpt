@@ -728,8 +728,8 @@ be one of the following:</p>
 <p>Each <span title=concept-event>event</span> has the following associated
 flags that are all initially unset:</p>
 <ul>
- <li><dfn>propagation flag</dfn>
- <li><dfn>immediate propagation flag</dfn>
+ <li><dfn>stop propagation flag</dfn>
+ <li><dfn>stop immediate propagation flag</dfn>
  <li><dfn>bubble flag</dfn>
  <li><dfn>cancel flag</dfn>
  <li><dfn>canceled flag</dfn>
@@ -738,11 +738,11 @@ flags that are all initially unset:</p>
 </ul>
 <p>When the
 <dfn title=dom-Event-stopPropagation><code>stopPropagation()</code></dfn>
-method is invoked the <span>propagation flag</span> must be set.
+method is invoked the <span>stop propagation flag</span> must be set.
 <p>When the
 <dfn title=dom-Event-stopImmediatePropagation><code>stopImmediatePropagation()</code></dfn>
-method is invoked both the <span>propagation flag</span> and
-<span>immediate propagation flag</span> must be set.
+method is invoked both the <span>stop propagation flag</span> and
+<span>stop immediate propagation flag</span> must be set.
 <p>The <dfn title=dom-Event-bubbles><code>bubbles</code></dfn> attribute
 must return true if the <span>bubble flag</span> is set and false otherwise.
 <p>The <dfn title=dom-Event-cancelable><code>cancelable</code></dfn>
@@ -874,8 +874,8 @@ method is invoked these steps must be run:
  <li><p>Let <var title>e</var> be the <span title=concept-event>event</span> that
  is dispatched.
  <li><p>Set <var title>e</var>'s <span>dispatch flag</span>.
- <li><p>Unset <var title>e</var>'s <span>propagation flag</span>,
- <span>immediate propagation flag</span>, and <span>canceled flag</span>.
+ <li><p>Unset <var title>e</var>'s <span>stop propagation flag</span>,
+ <span>stop immediate propagation flag</span>, and <span>canceled flag</span>.
  <li><p>Set <var title>e</var>'s <span title=concept-event-target>target</span>
  to the object on which <var title>e</var> is dispatched.
  <li>
@@ -893,12 +893,12 @@ method is invoked these steps must be run:
      <var title>event path</var>
      <span title=concept-event-listener-invoke>invoke</span> its
      <span title=concept-event-listener>event listeners</span> as long as
-     <var title>e</var>'s <span>propagation flag</span> is unset.</li>
+     <var title>e</var>'s <span>stop propagation flag</span> is unset.</li>
      <li><p>Set <var title>e</var>'s <span title=concept-event-phase>phase</span> to <span title=dom-Event-AT_TARGET>AT_TARGET</span>.
      <li><p><span title=concept-event-listener-invoke>Invoke</span>
      <var title>e</var>'s <span title=concept-event-target>event target</span>
      <span title=concept-event-listener>event listeners</span> if
-     <var title>e</var>'s <span>propagation flag</span> is unset.
+     <var title>e</var>'s <span>stop propagation flag</span> is unset.
      <li>
       <p>If <var title>e</var>'s <span>bubble flag</span> is set run these
       substeps:</p>
@@ -909,7 +909,7 @@ method is invoked these steps must be run:
        <var title>event path</var>
        <span title=concept-event-listener-invoke>invoke</span> its
        <span title=concept-event-listener>event listeners</span> as long as
-       <var title>e</var>'s <span>propagation flag</span> is unset.</li>
+       <var title>e</var>'s <span>stop propagation flag</span> is unset.</li>
       </ol>
     </ol>
    </dd>
@@ -944,7 +944,7 @@ method is invoked these steps must be run:
   <span title=concept-event-listener>event listener</span> associated with
   the <span title=concept-event-current-target>current target</span>:</p>
   <ol>
-   <li>If <var title>e</var>'s <span>immediate propagation flag</span> is set
+   <li>If <var title>e</var>'s <span>stop immediate propagation flag</span> is set
    terminate the <span title=concept-event-listener-invoke>invoke</span>
    algorithm.
    <li>Let <var title>l</var> be the
@@ -3590,6 +3590,7 @@ specification will however not support them.
 <p>Thanks to
 
 Dethe Elza,
+Glenn Maynard,
 Jonas Sicking, and
 Henri Sivonen
 

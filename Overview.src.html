@@ -905,6 +905,11 @@ list of <span title=concept-event-listener>event listeners</span>, whose
    <var>l</var>'s <b>capture</b> is false terminate these substeps (and run
    them for the next
    <span title=concept-event-listener>event listener</span>).
+   <li>If <var>e</var>'s <span title=concept-event-phase>phase</span> is
+   <span title=dom-Event-BUBBLING_PHASE>BUBBLING_PHASE</span> and
+   <var>l</var>'s <b>capture</b> is true terminate these substeps (and run
+   them for the next
+   <span title=concept-event-listener>event listener</span>).
    <li>Run <var>l</var>'s <b>listener</b>.
   </ol>
  </li>

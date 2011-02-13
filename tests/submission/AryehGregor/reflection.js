@@ -1,201 +1,6 @@
-var ReflectionTests = {};
+ReflectionTests = {};
 
 ReflectionTests.start = new Date().getTime();
-ReflectionTests.passed = document.getElementById("passed");
-ReflectionTests.failed = document.getElementById("failed");
-
-// Should we report a failure for unexpected exceptions, or just rethrow them?
-// The original test framework reports an exception, but testharness.js doesn't
-// want that.
-ReflectionTests.catchUnexpectedExceptions = true;
-
-/**
- * If question === answer, output a success, else report a failure with the
- * given description.  Currently success and failure both increment counters,
- * and failures output a message to a <ul>.  Which <ul> is decided by the type
- * parameter -- different attribute types are separated for readability.
- */
-ReflectionTests.test = function(expected, actual, description) {
-	if (expected === actual) {
-		this.increment(this.passed);
-		return true;
-	} else {
-		this.increment(this.failed);
-		this.reportFailure(description + ' (expected ' + this.stringRep(actual) + ', got ' + this.stringRep(expected) + ')');
-		return false;
-	}
-}
-
-/**
- * If calling fn causes a DOMException of the type given by the string
- * exceptionName (e.g., "INDEX_SIZE_ERR"), output a success.  Otherwise, report
- * a failure with the given description.
- */
-ReflectionTests.testException = function(exceptionName, fn, description) {
-	try {
-		fn();
-	} catch (e) {
-		if (e instanceof DOMException && e.code == eval("DOMException." + exceptionName)) {
-			this.increment(this.passed);
-			return true;
-		}
-	}
-	this.increment(this.failed);
-	this.reportFailure(description);
-	return false;
-}
-
-ReflectionTests.currentTestInfo = {};
-/**
- * Report a failure with the given description, adding context from the
- * currentTestInfo global.
- */
-ReflectionTests.reportFailure = function(description) {
-	var domNode = this.currentTestInfo.domObj.tagName.toLowerCase();
-	var idlNode = this.currentTestInfo.idlObj.nodeName.toLowerCase();
-	var domName = this.currentTestInfo.domName;
-	var idlName = this.currentTestInfo.idlName;
-	var comment = this.currentTestInfo.data.comment;
-	var typeDesc = idlNode + "." + idlName;
-	if (!comment && (domNode != idlNode || domName != idlName)) {
-		comment = "<" + domNode + " " + domName + ">";
-	}
-	if (comment) {
-		typeDesc += " (" + comment + ")";
-	}
-	typeDesc = typeDesc.replace("&", "&amp;").replace("<", "&lt;");
-	description = description.replace("&", "&amp;").replace("<", "&lt;");
-
-	var type = this.currentTestInfo.data.type;
-
-	// Special case for undefined attributes, which we don't want getting in
-	// the way of everything else.
-	if (description.search('^typeof IDL attribute \\(expected ".*", got "undefined"\\)$') != -1) {
-		type = "undefined";
-	}
-
-	var done = false;
-	var ul = document.getElementById("errors-" + type.replace(" ", "-"));
-	if (ul === null) {
-		ul = document.createElement("ul");
-		ul.id = "errors-" + type.replace(" ", "-");
-		var div = document.getElementById("errors");
-		p = document.createElement("p");
-		if (type == "undefined") {
-			div.parentNode.insertBefore(ul, div.nextSibling);
-			p.innerHTML = "These IDL attributes were of undefined type, presumably representing unimplemented features (cordoned off into a separate section for tidiness):";
-		} else {
-			div.appendChild(ul);
-			p.innerHTML = "Errors for type " + type + ":";
-		}
-		ul.parentNode.insertBefore(p, ul);
-	} else if (type != "undefined") {
-		var existingErrors = ul.getElementsByClassName("desc");
-		for (var i = 0; i < existingErrors.length; i++) {
-			if (existingErrors[i].innerHTML == description) {
-				var typeSpan = existingErrors[i].parentNode.getElementsByClassName("type")[0];
-				// Check if we have lots of the same error for the same
-				// attribute.  If so, we want to collapse them -- the exact
-				// elements that exhibit the error aren't going to be important
-				// to report in this case, and it can take a lot of space if
-				// there's an error in a global attribute like dir or id.
-				var types = typeSpan.innerHTML.split(", ");
-				var count = 0;
-				for (var i = 0; i < types.length; i++) {
-					if (types[i].search("^\\([0-9]* elements\\)\\." + idlName + "$") != -1) {
-						types[i] = "(" + (1 + parseInt(/[0-9]+/.exec(types[i])[0])) + " elements)." + idlName;
-						typeSpan.innerHTML = types.join(", ");
-						return;
-					} else if (types[i].search("\\." + idlName + "$") != -1) {
-						count++;
-					}
-				}
-				if (comment || count < 10) {
-					// Just add the extra error to the end, not many duplicates
-					// (or we have a comment)
-					typeSpan.innerHTML += ", " + typeDesc;
-				} else {
-					var filteredTypes = types.filter(function(type) { return type.search("\\." + idlName + "$") == -1; });
-					if (filteredTypes.length) {
-						typeSpan.innerHTML = filteredTypes.join(", ") + ", ";
-					} else {
-						typeSpan.innerHTML = "";
-					}
-					typeSpan.innerHTML += "(" + (types.length - filteredTypes.length) + " elements)." + idlName;
-				}
-				return;
-			}
-		}
-	}
-
-	if (type == "undefined") {
-		ul.innerHTML += "<li>" + typeDesc;
-	} else {
-		ul.innerHTML += "<li><span class=\"type\">" + typeDesc + "</span>: <span class=\"desc\">" + description + "</span>";
-	}
-}
-
-/**
- * Returns a string representing val.  Basically just adds quotes for strings,
- * and passes through other recognized types literally.
- */
-ReflectionTests.stringRep = function(val) {
-	if (val === null) {
-		// typeof is object, so the switch isn't useful
-		return "null";
-	}
-	switch (typeof val) {
-		case "string":
-			return '"' + val.replace('"', '\\"') + '"';
-		case "boolean":
-		case "undefined":
-		case "number":
-			return val + "";
-		default:
-			return typeof val + ' "' + val + '"';
-	}
-}
-
-/**
- * Shorthand function for when we have a failure outside of test().  Generally
- * used when the failure is an exception thrown unexpectedly or such, something
- * not equality-based.
- */
-ReflectionTests.failure = function(message) {
-	this.increment(this.failed);
-	this.reportFailure(message);
-}
-
-/**
- * Increment the count in either "passed" or "failed".  el should always be one
- * of those two variables.  The implementation of this function amuses me.
- */
-ReflectionTests.increment = function(el) {
-	el.innerHTML = parseInt(el.innerHTML) + 1;
-	var percent = document.getElementById("percent");
-	var passed = document.getElementById("passed");
-	var failed = document.getElementById("failed");
-	percent.innerHTML = (parseInt(passed.innerHTML)/(parseInt(passed.innerHTML) + parseInt(failed.innerHTML))*100).toPrecision(3);
-}
-
-/**
- * Hide all displayed errors matching a given regex, so it's easier to filter
- * out repetitive failures.  TODO: Fix this so it works right with the new
- * "lump many errors in one <li>" thing.
- */
-ReflectionTests.maskErrors = function(regex) {
-	var uls = document.getElementsByTagName("ul");
-	for (var i = 0; i < uls.length; i++) {
-		var lis = uls[i].children;
-		for (var j = 0; j < lis.length; j++) {
-			if (regex !== "" && lis[j].innerHTML.match(regex)) {
-				lis[j].style.display = "none";
-			} else {
-				lis[j].style.display = "list-item";
-			}
-		}
-	}
-}
 
 /**
  * Resolve the given URL to an absolute URL, relative to the current document's
@@ -532,11 +337,11 @@ ReflectionTests.reflects = function(data, idlName, idlObj, domName, domObj) {
 	// Note: probably a hack?  This kind of assumes that the variables here
 	// won't change over the course of the tests, which is wrong, but it's
 	// probably safe enough.  Just don't read stuff that will change.
-	this.currentTestInfo = {"data": data, "idlName": idlName, "idlObj": idlObj, "domName": domName, "domObj": domObj};
+	ReflectionHarness.currentTestInfo = {"data": data, "idlName": idlName, "idlObj": idlObj, "domName": domName, "domObj": domObj};
 
 	// Test that typeof idlObj[idlName] is correct.  If not, further tests are
 	// probably pointless, so bail out.
-	if (!this.test(typeof idlObj[idlName], typeInfo.jsType, "typeof IDL attribute")) {
+	if (!ReflectionHarness.test(typeof idlObj[idlName], typeInfo.jsType, "typeof IDL attribute")) {
 		return;
 	}
 
@@ -546,7 +351,7 @@ ReflectionTests.reflects = function(data, idlName, idlObj, domName, domObj) {
 		defaultVal = typeInfo.defaultVal;
 	}
 	if (defaultVal !== null) {
-		this.test(idlObj[idlName], defaultVal, "IDL get with DOM attribute unset");
+		ReflectionHarness.test(idlObj[idlName], defaultVal, "IDL get with DOM attribute unset");
 	}
 
 	var domTests = typeInfo.domTests.slice(0);
@@ -630,12 +435,14 @@ ReflectionTests.reflects = function(data, idlName, idlObj, domName, domObj) {
 			// regard for type), but it's really not an HTML5 thing, so this is
 			// more of a sanity check to signal trouble in case things go wrong
 			// in the IDL get.
-			this.test(domObj.getAttribute(domName), domTests[i] + "", "setAttribute() to " + this.stringRep(domTests[i]) + " followed by getAttribute()");
-			this.test(idlObj[idlName], domExpected[i], "setAttribute() to " + this.stringRep(domTests[i]) + " followed by IDL get");
-			this.increment(this.passed);
+			ReflectionHarness.test(domObj.getAttribute(domName), domTests[i] + "", "setAttribute() to " + ReflectionHarness.stringRep(domTests[i]) + " followed by getAttribute()");
+			ReflectionHarness.test(idlObj[idlName], domExpected[i], "setAttribute() to " + ReflectionHarness.stringRep(domTests[i]) + " followed by IDL get");
+			if (ReflectionHarness.catchUnexpectedExceptions) {
+				ReflectionHarness.success();
+			}
 		} catch (err) {
-			if (this.catchUnexpectedExceptions) {
-				this.failure("Exception thrown during tests with setAttribute() to " + this.stringRep(domTests[i]));
+			if (ReflectionHarness.catchUnexpectedExceptions) {
+				ReflectionHarness.failure("Exception thrown during tests with setAttribute() to " + ReflectionHarness.stringRep(domTests[i]));
 			} else {
 				throw err;
 			}
@@ -644,25 +451,27 @@ ReflectionTests.reflects = function(data, idlName, idlObj, domName, domObj) {
 
 	for (var i = 0; i < idlTests.length; i++) {
 		if (idlDomExpected[i] === null) {
-			this.testException("INDEX_SIZE_ERR", function() {
+			ReflectionHarness.testException("INDEX_SIZE_ERR", function() {
 				idlObj[idlName] = idlTests[i];
-			}, "IDL set to " + this.stringRep(idlTests[i]) + " must throw INDEX_SIZE_ERR");
+			}, "IDL set to " + ReflectionHarness.stringRep(idlTests[i]) + " must throw INDEX_SIZE_ERR");
 		} else {
 			try {
 				idlObj[idlName] = idlTests[i];
 				if (data.type == "boolean" && idlTests[i] == false) {
 					// Special case yay
-					this.test(domObj.hasAttribute(domName), false, "IDL set to " + this.stringRep(idlTests[i]) + " followed by hasAttribute()");
+					ReflectionHarness.test(domObj.hasAttribute(domName), false, "IDL set to " + ReflectionHarness.stringRep(idlTests[i]) + " followed by hasAttribute()");
 				} else if (idlDomExpected[i] !== null) {
-					this.test(domObj.getAttribute(domName), idlDomExpected[i] + "", "IDL set to " + this.stringRep(idlTests[i]) + " followed by getAttribute()");
+					ReflectionHarness.test(domObj.getAttribute(domName), idlDomExpected[i] + "", "IDL set to " + ReflectionHarness.stringRep(idlTests[i]) + " followed by getAttribute()");
 				}
 				if (idlIdlExpected[i] !== null) {
-					this.test(idlObj[idlName], idlIdlExpected[i], "IDL set to " + this.stringRep(idlTests[i]) + " followed by IDL get");
+					ReflectionHarness.test(idlObj[idlName], idlIdlExpected[i], "IDL set to " + ReflectionHarness.stringRep(idlTests[i]) + " followed by IDL get");
 				}
-				this.increment(this.passed);
+				if (ReflectionHarness.catchUnexpectedExceptions) {
+					ReflectionHarness.success();
+				}
 			} catch (err) {
-				if (this.catchUnexpectedExceptions) {
-					this.failure("Exception thrown during tests with IDL set to " + this.stringRep(idlTests[i]));
+				if (ReflectionHarness.catchUnexpectedExceptions) {
+					ReflectionHarness.failure("Exception thrown during tests with IDL set to " + ReflectionHarness.stringRep(idlTests[i]));
 				} else {
 					throw err;
 				}

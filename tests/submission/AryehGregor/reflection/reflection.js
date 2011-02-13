@@ -965,6 +965,9 @@ ReflectionTests.reflects("url", "itemValue", "link", "href");
 ReflectionTests.reflects("url", "itemValue", "object", "data");
 ReflectionTests.reflects("url", "itemValue", "time", "datetime");
 
-document.getElementById("time").innerHTML = (new Date().getTime() - ReflectionTests.start)/1000;
+var time = document.getElementById("time");
+if (time) {
+	time.innerHTML = (new Date().getTime() - ReflectionTests.start)/1000;
+}
 
 document.body.innerHTML += "(Note: missing tests for types " + unimplemented.join(", ") + ".)";

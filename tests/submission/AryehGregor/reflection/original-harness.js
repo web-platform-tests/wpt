@@ -83,12 +83,9 @@ ReflectionHarness.testException = function(exceptionName, fn, description) {
 }
 
 /**
- * Report a failure with the given description, adding context from the
- * currentTestInfo member.
- *
- * @private
+ * Get a description of the current type, e.g., "a.href".
  */
-ReflectionHarness.reportFailure = function(description) {
+ReflectionHarness.getTypeDescription = function() {
 	var domNode = this.currentTestInfo.domObj.tagName.toLowerCase();
 	var idlNode = this.currentTestInfo.idlObj.nodeName.toLowerCase();
 	var domName = this.currentTestInfo.domName;
@@ -101,6 +98,19 @@ ReflectionHarness.reportFailure = function(description) {
 	if (comment) {
 		typeDesc += " (" + comment + ")";
 	}
+	return typeDesc;
+}
+
+/**
+ * Report a failure with the given description, adding context from the
+ * currentTestInfo member.
+ *
+ * @private
+ */
+ReflectionHarness.reportFailure = function(description) {
+	var typeDesc = this.getTypeDescription();
+	var idlName = this.currentTestInfo.idlName;
+	var comment = this.currentTestInfo.data.comment;
 	typeDesc = typeDesc.replace("&", "&amp;").replace("<", "&lt;");
 	description = description.replace("&", "&amp;").replace("<", "&lt;");
 

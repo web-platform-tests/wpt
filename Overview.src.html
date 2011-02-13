@@ -776,9 +776,33 @@ method is invoked these steps must be run:</p>
  the <span>cancel flag</span>.
 </ol>
 
-<!--
-XXX add CustomEvent here?!
--->
+<h3>Interface <code>CustomEvent</code></h3>
+
+<pre class=idl>interface <dfn>CustomEvent</dfn> : <span>Event</span> {
+  readonly attribute object <span title=dom-CustomEvent-detail>detail</span>;
+  void <span title=dom-CustomEvent-initCustomEvent>initCustomEvent</span>(DOMString <var>type</var>, optional boolean <var>bubbles</var>, <var>cancelable</var>, object <var>detail</var>);
+};</pre>
+
+<p><span title=concept-event>Events</span> of type <code>CustomEvent</code>
+can be used for synthetic events that need to carry data.</p>
+
+<p><span title=concept-event>Events</span> of type <code>CustomEvent</code>
+have an associated <dfn title=concept-CustomEvent-detail>detail</dfn>
+variable. The <dfn title=dom-CustomEvent-detail><code>detail</code></dfn>
+attribute must return <span title=concept-CustomEvent-detail>detail</span>.
+
+<p>When the <dfn title=dom-CustomEvent-initCustomEvent><code>initCustomEvent(<var>type</var>, <var>bubbles</var>, <var>cancelable</var>, <var>detail</var>)</code></dfn>
+method is invoked these steps must be run:</p>
+
+<ol>
+ <li><p>If the <span>dispatch flag</span> is set terminate these steps.
+ <li><p>Invoke <code title=dom-Event-initEvent>initEvent()</code> with the
+ first three arguments.</li>
+ <li><p>Set <span title=concept-CustomEvent-detail>detail</span> to <var>detail</var>.
+</ol>
+
+<!-- XXX maybe we should make this init business even simpler in terms of having to define it? -->
+
 
 <h3>Interface <code>EventTarget</code></h3>
 

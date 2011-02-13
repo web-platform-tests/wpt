@@ -671,7 +671,7 @@ field must return the name of the exception constant as a string.
   readonly attribute boolean <span title=dom-Event-isTrusted>isTrusted</span>;
   readonly attribute DOMTimeStamp <span title=dom-Event-timeStamp>timeStamp</span>;
 
-  void <span title=dom-Event-initEvent>initEvent</span>(DOMString <var>type</var>, boolean <var>bubbles</var>, boolean <var>cancelable</var>);
+  void <span title=dom-Event-initEvent>initEvent</span>(DOMString <var>type</var>, optional boolean <var>bubbles</var>, optional boolean <var>cancelable</var>);
 };</pre>
 
 <p>An <dfn title=concept-event>event</dfn> allows for signaling that something has occurred. E.g. that an image has completed downloading.</p>
@@ -716,6 +716,7 @@ flags that are all initially unset:</p>
  <li><dfn>cancel flag</dfn>
  <li><dfn>canceled flag</dfn>
  <li><dfn>trusted flag</dfn>
+ <li><dfn>dispatch flag</dfn>
 </ul>
 <p>When the
 <dfn title=dom-Event-stopPropagation><code>stopPropagation()</code></dfn>
@@ -745,9 +746,17 @@ otherwise.
 attribute must be useless. <span class=XXX>Come on!</span>
 <!-- http://www.w3.org/2008/webapps/track/issues/172 -->
 
+<p>When the <dfn title=dom-Event-initEvent><code>initEvent(<var>type</var>, <var>bubbles</var>, <var>cancelable</var>)</code></dfn>
+method is invoked these steps must be run:</p>
 
-
-<!-- initialize an event -->
+<ol>
+ <li><p>If the <span>dispatch flag</span> is set terminate these steps.
+ <li><p>Set <span title=event-name>name</span> to <var>type</var>.
+ <li><p>If the <var>bubbles</var> argument is not omitted and is true set
+ the <span>bubble flag</span>.
+ <li><p>If the <var>cancelable</var> argument is not omitted and is true set
+ the <span>cancel flag</span>.
+</ol>
 
 <!--
 XXX add CustomEvent here?!
@@ -811,6 +820,11 @@ list of <span title=concept-event-listener>event listeners</span>, whose
 <ol>
  <li><p>Let <var>e</var> be the <span title=concept-event>event</span> that
  is dispatched.
+ <li><p>Set <var>e</var>'s <span>dispatch flag</span>.
+ <li><p>Unset <var>e</var>'s <span>propagation flag</span>,
+ <span>immediate propagation flag</span>, and <span>canceled flag</span>.
+ <!-- XXX DOM3Events says this happens after dispatching but I think that is
+ wrong -->
  <li><p>Set <var>e</var>'s <span title=concept-event-target>target</span>
  to the object on which <var>e</var> is dispatched.
  <li>
@@ -856,8 +870,8 @@ list of <span title=concept-event-listener>event listeners</span>, whose
    <var>e</var>'s <span title=concept-event-target>target</span>.</p></dd>
   </dl>
  </li>
+ <li><p>Unset <var>e</var>'s <span>dispatch flag</span>.
  <li class=XXX>report whether the event was canceled
- <li class=XXX>initialize the event (reset flags)
 </ol>
 
 

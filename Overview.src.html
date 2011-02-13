@@ -842,13 +842,15 @@ method is invoked these steps must be run:
  that list with the same <b>name</b>, <b>listener</b>, and <b>capture</b>.
 </ol>
 
-<p>When the
-<dfn title=dom-EventTarget-removeEventListener><code>removeEventListener(<var>type</var>, <var>listener</var>, <var>capture</var>)</code></dfn>
-method is invoked the
-<span title=concept-event-listener>event listener</span> from the associated
-list of <span title=concept-event-listener>event listeners</span>, whose
-<b>name</b> is <var>name</var>, <b>listener</b> is <var>listener</var>, and
-<var>capture</var> is <b>capture</b>, must be removed (if any).</p>
+<p>When the <dfn title=dom-EventTarget-removeEventListener><code>removeEventListener(<var>type</var>, <var>listener</var>, <var>capture</var>)</code></dfn> method is invoked these steps must be run:
+<ol>
+ <li><p>If <var>capture</var> is omitted let <var>capture</var> be false.
+ <li><p>Remove an <span title=concept-event-listener>event listener</span>
+ from the associated list of
+ <span title=concept-event-listener>event listeners</span>, whose
+ <b>name</b> is <var>name</var>, <b>listener</b> is <var>listener</var>, and
+ <b>capture</b> is <var>capture</var>.</p>
+</ol>
 
 <p>When the
 <dfn title=dom-EventTarget-dispatchEvent><code>dispatchEvent(<var>event</var>)</code></dfn> method is invoked these steps must be run:

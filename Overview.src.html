@@ -924,13 +924,37 @@ run.</p>
 <h3>Creating Events</h3>
 
 <p class=note>Although the <code>Document</code> object is introduced later
-it was thought better to describe the
+it was thought better to describe its
 <code title=dom-Document-createEvent>createEvent()</code> method here.
 
-<p class=XXX>document.createEvent()</p>
+<p>When the <dfn title=dom-Document-createEvent><code>createEvent(<var>interface</var>)</code></dfn> methed is invoked these steps must be run:
 
-<p class=XXX>We should do something about synthetic events for Web Workers too I think. Maybe that gives a chance to introduce a much simpler model? (We should carefully consider whether that is worth it though. How frequently are synthetic events used?)
+<ol>
+ <li>
+  <p>If <var>interface</var> is an <span>ASCII case-insensitive</span>
+  match for any of the strings in the first column in the following table
+  let <var>interface</var> be the string in the second column on the same
+  row as the matching string:</p>
+  <table>
+   <tr><td>"<code title>htmlevents</code>"<td>"<code title>event</code>"
+   <tr><td>"<code title>mouseevents</code>"<td>"<code title>mouseevent</code>"
+   <tr><td>"<code title>mutationevents</code>"<td>"<code title>mutationevent</code>"
+   <tr><td>"<code title>uievents</code>"<td>"<code title>uievent</code>"
+  </table>
+  <!-- XXX WebKit/Gecko (IE?) support "events" -> "event". Add it or make sure it's not supported? -->
+ </li>
+ <li><p>If <var>interface</var> is <em>not</em> an
+ <span>ASCII case-insensitive</span> match for "<code title>event</code>" or
+ for the name of an interface that inherits from the <code>Event</code>
+ interface and is supported by the user agent, throw a
+ <code title=dom-DOMException-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</code> and
+ terminate these steps.
+ <li><p>Create an <span title=concept-event>event</span> implementing the
+ interface whose name <var>interface</var> is an
+ <span>ASCII case-insensitive</span> match for and return it.
+</ol>
 
+<p class=note>Because <code title=dom-Document-createEvent>createEvent()</code> is located on the <code>Document</code> object it cannot be used by Web Workers. Please let us know if this bothers you.
 
 
 <h2>Nodes Model</h2>
@@ -1738,6 +1762,8 @@ method must run these steps:
   readonly attribute DOMConfiguration domConfig;
   void normalizeDocument();
   Node renameNode(Node n, DOMString namespace, DOMString qualifiedName);-->
+
+  <span>Event</span> <span title=dom-Document-createEvent>createEvent</span>(DOMString <var>interface</var>);
 };</pre>
 
 <p>A <code>Document</code> node is assumed to be an <dfn>XML document</dfn>

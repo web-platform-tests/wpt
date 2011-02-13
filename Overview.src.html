@@ -769,12 +769,13 @@ attribute must be useless. <span class=XXX>Come on!</span>
 method is invoked these steps must be run:</p>
 
 <ol>
- <li><p>If the <span>dispatch flag</span> is set terminate these steps.
+ <li><p>If the <span>dispatch flag</span> is set, terminate these steps.
+ <li><p>Set <span title=event-target>target</span> to null.
  <li><p>Set <span title=event-name>name</span> to <var title>type</var>.
- <li><p>If the <var title>bubbles</var> argument is not omitted and is true set
- the <span>bubble flag</span>.
- <li><p>If the <var title>cancelable</var> argument is not omitted and is true set
- the <span>cancel flag</span>.
+ <li><p>If the <var title>bubbles</var> argument is not omitted and is true,
+ set the <span>bubble flag</span>.
+ <li><p>If the <var title>cancelable</var> argument is not omitted and is
+ true, set the <span>cancel flag</span>.
 </ol>
 
 <h3>Interface <code>CustomEvent</code></h3>
@@ -796,10 +797,12 @@ attribute must return <span title=concept-CustomEvent-detail>detail</span>.
 method is invoked these steps must be run:</p>
 
 <ol>
- <li><p>If the <span>dispatch flag</span> is set terminate these steps.
- <li><p>Invoke <code title=dom-Event-initEvent>initEvent()</code> with the
- first three arguments.</li>
- <li><p>Set <span title=concept-CustomEvent-detail>detail</span> to <var title>detail</var>.
+ <li><p>If the <span>dispatch flag</span> is set, terminate these steps.
+ <li><p>Invoke <code title=dom-Event-initEvent>initEvent()</code> with up to
+ the first three arguments.</li>
+ <li><p>If the <var title>detail</var> argument is not omitted, set
+ <span title=concept-CustomEvent-detail>detail</span> to
+ <var title>detail</var>.
 </ol>
 
 <!-- XXX maybe we should make this init business even simpler in terms of having to define it? -->
@@ -914,15 +917,15 @@ method is invoked these steps must be run:
       </ol>
     </ol>
    </dd>
-   <dt>Otherwise</dt>
-   <dd><p>Set <var title>e</var>'s <span title=concept-event-phase>phase</span> to
-   <span title=dom-Event-AT_TARGET>AT_TARGET</span> and then
-   <span title=concept-event-listener-invoke>invoke</span> the
+   <dt>Otherwise
+   <dd><p><span title=concept-event-listener-invoke>Invoke</span> the
    <span title=concept-event-listener>event listeners</span> of
-   <var title>e</var>'s <span title=concept-event-target>target</span>.</p></dd>
+   <var title>e</var>'s <span title=concept-event-target>target</span>.
   </dl>
  </li>
  <li><p>Unset <var title>e</var>'s <span>dispatch flag</span>.
+ <li><p>Set <var title>e</var>'s <span title=concept-event-phase>phase</span> to <span title=dom-Event-AT_TARGET>AT_TARGET</span>.
+ <li><p>Set <var title>e</var>'s <span title=concept-event-current-target>current target</span> to null.
  <li><p>Return true if <var title>e</var>'s <span>canceled flag</span> is
  set and false otherwise.
 </ol>

@@ -933,20 +933,23 @@ method is invoked these steps must be run:
 
 <p>To <dfn title=concept-event-listener-invoke>invoke</dfn> the <span title=concept-event-listener>event listeners</span> for an object run these steps:</p>
 <ol>
- <li><p>Let <var title>e</var> be the <span title=concept-event>event</span> for
- which the <span title=concept-event-listener>event listeners</span> are
+ <li><p>Let <var title>e</var> be the <span title=concept-event>event</span>
+ for which the <span title=concept-event-listener>event listeners</span> are
  invoked.
- <li><p>If <var title>e</var> does not yet have a
- <span title=concept-event-target>target</span>, let
- <span title=concept-event-target>target</span> be the object for
- which these steps are run.
- <li><p>Let
- <span title=concept-event-current-target>current target</span> be the
+ <li><p>Let <var title>listeners</var> be a static list of the
+ <span title=concept-event-listener>event listeners</span> associated with
+ the object for which these steps are run.
+ <li><p>If <var title>e</var>'s
+ <span title=concept-event-target>target</span> is null, set
+ <var title>e</var>'s <span title=concept-event-target>target</span> to the
+ object for which these steps are run.
+ <li><p>Set <var title>e</var>'s
+ <span title=concept-event-current-target>current target</span> to the
  object for which these steps are run.
  <li>
   <p>Then run these substeps for each
-  <span title=concept-event-listener>event listener</span> associated with
-  the <span title=concept-event-current-target>current target</span>:</p>
+  <span title=concept-event-listener>event listener</span> in
+  <var title>listeners</var>:</p>
   <ol>
    <li><p>If <var title>e</var>'s
    <span>stop immediate propagation flag</span> is set, terminate the
@@ -973,11 +976,6 @@ method is invoked these steps must be run:
   </ol>
  </li>
 </ol>
-
-<p class=note>The list of
-<span title=concept-event-listener>event listeners</span> can be manipulated
-while <span title=concept-event-listener>event listeners</span> are being
-run.</p>
 
 
 <h3>Creating Events</h3>

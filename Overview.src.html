@@ -900,12 +900,13 @@ method is invoked these steps must be run:
      <li><p>For each <span title=concept-node>node</span> in the
      <var title>event path</var>
      <span title=concept-event-listener-invoke>invoke</span> its
-     <span title=concept-event-listener>event listeners</span> as long as
+     <span title=concept-event-listener>event listeners</span>, as long as
      <var title>event</var>'s <span>stop propagation flag</span> is unset.
      <li><p>Set <var title>event</var>'s <span title=concept-event-phase>phase</span> to <span title=dom-Event-AT_TARGET>AT_TARGET</span>.
-     <li><p><span title=concept-event-listener-invoke>Invoke</span>
-     <var title>event</var>'s <span title=concept-event-target>target</span>
-     <span title=concept-event-listener>event listeners</span> if
+     <li><p><span title=concept-event-listener-invoke>Invoke</span> the
+     <span title=concept-event-listener>event listeners</span> of
+     <var title>event</var>'s
+     <span title=concept-event-target>target</span>, if
      <var title>event</var>'s <span>stop propagation flag</span> is unset.
      <li>
       <p>If <var title>event</var>'s <span>bubble flag</span> is set run
@@ -916,7 +917,7 @@ method is invoked these steps must be run:
        <li><p>For each <span title=concept-node>node</span> in the
        <var title>event path</var>
        <span title=concept-event-listener-invoke>invoke</span> its
-       <span title=concept-event-listener>event listeners</span> as long as
+       <span title=concept-event-listener>event listeners</span>, as long as
        <var title>event</var>'s <span>stop propagation flag</span> is unset.
       </ol>
     </ol>

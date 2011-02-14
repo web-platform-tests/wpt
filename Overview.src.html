@@ -876,75 +876,78 @@ method is invoked these steps must be run:
 <!-- other specifications turn this into a requirement  -->
 
 <ol>
- <li><p>Let <var title>e</var> be the <span title=concept-event>event</span> that
- is dispatched.
- <li><p>Set <var title>e</var>'s <span>dispatch flag</span>.
- <li><p>Unset <var title>e</var>'s <span>stop propagation flag</span>,
- <span>stop immediate propagation flag</span>, and <span>canceled flag</span>.
- <li><p>Set <var title>e</var>'s <span title=concept-event-target>target</span>
- to the object on which <var title>e</var> is dispatched.
+ <li><p>Let <var title>event</var> be the
+ <span title=concept-event>event</span> that is dispatched.
+ <li><p>Set <var title>event</var>'s <span>dispatch flag</span>.
+ <li><p>Unset <var title>event</var>'s <span>stop propagation flag</span>,
+ <span>stop immediate propagation flag</span>, and
+ <span>canceled flag</span>.
+ <li><p>Set <var title>event</var>'s
+ <span title=concept-event-target>target</span> to the object on which
+ <var title>event</var> is dispatched.
  <li>
   <dl>
-   <dt>If <var title>e</var>'s <span title=concept-event-target>target</span> is a
+   <dt>If <var title>event</var>'s
+   <span title=concept-event-target>target</span> is a
    <span title=concept-node>node</span>
    <dd>
     <ol>
      <li><p>Let <var title>event path</var> be a static ordered list of all
      <span title=concept-ancestor-node>ancestor nodes</span> of
-     <var title>e</var>'s <span title=concept-event-target>target</span> in
-     <span>tree order</span>.</li>
-     <li><p>Set <var title>e</var>'s <span title=concept-event-phase>phase</span> to <span title=dom-Event-CAPTURING_PHASE>CAPTURING_PHASE</span>.
+     <var title>event</var>'s <span title=concept-event-target>target</span>
+     in <span>tree order</span>.</li>
+     <li><p>Set <var title>event</var>'s <span title=concept-event-phase>phase</span> to <span title=dom-Event-CAPTURING_PHASE>CAPTURING_PHASE</span>.
      <li><p>For each <span title=concept-node>node</span> in the
      <var title>event path</var>
      <span title=concept-event-listener-invoke>invoke</span> its
      <span title=concept-event-listener>event listeners</span> as long as
-     <var title>e</var>'s <span>stop propagation flag</span> is unset.</li>
-     <li><p>Set <var title>e</var>'s <span title=concept-event-phase>phase</span> to <span title=dom-Event-AT_TARGET>AT_TARGET</span>.
+     <var title>event</var>'s <span>stop propagation flag</span> is unset.
+     <li><p>Set <var title>event</var>'s <span title=concept-event-phase>phase</span> to <span title=dom-Event-AT_TARGET>AT_TARGET</span>.
      <li><p><span title=concept-event-listener-invoke>Invoke</span>
-     <var title>e</var>'s <span title=concept-event-target>event target</span>
+     <var title>event</var>'s <span title=concept-event-target>target</span>
      <span title=concept-event-listener>event listeners</span> if
-     <var title>e</var>'s <span>stop propagation flag</span> is unset.
+     <var title>event</var>'s <span>stop propagation flag</span> is unset.
      <li>
-      <p>If <var title>e</var>'s <span>bubble flag</span> is set run these
-      substeps:</p>
+      <p>If <var title>event</var>'s <span>bubble flag</span> is set run
+      these substeps:</p>
       <ol>
-       <li><p>Set <var title>e</var>'s <span title=concept-event-phase>phase</span> to <span title=dom-Event-BUBBLING_PHASE>BUBBLING_PHASE</span>.
+       <li><p>Set <var title>event</var>'s <span title=concept-event-phase>phase</span> to <span title=dom-Event-BUBBLING_PHASE>BUBBLING_PHASE</span>.
        <li><p>Reverse the order of <var title>event path</var>.
        <li><p>For each <span title=concept-node>node</span> in the
        <var title>event path</var>
        <span title=concept-event-listener-invoke>invoke</span> its
        <span title=concept-event-listener>event listeners</span> as long as
-       <var title>e</var>'s <span>stop propagation flag</span> is unset.</li>
+       <var title>event</var>'s <span>stop propagation flag</span> is unset.
       </ol>
     </ol>
    </dd>
    <dt>Otherwise
    <dd><p><span title=concept-event-listener-invoke>Invoke</span> the
    <span title=concept-event-listener>event listeners</span> of
-   <var title>e</var>'s <span title=concept-event-target>target</span>.
+   <var title>event</var>'s <span title=concept-event-target>target</span>.
   </dl>
  </li>
- <li><p>Unset <var title>e</var>'s <span>dispatch flag</span>.
- <li><p>Set <var title>e</var>'s <span title=concept-event-phase>phase</span> to <span title=dom-Event-AT_TARGET>AT_TARGET</span>.
- <li><p>Set <var title>e</var>'s <span title=concept-event-current-target>current target</span> to null.
- <li><p>Return true if <var title>e</var>'s <span>canceled flag</span> is
- set and false otherwise.
+ <li><p>Unset <var title>event</var>'s <span>dispatch flag</span>.
+ <li><p>Set <var title>event</var>'s <span title=concept-event-phase>phase</span> to <span title=dom-Event-AT_TARGET>AT_TARGET</span>.
+ <li><p>Set <var title>event</var>'s <span title=concept-event-current-target>current target</span> to null.
+ <li><p>Return true if <var title>event</var>'s <span>canceled flag</span>
+ is set and false otherwise.
 </ol>
 
 
 <p>To <dfn title=concept-event-listener-invoke>invoke</dfn> the <span title=concept-event-listener>event listeners</span> for an object run these steps:</p>
 <ol>
- <li><p>Let <var title>e</var> be the <span title=concept-event>event</span>
+ <li><p>Let <var title>event</var> be the <span title=concept-event>event</span>
  for which the <span title=concept-event-listener>event listeners</span> are
  invoked.
  <li><p>Let <var title>listeners</var> be a static list of the
  <span title=concept-event-listener>event listeners</span> associated with
  the object for which these steps are run.
- <li><p>If <var title>e</var>'s
+ <li><p>If <var title>event</var>'s
  <span title=concept-event-target>target</span> is null, set
- <var title>e</var>'s <span title=concept-event-target>target</span> to the
+ <var title>event</var>'s <span title=concept-event-target>target</span> to the
  object for which these steps are run.
- <li><p>Set <var title>e</var>'s
+ <li><p>Set <var title>event</var>'s
  <span title=concept-event-current-target>current target</span> to the
  object for which these steps are run.
  <li>
@@ -952,28 +955,29 @@ method is invoked these steps must be run:
   <span title=concept-event-listener>event listener</span> in
   <var title>listeners</var>:</p>
   <ol>
-   <li><p>If <var title>e</var>'s
+   <li><p>If <var title>event</var>'s
    <span>stop immediate propagation flag</span> is set, terminate the
    <span title=concept-event-listener-invoke>invoke</span> algorithm.
-   <li><p>Let <var title>l</var> be the
+   <li><p>Let <var title>listener</var> be the
    <span title=concept-event-listener>event listener</span>.
-   <li><p>If <var title>e</var>'s <span title=concept-event-name>name</span>
-   is not <var title>l</var>'s <b>name</b>, terminate these substeps (and
+   <li><p>If <var title>event</var>'s
+   <span title=concept-event-name>name</span> is not
+   <var title>listener</var>'s <b>name</b>, terminate these substeps (and
    run them for the next
    <span title=concept-event-listener>event listener</span>).
-   <li><p>If <var title>e</var>'s
+   <li><p>If <var title>event</var>'s
    <span title=concept-event-phase>phase</span> is
    <span title=dom-Event-CAPTURING_PHASE>CAPTURING_PHASE</span> and
-   <var title>l</var>'s <b>capture</b> is false, terminate these substeps
-   (and run them for the next <span title=concept-event-listener>event
-   listener</span>).
-   <li><p>If <var title>e</var>'s
+   <var title>listener</var>'s <b>capture</b> is false, terminate these
+   substeps (and run them for the next
+   <span title=concept-event-listener>event listener</span>).
+   <li><p>If <var title>event</var>'s
    <span title=concept-event-phase>phase</span> is
    <span title=dom-Event-BUBBLING_PHASE>BUBBLING_PHASE</span> and
-   <var title>l</var>'s <b>capture</b> is true, terminate these substeps
-   (and run them for the next
+   <var title>listener</var>'s <b>capture</b> is true, terminate these
+   substeps (and run them for the next
    <span title=concept-event-listener>event listener</span>).
-   <li><p>Run <var title>l</var>'s <b>listener</b>.
+   <li><p>Run <var title>listener</var>'s <b>listener</b>.
   </ol>
  </li>
 </ol>

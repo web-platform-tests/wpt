@@ -277,3 +277,30 @@ ReflectionHarness.maskErrors = function(regex) {
 		}
 	}
 }
+
+// Now for some stuff that has nothing to do with ReflectionHarness and
+// everything to do with initialization needed for reflection.js, which seems
+// pointless to put in an extra file.
+
+var elements = {};
+
+var extraTests = [];
+
+/**
+ * Used for combining a number of small arrays of element data into one big
+ * one.
+ */
+function mergeElements(src) {
+	for (var key in src) {
+		if (!src.hasOwnProperty(key)) {
+			// This is inherited from a prototype or something.
+			continue;
+		}
+
+		if (key in elements) {
+			elements[key] = elements[key].concat(src[key]);
+		} else {
+			elements[key] = src[key];
+		}
+	}
+}

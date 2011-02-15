@@ -539,6 +539,19 @@ ReflectionTests.enumExpected = function(keywords, nonCanon, invalidVal, contentV
 }
 
 /**
+ * Now we have the data structures that tell us which elements have which
+ * attributes.
+ *
+ * The elements object (which must have been defined in earlier files) is a map
+ * from element name to a list of attributes (omitting the global attributes).
+ * Each attribute can either be a list of the form ["type", "attrname",
+ * "data"], or just a string "attrname".  In the latter case, the type is
+ * looked up from the attribs object.  Types are just strings, most of which
+ * have fairly guessable meanings.  "data" is optional -- it's used for default
+ * values for longs, permitted values for enums, and such.
+ */
+
+/**
  * Maps an IDL attribute name to its type.  If the IDL attribute name differs
  * from the content attribute name, a two-element array of ["type", "content
  * attribute name"] is used.  This format is also necessary for enums limited

@@ -3,3 +3,5 @@
 == ../text-transform-kana-001.xht text-transform-kana-001-ref.xht			# text-transform - large-kana - basic cases
 == ../text-transform-fullwidth-001.xht text-transform-fullwidth-001-ref.xht		# text-transform - fullwidth - basic cases
 == ../text-transform-none-001.xht text-transform-none-001-ref.xht			# text-transform - none - basic cases
+== ../text-transform-uppercase-001.xht text-transform-uppercase-001-ref.xht		# text-transform - uppercase - basic cases
+

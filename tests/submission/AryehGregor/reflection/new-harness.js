@@ -6,7 +6,9 @@ ReflectionHarness.test = function(expected, actual, description) {
 	test(function() {
 		assert_equals(expected, actual);
 	}, this.getTypeDescription() + ": " + description);
-	return expected === actual;
+	// This is the test suite that will rate conformance, so we don't want to
+	// bail out early if a test fails -- we want all tests to always run.
+	return true;
 }
 
 ReflectionHarness.testException = function(exceptionName, fn, description) {

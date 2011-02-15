@@ -13,6 +13,11 @@ ReflectionTests.start = new Date().getTime();
  * Return "" if the URL couldn't be resolved, since this is really for
  * reflected URL attributes, and those are supposed to return "" if the URL
  * couldn't be resolved.
+ *
+ * It seems like IE9 doesn't implement URL decomposition attributes correctly
+ * for <a>, which causes all these tests to fail.  Ideally I'd do this in some
+ * other way, but the failure does stem from an incorrect implementation of
+ * HTML, so I'll leave it alone for now.
  */
 ReflectionTests.resolveUrl = function(url) {
 	var el = document.createElement("a");
@@ -53,6 +58,12 @@ var binaryString = "\x00\x01\x02\x03\x04\x05\x06\x07 "
  * "throw an INDEX_SIZE_ERR exception" as an IDL expected value.  (This is a
  * kind of stupid and fragile convention, but it's simple and works for now.)
  * Expected DOM values are cast to strings by adding "".
+ *
+ * TODO: Test that DOMStrings are converted to a sequence of Unicode
+ * characters.
+ *
+ * TODO: Test setting an IDL attribute to null -- currently there's no interop
+ * and WebIDL might not match reality.
  */
 ReflectionTests.typeMap = {
 	"string": {
@@ -63,7 +74,7 @@ ReflectionTests.typeMap = {
 		 * any of the above categories, then the getting and setting must be
 		 * done in a transparent, case-preserving manner."
 		 */
-		"domTests": ["", binaryString + "abc 123 !!!"],
+		"domTests": ["", " " + binaryString + " foo ", undefined, 7, 1.5, true, false, {"test": 6}, NaN],
 	},
 	/**
 	 * "If a reflecting IDL attribute is a DOMString attribute whose content
@@ -78,7 +89,7 @@ ReflectionTests.typeMap = {
 	"url": {
 		"jsType": "string",
 		"defaultVal": "",
-		"domTests": ["", "foo", "http://site.example/", "//site.example/path???@#l", binaryString],
+		"domTests": ["", " foo ", "http://site.example/", "//site.example/path???@#l", binaryString, undefined, 7, 1.5, true, false, {"test": 6}, NaN],
 		// Expected values set below programmatically, for maintainability
 	},
 	/**
@@ -98,7 +109,7 @@ ReflectionTests.typeMap = {
 	"urls": {
 		"jsType": "string",
 		"defaultVal": "",
-		"domTests": ["", "foo   ", "http://site.example/ foo  bar   baz", "//site.example/path???@#l", binaryString],
+		"domTests": ["", " foo   ", "http://site.example/ foo  bar   baz", "//site.example/path???@#l", binaryString, undefined, 7, 1.5, true, false, {"test": 6}, NaN],
 		// Expected values set below programmatically
 	},
 	/**
@@ -158,7 +169,7 @@ ReflectionTests.typeMap = {
 	"enum": {
 		"jsType": "string",
 		"defaultVal": "",
-		"domTests": ["", binaryString + "abc 123 !!!"],
+		"domTests": ["", " " + binaryString + "foo"],
 	},
 	/**
 	 * "If a reflecting IDL attribute is a boolean attribute, then on getting
@@ -171,12 +182,8 @@ ReflectionTests.typeMap = {
 	"boolean": {
 		"jsType": "boolean",
 		"defaultVal": false,
-		"domTests": ["", "abc 123 !!!"],
-		"domExpected": [true, true],
-		"idlTests": [true, false],
-		// There's a special case for setting to false
-		"idlDomExpected": [""],
-		"idlIdlExpected": [true, false],
+		"domTests": ["", " foo ", undefined, null, 7, 1.5, true, false, {"test": 6}, NaN],
+		"domExpected": [true, true, true, true, true, true, true, true, true, true],
 	},
 	/**
 	 * "If a reflecting IDL attribute is a signed integer type (long) then, on
@@ -269,6 +276,7 @@ ReflectionTests.typeMap.url.idlIdlExpected = ReflectionTests.typeMap.url.domExpe
 ReflectionTests.typeMap.urls.domExpected = ReflectionTests.typeMap.urls.domTests.map(function(urls) {
 	var expected = "";
 	// TODO: Test other whitespace?
+	urls = urls + "";
 	var split = urls.split(" ");
 	for (var j = 0; j < split.length; j++) {
 		if (split[j] == "") {
@@ -289,14 +297,16 @@ ReflectionTests.typeMap.urls.domExpected = ReflectionTests.typeMap.urls.domTests
 ReflectionTests.typeMap.urls.idlDomExpected = ReflectionTests.typeMap.urls.domExpected;
 
 for (var type in ReflectionTests.typeMap) {
+	var jsType = ReflectionTests.typeMap[type].jsType;
+	var cast = window[jsType[0].toUpperCase() + jsType.slice(1)];
 	if (ReflectionTests.typeMap[type].domExpected === undefined) {
-		ReflectionTests.typeMap[type].domExpected = ReflectionTests.typeMap[type].domTests;
+		ReflectionTests.typeMap[type].domExpected = ReflectionTests.typeMap[type].domTests.map(cast);
 	}
 	if (ReflectionTests.typeMap[type].idlTests === undefined) {
 		ReflectionTests.typeMap[type].idlTests = ReflectionTests.typeMap[type].domTests;
 	}
 	if (ReflectionTests.typeMap[type].idlDomExpected === undefined) {
-		ReflectionTests.typeMap[type].idlDomExpected = ReflectionTests.typeMap[type].idlTests;
+		ReflectionTests.typeMap[type].idlDomExpected = ReflectionTests.typeMap[type].idlTests.map(cast);
 	}
 	if (ReflectionTests.typeMap[type].idlIdlExpected === undefined) {
 		ReflectionTests.typeMap[type].idlIdlExpected = ReflectionTests.typeMap[type].idlDomExpected;
@@ -437,11 +447,11 @@ ReflectionTests.reflects = function(data, idlName, idlObj, domName, domObj) {
 		try {
 			domObj.setAttribute(domName, domTests[i]);
 			// setAttribute() followed by getAttribute() should always return
-			// the same thing.  We could test this more extensively (without
-			// regard for type), but it's really not an HTML5 thing, so this is
-			// more of a sanity check to signal trouble in case things go wrong
-			// in the IDL get.
-			ReflectionHarness.test(domObj.getAttribute(domName), domTests[i] + "", "setAttribute() to " + ReflectionHarness.stringRep(domTests[i]) + " followed by getAttribute()");
+			// the same thing.  TODO: Except that null should be cast to "" not
+			// "null", but that's not specced, so let's just not test it.
+			if (domTests[i] !== null) {
+				ReflectionHarness.test(domObj.getAttribute(domName), domTests[i] + "", "setAttribute() to " + ReflectionHarness.stringRep(domTests[i]) + " followed by getAttribute()");
+			}
 			ReflectionHarness.test(idlObj[idlName], domExpected[i], "setAttribute() to " + ReflectionHarness.stringRep(domTests[i]) + " followed by IDL get");
 			if (ReflectionHarness.catchUnexpectedExceptions) {
 				ReflectionHarness.success();
@@ -463,9 +473,9 @@ ReflectionTests.reflects = function(data, idlName, idlObj, domName, domObj) {
 		} else {
 			try {
 				idlObj[idlName] = idlTests[i];
-				if (data.type == "boolean" && idlTests[i] == false) {
+				if (data.type == "boolean") {
 					// Special case yay
-					ReflectionHarness.test(domObj.hasAttribute(domName), false, "IDL set to " + ReflectionHarness.stringRep(idlTests[i]) + " followed by hasAttribute()");
+					ReflectionHarness.test(domObj.hasAttribute(domName), Boolean(idlTests[i]), "IDL set to " + ReflectionHarness.stringRep(idlTests[i]) + " followed by hasAttribute()");
 				} else if (idlDomExpected[i] !== null) {
 					ReflectionHarness.test(domObj.getAttribute(domName), idlDomExpected[i] + "", "IDL set to " + ReflectionHarness.stringRep(idlTests[i]) + " followed by getAttribute()");
 				}
@@ -724,7 +734,7 @@ var elements = {
 	"ruby": [],
 	"s": [],
 	"samp": [],
-	"script": ["src", "type", "charset", "async", "defer"],
+	"script": ["src", "type", "charset", "defer"],
 	"section": [],
 	"select": ["multiple", ["limited unsigned long", "size", 0], "autofocus", "name", "disabled"],
 	"small": [],
@@ -794,7 +804,6 @@ var attribs = {
 	"acceptCharset": ["string", "accept-charset"],
 	"action": "url",
 	"formAction": "url",
-	"async": "boolean",
 	"audio": "settable tokenlist",
 	"autocomplete": ["enum", "autocomplete", {"values": ["on", "off"], "missing": "on"}],
 	"autofocus": "boolean",
@@ -953,10 +962,6 @@ var attrs = ["text", "bgcolor", "link", "alink", "vlink"];
 for (var i = 0; i < attrs.length; i++) {
 	document.body.removeAttribute(attrs[i]);
 }
-
-var el = document.createElement("select");
-el.multiple = true;
-ReflectionTests.reflects({"type": "limited unsigned long", "defaultVal": 4, "comment": 'with multiple=""'}, "size", el);
 
 // itemValue only reflects in certain circumstances.  The syntax for our big
 // array thing above doesn't currently support one IDL attribute that reflects

@@ -638,10 +638,6 @@ policies and contribution forms [3].
                  function()
                  {
                      this_obj.all_loaded = true;
-                     if (document.getElementById("log"))
-                     {
-                         add_completion_callback(output_results);
-                     }
                      if (this_obj.all_done())
                      {
                          this_obj.complete();
@@ -824,6 +820,8 @@ policies and contribution forms [3].
     };
 
     var tests = new Tests();
+    add_completion_callback(output_results);
+
 
     function add_start_callback(callback) {
         tests.start_callbacks.push(callback);
@@ -882,7 +880,12 @@ policies and contribution forms [3].
     function output_results(tests, harness_status)
     {
         var log = document.getElementById("log");
-        while (log.lastChild) {
+        if (!log)
+        {
+            return;
+        }
+        while (log.lastChild)
+        {
             log.removeChild(log.lastChild);
         }
         var prefix = null;

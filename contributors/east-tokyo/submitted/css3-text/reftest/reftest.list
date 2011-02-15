@@ -1,0 +1,9 @@
+# CSS Text Level 3
+# http://www.w3.org/TR/css3-text/
+== ../text-transform-kana-001.xht text-transform-kana-001-ref.xht			# text-transform - large-kana - basic cases
+== ../text-transform-fullwidth-001.xht text-transform-fullwidth-001-ref.xht		# text-transform - fullwidth - basic cases
+== ../text-transform-capitalize-001.xht text-transform-capitalize-001-ref.xht	# text-transform - capitalize - basic cases
+== ../text-transform-none-001.xht text-transform-none-001-ref.xht			# text-transform - none - basic cases
+== ../text-transform-uppercase-001.xht text-transform-uppercase-001-ref.xht		# text-transform - uppercase - basic cases
+== ../text-transform-lowercase-001.xht text-transform-lowercase-001-ref.xht		# text-transform - lowercase - basic cases
+

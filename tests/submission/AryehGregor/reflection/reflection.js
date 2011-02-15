@@ -569,7 +569,8 @@ var elements = {
 		// Obsolete
 		"clear"
 	],
-	"button": [["string", "value"], ["enum", "type", {"values": ["submit", "reset", "button"], "missing": "submit"}], "formAction", "formEnctype", "formMethod", "formNoValidate", "formTarget", "autofocus", "name", "disabled"],
+	// TODO: formAction is special
+	"button": [["string", "value"], ["enum", "type", {"values": ["submit", "reset", "button"], "missing": "submit"}], /*"formAction",*/ "formEnctype", "formMethod", "formNoValidate", "formTarget", "autofocus", "name", "disabled"],
 	"canvas": [["unsigned long", "width", 300], ["unsigned long", "height", 150]],
 	"caption": [
 		// Obsolete
@@ -610,7 +611,8 @@ var elements = {
 	"figcaption": [],
 	"figure": [],
 	"footer": [],
-	"form": ["autocomplete", "name", "acceptCharset", "action", "method", "enctype", "encoding", "target", "noValidate"],
+	// TODO: action is special
+	"form": ["autocomplete", "name", "acceptCharset", /*"action",*/ "method", "enctype", "encoding", "target", "noValidate"],
 	"h1": [/* Obsolete */ "align"],
 	"h2": [/* Obsolete */ "align"],
 	"h3": [/* Obsolete */ "align"],
@@ -640,7 +642,7 @@ var elements = {
 	],
 	"input": [
 		// Conforming
-		// FIXME: autocomplete for input is different from form; this requires
+		// TODO: autocomplete for input is different from form; this requires
 		// implementing a notion of "state with no associated keyword" for
 		// enums.
 		"accept", "alt", /*"autocomplete",*/ "max", "min", "multiple", "pattern",
@@ -650,7 +652,8 @@ var elements = {
 			"email", "password", "datetime", "date", "month", "week", "time",
 			"datetime-local", "number", "range", "color", "checkbox", "radio",
 			"file", "submit", "image", "reset", "button"], "missing": "text"},
-		"formAction", "formEnctype", "formMethod", "formNoValidate",
+		// TODO: formAction is special
+		/*"formAction",*/ "formEnctype", "formMethod", "formNoValidate",
 		"formTarget", "autofocus", "name", "disabled"], "dirname",
 		// Obsolete
 		"align", "useMap",
@@ -723,7 +726,7 @@ var elements = {
 	"samp": [],
 	"script": ["src", "type", "charset", "async", "defer"],
 	"section": [],
-	"select": ["multiple", ["limited unsigned long", "size"], "autofocus", "name", "disabled"],
+	"select": ["multiple", ["limited unsigned long", "size", 0], "autofocus", "name", "disabled"],
 	"small": [],
 	"source": ["src", "type", "media"],
 	"span": [],

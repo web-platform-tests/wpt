@@ -155,7 +155,6 @@ document as other than work in progress.
 
 <h2>Common infrastructure</h2>
 <h3>Terminology</h3>
-<p>The term <dfn>tree order</dfn> means a pre-order, depth-first traversal of DOM nodes involved (through the <code title=dom-Node-parentNode>parentNode</code>/<code title=dom-Node-childNodes>childNodes</code> relationship).
 
 <p>The term <dfn>context node</dfn> means the <code>Node</code> on which the
 method or attribute being discussed was called.
@@ -280,6 +279,8 @@ this specification.
 hierarchical tree structures, simply named
 <dfn title=concept-tree>trees</dfn>.
 
+<hr>
+
 <p>An object that <dfn title=concept-tree-participate>participates</dfn> in
 a <span title=concept-tree>tree</span> has a number of properties that other
 objects do not. The remainder of definitions in this section apply to
@@ -327,7 +328,12 @@ comes before <var title>B</var> in their shared
 comes after <var title>B</var> in their shared
 <span title=concept-tree-parent>parent</span>.
 
+<hr>
 
+<p>The term <dfn>tree order</dfn> means a pre-order, depth-first traversal
+of the <span title=concept-tree>tree</span>.
+<!-- XXX should that use concept- ? -->
+<!-- http://en.wikipedia.org/wiki/Tree_traversal#Depth-first_Traversal -->
 
 
 <h3>Case-sensitivity</h3>

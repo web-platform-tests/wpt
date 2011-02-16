@@ -81,6 +81,15 @@ ReflectionHarness.stringRep = function(val) {
 ReflectionHarness.currentTestInfo = {};
 
 /**
+ * This is called when we want to test a single element/attribute combination.
+ * For the original harness, it does nothing special (just calls the function),
+ * but for testharness.js, it can wrap everything in a test() call.
+ */
+ReflectionHarness.testWrapper = function(fn) {
+	fn();
+}
+
+/**
  * If question === answer, output a success, else report a failure with the
  * given description.  Currently success and failure both increment counters,
  * and failures output a message to a <ul>.  Which <ul> is decided by the type

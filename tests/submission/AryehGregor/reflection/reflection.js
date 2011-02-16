@@ -326,6 +326,7 @@ for (var type in ReflectionTests.typeMap) {
  * string, we set idlObj = domObj = document.createElement(idlObj).
  */
 ReflectionTests.reflects = function(data, idlName, idlObj, domName, domObj) {
+	// Do some setup first so that getTypeDescription() works in testWrapper()
 	if (typeof data == "string") {
 		data = {"type": data};
 	}
@@ -344,16 +345,26 @@ ReflectionTests.reflects = function(data, idlName, idlObj, domName, domObj) {
 		domObj = idlObj;
 	}
 
+	// Note: probably a hack?  This kind of assumes that the variables here
+	// won't change over the course of the tests, which is wrong, but it's
+	// probably safe enough.  Just don't read stuff that will change.
+	ReflectionHarness.currentTestInfo = {"data": data, "idlName": idlName, "idlObj": idlObj, "domName": domName, "domObj": domObj};
+
+	ReflectionHarness.testWrapper(function() {
+		ReflectionTests.doReflects(data, idlName, idlObj, domName, domObj);
+	});
+}
+
+/**
+ * Actual implementation of the above.
+ */
+ReflectionTests.doReflects = function(data, idlName, idlObj, domName, domObj) {
 	// If we don't recognize the type, testing is impossible.
 	if (this.typeMap[data.type] === undefined) {
 		return;
 	}
 
 	var typeInfo = this.typeMap[data.type];
-	// Note: probably a hack?  This kind of assumes that the variables here
-	// won't change over the course of the tests, which is wrong, but it's
-	// probably safe enough.  Just don't read stuff that will change.
-	ReflectionHarness.currentTestInfo = {"data": data, "idlName": idlName, "idlObj": idlObj, "domName": domName, "domObj": domObj};
 
 	// Test that typeof idlObj[idlName] is correct.  If not, further tests are
 	// probably pointless, so bail out.

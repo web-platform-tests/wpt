@@ -56,7 +56,7 @@
   <dt>Previous Versions:
   <dd><a href="http://www.w3.org/TR/2010/WD-domcore-20101007/">http://www.w3.org/TR/2010/WD-domcore-20101007/</a>
 
-  <dt>Editor:
+  <dt>Editors:
   <dd><a href="http://annevankesteren.nl/">Anne van Kesteren</a>
     (<a href="http://www.opera.com/">Opera Software ASA</a>)
     &lt;<a href="mailto:annevk@opera.com">annevk@opera.com</a>>
@@ -269,6 +269,65 @@ the requirements of such an extension specification, it becomes an
 specification</dfn> for the purposes of conformance requirements in
 this specification.
 <!-- http://www.w3.org/mid/17E341CD-E790-422C-9F9A-69347EE01CEB@iki.fi -->
+
+
+<h3>Trees</h3> <!-- Sorry reddit, this is not /r/trees -->
+
+<!-- XXX I do not like the structure of "Common infrastructure" at all but
+     I will write this first. -->
+
+<p>Just like most programming paradigms the Web platform has finite
+hierarchical tree structures, simply named
+<dfn title=concept-tree>trees</dfn>.
+
+<p>An object that <dfn title=concept-tree-participate>participates</dfn> in
+a <span title=concept-tree>tree</span> has a number of properties that other
+objects do not. The remainder of definitions in this section apply to
+objects that <span title=concept-tree-participate>participate</dfn> in
+<span title=concept-tree>trees</span>.
+
+<p>An object has zero or one
+<dfn title=concept-tree-parent>parent</dfn> object. An object without
+<span title=concept-tree-parent>parent</span> is called the
+<dfn title=concept-tree-root>root</dfn> object.
+<!-- XXX do we need "root"? -->
+
+<p>An object <var title>A</var> is a
+<dfn title=concept-tree-child>child</dfn> of an object <var title>B</var> if
+and only if <var title>B</var> is the
+<span title=concept-tree-parent>parent</span> of <var title>A</var>.
+
+<p>An object <var title>A</var> is called a
+<dfn title=concept-tree-descendant>descendant</dfn> of an object
+<var title>B</var>, if either <var title>A</var> is a
+<span title=concept-tree-child>child</span> of <var title>B</var> or
+<var title>A</var> is a <span title=concept-tree-child>child</span> of an
+object <var title>C</var> that is a
+<span title=concept-tree-descendant>descendant</span> of <var title>B</var>.
+
+<p>An object <var title>A</var> is called an
+<dfn title=concept-tree-ancestor>ancestor</dfn> of an object
+<var title>B</var> if and only if <var title>B</var> is a
+<span title=concept-tree-descendant>descendant</span> of
+<var title>A</var>.
+
+<p>An object <var title>A</var> is called a
+<dfn title=concept-tree-sibling>sibling</dfn> of an object
+<var title>B</var>, if and only if <var title>B</var> and <var title>A</var> share the same <span title=concept-tree-parent>parent</span>.
+<var title>A</var> is a
+<dfn title=concept-tree-preceding-sibling>preceding sibling</dfn> of
+<var title>B</var> if <var title>A</var> and <var title>B</var> are
+<span title=concept-tree-sibling>siblings</span> and <var title>A</var>
+comes before <var title>B</var> in their shared
+<span title=concept-tree-parent>parent</span>.
+<var title>A</var> is a
+<dfn title=concept-tree-following-sibling>following sibling</dfn> of
+<var title>B</var> if <var title>A</var> and <var title>B</var> are
+<span title=concept-sibling-node>siblings</span> and <var title>A</var>
+comes after <var title>B</var> in their shared
+<span title=concept-tree-parent>parent</span>.
+
+
 
 
 <h3>Case-sensitivity</h3>
@@ -872,7 +931,8 @@ method is invoked these steps must be run:
 <h3>Dispatching Events</h3>
 
 <p>To <dfn title=concept-event-dispatch>dispatch</dfn> an
-<span title=concept-event>event</span> run these steps:</p>
+<span title=concept-event>event</span> on a given object run these
+steps:</p>
 <!-- other specifications turn this into a requirement  -->
 
 <ol>
@@ -912,8 +972,8 @@ method is invoked these steps must be run:
       <p>If <var title>event</var>'s <span>bubble flag</span> is set run
       these substeps:</p>
       <ol>
-       <li><p>Set <var title>event</var>'s <span title=concept-event-phase>phase</span> to <span title=dom-Event-BUBBLING_PHASE>BUBBLING_PHASE</span>.
        <li><p>Reverse the order of <var title>event path</var>.
+       <li><p>Set <var title>event</var>'s <span title=concept-event-phase>phase</span> to <span title=dom-Event-BUBBLING_PHASE>BUBBLING_PHASE</span>.
        <li><p>For each <span title=concept-node>node</span> in the
        <var title>event path</var>
        <span title=concept-event-listener-invoke>invoke</span> its

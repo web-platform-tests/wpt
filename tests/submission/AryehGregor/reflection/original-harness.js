@@ -24,6 +24,11 @@ ReflectionHarness.stringRep = function(val) {
 		// typeof is object, so the switch isn't useful
 		return "null";
 	}
+	// In JavaScript, -0 === 0 and String(-0) == "0", so we have to
+	// special-case.
+	if (val === -0 && 1/val === -Infinity) {
+		return "-0";
+	}
 	switch (typeof val) {
 		case "string":
 			for (var i = 0; i < 32; i++) {
@@ -98,7 +103,11 @@ ReflectionHarness.testWrapper = function(fn) {
  * @public
  */
 ReflectionHarness.test = function(expected, actual, description) {
-	if (expected === actual) {
+	// Special-case -0 yay!
+	if (expected === 0 && actual === 0 && 1/expected === 1/actual) {
+		this.increment(this.passed);
+		return true;
+	} else if (expected === actual) {
 		this.increment(this.passed);
 		return true;
 	} else {

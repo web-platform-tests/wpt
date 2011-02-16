@@ -34,7 +34,7 @@ var formElements = {
 	// TODO: Add htmlFor as a settable tokenlist, but the syntax doesn't
 	// support this right now . . .
 	"output": [/*"htmlFor",*/ "name"],
-	"progress": [["double", "max"]],
+	"progress": [["double", "max", 1]],
 	"meter": [["double", "min"], ["double", "max"], ["double", "low"], ["double", "high"], ["double", "optimum"]],
 };
 

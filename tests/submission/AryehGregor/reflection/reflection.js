@@ -30,11 +30,108 @@ ReflectionTests.resolveUrl = function(url) {
 	}
 }
 
+/**
+ * Given some input, convert to a multi-URL value for IDL get per the spec.
+ */
+ReflectionTests.urlsExpected = function(urls) {
+	var expected = "";
+	// TODO: Test other whitespace?
+	urls = urls + "";
+	var split = urls.split(" ");
+	for (var j = 0; j < split.length; j++) {
+		if (split[j] == "") {
+			continue;
+		}
+		var append = ReflectionTests.resolveUrl(split[j]);
+		if (append == "") {
+			continue;
+		}
+		if (expected == "") {
+			expected = append;
+		} else {
+			expected += " " + append;
+		}
+	}
+	return expected;
+}
+
+/**
+ * The "rules for parsing non-negative integers" from the HTML spec.  They're
+ * mostly used for reflection, so here seems like as good a place to test them
+ * as any.  Returns false on error.
+ */
+ReflectionTests.parseNonneg = function(input) {
+	var position = 0;
+	// Skip whitespace
+	while (input.length > position && /^[ \t\n\f\r]$/.test(input[position])) {
+		position++;
+	}
+	if (position >= input.length) {
+		return false;
+	}
+	if (input[position] == "+") {
+		position++;
+	}
+	if (position >= input.length) {
+		return false;
+	}
+	if (!/^[0-9]$/.test(input[position])) {
+		return false;
+	}
+	var value = 0;
+	while (/^[0-9]$/.test(input[position])) {
+		value *= 10;
+		// Don't use parseInt even for single-digit strings . . .
+		value += input.charCodeAt(position) - "0".charCodeAt(0);
+		position++;
+	}
+	return value;
+}
+
+/**
+ * The "rules for parsing integers" from the HTML spec.  Returns false on
+ * error.
+ */
+ReflectionTests.parseInt = function(input) {
+	var position = 0;
+	var sign = 1;
+	// Skip whitespace
+	while (input.length > position && /^[ \t\n\f\r]$/.test(input[position])) {
+		position++;
+	}
+	if (position >= input.length) {
+		return false;
+	}
+	if (input[position] == "-") {
+		sign = -1;
+		position++;
+	} else if (input[position] == "+") {
+		position++;
+	}
+	if (position >= input.length) {
+		return false;
+	}
+	if (!/^[0-9]$/.test(input[position])) {
+		return false;
+	}
+	var value = 0;
+	while (/^[0-9]$/.test(input[position])) {
+		value *= 10;
+		// Don't use parseInt even for single-digit strings . . .
+		value += input.charCodeAt(position) - "0".charCodeAt(0);
+		position++;
+	}
+	return sign * value;
+}
+
 // Used in initializing typeMap
 var binaryString = "\x00\x01\x02\x03\x04\x05\x06\x07 "
 	+ "\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f "
 	+ "\x10\x11\x12\x13\x14\x15\x16\x17 "
 	+ "\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f ";
+var maxInt = 2147483647;
+var minInt = -2147483648;
+var maxUnsigned = 4294967295;
 
 /**
  * Array containing the tests and other information for each type of reflected
@@ -59,11 +156,19 @@ var binaryString = "\x00\x01\x02\x03\x04\x05\x06\x07 "
  * kind of stupid and fragile convention, but it's simple and works for now.)
  * Expected DOM values are cast to strings by adding "".
  *
- * TODO: Test that DOMStrings are converted to a sequence of Unicode
- * characters.
+ * TODO: Test strings that aren't valid UTF-16.  Desired behavior is not clear
+ * here at the time of writing, see
+ * http://www.w3.org/Bugs/Public/show_bug.cgi?id=12100
  *
  * TODO: Test setting an IDL attribute to null -- currently there's no interop
  * and WebIDL might not match reality.
+ *
+ * TODO: Test deleting an IDL attribute, and maybe doing other fun stuff to it.
+ *
+ * TODO: Test IDL sets of integer types to out-of-range or other weird values.
+ * WebIDL says to wrap, but I'm not sure offhand if that's what we want.
+ *
+ * TODO: tokenlist, settable tokenlist
  */
 ReflectionTests.typeMap = {
 	"string": {
@@ -74,7 +179,8 @@ ReflectionTests.typeMap = {
 		 * any of the above categories, then the getting and setting must be
 		 * done in a transparent, case-preserving manner."
 		 */
-		"domTests": ["", " " + binaryString + " foo ", undefined, 7, 1.5, true, false, {"test": 6}, NaN],
+		"domTests": ["", " " + binaryString + " foo ", undefined, 7, 1.5, true,
+			false, {"test": 6}, NaN, +Infinity, -Infinity, "\0"],
 	},
 	/**
 	 * "If a reflecting IDL attribute is a DOMString attribute whose content
@@ -89,8 +195,11 @@ ReflectionTests.typeMap = {
 	"url": {
 		"jsType": "string",
 		"defaultVal": "",
-		"domTests": ["", " foo ", "http://site.example/", "//site.example/path???@#l", binaryString, undefined, 7, 1.5, true, false, {"test": 6}, NaN],
-		// Expected values set below programmatically, for maintainability
+		"domTests": ["", " foo ", "http://site.example/",
+			"//site.example/path???@#l", binaryString, undefined, 7, 1.5, true,
+			false, {"test": 6}, NaN, +Infinity, -Infinity, "\0"],
+		"domExpected": ReflectionTests.resolveUrl,
+		"idlIdlExpected": ReflectionTests.resolveUrl,
 	},
 	/**
 	 * "If a reflecting IDL attribute is a DOMString attribute whose content
@@ -109,8 +218,11 @@ ReflectionTests.typeMap = {
 	"urls": {
 		"jsType": "string",
 		"defaultVal": "",
-		"domTests": ["", " foo   ", "http://site.example/ foo  bar   baz", "//site.example/path???@#l", binaryString, undefined, 7, 1.5, true, false, {"test": 6}, NaN],
-		// Expected values set below programmatically
+		"domTests": ["", " foo   ", "http://site.example/ foo  bar   baz",
+			"//site.example/path???@#l", binaryString, undefined, 7, 1.5, true,
+			false, {"test": 6}, NaN, +Infinity, -Infinity, "\0"],
+		"domExpected": ReflectionTests.urlsExpected,
+		"idlIdlExpected": ReflectionTests.urlsExpected,
 	},
 	/**
 	 * "If a reflecting IDL attribute is a DOMString whose content attribute is
@@ -169,7 +281,8 @@ ReflectionTests.typeMap = {
 	"enum": {
 		"jsType": "string",
 		"defaultVal": "",
-		"domTests": ["", " " + binaryString + "foo"],
+		"domTests": ["", " " + binaryString + " foo ", undefined, 7, 1.5, true,
+			false, {"test": 6}, NaN, +Infinity, -Infinity, "\0"],
 	},
 	/**
 	 * "If a reflecting IDL attribute is a boolean attribute, then on getting
@@ -182,8 +295,11 @@ ReflectionTests.typeMap = {
 	"boolean": {
 		"jsType": "boolean",
 		"defaultVal": false,
-		"domTests": ["", " foo ", undefined, null, 7, 1.5, true, false, {"test": 6}, NaN],
-		"domExpected": [true, true, true, true, true, true, true, true, true, true],
+		"domTests": ["", " foo ", undefined, null, 7, 1.5, true, false,
+			{"test": 6}, NaN, +Infinity, -Infinity, "\0"],
+		"domExpected": function(val) {
+			return true;
+		},
 	},
 	/**
 	 * "If a reflecting IDL attribute is a signed integer type (long) then, on
@@ -200,8 +316,17 @@ ReflectionTests.typeMap = {
 	"long": {
 		"jsType": "number",
 		"defaultVal": 0,
-		"domTests":    [-36, -1, 0, 1, 2147483647, -2147483648, 2147483648, -2147483649],
-		"domExpected": [-36, -1, 0, 1, 2147483647, -2147483648, null,       null],
+		"domTests": [-36, -1, 0, 1, maxInt, minInt, maxInt + 1, minInt - 1,
+			maxUnsigned, maxUnsigned + 1, "", " " + binaryString + " foo ",
+			undefined, 1.5, true, false, {"test": 6}, NaN, +Infinity,
+			-Infinity, "\0"],
+		"domExpected": function(val) {
+			var parsed = ReflectionTests.parseInt(val + "");
+			if (parsed === false || parsed > maxInt || parsed < minInt) {
+				return null;
+			}
+			return parsed;
+		},
 		"idlTests":       [-36, -1, 0, 1, 2147483647, -2147483648],
 		"idlDomExpected": [-36, -1, 0, 1, 2147483647, -2147483648],
 	},
@@ -222,17 +347,26 @@ ReflectionTests.typeMap = {
 	"limited long": {
 		"jsType": "number",
 		"defaultVal": -1,
-		"domTests":    [-2147483649, -2147483648, -36,  -1,   0, 1, 2147483647, 2147483648],
-		"domExpected": [null,        null,        null, null, 0, 1, 2147483647, null],
-		"idlTests":       [-2147483648, -36,  -1,   0, 1, 2147483647],
-		"idlDomExpected": [null,        null, null, 0, 1, 2147483647],
+		"domTests": [minInt - 1, minInt, -36,  -1,   0, 1, maxInt, maxInt + 1,
+			maxUnsigned, maxUnsigned + 1, "", " " + binaryString + " foo ",
+			undefined, 1.5, true, false, {"test": 6}, NaN, +Infinity,
+			-Infinity, "\0"],
+		"domExpected": function(val) {
+			var parsed = ReflectionTests.parseNonneg(val + "");
+			if (parsed === false || parsed > maxInt || parsed < minInt) {
+				return null;
+			}
+			return parsed;
+		},
+		"idlTests":       [minInt, -36,  -1,   0, 1, maxInt],
+		"idlDomExpected": [null,   null, null, 0, 1, maxInt],
 	},
 	/**
 	 * "If a reflecting IDL attribute is an unsigned integer type (unsigned
 	 * long) then, on getting, the content attribute must be parsed according
 	 * to the rules for parsing non-negative integers, and if that is
-	 * successful, and the value is in the range of the IDL attribute's type,
-	 * the resulting value must be returned. If, on the other hand, it fails or
+	 * successful, and the value is in the range 0 to 2147483647 inclusive, the
+	 * resulting value must be returned. If, on the other hand, it fails or
 	 * returns an out of range value, or if the attribute is absent, the
 	 * default value must be returned instead, or 0 if there is no default
 	 * value. On setting, the given value must be converted to the shortest
@@ -242,8 +376,18 @@ ReflectionTests.typeMap = {
 	"unsigned long": {
 		"jsType": "number",
 		"defaultVal": 0,
-		"domTests":    [-2147483649, -2147483648, -36,  -1,   0, 1, 257, 2147483647, 2147483648, 4294967295, 4294967296],
-		"domExpected": [null,        null,        null, null, 0, 1, 257, 2147483647, null,       null,       null],
+		"domTests": [minInt - 1, minInt, -36,  -1,   0, 1, 257, maxInt,
+			maxInt + 1, maxUnsigned, maxUnsigned + 1, "",
+			" " + binaryString + " foo ", undefined, 1.5, true, false,
+			{"test": 6}, NaN, +Infinity, -Infinity, "\0"],
+		"domExpected": function(val) {
+			var parsed = ReflectionTests.parseNonneg(val + "");
+			// Note maxInt, not maxUnsigned.
+			if (parsed === false || parsed < 0 || parsed > maxInt) {
+				return null;
+			}
+			return parsed;
+		},
 		"idlTests": [0, 1, 257, 2147483647],
 	},
 	/**
@@ -252,8 +396,8 @@ ReflectionTests.typeMap = {
 	 * then the behavior is similar to the previous case, but zero is not
 	 * allowed. On getting, the content attribute must first be parsed
 	 * according to the rules for parsing non-negative integers, and if that is
-	 * successful, and the value is in the range of the IDL attribute's type,
-	 * the resulting value must be returned. If, on the other hand, it fails or
+	 * successful, and the value is in the range 1 to 2147483647 inclusive, the
+	 * resulting value must be returned. If, on the other hand, it fails or
 	 * returns an out of range value, or if the attribute is absent, the
 	 * default value must be returned instead, or 1 if there is no default
 	 * value. On setting, if the value is zero, the user agent must fire an
@@ -265,51 +409,83 @@ ReflectionTests.typeMap = {
 	"limited unsigned long": {
 		"jsType": "number",
 		"defaultVal": 1,
-		"domTests":    [-2147483649, -2147483648, -36,  -1,   0,    1, 2147483647, 2147483648, 4294967295, 4294967296],
-		"domExpected": [null,        null,        null, null, null, 1, 2147483647, null,       null,       null],
+		"domTests": [minInt - 1, minInt, -36,  -1,   0,    1, maxInt,
+			maxInt + 1, maxUnsigned, maxUnsigned + 1, "",
+			" " + binaryString + " foo ", undefined, 1.5, true, false,
+			{"test": 6}, NaN, +Infinity, -Infinity, "\0"],
+		"domExpected": function(val) {
+			var parsed = ReflectionTests.parseNonneg(val + "");
+			// Note maxInt, not maxUnsigned.
+			if (parsed === false || parsed < 1 || parsed > maxInt) {
+				return null;
+			}
+			return parsed;
+		},
 		"idlTests":       [0,    1, 2147483647],
 		"idlDomExpected": [null, 1, 2147483647],
 	},
+	/**
+	 * "If a reflecting IDL attribute is a floating point number type (double),
+	 * then, on getting, the content attribute must be parsed according to the
+	 * rules for parsing floating point number values, and if that is
+	 * successful, the resulting value must be returned. If, on the other hand,
+	 * it fails, or if the attribute is absent, the default value must be
+	 * returned instead, or 0.0 if there is no default value. On setting, the
+	 * given value must be converted to the best representation of the number
+	 * as a floating point number and then that string must be used as the new
+	 * content attribute value."
+	 *
+	 * TODO: Check this:
+	 *
+	 * "Except where otherwise specified, if an IDL attribute that is a
+	 * floating point number type (double) is assigned an Infinity or
+	 * Not-a-Number (NaN) value, a NOT_SUPPORTED_ERR exception must be raised."
+	 *
+	 * TODO: Implement the actual algorithm so we can run lots more tests.  For
+	 * now we're stuck with manually setting up expected values.  Of course,
+	 * a lot of care has to be taken in checking equality for floats . . .
+	 * maybe we should have some tolerance for comparing them.  I'm not even
+	 * sure whether setting the content attribute to 0 should return 0.0 or
+	 * -0.0 (the former, I hope).
+	 */
+	"double": {
+		"jsType": "number",
+		"defaultVal": 0.0,
+		"domTests": [minInt - 1, minInt, -36, -1, 0, 1, maxInt,
+            maxInt + 1, maxUnsigned, maxUnsigned + 1, "",
+            " " + binaryString + " foo ", undefined, 1.5, true, false,
+            {"test": 6}, NaN, +Infinity, -Infinity, "\0"],
+		"domExpected": [minInt - 1, minInt, -36, -1, 0, 1, maxInt, maxInt + 1,
+			maxUnsigned, maxUnsigned + 1, null, null, null, 1.5, null, null,
+			null, null, null, null, null],
+		// I checked that ES ToString is well-defined for all of these (I
+		// think).  Yes, String(-0) == "0".
+		"idlTests":       [ -10000000000,   -1,  -0,   0,   1,   10000000000],
+		"idlDomExpected": ["-10000000000", "-1", "0", "0", "1", "10000000000"],
+		"idlIdlExpected": [ -10000000000,   -1,  -0,   0,   1,   10000000000],
+	},
 };
-ReflectionTests.typeMap.url.domExpected = ReflectionTests.typeMap.url.domTests.map(ReflectionTests.resolveUrl);
-ReflectionTests.typeMap.url.idlIdlExpected = ReflectionTests.typeMap.url.domExpected;
-ReflectionTests.typeMap.urls.domExpected = ReflectionTests.typeMap.urls.domTests.map(function(urls) {
-	var expected = "";
-	// TODO: Test other whitespace?
-	urls = urls + "";
-	var split = urls.split(" ");
-	for (var j = 0; j < split.length; j++) {
-		if (split[j] == "") {
-			continue;
-		}
-		var append = ReflectionTests.resolveUrl(split[j]);
-		if (append == "") {
-			continue;
-		}
-		if (expected == "") {
-			expected = append;
-		} else {
-			expected += " " + append;
-		}
-	}
-	return expected;
-});
-ReflectionTests.typeMap.urls.idlDomExpected = ReflectionTests.typeMap.urls.domExpected;
 
 for (var type in ReflectionTests.typeMap) {
-	var jsType = ReflectionTests.typeMap[type].jsType;
-	var cast = window[jsType[0].toUpperCase() + jsType.slice(1)];
-	if (ReflectionTests.typeMap[type].domExpected === undefined) {
-		ReflectionTests.typeMap[type].domExpected = ReflectionTests.typeMap[type].domTests.map(cast);
+	var props = ReflectionTests.typeMap[type];
+	var cast = window[props.jsType[0].toUpperCase() + props.jsType.slice(1)];
+	if (props.domExpected === undefined) {
+		props.domExpected = props.domTests.map(cast);
+	} else if (typeof props.domExpected == "function") {
+		props.domExpected = props.domTests.map(props.domExpected);
 	}
-	if (ReflectionTests.typeMap[type].idlTests === undefined) {
-		ReflectionTests.typeMap[type].idlTests = ReflectionTests.typeMap[type].domTests;
+	if (props.idlTests === undefined) {
+		props.idlTests = props.domTests;
 	}
-	if (ReflectionTests.typeMap[type].idlDomExpected === undefined) {
-		ReflectionTests.typeMap[type].idlDomExpected = ReflectionTests.typeMap[type].idlTests.map(cast);
+	if (props.idlDomExpected === undefined) {
+		props.idlDomExpected = props.idlTests.map(cast);
+	} else if (typeof props.idlDomExpected == "function") {
+		props.idlDomExpected = props.idlTests.map(props.idlDomExpected);
 	}
-	if (ReflectionTests.typeMap[type].idlIdlExpected === undefined) {
-		ReflectionTests.typeMap[type].idlIdlExpected = ReflectionTests.typeMap[type].idlDomExpected;
+	if (props.idlIdlExpected === undefined) {
+		props.idlIdlExpected = props.idlDomExpected;
+	} else if (typeof props.idlIdlExpected == "function") {
+		props.idlIdlExpected = props.idlTests.map(props.idlIdlExpected);
 	}
 }
 
@@ -402,8 +578,8 @@ ReflectionTests.doReflects = function(data, idlName, idlObj, domName, domObj) {
 			data.nonCanon = {};
 		}
 		for (var i = 0; i < data.keywords.length; i++) {
-			domTests.push(data.keywords[i], "x" + data.keywords[i]);
-			idlTests.push(data.keywords[i], "x" + data.keywords[i]);
+			domTests.push(data.keywords[i], "x" + data.keywords[i], data.keywords[i] + "\0");
+			idlTests.push(data.keywords[i], "x" + data.keywords[i], data.keywords[i] + "\0");
 
 			if (data.keywords[i].length > 1) {
 				domTests.push(data.keywords[i].slice(1));
@@ -538,7 +714,7 @@ ReflectionTests.reflectsEnum = function(elementName, domAttrName, idlAttrName, o
 ReflectionTests.enumExpected = function(keywords, nonCanon, invalidVal, contentVal) {
 	var ret = invalidVal;
 	for (var i = 0; i < keywords.length; i++) {
-		if (contentVal.toLowerCase() == keywords[i].toLowerCase()) {
+		if (String(contentVal).toLowerCase() == keywords[i].toLowerCase()) {
 			ret = keywords[i];
 			break;
 		}
@@ -711,6 +887,8 @@ for (var element in elements) {
 			ReflectionTests.reflectsUnsignedLong(element, domAttrName, idlAttrName, data);
 		} else if (type == "limited unsigned long") {
 			ReflectionTests.reflectsLimitedUnsignedLong(element, domAttrName, idlAttrName, data);
+		} else if (type == "double") {
+			ReflectionTests.reflects({type: "double", defaultVal: data}, idlAttrName, element, domAttrName);
 		} else if (unimplemented.indexOf(type) == -1) {
 			unimplemented.push(type);
 		}

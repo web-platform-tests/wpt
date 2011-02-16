@@ -780,13 +780,19 @@ return the current <span title=concept-event-phase>phase</span>, which must
 be one of the following:</p>
 <dl>
  <dt><dfn title=dom-Event-CAPTURING_PHASE><code>CAPTURING_PHASE</code></dfn> (numeric value 1)</dt>
- <dd><p>When an <span title=concept-event>event</span> is <span title=concept-event-dispatch>dispatched</span> on a <span title=concept-node>node</span> it will be in this phase before it reaches
- its <span title=concept-event-target>target</span>.
+ <dd><p>When an <span title=concept-event>event</span> is
+ <span title=concept-event-dispatch>dispatched</span> on an object that
+ <span title=concept-tree-participate>participates</span> in a
+ <span title=concept-tree>tree</span> it will be in this phase before it
+ reaches its <span title=concept-event-target>target</span>.
  <dt><dfn title=dom-Event-AT_TARGET><code>AT_TARGET</code></dfn> (numeric value 2)
  <dd><p>When an <span title=concept-event>event</span> is <span title=concept-event-dispatch>dispatched</span> it will be in this phase on its <span title=concept-event-target>target</span>.
  <dt><dfn title=dom-Event-BUBBLING_PHASE><code>BUBBLING_PHASE</code></dfn> (numeric value 3)
- <dd><p>When an <span title=concept-event>event</span> is <span title=concept-event-dispatch>dispatched</span> on a <span title=concept-node>node</span> it will be in this phase after it reaches
- its <span title=concept-event-target>target</span>.
+ <dd><p>When an <span title=concept-event>event</span> is
+ <span title=concept-event-dispatch>dispatched</span> on an object that
+ <span title=concept-tree-participate>participates</span> in a
+ <span title=concept-tree>tree</span> it will be in this phase after it
+ reaches its <span title=concept-event-target>target</span>.
 </dl>
 <p>Initially the <span title=concept-event-phase>phase</span> is
 <span title=dom-Event-AT_TARGET>AT_TARGET</span>.
@@ -954,17 +960,17 @@ steps:</p>
  <li>
   <dl>
    <dt>If <var title>event</var>'s
-   <span title=concept-event-target>target</span> is a
-   <span title=concept-node>node</span>
+   <span title=concept-event-target>target</span> is
+   <span title=concept-tree-participate>participating</span> in a
+   <span title=concept-tree>tree</span>
    <dd>
     <ol>
      <li><p>Let <var title>event path</var> be a static ordered list of all
-     <span title=concept-ancestor-node>ancestor nodes</span> of
+     <span title=concept-tree-ancestor>ancestors</span> of
      <var title>event</var>'s <span title=concept-event-target>target</span>
      in <span>tree order</span>.</li>
      <li><p>Set <var title>event</var>'s <span title=concept-event-phase>phase</span> to <span title=dom-Event-CAPTURING_PHASE>CAPTURING_PHASE</span>.
-     <li><p>For each <span title=concept-node>node</span> in the
-     <var title>event path</var>
+     <li><p>For each object in the <var title>event path</var>
      <span title=concept-event-listener-invoke>invoke</span> its
      <span title=concept-event-listener>event listeners</span>, as long as
      <var title>event</var>'s <span>stop propagation flag</span> is unset.
@@ -980,8 +986,7 @@ steps:</p>
       <ol>
        <li><p>Reverse the order of <var title>event path</var>.
        <li><p>Set <var title>event</var>'s <span title=concept-event-phase>phase</span> to <span title=dom-Event-BUBBLING_PHASE>BUBBLING_PHASE</span>.
-       <li><p>For each <span title=concept-node>node</span> in the
-       <var title>event path</var>
+       <li><p>For each object in the <var title>event path</var>
        <span title=concept-event-listener-invoke>invoke</span> its
        <span title=concept-event-listener>event listeners</span>, as long as
        <var title>event</var>'s <span>stop propagation flag</span> is unset.
@@ -993,6 +998,8 @@ steps:</p>
    <span title=concept-event-listener>event listeners</span> of
    <var title>event</var>'s <span title=concept-event-target>target</span>.
   </dl>
+  <!-- XXX This could be flattened by just letting "event path" be empty for
+           objects not participating in a tree. -->
  </li>
  <li><p>Unset <var title>event</var>'s <span>dispatch flag</span>.
  <li><p>Set <var title>event</var>'s <span title=concept-event-phase>phase</span> to <span title=dom-Event-AT_TARGET>AT_TARGET</span>.
@@ -1087,9 +1094,16 @@ it was thought better to describe its
 
 
 <h2>Nodes Model</h2>
-<p><code>Node</code> objects (simply called <dfn title=concept-node>nodes</dfn>) form a tree-based structure. Each node, except for <code>Document</code> objects, has zero or one <dfn title=concept-parent-node>parent nodes</dfn>. A <code>Document</code> object cannot have a <span title=concept-parent-node>parent node</span>.</p>
-<p>A node <var title>A</var> is a <dfn title=concept-child-node>child node</dfn> of a node <var title>B</var> if and only if <var title>B</var> is the <span title=concept-parent-node>parent node</span> of <var title>A</var>.</p>
-<p>The tree-based structure is constrained by the following node hierarchy expressed as a relationship between the type of node and its allowed <span title=concpet-child-node>child nodes</span>:</p>
+
+<p><code>Node</code> objects (simply called
+<dfn title=concept-node>nodes</dfn>)
+<span title=concept-tree-participate>participate</span> in a
+<span title=concept-tree>tree</span>.
+
+<p>The <span title=concept-tree>tree</span> of
+<span title=concept-node>nodes</span> is constrained as follows, expressed
+as a relationship between the type of <span title=concept-node>node</span>
+and its allowed <span title=concept-tree-child>children</span>:
 <dl>
  <dt><code>Document</code>
  <dd>
@@ -1115,15 +1129,16 @@ it was thought better to describe its
  <dt><code>Text</code>
  <dd><p>None.
 </dl>
-<p>A node, or the <span title=concpet-child-node>child nodes</span> in case of a <code>DocumentFragment</code> object, are said to <dfn>violate the node hierarchy</dfn> of another node if inserting them within the other node's
-<span>home subtree</span> would violate the constraints listed above.</p>
-<p class="note">Operations that would cause a node to <span>violate the node hierarchy</span> of another node will throw a <code title=dom-DOMException-HIERARCHY_REQUEST_ERR>HIERARCHY_REQUEST_ERR</code>.</p>
-<p>Besides <span title=concept-parent-node>parent node</span> and <span title=concept-child-node>child node</span> various other terms are used for tree-based structures.</p>
-<p>A node <var title>A</var> is called a <dfn title=concept-descendant-node>descendant node</dfn> of a node <var title>B</var>, if either <var title>A</var> is a <span title=concept-child-node>child node</span> of <var title>B</var> or <var title>A</var> is a <span title=concept-child-node>child node</span> of a node <var title>C</var> that is a <span title=concept-descendant-node>descendant node</span> of <var title>B</var>.</p>
-<p>A node <var title>A</var> is called an <dfn title=concept-ancestor-node>ancestor node</dfn> of a node <var title>B</var> if and only if <var title>B</var> is a <span title=concept-descendant-node>descendant node</span> of <var title>A</var>.</p>
-<p>A node <var title>A</var> is called a <dfn title=concept-sibling-node>sibling node</dfn> of a node <var title>B</var>, if and only if <var title>B</var> and <var title>A</var> share the same <span title=concept-parent-node>parent node</span>.
-<var title>A</var> is a <dfn title=concept-preceding-sibling-node>preceding sibling node</dfn> of <var title>B</var> if <var title>A</var> and <var title>B</var> are <span title=concept-sibling-node>siblings</span> and <var title>A</var> comes before <var title>B</var> in their shared parent node.
-<var title>A</var> is a <dfn title=concept-following-sibling-node>following sibling node</dfn> of <var title>B</var> if <var title>A</var> and <var title>B</var> are <span title=concept-sibling-node>siblings</span> and <var title>A</var> comes after <var title>B</var> in their shared parent node.
+
+<p>A <span title=concept-node>node</span>, or its
+<span title=concept-tree-child>children</span> in case of a
+<code>DocumentFragment</code> object, are said to
+<dfn>violate the node hierarchy</dfn> of another node if inserting them
+within the other node's <span>home subtree</span> would violate the
+constraints listed above.
+<!-- XXX more xref? -->
+
+<p class="note">Operations that would cause a node to <span>violate the node hierarchy</span> of another node will throw a <code title=dom-DOMException-HIERARCHY_REQUEST_ERR>HIERARCHY_REQUEST_ERR</code>.
 
 <!--AttrExodus -->
 

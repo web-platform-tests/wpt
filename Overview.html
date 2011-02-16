@@ -41,7 +41,7 @@
 <p><a href="http://www.w3.org/"><img alt="W3C" height="48" src="http://www.w3.org/Icons/w3c_home" width="72"></a></p>
 <!--end-logo-->
  <h1>Web DOM Core</h1>
- <h2 class="no-num no-toc" id="editor-s-draft-14-february-2011">Editor's Draft 14 February 2011</h2>
+ <h2 class="no-num no-toc" id="editor-s-draft-16-february-2011">Editor's Draft 16 February 2011</h2>
 
  <dl>
   <dt>This Version:
@@ -52,7 +52,7 @@
   <dt>Previous Versions:
   <dd><a href="http://www.w3.org/TR/2010/WD-domcore-20101007/">http://www.w3.org/TR/2010/WD-domcore-20101007/</a>
 
-  <dt>Editor:
+  <dt>Editors:
   <dd><a href="http://annevankesteren.nl/">Anne van Kesteren</a>
     (<a href="http://www.opera.com/">Opera Software ASA</a>)
     &lt;<a href="mailto:annevk@opera.com">annevk@opera.com</a>&gt;
@@ -81,7 +81,7 @@ publications and the latest revision of this technical report can be found in
 the <a href="http://www.w3.org/TR/">W3C technical reports index</a> at
 http://www.w3.org/TR/.</em>
 
-<p>This is the 14 February 2011 Editor's Draft of Web DOM Core. Please send
+<p>This is the 16 February 2011 Editor's Draft of Web DOM Core. Please send
 comments to
 <a href="mailto:public-webapps@w3.org?subject=%5BDOMCore%5D%20">public-webapps@w3.org</a>
 (<a href="http://lists.w3.org/Archives/Public/public-webapps/">archived</a>)
@@ -126,14 +126,15 @@ document as other than work in progress.
     <ol class="toc">
      <li><a href="#dependencies"><span class="secno">1.2.1 </span>Dependencies</a></li>
      <li><a href="#extensibility"><span class="secno">1.2.2 </span>Extensibility</a></ol></li>
-   <li><a href="#case-sensitivity"><span class="secno">1.3 </span>Case-sensitivity</a></li>
-   <li><a href="#common-microsyntaxes"><span class="secno">1.4 </span>Common microsyntaxes</a>
+   <li><a href="#trees"><span class="secno">1.3 </span>Trees</a></li>
+   <li><a href="#case-sensitivity"><span class="secno">1.4 </span>Case-sensitivity</a></li>
+   <li><a href="#common-microsyntaxes"><span class="secno">1.5 </span>Common microsyntaxes</a>
     <ol class="toc">
-     <li><a href="#common-parser-idioms"><span class="secno">1.4.1 </span>Common parser idioms</a></li>
-     <li><a href="#space-separated-tokens"><span class="secno">1.4.2 </span>Space-separated tokens</a></ol></li>
-   <li><a href="#dom-features"><span class="secno">1.5 </span>DOM features</a></li>
-   <li><a href="#cloning-nodes"><span class="secno">1.6 </span>Cloning nodes</a></li>
-   <li><a href="#namespaces"><span class="secno">1.7 </span>Namespaces</a></ol></li>
+     <li><a href="#common-parser-idioms"><span class="secno">1.5.1 </span>Common parser idioms</a></li>
+     <li><a href="#space-separated-tokens"><span class="secno">1.5.2 </span>Space-separated tokens</a></ol></li>
+   <li><a href="#dom-features"><span class="secno">1.6 </span>DOM features</a></li>
+   <li><a href="#cloning-nodes"><span class="secno">1.7 </span>Cloning nodes</a></li>
+   <li><a href="#namespaces"><span class="secno">1.8 </span>Namespaces</a></ol></li>
  <li><a href="#exceptions"><span class="secno">2 </span>Exceptions</a>
   <ol class="toc">
    <li><a href="#exception-domexception"><span class="secno">2.1 </span>Exception <code>DOMException</code></a></ol></li>
@@ -215,7 +216,6 @@ document as other than work in progress.
 
 <h2 id="common-infrastructure"><span class="secno">1 </span>Common infrastructure</h2>
 <h3 id="terminology"><span class="secno">1.1 </span>Terminology</h3>
-<p>The term <dfn id="tree-order">tree order</dfn> means a pre-order, depth-first traversal of DOM nodes involved (through the <code title="dom-Node-parentNode"><a href="#dom-node-parentnode">parentNode</a></code>/<code title="dom-Node-childNodes"><a href="#dom-node-childnodes">childNodes</a></code> relationship).
 
 <p>The term <dfn id="context-node">context node</dfn> means the <code><a href="#node">Node</a></code> on which the
 method or attribute being discussed was called.
@@ -328,7 +328,73 @@ this specification.
 <!-- http://www.w3.org/mid/17E341CD-E790-422C-9F9A-69347EE01CEB@iki.fi -->
 
 
-<h3 id="case-sensitivity"><span class="secno">1.3 </span>Case-sensitivity</h3>
+<h3 id="trees"><span class="secno">1.3 </span>Trees</h3> <!-- Sorry reddit, this is not /r/trees -->
+
+<!-- XXX I do not like the structure of "Common infrastructure" at all but
+     I will write this first. -->
+
+<p>Just like most programming paradigms the Web platform has finite
+hierarchical tree structures, simply named
+<dfn id="concept-tree" title="concept-tree">trees</dfn>.
+
+<hr>
+
+<p>An object that <dfn id="concept-tree-participate" title="concept-tree-participate">participates</dfn> in
+a <a href="#concept-tree" title="concept-tree">tree</a> has a number of properties that other
+objects do not. The remainder of definitions in this section apply to
+objects that <a href="#concept-tree-participate" title="concept-tree-participate">participate in
+<span title="concept-tree">trees</span>.
+
+</a><p>An object has zero or one
+<dfn id="concept-tree-parent" title="concept-tree-parent">parent</dfn> object. An object without
+<a href="#concept-tree-parent" title="concept-tree-parent">parent</a> is called the
+<dfn id="concept-tree-root" title="concept-tree-root">root</dfn> object.
+<!-- XXX do we need "root"? -->
+
+<p>An object <var title="">A</var> is a
+<dfn id="concept-tree-child" title="concept-tree-child">child</dfn> of an object <var title="">B</var> if
+and only if <var title="">B</var> is the
+<a href="#concept-tree-parent" title="concept-tree-parent">parent</a> of <var title="">A</var>.
+
+<p>An object <var title="">A</var> is called a
+<dfn id="concept-tree-descendant" title="concept-tree-descendant">descendant</dfn> of an object
+<var title="">B</var>, if either <var title="">A</var> is a
+<a href="#concept-tree-child" title="concept-tree-child">child</a> of <var title="">B</var> or
+<var title="">A</var> is a <a href="#concept-tree-child" title="concept-tree-child">child</a> of an
+object <var title="">C</var> that is a
+<a href="#concept-tree-descendant" title="concept-tree-descendant">descendant</a> of <var title="">B</var>.
+
+<p>An object <var title="">A</var> is called an
+<dfn id="concept-tree-ancestor" title="concept-tree-ancestor">ancestor</dfn> of an object
+<var title="">B</var> if and only if <var title="">B</var> is a
+<a href="#concept-tree-descendant" title="concept-tree-descendant">descendant</a> of
+<var title="">A</var>.
+
+<p>An object <var title="">A</var> is called a
+<dfn id="concept-tree-sibling" title="concept-tree-sibling">sibling</dfn> of an object
+<var title="">B</var>, if and only if <var title="">B</var> and <var title="">A</var> share the same <a href="#concept-tree-parent" title="concept-tree-parent">parent</a>.
+<var title="">A</var> is a
+<dfn id="concept-tree-preceding-sibling" title="concept-tree-preceding-sibling">preceding sibling</dfn> of
+<var title="">B</var> if <var title="">A</var> and <var title="">B</var> are
+<a href="#concept-tree-sibling" title="concept-tree-sibling">siblings</a> and <var title="">A</var>
+comes before <var title="">B</var> in their shared
+<a href="#concept-tree-parent" title="concept-tree-parent">parent</a>.
+<var title="">A</var> is a
+<dfn id="concept-tree-following-sibling" title="concept-tree-following-sibling">following sibling</dfn> of
+<var title="">B</var> if <var title="">A</var> and <var title="">B</var> are
+<span title="concept-sibling-node">siblings</span> and <var title="">A</var>
+comes after <var title="">B</var> in their shared
+<a href="#concept-tree-parent" title="concept-tree-parent">parent</a>.
+
+<hr>
+
+<p>The term <dfn id="tree-order">tree order</dfn> means a pre-order, depth-first traversal
+of the <a href="#concept-tree" title="concept-tree">tree</a>.
+<!-- XXX should that use concept- ? -->
+<!-- http://en.wikipedia.org/wiki/Tree_traversal#Depth-first_Traversal -->
+
+
+<h3 id="case-sensitivity"><span class="secno">1.4 </span>Case-sensitivity</h3>
 <p>This specification defines several comparison operators for strings.
 
 <p>Comparing two strings in a <dfn id="case-sensitive">case-sensitive</dfn> manner means comparing them exactly, codepoint for codepoint.
@@ -346,8 +412,8 @@ this specification.
 other.
 
 
-<h3 id="common-microsyntaxes"><span class="secno">1.4 </span>Common microsyntaxes</h3>
-<h4 id="common-parser-idioms"><span class="secno">1.4.1 </span>Common parser idioms</h4>
+<h3 id="common-microsyntaxes"><span class="secno">1.5 </span>Common microsyntaxes</h3>
+<h4 id="common-parser-idioms"><span class="secno">1.5.1 </span>Common parser idioms</h4>
 <p>Some of the micro-parsers described below follow the pattern of having an
 <var title="">input</var> variable that holds the string being parsed, and having a
 <var title="">position</var> variable pointing at the next character to parse in
@@ -377,7 +443,7 @@ can be collected:
 must <a href="#collect-a-sequence-of-characters">collect a sequence of characters</a> that are <a href="#space-character" title="space character">space characters</a>. The collected
 characters are not used.
 
-<h4 id="space-separated-tokens"><span class="secno">1.4.2 </span>Space-separated tokens</h4>
+<h4 id="space-separated-tokens"><span class="secno">1.5.2 </span>Space-separated tokens</h4>
 
 <p>A <dfn id="set-of-space-separated-tokens">set of space-separated tokens</dfn> is a string containing
 zero or more words (known as tokens) separated by one or more <a href="#space-character" title="space character">space characters</a>, where words consist
@@ -497,7 +563,7 @@ of the string, where such spaces are removed.
 </div>
 
 
-<h3 id="dom-features"><span class="secno">1.5 </span>DOM features</h3>
+<h3 id="dom-features"><span class="secno">1.6 </span>DOM features</h3>
 <p>A <dfn id="concept-domfeature" title="concept-DOMfeature">DOM feature</dfn> is a unique,
 <a href="#ascii-case-insensitive">ASCII case-insensitive</a> string that represents a certain feature of
 the user agent.
@@ -531,7 +597,7 @@ feature</a> with the version "2.0" associated with it.
 <!-- Chrome supports Core/1.0; Opera supports x/undefined -->
 
 
-<h3 id="cloning-nodes"><span class="secno">1.6 </span>Cloning nodes</h3>
+<h3 id="cloning-nodes"><span class="secno">1.7 </span>Cloning nodes</h3>
 <p>To <dfn id="clone">clone</dfn> a <var title="">node</var>, with a
 <var title="">new ownerDocument</var> and with a
 <dfn id="clone-children-flag"><i>clone children flag</i></dfn>, these steps must be run:
@@ -574,7 +640,7 @@ feature</a> with the version "2.0" associated with it.
 </ol>
 
 
-<h3 id="namespaces"><span class="secno">1.7 </span>Namespaces</h3>
+<h3 id="namespaces"><span class="secno">1.8 </span>Namespaces</h3>
 <p>The <dfn id="html-namespace">HTML namespace</dfn> is <code title="">http://www.w3.org/1999/xhtml</code>.
 
 <p>The <dfn id="xml-namespace">XML namespace</dfn> is <code title="">http://www.w3.org/XML/1998/namespace</code>.
@@ -749,13 +815,19 @@ return the current <a href="#concept-event-phase" title="concept-event-phase">ph
 be one of the following:</p>
 <dl>
  <dt><dfn id="dom-event-capturing_phase" title="dom-Event-CAPTURING_PHASE"><code>CAPTURING_PHASE</code></dfn> (numeric value 1)</dt>
- <dd><p>When an <a href="#concept-event" title="concept-event">event</a> is <a href="#concept-event-dispatch" title="concept-event-dispatch">dispatched</a> on a <a href="#concept-node" title="concept-node">node</a> it will be in this phase before it reaches
- its <a href="#concept-event-target" title="concept-event-target">target</a>.
+ <dd><p>When an <a href="#concept-event" title="concept-event">event</a> is
+ <a href="#concept-event-dispatch" title="concept-event-dispatch">dispatched</a> on an object that
+ <a href="#concept-tree-participate" title="concept-tree-participate">participates</a> in a
+ <a href="#concept-tree" title="concept-tree">tree</a> it will be in this phase before it
+ reaches its <a href="#concept-event-target" title="concept-event-target">target</a>.
  <dt><dfn id="dom-event-at_target" title="dom-Event-AT_TARGET"><code>AT_TARGET</code></dfn> (numeric value 2)
  <dd><p>When an <a href="#concept-event" title="concept-event">event</a> is <a href="#concept-event-dispatch" title="concept-event-dispatch">dispatched</a> it will be in this phase on its <a href="#concept-event-target" title="concept-event-target">target</a>.
  <dt><dfn id="dom-event-bubbling_phase" title="dom-Event-BUBBLING_PHASE"><code>BUBBLING_PHASE</code></dfn> (numeric value 3)
- <dd><p>When an <a href="#concept-event" title="concept-event">event</a> is <a href="#concept-event-dispatch" title="concept-event-dispatch">dispatched</a> on a <a href="#concept-node" title="concept-node">node</a> it will be in this phase after it reaches
- its <a href="#concept-event-target" title="concept-event-target">target</a>.
+ <dd><p>When an <a href="#concept-event" title="concept-event">event</a> is
+ <a href="#concept-event-dispatch" title="concept-event-dispatch">dispatched</a> on an object that
+ <a href="#concept-tree-participate" title="concept-tree-participate">participates</a> in a
+ <a href="#concept-tree" title="concept-tree">tree</a> it will be in this phase after it
+ reaches its <a href="#concept-event-target" title="concept-event-target">target</a>.
 </dl>
 <p>Initially the <a href="#concept-event-phase" title="concept-event-phase">phase</a> is
 <a href="#dom-event-at_target" title="dom-Event-AT_TARGET">AT_TARGET</a>.
@@ -906,7 +978,8 @@ method is invoked these steps must be run:
 <h3 id="dispatching-events"><span class="secno">3.4 </span>Dispatching Events</h3>
 
 <p>To <dfn id="concept-event-dispatch" title="concept-event-dispatch">dispatch</dfn> an
-<a href="#concept-event" title="concept-event">event</a> run these steps:</p>
+<a href="#concept-event" title="concept-event">event</a> on a given object run these
+steps:</p>
 <!-- other specifications turn this into a requirement  -->
 
 <ol>
@@ -922,17 +995,17 @@ method is invoked these steps must be run:
  <li>
   <dl>
    <dt>If <var title="">event</var>'s
-   <a href="#concept-event-target" title="concept-event-target">target</a> is a
-   <a href="#concept-node" title="concept-node">node</a>
+   <a href="#concept-event-target" title="concept-event-target">target</a> is
+   <a href="#concept-tree-participate" title="concept-tree-participate">participating</a> in a
+   <a href="#concept-tree" title="concept-tree">tree</a>
    <dd>
     <ol>
      <li><p>Let <var title="">event path</var> be a static ordered list of all
-     <a href="#concept-ancestor-node" title="concept-ancestor-node">ancestor nodes</a> of
+     <a href="#concept-tree-ancestor" title="concept-tree-ancestor">ancestors</a> of
      <var title="">event</var>'s <a href="#concept-event-target" title="concept-event-target">target</a>
      in <a href="#tree-order">tree order</a>.</li>
      <li><p>Set <var title="">event</var>'s <a href="#concept-event-phase" title="concept-event-phase">phase</a> to <a href="#dom-event-capturing_phase" title="dom-Event-CAPTURING_PHASE">CAPTURING_PHASE</a>.
-     <li><p>For each <a href="#concept-node" title="concept-node">node</a> in the
-     <var title="">event path</var>
+     <li><p>For each object in the <var title="">event path</var>
      <a href="#concept-event-listener-invoke" title="concept-event-listener-invoke">invoke</a> its
      <a href="#concept-event-listener" title="concept-event-listener">event listeners</a>, as long as
      <var title="">event</var>'s <a href="#stop-propagation-flag">stop propagation flag</a> is unset.
@@ -946,10 +1019,9 @@ method is invoked these steps must be run:
       <p>If <var title="">event</var>'s <a href="#bubble-flag">bubble flag</a> is set run
       these substeps:</p>
       <ol>
-       <li><p>Set <var title="">event</var>'s <a href="#concept-event-phase" title="concept-event-phase">phase</a> to <a href="#dom-event-bubbling_phase" title="dom-Event-BUBBLING_PHASE">BUBBLING_PHASE</a>.
        <li><p>Reverse the order of <var title="">event path</var>.
-       <li><p>For each <a href="#concept-node" title="concept-node">node</a> in the
-       <var title="">event path</var>
+       <li><p>Set <var title="">event</var>'s <a href="#concept-event-phase" title="concept-event-phase">phase</a> to <a href="#dom-event-bubbling_phase" title="dom-Event-BUBBLING_PHASE">BUBBLING_PHASE</a>.
+       <li><p>For each object in the <var title="">event path</var>
        <a href="#concept-event-listener-invoke" title="concept-event-listener-invoke">invoke</a> its
        <a href="#concept-event-listener" title="concept-event-listener">event listeners</a>, as long as
        <var title="">event</var>'s <a href="#stop-propagation-flag">stop propagation flag</a> is unset.
@@ -961,6 +1033,8 @@ method is invoked these steps must be run:
    <a href="#concept-event-listener" title="concept-event-listener">event listeners</a> of
    <var title="">event</var>'s <a href="#concept-event-target" title="concept-event-target">target</a>.
   </dl>
+  <!-- XXX This could be flattened by just letting "event path" be empty for
+           objects not participating in a tree. -->
  </li>
  <li><p>Unset <var title="">event</var>'s <a href="#dispatch-flag">dispatch flag</a>.
  <li><p>Set <var title="">event</var>'s <a href="#concept-event-phase" title="concept-event-phase">phase</a> to <a href="#dom-event-at_target" title="dom-Event-AT_TARGET">AT_TARGET</a>.
@@ -1055,9 +1129,16 @@ it was thought better to describe its
 
 
 <h2 id="nodes-model"><span class="secno">4 </span>Nodes Model</h2>
-<p><code><a href="#node">Node</a></code> objects (simply called <dfn id="concept-node" title="concept-node">nodes</dfn>) form a tree-based structure. Each node, except for <code><a href="#document">Document</a></code> objects, has zero or one <dfn id="concept-parent-node" title="concept-parent-node">parent nodes</dfn>. A <code><a href="#document">Document</a></code> object cannot have a <a href="#concept-parent-node" title="concept-parent-node">parent node</a>.</p>
-<p>A node <var title="">A</var> is a <dfn id="concept-child-node" title="concept-child-node">child node</dfn> of a node <var title="">B</var> if and only if <var title="">B</var> is the <a href="#concept-parent-node" title="concept-parent-node">parent node</a> of <var title="">A</var>.</p>
-<p>The tree-based structure is constrained by the following node hierarchy expressed as a relationship between the type of node and its allowed <span title="concpet-child-node">child nodes</span>:</p>
+
+<p><code><a href="#node">Node</a></code> objects (simply called
+<dfn id="concept-node" title="concept-node">nodes</dfn>)
+<a href="#concept-tree-participate" title="concept-tree-participate">participate</a> in a
+<a href="#concept-tree" title="concept-tree">tree</a>.
+
+<p>The <a href="#concept-tree" title="concept-tree">tree</a> of
+<a href="#concept-node" title="concept-node">nodes</a> is constrained as follows, expressed
+as a relationship between the type of <a href="#concept-node" title="concept-node">node</a>
+and its allowed <a href="#concept-tree-child" title="concept-tree-child">children</a>:
 <dl>
  <dt><code><a href="#document">Document</a></code>
  <dd>
@@ -1083,15 +1164,16 @@ it was thought better to describe its
  <dt><code><a href="#text">Text</a></code>
  <dd><p>None.
 </dl>
-<p>A node, or the <span title="concpet-child-node">child nodes</span> in case of a <code><a href="#documentfragment">DocumentFragment</a></code> object, are said to <dfn id="violate-the-node-hierarchy">violate the node hierarchy</dfn> of another node if inserting them within the other node's
-<a href="#home-subtree">home subtree</a> would violate the constraints listed above.</p>
-<p class="note">Operations that would cause a node to <a href="#violate-the-node-hierarchy">violate the node hierarchy</a> of another node will throw a <code title="dom-DOMException-HIERARCHY_REQUEST_ERR"><a href="#dom-domexception-hierarchy_request_err">HIERARCHY_REQUEST_ERR</a></code>.</p>
-<p>Besides <a href="#concept-parent-node" title="concept-parent-node">parent node</a> and <a href="#concept-child-node" title="concept-child-node">child node</a> various other terms are used for tree-based structures.</p>
-<p>A node <var title="">A</var> is called a <dfn id="concept-descendant-node" title="concept-descendant-node">descendant node</dfn> of a node <var title="">B</var>, if either <var title="">A</var> is a <a href="#concept-child-node" title="concept-child-node">child node</a> of <var title="">B</var> or <var title="">A</var> is a <a href="#concept-child-node" title="concept-child-node">child node</a> of a node <var title="">C</var> that is a <a href="#concept-descendant-node" title="concept-descendant-node">descendant node</a> of <var title="">B</var>.</p>
-<p>A node <var title="">A</var> is called an <dfn id="concept-ancestor-node" title="concept-ancestor-node">ancestor node</dfn> of a node <var title="">B</var> if and only if <var title="">B</var> is a <a href="#concept-descendant-node" title="concept-descendant-node">descendant node</a> of <var title="">A</var>.</p>
-<p>A node <var title="">A</var> is called a <dfn id="concept-sibling-node" title="concept-sibling-node">sibling node</dfn> of a node <var title="">B</var>, if and only if <var title="">B</var> and <var title="">A</var> share the same <a href="#concept-parent-node" title="concept-parent-node">parent node</a>.
-<var title="">A</var> is a <dfn id="concept-preceding-sibling-node" title="concept-preceding-sibling-node">preceding sibling node</dfn> of <var title="">B</var> if <var title="">A</var> and <var title="">B</var> are <a href="#concept-sibling-node" title="concept-sibling-node">siblings</a> and <var title="">A</var> comes before <var title="">B</var> in their shared parent node.
-<var title="">A</var> is a <dfn id="concept-following-sibling-node" title="concept-following-sibling-node">following sibling node</dfn> of <var title="">B</var> if <var title="">A</var> and <var title="">B</var> are <a href="#concept-sibling-node" title="concept-sibling-node">siblings</a> and <var title="">A</var> comes after <var title="">B</var> in their shared parent node.
+
+<p>A <a href="#concept-node" title="concept-node">node</a>, or its
+<a href="#concept-tree-child" title="concept-tree-child">children</a> in case of a
+<code><a href="#documentfragment">DocumentFragment</a></code> object, are said to
+<dfn id="violate-the-node-hierarchy">violate the node hierarchy</dfn> of another node if inserting them
+within the other node's <a href="#home-subtree">home subtree</a> would violate the
+constraints listed above.
+<!-- XXX more xref? -->
+
+<p class="note">Operations that would cause a node to <a href="#violate-the-node-hierarchy">violate the node hierarchy</a> of another node will throw a <code title="dom-DOMException-HIERARCHY_REQUEST_ERR"><a href="#dom-domexception-hierarchy_request_err">HIERARCHY_REQUEST_ERR</a></code>.
 
 <!--AttrExodus -->
 

@@ -243,16 +243,6 @@ this specification.
 <p>The term <dfn>context node</dfn> means the <code>Node</code> on which the
 method or attribute being discussed was called.
 
-<p>The <dfn>document element</dfn> is the <code>Element</code>
-<span title=concept-tree-child>child</span> of a <code>Document</code> or
-null if there is no <span title=concept-tree-child>child</span>
-<code>Element</code>.
-
-<p>When an <code>Element</code> or one of its
-<span title=concept-tree-ancestor>ancestors</span> is the
-<span>document element</span>, it is said to be
-<dfn>in a <code>Document</code></dfn>.
-
 <p>The <dfn title="space character">space characters</dfn>, for the
 purposes of this specification, are U+0020 SPACE, U+0009 CHARACTER
 TABULATION (tab), U+000A LINE FEED (LF), U+000C FORM FEED (FF), and
@@ -1114,6 +1104,16 @@ and its allowed <span title=concept-tree-child>children</span>:
  <dt><code>Text</code>
  <dd><p>None.
 </dl>
+
+<p>The <dfn>document element</dfn> is the <code>Element</code>
+<span title=concept-tree-child>child</span> of a <code>Document</code> or
+null if there is no <span title=concept-tree-child>child</span>
+<code>Element</code>.
+
+<p>When an <code>Element</code> or one of its
+<span title=concept-tree-ancestor>ancestors</span> is the
+<span>document element</span>, it is said to be
+<dfn>in a <code>Document</code></dfn>.
 
 <p>A <span title=concept-node>node</span>, or its
 <span title=concept-tree-child>children</span> in case of a

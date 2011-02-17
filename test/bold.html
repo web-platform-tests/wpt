@@ -1,0 +1,256 @@
+<!doctype html>
+<title>execCommand("bold") tests</title>
+<div id=log></div>
+<div contenteditable=true id=test>
+	<br> <br>
+	Some simple text<br>
+	<span>Some more text</span><br>
+	<b>Some more text</b><br>
+	<strong>Some more text</strong><br>
+	<span style=font-weight:bold>Some more text</span><br>
+	<span style=font-weight:bolder>Some more text</span><br>
+	<span style=font-weight:lighter>Some more text</span><br>
+	<span style=font-weight:900>Some more text</span><br>
+	<span style=font-weight:100>Some more text</span><br>
+	<i>Some more text</i><br>
+	<span style=font-style:italic>Some more text</span><br>
+	<span style=font-style:italic;font-weight:bold>Some more text</span><br>
+	<em style=font-weight:bold>Some more text</em><br>
+	<b>Some <span style=font-weight:light>more <b>te<span style=font-weight:bold>xt<strong>!</strong></span></b></span></b><br>
+	<p>Some simple text
+	<p><span>Some more text</span>
+	<p><b>Some more text</b>
+	<p><strong>Some more text</strong>
+	<p><span style=font-weight:bold>Some more text</span>
+	<p><span style=font-weight:bolder>Some more text</span>
+	<p><span style=font-weight:lighter>Some more text</span>
+	<p><span style=font-weight:900>Some more text</span>
+	<p><span style=font-weight:100>Some more text</span>
+	<p><i>Some more text</i>
+	<p><span style=font-style:italic>Some more text</span>
+	<p><span style=font-style:italic;font-weight:bold>Some more text</span>
+	<p><em style=font-weight:bold>Some more text</em>
+	<p><b>Some <span style=font-weight:light>more <b>te<span style=font-weight:bold>xt<strong>!</strong></span></b></span></b>
+</div>
+<script src=support/testharness.js></script>
+<script src=support/testharnessreport.js></script>
+<script>
+"use strict";
+
+var htmlNamespace = "http://www.w3.org/1999/xhtml";
+
+function indexOf(node) {
+	var ret = 0;
+	while (node != node.parentNode.childNodes[ret]) {
+		ret++;
+	}
+	return ret;
+}
+
+function nextNode(node) {
+	if (node.hasChildNodes()) {
+		return node.firstChild;
+	}
+	return nextNodeDescendants(node);
+}
+
+function previousNode(node) {
+	if (node.previousSibling) {
+		node = node.previousSibling;
+		while (node.hasChildNodes()) {
+			node = node.lastChild;
+		}
+		return node;
+	}
+	if (node.parentElement) {
+		return node.parentElement;
+	}
+	return null;
+}
+
+function nextNodeDescendants(node) {
+	while (node && !node.nextSibling) {
+		node = node.parentElement;
+	}
+	if (!node) {
+		return null;
+	}
+	return node.nextSibling;
+}
+
+function convertProperty(propertyName) {
+	// Hack for now
+	return "font-weight";
+}
+
+function styleRange(range, propertyName, propertyValue, tagList) {
+	var startNode = range.startContainer;
+	var startOffset = range.startOffset;
+	var endNode = range.endContainer;
+	var endOffset = range.endOffset;
+
+	var doc = startNode.ownerDocument;
+
+	// Skip the sanity check about node types/detached non-elements
+
+	if (startNode.nodeType == Node.TEXT_NODE
+	&& startOffset != 0
+	&& startOffset != startNode.data.length) {
+		startNode = startNode.splitText(startOffset);
+		startOffset = 0;
+	}
+
+	if (endNode.nodeType == Node.TEXT_NODE
+	&& endOffset != 0
+	&& endOffset != endNode.data.length) {
+		endNode = endNode.splitText(endOffset).previousSibling;
+		endOffset = endNode.data.length;
+	}
+
+	var nodeList = [];
+
+	var node;
+	if (startNode.nodeType == Node.ELEMENT_NODE
+	&& startNode.hasChildNodes()) {
+		node = nextNode(startNode.childNodes[startOffset]);
+	} else if (
+		(startNode.nodeType == Node.TEXT_NODE && startOffset == 0)
+		|| (startNode.nodeType == Node.ELEMENT_NODE && !startNode.hasChildNodes())
+	) {
+		node = startNode;
+	} else {
+		node = nextNode(startNode);
+	}
+
+	var end;
+	if (endNode.nodeType == Node.ELEMENT_NODE
+	&& endNode.hasChildNodes()) {
+		if (endOffset == endNode.childNodes.length) {
+			end = endNode.lastChild;
+		} else {
+			end = previousNode(endNode.childNodes[endOffset]);
+		}
+	} else if (
+		(endNode.nodeType == Node.TEXT_NODE && endOffset == endNode.data.length)
+		|| (endNode.nodeType == Node.ELEMENT_NODE && !endNode.hasChildNodes())
+	) {
+		end = endNode;
+	} else {
+		end = previousNode(endNode);
+	}
+
+	while (node && !(end.compareDocumentPosition(node) & 4)) {
+		nodeList.push(node);
+		node = nextNodeDescendants(node);
+	}
+
+	// FIXME what if nodeList.length == 0?
+	for (var i = 0; i < nodeList.length; i++) {
+		node = nodeList[i];
+		if (node.parentElement) {
+			var replace = true;
+			for (var j = 0; j < node.parentElement.childNodes.length; j++) {
+				if (node.parentElement.childNodes[j] != nodeList[i + j]) {
+					replace = false;
+					break;
+				}
+			}
+			if (replace) {
+				nodeList = nodeList.slice(0, i)
+					.concat(node.parentElement)
+					.concat(nodeList.slice(i + j));
+				continue;
+			}
+		}
+	}
+
+	for (var i = 0; i < nodeList.length; i++) {
+		node = nodeList[i];
+		if (node.nodeType == Node.ELEMENT_NODE) {
+			if (node.namespaceURI == htmlNamespace
+			&& tagList.indexOf(node.tagName.toLowerCase()) != -1) {
+				node.style[propertyName] = '';
+			} else {
+				node.style[propertyName] = propertyValue;
+			}
+
+			var desc = nextNode(node);
+			var stop = nextNodeDescendants(node);
+			while (true) {
+				if (desc == stop) {
+					break;
+				}
+
+				if (desc.nodeType != Node.ELEMENT_NODE) {
+					desc = nextNode(desc);
+					continue;
+				}
+
+				if (
+					(desc.namespaceURI == htmlNamespace
+					&& (desc.nodeName == "SPAN" || tagList.indexOf(desc.nodeName.toLowerCase()) != -1)
+					&& desc.attributes.length == 1
+					//&& desc.attributes[0].namespaceURI == htmlNamespace
+					&& desc.attributes[0].localName == "style"
+					&& desc.style.length == 1
+					&& desc.style.item(0) == convertProperty(propertyName)
+					)
+					||
+					(desc.namespaceURI == htmlNamespace
+					&& tagList.indexOf(desc.nodeName.toLowerCase()) != -1
+					&& desc.attributes.length == 0)
+				) {
+					var oldDesc = desc;
+					desc = nextNode(desc);
+					while (oldDesc.hasChildNodes()) {
+						oldDesc.parentNode.insertBefore(oldDesc.childNodes[0], oldDesc);
+					}
+					oldDesc.parentNode.removeChild(oldDesc);
+					continue;
+				}
+				desc.style[propertyName] = '';
+				if (desc.getAttribute("style") == "") {
+					desc.removeAttribute("style");
+				}
+				if (desc.namespaceURI == htmlNamespace
+				&& tagList.indexOf(desc.tagName.toLowerCase()) != -1) {
+					var newDesc = doc.createElement("span");
+					for (var j = 0; j < desc.attributes.length; j++) {
+						// Sick of playing the namespace game, assume
+						// everything is in HTML.
+						newDesc.setAttribute(desc.attributes[j].localName, desc.attributes[j].value);
+					}
+					desc.parentNode.insertBefore(newDesc, desc);
+					while (desc.hasChildNodes()) {
+						newDesc.appendChild(desc.childNodes[0]);
+					}
+					desc.parentNode.removeChild(desc);
+				}
+				desc = nextNode(desc);
+			}
+			continue;
+		}
+
+		if (node.previousSibling
+		&& node.previousSibling.nodeType == Node.ELEMENT_NODE
+		&& node.previousSibling.namespaceURI == htmlNamespace
+		&& node.previousSibling.tagName == tagList[0].toUpperCase()) {
+			node.previousSibling.appendChild(node);
+			continue;
+		}
+
+		if (node.nodeType != Node.TEXT_NODE
+		|| /^[ \t\n\f\r]*$/.test(node.data)) {
+			continue;
+		}
+
+		var newParent = doc.createElement(tagList[0]);
+		node.parentNode.insertBefore(newParent, node);
+		newParent.appendChild(node);
+	}
+}
+
+var range = document.createRange();
+range.selectNodeContents(document.getElementsByTagName("div")[1]);
+styleRange(range, "fontWeight", "bold", ["b", "strong"]);
+</script>

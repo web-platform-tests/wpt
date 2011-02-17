@@ -1,0 +1,40 @@
+<!doctype html>
+<title>execCommand() tests</title>
+<div contenteditable=true>
+	<br> <br>
+	Some simple text<br>
+	<span>Some more text</span><br>
+	<b>Some more text</b><br>
+	<strong>Some more text</strong><br>
+	<span style=font-weight:bold>Some more text</span><br>
+	<span style=font-weight:bolder>Some more text</span><br>
+	<span style=font-weight:lighter>Some more text</span><br>
+	<span style=font-weight:900>Some more text</span><br>
+	<span style=font-weight:100>Some more text</span><br>
+	<i>Some more text</i><br>
+	<span style=font-style:italic>Some more text</span><br>
+	<span style=font-style:italic;font-weight:bold>Some more text</span><br>
+	<em style=font-weight:bold>Some more text</em><br>
+	<b>Some <span style=font-weight:light>more <b>te<span style=font-weight:bold>xt<strong>!</strong></span></b></span></b><br>
+	<p>Some simple text
+	<p><span>Some more text</span>
+	<p><b>Some more text</b>
+	<p><strong>Some more text</strong>
+	<p><span style=font-weight:bold>Some more text</span>
+	<p><span style=font-weight:bolder>Some more text</span>
+	<p><span style=font-weight:lighter>Some more text</span>
+	<p><span style=font-weight:900>Some more text</span>
+	<p><span style=font-weight:100>Some more text</span>
+	<p><i>Some more text</i>
+	<p><span style=font-style:italic>Some more text</span>
+	<p><span style=font-style:italic;font-weight:bold>Some more text</span>
+	<p><em style=font-weight:bold>Some more text</em>
+	<p><b>Some <span style=font-weight:light>more <b>te<span style=font-weight:bold>xt<strong>!</strong></span></b></span></b>
+</div>
+<script>
+var selection = getSelection();
+selection.selectAllChildren(document.querySelector("div"));
+document.execCommand("bold", false, null);
+//document.execCommand("bold", false, null);
+selection.removeAllRanges();
+</script>

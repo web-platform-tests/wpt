@@ -243,26 +243,15 @@ this specification.
 <p>The term <dfn>context node</dfn> means the <code>Node</code> on which the
 method or attribute being discussed was called.
 
-<p>The <dfn>root element of a <code>Document</code> object</dfn> is that
-<code>Document</code>'s first <code>Element</code> child, if any. If it does not
-have one, the <code>Document</code> has no root element.
+<p>The <dfn>document element</dfn> is the <code>Element</code>
+<span title=concept-tree-child>child</span> of a <code>Document</code> or
+null if there is no <span title=concept-tree-child>child</span>
+<code>Element</code>.
 
-<p>The term <dfn>root element</dfn>, when not referring to the
-<span>root element of a <code>Document</code> object</span>, means the furthest
-ancestor element node of whatever node is being discussed, or the node itself if
-it has no ancestors. When the node is a part of the document, then the node's
-<span>root element</span> is indeed the document's root element; however, if the
-node is not currently part of the document tree, the root element will be an
-orphaned node.
-
-<p>When an element's <span>root element</span> is the
-<span>root element of a <code>Document</code> object</span>, it is said to be
+<p>When an <code>Element</code> or one of its
+<span title=concept-tree-ancestor>ancestors</span> is the
+<span>document element</span>, it is said to be
 <dfn>in a <code>Document</code></dfn>.
-
-<p>A node's <dfn>home subtree</dfn> is the subtree rooted at that
-node's <span>root element</span>. When a node is <span>in a
-<code>Document</code></span>, its <span>home subtree</span> is that
-<code>Document</code>'s tree.
 
 <p>The <dfn title="space character">space characters</dfn>, for the
 purposes of this specification, are U+0020 SPACE, U+0009 CHARACTER
@@ -1129,10 +1118,10 @@ and its allowed <span title=concept-tree-child>children</span>:
 <p>A <span title=concept-node>node</span>, or its
 <span title=concept-tree-child>children</span> in case of a
 <code>DocumentFragment</code> object, are said to
-<dfn>violate the node hierarchy</dfn> of another node if inserting them
-within the other node's <span>home subtree</span> would violate the
-constraints listed above.
-<!-- XXX more xref? -->
+<dfn>violate the node hierarchy</dfn> of another
+<span title=concept-node>node</span> if inserting them within the other
+<span title=concept-node>node</span>'s <span title=concept-tree>tree</span>
+would violate the constraints listed above.
 
 <p class="note">Operations that would cause a node to <span>violate the node hierarchy</span> of another node will throw a <code title=dom-DOMException-HIERARCHY_REQUEST_ERR>HIERARCHY_REQUEST_ERR</code>.
 
@@ -1974,8 +1963,7 @@ http://lists.w3.org/Archives/Public/www-dom/2003JulSep/0049.html -->
 
 <p>The
 <dfn title=dom-Document-documentElement><code>documentElement</code></dfn>
-attribute must return the child of the <code>Document</code> node that is an
-<code>Element</code> node, if there is one, or null otherwise.
+attribute must return the <span>document element</span>.
 
 <p>The <dfn
 title=dom-Document-getElementsByTagName><code>getElementsByTagName(<var

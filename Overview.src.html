@@ -153,40 +153,7 @@ document as other than work in progress.
 </ul>
 
 
-<h2>Common infrastructure</h2>
-<h3>Terminology</h3>
-
-<p>The term <dfn>context node</dfn> means the <code>Node</code> on which the
-method or attribute being discussed was called.
-
-<p>The <dfn>root element of a <code>Document</code> object</dfn> is that
-<code>Document</code>'s first <code>Element</code> child, if any. If it does not
-have one, the <code>Document</code> has no root element.
-
-<p>The term <dfn>root element</dfn>, when not referring to the
-<span>root element of a <code>Document</code> object</span>, means the furthest
-ancestor element node of whatever node is being discussed, or the node itself if
-it has no ancestors. When the node is a part of the document, then the node's
-<span>root element</span> is indeed the document's root element; however, if the
-node is not currently part of the document tree, the root element will be an
-orphaned node.
-
-<p>When an element's <span>root element</span> is the
-<span>root element of a <code>Document</code> object</span>, it is said to be
-<dfn>in a <code>Document</code></dfn>.
-
-<p>A node's <dfn>home subtree</dfn> is the subtree rooted at that
-node's <span>root element</span>. When a node is <span>in a
-<code>Document</code></span>, its <span>home subtree</span> is that
-<code>Document</code>'s tree.
-
-<p>The <dfn title="space character">space characters</dfn>, for the
-purposes of this specification, are U+0020 SPACE, U+0009 CHARACTER
-TABULATION (tab), U+000A LINE FEED (LF), U+000C FORM FEED (FF), and
-U+000D CARRIAGE RETURN (CR).
-
-
-<h3>Conformance requirements</h3>
+<h2>Conformance</h2>
 <p>All diagrams, examples, and notes in this specification are
 non-normative, as are all sections explicitly marked non-normative.
 Everything else in this specification is normative.
@@ -219,7 +186,7 @@ out of memory, or to work around platform-specific limitations.
 
 <p>Unless otherwise stated, string comparisons are done in a <span>case-sensitive</span> manner.
 
-<h4>Dependencies</h4>
+<h3>Dependencies</h3>
 
 <p>The IDL fragments in this specification must be interpreted as
 required for conforming IDL fragments, as described in the Web IDL
@@ -243,7 +210,7 @@ IDL</cite>, <cite>XML</cite> and <cite>Namespaces in XML</cite>.
 <span data-anolis-ref>XML</span>
 <span data-anolis-ref>XMLNS</span>
 
-<h4>Extensibility</h4>
+<h3>Extensibility</h3>
 
 <p>Vendor-specific proprietary extensions to this specification are
 strongly discouraged. Authors must not use such extensions, as
@@ -268,6 +235,39 @@ the requirements of such an extension specification, it becomes an
 specification</dfn> for the purposes of conformance requirements in
 this specification.
 <!-- http://www.w3.org/mid/17E341CD-E790-422C-9F9A-69347EE01CEB@iki.fi -->
+
+
+<h2>Common infrastructure</h2>
+<h3>Terminology</h3>
+
+<p>The term <dfn>context node</dfn> means the <code>Node</code> on which the
+method or attribute being discussed was called.
+
+<p>The <dfn>root element of a <code>Document</code> object</dfn> is that
+<code>Document</code>'s first <code>Element</code> child, if any. If it does not
+have one, the <code>Document</code> has no root element.
+
+<p>The term <dfn>root element</dfn>, when not referring to the
+<span>root element of a <code>Document</code> object</span>, means the furthest
+ancestor element node of whatever node is being discussed, or the node itself if
+it has no ancestors. When the node is a part of the document, then the node's
+<span>root element</span> is indeed the document's root element; however, if the
+node is not currently part of the document tree, the root element will be an
+orphaned node.
+
+<p>When an element's <span>root element</span> is the
+<span>root element of a <code>Document</code> object</span>, it is said to be
+<dfn>in a <code>Document</code></dfn>.
+
+<p>A node's <dfn>home subtree</dfn> is the subtree rooted at that
+node's <span>root element</span>. When a node is <span>in a
+<code>Document</code></span>, its <span>home subtree</span> is that
+<code>Document</code>'s tree.
+
+<p>The <dfn title="space character">space characters</dfn>, for the
+purposes of this specification, are U+0020 SPACE, U+0009 CHARACTER
+TABULATION (tab), U+000A LINE FEED (LF), U+000C FORM FEED (FF), and
+U+000D CARRIAGE RETURN (CR).
 
 
 <h3>Trees</h3> <!-- Sorry reddit, this is not /r/trees -->

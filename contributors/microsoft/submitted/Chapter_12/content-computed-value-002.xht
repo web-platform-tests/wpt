@@ -1,13 +1,13 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
-        <title>CSS Test: 'content' set to 'normal' using :after</title>
+        <title>CSS Test: 'content' set to 'normal' using :before</title>
         <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
         <link rel="help" href="http://www.w3.org/TR/CSS21/generate.html#content" />
         <meta name="flags" content="dom" />
         <meta name="assert" content="When the 'content' property is set to 'normal' the values computes to 'none'." />
         <style type="text/css">
-            div:after
+            div:before
             {
                 content: normal;
             }
@@ -20,7 +20,7 @@
         <script type="text/javascript">
             <![CDATA[
             var testEl = document.getElementById('test');
-            var propertyValue = window.getComputedStyle(testEl, ':after').content;
+            var propertyValue = window.getComputedStyle(testEl, ':before').content;
             var newTextNode = document.createTextNode(propertyValue);
             document.getElementById("result").appendChild(newTextNode);
             ]]>

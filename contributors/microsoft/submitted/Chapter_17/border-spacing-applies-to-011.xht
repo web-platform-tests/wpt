@@ -12,26 +12,35 @@
             {
                 display: table;
             }
-            #test
+            .tr
             {
                 border-spacing: 20px;
                 display: table-row;
             }
             .td
             {
-                border: 10px solid black;
                 display: table-cell;
                 height: 100px;
                 width: 100px;
             }
+            .top
+            {
+                border: 10px solid blue;
+            }
+            .bottom
+            {
+                border: 10px solid orange;
+            }
         </style>
     </head>
     <body>
-        <p>Test passes if the two boxes below are adjoining.</p>
+        <p>Test passes if there is a blue and orange square below and there is no vertical gap between the squares.</p>
         <div id="table">
-            <div id="test">
-                <div class="td"></div>
-                <div class="td"></div>
+            <div class="tr">
+                <div class="td top"></div>
+            </div>
+            <div class="tr">
+                <div class="td bottom"></div>
             </div>
         </div>
     </body>

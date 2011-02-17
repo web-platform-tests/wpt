@@ -12,21 +12,28 @@
             {
                 display: table;
             }
-            .caption
+            .caption1, .caption2
             {
-                border: 10px solid blue;
                 border-spacing: 20px;
                 display: table-caption;
                 height: 100px;
                 width: 100px;
             }
+            .caption1
+            {
+                border: 10px solid blue;
+            }
+            .caption2
+            {
+                border: 10px solid orange;
+            }
         </style>
     </head>
     <body>
-        <p>Test passes if there is one box below or if there are two boxes below that are adjoining.</p>
+        <p>Test passes if there is a blue and orange square below and there is no vertical gap between the squares.</p>
         <div id="table">
-            <div class="caption"></div>
-            <div class="caption"></div>
+            <div class="caption1"></div>
+            <div class="caption2"></div>
         </div>
     </body>
 </html>

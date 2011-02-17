@@ -10,17 +10,24 @@
         <style type="text/css">
             div
             {
-                border: 10px solid black;
                 border-spacing: 20px;
                 display: block;
                 height: 100px;
                 width: 100px;
             }
+            #div1
+            {
+                border: 10px solid blue;
+            }
+            #div2
+            {
+                border: 10px solid orange;
+            }
         </style>
     </head>
     <body>
-        <p>Test passes if the two boxes below are adjoining.</p>
-        <div></div>
-        <div></div>
+        <p>Test passes if there is a blue and orange square below and there is no vertical gap between the squares.</p>
+        <div id="div1"></div>
+        <div id="div2"></div>
     </body>
 </html>

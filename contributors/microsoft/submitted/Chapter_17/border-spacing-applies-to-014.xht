@@ -18,20 +18,27 @@
             }
             .td
             {
-                border: 10px solid black;
                 border-spacing: 20px;
                 display: table-cell;
                 height: 100px;
                 width: 100px;
             }
+            .left
+            {
+                border: 10px solid blue;
+            }
+            .right
+            {
+                border: 10px solid orange;
+            }
         </style>
     </head>
     <body>
-        <p>Test passes if the two boxes below are adjoining.</p>
+        <p>Test passes if there is a blue and orange square below and there is no horizontal gap between the squares.</p>
         <div id="table">
             <div id="tr">
-                <div class="td"></div>
-                <div class="td"></div>
+                <div class="td left"></div>
+                <div class="td right"></div>
             </div>
         </div>
     </body>

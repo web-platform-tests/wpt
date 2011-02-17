@@ -2,6 +2,10 @@ html {
     font-family:DejaVu Sans, Bitstream Vera Sans, Arial, Sans;
 }
 
+section#summary {
+    margin-bottom:1em;
+}
+
 table#results {
     border-collapse:collapse;
 }
@@ -18,19 +22,23 @@ table#results td {
     border-bottom:thin solid black;
 }
 
-table#results td.pass {
+td.pass {
     color:green;
 }
 
-table#results td.fail {
+td.fail {
     color:red;
 }
 
-table#results td.timeout {
+td.timeout {
     color:red;
 }
 
-table#results tr>td:nth-child(1) {
+td.notrun {
+    color:blue;
+}
+
+.pass .fail .timeout .notrun {
     font-variant:small-caps;
 }
 

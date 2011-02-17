@@ -915,24 +915,84 @@ policies and contribution forms [3].
         status_text[Test.prototype.TIMEOUT] = "Timeout";
         status_text[Test.prototype.NOTRUN] = "Not Run";
 
-        var template = ["table", {"id":"results"},
+        var status_number = {};
+        forEach(tests, function(test) {
+                    var status = status_text[test.status];
+                    if (status_number.hasOwnProperty(status))
+                    {
+                        status_number[status] += 1;
+                    } else {
+                        status_number[status] = 1;
+                    }
+                });
+
+        function status_class(status)
+        {
+            return status.replace(/\s/g, '').toLowerCase();
+        }
+
+        var summary_template = ["section", {"id":"summary"},
+                                ["h2", {}, "Summary"],
+                                ["p", {}, "Found ${num_tests} tests"],
+                                function(vars) {
+                                    var rv = [["div", {}]];
+                                    var i=0;
+                                    while (status_text.hasOwnProperty(i)) {
+                                        if (status_number.hasOwnProperty(status_text[i])) {
+                                            var status = status_text[i];
+                                            rv[0].push(["div", {"class":status_class(status)},
+                                                        ["input", {type:"checkbox", checked:"checked"}],
+                                                       status_number[status] + " " + status]);
+                                        }
+                                        i++;
+                                    }
+                                    return rv;
+                                }];
+
+        log.appendChild(render(summary_template, {num_tests:tests.length}));
+
+        forEach(document.querySelectorAll("section#summary input"),
+                function(element)
+                {
+                    on_event(element, "click",
+                             function(e)
+                             {
+                                 if (document.getElementById("results") === null)
+                                 {
+                                     e.preventDefault();
+                                     return;
+                                 }
+                                 var result_class = element.parentNode.getAttribute("class");
+                                 var checked = element.checked;
+                                 forEach(document.querySelectorAll("table#results > tbody > tr > td."+result_class),
+                                         function(cell)
+                                         {
+                                             cell.parentNode.style.display = checked ? "" : "None";
+                                         });
+                             });
+                });
+
+        var template = ["section", {},
+                        ["h2", {}, "Details"],
+                        ["table", {"id":"results"},
                         ["tr", {},
                          ["th", {}, "Result"],
                          ["th", {}, "Test Name"],
                          ["th", {}, "Message"]
                         ],
+                        ["tbody", {},
                         function(vars) {
                             var rv = map(vars.tests, function(test) {
                                              var status = status_text[test.status];
                                              return  ["tr", {},
-                                                      ["td", {"class":status.toLowerCase()}, status],
+                                                      ["td", {"class":status_class(status)}, status],
                                                       ["td", {}, test.name],
                                                       ["td", {}, test.message ? test.message : " "]
                                                      ];
                                          });
                             return rv;
-                        }
-                       ];
+                        }]
+                       ]];
 
         log.appendChild(render(template, {tests:tests}));
 

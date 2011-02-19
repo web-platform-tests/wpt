@@ -41,7 +41,7 @@
 <p><a href="http://www.w3.org/"><img alt="W3C" height="48" src="http://www.w3.org/Icons/w3c_home" width="72"></a></p>
 <!--end-logo-->
  <h1>Web DOM Core</h1>
- <h2 class="no-num no-toc" id="editor-s-draft-16-february-2011">Editor's Draft 16 February 2011</h2>
+ <h2 class="no-num no-toc" id="editor-s-draft-17-february-2011">Editor's Draft 17 February 2011</h2>
 
  <dl>
   <dt>This Version:
@@ -81,7 +81,7 @@ publications and the latest revision of this technical report can be found in
 the <a href="http://www.w3.org/TR/">W3C technical reports index</a> at
 http://www.w3.org/TR/.</em>
 
-<p>This is the 16 February 2011 Editor's Draft of Web DOM Core. Please send
+<p>This is the 17 February 2011 Editor's Draft of Web DOM Core. Please send
 comments to
 <a href="mailto:public-webapps@w3.org?subject=%5BDOMCore%5D%20">public-webapps@w3.org</a>
 (<a href="http://lists.w3.org/Archives/Public/public-webapps/">archived</a>)
@@ -119,58 +119,58 @@ document as other than work in progress.
 <ol class="toc">
  <li><a class="no-num" href="#goals">Goals</a></li>
  <li><a class="no-num" href="#issues">Issues</a></li>
- <li><a href="#common-infrastructure"><span class="secno">1 </span>Common infrastructure</a>
+ <li><a href="#conformance"><span class="secno">1 </span>Conformance</a>
   <ol class="toc">
-   <li><a href="#terminology"><span class="secno">1.1 </span>Terminology</a></li>
-   <li><a href="#conformance-requirements"><span class="secno">1.2 </span>Conformance requirements</a>
+   <li><a href="#dependencies"><span class="secno">1.1 </span>Dependencies</a></li>
+   <li><a href="#extensibility"><span class="secno">1.2 </span>Extensibility</a></ol></li>
+ <li><a href="#common-infrastructure"><span class="secno">2 </span>Common infrastructure</a>
+  <ol class="toc">
+   <li><a href="#terminology"><span class="secno">2.1 </span>Terminology</a></li>
+   <li><a href="#trees"><span class="secno">2.2 </span>Trees</a></li>
+   <li><a href="#case-sensitivity"><span class="secno">2.3 </span>Case-sensitivity</a></li>
+   <li><a href="#common-microsyntaxes"><span class="secno">2.4 </span>Common microsyntaxes</a>
     <ol class="toc">
-     <li><a href="#dependencies"><span class="secno">1.2.1 </span>Dependencies</a></li>
-     <li><a href="#extensibility"><span class="secno">1.2.2 </span>Extensibility</a></ol></li>
-   <li><a href="#trees"><span class="secno">1.3 </span>Trees</a></li>
-   <li><a href="#case-sensitivity"><span class="secno">1.4 </span>Case-sensitivity</a></li>
-   <li><a href="#common-microsyntaxes"><span class="secno">1.5 </span>Common microsyntaxes</a>
+     <li><a href="#common-parser-idioms"><span class="secno">2.4.1 </span>Common parser idioms</a></li>
+     <li><a href="#space-separated-tokens"><span class="secno">2.4.2 </span>Space-separated tokens</a></ol></li>
+   <li><a href="#dom-features"><span class="secno">2.5 </span>DOM features</a></li>
+   <li><a href="#cloning-nodes"><span class="secno">2.6 </span>Cloning nodes</a></li>
+   <li><a href="#namespaces"><span class="secno">2.7 </span>Namespaces</a></ol></li>
+ <li><a href="#exceptions"><span class="secno">3 </span>Exceptions</a>
+  <ol class="toc">
+   <li><a href="#exception-domexception"><span class="secno">3.1 </span>Exception <code>DOMException</code></a></ol></li>
+ <li><a href="#events"><span class="secno">4 </span>Events</a>
+  <ol class="toc">
+   <li><a href="#interface-event"><span class="secno">4.1 </span>Interface <code>Event</code></a></li>
+   <li><a href="#interface-customevent"><span class="secno">4.2 </span>Interface <code>CustomEvent</code></a></li>
+   <li><a href="#interface-eventtarget"><span class="secno">4.3 </span>Interface <code>EventTarget</code></a></li>
+   <li><a href="#dispatching-events"><span class="secno">4.4 </span>Dispatching Events</a></li>
+   <li><a href="#creating-events"><span class="secno">4.5 </span>Creating Events</a></ol></li>
+ <li><a href="#nodes-model"><span class="secno">5 </span>Nodes Model</a></li>
+ <li><a href="#nodes"><span class="secno">6 </span>Nodes</a>
+  <ol class="toc">
+   <li><a href="#interface-node"><span class="secno">6.1 </span>Interface <code>Node</code></a></li>
+   <li><a href="#interface-documentfragment"><span class="secno">6.2 </span>Interface <code>DocumentFragment</code></a></li>
+   <li><a href="#interface-document"><span class="secno">6.3 </span>Interface <code>Document</code></a>
     <ol class="toc">
-     <li><a href="#common-parser-idioms"><span class="secno">1.5.1 </span>Common parser idioms</a></li>
-     <li><a href="#space-separated-tokens"><span class="secno">1.5.2 </span>Space-separated tokens</a></ol></li>
-   <li><a href="#dom-features"><span class="secno">1.6 </span>DOM features</a></li>
-   <li><a href="#cloning-nodes"><span class="secno">1.7 </span>Cloning nodes</a></li>
-   <li><a href="#namespaces"><span class="secno">1.8 </span>Namespaces</a></ol></li>
- <li><a href="#exceptions"><span class="secno">2 </span>Exceptions</a>
-  <ol class="toc">
-   <li><a href="#exception-domexception"><span class="secno">2.1 </span>Exception <code>DOMException</code></a></ol></li>
- <li><a href="#events"><span class="secno">3 </span>Events</a>
-  <ol class="toc">
-   <li><a href="#interface-event"><span class="secno">3.1 </span>Interface <code>Event</code></a></li>
-   <li><a href="#interface-customevent"><span class="secno">3.2 </span>Interface <code>CustomEvent</code></a></li>
-   <li><a href="#interface-eventtarget"><span class="secno">3.3 </span>Interface <code>EventTarget</code></a></li>
-   <li><a href="#dispatching-events"><span class="secno">3.4 </span>Dispatching Events</a></li>
-   <li><a href="#creating-events"><span class="secno">3.5 </span>Creating Events</a></ol></li>
- <li><a href="#nodes-model"><span class="secno">4 </span>Nodes Model</a></li>
- <li><a href="#nodes"><span class="secno">5 </span>Nodes</a>
-  <ol class="toc">
-   <li><a href="#interface-node"><span class="secno">5.1 </span>Interface <code>Node</code></a></li>
-   <li><a href="#interface-documentfragment"><span class="secno">5.2 </span>Interface <code>DocumentFragment</code></a></li>
-   <li><a href="#interface-document"><span class="secno">5.3 </span>Interface <code>Document</code></a>
+     <li><a href="#interface-domimplementation"><span class="secno">6.3.1 </span>Interface <code>DOMImplementation</code></a></ol></li>
+   <li><a href="#interface-element"><span class="secno">6.4 </span>Interface <code>Element</code></a>
     <ol class="toc">
-     <li><a href="#interface-domimplementation"><span class="secno">5.3.1 </span>Interface <code>DOMImplementation</code></a></ol></li>
-   <li><a href="#interface-element"><span class="secno">5.4 </span>Interface <code>Element</code></a>
-    <ol class="toc">
-     <li><a href="#interface-attr"><span class="secno">5.4.1 </span>Interface <code>Attr</code></a></ol></li>
-   <li><a href="#interface-documenttype"><span class="secno">5.5 </span>Interface <code>DocumentType</code></a></li>
-   <li><a href="#interface-processinginstruction"><span class="secno">5.6 </span>Interface <code>ProcessingInstruction</code></a></li>
-   <li><a href="#interface-characterdata"><span class="secno">5.7 </span>Interface <code>CharacterData</code></a></li>
-   <li><a href="#interface-text"><span class="secno">5.8 </span>Interface <code>Text</code></a></li>
-   <li><a href="#interface-comment"><span class="secno">5.9 </span>Interface <code>Comment</code></a></ol></li>
- <li><a href="#collections"><span class="secno">6 </span>Collections</a>
+     <li><a href="#interface-attr"><span class="secno">6.4.1 </span>Interface <code>Attr</code></a></ol></li>
+   <li><a href="#interface-documenttype"><span class="secno">6.5 </span>Interface <code>DocumentType</code></a></li>
+   <li><a href="#interface-processinginstruction"><span class="secno">6.6 </span>Interface <code>ProcessingInstruction</code></a></li>
+   <li><a href="#interface-characterdata"><span class="secno">6.7 </span>Interface <code>CharacterData</code></a></li>
+   <li><a href="#interface-text"><span class="secno">6.8 </span>Interface <code>Text</code></a></li>
+   <li><a href="#interface-comment"><span class="secno">6.9 </span>Interface <code>Comment</code></a></ol></li>
+ <li><a href="#collections"><span class="secno">7 </span>Collections</a>
   <ol class="toc">
-   <li><a href="#interface-nodelist"><span class="secno">6.1 </span>Interface <code>NodeList</code></a></li>
-   <li><a href="#interface-htmlcollection"><span class="secno">6.2 </span>Interface <code>HTMLCollection</code></a></ol></li>
- <li><a href="#lists"><span class="secno">7 </span>Lists</a>
+   <li><a href="#interface-nodelist"><span class="secno">7.1 </span>Interface <code>NodeList</code></a></li>
+   <li><a href="#interface-htmlcollection"><span class="secno">7.2 </span>Interface <code>HTMLCollection</code></a></ol></li>
+ <li><a href="#lists"><span class="secno">8 </span>Lists</a>
   <ol class="toc">
-   <li><a href="#interface-domstringlist"><span class="secno">7.1 </span>Interface <code>DOMStringList</code></a></li>
-   <li><a href="#interface-domtokenlist"><span class="secno">7.2 </span>Interface <code>DOMTokenList</code></a></li>
-   <li><a href="#interface-domsettabletokenlist"><span class="secno">7.3 </span>Interface <code>DOMSettableTokenList</code></a></ol></li>
- <li><a href="#historical"><span class="secno">8 </span>Historical</a></li>
+   <li><a href="#interface-domstringlist"><span class="secno">8.1 </span>Interface <code>DOMStringList</code></a></li>
+   <li><a href="#interface-domtokenlist"><span class="secno">8.2 </span>Interface <code>DOMTokenList</code></a></li>
+   <li><a href="#interface-domsettabletokenlist"><span class="secno">8.3 </span>Interface <code>DOMSettableTokenList</code></a></ol></li>
+ <li><a href="#historical"><span class="secno">9 </span>Historical</a></li>
  <li><a class="no-num" href="#references">References</a>
   <ol class="toc">
    <li><a class="no-num" href="#normative-references">Normative references</a></li>
@@ -214,40 +214,7 @@ document as other than work in progress.
 </ul>
 
 
-<h2 id="common-infrastructure"><span class="secno">1 </span>Common infrastructure</h2>
-<h3 id="terminology"><span class="secno">1.1 </span>Terminology</h3>
-
-<p>The term <dfn id="context-node">context node</dfn> means the <code><a href="#node">Node</a></code> on which the
-method or attribute being discussed was called.
-
-<p>The <dfn id="root-element-of-a-document-object">root element of a <code>Document</code> object</dfn> is that
-<code><a href="#document">Document</a></code>'s first <code><a href="#element">Element</a></code> child, if any. If it does not
-have one, the <code><a href="#document">Document</a></code> has no root element.
-
-<p>The term <dfn id="root-element">root element</dfn>, when not referring to the
-<a href="#root-element-of-a-document-object">root element of a <code>Document</code> object</a>, means the furthest
-ancestor element node of whatever node is being discussed, or the node itself if
-it has no ancestors. When the node is a part of the document, then the node's
-<a href="#root-element">root element</a> is indeed the document's root element; however, if the
-node is not currently part of the document tree, the root element will be an
-orphaned node.
-
-<p>When an element's <a href="#root-element">root element</a> is the
-<a href="#root-element-of-a-document-object">root element of a <code>Document</code> object</a>, it is said to be
-<dfn id="in-a-document">in a <code>Document</code></dfn>.
-
-<p>A node's <dfn id="home-subtree">home subtree</dfn> is the subtree rooted at that
-node's <a href="#root-element">root element</a>. When a node is <a href="#in-a-document">in a
-<code>Document</code></a>, its <a href="#home-subtree">home subtree</a> is that
-<code><a href="#document">Document</a></code>'s tree.
-
-<p>The <dfn id="space-character" title="space character">space characters</dfn>, for the
-purposes of this specification, are U+0020 SPACE, U+0009 CHARACTER
-TABULATION (tab), U+000A LINE FEED (LF), U+000C FORM FEED (FF), and
-U+000D CARRIAGE RETURN (CR).
-
-
-<h3 id="conformance-requirements"><span class="secno">1.2 </span>Conformance requirements</h3>
+<h2 id="conformance"><span class="secno">1 </span>Conformance</h2>
 <p>All diagrams, examples, and notes in this specification are
 non-normative, as are all sections explicitly marked non-normative.
 Everything else in this specification is normative.
@@ -279,29 +246,19 @@ out of memory, or to work around platform-specific limitations.
 
 <p>Unless otherwise stated, string comparisons are done in a <a href="#case-sensitive">case-sensitive</a> manner.
 
-<h4 id="dependencies"><span class="secno">1.2.1 </span>Dependencies</h4>
+<h3 id="dependencies"><span class="secno">1.1 </span>Dependencies</h3>
 
 <p>The IDL fragments in this specification must be interpreted as
 required for conforming IDL fragments, as described in the Web IDL
 specification. <a href="#refsWEBIDL">[WEBIDL]</a>
 
-<p id="float-nan">Except where otherwise specified, if an IDL attribute that is a
-floating point number type (<code class="external"><a href="http://dev.w3.org/2006/webapi/WebIDL/#idl-float">float</a></code>) is
-assigned an Infinity or Not-a-Number (NaN) value, a <code title="dom-DOMException-NOT_SUPPORTED_ERR"><a href="#dom-domexception-not_supported_err">NOT_SUPPORTED_ERR</a></code> exception must
-be thrown.
-
-<p>Except where otherwise specified, if a method with an argument that is a
-floating point number type (<code class="external"><a href="http://dev.w3.org/2006/webapi/WebIDL/#idl-float">float</a></code>) is
-passed an Infinity or Not-a-Number (NaN) value, a <code title="dom-DOMException-NOT_SUPPORTED_ERR"><a href="#dom-domexception-not_supported_err">NOT_SUPPORTED_ERR</a></code> exception
-must be thrown.
-
-<p>Some of the terms used in this specification are defined in <cite>Web
-IDL</cite>, <cite>XML</cite> and <cite>Namespaces in XML</cite>.
+<p>Some of the terms used in this specification are defined in
+<cite>Web IDL</cite>, <cite>XML</cite> and <cite>Namespaces in XML</cite>.
 <a href="#refsWEBIDL">[WEBIDL]</a>
 <a href="#refsXML">[XML]</a>
 <a href="#refsXMLNS">[XMLNS]</a>
 
-<h4 id="extensibility"><span class="secno">1.2.2 </span>Extensibility</h4>
+<h3 id="extensibility"><span class="secno">1.2 </span>Extensibility</h3>
 
 <p>Vendor-specific proprietary extensions to this specification are
 strongly discouraged. Authors must not use such extensions, as
@@ -328,7 +285,19 @@ this specification.
 <!-- http://www.w3.org/mid/17E341CD-E790-422C-9F9A-69347EE01CEB@iki.fi -->
 
 
-<h3 id="trees"><span class="secno">1.3 </span>Trees</h3> <!-- Sorry reddit, this is not /r/trees -->
+<h2 id="common-infrastructure"><span class="secno">2 </span>Common infrastructure</h2>
+<h3 id="terminology"><span class="secno">2.1 </span>Terminology</h3>
+
+<p>The term <dfn id="context-node">context node</dfn> means the <code><a href="#node">Node</a></code> on which the
+method or attribute being discussed was called.
+
+<p>The <dfn id="space-character" title="space character">space characters</dfn>, for the
+purposes of this specification, are U+0020 SPACE, U+0009 CHARACTER
+TABULATION (tab), U+000A LINE FEED (LF), U+000C FORM FEED (FF), and
+U+000D CARRIAGE RETURN (CR).
+
+
+<h3 id="trees"><span class="secno">2.2 </span>Trees</h3> <!-- Sorry reddit, this is not /r/trees -->
 
 <!-- XXX I do not like the structure of "Common infrastructure" at all but
      I will write this first. -->
@@ -342,10 +311,10 @@ hierarchical tree structures, simply named
 <p>An object that <dfn id="concept-tree-participate" title="concept-tree-participate">participates</dfn> in
 a <a href="#concept-tree" title="concept-tree">tree</a> has a number of properties that other
 objects do not. The remainder of definitions in this section apply to
-objects that <a href="#concept-tree-participate" title="concept-tree-participate">participate in
-<span title="concept-tree">trees</span>.
+objects that <a href="#concept-tree-participate" title="concept-tree-participate">participate</a> in
+<a href="#concept-tree" title="concept-tree">trees</a>.
 
-</a><p>An object has zero or one
+<p>An object has zero or one
 <dfn id="concept-tree-parent" title="concept-tree-parent">parent</dfn> object. An object without
 <a href="#concept-tree-parent" title="concept-tree-parent">parent</a> is called the
 <dfn id="concept-tree-root" title="concept-tree-root">root</dfn> object.
@@ -389,12 +358,12 @@ comes after <var title="">B</var> in their shared
 <hr>
 
 <p>The term <dfn id="tree-order">tree order</dfn> means a pre-order, depth-first traversal
-of the <a href="#concept-tree" title="concept-tree">tree</a>.
+of a <a href="#concept-tree" title="concept-tree">tree</a>.
 <!-- XXX should that use concept- ? -->
 <!-- http://en.wikipedia.org/wiki/Tree_traversal#Depth-first_Traversal -->
 
 
-<h3 id="case-sensitivity"><span class="secno">1.4 </span>Case-sensitivity</h3>
+<h3 id="case-sensitivity"><span class="secno">2.3 </span>Case-sensitivity</h3>
 <p>This specification defines several comparison operators for strings.
 
 <p>Comparing two strings in a <dfn id="case-sensitive">case-sensitive</dfn> manner means comparing them exactly, codepoint for codepoint.
@@ -412,8 +381,8 @@ of the <a href="#concept-tree" title="concept-tree">tree</a>.
 other.
 
 
-<h3 id="common-microsyntaxes"><span class="secno">1.5 </span>Common microsyntaxes</h3>
-<h4 id="common-parser-idioms"><span class="secno">1.5.1 </span>Common parser idioms</h4>
+<h3 id="common-microsyntaxes"><span class="secno">2.4 </span>Common microsyntaxes</h3>
+<h4 id="common-parser-idioms"><span class="secno">2.4.1 </span>Common parser idioms</h4>
 <p>Some of the micro-parsers described below follow the pattern of having an
 <var title="">input</var> variable that holds the string being parsed, and having a
 <var title="">position</var> variable pointing at the next character to parse in
@@ -443,7 +412,7 @@ can be collected:
 must <a href="#collect-a-sequence-of-characters">collect a sequence of characters</a> that are <a href="#space-character" title="space character">space characters</a>. The collected
 characters are not used.
 
-<h4 id="space-separated-tokens"><span class="secno">1.5.2 </span>Space-separated tokens</h4>
+<h4 id="space-separated-tokens"><span class="secno">2.4.2 </span>Space-separated tokens</h4>
 
 <p>A <dfn id="set-of-space-separated-tokens">set of space-separated tokens</dfn> is a string containing
 zero or more words (known as tokens) separated by one or more <a href="#space-character" title="space character">space characters</a>, where words consist
@@ -563,7 +532,7 @@ of the string, where such spaces are removed.
 </div>
 
 
-<h3 id="dom-features"><span class="secno">1.6 </span>DOM features</h3>
+<h3 id="dom-features"><span class="secno">2.5 </span>DOM features</h3>
 <p>A <dfn id="concept-domfeature" title="concept-DOMfeature">DOM feature</dfn> is a unique,
 <a href="#ascii-case-insensitive">ASCII case-insensitive</a> string that represents a certain feature of
 the user agent.
@@ -597,7 +566,7 @@ feature</a> with the version "2.0" associated with it.
 <!-- Chrome supports Core/1.0; Opera supports x/undefined -->
 
 
-<h3 id="cloning-nodes"><span class="secno">1.7 </span>Cloning nodes</h3>
+<h3 id="cloning-nodes"><span class="secno">2.6 </span>Cloning nodes</h3>
 <p>To <dfn id="clone">clone</dfn> a <var title="">node</var>, with a
 <var title="">new ownerDocument</var> and with a
 <dfn id="clone-children-flag"><i>clone children flag</i></dfn>, these steps must be run:
@@ -640,7 +609,7 @@ feature</a> with the version "2.0" associated with it.
 </ol>
 
 
-<h3 id="namespaces"><span class="secno">1.8 </span>Namespaces</h3>
+<h3 id="namespaces"><span class="secno">2.7 </span>Namespaces</h3>
 <p>The <dfn id="html-namespace">HTML namespace</dfn> is <code title="">http://www.w3.org/1999/xhtml</code>.
 
 <p>The <dfn id="xml-namespace">XML namespace</dfn> is <code title="">http://www.w3.org/XML/1998/namespace</code>.
@@ -648,8 +617,8 @@ feature</a> with the version "2.0" associated with it.
 <p>The <dfn id="xmlns-namespace">XMLNS namespace</dfn> is <code title="">http://www.w3.org/2000/xmlns/</code>.
 
 
-<h2 id="exceptions"><span class="secno">2 </span>Exceptions</h2>
-<h3 id="exception-domexception"><span class="secno">2.1 </span>Exception <code><a href="#domexception">DOMException</a></code></h3>
+<h2 id="exceptions"><span class="secno">3 </span>Exceptions</h2>
+<h3 id="exception-domexception"><span class="secno">3.1 </span>Exception <code><a href="#domexception">DOMException</a></code></h3>
 <pre class="idl">exception <dfn id="domexception">DOMException</dfn> {
   const unsigned short <a href="#dom-domexception-index_size_err" title="dom-DOMException-INDEX_SIZE_ERR">INDEX_SIZE_ERR</a> = 1;
   const unsigned short <a href="#dom-domexception-domstring_size_err" title="dom-DOMException-DOMSTRING_SIZE_ERR">DOMSTRING_SIZE_ERR</a> = 2; // historical
@@ -746,7 +715,7 @@ following:
 field must return the name of the exception constant as a string.
 
 
-<h2 id="events"><span class="secno">3 </span>Events</h2>
+<h2 id="events"><span class="secno">4 </span>Events</h2>
 
 <!--
   for when the "hey look at my version of DOM Events" email goes out:
@@ -764,7 +733,7 @@ field must return the name of the exception constant as a string.
   - removed need for EventException
 -->
 
-<h3 id="interface-event"><span class="secno">3.1 </span>Interface <code><a href="#event">Event</a></code></h3>
+<h3 id="interface-event"><span class="secno">4.1 </span>Interface <code><a href="#event">Event</a></code></h3>
 
 <pre class="idl">interface <dfn id="event">Event</dfn> {
   readonly attribute DOMString <a href="#dom-event-type" title="dom-Event-type">type</a>;
@@ -885,7 +854,7 @@ method is invoked these steps must be run:</p>
  true, set the <a href="#cancel-flag">cancel flag</a>.
 </ol>
 
-<h3 id="interface-customevent"><span class="secno">3.2 </span>Interface <code><a href="#customevent">CustomEvent</a></code></h3>
+<h3 id="interface-customevent"><span class="secno">4.2 </span>Interface <code><a href="#customevent">CustomEvent</a></code></h3>
 
 <pre class="idl">interface <dfn id="customevent">CustomEvent</dfn> : <a href="#event">Event</a> {
   readonly attribute object <a href="#dom-customevent-detail" title="dom-CustomEvent-detail">detail</a>;
@@ -915,7 +884,7 @@ method is invoked these steps must be run:</p>
 <!-- XXX maybe we should make this init business even simpler in terms of having to define it? -->
 
 
-<h3 id="interface-eventtarget"><span class="secno">3.3 </span>Interface <code><a href="#eventtarget">EventTarget</a></code></h3>
+<h3 id="interface-eventtarget"><span class="secno">4.3 </span>Interface <code><a href="#eventtarget">EventTarget</a></code></h3>
 
 <pre class="idl">interface <dfn id="eventtarget">EventTarget</dfn> {
   void <a href="#dom-eventtarget-addeventlistener" title="dom-EventTarget-addEventListener">addEventListener</a>(DOMString <var title="">type</var>, <a href="#eventlistener">EventListener</a> <var title="">listener</var>, optional boolean <var title="">capture</var>);
@@ -975,7 +944,7 @@ method is invoked these steps must be run:
 </ol>
 
 
-<h3 id="dispatching-events"><span class="secno">3.4 </span>Dispatching Events</h3>
+<h3 id="dispatching-events"><span class="secno">4.4 </span>Dispatching Events</h3>
 
 <p>To <dfn id="concept-event-dispatch" title="concept-event-dispatch">dispatch</dfn> an
 <a href="#concept-event" title="concept-event">event</a> on a given object run these
@@ -1052,10 +1021,6 @@ steps:</p>
  <li><p>Let <var title="">listeners</var> be a static list of the
  <a href="#concept-event-listener" title="concept-event-listener">event listeners</a> associated with
  the object for which these steps are run.
- <li><p>If <var title="">event</var>'s
- <a href="#concept-event-target" title="concept-event-target">target</a> is null, set
- <var title="">event</var>'s <a href="#concept-event-target" title="concept-event-target">target</a> to the
- object for which these steps are run.
  <li><p>Set <var title="">event</var>'s
  <a href="#concept-event-current-target" title="concept-event-current-target">current target</a> to the
  object for which these steps are run.
@@ -1092,7 +1057,7 @@ steps:</p>
 </ol>
 
 
-<h3 id="creating-events"><span class="secno">3.5 </span>Creating Events</h3>
+<h3 id="creating-events"><span class="secno">4.5 </span>Creating Events</h3>
 
 <p class="note">Although the <code><a href="#document">Document</a></code> object is introduced later
 it was thought better to describe its
@@ -1128,7 +1093,7 @@ it was thought better to describe its
 <p class="note">Because <code title="dom-Document-createEvent"><a href="#dom-document-createevent">createEvent()</a></code> is located on the <code><a href="#document">Document</a></code> object it cannot be used by Web Workers. Please let us know if this bothers you.
 
 
-<h2 id="nodes-model"><span class="secno">4 </span>Nodes Model</h2>
+<h2 id="nodes-model"><span class="secno">5 </span>Nodes Model</h2>
 
 <p><code><a href="#node">Node</a></code> objects (simply called
 <dfn id="concept-node" title="concept-node">nodes</dfn>)
@@ -1165,13 +1130,23 @@ and its allowed <a href="#concept-tree-child" title="concept-tree-child">childre
  <dd><p>None.
 </dl>
 
+<p>The <dfn id="document-element">document element</dfn> is the <code><a href="#element">Element</a></code>
+<a href="#concept-tree-child" title="concept-tree-child">child</a> of a <code><a href="#document">Document</a></code> or
+null if there is no <a href="#concept-tree-child" title="concept-tree-child">child</a>
+<code><a href="#element">Element</a></code>.
+
+<p>When an <code><a href="#element">Element</a></code> or one of its
+<a href="#concept-tree-ancestor" title="concept-tree-ancestor">ancestors</a> is the
+<a href="#document-element">document element</a>, it is said to be
+<dfn id="in-a-document">in a <code>Document</code></dfn>.
+
 <p>A <a href="#concept-node" title="concept-node">node</a>, or its
 <a href="#concept-tree-child" title="concept-tree-child">children</a> in case of a
 <code><a href="#documentfragment">DocumentFragment</a></code> object, are said to
-<dfn id="violate-the-node-hierarchy">violate the node hierarchy</dfn> of another node if inserting them
-within the other node's <a href="#home-subtree">home subtree</a> would violate the
-constraints listed above.
-<!-- XXX more xref? -->
+<dfn id="violate-the-node-hierarchy">violate the node hierarchy</dfn> of another
+<a href="#concept-node" title="concept-node">node</a> if inserting them within the other
+<a href="#concept-node" title="concept-node">node</a>'s <a href="#concept-tree" title="concept-tree">tree</a>
+would violate the constraints listed above.
 
 <p class="note">Operations that would cause a node to <a href="#violate-the-node-hierarchy">violate the node hierarchy</a> of another node will throw a <code title="dom-DOMException-HIERARCHY_REQUEST_ERR"><a href="#dom-domexception-hierarchy_request_err">HIERARCHY_REQUEST_ERR</a></code>.
 
@@ -1180,8 +1155,8 @@ constraints listed above.
 <!-- XXXhierarchy - make sure to expand DocumentFragment before checking -->
 
 
-<h2 id="nodes"><span class="secno">5 </span>Nodes</h2>
-<h3 id="interface-node"><span class="secno">5.1 </span>Interface <code><a href="#node">Node</a></code></h3>
+<h2 id="nodes"><span class="secno">6 </span>Nodes</h2>
+<h3 id="interface-node"><span class="secno">6.1 </span>Interface <code><a href="#node">Node</a></code></h3>
 <pre class="idl">interface <dfn id="node">Node</dfn> {
   const unsigned short <a href="#dom-node-element_node" title="dom-Node-ELEMENT_NODE">ELEMENT_NODE</a> = 1;
   const unsigned short <a href="#dom-node-attribute_node" title="dom-Node-ATTRIBUTE_NODE">ATTRIBUTE_NODE</a> = 2; // historical
@@ -1898,12 +1873,12 @@ method must run these steps:
 </ol>
 
 
-<h3 id="interface-documentfragment"><span class="secno">5.2 </span>Interface <code><a href="#documentfragment">DocumentFragment</a></code></h3>
+<h3 id="interface-documentfragment"><span class="secno">6.2 </span>Interface <code><a href="#documentfragment">DocumentFragment</a></code></h3>
 <pre class="idl">interface <dfn id="documentfragment">DocumentFragment</dfn> : <a href="#node">Node</a> {
 };</pre>
 
 
-<h3 id="interface-document"><span class="secno">5.3 </span>Interface <code><a href="#document">Document</a></code></h3>
+<h3 id="interface-document"><span class="secno">6.3 </span>Interface <code><a href="#document">Document</a></code></h3>
 <pre class="idl">interface <dfn id="document">Document</dfn> : <a href="#node">Node</a> {
   readonly attribute <a href="#domimplementation">DOMImplementation</a> <a href="#dom-document-implementation" title="dom-Document-implementation">implementation</a>;
            attribute DOMString <a href="#dom-document-documenturi" title="dom-Document-documentURI">documentURI</a>;
@@ -2004,8 +1979,7 @@ http://lists.w3.org/Archives/Public/www-dom/2003JulSep/0049.html -->
 
 <p>The
 <dfn id="dom-document-documentelement" title="dom-Document-documentElement"><code>documentElement</code></dfn>
-attribute must return the child of the <code><a href="#document">Document</a></code> node that is an
-<code><a href="#element">Element</a></code> node, if there is one, or null otherwise.
+attribute must return the <a href="#document-element">document element</a>.
 
 <p>The <dfn id="dom-document-getelementsbytagname" title="dom-Document-getElementsByTagName"><code>getElementsByTagName(<var title="">localName</var>)</code></dfn> method must run these steps:
 
@@ -2277,7 +2251,7 @@ method must run these steps:
 
 <hr>
 
-<h4 id="interface-domimplementation"><span class="secno">5.3.1 </span>Interface <code><a href="#domimplementation">DOMImplementation</a></code></h4>
+<h4 id="interface-domimplementation"><span class="secno">6.3.1 </span>Interface <code><a href="#domimplementation">DOMImplementation</a></code></h4>
 <p>User agents must create a new <code><a href="#domimplementation">DOMImplementation</a></code> object whenever a new <code><a href="#document">Document</a></code> node is created and associate it with the that <code><a href="#document">Document</a></code> node.
 
 <pre class="idl">interface <dfn id="domimplementation">DOMImplementation</dfn> {
@@ -2482,7 +2456,7 @@ otherwise [createAttribute]- ->.
 -->
 
 
-<h3 id="interface-element"><span class="secno">5.4 </span>Interface <code><a href="#element">Element</a></code></h3>
+<h3 id="interface-element"><span class="secno">6.4 </span>Interface <code><a href="#element">Element</a></code></h3>
 <pre class="idl">interface <dfn id="element">Element</dfn> : <a href="#node">Node</a> {
   readonly attribute DOMString <a href="#dom-element-namespaceuri" title="dom-Element-namespaceURI">namespaceURI</a>;
   readonly attribute DOMString <a href="#dom-element-prefix" title="dom-Element-prefix">prefix</a>;
@@ -2821,7 +2795,7 @@ the <a href="#context-node">context node</a> on which the method was invoked.
 may be returned as returned by an earlier call.
 
 
-<h4 id="interface-attr"><span class="secno">5.4.1 </span>Interface <code><a href="#attr">Attr</a></code></h4>
+<h4 id="interface-attr"><span class="secno">6.4.1 </span>Interface <code><a href="#attr">Attr</a></code></h4>
 <pre class="idl">interface <dfn id="attr">Attr</dfn> {
   readonly attribute DOMString? <a href="#dom-attr-namespaceuri" title="dom-Attr-namespaceURI">namespaceURI</a>;
   readonly attribute DOMString? <a href="#dom-attr-prefix" title="dom-Attr-prefix">prefix</a>;
@@ -2860,7 +2834,7 @@ return the <a href="#concept-attr-value" title="concept-attr-value">value</a>.
 <p>Setting the <code title="dom-Attr-value"><a href="#dom-attr-value">value</a></code> attribute must set
 <a href="#concept-attr-value" title="concept-attr-value">value</a> to the given value.
 
-<h3 id="interface-documenttype"><span class="secno">5.5 </span>Interface <code><a href="#documenttype">DocumentType</a></code></h3>
+<h3 id="interface-documenttype"><span class="secno">6.5 </span>Interface <code><a href="#documenttype">DocumentType</a></code></h3>
 <pre class="idl">interface <dfn id="documenttype">DocumentType</dfn> : <a href="#node">Node</a> {
   readonly attribute DOMString <a href="#dom-documenttype-name" title="dom-DocumentType-name">name</a>;<!--
   readonly attribute NamedNodeMap entities;
@@ -2883,7 +2857,7 @@ attribute must return the <a href="#context-node">context node</a>'s <a href="#c
 attribute must return the <a href="#context-node">context node</a>'s <a href="#concept-doctype-systemid" title="concept-doctype-systemid">system ID</a>.
 
 
-<h3 id="interface-processinginstruction"><span class="secno">5.6 </span>Interface <code><a href="#processinginstruction">ProcessingInstruction</a></code></h3>
+<h3 id="interface-processinginstruction"><span class="secno">6.6 </span>Interface <code><a href="#processinginstruction">ProcessingInstruction</a></code></h3>
 <pre class="idl">interface <dfn id="processinginstruction">ProcessingInstruction</dfn> : <a href="#node">Node</a> {
   readonly attribute DOMString <a href="#dom-processinginstruction-target" title="dom-ProcessingInstruction-target">target</a>;
            attribute DOMString <a href="#dom-processinginstruction-data" title="dom-ProcessingInstruction-data">data</a>;
@@ -2899,7 +2873,7 @@ attribute must return the <a href="#context-node">context node</a>'s <a href="#c
 <a href="#context-node">context node</a>'s <a href="#concept-pi-data" title="concept-PI-data">data</a> to the new value.
 
 
-<h3 id="interface-characterdata"><span class="secno">5.7 </span>Interface <code><a href="#characterdata">CharacterData</a></code></h3>
+<h3 id="interface-characterdata"><span class="secno">6.7 </span>Interface <code><a href="#characterdata">CharacterData</a></code></h3>
 <pre class="idl">interface <dfn id="characterdata">CharacterData</dfn> : <a href="#node">Node</a> {
   [TreatNullAs=EmptyString] attribute DOMString <a href="#dom-characterdata-data" title="dom-CharacterData-data">data</a>;
   readonly attribute unsigned long <a href="#dom-characterdata-length" title="dom-CharacterData-length">length</a>;
@@ -2976,7 +2950,7 @@ the <code title="dom-CharacterData-insertData"><a href="#dom-characterdata-inser
 exceptions these methods might have thrown.
 
 
-<h3 id="interface-text"><span class="secno">5.8 </span>Interface <code><a href="#text">Text</a></code></h3>
+<h3 id="interface-text"><span class="secno">6.8 </span>Interface <code><a href="#text">Text</a></code></h3>
 <pre class="idl">interface <dfn id="text">Text</dfn> : <a href="#characterdata">CharacterData</a> {
   <a href="#text">Text</a> <a href="#dom-text-splittext" title="dom-Text-splitText">splitText</a>(unsigned long <var title="">offset</var>);<!--
   readonly attribute boolean isElementContentWhitespace;-->
@@ -3060,13 +3034,13 @@ method must run these steps:
 space, tab, newline -->
 
 
-<h3 id="interface-comment"><span class="secno">5.9 </span>Interface <code><a href="#comment">Comment</a></code></h3>
+<h3 id="interface-comment"><span class="secno">6.9 </span>Interface <code><a href="#comment">Comment</a></code></h3>
 <pre class="idl">interface <dfn id="comment">Comment</dfn> : <a href="#characterdata">CharacterData</a> {
 };</pre>
 
 
 
-<h2 id="collections"><span class="secno">6 </span>Collections</h2>
+<h2 id="collections"><span class="secno">7 </span>Collections</h2>
 <p>A <dfn id="concept-collection" title="concept-collection">collection</dfn> is an object that
 represents a lists of DOM nodes. A
 <a href="#concept-collection" title="concept-collection">collection</a> can be either
@@ -3096,7 +3070,7 @@ the <a href="#concept-collection" title="concept-collection">collection</a> must
 every time it is retrieved.
 
 
-<h3 id="interface-nodelist"><span class="secno">6.1 </span>Interface <code><a href="#nodelist">NodeList</a></code></h3>
+<h3 id="interface-nodelist"><span class="secno">7.1 </span>Interface <code><a href="#nodelist">NodeList</a></code></h3>
 <p>A <code><a href="#nodelist">NodeList</a></code> object is a kind of
 <a href="#concept-collection" title="concept-collection">collection</a>.
 
@@ -3114,7 +3088,7 @@ node in the <a href="#concept-collection" title="concept-collection">collection<
 <p><code><a href="#nodelist">NodeList</a></code>s are enumerable. <span class="XXX" title="">Explain? <code title="">for ... in</code></span>
 
 
-<h3 id="interface-htmlcollection"><span class="secno">6.2 </span>Interface <code><a href="#htmlcollection">HTMLCollection</a></code></h3>
+<h3 id="interface-htmlcollection"><span class="secno">7.2 </span>Interface <code><a href="#htmlcollection">HTMLCollection</a></code></h3>
 <p>The <code><a href="#htmlcollection">HTMLCollection</a></code> interface represents a generic <a href="#concept-collection" title="concept-collection">collection</a> of elements.
 
 <p class="note">This interface is called <code><a href="#htmlcollection">HTMLCollection</a></code> for
@@ -3231,9 +3205,9 @@ title=concept-collection>collection</span>, whose primary purpose is to expose
 -->
 
 
-<h2 id="lists"><span class="secno">7 </span>Lists</h2>
+<h2 id="lists"><span class="secno">8 </span>Lists</h2>
 
-<h3 id="interface-domstringlist"><span class="secno">7.1 </span>Interface <code><a href="#domstringlist">DOMStringList</a></code></h3>
+<h3 id="interface-domstringlist"><span class="secno">8.1 </span>Interface <code><a href="#domstringlist">DOMStringList</a></code></h3>
 
 <p class="XXX">Only HTMLPropertiesCollection.names, DataTranser.types, Clipboard.types, and Document.styleSheetSets seem to use this API. Should they use something like DOMString[] instead if Web IDL introduces that?
 
@@ -3284,7 +3258,7 @@ method must return true if the list of strings contains <var title="">string</va
 or false otherwise.
 
 
-<h3 id="interface-domtokenlist"><span class="secno">7.2 </span>Interface <code><a href="#domtokenlist">DOMTokenList</a></code></h3>
+<h3 id="interface-domtokenlist"><span class="secno">8.2 </span>Interface <code><a href="#domtokenlist">DOMTokenList</a></code></h3>
 <p>The <code><a href="#domtokenlist">DOMTokenList</a></code> interface represents an interface
 to an underlying string that consists of a <a href="#set-of-space-separated-tokens">set of
 space-separated tokens</a>.
@@ -3484,7 +3458,7 @@ underlying string representation.
 </div>
 
 
-<h3 id="interface-domsettabletokenlist"><span class="secno">7.3 </span>Interface <code><a href="#domsettabletokenlist">DOMSettableTokenList</a></code></h3>
+<h3 id="interface-domsettabletokenlist"><span class="secno">8.3 </span>Interface <code><a href="#domsettabletokenlist">DOMSettableTokenList</a></code></h3>
 
 <p>The <code><a href="#domsettabletokenlist">DOMSettableTokenList</a></code> interface is the same as the
 <code><a href="#domtokenlist">DOMTokenList</a></code> interface, except that it allows the
@@ -3515,7 +3489,7 @@ attribute must return the underlying string and, on setting must replace the und
 
 
 
-<h2 id="historical"><span class="secno">8 </span>Historical</h2>
+<h2 id="historical"><span class="secno">9 </span>Historical</h2>
 <!-- XXX we should probably just nuke this section in due course. No need to keep old dreams alive. -->
 
 <p><dfn id="domstring"><code>DOMString</code></dfn> and

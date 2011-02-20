@@ -2261,24 +2261,24 @@ otherwise.
   <code><a href="#element">Element</a></code> whose
   <a href="#concept-element-local-name" title="concept-element-local-name">local name</a> is
   <var title="">qualifiedName</var> and whose
-  <code title="concept-element-namespace"><a href="#concept-element-namespace">namespace is
+  <a href="#concept-element-namespace" title="concept-element-namespace">namespace</a> is
   <var title="">namespace</var> (unless <var title="">qualifiedName</var> is the
   empty string), and with <var title="">doctype</var>, if it is given, as its
-  <code>DocumentType</code>.
+  <code><a href="#documenttype">DocumentType</a></code>.
 
-  </a></code><p><code title="concept-element-namespace"><a href="#concept-element-namespace">This method throws the same exceptions as the <code title="dom-Document-createElementNS">createElementNS</code> method, when
+  <p>This method throws the same exceptions as the <code title="dom-Document-createElementNS"><a href="#dom-document-createelementns">createElementNS</a></code> method, when
   invoked with the same arguments. If <var title="">doctype</var> comes from
-  another <code>Document</code>, a
-  <code title="dom-DOMException-WRONG_DOCUMENT_ERR">WRONG_DOCUMENT_ERR</code> exception is thrown.
+  another <code><a href="#document">Document</a></code>, a
+  <code title="dom-DOMException-WRONG_DOCUMENT_ERR"><a href="#dom-domexception-wrong_document_err">WRONG_DOCUMENT_ERR</a></code> exception is thrown.
 
 
- </a></code><dt><code title="concept-element-namespace"><a href="#concept-element-namespace"><var title="">doc</var> = <var title="">document</var> . <code title="dom-Document-implementation">implementation</code> . <code title="dom-DOMImplementation-createHTMLDocument">createHTMLDocument</code>(
+ <dt><var title="">doc</var> = <var title="">document</var> . <code title="dom-Document-implementation"><a href="#dom-document-implementation">implementation</a></code> . <code title="dom-DOMImplementation-createHTMLDocument"><a href="#dom-domimplementation-createhtmldocument">createHTMLDocument</a></code>(
  <var title="">title</var> )
 
- </a></code><dd><code title="concept-element-namespace"><a href="#concept-element-namespace">
-  <p>Returns a new <code>Document</code>, with a basic DOM already
+ <dd>
+  <p>Returns a new <code><a href="#document">Document</a></code>, with a basic DOM already
   constructed with an appropriate <code title="">title</code> element.
-</a></code></dl><code title="concept-element-namespace">
+</dl>
 
 <div class="impl">
 
@@ -2993,42 +2993,42 @@ exceptions these methods might have thrown.
 <dfn id="dom-text-splittext" title="dom-Text-splitText"><code>splitText(<var title="">offset</var>)</code></dfn>
 method must run the following steps:
 
-</code><ol><code title="concept-element-namespace"><a href="#concept-element-namespace">
-  <li>If <var title="">offset</var> is greater than the <span>context node</span>'s
-  <code title="dom-CharacterData-length">length</code>, throw an
-  <code title="dom-DOMException-INDEX_SIZE_ERR">INDEX_SIZE_ERR</code> exception
+<ol>
+  <li>If <var title="">offset</var> is greater than the <a href="#context-node">context node</a>'s
+  <code title="dom-CharacterData-length"><a href="#dom-characterdata-length">length</a></code>, throw an
+  <code title="dom-DOMException-INDEX_SIZE_ERR"><a href="#dom-domexception-index_size_err">INDEX_SIZE_ERR</a></code> exception
   and terminate these steps.
 
-  <li>Let <var title="">length</var> be the <span>context node</span>'s
-  <span title=""><code title="dom-CharacterData-length">length</code> &minus;
+  <li>Let <var title="">length</var> be the <a href="#context-node">context node</a>'s
+  <span title=""><code title="dom-CharacterData-length"><a href="#dom-characterdata-length">length</a></code> &minus;
   <var title="">offset</var></span>.
 
-  <li>Call the <span>context node</span>'s
-  <code title="dom-CharacterData-substringData">substringData</code> method with
+  <li>Call the <a href="#context-node">context node</a>'s
+  <code title="dom-CharacterData-substringData"><a href="#dom-characterdata-substringdata">substringData</a></code> method with
   <var title="">offset</var> and <var title="">length</var> as its arguments.
   If this threw an exception, terminate these steps. Otherwise, let
   <var title="">new data</var> be the value returned.
 
-  <li>Call the <span>context node</span>'s
-  <code title="dom-CharacterData-deleteData">deleteData</code> method with
+  <li>Call the <a href="#context-node">context node</a>'s
+  <code title="dom-CharacterData-deleteData"><a href="#dom-characterdata-deletedata">deleteData</a></code> method with
   <var title="">offset</var> and <var title="">length</var> as its arguments.
   If this threw an exception, terminate these steps.
 
-  <li>Let <var title="">new node</var> be a new <code>Text</code> object, with the
-  same <code title="dom-Node-ownerDocument">ownerDocument</code> as the
-  <span>context node</span>. Set <var title="">new node</var>'s
-  <code title="dom-CharacterData-data">data</code> to <var title="">new data</var>.
+  <li>Let <var title="">new node</var> be a new <code><a href="#text">Text</a></code> object, with the
+  same <code title="dom-Node-ownerDocument"><a href="#dom-node-ownerdocument">ownerDocument</a></code> as the
+  <a href="#context-node">context node</a>. Set <var title="">new node</var>'s
+  <code title="dom-CharacterData-data"><a href="#dom-characterdata-data">data</a></code> to <var title="">new data</var>.
 
-  <li>Let <var title="">parent</var> be the <span>context node</span>'s
-  <span title="concept-tree-parent">parent</span>. If <var title="">parent</var>
+  <li>Let <var title="">parent</var> be the <a href="#context-node">context node</a>'s
+  <a href="#concept-tree-parent" title="concept-tree-parent">parent</a>. If <var title="">parent</var>
   is null, return <var title="">new node</var> and terminate these steps.
 
-  </a></code><li><code title="concept-element-namespace"><a href="#concept-element-namespace">Call <var title="">parent</var>'s
-  <code title="dom-Node-insertBefore">insertBefore</code> method with
-  <var title="">new node</var> and the <span>context node</span>'s first
-  <span title="concept-tree-next-sibling">next sibling</span></a></code> as its argument.
+  <li>Call <var title="">parent</var>'s
+  <code title="dom-Node-insertBefore"><a href="#dom-node-insertbefore">insertBefore</a></code> method with
+  <var title="">new node</var> and the <a href="#context-node">context node</a>'s first
+  <span title="concept-tree-next-sibling">next sibling as its argument.
 
-  <li>Return <var title="">new node</var>.
+  </span><li>Return <var title="">new node</var>.
 </ol>
 
 <p>The <dfn id="contiguous-text-nodes">contiguous <code>Text</code> nodes</dfn> of a node are the node

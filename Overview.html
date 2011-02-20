@@ -1,6 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"><html lang="en-US"><head>
   <meta content="text/html;charset=UTF-8" http-equiv="content-type">
-  <title>Web DOM Core</title>
+  <title>DOM Core</title>
   <style type="text/css">
    pre.idl { border:solid thin; background:#eee; color:#000; padding:0.5em }
    pre.idl :link, pre.idl :visited { color:inherit; background:transparent }
@@ -40,8 +40,8 @@
 <!--begin-logo-->
 <p><a href="http://www.w3.org/"><img alt="W3C" height="48" src="http://www.w3.org/Icons/w3c_home" width="72"></a></p>
 <!--end-logo-->
- <h1>Web DOM Core</h1>
- <h2 class="no-num no-toc" id="editor-s-draft-17-february-2011">Editor's Draft 17 February 2011</h2>
+ <h1>DOM Core</h1>
+ <h2 class="no-num no-toc" id="editor-s-draft-20-february-2011">Editor's Draft 20 February 2011</h2>
 
  <dl>
   <dt>This Version:
@@ -68,9 +68,10 @@
 <hr class="top">
 
 <h2 class="no-num no-toc" id="abstract">Abstract</h2>
-<p>Web DOM Core defines the DOM Core part of the Web platform. The DOM is a
-language- and platform neutral interface that allows programs and scripts to
-dynamically access and update the content and structure of documents.
+<p>DOM Core defines the event and document model the Web platform uses. The
+DOM is a language- and platform neutral interface that allows programs and
+scripts to dynamically access and update the content and structure of
+documents.
 
 
 
@@ -81,7 +82,7 @@ publications and the latest revision of this technical report can be found in
 the <a href="http://www.w3.org/TR/">W3C technical reports index</a> at
 http://www.w3.org/TR/.</em>
 
-<p>This is the 17 February 2011 Editor's Draft of Web DOM Core. Please send
+<p>This is the 20 February 2011 Editor's Draft of DOM Core. Please send
 comments to
 <a href="mailto:public-webapps@w3.org?subject=%5BDOMCore%5D%20">public-webapps@w3.org</a>
 (<a href="http://lists.w3.org/Archives/Public/public-webapps/">archived</a>)
@@ -191,8 +192,6 @@ document as other than work in progress.
  <li>Import bits of HTML5 that ought to be in DOM Core.
  <li>Prevent a dependency on HTML5.
 </ul>
-
-<p>Obsoleting DOM Level 3 Core is not a goal. It is a fine specification for Java servers. Web DOM Core presents an alternative.
 
 <p>New features might be added, once everything else is sort of stable.
 
@@ -2249,10 +2248,11 @@ method must run these steps:
  <li><p>Return <var title="">node</var>.
 </ol>
 
-<hr>
 
 <h4 id="interface-domimplementation"><span class="secno">6.3.1 </span>Interface <code><a href="#domimplementation">DOMImplementation</a></code></h4>
-<p>User agents must create a new <code><a href="#domimplementation">DOMImplementation</a></code> object whenever a new <code><a href="#document">Document</a></code> node is created and associate it with the that <code><a href="#document">Document</a></code> node.
+<p>User agents must create a new <code><a href="#domimplementation">DOMImplementation</a></code> object
+whenever a new <code><a href="#document">Document</a></code> node is created and associate it with
+that <code><a href="#document">Document</a></code> node.
 
 <pre class="idl">interface <dfn id="domimplementation">DOMImplementation</dfn> {
   boolean <a href="#dom-domimplementation-hasfeature" title="dom-DOMImplementation-hasFeature">hasFeature</a>(DOMString feature, [TreatNullAs=EmptyString] DOMString version);
@@ -2490,7 +2490,7 @@ otherwise [createAttribute]- ->.
 
 <p><code><a href="#element">Element</a></code> nodes have an associated <dfn id="concept-element-namespace" title="concept-element-namespace">namespace</dfn>, <dfn id="concept-element-namespace-prefix" title="concept-element-namespace-prefix">namespace prefix</dfn>, <dfn id="concept-element-local-name" title="concept-element-local-name">local name</dfn>.
 
-<p>When an <code><a href="#element">Element</a></code> node is created its <a href="#concept-element-local-name" title="concept-element-local-name">local name</a> is always given. Unless explicitly given when an <code><a href="#element">Element</a></code> node is created, its <a href="#concept-element-namespace" title="concept-element-namespace">namespace</a> and <a href="#concept-element-namespace-prefix" title="concept-element-namespace-prefix">namespace prefix</a> are null.
+<p>When an <code><a href="#element">Element</a></code> node is created, its <a href="#concept-element-local-name" title="concept-element-local-name">local name</a> is always given. Unless explicitly given when an <code><a href="#element">Element</a></code> node is created, its <a href="#concept-element-namespace" title="concept-element-namespace">namespace</a> and <a href="#concept-element-namespace-prefix" title="concept-element-namespace-prefix">namespace prefix</a> are null.
 
 <p><code><a href="#element">Element</a></code> nodes also have an associated collection of
 <code><a href="#attr">Attr</a></code> objects, often called attributes.
@@ -2846,7 +2846,7 @@ return the <a href="#concept-attr-value" title="concept-attr-value">value</a>.
 
 <p><code><a href="#documenttype">DocumentType</a></code> nodes have an associated <dfn id="concept-doctype-name" title="concept-doctype-name">name</dfn>, <dfn id="concept-doctype-publicid" title="concept-doctype-publicid">public ID</dfn>, and <dfn id="concept-doctype-systemid" title="concept-doctype-systemid">system ID</dfn>.
 
-<p>When a <code><a href="#documenttype">DocumentType</a></code> node is created <a href="#concept-doctype-name" title="concept-doctype-name">name</a> is always given. Unless explicitly given when a <code><a href="#documenttype">DocumentType</a></code> node is created, its <a href="#concept-doctype-publicid" title="concept-doctype-publicid">public ID</a> and <a href="#concept-doctype-systemid" title="concept-doctype-systemid">system ID</a> are the empty string.
+<p>When a <code><a href="#documenttype">DocumentType</a></code> node is created, its <a href="#concept-doctype-name" title="concept-doctype-name">name</a> is always given. Unless explicitly given when a <code><a href="#documenttype">DocumentType</a></code> node is created, its <a href="#concept-doctype-publicid" title="concept-doctype-publicid">public ID</a> and <a href="#concept-doctype-systemid" title="concept-doctype-systemid">system ID</a> are the empty string.
 
 <p>The <dfn id="dom-documenttype-name" title="dom-DocumentType-name"><code>name</code></dfn> attribute must return the <a href="#context-node">context node</a>'s <a href="#concept-doctype-name" title="concept-doctype-name">name</a>.
 

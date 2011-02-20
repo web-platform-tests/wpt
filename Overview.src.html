@@ -1308,34 +1308,23 @@ of the <span>context node</span>, or null if there is none.
 <p>The <dfn title=dom-Node-lastChild><code>lastChild</code></dfn> attribute must return the last <span title=concept-tree-child>child</span> of the
 <span>context node</span>, or null if there is none.
 
-<p>The <dfn title=dom-Node-previousSibling><code>previousSibling</code></dfn>
-attribute must run these steps:
-
-<ol>
- <!-- AttrExodus
+<p>The
+<dfn title=dom-Node-previousSibling><code>previousSibling</code></dfn>
+attribute must return the first
+<span title=concept-tree-previous-sibling>previous sibling</span> of the
+<span>context node</span>, or null if there is none.
+<!-- AttrExodus
  <li><p>If the <span>context node</span> is an <code>Attr</code> node,
  return null and terminate these steps.
- -->
+-->
 
- <li><p>If the <span>context node</span> does not have a previous sibling
- node, return null and terminate these steps.
-
- <li><p>Return the previous sibling node of the <span>context node</span>.
-</ol>
-
-<p>The <dfn title=dom-Node-nextSibling><code>nextSibling</code></dfn> attribute must run these steps:
-
-<ol>
- <!-- AttrExodus
+<p>The <dfn title=dom-Node-nextSibling><code>nextSibling</code></dfn> attribute must return the  first
+<span title=concept-tree-next-sibling>next sibling</span> of the
+<span>context node</span>, or null if there is none.
+<!-- AttrExodus
  <li><p>If the <span>context node</span> is an <code>Attr</code> node,
  return null and terminate these steps.
- -->
-
- <li><p>If the <span>context node</span> does not have a next sibling node,
- return null and terminate these steps.
-
- <li><p>Return the next sibling node of the <span>context node</span>.
-</ol>
+-->
 
 <hr>
 
@@ -1548,7 +1537,7 @@ method must run these steps:
  <var title>newChild</var> as its argument.
 
  <li><p>Let <var title>refChild</var> be <var title>oldChild</var>'s
- <code title=dom-Node-nextSibling>nextSibling</code>.
+ first <span title=concept-tree-next-sibling>next sibling</span>.
 
  <li><p>Remove <var title>oldChild</var> from the <span>context node</span>.
 
@@ -3061,8 +3050,8 @@ method must run the following steps:
 
   <li>Call <var title>parent</var>'s
   <code title=dom-Node-insertBefore>insertBefore</code> method with
-  <var title>new node</var> and the <span>context node</span>'s
-  <code title=dom-Node-nextSibling>nextSibling</code> as its argument.
+  <var title>new node</var> and the <span>context node</span>'s first
+  <span title=concept-tree-next-sibling>next sibling</code> as its argument.
 
   <li>Return <var title>new node</var>.
 </ol>

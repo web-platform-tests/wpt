@@ -795,7 +795,7 @@ method is invoked these steps must be run:</p>
 
 <pre class=idl>interface <dfn>CustomEvent</dfn> : <span>Event</span> {
   readonly attribute object <span title=dom-CustomEvent-detail>detail</span>;
-  void <span title=dom-CustomEvent-initCustomEvent>initCustomEvent</span>(DOMString <var title>type</var>, optional boolean <var title>bubbles</var>, <var title>cancelable</var>, object <var title>detail</var>);
+  void <span title=dom-CustomEvent-initCustomEvent>initCustomEvent</span>(DOMString <var title>type</var>, optional boolean <var title>bubbles</var>, optional boolean <var title>cancelable</var>, optional object <var title>detail</var>);
 };</pre>
 
 <p><span title=concept-event>Events</span> of type <code>CustomEvent</code>
@@ -804,15 +804,16 @@ can be used for synthetic events that need to carry data.</p>
 <p><span title=concept-event>Events</span> of type <code>CustomEvent</code>
 have an associated <dfn title=concept-CustomEvent-detail>detail</dfn>
 variable. The <dfn title=dom-CustomEvent-detail><code>detail</code></dfn>
-attribute must return <span title=concept-CustomEvent-detail>detail</span>.
+attribute must return <span title=concept-CustomEvent-detail>detail</span>, if
+it is set, and null otherwise.
 
 <p>When the <dfn title=dom-CustomEvent-initCustomEvent><code>initCustomEvent(<var title>type</var>, <var title>bubbles</var>, <var title>cancelable</var>, <var title>detail</var>)</code></dfn>
 method is invoked these steps must be run:</p>
 
 <ol>
  <li><p>If the <span>dispatch flag</span> is set, terminate these steps.
- <li><p>Invoke <code title=dom-Event-initEvent>initEvent()</code> with up to
- the first three arguments.</li>
+ <li><p>Invoke <code title=dom-Event-initEvent>initEvent()</code> with those of
+ the first three arguments that are set.</li>
  <li><p>If the <var title>detail</var> argument is not omitted, set
  <span title=concept-CustomEvent-detail>detail</span> to
  <var title>detail</var>.
@@ -829,7 +830,7 @@ method is invoked these steps must be run:</p>
   boolean <span title=dom-EventTarget-dispatchEvent>dispatchEvent</span>(<span>Event</span> <var title>event</var>);
 };
 
-interface <dfn>EventListener</dfn> {
+[Callback] interface <dfn>EventListener</dfn> {
   void <span title=dom-EventListener-handleEvent>handleEvent</span>(<span>Event</span> <var title>event</var>);
 };</pre>
 
@@ -1009,6 +1010,9 @@ it was thought better to describe its
   let <var title>interface</var> be the string in the second column on the same
   row as the matching string:</p>
   <table>
+  <thead>
+   <tr><th>Input interface <th>Replacement interface
+  <tbody>
    <tr><td>"<code title>htmlevents</code>"<td>"<code title>event</code>"
    <tr><td>"<code title>mouseevents</code>"<td>"<code title>mouseevent</code>"
    <tr><td>"<code title>mutationevents</code>"<td>"<code title>mutationevent</code>"

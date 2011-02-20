@@ -837,7 +837,7 @@ method is invoked these steps must be run:</p>
 
 <pre class="idl">interface <dfn id="customevent">CustomEvent</dfn> : <a href="#event">Event</a> {
   readonly attribute object <a href="#dom-customevent-detail" title="dom-CustomEvent-detail">detail</a>;
-  void <a href="#dom-customevent-initcustomevent" title="dom-CustomEvent-initCustomEvent">initCustomEvent</a>(DOMString <var title="">type</var>, optional boolean <var title="">bubbles</var>, <var title="">cancelable</var>, object <var title="">detail</var>);
+  void <a href="#dom-customevent-initcustomevent" title="dom-CustomEvent-initCustomEvent">initCustomEvent</a>(DOMString <var title="">type</var>, optional boolean <var title="">bubbles</var>, optional boolean <var title="">cancelable</var>, optional object <var title="">detail</var>);
 };</pre>
 
 <p><a href="#concept-event" title="concept-event">Events</a> of type <code><a href="#customevent">CustomEvent</a></code>
@@ -846,15 +846,16 @@ can be used for synthetic events that need to carry data.</p>
 <p><a href="#concept-event" title="concept-event">Events</a> of type <code><a href="#customevent">CustomEvent</a></code>
 have an associated <dfn id="concept-customevent-detail" title="concept-CustomEvent-detail">detail</dfn>
 variable. The <dfn id="dom-customevent-detail" title="dom-CustomEvent-detail"><code>detail</code></dfn>
-attribute must return <a href="#concept-customevent-detail" title="concept-CustomEvent-detail">detail</a>.
+attribute must return <a href="#concept-customevent-detail" title="concept-CustomEvent-detail">detail</a>, if
+it is set, and null otherwise.
 
 <p>When the <dfn id="dom-customevent-initcustomevent" title="dom-CustomEvent-initCustomEvent"><code>initCustomEvent(<var title="">type</var>, <var title="">bubbles</var>, <var title="">cancelable</var>, <var title="">detail</var>)</code></dfn>
 method is invoked these steps must be run:</p>
 
 <ol>
  <li><p>If the <a href="#dispatch-flag">dispatch flag</a> is set, terminate these steps.
- <li><p>Invoke <code title="dom-Event-initEvent"><a href="#dom-event-initevent">initEvent()</a></code> with up to
- the first three arguments.</li>
+ <li><p>Invoke <code title="dom-Event-initEvent"><a href="#dom-event-initevent">initEvent()</a></code> with those of
+ the first three arguments that are set.</li>
  <li><p>If the <var title="">detail</var> argument is not omitted, set
  <a href="#concept-customevent-detail" title="concept-CustomEvent-detail">detail</a> to
  <var title="">detail</var>.
@@ -871,7 +872,7 @@ method is invoked these steps must be run:</p>
   boolean <a href="#dom-eventtarget-dispatchevent" title="dom-EventTarget-dispatchEvent">dispatchEvent</a>(<a href="#event">Event</a> <var title="">event</var>);
 };
 
-interface <dfn id="eventlistener">EventListener</dfn> {
+[Callback] interface <dfn id="eventlistener">EventListener</dfn> {
   void <span title="dom-EventListener-handleEvent">handleEvent</span>(<a href="#event">Event</a> <var title="">event</var>);
 };</pre>
 
@@ -1051,6 +1052,9 @@ it was thought better to describe its
   let <var title="">interface</var> be the string in the second column on the same
   row as the matching string:</p>
   <table>
+  <thead>
+   <tr><th>Input interface <th>Replacement interface
+  <tbody>
    <tr><td>"<code title="">htmlevents</code>"<td>"<code title="">event</code>"
    <tr><td>"<code title="">mouseevents</code>"<td>"<code title="">mouseevent</code>"
    <tr><td>"<code title="">mutationevents</code>"<td>"<code title="">mutationevent</code>"

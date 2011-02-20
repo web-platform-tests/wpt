@@ -673,22 +673,6 @@ field must return the name of the exception constant as a string.
 
 <h2>Events</h2>
 
-<!--
-  for when the "hey look at my version of DOM Events" email goes out:
-
-  - no restrictions on event.type (allow empty string)
-  - no need for initEvent
-  - make most initEvent arguments optional
-  - better defined what everything returns when you create an event, when
-    you initialize it, and when you dispatch it
-  - propagation/canceled flags are cleared before dispatching rather than
-    after as to not affect defaultPrevented
-  - changed preventDefault to make sense
-  - changed dispatchEvent return value to make sense
-  - set trusted to false in dispatchEvent, not createEvent
-  - removed need for EventException
--->
-
 <h3>Interface <code>Event</code></h3>
 
 <pre class="idl">interface <dfn>Event</dfn> {
@@ -3566,18 +3550,49 @@ attribute must return the underlying string and, on setting must replace the und
 
 
 <h2>Historical</h2>
+
 <!-- XXX we should probably just nuke this section in due course. No need to keep old dreams alive. -->
 
-<!-- XXX but while we have it we should mention DOM Events and
-     http://www.w3.org/TR/ElementTraversal/ -->
+<p>As explained in <a href="#goals">goals</a> this specification attempts to
+update various DOM specifications. Along the way a number of changes has
+been made of which this section is a rough summary.
+
+<p>The features defined by this specification mostly originated elsewhere
+and have been moved here as this was deemed a more appropriate location. As
+such this specification includes features defined by former DOM Events and
+DOM Core specifications, features once defined by HTML, and features defined
+by the Element Traversal specification.</p>
+
+<h3>DOM Events</h3>
+
+<p>This specification only replaces the core event model and not any of the
+events for specific contexts (e.g. user interface events).
+
+<p>It makes the following changes:</p>
+
+<ul class=brief>
+ <li>No more restrictions on <code title=dom-Event-type>Event.type</code>.
+ <li>No need to invoke <code title=dom-Event-initEvent>initEvent()</code> to
+ initialize an event.</li>
+ <li><code title=dom-Event-initEvent>initEvent()</code> arguments are
+ optional except for the first.
+ <li><code title=dom-Event-preventDefault>preventDefault()</code> only
+ changes what <code title=dom-Event-defaultPrevented>defaultPrevented</code>
+ and <code title=dom-EventTarget-dispatchEvent>dispatchEvent()</code> return
+ if the event is cancelable.
+ <li>Removes <dfn><code>EventException</code></dfn>
+</ul>
+
+
+<h3>DOM Core</h3>
 
 <p><dfn><code>DOMString</code></dfn> and
 <dfn><code>DOMTimeStamp</code></dfn> originally defined in DOM Level 3 Core
 are now defined in Web IDL.
 
 <p>The remainder of interfaces and interface members listed in this section
-are part of DOM Level 3 Core. Implementations conforming to this
-specification will however not support them.
+were once part of DOM Core. Implementations conforming to this specification
+will not support them.
 
 <p>Interfaces:
 <ul class=brief>
@@ -3667,6 +3682,18 @@ specification will however not support them.
  <dd>
   <p><dfn title=dom-Text-isElementContentWhitespace><code>isElementContentWhitespace</code></dfn>
 </dl>
+
+
+<h3>HTML</h3>
+
+<p>A number of DOM methods behave in a special way based on the
+<span>HTML namespace</span> or <span>HTML document</span> variables. This
+specification makes that an intrinsic part of the DOM.
+
+
+<h3>Element Traversal</h3>
+
+<p>This specification has removed <dfn title=dom-Element-childElementCount><code>childElementCount</code></dfn>.
 
 
 

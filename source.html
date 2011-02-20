@@ -54,6 +54,9 @@ included in HTML comments so as not to distract the reader.
   <li><p>Need to make CSS terminology more precise, about setting/unsetting CSS
   properties.  The intent is to modify the style attribute, CSSOM-style.
 
+  <li><p>Also not sure about computed style.  There are differences between
+  "computed" and "used" and things like that, what do we actually want here?
+
   <li><p>Some of the DOM stuff might benefit from more precision.  E.g., is
   there a precise algorithm for what it means to append a node someplace, if
   that node is already somewhere in the DOM?  What does that do if it's
@@ -63,6 +66,9 @@ included in HTML comments so as not to distract the reader.
 
 <h2>Definitions</h2>
 
+<p class=XXX>This definition is just an ugly workaround for the annoyance of
+xrefs.  Fix it sometime.
+
 <p>A <code data-anolis-spec=domcore>Node</code> is an <dfn>HTML element
 with name</dfn> <var title>name</var> if it is an <code
 data-anolis-spec=domcore>Element</code>, its <span data-anolis-spec=domcore
@@ -70,6 +76,155 @@ title=concept-element-namespace>namespace</span> is the <span
 data-anolis-spec=domcore>HTML namespace</span>, and its <span
 data-anolis-spec=domcore title=concept-element-local-name>local name</span> is
 <var title>name</var>.
+
+<p>The <dfn>first node</dfn> of a [[range]] is its [[rangestart]] [[bpnode]],
+if that is a [[text]], [[comment]], or [[processinginstruction]] node; or else
+the child of its [[rangestart]] [[bpnode]] with [[index]] equal to its
+[[rangestart]] [[bpoffset]], if that exists; or else its [[rangestart]]
+[[bpnode]].
+
+<p>The <dfn>beginning element</dfn> of a [[range]] is its <span>first
+node</span> if that is an [[element]]; or the parent of its <span>first
+node</span>, if <em>that</em> is an [[element]]; or else null.
+
+<p class=XXX>(It will be null only in weird cases, like selecting a comment
+whose parent is a document, or the child of a document fragment, or whatever.
+I'm ignoring those cases for now.)
+
+
+<h2>Decomposing a Range into Nodes</h2>
+<p>When a user agent is to <dfn>decompose a [[range]]</dfn> <var
+title>range</var>, it must run the following steps.
+
+<p class=note>The algorithm returns a list of [[node]]s in the [[range]] that
+are not contained in any other [[node]] in the [[range]].  It splits [[text]]
+nodes if necessary, but isn't picky about [[comment]]s or
+[[processinginstruction]]s.
+
+<ol>
+  <li><p>Let <var title>start node</var>, <var title>start offset</var>, <var
+  title>end node</var>, and <var title>end offset</var> be the [[rangestart]]
+  and [[rangeend]] [[bpnodes]] and [[bpoffsets]] of <var title>range</var>,
+  respectively.
+
+  <li><p>If <var title>start node</var> or <var title>end node</var> is not an
+  [[element]], [[text]], [[processinginstruction]], or [[comment]] node, or is
+  not an [[element]] and has no parent, abort these steps.
+
+  <p class=XXX>Figure out something sensible here.
+
+  <li><p>If <var title>start node</var> is a [[text]] node and <var title>start
+  offset</var> is neither 0 nor the [[nodelength]] of <var title>start
+  node</var>, run <code data-anolis-spec=domcore
+  title=dom-Text-splitText>splitText(<var title>start offset</var>)</code> on
+  <var title>start node</var> and set <var title>start node</var> to the
+  returned node.  Set <var title>start offset</var> to 0.
+
+  <li><p>If <var title>end node</var> is a [[text]] node and <var title>end
+  offset</var> is neither 0 nor the [[nodelength]] of <var title>end
+  node</var>, run <code data-anolis-spec=domcore
+  title=dom-Text-splitText>splitText(<var title>end offset</var>)</code> on
+  <var title>end node</var> and set <var title>end node</var> to the previous
+  sibling of the returned node.  Set <var title>end offset</var> to the
+  [[nodelength]] of the new <var title>end node</var>.
+
+  <p class=XXX>What if the start and end nodes are the same [[text]] node?
+  Handle explicitly.
+
+  <li><p>If <var title>start node</var> is an [[element]] with at least one
+  child, let <var title>node</var> be the child of <var title>start node</var>
+  with [[index]] <var title>start offset</var>.
+
+  <li><p>Otherwise, if <var title>start node</var> is a [[text]] node and <var
+  title>start offset</var> is its [[nodelength]], let <var title>node</var> be
+  the first [[node]] after <var title>start node</var> in [[treeorder]].
+
+  <li><p>Otherwise, let <var title>node</var> be <var title>start node</var>.
+
+  <li><p>If <var title>end node</var> is an [[element]] and <var title>end
+  offset</var> is not 0, let <var title>end</var> be the child of <var
+  title>end node</var> with [[index]] <var title>end offset</var> &minus; 1.
+
+  <li><p>Otherwise, if <var title>end offset</var> is 0, let <var
+  title>end</var> be the first [[node]] before <var title>end node</var> in
+  [[treeorder]].
+
+  <li><p>Otherwise, let <var title>end</var> be <var title>end node</var>.
+
+  <li><p>Let <var title>node list</var> be an empty list of [[node]]s.
+
+  <li><p>While <var title>node</var> is not after <var title>end</var> in
+  [[treeorder]]:
+
+  <ol>
+    <li>Append <var title>node</var> to <var title>node list</var>.
+
+    <li>Set <var title>node</var> to the first [[node]] in
+    [[treeorder]] that is after <var title>node</var> and (if applicable) all
+    its [[descendants]].  If no such [[node]] exists, break out of these substeps.
+  </ol>
+
+  <li><p>Return <var title>node list</var>.
+</ol>
+
+
+<h2>Unstyling an element</h2>
+<p>When a user agent is to <dfn>unstyle an element</dfn>, it must run the
+following steps.
+
+<ol>
+  <li><p>Let <var title>element</var> be the <code
+  data-anolis-spec=domcore>Element</code> to be unstyled.
+
+  <li><p>Let <var title>property name</var> and <var title>tag list</var> be as
+  in the invoking algorithm.
+
+  <li><p>If either
+
+  <ul>
+    <li><p><var title>element</var> is an <span>HTML element with
+    name</span> either "span" or in <var title>tag list</var>, and it has
+    only a single attribute, and that attribute is named "style", and
+    that style attribute sets only the CSS property <var title>property
+    name</var>; or
+
+    <li><p><var title>element</var> is an <span>HTML element with
+    name</span> in <var title>tag list</var> and it has no attributes,
+  </ul>
+
+  <p>then:
+
+  <ol>
+    <li><p>While <var title>element</var> has children, insert the first child
+    of <var title>element</var> as the previous sibling of <var
+    title>element</var>.
+
+    <li><p>Remove <var title>element</var>.
+
+    <li><p>Abort this algorithm.
+  </ol>
+
+  <li><p>Unset the CSS property <var title>property name</var> of <var
+  title>element</var>.
+
+  <li><p>If <var title>element</var> is an <span>HTML element with
+  name</span> in <var title>tag list</var>:
+
+  <ol>
+    <li><p>Let <var title>new element</var> be a new <span>HTML element with
+    name</span> "span", with the same attributes and <code
+    data-anolis-spec=domcore title=dom-Node-ownerDocument>ownerDocument</code>
+    as <var title>element</var>.
+
+    <li><p>Append <var title>new element</var> to <var title>element</var>'s
+    parent as the previous sibling of <var title>element</var>.
+
+    <li><p>While <var title>element</var> has children, append the first child
+    of <var title>element</var> as the last child of <var title>new element</var>.
+
+    <li><p>Remove <var title>element</var>.
+  </ol>
+</ol>
 
 
 <h2>Styling a Range</h2>
@@ -79,174 +234,31 @@ run the following steps.  There are three inputs: a CSS property name <var
 title>property name</var>, a new value <var title>property value</var>, and a
 nonempty list of strings <var title>tag list</var>.
 
-<p class=XXX>This is totally made up and I have no idea yet if it matches
-browsers and/or is even vaguely coherent.
+<div class=XXX>
+<p>This description tries to keep the algorithm as simple as possible at the
+expense of producing much more complicated markup in some cases than a slightly
+more sophisticated algorithm.  It's similar to what Gecko does in spirit,
+although the details differ.  The basic cause of most of the ugly markup is
+that we don't bake in any element nesting restrictions, so <code
+title>&lt;em>Abc&lt;/em> &lt;em>def&lt;/em></code> becomes <code title>&lt;em
+style=font-weight:bold>Abc&lt;/em>&lt;b> &lt;/b>&lt;em
+style=font-weight:bold>def&lt;/em></code> instead of just <code
+title>&lt;b>&lt;em>Abc&lt;/em> &lt;em>def&lt;/em>&lt;/b></code>.  Otherwise
+we'd have to add content model checks.  Maybe this is worth it?  IE and WebKit
+seem to do it, Gecko and Opera seem not to (they only wrap text nodes AFAICT).
+
+<p>I did add some complication by saying conflicting inline style needs to be
+removed.  This is what WebKit does.  Gecko and IE9 leave it alone, which leads
+to stuff like <code title>&lt;b>&lt;span
+style=font-weight:100>Foo&lt;/span>&lt;/b></code> that doesn't actually work.
+Opera avoids the problem by producing code like <code title>&lt;span
+style=font-weight:100>&lt;b>Foo&lt;/b>&lt;/span></code>, but that doesn't work
+with the CSS-based strategy.
+</div>
 
 <ol>
-  <li><p>Let <var title>start node</var>, <var title>start offset</var>, <var
-  title>end node</var>, and <var title>end offset</var> be the <span
-  data-anolis-spec=domrange title=concept-range-start>start</span> and <span
-  data-anolis-spec=domrange title=concept-range-end>end</span> <span
-  data-anolis-spec=domrange title=concept-boundary-point-node>nodes</span> and
-  <span data-anolis-spec=domrange
-  title=concept-boundary-point-offset>offsets</span> of <var title>range</var>,
-  respectively.
-
-  <li><p>Let <var title>document</var> be the <code data-anolis-spec=domcore
-  title=dom-Node-ownerDocument>ownerDocument</code> of <var title>start
-  node</var>.
-
-  <li><p>If <var title>start node</var> or <var title>end node</var> is not an
-  <code data-anolis-spec=domcore>Element</code>, <code
-  data-anolis-spec=domcore>Text</code>, <code
-  data-anolis-spec=domcore>ProcessingInstruction</code>, or <code
-  data-anolis-spec=domcore>Comment</code> node, or is not an <code
-  data-anolis-spec=domcore>Element</code> and has no parent, abort
-  these steps.
-
-  <p class=XXX>Figure out something sensible here.
-
-  <li><p>If <var title>start node</var> is a <code
-  data-anolis-spec=domcore>Text</code> node and <var title>start offset</var>
-  is neither 0 nor the <span data-anolis-spec=domrange
-  title=concept-node-length>length</span> of <var title>start node</var>, run
-  <code data-anolis-spec=domcore title=dom-Text-splitText>splitText(<var
-  title>start offset</var>)</code> on <var title>start node</var> and set <var
-  title>start node</var> to the returned node.  Set <var title>start
-  offset</var> to 0.
-
-  <li><p>If <var title>end node</var> is a <code
-  data-anolis-spec=domcore>Text</code> node and <var title>end offset</var> is
-  neither 0 nor the <span data-anolis-spec=domrange
-  title=concept-node-length>length</span> of <var title>end node</var>, run
-  <code data-anolis-spec=domcore title=dom-Text-splitText>splitText(<var
-  title>end offset</var>)</code> on <var title>end node</var> and set <var
-  title>end node</var> to the previous sibling of the returned node.  Set <var
-  title>end offset</var> to the <span data-anolis-spec=domrange
-  title=concept-node-length>length</span> of the new <var title>end node</var>.
-
-<!-- Original declarative definition
-  <li><p>Let <var title>node list</var> be the list of <code
-  data-anolis-spec=domcore>Node</code>s <var title>node</var> in <var
-  title>document</var> satisfying all of the following conditions:
-
-  <ul>
-    <li><p>In <span data-anolis-spec=domcore>tree order</span>, <var
-    title>node</var> is after the child of <var title>start node</var> with
-    <span data-anolis-spec=domrange title=concept-indexof>index</span> <var
-    title>start offset</var> (or after <var title>start node</var> itself, if
-    <var title>start node</var> is not an <code
-    data-anolis-spec=domcore>Element</code>).
-
-    <li><p>In <span data-anolis-spec=domcore>tree order</span>, <var
-    title>node</var> is before the child of <var title>end node</var> with
-    <span data-anolis-spec=domrange title=concept-indexof>index</span> <var
-    title>end offset</var> (or before <var title>end node</var> itself, if <var
-    title>end node</var> is not an <code
-    data-anolis-spec=domcore>Element</code>).
-
-    <li><p><var title>node</var> is not a <span data-anolis-spec=domcore
-    title=concept-descendant-node>descendant</span> of any other <code
-    data-anolis-spec=domcore>Node</code> that satisfies the previous two
-    conditions.
-  </ul>
-
-  <li><p>If <var title>start node</var> is a <code
-  data-anolis-spec=domcore>Text</code> node and <var title>start offset</var>
-  is 0, add <var title>start node</var> to <var title>node list</var>.
-
-  <li><p>If <var title>end node</var> is a <code
-  data-anolis-spec=domcore>Text</code> node and <var title>end offset</var> is
-  the <span data-anolis-spec=domrange title=concept-node-length>length</span>
-  of <var title>end node</var>, add <var title>end node</var> to <var
-  title>node list</var>.
-
-  <li><p>If there is some <code data-anolis-spec=domcore>Element</code> that is
-  not in <var title>node list</var> but which has one or more children, and its
-  children are all in <var title>node list</var>, add that <code
-  data-anolis-spec=domcore>Element</code> to <var title>node list</var> and
-  remove all its children from <var title>node list</var>.  Repeat until there
-  is no such <code data-anolis-spec=domcore>Element</code>.
-  -->
-
-  <li><p>Let <var title>node list</var> be an empty list of <code
-  data-anolis-spec=domcore>Node</code>s.
-
-  <li><p>If <var title>start node</var> is an <code
-  data-anolis-spec=domcore>Element</code> with at least one child, let <var
-  title>node</var> be the first <code data-anolis-spec=domcore>Node</code>
-  after the child of <var title>start node</var> with <span
-  data-anolis-spec=domrange title=concept-indexof>index</span> <var title>start
-  offset</var>, in <span data-anolis-spec=domcore>tree order</span>.
-
-  <li><p>Otherwise, if <var title>start node</var> is a <code
-  data-anolis-spec=domcore>Text</code> node and <var title>start offset</var>
-  is 0, or if <var title>start node</var> is an <code
-  data-anolis-spec=domcore>Element</code> with no children, let <var
-  title>node</var> be <var title>start node</var>.
-
-  <li><p>Otherwise, let <var title>node</var> be the first <code
-  data-anolis-spec=domcore>Node</code> after <var title>start node</var> in
-  <span data-anolis-spec=domcore>tree order</span>.
-
-  <li><p>If <var title>end node</var> is an <code
-  data-anolis-spec=domcore>Element</code> with at least one child, let <var
-  title>end</var> be the first <code data-anolis-spec=domcore>Node</code>
-  before the child of <var title>end node</var> with <span
-  data-anolis-spec=domrange title=concept-indexof>index</span> <var title>end
-  offset</var>, in <span data-anolis-spec=domcore>tree order</span> (or, if
-  <var title>end offset</var> is <var title>end node</var>'s <span
-  data-anolis-spec=domrange title=concept-node-length>length</span>, let <var
-  title>end</var> be the last child of <var title>end node</var>).
-
-  <li><p>Otherwise, if <var title>end node</var> is a <code
-  data-anolis-spec=domcore>Text</code> node and <var title>end offset</var> is
-  its <span data-anolis-spec=domrange title=concept-node-length>length</span>,
-  or if <var title>end node</var> is an <code
-  data-anolis-spec=domcore>Element</code> with no children, let <var
-  title>end</var> be <var title>end node</var>.
-
-  <li><p>Otherwise, let <var title>end</var> be the last <code
-  data-anolis-spec=domcore>Node</code> before <var title>end node</var> in
-  <span data-anolis-spec=domcore>tree order</span>.
-
-  <li><p>While <var title>node</var> is not after <var title>end</var> in
-  <span data-anolis-spec=domcore>tree order</span>:
-
-  <ol>
-    <li>Append <var title>node</var> to <var title>node list</var>.
-
-    <li>Set <var title>node</var> to the first <code
-    data-anolis-spec=domcore>Node</code> in <span data-anolis-spec=domcore>tree
-    order</span> that is after <var title>node</var> and (if applicable) all
-    its <span data-anolis-spec=domcore
-    title=concept-descendant-node>descendants</span>.  If no such <code
-    data-anolis-spec=domcore>Node</code> exists, break out of these substeps.
-  </ol>
-
-  <!-- Condense the node list for extra tidiness. -->
-  <li><p>Let <var title>node</var> be the first <code
-  data-anolis-spec=domcore>Node</code> in <var title>node list</var>.
-  
-  <li><p>Repeat:
-
-  <ol>
-    <li><p>If <var title>node</var> has a parent, and its parent is an <code
-    data-anolis-spec=domcore>Element</code>, and all the children of <var
-    title>node</var>'s parent are contained in <var title>node list</var>, add
-    <var title>node</var>'s parent to <var title>node list</var> immediately
-    before <var title>node</var>, then remove all children of <var
-    title>node</var>'s parent from <var title>node list</var>.  Set <var
-    title>node</var> to <var title>node</var>'s parent and continue these
-    substeps from the beginning.
-
-    <li><p>If <var title>node</var> is the last <code
-    data-anolis-spec=domcore>Node</code> in <var title>node list</var>, break
-    out of these substeps.
-
-    <li><p>Set <var title>node</var> to the next <code
-    data-anolis-spec=domcore>Node</code> in <var title>node list</var>.
-  </ol>
+  <li><p>Let <var title>node list</var> be the result of <span title="decompose
+  a range">decomposing</span> <var title>range</var>.
 
   <li><p>For each <var title>node</var> in <var title>node list</var>, in <span
   data-anolis-spec=domcore>tree order</span>:
@@ -262,84 +274,29 @@ browsers and/or is even vaguely coherent.
       <var title>property name</var> of <var title>node</var> to <var
       title>property value</var>.
 
-      <li><p>For each <span data-anolis-spec=domcore
-      title=concept-descendant-node>descendant</span> <var
-      title>descendant</var> of <var title>node</var> that is an <code
-      data-anolis-spec=domcore>Element</code>:
-
-      <ol>
-        <li><p>If either
-        
-        <ul>
-          <li><p><var title>descendant</var> is an <span>HTML element with
-          name</span> either "span" or in <var title>tag list</var>, and it has
-          only a single attribute, and that attribute is named "style", and
-          that style attribute sets only the CSS property <var title>property
-          name</var>; or
-
-          <li><p><var title>descendant</var> is an <span>HTML element with
-          name</span> in <var title>tag list</var> and it has no attributes,
-        </ul>
-
-        <p>then append all of <var title>descendant</var>'s children to the
-        parent of <var title>descendant</var> in order immediately before <var
-        title>descendant</var>, and remove <var title>descendant</var>.
-        Continue with the next descendant.
-
-        <li><p>Unset the CSS property <var title>property name</var> of <var
-        title>descendant</var>.
-        <!-- Only WebKit appears to do this, but it makes sense.  Otherwise
-        things like <span style=font-weight:normal> won't disappear when you
-        apply bold.  (Same applies to the places below where we unset the CSS
-        property here.) -->
-
-        <li><p>If <var title>descendant</var> is an <span>HTML element with
-        name</span> in <var title>tag list</var>, let <var title>new
-        descendant</var> be a new <span>HTML element with name</span> "span",
-        with the same attributes and <code data-anolis-spec=domcore
-        title=dom-Node-ownerDocument>ownerDocument</code> as <var
-        title>descendant</var>.  Append <var title>new descendant</var> to <var
-        title>descendant</var>'s parent as the previous sibling of <var
-        title>descendant</var>, then append all of <var
-        title>descendant</var>'s children to <var title>new descendant</var> in
-        order, then remove <var title>descendant</var>.
-      </ol>
+      <li><p><span title="unstyle an element">Unstyle</span> each <code
+      data-anolis-spec=domcore>Element</code> <span data-anolis-spec=domcore
+      title=concept-descendant-node>descendant</span> of <var title>node</var>.
     </ol>
 
-    <li><p>Otherwise:
+    <li><p>Otherwise, if <var title>node</var> is a <code
+    data-anolis-spec=domcore>Text</code> node:
 
     <ol>
-      <li><p>If <var title>node</var> is not the first child of its parent,
-      and its previous sibling is an <span>HTML element with name</span> equal
-      to the first string in <var title>tag list</var>, append <var
-      title>node</var> to <var title>node</var>'s previous sibling as the last
-      child.  Continue with the next <code data-anolis-spec=domcore>Node</code>
-      in <var title>node list</var>.
-      <!-- Thus we merge things together a bit.  This could probably use more
-      thought. -->
-
-      <li><p>If <var title>node</var> is not a <code
-      data-anolis-spec=domcore>Text</code> node, or if its <span
-      data-anolis-spec=domcore title=dom-CharacterData-data>data</span> is a
-      sequence of zero or more <span data-anolis-spec=html title="space
-      character">space characters</span>, continue with the next <code
-      data-anolis-spec=domcore>Node</code> in <var title>node list</var>.
-      <!-- This avoids wrapping whitespace-only text nodes, which agrees with
-      Gecko and WebKit.  IE9 and Opera wrap the whitespace-only text nodes,
-      which seems pointless. -->
-      
       <li><p>Let <var title>new parent</var> be a new <span>HTML element with
       name</span> equal to the first string in <var title>tag list</var>, with
       no attributes, and <code data-anolis-spec=domcore
-      title=dom-Node-ownerDocument>ownerDocument</code> set to <var
-      title>document</var>.
-      
+      title=dom-Node-ownerDocument>ownerDocument</code> the same as <var
+      title>node</var>.
+
       <li><p>Append <var title>new parent</var> to <var title>node</var>'s
       parent as the previous sibling of <var title>node</var>.
 
       <li><p>Append <var title>node</var> to <var title>new parent</var> as
       its last child.
     </ol>
+
+    <li><p>Otherwise, do nothing.
   </ol>
 </ol>
 
@@ -348,265 +305,106 @@ element, IE9 and WebKit and Opera wrap various descendants in <b> or <strong>;
 Gecko just adds a style attribute.  The latter is simpler, particularly because
 you then don't have to worry about making sure you only insert your tags in a
 valid place (which you have to so that text/html serialization is possible, if
-nothing else).  I originally specced the former approach, retained here in case
-I want to switch back:
+nothing else).  I originally specced the former approach, available in git
+history. -->
 
-<p>When a user agent is to <dfn title=wrap-range-in-tag>wrap a <code
-data-anolis-spec=domrange>Range</code> <var title>range</var> in a tag <var
-title>tag</var></dfn>, treating <var title>tag list</var> as equivalent and
-overriding CSS <var title>property</var>, it must run the following steps:
 
-<p class=XXX>This is totally made up and I have no idea yet if it matches
-browsers and/or is even vaguely coherent.
+<h2>Unstyling a Range</h2>
+<p>When a user agent is to <dfn>unstyle a <code
+data-anolis-spec=domrange>Range</code></dfn> <var title>range</var>, it must
+run the following steps.  There are three inputs: a CSS property name <var
+title>property name</var>, a new value <var title>property value</var>, and a
+possibly empty list of strings <var title>tag list</var>.
 
 <ol>
-  <li><p>Let <var title>start node</var>, <var title>start offset</var>, <var
-  title>end node</var>, and <var title>end offset</var> be the <span
-  data-anolis-spec=domrange title=concept-range-start>start</span> and <span
-  data-anolis-spec=domrange title=concept-range-end>end</span> <span
-  data-anolis-spec=domrange title=concept-boundary-point-node>nodes</span> and
-  <span data-anolis-spec=domrange
-  title=concept-boundary-point-offset>offsets</span> of <var title>range</var>,
-  respectively.
+  <li><p>Let <var title>node list</var> be the result of <span title="decompose
+  a range">decomposing</span> <var title>range</var>.
 
-  <li><p>Let <var title>document</var> be the <code data-anolis-spec=domcore
-  title=dom-Node-ownerDocument>ownerDocument</code> of <var title>start
-  node</var>.
+  <li><p>For each <var title>node</var> in <var title>node list</var>, in
+  order:
 
-  <li><p>If <var title>start node</var> is a <code
-  data-anolis-spec=domcore>Text</code>, <code
-  data-anolis-spec=domcore>ProcessingInstruction</code>, or <code
-  data-anolis-spec=domcore>Comment</code> node, and it has no parent, abort
-  these steps.
-
-  <p class=XXX>Figure out something sensible here.  Doesn't make sense except
-  in IE, since other browsers fail if it's not contentEditable.  What does IE
-  do?  What do we expect?
-
-  <li><p>If <var title>start node</var> is a <code
-  data-anolis-spec=domcore>Text</code> node and <var title>start offset</var>
-  is neither 0 nor the <span data-anolis-spec=domrange
-  title=concept-node-length>length</span> of <var title>start node</var>, run
-  <code data-anolis-spec=domcore title=dom-Text-splitText>splitText(<var
-  title>start offset</var>)</code> on <var title>start node</var> and set <var
-  title>start node</var> to the returned node.  Set <var title>start
-  offset</var> to 0.
-
-  <li><p>If <var title>start node</var> is a <code
-  data-anolis-spec=domcore>Text</code> node and <var title>start offset</var>
-  is 0, set <var title>start offset</var> to the <span
-  data-anolis-spec=domrange title=concept-indexof>index of</span> <var
-  title>start node</var> in its parent, then set <var title>start node</var> to
-  its parent.
-
-  <li><p>If <var title>start node</var> is a <code
-  data-anolis-spec=domcore>Text</code>, <code
-  data-anolis-spec=domcore>Comment</code>, or <code
-  data-anolis-spec=domcore>ProcessingInstruction</code> node, set <var
-  title>start offset</var> to one plus the <span data-anolis-spec=domrange
-  title=concept-indexof>index of</span> <var title>start node</var> in its
-  parent, then set <var title>start node</var> to its parent.
-
-  <li><p>If <var title>end node</var> is a <code
-  data-anolis-spec=domcore>Text</code> node and <var title>end offset</var> is
-  neither 0 nor the <span data-anolis-spec=domrange
-  title=concept-node-length>length</span> of <var title>end node</var>, run
-  <code data-anolis-spec=domcore title=dom-Text-splitText>splitText(<var
-  title>end offset</var>)</code> on <var title>end node</var> and set <var
-  title>end node</var> to the previous sibling of the returned node.  Set <var
-  title>end offset</var> to the <span data-anolis-spec=domrange
-  title=concept-node-length>length</span> of the new <var title>end node</var>.
-
-  <li><p>If <var title>end node</var> is a <code
-  data-anolis-spec=domcore>Text</code> node and <var title>end offset</var> is
-  the <span data-anolis-spec=domrange title=concept-node-length>length</span>
-  of <var title>end node</var>, set <var title>end offset</var> to one plus the
-  <span data-anolis-spec=domrange title=concept-indexof>index of</span> <var
-  title>end node</var> in its parent, then set <var title>end node</var> to its
-  parent.
-
-  <li><p>If <var title>end node</var> is a <code
-  data-anolis-spec=domcore>Text</code>, <code
-  data-anolis-spec=domcore>Comment</code>, or <code
-  data-anolis-spec=domcore>ProcessingInstruction</code> node, set <var
-  title>end offset</var> to the <span data-anolis-spec=domrange
-  title=concept-indexof>index of</span> <var title>end node</var> in its
-  parent, then set <var title>end node</var> to its parent.
-
-  <p class=note>The previous several steps have ensured that <var title>start
-  node</var> and <var title>end node</var> are not <code
-  data-anolis-spec=domcore>Text</code>, <code
-  data-anolis-spec=domcore>Comment</code>, or <code
-  data-anolis-spec=domcore>ProcessingInstruction</code> nodes, so <var
-  title>start offset</var> and <var title>end offset</var> now represent node
-  offsets instead of character offsets.
-
-  <li><p>Let <var title>node</var> equal <var title>start node</var> and let <var
-  title>offset</var> equal <var title>start offset</var>.
-
-  <li><p>Repeat the following steps until aborted:
   <ol>
-    <li><p><i title id=wrap-algorithm-start>Start</i>: If <var title>node</var> is
-    after <var title>end node</var> in <span data-anolis-spec=domcore>tree
-    order</span>, or if <var title>node</var> equals <var title>end node</var>
-    and <var title>offset</var> is greater than or equal to <var title>end
-    offset</var>, abort this subalgorithm.
-
-    <li><p>Let <var title>element</var> be a new <code
-    data-anolis-spec=domcore>Element</code> with no attributes, <span
-    data-anolis-spec=domcore title=concept-element-namespace>namespace</span>
-    set to the <span data-anolis-spec=domcore>HTML namespace</span>, <span
-    data-anolis-spec=domcore title=concept-element-local-name>local name</span>
-    set to <var title>tag</var>, and <code data-anolis-spec=domcore
-    title=dom-Node-ownerDocument>ownerDocument</code> set to <var
-    title>document</var>.
-
-    <li><p>While <var title>node</var> has a child with <span
-    data-anolis-spec=domrange title=concept-indexof>index</span> <var
-    title>offset</var>, and that child meets one of the following conditions,
-    take the described action (if any) and increment <var title>offset</var>:
-
-    <dl class=switch>
-      <dt>The child is a <code data-anolis-spec=domcore>Text</code> node whose
-      <code data-anolis-spec=domcore title=dom-CharacterData-data>data</code>
-      consists of zero or more <span data-anolis-spec=html title="space
-      character">space characters</span>
-      <!- - This avoids wrapping whitespace-only text nodes, which agrees with
-      WebKit.  IE9 wraps the whitespace-only text nodes, and Gecko tries to do
-      something crazy like add CSS attributes instead of elements. - ->
-      <dt>The child is a <code data-anolis-spec=domcore>Comment</code>, <code
-      data-anolis-spec=domcore>ProcessingInstruction</code>, or <code
-      data-anolis-spec=domcore>DocumentType</code>
-      <dd>No action.
-
-      <dt>The child is an <code data-anolis-spec=domcore>Element</code> whose
-      <span data-anolis-spec=domcore
-      title=concept-element-namespace>namespace</span> is the <span
-      data-anolis-spec=domcore>HTML namespace</span> and whose <span
-      data-anolis-spec=domcore title=concept-element-local-name>local
-      name</span> is <var title>tag</var>
-      <dd><span>Unset the CSS property</span> <var title>property</var> on each
-      <span data-anolis-spec=domcore
-      title=concept-descendant-node>descendant</span> of the child.
-      <!- - Only WebKit appears to do this, but it makes sense.  Otherwise
-      things like <span style=font-weight:normal> won't disappear when you
-      apply bold.  (Same applies to the places below where we unset the CSS
-      property here.) - ->
-    </dl>
-
-    <li><p>If <var title>offset</var> is equal to <var title>node</var>'s <span
-    data-anolis-spec=domrange title=concept-node-length>length</span>:
-    
-    <ol>
-      <li><p>If <var title>node</var> is the last <code
-      data-anolis-spec=domcore>Node</code> in <var title>document</var>, abort
-      this subalgorithm (the one that begins with <i title><a
-      href=wrap-algorithm-start>start</a></i>).
-
-      <li><p>Let <var title>node</var> equal the first <code
-      data-anolis-spec=domcore>Node</code> in <var title>document</var> that is
-      after all of <var title>node</var>'s <span data-anolis-spec=domcore
-      title=concept-descendant-node>descendants</span> in <span
-      data-anolis-spec=domcore>tree order</span>.
-      
-      <li><p>Let <var title>offset</var> equal zero.
-      
-      <li><p>Continue from <i title><a
-      href=#wrap-algorithm-start>start</a></i>.
-    </ol>
-
-    <li><p>Let <var title>child</var> be the child of <var title>node</var> with
-    <span data-anolis-spec=domrange title=concept-indexof>index</span> <var
-    title>offset</var>.
-
-    <p class=note><var title>child</var> will always be either an <code
-    data-anolis-spec=domcore>Element</code> or a <code
-    data-anolis-spec=domcore>Text</code> node.
-
-    <li><p>If <var title>child</var> is an <code
-    data-anolis-spec=domcore>Element</code> which is not part of the <span
-    data-anolis-spec=html title="content models">content model</span> of <var
-    title>element</var>:
-    
-    <ol>
-      <li><p>Create a new <code data-anolis-spec=domrange>Range</code> with <span
-      data-anolis-spec=domrange title=concept-range-start>start</span> (<var
-      title>child</var>, 0), <span data-anolis-spec=domrange
-      title=concept-range-end>end</span> (<var title>child</var>, <span
-      data-anolis-spec=domrange title=concept-node-length>length</span> of <Var
-      title>child</var>), and <span data-anolis-spec=domrange
-      title=concept-range-root>root</span> the same as <var title>range</var>'s
-      <span data-anolis-spec=domrange title=concept-range-root>root</span>.
-      
-      <li><p><span title=wrap-range-in-tag>Wrap that <code
-      data-anolis-spec=domrange>Range</code> in <var title>tag</var></span>,
-      treating <var title>tag list</var> as equivalent and overriding CSS <var
-      title>property</var>.
-    </ol>
-
-    <li><p>Otherwise, if <var title>child</var> is an <code
-    data-anolis-spec=domcore>Element</code> whose <span
-    data-anolis-spec=domcore title=concept-element-namespace>namespace</span>
-    is the <span data-anolis-spec=domcore>HTML namespace</span> and whose <span
-    data-anolis-spec=domcore title=concept-element-local-name>local name</span>
-    is <var title>tag</var> or is in <var title>tag list</var>, change <var
-    title>child</var>'s <span data-anolis-spec=domcore
-    title=concept-element-local-name>local name</span> to <var title>tag</var>
-    and <span>unset the CSS property</span> <var title>property</var> on each
-    of its <span data-anolis-spec=domcore
-    title=concept-descendant-node>descendants</span>.
-
-    <li><p>Otherwise:
-
-    <p class=note><var title>child</var> is a <code
-    data-anolis-spec=domcore>Text</code> node or an <code
-    data-anolis-spec=domcore>Element</code> that is part of the <span
-    data-anolis-spec=html title="content models">content model</span> of <var
-    title>element</var>.
+    <li><p>If <var title>node</var> is an <code
+    data-anolis-spec=domcore>Element</code>:
 
     <ol>
-      <li><p>Append <var title>element</var> to <var title>node</var> as the
-      previous sibling of <var title>child</var>.
+      <li><p><span title="unstyle an element">Unstyle</span> <var
+      title>node</var>.
 
-      <li><p>While <var title>node</var> has a child with <span
-      data-anolis-spec=domrange title=concept-indexof>index</span> <var
-      title>offset</var> + 1, and while that child is not an <code
-      data-anolis-spec=domcore>Element</code> or is an <code
-      data-anolis-spec=domcore>Element</code> but is part of the <span
-      data-anolis-spec=html title="content models">content model</span> of <var
-      title>element</var>, append that child to <var title>element</var>.
+      <li><p>If the computed value of <var title>property name</var> for <var
+      title>node</var> is not <var title>property value</var>, set the CSS
+      property <var title>property name</var> of <var title>node</var> to <var
+      title>property value</var>.
 
-      <p class=note>Since the next sibling of <var title>element</var> is being
-      reparented on each iteration of the loop, the same <var
-      title>offset</var> will point to a new node every time.
-
-      <li><p><span>Unset the CSS property</span> <var title>property</var> on
-      each of <var title>element</var>'s descendants.
+      <li><p><span title="unstyle an element">Unstyle</span> each <code
+      data-anolis-spec=domcore>Element</code> <span data-anolis-spec=domcore
+      title=concept-descendant-node>descendant</span> of <var title>node</var>.
     </ol>
 
-    <li><p>Increment <var title>offset</var>.
+    <li><p>Otherwise, if <var title>node</var> is a <code
+    data-anolis-spec=domcore>Text</code> node and the computed value of <var
+    title>property name</var> for <var title>node</var>'s parent is not <var
+    title>property value</var>:
 
-    <p class=XXX>There appears to be no precise definition of what it means to
-    append an existing element to another one.  Is it just obvious?  Should Web
-    DOM Core be clearer?
+    <ol>
+      <li><p>Let <var title>new parent</var> be a new <span>HTML element with
+      name</span> "span", with no attributes, and with <code
+      data-anolis-spec=domcore
+      title=dom-Node-ownerDocument>ownerDocument</code> equal to <var
+      title>node</var>'s.
+
+      <li><p>Set the CSS property <var title>property name</var> of <var
+      title>new parent</var> to <var title>property value</var>.
+
+      <li><p>Insert <var title>new parent</var> as <var title>node</var>'s
+      previous sibling.
+
+      <li><p>Append <var title>node</var> to <var title>new parent</var> as its
+      child.
+    </ol>
+
+    <li><p>Otherwise, do nothing.
   </ol>
 </ol>
--->
+
 
 <h2>Commands</h2>
+<p>The <dfn title=execCommand()><code>execCommand(<var title>commandId</var>,
+<var title>showUI</var>, <var title>value</var>)</code></dfn> method on the
+<code data-anolis-spec=html>HTMLDocument</code> interface allows scripts to
+perform actions on the current selection or at the current caret position.
+Generally, these commands would be used to implement editor UI, for example
+having a "delete" button on a toolbar.
+
+<p>There are three variants to this method, with one, two, and three arguments
+respectively. The <var title>showUI</var> and <var title>value</var>
+parameters, even if specified, are ignored except where otherwise stated.
+
+<p>When <code>execCommand()</code> is invoked, the user agent must run the
+following steps:
+
+<ol>
+  <li>Let <var title>selection</var> be the result of calling <code
+  data-anolis-spec=domrange
+  title=dom-Document-getSelection>getSelection()</code> on the <span
+  data-anolis-spec=domrange>context object</span>.
+
+  <li>For each <code data-anolis-spec=domrange>Range</code> associated with
+  <var title>selection</var>, in order, take the action from the list below
+  given by <var title>commandId</var>.
+</ol>
+
 <dl>
 <dt><code title><dfn title=command-bold>bold</dfn></code>
-<dd>The user agent must <span title="style a range">style each <code
-data-anolis-spec=domrange>Range</code></span> of the current <code
-data-anolis-spec=domrange>Selection</code> with <var title>property name</var>
-"font-weight", <var title>property value</var> "bold", and <var title>tag
-list</var> ["b", "strong"].
-
-<p class=XXX>Be clearer.  What's the "current Selection", and what does it mean
-to wrap "each Range"?  What if there are overlapping Ranges?
-
-<p class=XXX>Obviously this doesn't yet even attempt to include the case where
-it's already bold and the bold has to be removed.
+<dd>If the <span>beginning element</span> of the <code
+data-anolis-spec=domrange>Range</code> has font-weight with computed value not
+equal to "bold", the user agent must <span title="style a range">style the
+<code data-anolis-spec=domrange>Range</code></span> with <var title>property
+name</var> "font-weight", <var title>property value</var> "bold", and <var
+title>tag list</var> ["b", "strong"].  Otherwise, it must <span title="unstyle
+a range">unstyle it</span> with <var title>property name</var> "font-weight",
+<var title>property value</var> "normal", and <var title>tag list</var> ["b",
+"strong"].
 </dl>
 
 

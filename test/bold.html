@@ -1,6 +1,6 @@
 <!doctype html>
 <title>execCommand("bold") tests</title>
-<div id=log></div>
+<button onclick=bold()>Bold</button>
 <div contenteditable=true id=test>
 	<br> <br>
 	Some simple text<br>
@@ -32,8 +32,6 @@
 	<p><em style=font-weight:bold>Some more text</em>
 	<p><b>Some <span style=font-weight:light>more <b>te<span style=font-weight:bold>xt<strong>!</strong></span></b></span></b>
 </div>
-<script src=support/testharness.js></script>
-<script src=support/testharnessreport.js></script>
 <script>
 "use strict";
 
@@ -83,16 +81,50 @@ function convertProperty(propertyName) {
 	return "font-weight";
 }
 
-function styleRange(range, propertyName, propertyValue, tagList) {
+
+function firstNode(range) {
+	if (range.startContainer.nodeType == Node.TEXT_NODE
+	|| range.startContainer.nodeType == Node.COMMENT_NODE
+	|| range.startContainer.nodeType == Node.PROCESSING_INSTRUCTION_NODE) {
+		return range.startContainer;
+	}
+
+	if (range.startContainer.childNodes.length > range.startOffset) {
+		return range.startContainer.childNodes[range.startOffset];
+	}
+
+	return range.startContainer;
+}
+
+function beginningElement(range) {
+	var first = firstNode(range);
+	if (first.nodeType == Node.ELEMENT_NODE) {
+		return first;
+	}
+
+	if (first.parentNode.nodeType == Node.ELEMENT_NODE) {
+		return first.parentNode;
+	}
+
+	return null;
+}
+
+function decomposeRange(range) {
+	// "Let start node, start offset, end node, and end offset be the start and
+	// end nodes and offsets of range, respectively."
 	var startNode = range.startContainer;
 	var startOffset = range.startOffset;
 	var endNode = range.endContainer;
 	var endOffset = range.endOffset;
 
-	var doc = startNode.ownerDocument;
-
+	// "If start node or end node is not an Element, Text,
+	// ProcessingInstruction, or Comment node, or is not an Element and has no
+	// parent, abort these steps."
 	// Skip the sanity check about node types/detached non-elements
 
+	// "If start node is a Text node and start offset is neither 0 nor the
+	// length of start node, run splitText(start offset) on start node and set
+	// start node to the returned node. Set start offset to 0."
 	if (startNode.nodeType == Node.TEXT_NODE
 	&& startOffset != 0
 	&& startOffset != startNode.data.length) {
@@ -100,6 +132,10 @@ function styleRange(range, propertyName, propertyValue, tagList) {
 		startOffset = 0;
 	}
 
+	// "If end node is a Text node and end offset is neither 0 nor the length
+	// of end node, run splitText(end offset) on end node and set end node to
+	// the previous sibling of the returned node. Set end offset to the length
+	// of the new end node."
 	if (endNode.nodeType == Node.TEXT_NODE
 	&& endOffset != 0
 	&& endOffset != endNode.data.length) {
@@ -107,150 +143,223 @@ function styleRange(range, propertyName, propertyValue, tagList) {
 		endOffset = endNode.data.length;
 	}
 
-	var nodeList = [];
-
 	var node;
+	// "If start node is an Element with at least one child, let node be the
+	// child of start node with index start offset."
 	if (startNode.nodeType == Node.ELEMENT_NODE
 	&& startNode.hasChildNodes()) {
-		node = nextNode(startNode.childNodes[startOffset]);
-	} else if (
-		(startNode.nodeType == Node.TEXT_NODE && startOffset == 0)
-		|| (startNode.nodeType == Node.ELEMENT_NODE && !startNode.hasChildNodes())
-	) {
-		node = startNode;
-	} else {
+		node = startNode.childNodes[startOffset];
+	// "Otherwise, if start node is a Text node and start offset is its length,
+	// let node be the first Node after start node in tree order."
+	} else if (startNode.nodeType == Node.TEXT_NODE
+	&& startOffset == startNode.data.length) {
 		node = nextNode(startNode);
+	// "Otherwise, let node be start node."
+	} else {
+		node = startNode;
 	}
 
 	var end;
-	if (endNode.nodeType == Node.ELEMENT_NODE
-	&& endNode.hasChildNodes()) {
-		if (endOffset == endNode.childNodes.length) {
-			end = endNode.lastChild;
-		} else {
-			end = previousNode(endNode.childNodes[endOffset]);
-		}
-	} else if (
-		(endNode.nodeType == Node.TEXT_NODE && endOffset == endNode.data.length)
-		|| (endNode.nodeType == Node.ELEMENT_NODE && !endNode.hasChildNodes())
-	) {
-		end = endNode;
-	} else {
+	// "If end node is an Element and end offset is not 0, let end be the child
+	// of end node with index end offset − 1."
+	if (endNode.nodeType == Node.ELEMENT_NODE && endOffset != 0) {
+		end = endNode.childNodes[endOffset - 1];
+	// "Otherwise, if end offset is 0, let end be the first Node before end
+	// node in tree order."
+	} else if (endOffset == 0) {
 		end = previousNode(endNode);
+	// "Otherwise, let end be end node."
+	} else {
+		end = endNode;
 	}
 
+	// "Let node list be an empty list of Nodes."
+	var nodeList = [];
+
+	// "While node is not after end in tree order:"
 	while (node && !(end.compareDocumentPosition(node) & 4)) {
+		// "Append node to node list."
 		nodeList.push(node);
+		// "Set node to the first Node in tree order that is after node and (if
+		// applicable) all its descendants. If no such Node exists, break out
+		// of these substeps."
+		//
+		// If no such node exists, node will be set to null by this line and
+		// we'll break out due to the "node" part of the while condition.
 		node = nextNodeDescendants(node);
 	}
 
-	// FIXME what if nodeList.length == 0?
-	for (var i = 0; i < nodeList.length; i++) {
-		node = nodeList[i];
-		if (node.parentElement) {
-			var replace = true;
-			for (var j = 0; j < node.parentElement.childNodes.length; j++) {
-				if (node.parentElement.childNodes[j] != nodeList[i + j]) {
-					replace = false;
-					break;
-				}
-			}
-			if (replace) {
-				nodeList = nodeList.slice(0, i)
-					.concat(node.parentElement)
-					.concat(nodeList.slice(i + j));
-				continue;
-			}
+	return nodeList;
+}
+
+function unstyleElement(element, propertyName, tagList) {
+	// "If either
+	//
+	// * element is an HTML element with name either "span" or in tag list, and
+	//   it has only a single attribute, and that attribute is named "style",
+	//   and that style attribute sets only the CSS property property name; or
+	//
+	// * element is an HTML element with name in tag list and it has no
+	//   attributes,
+	//
+	// then:"
+	if (
+		(element.namespaceURI == htmlNamespace
+		&& (element.nodeName == "SPAN" || tagList.indexOf(element.nodeName.toLowerCase()) != -1)
+		&& element.attributes.length == 1
+		&& element.attributes[0].localName == "style"
+		&& element.style.length == 1
+		&& element.style.item(0) == convertProperty(propertyName)
+		)
+		||
+		(element.namespaceURI == htmlNamespace
+		&& tagList.indexOf(element.nodeName.toLowerCase()) != -1
+		&& element.attributes.length == 0)
+	) {
+		// "While element has children, insert the first child of element as
+		// the previous sibling of element."
+		while (element.hasChildNodes()) {
+			element.parentNode.insertBefore(element.childNodes[0], element);
 		}
+		// "Remove element."
+		element.parentNode.removeChild(element);
+		// "Abort this algorithm."
+		return;
 	}
 
+	// "Unset the CSS property property name of element."
+	element.style[propertyName] = '';
+	if (element.getAttribute("style") == "") {
+		element.removeAttribute("style");
+	}
+
+	// "If element is an HTML element with name in tag list:"
+	if (element.namespaceURI == htmlNamespace
+	&& tagList.indexOf(element.tagName.toLowerCase()) != -1) {
+		// "Let new element be a new HTML element with name "span", with the
+		// same attributes and ownerDocument as element."
+		var newElement = element.ownerDocument.createElement("span");
+		for (var j = 0; j < element.attributes.length; j++) {
+			// FIXME: Namespaces?
+			newElement.setAttribute(element.attributes[j].localName, element.attributes[j].value);
+		}
+
+		// "Append new element to element's parent as the previous sibling of
+		// element."
+		element.parentNode.insertBefore(newElement, element);
+
+		// "While element has children, append the first child of element as
+		// the last child of new element."
+		while (element.hasChildNodes()) {
+			newElement.appendChild(element.childNodes[0]);
+		}
+		// "Remove element."
+		element.parentNode.removeChild(element);
+	}
+}
+
+function unstyleElementDescendants(element, propertyName, tagList) {
+	for (var i = 0; i < element.childNodes.length; i++) {
+		if (element.childNodes[i].nodeType != Node.ELEMENT_NODE) {
+			continue;
+		}
+		unstyleElement(element.childNodes[i], propertyName, tagList);
+		unstyleElementDescendants(element.childNodes[i], propertyName, tagList);
+	}
+}
+
+function styleRange(range, propertyName, propertyValue, tagList) {
+	// "Let node list be the result of decomposing range."
+	var nodeList = decomposeRange(range);
+
+	// "For each node in node list, in tree order:"
 	for (var i = 0; i < nodeList.length; i++) {
-		node = nodeList[i];
+		var node = nodeList[i];
+		// "If node is an Element:"
 		if (node.nodeType == Node.ELEMENT_NODE) {
+			// "If node is an HTML element with name in tag list, unset the CSS
+			// property property name of node. Otherwise, set the CSS property
+			// property name of node to property value."
 			if (node.namespaceURI == htmlNamespace
 			&& tagList.indexOf(node.tagName.toLowerCase()) != -1) {
 				node.style[propertyName] = '';
+				if (node.getAttribute("style") == "") {
+					node.removeAttribute("style");
+				}
 			} else {
 				node.style[propertyName] = propertyValue;
 			}
 
-			var desc = nextNode(node);
-			var stop = nextNodeDescendants(node);
-			while (true) {
-				if (desc == stop) {
-					break;
-				}
+			// "Unstyle each Element descendant of node."
+			unstyleElementDescendants(node, propertyName, tagList);
+		// "Otherwise, if node is a Text node:"
+		} else if (node.nodeType == Node.TEXT_NODE) {
+			// "Let new parent be a new HTML element with name equal to the first
+			// string in tag list, with no attributes, and ownerDocument the same
+			// as node."
+			var newParent = node.ownerDocument.createElement(tagList[0]);
 
-				if (desc.nodeType != Node.ELEMENT_NODE) {
-					desc = nextNode(desc);
-					continue;
-				}
+			// "Append new parent to node's parent as the previous sibling of
+			// node."
+			node.parentNode.insertBefore(newParent, node);
 
-				if (
-					(desc.namespaceURI == htmlNamespace
-					&& (desc.nodeName == "SPAN" || tagList.indexOf(desc.nodeName.toLowerCase()) != -1)
-					&& desc.attributes.length == 1
-					//&& desc.attributes[0].namespaceURI == htmlNamespace
-					&& desc.attributes[0].localName == "style"
-					&& desc.style.length == 1
-					&& desc.style.item(0) == convertProperty(propertyName)
-					)
-					||
-					(desc.namespaceURI == htmlNamespace
-					&& tagList.indexOf(desc.nodeName.toLowerCase()) != -1
-					&& desc.attributes.length == 0)
-				) {
-					var oldDesc = desc;
-					desc = nextNode(desc);
-					while (oldDesc.hasChildNodes()) {
-						oldDesc.parentNode.insertBefore(oldDesc.childNodes[0], oldDesc);
-					}
-					oldDesc.parentNode.removeChild(oldDesc);
-					continue;
-				}
-				desc.style[propertyName] = '';
-				if (desc.getAttribute("style") == "") {
-					desc.removeAttribute("style");
-				}
-				if (desc.namespaceURI == htmlNamespace
-				&& tagList.indexOf(desc.tagName.toLowerCase()) != -1) {
-					var newDesc = doc.createElement("span");
-					for (var j = 0; j < desc.attributes.length; j++) {
-						// Sick of playing the namespace game, assume
-						// everything is in HTML.
-						newDesc.setAttribute(desc.attributes[j].localName, desc.attributes[j].value);
-					}
-					desc.parentNode.insertBefore(newDesc, desc);
-					while (desc.hasChildNodes()) {
-						newDesc.appendChild(desc.childNodes[0]);
-					}
-					desc.parentNode.removeChild(desc);
-				}
-				desc = nextNode(desc);
-			}
-			continue;
+			// "Append node to new parent as its last child."
+			newParent.appendChild(node);
 		}
-
-		if (node.previousSibling
-		&& node.previousSibling.nodeType == Node.ELEMENT_NODE
-		&& node.previousSibling.namespaceURI == htmlNamespace
-		&& node.previousSibling.tagName == tagList[0].toUpperCase()) {
-			node.previousSibling.appendChild(node);
-			continue;
-		}
-
-		if (node.nodeType != Node.TEXT_NODE
-		|| /^[ \t\n\f\r]*$/.test(node.data)) {
-			continue;
-		}
-
-		var newParent = doc.createElement(tagList[0]);
-		node.parentNode.insertBefore(newParent, node);
-		newParent.appendChild(node);
+		// "Otherwise, do nothing."
 	}
 }
 
-var range = document.createRange();
-range.selectNodeContents(document.getElementsByTagName("div")[1]);
-styleRange(range, "fontWeight", "bold", ["b", "strong"]);
+function unstyleRange(range, propertyName, propertyValue, tagList) {
+	// "Let node list be the result of decomposing range."
+	var nodeList = decomposeRange(range);
+
+	// "For each node in node list, in order:"
+	for (var i = 0; i < nodeList.length; i++) {
+		// "If node is an Element:"
+		if (node.nodeType == Node.ELEMENT_NODE) {
+			// "Unstyle node."
+			unstyleElement(node, propertyName, tagList);
+
+			// "If the computed value of property name for node is not property
+			// value, set the CSS property property name of node to property
+			// value."
+			if (getComputedStyle(node)[propertyName] != propertyValue) {
+				node.style[propertyName] = propertyValue;
+			}
+
+			// "Unstyle each Element descendant of node."
+			unstyleElementDescendants(node, propertyName, tagList);
+		// "Otherwise, if node is a Text node and the computed value of
+		// property name for node's parent is not property value:"
+		} else if (node.nodeType == Node.TEXT_NODE
+		&& getComputedStyle(node.parentNode)[propertyName] != propertyValue) {
+			// "Let new parent be a new HTML element with name "span", with no
+			// attributes, and with ownerDocument equal to node's."
+			var newParent = node.ownerDocument.createElement("span");
+
+			// "Set the CSS property property name of new parent to property
+			// value."
+			newParent.style[propertyName] = propertyValue;
+
+			// "Insert new parent as node's previous sibling."
+			node.parentNode.insertBefore(newParent, node);
+
+			// "Append node to new parent as its child."
+			newParent.appendChild(node);
+		}
+		// "Otherwise, do nothing."
+	}
+}
+
+function bold() {
+	var selection = getSelection();
+	for (var i = 0; i < selection.rangeCount; i++) {
+		if (getComputedStyle(beginningElement(selection.getRangeAt(i))).fontWeight != "bold") {
+			styleRange(selection.getRangeAt(i), "fontWeight", "bold", ["b", "strong"]);
+		} else {
+			styleRange(selection.getRangeAt(i), "fontWeight", "normal", ["b", "strong"]);
+		}
+	}
+}
 </script>

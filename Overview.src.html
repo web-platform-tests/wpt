@@ -1970,8 +1970,7 @@ title>localName</var>)</code></dfn> method must run these steps:
   </ul>
 
  <li><p>Otherwise, return a <code>NodeList</code> rooted at the
- <span>context node</span>, whose filter matches only <code>Element</code>
- nodes whose <span title=concept-element-local-name>local name</span> is
+ <span>context node</span>, whose filter matches only <span title=concept-element>elements</span> whose <span title=concept-element-local-name>local name</span> is
  <var title>localName</var>.
 </ol>
 <p>When invoked with the same argument the same <code>NodeList</code> object may be returned as returned by an earlier call.
@@ -1988,20 +1987,17 @@ that are in the <span>HTML namespace</span>.
 <ol>
  <li><p>If both <var title>namespace</var> and <var title>localName</var> are
  "<code>*</code>" (U+002A) return a <code>NodeList</code> rooted at the
- <span>context node</span>, whose filter matches only <code>Element</code>
- nodes.
+ <span>context node</span>, whose filter matches only <span title=concept-element>elements</span>.
  <li><p>Otherwise, if just <var title>namespace</var> is "<code>*</code>"
  (U+002A), return a <code>NodeList</code> rooted at the
- <span>context node</span>, whose filter matches only <code>Element</code>
- nodes whose <span title=concept-element-local-name>local name</span> is
+ <span>context node</span>, whose filter matches only <span title=concept-element>elements</span> whose <span title=concept-element-local-name>local name</span> is
  <var title>localName</var>.
  <li><p>Otherwise, if just <var title>localName</var> is "<code>*</code>"
  (U+002A), return a <code>NodeList</code> rooted at the
- <span>context node</span>, whose filter matches only <code>Element</code>
- nodes whose <span title=concept-element-namespace>namespace</span> is
+ <span>context node</span>, whose filter matches only <span title=concept-element>elements</span> whose <span title=concept-element-namespace>namespace</span> is
  <var title>namespace</var>.
  <li><p>Otherwise, return a <code>NodeList</code> rooted at the
- <span>context node</span>, whose filter matches only <code>Element</code> nodes whose <span title=concept-element-namespace>namespace</span> is
+ <span>context node</span>, whose filter matches only <span title=concept-element>elements</span> whose <span title=concept-element-namespace>namespace</span> is
  <var title>namespace</var> and
  <span title=concept-element-local-name>local name</span> is
  <var title>localName</var>.
@@ -2063,10 +2059,10 @@ case-insensitive</span> manner, otherwise, the comparisons must be done in a
 
 <p>The
 <dfn title=dom-Document-getElementById><code>getElementById(<var title>elementId</var>)</code></dfn>
-method must return the first <code>Element</code> node, in
-<span>tree order</span>, in the <span>context node</span> whose
-<span title=concept-ID>ID</span> is <var title>elementId</var>, or null if there
-is none.
+method must return the first <span title=concept-element>element</span>, in
+<span>tree order</span>, within the <span>context node</span>'s
+<span title=concept-tree>tree</span>, whose <span title=concept-ID>ID</span>
+is <var title>elementId</var>, or null if there is none.
 
 <hr>
 
@@ -2083,7 +2079,8 @@ is none.
  let <var title>localName</var> be <span>converted to lowercase</span>.
  <!-- XXX why restrict this to HTML documents? -->
 
- <li><p>Return a new <code>Element</code> node with no attributes,
+ <li><p>Return a new <span title=concept-element>element</span> with no
+ attributes,
  <span title=concept-element-namespace>namespace</span> set to the
  <span>HTML namespace</span>,
  <span title=concept-element-local-name>local name</span> set to
@@ -2126,7 +2123,7 @@ method must run these steps:
  "<code title>xmlns</code>", throw a
  <code title=dom-DOMException-NAMESPACE_ERR>NAMESPACE_ERR</code> exception
  and terminate these steps.
- <li><p>Return a new <code>Element</code> node with no attributes,
+ <li><p>Return a new <span title=concept-element>element</span> with no attributes,
  <span title=concept-element-namespace>namespace</span> set to <var title>namespace</var>,
  <span title=concept-element-namespace-prefix>namespace prefix</span> set to
  <var title>prefix</var>, <span title=concept-element-local-name>local name</span>
@@ -2209,12 +2206,12 @@ method must return a <span>clone</span> of <var title>node</var>, with
 method must run these steps:
 
 <ol>
- <li><p>If <var title>node</var> is a <code>Document</code> node or a
- <code>DocumentType</code> node, throw a
+ <li><p>If <var title>node</var> is of type <code>Document</code> or
+ <code>DocumentType</code>, throw a
  <code title=dom-DOMException-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</code>
  exception and terminate these steps.
 
- <li><p>If <var title>node</var> is an <code>Element</code> node, it is
+ <li><p>If <var title>node</var> is of type <code>Element</code>, it is
  <span>affected by a base URL change</span>.
 
  <li><p>If <var title>node</var>'s
@@ -2223,7 +2220,7 @@ method must run these steps:
  <span title=concept-tree-parent>parent</span>.
 
  <li><p>Set <code title=dom-Node-ownerDocument>ownerDocument</code> for
- <var title>node</var> and all its descendent nodes<!--AttrExodus as well as any associated
+ <var title>node</var> and all its <span title=concept-tree-descendant>descendants</span><!--AttrExodus as well as any associated
  <code>Attr</code> nodes--> to the <span>context node</span>.
 
  <li><p>Return <var title>node</var>.
@@ -2232,8 +2229,8 @@ method must run these steps:
 
 <h4>Interface <code>DOMImplementation</code></h4>
 <p>User agents must create a new <code>DOMImplementation</code> object
-whenever a new <code>Document</code> node is created and associate it with
-that <code>Document</code> node.
+whenever a new <code>Document</code> object is created and associate it with
+that <code>Document</code> object.
 
 <pre class=idl>interface <dfn>DOMImplementation</dfn> {
   boolean <span title=dom-DOMImplementation-hasFeature>hasFeature</span>(DOMString feature, [TreatNullAs=EmptyString] DOMString version);
@@ -2293,18 +2290,19 @@ otherwise.
 
  <dd>
   <p>Returns a new <code>Document</code>, with a new root
-  <code>Element</code> whose <code title=dom-Node-localName>localName</code> is
-  <var title>qualifiedName</var> and whose <code
-  title=dom-Node-namespaceURI>namespaceURI</code> is <var
-  title>namespace</var> (unless <var title>qualifiedName</var> is the empty
-  string), and with <var title>doctype</var>, if it is given, as its <code>DocumentType</code>.
+  <code>Element</code> whose
+  <span title=concept-element-local-name>local name</span> is
+  <var title>qualifiedName</var> and whose
+  <code title=concept-element-namespace>namespace</span> is
+  <var title>namespace</var> (unless <var title>qualifiedName</var> is the
+  empty string), and with <var title>doctype</var>, if it is given, as its
+  <code>DocumentType</code>.
 
   <p>This method throws the same exceptions as the <code
-  title=dom-Document-createElementNS>createElementNS</code> method, when called
-  with the same arguments. If <var title>doctype</var> comes from another
-  <code>Document</code>, a <code
-  title=dom-DOMException-WRONG_DOCUMENT_ERR>WRONG_DOCUMENT_ERR</code> exception
-  is thrown.
+  title=dom-Document-createElementNS>createElementNS</code> method, when
+  invoked with the same arguments. If <var title>doctype</var> comes from
+  another <code>Document</code>, a
+  <code title=dom-DOMException-WRONG_DOCUMENT_ERR>WRONG_DOCUMENT_ERR</code> exception is thrown.
 
 
  <dt><var title>doc</var> = <var title>document</var> . <code
@@ -2508,14 +2506,17 @@ otherwise [createAttribute]- ->.
   void setIdAttributeNode(Attr idAttr, boolean isId);-->
 };</pre>
 
-<p><code>Element</code> nodes have an associated <dfn title=concept-element-namespace>namespace</dfn>, <dfn title=concept-element-namespace-prefix>namespace prefix</dfn>, <dfn title=concept-element-local-name>local name</dfn>.
+<p><code>Element</code> objects are simply known as
+<dfn title=concept-element>elements</dfn>.</p>
 
-<p>When an <code>Element</code> node is created, its <span title=concept-element-local-name>local name</span> is always given. Unless explicitly given when an <code>Element</code> node is created, its <span title=concept-element-namespace>namespace</span> and <span title=concept-element-namespace-prefix>namespace prefix</span> are null.
+<p><span title=concept-element>Elements</span> have an associated <dfn title=concept-element-namespace>namespace</dfn>, <dfn title=concept-element-namespace-prefix>namespace prefix</dfn>, <dfn title=concept-element-local-name>local name</dfn>.
 
-<p><code>Element</code> nodes also have an associated collection of
-<code>Attr</code> objects, often called attributes.
+<p>When an <span title=concept-element>element</span> is created, its <span title=concept-element-local-name>local name</span> is always given. Unless explicitly given when an <span title=concept-element>element</span> is created, its <span title=concept-element-namespace>namespace</span> and <span title=concept-element-namespace-prefix>namespace prefix</span> are null.
 
-<p><code>Element</code> nodes can have a
+<p><span title=concept-element>Elements</span> also have an associated
+collection of <code>Attr</code> objects, often called attributes.
+
+<p><span title=concept-element>Elements</span> can have a
 <dfn title=concept-id>unique identifier (ID)</dfn> and
 <dfn title=concept-class>classes</dfn> associated with them.
 
@@ -2526,9 +2527,10 @@ here. It would simplify a lot of stuff.
 
 <p>Specifications may define <dfn>base URL change steps</dfn>.
 
-<p>When an <code>Element</code> node is <dfn>affected by a base URL
-change</dfn>, the user agent must run the <span>base URL change steps</span>, as
-defined in <span>other applicable specifications</span>.
+<p>When an <span title=concept-element>element</span> is
+<dfn>affected by a base URL change</dfn>, the user agent must run the
+<span>base URL change steps</span>, as defined in
+<span>other applicable specifications</span>.
 
 <hr>
 
@@ -2773,16 +2775,17 @@ have its name converted to ASCII lowercase before the element is affected.
 <p>The <dfn title=dom-Element-children><code>children</code></dfn> attribute
 must return an <code>HTMLCollection</code>
 <span title=concept-collection>collection</span>, rooted at the
-<span>context node</span>, whose filter matches only <code>Element</code>
-nodes whose <span title=concept-tree-parent>parent</span> is the
+<span>context node</span>, whose filter matches only
+<span title=concept-element>elements</span> whose <span title=concept-tree-parent>parent</span> is the
 <span>context node</span>.
 
-<p>The
+<p>When the
 <dfn
 title=dom-Element-getElementsByTagName><code>getElementsByTagName(<var
 title>qualifiedName</var>)</code></dfn>
-method on the <code>Element</code> interface must return a
-<span title=concept-collection-live>live</span> <code>NodeList</code> with the nodes that the
+method is invoked it must return a
+<span title=concept-collection-live>live</span> <code>NodeList</code> with
+the nodes that the
 <code title=dom-Document-getElementsByTagName>getElementsByTagName</code>
 method would return when called on the <span>context node</span>'s
 <code title=dom-Node-ownerDocument>ownerDocument</code> and passed the same
@@ -2792,9 +2795,9 @@ argument, excluding any elements that are not descendants of the
 may be returned as returned by an earlier call.
 
 
-<p>The
+<p>When the
 <dfn title=dom-Element-getElementsByTagNameNS><code>getElementsByTagNameNS(<var title>namespace</var>, <var title>localName</var>)</code></dfn>
-method on the <code>Element</code> interface must return a
+method is invoked it must return a
 <span title=concept-collection-live>live</span> <code>NodeList</code> with
 the nodes that the
 <code title=dom-Document-getElementsByTagNameNS>getElementsByTagNameNS</code>
@@ -2806,10 +2809,11 @@ of the <span>context node</span> on which the method was invoked.
 may be returned as returned by an earlier call.
 
 
-<p>The <dfn
+<p>When the
+<dfn
 title=dom-Element-getElementsByClassName><code>getElementsByClassName(<var
-title>classNames</var>)</code></dfn> method on the <code>Element</code>
-interface must return a <span title=concept-collection-live>live</span>
+title>classNames</var>)</code></dfn>
+method is invoked it must return a <span title=concept-collection-live>live</span>
 <code>NodeList</code> with the nodes that the <code
 title="dom-Document-getElementsByClassName">getElementsByClassName</code>
 method would return when called on the <span>context node</span>'s
@@ -2855,7 +2859,7 @@ there is no such <span title=concept-node>node</span>.
            attribute DOMString <span title=dom-Attr-value>value</span>;
 };</pre>
 
-<p>Just like <code>Element</code> nodes, <code>Attr</code> objects have an associated <dfn title=concept-attr-namespace>namespace</dfn>, <dfn title=concept-attr-namespace-prefix>namespace prefix</dfn>, <dfn title=concept-attr-local-name>local name</dfn>, and <dfn title=concept-attr-qualified-name>qualified name</dfn>.
+<p>Just like <span title=concept-element>elements</span>, <code>Attr</code> objects have an associated <dfn title=concept-attr-namespace>namespace</dfn>, <dfn title=concept-attr-namespace-prefix>namespace prefix</dfn>, <dfn title=concept-attr-local-name>local name</dfn>, and <dfn title=concept-attr-qualified-name>qualified name</dfn>.
 
 <p>When an <code>Attr</code> object is created its <span title=concept-attr-local-name>local name</span> is always given. Unless explicitly given when an <code>Attr</code> object is created, its <span title=concept-attr-namespace>namespace</span> and <span title=concept-attr-namespace-prefix>namespace prefix</span> are null and its <span title=concept-attr-qualified-name>qualified name</span> is its <span title=concept-attr-namespace-prefix>namespace prefix</span>, followed by a "<code>:</code>" (U+003A), followed by its <span title=concept-attr-local-name>local name</span>, if its <span title=concept-attr-namespace-prefix>namespace prefix</span> is not null, or otherwise <span title=concept-attr-qualified-name>qualified name</span> is just its <span title=concept-attr-local-name>local name</span>.
 

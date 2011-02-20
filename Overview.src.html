@@ -134,12 +134,6 @@ document as other than work in progress.
 
 <p>New features might be added, once everything else is sort of stable.
 
-<!--
- Ideas:
- - define id="" and class="" as applying to all elements
- - import http://www.w3.org/TR/ElementTraversal/
--->
-
 
 <h2 class=no-num>Issues</h2>
 
@@ -2496,11 +2490,18 @@ otherwise [createAttribute]- ->.
   <span>Attr</span> <span title=dom-Element-getAttributeNodeNS>getAttributeNodeNS</span>(DOMString namespace, DOMString localName);
   <span>Attr</span> <span title=dom-Element-setAttributeNode>setAttributeNode</span>(Attr newAttr);
   <span>Attr</span> <span title=dom-Element-removeAttributeNode>removeAttributeNode</span>(Attr oldAttr);
+
+  childElementCount - kill it?!
 -->
   readonly attribute <span>HTMLCollection</span> <span title=dom-Element-children>children</span>;
   <span>NodeList</span> <span title=dom-Element-getElementsByTagName>getElementsByTagName</span>(DOMString <var title>qualifiedName</var>);
   <span>NodeList</span> <span title=dom-Element-getElementsByTagNameNS>getElementsByTagNameNS</span>(DOMString <var title>namespace</var>, DOMString <var title>localName</var>);
-  <span>NodeList</span> <span title=dom-Element-getElementsByClassName>getElementsByClassName</span>(DOMString <var title>classNames</var>);<!--
+  <span>NodeList</span> <span title=dom-Element-getElementsByClassName>getElementsByClassName</span>(DOMString <var title>classNames</var>);
+  readonly attribute <span>Element</span> <span title=dom-Element-firstElementChild>firstElementChild</span>;
+  readonly attribute <span>Element</span> <span title=dom-Element-lastElementChild>lastElementChild</span>;
+  readonly attribute <span>Element</span> <span title=dom-Element-previousElementSibling>previousElementSibling</span>;
+  readonly attribute <span>Element</span> <span title=dom-Element-nextElementSibling</span>;<!--
+
   readonly attribute TypeInfo schemaTypeInfo;
   void setIdAttribute(DOMString name, boolean isId);
   void setIdAttributeNS(DOMString namespace, DOMString localName, boolean isId);
@@ -2817,6 +2818,32 @@ passed the same argument, excluding any elements that are not descendants of
 the <span>context node</span> on which the method was invoked.
 <p>When invoked with the same argument the same <code>NodeList</code> object
 may be returned as returned by an earlier call.
+
+<p>The
+<dfn title=dom-Element-firstElementChild><code>firstElementChild</code></dfn>
+attribute must return the first <span title=concept-tree-child>child</span>
+of the <span>context node</span> that is of type <code>Element</code> or
+null if there is no such <span title=concept-node>node</span>.
+
+<p>The
+<dfn title=dom-Element-lastElementChild><code>lastElementChild</code></dfn>
+attribute must return the last <span title=concept-tree-child>child</span>
+of the <span>context node</span> that is of type <code>Element</code> or
+null if there is no such <span title=concept-node>node</span>.
+
+<p>The
+<dfn title=dom-Element-previousElementSibling><code>previousElementSibling</code></dfn>
+attribute must return the first
+<span title=concept-tree-preceding-sibling>preceding sibling</span> of the
+<span>context node</span> that is of type <code>Element</code> or null if
+there is no such <span title=concept-node>node</span>.
+
+<p>The
+<dfn title=dom-Element-nextElementSibling><code>nextElementSibling</code></dfn>
+attribute must return the first
+<span title=concept-tree-following-sibling>following sibling</span> of the
+<span>context node</span> that is of type <code>Element</code> or null if
+there is no such <span title=concept-node>node</span>.
 
 
 <h4>Interface <code>Attr</code></h4>

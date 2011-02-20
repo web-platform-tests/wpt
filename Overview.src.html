@@ -1086,16 +1086,6 @@ and its allowed <span title=concept-tree-child>children</span>:
  <dd><p>None.
 </dl>
 
-<p>The <dfn>document element</dfn> is the <code>Element</code>
-<span title=concept-tree-child>child</span> of a <code>Document</code> or
-null if there is no <span title=concept-tree-child>child</span>
-<code>Element</code>.
-
-<p>When an <code>Element</code> or one of its
-<span title=concept-tree-ancestor>ancestors</span> is the
-<span>document element</span>, it is said to be
-<dfn>in a <code>Document</code></dfn>.
-
 <p>A <span title=concept-node>node</span>, or its
 <span title=concept-tree-child>children</span> in case of a
 <code>DocumentFragment</code> object, are said to
@@ -1301,8 +1291,7 @@ return null and terminate these steps.
 
 <!-- XXX needed? Minefield does not have this -->
 <p>The <dfn title=dom-Node-parentElement><code>parentElement</code></dfn>
-attribute must return the <span title=concept-tree-parent>parent</span> if
-it is an <code>Element</code>, or null otherwise.
+attribute must return the <span>parent element</span>.
 
 <p>The <dfn title=dom-Node-hasChildNodes><code>hasChildNodes()</code></dfn>
 method must return false if the <span>context node</span> has no
@@ -1713,8 +1702,8 @@ false otherwise:
  steps.
 
  <li><p>Return the result of running <span>locate a namespace prefix</span>
- on its <code title=dom-Node-parentElement>parentElement</code> using
- <var title>namespace</var>, if that is not null, or null otherwise.
+ on its <span>parent element</span> using <var title>namespace</var>, if
+ that is not null, or null otherwise.
 </ol>
 
 <p>To <dfn>locate a namespace</dfn> for a <var title>node</var> using
@@ -1752,8 +1741,8 @@ false otherwise:
     </ol>
 
    <li><p>Return the result of running <span>locate a namespace</span> on
-   its <code title=dom-Node-parentElement>parentElement</code> using
-   <var title>prefix</var>, if that is not null, or null otherwise.
+   its <span>parent element</span> using <var title>prefix</var>, if that is
+   not null, or null otherwise.
   </ol>
 
  <!--AttrExodus <code>Attr</code> -->
@@ -1770,8 +1759,8 @@ false otherwise:
 
  <dt>Any other node
  <dd><p>Return the result of running <span>locate a namespace</span> on its
- <code title=dom-Node-parentElement>parentElement</code> using
- <var title>prefix</var>, if that is not null, or null otherwise.
+ <span>parent element</span> using <var title>prefix</var>, if that is not
+ null, or null otherwise.
 </dl>
 
 <p>The
@@ -1804,9 +1793,7 @@ method must run these steps:
    <dt>Any other node
    <dd><p>Return the result of
    <span title="locate a namespace prefix">locating a namespace prefix</span>
-   for its <span title=concept-tree-parent>parent</span>, if that is an
-   <code>Element</code> node, or null otherwise.
-   <!-- XXX parentElement -->
+   for its <span>parent element</span>, or if that is null, null.
   </dl>
 </ol>
 
@@ -2524,6 +2511,26 @@ collection of <code>Attr</code> objects, often called attributes.
 should just state that id="" sets the ID and class="" sets the classes. We
 can then also define Element.id, Element.className, and Element.classList
 here. It would simplify a lot of stuff.
+
+<hr>
+
+<p>A <span title=concept-node>node</span>'s
+<span title=concept-tree-parent>parent</span> of type
+<code>Element</code> is known as a <dfn>parent element</dfn>. If the
+<span title=concept-node>node</span> has a
+<span title=concept-tree-parent>parent</span> of a different type, its
+<span>parent element</span> is null.</p>
+
+<p>An <span title=concept-element>element</span> is known as the
+<dfn>document element</dfn> when its
+<span title=concept-tree-parent>parent</span> is of type
+<code>Document</code>.</p>
+
+<p>When an <span title=concept-element>element</span> or one of its
+<span title=concept-tree-ancestor>ancestors</span> is the
+<span>document element</span>, it is <dfn>in a <code>Document</code></dfn>.
+
+<hr>
 
 <p>Specifications may define <dfn>base URL change steps</dfn>.
 

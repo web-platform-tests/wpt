@@ -247,9 +247,9 @@ objects do not. The remainder of definitions in this section apply to
 objects that <span title=concept-tree-participate>participate</span> in
 <span title=concept-tree>trees</span>.
 
-<p>An object has zero or one
-<dfn title=concept-tree-parent>parent</dfn> object. An object without
-<span title=concept-tree-parent>parent</span> is called the
+<p>An object has a <dfn title=concept-tree-parent>parent</dfn> which is
+either another object or null. An object whose
+<span title=concept-tree-parent>parent</span> is null is called the
 <dfn title=concept-tree-root>root</dfn> object.
 <!-- XXX do we need "root"? -->
 
@@ -1293,33 +1293,31 @@ otherwise.
 <p>The <dfn title=dom-Node-ownerDocument><code>ownerDocument</code></dfn> attribute must return the <code>Document</code> node that the <span>context node</span> is associated with, or null if there is none.
 
 <p>The <dfn title=dom-Node-parentNode><code>parentNode</code></dfn>
-attribute must run these steps:
-
-<ol>
- <!-- AttrExodus
- <li><p>If the <span>context node</span> is an <code>Attr</code> node,
- return null and terminate these steps.
- -->
-
- <li><p>If the <span>context node</span> does not have a parent node, return
- null and terminate these steps.
-
- <li><p>Return the parent node of the <span>context node</span>.
-</ol>
+attribute must return the <span title=concept-tree-parent>parent</span>.
+<!-- AttrExodus
+<li><p>If the <span>context node</span> is an <code>Attr</code> node,
+return null and terminate these steps.
+-->
 
 <!-- XXX needed? Minefield does not have this -->
-<p>The <dfn title=dom-Node-parentElement><code>parentElement</code></dfn> attribute must return the parent node of the <span>context node</span> if there is a parent and it is an <code>Element</code> node, or null otherwise.
+<p>The <dfn title=dom-Node-parentElement><code>parentElement</code></dfn>
+attribute must return the <span title=concept-tree-parent>parent</span> if
+it is an <code>Element</code>, or null otherwise.
 
 <p>The <dfn title=dom-Node-hasChildNodes><code>hasChildNodes()</code></dfn>
-method must return false if the <span>context node</span>'s
-<code title=dom-Node-firstChild>firstChild</code> is null, or true
-otherwise.
+method must return false if the <span>context node</span> has no
+<span title=concept-tree-child>children</span>, or true otherwise.
 
-<p>The <dfn title=dom-Node-childNodes><code>childNodes</code></dfn> attribute must return a <code>NodeList</code> rooted at the <span>context node</span> matching only child nodes.
+<p>The <dfn title=dom-Node-childNodes><code>childNodes</code></dfn>
+attribute must return a <code>NodeList</code> rooted at the
+<span>context node</span> matching only
+<span title=concept-tree-child>children</span>.
 
-<p>The <dfn title=dom-Node-firstChild><code>firstChild</code></dfn> attribute must return the first child node of the <span>context node</span>, or null if there is none.
+<p>The <dfn title=dom-Node-firstChild><code>firstChild</code></dfn> attribute must return the first <span title=concept-tree-child>child</span>
+of the <span>context node</span>, or null if there is none.
 
-<p>The <dfn title=dom-Node-lastChild><code>lastChild</code></dfn> attribute must return the last child node of the <span>context node</span>, or null if there is none.
+<p>The <dfn title=dom-Node-lastChild><code>lastChild</code></dfn> attribute must return the last <span title=concept-tree-child>child</span> of the
+<span>context node</span>, or null if there is none.
 
 <p>The <dfn title=dom-Node-previousSibling><code>previousSibling</code></dfn>
 attribute must run these steps:
@@ -1806,8 +1804,9 @@ method must run these steps:
    <dt>Any other node
    <dd><p>Return the result of
    <span title="locate a namespace prefix">locating a namespace prefix</span>
-   for its <code title=dom-Node-parentNode>parentNode</code>, if that is an
+   for its <span title=concept-tree-parent>parent</span>, if that is an
    <code>Element</code> node, or null otherwise.
+   <!-- XXX parentElement -->
   </dl>
 </ol>
 
@@ -2218,9 +2217,10 @@ method must run these steps:
  <li><p>If <var title>node</var> is an <code>Element</code> node, it is
  <span>affected by a base URL change</span>.
 
- <li><p>If <var title>node</var>'s <code
- title=dom-Node-parentNode>parentNode</code> is not null, remove
- <var title>node</var> from its parent.
+ <li><p>If <var title>node</var>'s
+ <span title=concept-tree-parent>parent</span> is not null, remove
+ <var title>node</var> from its
+ <span title=concept-tree-parent>parent</span>.
 
  <li><p>Set <code title=dom-Node-ownerDocument>ownerDocument</code> for
  <var title>node</var> and all its descendent nodes<!--AttrExodus as well as any associated
@@ -2774,7 +2774,7 @@ have its name converted to ASCII lowercase before the element is affected.
 must return an <code>HTMLCollection</code>
 <span title=concept-collection>collection</span>, rooted at the
 <span>context node</span>, whose filter matches only <code>Element</code>
-nodes whose <code title=dom-Node-parentNode>parentNode</code> is the
+nodes whose <span title=concept-tree-parent>parent</span> is the
 <span>context node</span>.
 
 <p>The
@@ -3045,7 +3045,7 @@ method must run the following steps:
   <code title=dom-CharacterData-data>data</code> to <var title>new data</var>.
 
   <li>Let <var title>parent</var> be the <span>context node</span>'s
-  <code title=dom-Node-parentNode>parentNode</code>. If <var title>parent</var>
+  <span title=concept-tree-parent>parent</span>. If <var title>parent</var>
   is null, return <var title>new node</var> and terminate these steps.
 
   <li>Call <var title>parent</var>'s
@@ -3567,6 +3567,9 @@ attribute must return the underlying string and, on setting must replace the und
 
 <h2>Historical</h2>
 <!-- XXX we should probably just nuke this section in due course. No need to keep old dreams alive. -->
+
+<!-- XXX but while we have it we should mention DOM Events and
+     http://www.w3.org/TR/ElementTraversal/ -->
 
 <p><dfn><code>DOMString</code></dfn> and
 <dfn><code>DOMTimeStamp</code></dfn> originally defined in DOM Level 3 Core

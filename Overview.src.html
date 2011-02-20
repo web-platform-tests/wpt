@@ -1377,8 +1377,9 @@ attribute must return the following, depending on the
  <dt><code>Element</code>
  <!--AttrExodus <dt><code>Attr</code> -->
  <dd><p>The concatenation of the
- <code title=dom-CharacterData-data>data</code> of all the descendant
- <code>Text</code> nodes of the <span>context node</span>, in
+ <code title=dom-CharacterData-data>data</code> attributes of all the
+ <span title=concept-tree-descendant>descendants</span> of type
+ <code>Text</code> of the <span>context node</span>, in
  <span>tree order</span>.
 
  <dt><code>Text</code>
@@ -1404,7 +1405,8 @@ attribute must do as described below, depending on the
  <!--AttrExodus <dt><code>Attr</code> -->
  <dd>
   <ol>
-   <li><p>Remove all the descendent nodes of the <span>context node</span>.
+   <li><p>Remove all the
+   <span title=concept-tree-descendant>descendants</span> of the <span>context node</span>.
    <li><p>Let <var title>data</var> be the given value.
    <li><p>If <var title>data</var> is not the empty string, append a new
    <code>Text</code> node to the <span>context node</span> whose
@@ -1447,7 +1449,8 @@ method must run these steps:
  and terminate these steps.
 
  <li><p>If <var title>newChild</var> is the <span>context node</span> or an
- ancestor of the <span>context node</span> throw a
+ <span title=concept-tree-ancestor>ancestor</span> of the
+ <span>context node</span> throw a
  <code title=dom-DOMException-HIERARCHY_REQUEST_ERR>HIERARCHY_REQUEST_ERR</code>
  and terminate these steps.
 
@@ -1497,7 +1500,8 @@ method must run these steps:
  and terminate these steps.
 
  <li><p>If <var title>newChild</var> is the <span>context node</span> or an
- ancestor of the <span>context node</span> throw a
+ <span title=concept-tree-ancestor>ancestor</span> of the
+ <span>context node</span> throw a
  <code title=dom-DOMException-HIERARCHY_REQUEST_ERR>HIERARCHY_REQUEST_ERR</code>
  and terminate these steps.
 
@@ -1564,7 +1568,8 @@ method must run these steps:
  and terminate these steps.
 
  <li><p>If <var title>newChild</var> is the <span>context node</span> or an
- ancestor of the <span>context node</span> throw a
+ <span title=concept-tree-ancestor>ancestor</span> of the
+ <span>context node</span> throw a
  <code title=dom-DOMException-HIERARCHY_REQUEST_ERR>HIERARCHY_REQUEST_ERR</code>
  and terminate these steps.
 
@@ -2765,11 +2770,12 @@ title=dom-Element-getElementsByTagName><code>getElementsByTagName(<var
 title>qualifiedName</var>)</code></dfn>
 method is invoked it must return a
 <span title=concept-collection-live>live</span> <code>NodeList</code> with
-the nodes that the
+the <span title=concept-element>elements</span> that the
 <code title=dom-Document-getElementsByTagName>getElementsByTagName</code>
 method would return when called on the <span>context node</span>'s
 <code title=dom-Node-ownerDocument>ownerDocument</code> and passed the same
-argument, excluding any elements that are not descendants of the
+argument, excluding any <span title=concept-element>elements</span> that are
+not <span title=concept-tree-descendant>descendants</span> of the
 <span>context node</span> on which the method was invoked.
 <p>When invoked with the same argument the same <code>NodeList</code> object
 may be returned as returned by an earlier call.
@@ -2779,12 +2785,14 @@ may be returned as returned by an earlier call.
 <dfn title=dom-Element-getElementsByTagNameNS><code>getElementsByTagNameNS(<var title>namespace</var>, <var title>localName</var>)</code></dfn>
 method is invoked it must return a
 <span title=concept-collection-live>live</span> <code>NodeList</code> with
-the nodes that the
+the <span title=concept-element>elements</span> that the
 <code title=dom-Document-getElementsByTagNameNS>getElementsByTagNameNS</code>
 method would return when called on the <span>context node</span>'s
 <code title=dom-Node-ownerDocument>ownerDocument</code> and
-passed the same arguments, excluding any elements that are not descendants
-of the <span>context node</span> on which the method was invoked.
+passed the same arguments, excluding any
+<span title=concept-element>elements</span> that are
+not <span title=concept-tree-descendant>descendants</span> of the
+<span>context node</span> on which the method was invoked.
 <p>When invoked with the same argument the same <code>NodeList</code> object
 may be returned as returned by an earlier call.
 
@@ -2794,12 +2802,15 @@ may be returned as returned by an earlier call.
 title=dom-Element-getElementsByClassName><code>getElementsByClassName(<var
 title>classNames</var>)</code></dfn>
 method is invoked it must return a <span title=concept-collection-live>live</span>
-<code>NodeList</code> with the nodes that the <code
+<code>NodeList</code> with the <span title=concept-element>elements</span>
+that the <code
 title="dom-Document-getElementsByClassName">getElementsByClassName</code>
 method would return when called on the <span>context node</span>'s
 <code title=dom-Node-ownerDocument>ownerDocument</code> and
-passed the same argument, excluding any elements that are not descendants of
-the <span>context node</span> on which the method was invoked.
+passed the same argument, excluding any
+<span title=concept-element>elements</span> that are not
+<span title=concept-tree-descendant>descendants</span> of the
+<span>context node</span> on which the method was invoked.
 <p>When invoked with the same argument the same <code>NodeList</code> object
 may be returned as returned by an earlier call.
 

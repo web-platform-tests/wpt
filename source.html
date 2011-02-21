@@ -66,22 +66,29 @@ included in HTML comments so as not to distract the reader.
 
 <h2>Definitions</h2>
 
-<p class=XXX>This definition is just an ugly workaround for the annoyance of
-xrefs.  Fix it sometime.
+<p>A [[node]] is an <dfn>HTML element</dfn> if it is an [[element]] whose
+[[namespace]] is the <span data-anolis-spec=domcore>HTML namespace</span>.
 
-<p>A <code data-anolis-spec=domcore>Node</code> is an <dfn>HTML element
-with name</dfn> <var title>name</var> if it is an <code
-data-anolis-spec=domcore>Element</code>, its <span data-anolis-spec=domcore
-title=concept-element-namespace>namespace</span> is the <span
-data-anolis-spec=domcore>HTML namespace</span>, and its <span
-data-anolis-spec=domcore title=concept-element-local-name>local name</span> is
-<var title>name</var>.
+<p>The <dfn>first node</dfn> of a [[range]] is the [[node]] returned by the
+following algorithm:
 
-<p>The <dfn>first node</dfn> of a [[range]] is its [[rangestart]] [[bpnode]],
-if that is a [[text]], [[comment]], or [[processinginstruction]] node; or else
-the child of its [[rangestart]] [[bpnode]] with [[index]] equal to its
-[[rangestart]] [[bpoffset]], if that exists; or else its [[rangestart]]
-[[bpnode]].
+<ol>
+  <li><p>Let <var title>range</var> be the [[range]] under discussion.
+
+  <li><p>If <var title>range</var>'s [[rangestart]] [[bpoffset]] is equal to
+  the [[nodelength]] of its [[rangestart]] [[bpnode]], return the first
+  [[node]] that is after the [[rangestart]] [[bpnode]] and all its
+  [[descendants]] (if any) in [[treeorder]].  If there is no such [[node]],
+  return the last [[node]] in the document.
+
+  <li><p>If <var title>range</var>'s [[rangestart]] [[bpnode]] is a [[text]],
+  [[comment]], or [[processinginstruction]] node, return that.
+
+  <li><p>If <var title>range</var>'s [[rangestart]] [[bpnode]] has children,
+  return the child with [[index]] equal to the [[rangestart]] [[bpoffset]].
+
+  <li><p>Return <var title>range</var>'s [[rangestart]] [[bpnode]].
+</ol>
 
 <p>The <dfn>beginning element</dfn> of a [[range]] is its <span>first
 node</span> if that is an [[element]]; or the parent of its <span>first
@@ -113,6 +120,27 @@ nodes if necessary, but isn't picky about [[comment]]s or
 
   <p class=XXX>Figure out something sensible here.
 
+  <li><p>If <var title>start node</var> and <var title>end node</var> are both
+  [[text]] nodes, and <var title>start node</var> is the same as <var title>end
+  node</var>, and neither <var title>start offset</var> nor <var title>end
+  offset</var> is equal to 0 or the [[nodelength]] of <var title>start
+  node</var>:
+
+  <ol>
+    <li><p>Run <code data-anolis-spec=domcore
+    title=dom-Text-splitText>splitText(<var title>start offset</var>)</code> on
+    <var title>start node</var> and set <var title>start node</var> to the
+    result.
+
+    <li><p>Run <code data-anolis-spec=domcore
+    title=dom-Text-splitText>splitText(<var title>end offset</var> &minus; <var
+    title>start offset</var>)</code> on <var title>start node</var> and set
+    <var title>start node</var> to the previous sibling of the result.
+
+    <li><p>Return the list consisting of the single [[node]] <var title>start
+    node</var>, and abort these steps.
+  </ol>
+
   <li><p>If <var title>start node</var> is a [[text]] node and <var title>start
   offset</var> is neither 0 nor the [[nodelength]] of <var title>start
   node</var>, run <code data-anolis-spec=domcore
@@ -127,9 +155,6 @@ nodes if necessary, but isn't picky about [[comment]]s or
   <var title>end node</var> and set <var title>end node</var> to the previous
   sibling of the returned node.  Set <var title>end offset</var> to the
   [[nodelength]] of the new <var title>end node</var>.
-
-  <p class=XXX>What if the start and end nodes are the same [[text]] node?
-  Handle explicitly.
 
   <li><p>If <var title>start node</var> is an [[element]] with at least one
   child, let <var title>node</var> be the child of <var title>start node</var>
@@ -151,17 +176,33 @@ nodes if necessary, but isn't picky about [[comment]]s or
 
   <li><p>Otherwise, let <var title>end</var> be <var title>end node</var>.
 
+  <!-- We try to include a node's parent instead of that node if possible,
+  because this generally reduces the number of nodes we're handling.  So if the
+  string "oo bar" was selected in <b>Foo <i>bar</i></b>, we'd add the <i> to
+  the selection, even if the browser registered the end as the text node "bar".
+  -->
+  <li><p>While <var title>node</var> is the first child of its parent and <var
+  title>end</var> is not a [[descendant]] of <var title>node</var>'s parent,
+  set <var title>node</var> to its parent.
+
+  <li><p>While <var title>end</var> is the last child of its parent and <var
+  title>node</var> is not a [[descendant]] of <var title>end</var>'s parent,
+  set <var title>end</var> to its parent.
+
   <li><p>Let <var title>node list</var> be an empty list of [[node]]s.
 
   <li><p>While <var title>node</var> is not after <var title>end</var> in
   [[treeorder]]:
 
   <ol>
-    <li>Append <var title>node</var> to <var title>node list</var>.
+    <li><p>Append <var title>node</var> to <var title>node list</var>.
 
-    <li>Set <var title>node</var> to the first [[node]] in
-    [[treeorder]] that is after <var title>node</var> and (if applicable) all
-    its [[descendants]].  If no such [[node]] exists, break out of these substeps.
+    <li><p>Set <var title>node</var> to the first [[node]] in [[treeorder]]
+    that is after <var title>node</var> and (if applicable) all its
+    [[descendants]].  If no such [[node]] exists, break out of these substeps.
+
+    <li><p>While <var title>node</var> is an [[ancestor]] of <var
+    title>end</var>, set <var title>node</var> to its first child.
   </ol>
 
   <li><p>Return <var title>node list</var>.
@@ -170,7 +211,9 @@ nodes if necessary, but isn't picky about [[comment]]s or
 
 <h2>Unstyling an element</h2>
 <p>When a user agent is to <dfn>unstyle an element</dfn>, it must run the
-following steps.
+following steps.  This algorithm might remove the element from the DOM and
+insert other elements in its place, in which case it will return an ordered
+list of the element's former children.
 
 <ol>
   <li><p>Let <var title>element</var> be the <code
@@ -179,51 +222,82 @@ following steps.
   <li><p>Let <var title>property name</var> and <var title>tag list</var> be as
   in the invoking algorithm.
 
+  <li><p>Let <var title>element children</var> be the [[element]] children of
+  <var title>element</var>.
+
+  <li><p><span title="unstyle an element">Unstyle</span> each [[element]] in
+  <var title>element children</var>, in order.
+
+  <p class=note>Unstyling an element can change the number of children its
+  parent has, so the list of children to unstyle needs to be computed
+  beforehand.
+
+  <li><p>Let <var title>children</var> be an empty list of [[node]]s.
+
   <li><p>If either
 
   <ul>
-    <li><p><var title>element</var> is an <span>HTML element with
-    name</span> either "span" or in <var title>tag list</var>, and it has
+    <li><p><var title>element</var> is an <span>HTML element</span> with
+    [[localname]] either "span" or in <var title>tag list</var>, and it has
     only a single attribute, and that attribute is named "style", and
     that style attribute sets only the CSS property <var title>property
     name</var>; or
 
-    <li><p><var title>element</var> is an <span>HTML element with
-    name</span> in <var title>tag list</var> and it has no attributes,
+    <li><p><var title>element</var> is an <span>HTML element</span> with
+    [[localname]] in <var title>tag list</var> and it has no attributes,
   </ul>
 
   <p>then:
 
   <ol>
-    <li><p>While <var title>element</var> has children, insert the first child
-    of <var title>element</var> as the previous sibling of <var
-    title>element</var>.
+    <li><p>While <var title>element</var> has children:
+
+    <ol>
+      <li><p>Let <var title>child</var> be the first child of <var
+      title>element</var>.
+
+      <li><p>Append <var title>child</var> to <var title>children</var>.
+
+      <li><p>Insert <var title>child</var> as the previous sibling of <var
+      title>element</var>.
+    </ol>
 
     <li><p>Remove <var title>element</var>.
 
-    <li><p>Abort this algorithm.
+    <li><p>Return <var title>children</var> and abort this algorithm.
   </ol>
 
   <li><p>Unset the CSS property <var title>property name</var> of <var
   title>element</var>.
 
-  <li><p>If <var title>element</var> is an <span>HTML element with
-  name</span> in <var title>tag list</var>:
+  <li><p>If <var title>element</var> is an <span>HTML element</span> with
+  [[localname]] in <var title>tag list</var>:
 
   <ol>
-    <li><p>Let <var title>new element</var> be a new <span>HTML element with
-    name</span> "span", with the same attributes and <code
+    <li><p>Let <var title>new element</var> be a new <span>HTML element</span> with
+    [[localname]] "span", with the same attributes and <code
     data-anolis-spec=domcore title=dom-Node-ownerDocument>ownerDocument</code>
     as <var title>element</var>.
 
     <li><p>Append <var title>new element</var> to <var title>element</var>'s
     parent as the previous sibling of <var title>element</var>.
 
-    <li><p>While <var title>element</var> has children, append the first child
-    of <var title>element</var> as the last child of <var title>new element</var>.
+    <li><p>While <var title>element</var> has children:
+
+    <ol>
+      <li><p>Let <var title>child</var> be the first child of <var
+      title>element</var>.
+
+      <li><p>Append <var title>child</var> to <var title>children</var>.
+
+      <li><p>Append <var title>child</var> as the last child of <var title>new
+      element</var>.
+    </ol>
 
     <li><p>Remove <var title>element</var>.
   </ol>
+
+  <li><p>Return <var title>children</var>.
 </ol>
 
 
@@ -268,29 +342,47 @@ with the CSS-based strategy.
     data-anolis-spec=domcore>Element</code>:
 
     <ol>
-      <li><p>If <var title>node</var> is an <span>HTML element with name</span>
+      <li><p>If <var title>node</var> is an <span>HTML element</span> with [[localname]]
       in <var title>tag list</var>, unset the CSS property <var title>property
       name</var> of <var title>node</var>.  Otherwise, set the CSS property
       <var title>property name</var> of <var title>node</var> to <var
       title>property value</var>.
 
-      <li><p><span title="unstyle an element">Unstyle</span> each <code
-      data-anolis-spec=domcore>Element</code> <span data-anolis-spec=domcore
-      title=concept-descendant-node>descendant</span> of <var title>node</var>.
+      <li><p>Let <var title>element children</var> be the [[element]] children
+      of <var title>node</var>.
+
+      <li><p><span title="unstyle an element">Unstyle</span> each [[element]]
+      in <var title>element children</var>, in order.
+
+      <p class=note>Unstyling an element can change the number of children its
+      parent has, so the list of children to unstyle needs to be computed
+      beforehand.
     </ol>
 
     <li><p>Otherwise, if <var title>node</var> is a <code
     data-anolis-spec=domcore>Text</code> node:
 
     <ol>
-      <li><p>Let <var title>new parent</var> be a new <span>HTML element with
-      name</span> equal to the first string in <var title>tag list</var>, with
-      no attributes, and <code data-anolis-spec=domcore
-      title=dom-Node-ownerDocument>ownerDocument</code> the same as <var
-      title>node</var>.
+      <!-- This next step is not strictly necessary from a user point of view,
+      since there's no visible difference.  We could just always insert a new
+      element.  But that can drastically complicate the DOM if there are lots
+      of text nodes, which happens easily when the algorithms here are invoked
+      a lot: you get splitText() called when decomposing ranges, and unstyling
+      elements can also dump their text node children into the DOM next to
+      other text nodes. -->
+      <li><p>If the previous sibling of <var title>node</var> is an <span>HTML
+      element</span> with [[localname]] in <var title>tag list</var> with no
+      attributes, let <var title>new parent</var> equal the previous sibling of
+      <var title>node</var>.
 
-      <li><p>Append <var title>new parent</var> to <var title>node</var>'s
-      parent as the previous sibling of <var title>node</var>.
+      <li><p>Otherwise, let <var title>new parent</var> be a new <span>HTML
+      element</span> with [[localname]] equal to the first string in <var
+      title>tag list</var>, with no attributes, and <code
+      data-anolis-spec=domcore
+      title=dom-Node-ownerDocument>ownerDocument</code> the same as <var
+      title>node</var>.  Append <var title>new parent</var> to <var
+      title>node</var>'s parent as the previous sibling of <var
+      title>node</var>.
 
       <li><p>Append <var title>node</var> to <var title>new parent</var> as
       its last child.
@@ -328,17 +420,37 @@ possibly empty list of strings <var title>tag list</var>.
     data-anolis-spec=domcore>Element</code>:
 
     <ol>
-      <li><p><span title="unstyle an element">Unstyle</span> <var
-      title>node</var>.
+      <li><p>Let <var title>children</var> be the result of <span
+      title="unstyle an element">unstyling</span> <var title>node</var>.
+
+      <li><p>If <var title>node</var> no longer has a parent:
+
+      <ol>
+        <li><p>Insert all the [[node]]s in <var title>children</var> into <var
+        title>node list</var> immediately after <var title>node</var>, in
+        order.
+
+        <li><p>Continue with the next [[node]] in <var title>node list</var>,
+        if any.
+
+        <p class=note>The next [[node]] will be the first former child of <var
+        title>node</var>, if <var title>node</var> had children.
+      </ol>
 
       <li><p>If the computed value of <var title>property name</var> for <var
       title>node</var> is not <var title>property value</var>, set the CSS
       property <var title>property name</var> of <var title>node</var> to <var
       title>property value</var>.
 
-      <li><p><span title="unstyle an element">Unstyle</span> each <code
-      data-anolis-spec=domcore>Element</code> <span data-anolis-spec=domcore
-      title=concept-descendant-node>descendant</span> of <var title>node</var>.
+      <li><p>Let <var title>element children</var> be the [[element]] children
+      of <var title>node</var>.
+
+      <li><p><span title="unstyle an element">Unstyle</span> each [[element]]
+      in <var title>element children</var>, in order.
+
+      <p class=note>Unstyling an element can change the number of children its
+      parent has, so the list of children to unstyle needs to be computed
+      beforehand.
     </ol>
 
     <li><p>Otherwise, if <var title>node</var> is a <code
@@ -347,8 +459,8 @@ possibly empty list of strings <var title>tag list</var>.
     title>property value</var>:
 
     <ol>
-      <li><p>Let <var title>new parent</var> be a new <span>HTML element with
-      name</span> "span", with no attributes, and with <code
+      <li><p>Let <var title>new parent</var> be a new <span>HTML element</span> with
+      [[localname]] "span", with no attributes, and with <code
       data-anolis-spec=domcore
       title=dom-Node-ownerDocument>ownerDocument</code> equal to <var
       title>node</var>'s.
@@ -396,15 +508,18 @@ following steps:
 
 <dl>
 <dt><code title><dfn title=command-bold>bold</dfn></code>
-<dd>If the <span>beginning element</span> of the <code
-data-anolis-spec=domrange>Range</code> has font-weight with computed value not
-equal to "bold", the user agent must <span title="style a range">style the
-<code data-anolis-spec=domrange>Range</code></span> with <var title>property
+<dd><p>If the <span>beginning element</span> of the [[range]] has font-weight
+with computed value not equal to "bold" (or less than 700), the user agent must
+<span title="style a range">style the [[range]]</span> with <var title>property
 name</var> "font-weight", <var title>property value</var> "bold", and <var
 title>tag list</var> ["b", "strong"].  Otherwise, it must <span title="unstyle
 a range">unstyle it</span> with <var title>property name</var> "font-weight",
 <var title>property value</var> "normal", and <var title>tag list</var> ["b",
 "strong"].
+
+<p class=XXX>b has font-weight: bolder, not font-weight: bold.  This produces
+unexpected behavior if there are font-weight: lighters or something thrown
+around.  Maybe that's not worth worrying about.
 </dl>
 
 

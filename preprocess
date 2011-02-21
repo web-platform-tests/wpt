@@ -4,6 +4,8 @@
 # <span data-anolis-spec=domcore title=concept-element-namespace>namespace</span>.
 
 replace = {
+    "ancestor": "<span data-anolis-spec=domcore title=concept-ancestor-node>ancestor</span>",
+    "ancestors": "<span data-anolis-spec=domcore title=concept-ancestor-node>ancestors</span>",
     "bpnode": "<span data-anolis-spec=domrange title=concept-boundary-point-node>node</span>",
     "bpnodes": "<span data-anolis-spec=domrange title=concept-boundary-point-node>nodes</span>",
     "bpoffset": "<span data-anolis-spec=domrange title=concept-boundary-point-offset>offset</span>",
@@ -12,10 +14,12 @@ replace = {
     "descendant": "<span data-anolis-spec=domcore title=concept-descendant-node>descendant</span>",
     "descendants": "<span data-anolis-spec=domcore title=concept-descendant-node>descendants</span>",
     "element": "<code data-anolis-spec=domcore>Element</code>",
+    "htmlnamespace": "<span data-anolis-spec=domcore>HTML namespace</span>",
     "index": "<span data-anolis-spec=domrange title=concept-indexof>index</span>",
+    "localname": "<span data-anolis-spec=domcore title=concept-element-local-name>local name</span>",
     "namespace": "<span data-anolis-spec=domcore title=concept-element-namespace>namespace</span>",
     "node": "<code data-anolis-spec=domcore>Node</code>",
-    "nodelength": "<code data-anolis-spec=domrange title=concept-node-length>length</code>",
+    "nodelength": "<span data-anolis-spec=domrange title=concept-node-length>length</span>",
     "processinginstruction": "<code data-anolis-spec=domcore>ProcessingInstruction</code>",
     "range": "<code data-anolis-spec=domrange>Range</code>",
     "rangeend": "<span data-anolis-spec=domrange title=concept-range-end>end</span>",

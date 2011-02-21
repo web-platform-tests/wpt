@@ -9,4 +9,5 @@
 == ../text-indent-percentage-001.xht text-indent-percentage-001-ref.xht		# text-indent - percentege - basic cases
 == ../white-space-collapsing-discard-001.xht white-space-collapsing-discard-001-ref.xht	# white-space-collapsing - discard - basic cases
 == ../white-space-collapsing-preserve-breaks-001.xht white-space-collapsing-preserve-breaks-001-ref.xht	# white-space-collapsing - preserve-breaks - basic cases
+== ../text-emphasis-color-001.xht text-emphasis-color-001-ref.xht			#  text-emphasis - color - basic cases
 

@@ -520,6 +520,29 @@ a range">unstyle it</span> with <var title>property name</var> "font-weight",
 <p class=XXX>b has font-weight: bolder, not font-weight: bold.  This produces
 unexpected behavior if there are font-weight: lighters or something thrown
 around.  Maybe that's not worth worrying about.
+
+<dt><code title><dfn title=command-italic>italic</dfn></code>
+<dd><p>If the <span>beginning element</span> of the [[range]] has font-style
+with computed value not equal to "italic" or "oblique", the user agent must
+<span title="style a range">style the [[range]]</span> with <var title>property
+name</var> "font-style", <var title>property value</var> "italic", and <var
+title>tag list</var> ["i", "em"].  Otherwise, it must <span title="unstyle
+a range">unstyle it</span> with <var title>property name</var> "font-style",
+<var title>property value</var> "normal", and <var title>tag list</var> ["i",
+"em"].
+
+<dt><code title><dfn title=command-underline>underline</dfn></code>
+<dd><p>If the <span>beginning element</span> of the [[range]] has
+text-decoration with a computed value that does not include "underline", the
+user agent must <span title="style a range">style the [[range]]</span> with
+<var title>property name</var> "text-decoration", <var title>property
+value</var> "underline", and <var title>tag list</var> ["u"].  Otherwise, it
+must <span title="unstyle a range">unstyle it</span> with <var title>property
+name</var> "text-decoration", <var title>property value</var> "none", and <var
+title>tag list</var> ["u"].
+
+<p class=XXX>This is wrong, it will clear strikethrough and overline.  Also,
+computed style isn't useful, because text-decoration doesn't inherit.
 </dl>
 
 

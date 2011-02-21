@@ -1,6 +1,8 @@
 {
   "beginning element": "beginning-element",
   "command-bold": "command-bold",
+  "command-italic": "command-italic",
+  "command-underline": "command-underline",
   "decompose a range": "decompose-a-range",
   "execcommand()": "execcommand()",
   "first node": "first-node",

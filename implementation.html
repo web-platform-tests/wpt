@@ -1,6 +1,14 @@
 <!doctype html>
-<title>execCommand("bold") tests</title>
-<button onclick=bold()>Bold</button>
+<title>execCommand() experimental implementation</title>
+<p>Spec:
+<button onclick=bold()><b>B</b></button>
+<button onclick=italic()><i>I</i></button>
+<button onclick=underline()><u>U</u></button>
+
+<p>Actual execCommand():
+<button onclick="execCommand('bold', false, null)"><b>B</b></button>
+<button onclick="execCommand('italic', false, null)"><i>I</i></button>
+<button onclick="execCommand('underline', false, null)"><u>U</u></button>
 <div contenteditable=true id=test>
 	<br> <br>
 	Some simple text<br>
@@ -88,8 +96,13 @@ function nextNodeDescendants(node) {
 }
 
 function convertProperty(propertyName) {
-	// Hack for now
-	return "font-weight";
+	// Special-case for now
+	var map = {
+		"fontStyle": "font-style",
+		"fontWeight": "font-weight",
+		"textDecoration": "text-decoration",
+	};
+	return map[propertyName];
 }
 
 
@@ -507,6 +520,30 @@ function bold() {
 			styleRange(selection.getRangeAt(i), "fontWeight", "bold", ["b", "strong"]);
 		} else {
 			unstyleRange(selection.getRangeAt(i), "fontWeight", ["normal", "400"], ["b", "strong"]);
+		}
+	}
+}
+
+function italic() {
+	var selection = getSelection();
+	for (var i = 0; i < selection.rangeCount; i++) {
+		var fontStyle = getComputedStyle(beginningElement(selection.getRangeAt(i))).fontStyle;
+		if (fontStyle != "italic" && fontStyle != "oblique") {
+			styleRange(selection.getRangeAt(i), "fontStyle", "italic", ["i", "em"]);
+		} else {
+			unstyleRange(selection.getRangeAt(i), "fontStyle", ["normal"], ["i", "em"]);
+		}
+	}
+}
+
+function underline() {
+	var selection = getSelection();
+	for (var i = 0; i < selection.rangeCount; i++) {
+		var textDecoration = getComputedStyle(beginningElement(selection.getRangeAt(i))).textDecoration;
+		if (!/ underline /.test(" " + textDecoration + " ")) {
+			styleRange(selection.getRangeAt(i), "textDecoration", "underline", ["u"]);
+		} else {
+			unstyleRange(selection.getRangeAt(i), "textDecoration", ["none"], ["u"]);
 		}
 	}
 }

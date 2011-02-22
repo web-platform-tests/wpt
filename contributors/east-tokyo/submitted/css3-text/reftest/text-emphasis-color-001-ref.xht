@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<title>CSS Test: text-emphasis - color - basic cases</title>
+		<link rel="author" title="Makoto Kikuchi" href="mailto:kikuchi@est.co.jp" />
+		<link rel="help" title="CSS Text Level 3: 11.2.3. Indent Text: the 'text-emphasis-color' property" href="http://www.w3.org/TR/css3-text/#text-emphasis-color" />
+		<meta name="flags" content="ahem" />
+		<meta name="assert" content="The 'text-emphasis-color' property set to character renders the appropriate decorations." />
+		<style type="text/css"><![CDATA[
+				.parent
+				{
+				    font: 16px/1em Ahem;
+				}
+				.reference-black
+				{
+					padding: 12px 0 0;
+					background-repeat:repeat-x;
+					background-position:left top;
+					background-image:url("../emphasis-black.png");
+				}
+				.reference-blue
+				{
+					padding: 12px 0 0;
+					background-repeat:repeat-x;
+					background-position:left top;
+					background-image:url("../emphasis-blue.png");
+					color: blue;
+				}
+		]]></style>
+	</head>
+	<body>
+		<p>Test passes if the following two text blocks look same in terms of emphasis and background-image respectively.</p>
+		<div class="parent">
+			<div><span class="reference-black">Fil</span><span class="reference-blue">ler</span> <span class="reference-black">Text</span></div>
+			<div><br/><span class="reference-black">Fil</span><span class="reference-blue">ler</span> <span class="reference-black">Text</span></div>
+		</div>
+	</body>
+</html>

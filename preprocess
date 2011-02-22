@@ -2,28 +2,34 @@
 
 # This script is probably evil, but I am unspeakably sick of typing stuff like
 # <span data-anolis-spec=domcore title=concept-element-namespace>namespace</span>.
+# <var title> is also really pointless, although I should really get that fixed
+# in Anolis proper.
 
 replace = {
     "ancestor": "<span data-anolis-spec=domcore title=concept-ancestor-node>ancestor</span>",
-    "ancestors": "<span data-anolis-spec=domcore title=concept-ancestor-node>ancestors</span>",
+    "boundarypoint": "<span data-anolis-spec=domrange title=concept-boundary-point>boundary point</span>",
     "bpnode": "<span data-anolis-spec=domrange title=concept-boundary-point-node>node</span>",
-    "bpnodes": "<span data-anolis-spec=domrange title=concept-boundary-point-node>nodes</span>",
     "bpoffset": "<span data-anolis-spec=domrange title=concept-boundary-point-offset>offset</span>",
-    "bpoffsets": "<span data-anolis-spec=domrange title=concept-boundary-point-offset>offsets</span>",
+    "bpposition": "<span data-anolis-spec=domrange title=concept-bp-position>position</span>",
     "comment": "<code data-anolis-spec=domcore>Comment</code>",
+    "contextobject": "<span data-anolis-spec=domrange>context object</span>",
     "descendant": "<span data-anolis-spec=domcore title=concept-descendant-node>descendant</span>",
-    "descendants": "<span data-anolis-spec=domcore title=concept-descendant-node>descendants</span>",
+    "document": "<code data-anolis-spec=domcore>Document</code>",
     "element": "<code data-anolis-spec=domcore>Element</code>",
+    "getselection": "<code data-anolis-spec=domrange title=dom-Document-getSelection>getSelection()</code>",
     "htmlnamespace": "<span data-anolis-spec=domcore>HTML namespace</span>",
     "index": "<span data-anolis-spec=domrange title=concept-indexof>index</span>",
     "localname": "<span data-anolis-spec=domcore title=concept-element-local-name>local name</span>",
     "namespace": "<span data-anolis-spec=domcore title=concept-element-namespace>namespace</span>",
     "node": "<code data-anolis-spec=domcore>Node</code>",
     "nodelength": "<span data-anolis-spec=domrange title=concept-node-length>length</span>",
+    "ownerdocument": "<code data-anolis-spec=domcore title=dom-Node-ownerDocument>ownerDocument</code>",
     "processinginstruction": "<code data-anolis-spec=domcore>ProcessingInstruction</code>",
     "range": "<code data-anolis-spec=domrange>Range</code>",
     "rangeend": "<span data-anolis-spec=domrange title=concept-range-end>end</span>",
+    "rangeroot": "<span data-anolis-spec=domrange title=concept-range-root>root</span>",
     "rangestart": "<span data-anolis-spec=domrange title=concept-range-start>start</span>",
+    "selection": "<code data-anolis-spec=domrange>Selection</code>",
     "text": "<code data-anolis-spec=domcore>Text</code>",
     "treeorder": "<span data-anolis-spec=domcore>tree order</span>",
 }
@@ -31,9 +37,13 @@ replace = {
 s = open("source.html", "r").read()
 for key in replace:
     s = s.replace("[[" + key + "]]", replace[key])
+    # Plurals
+    s = s.replace("[[" + key + "s]]", replace[key].replace("</", "s</"))
 
 if "[[" in s:
     raise Exception("Something mistyped?  " + s[s.find("[["):s.rfind("]]") + 2])
+
+s = s.replace("<var>", "<var title>")
 
 f = open("intermediate.html", "w")
 f.write(s)

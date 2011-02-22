@@ -19,7 +19,7 @@
 <body class=draft>
 <div class=head id=head>
 <h1>HTML Editing Commands</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-21-february-2011>Work in Progress &mdash; Last Update 21 February 2011</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-22-february-2011>Work in Progress &mdash; Last Update 22 February 2011</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;ayg+spec@aryeh.name&gt;
@@ -109,6 +109,29 @@ node</a>, if <em>that</em> is an <a href=http://dvcs.w3.org/hg/domcore/raw-file/
 <p class=XXX>(It will be null only in weird cases, like selecting a comment
 whose parent is a document, or the child of a document fragment, or whatever.
 I'm ignoring those cases for now.)
+
+<p>The <dfn id=active-range>active range</dfn> of a <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#document><code class=external data-anolis-spec=domcore>Document</code></a> is the value returned by the
+following algorithm:
+
+<ol>
+  <li><p>Let <var title="">selection</var> be the result of calling <a href=http://html5.org/specs/dom-range.html#dom-document-getselection><code class=external data-anolis-spec=domrange title=dom-Document-getSelection>getSelection()</code></a> on
+  the <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#document><code class=external data-anolis-spec=domcore>Document</code></a>.
+
+  <li><p>If there are no <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a>s associated with <var title="">selection</var>,
+  return null.
+
+  <li><p>Let <var title="">start</var> be the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point title=concept-boundary-point>boundary point</a> with the earliest
+  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-bp-position title=concept-bp-position>position</a> among all of <var title="">selection</var>'s <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a>s'
+  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>starts</a>.
+
+  <li><p>Return the last <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a> in <var title="">selection</var> whose <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a>
+  is <var title="">start</var>.
+  <!-- This is what Firefox seems to do, no reason to change it . . . -->
+
+  <p class=note>In user agents that support only one <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a> per
+  <a href=http://html5.org/specs/dom-range.html#selection><code class=external data-anolis-spec=domrange>Selection</code></a>, <var title="">range</var> will simply be the only <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a> associated
+  to <var title="">selection</var>.
+</ol>
 
 
 <h2 id=decomposing-a-range-into-nodes><span class=secno>4 </span>Decomposing a Range into Nodes</h2>
@@ -296,8 +319,9 @@ list of the element's former children.
 
 <h2 id=styling-a-range><span class=secno>6 </span>Styling a Range</h2>
 <p>When a user agent is to <dfn id=style-a-range>style a <code class=external data-anolis-spec=domrange>Range</code></dfn> <var title="">range</var>, it must
-run the following steps.  There are three inputs: a CSS property name <var title="">property name</var>, a new value <var title="">property value</var>, and a
-nonempty list of strings <var title="">tag list</var>.
+run the following steps.  There are four inputs: a CSS property name <var title="">property name</var>, a new value <var title="">property value</var>, a
+nonempty list of strings <var title="">tag list</var>, and a string
+<var title="">commandId</var>.
 
 <div class=XXX>
 <p>This description tries to keep the algorithm as simple as possible at the
@@ -334,6 +358,15 @@ with the CSS-based strategy.
       name</var> of <var title="">node</var>.  Otherwise, set the CSS property
       <var title="">property name</var> of <var title="">node</var> to <var title="">property value</var>.
 
+      <li><p>If the <a href=#state>state</a> of <var title="">commandId</var> on
+      <var title="">node</var> is false, set the CSS property <var title="">property name</var>
+      of <var title="">node</var> to <var title="">property value</var>.
+      <!-- This fixes cases where the element won't actually create the desired
+      style.  E.g., <span style=font-weight:lighter><b>Foo</b></span> will not
+      actually bold "Foo" (because the default style for <b> is font-weight:
+      bolder), so we do <b style=font-weight:bold> instead.  Likewise when we
+      do similarly a bit later on in this algorithm. -->
+
       <li><p>Let <var title="">element children</var> be the <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a> children
       of <var title="">node</var>.
 
@@ -357,11 +390,19 @@ with the CSS-based strategy.
       other text nodes. -->
       <li><p>If the previous sibling of <var title="">node</var> is an <a href=#html-element>HTML
       element</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> in <var title="">tag list</var> with no
-      attributes, let <var title="">new parent</var> equal the previous sibling of
-      <var title="">node</var>.
+      attributes, and the <a href=#state>state</a> of <var title="">commandId</var> on
+      <var title="">node</var> is true, let <var title="">new parent</var> equal the previous
+      sibling of <var title="">node</var>.
 
       <li><p>Otherwise, let <var title="">new parent</var> be a new <a href=#html-element>HTML
-      element</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> equal to the first string in <var title="">tag list</var>, with no attributes, and <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument><code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument>ownerDocument</code></a> the same as <var title="">node</var>.  Append <var title="">new parent</var> to <var title="">node</var>'s parent as the previous sibling of <var title="">node</var>.
+      element</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> equal to the first string in <var title="">tag
+      list</var>, with no attributes, and <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument><code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument>ownerDocument</code></a> the same as
+      <var title="">node</var>.  Append <var title="">new parent</var> to <var title="">node</var>'s
+      parent as the previous sibling of <var title="">node</var>.
+
+      <li><p>If the <a href=#state>state</a> of <var title="">commandId</var> on <var title="">new
+      parent</var> is false, set the CSS property <var title="">property name</var> of
+      <var title="">new parent</var> to <var title="">property value</var>.
 
       <li><p>Append <var title="">node</var> to <var title="">new parent</var> as
       its last child.
@@ -382,8 +423,9 @@ history. -->
 
 <h2 id=unstyling-a-range><span class=secno>7 </span>Unstyling a Range</h2>
 <p>When a user agent is to <dfn id=unstyle-a-range>unstyle a <code class=external data-anolis-spec=domrange>Range</code></dfn> <var title="">range</var>, it must
-run the following steps.  There are three inputs: a CSS property name <var title="">property name</var>, a new value <var title="">property value</var>, and a
-possibly empty list of strings <var title="">tag list</var>.
+run the following steps.  There are four inputs: a CSS property name <var title="">property name</var>, a new value <var title="">property value</var>, a
+possibly empty list of strings <var title="">tag list</var>, and a string
+<var title="">commandId</var>.
 
 <ol>
   <li><p>Let <var title="">node list</var> be the result of <a href=#decompose-a-range title="decompose
@@ -456,48 +498,65 @@ having a "delete" button on a toolbar.
 respectively. The <var title="">showUI</var> and <var title="">value</var>
 parameters, even if specified, are ignored except where otherwise stated.
 
-<p>When <a href=#execcommand()><code>execCommand()</code></a> is invoked, the user agent must run the
-following steps:
+<p>When <a href=#execcommand()><code>execCommand()</code></a> is invoked, the user agent must take the
+action from the list below given by <var title="">commandId</var> on the
+<a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>'s <a href=#active-range>active range</a>.  If no action is given or if
+there is no <a href=#active-range>active range</a>, do nothing.
 
-<ol>
-  <li>Let <var title="">selection</var> be the result of calling <a href=http://html5.org/specs/dom-range.html#dom-document-getselection><code class=external data-anolis-spec=domrange title=dom-Document-getSelection>getSelection()</code></a> on the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>.
+<p>The <dfn id=querycommandstate() title=queryCommandState()><code>queryCommandState(<var title="">commandId</var>)</code></dfn>
+method on the <a href=http://www.whatwg.org/html/#htmldocument><code class=external data-anolis-spec=html>HTMLDocument</code></a> interface must
+return the <a href=#state>state</a> of <var title="">commandId</var> on the
+<a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>'s <a href=#active-range>active range</a>.  If there is no <a href=#active-range>active
+range</a>, return false.
+<!-- Gecko throws an exception if there are no ranges in the selection, but
+other engines seem to just return false, which seems like nicer behavior
+anyway. -->
 
-  <li>For each <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a> associated with
-  <var title="">selection</var>, in order, take the action from the list below
-  given by <var title="">commandId</var>.
-</ol>
+<p>The <dfn id=state>state</dfn> of a command <var title="">commandId</var> on a <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a> is
+given by the list below.  If <var title="">commandId</var> is not on the list, its
+<a href=#state>state</a> is false on any <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a>.  The <a href=#state>state</a> of a
+command on a <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> <var title="">node</var> is the <a href=#state>state</a> of that command
+on the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> (<var title="">node</var>, 0), <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a>
+(<var title="">node</var>, <var title="">node</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a>), and <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-root title=concept-range-root>root</a> equal to
+<var title="">node</var>'s <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument><code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument>ownerDocument</code></a>.
 
 <dl>
 <dt><code title=""><dfn id=command-bold title=command-bold>bold</dfn></code>
-<dd><p>If the <a href=#beginning-element>beginning element</a> of the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a> has font-weight
-with computed value not equal to "bold" (or less than 700), the user agent must
-<a href=#style-a-range title="style a range">style the <code class=external data-anolis-spec=domrange>Range</code></a> with <var title="">property
-name</var> "font-weight", <var title="">property value</var> "bold", and <var title="">tag list</var> ["b", "strong"].  Otherwise, it must <a href=#unstyle-a-range title="unstyle
-a range">unstyle it</a> with <var title="">property name</var> "font-weight",
-<var title="">property value</var> "normal", and <var title="">tag list</var> ["b",
-"strong"].
 
-<p class=XXX>b has font-weight: bolder, not font-weight: bold.  This produces
-unexpected behavior if there are font-weight: lighters or something thrown
-around.  Maybe that's not worth worrying about.
+<dd><p><strong>Action</strong>: If the state of the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a> for this command
+is false, the user agent must <a href=#style-a-range title="style a range">style the
+<code class=external data-anolis-spec=domrange>Range</code></a> with <var title="">property name</var> "font-weight", <var title="">property
+value</var> "bold", and <var title="">tag list</var> ["b", "strong"].  Otherwise, it
+must <a href=#unstyle-a-range title="unstyle a range">unstyle it</a> with <var title="">property
+name</var> "font-weight", <var title="">property value</var> "normal", and <var title="">tag
+list</var> ["b", "strong"].
+
+<dd><p><strong>State</strong>: True if the <a href=#beginning-element>beginning element</a> of the
+<a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a> has font-weight with computed value less than 700, otherwise false.
+
 
 <dt><code title=""><dfn id=command-italic title=command-italic>italic</dfn></code>
-<dd><p>If the <a href=#beginning-element>beginning element</a> of the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a> has font-style
-with computed value not equal to "italic" or "oblique", the user agent must
-<a href=#style-a-range title="style a range">style the <code class=external data-anolis-spec=domrange>Range</code></a> with <var title="">property
-name</var> "font-style", <var title="">property value</var> "italic", and <var title="">tag list</var> ["i", "em"].  Otherwise, it must <a href=#unstyle-a-range title="unstyle
-a range">unstyle it</a> with <var title="">property name</var> "font-style",
-<var title="">property value</var> "normal", and <var title="">tag list</var> ["i",
+
+<dd><p><strong>Action</strong>: If the of the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a> for this command is
+false, the user agent must <a href=#style-a-range title="style a range">style the
+<code class=external data-anolis-spec=domrange>Range</code></a> with <var title="">property name</var> "font-style", <var title="">property
+value</var> "italic", and <var title="">tag list</var> ["i", "em"].  Otherwise, it must
+<a href=#unstyle-a-range title="unstyle a range">unstyle it</a> with <var title="">property name</var>
+"font-style", <var title="">property value</var> "normal", and <var title="">tag list</var> ["i",
 "em"].
 
+<dd><p><strong>State</strong>: True if the <a href=#beginning-element>beginning element</a> of the
+<a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a> has font-style with computed value "italic" or "oblique", otherwise
+false.
+
+
 <dt><code title=""><dfn id=command-underline title=command-underline>underline</dfn></code>
-<dd><p>If the <a href=#beginning-element>beginning element</a> of the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a> has
-text-decoration with a computed value that does not include "underline", the
-user agent must <a href=#style-a-range title="style a range">style the <code class=external data-anolis-spec=domrange>Range</code></a> with
-<var title="">property name</var> "text-decoration", <var title="">property
-value</var> "underline", and <var title="">tag list</var> ["u"].  Otherwise, it
-must <a href=#unstyle-a-range title="unstyle a range">unstyle it</a> with <var title="">property
-name</var> "text-decoration", <var title="">property value</var> "none", and <var title="">tag list</var> ["u"].
+
+<dd class=XXX><p><strong>Action</strong>: ???  This is totally unreasonable,
+because CSS text-decoration is a nightmare.  Styling is easy, unstyling is only
+possible through massive hacks.
+
+<dd class=XXX><p><strong>State</strong>: ...
 
 <p class=XXX>This is wrong, it will clear strikethrough and overline.  Also,
 computed style isn't useful, because text-decoration doesn't inherit.

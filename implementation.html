@@ -1,14 +1,18 @@
 <!doctype html>
 <title>execCommand() experimental implementation</title>
 <p>Spec:
-<button onclick=bold()><b>B</b></button>
-<button onclick=italic()><i>I</i></button>
-<button onclick=underline()><u>U</u></button>
+<button onclick="myExecCommand('bold')"><b>B</b></button>
+<button onclick="myExecCommand('italic')"><i>I</i></button>
+<button onclick="alert(myQueryCommandState('bold'))">B?</button>
+<button onclick="alert(myQueryCommandState('italic'))">I?</button>
 
 <p>Actual execCommand():
 <button onclick="execCommand('bold', false, null)"><b>B</b></button>
 <button onclick="execCommand('italic', false, null)"><i>I</i></button>
 <button onclick="execCommand('underline', false, null)"><u>U</u></button>
+<button onclick="alert(queryCommandState('bold'))">B?</button>
+<button onclick="alert(queryCommandState('italic'))">I?</button>
+<button onclick="alert(queryCommandState('underline'))">U?</button>
 <div contenteditable=true id=test>
 	<br> <br>
 	Some simple text<br>
@@ -151,6 +155,42 @@ function beginningElement(range) {
 	}
 
 	return null;
+}
+
+function activeRange(doc) {
+	// "Let selection be the result of calling getSelection() on the Document."
+	var selection = doc.getSelection();
+
+	// "If there are no Ranges associated with selection, return null."
+	if (selection.rangeCount == 0) {
+		return null;
+	}
+
+	// "Let start be the boundary point with the earliest position among all of
+	// selection's Ranges' starts."
+	var startNode = null;
+	var startOffset = null;
+	for (var i = 0; i < selection.rangeCount; i++) {
+		if (startNode === null) {
+			startNode = selection.getRangeAt(i).startContainer;
+			startOffset = selection.getRangeAt(i).startOffset;
+			continue;
+		}
+		var testRange = doc.createRange();
+		testRange.setStart(startNode, startOffset);
+		if (testRange.compareBoundaryPoints(Range.START_TO_START, selection.getRangeAt(i)) < 0) {
+			startNode = selection.getRangeAt(i).startContainer;
+			startOffset = selection.getRangeAt(i).startOffset;
+		}
+	}
+
+	// "Return the last Range in selection whose start is start."
+	for (var i = selection.rangeCount - 1; i >= 0; i--) {
+		if (selection.getRangeAt(i).startContainer == startNode
+		&& selection.getRangeAt(i).startOffset == startOffset) {
+			return selection.getRangeAt(i);
+		}
+	}
 }
 
 function decomposeRange(range) {
@@ -379,7 +419,7 @@ function unstyleElement(element, propertyName, tagList) {
 	return children;
 }
 
-function styleRange(range, propertyName, propertyValue, tagList) {
+function styleRange(range, propertyName, propertyValue, tagList, commandId) {
 	// "Let node list be the result of decomposing range."
 	var nodeList = decomposeRange(range);
 
@@ -401,6 +441,12 @@ function styleRange(range, propertyName, propertyValue, tagList) {
 				node.style[propertyName] = propertyValue;
 			}
 
+			// "If the state of commandId on node is false, set the CSS
+			// property property name of node to property value."
+			if (!getState(commandId, node)) {
+				node.style[propertyName] = propertyValue;
+			}
+
 			// "Let element children be the Element children of node."
 			var elementChildren = [];
 			for (var j = 0; j < node.childNodes.length; j++) {
@@ -417,13 +463,15 @@ function styleRange(range, propertyName, propertyValue, tagList) {
 		} else if (node.nodeType == Node.TEXT_NODE) {
 			var newParent;
 			// "If the previous sibling of node is an HTML element with local
-			// name in tag list with no attributes, let new parent equal the
-			// previous sibling of node."
+			// name in tag list with no attributes, and the state of commandId
+			// on node is true, let new parent equal the previous sibling of
+			// node."
 			if (node.previousSibling
 			&& node.previousSibling.nodeType == Node.ELEMENT_NODE
 			&& node.previousSibling.namespaceURI == htmlNamespace
 			&& tagList.indexOf(node.previousSibling.tagName.toLowerCase()) != -1
-			&& node.previousSibling.attributes.length == 0) {
+			&& node.previousSibling.attributes.length == 0
+			&& getState(commandId, node.previousSibling)) {
 				newParent = node.previousSibling;
 			} else {
 				// "Otherwise, let new parent be a new HTML element with local
@@ -432,6 +480,12 @@ function styleRange(range, propertyName, propertyValue, tagList) {
 				// parent to node's parent as the previous sibling of node."
 				newParent = node.ownerDocument.createElement(tagList[0]);
 				node.parentNode.insertBefore(newParent, node);
+			}
+
+			// "If the state of commandId on new parent is false, set the CSS
+			// property property name of new parent to property value."
+			if (!getState(commandId, newParent)) {
+				newParent.style[propertyName] = propertyValue;
 			}
 
 			// "Append node to new parent as its last child."
@@ -511,40 +565,64 @@ function unstyleRange(range, propertyName, propertyValue, tagList) {
 	}
 }
 
-function bold() {
-	var selection = getSelection();
-	for (var i = 0; i < selection.rangeCount; i++) {
-		var fontWeight = getComputedStyle(beginningElement(selection.getRangeAt(i))).fontWeight;
-		if (fontWeight != "bold"
-		&& (!/^[0-9]+$/.test(fontWeight) || fontWeight < 700)) {
-			styleRange(selection.getRangeAt(i), "fontWeight", "bold", ["b", "strong"]);
+function myExecCommand(commandId, showUI, value) {
+	var range = activeRange(document);
+
+	if (!range) {
+		return;
+	}
+
+	switch (commandId) {
+		case "bold":
+		if (getState("bold", range)) {
+			unstyleRange(range, "fontWeight", ["normal", "400"], ["b", "strong"]);
 		} else {
-			unstyleRange(selection.getRangeAt(i), "fontWeight", ["normal", "400"], ["b", "strong"]);
+			styleRange(range, "fontWeight", "bold", ["b", "strong"], "bold");
 		}
+		break;
+
+		case "italic":
+		if (getState("italic", range)) {
+			unstyleRange(range, "fontStyle", ["normal"], ["i", "em"]);
+		} else {
+			styleRange(range, "fontStyle", "italic", ["i", "em"], "italic");
+		}
+		break;
+
+		default:
+		break;
 	}
 }
 
-function italic() {
-	var selection = getSelection();
-	for (var i = 0; i < selection.rangeCount; i++) {
-		var fontStyle = getComputedStyle(beginningElement(selection.getRangeAt(i))).fontStyle;
-		if (fontStyle != "italic" && fontStyle != "oblique") {
-			styleRange(selection.getRangeAt(i), "fontStyle", "italic", ["i", "em"]);
-		} else {
-			unstyleRange(selection.getRangeAt(i), "fontStyle", ["normal"], ["i", "em"]);
-		}
+function myQueryCommandState(commandId) {
+	var range = activeRange(document);
+
+	if (!range) {
+		return false;
 	}
+
+	return getState(commandId, range);
 }
 
-function underline() {
-	var selection = getSelection();
-	for (var i = 0; i < selection.rangeCount; i++) {
-		var textDecoration = getComputedStyle(beginningElement(selection.getRangeAt(i))).textDecoration;
-		if (!/ underline /.test(" " + textDecoration + " ")) {
-			styleRange(selection.getRangeAt(i), "textDecoration", "underline", ["u"]);
-		} else {
-			unstyleRange(selection.getRangeAt(i), "textDecoration", ["none"], ["u"]);
-		}
+function getState(commandId, range) {
+	if (range instanceof Node) {
+		var node = range;
+		range = node.ownerDocument.createRange();
+		range.selectNodeContents(node);
+	}
+
+	var style = getComputedStyle(beginningElement(range));
+
+	switch (commandId) {
+		case "bold":
+		return style.fontWeight == "bold"
+			|| (/^[0-9]+$/.test(style.fontWeight) && style.fontWeight >= 700);
+
+		case "italic":
+		return style.fontStyle == "italic" || style.fontStyle == "oblique";
+
+		default:
+		return false;
 	}
 }
 </script>

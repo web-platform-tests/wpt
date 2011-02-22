@@ -1,4 +1,5 @@
 {
+  "active range": "active-range",
   "beginning element": "beginning-element",
   "command-bold": "command-bold",
   "command-italic": "command-italic",
@@ -7,6 +8,8 @@
   "execcommand()": "execcommand()",
   "first node": "first-node",
   "html element": "html-element",
+  "querycommandstate()": "querycommandstate()",
+  "state": "state",
   "style a range": "style-a-range",
   "unstyle a range": "unstyle-a-range",
   "unstyle an element": "unstyle-an-element"

@@ -3112,13 +3112,29 @@ every time it is retrieved.
   readonly attribute unsigned long <a href="#dom-nodelist-length" title="dom-NodeList-length">length</a>;
 };</pre>
 
+<dl class="domintro">
+ <dt><var title="">collection</var> . <code title="dom-NodeList-length"><a href="#dom-nodelist-length">length</a></code>
+ <dd>
+  <p>Returns the number of elements in the collection.
+
+ <dt><var title="">element</var> = <var title="">collection</var> . <code title="dom-NodeList-item"><a href="#dom-nodelist-item">item</a></code>(<var title="">index</var>)
+ <dt><var title="">element</var> = <var title="">collection</var>[<var title="">index</var>]
+ <dd>
+  <p>Returns the item with index <var title="">index</var> from the collection. The items are sorted in <a href="#tree-order">tree order</a>.
+  <p>Returns null if <var title="">index</var> is out of range.
+</dl>
+
+<p>The object's <a class="external" href="http://dev.w3.org/2006/webapi/WebIDL/#dfn-supported-property-indices">supported property indices</a>
+are the numbers in the range zero to one less than the number of nodes
+<a href="#represented-by-the-collection">represented by the collection</a>. If there are no such elements, then
+there are no <a class="external" href="http://dev.w3.org/2006/webapi/WebIDL/#dfn-supported-property-indices">supported property indices</a>.
+
+<p>The <dfn id="dom-nodelist-length" title="dom-NodeList-length"><code>length</code></dfn> attribute must
+return the number of nodes <a href="#represented-by-the-collection">represented by the collection</a>.
+
 <p>The <dfn id="dom-nodelist-item" title="dom-NodeList-item"><code>item(<var title="">index</var>)</code></dfn> method must return the <var title="">index</var>th
 node in the <a href="#concept-collection" title="concept-collection">collection</a>. If there is no
 <var title="">index</var>th node in the <a href="#concept-collection" title="concept-collection">collection</a>, then the method must return null.
-
-<p>The <dfn id="dom-nodelist-length" title="dom-NodeList-length"><code>length</code></dfn> attribute must return the number of nodes <a href="#represented-by-the-collection">represented by the collection</a>.
-
-<p><code><a href="#nodelist">NodeList</a></code>s are enumerable. <span class="XXX" title="">Explain? <code title="">for ... in</code></span>
 
 
 <h3 id="interface-htmlcollection"><span class="secno">6.2 </span>Interface <code><a href="#htmlcollection">HTMLCollection</a></code></h3>
@@ -3130,8 +3146,8 @@ it, which return other objects for historical reasons.
 
 <pre class="idl">interface <dfn id="htmlcollection">HTMLCollection</dfn> {
   readonly attribute unsigned long <a href="#dom-htmlcollection-length" title="dom-HTMLCollection-length">length</a>;
-  caller getter <a href="#element">Element</a> <a href="#dom-htmlcollection-item" title="dom-HTMLCollection-item">item</a>(unsigned long index);
-  caller getter object <a href="#dom-htmlcollection-nameditem" title="dom-HTMLCollection-namedItem">namedItem</a>(DOMString name); // only returns Element
+  getter <a href="#element">Element</a> <a href="#dom-htmlcollection-item" title="dom-HTMLCollection-item">item</a>(unsigned long index);
+  getter object <a href="#dom-htmlcollection-nameditem" title="dom-HTMLCollection-namedItem">namedItem</a>(DOMString name); // only returns <code><a href="#element">Element</a></code>
 };</pre>
 
 <dl class="domintro">
@@ -3140,15 +3156,13 @@ it, which return other objects for historical reasons.
   <p>Returns the number of elements in the collection.
 
  <dt><var title="">element</var> = <var title="">collection</var> . <code title="dom-HTMLCollection-item"><a href="#dom-htmlcollection-item">item</a></code>(<var title="">index</var>)
- <dt><var title="">collection</var>[<var title="">index</var>]
- <dt><var title="">collection</var>(<var title="">index</var>)
+ <dt><var title="">element</var> = <var title="">collection</var>[<var title="">index</var>]
  <dd>
   <p>Returns the item with index <var title="">index</var> from the collection. The items are sorted in <a href="#tree-order">tree order</a>.
   <p>Returns null if <var title="">index</var> is out of range.
 
  <dt><var title="">element</var> = <var title="">collection</var> . <code title="dom-HTMLCollection-namedItem"><a href="#dom-htmlcollection-nameditem">namedItem</a></code>(<var title="">name</var>)
- <dt><var title="">collection</var>[<var title="">name</var>]
- <dt><var title="">collection</var>(<var title="">name</var>)
+ <dt><var title="">element</var> = <var title="">collection</var>[<var title="">name</var>]
  <dd>
   <p>Returns the first item with <a href="#concept-id" title="concept-id">ID</a> or name <var title="">name</var>
   from the collection.

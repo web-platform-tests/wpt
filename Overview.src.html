@@ -3133,16 +3133,31 @@ every time it is retrieved.
   readonly attribute unsigned long <span title=dom-NodeList-length>length</span>;
 };</pre>
 
+<dl class=domintro>
+ <dt><var title>collection</var> . <code title=dom-NodeList-length>length</code>
+ <dd>
+  <p>Returns the number of elements in the collection.
+
+ <dt><var title>element</var> = <var title>collection</var> . <code title=dom-NodeList-item>item</code>(<var title>index</var>)
+ <dt><var title>element</var> = <var title>collection</var>[<var title>index</var>]
+ <dd>
+  <p>Returns the item with index <var title>index</var> from the collection. The items are sorted in <span>tree order</span>.
+  <p>Returns null if <var title>index</var> is out of range.
+</dl>
+
+<p>The object's <span data-anolis-spec=webidl>supported property indices</span>
+are the numbers in the range zero to one less than the number of nodes
+<span>represented by the collection</span>. If there are no such elements, then
+there are no <span data-anolis-spec=webidl>supported property indices</span>.
+
+<p>The <dfn title=dom-NodeList-length><code>length</code></dfn> attribute must
+return the number of nodes <span>represented by the collection</span>.
+
 <p>The <dfn title=dom-NodeList-item><code>item(<var
 title>index</var>)</code></dfn> method must return the <var title>index</var>th
 node in the <span title=concept-collection>collection</span>. If there is no
 <var title>index</var>th node in the <span
 title=concept-collection>collection</span>, then the method must return null.
-
-<p>The <dfn title=dom-NodeList-length><code>length</code></dfn> attribute must return the number of nodes <span>represented by the collection</span>.
-
-<p><code>NodeList</code>s are enumerable. <span class=XXX title>Explain? <code
-title>for ... in</code></span>
 
 
 <h3>Interface <code>HTMLCollection</code></h3>
@@ -3156,8 +3171,8 @@ it, which return other objects for historical reasons.
 
 <pre class=idl>interface <dfn>HTMLCollection</dfn> {
   readonly attribute unsigned long <span title=dom-HTMLCollection-length>length</span>;
-  caller getter <span>Element</span> <span title=dom-HTMLCollection-item>item</span>(unsigned long index);
-  caller getter object <span title=dom-HTMLCollection-namedItem>namedItem</span>(DOMString name); // only returns Element
+  getter <span>Element</span> <span title=dom-HTMLCollection-item>item</span>(unsigned long index);
+  getter object <span title=dom-HTMLCollection-namedItem>namedItem</span>(DOMString name); // only returns <code>Element</code>
 };</pre>
 
 <dl class=domintro>
@@ -3166,15 +3181,13 @@ it, which return other objects for historical reasons.
   <p>Returns the number of elements in the collection.
 
  <dt><var title>element</var> = <var title>collection</var> . <code title=dom-HTMLCollection-item>item</code>(<var title>index</var>)
- <dt><var title>collection</var>[<var title>index</var>]
- <dt><var title>collection</var>(<var title>index</var>)
+ <dt><var title>element</var> = <var title>collection</var>[<var title>index</var>]
  <dd>
   <p>Returns the item with index <var title>index</var> from the collection. The items are sorted in <span>tree order</span>.
   <p>Returns null if <var title>index</var> is out of range.
 
  <dt><var title>element</var> = <var title>collection</var> . <code title=dom-HTMLCollection-namedItem>namedItem</code>(<var title>name</var>)
- <dt><var title>collection</var>[<var title>name</var>]
- <dt><var title>collection</var>(<var title>name</var>)
+ <dt><var title>element</var> = <var title>collection</var>[<var title>name</var>]
  <dd>
   <p>Returns the first item with <span title="concept-id">ID</span> or name <var title>name</var>
   from the collection.

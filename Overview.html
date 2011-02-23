@@ -3144,6 +3144,8 @@ every time it is retrieved.
   <p>Returns null if <var title="">index</var> is out of range.
 </dl>
 
+<div class="impl">
+
 <p>The object's <a class="external" href="http://dev.w3.org/2006/webapi/WebIDL/#dfn-supported-property-indices">supported property indices</a>
 are the numbers in the range zero to one less than the number of nodes
 <a href="#represented-by-the-collection">represented by the collection</a>. If there are no such elements, then
@@ -3155,6 +3157,8 @@ return the number of nodes <a href="#represented-by-the-collection">represented 
 <p>The <dfn id="dom-nodelist-item" title="dom-NodeList-item"><code>item(<var title="">index</var>)</code></dfn> method must return the <var title="">index</var>th
 node in the <a href="#concept-collection" title="concept-collection">collection</a>. If there is no
 <var title="">index</var>th node in the <a href="#concept-collection" title="concept-collection">collection</a>, then the method must return null.
+
+</div>
 
 
 <h3 id="interface-htmlcollection"><span class="secno">6.2 </span>Interface <code><a href="#htmlcollection">HTMLCollection</a></code></h3>
@@ -3197,6 +3201,8 @@ it, which return other objects for historical reasons.
   <code title="">name</code> attribute.
 </dl>
 
+<div class="impl">
+
 <p>The object's <a class="external" href="http://dev.w3.org/2006/webapi/WebIDL/#dfn-supported-property-indices">supported property indices</a>
 are the numbers in the range zero to one less than the number of nodes
 <a href="#represented-by-the-collection">represented by the collection</a>. If there are no such elements, then
@@ -3215,9 +3221,11 @@ of the values of the <code title="">name</code> attributes of each <code title="
 attribute, plus the list of <a href="#concept-id" title="concept-id">IDs</a> that the elements
 <a href="#represented-by-the-collection">represented by the collection</a> have.
 
-<p>The <dfn id="dom-htmlcollection-nameditem" title="dom-HTMLCollection-namedItem"><code>namedItem(<var title="">key</var>)</code></dfn> method must return the first node in the
-<a href="#concept-collection" title="concept-collection">collection</a> that matches the following
-requirements:
+<p>The
+<dfn id="dom-htmlcollection-nameditem" title="dom-HTMLCollection-namedItem"><code>namedItem(<var title="">key</var>)</code></dfn>
+method must return the first node in the
+<a href="#concept-collection" title="concept-collection">collection</a> that falls into one of the
+following categories:
 
 <ul>
  <li>It is an <code title="">a</code>, <code title="">applet</code>, <code title="">area</code>, <code title="">embed</code>, <code title="">form</code>, <code title="">frame</code>, <code title="">frameset</code>, <code title="">iframe</code>,
@@ -3230,6 +3238,9 @@ requirements:
 
 <p>If no such elements are found, then the method must return
 null.
+
+</div>
+
 
 <!-- AttrExodus
 <h3>Interface <code>NamedNodeMap</code></h3>
@@ -3302,6 +3313,8 @@ ordered list of strings.
  otherwise.
 </dl>
 
+<div class="impl">
+
 <p>The <dfn id="dom-domstringlist-length" title="dom-DOMStringList-length"><code>length</code></dfn>
 attribute must return the number of strings in the list.
 
@@ -3323,6 +3336,8 @@ method must return null.
 <dfn id="dom-domstringlist-contains" title="dom-DOMStringList-contains"><code>contains(<var title="">string</var>)</code></dfn>
 method must return true if the list of strings contains <var title="">string</var>,
 or false otherwise.
+
+</div>
 
 
 <h3 id="interface-domtokenlist"><span class="secno">7.2 </span>Interface <code><a href="#domtokenlist">DOMTokenList</a></code></h3>

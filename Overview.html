@@ -27,6 +27,13 @@
    table thead { border-bottom:solid }
    table tbody th:first-child { border-left:solid }
    table td, table th { border-left:solid; border-right:solid; border-bottom:solid thin; vertical-align:top; padding:0.2em }
+
+   .warning { color: red; background: transparent; font-weight: bolder; font-style: italic; }
+   .warning p:first-child { margin-top: 0; }
+   .warning p:last-child { margin-bottom: 0; }
+   .warning:before { font-style: normal; }
+   p.warning:before { content: '\26A0 Warning! '; }
+
    @media print {
      [data-anolis-spec]::after { content:"[" attr(data-anolis-spec) "]"; font-size:.6em; vertical-align:super; text-transform:uppercase }
    }
@@ -132,8 +139,7 @@ document as other than work in progress.
     <ol class="toc">
      <li><a href="#common-parser-idioms"><span class="secno">2.3.1 </span>Common parser idioms</a></li>
      <li><a href="#space-separated-tokens"><span class="secno">2.3.2 </span>Space-separated tokens</a></ol></li>
-   <li><a href="#dom-features"><span class="secno">2.4 </span>DOM features</a></li>
-   <li><a href="#namespaces"><span class="secno">2.5 </span>Namespaces</a></ol></li>
+   <li><a href="#namespaces"><span class="secno">2.4 </span>Namespaces</a></ol></li>
  <li><a href="#exceptions"><span class="secno">3 </span>Exceptions</a>
   <ol class="toc">
    <li><a href="#exception-domexception"><span class="secno">3.1 </span>Exception <code>DOMException</code></a></ol></li>
@@ -171,12 +177,13 @@ document as other than work in progress.
    <li><a href="#interface-domstringlist"><span class="secno">7.1 </span>Interface <code>DOMStringList</code></a></li>
    <li><a href="#interface-domtokenlist"><span class="secno">7.2 </span>Interface <code>DOMTokenList</code></a></li>
    <li><a href="#interface-domsettabletokenlist"><span class="secno">7.3 </span>Interface <code>DOMSettableTokenList</code></a></ol></li>
- <li><a href="#historical"><span class="secno">8 </span>Historical</a>
+ <li><a href="#dom-features"><span class="secno">8 </span>DOM features</a></li>
+ <li><a href="#historical"><span class="secno">9 </span>Historical</a>
   <ol class="toc">
-   <li><a href="#dom-events"><span class="secno">8.1 </span>DOM Events</a></li>
-   <li><a href="#dom-core"><span class="secno">8.2 </span>DOM Core</a></li>
-   <li><a href="#html"><span class="secno">8.3 </span>HTML</a></li>
-   <li><a href="#element-traversal"><span class="secno">8.4 </span>Element Traversal</a></ol></li>
+   <li><a href="#dom-events"><span class="secno">9.1 </span>DOM Events</a></li>
+   <li><a href="#dom-core"><span class="secno">9.2 </span>DOM Core</a></li>
+   <li><a href="#html"><span class="secno">9.3 </span>HTML</a></li>
+   <li><a href="#element-traversal"><span class="secno">9.4 </span>Element Traversal</a></ol></li>
  <li><a class="no-num" href="#references">References</a>
   <ol class="toc">
    <li><a class="no-num" href="#normative-references">Normative references</a></li>
@@ -525,41 +532,7 @@ of the string, where such spaces are removed.
 </div>
 
 
-<h3 id="dom-features"><span class="secno">2.4 </span>DOM features</h3>
-<p>A <dfn id="concept-domfeature" title="concept-DOMfeature">DOM feature</dfn> is a unique,
-<a href="#ascii-case-insensitive">ASCII case-insensitive</a> string that represents a certain feature of
-the user agent.
-
-<p>A <dfn id="concept-domfeatureversion" title="concept-DOMfeatureversion">DOM feature version</dfn> is a (<var title="">feature</var>,&nbsp;<var title="">version</var>) tuple, where <var title="">feature</var> is <a href="#concept-domfeature" title="concept-DOMfeature">DOM feature</a>
-and <var title="">version</var> is a <a href="#case-sensitive">case-sensitive</a> string
-representing a version number.
-<!--of the form "<var title>major</var>.<var title>minor</var>".-->
-
-<p>Specifications may define which <a href="#concept-domfeature" title="concept-DOMfeature">DOM
-features</a> a user agent is to <dfn id="concept-support-domfeature" title="concept-support-DOMfeature">support</dfn>, as well as an associated list of
-one or more <a href="#case-sensitive">case-sensitive</a> strings representing version numbers, and under which circumstances, when necessary for compatibility (i.e. because of historical use). Specifications must not introduce new <a href="#concept-domfeature" title="concept-DOMfeature">DOM
-features</a> or new versions for existing features.
-
-<p>A user agent must <dfn id="concept-support-domfeatureversion" title="concept-support-DOMfeatureversion">support</dfn>
-a <a href="#concept-domfeatureversion" title="concept-DOMfeatureversion">DOM feature version</a> (<var title="">feature</var>,&nbsp;<var title="">version</var>) if it <a href="#concept-support-domfeature" title="concept-support-DOMfeature">supports</a> a <a href="#concept-domfeature" title="concept-DOMfeature">DOM feature</a> that is a <a href="#ascii-case-insensitive">ASCII
-case-insensitive</a> match for <var title="">feature</var> and <var title="">version</var> is in the associated list of versions.
-
-<p>A user agent must <a href="#concept-support-domfeatureversion" title="concept-support-DOMfeatureversion">support</a> the (<var title="">feature</var>,&nbsp;"") tuple if it <a href="#concept-support-domfeature" title="concept-support-DOMfeature">supports</a> a <a href="#concept-domfeature" title="concept-DOMfeature">DOM feature</a> that is a <a href="#ascii-case-insensitive">ASCII
-case-insensitive</a> match for <var title="">feature</var>.
-
-<p class="note">Authors are strongly discouraged from using <a href="#concept-domfeature" title="concept-DOMfeature">DOM features</a>, as they are notoriously unreliable
-and imprecise. Authors are encouraged to rely on explicit feature testing or
-graceful degradation.
-
-<p>For historical reasons, user agents must <a href="#concept-support-domfeatureversion" title="concept-support-DOMfeatureversion">support</a> the
-"XML" <a href="#concept-domfeature" title="concept-DOMfeature">DOM feature</a> with the versions "1.0"
-and "2.0" associated with it, and the "Core" <a href="#concept-domfeature" title="concept-DOMfeature">DOM
-feature</a> with the version "2.0" associated with it.
-
-<!-- Chrome supports Core/1.0; Opera supports x/undefined -->
-
-
-<h3 id="namespaces"><span class="secno">2.5 </span>Namespaces</h3>
+<h3 id="namespaces"><span class="secno">2.4 </span>Namespaces</h3>
 <p>The <dfn id="html-namespace">HTML namespace</dfn> is <code title="">http://www.w3.org/1999/xhtml</code>.
 
 <p>The <dfn id="xml-namespace">XML namespace</dfn> is <code title="">http://www.w3.org/XML/1998/namespace</code>.
@@ -3559,7 +3532,47 @@ attribute must return the underlying string and, on setting must replace the und
 
 
 
-<h2 id="historical"><span class="secno">8 </span>Historical</h2>
+<h2 id="dom-features"><span class="secno">8 </span>DOM features</h2>
+<p class="warning">Authors are strongly discouraged from using
+<a href="#concept-domfeature" title="concept-DOMfeature">DOM features</a>, as they are notoriously
+unreliable and imprecise. Authors are encouraged to rely on explicit feature
+testing or graceful degradation.
+
+<p>A <dfn id="concept-domfeature" title="concept-DOMfeature">DOM feature</dfn> is a unique,
+<a href="#ascii-case-insensitive">ASCII case-insensitive</a> string that represents a certain feature of
+the user agent.
+
+<p>A <dfn id="concept-domfeatureversion" title="concept-DOMfeatureversion">DOM feature version</dfn> is a (<var title="">feature</var>,&nbsp;<var title="">version</var>) tuple, where <var title="">feature</var> is <a href="#concept-domfeature" title="concept-DOMfeature">DOM feature</a>
+and <var title="">version</var> is a <a href="#case-sensitive">case-sensitive</a> string
+representing a version number.
+<!--of the form "<var title>major</var>.<var title>minor</var>".-->
+
+<p>Specifications may define which <a href="#concept-domfeature" title="concept-DOMfeature">DOM
+features</a> a user agent is to <dfn id="concept-support-domfeature" title="concept-support-DOMfeature">support</dfn>, as well as an associated list of
+one or more <a href="#case-sensitive">case-sensitive</a> strings representing version numbers, and under which circumstances, when necessary for compatibility (i.e. because of historical use). Specifications must not introduce new <a href="#concept-domfeature" title="concept-DOMfeature">DOM
+features</a> or new versions for existing features.
+
+<div class="impl">
+
+<p>A user agent must <dfn id="concept-support-domfeatureversion" title="concept-support-DOMfeatureversion">support</dfn>
+a <a href="#concept-domfeatureversion" title="concept-DOMfeatureversion">DOM feature version</a> (<var title="">feature</var>,&nbsp;<var title="">version</var>) if it <a href="#concept-support-domfeature" title="concept-support-DOMfeature">supports</a> a <a href="#concept-domfeature" title="concept-DOMfeature">DOM feature</a> that is a <a href="#ascii-case-insensitive">ASCII
+case-insensitive</a> match for <var title="">feature</var> and <var title="">version</var> is in the associated list of versions.
+
+<p>A user agent must <a href="#concept-support-domfeatureversion" title="concept-support-DOMfeatureversion">support</a> the (<var title="">feature</var>,&nbsp;"") tuple if it <a href="#concept-support-domfeature" title="concept-support-DOMfeature">supports</a> a <a href="#concept-domfeature" title="concept-DOMfeature">DOM feature</a> that is a <a href="#ascii-case-insensitive">ASCII
+case-insensitive</a> match for <var title="">feature</var>.
+
+<p>For historical reasons, user agents must <a href="#concept-support-domfeatureversion" title="concept-support-DOMfeatureversion">support</a> the
+"XML" <a href="#concept-domfeature" title="concept-DOMfeature">DOM feature</a> with the versions "1.0"
+and "2.0" associated with it, and the "Core" <a href="#concept-domfeature" title="concept-DOMfeature">DOM
+feature</a> with the version "2.0" associated with it.
+
+<!-- Chrome supports Core/1.0; Opera supports x/undefined -->
+
+</div>
+
+
+
+<h2 id="historical"><span class="secno">9 </span>Historical</h2>
 
 <!-- XXX we should probably just nuke this section in due course. No need to keep old dreams alive. -->
 
@@ -3573,7 +3586,7 @@ such this specification includes features defined by former DOM Events and
 DOM Core specifications, features once defined by HTML, and features defined
 by the Element Traversal specification.</p>
 
-<h3 id="dom-events"><span class="secno">8.1 </span>DOM Events</h3>
+<h3 id="dom-events"><span class="secno">9.1 </span>DOM Events</h3>
 
 <p>This specification only replaces the core event model and not any of the
 events for specific contexts (e.g. user interface events).
@@ -3599,7 +3612,7 @@ events for specific contexts (e.g. user interface events).
 </ul>
 
 
-<h3 id="dom-core"><span class="secno">8.2 </span>DOM Core</h3>
+<h3 id="dom-core"><span class="secno">9.2 </span>DOM Core</h3>
 
 <p><dfn id="domstring"><code>DOMString</code></dfn> and
 <dfn id="domtimestamp"><code>DOMTimeStamp</code></dfn> originally defined in DOM Level 3 Core
@@ -3699,14 +3712,14 @@ will not support them.
 </dl>
 
 
-<h3 id="html"><span class="secno">8.3 </span>HTML</h3>
+<h3 id="html"><span class="secno">9.3 </span>HTML</h3>
 
 <p>A number of DOM methods behave in a special way based on the
 <a href="#html-namespace">HTML namespace</a> or <a href="#html-document">HTML document</a> variables. This
 specification makes that an intrinsic part of the DOM.
 
 
-<h3 id="element-traversal"><span class="secno">8.4 </span>Element Traversal</h3>
+<h3 id="element-traversal"><span class="secno">9.4 </span>Element Traversal</h3>
 
 <p>This specification has removed <dfn id="dom-element-childelementcount" title="dom-Element-childElementCount"><code>childElementCount</code></dfn>.
 

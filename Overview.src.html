@@ -29,6 +29,13 @@
    table thead { border-bottom:solid }
    table tbody th:first-child { border-left:solid }
    table td, table th { border-left:solid; border-right:solid; border-bottom:solid thin; vertical-align:top; padding:0.2em }
+
+   .warning { color: red; background: transparent; font-weight: bolder; font-style: italic; }
+   .warning p:first-child { margin-top: 0; }
+   .warning p:last-child { margin-bottom: 0; }
+   .warning:before { font-style: normal; }
+   p.warning:before { content: '\26A0 Warning! '; }
+
    @media print {
      [data-anolis-spec]::after { content:"[" attr(data-anolis-spec) "]"; font-size:.6em; vertical-align:super; text-transform:uppercase }
    }
@@ -465,51 +472,6 @@ token to be collapsed to a single space, except at the start and end
 of the string, where such spaces are removed.
 
 </div>
-
-
-<h3>DOM features</h3>
-<p>A <dfn title=concept-DOMfeature>DOM feature</dfn> is a unique,
-<span>ASCII case-insensitive</span> string that represents a certain feature of
-the user agent.
-
-<p>A <dfn title=concept-DOMfeatureversion>DOM feature version</dfn> is a (<var title>feature</var>,&nbsp;<var title>version</var>) tuple, where <var title>feature</var> is <span title=concept-DOMfeature>DOM feature</span>
-and <var title>version</var> is a <span>case-sensitive</span> string
-representing a version number.
-<!--of the form "<var title>major</var>.<var title>minor</var>".-->
-
-<p>Specifications may define which <span title=concept-DOMfeature>DOM
-features</span> a user agent is to <dfn
-title=concept-support-DOMfeature>support</dfn>, as well as an associated list of
-one or more <span>case-sensitive</span> strings representing version numbers, and under which circumstances, when necessary for compatibility (i.e. because of historical use). Specifications must not introduce new <span title=concept-DOMfeature>DOM
-features</span> or new versions for existing features.
-
-<p>A user agent must <dfn title=concept-support-DOMfeatureversion>support</dfn>
-a <span title=concept-DOMfeatureversion>DOM feature version</span> (<var
-title>feature</var>,&nbsp;<var title>version</var>) if it <span
-title=concept-support-DOMfeature>supports</span> a <span
-title=concept-DOMfeature>DOM feature</span> that is a <span>ASCII
-case-insensitive</span> match for <var title>feature</var> and <var
-title>version</var> is in the associated list of versions.
-
-<p>A user agent must <span
-title=concept-support-DOMfeatureversion>support</span> the (<var
-title>feature</var>,&nbsp;"") tuple if it <span
-title=concept-support-DOMfeature>supports</span> a <span
-title=concept-DOMfeature>DOM feature</span> that is a <span>ASCII
-case-insensitive</span> match for <var title>feature</var>.
-
-<p class=note>Authors are strongly discouraged from using <span
-title=concept-DOMfeature>DOM features</span>, as they are notoriously unreliable
-and imprecise. Authors are encouraged to rely on explicit feature testing or
-graceful degradation.
-
-<p>For historical reasons, user agents must <span
-title=concept-support-DOMfeatureversion>support</span> the
-"XML" <span title=concept-DOMfeature>DOM feature</span> with the versions "1.0"
-and "2.0" associated with it, and the "Core" <span title=concept-DOMfeature>DOM
-feature</span> with the version "2.0" associated with it.
-
-<!-- Chrome supports Core/1.0; Opera supports x/undefined -->
 
 
 <h3>Namespaces</h3>
@@ -3593,6 +3555,56 @@ here.
 <p>The <dfn
 title="dom-DOMSettableTokenList-value"><code>value</code></dfn>
 attribute must return the underlying string and, on setting must replace the underlying string with the new value.
+
+</div>
+
+
+
+<h2>DOM features</h2>
+<p class=warning>Authors are strongly discouraged from using
+<span title=concept-DOMfeature>DOM features</span>, as they are notoriously
+unreliable and imprecise. Authors are encouraged to rely on explicit feature
+testing or graceful degradation.
+
+<p>A <dfn title=concept-DOMfeature>DOM feature</dfn> is a unique,
+<span>ASCII case-insensitive</span> string that represents a certain feature of
+the user agent.
+
+<p>A <dfn title=concept-DOMfeatureversion>DOM feature version</dfn> is a (<var title>feature</var>,&nbsp;<var title>version</var>) tuple, where <var title>feature</var> is <span title=concept-DOMfeature>DOM feature</span>
+and <var title>version</var> is a <span>case-sensitive</span> string
+representing a version number.
+<!--of the form "<var title>major</var>.<var title>minor</var>".-->
+
+<p>Specifications may define which <span title=concept-DOMfeature>DOM
+features</span> a user agent is to <dfn
+title=concept-support-DOMfeature>support</dfn>, as well as an associated list of
+one or more <span>case-sensitive</span> strings representing version numbers, and under which circumstances, when necessary for compatibility (i.e. because of historical use). Specifications must not introduce new <span title=concept-DOMfeature>DOM
+features</span> or new versions for existing features.
+
+<div class=impl>
+
+<p>A user agent must <dfn title=concept-support-DOMfeatureversion>support</dfn>
+a <span title=concept-DOMfeatureversion>DOM feature version</span> (<var
+title>feature</var>,&nbsp;<var title>version</var>) if it <span
+title=concept-support-DOMfeature>supports</span> a <span
+title=concept-DOMfeature>DOM feature</span> that is a <span>ASCII
+case-insensitive</span> match for <var title>feature</var> and <var
+title>version</var> is in the associated list of versions.
+
+<p>A user agent must <span
+title=concept-support-DOMfeatureversion>support</span> the (<var
+title>feature</var>,&nbsp;"") tuple if it <span
+title=concept-support-DOMfeature>supports</span> a <span
+title=concept-DOMfeature>DOM feature</span> that is a <span>ASCII
+case-insensitive</span> match for <var title>feature</var>.
+
+<p>For historical reasons, user agents must <span
+title=concept-support-DOMfeatureversion>support</span> the
+"XML" <span title=concept-DOMfeature>DOM feature</span> with the versions "1.0"
+and "2.0" associated with it, and the "Core" <span title=concept-DOMfeature>DOM
+feature</span> with the version "2.0" associated with it.
+
+<!-- Chrome supports Core/1.0; Opera supports x/undefined -->
 
 </div>
 

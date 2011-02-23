@@ -41,7 +41,7 @@
 <p><a href="http://www.w3.org/"><img alt="W3C" height="48" src="http://www.w3.org/Icons/w3c_home" width="72"></a></p>
 <!--end-logo-->
  <h1>DOM Core</h1>
- <h2 class="no-num no-toc" id="editor-s-draft-22-february-2011">Editor's Draft 22 February 2011</h2>
+ <h2 class="no-num no-toc" id="editor-s-draft-23-february-2011">Editor's Draft 23 February 2011</h2>
 
  <dl>
   <dt>This Version:
@@ -82,7 +82,7 @@ publications and the latest revision of this technical report can be found in
 the <a href="http://www.w3.org/TR/">W3C technical reports index</a> at
 http://www.w3.org/TR/.</i>
 
-<p>This is the 22 February 2011 Editor's Draft of DOM Core. Please send
+<p>This is the 23 February 2011 Editor's Draft of DOM Core. Please send
 comments to
 <a href="mailto:public-webapps@w3.org?subject=%5BDOMCore%5D%20">public-webapps@w3.org</a>
 (<a href="http://lists.w3.org/Archives/Public/public-webapps/">archived</a>)
@@ -124,17 +124,16 @@ document as other than work in progress.
   <ol class="toc">
    <li><a href="#dependencies"><span class="secno">1.1 </span>Dependencies</a></li>
    <li><a href="#extensibility"><span class="secno">1.2 </span>Extensibility</a></ol></li>
- <li><a href="#common-infrastructure"><span class="secno">2 </span>Common infrastructure</a>
+ <li><a href="#terminology"><span class="secno">2 </span>Terminology</a>
   <ol class="toc">
-   <li><a href="#terminology"><span class="secno">2.1 </span>Terminology</a></li>
-   <li><a href="#trees"><span class="secno">2.2 </span>Trees</a></li>
-   <li><a href="#case-sensitivity"><span class="secno">2.3 </span>Case-sensitivity</a></li>
-   <li><a href="#common-microsyntaxes"><span class="secno">2.4 </span>Common microsyntaxes</a>
+   <li><a href="#trees"><span class="secno">2.1 </span>Trees</a></li>
+   <li><a href="#case-sensitivity"><span class="secno">2.2 </span>Case-sensitivity</a></li>
+   <li><a href="#common-microsyntaxes"><span class="secno">2.3 </span>Common microsyntaxes</a>
     <ol class="toc">
-     <li><a href="#common-parser-idioms"><span class="secno">2.4.1 </span>Common parser idioms</a></li>
-     <li><a href="#space-separated-tokens"><span class="secno">2.4.2 </span>Space-separated tokens</a></ol></li>
-   <li><a href="#dom-features"><span class="secno">2.5 </span>DOM features</a></li>
-   <li><a href="#namespaces"><span class="secno">2.6 </span>Namespaces</a></ol></li>
+     <li><a href="#common-parser-idioms"><span class="secno">2.3.1 </span>Common parser idioms</a></li>
+     <li><a href="#space-separated-tokens"><span class="secno">2.3.2 </span>Space-separated tokens</a></ol></li>
+   <li><a href="#dom-features"><span class="secno">2.4 </span>DOM features</a></li>
+   <li><a href="#namespaces"><span class="secno">2.5 </span>Namespaces</a></ol></li>
  <li><a href="#exceptions"><span class="secno">3 </span>Exceptions</a>
   <ol class="toc">
    <li><a href="#exception-domexception"><span class="secno">3.1 </span>Exception <code>DOMException</code></a></ol></li>
@@ -283,11 +282,11 @@ this specification.
 <!-- http://www.w3.org/mid/17E341CD-E790-422C-9F9A-69347EE01CEB@iki.fi -->
 
 
-<h2 id="common-infrastructure"><span class="secno">2 </span>Common infrastructure</h2>
-<h3 id="terminology"><span class="secno">2.1 </span>Terminology</h3>
+<h2 id="terminology"><span class="secno">2 </span>Terminology</h2>
 
-<p>The term <dfn id="context-node">context node</dfn> means the <code><a href="#node">Node</a></code> on which the
-method or attribute being discussed was called.
+<p>The term <dfn id="context-object">context object</dfn> means the object on which the method
+or attribute being discussed was called. It is not always used as sometimes
+it is unambiguous.
 
 <p>The <dfn id="space-character" title="space character">space characters</dfn>, for the
 purposes of this specification, are U+0020 SPACE, U+0009 CHARACTER
@@ -295,7 +294,7 @@ TABULATION (tab), U+000A LINE FEED (LF), U+000C FORM FEED (FF), and
 U+000D CARRIAGE RETURN (CR).
 
 
-<h3 id="trees"><span class="secno">2.2 </span>Trees</h3> <!-- Sorry reddit, this is not /r/trees -->
+<h3 id="trees"><span class="secno">2.1 </span>Trees</h3> <!-- Sorry reddit, this is not /r/trees -->
 
 <p>Just like most programming paradigms the Web platform has finite
 hierarchical tree structures, simply named
@@ -358,7 +357,7 @@ of a <a href="#concept-tree" title="concept-tree">tree</a>.
 <!-- http://en.wikipedia.org/wiki/Tree_traversal#Depth-first_Traversal -->
 
 
-<h3 id="case-sensitivity"><span class="secno">2.3 </span>Case-sensitivity</h3>
+<h3 id="case-sensitivity"><span class="secno">2.2 </span>Case-sensitivity</h3>
 <p>This specification defines several comparison operators for strings.
 
 <p>Comparing two strings in a <dfn id="case-sensitive">case-sensitive</dfn> manner means comparing them exactly, codepoint for codepoint.
@@ -376,8 +375,8 @@ of a <a href="#concept-tree" title="concept-tree">tree</a>.
 other.
 
 
-<h3 id="common-microsyntaxes"><span class="secno">2.4 </span>Common microsyntaxes</h3>
-<h4 id="common-parser-idioms"><span class="secno">2.4.1 </span>Common parser idioms</h4>
+<h3 id="common-microsyntaxes"><span class="secno">2.3 </span>Common microsyntaxes</h3>
+<h4 id="common-parser-idioms"><span class="secno">2.3.1 </span>Common parser idioms</h4>
 <p>Some of the micro-parsers described below follow the pattern of having an
 <var title="">input</var> variable that holds the string being parsed, and having a
 <var title="">position</var> variable pointing at the next character to parse in
@@ -407,7 +406,7 @@ can be collected:
 must <a href="#collect-a-sequence-of-characters">collect a sequence of characters</a> that are <a href="#space-character" title="space character">space characters</a>. The collected
 characters are not used.
 
-<h4 id="space-separated-tokens"><span class="secno">2.4.2 </span>Space-separated tokens</h4>
+<h4 id="space-separated-tokens"><span class="secno">2.3.2 </span>Space-separated tokens</h4>
 
 <p>A <dfn id="set-of-space-separated-tokens">set of space-separated tokens</dfn> is a string containing
 zero or more words (known as tokens) separated by one or more <a href="#space-character" title="space character">space characters</a>, where words consist
@@ -527,7 +526,7 @@ of the string, where such spaces are removed.
 </div>
 
 
-<h3 id="dom-features"><span class="secno">2.5 </span>DOM features</h3>
+<h3 id="dom-features"><span class="secno">2.4 </span>DOM features</h3>
 <p>A <dfn id="concept-domfeature" title="concept-DOMfeature">DOM feature</dfn> is a unique,
 <a href="#ascii-case-insensitive">ASCII case-insensitive</a> string that represents a certain feature of
 the user agent.
@@ -561,7 +560,7 @@ feature</a> with the version "2.0" associated with it.
 <!-- Chrome supports Core/1.0; Opera supports x/undefined -->
 
 
-<h3 id="namespaces"><span class="secno">2.6 </span>Namespaces</h3>
+<h3 id="namespaces"><span class="secno">2.5 </span>Namespaces</h3>
 <p>The <dfn id="html-namespace">HTML namespace</dfn> is <code title="">http://www.w3.org/1999/xhtml</code>.
 
 <p>The <dfn id="xml-namespace">XML namespace</dfn> is <code title="">http://www.w3.org/XML/1998/namespace</code>.
@@ -789,6 +788,30 @@ method is invoked these steps must be run:</p>
  <li><p>If the <var title="">cancelable</var> argument is not omitted and is
  true, set the <a href="#cancel-flag">cancel flag</a>.
 </ol>
+
+<hr>
+
+<p>To
+<dfn id="concept-event-fire" title="concept-event-fire">fire an event named <var title="">e</var></dfn>
+means that an <a href="#concept-event" title="concept-event">event</a> of type
+<code><a href="#event">Event</a></code>, with its <a href="#concept-event-name" title="concept-event-name">name</a> set
+to <var title="">e</var>, and its <a href="#trusted-flag">trusted flag</a> set, is to be
+<a href="#concept-event-dispatch" title="concept-event-dispatch">dispatched</a> at the indicated
+object.</p>
+
+<p class="note">Fire is short for initializing and
+<a href="#concept-event-dispatch" title="concept-event-dispatch">dispatching</a> an
+<a href="#concept-event" title="concept-event">event</a>.
+
+<p class="note"><a href="#concept-event-fire" title="concept-event-fire">Fire an event</a> is a
+concept to make initializing and
+<a href="#concept-event-dispatch" title="concept-event-dispatch">dispatching</a> an
+<a href="#concept-event" title="concept-event">event</a> easier to write down. If the
+<a href="#concept-event" title="concept-event">event</a> needs its <a href="#bubble-flag">bubble flag</a> or
+<a href="#cancel-flag">cancel flag</a> set, one would write e.g.
+<a href="#concept-event-fire" title="concept-event-fire">fire an event named <code title="">submit</code></a>
+with its <a href="#cancel-flag">cancel flag</a> set.
+
 
 <h3 id="interface-customevent"><span class="secno">4.2 </span>Interface <code><a href="#customevent">CustomEvent</a></code></h3>
 
@@ -1257,16 +1280,16 @@ must return the local name that is associated with the node, if it has one,
 and null otherwise.-->
 
 <p>The <dfn id="dom-node-nodename" title="dom-Node-nodeName"><code>nodeName</code></dfn> attribute
-must return the following, depending on the <a href="#context-node">context node</a>:
+must return the following, depending on the <a href="#context-object">context object</a>:
 
 <dl class="switch">
  <dt><code><a href="#element">Element</a></code>
- <dd><p>The <a href="#context-node">context node</a>'s
+ <dd><p>The <a href="#context-object">context object</a>'s
  <code title="dom-Element-tagName"><a href="#dom-element-tagname">tagName</a></code> attribute.
 
  <!--AttrExodus
  <dt><code>Attr</code>
- <dd><p>The <span>context node</span>'s
+ <dd><p>The <span>context object</span>'s
  <code title=dom-Attr-name>name</code> attribute.
  -->
 
@@ -1274,7 +1297,7 @@ must return the following, depending on the <a href="#context-node">context node
  <dd><p>"<code title="">#text</code>".
 
  <dt><code><a href="#processinginstruction">ProcessingInstruction</a></code>
- <dd><p>The <a href="#context-node">context node</a>'s
+ <dd><p>The <a href="#context-object">context object</a>'s
  <code title="dom-ProcessingInstruction-target"><a href="#dom-processinginstruction-target">target</a></code> attribute.
 
  <dt><code><a href="#comment">Comment</a></code>
@@ -1284,7 +1307,7 @@ must return the following, depending on the <a href="#context-node">context node
  <dd><p>"<code title="">#document</code>".
 
  <dt><code><a href="#documenttype">DocumentType</a></code>
- <dd><p>The <a href="#context-node">context node</a>'s
+ <dd><p>The <a href="#context-object">context object</a>'s
  <code title="dom-DocumentType-name"><a href="#dom-documenttype-name">name</a></code> attribute.
 
  <dt><code><a href="#documentfragment">DocumentFragment</a></code>
@@ -1300,20 +1323,20 @@ must return the following, depending on the <a href="#context-node">context node
 
 <p>The <dfn title=dom-Node-hasAttributes><code>hasAttributes()</code></dfn>
 method must return true if there are any attributes associated with the
-<span>context node</span>, if it is an <code>Element</code> node, and false
+<span>context object</span>, if it is an <code>Element</code> node, and false
 otherwise.
 
-<p>The <dfn title=dom-Node-attributes><code>attributes</code></dfn> attribute must return a <code>NamedNodeMap</code> of all the <code>Attr</code> nodes associated with the node of the <span>context node</span>, if it is an <code>Element</code> node, or null otherwise.
+<p>The <dfn title=dom-Node-attributes><code>attributes</code></dfn> attribute must return a <code>NamedNodeMap</code> of all the <code>Attr</code> nodes associated with the node of the <span>context object</span>, if it is an <code>Element</code> node, or null otherwise.
 -->
 
 <hr>
 
-<p>The <dfn id="dom-node-ownerdocument" title="dom-Node-ownerDocument"><code>ownerDocument</code></dfn> attribute must return the <code><a href="#document">Document</a></code> node that the <a href="#context-node">context node</a> is associated with, or null if there is none.
+<p>The <dfn id="dom-node-ownerdocument" title="dom-Node-ownerDocument"><code>ownerDocument</code></dfn> attribute must return the <code><a href="#document">Document</a></code> node that the <a href="#context-object">context object</a> is associated with, or null if there is none.
 
 <p>The <dfn id="dom-node-parentnode" title="dom-Node-parentNode"><code>parentNode</code></dfn>
 attribute must return the <a href="#concept-tree-parent" title="concept-tree-parent">parent</a>.
 <!-- AttrExodus
-<li><p>If the <span>context node</span> is an <code>Attr</code> node,
+<li><p>If the <span>context object</span> is an <code>Attr</code> node,
 return null and terminate these steps.
 -->
 
@@ -1322,35 +1345,35 @@ return null and terminate these steps.
 attribute must return the <a href="#parent-element">parent element</a>.
 
 <p>The <dfn id="dom-node-haschildnodes" title="dom-Node-hasChildNodes"><code>hasChildNodes()</code></dfn>
-method must return false if the <a href="#context-node">context node</a> has no
+method must return false if the <a href="#context-object">context object</a> has no
 <a href="#concept-tree-child" title="concept-tree-child">children</a>, or true otherwise.
 
 <p>The <dfn id="dom-node-childnodes" title="dom-Node-childNodes"><code>childNodes</code></dfn>
 attribute must return a <code><a href="#nodelist">NodeList</a></code> rooted at the
-<a href="#context-node">context node</a> matching only
+<a href="#context-object">context object</a> matching only
 <a href="#concept-tree-child" title="concept-tree-child">children</a>.
 
 <p>The <dfn id="dom-node-firstchild" title="dom-Node-firstChild"><code>firstChild</code></dfn> attribute must return the first <a href="#concept-tree-child" title="concept-tree-child">child</a>
-of the <a href="#context-node">context node</a>, or null if there is none.
+of the <a href="#context-object">context object</a>, or null if there is none.
 
 <p>The <dfn id="dom-node-lastchild" title="dom-Node-lastChild"><code>lastChild</code></dfn> attribute must return the last <a href="#concept-tree-child" title="concept-tree-child">child</a> of the
-<a href="#context-node">context node</a>, or null if there is none.
+<a href="#context-object">context object</a>, or null if there is none.
 
 <p>The
 <dfn id="dom-node-previoussibling" title="dom-Node-previousSibling"><code>previousSibling</code></dfn>
 attribute must return the first
 <span title="concept-tree-previous-sibling">previous sibling</span> of the
-<a href="#context-node">context node</a>, or null if there is none.
+<a href="#context-object">context object</a>, or null if there is none.
 <!-- AttrExodus
- <li><p>If the <span>context node</span> is an <code>Attr</code> node,
+ <li><p>If the <span>context object</span> is an <code>Attr</code> node,
  return null and terminate these steps.
 -->
 
 <p>The <dfn id="dom-node-nextsibling" title="dom-Node-nextSibling"><code>nextSibling</code></dfn> attribute must return the  first
 <span title="concept-tree-next-sibling">next sibling</span> of the
-<a href="#context-node">context node</a>, or null if there is none.
+<a href="#context-object">context object</a>, or null if there is none.
 <!-- AttrExodus
- <li><p>If the <span>context node</span> is an <code>Attr</code> node,
+ <li><p>If the <span>context object</span> is an <code>Attr</code> node,
  return null and terminate these steps.
 -->
 
@@ -1380,14 +1403,14 @@ returns.
 <hr>
 
 <p>The <dfn id="dom-node-nodevalue" title="dom-Node-nodeValue"><code>nodeValue</code></dfn> attribute
-must return the following, depending on the <a href="#context-node">context node</a>:
+must return the following, depending on the <a href="#context-object">context object</a>:
 
 <dl class="switch">
  <!--AttrExodus <dt><code>Attr</code> -->
  <dt><code><a href="#text">Text</a></code>
  <dt><code><a href="#comment">Comment</a></code>
  <dt><code><a href="#processinginstruction">ProcessingInstruction</a></code>
- <dd><p>The <a href="#context-node">context node</a>'s
+ <dd><p>The <a href="#context-object">context object</a>'s
  <code title="dom-Node-textContent"><a href="#dom-node-textcontent">textContent</a></code> attribute.
 
  <dt>Any other node
@@ -1395,14 +1418,14 @@ must return the following, depending on the <a href="#context-node">context node
 </dl>
 
 <p>Setting the <code title="dom-Node-nodeValue"><a href="#dom-node-nodevalue">nodeValue</a></code> attribute
-must do as described below, depending on the <a href="#context-node">context node</a>:
+must do as described below, depending on the <a href="#context-object">context object</a>:
 
 <dl class="switch">
  <!--AttrExodus <dt><code>Attr</code> -->
  <dt><code><a href="#text">Text</a></code>
  <dt><code><a href="#comment">Comment</a></code>
  <dt><code><a href="#processinginstruction">ProcessingInstruction</a></code>
- <dd><p>Set the <a href="#context-node">context node</a>'s
+ <dd><p>Set the <a href="#context-object">context object</a>'s
  <code title="dom-Node-textContent"><a href="#dom-node-textcontent">textContent</a></code> attribute to the given
  value.
 
@@ -1412,7 +1435,7 @@ must do as described below, depending on the <a href="#context-node">context nod
 
 <p>The <dfn id="dom-node-textcontent" title="dom-Node-textContent"><code>textContent</code></dfn>
 attribute must return the following, depending on the
-<a href="#context-node">context node</a>:
+<a href="#context-object">context object</a>:
 
 <dl class="switch">
  <dt><code><a href="#documentfragment">DocumentFragment</a></code>
@@ -1421,16 +1444,16 @@ attribute must return the following, depending on the
  <dd><p>The concatenation of the
  <code title="dom-CharacterData-data"><a href="#dom-characterdata-data">data</a></code> attributes of all the
  <a href="#concept-tree-descendant" title="concept-tree-descendant">descendants</a> of type
- <code><a href="#text">Text</a></code> of the <a href="#context-node">context node</a>, in
+ <code><a href="#text">Text</a></code> of the <a href="#context-object">context object</a>, in
  <a href="#tree-order">tree order</a>.
 
  <dt><code><a href="#text">Text</a></code>
  <dt><code><a href="#comment">Comment</a></code>
- <dd><p>The <a href="#context-node">context node</a>'s
+ <dd><p>The <a href="#context-object">context object</a>'s
  <code title="dom-CharacterData-data"><a href="#dom-characterdata-data">data</a></code> attribute.
 
  <dt><code><a href="#processinginstruction">ProcessingInstruction</a></code>
- <dd><p>The <a href="#context-node">context node</a>'s
+ <dd><p>The <a href="#context-object">context object</a>'s
  <code title="dom-ProcessingInstruction-data"><a href="#dom-processinginstruction-data">data</a></code> attribute.
 
  <dt>Any other node
@@ -1439,7 +1462,7 @@ attribute must return the following, depending on the
 
 <p>Setting the <code title="dom-Node-textContent"><a href="#dom-node-textcontent">textContent</a></code>
 attribute must do as described below, depending on the
-<a href="#context-node">context node</a>:
+<a href="#context-object">context object</a>:
 
 <dl class="switch">
  <dt><code><a href="#documentfragment">DocumentFragment</a></code>
@@ -1448,21 +1471,21 @@ attribute must do as described below, depending on the
  <dd>
   <ol>
    <li><p>Remove all the
-   <a href="#concept-tree-descendant" title="concept-tree-descendant">descendants</a> of the <a href="#context-node">context node</a>.
+   <a href="#concept-tree-descendant" title="concept-tree-descendant">descendants</a> of the <a href="#context-object">context object</a>.
    <li><p>Let <var title="">data</var> be the given value.
    <li><p>If <var title="">data</var> is not the empty string, append a new
-   <code><a href="#text">Text</a></code> node to the <a href="#context-node">context node</a> whose
+   <code><a href="#text">Text</a></code> node to the <a href="#context-object">context object</a> whose
    <code title="dom-CharacterData-data"><a href="#dom-characterdata-data">data</a></code> is set to <var title="">data</var>.
   </ol>
 
  <dt><code><a href="#text">Text</a></code>
  <dt><code><a href="#comment">Comment</a></code>
- <dd><p>Set <a href="#context-node">context node</a>'s
+ <dd><p>Set <a href="#context-object">context object</a>'s
  <code title="dom-CharacterData-data"><a href="#dom-characterdata-data">data</a></code> attribute to the given
  value.
 
  <dt><code><a href="#processinginstruction">ProcessingInstruction</a></code>
- <dd><p>Set the <a href="#context-node">context node</a>'s
+ <dd><p>Set the <a href="#context-object">context object</a>'s
  <code title="dom-ProcessingInstruction-data"><a href="#dom-processinginstruction-data">data</a></code> attribute to the
  given value.
 
@@ -1475,24 +1498,24 @@ attribute must do as described below, depending on the
 method must run these steps:
 
 <ol>
- <li><p>If the <a href="#context-node">context node</a> is not a <code><a href="#document">Document</a></code>,
+ <li><p>If the <a href="#context-object">context object</a> is not a <code><a href="#document">Document</a></code>,
  <code><a href="#documentfragment">DocumentFragment</a></code> or <code><a href="#element">Element</a></code>, throw a
  <code title="dom-DOMException-HIERARCHY_REQUEST_ERR"><a href="#dom-domexception-hierarchy_request_err">HIERARCHY_REQUEST_ERR</a></code>
  and terminate these steps.
 
  <li><p>If <var title="">refChild</var> is null, return the result of invoking
- <a href="#context-node">context node</a>'s
+ <a href="#context-object">context object</a>'s
  <code title="dom-Node-appendChild"><a href="#dom-node-appendchild">appendChild</a></code> with
  <var title="">newChild</var> as argument and terminate these steps.
 
  <li><p>If <var title="">refChild</var> is not a child of the
- <a href="#context-node">context node</a>, then throw a
+ <a href="#context-object">context object</a>, then throw a
  <code title="dom-DOMException-NOT_FOUND_ERR"><a href="#dom-domexception-not_found_err">NOT_FOUND_ERR</a></code> exception
  and terminate these steps.
 
- <li><p>If <var title="">newChild</var> is the <a href="#context-node">context node</a> or an
+ <li><p>If <var title="">newChild</var> is the <a href="#context-object">context object</a> or an
  <a href="#concept-tree-ancestor" title="concept-tree-ancestor">ancestor</a> of the
- <a href="#context-node">context node</a> throw a
+ <a href="#context-object">context object</a> throw a
  <code title="dom-DOMException-HIERARCHY_REQUEST_ERR"><a href="#dom-domexception-hierarchy_request_err">HIERARCHY_REQUEST_ERR</a></code>
  and terminate these steps.
 
@@ -1505,23 +1528,23 @@ method must run these steps:
 
  <li><p>If <var title="">newChild</var> is a <code><a href="#documenttype">DocumentType</a></code> node set its
  <code title="dom-Node-ownerDocument"><a href="#dom-node-ownerdocument">ownerDocument</a></code> to the
- <a href="#context-node">context node</a>'s
+ <a href="#context-object">context object</a>'s
  <code title="dom-Node-ownerDocument"><a href="#dom-node-ownerdocument">ownerDocument</a></code>.
 
  <li><p>If <var title="">newChild</var> is not a <code><a href="#documenttype">DocumentType</a></code> node let
  <var title="">newChild</var> be the result of invoking the
- <a href="#context-node">context node</a>'s
+ <a href="#context-object">context object</a>'s
  <code title="dom-Node-ownerDocument"><a href="#dom-node-ownerdocument">ownerDocument</a></code>
  <code title="dom-Document-adoptNode"><a href="#dom-document-adoptnode">adoptNode</a></code> method with
  <var title="">newChild</var> as its argument.
 
  <li><p>If <var title="">newChild</var> is a <code><a href="#documentfragment">DocumentFragment</a></code> node,
  insert the children of <var title="">newChild</var> in the
- <a href="#context-node">context node</a>, in <a href="#tree-order">tree order</a>, so that the last
+ <a href="#context-object">context object</a>, in <a href="#tree-order">tree order</a>, so that the last
  child becomes the previous sibling of <var title="">refChild</var>.
 
  <li><p>Otherwise insert <var title="">newChild</var> in the
- <a href="#context-node">context node</a> as the previous sibling of <var title="">refChild</var>.
+ <a href="#context-object">context object</a> as the previous sibling of <var title="">refChild</var>.
 
  <li><p>Return <var title="">newChild</var>.
 </ol>
@@ -1531,19 +1554,19 @@ method must run these steps:
 method must run these steps:
 
 <ol>
- <li><p>If the <a href="#context-node">context node</a> is not a <code><a href="#document">Document</a></code>,
+ <li><p>If the <a href="#context-object">context object</a> is not a <code><a href="#document">Document</a></code>,
  <code><a href="#documentfragment">DocumentFragment</a></code> or <code><a href="#element">Element</a></code>, throw a
  <code title="dom-DOMException-HIERARCHY_REQUEST_ERR"><a href="#dom-domexception-hierarchy_request_err">HIERARCHY_REQUEST_ERR</a></code>
  and terminate these steps.
 
  <li><p>If <var title="">oldChild</var> is not a child of the
- <a href="#context-node">context node</a>, then throw a
+ <a href="#context-object">context object</a>, then throw a
  <code title="dom-DOMException-NOT_FOUND_ERR"><a href="#dom-domexception-not_found_err">NOT_FOUND_ERR</a></code> exception
  and terminate these steps.
 
- <li><p>If <var title="">newChild</var> is the <a href="#context-node">context node</a> or an
+ <li><p>If <var title="">newChild</var> is the <a href="#context-object">context object</a> or an
  <a href="#concept-tree-ancestor" title="concept-tree-ancestor">ancestor</a> of the
- <a href="#context-node">context node</a> throw a
+ <a href="#context-object">context object</a> throw a
  <code title="dom-DOMException-HIERARCHY_REQUEST_ERR"><a href="#dom-domexception-hierarchy_request_err">HIERARCHY_REQUEST_ERR</a></code>
  and terminate these steps.
 
@@ -1556,12 +1579,12 @@ method must run these steps:
 
  <li><p>If <var title="">newChild</var> is a <code><a href="#documenttype">DocumentType</a></code> node set its
  <code title="dom-Node-ownerDocument"><a href="#dom-node-ownerdocument">ownerDocument</a></code> to the
- <a href="#context-node">context node</a>'s
+ <a href="#context-object">context object</a>'s
  <code title="dom-Node-ownerDocument"><a href="#dom-node-ownerdocument">ownerDocument</a></code>.
 
  <li><p>If <var title="">newChild</var> is not a <code><a href="#documenttype">DocumentType</a></code> node let
  <var title="">newChild</var> be the result of invoking the
- <a href="#context-node">context node</a>'s
+ <a href="#context-object">context object</a>'s
  <code title="dom-Node-ownerDocument"><a href="#dom-node-ownerdocument">ownerDocument</a></code>
  <code title="dom-Document-adoptNode"><a href="#dom-document-adoptnode">adoptNode</a></code> method with
  <var title="">newChild</var> as its argument.
@@ -1569,9 +1592,9 @@ method must run these steps:
  <li><p>Let <var title="">refChild</var> be <var title="">oldChild</var>'s
  first <span title="concept-tree-next-sibling">next sibling</span>.
 
- <li><p>Remove <var title="">oldChild</var> from the <a href="#context-node">context node</a>.
+ <li><p>Remove <var title="">oldChild</var> from the <a href="#context-object">context object</a>.
 
- <li><p>Return the result of invoking the <a href="#context-node">context node</a>'s
+ <li><p>Return the result of invoking the <a href="#context-object">context object</a>'s
  <code title="dom-Node-insertBefore"><a href="#dom-node-insertbefore">insertBefore</a></code> method with
  <var title="">newChild</var> and <var title="">refChild</var> as arguments.
 </ol>
@@ -1581,18 +1604,18 @@ method must run these steps:
 method must run these steps:
 
 <ol>
- <li><p>If the <a href="#context-node">context node</a> is not a <code><a href="#document">Document</a></code>,
+ <li><p>If the <a href="#context-object">context object</a> is not a <code><a href="#document">Document</a></code>,
  <code><a href="#documentfragment">DocumentFragment</a></code> or <code><a href="#element">Element</a></code>, throw a
  <code title="dom-DOMException-HIERARCHY_REQUEST_ERR"><a href="#dom-domexception-hierarchy_request_err">HIERARCHY_REQUEST_ERR</a></code>
  and terminate these steps.
 
  <li><p>If <var title="">oldChild</var> is not a child of the
- <a href="#context-node">context node</a>, then throw a
+ <a href="#context-object">context object</a>, then throw a
  <code title="dom-DOMException-NOT_FOUND_ERR"><a href="#dom-domexception-not_found_err">NOT_FOUND_ERR</a></code> exception
  and terminate these steps.
  <!-- Including other documents. -->
 
- <li><p>Remove <var title="">oldChild</var> from the <a href="#context-node">context node</a>.
+ <li><p>Remove <var title="">oldChild</var> from the <a href="#context-object">context object</a>.
 
  <li><p>Return <var title="">oldChild</var>.
 </ol>
@@ -1602,14 +1625,14 @@ method must run these steps:
 method must run these steps:
 
 <ol>
- <li><p>If the <a href="#context-node">context node</a> is not a <code><a href="#document">Document</a></code>,
+ <li><p>If the <a href="#context-object">context object</a> is not a <code><a href="#document">Document</a></code>,
  <code><a href="#documentfragment">DocumentFragment</a></code> or <code><a href="#element">Element</a></code>, throw a
  <code title="dom-DOMException-HIERARCHY_REQUEST_ERR"><a href="#dom-domexception-hierarchy_request_err">HIERARCHY_REQUEST_ERR</a></code>
  and terminate these steps.
 
- <li><p>If <var title="">newChild</var> is the <a href="#context-node">context node</a> or an
+ <li><p>If <var title="">newChild</var> is the <a href="#context-object">context object</a> or an
  <a href="#concept-tree-ancestor" title="concept-tree-ancestor">ancestor</a> of the
- <a href="#context-node">context node</a> throw a
+ <a href="#context-object">context object</a> throw a
  <code title="dom-DOMException-HIERARCHY_REQUEST_ERR"><a href="#dom-domexception-hierarchy_request_err">HIERARCHY_REQUEST_ERR</a></code>
  and terminate these steps.
 
@@ -1622,17 +1645,17 @@ method must run these steps:
 
  <li><p>If <var title="">newChild</var> is a <code><a href="#documenttype">DocumentType</a></code> node set its
  <code title="dom-Node-ownerDocument"><a href="#dom-node-ownerdocument">ownerDocument</a></code> to the
- <a href="#context-node">context node</a>'s
+ <a href="#context-object">context object</a>'s
  <code title="dom-Node-ownerDocument"><a href="#dom-node-ownerdocument">ownerDocument</a></code>.
 
  <li><p>If <var title="">newChild</var> is not a <code><a href="#documenttype">DocumentType</a></code> node let
  <var title="">newChild</var> be the result of invoking the
- <a href="#context-node">context node</a>'s
+ <a href="#context-object">context object</a>'s
  <code title="dom-Node-ownerDocument"><a href="#dom-node-ownerdocument">ownerDocument</a></code>
  <code title="dom-Document-adoptNode"><a href="#dom-document-adoptnode">adoptNode</a></code> method with
  <var title="">newChild</var> as its argument.
 
- <li><p>Append <var title="">newChild</var> to the <a href="#context-node">context node</a>.
+ <li><p>Append <var title="">newChild</var> to the <a href="#context-object">context object</a>.
 
  <li><p>Return <var title="">newChild</var>.
 </ol>
@@ -1641,15 +1664,15 @@ method must run these steps:
 
 <p>The
 <dfn id="dom-node-clonenode" title="dom-Node-cloneNode"><code>cloneNode(<var title="">deep</var>)</code></dfn>
-method must return a <a href="#clone">clone</a> of the <a href="#context-node">context node</a>,
-with <var title="">new ownerDocument</var> being the <a href="#context-node">context node</a>'s
+method must return a <a href="#clone">clone</a> of the <a href="#context-object">context object</a>,
+with <var title="">new ownerDocument</var> being the <a href="#context-object">context object</a>'s
 <code title="dom-Node-ownerDocument"><a href="#dom-node-ownerdocument">ownerDocument</a></code>, and the
 <i><a href="#clone-children-flag">clone children flag</a></i> set if <var title="">deep</var> is true.
 
 <p>The
 <dfn id="dom-node-issamenode" title="dom-Node-isSameNode"><code>isSameNode(<var title="">node</var>)</code></dfn>
 method must return true if <var title="">node</var> is a reference to the same
-object as the <a href="#context-node">context node</a>, or false otherwise.
+object as the <a href="#context-object">context object</a>, or false otherwise.
 
 <p>The
 <dfn id="dom-node-isequalnode" title="dom-Node-isEqualNode"><code>isEqualNode(<var title="">node</var>)</code></dfn>
@@ -1658,9 +1681,9 @@ false otherwise:
 
 <ul>
  <li><p><var title="">node</var> is not null.
- <li><p><var title="">node</var>'s <code title="dom-Node-nodeType"><a href="#dom-node-nodetype">nodeType</a></code> is the same as the <a href="#context-node">context node</a>'s <code title="dom-Node-nodeType"><a href="#dom-node-nodetype">nodeType</a></code>.
- <li><p><var title="">node</var>'s <code title="dom-Node-nodeName"><a href="#dom-node-nodename">nodeName</a></code> is the same as the <a href="#context-node">context node</a>'s <code title="dom-Node-nodeName"><a href="#dom-node-nodename">nodeName</a></code>.
- <li><p><var title="">node</var>'s <code title="dom-Node-nodeValue"><a href="#dom-node-nodevalue">nodeValue</a></code> is the same as the <a href="#context-node">context node</a>'s <code title="dom-Node-nodeValue"><a href="#dom-node-nodevalue">nodeValue</a></code>.
+ <li><p><var title="">node</var>'s <code title="dom-Node-nodeType"><a href="#dom-node-nodetype">nodeType</a></code> is the same as the <a href="#context-object">context object</a>'s <code title="dom-Node-nodeType"><a href="#dom-node-nodetype">nodeType</a></code>.
+ <li><p><var title="">node</var>'s <code title="dom-Node-nodeName"><a href="#dom-node-nodename">nodeName</a></code> is the same as the <a href="#context-object">context object</a>'s <code title="dom-Node-nodeName"><a href="#dom-node-nodename">nodeName</a></code>.
+ <li><p><var title="">node</var>'s <code title="dom-Node-nodeValue"><a href="#dom-node-nodevalue">nodeValue</a></code> is the same as the <a href="#context-object">context object</a>'s <code title="dom-Node-nodeValue"><a href="#dom-node-nodevalue">nodeValue</a></code>.
  <li>
   <p>The following are also equal, depending on <var title="">node</var>:
   <dl class="switch">
@@ -1692,8 +1715,8 @@ false otherwise:
    <dt>Any other node
    <dd><p>&mdash;
   </dl>
- <li><p><var title="">node</var>'s <code title="dom-Node-childNodes"><a href="#dom-node-childnodes">childNodes</a></code>' <code title="dom-NodeList-length"><a href="#dom-nodelist-length">length</a></code> is the same as the <a href="#context-node">context node</a>'s <code title="dom-Node-childNodes"><a href="#dom-node-childnodes">childNodes</a></code>' <code title="dom-NodeList-length"><a href="#dom-nodelist-length">length</a></code>.
- <li><p>Calling <code title="dom-Node-isEqualNode"><a href="#dom-node-isequalnode">isEqualNode</a></code> on each child node of the <a href="#context-node">context node</a>, with the child node of the same index in <var title="">node</var> as argument returns true for every child node.
+ <li><p><var title="">node</var>'s <code title="dom-Node-childNodes"><a href="#dom-node-childnodes">childNodes</a></code>' <code title="dom-NodeList-length"><a href="#dom-nodelist-length">length</a></code> is the same as the <a href="#context-object">context object</a>'s <code title="dom-Node-childNodes"><a href="#dom-node-childnodes">childNodes</a></code>' <code title="dom-NodeList-length"><a href="#dom-nodelist-length">length</a></code>.
+ <li><p>Calling <code title="dom-Node-isEqualNode"><a href="#dom-node-isequalnode">isEqualNode</a></code> on each child node of the <a href="#context-object">context object</a>, with the child node of the same index in <var title="">node</var> as argument returns true for every child node.
 </ul>
 
 <hr>
@@ -1789,7 +1812,7 @@ method must run these steps:
  <li><p>If <var title="">namespace</var> is the empty string return null.
 
  <li>
-  <p>Otherwise it depends on the <a href="#context-node">context node</a>:
+  <p>Otherwise it depends on the <a href="#context-object">context object</a>:
 
   <dl class="switch">
    <dt><code><a href="#element">Element</a></code>
@@ -1818,7 +1841,7 @@ method must run these steps:
 <p>The
 <dfn id="dom-node-lookupnamespaceuri" title="dom-Node-lookupNamespaceURI"><code>lookupNamespaceURI(<var title="">prefix</var>)</code></dfn>
 method must return the result of running <a href="#locate-a-namespace">locate a namespace</a> for
-the <a href="#context-node">context node</a> using <var title="">prefix</var>.
+the <a href="#context-object">context object</a> using <var title="">prefix</var>.
 
 <p>The
 <dfn id="dom-node-isdefaultnamespace" title="dom-Node-isDefaultNamespace"><code>isDefaultNamespace(<var title="">namespace</var>)</code></dfn>
@@ -1827,7 +1850,7 @@ method must run these steps:
 <ol>
  <li><p>Let <var title="">defaultNamespace</var> be the result of invoking
  <code title="dom-Node-lookupNamespaceURI"><a href="#dom-node-lookupnamespaceuri">lookupNamespaceURI</a></code> with null
- as argument on the <a href="#context-node">context node</a>.
+ as argument on the <a href="#context-object">context object</a>.
 
  <li><p>If <var title="">defaultNamespace</var> is null let it be the empty
  string.
@@ -1906,8 +1929,8 @@ absence, or value of the DOCTYPE string.
 <dl class="domintro">
  <dt><var title="">document</var> . <code title="dom-Document-compatMode"><a href="#dom-document-compatmode">compatMode</a></code>
  <dd>
-  <p>Returns the string "<code title="">CSS1Compat</code>" if the <a href="#context-node">context
-  node</a> is in <a href="#concept-no-quirks-mode" title="concept-no-quirks-mode">no-quirks mode</a> or
+  <p>Returns the string "<code title="">CSS1Compat</code>" if the <span>context
+  node</span> is in <a href="#concept-no-quirks-mode" title="concept-no-quirks-mode">no-quirks mode</a> or
   <a href="#concept-limited-quirks-mode" title="concept-limited-quirks-mode">limited-quirks mode</a>, and
   "<code title="">BackCompat</code>", if the <code><a href="#document">Document</a></code> is in
   <a href="#concept-quirks-mode" title="concept-quirks-mode">quirks mode</a>.
@@ -1920,7 +1943,7 @@ Should document.documentURI really exist? be readonly?
 
 <p>The <dfn id="dom-document-compatmode" title="dom-Document-compatMode"><code>compatMode</code></dfn> IDL
 attribute must return the literal string "<code title="">CSS1Compat</code>" unless
-the <a href="#context-node">context node</a> is in <a href="#concept-quirks-mode" title="concept-quirks-mode">quirks mode</a>, in which case it must instead
+the <a href="#context-object">context object</a> is in <a href="#concept-quirks-mode" title="concept-quirks-mode">quirks mode</a>, in which case it must instead
 return the literal string "<code title="">BackCompat</code>".
 
 <!-- <dfn title=dom-Document-xmlVersion>xmlVersion</dfn>
@@ -1949,13 +1972,13 @@ attribute must return the <a href="#document-element">document element</a>.
 
 <ol>
  <li><p>If <var title="">localName</var> is "<code>*</code>" (U+002A),
- return a <code><a href="#nodelist">NodeList</a></code> rooted at the <a href="#context-node">context node</a>,
+ return a <code><a href="#nodelist">NodeList</a></code> rooted at the <a href="#context-object">context object</a>,
  whose filter matches only <code><a href="#element">Element</a></code> nodes.
 
  <li>
-  <p>Otherwise, if the <a href="#context-node">context node</a> is an
+  <p>Otherwise, if the <a href="#context-object">context object</a> is an
   <a href="#html-document">HTML document</a>, return a <code><a href="#nodelist">NodeList</a></code> rooted at the
-  <a href="#context-node">context node</a>, whose filter matches only the following nodes:
+  <a href="#context-object">context object</a>, whose filter matches only the following nodes:
 
   <ul>
    <li><code><a href="#element">Element</a></code> nodes in the <a href="#html-namespace">HTML namespace</a> whose <a href="#concept-element-local-name" title="concept-element-local-name">local name</a> is
@@ -1968,7 +1991,7 @@ attribute must return the <a href="#document-element">document element</a>.
   </ul>
 
  <li><p>Otherwise, return a <code><a href="#nodelist">NodeList</a></code> rooted at the
- <a href="#context-node">context node</a>, whose filter matches only <a href="#concept-element" title="concept-element">elements</a> whose <a href="#concept-element-local-name" title="concept-element-local-name">local name</a> is
+ <a href="#context-object">context object</a>, whose filter matches only <a href="#concept-element" title="concept-element">elements</a> whose <a href="#concept-element-local-name" title="concept-element-local-name">local name</a> is
  <var title="">localName</var>.
 </ol>
 <p>When invoked with the same argument the same <code><a href="#nodelist">NodeList</a></code> object may be returned as returned by an earlier call.
@@ -1985,17 +2008,17 @@ that are in the <a href="#html-namespace">HTML namespace</a>.
 <ol>
  <li><p>If both <var title="">namespace</var> and <var title="">localName</var> are
  "<code>*</code>" (U+002A) return a <code><a href="#nodelist">NodeList</a></code> rooted at the
- <a href="#context-node">context node</a>, whose filter matches only <a href="#concept-element" title="concept-element">elements</a>.
+ <a href="#context-object">context object</a>, whose filter matches only <a href="#concept-element" title="concept-element">elements</a>.
  <li><p>Otherwise, if just <var title="">namespace</var> is "<code>*</code>"
  (U+002A), return a <code><a href="#nodelist">NodeList</a></code> rooted at the
- <a href="#context-node">context node</a>, whose filter matches only <a href="#concept-element" title="concept-element">elements</a> whose <a href="#concept-element-local-name" title="concept-element-local-name">local name</a> is
+ <a href="#context-object">context object</a>, whose filter matches only <a href="#concept-element" title="concept-element">elements</a> whose <a href="#concept-element-local-name" title="concept-element-local-name">local name</a> is
  <var title="">localName</var>.
  <li><p>Otherwise, if just <var title="">localName</var> is "<code>*</code>"
  (U+002A), return a <code><a href="#nodelist">NodeList</a></code> rooted at the
- <a href="#context-node">context node</a>, whose filter matches only <a href="#concept-element" title="concept-element">elements</a> whose <a href="#concept-element-namespace" title="concept-element-namespace">namespace</a> is
+ <a href="#context-object">context object</a>, whose filter matches only <a href="#concept-element" title="concept-element">elements</a> whose <a href="#concept-element-namespace" title="concept-element-namespace">namespace</a> is
  <var title="">namespace</var>.
  <li><p>Otherwise, return a <code><a href="#nodelist">NodeList</a></code> rooted at the
- <a href="#context-node">context node</a>, whose filter matches only <a href="#concept-element" title="concept-element">elements</a> whose <a href="#concept-element-namespace" title="concept-element-namespace">namespace</a> is
+ <a href="#context-object">context object</a>, whose filter matches only <a href="#concept-element" title="concept-element">elements</a> whose <a href="#concept-element-namespace" title="concept-element-namespace">namespace</a> is
  <var title="">namespace</var> and
  <a href="#concept-element-local-name" title="concept-element-local-name">local name</a> is
  <var title="">localName</var>.
@@ -2006,7 +2029,7 @@ that are in the <a href="#html-namespace">HTML namespace</a>.
 
 <p>The <dfn id="dom-document-getelementsbyclassname" title="dom-Document-getElementsByClassName"><code>getElementsByClassName(<var title="">classNames</var>)</code></dfn> method takes a string that contains a
 <a href="#set-of-space-separated-tokens">set of space-separated tokens</a> representing <a href="#concept-class" title="concept-class">classes</a>. When called, the method must return a <a href="#concept-collection-live" title="concept-collection-live">live</a> <code><a href="#nodelist">NodeList</a></code> object
-containing all the elements in the <a href="#context-node">context node</a>, in <a href="#tree-order">tree
+containing all the elements in the <a href="#context-object">context object</a>, in <a href="#tree-order">tree
 order</a>, that have all the <a href="#concept-class" title="concept-class">classes</a>
 specified in the <var title="">classNames</var> argument, having obtained the
 <a href="#concept-class" title="concept-class">classes</a> by <a href="#split-a-string-on-spaces" title="split a string on
@@ -2052,7 +2075,7 @@ case-insensitive</a> manner, otherwise, the comparisons must be done in a
 <p>The
 <dfn id="dom-document-getelementbyid" title="dom-Document-getElementById"><code>getElementById(<var title="">elementId</var>)</code></dfn>
 method must return the first <a href="#concept-element" title="concept-element">element</a>, in
-<a href="#tree-order">tree order</a>, within the <a href="#context-node">context node</a>'s
+<a href="#tree-order">tree order</a>, within the <a href="#context-object">context object</a>'s
 <a href="#concept-tree" title="concept-tree">tree</a>, whose <a href="#concept-id" title="concept-ID">ID</a>
 is <var title="">elementId</var>, or null if there is none.
 
@@ -2065,7 +2088,7 @@ is <var title="">elementId</var>, or null if there is none.
  <code title="dom-DOMException-INVALID_CHARACTER_ERR"><a href="#dom-domexception-invalid_character_err">INVALID_CHARACTER_ERR</a></code>
  exception and terminate these steps.
 
- <li><p>If the <a href="#context-node">context node</a> is an <a href="#html-document">HTML document</a>,
+ <li><p>If the <a href="#context-object">context object</a> is an <a href="#html-document">HTML document</a>,
  let <var title="">localName</var> be <a href="#converted-to-lowercase">converted to lowercase</a>.
  <!-- XXX why restrict this to HTML documents? -->
 
@@ -2076,7 +2099,7 @@ is <var title="">elementId</var>, or null if there is none.
  <a href="#concept-element-local-name" title="concept-element-local-name">local name</a> set to
  <var title="">localName</var>, and
  <code title="dom-Node-ownerDocument"><a href="#dom-node-ownerdocument">ownerDocument</a></code> set to the
- <a href="#context-node">context node</a>.
+ <a href="#context-object">context object</a>.
 </ol>
 
 <p>The
@@ -2119,20 +2142,20 @@ method must run these steps:
  <var title="">prefix</var>, <a href="#concept-element-local-name" title="concept-element-local-name">local name</a>
  set to <var title="">localName</var>, and
  <code title="dom-Node-ownerDocument"><a href="#dom-node-ownerdocument">ownerDocument</a></code> set to the
- <a href="#context-node">context node</a>.
+ <a href="#context-object">context object</a>.
 </ol>
 
 <p>The
 <dfn id="dom-document-createdocumentfragment" title="dom-Document-createDocumentFragment"><code>createDocumentFragment()</code></dfn>
 method must return a new <code><a href="#documentfragment">DocumentFragment</a></code> node with its
 <code title="dom-Node-ownerDocument"><a href="#dom-node-ownerdocument">ownerDocument</a></code> set to the
-<a href="#context-node">context node</a>.
+<a href="#context-object">context object</a>.
 
-<p>The <dfn id="dom-document-createtextnode" title="dom-Document-createTextNode"><code>createTextNode(<var title="">data</var>)</code></dfn> method must return a new <code><a href="#text">Text</a></code> node with its <code title="dom-CharacterData-data"><a href="#dom-characterdata-data">data</a></code> attribute set to <var title="">data</var> and <code title="dom-Node-ownerDocument"><a href="#dom-node-ownerdocument">ownerDocument</a></code> set to the <a href="#context-node">context node</a>.
+<p>The <dfn id="dom-document-createtextnode" title="dom-Document-createTextNode"><code>createTextNode(<var title="">data</var>)</code></dfn> method must return a new <code><a href="#text">Text</a></code> node with its <code title="dom-CharacterData-data"><a href="#dom-characterdata-data">data</a></code> attribute set to <var title="">data</var> and <code title="dom-Node-ownerDocument"><a href="#dom-node-ownerdocument">ownerDocument</a></code> set to the <a href="#context-object">context object</a>.
 <p class="note">No check is performed that the text node contains characters that
 match the <code class="external"><a href="http://www.w3.org/TR/xml/#NT-Char">Char</a></code> production in XML.
 
-<p>The <dfn id="dom-document-createcomment" title="dom-Document-createComment"><code>createComment(<var title="">data</var>)</code></dfn> method must return a new <code><a href="#comment">Comment</a></code> node with its <code title="dom-CharacterData-data"><a href="#dom-characterdata-data">data</a></code> attribute set to <var title="">data</var> and <code title="dom-Node-ownerDocument"><a href="#dom-node-ownerdocument">ownerDocument</a></code> set to the <a href="#context-node">context node</a>.
+<p>The <dfn id="dom-document-createcomment" title="dom-Document-createComment"><code>createComment(<var title="">data</var>)</code></dfn> method must return a new <code><a href="#comment">Comment</a></code> node with its <code title="dom-CharacterData-data"><a href="#dom-characterdata-data">data</a></code> attribute set to <var title="">data</var> and <code title="dom-Node-ownerDocument"><a href="#dom-node-ownerdocument">ownerDocument</a></code> set to the <a href="#context-object">context object</a>.
 <p class="note">No check is performed that the comment contains characters that
 match the <code class="external"><a href="http://www.w3.org/TR/xml/#NT-Char">Char</a></code> production in XML or that it
 contains two adjacent hyphens or ends with a hyphen.
@@ -2140,7 +2163,7 @@ contains two adjacent hyphens or ends with a hyphen.
 <p>The <dfn id="dom-document-createprocessinginstruction" title="dom-Document-createProcessingInstruction"><code>createProcessingInstruction(<var title="">target</var>, <var title="">data</var>)</code></dfn> method must run these steps:
 
 <ol>
- <li><p>If the <a href="#context-node">context node</a> is an <a href="#html-document">HTML document</a>, throw
+ <li><p>If the <a href="#context-object">context object</a> is an <a href="#html-document">HTML document</a>, throw
  a <code title="dom-DOMException-NOT_SUPPORTED_ERR"><a href="#dom-domexception-not_supported_err">NOT_SUPPORTED_ERR</a></code>
  exception and terminate these steps.
 
@@ -2159,7 +2182,7 @@ contains two adjacent hyphens or ends with a hyphen.
  <a href="#concept-pi-target" title="concept-PI-target">target</a> set to <var title="">target</var>,
  <a href="#concept-pi-data" title="concept-PI-data">data</a> set to <var title="">data</var>, and
  <code title="dom-Node-ownerDocument"><a href="#dom-node-ownerdocument">ownerDocument</a></code> set to the
- <a href="#context-node">context node</a>.
+ <a href="#context-object">context object</a>.
 </ol>
 
 <p class="note">No check is performed that the processing instruction target
@@ -2173,7 +2196,7 @@ contains "xml" or the colon, or that the data contains characters that match the
  <li><p>If <var title>name</var> does not match the <code data-anolis-spec=xml>Name</code> production in XML, throw an
  <code title=dom-DOMException-INVALID_CHARACTER_ERR>INVALID_CHARACTER_ERR</code>
  exception and terminate these steps.
- <li><p>Return a new <code>Attr</code> node with its <code title=dom-Node-namespaceURI>namespaceURI</code> set to null, <code title=dom-Node-prefix>prefix</code> set to null, <code title=dom-Node-localName>localName</code> set to <var title>name</var>, and <code title=dom-Node-ownerDocument>ownerDocument</code> set to the <span>context node</span>.
+ <li><p>Return a new <code>Attr</code> node with its <code title=dom-Node-namespaceURI>namespaceURI</code> set to null, <code title=dom-Node-prefix>prefix</code> set to null, <code title=dom-Node-localName>localName</code> set to <var title>name</var>, and <code title=dom-Node-ownerDocument>ownerDocument</code> set to the <span>context object</span>.
 </ol>-->
 <!-- this is different from DOM3 -->
 <!--<p class=note>No check is performed that the local name will match the <code
@@ -2184,7 +2207,7 @@ data-anolis-spec=xmlns>NCName</code> production in Namespaces in XML.-->
 <p>The
 <dfn id="dom-document-importnode" title="dom-Document-importNode"><code>importNode(<var title="">node</var>, <var title="">deep</var>)</code></dfn>
 method must return a <a href="#clone">clone</a> of <var title="">node</var>, with
-<var title="">new ownerDocument</var> being the <a href="#context-node">context node</a>, and the
+<var title="">new ownerDocument</var> being the <a href="#context-object">context object</a>, and the
 <i><a href="#clone-children-flag">clone children flag</a></i> set if <var title="">deep</var> is true.
 
 <p>The
@@ -2207,7 +2230,7 @@ method must run these steps:
 
  <li><p>Set <code title="dom-Node-ownerDocument"><a href="#dom-node-ownerdocument">ownerDocument</a></code> for
  <var title="">node</var> and all its <a href="#concept-tree-descendant" title="concept-tree-descendant">descendants</a><!--AttrExodus as well as any associated
- <code>Attr</code> nodes--> to the <a href="#context-node">context node</a>.
+ <code>Attr</code> nodes--> to the <a href="#context-object">context object</a>.
 
  <li><p>Return <var title="">node</var>.
 </ol>
@@ -2406,20 +2429,20 @@ title=dom-Node-appendChild>appendChild</code> methods.
 
 <p>The <dfn title=dom-Attr-name><code>name</code></dfn> attribute must return
 the <span title=concept-attribute-name>name</span> associated with the
-<span>context node</span>.
+<span>context object</span>.
 
 <p>The <dfn title=dom-Attr-specified><code>specified</code></dfn> attribute must
 return true.
 
-<p>The <dfn title=dom-Attr-value><code>value</code></dfn> attribute must return the value of the <span>context node</span>'s
+<p>The <dfn title=dom-Attr-value><code>value</code></dfn> attribute must return the value of the <span>context object</span>'s
 <code title=dom-Node-textContent>textContent</code> attribute and on
-setting, must set the <span>context node</span>'s
+setting, must set the <span>context object</span>'s
 <code title=dom-Node-textContent>textContent</code> attribute to the given
 value.
 
 <p>The <dfn title=dom-Attr-ownerElement><code>ownerElement</code></dfn>
 attribute must return the <span title=concept-attribute-element>element</span>
-associated with the <span>context node</span><!- -, if there is one, or null
+associated with the <span>context object</span><!- -, if there is one, or null
 otherwise [createAttribute]- ->.
 -->
 
@@ -2512,20 +2535,20 @@ here. It would simplify a lot of stuff.
 <hr>
 
 <p>The <dfn id="dom-element-namespaceuri" title="dom-Element-namespaceURI"><code>namespaceURI</code></dfn>
-attribute must return the <a href="#context-node">context node</a>'s
+attribute must return the <a href="#context-object">context object</a>'s
 <a href="#concept-element-namespace" title="concept-element-namespace">namespace</a>.
 
-<p>The <dfn id="dom-element-prefix" title="dom-Element-prefix"><code>prefix</code></dfn> attribute must return the <a href="#context-node">context node</a>'s
+<p>The <dfn id="dom-element-prefix" title="dom-Element-prefix"><code>prefix</code></dfn> attribute must return the <a href="#context-object">context object</a>'s
 <a href="#concept-element-namespace-prefix" title="concept-element-namespace-prefix">namespace prefix</a>.
 
 <p>The <dfn id="dom-element-localname" title="dom-Element-localName"><code>localName</code></dfn>
-attribute must return the <a href="#context-node">context node</a>'s
+attribute must return the <a href="#context-object">context object</a>'s
 <a href="#concept-element-local-name" title="concept-element-local-name">local name</a>.
 
 <p>The <dfn id="dom-element-tagname" title="dom-Element-tagName"><code>tagName</code></dfn> attribute
 must run these steps:
 <ol>
- <li><p>If <a href="#context-node">context node</a>'s
+ <li><p>If <a href="#context-object">context object</a>'s
  <a href="#concept-element-namespace-prefix" title="concept-element-namespace-prefix">namespace prefix</a> is not
  null, let <var title="">qualified name</var> be its
  <a href="#concept-element-namespace-prefix" title="concept-element-namespace-prefix">namespace prefix</a>, followed
@@ -2534,7 +2557,7 @@ must run these steps:
  <var title="">qualified name</var> be its
  <a href="#concept-element-local-name" title="concept-element-local-name">local name</a>.
 
- <li><p>If the <a href="#context-node">context node</a> is in the <a href="#html-namespace">HTML namespace</a> and
+ <li><p>If the <a href="#context-object">context object</a> is in the <a href="#html-namespace">HTML namespace</a> and
  its <code title="dom-Node-ownerDocument"><a href="#dom-node-ownerdocument">ownerDocument</a></code> is an
  <a href="#html-document">HTML document</a>, let <var title="">qualified name</var> be
  <a href="#converted-to-uppercase">converted to uppercase</a>.
@@ -2548,17 +2571,17 @@ must run these steps:
 
 <p>The <dfn id="dom-element-attributes" title="dom-Element-attributes"><code>attributes</code></dfn>
 attribute must return a read only array<!--XXX WebIDL--> of the
-<a href="#context-node">context node</a>'s associated <code><a href="#attr">Attr</a></code> objects.
+<a href="#context-object">context object</a>'s associated <code><a href="#attr">Attr</a></code> objects.
 
 <p>The <dfn id="dom-element-getattribute" title="dom-Element-getAttribute"><code>getAttribute(<var title="">name</var>)</code></dfn> method must run these steps:
 <ol>
- <li><p>If the <a href="#context-node">context node</a> is in the
+ <li><p>If the <a href="#context-object">context object</a> is in the
  <a href="#html-namespace">HTML namespace</a> and its
  <code title="dom-Node-ownerDocument"><a href="#dom-node-ownerdocument">ownerDocument</a></code> is an
  <a href="#html-document">HTML document</a>, let <var title="">name</var> be <a href="#converted-to-lowercase">converted to lowercase</a>.
 
  <li><p>Return the <a href="#concept-attr-value" title="concept-attr-value">value</a> of the first
- <code><a href="#attr">Attr</a></code> in the <a href="#context-node">context node</a>'s
+ <code><a href="#attr">Attr</a></code> in the <a href="#context-object">context object</a>'s
  <code title="dom-Element-attributes"><a href="#dom-element-attributes">attributes</a></code> whose
  <a href="#concept-attr-qualified-name" title="concept-attr-qualified-name">qualified name</a> is
  <var title="">name</var>, if the <code><a href="#attr">Attr</a></code> is present, or null otherwise.
@@ -2567,7 +2590,7 @@ attribute must return a read only array<!--XXX WebIDL--> of the
 <p>The
 <dfn id="dom-element-getattributens" title="dom-Element-getAttributeNS"><code>getAttributeNS(<var title="">namespace</var>, <var title="">localName</var>)</code></dfn>
 method must return the <a href="#concept-attr-value" title="concept-attr-value">value</a> of the
-<code><a href="#attr">Attr</a></code> in the <a href="#context-node">context node</a>'s
+<code><a href="#attr">Attr</a></code> in the <a href="#context-object">context object</a>'s
 <code title="dom-Element-attributes"><a href="#dom-element-attributes">attributes</a></code> whose
 <a href="#concept-attr-namespace" title="concept-attr-namespace">namespace</a> is
 <var title="">namespace</var> and
@@ -2585,7 +2608,7 @@ method must run these steps:
  <code title="dom-DOMException-INVALID_CHARACTER_ERR"><a href="#dom-domexception-invalid_character_err">INVALID_CHARACTER_ERR</a></code>
  exception and terminate these steps.
 
- <li><p>If the <a href="#context-node">context node</a> is in the <a href="#html-namespace">HTML namespace</a>
+ <li><p>If the <a href="#context-object">context object</a> is in the <a href="#html-namespace">HTML namespace</a>
  and its <code title="dom-Node-ownerDocument"><a href="#dom-node-ownerdocument">ownerDocument</a></code> is an
  <a href="#html-document">HTML document</a>, let <var title="">qualifiedName</var> be
  <a href="#converted-to-lowercase">converted to lowercase</a>.
@@ -2596,17 +2619,17 @@ method must run these steps:
  <code title="dom-DOMException-NAMESPACE_ERR"><a href="#dom-domexception-namespace_err">NAMESPACE_ERR</a></code> and
  terminate these steps.
 
- <li><p>If the <a href="#context-node">context node</a> does not have an <code><a href="#attr">Attr</a></code>
+ <li><p>If the <a href="#context-object">context object</a> does not have an <code><a href="#attr">Attr</a></code>
  object whose <a href="#concept-attr-local-name" title="concept-attr-local-name">local name</a> is
  <var title="">qualifiedName</var>, create an <code><a href="#attr">Attr</a></code> object, whose
  <a href="#concept-attr-local-name" title="concept-attr-local-name">local name</a> is
  <var title="">qualifiedName</var> and <a href="#concept-attr-value" title="concept-attr-value">value</a>
  is <var title="">value</var>. Append this object to the
- <a href="#context-node">context node</a>'s
+ <a href="#context-object">context object</a>'s
  <code title="dom-Element-attributes"><a href="#dom-element-attributes">attributes</a></code>.
 
  <li><p>Otherwise, set the <a href="#concept-attr-value" title="concept-attr-value">value</a> of
- the first <code><a href="#attr">Attr</a></code> object in the <a href="#context-node">context node</a>'s
+ the first <code><a href="#attr">Attr</a></code> object in the <a href="#context-object">context object</a>'s
  <code title="dom-Element-attributes"><a href="#dom-element-attributes">attributes</a></code> whose
  <a href="#concept-attr-qualified-name" title="concept-attr-qualified-name">qualified name</a> is
  <var title="">qualifiedName</var>, to <var title="">value</var>.
@@ -2658,7 +2681,7 @@ method must run these steps:
  <code title="dom-DOMException-NAMESPACE_ERR"><a href="#dom-domexception-namespace_err">NAMESPACE_ERR</a></code> exception
  and terminate these steps.
 
- <li><p>If the <a href="#context-node">context node</a>'s
+ <li><p>If the <a href="#context-object">context object</a>'s
  <code title="dom-Element-attributes"><a href="#dom-element-attributes">attributes</a></code> does not contain an
  <code><a href="#attr">Attr</a></code> object whose
  <a href="#concept-attr-namespace" title="concept-attr-namespace">namespace</a> is
@@ -2671,11 +2694,11 @@ method must run these steps:
  <var title="">prefix</var>, <a href="#concept-attr-local-name" title="concept-attr-local-name">local name</a>
  is <var title="">localName</var>, and <a href="#concept-attr-value" title="concept-attr-value">value</a>
  is <var title="">value</var>. Append this object to the
- <a href="#context-node">context node</a>'s
+ <a href="#context-object">context object</a>'s
  <code title="dom-Element-attributes"><a href="#dom-element-attributes">attributes</a></code>.
 
  <li><p>Otherwise, set the <a href="#concept-attr-value" title="concept-attr-value">value</a> of
- the <code><a href="#attr">Attr</a></code> object in the <a href="#context-node">context node</a>'s
+ the <code><a href="#attr">Attr</a></code> object in the <a href="#context-object">context object</a>'s
  <code title="dom-Element-attributes"><a href="#dom-element-attributes">attributes</a></code> whose
  <a href="#concept-attr-namespace" title="concept-attr-namespace">namespace</a> is
  <var title="">namespace</var>, and
@@ -2689,13 +2712,13 @@ method must run these steps:
 <dfn id="dom-element-removeattribute" title="dom-Element-removeAttribute"><code>removeAttribute(<var title="">qualifiedName</var>)</code></dfn>
 method must run the following steps:
 <ol>
- <li><p>If the <a href="#context-node">context node</a> is in the <a href="#html-namespace">HTML namespace</a>
+ <li><p>If the <a href="#context-object">context object</a> is in the <a href="#html-namespace">HTML namespace</a>
  and its <code title="dom-Node-ownerDocument"><a href="#dom-node-ownerdocument">ownerDocument</a></code> is an
  <a href="#html-document">HTML document</a>, let <var title="">qualifiedName</var> be
  <a href="#converted-to-lowercase">converted to lowercase</a>.
 
  <li><p>Remove the first <code><a href="#attr">Attr</a></code> object in the
- <a href="#context-node">context node</a>'s
+ <a href="#context-object">context object</a>'s
  <code title="dom-Element-attributes"><a href="#dom-element-attributes">attributes</a></code> whose
  <a href="#concept-attr-qualified-name" title="concept-attr-qualified-name">qualified name</a> is
  <var title="">qualifiedName</var>.
@@ -2704,7 +2727,7 @@ method must run the following steps:
 <p>The
 <dfn id="dom-element-removeattributens" title="dom-Element-removeAttributeNS"><code>removeAttributeNS(<var title="">namespace</var>, <var title="">localName</var>)</code></dfn>
 method must remove the <code><a href="#attr">Attr</a></code> object in the
-<a href="#context-node">context node</a>'s
+<a href="#context-object">context object</a>'s
 <code title="dom-Element-attributes"><a href="#dom-element-attributes">attributes</a></code> whose
 <a href="#concept-attr-namespace" title="concept-attr-namespace">namespace</a> is
 <var title="">namespace</var> and
@@ -2715,13 +2738,13 @@ method must remove the <code><a href="#attr">Attr</a></code> object in the
 <dfn id="dom-element-hasattribute" title="dom-Element-hasAttribute"><code>hasAttribute(<var title="">qualifiedName</var>)</code></dfn>
 method must run these steps:
 <ol>
- <li><p>If the <a href="#context-node">context node</a> is in the
+ <li><p>If the <a href="#context-object">context object</a> is in the
  <a href="#html-namespace">HTML namespace</a> and its
  <code title="dom-Node-ownerDocument"><a href="#dom-node-ownerdocument">ownerDocument</a></code> is an
  <a href="#html-document">HTML document</a>, let <var title="">qualifiedName</var> be
  <a href="#converted-to-lowercase">converted to lowercase</a>.
 
- <li><p>Return true if <a href="#context-node">context node</a>'s
+ <li><p>Return true if <a href="#context-object">context object</a>'s
  <code title="dom-Element-attributes"><a href="#dom-element-attributes">attributes</a></code> contains an
  <code><a href="#attr">Attr</a></code> whose
  <a href="#concept-attr-qualified-name" title="concept-attr-qualified-name">qualified name</a> is
@@ -2730,7 +2753,7 @@ method must run these steps:
 
 <p>The
 <dfn id="dom-element-hasattributens" title="dom-Element-hasAttributeNS"><code>hasAttributeNS(<var title="">namespace</var>, <var title="">localName</var>)</code></dfn>
-method must return true if <a href="#context-node">context node</a>'s
+method must return true if <a href="#context-object">context object</a>'s
 <code title="dom-Element-attributes"><a href="#dom-element-attributes">attributes</a></code> contains an
 <code><a href="#attr">Attr</a></code> whose <a href="#concept-attr-namespace" title="concept-attr-namespace">namespace</a>
 is <var title="">namespace</var> and
@@ -2752,9 +2775,9 @@ have its name converted to ASCII lowercase before the element is affected.
 <p>The <dfn id="dom-element-children" title="dom-Element-children"><code>children</code></dfn> attribute
 must return an <code><a href="#htmlcollection">HTMLCollection</a></code>
 <a href="#concept-collection" title="concept-collection">collection</a>, rooted at the
-<a href="#context-node">context node</a>, whose filter matches only
+<a href="#context-object">context object</a>, whose filter matches only
 <a href="#concept-element" title="concept-element">elements</a> whose <a href="#concept-tree-parent" title="concept-tree-parent">parent</a> is the
-<a href="#context-node">context node</a>.
+<a href="#context-object">context object</a>.
 
 <p>When the
 <dfn id="dom-element-getelementsbytagname" title="dom-Element-getElementsByTagName"><code>getElementsByTagName(<var title="">qualifiedName</var>)</code></dfn>
@@ -2762,11 +2785,11 @@ method is invoked it must return a
 <a href="#concept-collection-live" title="concept-collection-live">live</a> <code><a href="#nodelist">NodeList</a></code> with
 the <a href="#concept-element" title="concept-element">elements</a> that the
 <code title="dom-Document-getElementsByTagName"><a href="#dom-document-getelementsbytagname">getElementsByTagName</a></code>
-method would return when called on the <a href="#context-node">context node</a>'s
+method would return when called on the <a href="#context-object">context object</a>'s
 <code title="dom-Node-ownerDocument"><a href="#dom-node-ownerdocument">ownerDocument</a></code> and passed the same
 argument, excluding any <a href="#concept-element" title="concept-element">elements</a> that are
 not <a href="#concept-tree-descendant" title="concept-tree-descendant">descendants</a> of the
-<a href="#context-node">context node</a> on which the method was invoked.
+<a href="#context-object">context object</a> on which the method was invoked.
 <p>When invoked with the same argument the same <code><a href="#nodelist">NodeList</a></code> object
 may be returned as returned by an earlier call.
 
@@ -2777,12 +2800,12 @@ method is invoked it must return a
 <a href="#concept-collection-live" title="concept-collection-live">live</a> <code><a href="#nodelist">NodeList</a></code> with
 the <a href="#concept-element" title="concept-element">elements</a> that the
 <code title="dom-Document-getElementsByTagNameNS"><a href="#dom-document-getelementsbytagnamens">getElementsByTagNameNS</a></code>
-method would return when called on the <a href="#context-node">context node</a>'s
+method would return when called on the <a href="#context-object">context object</a>'s
 <code title="dom-Node-ownerDocument"><a href="#dom-node-ownerdocument">ownerDocument</a></code> and
 passed the same arguments, excluding any
 <a href="#concept-element" title="concept-element">elements</a> that are
 not <a href="#concept-tree-descendant" title="concept-tree-descendant">descendants</a> of the
-<a href="#context-node">context node</a> on which the method was invoked.
+<a href="#context-object">context object</a> on which the method was invoked.
 <p>When invoked with the same argument the same <code><a href="#nodelist">NodeList</a></code> object
 may be returned as returned by an earlier call.
 
@@ -2792,39 +2815,39 @@ may be returned as returned by an earlier call.
 method is invoked it must return a <a href="#concept-collection-live" title="concept-collection-live">live</a>
 <code><a href="#nodelist">NodeList</a></code> with the <a href="#concept-element" title="concept-element">elements</a>
 that the <code title="dom-Document-getElementsByClassName"><a href="#dom-document-getelementsbyclassname">getElementsByClassName</a></code>
-method would return when called on the <a href="#context-node">context node</a>'s
+method would return when called on the <a href="#context-object">context object</a>'s
 <code title="dom-Node-ownerDocument"><a href="#dom-node-ownerdocument">ownerDocument</a></code> and
 passed the same argument, excluding any
 <a href="#concept-element" title="concept-element">elements</a> that are not
 <a href="#concept-tree-descendant" title="concept-tree-descendant">descendants</a> of the
-<a href="#context-node">context node</a> on which the method was invoked.
+<a href="#context-object">context object</a> on which the method was invoked.
 <p>When invoked with the same argument the same <code><a href="#nodelist">NodeList</a></code> object
 may be returned as returned by an earlier call.
 
 <p>The
 <dfn id="dom-element-firstelementchild" title="dom-Element-firstElementChild"><code>firstElementChild</code></dfn>
 attribute must return the first <a href="#concept-tree-child" title="concept-tree-child">child</a>
-of the <a href="#context-node">context node</a> that is of type <code><a href="#element">Element</a></code> or
+of the <a href="#context-object">context object</a> that is of type <code><a href="#element">Element</a></code> or
 null if there is no such <a href="#concept-node" title="concept-node">node</a>.
 
 <p>The
 <dfn id="dom-element-lastelementchild" title="dom-Element-lastElementChild"><code>lastElementChild</code></dfn>
 attribute must return the last <a href="#concept-tree-child" title="concept-tree-child">child</a>
-of the <a href="#context-node">context node</a> that is of type <code><a href="#element">Element</a></code> or
+of the <a href="#context-object">context object</a> that is of type <code><a href="#element">Element</a></code> or
 null if there is no such <a href="#concept-node" title="concept-node">node</a>.
 
 <p>The
 <dfn id="dom-element-previouselementsibling" title="dom-Element-previousElementSibling"><code>previousElementSibling</code></dfn>
 attribute must return the first
 <a href="#concept-tree-preceding-sibling" title="concept-tree-preceding-sibling">preceding sibling</a> of the
-<a href="#context-node">context node</a> that is of type <code><a href="#element">Element</a></code> or null if
+<a href="#context-object">context object</a> that is of type <code><a href="#element">Element</a></code> or null if
 there is no such <a href="#concept-node" title="concept-node">node</a>.
 
 <p>The
 <dfn id="dom-element-nextelementsibling" title="dom-Element-nextElementSibling"><code>nextElementSibling</code></dfn>
 attribute must return the first
 <a href="#concept-tree-following-sibling" title="concept-tree-following-sibling">following sibling</a> of the
-<a href="#context-node">context node</a> that is of type <code><a href="#element">Element</a></code> or null if
+<a href="#context-object">context object</a> that is of type <code><a href="#element">Element</a></code> or null if
 there is no such <a href="#concept-node" title="concept-node">node</a>.
 
 
@@ -2881,13 +2904,13 @@ return the <a href="#concept-attr-value" title="concept-attr-value">value</a>.
 
 <p>When a <code><a href="#documenttype">DocumentType</a></code> node is created, its <a href="#concept-doctype-name" title="concept-doctype-name">name</a> is always given. Unless explicitly given when a <code><a href="#documenttype">DocumentType</a></code> node is created, its <a href="#concept-doctype-publicid" title="concept-doctype-publicid">public ID</a> and <a href="#concept-doctype-systemid" title="concept-doctype-systemid">system ID</a> are the empty string.
 
-<p>The <dfn id="dom-documenttype-name" title="dom-DocumentType-name"><code>name</code></dfn> attribute must return the <a href="#context-node">context node</a>'s <a href="#concept-doctype-name" title="concept-doctype-name">name</a>.
+<p>The <dfn id="dom-documenttype-name" title="dom-DocumentType-name"><code>name</code></dfn> attribute must return the <a href="#context-object">context object</a>'s <a href="#concept-doctype-name" title="concept-doctype-name">name</a>.
 
 <p>The <dfn id="dom-documenttype-publicid" title="dom-DocumentType-publicId"><code>publicId</code></dfn>
-attribute must return the <a href="#context-node">context node</a>'s <a href="#concept-doctype-publicid" title="concept-doctype-publicid">public ID</a>.
+attribute must return the <a href="#context-object">context object</a>'s <a href="#concept-doctype-publicid" title="concept-doctype-publicid">public ID</a>.
 
 <p>The <dfn id="dom-documenttype-systemid" title="dom-DocumentType-systemId"><code>systemId</code></dfn>
-attribute must return the <a href="#context-node">context node</a>'s <a href="#concept-doctype-systemid" title="concept-doctype-systemid">system ID</a>.
+attribute must return the <a href="#context-object">context object</a>'s <a href="#concept-doctype-systemid" title="concept-doctype-systemid">system ID</a>.
 
 
 <h3 id="interface-processinginstruction"><span class="secno">5.8 </span>Interface <code><a href="#processinginstruction">ProcessingInstruction</a></code></h3>
@@ -2899,11 +2922,11 @@ attribute must return the <a href="#context-node">context node</a>'s <a href="#c
 <p><code><a href="#processinginstruction">ProcessingInstruction</a></code> nodes have an associated <dfn id="concept-pi-target" title="concept-PI-target">target</dfn> and <dfn id="concept-pi-data" title="concept-PI-data">data</dfn>. When a <code><a href="#processinginstruction">ProcessingInstruction</a></code> node is created both are given.
 
 <p>The <dfn id="dom-processinginstruction-target" title="dom-ProcessingInstruction-target"><code>target</code></dfn>
-attribute must return the <a href="#context-node">context node</a>'s <a href="#concept-pi-target" title="concept-PI-target">target</a>.
+attribute must return the <a href="#context-object">context object</a>'s <a href="#concept-pi-target" title="concept-PI-target">target</a>.
 
 <p>The <dfn id="dom-processinginstruction-data" title="dom-ProcessingInstruction-data"><code>data</code></dfn>
-attribute must return the <a href="#context-node">context node</a>'s <a href="#concept-pi-data" title="concept-PI-data">data</a>, and on setting, set the
-<a href="#context-node">context node</a>'s <a href="#concept-pi-data" title="concept-PI-data">data</a> to the new value.
+attribute must return the <a href="#context-object">context object</a>'s <a href="#concept-pi-data" title="concept-PI-data">data</a>, and on setting, set the
+<a href="#context-object">context object</a>'s <a href="#concept-pi-data" title="concept-PI-data">data</a> to the new value.
 
 
 <h3 id="interface-characterdata"><span class="secno">5.9 </span>Interface <code><a href="#characterdata">CharacterData</a></code></h3>
@@ -2927,12 +2950,12 @@ method must run these steps:
 
 <ol>
  <li><p>If <var title="">offset</var> is greater than the
- <a href="#context-node">context node</a>'s <code title="dom-CharacterData-length"><a href="#dom-characterdata-length">length</a></code>,
+ <a href="#context-object">context object</a>'s <code title="dom-CharacterData-length"><a href="#dom-characterdata-length">length</a></code>,
  throw an <code title="dom-DOMException-INDEX_SIZE_ERR"><a href="#dom-domexception-index_size_err">INDEX_SIZE_ERR</a></code>
  exception and terminate these steps.
 
  <li><p>If <span title=""><var title="">offset</var>+<var title="">count</var></span> is
- greater than the <a href="#context-node">context node</a>'s <code title="dom-CharacterData-length"><a href="#dom-characterdata-length">length</a></code>, return a <code class="external"><a href="#domstring">DOMString</a></code> whose value is the UTF-16 code units
+ greater than the <a href="#context-object">context object</a>'s <code title="dom-CharacterData-length"><a href="#dom-characterdata-length">length</a></code>, return a <code class="external"><a href="#domstring">DOMString</a></code> whose value is the UTF-16 code units
  from the <var title="">offset</var>th UTF-16 code unit to the end of <var title="">data</var>.
 
  <li><p>Return a <code class="external"><a href="#domstring">DOMString</a></code> whose value is
@@ -2941,35 +2964,35 @@ method must run these steps:
  code unit in <var title="">data</var>.
 </ol>
 
-<p>The <dfn id="dom-characterdata-appenddata" title="dom-CharacterData-appendData"><code>appendData(<var title="">data</var>)</code></dfn> method must append <var title="">data</var> to the <a href="#context-node">context node</a>'s data.
+<p>The <dfn id="dom-characterdata-appenddata" title="dom-CharacterData-appendData"><code>appendData(<var title="">data</var>)</code></dfn> method must append <var title="">data</var> to the <a href="#context-object">context object</a>'s data.
 
 <p>The <dfn id="dom-characterdata-insertdata" title="dom-CharacterData-insertData"><code>insertData(<var title="">offset</var>, <var title="">data</var>)</code></dfn> method must run these steps:
 
 <ol>
- <li><p>If <var title="">offset</var> is greater than the <a href="#context-node">context node</a>'s
+ <li><p>If <var title="">offset</var> is greater than the <a href="#context-object">context object</a>'s
  <code title="dom-CharacterData-length"><a href="#dom-characterdata-length">length</a></code>, throw an
  <code title="dom-DOMException-INDEX_SIZE_ERR"><a href="#dom-domexception-index_size_err">INDEX_SIZE_ERR</a></code> exception
  and terminate these steps.
 
- <li><p>Insert <var title="">data</var> into the <a href="#context-node">context node</a>'s data
+ <li><p>Insert <var title="">data</var> into the <a href="#context-object">context object</a>'s data
  after <var title="">offset</var> UTF-16 code units.
 </ol>
 
 <p>The <dfn id="dom-characterdata-deletedata" title="dom-CharacterData-deleteData"><code>deleteData(<var title="">offset</var>, <var title="">count</var>)</code></dfn> method must run these steps:
 
 <ol>
- <li><p>If <var title="">offset</var> is greater than the <a href="#context-node">context node</a>'s
+ <li><p>If <var title="">offset</var> is greater than the <a href="#context-object">context object</a>'s
  <code title="dom-CharacterData-length"><a href="#dom-characterdata-length">length</a></code>, throw an
  <code title="dom-DOMException-INDEX_SIZE_ERR"><a href="#dom-domexception-index_size_err">INDEX_SIZE_ERR</a></code> exception
  and terminate these steps.
 
  <li><p>If <var title="">offset</var>+<var title="">count</var> is greater than the
- <a href="#context-node">context node</a>'s
+ <a href="#context-object">context object</a>'s
  <code title="dom-CharacterData-length"><a href="#dom-characterdata-length">length</a></code> let <var title="">count</var> be
  <code title="dom-CharacterData-length"><a href="#dom-characterdata-length">length</a></code>-<var title="">offset</var>.
 
  <li><p>Starting from <var title="">offset</var> UTF-16 code units remove
- <var title="">count</var> UTF-16 code units from the <a href="#context-node">context node</a>'s
+ <var title="">count</var> UTF-16 code units from the <a href="#context-object">context object</a>'s
  data.
 </ol>
 
@@ -2996,38 +3019,38 @@ exceptions these methods might have thrown.
 method must run the following steps:
 
 <ol>
-  <li>If <var title="">offset</var> is greater than the <a href="#context-node">context node</a>'s
+  <li>If <var title="">offset</var> is greater than the <a href="#context-object">context object</a>'s
   <code title="dom-CharacterData-length"><a href="#dom-characterdata-length">length</a></code>, throw an
   <code title="dom-DOMException-INDEX_SIZE_ERR"><a href="#dom-domexception-index_size_err">INDEX_SIZE_ERR</a></code> exception
   and terminate these steps.
 
-  <li>Let <var title="">length</var> be the <a href="#context-node">context node</a>'s
+  <li>Let <var title="">length</var> be the <a href="#context-object">context object</a>'s
   <span title=""><code title="dom-CharacterData-length"><a href="#dom-characterdata-length">length</a></code> &minus;
   <var title="">offset</var></span>.
 
-  <li>Call the <a href="#context-node">context node</a>'s
+  <li>Call the <a href="#context-object">context object</a>'s
   <code title="dom-CharacterData-substringData"><a href="#dom-characterdata-substringdata">substringData</a></code> method with
   <var title="">offset</var> and <var title="">length</var> as its arguments.
   If this threw an exception, terminate these steps. Otherwise, let
   <var title="">new data</var> be the value returned.
 
-  <li>Call the <a href="#context-node">context node</a>'s
+  <li>Call the <a href="#context-object">context object</a>'s
   <code title="dom-CharacterData-deleteData"><a href="#dom-characterdata-deletedata">deleteData</a></code> method with
   <var title="">offset</var> and <var title="">length</var> as its arguments.
   If this threw an exception, terminate these steps.
 
   <li>Let <var title="">new node</var> be a new <code><a href="#text">Text</a></code> object, with the
   same <code title="dom-Node-ownerDocument"><a href="#dom-node-ownerdocument">ownerDocument</a></code> as the
-  <a href="#context-node">context node</a>. Set <var title="">new node</var>'s
+  <a href="#context-object">context object</a>. Set <var title="">new node</var>'s
   <code title="dom-CharacterData-data"><a href="#dom-characterdata-data">data</a></code> to <var title="">new data</var>.
 
-  <li>Let <var title="">parent</var> be the <a href="#context-node">context node</a>'s
+  <li>Let <var title="">parent</var> be the <a href="#context-object">context object</a>'s
   <a href="#concept-tree-parent" title="concept-tree-parent">parent</a>. If <var title="">parent</var>
   is null, return <var title="">new node</var> and terminate these steps.
 
   <li>Call <var title="">parent</var>'s
   <code title="dom-Node-insertBefore"><a href="#dom-node-insertbefore">insertBefore</a></code> method with
-  <var title="">new node</var> and the <a href="#context-node">context node</a>'s first
+  <var title="">new node</var> and the <a href="#context-object">context object</a>'s first
   <span title="concept-tree-next-sibling">next sibling as its argument.
 
   </span><li>Return <var title="">new node</var>.
@@ -3044,7 +3067,7 @@ duplicates.
 attribute must return a concatenation of the
 <code title="dom-CharacterData-data"><a href="#dom-characterdata-data">data</a></code> of the
 <a href="#contiguous-text-nodes">contiguous <code>Text</code> nodes</a> of the
-<a href="#context-node">context node</a>, in <a href="#tree-order">tree order</a>.
+<a href="#context-object">context object</a>, in <a href="#tree-order">tree order</a>.
 
 <p>The
 <dfn id="dom-text-replacewholetext" title="dom-Text-replaceWholeText"><code>replaceWholeText(<var title="">data</var>)</code></dfn>
@@ -3052,7 +3075,7 @@ method must run these steps:
 
 <ol>
  <li><p>Remove the <a href="#contiguous-text-nodes">contiguous <code>Text</code> nodes</a> of the
- <a href="#context-node">context node</a>.
+ <a href="#context-object">context object</a>.
  <li><p>If <var title="">data</var> is not the empty string, insert a new
  <code><a href="#text">Text</a></code> node whose
  <code title="dom-CharacterData-data"><a href="#dom-characterdata-data">data</a></code> is <var title="">data</var> at the
@@ -3568,6 +3591,11 @@ events for specific contexts (e.g. user interface events).
  and <code title="dom-EventTarget-dispatchEvent"><a href="#dom-eventtarget-dispatchevent">dispatchEvent()</a></code> return
  if the event is cancelable.
  <li>Removes <dfn id="eventexception"><code>EventException</code></dfn>.
+ <li>Fire is no longer synonymous with dispatch, but includes initializing
+ an event.</li>
+ <li>The propagation and canceled flags are unset before dispatching rather
+ than after. <span class="XXX">This seems better for canceled. Is it better
+ for propagation?</span>
 </ul>
 
 

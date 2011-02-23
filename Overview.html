@@ -127,7 +127,7 @@ document as other than work in progress.
  <li><a href="#terminology"><span class="secno">2 </span>Terminology</a>
   <ol class="toc">
    <li><a href="#trees"><span class="secno">2.1 </span>Trees</a></li>
-   <li><a href="#case-sensitivity"><span class="secno">2.2 </span>Case-sensitivity</a></li>
+   <li><a href="#string-operations"><span class="secno">2.2 </span>String operations</a></li>
    <li><a href="#common-microsyntaxes"><span class="secno">2.3 </span>Common microsyntaxes</a>
     <ol class="toc">
      <li><a href="#common-parser-idioms"><span class="secno">2.3.1 </span>Common parser idioms</a></li>
@@ -289,11 +289,6 @@ this specification.
 or attribute being discussed was called. It is not always used as sometimes
 it is unambiguous.
 
-<p>The <dfn id="space-character" title="space character">space characters</dfn>, for the
-purposes of this specification, are U+0020 SPACE, U+0009 CHARACTER
-TABULATION (tab), U+000A LINE FEED (LF), U+000C FORM FEED (FF), and
-U+000D CARRIAGE RETURN (CR).
-
 
 <h3 id="trees"><span class="secno">2.1 </span>Trees</h3> <!-- Sorry reddit, this is not /r/trees -->
 
@@ -358,9 +353,7 @@ of a <a href="#concept-tree" title="concept-tree">tree</a>.
 <!-- http://en.wikipedia.org/wiki/Tree_traversal#Depth-first_Traversal -->
 
 
-<h3 id="case-sensitivity"><span class="secno">2.2 </span>Case-sensitivity</h3>
-<p>This specification defines several comparison operators for strings.
-
+<h3 id="string-operations"><span class="secno">2.2 </span>String operations</h3>
 <p>Comparing two strings in a <dfn id="case-sensitive">case-sensitive</dfn> manner means comparing them exactly, codepoint for codepoint.
 
 <p>Comparing two strings in a <dfn id="ascii-case-insensitive">ASCII case-insensitive</dfn> manner means comparing them exactly, codepoint for codepoint, except that the characters in the range U+0041 .. U+005A (i.e. LATIN CAPITAL LETTER A to LATIN CAPITAL LETTER Z) and the corresponding characters in the range U+0061 .. U+007A (i.e. LATIN SMALL LETTER A to LATIN SMALL LETTER Z) are considered to also match.
@@ -374,6 +367,11 @@ of a <a href="#concept-tree" title="concept-tree">tree</a>.
 <var title="">s</var> and truncating <var title="">s</var> to
 <var title="">pattern</var>'s length leaves the two strings as matches of each
 other.
+
+<p>The <dfn id="space-character" title="space character">space characters</dfn>, for the
+purposes of this specification, are U+0020 SPACE, U+0009 CHARACTER
+TABULATION (tab), U+000A LINE FEED (LF), U+000C FORM FEED (FF), and
+U+000D CARRIAGE RETURN (CR).
 
 
 <h3 id="common-microsyntaxes"><span class="secno">2.3 </span>Common microsyntaxes</h3>

@@ -224,11 +224,6 @@ this specification.
 or attribute being discussed was called. It is not always used as sometimes
 it is unambiguous.
 
-<p>The <dfn title="space character">space characters</dfn>, for the
-purposes of this specification, are U+0020 SPACE, U+0009 CHARACTER
-TABULATION (tab), U+000A LINE FEED (LF), U+000C FORM FEED (FF), and
-U+000D CARRIAGE RETURN (CR).
-
 
 <h3>Trees</h3> <!-- Sorry reddit, this is not /r/trees -->
 
@@ -293,9 +288,7 @@ of a <span title=concept-tree>tree</span>.
 <!-- http://en.wikipedia.org/wiki/Tree_traversal#Depth-first_Traversal -->
 
 
-<h3>Case-sensitivity</h3>
-<p>This specification defines several comparison operators for strings.
-
+<h3>String operations</h3>
 <p>Comparing two strings in a <dfn>case-sensitive</dfn> manner means comparing them exactly, codepoint for codepoint.
 
 <p>Comparing two strings in a <dfn>ASCII case-insensitive</dfn> manner means comparing them exactly, codepoint for codepoint, except that the characters in the range U+0041 .. U+005A (i.e. LATIN CAPITAL LETTER A to LATIN CAPITAL LETTER Z) and the corresponding characters in the range U+0061 .. U+007A (i.e. LATIN SMALL LETTER A to LATIN SMALL LETTER Z) are considered to also match.
@@ -309,6 +302,11 @@ of a <span title=concept-tree>tree</span>.
 <var title>s</var> and truncating <var title>s</var> to
 <var title>pattern</var>'s length leaves the two strings as matches of each
 other.
+
+<p>The <dfn title="space character">space characters</dfn>, for the
+purposes of this specification, are U+0020 SPACE, U+0009 CHARACTER
+TABULATION (tab), U+000A LINE FEED (LF), U+000C FORM FEED (FF), and
+U+000D CARRIAGE RETURN (CR).
 
 
 <h3>Common microsyntaxes</h3>

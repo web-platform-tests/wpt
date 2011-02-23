@@ -142,8 +142,9 @@ document as other than work in progress.
    <li><a href="#interface-event"><span class="secno">4.1 </span>Interface <code>Event</code></a></li>
    <li><a href="#interface-customevent"><span class="secno">4.2 </span>Interface <code>CustomEvent</code></a></li>
    <li><a href="#interface-eventtarget"><span class="secno">4.3 </span>Interface <code>EventTarget</code></a></li>
-   <li><a href="#dispatching-events"><span class="secno">4.4 </span>Dispatching Events</a></li>
-   <li><a href="#creating-events"><span class="secno">4.5 </span>Creating Events</a></ol></li>
+   <li><a href="#creating-events"><span class="secno">4.4 </span>Creating Events</a></li>
+   <li><a href="#dispatching-events"><span class="secno">4.5 </span>Dispatching Events</a></li>
+   <li><a href="#firing-events"><span class="secno">4.6 </span>Firing Events</a></ol></li>
  <li><a href="#nodes"><span class="secno">5 </span>Nodes</a>
   <ol class="toc">
    <li><a href="#nodes-model"><span class="secno">5.1 </span>Nodes Model</a></li>
@@ -789,29 +790,6 @@ method is invoked these steps must be run:</p>
  true, set the <a href="#cancel-flag">cancel flag</a>.
 </ol>
 
-<hr>
-
-<p>To
-<dfn id="concept-event-fire" title="concept-event-fire">fire an event named <var title="">e</var></dfn>
-means that an <a href="#concept-event" title="concept-event">event</a> of type
-<code><a href="#event">Event</a></code>, with its <a href="#concept-event-name" title="concept-event-name">name</a> set
-to <var title="">e</var>, and its <a href="#trusted-flag">trusted flag</a> set, is to be
-<a href="#concept-event-dispatch" title="concept-event-dispatch">dispatched</a> at the indicated
-object.</p>
-
-<p class="note">Fire is short for initializing and
-<a href="#concept-event-dispatch" title="concept-event-dispatch">dispatching</a> an
-<a href="#concept-event" title="concept-event">event</a>.
-
-<p class="note"><a href="#concept-event-fire" title="concept-event-fire">Fire an event</a> is a
-concept to make initializing and
-<a href="#concept-event-dispatch" title="concept-event-dispatch">dispatching</a> an
-<a href="#concept-event" title="concept-event">event</a> easier to write down. If the
-<a href="#concept-event" title="concept-event">event</a> needs its <a href="#bubble-flag">bubble flag</a> or
-<a href="#cancel-flag">cancel flag</a> set, one would write e.g.
-<a href="#concept-event-fire" title="concept-event-fire">fire an event named <code title="">submit</code></a>
-with its <a href="#cancel-flag">cancel flag</a> set.
-
 
 <h3 id="interface-customevent"><span class="secno">4.2 </span>Interface <code><a href="#customevent">CustomEvent</a></code></h3>
 
@@ -904,7 +882,46 @@ method is invoked these steps must be run:
 </ol>
 
 
-<h3 id="dispatching-events"><span class="secno">4.4 </span>Dispatching Events</h3>
+<h3 id="creating-events"><span class="secno">4.4 </span>Creating Events</h3>
+
+<p class="note">Although the <code><a href="#document">Document</a></code> object is introduced later
+it was thought better to describe its
+<code title="dom-Document-createEvent"><a href="#dom-document-createevent">createEvent()</a></code> method here.
+
+<p>When the <dfn id="dom-document-createevent" title="dom-Document-createEvent"><code>createEvent(<var title="">interface</var>)</code></dfn> methed is invoked these steps must be run:
+
+<ol>
+ <li>
+  <p>If <var title="">interface</var> is an <a href="#ascii-case-insensitive">ASCII case-insensitive</a>
+  match for any of the strings in the first column in the following table
+  let <var title="">interface</var> be the string in the second column on the same
+  row as the matching string:</p>
+  <table>
+  <thead>
+   <tr><th>Input interface <th>Replacement interface
+  <tbody>
+   <tr><td>"<code title="">htmlevents</code>"<td>"<code title="">event</code>"
+   <tr><td>"<code title="">mouseevents</code>"<td>"<code title="">mouseevent</code>"
+   <tr><td>"<code title="">mutationevents</code>"<td>"<code title="">mutationevent</code>"
+   <tr><td>"<code title="">uievents</code>"<td>"<code title="">uievent</code>"
+  </table>
+  <!-- XXX WebKit/Gecko (IE?) support "events" -> "event". Add it or make sure it's not supported? -->
+ </li>
+ <li><p>If <var title="">interface</var> is <em>not</em> an
+ <a href="#ascii-case-insensitive">ASCII case-insensitive</a> match for "<code title="">event</code>" or
+ for the name of an interface that inherits from the <code><a href="#event">Event</a></code>
+ interface and is supported by the user agent, throw a
+ <code title="dom-DOMException-NOT_SUPPORTED_ERR"><a href="#dom-domexception-not_supported_err">NOT_SUPPORTED_ERR</a></code> and
+ terminate these steps.
+ <li><p>Create an <a href="#concept-event" title="concept-event">event</a> implementing the
+ interface whose name <var title="">interface</var> is an
+ <a href="#ascii-case-insensitive">ASCII case-insensitive</a> match for and return it.
+</ol>
+
+<p class="note">Because <code title="dom-Document-createEvent"><a href="#dom-document-createevent">createEvent()</a></code> is located on the <code><a href="#document">Document</a></code> object it cannot be used by Web Workers. Please let us know if this bothers you.
+
+
+<h3 id="dispatching-events"><span class="secno">4.5 </span>Dispatching Events</h3>
 
 <p>To <dfn id="concept-event-dispatch" title="concept-event-dispatch">dispatch</dfn> an
 <a href="#concept-event" title="concept-event">event</a> on a given object run these
@@ -1017,43 +1034,27 @@ steps:</p>
 </ol>
 
 
-<h3 id="creating-events"><span class="secno">4.5 </span>Creating Events</h3>
+<h3 id="firing-events"><span class="secno">4.6 </span>Firing Events</h3>
+<p>To
+<dfn id="concept-event-fire" title="concept-event-fire">fire an event named <var title="">e</var></dfn>
+means that an <a href="#concept-event" title="concept-event">event</a> of type
+<code><a href="#event">Event</a></code>, with its <a href="#concept-event-name" title="concept-event-name">name</a> set
+to <var title="">e</var>, and its <a href="#trusted-flag">trusted flag</a> set, is to be
+<a href="#concept-event-dispatch" title="concept-event-dispatch">dispatched</a> at the indicated
+object.</p>
 
-<p class="note">Although the <code><a href="#document">Document</a></code> object is introduced later
-it was thought better to describe its
-<code title="dom-Document-createEvent"><a href="#dom-document-createevent">createEvent()</a></code> method here.
+<p class="note">Fire is short for initializing and
+<a href="#concept-event-dispatch" title="concept-event-dispatch">dispatching</a> an
+<a href="#concept-event" title="concept-event">event</a>.
 
-<p>When the <dfn id="dom-document-createevent" title="dom-Document-createEvent"><code>createEvent(<var title="">interface</var>)</code></dfn> methed is invoked these steps must be run:
-
-<ol>
- <li>
-  <p>If <var title="">interface</var> is an <a href="#ascii-case-insensitive">ASCII case-insensitive</a>
-  match for any of the strings in the first column in the following table
-  let <var title="">interface</var> be the string in the second column on the same
-  row as the matching string:</p>
-  <table>
-  <thead>
-   <tr><th>Input interface <th>Replacement interface
-  <tbody>
-   <tr><td>"<code title="">htmlevents</code>"<td>"<code title="">event</code>"
-   <tr><td>"<code title="">mouseevents</code>"<td>"<code title="">mouseevent</code>"
-   <tr><td>"<code title="">mutationevents</code>"<td>"<code title="">mutationevent</code>"
-   <tr><td>"<code title="">uievents</code>"<td>"<code title="">uievent</code>"
-  </table>
-  <!-- XXX WebKit/Gecko (IE?) support "events" -> "event". Add it or make sure it's not supported? -->
- </li>
- <li><p>If <var title="">interface</var> is <em>not</em> an
- <a href="#ascii-case-insensitive">ASCII case-insensitive</a> match for "<code title="">event</code>" or
- for the name of an interface that inherits from the <code><a href="#event">Event</a></code>
- interface and is supported by the user agent, throw a
- <code title="dom-DOMException-NOT_SUPPORTED_ERR"><a href="#dom-domexception-not_supported_err">NOT_SUPPORTED_ERR</a></code> and
- terminate these steps.
- <li><p>Create an <a href="#concept-event" title="concept-event">event</a> implementing the
- interface whose name <var title="">interface</var> is an
- <a href="#ascii-case-insensitive">ASCII case-insensitive</a> match for and return it.
-</ol>
-
-<p class="note">Because <code title="dom-Document-createEvent"><a href="#dom-document-createevent">createEvent()</a></code> is located on the <code><a href="#document">Document</a></code> object it cannot be used by Web Workers. Please let us know if this bothers you.
+<p class="note"><a href="#concept-event-fire" title="concept-event-fire">Fire an event</a> is a
+concept to make initializing and
+<a href="#concept-event-dispatch" title="concept-event-dispatch">dispatching</a> an
+<a href="#concept-event" title="concept-event">event</a> easier to write down. If the
+<a href="#concept-event" title="concept-event">event</a> needs its <a href="#bubble-flag">bubble flag</a> or
+<a href="#cancel-flag">cancel flag</a> set, one would write e.g.
+<a href="#concept-event-fire" title="concept-event-fire">fire an event named <code title="">submit</code></a>
+with its <a href="#cancel-flag">cancel flag</a> set.
 
 
 

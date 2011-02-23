@@ -1,6 +1,6 @@
 # Extracts from http://www.whatwg.org/specs/web-apps/current-work/
 #
-# (c) Copyright 2004-2010 Apple Computer, Inc., Mozilla Foundation, and Opera Software ASA.
+# (c) Copyright 2004-2011 Apple Computer, Inc., Mozilla Foundation, and Opera Software ASA.
 # You are granted a license to use, reproduce and create derivative works of this document.
 
 assertions:
@@ -27,16 +27,16 @@ assertions:
   - id: initial.colour
     text: "When the canvas is initialized, its bitmap *must* be cleared to transparent black<^>."
   - id: size.reflect
-    text: "The width and height IDL attributes *must* reflect the respective content attributes of the same name<^>."
+    text: "The width and height IDL attributes *must* reflect the respective content attributes of the same name<^>,"
 
   - id: context.unrecognised
     text: "If contextId is not the name of a context supported by the user agent, return null and abort these steps<^>."
   - id: context.unique
     text: "If the getContext() method has already been invoked on this element for the same contextId, return the same object as was returned that time, and abort these steps<^>."
   - id: context.2d
-    text: "When the getContext() method of a canvas element is is to return a new object for the contextId 2d, the user agent *must* return a new CanvasRenderingContext2D object<^>."
+    text: "When the getContext() method of a canvas element is to return a new object for the contextId 2d, the user agent *must* return a new CanvasRenderingContext2D object<^>."
   - id: context.2d.extraargs
-    text: "When the getContext() method of a canvas element is is to return a new object for the contextId 2d, the user agent *must* return a new CanvasRenderingContext2D object. Any additional arguments are ignored<^>."
+    text: "When the getContext() method of a canvas element is to return a new object for the contextId 2d, the user agent *must* return a new CanvasRenderingContext2D object. Any additional arguments are ignored<^>."
 
   - id: toDataURL.noarguments
     text: "The toDataURL() method *must*, when called with no arguments, return a data: URL containing a representation of the image as a PNG file<^>."
@@ -56,7 +56,7 @@ assertions:
     previously: [ 0, "image/png", false ] 
     text: "image/jpeg<^>"
   - id: toDataURL.jpeg.quality
-    text: "The second argument, if it is a number between 0.0 and 1.0, *must* be treated as the desired quality level<^>."
+    text: "The second argument, if it is a number in the range 0.0 to 1.0 inclusive, *must* be treated as the desired quality level<^>."
   - id: toDataURL.jpeg.nan
     text: "If it is not a number<^> <...>, the user agent *must* use its default value, as if the argument had been omitted."
   - id: toDataURL.jpeg.range
@@ -129,13 +129,13 @@ assertions:
   - id: 2d.transformation.translate
     text: "The translate(x, y) method *must* add the translation transformation described by the arguments to the transformation matrix<^>."
   - id: 2d.transformation.transform
-    text: "The transform(m11, m12, m21, m22, dx, dy) method *must* multiply the current transformation matrix with the matrix described by<^>:"
+    text: "The transform(a, b, c, d, e, f) method *must* replace the current transformation matrix with the result of multiplying the current transformation matrix with the matrix described by<^>:"
   - id: 2d.transformation.transform.multiply
-    text: "The transform(m11, m12, m21, m22, dx, dy) method *must* multiply<^> the current transformation matrix with the matrix described by:"
+    text: "The transform(a, b, c, d, e, f) method *must* replace the current transformation matrix with the result of multiplying<^> the current transformation matrix with the matrix described by:"
   - id: 2d.transformation.setTransform
-    text: "The setTransform(m11, m12, m21, m22, dx, dy) method *must* <...> invoke the transform(m11, m12, m21, m22, dx, dy) method with the same arguments<^>"
+    text: "The setTransform(a, b, c, d, e, f) method *must* <...> invoke the transform(a, b, c, d, e, f) method with the same arguments<^>"
   - id: 2d.transformation.setTransform.identity
-    text: "The setTransform(m11, m12, m21, m22, dx, dy) method *must* reset the current transform to the identity matrix<^>, "
+    text: "The setTransform(a, b, c, d, e, f) method *must* reset the current transform to the identity matrix<^>, "
 
 
   - id: 2d.composite.operation
@@ -197,7 +197,7 @@ assertions:
   - id: 2d.pattern.assign
     text: "On setting, <...> CanvasGradient and CanvasPattern<^> objects *must* be assigned themselves."
   - id: 2d.colours.invalidstring
-    text: "If the value is a string but is not a valid color<^>, <...> then it *must* be ignored, and the attribute must retain its previous value."
+    text: "If the value is a string but cannot be parsed as a CSS <color> value<^>, <...> then it *must* be ignored, and the attribute must retain its previous value."
   - id: 2d.colours.invalidtype
     text: "If the value is <...> neither a string, a CanvasGradient, nor a CanvasPattern<^>, then it *must* be ignored, and the attribute must retain its previous value."
   - id: 2d.colours.getcolour
@@ -228,7 +228,7 @@ assertions:
   - id: 2d.gradient.invalidoffset
     text: "If the offset is less than 0, greater than 1, infinite, or NaN, then an INDEX_SIZE_ERR exception *must* be raised<^>."
   - id: 2d.gradient.invalidcolour
-    text: "If the color cannot be parsed as a CSS color, then a SYNTAX_ERR exception *must* be raised<^>."
+    text: "If the color cannot be parsed as a CSS <color> value, then a SYNTAX_ERR exception *must* be raised<^>."
   - id: 2d.gradient.update
     text: "Otherwise, the gradient *must* have a new stop placed, at offset offset relative to the whole gradient, and with the color obtained by parsing color as a CSS <color> value<^>."
   - id: 2d.gradient.interpolate.overlap
@@ -275,9 +275,7 @@ assertions:
     previously: [ 2, "createPattern" ]
     text: "The image argument is an instance of either HTMLImageElement, HTMLCanvasElement, or HTMLVideoElement. If the image is of the wrong type or null, the implementation *must* raise a TYPE_MISMATCH_ERR exception<^>."
   - id: 2d.pattern.incomplete.image
-    text: "If the image argument is an HTMLImageElement object whose complete attribute is false<^> <...> then the implementation *must* return null."
-  - id: 2d.pattern.incomplete.image.nosrc
-    text: "If the image argument is an HTMLImageElement object whose complete attribute is false or whose src attribute is omitted or empty<^>, <...> then the implementation *must* return null."
+    text: "If the image argument is an HTMLImageElement object that is not fully decodable<^><...> then the implementation *must* return null."
   - id: 2d.pattern.incomplete.video
     previously: [ 6, "createPattern" ]
     text: "If the image argument is <...> an HTMLVideoElement object whose readyState attribute is either HAVE_NOTHING or HAVE_METADATA<^>, then the implementation *must* return null."
@@ -367,7 +365,7 @@ assertions:
   - id: 2d.shadow.color.set
     text: "On setting, the new value *must* be parsed as a CSS <color> value and the color assigned<^>."
   - id: 2d.shadow.color.invalid
-    text: "If the value is not a valid color, then it *must* be ignored, and the attribute must retain its previous value<^>."
+    text: "If the value cannot be parsed as a CSS <color> value then it *must* be ignored, and the attribute must retain its previous value<^>."
   - id: 2d.shadow.offset.initial
     text: "When the context is created, the shadow offset attributes *must* initially have the value 0<^>."
   - id: 2d.shadow.offset.get
@@ -578,9 +576,7 @@ assertions:
     previously: [ 2, "dw and dh" ]
     text: "The image argument is an instance of either HTMLImageElement, HTMLCanvasElement, or HTMLVideoElement. If the image is of the wrong type or null, the implementation *must* raise a TYPE_MISMATCH_ERR exception<^>."
   - id: 2d.drawImage.incomplete.image
-    text: "If the image argument is an HTMLImageElement object whose complete attribute is false<^> <...> then the implementation *must* return without drawing anything."
-  - id: 2d.drawImage.incomplete.image.nosrc
-    text: "If the image argument is an HTMLImageElement object whose complete attribute is false or whose src attribute is omitted or empty<^>, <...> then the implementation *must* return without drawing anything."
+    text: "If the image argument is an HTMLImageElement object that is not fully decodable<^><...> then the implementation *must* return without drawing anything."
   - id: 2d.drawImage.incomplete.video
     previously: [ 6, "dw and dh" ]
     text: "If the image argument is <...> an HTMLVideoElement object whose readyState attribute is either HAVE_NOTHING or HAVE_METADATA<^>, then the implementation *must* return without drawing anything."
@@ -653,9 +649,9 @@ assertions:
   - id: 2d.pixelarray.length
     text: "The length attribute of a CanvasPixelArray object *must* return this number<^>."
   - id: 2d.pixelarray.retrieve
-    text: "When a CanvasPixelArray object is indexed to retrieve an indexed property index, the value returned *must* be the value of the indexth component in the array<^>."
+    text: "To determine the value of an indexed property index, the user agent *must* return the value of the indexth component in the array<^>."
   - id: 2d.pixelarray.modify
-    text: "When a CanvasPixelArray object is indexed to modify an indexed property index with value value, the value of the indexth component in the array *must* be set to value<^>."
+    text: "To set the value of an existing indexed property index to value value, the value of the indexth component in the array *must* be set to value<^>."
 
   - id: 2d.imageData.put.nonfinite
     text: "If any of the arguments to the method are infinite or NaN, the method *must* raise a NOT_SUPPORTED_ERR exception<^>."

@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<title>Canvas test: 2d.drawImage.incomplete</title>
+<title>Canvas test: 2d.drawImage.incomplete.removedsrc</title>
 <meta name="author" content="Philip Taylor">
 <script src="../common/canvas-tests.js"></script>
 <link rel="stylesheet" href="../common/canvas-tests.css">
 <body class="show_output">
 
-<h1><a href="index.2d.html">2d</a>.<a href="index.2d.drawImage.html">drawImage</a>.incomplete</h1>
+<h1><a href="index.2d.html">2d</a>.<a href="index.2d.drawImage.html">drawImage</a>.<a href="index.2d.drawImage.incomplete.html">incomplete</a>.removedsrc</h1>
 <p class="desc"></p>
 
 <div class="refs">Spec references:
@@ -23,11 +23,13 @@ _addTest(function(canvas, ctx) {
 
 ctx.fillStyle = '#0f0';
 ctx.fillRect(0, 0, 100, 50);
-var img = new Image();
-_assertSame(img.complete, false, "img.complete", "false");
+var img = document.getElementById('red.png');
+img.removeAttribute('src');
 ctx.drawImage(img, 0, 0);
+_assertPixelApprox(canvas, 50,25, 0,255,0,255, "50,25", "0,255,0,255", 2);
 
 
 });
 </script>
+<img src="../images/red.png" id="red.png" class="resource">
 

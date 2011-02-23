@@ -1,16 +1,16 @@
 <!DOCTYPE html>
-<title>Canvas test: 2d.fillStyle.parse.invalid.name-5</title>
+<title>Canvas test: 2d.drawImage.incomplete.nosrc</title>
 <meta name="author" content="Philip Taylor">
 <script src="../common/canvas-tests.js"></script>
 <link rel="stylesheet" href="../common/canvas-tests.css">
 <body class="show_output">
 
-<h1><a href="index.2d.html">2d</a>.<a href="index.2d.fillStyle.html">fillStyle</a>.<a href="index.2d.fillStyle.parse.html">parse</a>.<a href="index.2d.fillStyle.parse.invalid.html">invalid</a>.name-5</h1>
+<h1><a href="index.2d.html">2d</a>.<a href="index.2d.drawImage.html">drawImage</a>.<a href="index.2d.drawImage.incomplete.html">incomplete</a>.nosrc</h1>
 <p class="desc"></p>
 
 <div class="refs">Spec references:
 <ul>
-<li><a href="../annotated-spec/canvas.html#testrefs.2d.colours.parse">2d.colours.parse</a>
+<li><a href="../annotated-spec/canvas.html#testrefs.2d.drawImage.incomplete.image">2d.drawImage.incomplete.image</a>
 </ul>
 </div>
 
@@ -21,11 +21,11 @@
 <script>
 _addTest(function(canvas, ctx) {
 
-
 ctx.fillStyle = '#0f0';
-try { ctx.fillStyle = '"red'; } catch (e) { } // this shouldn't throw, but it shouldn't matter here if it does
 ctx.fillRect(0, 0, 100, 50);
-_assertPixel(canvas, 50,25, 0,255,0,255, "50,25", "0,255,0,255");
+var img = new Image();
+ctx.drawImage(img, 0, 0);
+_assertPixelApprox(canvas, 50,25, 0,255,0,255, "50,25", "0,255,0,255", 2);
 
 
 });

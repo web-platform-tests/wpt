@@ -118,7 +118,7 @@
    .domintro:before { display: table; margin: -1em -0.5em -0.5em auto; width: auto; content: 'This box is non-normative. Implementation requirements are given below this box.'; color: black; font-style: italic; border: solid 2px; background: white; padding: 0 0.25em; }
   </style><link href="data:text/css," id="complete" rel="stylesheet" title="Complete specification"><link href="data:text/css,.impl%20{%20display:%20none;%20}%0Ahtml%20{%20border:%20solid%20yellow;%20}%20.domintro:before%20{%20display:%20none;%20}" id="author" rel="alternate stylesheet" title="Author documentation only"><link href="data:text/css,.impl%20{%20background:%20%23FFEEEE;%20}%20.domintro:before%20{%20background:%20%23FFEEEE;%20}" id="highlight" rel="alternate stylesheet" title="Highlight implementation requirements"><link href="http://www.whatwg.org/specs/web-apps/current-work/status.css" rel="stylesheet"><link href="../common/canvas-spec.css" type="text/css" rel="stylesheet"></head><body onload="init()" class="draft"><header class="head" id="head"><p><a href="http://www.whatwg.org/" class="logo" rel="home"><img src="http://www.whatwg.org/images/logo" alt="WHATWG" width="101" height="101"></a></p>
    <hgroup><h1>HTML5 (including next generation additions still in development)</h1>
-    <h2 class="no-num no-toc">Draft Standard — 29 September 2010</h2>
+    <h2 class="no-num no-toc">Draft Standard — 5 January 2011</h2>
    </hgroup><p class="copyright">© Copyright 2004-2010 Apple Computer, Inc.,
    Mozilla Foundation, and Opera Software ASA.</p>
    <p class="copyright">You are granted a license to use, reproduce
@@ -236,7 +236,7 @@
   <p>The <dfn id="dom-canvas-width" title="dom-canvas-width"><code>width</code></dfn> and
   <dfn id="dom-canvas-height" title="dom-canvas-height"><code>height</code></dfn> IDL
   attributes must <a href="#reflect">reflect</a> the respective content
-  attributes of the same name<span class="testrefs kw-must" id="testrefs.size.reflect"> <a href="#testrefs.size.reflect" title="size.reflect">#</a> <a href="../canvas/size.attributes.reflect.setidl.html">size.attributes.reflect.setidl</a> <a href="../canvas/size.attributes.reflect.setidlzero.html">size.attributes.reflect.setidlzero</a> <a href="../canvas/size.attributes.reflect.setcontent.html">size.attributes.reflect.setcontent</a> </span>.</p>
+  attributes of the same name<span class="testrefs kw-must" id="testrefs.size.reflect"> <a href="#testrefs.size.reflect" title="size.reflect">#</a> <a href="../canvas/size.attributes.reflect.setidl.html">size.attributes.reflect.setidl</a> <a href="../canvas/size.attributes.reflect.setidlzero.html">size.attributes.reflect.setidlzero</a> <a href="../canvas/size.attributes.reflect.setcontent.html">size.attributes.reflect.setcontent</a> </span>, with the same defaults.</p>
 
   </div>
 
@@ -353,8 +353,7 @@
 
    <dd>
 
-    <p>Returns a <code title="">data:</code> URL for the image in the
-    canvas.</p>
+    <p>Returns a <a href="#data-protocol" title="data protocol"><code title="">data:</code> URL</a> for the image in the canvas.</p>
 
     <p>The first argument, if provided, controls the type of the image
     to be returned (e.g. PNG or JPEG). The default is <code title="">image/png</code>; that type is also used if the given
@@ -367,17 +366,18 @@
   </dl><div class="impl">
 
   <p>The <dfn id="dom-canvas-todataurl" title="dom-canvas-toDataURL"><code>toDataURL()</code></dfn> method
-  must, when called with no arguments, return a <code title="">data:</code> URL containing a representation of the image
-  as a PNG file<span class="testrefs kw-must" id="testrefs.toDataURL.noarguments"> <a href="#testrefs.toDataURL.noarguments" title="toDataURL.noarguments">#</a> <a href="../canvas/toDataURL.default.html">toDataURL.default</a> <a href="../canvas/toDataURL.nocontext.html">toDataURL.nocontext</a> </span>. <a href="#refsPNG">[PNG]</a></p>
+  must, when called with no arguments, return a <a href="#data-protocol" title="data   protocol"><code title="">data:</code> URL</a> containing a
+  representation of the image as a PNG file<span class="testrefs kw-must" id="testrefs.toDataURL.noarguments"> <a href="#testrefs.toDataURL.noarguments" title="toDataURL.noarguments">#</a> <a href="../canvas/toDataURL.default.html">toDataURL.default</a> <a href="../canvas/toDataURL.nocontext.html">toDataURL.nocontext</a> </span>. <a href="#refsPNG">[PNG]</a> <a href="#refsRFC2397">[RFC2397]</a></p>
 
   <p>If the canvas has no pixels (i.e. either its horizontal dimension
   or its vertical dimension is zero) then the method must return the
-  string &quot;<code title="">data:,</code>&quot;<span class="testrefs kw-must" id="testrefs.toDataURL.zerosize"> <a href="#testrefs.toDataURL.zerosize" title="toDataURL.zerosize">#</a> <a href="../canvas/toDataURL.zerosize.html">toDataURL.zerosize</a> </span>. (This is the shortest <code title="">data:</code> URL; it represents the empty string in a <code title="">text/plain</code> resource.)</p>
+  string &quot;<code title="">data:,</code>&quot;<span class="testrefs kw-must" id="testrefs.toDataURL.zerosize"> <a href="#testrefs.toDataURL.zerosize" title="toDataURL.zerosize">#</a> <a href="../canvas/toDataURL.zerosize.html">toDataURL.zerosize</a> </span>. (This is the shortest <a href="#data-protocol" title="data protocol"><code title="">data:</code> URL</a>; it
+  represents the empty string in a <code title="">text/plain</code>
+  resource.)</p>
 
   <p>When the <code title="dom-canvas-toDataURL"><a href="#dom-canvas-todataurl">toDataURL(<var title="">type</var>)</a></code> method is called with one <em>or
-  more</em> arguments, it must return a <code title="">data:</code>
-  URL containing a representation of the image in the format given by
-  <var title="">type</var><span class="testrefs kw-must" id="testrefs.toDataURL.witharguments"> <a href="#testrefs.toDataURL.witharguments" title="toDataURL.witharguments">#</a> <a href="../canvas/toDataURL.png.html">toDataURL.png</a> </span>. The possible values are <a href="#mime-type" title="MIME   type">MIME types</a> with no parameters, for example
+  more</em> arguments, it must return a <a href="#data-protocol" title="data   protocol"><code title="">data:</code> URL</a> containing a
+  representation of the image in the format given by <var title="">type</var><span class="testrefs kw-must" id="testrefs.toDataURL.witharguments"> <a href="#testrefs.toDataURL.witharguments" title="toDataURL.witharguments">#</a> <a href="../canvas/toDataURL.png.html">toDataURL.png</a> </span>. The possible values are <a href="#mime-type" title="MIME   type">MIME types</a> with no parameters, for example
   <code>image/png</code>, <code>image/jpeg</code>, or even maybe
   <code>image/svg+xml</code> if the implementation actually keeps
   enough information to reliably render an SVG image from the
@@ -386,15 +386,16 @@
   <p>For image types that do not support an alpha channel, the image
   must be composited onto a solid black background using the
   source-over operator, and the resulting image must be the one used
-  to create the <code title="">data:</code> URL<span class="testrefs kw-must" id="testrefs.toDataURL.noalpha"> <a href="#testrefs.toDataURL.noalpha" title="toDataURL.noalpha">#</a> <a href="../canvas/toDataURL.jpeg.alpha.html">toDataURL.jpeg.alpha</a> </span>.</p>
+  to create the <a href="#data-protocol" title="data protocol"><code title="">data:</code> URL</a><span class="testrefs kw-must" id="testrefs.toDataURL.noalpha"> <a href="#testrefs.toDataURL.noalpha" title="toDataURL.noalpha">#</a> <a href="../canvas/toDataURL.jpeg.alpha.html">toDataURL.jpeg.alpha</a> </span>.</p>
 
   <p>Only support for <code>image/png</code> is required<span class="testrefs kw-required" id="testrefs.toDataURL.png"> <a href="#testrefs.toDataURL.png" title="toDataURL.png">#</a> <a href="../canvas/toDataURL.png.html">toDataURL.png</a> <a href="../canvas/toDataURL.png.primarycolours.html">toDataURL.png.primarycolours</a> <a href="../canvas/toDataURL.png.complexcolours.html">toDataURL.png.complexcolours</a> </span>. User agents
   may support other types. If the user agent does not support the
   requested type, it must return the image using the PNG format<span class="testrefs kw-must" id="testrefs.toDataURL.unrecognised"> <a href="#testrefs.toDataURL.unrecognised" title="toDataURL.unrecognised">#</a> <a href="../canvas/toDataURL.bogustype.html">toDataURL.bogustype</a> <a href="../canvas/toDataURL.unrecognised.html">toDataURL.unrecognised</a> </span>.</p>
 
-  <p>User agents must <a href="#converted-to-ascii-lowercase" title="converted to ASCII lowercase">convert the
-  provided type to ASCII lowercase</a> before establishing if they
-  support that type and before creating the <code title="">data:</code> URL<span class="testrefs kw-must" id="testrefs.toDataURL.lowercase"> <a href="#testrefs.toDataURL.lowercase" title="toDataURL.lowercase">#</a> <a href="../canvas/toDataURL.lowercase.ascii.html">toDataURL.lowercase.ascii</a> <a href="../canvas/toDataURL.lowercase.unicode.html">toDataURL.lowercase.unicode</a> </span>.</p>
+  <p>User agents must <a href="#converted-to-ascii-lowercase" title="converted to ASCII   lowercase">convert the provided type to ASCII lowercase</a>
+  before establishing if they support that type and before creating
+  the <a href="#data-protocol" title="data protocol"><code title="">data:</code>
+  URL</a><span class="testrefs kw-must" id="testrefs.toDataURL.lowercase"> <a href="#testrefs.toDataURL.lowercase" title="toDataURL.lowercase">#</a> <a href="../canvas/toDataURL.lowercase.ascii.html">toDataURL.lowercase.ascii</a> <a href="../canvas/toDataURL.lowercase.unicode.html">toDataURL.lowercase.unicode</a> </span>.</p>
 
   </div>
 
@@ -420,7 +421,7 @@
    </th></tr></thead><tbody><tr><td> image/jpeg<span class="testrefs kw-none" id="testrefs.toDataURL.jpeg"> <a href="#testrefs.toDataURL.jpeg" title="toDataURL.jpeg">#</a> <a href="../canvas/toDataURL.jpeg.primarycolours.html">toDataURL.jpeg.primarycolours</a> <a href="../canvas/toDataURL.jpeg.alpha.html">toDataURL.jpeg.alpha</a> </span>
      </td><td> The second argument<span class="impl">, if it</span> is a
      number in the range 0.0 to 1.0 inclusive<span class="impl">, must
-     be</span> treated as the desired quality level. <span class="impl">If it is not a number<span class="testrefs kw-must" id="testrefs.toDataURL.jpeg.nan"> <a href="#testrefs.toDataURL.jpeg.nan" title="toDataURL.jpeg.nan">#</a> <a href="../canvas/toDataURL.jpeg.quality.notnumber.html">toDataURL.jpeg.quality.notnumber</a> </span> or is outside that range<span class="testrefs kw-must" id="testrefs.toDataURL.jpeg.range"> <a href="#testrefs.toDataURL.jpeg.range" title="toDataURL.jpeg.range">#</a> <a href="../canvas/toDataURL.jpeg.quality.outsiderange.html">toDataURL.jpeg.quality.outsiderange</a> </span>, the
+     be</span> treated as the desired quality level<span class="testrefs kw-must" id="testrefs.toDataURL.jpeg.quality"> <a href="#testrefs.toDataURL.jpeg.quality" title="toDataURL.jpeg.quality">#</a> <a href="../canvas/toDataURL.jpeg.quality.basic.html">toDataURL.jpeg.quality.basic</a> </span>. <span class="impl">If it is not a number<span class="testrefs kw-must" id="testrefs.toDataURL.jpeg.nan"> <a href="#testrefs.toDataURL.jpeg.nan" title="toDataURL.jpeg.nan">#</a> <a href="../canvas/toDataURL.jpeg.quality.notnumber.html">toDataURL.jpeg.quality.notnumber</a> </span> or is outside that range<span class="testrefs kw-must" id="testrefs.toDataURL.jpeg.range"> <a href="#testrefs.toDataURL.jpeg.range" title="toDataURL.jpeg.range">#</a> <a href="../canvas/toDataURL.jpeg.quality.outsiderange.html">toDataURL.jpeg.quality.outsiderange</a> </span>, the
      user agent must use its default value, as if the argument had
      been omitted.</span>
   </td></tr></tbody></table><div class="impl">
@@ -435,6 +436,10 @@
   probably define other parameters to be passed to <code title="dom-canvas-toDataURL"><a href="#dom-canvas-todataurl">toDataURL()</a></code> to allow authors to
   more carefully control compression settings, image metadata,
   etc.</p>
+
+  <!-- should we explicitly require the URL to be base64-encoded and
+  not have any parameters, to ensure the same exact URL is generated
+  in each browser? -->
 
   </div>
 
@@ -455,7 +460,7 @@
   <div class="impl">
 
   <p>When the <code title="dom-canvas-getContext"><a href="#dom-canvas-getcontext">getContext()</a></code>
-  method of a <code><a href="#the-canvas-element">canvas</a></code> element is is to <a href="#getcontext-return" title="getContext-return">return a new object for the <var title="">contextId</var></a> <code title="canvas-context-2d"><a href="#canvas-context-2d">2d</a></code>, the user agent must return a
+  method of a <code><a href="#the-canvas-element">canvas</a></code> element is to <a href="#getcontext-return" title="getContext-return">return a new object for the <var title="">contextId</var></a> <code title="canvas-context-2d"><a href="#canvas-context-2d">2d</a></code>, the user agent must return a
   new <code><a href="#canvasrenderingcontext2d">CanvasRenderingContext2D</a></code> object<span class="testrefs kw-must" id="testrefs.context.2d"> <a href="#testrefs.context.2d" title="context.2d">#</a> <a href="../canvas/2d.getcontext.exists.html">2d.getcontext.exists</a> </span>. Any additional
   arguments are ignored<span class="testrefs kw-must" id="testrefs.context.2d.extraargs"> <a href="#testrefs.context.2d.extraargs" title="context.2d.extraargs">#</a> <a href="../canvas/2d.getcontext.extraargs.html">2d.getcontext.extraargs</a> </span>.</p>
 
@@ -796,9 +801,9 @@ idea from Mihai:
   the translation distance in the horizontal direction and the <var title="">y</var> argument represents the translation distance in the
   vertical direction. The arguments are in coordinate space units.</p>
 
-  <p>The <dfn id="dom-context-2d-transform" title="dom-context-2d-transform"><code>transform(<var title="">a</var>, <var title="">b</var>, <var title="">c</var>, <var title="">d</var>, <var title="">e</var>,
-  <var title="">f</var>)</code></dfn> method must multiply the
-  current transformation matrix with the matrix described by:</p>
+  <p>The <dfn id="dom-context-2d-transform" title="dom-context-2d-transform"><code>transform(<var title="">a</var>, <var title="">b</var>, <var title="">c</var>, <var title="">d</var>, <var title="">e</var>, <var title="">f</var>)</code></dfn> method must replace the current
+  transformation matrix with the result of multiplying<span class="testrefs kw-must" id="testrefs.2d.transformation.transform.multiply"> <a href="#testrefs.2d.transformation.transform.multiply" title="2d.transformation.transform.multiply">#</a> <a href="../canvas/2d.transformation.transform.multiply.html">2d.transformation.transform.multiply</a> </span> the current
+  transformation matrix with the matrix described by<span class="testrefs kw-must" id="testrefs.2d.transformation.transform"> <a href="#testrefs.2d.transformation.transform" title="2d.transformation.transform">#</a> <a href="../canvas/2d.transformation.transform.identity.html">2d.transformation.transform.identity</a> <a href="../canvas/2d.transformation.transform.skewed.html">2d.transformation.transform.skewed</a> </span>:</p>
 
   </div>
 
@@ -821,8 +826,8 @@ idea from Mihai:
 
   <p>The <dfn id="dom-context-2d-settransform" title="dom-context-2d-setTransform"><code>setTransform(<var title="">a</var>, <var title="">b</var>, <var title="">c</var>, <var title="">d</var>, <var title="">e</var>,
   <var title="">f</var>)</code></dfn> method must reset the current
-  transform to the identity matrix, and then invoke the <code><a href="#dom-context-2d-transform" title="dom-context-2d-transform">transform</a>(<var title="">a</var>, <var title="">b</var>, <var title="">c</var>, <var title="">d</var>, <var title="">e</var>,
-  <var title="">f</var>)</code> method with the same arguments.</p>
+  transform to the identity matrix<span class="testrefs kw-must" id="testrefs.2d.transformation.setTransform.identity"> <a href="#testrefs.2d.transformation.setTransform.identity" title="2d.transformation.setTransform.identity">#</a> <a href="../canvas/2d.transformation.setTransform.multiple.html">2d.transformation.setTransform.multiple</a> </span>, and then invoke the <code><a href="#dom-context-2d-transform" title="dom-context-2d-transform">transform</a>(<var title="">a</var>, <var title="">b</var>, <var title="">c</var>, <var title="">d</var>, <var title="">e</var>,
+  <var title="">f</var>)</code> method with the same arguments<span class="testrefs kw-must" id="testrefs.2d.transformation.setTransform"> <a href="#testrefs.2d.transformation.setTransform" title="2d.transformation.setTransform">#</a> <a href="../canvas/2d.transformation.setTransform.skewed.html">2d.transformation.setTransform.skewed</a> </span>.</p>
 
   </div>
 
@@ -1053,13 +1058,13 @@ idea from Mihai:
 
   <p>Both attributes can be either strings,
   <code><a href="#canvasgradient">CanvasGradient</a></code>s, or <code><a href="#canvaspattern">CanvasPattern</a></code>s. On
-  setting, strings must be parsed as CSS &lt;color&gt; values and the
-  color assigned<span class="testrefs kw-must" id="testrefs.2d.colours.parse"> <a href="#testrefs.2d.colours.parse" title="2d.colours.parse">#</a> <a href="../canvas/2d.fillStyle.parse.html4.html">2d.fillStyle.parse.html4</a> <a href="../canvas/2d.fillStyle.parse.hex3.html">2d.fillStyle.parse.hex3</a> <a href="../canvas/2d.fillStyle.parse.hex6.html">2d.fillStyle.parse.hex6</a> <a href="../canvas/2d.fillStyle.parse.rgb-num.html">2d.fillStyle.parse.rgb-num</a> <a href="../canvas/2d.fillStyle.parse.rgb-clamp-1.html">2d.fillStyle.parse.rgb-clamp-1</a> <a href="../canvas/2d.fillStyle.parse.rgb-clamp-2.html">2d.fillStyle.parse.rgb-clamp-2</a> <a href="../canvas/2d.fillStyle.parse.rgb-clamp-3.html">2d.fillStyle.parse.rgb-clamp-3</a> <a href="../canvas/2d.fillStyle.parse.rgb-clamp-4.html">2d.fillStyle.parse.rgb-clamp-4</a> <a href="../canvas/2d.fillStyle.parse.rgb-clamp-5.html">2d.fillStyle.parse.rgb-clamp-5</a> <a href="../canvas/2d.fillStyle.parse.rgb-percent.html">2d.fillStyle.parse.rgb-percent</a> <a href="../canvas/2d.fillStyle.parse.rgb-eof.html">2d.fillStyle.parse.rgb-eof</a> <a href="../canvas/2d.fillStyle.parse.rgba-solid-1.html">2d.fillStyle.parse.rgba-solid-1</a> <a href="../canvas/2d.fillStyle.parse.rgba-solid-2.html">2d.fillStyle.parse.rgba-solid-2</a> <a href="../canvas/2d.fillStyle.parse.rgba-solid-3.html">2d.fillStyle.parse.rgba-solid-3</a> <a href="../canvas/2d.fillStyle.parse.rgba-solid-4.html">2d.fillStyle.parse.rgba-solid-4</a> <a href="../canvas/2d.fillStyle.parse.rgba-num-1.html">2d.fillStyle.parse.rgba-num-1</a> <a href="../canvas/2d.fillStyle.parse.rgba-num-2.html">2d.fillStyle.parse.rgba-num-2</a> <a href="../canvas/2d.fillStyle.parse.rgba-percent.html">2d.fillStyle.parse.rgba-percent</a> <a href="../canvas/2d.fillStyle.parse.rgba-clamp-1.html">2d.fillStyle.parse.rgba-clamp-1</a> <a href="../canvas/2d.fillStyle.parse.rgba-clamp-2.html">2d.fillStyle.parse.rgba-clamp-2</a> <a href="../canvas/2d.fillStyle.parse.rgba-eof.html">2d.fillStyle.parse.rgba-eof</a> <a href="../canvas/2d.fillStyle.parse.transparent-1.html">2d.fillStyle.parse.transparent-1</a> <a href="../canvas/2d.fillStyle.parse.transparent-2.html">2d.fillStyle.parse.transparent-2</a> <a href="../canvas/2d.fillStyle.parse.hsl-1.html">2d.fillStyle.parse.hsl-1</a> <a href="../canvas/2d.fillStyle.parse.hsl-2.html">2d.fillStyle.parse.hsl-2</a> <a href="../canvas/2d.fillStyle.parse.hsl-3.html">2d.fillStyle.parse.hsl-3</a> <a href="../canvas/2d.fillStyle.parse.hsl-4.html">2d.fillStyle.parse.hsl-4</a> <a href="../canvas/2d.fillStyle.parse.hsl-5.html">2d.fillStyle.parse.hsl-5</a> <a href="../canvas/2d.fillStyle.parse.hsl-6.html">2d.fillStyle.parse.hsl-6</a> <a href="../canvas/2d.fillStyle.parse.hsl-clamp-1.html">2d.fillStyle.parse.hsl-clamp-1</a> <a href="../canvas/2d.fillStyle.parse.hsl-clamp-2.html">2d.fillStyle.parse.hsl-clamp-2</a> <a href="../canvas/2d.fillStyle.parse.hsl-clamp-3.html">2d.fillStyle.parse.hsl-clamp-3</a> <a href="../canvas/2d.fillStyle.parse.hsl-clamp-4.html">2d.fillStyle.parse.hsl-clamp-4</a> <a href="../canvas/2d.fillStyle.parse.hsla-1.html">2d.fillStyle.parse.hsla-1</a> <a href="../canvas/2d.fillStyle.parse.hsla-2.html">2d.fillStyle.parse.hsla-2</a> <a href="../canvas/2d.fillStyle.parse.hsla-clamp-1.html">2d.fillStyle.parse.hsla-clamp-1</a> <a href="../canvas/2d.fillStyle.parse.hsla-clamp-2.html">2d.fillStyle.parse.hsla-clamp-2</a> <a href="../canvas/2d.fillStyle.parse.hsla-clamp-3.html">2d.fillStyle.parse.hsla-clamp-3</a> <a href="../canvas/2d.fillStyle.parse.hsla-clamp-4.html">2d.fillStyle.parse.hsla-clamp-4</a> <a href="../canvas/2d.fillStyle.parse.hsla-clamp-5.html">2d.fillStyle.parse.hsla-clamp-5</a> <a href="../canvas/2d.fillStyle.parse.hsla-clamp-6.html">2d.fillStyle.parse.hsla-clamp-6</a> <a href="../canvas/2d.fillStyle.parse.svg-1.html">2d.fillStyle.parse.svg-1</a> <a href="../canvas/2d.fillStyle.parse.svg-2.html">2d.fillStyle.parse.svg-2</a> <a href="../canvas/2d.fillStyle.parse.invalid.hex1.html">2d.fillStyle.parse.invalid.hex1</a> <a href="../canvas/2d.fillStyle.parse.invalid.hex2.html">2d.fillStyle.parse.invalid.hex2</a> <a href="../canvas/2d.fillStyle.parse.invalid.hex3.html">2d.fillStyle.parse.invalid.hex3</a> <a href="../canvas/2d.fillStyle.parse.invalid.hex4.html">2d.fillStyle.parse.invalid.hex4</a> <a href="../canvas/2d.fillStyle.parse.invalid.hex5.html">2d.fillStyle.parse.invalid.hex5</a> <a href="../canvas/2d.fillStyle.parse.invalid.hex6.html">2d.fillStyle.parse.invalid.hex6</a> <a href="../canvas/2d.fillStyle.parse.invalid.hex7.html">2d.fillStyle.parse.invalid.hex7</a> <a href="../canvas/2d.fillStyle.parse.invalid.hex8.html">2d.fillStyle.parse.invalid.hex8</a> <a href="../canvas/2d.fillStyle.parse.invalid.rgb-1.html">2d.fillStyle.parse.invalid.rgb-1</a> <a href="../canvas/2d.fillStyle.parse.invalid.rgb-2.html">2d.fillStyle.parse.invalid.rgb-2</a> <a href="../canvas/2d.fillStyle.parse.invalid.rgb-3.html">2d.fillStyle.parse.invalid.rgb-3</a> <a href="../canvas/2d.fillStyle.parse.invalid.rgb-4.html">2d.fillStyle.parse.invalid.rgb-4</a> <a href="../canvas/2d.fillStyle.parse.invalid.rgb-5.html">2d.fillStyle.parse.invalid.rgb-5</a> <a href="../canvas/2d.fillStyle.parse.invalid.rgb-6.html">2d.fillStyle.parse.invalid.rgb-6</a> <a href="../canvas/2d.fillStyle.parse.invalid.rgb-7.html">2d.fillStyle.parse.invalid.rgb-7</a> <a href="../canvas/2d.fillStyle.parse.invalid.rgba-1.html">2d.fillStyle.parse.invalid.rgba-1</a> <a href="../canvas/2d.fillStyle.parse.invalid.rgba-2.html">2d.fillStyle.parse.invalid.rgba-2</a> <a href="../canvas/2d.fillStyle.parse.invalid.rgba-3.html">2d.fillStyle.parse.invalid.rgba-3</a> <a href="../canvas/2d.fillStyle.parse.invalid.rgba-4.html">2d.fillStyle.parse.invalid.rgba-4</a> <a href="../canvas/2d.fillStyle.parse.invalid.rgba-5.html">2d.fillStyle.parse.invalid.rgba-5</a> <a href="../canvas/2d.fillStyle.parse.invalid.rgba-6.html">2d.fillStyle.parse.invalid.rgba-6</a> <a href="../canvas/2d.fillStyle.parse.invalid.rgba-7.html">2d.fillStyle.parse.invalid.rgba-7</a> <a href="../canvas/2d.fillStyle.parse.invalid.hsl-1.html">2d.fillStyle.parse.invalid.hsl-1</a> <a href="../canvas/2d.fillStyle.parse.invalid.hsl-2.html">2d.fillStyle.parse.invalid.hsl-2</a> <a href="../canvas/2d.fillStyle.parse.invalid.hsl-3.html">2d.fillStyle.parse.invalid.hsl-3</a> <a href="../canvas/2d.fillStyle.parse.invalid.hsl-4.html">2d.fillStyle.parse.invalid.hsl-4</a> <a href="../canvas/2d.fillStyle.parse.invalid.hsl-5.html">2d.fillStyle.parse.invalid.hsl-5</a> <a href="../canvas/2d.fillStyle.parse.invalid.hsl-6.html">2d.fillStyle.parse.invalid.hsl-6</a> <a href="../canvas/2d.fillStyle.parse.invalid.hsla-1.html">2d.fillStyle.parse.invalid.hsla-1</a> <a href="../canvas/2d.fillStyle.parse.invalid.hsla-2.html">2d.fillStyle.parse.invalid.hsla-2</a> <a href="../canvas/2d.fillStyle.parse.invalid.name-1.html">2d.fillStyle.parse.invalid.name-1</a> <a href="../canvas/2d.fillStyle.parse.invalid.name-2.html">2d.fillStyle.parse.invalid.name-2</a> <a href="../canvas/2d.fillStyle.parse.invalid.name-3.html">2d.fillStyle.parse.invalid.name-3</a> <a href="../canvas/2d.fillStyle.parse.invalid.name-4.html">2d.fillStyle.parse.invalid.name-4</a> <a href="../canvas/2d.fillStyle.parse.system.html">2d.fillStyle.parse.system</a> <a href="../canvas/2d.fillStyle.parse.current.basic.html">2d.fillStyle.parse.current.basic</a> <a href="../canvas/2d.fillStyle.parse.current.changed.html">2d.fillStyle.parse.current.changed</a> <a href="../canvas/2d.fillStyle.parse.current.removed.html">2d.fillStyle.parse.current.removed</a> </span>, and <code><a href="#canvasgradient">CanvasGradient</a></code><span class="testrefs kw-must" id="testrefs.2d.gradient.assign"> <a href="#testrefs.2d.gradient.assign" title="2d.gradient.assign">#</a> </span> and
+  setting, strings must be <a href="#parsed-as-a-css-color-value" title="parsed as a CSS &lt;color&gt;   value">parsed as CSS &lt;color&gt; values</a> and the color
+  assigned<span class="testrefs kw-must" id="testrefs.2d.colours.parse"> <a href="#testrefs.2d.colours.parse" title="2d.colours.parse">#</a> <a href="../canvas/2d.fillStyle.parse.html4.html">2d.fillStyle.parse.html4</a> <a href="../canvas/2d.fillStyle.parse.hex3.html">2d.fillStyle.parse.hex3</a> <a href="../canvas/2d.fillStyle.parse.hex6.html">2d.fillStyle.parse.hex6</a> <a href="../canvas/2d.fillStyle.parse.rgb-num.html">2d.fillStyle.parse.rgb-num</a> <a href="../canvas/2d.fillStyle.parse.rgb-clamp-1.html">2d.fillStyle.parse.rgb-clamp-1</a> <a href="../canvas/2d.fillStyle.parse.rgb-clamp-2.html">2d.fillStyle.parse.rgb-clamp-2</a> <a href="../canvas/2d.fillStyle.parse.rgb-clamp-3.html">2d.fillStyle.parse.rgb-clamp-3</a> <a href="../canvas/2d.fillStyle.parse.rgb-clamp-4.html">2d.fillStyle.parse.rgb-clamp-4</a> <a href="../canvas/2d.fillStyle.parse.rgb-clamp-5.html">2d.fillStyle.parse.rgb-clamp-5</a> <a href="../canvas/2d.fillStyle.parse.rgb-percent.html">2d.fillStyle.parse.rgb-percent</a> <a href="../canvas/2d.fillStyle.parse.rgb-eof.html">2d.fillStyle.parse.rgb-eof</a> <a href="../canvas/2d.fillStyle.parse.rgba-solid-1.html">2d.fillStyle.parse.rgba-solid-1</a> <a href="../canvas/2d.fillStyle.parse.rgba-solid-2.html">2d.fillStyle.parse.rgba-solid-2</a> <a href="../canvas/2d.fillStyle.parse.rgba-solid-3.html">2d.fillStyle.parse.rgba-solid-3</a> <a href="../canvas/2d.fillStyle.parse.rgba-solid-4.html">2d.fillStyle.parse.rgba-solid-4</a> <a href="../canvas/2d.fillStyle.parse.rgba-num-1.html">2d.fillStyle.parse.rgba-num-1</a> <a href="../canvas/2d.fillStyle.parse.rgba-num-2.html">2d.fillStyle.parse.rgba-num-2</a> <a href="../canvas/2d.fillStyle.parse.rgba-percent.html">2d.fillStyle.parse.rgba-percent</a> <a href="../canvas/2d.fillStyle.parse.rgba-clamp-1.html">2d.fillStyle.parse.rgba-clamp-1</a> <a href="../canvas/2d.fillStyle.parse.rgba-clamp-2.html">2d.fillStyle.parse.rgba-clamp-2</a> <a href="../canvas/2d.fillStyle.parse.rgba-eof.html">2d.fillStyle.parse.rgba-eof</a> <a href="../canvas/2d.fillStyle.parse.transparent-1.html">2d.fillStyle.parse.transparent-1</a> <a href="../canvas/2d.fillStyle.parse.transparent-2.html">2d.fillStyle.parse.transparent-2</a> <a href="../canvas/2d.fillStyle.parse.hsl-1.html">2d.fillStyle.parse.hsl-1</a> <a href="../canvas/2d.fillStyle.parse.hsl-2.html">2d.fillStyle.parse.hsl-2</a> <a href="../canvas/2d.fillStyle.parse.hsl-3.html">2d.fillStyle.parse.hsl-3</a> <a href="../canvas/2d.fillStyle.parse.hsl-4.html">2d.fillStyle.parse.hsl-4</a> <a href="../canvas/2d.fillStyle.parse.hsl-5.html">2d.fillStyle.parse.hsl-5</a> <a href="../canvas/2d.fillStyle.parse.hsl-6.html">2d.fillStyle.parse.hsl-6</a> <a href="../canvas/2d.fillStyle.parse.hsl-clamp-1.html">2d.fillStyle.parse.hsl-clamp-1</a> <a href="../canvas/2d.fillStyle.parse.hsl-clamp-2.html">2d.fillStyle.parse.hsl-clamp-2</a> <a href="../canvas/2d.fillStyle.parse.hsl-clamp-3.html">2d.fillStyle.parse.hsl-clamp-3</a> <a href="../canvas/2d.fillStyle.parse.hsl-clamp-4.html">2d.fillStyle.parse.hsl-clamp-4</a> <a href="../canvas/2d.fillStyle.parse.hsla-1.html">2d.fillStyle.parse.hsla-1</a> <a href="../canvas/2d.fillStyle.parse.hsla-2.html">2d.fillStyle.parse.hsla-2</a> <a href="../canvas/2d.fillStyle.parse.hsla-clamp-1.html">2d.fillStyle.parse.hsla-clamp-1</a> <a href="../canvas/2d.fillStyle.parse.hsla-clamp-2.html">2d.fillStyle.parse.hsla-clamp-2</a> <a href="../canvas/2d.fillStyle.parse.hsla-clamp-3.html">2d.fillStyle.parse.hsla-clamp-3</a> <a href="../canvas/2d.fillStyle.parse.hsla-clamp-4.html">2d.fillStyle.parse.hsla-clamp-4</a> <a href="../canvas/2d.fillStyle.parse.hsla-clamp-5.html">2d.fillStyle.parse.hsla-clamp-5</a> <a href="../canvas/2d.fillStyle.parse.hsla-clamp-6.html">2d.fillStyle.parse.hsla-clamp-6</a> <a href="../canvas/2d.fillStyle.parse.svg-1.html">2d.fillStyle.parse.svg-1</a> <a href="../canvas/2d.fillStyle.parse.svg-2.html">2d.fillStyle.parse.svg-2</a> <a href="../canvas/2d.fillStyle.parse.invalid.hex1.html">2d.fillStyle.parse.invalid.hex1</a> <a href="../canvas/2d.fillStyle.parse.invalid.hex2.html">2d.fillStyle.parse.invalid.hex2</a> <a href="../canvas/2d.fillStyle.parse.invalid.hex3.html">2d.fillStyle.parse.invalid.hex3</a> <a href="../canvas/2d.fillStyle.parse.invalid.hex4.html">2d.fillStyle.parse.invalid.hex4</a> <a href="../canvas/2d.fillStyle.parse.invalid.hex5.html">2d.fillStyle.parse.invalid.hex5</a> <a href="../canvas/2d.fillStyle.parse.invalid.hex6.html">2d.fillStyle.parse.invalid.hex6</a> <a href="../canvas/2d.fillStyle.parse.invalid.hex7.html">2d.fillStyle.parse.invalid.hex7</a> <a href="../canvas/2d.fillStyle.parse.invalid.hex8.html">2d.fillStyle.parse.invalid.hex8</a> <a href="../canvas/2d.fillStyle.parse.invalid.rgb-1.html">2d.fillStyle.parse.invalid.rgb-1</a> <a href="../canvas/2d.fillStyle.parse.invalid.rgb-2.html">2d.fillStyle.parse.invalid.rgb-2</a> <a href="../canvas/2d.fillStyle.parse.invalid.rgb-3.html">2d.fillStyle.parse.invalid.rgb-3</a> <a href="../canvas/2d.fillStyle.parse.invalid.rgb-4.html">2d.fillStyle.parse.invalid.rgb-4</a> <a href="../canvas/2d.fillStyle.parse.invalid.rgb-5.html">2d.fillStyle.parse.invalid.rgb-5</a> <a href="../canvas/2d.fillStyle.parse.invalid.rgb-6.html">2d.fillStyle.parse.invalid.rgb-6</a> <a href="../canvas/2d.fillStyle.parse.invalid.rgb-7.html">2d.fillStyle.parse.invalid.rgb-7</a> <a href="../canvas/2d.fillStyle.parse.invalid.rgba-1.html">2d.fillStyle.parse.invalid.rgba-1</a> <a href="../canvas/2d.fillStyle.parse.invalid.rgba-2.html">2d.fillStyle.parse.invalid.rgba-2</a> <a href="../canvas/2d.fillStyle.parse.invalid.rgba-3.html">2d.fillStyle.parse.invalid.rgba-3</a> <a href="../canvas/2d.fillStyle.parse.invalid.rgba-4.html">2d.fillStyle.parse.invalid.rgba-4</a> <a href="../canvas/2d.fillStyle.parse.invalid.rgba-5.html">2d.fillStyle.parse.invalid.rgba-5</a> <a href="../canvas/2d.fillStyle.parse.invalid.rgba-6.html">2d.fillStyle.parse.invalid.rgba-6</a> <a href="../canvas/2d.fillStyle.parse.invalid.rgba-7.html">2d.fillStyle.parse.invalid.rgba-7</a> <a href="../canvas/2d.fillStyle.parse.invalid.hsl-1.html">2d.fillStyle.parse.invalid.hsl-1</a> <a href="../canvas/2d.fillStyle.parse.invalid.hsl-2.html">2d.fillStyle.parse.invalid.hsl-2</a> <a href="../canvas/2d.fillStyle.parse.invalid.hsl-3.html">2d.fillStyle.parse.invalid.hsl-3</a> <a href="../canvas/2d.fillStyle.parse.invalid.hsl-4.html">2d.fillStyle.parse.invalid.hsl-4</a> <a href="../canvas/2d.fillStyle.parse.invalid.hsl-5.html">2d.fillStyle.parse.invalid.hsl-5</a> <a href="../canvas/2d.fillStyle.parse.invalid.hsl-6.html">2d.fillStyle.parse.invalid.hsl-6</a> <a href="../canvas/2d.fillStyle.parse.invalid.hsla-1.html">2d.fillStyle.parse.invalid.hsla-1</a> <a href="../canvas/2d.fillStyle.parse.invalid.hsla-2.html">2d.fillStyle.parse.invalid.hsla-2</a> <a href="../canvas/2d.fillStyle.parse.invalid.name-1.html">2d.fillStyle.parse.invalid.name-1</a> <a href="../canvas/2d.fillStyle.parse.invalid.name-2.html">2d.fillStyle.parse.invalid.name-2</a> <a href="../canvas/2d.fillStyle.parse.invalid.name-3.html">2d.fillStyle.parse.invalid.name-3</a> <a href="../canvas/2d.fillStyle.parse.invalid.name-4.html">2d.fillStyle.parse.invalid.name-4</a> <a href="../canvas/2d.fillStyle.parse.system.html">2d.fillStyle.parse.system</a> <a href="../canvas/2d.fillStyle.parse.current.basic.html">2d.fillStyle.parse.current.basic</a> <a href="../canvas/2d.fillStyle.parse.current.changed.html">2d.fillStyle.parse.current.changed</a> <a href="../canvas/2d.fillStyle.parse.current.removed.html">2d.fillStyle.parse.current.removed</a> </span>, and <code><a href="#canvasgradient">CanvasGradient</a></code><span class="testrefs kw-must" id="testrefs.2d.gradient.assign"> <a href="#testrefs.2d.gradient.assign" title="2d.gradient.assign">#</a> </span> and
   <code><a href="#canvaspattern">CanvasPattern</a></code><span class="testrefs kw-must" id="testrefs.2d.pattern.assign"> <a href="#testrefs.2d.pattern.assign" title="2d.pattern.assign">#</a> </span> objects must be assigned themselves. <a href="#refsCSSCOLOR">[CSSCOLOR]</a> If the value is a string but
-  is not a valid color<span class="testrefs kw-must" id="testrefs.2d.colours.invalidstring"> <a href="#testrefs.2d.colours.invalidstring" title="2d.colours.invalidstring">#</a> <a href="../canvas/2d.fillStyle.invalidstring.html">2d.fillStyle.invalidstring</a> </span>, or is neither a string, a
-  <code><a href="#canvasgradient">CanvasGradient</a></code>, nor a <code><a href="#canvaspattern">CanvasPattern</a></code><span class="testrefs kw-must" id="testrefs.2d.colours.invalidtype"> <a href="#testrefs.2d.colours.invalidtype" title="2d.colours.invalidtype">#</a> <a href="../canvas/2d.fillStyle.invalidtype.html">2d.fillStyle.invalidtype</a> </span>, then
-  it must be ignored, and the attribute must retain its previous
-  value.</p>
+  cannot be <a href="#parsed-as-a-css-color-value">parsed as a CSS &lt;color&gt; value</a><span class="testrefs kw-must" id="testrefs.2d.colours.invalidstring"> <a href="#testrefs.2d.colours.invalidstring" title="2d.colours.invalidstring">#</a> <a href="../canvas/2d.fillStyle.invalidstring.html">2d.fillStyle.invalidstring</a> </span>, or is
+  neither a string, a <code><a href="#canvasgradient">CanvasGradient</a></code>, nor a
+  <code><a href="#canvaspattern">CanvasPattern</a></code><span class="testrefs kw-must" id="testrefs.2d.colours.invalidtype"> <a href="#testrefs.2d.colours.invalidtype" title="2d.colours.invalidtype">#</a> <a href="../canvas/2d.fillStyle.invalidtype.html">2d.fillStyle.invalidtype</a> </span>, then it must be ignored, and the
+  attribute must retain its previous value.</p>
 
   <p>When set to a <code><a href="#canvaspattern">CanvasPattern</a></code> or
   <code><a href="#canvasgradient">CanvasGradient</a></code> object, the assignment is
@@ -1160,16 +1165,17 @@ idea from Mihai:
   method on the <code><a href="#canvasgradient">CanvasGradient</a></code> interface adds a new stop
   to a gradient. If the <var title="">offset</var> is less than 0,
   greater than 1, infinite, or NaN, then an
-  <code><a href="#index_size_err">INDEX_SIZE_ERR</a></code> exception must be raised<span class="testrefs kw-must" id="testrefs.2d.gradient.invalidoffset"> <a href="#testrefs.2d.gradient.invalidoffset" title="2d.gradient.invalidoffset">#</a> <a href="../canvas/2d.gradient.object.invalidoffset.html">2d.gradient.object.invalidoffset</a> </span>. If the <var title="">color</var> cannot be parsed as a CSS color, then a
-  <code><a href="#syntax_err">SYNTAX_ERR</a></code> exception must be raised<span class="testrefs kw-must" id="testrefs.2d.gradient.invalidcolour"> <a href="#testrefs.2d.gradient.invalidcolour" title="2d.gradient.invalidcolour">#</a> <a href="../canvas/2d.gradient.object.invalidcolour.html">2d.gradient.object.invalidcolour</a> </span>. Otherwise, the
-  gradient must have a new stop placed, at offset <var title="">offset</var> relative to the whole gradient, and with the
-  color obtained by parsing <var title="">color</var> as a CSS
-  &lt;color&gt; value<span class="testrefs kw-must" id="testrefs.2d.gradient.update"> <a href="#testrefs.2d.gradient.update" title="2d.gradient.update">#</a> <a href="../canvas/2d.gradient.object.update.html">2d.gradient.object.update</a> </span>. If multiple stops are added at the same offset
-  on a gradient, they must be placed in the order added, with the
-  first one closest to the start of the gradient, and each subsequent
-  one infinitesimally further along towards the end point (in effect
-  causing all but the first and last stop added at each point to be
-  ignored)<span class="testrefs kw-must" id="testrefs.2d.gradient.interpolate.overlap"> <a href="#testrefs.2d.gradient.interpolate.overlap" title="2d.gradient.interpolate.overlap">#</a> <a href="../canvas/2d.gradient.interpolate.overlap.html">2d.gradient.interpolate.overlap</a> <a href="../canvas/2d.gradient.interpolate.overlap2.html">2d.gradient.interpolate.overlap2</a> </span>.</p>
+  <code><a href="#index_size_err">INDEX_SIZE_ERR</a></code> exception must be raised<span class="testrefs kw-must" id="testrefs.2d.gradient.invalidoffset"> <a href="#testrefs.2d.gradient.invalidoffset" title="2d.gradient.invalidoffset">#</a> <a href="../canvas/2d.gradient.object.invalidoffset.html">2d.gradient.object.invalidoffset</a> </span>. If the <var title="">color</var> cannot be <a href="#parsed-as-a-css-color-value">parsed as a CSS &lt;color&gt;
+  value</a>, then a <code><a href="#syntax_err">SYNTAX_ERR</a></code> exception must be
+  raised<span class="testrefs kw-must" id="testrefs.2d.gradient.invalidcolour"> <a href="#testrefs.2d.gradient.invalidcolour" title="2d.gradient.invalidcolour">#</a> <a href="../canvas/2d.gradient.object.invalidcolour.html">2d.gradient.object.invalidcolour</a> </span>. Otherwise, the gradient must have a new stop placed, at
+  offset <var title="">offset</var> relative to the whole gradient,
+  and with the color obtained by parsing <var title="">color</var> as
+  a CSS &lt;color&gt; value<span class="testrefs kw-must" id="testrefs.2d.gradient.update"> <a href="#testrefs.2d.gradient.update" title="2d.gradient.update">#</a> <a href="../canvas/2d.gradient.object.update.html">2d.gradient.object.update</a> </span>. If multiple stops are added at the same
+  offset on a gradient, they must be placed in the order added, with
+  the first one closest to the start of the gradient, and each
+  subsequent one infinitesimally further along towards the end point
+  (in effect causing all but the first and last stop added at each
+  point to be ignored)<span class="testrefs kw-must" id="testrefs.2d.gradient.interpolate.overlap"> <a href="#testrefs.2d.gradient.interpolate.overlap" title="2d.gradient.interpolate.overlap">#</a> <a href="../canvas/2d.gradient.interpolate.overlap.html">2d.gradient.interpolate.overlap</a> <a href="../canvas/2d.gradient.interpolate.overlap2.html">2d.gradient.interpolate.overlap2</a> </span>.</p>
 
   <p>The <dfn id="dom-context-2d-createlineargradient" title="dom-context-2d-createLinearGradient"><code>createLinearGradient(<var title="">x0</var>, <var title="">y0</var>, <var title="">x1</var>,
   <var title="">y1</var>)</code></dfn> method takes four arguments
@@ -1302,11 +1308,9 @@ idea from Mihai:
   exception.</p> <!-- drawImage() has an equivalent paragraph -->
 
   <p>If the <var title="">image</var> argument is an
-  <code><a href="#htmlimageelement">HTMLImageElement</a></code> object whose <code title="dom-img-complete"><a href="#dom-img-complete">complete</a></code> attribute is false<span class="testrefs kw-must" id="testrefs.2d.pattern.incomplete.image"> <a href="#testrefs.2d.pattern.incomplete.image" title="2d.pattern.incomplete.image">#</a> <a href="../canvas/2d.pattern.image.incomplete.html">2d.pattern.image.incomplete</a> <a href="../canvas/2d.pattern.image.broken.html">2d.pattern.image.broken</a> </span> or whose
-  <code title="attr-img-src"><a href="#attr-img-src">src</a></code> attribute is omitted or empty<span class="testrefs kw-must" id="testrefs.2d.pattern.incomplete.image.nosrc"> <a href="#testrefs.2d.pattern.incomplete.image.nosrc" title="2d.pattern.incomplete.image.nosrc">#</a> <a href="../canvas/2d.pattern.image.incomplete.empty.html">2d.pattern.image.incomplete.empty</a> <a href="../canvas/2d.pattern.image.incomplete.omitted.html">2d.pattern.image.incomplete.omitted</a> </span>,
-  or if the <var title="">image</var> argument is an
-  <code><a href="#htmlvideoelement">HTMLVideoElement</a></code> object whose <code title="dom-media-readyState"><a href="#dom-media-readystate">readyState</a></code> attribute is either
-  <code title="dom-media-HAVE_NOTHING"><a href="#dom-media-have_nothing">HAVE_NOTHING</a></code> or <code title="dom-media-HAVE_METADATA"><a href="#dom-media-have_metadata">HAVE_METADATA</a></code><span class="testrefs kw-must" id="testrefs.2d.pattern.incomplete.video"> <a href="#testrefs.2d.pattern.incomplete.video" title="2d.pattern.incomplete.video">#</a> </span>, then the
+  <code><a href="#htmlimageelement">HTMLImageElement</a></code> object that is not <a href="#img-good" title="img-good">fully decodable</a><span class="testrefs kw-must" id="testrefs.2d.pattern.incomplete.image"> <a href="#testrefs.2d.pattern.incomplete.image" title="2d.pattern.incomplete.image">#</a> <a href="../canvas/2d.pattern.image.incomplete.nosrc.html">2d.pattern.image.incomplete.nosrc</a> <a href="../canvas/2d.pattern.image.incomplete.immediate.html">2d.pattern.image.incomplete.immediate</a> <a href="../canvas/2d.pattern.image.incomplete.reload.html">2d.pattern.image.incomplete.reload</a> <a href="../canvas/2d.pattern.image.incomplete.emptysrc.html">2d.pattern.image.incomplete.emptysrc</a> <a href="../canvas/2d.pattern.image.incomplete.removedsrc.html">2d.pattern.image.incomplete.removedsrc</a> <a href="../canvas/2d.pattern.image.broken.html">2d.pattern.image.broken</a> </span>, or if the <var title="">image</var> argument is an <code><a href="#htmlvideoelement">HTMLVideoElement</a></code>
+  object whose <code title="dom-media-readyState"><a href="#dom-media-readystate">readyState</a></code>
+  attribute is either <code title="dom-media-HAVE_NOTHING"><a href="#dom-media-have_nothing">HAVE_NOTHING</a></code> or <code title="dom-media-HAVE_METADATA"><a href="#dom-media-have_metadata">HAVE_METADATA</a></code><span class="testrefs kw-must" id="testrefs.2d.pattern.incomplete.video"> <a href="#testrefs.2d.pattern.incomplete.video" title="2d.pattern.incomplete.video">#</a> </span>, then the
   implementation must return null.</p> <!-- drawImage() has an
   equivalent paragraph -->
 
@@ -1329,7 +1333,18 @@ idea from Mihai:
   stroking or filling effect requires that they be drawn<span class="testrefs kw-must" id="testrefs.2d.pattern.extent"> <a href="#testrefs.2d.pattern.extent" title="2d.pattern.extent">#</a> </span>, and are
   affected by the current transformation matrix.</p>
 
-  <p>When the <code title="dom-context-2d-createPattern"><a href="#dom-context-2d-createpattern">createPattern()</a></code> method
+  <p>If the original image data is a bitmap image, the value painted
+  at a point in the area of the repetitions is computed by filtering
+  the original image data. The user agent may use any filtering
+  algorithm (for example bilinear interpolation or nearest-neighbor).
+  When the filtering algorithm requires a pixel value from outside the
+  original image data, it must instead use the value from wrapping the
+  pixel's coordinates to the original image's dimensions. (That is,
+  the filter uses 'repeat' behavior, regardless of the value of
+  <var title="">repetition</var>.)
+  <!-- drawImage() has a similar paragraph with different rules -->
+
+  </p><p>When the <code title="dom-context-2d-createPattern"><a href="#dom-context-2d-createpattern">createPattern()</a></code> method
   is passed an animated image as its <var title="">image</var>
   argument, the user agent must use the poster frame of the animation,
   or, if there is no poster frame, the first frame of the
@@ -1577,10 +1592,10 @@ hairline width with transform. ack Shaun Morris.
 
   <p>On getting, the <a href="#serialization-of-a-color" title="serialization of a   color">serialization of the color</a> must be returned<span class="testrefs kw-must" id="testrefs.2d.shadow.color.get"> <a href="#testrefs.2d.shadow.color.get" title="2d.shadow.color.get">#</a> <a href="../canvas/2d.shadow.attributes.shadowColor.valid.html">2d.shadow.attributes.shadowColor.valid</a> </span>.</p>
 
-  <p>On setting, the new value must be parsed as a CSS &lt;color&gt;
-  value and the color assigned<span class="testrefs kw-must" id="testrefs.2d.shadow.color.set"> <a href="#testrefs.2d.shadow.color.set" title="2d.shadow.color.set">#</a> <a href="../canvas/2d.shadow.attributes.shadowColor.valid.html">2d.shadow.attributes.shadowColor.valid</a> </span>. If the value is not a valid color,
-  then it must be ignored, and the attribute must retain its previous
-  value<span class="testrefs kw-must" id="testrefs.2d.shadow.color.invalid"> <a href="#testrefs.2d.shadow.color.invalid" title="2d.shadow.color.invalid">#</a> <a href="../canvas/2d.shadow.attributes.shadowColor.invalid.html">2d.shadow.attributes.shadowColor.invalid</a> </span>. <a href="#refsCSSCOLOR">[CSSCOLOR]</a></p>
+  <p>On setting, the new value must be <a href="#parsed-as-a-css-color-value">parsed as a CSS
+  &lt;color&gt; value</a> and the color assigned<span class="testrefs kw-must" id="testrefs.2d.shadow.color.set"> <a href="#testrefs.2d.shadow.color.set" title="2d.shadow.color.set">#</a> <a href="../canvas/2d.shadow.attributes.shadowColor.valid.html">2d.shadow.attributes.shadowColor.valid</a> </span>. If the value
+  cannot be parsed as a CSS &lt;color&gt; value then it must be
+  ignored, and the attribute must retain its previous value<span class="testrefs kw-must" id="testrefs.2d.shadow.color.invalid"> <a href="#testrefs.2d.shadow.color.invalid" title="2d.shadow.color.invalid">#</a> <a href="../canvas/2d.shadow.attributes.shadowColor.invalid.html">2d.shadow.attributes.shadowColor.invalid</a> </span>. <a href="#refsCSSCOLOR">[CSSCOLOR]</a></p>
 
   <p>The <dfn id="dom-context-2d-shadowoffsetx" title="dom-context-2d-shadowOffsetX"><code>shadowOffsetX</code></dfn>
   and <dfn id="dom-context-2d-shadowoffsety" title="dom-context-2d-shadowOffsetY"><code>shadowOffsetY</code></dfn>
@@ -2782,11 +2797,9 @@ v5DVT (also check for '- -' bits in the part above) --><p>The <dfn id="dom-conte
   exception.</p> <!-- createPattern() has an equivalent paragraph -->
 
   <p>If the <var title="">image</var> argument is an
-  <code><a href="#htmlimageelement">HTMLImageElement</a></code> object whose <code title="dom-img-complete"><a href="#dom-img-complete">complete</a></code> attribute is false<span class="testrefs kw-must" id="testrefs.2d.drawImage.incomplete.image"> <a href="#testrefs.2d.drawImage.incomplete.image" title="2d.drawImage.incomplete.image">#</a> <a href="../canvas/2d.drawImage.incomplete.html">2d.drawImage.incomplete</a> <a href="../canvas/2d.drawImage.broken.html">2d.drawImage.broken</a> </span> or whose
-  <code title="attr-img-src"><a href="#attr-img-src">src</a></code> attribute is omitted or empty<span class="testrefs kw-must" id="testrefs.2d.drawImage.incomplete.image.nosrc"> <a href="#testrefs.2d.drawImage.incomplete.image.nosrc" title="2d.drawImage.incomplete.image.nosrc">#</a> <a href="../canvas/2d.drawImage.image.incomplete.empty.html">2d.drawImage.image.incomplete.empty</a> <a href="../canvas/2d.drawImage.image.incomplete.omitted.html">2d.drawImage.image.incomplete.omitted</a> </span>,
-  or if the <var title="">image</var> argument is an
-  <code><a href="#htmlvideoelement">HTMLVideoElement</a></code> object whose <code title="dom-media-readyState"><a href="#dom-media-readystate">readyState</a></code> attribute is either
-  <code title="dom-media-HAVE_NOTHING"><a href="#dom-media-have_nothing">HAVE_NOTHING</a></code> or <code title="dom-media-HAVE_METADATA"><a href="#dom-media-have_metadata">HAVE_METADATA</a></code><span class="testrefs kw-must" id="testrefs.2d.drawImage.incomplete.video"> <a href="#testrefs.2d.drawImage.incomplete.video" title="2d.drawImage.incomplete.video">#</a> </span>, then the
+  <code><a href="#htmlimageelement">HTMLImageElement</a></code> object that is not <a href="#img-good" title="img-good">fully decodable</a><span class="testrefs kw-must" id="testrefs.2d.drawImage.incomplete.image"> <a href="#testrefs.2d.drawImage.incomplete.image" title="2d.drawImage.incomplete.image">#</a> <a href="../canvas/2d.drawImage.incomplete.nosrc.html">2d.drawImage.incomplete.nosrc</a> <a href="../canvas/2d.drawImage.incomplete.immediate.html">2d.drawImage.incomplete.immediate</a> <a href="../canvas/2d.drawImage.incomplete.reload.html">2d.drawImage.incomplete.reload</a> <a href="../canvas/2d.drawImage.incomplete.emptysrc.html">2d.drawImage.incomplete.emptysrc</a> <a href="../canvas/2d.drawImage.incomplete.removedsrc.html">2d.drawImage.incomplete.removedsrc</a> <a href="../canvas/2d.drawImage.broken.html">2d.drawImage.broken</a> </span>, or if the <var title="">image</var> argument is an <code><a href="#htmlvideoelement">HTMLVideoElement</a></code>
+  object whose <code title="dom-media-readyState"><a href="#dom-media-readystate">readyState</a></code>
+  attribute is either <code title="dom-media-HAVE_NOTHING"><a href="#dom-media-have_nothing">HAVE_NOTHING</a></code> or <code title="dom-media-HAVE_METADATA"><a href="#dom-media-have_metadata">HAVE_METADATA</a></code><span class="testrefs kw-must" id="testrefs.2d.drawImage.incomplete.video"> <a href="#testrefs.2d.drawImage.incomplete.video" title="2d.drawImage.incomplete.video">#</a> </span>, then the
   implementation must return without drawing anything.</p> <!--
   createPattern() has an equivalent paragraph -->
 
@@ -2803,10 +2816,6 @@ v5DVT (also check for '- -' bits in the part above) --><p>The <dfn id="dom-conte
   <p>If one of the <var title="">sw</var> or <var title="">sh</var>
   arguments is zero, the implementation must raise an
   <code><a href="#index_size_err">INDEX_SIZE_ERR</a></code> exception.</p>
-
-  <p>Pixels of the source rectangle that are not entirely within the
-  source image must be treated as transparent black.</p> <!-- see
-  CORE-32111 http://krijnhoetmer.nl/irc-logs/whatwg/20100818#l-737 -->
 
   <p>The destination rectangle is the rectangle whose corners are the
   four points (<var title="">dx</var>, <var title="">dy</var>),
@@ -2833,6 +2842,19 @@ v5DVT (also check for '- -' bits in the part above) --><p>The <dfn id="dom-conte
   model</a> requires the source to be copied before the image is drawn
   back onto the canvas, so it is possible to copy parts of a canvas
   onto overlapping parts of itself<span class="testrefs kw-none" id="testrefs.2d.drawImage.self"> <a href="#testrefs.2d.drawImage.self" title="2d.drawImage.self">#</a> <a href="../canvas/2d.drawImage.self.1.html">2d.drawImage.self.1</a> <a href="../canvas/2d.drawImage.self.2.html">2d.drawImage.self.2</a> </span>.</p>
+
+  <p>If the original image data is a bitmap image, the value painted
+  at a point in the destination rectangle is computed by filtering the
+  original image data. The user agent may use any filtering algorithm
+  (for example bilinear interpolation or nearest-neighbor). When the
+  filtering algorithm requires a pixel value from outside the original
+  image data, it must instead use the value from the nearest edge
+  pixel. (That is, the filter uses 'clamp-to-edge' behavior.)</p>
+  <!-- see CORE-32111 and:
+       http://krijnhoetmer.nl/irc-logs/whatwg/20100818#l-737
+       http://www.w3.org/Bugs/Public/show_bug.cgi?id=10799#c11
+  -->
+  <!-- createPattern() has a similar paragraph with different rules -->
 
   <p>When the <code title="dom-context-2d-drawImage"><a href="#dom-context-2d-drawimage">drawImage()</a></code> method
   is passed an animated image as its <var title="">image</var>
@@ -2993,17 +3015,17 @@ v5DVT (also check for '- -' bits in the part above) --><p>The <dfn id="dom-conte
   attribute of a <code><a href="#canvaspixelarray">CanvasPixelArray</a></code> object must return this
   number<span class="testrefs kw-must" id="testrefs.2d.pixelarray.length"> <a href="#testrefs.2d.pixelarray.length" title="2d.pixelarray.length">#</a> <a href="../canvas/2d.imageData.get.length.html">2d.imageData.get.length</a> </span>.</p>
 
-  <p>The object's <span>indices of the supported indexed
-  properties</span> are the numbers in the range 0 .. <span title=""><var title="">h</var>×<var title="">w</var>×4-1</span>.</p>
+  <p>The object's <a href="#supported-property-indices">supported property indices</a> are the
+  numbers in the range 0 .. <span title=""><var title="">h</var>×<var title="">w</var>×4-1</span>.</p>
 
-  <p>When a <code><a href="#canvaspixelarray">CanvasPixelArray</a></code> object is <dfn id="dom-canvaspixelarray-get" title="dom-CanvasPixelArray-get">indexed to retrieve an indexed
-  property</dfn> <var title="">index</var>, the value returned must be
-  the value of the <var title="">index</var>th component in the
-  array<span class="testrefs kw-must" id="testrefs.2d.pixelarray.retrieve"> <a href="#testrefs.2d.pixelarray.retrieve" title="2d.pixelarray.retrieve">#</a> <a href="../canvas/2d.imageData.get.range.html">2d.imageData.get.range</a> </span>.</p>
+  <p>To <dfn id="dom-canvaspixelarray-get" title="dom-CanvasPixelArray-get">determine the value of
+  an indexed property</dfn> <var title="">index</var>, the user agent
+  must return the value of the <var title="">index</var>th component
+  in the array<span class="testrefs kw-must" id="testrefs.2d.pixelarray.retrieve"> <a href="#testrefs.2d.pixelarray.retrieve" title="2d.pixelarray.retrieve">#</a> <a href="../canvas/2d.imageData.get.range.html">2d.imageData.get.range</a> </span>.</p>
 
-  <p>When a <code><a href="#canvaspixelarray">CanvasPixelArray</a></code> object is <dfn id="dom-canvaspixelarray-set" title="dom-CanvasPixelArray-set">indexed to modify an indexed
-  property</dfn> <var title="">index</var> with value <var title="">value</var>, the value of the <var title="">index</var>th
-  component in the array must be set to <var title="">value</var><span class="testrefs kw-must" id="testrefs.2d.pixelarray.modify"> <a href="#testrefs.2d.pixelarray.modify" title="2d.pixelarray.modify">#</a> <a href="../canvas/2d.imageData.object.set.html">2d.imageData.object.set</a> <a href="../canvas/2d.imageData.object.undefined.html">2d.imageData.object.undefined</a> <a href="../canvas/2d.imageData.object.nan.html">2d.imageData.object.nan</a> <a href="../canvas/2d.imageData.object.string.html">2d.imageData.object.string</a> <a href="../canvas/2d.imageData.object.wrap.html">2d.imageData.object.wrap</a> <a href="../canvas/2d.imageData.object.round.html">2d.imageData.object.round</a> </span>.</p>
+  <p>To <dfn id="dom-canvaspixelarray-set" title="dom-CanvasPixelArray-set">set the value of an
+  existing indexed property</dfn> <var title="">index</var> to value
+  <var title="">value</var>, the value of the <var title="">index</var>th component in the array must be set to <var title="">value</var><span class="testrefs kw-must" id="testrefs.2d.pixelarray.modify"> <a href="#testrefs.2d.pixelarray.modify" title="2d.pixelarray.modify">#</a> <a href="../canvas/2d.imageData.object.set.html">2d.imageData.object.set</a> <a href="../canvas/2d.imageData.object.undefined.html">2d.imageData.object.undefined</a> <a href="../canvas/2d.imageData.object.nan.html">2d.imageData.object.nan</a> <a href="../canvas/2d.imageData.object.string.html">2d.imageData.object.string</a> <a href="../canvas/2d.imageData.object.wrap.html">2d.imageData.object.wrap</a> <a href="../canvas/2d.imageData.object.round.html">2d.imageData.object.round</a> </span>.</p>
 
   <p class="note">The width and height (<var title="">w</var> and <var title="">h</var>) might be different from the <var title="">sw</var>
   and <var title="">sh</var> arguments to the above methods, e.g. if

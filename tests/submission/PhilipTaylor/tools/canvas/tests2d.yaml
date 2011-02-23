@@ -1,4 +1,4 @@
-# Copyright (c) 2010 Philip Taylor
+# Copyright (c) 2011 Philip Taylor
 # Released under the BSD license and W3C Test Suite License: see LICENSE.txt
 
 - name: 2d.getcontext.exists
@@ -2676,66 +2676,70 @@
   code: |
     @assert throws TypeError ctx.createPattern('../images/red.png', 'repeat'); @moz-todo
 
-- name: 2d.pattern.image.incomplete
-  testing:
-    - 2d.pattern.incomplete.image
-  #mozilla: { bug: TODO }
-  code: |
-    var img = new Image();
-    @assert img.complete === false; @moz-todo
-    @assert ctx.createPattern(img, 'repeat') === null;
-
-- name: 2d.pattern.image.incomplete2
-  DISABLED: Depends on unspecified 'complete' behaviour
+- name: 2d.pattern.image.incomplete.nosrc
   testing:
     - 2d.pattern.incomplete.image
   code: |
     var img = new Image();
-    img.src = 'http://www.google.com/images/logo.gif';
-    @assert img.complete === false; // FIXME: it is not (yet) specified whether cached image loads can set 'complete' immediately
-    @assert ctx.createPattern(img, 'repeat') === null;
-    img.src = "";
-
-- name: 2d.pattern.image.incomplete.empty
-  testing:
-    - 2d.pattern.incomplete.image.nosrc
-  images:
-    - green.png
-  code: |
-    var img = document.getElementById('green.png');
-    img.src = "";
     @assert ctx.createPattern(img, 'repeat') === null;
 
-- name: 2d.pattern.image.incomplete.omitted
-  testing:
-    - 2d.pattern.incomplete.image.nosrc
-  images:
-    - green.png
-  code: |
-    var img = document.getElementById('green.png');
-    img.removeAttribute('src');
-    @assert ctx.createPattern(img, 'repeat') === null;
-
-- name: 2d.pattern.image.incomplete4
-  DISABLED: Depends on unspecified 'complete' behaviour
+- name: 2d.pattern.image.incomplete.immediate
   testing:
     - 2d.pattern.incomplete.image
   images:
-    - green.png
+    - red.png
   code: |
-    var img = document.getElementById('green.png');
+    var img = new Image();
     img.src = '../images/red.png';
+    // This triggers the "update the image data" algorithm.
+    // The image will not go to the "completely available" state
+    // until a fetch task in the networking task source is processed,
+    // so the image must not be fully decodable yet:
+    @assert ctx.createPattern(img, 'repeat') === null;
+
+- name: 2d.pattern.image.incomplete.reload
+  testing:
+    - 2d.pattern.incomplete.image
+  images:
+    - yellow.png
+    - red.png
+  code: |
+    var img = document.getElementById('yellow.png');
+    img.src = '../images/red.png';
+    // This triggers the "update the image data" algorithm,
+    // and resets the image to the "unavailable" state.
+    // The image will not go to the "completely available" state
+    // until a fetch task in the networking task source is processed,
+    // so the image must not be fully decodable yet:
+    @assert ctx.createPattern(img, 'repeat') === null;
+
+- name: 2d.pattern.image.incomplete.emptysrc
+  testing:
+    - 2d.pattern.incomplete.image
+  images:
+    - red.png
+  code: |
+    var img = document.getElementById('red.png');
+    img.src = "";
+    @assert ctx.createPattern(img, 'repeat') === null;
+
+- name: 2d.pattern.image.incomplete.removedsrc
+  testing:
+    - 2d.pattern.incomplete.image
+  images:
+    - red.png
+  code: |
+    var img = document.getElementById('red.png');
+    img.removeAttribute('src');
     @assert ctx.createPattern(img, 'repeat') === null;
 
 - name: 2d.pattern.image.broken
   testing:
     - 2d.pattern.incomplete.image
-  #mozilla: { bug: TODO }
   images:
     - broken.png
   code: |
     var img = document.getElementById('broken.png');
-    @assert img.complete === false; @moz-todo
     @assert ctx.createPattern(img, 'repeat') === null;
 
 - name: 2d.pattern.repeat.empty
@@ -8742,23 +8746,58 @@
     @assert pixel 50,25 ==~ 0,255,0,255; @moz-todo
   expected: green
 
-- name: 2d.drawImage.incomplete
+- name: 2d.drawImage.incomplete.nosrc
   testing:
     - 2d.drawImage.incomplete.image
-  #mozilla: { bug: TODO }
   code: |
     ctx.fillStyle = '#0f0';
     ctx.fillRect(0, 0, 100, 50);
     var img = new Image();
-    @assert img.complete === false; @moz-todo
     ctx.drawImage(img, 0, 0);
+    @assert pixel 50,25 ==~ 0,255,0,255;
   expected: green
 
-# TODO: see 2d.pattern.image.incomplete2,3,4 and repeat them here once they're fixed
-
-- name: 2d.drawImage.image.incomplete.empty
+- name: 2d.drawImage.incomplete.immediate
   testing:
-    - 2d.drawImage.incomplete.image.nosrc
+    - 2d.drawImage.incomplete.image
+  images:
+    - red.png
+  code: |
+    ctx.fillStyle = '#0f0';
+    ctx.fillRect(0, 0, 100, 50);
+    var img = new Image();
+    img.src = '../images/red.png';
+    // This triggers the "update the image data" algorithm.
+    // The image will not go to the "completely available" state
+    // until a fetch task in the networking task source is processed,
+    // so the image must not be fully decodable yet:
+    ctx.drawImage(img, 0, 0);
+    @assert pixel 50,25 ==~ 0,255,0,255;
+  expected: green
+
+- name: 2d.drawImage.incomplete.reload
+  testing:
+    - 2d.drawImage.incomplete.image
+  images:
+    - yellow.png
+    - red.png
+  code: |
+    ctx.fillStyle = '#0f0';
+    ctx.fillRect(0, 0, 100, 50);
+    var img = document.getElementById('yellow.png');
+    img.src = '../images/red.png';
+    // This triggers the "update the image data" algorithm,
+    // and resets the image to the "unavailable" state.
+    // The image will not go to the "completely available" state
+    // until a fetch task in the networking task source is processed,
+    // so the image must not be fully decodable yet:
+    ctx.drawImage(img, 0, 0);
+    @assert pixel 50,25 ==~ 0,255,0,255;
+  expected: green
+
+- name: 2d.drawImage.incomplete.emptysrc
+  testing:
+    - 2d.drawImage.incomplete.image
   images:
     - red.png
   code: |
@@ -8770,9 +8809,9 @@
     @assert pixel 50,25 ==~ 0,255,0,255;
   expected: green
 
-- name: 2d.drawImage.image.incomplete.omitted
+- name: 2d.drawImage.incomplete.removedsrc
   testing:
-    - 2d.drawImage.incomplete.image.nosrc
+    - 2d.drawImage.incomplete.image
   images:
     - red.png
   code: |
@@ -8787,15 +8826,14 @@
 - name: 2d.drawImage.broken
   testing:
     - 2d.drawImage.incomplete.image
-  #mozilla: { bug: TODO }
   images:
     - broken.png
   code: |
     ctx.fillStyle = '#0f0';
     ctx.fillRect(0, 0, 100, 50);
     var img = document.getElementById('broken.png');
-    @assert img.complete === false; @moz-todo
     ctx.drawImage(img, 0, 0);
+    @assert pixel 50,25 ==~ 0,255,0,255;
   expected: green
 
 - name: 2d.drawImage.zerocanvas

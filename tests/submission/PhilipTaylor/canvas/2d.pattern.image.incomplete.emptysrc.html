@@ -1,16 +1,16 @@
 <!DOCTYPE html>
-<title>Canvas test: 2d.pattern.image.incomplete.empty</title>
+<title>Canvas test: 2d.pattern.image.incomplete.emptysrc</title>
 <meta name="author" content="Philip Taylor">
 <script src="../common/canvas-tests.js"></script>
 <link rel="stylesheet" href="../common/canvas-tests.css">
 <body class="show_output">
 
-<h1><a href="index.2d.html">2d</a>.<a href="index.2d.pattern.html">pattern</a>.<a href="index.2d.pattern.image.html">image</a>.<a href="index.2d.pattern.image.incomplete.html">incomplete</a>.empty</h1>
+<h1><a href="index.2d.html">2d</a>.<a href="index.2d.pattern.html">pattern</a>.<a href="index.2d.pattern.image.html">image</a>.<a href="index.2d.pattern.image.incomplete.html">incomplete</a>.emptysrc</h1>
 <p class="desc"></p>
 
 <div class="refs">Spec references:
 <ul>
-<li><a href="../annotated-spec/canvas.html#testrefs.2d.pattern.incomplete.image.nosrc">2d.pattern.incomplete.image.nosrc</a>
+<li><a href="../annotated-spec/canvas.html#testrefs.2d.pattern.incomplete.image">2d.pattern.incomplete.image</a>
 </ul>
 </div>
 
@@ -21,12 +21,12 @@
 <script>
 _addTest(function(canvas, ctx) {
 
-var img = document.getElementById('green.png');
+var img = document.getElementById('red.png');
 img.src = "";
 _assertSame(ctx.createPattern(img, 'repeat'), null, "ctx.createPattern(img, 'repeat')", "null");
 
 
 });
 </script>
-<img src="../images/green.png" id="green.png" class="resource">
+<img src="../images/red.png" id="red.png" class="resource">
 

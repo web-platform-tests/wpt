@@ -877,7 +877,7 @@
     - security.toDataURL
     - security.getImageData
   images:
-    - http://test2.w3.org/html/tests/approved/images/yellow.png
+    - http://w3c-test.org/html/tests/approved/images/yellow.png
   code: |
     ctx.drawImage(document.getElementById('yellow.png'), 0, 0);
     @assert throws canvas.toDataURL();
@@ -889,7 +889,7 @@
   testing:
     - security.drawImage.canvas
   images:
-    - http://test2.w3.org/html/tests/approved/images/yellow.png
+    - http://w3c-test.org/html/tests/approved/images/yellow.png
   code: |
     var canvas2 = document.createElement('canvas');
     canvas2.width = 100;
@@ -906,7 +906,7 @@
   testing:
     - security.start
   images:
-    - http://test2.w3.org/html/tests/approved/images/yellow.png
+    - http://w3c-test.org/html/tests/approved/images/yellow.png
   code: |
     var p = ctx.createPattern(document.getElementById('yellow.png'), 'repeat');
     canvas.toDataURL();
@@ -919,7 +919,7 @@
   testing:
     - security.start
   images:
-    - http://test2.w3.org/html/tests/approved/images/yellow.png
+    - http://w3c-test.org/html/tests/approved/images/yellow.png
   code: |
     var canvas2 = document.createElement('canvas');
     canvas2.width = 100;
@@ -941,7 +941,7 @@
     - security.start
     - security.fillStyle.canvas
   images:
-    - http://test2.w3.org/html/tests/approved/images/yellow.png
+    - http://w3c-test.org/html/tests/approved/images/yellow.png
   code: |
     var canvas2 = document.createElement('canvas');
     canvas2.width = 100;
@@ -963,7 +963,7 @@
   testing:
     - security.fillStyle.image
   images:
-    - http://test2.w3.org/html/tests/approved/images/yellow.png
+    - http://w3c-test.org/html/tests/approved/images/yellow.png
   code: |
     var p = ctx.createPattern(document.getElementById('yellow.png'), 'repeat');
     ctx.fillStyle = p;
@@ -977,7 +977,7 @@
   testing:
     - security.fillStyle.canvas
   images:
-    - http://test2.w3.org/html/tests/approved/images/yellow.png
+    - http://w3c-test.org/html/tests/approved/images/yellow.png
   code: |
     var canvas2 = document.createElement('canvas');
     canvas2.width = 100;
@@ -996,7 +996,7 @@
   testing:
     - security.strokeStyle.image
   images:
-    - http://test2.w3.org/html/tests/approved/images/yellow.png
+    - http://w3c-test.org/html/tests/approved/images/yellow.png
   code: |
     var p = ctx.createPattern(document.getElementById('yellow.png'), 'repeat');
     ctx.strokeStyle = p;
@@ -1010,7 +1010,7 @@
   testing:
     - security.strokeStyle.canvas
   images:
-    - http://test2.w3.org/html/tests/approved/images/yellow.png
+    - http://w3c-test.org/html/tests/approved/images/yellow.png
   code: |
     var canvas2 = document.createElement('canvas');
     canvas2.width = 100;
@@ -1049,7 +1049,7 @@
   testing:
     - initial.reset
   images:
-    - http://test2.w3.org/html/tests/approved/images/yellow.png
+    - http://w3c-test.org/html/tests/approved/images/yellow.png
   code: |
     canvas.width = 50;
     ctx.drawImage(document.getElementById('yellow.png'), 0, 0);

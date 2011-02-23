@@ -3631,6 +3631,11 @@ events for specific contexts (e.g. user interface events).
  and <code title=dom-EventTarget-dispatchEvent>dispatchEvent()</code> return
  if the event is cancelable.
  <li>Removes <dfn><code>EventException</code></dfn>.
+ <li>Fire is no longer synonymous with dispatch, but includes initializing
+ an event.</li>
+ <li>The propagation and canceled flags are unset before dispatching rather
+ than after. <span class=XXX>This seems better for canceled. Is it better
+ for propagation?</span>
 </ul>
 
 

@@ -19,7 +19,7 @@
 <body class=draft>
 <div class=head id=head>
 <h1>HTML Editing Commands</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-22-february-2011>Work in Progress &mdash; Last Update 22 February 2011</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-23-february-2011>Work in Progress &mdash; Last Update 23 February 2011</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;ayg+spec@aryeh.name&gt;
@@ -62,9 +62,27 @@ included in HTML comments so as not to distract the reader.
 
 <h2 id=issues><span class=secno>2 </span>Issues</h2>
 
+<p>I'm not sure if my priorities in writing the algorithms here are correct.
+My goals were 1) make the algorithms as simple as possible, and 2) minimize
+surprising user-visible behavior (e.g., "I clicked B but it didn't turn
+bold!").  I didn't try to optimize the niceness of the resulting DOM at all, so
+for instance, when bolding <code title="">abc &lt;i&gt;def&lt;/i&gt; &lt;br&gt; ghi</code>
+you get <code title="">&lt;b&gt;abc &lt;/b&gt;&lt;i style="font-weight:
+bold"&gt;def&lt;/i&gt;&lt;b&gt; &lt;/b&gt;&lt;br style="font-weight: bold"&gt;&lt;b&gt;
+ghi&lt;/b&gt;</code> instead of wrapping the whole thing in a single <code title="">&lt;b&gt;</code>.  This is to avoid making the algorithm understand content
+models, but maybe it's worth revisiting later.  Likewise, unbolding the middle
+word of <code title="">&lt;b&gt;Foo bar baz&lt;/b&gt;</code> produces <code title="">&lt;b&gt;Foo &lt;span style="font-weight: normal"&gt;bar&lt;/span&gt;
+baz&lt;/b&gt;</code> instead of the simpler <code title="">&lt;b&gt;Foo &lt;/b&gt;bar&lt;b&gt;
+baz&lt;/b&gt;</code>.  For now, the algorithm works, even if it produces messy
+DOMs.
+
+<p>Other issues:
+
 <ul>
   <li><p>Need to make CSS terminology more precise, about setting/unsetting CSS
   properties.  The intent is to modify the style attribute, CSSOM-style.
+  Likewise, CSS value comparisons need to be done after serializing both
+  values, so "bold" == "700" and "red" == "#f00" and so on.
 
   <li><p>Also not sure about computed style.  There are differences between
   "computed" and "used" and things like that, what do we actually want here?
@@ -253,8 +271,6 @@ list of the element's former children.
   parent has, so the list of children to unstyle needs to be computed
   beforehand.
 
-  <li><p>Let <var title="">children</var> be an empty list of <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a>s.
-
   <li><p>If either
 
   <ul>
@@ -271,6 +287,8 @@ list of the element's former children.
   <p>then:
 
   <ol>
+    <li><p>Let <var title="">children</var> be an empty list of <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a>s.
+
     <li><p>While <var title="">element</var> has children:
 
     <ol>
@@ -283,65 +301,35 @@ list of the element's former children.
 
     <li><p>Remove <var title="">element</var>.
 
-    <li><p>Return <var title="">children</var> and abort this algorithm.
+    <li><p>Return <var title="">children</var>.
   </ol>
 
   <li><p>Unset the CSS property <var title="">property name</var> of <var title="">element</var>.
 
-  <li><p>If <var title="">element</var> is an <a href=#html-element>HTML element</a> with
-  <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> in <var title="">tag list</var>:
+  <li><p>If <var title="">element</var> is not an <a href=#html-element>HTML element</a> or its
+  <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> is not in <var title="">tag list</var>, return the empty list.
 
-  <ol>
-    <li><p>Let <var title="">new element</var> be a new <a href=#html-element>HTML element</a> with
-    <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> "span", with the same attributes and <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument><code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument>ownerDocument</code></a>
-    as <var title="">element</var>.
+  <li><p>Let <var title="">new element</var> be a new <a href=#html-element>HTML element</a> with
+  <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> "span", with the same attributes and <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument><code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument>ownerDocument</code></a>
+  as <var title="">element</var>.
 
-    <li><p>Append <var title="">new element</var> to <var title="">element</var>'s
-    parent as the previous sibling of <var title="">element</var>.
+  <li><p>Append <var title="">new element</var> to <var title="">element</var>'s
+  parent as the previous sibling of <var title="">element</var>.
 
-    <li><p>While <var title="">element</var> has children:
+  <li><p>While <var title="">element</var> has children, append its first child
+  as the last child of <var title="">new element</var>.
 
-    <ol>
-      <li><p>Let <var title="">child</var> be the first child of <var title="">element</var>.
+  <li><p>Remove <var title="">element</var>.
 
-      <li><p>Append <var title="">child</var> to <var title="">children</var>.
-
-      <li><p>Append <var title="">child</var> as the last child of <var title="">new
-      element</var>.
-    </ol>
-
-    <li><p>Remove <var title="">element</var>.
-  </ol>
-
-  <li><p>Return <var title="">children</var>.
+  <li><p>Return the one-<a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> list consisting of <var title="">new element</var>.
 </ol>
 
 
 <h2 id=styling-a-range><span class=secno>6 </span>Styling a Range</h2>
-<p>When a user agent is to <dfn id=style-a-range>style a <code class=external data-anolis-spec=domrange>Range</code></dfn> <var title="">range</var>, it must
-run the following steps.  There are four inputs: a CSS property name <var title="">property name</var>, a new value <var title="">property value</var>, a
-nonempty list of strings <var title="">tag list</var>, and a string
-<var title="">commandId</var>.
-
-<div class=XXX>
-<p>This description tries to keep the algorithm as simple as possible at the
-expense of producing much more complicated markup in some cases than a slightly
-more sophisticated algorithm.  It's similar to what Gecko does in spirit,
-although the details differ.  The basic cause of most of the ugly markup is
-that we don't bake in any element nesting restrictions, so <code title="">&lt;em&gt;Abc&lt;/em&gt; &lt;em&gt;def&lt;/em&gt;</code> becomes <code title="">&lt;em
-style=font-weight:bold&gt;Abc&lt;/em&gt;&lt;b&gt; &lt;/b&gt;&lt;em
-style=font-weight:bold&gt;def&lt;/em&gt;</code> instead of just <code title="">&lt;b&gt;&lt;em&gt;Abc&lt;/em&gt; &lt;em&gt;def&lt;/em&gt;&lt;/b&gt;</code>.  Otherwise
-we'd have to add content model checks.  Maybe this is worth it?  IE and WebKit
-seem to do it, Gecko and Opera seem not to (they only wrap text nodes AFAICT).
-
-<p>I did add some complication by saying conflicting inline style needs to be
-removed.  This is what WebKit does.  Gecko and IE9 leave it alone, which leads
-to stuff like <code title="">&lt;b&gt;&lt;span
-style=font-weight:100&gt;Foo&lt;/span&gt;&lt;/b&gt;</code> that doesn't actually work.
-Opera avoids the problem by producing code like <code title="">&lt;span
-style=font-weight:100&gt;&lt;b&gt;Foo&lt;/b&gt;&lt;/span&gt;</code>, but that doesn't work
-with the CSS-based strategy.
-</div>
+<p>When a user agent is to <dfn id=style-a-range>style a <code class=external data-anolis-spec=domrange>Range</code></dfn> <var title="">range</var>, it
+must run the following steps.  There are three inputs: a CSS property name
+<var title="">property name</var>, a new value <var title="">property value</var>, and a possibly
+empty list of strings <var title="">tag list</var>.
 
 <ol>
   <li><p>Let <var title="">node list</var> be the result of <a href=#decompose-a-range title="decompose
@@ -353,19 +341,16 @@ with the CSS-based strategy.
     <li><p>If <var title="">node</var> is an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a>:
 
     <ol>
-      <li><p>If <var title="">node</var> is an <a href=#html-element>HTML element</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a>
-      in <var title="">tag list</var>, unset the CSS property <var title="">property
-      name</var> of <var title="">node</var>.  Otherwise, set the CSS property
-      <var title="">property name</var> of <var title="">node</var> to <var title="">property value</var>.
+      <li><p>Unset the CSS property <var title="">property name</var> of <var title="">node</var>.
 
-      <li><p>If the <a href=#state>state</a> of <var title="">commandId</var> on
-      <var title="">node</var> is false, set the CSS property <var title="">property name</var>
-      of <var title="">node</var> to <var title="">property value</var>.
-      <!-- This fixes cases where the element won't actually create the desired
-      style.  E.g., <span style=font-weight:lighter><b>Foo</b></span> will not
-      actually bold "Foo" (because the default style for <b> is font-weight:
-      bolder), so we do <b style=font-weight:bold> instead.  Likewise when we
-      do similarly a bit later on in this algorithm. -->
+      <li><p>If the computed value of <var title="">property name</var> for
+      <var title="">node</var> is not <var title="">property value</var>, set the CSS property
+      <var title="">property name</var> of <var title="">node</var> to <var title="">property value</var>.
+      <!-- This means we don't bother applying the property if the style is
+      already present, e.g., from an ancestor.  But we do apply it if the
+      element is the expected sort of element but the style is wrong anyway,
+      e.g., <span style=font-weight:100><b>Foo</b></span> where b's style is
+      font-weight: bold. -->
 
       <li><p>Let <var title="">element children</var> be the <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a> children
       of <var title="">node</var>.
@@ -381,28 +366,22 @@ with the CSS-based strategy.
     <li><p>Otherwise, if <var title="">node</var> is a <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> node:
 
     <ol>
-      <!-- This next step is not strictly necessary from a user point of view,
-      since there's no visible difference.  We could just always insert a new
-      element.  But that can drastically complicate the DOM if there are lots
-      of text nodes, which happens easily when the algorithms here are invoked
-      a lot: you get splitText() called when decomposing ranges, and unstyling
-      elements can also dump their text node children into the DOM next to
-      other text nodes. -->
-      <li><p>If the previous sibling of <var title="">node</var> is an <a href=#html-element>HTML
-      element</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> in <var title="">tag list</var> with no
-      attributes, and the <a href=#state>state</a> of <var title="">commandId</var> on
-      <var title="">node</var> is true, let <var title="">new parent</var> equal the previous
-      sibling of <var title="">node</var>.
+      <li><p>Let <var title="">new parent</var> be a new <a href=#html-element>HTML element</a> with
+      <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> equal to the first string in <var title="">tag list</var> (or equal
+      to "span" if <var title="">tag list</var> is empty), with no attributes, and
+      <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument><code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument>ownerDocument</code></a> the same as <var title="">node</var>.
 
-      <li><p>Otherwise, let <var title="">new parent</var> be a new <a href=#html-element>HTML
-      element</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> equal to the first string in <var title="">tag
-      list</var>, with no attributes, and <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument><code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument>ownerDocument</code></a> the same as
-      <var title="">node</var>.  Append <var title="">new parent</var> to <var title="">node</var>'s
-      parent as the previous sibling of <var title="">node</var>.
+      <li><p>Append <var title="">new parent</var> to <var title="">node</var>'s parent as the
+      previous sibling of <var title="">node</var>.
 
-      <li><p>If the <a href=#state>state</a> of <var title="">commandId</var> on <var title="">new
-      parent</var> is false, set the CSS property <var title="">property name</var> of
-      <var title="">new parent</var> to <var title="">property value</var>.
+      <li><p>If the computed value of <var title="">property name</var> on <var title="">new
+      parent</var> is not equal to <var title="">property value</var>, set the CSS
+      property <var title="">property name</var> of <var title="">new parent</var> to
+      <var title="">property value</var>.
+      <!-- This is needed if tag list is empty, but also if the correct style
+      is being suppressed for some reason, like <span
+      style=font-weight:100><b>Foo</b></span> where b is font-weight: bolder.
+      -->
 
       <li><p>Append <var title="">node</var> to <var title="">new parent</var> as
       its last child.
@@ -411,7 +390,6 @@ with the CSS-based strategy.
     <li><p>Otherwise, do nothing.
   </ol>
 </ol>
-
 <!-- Out of IE9, Gecko, WebKit, and Opera, when asked to (e.g.) bold an
 element, IE9 and WebKit and Opera wrap various descendants in <b> or <strong>;
 Gecko just adds a style attribute.  The latter is simpler, particularly because
@@ -422,10 +400,10 @@ history. -->
 
 
 <h2 id=unstyling-a-range><span class=secno>7 </span>Unstyling a Range</h2>
-<p>When a user agent is to <dfn id=unstyle-a-range>unstyle a <code class=external data-anolis-spec=domrange>Range</code></dfn> <var title="">range</var>, it must
-run the following steps.  There are four inputs: a CSS property name <var title="">property name</var>, a new value <var title="">property value</var>, a
-possibly empty list of strings <var title="">tag list</var>, and a string
-<var title="">commandId</var>.
+<p>When a user agent is to <dfn id=unstyle-a-range>unstyle a <code class=external data-anolis-spec=domrange>Range</code></dfn> <var title="">range</var>, it
+must run the following steps.  There are three inputs: a CSS property name
+<var title="">property name</var>, a new value <var title="">property value</var>, and a possibly
+empty list of strings <var title="">tag list</var>.
 
 <ol>
   <li><p>Let <var title="">node list</var> be the result of <a href=#decompose-a-range title="decompose
@@ -438,18 +416,18 @@ possibly empty list of strings <var title="">tag list</var>, and a string
     <li><p>If <var title="">node</var> is an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a>:
 
     <ol>
-      <li><p>Let <var title="">children</var> be the result of <a href=#unstyle-an-element title="unstyle an element">unstyling</a> <var title="">node</var>.
+      <li><p>Let <var title="">extra nodes</var> be the result of <a href=#unstyle-an-element title="unstyle an element">unstyling</a> <var title="">node</var>.
 
       <li><p>If <var title="">node</var> no longer has a parent:
 
       <ol>
-        <li><p>Insert all the <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a>s in <var title="">children</var> into <var title="">node list</var> immediately after <var title="">node</var>, in
-        order.
+        <li><p>Insert all the <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a>s in <var title="">extra nodes</var> into
+        <var title="">node list</var> immediately after <var title="">node</var>, in order.
 
-        <li><p>Continue with the next <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> in <var title="">node list</var>,
-        if any.
+        <li><p>Continue with the next <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> in <var title="">node list</var>, if any.
 
-        <p class=note>The next <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> will be the first former child of <var title="">node</var>, if <var title="">node</var> had children.
+        <p class=note>The next <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> will be the first in <var title="">extra
+        nodes</var>, unless <var title="">extra nodes</var> is empty.
       </ol>
 
       <li><p>If the computed value of <var title="">property name</var> for <var title="">node</var> is not <var title="">property value</var>, set the CSS
@@ -505,22 +483,78 @@ there is no <a href=#active-range>active range</a>, do nothing.
 
 <p>The <dfn id=querycommandstate() title=queryCommandState()><code>queryCommandState(<var title="">commandId</var>)</code></dfn>
 method on the <a href=http://www.whatwg.org/html/#htmldocument><code class=external data-anolis-spec=html>HTMLDocument</code></a> interface must
-return the <a href=#state>state</a> of <var title="">commandId</var> on the
-<a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>'s <a href=#active-range>active range</a>.  If there is no <a href=#active-range>active
-range</a>, return false.
+return the state of <var title="">commandId</var> on the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>'s
+<a href=#active-range>active range</a>, as given by the list below.  If there is no
+<a href=#active-range>active range</a>, or if <var title="">commandId</var> is not on the list,
+return false.
 <!-- Gecko throws an exception if there are no ranges in the selection, but
 other engines seem to just return false, which seems like nicer behavior
-anyway. -->
+anyway.
 
-<p>The <dfn id=state>state</dfn> of a command <var title="">commandId</var> on a <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a> is
-given by the list below.  If <var title="">commandId</var> is not on the list, its
-<a href=#state>state</a> is false on any <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a>.  The <a href=#state>state</a> of a
-command on a <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> <var title="">node</var> is the <a href=#state>state</a> of that command
-on the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> (<var title="">node</var>, 0), <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a>
-(<var title="">node</var>, <var title="">node</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a>), and <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-root title=concept-range-root>root</a> equal to
-<var title="">node</var>'s <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument><code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument>ownerDocument</code></a>.
+Requesting the state of an unknown command throws an exception in IE 9 RC
+and Firefox 4b11, and returns boolean false in Chrome 10 and Opera 11. -->
+
+<p>The <dfn id=querycommandvalue() title=queryCommandValue()><code>queryCommandValue(<var title="">commandId</var>)</code></dfn>
+method on the <a href=http://www.whatwg.org/html/#htmldocument><code class=external data-anolis-spec=html>HTMLDocument</code></a> interface must
+return the value of <var title="">commandId</var> on the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>'s
+<a href=#active-range>active range</a>, as given by the list below.  If there is no
+<a href=#active-range>active range</a>, or if <var title="">commandId</var> is not on the list,
+return the empty string.
+<!-- Requesting the value of an unknown command throws an exception in
+IE 9 RC and in Firefox 4b11.  It returns boolean false in Chrome 10, and the
+empty string in Opera 11. -->
+
+<p class=XXX>Querying the value or state of an unrecognized command throws an
+exception in IE and Firefox.  Need to consider changing to that behavior.
+
+<p>The possible values for <var title="">commandId</var>, and their corresponding
+meanings, are as follows.  These values must be compared to the argument in an
+<a class=external data-anolis-spec=html href=http://www.whatwg.org/html/#ascii-case-insensitive>ASCII case-insensitive</a> manner.
 
 <dl>
+<dt><code title=""><dfn id=command-backcolor title=command-backColor>backColor</dfn></code>
+
+<dd><p><strong>Action</strong>: If <var title="">value</var> is not a valid CSS color,
+the user agent must do nothing and abort these steps.  Otherwise, it must <a href=#style-a-range title="style a range">style the <code class=external data-anolis-spec=domrange>Range</code></a> with <var title="">property name</var>
+equal to "background-color", <var title="">property value</var> equal to
+<var title="">value</var>, and <var title="">tag list</var> equal to the empty list.
+<!-- Firefox documentation says it normally sets the background color of the
+document, but I can't get it to work at all in brief testing in 4b11.  (It says
+it behaves differently in styleWithCss mode.)  Opera 11 appears to set the
+background color of the nearest block container of the cursor, or something.
+IE 9 RC and Chrome 10 behave as I'd expect, namely, they set the background of
+the selection, just like all the other styling features.  I go with IE/WebKit.
+
+Invalid colors are probably the same craziness as with foreColor.
+
+Chrome 10 dev actually sets background, not background-color, so it resets all
+the other background stuff.  I go with IE 9 RC and Opera 11, which only set
+background-color. -->
+
+<dd><p><strong>State</strong>: Always false.
+
+<dd><p><strong>Value</strong>: The value is given by the following algorithm:
+
+<ol>
+  <li><p>Let <var title="">element</var> be the <a href=#beginning-element>beginning element</a> of the
+  <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a>.
+
+  <li><p>While the computed style of "background-color" on <var title="">element</var>
+  is any fully transparent value, set <var title="">element</var> to its parent.
+
+  <p class=XXX>It's intended that for these purposes, the root element will
+  have a white background.  Should that be specified somewhere?  I don't think
+  all UAs actually do it.
+
+  <li><p>Return the computed style of "background-color" for
+  <var title="">element</var>.
+</ol>
+<!-- Chrome 10 returns rgba(0, 0, 0, 0) if there's no background defined
+anywhere.  Opera 11 returns rgb(255, 255, 255) as I'd like.  Firefox 4b11 just
+throws an exception for some reason.  IE 9 RC seems to return the number 0
+across the board, as with foreColor. -->
+
+
 <dt><code title=""><dfn id=command-bold title=command-bold>bold</dfn></code>
 
 <dd><p><strong>Action</strong>: If the state of the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a> for this command
@@ -534,13 +568,57 @@ list</var> ["b", "strong"].
 <dd><p><strong>State</strong>: True if the <a href=#beginning-element>beginning element</a> of the
 <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a> has font-weight with computed value less than 700, otherwise false.
 
+<dd><p><strong>Value</strong>: Always the empty string.
+<!-- We have lots of options here (and presumably for all the others where
+value is meaningless).  IE 9 RC returns the boolean false, Firefox 4b11 and
+Opera 11 both return the empty string, Chrome 10 returns the string "false".
+The HTML5 spec as of February 2011 mandates WebKit's behavior.  It makes sense
+to always return a string, a majority of string-returners return the empty
+string, and three out of the four return something that evaluates to false as a
+boolean, so I'll go with Firefox and Opera. -->
+
+
+<dt><code title=""><dfn id=command-forecolor title=command-forecolor>foreColor</dfn></code>
+
+<dd><p><strong>Action</strong>: If <var title="">value</var> is not a valid CSS color,
+the user agent must do nothing and abort these steps.
+<!-- Browsers are all over the place here.  IE 9 RC seems to treat unrecognized
+colors as black, but everyone else ignores them.  There are also special rules
+for certain things that aren't valid CSS colors, in some browsers, like:
+
+IE 9 RC: "ffe" -> "#ffe", "123" -> "#123"
+Firefox 4b11: "ffe" -> no style, "123" -> no style
+Chrome 10 dev: "ffe" -> "#FFFFEE", "123" -> "#000123"
+Opera 11: "ffe" -> "#0f0f0e", "123" -> "#010203"
+
+Firefox seems to stick to just CSS colors, so with any luck that works.
+"limegreen" works as expected in all browsers.  rgb(255, 255, 255) does too,
+except in Opera, which tries to parse it in some crazy way and winds up with
+"#00b025".  rgba() colors don't work as uniformly, but I don't see any reason
+to prohibit them.  Best to just match CSS. -->
+Otherwise, it must <a href=#style-a-range title="style a range">style the <code class=external data-anolis-spec=domrange>Range</code></a> with
+<var title="">property name</var> equal to "color", <var title="">property value</var> equal to
+<var title="">value</var>, and <var title="">tag list</var> equal to the empty list.
+
+<dd><p><strong>State</strong>: Always false.
+<!-- This matches IE 9 RC and Chrome 10.  Opera 11 seems to return true if
+there's some color style applied, false otherwise, which seems fairly useless;
+authors want to use value here, not state.  Firefox 4b11 throws an exception,
+which is an interesting approach, but I'll go with IE/WebKit, which makes at
+least as much sense. -->
+
+<dd><p><strong>Value</strong>: The computed value of the CSS property "color"
+for the <a href=#beginning-element>beginning element</a> of the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a>.
+<!-- IE 9 RC returns the number 0 always, which makes no sense at all.  This
+matches the other browsers. -->
+
 
 <dt><code title=""><dfn id=command-italic title=command-italic>italic</dfn></code>
 
 <dd><p><strong>Action</strong>: If the of the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a> for this command is
 false, the user agent must <a href=#style-a-range title="style a range">style the
 <code class=external data-anolis-spec=domrange>Range</code></a> with <var title="">property name</var> "font-style", <var title="">property
-value</var> "italic", and <var title="">tag list</var> ["i", "em"].  Otherwise, it must
+value</var> "italic", <var title="">tag list</var> ["i", "em"].  Otherwise, it must
 <a href=#unstyle-a-range title="unstyle a range">unstyle it</a> with <var title="">property name</var>
 "font-style", <var title="">property value</var> "normal", and <var title="">tag list</var> ["i",
 "em"].
@@ -548,6 +626,9 @@ value</var> "italic", and <var title="">tag list</var> ["i", "em"].  Otherwise, 
 <dd><p><strong>State</strong>: True if the <a href=#beginning-element>beginning element</a> of the
 <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a> has font-style with computed value "italic" or "oblique", otherwise
 false.
+
+<dd><p><strong>Value</strong>: Always the empty string.
+<!-- See comment for bold -->
 
 
 <dt><code title=""><dfn id=command-underline title=command-underline>underline</dfn></code>
@@ -558,8 +639,8 @@ possible through massive hacks.
 
 <dd class=XXX><p><strong>State</strong>: ...
 
-<p class=XXX>This is wrong, it will clear strikethrough and overline.  Also,
-computed style isn't useful, because text-decoration doesn't inherit.
+<dd><p><strong>Value</strong>: Always the empty string.
+<!-- See comment for bold -->
 </dl>
 
 

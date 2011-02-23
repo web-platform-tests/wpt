@@ -50,9 +50,29 @@ included in HTML comments so as not to distract the reader.
 
 <h2>Issues</h2>
 
+<p>I'm not sure if my priorities in writing the algorithms here are correct.
+My goals were 1) make the algorithms as simple as possible, and 2) minimize
+surprising user-visible behavior (e.g., "I clicked B but it didn't turn
+bold!").  I didn't try to optimize the niceness of the resulting DOM at all, so
+for instance, when bolding <code title>abc &lt;i>def&lt;/i> &lt;br> ghi</code>
+you get <code title>&lt;b>abc &lt;/b>&lt;i style="font-weight:
+bold">def&lt;/i>&lt;b> &lt;/b>&lt;br style="font-weight: bold">&lt;b>
+ghi&lt;/b></code> instead of wrapping the whole thing in a single <code
+title>&lt;b></code>.  This is to avoid making the algorithm understand content
+models, but maybe it's worth revisiting later.  Likewise, unbolding the middle
+word of <code title>&lt;b>Foo bar baz&lt;/b></code> produces <code
+title>&lt;b>Foo &lt;span style="font-weight: normal">bar&lt;/span>
+baz&lt;/b></code> instead of the simpler <code title>&lt;b>Foo &lt;/b>bar&lt;b>
+baz&lt;/b></code>.  For now, the algorithm works, even if it produces messy
+DOMs.
+
+<p>Other issues:
+
 <ul>
   <li><p>Need to make CSS terminology more precise, about setting/unsetting CSS
   properties.  The intent is to modify the style attribute, CSSOM-style.
+  Likewise, CSS value comparisons need to be done after serializing both
+  values, so "bold" == "700" and "red" == "#f00" and so on.
 
   <li><p>Also not sure about computed style.  There are differences between
   "computed" and "used" and things like that, what do we actually want here?
@@ -73,21 +93,21 @@ included in HTML comments so as not to distract the reader.
 following algorithm:
 
 <ol>
-  <li><p>Let <var title>range</var> be the [[range]] under discussion.
+  <li><p>Let <var>range</var> be the [[range]] under discussion.
 
-  <li><p>If <var title>range</var>'s [[rangestart]] [[bpoffset]] is equal to
+  <li><p>If <var>range</var>'s [[rangestart]] [[bpoffset]] is equal to
   the [[nodelength]] of its [[rangestart]] [[bpnode]], return the first
   [[node]] that is after the [[rangestart]] [[bpnode]] and all its
   [[descendants]] (if any) in [[treeorder]].  If there is no such [[node]],
   return the last [[node]] in the document.
 
-  <li><p>If <var title>range</var>'s [[rangestart]] [[bpnode]] is a [[text]],
+  <li><p>If <var>range</var>'s [[rangestart]] [[bpnode]] is a [[text]],
   [[comment]], or [[processinginstruction]] node, return that.
 
-  <li><p>If <var title>range</var>'s [[rangestart]] [[bpnode]] has children,
+  <li><p>If <var>range</var>'s [[rangestart]] [[bpnode]] has children,
   return the child with [[index]] equal to the [[rangestart]] [[bpoffset]].
 
-  <li><p>Return <var title>range</var>'s [[rangestart]] [[bpnode]].
+  <li><p>Return <var>range</var>'s [[rangestart]] [[bpnode]].
 </ol>
 
 <p>The <dfn>beginning element</dfn> of a [[range]] is its <span>first
@@ -132,103 +152,103 @@ nodes if necessary, but isn't picky about [[comment]]s or
 [[processinginstruction]]s.
 
 <ol>
-  <li><p>Let <var title>start node</var>, <var title>start offset</var>, <var
-  title>end node</var>, and <var title>end offset</var> be the [[rangestart]]
-  and [[rangeend]] [[bpnodes]] and [[bpoffsets]] of <var title>range</var>,
+  <li><p>Let <var>start node</var>, <var>start offset</var>, <var
+  title>end node</var>, and <var>end offset</var> be the [[rangestart]]
+  and [[rangeend]] [[bpnodes]] and [[bpoffsets]] of <var>range</var>,
   respectively.
 
-  <li><p>If <var title>start node</var> or <var title>end node</var> is not an
+  <li><p>If <var>start node</var> or <var>end node</var> is not an
   [[element]], [[text]], [[processinginstruction]], or [[comment]] node, or is
   not an [[element]] and has no parent, abort these steps.
 
   <p class=XXX>Figure out something sensible here.
 
-  <li><p>If <var title>start node</var> and <var title>end node</var> are both
-  [[text]] nodes, and <var title>start node</var> is the same as <var title>end
-  node</var>, and neither <var title>start offset</var> nor <var title>end
-  offset</var> is equal to 0 or the [[nodelength]] of <var title>start
+  <li><p>If <var>start node</var> and <var>end node</var> are both
+  [[text]] nodes, and <var>start node</var> is the same as <var>end
+  node</var>, and neither <var>start offset</var> nor <var>end
+  offset</var> is equal to 0 or the [[nodelength]] of <var>start
   node</var>:
 
   <ol>
     <li><p>Run <code data-anolis-spec=domcore
-    title=dom-Text-splitText>splitText(<var title>start offset</var>)</code> on
-    <var title>start node</var> and set <var title>start node</var> to the
+    title=dom-Text-splitText>splitText(<var>start offset</var>)</code> on
+    <var>start node</var> and set <var>start node</var> to the
     result.
 
     <li><p>Run <code data-anolis-spec=domcore
-    title=dom-Text-splitText>splitText(<var title>end offset</var> &minus; <var
-    title>start offset</var>)</code> on <var title>start node</var> and set
-    <var title>start node</var> to the previous sibling of the result.
+    title=dom-Text-splitText>splitText(<var>end offset</var> &minus; <var
+    title>start offset</var>)</code> on <var>start node</var> and set
+    <var>start node</var> to the previous sibling of the result.
 
-    <li><p>Return the list consisting of the single [[node]] <var title>start
+    <li><p>Return the list consisting of the single [[node]] <var>start
     node</var>, and abort these steps.
   </ol>
 
-  <li><p>If <var title>start node</var> is a [[text]] node and <var title>start
-  offset</var> is neither 0 nor the [[nodelength]] of <var title>start
+  <li><p>If <var>start node</var> is a [[text]] node and <var>start
+  offset</var> is neither 0 nor the [[nodelength]] of <var>start
   node</var>, run <code data-anolis-spec=domcore
-  title=dom-Text-splitText>splitText(<var title>start offset</var>)</code> on
-  <var title>start node</var> and set <var title>start node</var> to the
-  returned node.  Set <var title>start offset</var> to 0.
+  title=dom-Text-splitText>splitText(<var>start offset</var>)</code> on
+  <var>start node</var> and set <var>start node</var> to the
+  returned node.  Set <var>start offset</var> to 0.
 
-  <li><p>If <var title>end node</var> is a [[text]] node and <var title>end
-  offset</var> is neither 0 nor the [[nodelength]] of <var title>end
+  <li><p>If <var>end node</var> is a [[text]] node and <var>end
+  offset</var> is neither 0 nor the [[nodelength]] of <var>end
   node</var>, run <code data-anolis-spec=domcore
-  title=dom-Text-splitText>splitText(<var title>end offset</var>)</code> on
-  <var title>end node</var> and set <var title>end node</var> to the previous
-  sibling of the returned node.  Set <var title>end offset</var> to the
-  [[nodelength]] of the new <var title>end node</var>.
+  title=dom-Text-splitText>splitText(<var>end offset</var>)</code> on
+  <var>end node</var> and set <var>end node</var> to the previous
+  sibling of the returned node.  Set <var>end offset</var> to the
+  [[nodelength]] of the new <var>end node</var>.
 
-  <li><p>If <var title>start node</var> is an [[element]] with at least one
-  child, let <var title>node</var> be the child of <var title>start node</var>
-  with [[index]] <var title>start offset</var>.
+  <li><p>If <var>start node</var> is an [[element]] with at least one
+  child, let <var>node</var> be the child of <var>start node</var>
+  with [[index]] <var>start offset</var>.
 
-  <li><p>Otherwise, if <var title>start node</var> is a [[text]] node and <var
-  title>start offset</var> is its [[nodelength]], let <var title>node</var> be
-  the first [[node]] after <var title>start node</var> in [[treeorder]].
+  <li><p>Otherwise, if <var>start node</var> is a [[text]] node and <var
+  title>start offset</var> is its [[nodelength]], let <var>node</var> be
+  the first [[node]] after <var>start node</var> in [[treeorder]].
 
-  <li><p>Otherwise, let <var title>node</var> be <var title>start node</var>.
+  <li><p>Otherwise, let <var>node</var> be <var>start node</var>.
 
-  <li><p>If <var title>end node</var> is an [[element]] and <var title>end
-  offset</var> is not 0, let <var title>end</var> be the child of <var
-  title>end node</var> with [[index]] <var title>end offset</var> &minus; 1.
+  <li><p>If <var>end node</var> is an [[element]] and <var>end
+  offset</var> is not 0, let <var>end</var> be the child of <var
+  title>end node</var> with [[index]] <var>end offset</var> &minus; 1.
 
-  <li><p>Otherwise, if <var title>end offset</var> is 0, let <var
-  title>end</var> be the first [[node]] before <var title>end node</var> in
+  <li><p>Otherwise, if <var>end offset</var> is 0, let <var
+  title>end</var> be the first [[node]] before <var>end node</var> in
   [[treeorder]].
 
-  <li><p>Otherwise, let <var title>end</var> be <var title>end node</var>.
+  <li><p>Otherwise, let <var>end</var> be <var>end node</var>.
 
   <!-- We try to include a node's parent instead of that node if possible,
   because this generally reduces the number of nodes we're handling.  So if the
   string "oo bar" was selected in <b>Foo <i>bar</i></b>, we'd add the <i> to
   the selection, even if the browser registered the end as the text node "bar".
   -->
-  <li><p>While <var title>node</var> is the first child of its parent and <var
-  title>end</var> is not a [[descendant]] of <var title>node</var>'s parent,
-  set <var title>node</var> to its parent.
+  <li><p>While <var>node</var> is the first child of its parent and <var
+  title>end</var> is not a [[descendant]] of <var>node</var>'s parent,
+  set <var>node</var> to its parent.
 
-  <li><p>While <var title>end</var> is the last child of its parent and <var
-  title>node</var> is not a [[descendant]] of <var title>end</var>'s parent,
-  set <var title>end</var> to its parent.
+  <li><p>While <var>end</var> is the last child of its parent and <var
+  title>node</var> is not a [[descendant]] of <var>end</var>'s parent,
+  set <var>end</var> to its parent.
 
-  <li><p>Let <var title>node list</var> be an empty list of [[node]]s.
+  <li><p>Let <var>node list</var> be an empty list of [[node]]s.
 
-  <li><p>While <var title>node</var> is not after <var title>end</var> in
+  <li><p>While <var>node</var> is not after <var>end</var> in
   [[treeorder]]:
 
   <ol>
-    <li><p>Append <var title>node</var> to <var title>node list</var>.
+    <li><p>Append <var>node</var> to <var>node list</var>.
 
-    <li><p>Set <var title>node</var> to the first [[node]] in [[treeorder]]
-    that is after <var title>node</var> and (if applicable) all its
+    <li><p>Set <var>node</var> to the first [[node]] in [[treeorder]]
+    that is after <var>node</var> and (if applicable) all its
     [[descendants]].  If no such [[node]] exists, break out of these substeps.
 
-    <li><p>While <var title>node</var> is an [[ancestor]] of <var
-    title>end</var>, set <var title>node</var> to its first child.
+    <li><p>While <var>node</var> is an [[ancestor]] of <var
+    title>end</var>, set <var>node</var> to its first child.
   </ol>
 
-  <li><p>Return <var title>node list</var>.
+  <li><p>Return <var>node list</var>.
 </ol>
 
 
@@ -239,194 +259,149 @@ insert other elements in its place, in which case it will return an ordered
 list of the element's former children.
 
 <ol>
-  <li><p>Let <var title>element</var> be the <code
+  <li><p>Let <var>element</var> be the <code
   data-anolis-spec=domcore>Element</code> to be unstyled.
 
-  <li><p>Let <var title>property name</var> and <var title>tag list</var> be as
+  <li><p>Let <var>property name</var> and <var>tag list</var> be as
   in the invoking algorithm.
 
-  <li><p>Let <var title>element children</var> be the [[element]] children of
-  <var title>element</var>.
+  <li><p>Let <var>element children</var> be the [[element]] children of
+  <var>element</var>.
 
   <li><p><span title="unstyle an element">Unstyle</span> each [[element]] in
-  <var title>element children</var>, in order.
+  <var>element children</var>, in order.
 
   <p class=note>Unstyling an element can change the number of children its
   parent has, so the list of children to unstyle needs to be computed
   beforehand.
 
-  <li><p>Let <var title>children</var> be an empty list of [[node]]s.
-
   <li><p>If either
 
   <ul>
-    <li><p><var title>element</var> is an <span>HTML element</span> with
-    [[localname]] either "span" or in <var title>tag list</var>, and it has
+    <li><p><var>element</var> is an <span>HTML element</span> with
+    [[localname]] either "span" or in <var>tag list</var>, and it has
     only a single attribute, and that attribute is named "style", and
-    that style attribute sets only the CSS property <var title>property
+    that style attribute sets only the CSS property <var>property
     name</var>; or
 
-    <li><p><var title>element</var> is an <span>HTML element</span> with
-    [[localname]] in <var title>tag list</var> and it has no attributes,
+    <li><p><var>element</var> is an <span>HTML element</span> with
+    [[localname]] in <var>tag list</var> and it has no attributes,
   </ul>
 
   <p>then:
 
   <ol>
-    <li><p>While <var title>element</var> has children:
+    <li><p>Let <var>children</var> be an empty list of [[node]]s.
+
+    <li><p>While <var>element</var> has children:
 
     <ol>
-      <li><p>Let <var title>child</var> be the first child of <var
+      <li><p>Let <var>child</var> be the first child of <var
       title>element</var>.
 
-      <li><p>Append <var title>child</var> to <var title>children</var>.
+      <li><p>Append <var>child</var> to <var>children</var>.
 
-      <li><p>Insert <var title>child</var> as the previous sibling of <var
+      <li><p>Insert <var>child</var> as the previous sibling of <var
       title>element</var>.
     </ol>
 
-    <li><p>Remove <var title>element</var>.
+    <li><p>Remove <var>element</var>.
 
-    <li><p>Return <var title>children</var> and abort this algorithm.
+    <li><p>Return <var>children</var>.
   </ol>
 
-  <li><p>Unset the CSS property <var title>property name</var> of <var
+  <li><p>Unset the CSS property <var>property name</var> of <var
   title>element</var>.
 
-  <li><p>If <var title>element</var> is an <span>HTML element</span> with
-  [[localname]] in <var title>tag list</var>:
+  <li><p>If <var>element</var> is not an <span>HTML element</span> or its
+  [[localname]] is not in <var>tag list</var>, return the empty list.
 
-  <ol>
-    <li><p>Let <var title>new element</var> be a new <span>HTML element</span> with
-    [[localname]] "span", with the same attributes and <code
-    data-anolis-spec=domcore title=dom-Node-ownerDocument>ownerDocument</code>
-    as <var title>element</var>.
+  <li><p>Let <var>new element</var> be a new <span>HTML element</span> with
+  [[localname]] "span", with the same attributes and <code
+  data-anolis-spec=domcore title=dom-Node-ownerDocument>ownerDocument</code>
+  as <var>element</var>.
 
-    <li><p>Append <var title>new element</var> to <var title>element</var>'s
-    parent as the previous sibling of <var title>element</var>.
+  <li><p>Append <var>new element</var> to <var>element</var>'s
+  parent as the previous sibling of <var>element</var>.
 
-    <li><p>While <var title>element</var> has children:
+  <li><p>While <var>element</var> has children, append its first child
+  as the last child of <var>new element</var>.
 
-    <ol>
-      <li><p>Let <var title>child</var> be the first child of <var
-      title>element</var>.
+  <li><p>Remove <var>element</var>.
 
-      <li><p>Append <var title>child</var> to <var title>children</var>.
-
-      <li><p>Append <var title>child</var> as the last child of <var title>new
-      element</var>.
-    </ol>
-
-    <li><p>Remove <var title>element</var>.
-  </ol>
-
-  <li><p>Return <var title>children</var>.
+  <li><p>Return the one-[[node]] list consisting of <var>new element</var>.
 </ol>
 
 
 <h2>Styling a Range</h2>
-<p>When a user agent is to <dfn>style a <code
-data-anolis-spec=domrange>Range</code></dfn> <var title>range</var>, it must
-run the following steps.  There are four inputs: a CSS property name <var
-title>property name</var>, a new value <var title>property value</var>, a
-nonempty list of strings <var title>tag list</var>, and a string
-<var>commandId</var>.
-
-<div class=XXX>
-<p>This description tries to keep the algorithm as simple as possible at the
-expense of producing much more complicated markup in some cases than a slightly
-more sophisticated algorithm.  It's similar to what Gecko does in spirit,
-although the details differ.  The basic cause of most of the ugly markup is
-that we don't bake in any element nesting restrictions, so <code
-title>&lt;em>Abc&lt;/em> &lt;em>def&lt;/em></code> becomes <code title>&lt;em
-style=font-weight:bold>Abc&lt;/em>&lt;b> &lt;/b>&lt;em
-style=font-weight:bold>def&lt;/em></code> instead of just <code
-title>&lt;b>&lt;em>Abc&lt;/em> &lt;em>def&lt;/em>&lt;/b></code>.  Otherwise
-we'd have to add content model checks.  Maybe this is worth it?  IE and WebKit
-seem to do it, Gecko and Opera seem not to (they only wrap text nodes AFAICT).
-
-<p>I did add some complication by saying conflicting inline style needs to be
-removed.  This is what WebKit does.  Gecko and IE9 leave it alone, which leads
-to stuff like <code title>&lt;b>&lt;span
-style=font-weight:100>Foo&lt;/span>&lt;/b></code> that doesn't actually work.
-Opera avoids the problem by producing code like <code title>&lt;span
-style=font-weight:100>&lt;b>Foo&lt;/b>&lt;/span></code>, but that doesn't work
-with the CSS-based strategy.
-</div>
+<p>When a user agent is to <dfn>style a [[range]]</dfn> <var>range</var>, it
+must run the following steps.  There are three inputs: a CSS property name
+<var>property name</var>, a new value <var>property value</var>, and a possibly
+empty list of strings <var>tag list</var>.
 
 <ol>
-  <li><p>Let <var title>node list</var> be the result of <span title="decompose
-  a range">decomposing</span> <var title>range</var>.
+  <li><p>Let <var>node list</var> be the result of <span title="decompose
+  a range">decomposing</span> <var>range</var>.
 
-  <li><p>For each <var title>node</var> in <var title>node list</var>, in <span
+  <li><p>For each <var>node</var> in <var>node list</var>, in <span
   data-anolis-spec=domcore>tree order</span>:
 
   <ol>
-    <li><p>If <var title>node</var> is an <code
+    <li><p>If <var>node</var> is an <code
     data-anolis-spec=domcore>Element</code>:
 
     <ol>
-      <li><p>If <var title>node</var> is an <span>HTML element</span> with [[localname]]
-      in <var title>tag list</var>, unset the CSS property <var title>property
-      name</var> of <var title>node</var>.  Otherwise, set the CSS property
-      <var title>property name</var> of <var title>node</var> to <var
-      title>property value</var>.
+      <li><p>Unset the CSS property <var>property name</var> of <var
+      title>node</var>.
 
-      <li><p>If the <span>state</span> of <var>commandId</var> on
-      <var>node</var> is false, set the CSS property <var>property name</var>
-      of <var>node</var> to <var>property value</var>.
-      <!-- This fixes cases where the element won't actually create the desired
-      style.  E.g., <span style=font-weight:lighter><b>Foo</b></span> will not
-      actually bold "Foo" (because the default style for <b> is font-weight:
-      bolder), so we do <b style=font-weight:bold> instead.  Likewise when we
-      do similarly a bit later on in this algorithm. -->
+      <li><p>If the computed value of <var>property name</var> for
+      <var>node</var> is not <var>property value</var>, set the CSS property
+      <var>property name</var> of <var>node</var> to <var>property value</var>.
+      <!-- This means we don't bother applying the property if the style is
+      already present, e.g., from an ancestor.  But we do apply it if the
+      element is the expected sort of element but the style is wrong anyway,
+      e.g., <span style=font-weight:100><b>Foo</b></span> where b's style is
+      font-weight: bold. -->
 
-      <li><p>Let <var title>element children</var> be the [[element]] children
-      of <var title>node</var>.
+      <li><p>Let <var>element children</var> be the [[element]] children
+      of <var>node</var>.
 
       <li><p><span title="unstyle an element">Unstyle</span> each [[element]]
-      in <var title>element children</var>, in order.
+      in <var>element children</var>, in order.
 
       <p class=note>Unstyling an element can change the number of children its
       parent has, so the list of children to unstyle needs to be computed
       beforehand.
     </ol>
 
-    <li><p>Otherwise, if <var title>node</var> is a <code
+    <li><p>Otherwise, if <var>node</var> is a <code
     data-anolis-spec=domcore>Text</code> node:
 
     <ol>
-      <!-- This next step is not strictly necessary from a user point of view,
-      since there's no visible difference.  We could just always insert a new
-      element.  But that can drastically complicate the DOM if there are lots
-      of text nodes, which happens easily when the algorithms here are invoked
-      a lot: you get splitText() called when decomposing ranges, and unstyling
-      elements can also dump their text node children into the DOM next to
-      other text nodes. -->
-      <li><p>If the previous sibling of <var>node</var> is an <span>HTML
-      element</span> with [[localname]] in <var>tag list</var> with no
-      attributes, and the <span>state</span> of <var>commandId</var> on
-      <var>node</var> is true, let <var>new parent</var> equal the previous
-      sibling of <var>node</var>.
+      <li><p>Let <var>new parent</var> be a new <span>HTML element</span> with
+      [[localname]] equal to the first string in <var>tag list</var> (or equal
+      to "span" if <var>tag list</var> is empty), with no attributes, and
+      [[ownerdocument]] the same as <var>node</var>.
 
-      <li><p>Otherwise, let <var>new parent</var> be a new <span>HTML
-      element</span> with [[localname]] equal to the first string in <var>tag
-      list</var>, with no attributes, and [[ownerdocument]] the same as
-      <var>node</var>.  Append <var>new parent</var> to <var>node</var>'s
-      parent as the previous sibling of <var>node</var>.
+      <li><p>Append <var>new parent</var> to <var>node</var>'s parent as the
+      previous sibling of <var>node</var>.
 
-      <li><p>If the <span>state</span> of <var>commandId</var> on <var>new
-      parent</var> is false, set the CSS property <var>property name</var> of
-      <var>new parent</var> to <var>property value</var>.
+      <li><p>If the computed value of <var>property name</var> on <var>new
+      parent</var> is not equal to <var>property value</var>, set the CSS
+      property <var>property name</var> of <var>new parent</var> to
+      <var>property value</var>.
+      <!-- This is needed if tag list is empty, but also if the correct style
+      is being suppressed for some reason, like <span
+      style=font-weight:100><b>Foo</b></span> where b is font-weight: bolder.
+      -->
 
-      <li><p>Append <var title>node</var> to <var title>new parent</var> as
+      <li><p>Append <var>node</var> to <var>new parent</var> as
       its last child.
     </ol>
 
     <li><p>Otherwise, do nothing.
   </ol>
 </ol>
-
 <!-- Out of IE9, Gecko, WebKit, and Opera, when asked to (e.g.) bold an
 element, IE9 and WebKit and Opera wrap various descendants in <b> or <strong>;
 Gecko just adds a style attribute.  The latter is simpler, particularly because
@@ -437,77 +412,73 @@ history. -->
 
 
 <h2>Unstyling a Range</h2>
-<p>When a user agent is to <dfn>unstyle a <code
-data-anolis-spec=domrange>Range</code></dfn> <var title>range</var>, it must
-run the following steps.  There are four inputs: a CSS property name <var
-title>property name</var>, a new value <var title>property value</var>, a
-possibly empty list of strings <var title>tag list</var>, and a string
-<var>commandId</var>.
+<p>When a user agent is to <dfn>unstyle a [[range]]</dfn> <var>range</var>, it
+must run the following steps.  There are three inputs: a CSS property name
+<var>property name</var>, a new value <var>property value</var>, and a possibly
+empty list of strings <var>tag list</var>.
 
 <ol>
-  <li><p>Let <var title>node list</var> be the result of <span title="decompose
-  a range">decomposing</span> <var title>range</var>.
+  <li><p>Let <var>node list</var> be the result of <span title="decompose
+  a range">decomposing</span> <var>range</var>.
 
-  <li><p>For each <var title>node</var> in <var title>node list</var>, in
+  <li><p>For each <var>node</var> in <var>node list</var>, in
   order:
 
   <ol>
-    <li><p>If <var title>node</var> is an <code
+    <li><p>If <var>node</var> is an <code
     data-anolis-spec=domcore>Element</code>:
 
     <ol>
-      <li><p>Let <var title>children</var> be the result of <span
-      title="unstyle an element">unstyling</span> <var title>node</var>.
+      <li><p>Let <var>extra nodes</var> be the result of <span
+      title="unstyle an element">unstyling</span> <var>node</var>.
 
-      <li><p>If <var title>node</var> no longer has a parent:
+      <li><p>If <var>node</var> no longer has a parent:
 
       <ol>
-        <li><p>Insert all the [[node]]s in <var title>children</var> into <var
-        title>node list</var> immediately after <var title>node</var>, in
-        order.
+        <li><p>Insert all the [[node]]s in <var>extra nodes</var> into
+        <var>node list</var> immediately after <var>node</var>, in order.
 
-        <li><p>Continue with the next [[node]] in <var title>node list</var>,
-        if any.
+        <li><p>Continue with the next [[node]] in <var>node list</var>, if any.
 
-        <p class=note>The next [[node]] will be the first former child of <var
-        title>node</var>, if <var title>node</var> had children.
+        <p class=note>The next [[node]] will be the first in <var>extra
+        nodes</var>, unless <var>extra nodes</var> is empty.
       </ol>
 
-      <li><p>If the computed value of <var title>property name</var> for <var
-      title>node</var> is not <var title>property value</var>, set the CSS
-      property <var title>property name</var> of <var title>node</var> to <var
+      <li><p>If the computed value of <var>property name</var> for <var
+      title>node</var> is not <var>property value</var>, set the CSS
+      property <var>property name</var> of <var>node</var> to <var
       title>property value</var>.
 
-      <li><p>Let <var title>element children</var> be the [[element]] children
-      of <var title>node</var>.
+      <li><p>Let <var>element children</var> be the [[element]] children
+      of <var>node</var>.
 
       <li><p><span title="unstyle an element">Unstyle</span> each [[element]]
-      in <var title>element children</var>, in order.
+      in <var>element children</var>, in order.
 
       <p class=note>Unstyling an element can change the number of children its
       parent has, so the list of children to unstyle needs to be computed
       beforehand.
     </ol>
 
-    <li><p>Otherwise, if <var title>node</var> is a <code
+    <li><p>Otherwise, if <var>node</var> is a <code
     data-anolis-spec=domcore>Text</code> node and the computed value of <var
-    title>property name</var> for <var title>node</var>'s parent is not <var
+    title>property name</var> for <var>node</var>'s parent is not <var
     title>property value</var>:
 
     <ol>
-      <li><p>Let <var title>new parent</var> be a new <span>HTML element</span> with
+      <li><p>Let <var>new parent</var> be a new <span>HTML element</span> with
       [[localname]] "span", with no attributes, and with <code
       data-anolis-spec=domcore
       title=dom-Node-ownerDocument>ownerDocument</code> equal to <var
       title>node</var>'s.
 
-      <li><p>Set the CSS property <var title>property name</var> of <var
-      title>new parent</var> to <var title>property value</var>.
+      <li><p>Set the CSS property <var>property name</var> of <var
+      title>new parent</var> to <var>property value</var>.
 
-      <li><p>Insert <var title>new parent</var> as <var title>node</var>'s
+      <li><p>Insert <var>new parent</var> as <var>node</var>'s
       previous sibling.
 
-      <li><p>Append <var title>node</var> to <var title>new parent</var> as its
+      <li><p>Append <var>node</var> to <var>new parent</var> as its
       child.
     </ol>
 
@@ -517,15 +488,15 @@ possibly empty list of strings <var title>tag list</var>, and a string
 
 
 <h2>Commands</h2>
-<p>The <dfn title=execCommand()><code>execCommand(<var title>commandId</var>,
-<var title>showUI</var>, <var title>value</var>)</code></dfn> method on the
+<p>The <dfn title=execCommand()><code>execCommand(<var>commandId</var>,
+<var>showUI</var>, <var>value</var>)</code></dfn> method on the
 <code data-anolis-spec=html>HTMLDocument</code> interface allows scripts to
 perform actions on the current selection or at the current caret position.
 Generally, these commands would be used to implement editor UI, for example
 having a "delete" button on a toolbar.
 
 <p>There are three variants to this method, with one, two, and three arguments
-respectively. The <var title>showUI</var> and <var title>value</var>
+respectively. The <var>showUI</var> and <var>value</var>
 parameters, even if specified, are ignored except where otherwise stated.
 
 <p>When <code>execCommand()</code> is invoked, the user agent must take the
@@ -536,22 +507,80 @@ there is no <span>active range</span>, do nothing.
 <p>The <dfn
 title=queryCommandState()><code>queryCommandState(<var>commandId</var>)</code></dfn>
 method on the <code data-anolis-spec=html>HTMLDocument</code> interface must
-return the <span>state</span> of <var>commandId</var> on the
-[[contextobject]]'s <span>active range</span>.  If there is no <span>active
-range</span>, return false.
+return the state of <var>commandId</var> on the [[contextobject]]'s
+<span>active range</span>, as given by the list below.  If there is no
+<span>active range</span>, or if <var>commandId</var> is not on the list,
+return false.
 <!-- Gecko throws an exception if there are no ranges in the selection, but
 other engines seem to just return false, which seems like nicer behavior
-anyway. -->
+anyway.
 
-<p>The <dfn>state</dfn> of a command <var>commandId</var> on a [[range]] is
-given by the list below.  If <var>commandId</var> is not on the list, its
-<span>state</span> is false on any [[range]].  The <span>state</span> of a
-command on a [[node]] <var>node</var> is the <span>state</span> of that command
-on the [[range]] with [[rangestart]] (<var>node</var>, 0), [[rangeend]]
-(<var>node</var>, <var>node</var>'s [[nodelength]]), and [[rangeroot]] equal to
-<var>node</var>'s [[ownerdocument]].
+Requesting the state of an unknown command throws an exception in IE 9 RC
+and Firefox 4b11, and returns boolean false in Chrome 10 and Opera 11. -->
+
+<p>The <dfn
+title=queryCommandValue()><code>queryCommandValue(<var>commandId</var>)</code></dfn>
+method on the <code data-anolis-spec=html>HTMLDocument</code> interface must
+return the value of <var>commandId</var> on the [[contextobject]]'s
+<span>active range</span>, as given by the list below.  If there is no
+<span>active range</span>, or if <var>commandId</var> is not on the list,
+return the empty string.
+<!-- Requesting the value of an unknown command throws an exception in
+IE 9 RC and in Firefox 4b11.  It returns boolean false in Chrome 10, and the
+empty string in Opera 11. -->
+
+<p class=XXX>Querying the value or state of an unrecognized command throws an
+exception in IE and Firefox.  Need to consider changing to that behavior.
+
+<p>The possible values for <var>commandId</var>, and their corresponding
+meanings, are as follows.  These values must be compared to the argument in an
+<span data-anolis-spec=html>ASCII case-insensitive</span> manner.
 
 <dl>
+<dt><code title><dfn title=command-backColor>backColor</dfn></code>
+
+<dd><p><strong>Action</strong>: If <var>value</var> is not a valid CSS color,
+the user agent must do nothing and abort these steps.  Otherwise, it must <span
+title="style a range">style the [[range]]</span> with <var>property name</var>
+equal to "background-color", <var>property value</var> equal to
+<var>value</var>, and <var>tag list</var> equal to the empty list.
+<!-- Firefox documentation says it normally sets the background color of the
+document, but I can't get it to work at all in brief testing in 4b11.  (It says
+it behaves differently in styleWithCss mode.)  Opera 11 appears to set the
+background color of the nearest block container of the cursor, or something.
+IE 9 RC and Chrome 10 behave as I'd expect, namely, they set the background of
+the selection, just like all the other styling features.  I go with IE/WebKit.
+
+Invalid colors are probably the same craziness as with foreColor.
+
+Chrome 10 dev actually sets background, not background-color, so it resets all
+the other background stuff.  I go with IE 9 RC and Opera 11, which only set
+background-color. -->
+
+<dd><p><strong>State</strong>: Always false.
+
+<dd><p><strong>Value</strong>: The value is given by the following algorithm:
+
+<ol>
+  <li><p>Let <var>element</var> be the <span>beginning element</span> of the
+  [[range]].
+
+  <li><p>While the computed style of "background-color" on <var>element</var>
+  is any fully transparent value, set <var>element</var> to its parent.
+
+  <p class=XXX>It's intended that for these purposes, the root element will
+  have a white background.  Should that be specified somewhere?  I don't think
+  all UAs actually do it.
+
+  <li><p>Return the computed style of "background-color" for
+  <var>element</var>.
+</ol>
+<!-- Chrome 10 returns rgba(0, 0, 0, 0) if there's no background defined
+anywhere.  Opera 11 returns rgb(255, 255, 255) as I'd like.  Firefox 4b11 just
+throws an exception for some reason.  IE 9 RC seems to return the number 0
+across the board, as with foreColor. -->
+
+
 <dt><code title><dfn title=command-bold>bold</dfn></code>
 
 <dd><p><strong>Action</strong>: If the state of the [[range]] for this command
@@ -565,13 +594,57 @@ list</var> ["b", "strong"].
 <dd><p><strong>State</strong>: True if the <span>beginning element</span> of the
 [[range]] has font-weight with computed value less than 700, otherwise false.
 
+<dd><p><strong>Value</strong>: Always the empty string.
+<!-- We have lots of options here (and presumably for all the others where
+value is meaningless).  IE 9 RC returns the boolean false, Firefox 4b11 and
+Opera 11 both return the empty string, Chrome 10 returns the string "false".
+The HTML5 spec as of February 2011 mandates WebKit's behavior.  It makes sense
+to always return a string, a majority of string-returners return the empty
+string, and three out of the four return something that evaluates to false as a
+boolean, so I'll go with Firefox and Opera. -->
+
+
+<dt><code title><dfn title=command-forecolor>foreColor</dfn></code>
+
+<dd><p><strong>Action</strong>: If <var>value</var> is not a valid CSS color,
+the user agent must do nothing and abort these steps.
+<!-- Browsers are all over the place here.  IE 9 RC seems to treat unrecognized
+colors as black, but everyone else ignores them.  There are also special rules
+for certain things that aren't valid CSS colors, in some browsers, like:
+
+IE 9 RC: "ffe" -> "#ffe", "123" -> "#123"
+Firefox 4b11: "ffe" -> no style, "123" -> no style
+Chrome 10 dev: "ffe" -> "#FFFFEE", "123" -> "#000123"
+Opera 11: "ffe" -> "#0f0f0e", "123" -> "#010203"
+
+Firefox seems to stick to just CSS colors, so with any luck that works.
+"limegreen" works as expected in all browsers.  rgb(255, 255, 255) does too,
+except in Opera, which tries to parse it in some crazy way and winds up with
+"#00b025".  rgba() colors don't work as uniformly, but I don't see any reason
+to prohibit them.  Best to just match CSS. -->
+Otherwise, it must <span title="style a range">style the [[range]]</span> with
+<var>property name</var> equal to "color", <var>property value</var> equal to
+<var>value</var>, and <var>tag list</var> equal to the empty list.
+
+<dd><p><strong>State</strong>: Always false.
+<!-- This matches IE 9 RC and Chrome 10.  Opera 11 seems to return true if
+there's some color style applied, false otherwise, which seems fairly useless;
+authors want to use value here, not state.  Firefox 4b11 throws an exception,
+which is an interesting approach, but I'll go with IE/WebKit, which makes at
+least as much sense. -->
+
+<dd><p><strong>Value</strong>: The computed value of the CSS property "color"
+for the <span>beginning element</span> of the [[range]].
+<!-- IE 9 RC returns the number 0 always, which makes no sense at all.  This
+matches the other browsers. -->
+
 
 <dt><code title><dfn title=command-italic>italic</dfn></code>
 
 <dd><p><strong>Action</strong>: If the of the [[range]] for this command is
 false, the user agent must <span title="style a range">style the
 [[range]]</span> with <var>property name</var> "font-style", <var>property
-value</var> "italic", and <var>tag list</var> ["i", "em"].  Otherwise, it must
+value</var> "italic", <var>tag list</var> ["i", "em"].  Otherwise, it must
 <span title="unstyle a range">unstyle it</span> with <var>property name</var>
 "font-style", <var>property value</var> "normal", and <var>tag list</var> ["i",
 "em"].
@@ -579,6 +652,9 @@ value</var> "italic", and <var>tag list</var> ["i", "em"].  Otherwise, it must
 <dd><p><strong>State</strong>: True if the <span>beginning element</span> of the
 [[range]] has font-style with computed value "italic" or "oblique", otherwise
 false.
+
+<dd><p><strong>Value</strong>: Always the empty string.
+<!-- See comment for bold -->
 
 
 <dt><code title><dfn title=command-underline>underline</dfn></code>
@@ -589,8 +665,8 @@ possible through massive hacks.
 
 <dd class=XXX><p><strong>State</strong>: ...
 
-<p class=XXX>This is wrong, it will clear strikethrough and overline.  Also,
-computed style isn't useful, because text-decoration doesn't inherit.
+<dd><p><strong>Value</strong>: Always the empty string.
+<!-- See comment for bold -->
 </dl>
 
 

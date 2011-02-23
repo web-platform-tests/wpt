@@ -1,7 +1,9 @@
 {
   "active range": "active-range",
   "beginning element": "beginning-element",
+  "command-backcolor": "command-backcolor",
   "command-bold": "command-bold",
+  "command-forecolor": "command-forecolor",
   "command-italic": "command-italic",
   "command-underline": "command-underline",
   "decompose a range": "decompose-a-range",
@@ -9,7 +11,7 @@
   "first node": "first-node",
   "html element": "html-element",
   "querycommandstate()": "querycommandstate()",
-  "state": "state",
+  "querycommandvalue()": "querycommandvalue()",
   "style a range": "style-a-range",
   "unstyle a range": "unstyle-a-range",
   "unstyle an element": "unstyle-an-element"

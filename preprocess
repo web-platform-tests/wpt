@@ -7,6 +7,8 @@
 
 replace = {
     "ancestor": "<span data-anolis-spec=domcore title=concept-ancestor-node>ancestor</span>",
+    "attrlocalname": "<span data-anolis-spec=domcore title=concept-attr-local-name>local name</span>",
+    "attrvalue": "<span data-anolis-spec=domcore title=concept-attr-value>value</span>",
     "boundarypoint": "<span data-anolis-spec=domrange title=concept-boundary-point>boundary point</span>",
     "bpnode": "<span data-anolis-spec=domrange title=concept-boundary-point-node>node</span>",
     "bpoffset": "<span data-anolis-spec=domrange title=concept-boundary-point-offset>offset</span>",

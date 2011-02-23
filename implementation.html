@@ -1,18 +1,20 @@
 <!doctype html>
 <title>execCommand() experimental implementation</title>
+<p><label>Command: <input oninput="command = this.value"></label>
+   <label>Value: <input oninput="val = this.value"></label>
+<script>
+// Silly Firefox, prefilling inputs when you reload
+var command = document.querySelector("input").value;
+var val = document.querySelectorAll("input")[1].value;
+</script>
 <p>Spec:
-<button onclick="myExecCommand('bold')"><b>B</b></button>
-<button onclick="myExecCommand('italic')"><i>I</i></button>
-<button onclick="alert(myQueryCommandState('bold'))">B?</button>
-<button onclick="alert(myQueryCommandState('italic'))">I?</button>
-
-<p>Actual execCommand():
-<button onclick="execCommand('bold', false, null)"><b>B</b></button>
-<button onclick="execCommand('italic', false, null)"><i>I</i></button>
-<button onclick="execCommand('underline', false, null)"><u>U</u></button>
-<button onclick="alert(queryCommandState('bold'))">B?</button>
-<button onclick="alert(queryCommandState('italic'))">I?</button>
-<button onclick="alert(queryCommandState('underline'))">U?</button>
+<button onclick='myExecCommand(command, null, val)'>exec</button>
+<button onclick='var ret = myQueryCommandState(command); alert(typeof ret + " \"" + ret + "\"")'>state</button>
+<button onclick='var ret = myQueryCommandValue(command); alert(typeof ret + " \"" + ret + "\"")'>value</button>
+<p>Actual:
+<button onclick='execCommand(command, null, val)'>exec</button>
+<button onclick='var ret = queryCommandState(command); alert(typeof ret + " \"" + ret + "\"")'>state</button>
+<button onclick='var ret = queryCommandValue(command); alert(typeof ret + " \"" + ret + "\"")'>value</button>
 <div contenteditable=true id=test>
 	<br> <br>
 	Some simple text<br>
@@ -20,28 +22,13 @@
 	<b>Some more text</b><br>
 	<strong>Some more text</strong><br>
 	<span style=font-weight:bold>Some more text</span><br>
-	<span style=font-weight:bolder>Some more text</span><br>
-	<span style=font-weight:lighter>Some more text</span><br>
-	<span style=font-weight:900>Some more text</span><br>
-	<span style=font-weight:100>Some more text</span><br>
 	<i>Some more text</i><br>
-	<span style=font-style:italic>Some more text</span><br>
 	<span style=font-style:italic;font-weight:bold>Some more text</span><br>
-	<em style=font-weight:bold>Some more text</em><br>
 	<b>Some <span style=font-weight:200>more <b>te<span style=font-weight:bold>xt<strong>!</strong></span></b></span></b><br>
 	<p>Some simple text
 	<p><span>Some more text</span>
 	<p><b>Some more text</b>
-	<p><strong>Some more text</strong>
-	<p><span style=font-weight:bold>Some more text</span>
-	<p><span style=font-weight:bolder>Some more text</span>
-	<p><span style=font-weight:lighter>Some more text</span>
-	<p><span style=font-weight:900>Some more text</span>
-	<p><span style=font-weight:100>Some more text</span>
 	<p><i>Some more text</i>
-	<p><span style=font-style:italic>Some more text</span>
-	<p><span style=font-style:italic;font-weight:bold>Some more text</span>
-	<p><em style=font-weight:bold>Some more text</em>
 	<p><b>Some <span style=font-weight:200>more <b>te<span style=font-weight:bold>xt<strong>!</strong></span></b></span></b>
 </div>
 <script>
@@ -106,7 +93,11 @@ function convertProperty(propertyName) {
 		"fontWeight": "font-weight",
 		"textDecoration": "text-decoration",
 	};
-	return map[propertyName];
+	if (typeof map[propertyName] != "undefined") {
+		return map[propertyName];
+	}
+
+	return propertyName;
 }
 
 
@@ -333,9 +324,6 @@ function unstyleElement(element, propertyName, tagList) {
 		unstyleElement(elementChildren[j], propertyName, tagList);
 	}
 
-	// "Let children be an empty list of Nodes."
-	var children = [];
-
 	// "If either
 	//
 	// * element is an HTML element with name either "span" or in tag list, and
@@ -359,6 +347,9 @@ function unstyleElement(element, propertyName, tagList) {
 		&& tagList.indexOf(element.nodeName.toLowerCase()) != -1
 		&& element.attributes.length == 0)
 	) {
+		// "Let children be an empty list of Nodes."
+		var children = [];
+
 		// "While element has children:"
 		while (element.hasChildNodes()) {
 			// "Let child be the first child of element."
@@ -374,7 +365,7 @@ function unstyleElement(element, propertyName, tagList) {
 		// "Remove element."
 		element.parentNode.removeChild(element);
 
-		// "Return children and abort this algorithm."
+		// "Return children."
 		return children;
 	}
 
@@ -384,42 +375,45 @@ function unstyleElement(element, propertyName, tagList) {
 		element.removeAttribute("style");
 	}
 
-	// "If element is an HTML element with name in tag list:"
-	if (element.namespaceURI == htmlNamespace
-	&& tagList.indexOf(element.tagName.toLowerCase()) != -1) {
-		// "Let new element be a new HTML element with name "span", with the
-		// same attributes and ownerDocument as element."
-		var newElement = element.ownerDocument.createElement("span");
-		for (var j = 0; j < element.attributes.length; j++) {
-			// FIXME: Namespaces?
-			newElement.setAttribute(element.attributes[j].localName, element.attributes[j].value);
-		}
-
-		// "Append new element to element's parent as the previous sibling of
-		// element."
-		element.parentNode.insertBefore(newElement, element);
-
-		// "While element has children:"
-		while (element.hasChildNodes()) {
-			// "Let child be the first child of element."
-			var child = element.firstChild;
-
-			// "Append child to children."
-			children.push(child);
-
-			// "Append child as the last child of new element."
-			newElement.appendChild(child);
-		}
-
-		// "Remove element."
-		element.parentNode.removeChild(element);
+	// "If element is not an HTML element or its local name is not in tag list,
+	// return the empty list."
+	if (element.namespaceURI != htmlNamespace
+	|| tagList.indexOf(element.tagName.toLowerCase()) == -1) {
+		return [];
 	}
 
-	// "Return children."
-	return children;
+	// "Let new element be a new HTML element with name "span", with the
+	// same attributes and ownerDocument as element."
+	var newElement = element.ownerDocument.createElement("span");
+	for (var j = 0; j < element.attributes.length; j++) {
+		// FIXME: Namespaces?
+		newElement.setAttribute(element.attributes[j].localName, element.attributes[j].value);
+	}
+
+	// "Append new element to element's parent as the previous sibling of
+	// element."
+	element.parentNode.insertBefore(newElement, element);
+
+	// "While element has children, append its first child as the last
+	// child of new element."
+	while (element.hasChildNodes()) {
+		newElement.appendChild(element.firstChild);
+	}
+
+	// "Remove element."
+	element.parentNode.removeChild(element);
+
+	// "Return the one-Node list consisting of new element."
+	return [newElement];
 }
 
-function styleRange(range, propertyName, propertyValue, tagList, commandId) {
+function styleRange(range, propertyName, propertyValue, tagList) {
+	// Extra step to implement CSS value equality checking; this needs to be
+	// specced somehow.
+	var testEl = document.createElement("span");
+	testEl.style[propertyName] = propertyValue;
+	var expectedPropertyValue = testEl.style[propertyName];
+
 	// "Let node list be the result of decomposing range."
 	var nodeList = decomposeRange(range);
 
@@ -428,22 +422,16 @@ function styleRange(range, propertyName, propertyValue, tagList, commandId) {
 		var node = nodeList[i];
 		// "If node is an Element:"
 		if (node.nodeType == Node.ELEMENT_NODE) {
-			// "If node is an HTML element with name in tag list, unset the CSS
-			// property property name of node. Otherwise, set the CSS property
-			// property name of node to property value."
-			if (node.namespaceURI == htmlNamespace
-			&& tagList.indexOf(node.tagName.toLowerCase()) != -1) {
-				node.style[propertyName] = '';
-				if (node.getAttribute("style") == "") {
-					node.removeAttribute("style");
-				}
-			} else {
-				node.style[propertyName] = propertyValue;
+			// "Unset the CSS property property name of node."
+			node.style[propertyName] = '';
+			if (node.getAttribute("style") == "") {
+				node.removeAttribute("style");
 			}
 
-			// "If the state of commandId on node is false, set the CSS
-			// property property name of node to property value."
-			if (!getState(commandId, node)) {
+			// "If the computed value of property name for node is not property
+			// value, set the CSS property property name of node to property
+			// value."
+			if (getComputedStyle(node)[propertyName] != expectedPropertyValue) {
 				node.style[propertyName] = propertyValue;
 			}
 
@@ -461,30 +449,19 @@ function styleRange(range, propertyName, propertyValue, tagList, commandId) {
 			}
 		// "Otherwise, if node is a Text node:"
 		} else if (node.nodeType == Node.TEXT_NODE) {
-			var newParent;
-			// "If the previous sibling of node is an HTML element with local
-			// name in tag list with no attributes, and the state of commandId
-			// on node is true, let new parent equal the previous sibling of
-			// node."
-			if (node.previousSibling
-			&& node.previousSibling.nodeType == Node.ELEMENT_NODE
-			&& node.previousSibling.namespaceURI == htmlNamespace
-			&& tagList.indexOf(node.previousSibling.tagName.toLowerCase()) != -1
-			&& node.previousSibling.attributes.length == 0
-			&& getState(commandId, node.previousSibling)) {
-				newParent = node.previousSibling;
-			} else {
-				// "Otherwise, let new parent be a new HTML element with local
-				// name equal to the first string in tag list, with no
-				// attributes, and ownerDocument the same as node. Append new
-				// parent to node's parent as the previous sibling of node."
-				newParent = node.ownerDocument.createElement(tagList[0]);
-				node.parentNode.insertBefore(newParent, node);
-			}
+			// "Let new parent be a new HTML element with local name equal to
+			// the first string in tag list (or equal to "span" if tag list is
+			// empty), with no attributes, and ownerDocument the same as node."
+			newParent = node.ownerDocument.createElement(tagList.length ? tagList[0] : "span");
 
-			// "If the state of commandId on new parent is false, set the CSS
-			// property property name of new parent to property value."
-			if (!getState(commandId, newParent)) {
+			// "Append new parent to node's parent as the previous sibling of
+			// node."
+			node.parentNode.insertBefore(newParent, node);
+
+			// "If the computed value of property name on new parent is not
+			// equal to property value, set the CSS property property name of
+			// new parent to property value."
+			if (getComputedStyle(newParent)[propertyName] != expectedPropertyValue) {
 				newParent.style[propertyName] = propertyValue;
 			}
 
@@ -495,9 +472,13 @@ function styleRange(range, propertyName, propertyValue, tagList, commandId) {
 	}
 }
 
-// Note: because browsers are inconsistent about what to return for computed
-// styles for bold, I'm making propertyValue an array in the implementation.
 function unstyleRange(range, propertyName, propertyValue, tagList) {
+	// Extra step to implement CSS value equality checking; this needs to be
+	// specced somehow.
+	var testEl = document.createElement("span");
+	testEl.style[propertyName] = propertyValue;
+	var expectedPropertyValue = testEl.style[propertyName];
+
 	// "Let node list be the result of decomposing range."
 	var nodeList = decomposeRange(range);
 
@@ -507,17 +488,17 @@ function unstyleRange(range, propertyName, propertyValue, tagList) {
 
 		// "If node is an Element:"
 		if (node.nodeType == Node.ELEMENT_NODE) {
-			// "Let children be the result of unstyling node."
-			var children = unstyleElement(node, propertyName, tagList);
+			// "Let extra nodes be the result of unstyling node."
+			var extraNodes = unstyleElement(node, propertyName, tagList);
 
 			// "If node no longer has a parent:"
 			if (!node.parentNode) {
-				// "Insert all the Nodes in children into node list immediately
-				// after node, in order."
+				// "Insert all the Nodes in extra nodes into node list
+				// immediately after node, in order."
 				//
 				// splice() would be perfect, but it requires varargs.  :(
 				nodeList = nodeList.slice(0, i + 1)
-					.concat(children)
+					.concat(extraNodes)
 					.concat(nodeList.slice(i + 1));
 
 				// "Continue with the next Node in node list, if any."
@@ -527,8 +508,8 @@ function unstyleRange(range, propertyName, propertyValue, tagList) {
 			// "If the computed value of property name for node is not property
 			// value, set the CSS property property name of node to property
 			// value."
-			if (propertyValue.indexOf(getComputedStyle(node)[propertyName]) == -1) {
-				node.style[propertyName] = propertyValue[0];
+			if (getComputedStyle(node)[propertyName] != expectedPropertyValue) {
+				node.style[propertyName] = propertyValue;
 			}
 
 			// "Let element children be the Element children of node."
@@ -546,14 +527,14 @@ function unstyleRange(range, propertyName, propertyValue, tagList) {
 		// "Otherwise, if node is a Text node and the computed value of
 		// property name for node's parent is not property value:"
 		} else if (node.nodeType == Node.TEXT_NODE
-		&& propertyValue.indexOf(getComputedStyle(node.parentNode)[propertyName]) == -1) {
+		&& getComputedStyle(node.parentNode)[propertyName] != expectedPropertyValue) {
 			// "Let new parent be a new HTML element with name "span", with no
 			// attributes, and with ownerDocument equal to node's."
 			var newParent = node.ownerDocument.createElement("span");
 
 			// "Set the CSS property property name of new parent to property
 			// value."
-			newParent.style[propertyName] = propertyValue[0];
+			newParent.style[propertyName] = propertyValue;
 
 			// "Insert new parent as node's previous sibling."
 			node.parentNode.insertBefore(newParent, node);
@@ -566,6 +547,7 @@ function unstyleRange(range, propertyName, propertyValue, tagList) {
 }
 
 function myExecCommand(commandId, showUI, value) {
+	commandId = commandId.toLowerCase();
 	var range = activeRange(document);
 
 	if (!range) {
@@ -575,17 +557,27 @@ function myExecCommand(commandId, showUI, value) {
 	switch (commandId) {
 		case "bold":
 		if (getState("bold", range)) {
-			unstyleRange(range, "fontWeight", ["normal", "400"], ["b", "strong"]);
+			unstyleRange(range, "fontWeight", "normal", ["b", "strong"]);
 		} else {
-			styleRange(range, "fontWeight", "bold", ["b", "strong"], "bold");
+			styleRange(range, "fontWeight", "bold", ["b", "strong"]);
 		}
+		break;
+
+		case "foreColor":
+		// Hacky test to see if the color is valid
+		var testEl = document.createElement("span");
+		testEl.style.color = value;
+		if (testEl.style.color === "") {
+			return;
+		}
+		styleRange(range, "color", value, []);
 		break;
 
 		case "italic":
 		if (getState("italic", range)) {
-			unstyleRange(range, "fontStyle", ["normal"], ["i", "em"]);
+			unstyleRange(range, "fontStyle", "normal", ["i", "em"]);
 		} else {
-			styleRange(range, "fontStyle", "italic", ["i", "em"], "italic");
+			styleRange(range, "fontStyle", "italic", ["i", "em"]);
 		}
 		break;
 
@@ -595,6 +587,7 @@ function myExecCommand(commandId, showUI, value) {
 }
 
 function myQueryCommandState(commandId) {
+	commandId = commandId.toLowerCase();
 	var range = activeRange(document);
 
 	if (!range) {
@@ -605,12 +598,6 @@ function myQueryCommandState(commandId) {
 }
 
 function getState(commandId, range) {
-	if (range instanceof Node) {
-		var node = range;
-		range = node.ownerDocument.createRange();
-		range.selectNodeContents(node);
-	}
-
 	var style = getComputedStyle(beginningElement(range));
 
 	switch (commandId) {
@@ -623,6 +610,35 @@ function getState(commandId, range) {
 
 		default:
 		return false;
+	}
+}
+
+function myQueryCommandValue(commandId) {
+	commandId = commandId.toLowerCase();
+	var range = activeRange(document);
+
+	if (!range) {
+		return "";
+	}
+
+	switch (commandId) {
+		case "backcolor":
+		var element = beginningElement(range);
+		while (element.nodeType == Node.ELEMENT_NODE
+		&& (getComputedStyle(element).backgroundColor == "rgba(0, 0, 0, 0)"
+		|| getComputedStyle(element).backgroundColor === "")) {
+			element = element.parentNode;
+		}
+		if (element.nodeType != Node.ELEMENT_NODE) {
+			return 'rgb(255, 255, 255)';
+		}
+		return getComputedStyle(element).backgroundColor;
+
+		case "forecolor":
+		return getComputedStyle(beginningElement(range)).color;
+
+		default:
+		return "";
 	}
 }
 </script>

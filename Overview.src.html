@@ -750,20 +750,26 @@ method is invoked these steps must be run:</p>
 
 <hr>
 
-<p>To <dfn>dispatch an event named <var title>e</var></dfn> means that an
+<p>To <dfn title=concept-event-fire>fire an event named
+<var title>e</var></dfn> means that an
 <span title=concept-event>event</span> of type <code>Event</code>, with its
 <span title=concept-event-name>name</span> set to <var title>e</var>, and
 its <span>trusted flag</span> set, is to be
 <span title=concept-event-dispatch>dispatched</span> at the indicated
 object.</p>
-<!-- XXX need a <dfn title> -->
 
-<p class=note>Specifications can use this definition to dispatch basic
-events. If the <span title=concept-event>event</span> needs its
-<span>bubble flag</span> or <span>cancel flag</span> set a specification
-could e.g. say dispatch an event named <code title>submit</code> with its
-<span>cancel flag</span> set.
-<!-- XXX xref <dfn> -->
+<p class=note>Fire is short for initializing and
+<span title=concept-event-dispatch>dispatching</span> an
+<span title=concept-event>event</span>.
+
+<p class=note><span title=concept-event-fire>Fire an event</span> is a
+concept to make initializing and
+<span title=concept-event-dispatch>dispatching</span> an
+<span title=concept-event>event</span> easier to write down. If the
+<span title=concept-event>event</span> needs its <span>bubble flag</span> or
+<span>cancel flag</span> set, one would write e.g.
+<span title=concept-event-fire>fire an event named <code title>submit</code></span>
+with its <span>cancel flag</span> set.
 
 
 <h3>Interface <code>CustomEvent</code></h3>

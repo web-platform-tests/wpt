@@ -1585,6 +1585,28 @@ method must run these steps:
 
 <hr>
 
+<dl class=domintro>
+ <dt><var title>new node</var> = <var title>node</var> .
+ <code title=dom-Node-cloneNode>cloneNode</code>(<var title>deep</var>)
+ <dd>
+  <p>Returns a copy of the node, with its relevant node-specific data. If
+  <var title>deep</var> is true, the copy also includes the node's children.
+
+ <dt><var title>same</var> = <var title>node</var> .
+ <code title=dom-Node-isSameNode>isSameNode</code>(<var title>other</var>)
+ <dd>
+  <p>Returns whether <var title>node</var> and <var title>other</var> are the
+  exact same node.
+
+ <dt><var title>similar</var> = <var title>node</var> .
+ <code title=dom-Node-isEqualNode>isEqualNode</code>(<var title>other</var>)
+ <dd>
+  <p>Returns whether <var title>node</var> and <var title>other</var> have the
+  same properties.
+</dl>
+
+<div class=impl>
+
 <p>The
 <dfn title=dom-Node-cloneNode><code>cloneNode(<var title>deep</var>)</code></dfn>
 method must return a <span>clone</span> of the <span>context object</span>,
@@ -1595,11 +1617,11 @@ with <var title>new ownerDocument</var> being the <span>context object</span>'s
 <p>The
 <dfn title=dom-Node-isSameNode><code>isSameNode(<var title>node</var>)</code></dfn>
 method must return true if <var title>node</var> is a reference to the same
-object as the <span>context object</span>, or false otherwise.
+object as the <span>context object</span>, and false otherwise.
 
 <p>The
 <dfn title=dom-Node-isEqualNode><code>isEqualNode(<var title>node</var>)</code></dfn>
-method must return true if all of the following conditions are true, or
+method must return true if all of the following conditions are true, and
 false otherwise:
 
 <ul>
@@ -1619,7 +1641,7 @@ false otherwise:
    <dd><p>Its <span title=concept-element-namespace>namespace</span>,
    <span title=concept-element-namespace-prefix>namespace prefix</span>,
    <span title=concept-element-local-name>local name</span>, and its
-   associated collection of <code>Attr</code> objects.
+   associated collection of <code>Attr</code> objects. <!-- XXX def -->
 
    <!--AttrExodus
    <dt><code>Attr</code>
@@ -1641,6 +1663,8 @@ false otherwise:
  <li><p><var title>node</var>'s <code title=dom-Node-childNodes>childNodes</code>' <code title=dom-NodeList-length>length</code> is the same as the <span>context object</span>'s <code title=dom-Node-childNodes>childNodes</code>' <code title=dom-NodeList-length>length</code>.
  <li><p>Calling <code title=dom-Node-isEqualNode>isEqualNode</code> on each child node of the <span>context object</span>, with the child node of the same index in <var title>node</var> as argument returns true for every child node.
 </ul>
+
+</div>
 
 <hr>
 

@@ -77,17 +77,26 @@ DOMs.
   <li><p>Also not sure about computed style.  There are differences between
   "computed" and "used" and things like that, what do we actually want here?
 
-  <li><p>Some of the DOM stuff might benefit from more precision.  E.g., is
-  there a precise algorithm for what it means to append a node someplace, if
-  that node is already somewhere in the DOM?  What does that do if it's
-  selected, it has state (like a video or animated image), etc.?
+  <li><p>The wording I use for DOM stuff is a bit of a mess, often either
+  imprecise or unreasonably verbose.  I'm not quite sure how to fix it.
+
+  <li><p>I haven't put any thought yet into collapsed ranges or selections.
+  Currently my algorithms mostly do nothing if the selection is collapsed,
+  which is of course wrong.  E.g., bold with collapsed selection should put
+  &lt;b>&lt;/b> at the cursor, generally.
+
+  <li><p>I also don't pay attention to what happens to the selection when you
+  mutate the DOM.  This is essential.
 </ul>
 
 
 <h2>Definitions</h2>
 
 <p>A [[node]] is an <dfn>HTML element</dfn> if it is an [[element]] whose
-[[namespace]] is the <span data-anolis-spec=domcore>HTML namespace</span>.
+[[namespace]] is the [[htmlnamespace]].  An <code
+data-anolis-spec=domcore>Attr</code> is an <dfn>HTML attribute</dfn> if its
+<span data-anolis-spec=domcore title=concept-attr-namespace>namespace</span> is
+the [[htmlnamespace]].
 
 <p>The <dfn>first node</dfn> of a [[range]] is the [[node]] returned by the
 following algorithm:
@@ -105,7 +114,8 @@ following algorithm:
   [[comment]], or [[processinginstruction]] node, return that.
 
   <li><p>If <var>range</var>'s [[rangestart]] [[bpnode]] has children,
-  return the child with [[index]] equal to the [[rangestart]] [[bpoffset]].
+  return the child whose [[index]] is equal to <var>range</var>'s
+  [[rangestart]] [[bpoffset]].
 
   <li><p>Return <var>range</var>'s [[rangestart]] [[bpnode]].
 </ol>
@@ -137,9 +147,14 @@ following algorithm:
   <!-- This is what Firefox seems to do, no reason to change it . . . -->
 
   <p class=note>In user agents that support only one [[range]] per
-  [[selection]], <var>range</var> will simply be the only [[range]] associated
-  to <var>selection</var>.
+  [[selection]], the active range is simply the only one in the selection.
 </ol>
+
+<p>When the user agent is instructed to run a particular method, it must follow
+the steps defined for that method in the appropriate specification, not act as
+though the method had actually been called from JavaScript.  In particular,
+if the author has overridden the method with a custom method, the standard
+method must be run rather than the custom one.
 
 
 <h2>Decomposing a Range into Nodes</h2>
@@ -177,8 +192,7 @@ nodes if necessary, but isn't picky about [[comment]]s or
 
     <li><p>Run <code data-anolis-spec=domcore
     title=dom-Text-splitText>splitText(<var>end offset</var> &minus; <var
-    title>start offset</var>)</code> on <var>start node</var> and set
-    <var>start node</var> to the previous sibling of the result.
+    title>start offset</var>)</code> on <var>start node</var>.
 
     <li><p>Return the list consisting of the single [[node]] <var>start
     node</var>, and abort these steps.
@@ -195,17 +209,16 @@ nodes if necessary, but isn't picky about [[comment]]s or
   offset</var> is neither 0 nor the [[nodelength]] of <var>end
   node</var>, run <code data-anolis-spec=domcore
   title=dom-Text-splitText>splitText(<var>end offset</var>)</code> on
-  <var>end node</var> and set <var>end node</var> to the previous
-  sibling of the returned node.  Set <var>end offset</var> to the
-  [[nodelength]] of the new <var>end node</var>.
+  <var>end node</var>.
 
-  <li><p>If <var>start node</var> is an [[element]] with at least one
-  child, let <var>node</var> be the child of <var>start node</var>
-  with [[index]] <var>start offset</var>.
+  <li><p>If <var>start offset</var> is nonzero and equals the [[nodelength]] of
+  <var>start node</var>, let <var>node</var> be the first [[node]] after
+  <var>start node</var> in [[treeorder]].  If there is no such [[node]], return
+  the empty list.
 
-  <li><p>Otherwise, if <var>start node</var> is a [[text]] node and <var
-  title>start offset</var> is its [[nodelength]], let <var>node</var> be
-  the first [[node]] after <var>start node</var> in [[treeorder]].
+  <li><p>Otherwise, if <var>start node</var> is an [[element]] with at least
+  one child, let <var>node</var> be the <var>start offset</var>th child of
+  <var>start node</var>.
 
   <li><p>Otherwise, let <var>node</var> be <var>start node</var>.
 
@@ -215,7 +228,7 @@ nodes if necessary, but isn't picky about [[comment]]s or
 
   <li><p>Otherwise, if <var>end offset</var> is 0, let <var
   title>end</var> be the first [[node]] before <var>end node</var> in
-  [[treeorder]].
+  [[treeorder]].  If there is no such [[node]], return the empty list.
 
   <li><p>Otherwise, let <var>end</var> be <var>end node</var>.
 
@@ -226,11 +239,11 @@ nodes if necessary, but isn't picky about [[comment]]s or
   -->
   <li><p>While <var>node</var> is the first child of its parent and <var
   title>end</var> is not a [[descendant]] of <var>node</var>'s parent,
-  set <var>node</var> to its parent.
+  set <var>node</var> to <var>node</var>'s parent.
 
   <li><p>While <var>end</var> is the last child of its parent and <var
   title>node</var> is not a [[descendant]] of <var>end</var>'s parent,
-  set <var>end</var> to its parent.
+  set <var>end</var> to <var>node</var>'s parent.
 
   <li><p>Let <var>node list</var> be an empty list of [[node]]s.
 
@@ -240,12 +253,12 @@ nodes if necessary, but isn't picky about [[comment]]s or
   <ol>
     <li><p>Append <var>node</var> to <var>node list</var>.
 
-    <li><p>Set <var>node</var> to the first [[node]] in [[treeorder]]
-    that is after <var>node</var> and (if applicable) all its
-    [[descendants]].  If no such [[node]] exists, break out of these substeps.
+    <li><p>Set <var>node</var> to the first [[node]] in [[treeorder]] that is
+    after <var>node</var> and all its [[descendants]] (if any).  If no such
+    [[node]] exists, break out of these substeps.
 
     <li><p>While <var>node</var> is an [[ancestor]] of <var
-    title>end</var>, set <var>node</var> to its first child.
+    title>end</var>, set <var>node</var> to <var>node</var>'s first child.
   </ol>
 
   <li><p>Return <var>node list</var>.
@@ -254,13 +267,10 @@ nodes if necessary, but isn't picky about [[comment]]s or
 
 <h2>Unstyling an element</h2>
 <p>When a user agent is to <dfn>unstyle an element</dfn>, it must run the
-following steps.  This algorithm might remove the element from the DOM and
-insert other elements in its place, in which case it will return an ordered
-list of the element's former children.
+following steps.
 
 <ol>
-  <li><p>Let <var>element</var> be the <code
-  data-anolis-spec=domcore>Element</code> to be unstyled.
+  <li><p>Let <var>element</var> be the [[element]] to be unstyled.
 
   <li><p>Let <var>property name</var> and <var>tag list</var> be as
   in the invoking algorithm.
@@ -296,13 +306,12 @@ list of the element's former children.
     <li><p>While <var>element</var> has children:
 
     <ol>
-      <li><p>Let <var>child</var> be the first child of <var
-      title>element</var>.
+      <li><p>Let <var>child</var> be the first child of <var>element</var>.
 
       <li><p>Append <var>child</var> to <var>children</var>.
 
-      <li><p>Insert <var>child</var> as the previous sibling of <var
-      title>element</var>.
+      <li><p>Insert <var>child</var> as the previous sibling of
+      <var>element</var>.
     </ol>
 
     <li><p>Remove <var>element</var>.
@@ -310,16 +319,14 @@ list of the element's former children.
     <li><p>Return <var>children</var>.
   </ol>
 
-  <li><p>Unset the CSS property <var>property name</var> of <var
-  title>element</var>.
+  <li><p>Unset the CSS property <var>property name</var> of <var>element</var>.
 
   <li><p>If <var>element</var> is not an <span>HTML element</span> or its
   [[localname]] is not in <var>tag list</var>, return the empty list.
 
   <li><p>Let <var>new element</var> be a new <span>HTML element</span> with
-  [[localname]] "span", with the same attributes and <code
-  data-anolis-spec=domcore title=dom-Node-ownerDocument>ownerDocument</code>
-  as <var>element</var>.
+  [[localname]] "span", with the same attributes and [[ownerdocument]] as
+  <var>element</var>.
 
   <li><p>Append <var>new element</var> to <var>element</var>'s
   parent as the previous sibling of <var>element</var>.
@@ -343,8 +350,7 @@ empty list of strings <var>tag list</var>.
   <li><p>Let <var>node list</var> be the result of <span title="decompose
   a range">decomposing</span> <var>range</var>.
 
-  <li><p>For each <var>node</var> in <var>node list</var>, in <span
-  data-anolis-spec=domcore>tree order</span>:
+  <li><p>For each <var>node</var> in <var>node list</var>, in order:
 
   <ol>
     <li><p>If <var>node</var> is an <code
@@ -378,10 +384,13 @@ empty list of strings <var>tag list</var>.
     data-anolis-spec=domcore>Text</code> node:
 
     <ol>
-      <li><p>Let <var>new parent</var> be a new <span>HTML element</span> with
-      [[localname]] equal to the first string in <var>tag list</var> (or equal
-      to "span" if <var>tag list</var> is empty), with no attributes, and
-      [[ownerdocument]] the same as <var>node</var>.
+      <li><p>Let <var>tag</var> be the first string in <var>tag list</var>, or
+      "span" if <var>tag list</var> is empty.
+
+      <li><p>Let <var>new parent</var> be the result of calling <code
+      data-anolis-spec=domcore
+      title=dom-Document-createElement>createElement(<var>tag</var>)</code> on
+      the [[ownerdocument]] of <var>node</var>.
 
       <li><p>Append <var>new parent</var> to <var>node</var>'s parent as the
       previous sibling of <var>node</var>.
@@ -421,8 +430,7 @@ empty list of strings <var>tag list</var>.
   <li><p>Let <var>node list</var> be the result of <span title="decompose
   a range">decomposing</span> <var>range</var>.
 
-  <li><p>For each <var>node</var> in <var>node list</var>, in
-  order:
+  <li><p>For each <var>node</var> in <var>node list</var>, in order:
 
   <ol>
     <li><p>If <var>node</var> is an <code
@@ -466,14 +474,13 @@ empty list of strings <var>tag list</var>.
     title>property value</var>:
 
     <ol>
-      <li><p>Let <var>new parent</var> be a new <span>HTML element</span> with
-      [[localname]] "span", with no attributes, and with <code
+      <li><p>Let <var>new parent</var> be the result of calling <code
       data-anolis-spec=domcore
-      title=dom-Node-ownerDocument>ownerDocument</code> equal to <var
-      title>node</var>'s.
+      title=dom-Document-createElement>createElement("span")</code> on the
+      [[ownerdocument]] of <var>node</var>.
 
-      <li><p>Set the CSS property <var>property name</var> of <var
-      title>new parent</var> to <var>property value</var>.
+      <li><p>Set the CSS property <var>property name</var> of <var>new
+      parent</var> to <var>property value</var>.
 
       <li><p>Insert <var>new parent</var> as <var>node</var>'s
       previous sibling.
@@ -557,6 +564,14 @@ Chrome 10 dev actually sets background, not background-color, so it resets all
 the other background stuff.  I go with IE 9 RC and Opera 11, which only set
 background-color. -->
 
+<p class=XXX>Firefox and Opera use backColor to set the background color of the
+whole document.  The hiliteColor command can then be used to set the background
+of the selection (supported in all my test browsers except IE).  This
+terminology is inconsistent with foreColor, but the model I've specced leaves
+no way to change the document's overall background color.  I'm not sure how
+important this is, but maybe I should switch, since hiliteColor is more
+interoperably implemented than backColor.
+
 <dd><p><strong>State</strong>: Always false.
 
 <dd><p><strong>Value</strong>: The value is given by the following algorithm:
@@ -604,6 +619,146 @@ string, and three out of the four return something that evaluates to false as a
 boolean, so I'll go with Firefox and Opera. -->
 
 
+<dt><code title><dfn title=command-createlink>createLink</dfn></code>
+
+<dd><p><strong>Action</strong>: The user agent must run the following steps:
+
+<ol>
+  <li><p>If <var>value</var> is the empty string, abort these steps and do
+  nothing.
+  <!-- This matches Firefox 4b11 and Chrome 11 dev.  IE 9 RC and Opera 11 both
+  treat the request literally.  Gecko and WebKit probably have it right here:
+  users who enter no URL are very unlikely to want to link to a relative URL
+  resolving to the current document.  If they really want to, they can always
+  specify "#" for the value, or the author can rewrite it, so it's not like
+  this makes the API less useful. -->
+
+  <li><p>Let <var>node list</var> be the result of <span title="decompose a
+  range">decomposing</span> the [[range]].
+
+  <li><p>For each <var>node</var> in <var>node list</var>, in order:
+
+  <ol>
+    <li><p>Let <var>text nodes</var> be a list of all [[text]] node
+    [[descendants]] of <var>node</var>, or <var>node</var> itself if it's a
+    [[text]] node.
+
+    <li><p>For each <var>text node</var> in <var>text nodes</var>, in
+    [[treeorder]]:
+
+    <ol>
+      <li><p>Let <var>ancestor link</var> be the parent of <var>text
+      node</var>.
+
+      <li><p>While <var>ancestor link</var> is not an <span>HTML
+      element</span>, or its [[localname]] is not "a", or it has no <span>HTML
+      attribute</span> with [[attrlocalname]] "href":
+
+      <ol>
+        <li><p>If the parent of <var>ancestor link</var> is not an [[element]],
+        set <var>ancestor link</var> to null and break from this loop.
+
+        <li><p>Otherwise, set <var>ancestor link</var> to its parent.
+      </ol>
+
+      <li><p>If <var>ancestor link</var> is not null, set its "href" attribute
+      to <var>value</var> and continue with the next <var>text node</var>.
+      <!-- There are three approaches here.  For instance, if you ask browsers
+      to create a link to "http://example.org" on the "b" here:
+
+        <a href=http://example.com><b>Abc</b></a>
+
+      Chrome 10 dev produces:
+
+        <b><a href=http://example.com>A</a><a href=http://example.org>b</a>
+        <a href=http://example.com>c</a></b>
+
+      Firefox 4b11 produces (roughly):
+
+        <a href=http://example.com><b>A<a href=http://example.org>b</a>c</b></a>
+
+      IE 9 RC and Opera 11 produce simply:
+
+        <a href=http://example.org><b>Abc</b></a>
+
+      The last behavior produces valid markup (unlike Gecko), is simple (unlike
+      WebKit), and probably best matches user expectations.  If you happen to
+      miss out a character when selecting the link you want to change, do you
+      really intend to only change the link of part of it? -->
+
+      <li><p>Let <var>new parent</var> be the result of calling <code
+      data-anolis-spec=domcore
+      title=dom-Document-createElement>createElement("a")</code> on the
+      [[ownerdocument]] of <var>text node</var>.
+
+      <li><p>Call <code data-anolis-spec=domcore
+      title=dom-Element-setAttribute>setAttribute("href",
+      <var>value</var>)</code> on <var>new parent</var>.
+
+      <li><p>Insert <var>new parent</var> into <var>text node</var>'s parent as
+      the previous sibling of <var>text node</var>.
+
+      <li><p>Append <var>text node</var> to <var>new parent</var> as its last
+      child.
+    </ol>
+  </ol>
+</ol>
+
+<dd><p><strong>State</strong>: Always false.
+
+<dd><p><strong>Value</strong>: Always the empty string.
+<!-- I'd have expected the value to be the URL, but guess not. -->
+
+
+<dt><code title><dfn title=command-fontname>fontName</dfn></code>
+
+<dd><p><strong>Action</strong>: The user agent must <span title="style a
+range">style the [[range]]</span> with <var>property name</var> equal to
+"font-family", <var>property value</var> equal to <var>value</var>, and
+<var>tag list</var> equal to the empty list.
+<!-- UAs differ a bit in the details here:
+
+IE 9 RC: Empty string sets <font face="">
+Firefox 4b11: Empty string does nothing
+Chrome 11 dev: Empty string does nothing, '"monospace"' same as 'monospace'
+  (i.e., cannot escape font-family keywords because quotes are stripped,
+  clearly wrong)
+Opera 11: Empty string sets <font face="">
+
+Setting an empty font-family has the effect of inheriting the font from the
+parent (although I don't see where the February 24, 2011 CSS 3 Fonts draft says
+that).  Thus it makes sense that if we special-case this, it should be to unset
+the font somehow.
+
+Special-casing the empty string to do nothing doesn't make sense to me.  With
+createLink we'd expect the user to enter the URL themselves, so it makes sense
+to special-case clicking OK without entering anything.  But here it's very
+likely that the font list will be fixed by the author (how many users will
+understand CSS font-family syntax?), so I don't think such usability concerns
+apply. -->
+
+<dd><p><strong>State</strong>: Always false.
+
+<dd><p><strong>Value</strong>: The computed value of the CSS property
+"font-family" for the <span>beginning element</span> of the [[range]].
+<!-- Complicated.
+
+IE 9 RC: Always the empty string.  Not very useful.
+Firefox 4b11: Confusing.  Sometimes it returns generic family names, like
+  "sans-serif".  Sometimes it gives specific font names, like "tt" when the
+  font is specified as "monospace".  Sometimes it gives the literal font-family
+  string.  Not sure what it's doing here.
+Chrome 11 dev: Gives the literal value of font-family, except if it's inherited
+  from default values (no explicit style declarations anywhere), when it seems
+  to return the exact font name.
+Opera 11: Returns the literal value of font-family, except if it's inherited
+  from default values, when it returns the empty string.
+
+I'm just going to punt on this and say it should be the computed value of
+font-family.  I'll leave CSSOM to decide what that means if there are no
+applicable style rules. -->
+
+
 <dt><code title><dfn title=command-forecolor>foreColor</dfn></code>
 
 <dd><p><strong>Action</strong>: If <var>value</var> is not a valid CSS color,
@@ -639,6 +794,53 @@ for the <span>beginning element</span> of the [[range]].
 matches the other browsers. -->
 
 
+<dt><code title><dfn title=command-insertimage>insertImage</dfn></code>
+
+<dd><p><strong>Action</strong>: The user agent must run the following steps:
+
+<p class=XXX>We need to delete the selection if it's not collapsed.
+
+<ol>
+  <li><p>If <var>value</var> is the empty string, abort these steps and do
+  nothing.
+  <!-- Similar logic to createLink, except even more compelling, since an HTML
+  document linking to itself as an image is just silly.  In fact, the current
+  HTML spec instructs UAs to not even try displaying the image, and just fail
+  immediately if the URL is empty.  Firefox 4b11 bails out on an empty string,
+  but the other three browsers I tested stick in the <img> anyway. -->
+
+  <li><p>Let (<var>node</var>, <var>offset</var>) be the [[range]]'s
+  [[rangestart]].
+
+  <li><p>Let <var>img</var> be a new <span>HTML element</span> with
+  [[localname]] "img", the same [[ownerdocument]] as <var>node</var>, and a
+  single <span>HTML attribute</span> with [[attrlocalname]] "src" and with
+  [[attrvalue]] <var>value</var>.
+  <!-- No alt text, so it's invalid.  This matches all browsers. -->
+
+  <li><p>If <var>node</var> is a [[text]] node, and <var>offset</var> is not
+  equal to 0 or the [[nodelength]] of <var>node</var>, run <code
+  data-anolis-spec=domcore
+  title=dom-Text-splitText>splitText(<var>offset</var>)</code> on
+  <var>node</var>.
+
+  <li><p>If <var>node</var> is a [[text]], [[comment]], or
+  [[processinginstruction]] node, run <code data-anolis-spec=domcore
+  title=dom-Node-insertBefore>insertBefore(<var>img</var>,
+  <var>node</var>)</code> on the parent of <var>node</var>.
+
+  <li><p>Otherwise, let <var>child</var> be the <var>offset</var>th child of
+  <var>node</var> (or null if there is no such child), and run <code
+  data-anolis-spec=domcore
+  title=dom-Node-insertBefore>insertBefore(<var>img</var>,
+  <var>child</var>)</code> on <var>node</var>.
+</ol>
+
+<dd><p><strong>State</strong>:
+
+<dd><p><strong>Value</strong>:
+
+
 <dt><code title><dfn title=command-italic>italic</dfn></code>
 
 <dd><p><strong>Action</strong>: If the of the [[range]] for this command is
@@ -654,7 +856,19 @@ value</var> "italic", <var>tag list</var> ["i", "em"].  Otherwise, it must
 false.
 
 <dd><p><strong>Value</strong>: Always the empty string.
-<!-- See comment for bold -->
+
+
+<dt><code title><dfn title=command-unlink>unlink</dfn></code>
+
+<dd><p><strong>Action</strong>:
+<!-- IE 9 RC unlinks the whole link you're pointing at.  Others just unlink
+your selection, which does nothing if you have nothing selected.
+Unfortunately, everyone but IE winds up doing some DOM surgery here in some
+cases, creating and splitting elements in some cases. -->
+
+<dd><p><strong>State</strong>:
+
+<dd><p><strong>Value</strong>:
 
 
 <dt><code title><dfn title=command-underline>underline</dfn></code>
@@ -666,7 +880,6 @@ possible through massive hacks.
 <dd class=XXX><p><strong>State</strong>: ...
 
 <dd><p><strong>Value</strong>: Always the empty string.
-<!-- See comment for bold -->
 </dl>
 
 

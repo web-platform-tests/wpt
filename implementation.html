@@ -1,35 +1,21 @@
 <!doctype html>
 <title>execCommand() experimental implementation</title>
-<p><label>Command: <input oninput="command = this.value"></label>
-   <label>Value: <input oninput="val = this.value"></label>
+<p><label>Command: <input></label>
+   <label>Value: <input></label>
 <script>
-// Silly Firefox, prefilling inputs when you reload
-var command = document.querySelector("input").value;
-var val = document.querySelectorAll("input")[1].value;
+var command = document.querySelector("input");
+var val = document.querySelectorAll("input")[1];
 </script>
 <p>Spec:
-<button onclick='myExecCommand(command, null, val)'>exec</button>
-<button onclick='var ret = myQueryCommandState(command); alert(typeof ret + " \"" + ret + "\"")'>state</button>
-<button onclick='var ret = myQueryCommandValue(command); alert(typeof ret + " \"" + ret + "\"")'>value</button>
+<button tabindex=-1 accesskey=a onclick='myExecCommand(command.value, null, val.value)'>exec</button>
+<button tabindex=-1 accesskey=s onclick='var ret = myQueryCommandState(command.value); alert(typeof ret + " \"" + ret + "\"")'>state</button>
+<button tabindex=-1 accesskey=d onclick='var ret = myQueryCommandValue(command.value); alert(typeof ret + " \"" + ret + "\"")'>value</button>
 <p>Actual:
-<button onclick='execCommand(command, null, val)'>exec</button>
-<button onclick='var ret = queryCommandState(command); alert(typeof ret + " \"" + ret + "\"")'>state</button>
-<button onclick='var ret = queryCommandValue(command); alert(typeof ret + " \"" + ret + "\"")'>value</button>
-<div contenteditable=true id=test>
-	<br> <br>
-	Some simple text<br>
-	<span>Some more text</span><br>
-	<b>Some more text</b><br>
-	<strong>Some more text</strong><br>
-	<span style=font-weight:bold>Some more text</span><br>
-	<i>Some more text</i><br>
-	<span style=font-style:italic;font-weight:bold>Some more text</span><br>
-	<b>Some <span style=font-weight:200>more <b>te<span style=font-weight:bold>xt<strong>!</strong></span></b></span></b><br>
-	<p>Some simple text
-	<p><span>Some more text</span>
-	<p><b>Some more text</b>
-	<p><i>Some more text</i>
-	<p><b>Some <span style=font-weight:200>more <b>te<span style=font-weight:bold>xt<strong>!</strong></span></b></span></b>
+<button tabindex=-1 accesskey=z onclick='execCommand(command.value, null, val.value)'>exec</button>
+<button tabindex=-1 accesskey=x onclick='var ret = queryCommandState(command.value); alert(typeof ret + " \"" + ret + "\"")'>state</button>
+<button tabindex=-1 accesskey=c onclick='var ret = queryCommandValue(command.value); alert(typeof ret + " \"" + ret + "\"")'>value</button>
+<div contenteditable=true>
+	Abcdef
 </div>
 <script>
 "use strict";
@@ -150,7 +136,11 @@ function beginningElement(range) {
 
 function activeRange(doc) {
 	// "Let selection be the result of calling getSelection() on the Document."
-	var selection = doc.getSelection();
+	//
+	// We call getSelection() on defaultView instead, because Firefox and Opera
+	// don't follow the DOM Range spec here:
+	// https://bugzilla.mozilla.org/show_bug.cgi?id=636512
+	var selection = doc.defaultView.getSelection();
 
 	// "If there are no Ranges associated with selection, return null."
 	if (selection.rangeCount == 0) {
@@ -452,7 +442,7 @@ function styleRange(range, propertyName, propertyValue, tagList) {
 			// "Let new parent be a new HTML element with local name equal to
 			// the first string in tag list (or equal to "span" if tag list is
 			// empty), with no attributes, and ownerDocument the same as node."
-			newParent = node.ownerDocument.createElement(tagList.length ? tagList[0] : "span");
+			var newParent = node.ownerDocument.createElement(tagList.length ? tagList[0] : "span");
 
 			// "Append new parent to node's parent as the previous sibling of
 			// node."
@@ -563,6 +553,82 @@ function myExecCommand(commandId, showUI, value) {
 		}
 		break;
 
+		case "createlink":
+		// "If value is the empty string, do nothing."
+		if (value === "") {
+			break;
+		}
+
+		// "Let node list be the result of decomposing the Range."
+		var nodeList = decomposeRange(range);
+
+		// "For each node in node list, in order:"
+		for (var i = 0; i < nodeList.length; i++) {
+			var node = nodeList[i];
+
+			// "Let text nodes be a list of all Text node descendants of node,
+			// or node itself if it's a Text node."
+			var textNodes = [];
+			if (node.nodeType == Node.TEXT_NODE) {
+				textNodes.push(node);
+			} else {
+				for (var cur = node.firstChild;
+				cur && cur.compareDocumentPosition(node) & Node.DOCUMENT_POSITION_CONTAINS;
+				cur = nextNode(cur)) {
+					if (cur.nodeType == Node.TEXT_NODE) {
+						textNodes.push(cur);
+					}
+				}
+			}
+
+			// "For each text node in text nodes, in tree order:"
+			for (var j = 0; j < textNodes.length; j++) {
+				var textNode = textNodes[j];
+
+				// "Let ancestor link be the parent of text node."
+				var ancestorLink = textNode.parentNode;
+
+				// "While ancestor link is not an HTML element, or its local
+				// name is not "a", or it has no HTML attribute with local name
+				// "href":"
+				while (ancestorLink.namespaceURI != htmlNamespace
+				|| ancestorLink.nodeType != Node.ELEMENT_NODE
+				|| ancestorLink.tagName != "A"
+				|| !ancestorLink.hasAttribute("href")) {
+					// "If the parent of ancestor link is not an Element, set
+					// ancestor link to null and break from this loop."
+					if (!ancestorLink.parentNode
+					|| ancestorLink.parentNode.nodeType != Node.ELEMENT_NODE) {
+						ancestorLink = null;
+						break;
+					}
+
+					// "Otherwise, set ancestor link to its parent."
+					ancestorLink = ancestorLink.parentNode;
+				}
+
+				// "If ancestor link is not null, set its "href" attribute to
+				// value and continue with the next text node."
+				if (ancestorLink) {
+					ancestorLink.setAttribute("href", value);
+					continue;
+				}
+
+				// "Let new parent be a new HTML element with local name "a",
+				// the same ownerDocument as text node, and a single HTML
+				// attribute with local name "href" and value value."
+				var newParent = textNode.ownerDocument.createElement("a");
+				newParent.setAttribute("href", value);
+
+				// "Insert new parent into text node's parent as the previous
+				// sibling of text node."
+				textNode.parentNode.insertBefore(newParent, textNode);
+
+				// "Append text node to new parent as its last child."
+				newParent.appendChild(textNode);
+			}
+		}
+
 		case "foreColor":
 		// Hacky test to see if the color is valid
 		var testEl = document.createElement("span");
@@ -621,21 +687,31 @@ function myQueryCommandValue(commandId) {
 		return "";
 	}
 
+	var style = getComputedStyle(beginningElement(range));
+
 	switch (commandId) {
 		case "backcolor":
+		// "Let element be the beginning element of the Range."
 		var element = beginningElement(range);
+		// "While the computed style of "background-color" on element is any
+		// fully transparent value, set element to its parent."
 		while (element.nodeType == Node.ELEMENT_NODE
 		&& (getComputedStyle(element).backgroundColor == "rgba(0, 0, 0, 0)"
-		|| getComputedStyle(element).backgroundColor === "")) {
+		|| getComputedStyle(element).backgroundColor === ""
+		|| getComputedStyle(element).backgroundColor == "transparent")) {
 			element = element.parentNode;
 		}
+		// "Return the computed style of "background-color" for element."
 		if (element.nodeType != Node.ELEMENT_NODE) {
 			return 'rgb(255, 255, 255)';
 		}
 		return getComputedStyle(element).backgroundColor;
 
+		case "fontname":
+		return style.fontFamily;
+
 		case "forecolor":
-		return getComputedStyle(beginningElement(range)).color;
+		return style.color;
 
 		default:
 		return "";

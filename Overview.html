@@ -48,7 +48,7 @@
 <p><a href="http://www.w3.org/"><img alt="W3C" height="48" src="http://www.w3.org/Icons/w3c_home" width="72"></a></p>
 <!--end-logo-->
  <h1>DOM Core</h1>
- <h2 class="no-num no-toc" id="editor-s-draft-23-february-2011">Editor's Draft 23 February 2011</h2>
+ <h2 class="no-num no-toc" id="editor-s-draft-25-february-2011">Editor's Draft 25 February 2011</h2>
 
  <dl>
   <dt>This Version:
@@ -89,7 +89,7 @@ publications and the latest revision of this technical report can be found in
 the <a href="http://www.w3.org/TR/">W3C technical reports index</a> at
 http://www.w3.org/TR/.</i>
 
-<p>This is the 23 February 2011 Editor's Draft of DOM Core. Please send
+<p>This is the 25 February 2011 Editor's Draft of DOM Core. Please send
 comments to
 <a href="mailto:public-webapps@w3.org?subject=%5BDOMCore%5D%20">public-webapps@w3.org</a>
 (<a href="http://lists.w3.org/Archives/Public/public-webapps/">archived</a>)
@@ -195,7 +195,7 @@ document as other than work in progress.
 
 <h2 class="no-num" id="goals">Goals</h2>
 
-<p>The goal of this specification is taking DOM Level 3 Core and DOM Level 2 Events (except the "Event module definitions" chapter as specific type of events do not belong in the base specification) and do the following:</p>
+<p>The goal of this specification is taking DOM Level 3 Core and DOM Level 3 Events (except the "Event module definitions" chapter as specific type of events do not belong in the base specification) and do the following:</p>
 
 <ul>
  <li>Align them with the needs of ECMAScript where possible.
@@ -303,24 +303,14 @@ is unambiguous, the term can be omitted.
 hierarchical tree structures, simply named
 <dfn id="concept-tree" title="concept-tree">trees</dfn>.
 
-<hr>
-
 <p>An object that <dfn id="concept-tree-participate" title="concept-tree-participate">participates</dfn> in
-a <a href="#concept-tree" title="concept-tree">tree</a> has a number of properties that other
-objects do not. The remainder of definitions in this section apply to
-objects that <a href="#concept-tree-participate" title="concept-tree-participate">participate</a> in
-<a href="#concept-tree" title="concept-tree">trees</a>.
+a <a href="#concept-tree" title="concept-tree">tree</a> has a
+<dfn id="concept-tree-parent" title="concept-tree-parent">parent</dfn>, which is either another object
+or null, and an ordered list of zero or more
+<dfn id="concept-tree-child" title="concept-tree-child">child</dfn> objects.
 
-<p>An object has a <dfn id="concept-tree-parent" title="concept-tree-parent">parent</dfn> which is
-either another object or null. An object whose
-<a href="#concept-tree-parent" title="concept-tree-parent">parent</a> is null is called the
-<dfn id="concept-tree-root" title="concept-tree-root">root</dfn> object.
-<!-- XXX do we need "root"? -->
-
-<p>An object <var title="">A</var> is a
-<dfn id="concept-tree-child" title="concept-tree-child">child</dfn> of an object <var title="">B</var> if
-and only if <var title="">B</var> is the
-<a href="#concept-tree-parent" title="concept-tree-parent">parent</a> of <var title="">A</var>.
+<p>An object whose <a href="#concept-tree-parent" title="concept-tree-parent">parent</a> is null is
+called the <dfn id="concept-tree-root" title="concept-tree-root">root</dfn> object.
 
 <p>An object <var title="">A</var> is called a
 <dfn id="concept-tree-descendant" title="concept-tree-descendant">descendant</dfn> of an object
@@ -338,7 +328,8 @@ object <var title="">C</var> that is a
 
 <p>An object <var title="">A</var> is called a
 <dfn id="concept-tree-sibling" title="concept-tree-sibling">sibling</dfn> of an object
-<var title="">B</var>, if and only if <var title="">B</var> and <var title="">A</var> share the same <a href="#concept-tree-parent" title="concept-tree-parent">parent</a>.
+<var title="">B</var>, if and only if <var title="">B</var> and <var title="">A</var>
+share the same non-null <a href="#concept-tree-parent" title="concept-tree-parent">parent</a>.
 <var title="">A</var> is a
 <dfn id="concept-tree-preceding-sibling" title="concept-tree-preceding-sibling">preceding sibling</dfn> of
 <var title="">B</var> if <var title="">A</var> and <var title="">B</var> are
@@ -743,8 +734,8 @@ false otherwise.
 must return true if the <a href="#trusted-flag">trusted flag</a> is set and false
 otherwise.
 
-<p>The <dfn id="dom-event-timestamp" title="dom-Event-timeStamp"><code>timeStamp</code></dfn>
-attribute must be useless. <a class="XXX" href="http://www.w3.org/2008/webapps/track/issues/172">More information.</a>
+<p class="XXX">The <dfn id="dom-event-timestamp" title="dom-Event-timeStamp"><code>timeStamp</code></dfn>
+attribute ... <a href="http://www.w3.org/2008/webapps/track/issues/172">More information.</a>
 
 <p>When the <dfn id="dom-event-initevent" title="dom-Event-initEvent"><code>initEvent(<var title="">type</var>, <var title="">bubbles</var>, <var title="">cancelable</var>)</code></dfn>
 method is invoked these steps must be run:</p>
@@ -1024,8 +1015,8 @@ concept to make initializing and
 <a href="#concept-event" title="concept-event">event</a> easier to write down. If the
 <a href="#concept-event" title="concept-event">event</a> needs its <a href="#bubble-flag">bubble flag</a> or
 <a href="#cancel-flag">cancel flag</a> set, one would write e.g.
-<a href="#concept-event-fire" title="concept-event-fire">fire an event named <code title="">submit</code></a>
-with its <a href="#cancel-flag">cancel flag</a> set.
+"<a href="#concept-event-fire" title="concept-event-fire">fire an event</a> named
+<code title="">submit</code> with its <a href="#cancel-flag">cancel flag</a> set".
 
 
 

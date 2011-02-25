@@ -238,24 +238,14 @@ is unambiguous, the term can be omitted.
 hierarchical tree structures, simply named
 <dfn title=concept-tree>trees</dfn>.
 
-<hr>
-
 <p>An object that <dfn title=concept-tree-participate>participates</dfn> in
-a <span title=concept-tree>tree</span> has a number of properties that other
-objects do not. The remainder of definitions in this section apply to
-objects that <span title=concept-tree-participate>participate</span> in
-<span title=concept-tree>trees</span>.
+a <span title=concept-tree>tree</span> has a
+<dfn title=concept-tree-parent>parent</dfn>, which is either another object
+or null, and an ordered list of zero or more
+<dfn title=concept-tree-child>child</dfn> objects.
 
-<p>An object has a <dfn title=concept-tree-parent>parent</dfn> which is
-either another object or null. An object whose
-<span title=concept-tree-parent>parent</span> is null is called the
-<dfn title=concept-tree-root>root</dfn> object.
-<!-- XXX do we need "root"? -->
-
-<p>An object <var title>A</var> is a
-<dfn title=concept-tree-child>child</dfn> of an object <var title>B</var> if
-and only if <var title>B</var> is the
-<span title=concept-tree-parent>parent</span> of <var title>A</var>.
+<p>An object whose <span title=concept-tree-parent>parent</span> is null is
+called the <dfn title=concept-tree-root>root</dfn> object.
 
 <p>An object <var title>A</var> is called a
 <dfn title=concept-tree-descendant>descendant</dfn> of an object

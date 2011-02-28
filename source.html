@@ -110,14 +110,28 @@ following algorithm:
   [[descendants]] (if any) in [[treeorder]].  If there is no such [[node]],
   return the last [[node]] in the document.
 
-  <li><p>If <var>range</var>'s [[rangestart]] [[bpnode]] is a [[text]],
-  [[comment]], or [[processinginstruction]] node, return that.
-
   <li><p>If <var>range</var>'s [[rangestart]] [[bpnode]] has children,
   return the child whose [[index]] is equal to <var>range</var>'s
   [[rangestart]] [[bpoffset]].
 
   <li><p>Return <var>range</var>'s [[rangestart]] [[bpnode]].
+</ol>
+
+<p>The <dfn>last node</dfn> of a [[range]] is the [[node]] returned by the
+following algorithm:
+
+<ol>
+  <li><p>Let <var>range</var> be the [[range]] under discussion.
+
+  <li><p>If <var>range</var>'s [[rangeend]] [[bpoffset]] is zero, return the
+  last [[node]] that is before the [[rangeend]] [[bpnode]] in [[treeorder]].
+  If there is no such [[node]], return the first [[node]] in the document.
+
+  <li><p>If <var>range</var>'s [[rangeend]] [[bpnode]] has children,
+  return the child whose [[index]] is equal to <var>range</var>'s
+  [[rangeend]] [[bpoffset]] minus one.
+
+  <li><p>Return <var>range</var>'s [[rangeend]] [[bpnode]].
 </ol>
 
 <p>The <dfn>beginning element</dfn> of a [[range]] is its <span>first
@@ -541,7 +555,7 @@ exception in IE and Firefox.  Need to consider changing to that behavior.
 
 <p>The possible values for <var>commandId</var>, and their corresponding
 meanings, are as follows.  These values must be compared to the argument in an
-<span data-anolis-spec=html>ASCII case-insensitive</span> manner.
+<span data-anolis-spec=domcore>ASCII case-insensitive</span> manner.
 
 <dl>
 <dt><code title><dfn title=command-backColor>backColor</dfn></code>
@@ -860,15 +874,49 @@ false.
 
 <dt><code title><dfn title=command-unlink>unlink</dfn></code>
 
-<dd><p><strong>Action</strong>:
+<dd><p><strong>Action</strong>: The user agent must execute the following
+steps:
 <!-- IE 9 RC unlinks the whole link you're pointing at.  Others just unlink
 your selection, which does nothing if you have nothing selected.
 Unfortunately, everyone but IE winds up doing some DOM surgery here in some
 cases, creating and splitting elements in some cases. -->
 
-<dd><p><strong>State</strong>:
+<p class=XXX>This is based on what IE does.  Other browsers only unlink the
+selected portion, which might be more user-friendly but involves chopping up
+and reorganizing the DOM.  Revisit this later to see if it's reasonable to spec
+what the other browsers do instead.
 
-<dd><p><strong>Value</strong>:
+<ol>
+  <li><p>Let <var>links</var> be a [[collection]] rooted at the [[range]]'s
+  [[rangeroot]], whose filter matches only <span title="HTML element">HTML
+  elements</span> with [[localname]] "a", that have an <span>HTML
+  attribute</span> with [[attrlocalname]] "href".
+
+  <li><p>Let <var>selected</var> be a [[collection]] rooted at the [[range]]'s
+  [[rangeroot]], whose filter matches only [[node]]s that are equal to or after
+  the [[range]]'s <span>first node</span> in [[treeorder]], and also equal to
+  or before the [[range]]'s <span>last node</span> in [[treeorder]].
+
+  <li><p>For each <var>link</var> in <var>links</var>, in [[treeorder]]:
+
+  <ol>
+    <li><p>If <var>link</var> is not in <var>selected</var> and is not an
+    [[ancestor]] of any [[node]] in <var>selected</var>, continue with the next
+    <var>link</var>.
+
+    <li><p>While <var>link</var> has children, insert <var>link</var>'s first
+    child into its parent as <var>link</var>'s previous sibling.
+
+    <li><p>Remove <var>link</var>.
+
+    <p class=XXX>This means it disappears even if it had an id, class, etc.
+    Maybe not what we want?
+  </ol>
+</ol>
+
+<dd><p><strong>State</strong>: Always false.
+
+<dd><p><strong>Value</strong>: Always the empty string.
 
 
 <dt><code title><dfn title=command-underline>underline</dfn></code>

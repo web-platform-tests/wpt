@@ -19,7 +19,7 @@
 <body class=draft>
 <div class=head id=head>
 <h1>HTML Editing Commands</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-24-february-2011>Work in Progress &mdash; Last Update 24 February 2011</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-28-february-2011>Work in Progress &mdash; Last Update 28 February 2011</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;ayg+spec@aryeh.name&gt;
@@ -119,14 +119,28 @@ following algorithm:
   <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-descendant-node title=concept-descendant-node>descendants</a> (if any) in <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#tree-order>tree order</a>.  If there is no such <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a>,
   return the last <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> in the document.
 
-  <li><p>If <var title="">range</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> is a <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a>,
-  <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#comment><code class=external data-anolis-spec=domcore>Comment</code></a>, or <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#processinginstruction><code class=external data-anolis-spec=domcore>ProcessingInstruction</code></a> node, return that.
-
   <li><p>If <var title="">range</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> has children,
   return the child whose <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> is equal to <var title="">range</var>'s
   <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a>.
 
   <li><p>Return <var title="">range</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>.
+</ol>
+
+<p>The <dfn id=last-node>last node</dfn> of a <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a> is the <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> returned by the
+following algorithm:
+
+<ol>
+  <li><p>Let <var title="">range</var> be the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a> under discussion.
+
+  <li><p>If <var title="">range</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a> is zero, return the
+  last <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> that is before the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> in <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#tree-order>tree order</a>.
+  If there is no such <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a>, return the first <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> in the document.
+
+  <li><p>If <var title="">range</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> has children,
+  return the child whose <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> is equal to <var title="">range</var>'s
+  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a> minus one.
+
+  <li><p>Return <var title="">range</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>.
 </ol>
 
 <p>The <dfn id=beginning-element>beginning element</dfn> of a <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a> is its <a href=#first-node>first
@@ -522,7 +536,7 @@ exception in IE and Firefox.  Need to consider changing to that behavior.
 
 <p>The possible values for <var title="">commandId</var>, and their corresponding
 meanings, are as follows.  These values must be compared to the argument in an
-<a class=external data-anolis-spec=html href=http://www.whatwg.org/html/#ascii-case-insensitive>ASCII case-insensitive</a> manner.
+<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#ascii-case-insensitive>ASCII case-insensitive</a> manner.
 
 <dl>
 <dt><code title=""><dfn id=command-backcolor title=command-backColor>backColor</dfn></code>
@@ -832,15 +846,49 @@ false.
 
 <dt><code title=""><dfn id=command-unlink title=command-unlink>unlink</dfn></code>
 
-<dd><p><strong>Action</strong>:
+<dd><p><strong>Action</strong>: The user agent must execute the following
+steps:
 <!-- IE 9 RC unlinks the whole link you're pointing at.  Others just unlink
 your selection, which does nothing if you have nothing selected.
 Unfortunately, everyone but IE winds up doing some DOM surgery here in some
 cases, creating and splitting elements in some cases. -->
 
-<dd><p><strong>State</strong>:
+<p class=XXX>This is based on what IE does.  Other browsers only unlink the
+selected portion, which might be more user-friendly but involves chopping up
+and reorganizing the DOM.  Revisit this later to see if it's reasonable to spec
+what the other browsers do instead.
 
-<dd><p><strong>Value</strong>:
+<ol>
+  <li><p>Let <var title="">links</var> be a <a class=external data-anolis-spec=html href=http://www.whatwg.org/html/#collections title=collections>collection</a> rooted at the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a>'s
+  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-root title=concept-range-root>root</a>, whose filter matches only <a href=#html-element title="HTML element">HTML
+  elements</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> "a", that have an <a href=#html-attribute>HTML
+  attribute</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-attr-local-name title=concept-attr-local-name>local name</a> "href".
+
+  <li><p>Let <var title="">selected</var> be a <a class=external data-anolis-spec=html href=http://www.whatwg.org/html/#collections title=collections>collection</a> rooted at the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a>'s
+  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-root title=concept-range-root>root</a>, whose filter matches only <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a>s that are equal to or after
+  the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a>'s <a href=#first-node>first node</a> in <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#tree-order>tree order</a>, and also equal to
+  or before the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a>'s <a href=#last-node>last node</a> in <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#tree-order>tree order</a>.
+
+  <li><p>For each <var title="">link</var> in <var title="">links</var>, in <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#tree-order>tree order</a>:
+
+  <ol>
+    <li><p>If <var title="">link</var> is not in <var title="">selected</var> and is not an
+    <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-ancestor-node title=concept-ancestor-node>ancestor</a> of any <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> in <var title="">selected</var>, continue with the next
+    <var title="">link</var>.
+
+    <li><p>While <var title="">link</var> has children, insert <var title="">link</var>'s first
+    child into its parent as <var title="">link</var>'s previous sibling.
+
+    <li><p>Remove <var title="">link</var>.
+
+    <p class=XXX>This means it disappears even if it had an id, class, etc.
+    Maybe not what we want?
+  </ol>
+</ol>
+
+<dd><p><strong>State</strong>: Always false.
+
+<dd><p><strong>Value</strong>: Always the empty string.
 
 
 <dt><code title=""><dfn id=command-underline title=command-underline>underline</dfn></code>

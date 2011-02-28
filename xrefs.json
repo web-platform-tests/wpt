@@ -15,6 +15,7 @@
   "first node": "first-node",
   "html attribute": "html-attribute",
   "html element": "html-element",
+  "last node": "last-node",
   "querycommandstate()": "querycommandstate()",
   "querycommandvalue()": "querycommandvalue()",
   "style a range": "style-a-range",

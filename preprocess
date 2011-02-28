@@ -6,17 +6,17 @@
 # in Anolis proper.
 
 replace = {
-    "ancestor": "<span data-anolis-spec=domcore title=concept-ancestor-node>ancestor</span>",
+    "ancestor": "<span data-anolis-spec=domcore title=concept-tree-ancestor>ancestor</span>",
     "attrlocalname": "<span data-anolis-spec=domcore title=concept-attr-local-name>local name</span>",
     "attrvalue": "<span data-anolis-spec=domcore title=concept-attr-value>value</span>",
     "boundarypoint": "<span data-anolis-spec=domrange title=concept-boundary-point>boundary point</span>",
     "bpnode": "<span data-anolis-spec=domrange title=concept-boundary-point-node>node</span>",
     "bpoffset": "<span data-anolis-spec=domrange title=concept-boundary-point-offset>offset</span>",
     "bpposition": "<span data-anolis-spec=domrange title=concept-bp-position>position</span>",
-    "collection": "<span data-anolis-spec=html title=collections>collection</span>",
+    "collection": "<span data-anolis-spec=domcore title=concept-collection>collection</span>",
     "comment": "<code data-anolis-spec=domcore>Comment</code>",
     "contextobject": "<span data-anolis-spec=domrange>context object</span>",
-    "descendant": "<span data-anolis-spec=domcore title=concept-descendant-node>descendant</span>",
+    "descendant": "<span data-anolis-spec=domcore title=concept-tree-descendant>descendant</span>",
     "document": "<code data-anolis-spec=domcore>Document</code>",
     "element": "<code data-anolis-spec=domcore>Element</code>",
     "getselection": "<code data-anolis-spec=domrange title=dom-Document-getSelection>getSelection()</code>",

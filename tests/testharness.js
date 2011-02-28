@@ -77,7 +77,41 @@ policies and contribution forms [3].
  * The description parameter is used to present more useful error messages when
  * a test fails
  *
+ * == Setup ==
+ *
+ * Sometimes tests require non-trivial setup that may fail. For this purpose
+ * there is a setup() function, that may be called with one or two arguments.
+ * The two argument version is:
+ *
+ * setup(func, properties)
+ *
+ * The one argument versions may omit either argument.
+ * func is a function to be run synchronously. setup() becomes a no-op once
+ * any tests have returned results. Properties are global properties of the test
+ * harness. Currently recognised properties are:
+ *
+ * timeout - The time in ms after which the harness should stop waiting for
+ *           tests to complete (this is different to the per-test timeout
+ *           because async tests do not start their timer until .step is called)
+ *
+ * explicit_done - Wait for an explicit call to done() before declaring all tests
+ *                 complete (see below)
+ *
+ * == Determining when all tests are complete ==
+ *
+ * By default the test harness will assume there are no more results to come
+ * when:
+ * 1) There are no Test objects that have been created but not completed
+ * 2) The load event on the document has fired
+ *
+ * This behaviour can be overridden by setting the explicit_done property to true
+ * in a call to setup(). If explicit_done is true, the test harness will not assume
+ * it is done until the global done() function is called. Once done() is called, the
+ * two conditions above apply like normal.
+ *
  * == Generating tests ==
+ *
+ * NOTE: this functionality may be removed
  *
  * There are scenarios in which is is desirable to create a large number of
  * (synchronous) tests that are internally similar but vary in the parameters
@@ -100,6 +134,47 @@ policies and contribution forms [3].
  *
  * Note that the first item in each parameter list corresponds to the name of
  * the test.
+ *
+ * == Callback API ==
+ *
+ * The framework provides callbacks corresponding to 3 events:
+ *
+ * start - happens when the first Test is created
+ * result - happens when a test result is recieved
+ * complete - happens when all results are recieved
+ *
+ * The page defining the tests may add callbacks for these events by calling
+ * the following methods:
+ *
+ *   add_start_callback(callback) - callback called with no arguments
+ *   add_result_callback(callback) - callback called with a test argument
+ *   add_completion_callback(callback) - callback called with an array of tests
+ *                                       and an status object
+ *
+ * tests have the following properties:
+ *   status: A status code. This can be compared to the PASS, FAIL, TIMEOUT and
+ *           NOTRUN properties on the test object
+ *   message: A message indicating the reason for failure. In the future this
+ *            will always be a string
+ *
+ *  The status object gives the overall status of the harness. It has the
+ *  following properties:
+ *    status: Can be compared to the OK, ERROR and TIMEOUT properties
+ *    message: An error message set when the status is ERROR
+ *
+ * == External API ==
+ *
+ * In order to collect the results of multiple pages containing tests, the test
+ * harness will, when loaded in a nested browsing context, attempt to call
+ * certain functions in the top level browsing context:
+ *
+ * start - top.start_callback
+ * result - top.result_callback
+ * complete - top.completion_callback
+ *
+ * These are given the same arguments as the corresponding internal callbacks
+ * described above.
+ *
  */
 
 (function ()
@@ -107,15 +182,7 @@ policies and contribution forms [3].
     var debug = false;
     // default timeout is 5 seconds, test can override if needed
     var default_timeout = 5000;
-
-    // tests either pass, fail or timeout
-    var status =
-    {
-        PASS: 0,
-        FAIL: 1,
-        TIMEOUT: 2
-    };
-    expose(status, 'status');
+    var default_test_timeout = 2000;
 
     /*
     * API functions
@@ -139,7 +206,7 @@ policies and contribution forms [3].
         properties = properties ? properties : {};
         var test_obj = new Test(test_name, properties);
         test_obj.step(func);
-        if (test_obj.status === null) {
+        if (test_obj.status === test_obj.NOTRUN) {
             test_obj.done();
         }
     }
@@ -150,6 +217,26 @@ policies and contribution forms [3].
         properties = properties ? properties : {};
         var test_obj = new Test(test_name, properties);
         return test_obj;
+    }
+
+    function setup(func_or_properties, properties_or_func)
+    {
+        var func = null;
+        var properties = {};
+        if (arguments.length === 2) {
+            func = func_or_properties;
+            properties = properties_or_func;
+        } else if (func_or_properties instanceof Function){
+            func = func_or_properties;
+        } else {
+            properties = func_or_properties;
+
+        }
+        tests.setup(func, properties);
+    }
+
+    function done() {
+        tests.end_wait();
     }
 
     function generate_tests(func, args) {
@@ -171,11 +258,13 @@ policies and contribution forms [3].
     expose(test, 'test');
     expose(async_test, 'async_test');
     expose(generate_tests, 'generate_tests');
+    expose(setup, 'setup');
+    expose(done, 'done');
     expose(on_event, 'on_event');
 
     /*
-     * Assertions
-     */
+    * Assertions
+    */
 
     function assert_true(actual, description)
     {
@@ -200,10 +289,8 @@ policies and contribution forms [3].
           * are the same object
           */
          var message = make_message("assert_equals", description,
-                                    [["{text}", "expected "],
-                                     ["span", {"class":"expected"}, String(expected)],
-                                     ["{text}", ", got "],
-                                     ["span", {"class":"actual"}, String(actual)]]);
+                                    "expected ${expected} but got ${actual}",
+                                    {expected:String(expected), actual:String(actual)});
          if (expected !== expected)
          {
              //NaN case
@@ -410,31 +497,41 @@ policies and contribution forms [3].
 
     function Test(name, properties)
     {
-       this.name = name;
-       this.status = null;
-       var timeout = default_timeout;
-       this.is_done = false;
+        this.name = name;
+        this.status = this.NOTRUN;
+        this.timeout_id = null;
+        this.is_done = false;
 
-       if (properties.timeout)
-       {
-           timeout = properties.timeout;
-       }
+        this.timeout_length = properties.timeout ? properties.timeout : default_test_timeout;
 
-       this.message = null;
+        this.message = null;
 
-       var this_obj = this;
-       this.steps = [];
-       this.timeout_id = setTimeout(function() { this_obj.timeout(); }, timeout);
+        var this_obj = this;
+        this.steps = [];
 
-       tests.push(this);
-   }
+        tests.push(this);
+    }
+
+    Test.prototype = {
+        PASS:0,
+        FAIL:1,
+        TIMEOUT:2,
+        NOTRUN:3
+    };
+
 
     Test.prototype.step = function(func, this_obj)
     {
         //In case the test has already failed
-        if (this.status !== null)
+        if (this.status !== this.NOTRUN)
         {
           return;
+        }
+
+        tests.started = true;
+
+        if (this.timeout_id === null) {
+            this.set_timeout();
         }
 
         this.steps.push(func);
@@ -447,23 +544,31 @@ policies and contribution forms [3].
         {
             //This can happen if something called synchronously invoked another
             //step
-            if (this.status !== null)
+            if (this.status !== this.NOTRUN)
             {
                 return;
             }
-            this.status = status.FAIL;
-            this.message = (typeof e.message === "string") ?
-                ["span", {}, e.message] : e.message;
+            this.status = this.FAIL;
+            this.message = e.message;
             this.done();
-            if (debug) {
+            if (debug && e.constructor !== AssertionError) {
                 throw e;
             }
         }
     };
 
+    Test.prototype.set_timeout = function()
+    {
+        var this_obj = this;
+        this.timeout_id = setTimeout(function()
+                                     {
+                                         this_obj.timeout();
+                                     }, this.timeout_length);
+    };
+
     Test.prototype.timeout = function()
     {
-        this.status = status.TIMEOUT;
+        this.status = this.TIMEOUT;
         this.timeout_id = null;
         this.message = "Test timed out";
         this.done();
@@ -472,70 +577,181 @@ policies and contribution forms [3].
     Test.prototype.done = function()
     {
         if (this.is_done) {
-            //Using alert here is bad
             return;
         }
         clearTimeout(this.timeout_id);
-        if (this.status == null)
+        if (this.status === this.NOTRUN)
         {
-            this.status = status.PASS;
+            this.status = this.PASS;
         }
         this.is_done = true;
-        tests.done(this);
+        tests.result(this);
     };
 
 
    /*
     * Harness
     */
-    var tests = new Tests();
+
+    function TestsStatus()
+    {
+        this.status = null;
+        this.message = null;
+    }
+    TestsStatus.prototype = {
+        OK:0,
+        ERROR:1,
+        TIMEOUT:2
+    };
 
     function Tests()
     {
         this.tests = [];
         this.num_pending = 0;
-        this.started = false;
+
+        this.phases = {
+            INITIAL:0,
+            SETUP:1,
+            HAVE_TESTS:2,
+            HAVE_RESULTS:3,
+            COMPLETE:4
+        };
+        this.phase = this.phases.INITIAL;
+
+        //All tests can't be done until the load event fires
+        this.all_loaded = false;
+        this.wait_for_finish = false;
+
+        this.timeout_length = default_timeout;
+        this.timeout_id = null;
+        this.set_timeout();
 
         this.start_callbacks = [];
         this.test_done_callbacks = [];
         this.all_done_callbacks = [];
 
-        var this_obj = this;
+        this.status = new TestsStatus();
 
-        //All tests can't be done until the load event fires
-        this.all_loaded = false;
+        var this_obj = this;
 
         on_event(window, "load",
                  function()
                  {
                      this_obj.all_loaded = true;
-                     if (document.getElementById("log"))
-                     {
-                         add_completion_callback(output_results);
-                     }
                      if (this_obj.all_done())
                      {
-                         this_obj.notify_results();
+                         this_obj.complete();
                      }
                  });
-   }
+    }
+
+    Tests.prototype.setup = function(func, properties)
+    {
+        if (this.phase >= this.phases.HAVE_RESULTS) {
+            return;
+        }
+        if (this.phase < this.phases.SETUP) {
+            this.phase = this.phases.SETUP;
+        }
+
+        if (properties.timeout)
+        {
+            this.timeout_length = properties.timeout;
+            this.set_timeout();
+        }
+        if (properties.explicit_done)
+        {
+            this.wait_for_finish = true;
+        }
+
+        if (func)
+        {
+            try
+            {
+                func();
+            } catch(e)
+            {
+                this.status.status = this.status.ERROR;
+                this.status.message = e;
+            };
+        }
+    };
+
+    Tests.prototype.set_timeout = function()
+    {
+        var this_obj = this;
+        clearTimeout(this.timeout_id);
+        this.timeout_id = setTimeout(function() {
+                                         this_obj.timeout();
+                                     }, this.timeout_length);
+    };
+
+    Tests.prototype.timeout = function() {
+        this.status.status = this.status.TIMEOUT;
+        this.complete();
+    };
+
+    Tests.prototype.end_wait = function()
+    {
+        this.wait_for_finish = false;
+        if (this.all_done()) {
+            this.complete();
+        }
+    };
 
     Tests.prototype.push = function(test)
     {
-        if (!this.started) {
-            this.start();
+        if (this.phase < this.phases.HAVE_TESTS) {
+            this.notify_start();
         }
         this.num_pending++;
         this.tests.push(test);
     };
 
     Tests.prototype.all_done = function() {
-        return this.all_loaded && this.num_pending == 0;
+        return this.all_loaded && this.num_pending === 0 && !this.wait_for_finish;
     };
 
-    Tests.prototype.done = function(test)
+    Tests.prototype.start = function() {
+        this.phase = this.phases.HAVE_TESTS;
+        this.notify_start();
+    };
+
+    Tests.prototype.notify_start = function() {
+        var this_obj = this;
+        forEach (this.start_callbacks,
+                 function(callback)
+                 {
+                     callback(this_obj);
+                 });
+        if(top !== window && top.start_callback)
+        {
+            try
+            {
+                top.start_callback.call(this_obj);
+            }
+            catch(e)
+            {
+                if (debug)
+                {
+                    throw(e);
+                }
+            }
+        }
+    };
+
+    Tests.prototype.result = function(test)
     {
+        if (this.phase > this.phases.HAVE_RESULTS)
+        {
+            return;
+        }
+        this.phase = this.phases.HAVE_RESULTS;
         this.num_pending--;
+        this.notify_result(test);
+    };
+
+    Tests.prototype.notify_result = function(test) {
         var this_obj = this;
         forEach(this.test_done_callbacks,
                 function(callback)
@@ -545,44 +761,67 @@ policies and contribution forms [3].
 
         if(top !== window && top.result_callback)
         {
-            top.result_callback.call(this_obj, test);
+            try
+            {
+                top.result_callback.call(this_obj, test);
+            }
+            catch(e)
+            {
+                if(debug) {
+                    throw e;
+                }
+            }
         }
-
         if (this.all_done())
         {
-            this.notify_results();
+            this.complete();
         }
 
     };
 
-    Tests.prototype.start = function() {
-        this.started = true;
-        var this_obj = this;
-        forEach (this.start_callbacks,
-                 function(callback)
-                 {
-                     callback(this_obj);
-                 });
-        if(top !== window && top.start_callback)
-        {
-            top.start_callback.call(this_obj);
+    Tests.prototype.complete = function() {
+        if (this.phase === this.phases.COMPLETE) {
+            return;
         }
+        this.phase = this.phases.COMPLETE;
+        this.notify_complete();
     };
 
-    Tests.prototype.notify_results = function()
+    Tests.prototype.notify_complete = function()
     {
+        clearTimeout(this.timeout_id);
+
         var this_obj = this;
+        if (this.status.status === null)
+        {
+            this.status.status = this.status.OK;
+        }
 
         forEach (this.all_done_callbacks,
                  function(callback)
                  {
-                     callback(this_obj.tests);
+                     callback(this_obj.tests, this_obj.status);
                  });
         if(top !== window && top.completion_callback)
         {
-            top.completion_callback.call(this_obj, this_obj.tests);
+            try
+            {
+                top.completion_callback(this_obj.tests, this.status);
+            }
+            catch(e)
+            {
+                if (debug)
+                {
+                    throw e;
+                }
+            }
+
         }
     };
+
+    var tests = new Tests();
+    add_completion_callback(output_results);
+
 
     function add_start_callback(callback) {
         tests.start_callbacks.push(callback);
@@ -638,10 +877,15 @@ policies and contribution forms [3].
          }
      })();
 
-    function output_results(tests)
+    function output_results(tests, harness_status)
     {
         var log = document.getElementById("log");
-        while (log.lastChild) {
+        if (!log)
+        {
+            return;
+        }
+        while (log.lastChild)
+        {
             log.removeChild(log.lastChild);
         }
         var prefix = null;
@@ -666,28 +910,89 @@ policies and contribution forms [3].
         }
 
         var status_text = {};
-        status_text[status.PASS] = "Pass";
-        status_text[status.FAIL] = "Fail";
-        status_text[status.TIMEOUT] = "Timeout";
+        status_text[Test.prototype.PASS] = "Pass";
+        status_text[Test.prototype.FAIL] = "Fail";
+        status_text[Test.prototype.TIMEOUT] = "Timeout";
+        status_text[Test.prototype.NOTRUN] = "Not Run";
 
-        var template = ["table", {"id":"results"},
+        var status_number = {};
+        forEach(tests, function(test) {
+                    var status = status_text[test.status];
+                    if (status_number.hasOwnProperty(status))
+                    {
+                        status_number[status] += 1;
+                    } else {
+                        status_number[status] = 1;
+                    }
+                });
+
+        function status_class(status)
+        {
+            return status.replace(/\s/g, '').toLowerCase();
+        }
+
+        var summary_template = ["section", {"id":"summary"},
+                                ["h2", {}, "Summary"],
+                                ["p", {}, "Found ${num_tests} tests"],
+                                function(vars) {
+                                    var rv = [["div", {}]];
+                                    var i=0;
+                                    while (status_text.hasOwnProperty(i)) {
+                                        if (status_number.hasOwnProperty(status_text[i])) {
+                                            var status = status_text[i];
+                                            rv[0].push(["div", {"class":status_class(status)},
+                                                        ["input", {type:"checkbox", checked:"checked"}],
+                                                       status_number[status] + " " + status]);
+                                        }
+                                        i++;
+                                    }
+                                    return rv;
+                                }];
+
+        log.appendChild(render(summary_template, {num_tests:tests.length}));
+
+        forEach(document.querySelectorAll("section#summary input"),
+                function(element)
+                {
+                    on_event(element, "click",
+                             function(e)
+                             {
+                                 if (document.getElementById("results") === null)
+                                 {
+                                     e.preventDefault();
+                                     return;
+                                 }
+                                 var result_class = element.parentNode.getAttribute("class");
+                                 var checked = element.checked;
+                                 forEach(document.querySelectorAll("table#results > tbody > tr > td."+result_class),
+                                         function(cell)
+                                         {
+                                             cell.parentNode.style.display = checked ? "" : "None";
+                                         });
+                             });
+                });
+
+        var template = ["section", {},
+                        ["h2", {}, "Details"],
+                        ["table", {"id":"results"},
                         ["tr", {},
                          ["th", {}, "Result"],
                          ["th", {}, "Test Name"],
                          ["th", {}, "Message"]
                         ],
+                        ["tbody", {},
                         function(vars) {
                             var rv = map(vars.tests, function(test) {
                                              var status = status_text[test.status];
                                              return  ["tr", {},
-                                                      ["td", {"class":status.toLowerCase()}, status],
+                                                      ["td", {"class":status_class(status)}, status],
                                                       ["td", {}, test.name],
                                                       ["td", {}, test.message ? test.message : " "]
                                                      ];
                                          });
                             return rv;
-                        }
-                       ];
+                        }]
+                       ]];
 
         log.appendChild(render(template, {tests:tests}));
 
@@ -907,7 +1212,7 @@ policies and contribution forms [3].
 
     function make_message(function_name, description, error, substitutions)
     {
-        var message = substitute([["span", {"class":"assert"}, "${function_name}: "],
+        var message = substitute([["span", {"class":"assert"}, "${function_name}:"],
                                   function()
                                   {
                                       if (description) {

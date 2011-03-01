@@ -1,5 +1,4 @@
-AttrExodus.html
-Attr-values.html
+attributes.html
 support attributes.js
 CharacterData-appendData.html
 CharacterData-deleteData.html
@@ -44,9 +43,6 @@ Element-firstElementChild-namespace.svg
 Element-firstElementChild-namespace.xhtml
 Element-firstElementChild.svg
 Element-firstElementChild.xhtml
-Element-getAttribute.html
-Element-hasAttribute.html
-Element-hasAttributeNS.html
 Element-lastElementChild.html
 Element-lastElementChild.svg
 Element-lastElementChild.xhtml
@@ -57,8 +53,6 @@ Element-previousElementSibling.html
 Element-previousElementSibling.svg
 Element-previousElementSibling.xhtml
 Element-removeAttributeNS.html
-Element-setAttribute.html
-Element-setAttributeNS.html
 Element-siblingElement-null.html
 Element-siblingElement-null.svg
 Element-siblingElement-null.xhtml

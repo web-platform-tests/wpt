@@ -615,9 +615,9 @@ prefer.
 
 <p>An <dfn title=concept-event>event</dfn> allows for signaling that something has occurred. E.g. that an image has completed downloading.</p>
 
-<p>Each <span title=concept-event>event</span> has a <dfn title=concept-event-name>name</dfn> which is initially the empty string. The
+<p>Each <span title=concept-event>event</span> has a <dfn title=concept-event-type>type</dfn> which is initially the empty string. The
 <dfn title=dom-Event-type><code>type</code></dfn> attribute must
-return the <span title=concept-event-name>name</span>.</p>
+return the <span title=concept-event-type>type</span>.</p>
 
 <p>Each <span title=concept-event>event</span> has an associated
 <dfn title=concept-event-target>target</dfn> and
@@ -700,7 +700,7 @@ method is invoked these steps must be run:</p>
  <li><p>If the <span>dispatch flag</span> is set, terminate these steps.
  <li><p>Unset the <span>trusted flag</span>.
  <li><p>Set <span title=concept-event-target>target</span> to null.
- <li><p>Set <span title=concept-event-name>name</span> to
+ <li><p>Set <span title=concept-event-type>type</span> to
  <var title>type</var>.
  <li><p>If the <var title>bubbles</var> argument is not omitted and is true,
  set the <span>bubble flag</span>.
@@ -716,14 +716,16 @@ method is invoked these steps must be run:</p>
   void <span title=dom-CustomEvent-initCustomEvent>initCustomEvent</span>(DOMString <var title>type</var>, optional boolean <var title>bubbles</var>, optional boolean <var title>cancelable</var>, optional object <var title>detail</var>);
 };</pre>
 
-<p><span title=concept-event>Events</span> of type <code>CustomEvent</code>
-can be used for synthetic events that need to carry data.</p>
+<p><span title=concept-event>Events</span> using the
+<code>CustomEvent</code> interface can be used for synthetic events that
+need to carry data.</p>
 
-<p><span title=concept-event>Events</span> of type <code>CustomEvent</code>
-have an associated <dfn title=concept-CustomEvent-detail>detail</dfn>
-variable. The <dfn title=dom-CustomEvent-detail><code>detail</code></dfn>
-attribute must return <span title=concept-CustomEvent-detail>detail</span>, if
-it is set, and null otherwise.
+<p><span title=concept-event>Events</span> using the
+<code>CustomEvent</code> interface have an associated
+<dfn title=concept-CustomEvent-detail>detail</dfn> variable. The
+<dfn title=dom-CustomEvent-detail><code>detail</code></dfn> attribute must
+return <span title=concept-CustomEvent-detail>detail</span>, if it is set,
+and null otherwise.
 
 <p>When the <dfn title=dom-CustomEvent-initCustomEvent><code>initCustomEvent(<var title>type</var>, <var title>bubbles</var>, <var title>cancelable</var>, <var title>detail</var>)</code></dfn>
 method is invoked these steps must be run:</p>
@@ -932,7 +934,7 @@ steps:</p>
    <li><p>Let <var title>listener</var> be the
    <span title=concept-event-listener>event listener</span>.
    <li><p>If <var title>event</var>'s
-   <span title=concept-event-name>name</span> is not
+   <span title=concept-event-type>type</span> is not
    <var title>listener</var>'s <b>name</b>, terminate these substeps (and
    run them for the next
    <span title=concept-event-listener>event listener</span>).
@@ -957,9 +959,10 @@ steps:</p>
 <h3>Firing Events</h3>
 <p>To
 <dfn title=concept-event-fire>fire an event named <var title>e</var></dfn>
-means that an <span title=concept-event>event</span> of type
-<code>Event</code>, with its <span title=concept-event-name>name</span> set
-to <var title>e</var>, and its <span>trusted flag</span> set, is to be
+means that an <span title=concept-event>event</span> using the
+<code>Event</code> interface, with its
+<span title=concept-event-type>type</span> set to <var title>e</var>, and
+its <span>trusted flag</span> set, is to be
 <span title=concept-event-dispatch>dispatched</span> at the indicated
 object.</p>
 
@@ -1366,9 +1369,9 @@ attribute must return the following, depending on the
  <!--AttrExodus <dt><code>Attr</code> -->
  <dd><p>The concatenation of the
  <code title=dom-CharacterData-data>data</code> attributes of all the
- <span title=concept-tree-descendant>descendants</span> of type
- <code>Text</code> of the <span>context object</span>, in
- <span>tree order</span>.
+ <code>Text</code> object
+ <span title=concept-tree-descendant>descendants</span> of the
+ <span>context object</span>, in <span>tree order</span>.
 
  <dt><code>Text</code>
  <dt><code>Comment</code>

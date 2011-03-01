@@ -850,9 +850,11 @@ steps:</p>
  <li><p>Let <var title>event</var> be the
  <span title=concept-event>event</span> that is dispatched.
  <li><p>Set <var title>event</var>'s <span>dispatch flag</span>.
+<!-- XXX
  <li><p>Unset <var title>event</var>'s <span>stop propagation flag</span>,
  <span>stop immediate propagation flag</span>, and
  <span>canceled flag</span>.
+-->
  <li><p>Set <var title>event</var>'s
  <span title=concept-event-target>target</span> to the object on which
  <var title>event</var> is dispatched.
@@ -3682,9 +3684,10 @@ events for specific contexts (e.g. user interface events).
  <li>Removes <dfn><code>EventException</code></dfn>.
  <li>Fire is no longer synonymous with dispatch, but includes initializing
  an event.</li>
+<!-- XXX
  <li>The propagation and canceled flags are unset before dispatching rather
- than after. <span class=XXX>This seems better for canceled. Is it better
- for propagation?</span>
+ than after.
+-->
 </ul>
 
 

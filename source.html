@@ -62,25 +62,16 @@ included in HTML comments so as not to distract the reader.
 
 <h2>Issues</h2>
 
-<p>I'm not sure if my priorities in writing the algorithms here are correct.
-My goals were 1) make the algorithms as simple as possible, and 2) minimize
-surprising user-visible behavior (e.g., "I clicked B but it didn't turn
-bold!").  I didn't try to optimize the niceness of the resulting DOM at all, so
-for instance, when bolding <code title>abc &lt;i>def&lt;/i> &lt;br> ghi</code>
-you get <code title>&lt;b>abc &lt;/b>&lt;i style="font-weight:
-bold">def&lt;/i>&lt;b> &lt;/b>&lt;br style="font-weight: bold">&lt;b>
-ghi&lt;/b></code> instead of wrapping the whole thing in a single <code
-title>&lt;b></code>.  This is to avoid making the algorithm understand content
-models, but maybe it's worth revisiting later.  Likewise, unbolding the middle
-word of <code title>&lt;b>Foo bar baz&lt;/b></code> produces <code
-title>&lt;b>Foo &lt;span style="font-weight: normal">bar&lt;/span>
-baz&lt;/b></code> instead of the simpler <code title>&lt;b>Foo &lt;/b>bar&lt;b>
-baz&lt;/b></code>.  For now, the algorithm works, even if it produces messy
-DOMs.
-
-<p>Other issues:
-
 <ul>
+  <li><p>The styling/unstyling algorithms produce unreasonably messy DOMs.  I
+  don't know how far I'll go to simplify the output, but at the very least, I
+  need to wrap continguous phrasing content in a single tag, and be more
+  aggressive about splitting up existing tags instead of nesting extra tags
+  inside (e.g., unbolding the middle letter of <code
+  title>&lt;b>abc&lt;/b></code> should become <code
+  title>&lt;b>a&lt;/b>b&lt;b>c&lt;/b></code> instead of <code
+  title>&lt;b>a&lt;span style=font-weight:normal>b&lt;/span>c&lt;/b></code>).
+
   <li><p>Need to make CSS terminology more precise, about setting/unsetting CSS
   properties.  The intent is to modify the style attribute, CSSOM-style.
   Likewise, CSS value comparisons need to be done after serializing both
@@ -99,6 +90,12 @@ DOMs.
 
   <li><p>I also don't pay attention to what happens to the selection when you
   mutate the DOM.  This is essential.
+
+  <li><p>JavaScript can modify the DOM synchronously in some cases, such as DOM
+  mutation events and onunload when moving around iframes and objects.  This
+  has to be dealt with somehow.  (Pointed out by Ryosuke Niwa of WebKit: <a
+  href=http://lists.whatwg.org/pipermail/whatwg-whatwg.org/2011-March/030730.html>1</a>
+  <a href=http://lists.whatwg.org/pipermail/whatwg-whatwg.org/2011-March/030751.html>2</a>)
 </ul>
 
 
@@ -948,8 +945,18 @@ possible through massive hacks.
 <div id=anolis-references></div>
 
 
-<!--
 <h2 class=no-num>Acknowledgements</h2>
-<p>...
--->
+<p>Thanks to:
+
+<ul>
+  <li>Google, for funding this work
+  <li>Ian Hickson, for overseeing it
+  <li>Julie Parent, Ojan Vafai, Alex Russel, and Eric Seidel for their <a
+  href=http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2009-December/024627.html>research</a>
+  on how browsers and other rich text editors behave in many common scenarios
+  <li>Ryosuke Niwa, Julie Parent, and Roland Steiner for their feedback on
+  drafts of this document
+</ul>
+
 <script src=http://www.whatwg.org/specs/web-apps/current-work/dfn.js></script>
+<!-- vim: set expandtab shiftwidth=2 tabstop=2: -->

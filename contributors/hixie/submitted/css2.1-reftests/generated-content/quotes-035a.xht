@@ -5,7 +5,6 @@
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
   <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/quotes/001.xml" type="application/xhtml+xml"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/generate.html#quotes" />
-  <meta name="flags" content="should"/>
   <style type="text/css">
   <![CDATA[
      .party1 * { display: inline; }
@@ -17,10 +16,12 @@
                           " to "       " work"
                           "see "       " [FAIL to]"
                           "C"          "quotes"
+                          "S"          " "
                           "S"          " "; }
      .party1 .c { quotes: none; }
      .party1 .d { quotes: "FAIL!"      "FAIL!"
                           "FAIL!"      "FAIL!"
+                          ""           ""
                           ""           ""; }
      .test { margin-left: 2em; }
      .test .no-open:before { content: no-open-quote; }
@@ -60,7 +61,7 @@
       --></div><!-- close                            d 2                         
      --></div><!-- close                             d 1 [FAIL!] 
      --><div class="b no-close"><!--                 b 1                         
-      --><div class="triple-no-close"/><!-- close    b 0 [FAIL!!]   
+      --><div class="no-close"/><!-- close           b 0 [FAIL!!]   
       --><div class="triple-open"/><!-- open x 3     b 3 "", "wonderful ", "to "
       --><div class="triple-open"/><!-- open x 3     b 6 "see ", "C", "S"       
       --><div class="open close"><!-- open           b 7 S                       

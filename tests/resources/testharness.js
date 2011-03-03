@@ -1095,7 +1095,7 @@ policies and contribution forms [3].
         function substitute_attrs(attrs, rv)
         {
             rv[1] = {};
-            for (name in template[1])
+            for (var name in template[1])
             {
                 if (attrs.hasOwnProperty(name))
                 {
@@ -1148,7 +1148,7 @@ policies and contribution forms [3].
         else
         {
             var element = document.createElement(template[0]);
-            for (name in template[1]) {
+            for (var name in template[1]) {
                 if (template[1].hasOwnProperty(name))
                 {
                     element.setAttribute(name, template[1][name]);

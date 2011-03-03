@@ -48,7 +48,7 @@
 <p><a href="http://www.w3.org/"><img alt="W3C" height="48" src="http://www.w3.org/Icons/w3c_home" width="72"></a></p>
 <!--end-logo-->
  <h1>DOM Core</h1>
- <h2 class="no-num no-toc" id="editor-s-draft-1-march-2011">Editor's Draft 1 March 2011</h2>
+ <h2 class="no-num no-toc" id="editor-s-draft-3-march-2011">Editor's Draft 3 March 2011</h2>
 
  <dl>
   <dt>This Version:
@@ -90,7 +90,7 @@ publications and the latest revision of this technical report can be found in
 the <a href="http://www.w3.org/TR/">W3C technical reports index</a> at
 http://www.w3.org/TR/.</i>
 
-<p>This is the 1 March 2011 Editor's Draft of DOM Core. Please send
+<p>This is the 3 March 2011 Editor's Draft of DOM Core. Please send
 comments to
 <a href="mailto:public-webapps@w3.org?subject=%5BDOMCore%5D%20">public-webapps@w3.org</a>
 (<a href="http://lists.w3.org/Archives/Public/public-webapps/">archived</a>)
@@ -1131,7 +1131,7 @@ would violate the constraints listed above.
 
 
 <h3 id="interface-node"><span class="secno">5.3 </span>Interface <code><a href="#node">Node</a></code></h3>
-<pre class="idl">interface <dfn id="node">Node</dfn> {
+<pre class="idl">interface <dfn id="node">Node</dfn> : <a href="#eventtarget">EventTarget</a> {
   const unsigned short <a href="#dom-node-element_node" title="dom-Node-ELEMENT_NODE">ELEMENT_NODE</a> = 1;
   const unsigned short <a href="#dom-node-attribute_node" title="dom-Node-ATTRIBUTE_NODE">ATTRIBUTE_NODE</a> = 2; // historical
   const unsigned short <a href="#dom-node-text_node" title="dom-Node-TEXT_NODE">TEXT_NODE</a> = 3;
@@ -3663,6 +3663,8 @@ events for specific contexts (e.g. user interface events).
 <dfn id="domtimestamp"><code>DOMTimeStamp</code></dfn> originally defined in DOM Level 3 Core
 are now defined in Web IDL.
 
+<p><code><a href="#node">Node</a></code> now inherits from <code><a href="#eventtarget">EventTarget</a></code>.</p>
+
 <p>The remainder of interfaces and interface members listed in this section
 were once part of DOM Core. Implementations conforming to this specification
 will not support them.
@@ -3798,10 +3800,12 @@ specification makes that an intrinsic part of the DOM.
 
 <p>Thanks to
 
+Adrian Bateman,
 Dethe Elza,
 Glenn Maynard,
-Jonas Sicking, and
-Henri Sivonen
+Jonas Sicking,
+Henri Sivonen, and
+Shiki Okasaka
 
 for their useful comments.
 

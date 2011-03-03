@@ -1078,7 +1078,7 @@ would violate the constraints listed above.
 
 
 <h3>Interface <code>Node</code></h3>
-<pre class=idl>interface <dfn>Node</dfn> {
+<pre class=idl>interface <dfn>Node</dfn> : <span>EventTarget</span> {
   const unsigned short <span title=dom-Node-ELEMENT_NODE>ELEMENT_NODE</span> = 1;
   const unsigned short <span title=dom-Node-ATTRIBUTE_NODE>ATTRIBUTE_NODE</span> = 2; // historical
   const unsigned short <span title=dom-Node-TEXT_NODE>TEXT_NODE</span> = 3;
@@ -3699,6 +3699,8 @@ events for specific contexts (e.g. user interface events).
 <p><dfn><code>DOMString</code></dfn> and
 <dfn><code>DOMTimeStamp</code></dfn> originally defined in DOM Level 3 Core
 are now defined in Web IDL.
+
+<p><code>Node</code> now inherits from <code>EventTarget</code>.</p>
 
 <p>The remainder of interfaces and interface members listed in this section
 were once part of DOM Core. Implementations conforming to this specification

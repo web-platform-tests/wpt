@@ -48,7 +48,7 @@
 <p><a href="http://www.w3.org/"><img alt="W3C" height="48" src="http://www.w3.org/Icons/w3c_home" width="72"></a></p>
 <!--end-logo-->
  <h1>DOM Core</h1>
- <h2 class="no-num no-toc" id="editor-s-draft-25-february-2011">Editor's Draft 25 February 2011</h2>
+ <h2 class="no-num no-toc" id="editor-s-draft-1-march-2011">Editor's Draft 1 March 2011</h2>
 
  <dl>
   <dt>This Version:
@@ -79,6 +79,7 @@
 DOM is a language- and platform neutral interface that allows programs and
 scripts to dynamically access and update the content and structure of
 documents.
+<!-- XXX say something about exceptions? -->
 
 
 
@@ -89,7 +90,7 @@ publications and the latest revision of this technical report can be found in
 the <a href="http://www.w3.org/TR/">W3C technical reports index</a> at
 http://www.w3.org/TR/.</i>
 
-<p>This is the 25 February 2011 Editor's Draft of DOM Core. Please send
+<p>This is the 1 March 2011 Editor's Draft of DOM Core. Please send
 comments to
 <a href="mailto:public-webapps@w3.org?subject=%5BDOMCore%5D%20">public-webapps@w3.org</a>
 (<a href="http://lists.w3.org/Archives/Public/public-webapps/">archived</a>)
@@ -195,7 +196,10 @@ document as other than work in progress.
 
 <h2 class="no-num" id="goals">Goals</h2>
 
-<p>The goal of this specification is taking DOM Level 3 Core and DOM Level 3 Events (except the "Event module definitions" chapter as specific type of events do not belong in the base specification) and do the following:</p>
+<p>The goal of this specification is taking all of DOM Level 3 Core and the
+"DOM Event Architecture" and "Basic Event Interfaces" chapters of
+DOM Level 3 Events (specific type of events do not belong in the base
+specification) and do the following:</p>
 
 <ul>
  <li>Align them with the needs of ECMAScript where possible.
@@ -631,6 +635,11 @@ field must return the name of the exception constant as a string.
 
 <h2 id="events"><span class="secno">4 </span>Events</h2>
 
+<p class="XXX">This chapter provides an alternative definition for the
+"DOM Event Architecture" and "Basic Event Interfaces" chapters of
+DOM Level 3 Events. We would appreciate your input on which approach you
+prefer.
+
 <h3 id="interface-event"><span class="secno">4.1 </span>Interface <code><a href="#event">Event</a></code></h3>
 
 <pre class="idl">interface <dfn id="event">Event</dfn> {
@@ -659,9 +668,9 @@ field must return the name of the exception constant as a string.
 
 <p>An <dfn id="concept-event" title="concept-event">event</dfn> allows for signaling that something has occurred. E.g. that an image has completed downloading.</p>
 
-<p>Each <a href="#concept-event" title="concept-event">event</a> has a <dfn id="concept-event-name" title="concept-event-name">name</dfn> which is initially the empty string. The
+<p>Each <a href="#concept-event" title="concept-event">event</a> has a <dfn id="concept-event-type" title="concept-event-type">type</dfn> which is initially the empty string. The
 <dfn id="dom-event-type" title="dom-Event-type"><code>type</code></dfn> attribute must
-return the <a href="#concept-event-name" title="concept-event-name">name</a>.</p>
+return the <a href="#concept-event-type" title="concept-event-type">type</a>.</p>
 
 <p>Each <a href="#concept-event" title="concept-event">event</a> has an associated
 <dfn id="concept-event-target" title="concept-event-target">target</dfn> and
@@ -744,7 +753,7 @@ method is invoked these steps must be run:</p>
  <li><p>If the <a href="#dispatch-flag">dispatch flag</a> is set, terminate these steps.
  <li><p>Unset the <a href="#trusted-flag">trusted flag</a>.
  <li><p>Set <a href="#concept-event-target" title="concept-event-target">target</a> to null.
- <li><p>Set <a href="#concept-event-name" title="concept-event-name">name</a> to
+ <li><p>Set <a href="#concept-event-type" title="concept-event-type">type</a> to
  <var title="">type</var>.
  <li><p>If the <var title="">bubbles</var> argument is not omitted and is true,
  set the <a href="#bubble-flag">bubble flag</a>.
@@ -760,14 +769,16 @@ method is invoked these steps must be run:</p>
   void <a href="#dom-customevent-initcustomevent" title="dom-CustomEvent-initCustomEvent">initCustomEvent</a>(DOMString <var title="">type</var>, optional boolean <var title="">bubbles</var>, optional boolean <var title="">cancelable</var>, optional object <var title="">detail</var>);
 };</pre>
 
-<p><a href="#concept-event" title="concept-event">Events</a> of type <code><a href="#customevent">CustomEvent</a></code>
-can be used for synthetic events that need to carry data.</p>
+<p><a href="#concept-event" title="concept-event">Events</a> using the
+<code><a href="#customevent">CustomEvent</a></code> interface can be used for synthetic events that
+need to carry data.</p>
 
-<p><a href="#concept-event" title="concept-event">Events</a> of type <code><a href="#customevent">CustomEvent</a></code>
-have an associated <dfn id="concept-customevent-detail" title="concept-CustomEvent-detail">detail</dfn>
-variable. The <dfn id="dom-customevent-detail" title="dom-CustomEvent-detail"><code>detail</code></dfn>
-attribute must return <a href="#concept-customevent-detail" title="concept-CustomEvent-detail">detail</a>, if
-it is set, and null otherwise.
+<p><a href="#concept-event" title="concept-event">Events</a> using the
+<code><a href="#customevent">CustomEvent</a></code> interface have an associated
+<dfn id="concept-customevent-detail" title="concept-CustomEvent-detail">detail</dfn> variable. The
+<dfn id="dom-customevent-detail" title="dom-CustomEvent-detail"><code>detail</code></dfn> attribute must
+return <a href="#concept-customevent-detail" title="concept-CustomEvent-detail">detail</a>, if it is set,
+and null otherwise.
 
 <p>When the <dfn id="dom-customevent-initcustomevent" title="dom-CustomEvent-initCustomEvent"><code>initCustomEvent(<var title="">type</var>, <var title="">bubbles</var>, <var title="">cancelable</var>, <var title="">detail</var>)</code></dfn>
 method is invoked these steps must be run:</p>
@@ -894,9 +905,11 @@ steps:</p>
  <li><p>Let <var title="">event</var> be the
  <a href="#concept-event" title="concept-event">event</a> that is dispatched.
  <li><p>Set <var title="">event</var>'s <a href="#dispatch-flag">dispatch flag</a>.
- <li><p>Unset <var title="">event</var>'s <a href="#stop-propagation-flag">stop propagation flag</a>,
- <a href="#stop-immediate-propagation-flag">stop immediate propagation flag</a>, and
- <a href="#canceled-flag">canceled flag</a>.
+<!-- XXX
+ <li><p>Unset <var title>event</var>'s <span>stop propagation flag</span>,
+ <span>stop immediate propagation flag</span>, and
+ <span>canceled flag</span>.
+-->
  <li><p>Set <var title="">event</var>'s
  <a href="#concept-event-target" title="concept-event-target">target</a> to the object on which
  <var title="">event</var> is dispatched.
@@ -947,8 +960,8 @@ steps:</p>
  <li><p>Unset <var title="">event</var>'s <a href="#dispatch-flag">dispatch flag</a>.
  <li><p>Set <var title="">event</var>'s <a href="#concept-event-phase" title="concept-event-phase">phase</a> to <a href="#dom-event-at_target" title="dom-Event-AT_TARGET">AT_TARGET</a>.
  <li><p>Set <var title="">event</var>'s <a href="#concept-event-current-target" title="concept-event-current-target">current target</a> to null.
- <li><p>Return true if <var title="">event</var>'s <a href="#canceled-flag">canceled flag</a>
- is set and false otherwise.
+ <li><p>Return false if <var title="">event</var>'s <a href="#canceled-flag">canceled flag</a>
+ is set and true otherwise.
 </ol>
 
 
@@ -974,7 +987,7 @@ steps:</p>
    <li><p>Let <var title="">listener</var> be the
    <a href="#concept-event-listener" title="concept-event-listener">event listener</a>.
    <li><p>If <var title="">event</var>'s
-   <a href="#concept-event-name" title="concept-event-name">name</a> is not
+   <a href="#concept-event-type" title="concept-event-type">type</a> is not
    <var title="">listener</var>'s <b>name</b>, terminate these substeps (and
    run them for the next
    <a href="#concept-event-listener" title="concept-event-listener">event listener</a>).
@@ -999,9 +1012,10 @@ steps:</p>
 <h3 id="firing-events"><span class="secno">4.6 </span>Firing Events</h3>
 <p>To
 <dfn id="concept-event-fire" title="concept-event-fire">fire an event named <var title="">e</var></dfn>
-means that an <a href="#concept-event" title="concept-event">event</a> of type
-<code><a href="#event">Event</a></code>, with its <a href="#concept-event-name" title="concept-event-name">name</a> set
-to <var title="">e</var>, and its <a href="#trusted-flag">trusted flag</a> set, is to be
+means that an <a href="#concept-event" title="concept-event">event</a> using the
+<code><a href="#event">Event</a></code> interface, with its
+<a href="#concept-event-type" title="concept-event-type">type</a> set to <var title="">e</var>, and
+its <a href="#trusted-flag">trusted flag</a> set, is to be
 <a href="#concept-event-dispatch" title="concept-event-dispatch">dispatched</a> at the indicated
 object.</p>
 
@@ -1406,9 +1420,9 @@ attribute must return the following, depending on the
  <!--AttrExodus <dt><code>Attr</code> -->
  <dd><p>The concatenation of the
  <code title="dom-CharacterData-data"><a href="#dom-characterdata-data">data</a></code> attributes of all the
- <a href="#concept-tree-descendant" title="concept-tree-descendant">descendants</a> of type
- <code><a href="#text">Text</a></code> of the <a href="#context-object">context object</a>, in
- <a href="#tree-order">tree order</a>.
+ <code><a href="#text">Text</a></code> object
+ <a href="#concept-tree-descendant" title="concept-tree-descendant">descendants</a> of the
+ <a href="#context-object">context object</a>, in <a href="#tree-order">tree order</a>.
 
  <dt><code><a href="#text">Text</a></code>
  <dt><code><a href="#comment">Comment</a></code>
@@ -3636,9 +3650,10 @@ events for specific contexts (e.g. user interface events).
  <li>Removes <dfn id="eventexception"><code>EventException</code></dfn>.
  <li>Fire is no longer synonymous with dispatch, but includes initializing
  an event.</li>
+<!-- XXX
  <li>The propagation and canceled flags are unset before dispatching rather
- than after. <span class="XXX">This seems better for canceled. Is it better
- for propagation?</span>
+ than after.
+-->
 </ul>
 
 

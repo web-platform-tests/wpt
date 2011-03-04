@@ -610,7 +610,7 @@ prefer.
   readonly attribute boolean <span title=dom-Event-isTrusted>isTrusted</span>;
   readonly attribute DOMTimeStamp <span title=dom-Event-timeStamp>timeStamp</span>;
 
-  void <span title=dom-Event-initEvent>initEvent</span>(DOMString <var title>type</var>, optional boolean <var title>bubbles</var>, optional boolean <var title>cancelable</var>);
+  void <span title=dom-Event-initEvent>initEvent</span>(DOMString <var title>type</var>, boolean <var title>bubbles</var>, boolean <var title>cancelable</var>);
 };</pre>
 
 <p>An <dfn title=concept-event>event</dfn> allows for signaling that something has occurred. E.g. that an image has completed downloading.</p>
@@ -702,9 +702,9 @@ method is invoked these steps must be run:</p>
  <li><p>Set <span title=concept-event-target>target</span> to null.
  <li><p>Set <span title=concept-event-type>type</span> to
  <var title>type</var>.
- <li><p>If the <var title>bubbles</var> argument is not omitted and is true,
+ <li><p>If the <var title>bubbles</var> argument <!--is not omitted and -->is true,
  set the <span>bubble flag</span>.
- <li><p>If the <var title>cancelable</var> argument is not omitted and is
+ <li><p>If the <var title>cancelable</var> argument <!--is not omitted and -->is
  true, set the <span>cancel flag</span>.
 </ol>
 
@@ -713,7 +713,7 @@ method is invoked these steps must be run:</p>
 
 <pre class=idl>interface <dfn>CustomEvent</dfn> : <span>Event</span> {
   readonly attribute object <span title=dom-CustomEvent-detail>detail</span>;
-  void <span title=dom-CustomEvent-initCustomEvent>initCustomEvent</span>(DOMString <var title>type</var>, optional boolean <var title>bubbles</var>, optional boolean <var title>cancelable</var>, optional object <var title>detail</var>);
+  void <span title=dom-CustomEvent-initCustomEvent>initCustomEvent</span>(DOMString <var title>type</var>, boolean <var title>bubbles</var>, boolean <var title>cancelable</var>, object <var title>detail</var>);
 };</pre>
 
 <p><span title=concept-event>Events</span> using the
@@ -732,9 +732,9 @@ method is invoked these steps must be run:</p>
 
 <ol>
  <li><p>If the <span>dispatch flag</span> is set, terminate these steps.
- <li><p>Invoke <code title=dom-Event-initEvent>initEvent()</code> with those of
- the first three arguments that are set.</li>
- <li><p>If the <var title>detail</var> argument is not omitted, set
+ <li><p>Invoke <code title=dom-Event-initEvent>initEvent()</code> with<!-- those of-->
+ the first three arguments<!-- that are set-->.</li>
+ <li><p><!--If the <var title>detail</var> argument is not omitted, -->Set
  <span title=concept-CustomEvent-detail>detail</span> to
  <var title>detail</var>.
 </ol>
@@ -3678,8 +3678,6 @@ events for specific contexts (e.g. user interface events).
  <li>No more restrictions on <code title=dom-Event-type>Event.type</code>.
  <li>No need to invoke <code title=dom-Event-initEvent>initEvent()</code> to
  initialize an event.</li>
- <li><code title=dom-Event-initEvent>initEvent()</code> arguments are
- optional except for the first.
  <li><code title=dom-Event-preventDefault>preventDefault()</code> only
  changes what <code title=dom-Event-defaultPrevented>defaultPrevented</code>
  and <code title=dom-EventTarget-dispatchEvent>dispatchEvent()</code> return

@@ -700,12 +700,12 @@ method is invoked these steps must be run:</p>
  <li><p>If the <span>dispatch flag</span> is set, terminate these steps.
  <li><p>Unset the <span>trusted flag</span>.
  <li><p>Set <span title=concept-event-target>target</span> to null.
- <li><p>Set <span title=concept-event-type>type</span> to
- <var title>type</var>.
- <li><p>If the <var title>bubbles</var> argument <!--is not omitted and -->is true,
- set the <span>bubble flag</span>.
- <li><p>If the <var title>cancelable</var> argument <!--is not omitted and -->is
- true, set the <span>cancel flag</span>.
+ <li><p>Set <span title=concept-event-type>type</span> to the
+ <var title>type</var> argument.
+ <li><p>If the <var title>bubbles</var> argument is true, set the
+ <span>bubble flag</span>.
+ <li><p>If the <var title>cancelable</var> argument is true, set the
+ <span>cancel flag</span>.
 </ol>
 
 
@@ -732,14 +732,11 @@ method is invoked these steps must be run:</p>
 
 <ol>
  <li><p>If the <span>dispatch flag</span> is set, terminate these steps.
- <li><p>Invoke <code title=dom-Event-initEvent>initEvent()</code> with<!-- those of-->
- the first three arguments<!-- that are set-->.</li>
- <li><p><!--If the <var title>detail</var> argument is not omitted, -->Set
- <span title=concept-CustomEvent-detail>detail</span> to
- <var title>detail</var>.
+ <li><p>Invoke <code title=dom-Event-initEvent>initEvent()</code> with the
+ first three arguments.</li>
+ <li><p>Set <span title=concept-CustomEvent-detail>detail</span> to the
+ <var title>detail</var> argument.
 </ol>
-
-<!-- XXX maybe we should make this init business even simpler in terms of having to define it? -->
 
 
 <h3>Interface <code>EventTarget</code></h3>
@@ -3823,6 +3820,7 @@ specification makes that an intrinsic part of the DOM.
 Adrian Bateman,
 Dethe Elza,
 Glenn Maynard,
+Jacob Rossi,
 Jonas Sicking,
 Henri Sivonen, and
 Shiki Okasaka

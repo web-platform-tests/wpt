@@ -48,7 +48,7 @@
 <p><a href="http://www.w3.org/"><img alt="W3C" height="48" src="http://www.w3.org/Icons/w3c_home" width="72"></a></p>
 <!--end-logo-->
  <h1>DOM Core</h1>
- <h2 class="no-num no-toc" id="editor-s-draft-3-march-2011">Editor's Draft 3 March 2011</h2>
+ <h2 class="no-num no-toc" id="editor-s-draft-4-march-2011">Editor's Draft 4 March 2011</h2>
 
  <dl>
   <dt>This Version:
@@ -90,10 +90,10 @@ publications and the latest revision of this technical report can be found in
 the <a href="http://www.w3.org/TR/">W3C technical reports index</a> at
 http://www.w3.org/TR/.</i>
 
-<p>This is the 3 March 2011 Editor's Draft of DOM Core. Please send
+<p>This is the 4 March 2011 Editor's Draft of DOM Core. Please send
 comments to
-<a href="mailto:public-webapps@w3.org?subject=%5BDOMCore%5D%20">public-webapps@w3.org</a>
-(<a href="http://lists.w3.org/Archives/Public/public-webapps/">archived</a>)
+<a href="mailto:www-dom@w3.org?subject=%5BDOMCore%5D%20">www-dom@w3.org</a>
+(<a href="http://lists.w3.org/Archives/Public/www-dom/">archived</a>)
 with <samp>[DOMCore]</samp> at the start of the subject line.
 
 <p>This document is produced by the
@@ -663,7 +663,7 @@ prefer.
   readonly attribute boolean <a href="#dom-event-istrusted" title="dom-Event-isTrusted">isTrusted</a>;
   readonly attribute DOMTimeStamp <a href="#dom-event-timestamp" title="dom-Event-timeStamp">timeStamp</a>;
 
-  void <a href="#dom-event-initevent" title="dom-Event-initEvent">initEvent</a>(DOMString <var title="">type</var>, optional boolean <var title="">bubbles</var>, optional boolean <var title="">cancelable</var>);
+  void <a href="#dom-event-initevent" title="dom-Event-initEvent">initEvent</a>(DOMString <var title="">type</var>, boolean <var title="">bubbles</var>, boolean <var title="">cancelable</var>);
 };</pre>
 
 <p>An <dfn id="concept-event" title="concept-event">event</dfn> allows for signaling that something has occurred. E.g. that an image has completed downloading.</p>
@@ -751,14 +751,16 @@ method is invoked these steps must be run:</p>
 
 <ol>
  <li><p>If the <a href="#dispatch-flag">dispatch flag</a> is set, terminate these steps.
- <li><p>Unset the <a href="#trusted-flag">trusted flag</a>.
+ <li><p>Unset the <a href="#stop-propagation-flag">stop propagation flag</a>,
+ <a href="#stop-immediate-propagation-flag">stop immediate propagation flag</a>, <a href="#canceled-flag">canceled flag</a>,
+ and <a href="#trusted-flag">trusted flag</a>.
  <li><p>Set <a href="#concept-event-target" title="concept-event-target">target</a> to null.
- <li><p>Set <a href="#concept-event-type" title="concept-event-type">type</a> to
- <var title="">type</var>.
- <li><p>If the <var title="">bubbles</var> argument is not omitted and is true,
- set the <a href="#bubble-flag">bubble flag</a>.
- <li><p>If the <var title="">cancelable</var> argument is not omitted and is
- true, set the <a href="#cancel-flag">cancel flag</a>.
+ <li><p>Set <a href="#concept-event-type" title="concept-event-type">type</a> to the
+ <var title="">type</var> argument.
+ <li><p>If the <var title="">bubbles</var> argument is true, set the
+ <a href="#bubble-flag">bubble flag</a>.
+ <li><p>If the <var title="">cancelable</var> argument is true, set the
+ <a href="#cancel-flag">cancel flag</a>.
 </ol>
 
 
@@ -766,7 +768,7 @@ method is invoked these steps must be run:</p>
 
 <pre class="idl">interface <dfn id="customevent">CustomEvent</dfn> : <a href="#event">Event</a> {
   readonly attribute object <a href="#dom-customevent-detail" title="dom-CustomEvent-detail">detail</a>;
-  void <a href="#dom-customevent-initcustomevent" title="dom-CustomEvent-initCustomEvent">initCustomEvent</a>(DOMString <var title="">type</var>, optional boolean <var title="">bubbles</var>, optional boolean <var title="">cancelable</var>, optional object <var title="">detail</var>);
+  void <a href="#dom-customevent-initcustomevent" title="dom-CustomEvent-initCustomEvent">initCustomEvent</a>(DOMString <var title="">type</var>, boolean <var title="">bubbles</var>, boolean <var title="">cancelable</var>, object <var title="">detail</var>);
 };</pre>
 
 <p><a href="#concept-event" title="concept-event">Events</a> using the
@@ -785,14 +787,11 @@ method is invoked these steps must be run:</p>
 
 <ol>
  <li><p>If the <a href="#dispatch-flag">dispatch flag</a> is set, terminate these steps.
- <li><p>Invoke <code title="dom-Event-initEvent"><a href="#dom-event-initevent">initEvent()</a></code> with those of
- the first three arguments that are set.</li>
- <li><p>If the <var title="">detail</var> argument is not omitted, set
- <a href="#concept-customevent-detail" title="concept-CustomEvent-detail">detail</a> to
- <var title="">detail</var>.
+ <li><p>Invoke <code title="dom-Event-initEvent"><a href="#dom-event-initevent">initEvent()</a></code> with the
+ first three arguments.</li>
+ <li><p>Set <a href="#concept-customevent-detail" title="concept-CustomEvent-detail">detail</a> to the
+ <var title="">detail</var> argument.
 </ol>
-
-<!-- XXX maybe we should make this init business even simpler in terms of having to define it? -->
 
 
 <h3 id="interface-eventtarget"><span class="secno">4.3 </span>Interface <code><a href="#eventtarget">EventTarget</a></code></h3>
@@ -905,11 +904,6 @@ steps:</p>
  <li><p>Let <var title="">event</var> be the
  <a href="#concept-event" title="concept-event">event</a> that is dispatched.
  <li><p>Set <var title="">event</var>'s <a href="#dispatch-flag">dispatch flag</a>.
-<!-- XXX
- <li><p>Unset <var title>event</var>'s <span>stop propagation flag</span>,
- <span>stop immediate propagation flag</span>, and
- <span>canceled flag</span>.
--->
  <li><p>Set <var title="">event</var>'s
  <a href="#concept-event-target" title="concept-event-target">target</a> to the object on which
  <var title="">event</var> is dispatched.
@@ -3641,8 +3635,6 @@ events for specific contexts (e.g. user interface events).
  <li>No more restrictions on <code title="dom-Event-type"><a href="#dom-event-type">Event.type</a></code>.
  <li>No need to invoke <code title="dom-Event-initEvent"><a href="#dom-event-initevent">initEvent()</a></code> to
  initialize an event.</li>
- <li><code title="dom-Event-initEvent"><a href="#dom-event-initevent">initEvent()</a></code> arguments are
- optional except for the first.
  <li><code title="dom-Event-preventDefault"><a href="#dom-event-preventdefault">preventDefault()</a></code> only
  changes what <code title="dom-Event-defaultPrevented"><a href="#dom-event-defaultprevented">defaultPrevented</a></code>
  and <code title="dom-EventTarget-dispatchEvent"><a href="#dom-eventtarget-dispatchevent">dispatchEvent()</a></code> return
@@ -3650,10 +3642,9 @@ events for specific contexts (e.g. user interface events).
  <li>Removes <dfn id="eventexception"><code>EventException</code></dfn>.
  <li>Fire is no longer synonymous with dispatch, but includes initializing
  an event.</li>
-<!-- XXX
- <li>The propagation and canceled flags are unset before dispatching rather
- than after.
--->
+ <li>The propagation and canceled flags are unset when invoking
+ <code title="dom-Event-initEvent"><a href="#dom-event-initevent">initEvent()</a></code> rather than after
+ dispatch.
 </ul>
 
 
@@ -3803,8 +3794,10 @@ specification makes that an intrinsic part of the DOM.
 Adrian Bateman,
 Dethe Elza,
 Glenn Maynard,
+Jacob Rossi,
 Jonas Sicking,
-Henri Sivonen, and
+Henri Sivonen,
+Olli Pettay, and
 Shiki Okasaka
 
 for their useful comments.

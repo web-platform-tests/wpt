@@ -707,6 +707,7 @@ policies and contribution forms [3].
         //All tests can't be done until the load event fires
         this.all_loaded = false;
         this.wait_for_finish = false;
+        this.processing_callbacks = false;
 
         this.timeout_length = default_timeout;
         this.timeout_id = null;
@@ -795,7 +796,8 @@ policies and contribution forms [3].
     };
 
     Tests.prototype.all_done = function() {
-        return this.all_loaded && this.num_pending === 0 && !this.wait_for_finish;
+        return (this.all_loaded && this.num_pending === 0 &&
+                !this.wait_for_finish && !this.processing_callbacks);
     };
 
     Tests.prototype.start = function() {
@@ -839,6 +841,7 @@ policies and contribution forms [3].
 
     Tests.prototype.notify_result = function(test) {
         var this_obj = this;
+        this.processing_callbacks = true;
         forEach(this.test_done_callbacks,
                 function(callback)
                 {
@@ -858,6 +861,7 @@ policies and contribution forms [3].
                 }
             }
         }
+        this.processing_callbacks = false;
         if (this.all_done())
         {
             this.complete();
@@ -876,7 +880,6 @@ policies and contribution forms [3].
     Tests.prototype.notify_complete = function()
     {
         clearTimeout(this.timeout_id);
-
         var this_obj = this;
         if (this.status.status === null)
         {

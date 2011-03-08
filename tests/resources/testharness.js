@@ -376,6 +376,17 @@ policies and contribution forms [3].
     }
     expose(assert_array_equals, "assert_array_equals");
 
+    function assert_regexp_match(actual, expected, description) {
+        /*
+         * Test if a string (actual) matches a regexp (expected)
+         */
+        var message = make_message("assert_regexp_match", description,
+                                   "expected ${expected} but got ${actual}",
+                                   {expected:String(expected), actual:String(actual)});
+        assert(expected.test(actual), message);
+    }
+    expose(assert_regexp_match, "assert_regexp_match");
+
     function assert_exists(object, property_name, description)
     {
          var message = make_message(

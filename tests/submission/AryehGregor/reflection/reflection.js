@@ -801,7 +801,6 @@ var attribs = {
 	"rowSpan": "unsigned long",
 	"scoped": "boolean",
 	"seamless": "boolean",
-	"shape": ["enum", "shape", {"values": ["circle", "circ", "default", "poly", "polygon", "rect", "rectangle"], "noncanon": {"circ": "circle", "polygon": "poly", "rectangle": "rect"}, "missing": "rect"}],
 	"size": "unsigned long",
 	"sizes": "settable tokenlist",
 	"span": "limited unsigned long",

@@ -3,7 +3,7 @@ var textElements = {
 		// Conforming
 		"target", "rel", "media", "hreflang", "type", "rel", "relList",
 		// Obsolete
-		"coords", "charset", "name", "rev", ["string", "shape"],
+		"coords", "charset", "name", "rev", "shape",
 	],
 	"em": [],
 	"strong": [],

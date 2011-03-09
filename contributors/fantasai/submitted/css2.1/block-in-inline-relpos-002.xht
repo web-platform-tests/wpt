@@ -4,7 +4,6 @@
 <head>
   <title>CSS Test: Relative-positioning Inline Containing Blocks and Floats</title>
   <link rel="author" title="Elika J. Etemad" href="http://fantasai.inkedblade.net/contact"/>
-  <link rel="author" title="L. David Baron" href="http://dbaron.org/" />
   <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
   <meta name="flags" content=""/>
   <meta name="assert" content="When such an inline box is affected by relative positioning, the relative positioning also affects the block-level box contained in the inline box."/>
@@ -32,27 +31,24 @@
     .block {
       margin-left: -2em;
       height: 10px;
-      background: red;
     }
 
     .float {
       width: 2em;
       height: 10px;
     }
-    .float.inblock {
+    .float.L {
       float: left;
       background: orange;
       color: orange;
-    }
-    .float.L {
-      float: left;
-      background: blue;
-      color: blue;
     }
     .float.R {
       float: right;
-      background: orange;
-      color: orange;
+      background: blue;
+      color: blue;
+      /* Back position to fill the hole left by relpos'ing .float.L */
+      position: relative;
+      right: 4em;
     }
 
     .controlB {
@@ -67,7 +63,7 @@
   <p>The patterns in the two silver boxes below must be identical.</p>
   <div class="container">
     A<div class="relpos">B
-    <div class="block"><div class="float inblock"></div></div>
+    <div class="block"></div>
     <div class="float L"></div>
     <div class="float R"></div>
     <div></div>

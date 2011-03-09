@@ -106,7 +106,15 @@ function test_serializer(element) {
   return lines.join("\n");
 }
 
-
+function parse_query() {
+    var query = location.search.slice(1);
+    var vars = query.split("&");
+    var fields = vars.map(function (x) {
+                            var split = x.split("=");
+                            return [split[0], split.slice(1).join("=")];
+                          });
+    return fields;
+}
 
 function get_type() {
   var run_type = "uri";

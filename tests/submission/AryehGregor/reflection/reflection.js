@@ -509,11 +509,6 @@ ReflectionTests.reflects = function(data, idlName, idlObj, domName, domObj) {
 	if (domName === undefined) {
 		domName = idlName;
 	}
-	if (idlName === undefined) {
-		// The legacy functions take idlName first, so this is more common than
-		// the previous . . . TODO fix this once the rewrite is done.
-		idlName = domName;
-	}
 	if (typeof idlObj == "string") {
 		idlObj = document.createElement(idlObj);
 	}
@@ -537,6 +532,9 @@ ReflectionTests.reflects = function(data, idlName, idlObj, domName, domObj) {
 ReflectionTests.doReflects = function(data, idlName, idlObj, domName, domObj) {
 	// If we don't recognize the type, testing is impossible.
 	if (this.typeMap[data.type] === undefined) {
+		if (unimplemented.indexOf(data.type) == -1) {
+			unimplemented.push(data.type);
+		}
 		return;
 	}
 
@@ -683,27 +681,6 @@ ReflectionTests.doReflects = function(data, idlName, idlObj, domName, domObj) {
 	}
 }
 
-// Wrappers, to be removed
-ReflectionTests.reflectsLong = function(elementName, domAttrName, idlAttrName, defaultValue) {
-	this.reflects({"type": "long", "defaultVal": defaultValue}, idlAttrName, elementName, domAttrName);
-}
-
-ReflectionTests.reflectsLimitedLong = function(elementName, domAttrName, idlAttrName, defaultValue) {
-	this.reflects({"type": "limited long", "defaultVal": defaultValue}, idlAttrName, elementName, domAttrName);
-}
-
-ReflectionTests.reflectsUnsignedLong = function(elementName, domAttrName, idlAttrName, defaultValue) {
-	this.reflects({"type": "unsigned long", "defaultVal": defaultValue}, idlAttrName, elementName, domAttrName);
-}
-
-ReflectionTests.reflectsLimitedUnsignedLong = function(elementName, domAttrName, idlAttrName, defaultValue) {
-	this.reflects({"type": "limited unsigned long", "defaultVal": defaultValue}, idlAttrName, elementName, domAttrName);
-}
-
-ReflectionTests.reflectsEnum = function(elementName, domAttrName, idlAttrName, options) {
-	this.reflects({"type": "enum", "defaultVal": options["missing"], "invalidVal": options["invalid"], "nonCanon": options.noncanon, "keywords": options.values}, idlAttrName, elementName, domAttrName);
-}
-
 /**
  * If we have an enumerated attribute limited to the array of values in
  * keywords, with nonCanon being a map of non-canonical values to their
@@ -750,11 +727,11 @@ var attribs = {
 	"action": "url",
 	"formAction": "url",
 	"audio": "settable tokenlist",
-	"autocomplete": ["enum", "autocomplete", {"values": ["on", "off"], "missing": "on"}],
+	"autocomplete": {type: "enum", keywords: ["on", "off"], defaultVal: "on"},
 	"autofocus": "boolean",
 	"autoplay": "boolean",
 	"cite": "url",
-	"cols": ["limited unsigned long", "cols", 20],
+	"cols": {type: "limited unsigned long", defaultVal: 20},
 	"colSpan": "unsigned long",
 	"controls": "boolean",
 	"data": "url",
@@ -763,9 +740,9 @@ var attribs = {
 	"defaultSelected": ["boolean", "selected"],
 	"defer": "boolean",
 	"disabled": "boolean",
-	"encoding": ["enum", "enctype", {"values": ["application/x-www-form-urlencoded", "multipart/form-data", "text/plain"], "missing": "application/x-www-form-urlencoded"}],
-	"enctype": ["enum", "enctype", {"values": ["application/x-www-form-urlencoded", "multipart/form-data", "text/plain"], "missing": "application/x-www-form-urlencoded"}],
-	"formEnctype": ["enum", "formEnctype", {"values": ["application/x-www-form-urlencoded", "multipart/form-data", "text/plain"], "missing": "application/x-www-form-urlencoded"}],
+	"encoding": [{type: "enum", keywords: ["application/x-www-form-urlencoded", "multipart/form-data", "text/plain"], defaultVal: "application/x-www-form-urlencoded"}, "enctype"],
+	"enctype": {type: "enum", keywords: ["application/x-www-form-urlencoded", "multipart/form-data", "text/plain"], defaultVal: "application/x-www-form-urlencoded"},
+	"formEnctype": {type: "enum", keywords: ["application/x-www-form-urlencoded", "multipart/form-data", "text/plain"], defaultVal: "application/x-www-form-urlencoded"},
 	"headers": "settable tokenlist",
 	"htmlFor": ["string", "for"],
 	"httpEquiv": ["string", "http-equiv"],
@@ -778,12 +755,12 @@ var attribs = {
 	// which is magically reserved for "don't try testing this", since no one
 	// default is required.  (TODO: we could test that it's either the RSA
 	// state or the unknown state.)
-	"keytype": ["enum", "keytype", {"values": ["rsa"], "missing": null}],
-	"kind": ["enum", "kind", {"values": ["subtitles", "captions", "descriptions", "chapters", "metadata"], "missing": "captions"}],
+	"keytype": {type: "enum", keywords: ["rsa"], defaultVal: null},
+	"kind": {type: "enum", keywords: ["subtitles", "captions", "descriptions", "chapters", "metadata"], defaultVal: "captions"},
 	"loop": "boolean",
 	"maxLength": "limited long",
-	"method": ["enum", "method", {"values": ["get", "post"], "missing": "get"}],
-	"formMethod": ["enum", "formMethod", {"values": ["get", "post"], "missing": "get"}],
+	"method": {type: "enum", keywords: ["get", "post"], defaultVal: "get"},
+	"formMethod": {type: "enum", keywords: ["get", "post"], defaultVal: "get"},
 	"multiple": "boolean",
 	"noValidate": "boolean",
 	"formNoValidate": "boolean",
@@ -791,13 +768,13 @@ var attribs = {
 	"ping": "urls",
 	"poster": "url",
 	// As with "keytype", we have no missing value default defined here.
-	"preload": ["enum", "preload", {"values": ["none", "metadata", "auto"], "noncanon": {"": "auto"}, "missing": null}],
+	"preload": {type: "enum", keywords: ["none", "metadata", "auto"], nonCanon: {"": "auto"}, defaultVal: null},
 	"pubDate": "boolean",
 	"readOnly": "boolean",
 	"relList": ["tokenlist", "rel"],
 	"required": "boolean",
 	"reversed": "boolean",
-	"rows": ["limited unsigned long", "rows", 2],
+	"rows": {type: "limited unsigned long", defaultVal: 2},
 	"rowSpan": "unsigned long",
 	"scoped": "boolean",
 	"seamless": "boolean",
@@ -807,7 +784,7 @@ var attribs = {
 	"src": "url",
 	// TODO: The default value should be the number of elements if the
 	// reversed attribute is set.
-	"start": ["long", "start", 1],
+	"start": {type: "long", defaultVal: 1},
 
 	// Obsolete attributes
 	"ch": ["string", "char"],
@@ -843,54 +820,40 @@ for (var element in elements) {
 	// tokenlist support)
 
 	for (var i = 0; i < elements[element].length; i++) {
-		var idlAttrName = elements[element][i];
-		var domAttrName = undefined;
-		var type = undefined;
-		var data = undefined;
-		if (typeof idlAttrName == "string") {
+		var type, idlAttrName, domAttrName;
+		if (typeof elements[element][i] == "string") {
 			// An attribute that has only one type, so retrieve it from the
 			// attribs array.
+			idlAttrName = elements[element][i];
 			if (typeof attribs[idlAttrName] == "undefined") {
 				// This is the same as if attribs[idlAttrName] == "string"
 				// (a shortcut syntax).
 				type = "string";
 				domAttrName = idlAttrName;
-			} else if (typeof attribs[idlAttrName] == "string") {
-				// domAttrName == idlAttrName
+			} else if (typeof attribs[idlAttrName] == "string"
+			|| "type" in attribs[idlAttrName]) {
+				// attribs[idlAttrName] is just the type (either a string, or
+				// an array if it has options).  DOM and IDL names are the
+				// same.
 				type = attribs[idlAttrName];
 				domAttrName = idlAttrName;
 			} else {
-				// attribs[idlAttrName] is [type, name, extra data]
+				// attribs[idlAttrName] is [type, DOM name]
 				type = attribs[idlAttrName][0];
 				domAttrName = attribs[idlAttrName][1];
-				data = attribs[idlAttrName][2];
 			}
 		} else {
 			// Something like value, that has different types on different
-			// elements, so idlAttrName is [type, name, extra data].
-			type = idlAttrName[0];
-			data = idlAttrName[2];
-			idlAttrName = idlAttrName[1];
-			domAttrName = idlAttrName;
+			// elements, so idlAttrName is [type, IDL name, optional DOM name].
+			type = elements[element][i][0];
+			idlAttrName = elements[element][i][1];
+			if (elements[element][i].length > 2) {
+				domAttrName = elements[element][i][2];
+			} else {
+				domAttrName = idlAttrName;
+			}
 		}
-		if (["string", "boolean", "url", "urls"].indexOf(type) != -1) {
-			ReflectionTests.reflects(type, idlAttrName, element, domAttrName);
-		} else if (type == "enum") {
-			// Enumerated attribute that is limited only to known values
-			ReflectionTests.reflectsEnum(element, domAttrName, idlAttrName, data);
-		} else if (type == "long") {
-			ReflectionTests.reflectsLong(element, domAttrName, idlAttrName, data);
-		} else if (type == "limited long") {
-			ReflectionTests.reflectsLimitedLong(element, domAttrName, idlAttrName, data);
-		} else if (type == "unsigned long") {
-			ReflectionTests.reflectsUnsignedLong(element, domAttrName, idlAttrName, data);
-		} else if (type == "limited unsigned long") {
-			ReflectionTests.reflectsLimitedUnsignedLong(element, domAttrName, idlAttrName, data);
-		} else if (type == "double") {
-			ReflectionTests.reflects({type: "double", defaultVal: data}, idlAttrName, element, domAttrName);
-		} else if (unimplemented.indexOf(type) == -1) {
-			unimplemented.push(type);
-		}
+		ReflectionTests.reflects(type, idlAttrName, element, domAttrName);
 	}
 }
 

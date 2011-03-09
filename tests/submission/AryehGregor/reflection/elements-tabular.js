@@ -32,7 +32,8 @@ var tabularElements = {
 		// defaults is consistent here.  scope has an auto state with no
 		// associated keyword, which is the missing value default -- is this
 		// the right syntax for that?
-		["enum", "scope", {"values": ["row", "col", "rowgroup", "colgroup"]}], "colSpan", "rowSpan", "headers",
+		[{type: "enum", keywords: ["row", "col", "rowgroup", "colgroup"]}, "scope"],
+		"colSpan", "rowSpan", "headers",
 		// Obsolete
 		"abbr", "align", "axis", "bgColor", "ch", "chOff", "height", "noWrap", "vAlign", "width",
 	],

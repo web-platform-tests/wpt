@@ -1,5 +1,8 @@
 var miscElements = {
-	"command": [["enum", "type", {"values": ["command", "checkbox", "radio"], "missing": "command"}], "label", "icon", "disabled", "checked", "radiogroup"],
+	"command": [
+		[{type: "enum", keywords: ["command", "checkbox", "radio"],
+		defaultVal: "command"}, "type"],
+		"label", "icon", "disabled", "checked", "radiogroup"],
 	"del": [],
 	"details": ["open"],
 	"html": [/* Obsolete */ "version"],

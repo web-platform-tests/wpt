@@ -32,7 +32,7 @@ var embeddedElements = {
 	"video": ["audio", "poster", "src", "preload", "loop", "autoplay", "controls", ["unsigned long", "height"], ["unsigned long", "width"]],
 	"audio": ["src", "preload", "loop", "autoplay", "controls"],
 	"source": ["src", "type", "media"],
-	"canvas": [["unsigned long", "width", 300], ["unsigned long", "height", 150]],
+	"canvas": [[{type: "unsigned long", defaultVal: 300}, "width"], [{type: "unsigned long", defaultVal: 150}, "height"]],
 	"map": ["name"],
 	"area": [
 		// Conforming

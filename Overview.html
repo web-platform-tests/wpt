@@ -48,7 +48,7 @@
 <p><a href="http://www.w3.org/"><img alt="W3C" height="48" src="http://www.w3.org/Icons/w3c_home" width="72"></a></p>
 <!--end-logo-->
  <h1>DOM Core</h1>
- <h2 class="no-num no-toc" id="editor-s-draft-4-march-2011">Editor's Draft 4 March 2011</h2>
+ <h2 class="no-num no-toc" id="editor-s-draft-9-march-2011">Editor's Draft 9 March 2011</h2>
 
  <dl>
   <dt>This Version:
@@ -90,7 +90,7 @@ publications and the latest revision of this technical report can be found in
 the <a href="http://www.w3.org/TR/">W3C technical reports index</a> at
 http://www.w3.org/TR/.</i>
 
-<p>This is the 4 March 2011 Editor's Draft of DOM Core. Please send
+<p>This is the 9 March 2011 Editor's Draft of DOM Core. Please send
 comments to
 <a href="mailto:www-dom@w3.org?subject=%5BDOMCore%5D%20">www-dom@w3.org</a>
 (<a href="http://lists.w3.org/Archives/Public/www-dom/">archived</a>)
@@ -1082,6 +1082,9 @@ would violate the constraints listed above.
 
 
 <h3 id="cloning-nodes"><span class="secno">5.2 </span>Cloning nodes</h3>
+<p>Specifications may define <dfn id="concept-clone-ext" title="concept-clone-ext">cloning steps</dfn>
+for all or some <a href="#concept-node" title="concept-node">nodes</a>.
+
 <p>To <dfn id="clone">clone</dfn> a <var title="">node</var>, with a
 <var title="">new ownerDocument</var> and with a
 <dfn id="clone-children-flag"><i>clone children flag</i></dfn>, these steps must be run:
@@ -1091,6 +1094,7 @@ would violate the constraints listed above.
  <code><a href="#documenttype">DocumentType</a></code> node, throw a
  <code title="dom-DOMException-DATA_CLONE_ERR"><a href="#dom-domexception-data_clone_err">DATA_CLONE_ERR</a></code> exception
  and terminate these steps. <!--XXX wrong? -->
+
  <li>
   <p>Let <var title="">copy</var> be a new <code><a href="#node">Node</a></code> that implements the same interfaces as <var title="">node</var>, with <code title="dom-Node-ownerDocument"><a href="#dom-node-ownerdocument">ownerDocument</a></code> set to
   <var title="">new ownerDocument</var>. Also copy the following, depending on the
@@ -1119,7 +1123,12 @@ would violate the constraints listed above.
    <dt>Any other node
    <dd><p>&mdash;
   </dl>
+
+ <li><p>Run any <a href="#concept-clone-ext" title="concept-clone-ext">cloning steps</a> defined for
+ <var title="">node</var> in <a href="#other-applicable-specifications">other applicable specifications</a>.
+
  <li><p>If the <i><a href="#clone-children-flag">clone children flag</a></i> is set, <a href="#clone">clone</a> all the children of <var title="">node</var> and append them to <var title="">copy</var>, with the same <var title="">new ownerDocument</var> and the <i><a href="#clone-children-flag">clone children flag</a></i> being set.
+
  <li><p>Return <var title="">copy</var>.
 </ol>
 

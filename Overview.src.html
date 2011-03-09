@@ -1029,6 +1029,9 @@ would violate the constraints listed above.
 
 
 <h3>Cloning nodes</h3>
+<p>Specifications may define <dfn title=concept-clone-ext>cloning steps</dfn>
+for all or some <span title=concept-node>nodes</span>.
+
 <p>To <dfn>clone</dfn> a <var title>node</var>, with a
 <var title>new ownerDocument</var> and with a
 <dfn><i>clone children flag</i></dfn>, these steps must be run:
@@ -1038,6 +1041,7 @@ would violate the constraints listed above.
  <code>DocumentType</code> node, throw a
  <code title=dom-DOMException-DATA_CLONE_ERR>DATA_CLONE_ERR</code> exception
  and terminate these steps. <!--XXX wrong? -->
+
  <li>
   <p>Let <var title>copy</var> be a new <code>Node</code> that implements the same interfaces as <var title>node</var>, with <code title=dom-Node-ownerDocument>ownerDocument</code> set to
   <var title>new ownerDocument</var>. Also copy the following, depending on the
@@ -1066,7 +1070,12 @@ would violate the constraints listed above.
    <dt>Any other node
    <dd><p>&mdash;
   </dl>
+
+ <li><p>Run any <span title=concept-clone-ext>cloning steps</span> defined for
+ <var title>node</var> in <span>other applicable specifications</span>.
+
  <li><p>If the <i>clone children flag</i> is set, <span>clone</span> all the children of <var title>node</var> and append them to <var title>copy</var>, with the same <var title>new ownerDocument</var> and the <i>clone children flag</i> being set.
+
  <li><p>Return <var title>copy</var>.
 </ol>
 

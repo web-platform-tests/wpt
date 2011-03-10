@@ -407,6 +407,22 @@ policies and contribution forms [3].
     };
     expose(assert_not_exists, "assert_not_exists");
 
+  function assert_inherits(object, property_name, description)
+    {
+         var message = make_message(
+             "assert_inherits", description,
+             "property ${p} found on object expected in prototype chain",
+           {p:property_name});
+         assert(!object.hasOwnProperty(property_name), message);
+
+         message = make_message(
+             "assert_inherits", description,
+             "property ${p} not found in prototype chain",
+           {p:property_name});
+         assert(property_name in object, message);
+    };
+    expose(assert_inherits, "assert_inherits");
+
     function assert_readonly(object, property_name, description)
     {
          var initial_value = object[property_name];

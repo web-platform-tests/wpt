@@ -53,6 +53,16 @@
     }
     test(basicAssertObjectEquals, "basic assert_object_equals test");
 
+    function testAssertInherits() {
+        var A = function(){this.a = "a"}
+        A.prototype = {b:"b"}
+        var a = new A();
+        assert_exists(a, "a");
+        assert_not_exists(a, "b");
+        assert_inherits(a, "b");
+    }
+    test(testAssertInherits, "test for assert[_not]_exists and insert_inherits")
+
     test(function()
     {
         var e = {code:0, name:"TEST_ERR", TEST_ERR:0}

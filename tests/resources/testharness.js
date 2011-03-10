@@ -34,7 +34,7 @@ policies and contribution forms [3].
  *
  * To create a sunchronous test use the test() function:
  *
- * test(test_function, name)
+ * test(test_function, name, properties)
  *
  * test_function is a function that contains the code to test. For example a
  * trivial passing test would be:
@@ -42,6 +42,15 @@ policies and contribution forms [3].
  * test(function() {assert_true(true)}, "assert_true with true")
  *
  * The function passed in is run in the test() call.
+ *
+ * properties is an object that overrides default test properties. The recognised properties
+ * are:
+ *    timeout - the test timeout in ms
+ *
+ * e.g.
+ * test(test_function, "Sample test", {timeout:1000})
+ *
+ * would run test_function with a timeout of 1s.
  *
  * == Asynchronous Tests ==
  *
@@ -52,6 +61,9 @@ policies and contribution forms [3].
  *
  * To create a test, one starts by getting a Test object using async_test:
  *
+ * async_test(name, properties)
+ *
+ * e.g.
  * var t = async_test("Simple async test")
  *
  * Assertions can be added to the test by calling the step method of the test
@@ -62,6 +74,8 @@ policies and contribution forms [3].
  * When all the steps are complete, the done() method must be called:
  *
  * t.done();
+ *
+ * The properties argument is identical to that for test().
  *
  * == Making assertions ==
  *
@@ -175,6 +189,51 @@ policies and contribution forms [3].
  * These are given the same arguments as the corresponding internal callbacks
  * described above.
  *
+ * == List of assertions ==
+ *
+ * assert_true(actual, description)
+ *   asserts that /actual/ is strictly true
+ *
+ * assert_false(actual, description)
+ *   asserts that /actual/ is strictly false
+ *
+ * assert_equals(actual, expected, description)
+ *   asserts that /actual/ is strictly equal to /expected/
+ *
+ * assert_array_equals(actual, expected, description)
+ *   asserts that /actual/ and /expected/ have the same length and the value of
+ *   each indexed property in /actual/ is the strictly equal to the corresponding
+ *   property value in /expected/
+ *
+ * assert_regexp_match(actual, expected, description)
+ *   asserts that /actual/ matches the regexp /expected/
+ *
+ * assert_exists(object, property_name, description)
+ *   asserts that object has an own property property_name
+ *
+ * assert_not_exists(object, property_name, description)
+ *   assert that object does not have own property property_name
+ *
+ * assert_inherits(object, property_name, description)
+ *   assert that object does not have an own property named property_name
+ *   but that property_name is present in the prototype chain for object
+ *
+ * assert_readonly(object, property_name, description)
+ *   assert that property property_name on object is readonly
+ *
+ * assert_throws(code_or_object, func, description)
+ *   code_or_object - either a DOM error code as a string e.g. "NAMESPACE_ERR"
+ *                    or an object that should be thrown
+ *   func - a function that should throw
+ *
+ *   assert that func throws either a DOMException with error code
+ *   code_or_object (if code_or_object is a string) or that it throws an object
+ *   code_or_object
+ *
+ * assert_unreached(description)
+ *   asserts if called. Used to ensure that some codepath is *not* taken e.g.
+ *   an event does not fire.
+ * 
  */
 
 (function ()

@@ -233,7 +233,7 @@ policies and contribution forms [3].
  * assert_unreached(description)
  *   asserts if called. Used to ensure that some codepath is *not* taken e.g.
  *   an event does not fire.
- * 
+ *
  */
 
 (function ()
@@ -328,7 +328,7 @@ policies and contribution forms [3].
     function assert_true(actual, description)
     {
         var message = make_message("assert_true", description,
-                                   "expected true got ${actual}", {actual:actual});
+                                   "expected true got ${actual}", {actual:String(actual)});
         assert(actual === true, message);
     };
     expose(assert_true, "assert_true");
@@ -336,7 +336,7 @@ policies and contribution forms [3].
     function assert_false(actual, description)
     {
         var message = make_message("assert_false", description,
-                                   "expected false got ${actual}", {actual:actual});
+                                   "expected false got ${actual}", {actual:String(actual)});
         assert(actual === false, message);
     };
     expose(assert_false, "assert_false");
@@ -1162,7 +1162,7 @@ policies and contribution forms [3].
                 rv.push(components[i]);
                 if (components[i+1])
                 {
-                    rv.push(substitutions[components[i+1]]);
+                    rv.push(String(substitutions[components[i+1]]));
                 }
             }
             return rv;

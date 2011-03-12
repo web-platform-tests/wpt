@@ -1260,6 +1260,56 @@ otherwise.
 
 <hr>
 
+<dl class=domintro>
+ <dt><var title>doc</var> = <var title>node</var> .
+ <code title=dom-Node-ownerDocument>ownerDocument</code>
+ <dd>
+  <p>Returns the <code>Document</code> <var title>node</var> belongs to.
+
+ <dt><var title>parent</var> = <var title>node</var> .
+ <code title=dom-Node-parentNode>parentNode</code>
+ <dd>
+  <p>Returns the parent node of <var title>node</var>.
+
+ <dt><var title>parent</var> = <var title>node</var> .
+ <code title=dom-Node-parentElement>parentElement</code>
+ <dd>
+  <p>Returns the parent node of <var title>node</var>, if it is an
+  <code>Element</code>.
+
+ <dt><var title>haschildren</var> = <var title>node</var> .
+ <code title=dom-Node-hasChildNodes>hasChildNodes</code>
+ <dd>
+  <p>Returns whether <var title>node</var> has children.
+
+ <dt><var title>children</var> = <var title>node</var> .
+ <code title=dom-Node-childNodes>childNodes</code>
+ <dd>
+  <p>Returns the children of <var title>node</var>.
+
+ <dt><var title>child</var> = <var title>node</var> .
+ <code title=dom-Node-firstChild>firstChild</code>
+ <dd>
+  <p>Returns the first child of <var title>node</var>.
+
+ <dt><var title>child</var> = <var title>node</var> .
+ <code title=dom-Node-lastChild>lastChild</code>
+ <dd>
+  <p>Returns the last child of <var title>node</var>.
+
+ <dt><var title>child</var> = <var title>node</var> .
+ <code title=dom-Node-previousSibling>previousSibling</code>
+ <dd>
+  <p>Returns the node before <var title>node</var> in its parent.
+
+ <dt><var title>child</var> = <var title>node</var> .
+ <code title=dom-Node-nextSibling>nextSibling</code>
+ <dd>
+  <p>Returns the node after <var title>node</var> in its parent.
+</dl>
+
+<div class=impl>
+
 <p>The <dfn title=dom-Node-ownerDocument><code>ownerDocument</code></dfn> attribute must return the <code>Document</code> node that the <span>context object</span> is associated with, or null if there is none.
 
 <p>The <dfn title=dom-Node-parentNode><code>parentNode</code></dfn>
@@ -1305,6 +1355,8 @@ attribute must return the first
  <li><p>If the <span>context object</span> is an <code>Attr</code> node,
  return null and terminate these steps.
 -->
+
+</div>
 
 <hr>
 

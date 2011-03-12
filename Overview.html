@@ -48,7 +48,7 @@
 <p><a href="http://www.w3.org/"><img alt="W3C" height="48" src="http://www.w3.org/Icons/w3c_home" width="72"></a></p>
 <!--end-logo-->
  <h1>DOM Core</h1>
- <h2 class="no-num no-toc" id="editor-s-draft-9-march-2011">Editor's Draft 9 March 2011</h2>
+ <h2 class="no-num no-toc" id="editor-s-draft-12-march-2011">Editor's Draft 12 March 2011</h2>
 
  <dl>
   <dt>This Version:
@@ -90,7 +90,7 @@ publications and the latest revision of this technical report can be found in
 the <a href="http://www.w3.org/TR/">W3C technical reports index</a> at
 http://www.w3.org/TR/.</i>
 
-<p>This is the 9 March 2011 Editor's Draft of DOM Core. Please send
+<p>This is the 12 March 2011 Editor's Draft of DOM Core. Please send
 comments to
 <a href="mailto:www-dom@w3.org?subject=%5BDOMCore%5D%20">www-dom@w3.org</a>
 (<a href="http://lists.w3.org/Archives/Public/www-dom/">archived</a>)
@@ -1313,6 +1313,56 @@ otherwise.
 
 <hr>
 
+<dl class="domintro">
+ <dt><var title="">doc</var> = <var title="">node</var> .
+ <code title="dom-Node-ownerDocument"><a href="#dom-node-ownerdocument">ownerDocument</a></code>
+ <dd>
+  <p>Returns the <code><a href="#document">Document</a></code> <var title="">node</var> belongs to.
+
+ <dt><var title="">parent</var> = <var title="">node</var> .
+ <code title="dom-Node-parentNode"><a href="#dom-node-parentnode">parentNode</a></code>
+ <dd>
+  <p>Returns the parent node of <var title="">node</var>.
+
+ <dt><var title="">parent</var> = <var title="">node</var> .
+ <code title="dom-Node-parentElement"><a href="#dom-node-parentelement">parentElement</a></code>
+ <dd>
+  <p>Returns the parent node of <var title="">node</var>, if it is an
+  <code><a href="#element">Element</a></code>.
+
+ <dt><var title="">haschildren</var> = <var title="">node</var> .
+ <code title="dom-Node-hasChildNodes"><a href="#dom-node-haschildnodes">hasChildNodes</a></code>
+ <dd>
+  <p>Returns whether <var title="">node</var> has children.
+
+ <dt><var title="">children</var> = <var title="">node</var> .
+ <code title="dom-Node-childNodes"><a href="#dom-node-childnodes">childNodes</a></code>
+ <dd>
+  <p>Returns the children of <var title="">node</var>.
+
+ <dt><var title="">child</var> = <var title="">node</var> .
+ <code title="dom-Node-firstChild"><a href="#dom-node-firstchild">firstChild</a></code>
+ <dd>
+  <p>Returns the first child of <var title="">node</var>.
+
+ <dt><var title="">child</var> = <var title="">node</var> .
+ <code title="dom-Node-lastChild"><a href="#dom-node-lastchild">lastChild</a></code>
+ <dd>
+  <p>Returns the last child of <var title="">node</var>.
+
+ <dt><var title="">child</var> = <var title="">node</var> .
+ <code title="dom-Node-previousSibling"><a href="#dom-node-previoussibling">previousSibling</a></code>
+ <dd>
+  <p>Returns the node before <var title="">node</var> in its parent.
+
+ <dt><var title="">child</var> = <var title="">node</var> .
+ <code title="dom-Node-nextSibling"><a href="#dom-node-nextsibling">nextSibling</a></code>
+ <dd>
+  <p>Returns the node after <var title="">node</var> in its parent.
+</dl>
+
+<div class="impl">
+
 <p>The <dfn id="dom-node-ownerdocument" title="dom-Node-ownerDocument"><code>ownerDocument</code></dfn> attribute must return the <code><a href="#document">Document</a></code> node that the <a href="#context-object">context object</a> is associated with, or null if there is none.
 
 <p>The <dfn id="dom-node-parentnode" title="dom-Node-parentNode"><code>parentNode</code></dfn>
@@ -1358,6 +1408,8 @@ attribute must return the first
  <li><p>If the <span>context object</span> is an <code>Attr</code> node,
  return null and terminate these steps.
 -->
+
+</div>
 
 <hr>
 

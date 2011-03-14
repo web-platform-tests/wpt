@@ -168,6 +168,12 @@ var maxUnsigned = 4294967295;
  * TODO: Test IDL sets of integer types to out-of-range or other weird values.
  * WebIDL says to wrap, but I'm not sure offhand if that's what we want.
  *
+ * TODO: Check the parsing of leading whitespace of all sorts for numeric
+ * types.  The spec is currently wrong, so I've commented all those tests out:
+ * http://www.w3.org/Bugs/Public/show_bug.cgi?id=12296
+ * http://www.w3.org/Bugs/Public/show_bug.cgi?id=12220
+ * Will fix and uncomment once the bugs are resolved.
+ *
  * TODO: tokenlist, settable tokenlist
  */
 ReflectionTests.typeMap = {
@@ -318,6 +324,17 @@ ReflectionTests.typeMap = {
 		"defaultVal": 0,
 		"domTests": [-36, -1, 0, 1, maxInt, minInt, maxInt + 1, minInt - 1,
 			maxUnsigned, maxUnsigned + 1, "", " " + binaryString + " foo ",
+			// Test various different whitespace.  The spec currently says only
+			// 20, 9, A, C, and D are whitespace.  JavaScript includes many
+			// more, including all Zs characters in Unicode 3.0.0.  All the
+			// following should parse as 0 if the character is recognized as
+			// whitespace, 7 otherwise.  But the spec is wrong (see TODO
+			// above), so these are commented out for now.
+			//"\u00097", "\u000B7", "\u000C7", "\u00207", "\u00A07", "\uFEFF7",
+			//"\u000A7", "\u000D7", "\u20287", "\u20297", "\u16807", "\u180E7",
+			//"\u20007", "\u20017", "\u20027", "\u20037", "\u20047", "\u20057",
+			//"\u20067", "\u20077", "\u20087", "\u20097", "\u200A7", "\u202F7",
+			//"\u30007",
 			undefined, 1.5, true, false, {"test": 6}, NaN, +Infinity,
 			-Infinity, "\0"],
 		"domExpected": function(val) {
@@ -349,6 +366,11 @@ ReflectionTests.typeMap = {
 		"defaultVal": -1,
 		"domTests": [minInt - 1, minInt, -36,  -1,   0, 1, maxInt, maxInt + 1,
 			maxUnsigned, maxUnsigned + 1, "", " " + binaryString + " foo ",
+			//"\u00097", "\u000B7", "\u000C7", "\u00207", "\u00A07", "\uFEFF7",
+			//"\u000A7", "\u000D7", "\u20287", "\u20297", "\u16807", "\u180E7",
+			//"\u20007", "\u20017", "\u20027", "\u20037", "\u20047", "\u20057",
+			//"\u20067", "\u20077", "\u20087", "\u20097", "\u200A7", "\u202F7",
+			//"\u30007",
 			undefined, 1.5, true, false, {"test": 6}, NaN, +Infinity,
 			-Infinity, "\0"],
 		"domExpected": function(val) {
@@ -378,6 +400,11 @@ ReflectionTests.typeMap = {
 		"defaultVal": 0,
 		"domTests": [minInt - 1, minInt, -36,  -1,   0, 1, 257, maxInt,
 			maxInt + 1, maxUnsigned, maxUnsigned + 1, "",
+			//"\u00097", "\u000B7", "\u000C7", "\u00207", "\u00A07", "\uFEFF7",
+			//"\u000A7", "\u000D7", "\u20287", "\u20297", "\u16807", "\u180E7",
+			//"\u20007", "\u20017", "\u20027", "\u20037", "\u20047", "\u20057",
+			//"\u20067", "\u20077", "\u20087", "\u20097", "\u200A7", "\u202F7",
+			//"\u30007",
 			" " + binaryString + " foo ", undefined, 1.5, true, false,
 			{"test": 6}, NaN, +Infinity, -Infinity, "\0"],
 		"domExpected": function(val) {
@@ -411,6 +438,11 @@ ReflectionTests.typeMap = {
 		"defaultVal": 1,
 		"domTests": [minInt - 1, minInt, -36,  -1,   0,    1, maxInt,
 			maxInt + 1, maxUnsigned, maxUnsigned + 1, "",
+			//"\u00097", "\u000B7", "\u000C7", "\u00207", "\u00A07", "\uFEFF7",
+			//"\u000A7", "\u000D7", "\u20287", "\u20297", "\u16807", "\u180E7",
+			//"\u20007", "\u20017", "\u20027", "\u20037", "\u20047", "\u20057",
+			//"\u20067", "\u20077", "\u20087", "\u20097", "\u200A7", "\u202F7",
+			//"\u30007",
 			" " + binaryString + " foo ", undefined, 1.5, true, false,
 			{"test": 6}, NaN, +Infinity, -Infinity, "\0"],
 		"domExpected": function(val) {
@@ -452,11 +484,24 @@ ReflectionTests.typeMap = {
 		"jsType": "number",
 		"defaultVal": 0.0,
 		"domTests": [minInt - 1, minInt, -36, -1, 0, 1, maxInt,
-            maxInt + 1, maxUnsigned, maxUnsigned + 1, "",
-            " " + binaryString + " foo ", undefined, 1.5, true, false,
-            {"test": 6}, NaN, +Infinity, -Infinity, "\0"],
-		"domExpected": [minInt - 1, minInt, -36, -1, 0, 1, maxInt, maxInt + 1,
-			maxUnsigned, maxUnsigned + 1, null, null, null, 1.5, null, null,
+			maxInt + 1, maxUnsigned, maxUnsigned + 1, "",
+			//"\u00097", "\u000B7", "\u000C7", "\u00207", "\u00A07", "\uFEFF7",
+			//"\u000A7", "\u000D7", "\u20287", "\u20297", "\u16807", "\u180E7",
+			//"\u20007", "\u20017", "\u20027", "\u20037", "\u20047", "\u20057",
+			//"\u20067", "\u20077", "\u20087", "\u20097", "\u200A7", "\u202F7",
+			//"\u30007",
+			" " + binaryString + " foo ", undefined, 1.5, true, false,
+			{"test": 6}, NaN, +Infinity, -Infinity, "\0"],
+		"domExpected": [minInt - 1, minInt, -36, -1, 0, 1, maxInt,
+			maxInt + 1, maxUnsigned, maxUnsigned + 1, null,
+			// Leading whitespace tests
+			//7, null, 7, 7, null, null,
+			//7, 7, null, null, null, null,
+			//null, null, null, null, null, null,
+			//null, null, null, null, null, null,
+			//null,
+			// End leading whitespace tests
+			null, null, 1.5, null, null,
 			null, null, null, null, null],
 		// I checked that ES ToString is well-defined for all of these (I
 		// think).  Yes, String(-0) == "0".

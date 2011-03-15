@@ -1,0 +1,147 @@
+<!doctype html>
+<table border=1>
+	<tr><th>Input <th>Spec <th>Browser
+</table>
+<script src=../implementation.js></script>				
+<script>
+// Note: this data format can only yield selections whose start and end are
+// inside text nodes.
+var tests = [
+	'foo[bar]baz',
+	'foo]bar[baz',
+	'foo[bar<i>baz]qoz</i>quz',
+	'foo<span style="font-weight: bold">[bar]</span>baz',
+	'foo<b>[bar]</b>baz',
+	'foo[<b>bar</b>]baz',
+	'foo[<b>bar]</b>baz',
+	'foo<b>[bar</b>]baz',
+	'foo<strong>[bar]</strong>baz',
+	'foo[<strong>bar</strong>]baz',
+	'foo[<strong>bar]</strong>baz',
+	'foo<strong>[bar</strong>]baz',
+	'foo<span style="font-weight: bold">[bar]</span>baz',
+	'foo[<span style="font-weight: bold">bar</span>]baz',
+	'foo[<span style="font-weight: bold">bar]</span>baz',
+	'foo<span style="font-weight: bold">[bar</span>]baz',
+	'<b>{<p>foo</p><p>bar</p>}<p>baz</p></b>',
+	'<b><p>foo[<i>bar</i>}</p><p>baz</p></b>',
+	'foo [bar <b>baz] qoz</b> quz sic',
+	'foo bar <b>baz [qoz</b> quz] sic'
+];
+
+var table = document.querySelector("table");
+table.contentEditable = "true";
+for (var i = 0; i < tests.length; i++) {
+	var tr = document.createElement("tr");
+	table.appendChild(tr);
+
+	var inputCell = document.createElement("td");
+	inputCell.textContent = tests[i];
+	tr.appendChild(inputCell);
+
+	var specCell = document.createElement("td");
+	specCell.innerHTML = tests[i];
+	tr.appendChild(specCell);
+	selectBrackets(specCell);
+	myExecCommand("bold");
+	specCell.textContent = specCell.innerHTML;
+
+	var browserCell = document.createElement("td");
+	browserCell.innerHTML = tests[i];
+	tr.appendChild(browserCell);
+	selectBrackets(browserCell);
+	document.execCommand("bold", null, false);
+	browserCell.textContent = browserCell.innerHTML;
+}
+getSelection().removeAllRanges();
+table.contentEditable = false;
+
+function selectBrackets(node) {
+	var startNode, startOffset, endNode, endOffset;
+
+	var cur = node;
+	while (true) {
+		if (!cur || (cur != node && !(cur.compareDocumentPosition(node) & Node.DOCUMENT_POSITION_CONTAINS))) {
+			break;
+		}
+
+		if (cur.nodeType != Node.TEXT_NODE) {
+			cur = nextNode(cur);
+			continue;
+		}
+
+		var data = cur.data.replace(/\]/g, "");
+		var startIdx = data.indexOf("[");
+
+		data = cur.data.replace(/\[/g, "");
+		var endIdx = data.indexOf("]");
+
+		cur.data = cur.data.replace(/[\[\]]/g, "");
+
+		if (startIdx != -1) {
+			startNode = cur;
+			startOffset = startIdx;
+		}
+
+		if (endIdx != -1) {
+			endNode = cur;
+			endOffset = endIdx;
+		}
+
+		// These are only legal as the first or last
+		data = cur.data.replace(/\}/g, "");
+		var elStartIdx = data.indexOf("{");
+
+		data = cur.data.replace(/\{/g, "");
+		var elEndIdx = cur.data.indexOf("}");
+
+		if (elStartIdx == 0) {
+			startNode = cur.parentNode;
+			startOffset = getNodeIndex(cur);
+		} else if (elStartIdx != -1) {
+			startNode = cur.parentNode;
+			startOffset = getNodeIndex(cur) + 1;
+		}
+		if (elEndIdx == 0) {
+			endNode = cur.parentNode;
+			endOffset = getNodeIndex(cur);
+		} else if (elEndIdx != -1) {
+			endNode = cur.parentNode;
+			endOffset = getNodeIndex(cur) + 1;
+		}
+
+		cur.data = cur.data.replace(/[{}]/g, "");
+		if (!cur.data.length) {
+			if (cur == startNode || cur == endNode) {
+				throw "You put a square bracket where there was no text node . . .";
+			}
+			var oldCur = cur;
+			cur = nextNode(cur);
+			oldCur.parentNode.removeChild(oldCur);
+		} else {
+			cur = nextNode(cur);
+		}
+	}
+
+	if ("extend" in getSelection()) {
+		// WebKit behaves unreasonably for collapse(), so do that manually.
+		var range = document.createRange();
+		range.setStart(startNode, startOffset);
+		getSelection().removeAllRanges();
+		getSelection().addRange(range);
+		getSelection().extend(endNode, endOffset);
+	} else {
+		// IE9.  Selections have no direction, so we just make the selection
+		// always forwards;
+		var range = document.createRange();
+		range.setStart(startNode, startOffset);
+		range.setEnd(endNode, endOffset);
+		if (range.collapsed) {
+			// Phooey, we got them backwards.
+			range.setEnd(startNode, startOffset);
+		}
+		getSelection().removeAllRanges();
+		getSelection().addRange(range);
+	}
+}
+</script>

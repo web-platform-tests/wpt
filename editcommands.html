@@ -2,7 +2,7 @@
 <title>HTML Editing Commands</title>
 <link href=http://www.whatwg.org/style/specification rel=stylesheet>
 <style>
- pre, code { font-family:monospace, sans-serif; }
+ pre, code, xmp { font-family:monospace, sans-serif; }
  h2 code, h3 code, h4 code,
  h2 :link, h3 :link, h4 :link,
  h2 :visited, h3 :visited, h4 :visited
@@ -15,11 +15,18 @@
      text-transform: uppercase;
    }
  }
+ xmp {
+   font-size: inherit;
+   font-variant: normal;
+   margin-left: 2em;
+   white-space: pre-wrap;
+ }
+ div.note > p:first-child::before { content: 'Note: '; }
 </style>
 <body class=draft>
 <div class=head id=head>
 <h1>HTML Editing Commands</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-2-march-2011>Work in Progress &mdash; Last Update 2 March 2011</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-15-march-2011>Work in Progress &mdash; Last Update 15 March 2011</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;ayg+spec@aryeh.name&gt;
@@ -50,10 +57,14 @@ is encouraged, particularly from implementers.
  <li><a href=#issues><span class=secno>2 </span>Issues</a></li>
  <li><a href=#definitions><span class=secno>3 </span>Definitions</a></li>
  <li><a href=#decomposing-a-range-into-nodes><span class=secno>4 </span>Decomposing a Range into Nodes</a></li>
- <li><a href=#unstyling-an-element><span class=secno>5 </span>Unstyling an element</a></li>
- <li><a href=#styling-a-range><span class=secno>6 </span>Styling a Range</a></li>
- <li><a href=#unstyling-a-range><span class=secno>7 </span>Unstyling a Range</a></li>
- <li><a href=#commands><span class=secno>8 </span>Commands</a></li>
+ <li><a href="#clearing-an-element's-styles"><span class=secno>5 </span>Clearing an element's styles</a></li>
+ <li><a href="#recursively-clearing-an-element's-styles"><span class=secno>6 </span>Recursively clearing an element's styles</a></li>
+ <li><a href=#styling-a-node><span class=secno>7 </span>Styling a Node</a></li>
+ <li><a href=#recursively-styling-a-node><span class=secno>8 </span>Recursively styling a Node</a></li>
+ <li><a href=#styling-a-range><span class=secno>9 </span>Styling a Range</a></li>
+ <li><a href=#unstyling-a-node><span class=secno>10 </span>Unstyling a Node</a></li>
+ <li><a href=#unstyling-a-range><span class=secno>11 </span>Unstyling a Range</a></li>
+ <li><a href=#commands><span class=secno>12 </span>Commands</a></li>
  <li><a class=no-num href=#references>References</a></li>
  <li><a class=no-num href=#acknowledgements>Acknowledgements</a></ol>
 <!--end-toc-->
@@ -75,35 +86,37 @@ included in HTML comments so as not to distract the reader.
 <h2 id=issues><span class=secno>2 </span>Issues</h2>
 
 <ul>
-  <li><p>The styling/unstyling algorithms produce unreasonably messy DOMs.  I
-  don't know how far I'll go to simplify the output, but at the very least, I
-  need to wrap continguous phrasing content in a single tag, and be more
-  aggressive about splitting up existing tags instead of nesting extra tags
-  inside (e.g., unbolding the middle letter of <code title="">&lt;b&gt;abc&lt;/b&gt;</code> should become <code title="">&lt;b&gt;a&lt;/b&gt;b&lt;b&gt;c&lt;/b&gt;</code> instead of <code title="">&lt;b&gt;a&lt;span style=font-weight:normal&gt;b&lt;/span&gt;c&lt;/b&gt;</code>).
-
-  <li><p>Need to make CSS terminology more precise, about setting/unsetting CSS
+  <li>Need to make CSS terminology more precise, about setting/unsetting CSS
   properties.  The intent is to modify the style attribute, CSSOM-style.
   Likewise, CSS value comparisons need to be done after serializing both
   values, so "bold" == "700" and "red" == "#f00" and so on.
 
-  <li><p>Also not sure about computed style.  There are differences between
+  <li>Also not sure about computed style.  There are differences between
   "computed" and "used" and things like that, what do we actually want here?
 
-  <li><p>The wording I use for DOM stuff is a bit of a mess, often either
+  <li>The wording I use for DOM stuff is a bit of a mess, often either
   imprecise or unreasonably verbose.  I'm not quite sure how to fix it.
 
-  <li><p>I haven't put any thought yet into collapsed ranges or selections.
+  <li>I haven't put any thought yet into collapsed ranges or selections.
   Currently my algorithms mostly do nothing if the selection is collapsed,
   which is of course wrong.  E.g., bold with collapsed selection should put
   &lt;b&gt;&lt;/b&gt; at the cursor, generally.
 
-  <li><p>I also don't pay attention to what happens to the selection when you
+  <li>I also don't pay attention to what happens to the selection when you
   mutate the DOM.  This is essential.
 
-  <li><p>JavaScript can modify the DOM synchronously in some cases, such as DOM
+  <li>JavaScript can modify the DOM synchronously in some cases, such as DOM
   mutation events and onunload when moving around iframes and objects.  This
   has to be dealt with somehow.  (Pointed out by Ryosuke Niwa of WebKit: <a href=http://lists.whatwg.org/pipermail/whatwg-whatwg.org/2011-March/030730.html>1</a>
   <a href=http://lists.whatwg.org/pipermail/whatwg-whatwg.org/2011-March/030751.html>2</a>)
+
+  <li>I'm sloppy about handling things like nodes that don't descend from a
+  Document, comments that are children of a Document, that sort of thing.  Not
+  essential for prototyping, but needs to be cleaned up eventually.
+
+  <li>I don't pay attention to whether designMode/contenteditable is actually
+  set.  I should be doing things like not doing anything if the selection isn't
+  editable, making sure not to break out of contenteditable regions, etc.
 </ul>
 
 
@@ -114,70 +127,148 @@ included in HTML comments so as not to distract the reader.
 <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-attr-namespace title=concept-attr-namespace>namespace</a> is
 the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#html-namespace>HTML namespace</a>.
 
-<p>The <dfn id=first-node>first node</dfn> of a <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a> is the <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> returned by the
-following algorithm:
+<p>The <dfn id=beginning-element>beginning element</dfn> of a <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a> is returned by the following
+algorithm:
 
 <ol>
-  <li><p>Let <var title="">range</var> be the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a> under discussion.
+  <li>If the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> of the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a> is a <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a>,
+  <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#comment><code class=external data-anolis-spec=domcore>Comment</code></a>, or <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#processinginstruction><code class=external data-anolis-spec=domcore>ProcessingInstruction</code></a> node, and the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a>
+  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a> of the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a> is not equal to the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> of its
+  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>, let <var title="">first node</var> be the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a>'s
+  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>.
 
-  <li><p>If <var title="">range</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a> is equal to
-  the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> of its <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>, return the first
-  <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> that is after the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> and all its
-  <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-descendant title=concept-tree-descendant>descendants</a> (if any) in <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#tree-order>tree order</a>.  If there is no such <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a>,
-  return the last <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> in the document.
+  <li>Otherwise, let <var title="">first node</var> be the first <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> in
+  <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#tree-order>tree order</a> that is <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a>, if there is any.
 
-  <li><p>If <var title="">range</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> has children,
-  return the child whose <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> is equal to <var title="">range</var>'s
-  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a>.
+  <li>If <var title="">first node</var> is defined and is an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a>, return
+  <var title="">first node</var>.
 
-  <li><p>Return <var title="">range</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>.
+  <li>Otherwise, if <var title="">first node</var> is defined and its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is an
+  <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a>, return <var title="">first node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+
+  <li>Return null.
 </ol>
-
-<p>The <dfn id=last-node>last node</dfn> of a <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a> is the <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> returned by the
-following algorithm:
-
-<ol>
-  <li><p>Let <var title="">range</var> be the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a> under discussion.
-
-  <li><p>If <var title="">range</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a> is zero, return the
-  last <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> that is before the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> in <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#tree-order>tree order</a>.
-  If there is no such <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a>, return the first <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> in the document.
-
-  <li><p>If <var title="">range</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> has children,
-  return the child whose <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> is equal to <var title="">range</var>'s
-  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a> minus one.
-
-  <li><p>Return <var title="">range</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>.
-</ol>
-
-<p>The <dfn id=beginning-element>beginning element</dfn> of a <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a> is its <a href=#first-node>first
-node</a> if that is an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a>; or the parent of its <a href=#first-node>first
-node</a>, if <em>that</em> is an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a>; or else null.
-
-<p class=XXX>(It will be null only in weird cases, like selecting a comment
-whose parent is a document, or the child of a document fragment, or whatever.
-I'm ignoring those cases for now.)
 
 <p>The <dfn id=active-range>active range</dfn> of a <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#document><code class=external data-anolis-spec=domcore>Document</code></a> is the value returned by the
 following algorithm:
 
 <ol>
-  <li><p>Let <var title="">selection</var> be the result of calling <a href=http://html5.org/specs/dom-range.html#dom-document-getselection><code class=external data-anolis-spec=domrange title=dom-Document-getSelection>getSelection()</code></a> on
+  <li>Let <var title="">selection</var> be the result of calling <a href=http://html5.org/specs/dom-range.html#dom-document-getselection><code class=external data-anolis-spec=domrange title=dom-Document-getSelection>getSelection()</code></a> on
   the <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#document><code class=external data-anolis-spec=domcore>Document</code></a>.
 
-  <li><p>If there are no <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a>s associated with <var title="">selection</var>,
+  <li>If there are no <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a>s associated with <var title="">selection</var>,
   return null.
 
-  <li><p>Let <var title="">start</var> be the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point title=concept-boundary-point>boundary point</a> with the earliest
+  <li>Let <var title="">start</var> be the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point title=concept-boundary-point>boundary point</a> with the earliest
   <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-bp-position title=concept-bp-position>position</a> among all of <var title="">selection</var>'s <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a>s'
   <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>starts</a>.
 
-  <li><p>Return the last <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a> in <var title="">selection</var> whose <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a>
+  <li>Return the last <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a> in <var title="">selection</var> whose <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a>
   is <var title="">start</var>.
   <!-- This is what Firefox seems to do, no reason to change it . . . -->
 
   <p class=note>In user agents that support only one <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a> per
   <a href=http://html5.org/specs/dom-range.html#selection><code class=external data-anolis-spec=domrange>Selection</code></a>, the active range is simply the only one in the selection.
+</ol>
+
+<p>Given a CSS property name <var title="">property name</var>, an (optional) value
+<var title="">property value</var> for that property, and a possibly empty list of
+strings <var title="">tag list</var>, a <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> is a <dfn id=potentially-relevant-styling-element>potentially relevant styling
+element</dfn> if it is an <a href=#html-element>HTML element</a> and one of the following
+holds:
+
+<ul>
+  <li>Its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> is in <var title="">tag list</var> and it has no attributes.
+
+  <li>Its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> is in <var title="">tag list</var> or is "span" or is "font",
+  and it has exactly one attribute, and that attribute is an <a href=#html-attribute>HTML
+  attribute</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-attr-local-name title=concept-attr-local-name>local name</a> "style", and that attribute sets
+  exactly one CSS property, and that property is <var title="">property name</var>, and
+  either <var title="">property value</var> is undefined or the value the attribute sets
+  the property to is <var title="">property value</var>.
+
+  <li>Its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> is "font", and it has exactly one attribute, and that
+  attribute is a <a href=http://www.whatwg.org/html/#dom-font-color><code class=external data-anolis-spec=html title=dom-font-color>color</code></a>
+  attribute, and either <var title="">property value</var> is undefined or the effect of
+  the attribute is to hint that the CSS color attribute be set to <var title="">property
+  value</var>, and <var title="">property name</var> is "color".
+
+  <li>Its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> is "font", and it has exactly one attribute, and that
+  attribute is a <a href=http://www.whatwg.org/html/#dom-font-face><code class=external data-anolis-spec=html title=dom-font-face>face</code></a>
+  attribute, and either <var title="">property value</var> is undefined or the effect of
+  the attribute is to hint that the CSS font-family attribute be set to
+  <var title="">property value</var>, and <var title="">property name</var> is "font-family".
+
+  <li>Its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> is "font", and it has exactly one attribute, and that
+  attribute is a <a href=http://www.whatwg.org/html/#dom-font-size><code class=external data-anolis-spec=html title=dom-font-size>size</code></a>
+  attribute, and either <var title="">property value</var> is undefined or the effect of
+  the attribute is to hint that the CSS font-size attribute be set to
+  <var title="">property value</var>, and <var title="">property name</var> is "font-size".
+
+  <!-- Should we bother handling <font color=red style=color:red>?  Let's not.
+  -->
+</ul>
+
+<p>A <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> is a <dfn id=relevant-styling-element>relevant styling element</dfn> if it is a
+<a href=#potentially-relevant-styling-element>potentially relevant styling element</a>, and its CSS property
+<var title="">property name</var> computes to <var title="">property value</var> (which cannot be
+undefined).
+
+<div class=note>
+<p>If <var title="">property name</var> is "font-weight", <var title="">property value</var> is
+"bold", and <var title="">tag list</var> contains "b", an example of a <a href=#potentially-relevant-styling-element>potentially
+relevant styling element</a> that is not actually <a href=#relevant-styling-element title="relevant
+styling element">relevant</a> is
+
+</p><xmp><p style="font-weight: 100"><b>Foo</b></p></xmp>
+
+<p>Since <a href=http://www.whatwg.org/html/#the-b-element><code class=external data-anolis-spec=html title="the b element">b</code></a>'s default
+font-weight is "bolder", the computed font-weight will most likely end up being
+"normal" or lighter.
+</div>
+
+<p>A <dfn id=phrasing-element>phrasing element</dfn> is either an <a href=#html-element>HTML element</a> that is
+categorized as <a class=external data-anolis-spec=html href=http://www.whatwg.org/html/#phrasing-content>phrasing content</a>, or a <a class=external data-anolis-spec=html href=http://www.whatwg.org/html/#non-conforming-element title="non-conforming element">non-conforming</a> <a href=#html-element>HTML element</a>
+(which thus has no categories), or an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a> that is not an <a href=#html-element>HTML
+element</a>.
+
+<p class=XXX>We should allow unrecognized HTML elements too.
+
+<p>The <dfn id=specified-style>specified style</dfn> of an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a> for a given <var title="">property
+name</var> is returned by the following algorithm, which will return either a
+CSS value or null:
+
+<ol>
+  <li>If the <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a> has a <a href=http://www.whatwg.org/html/#the-style-attribute><code class=external data-anolis-spec=html title="the style attribute">style</code></a> attribute set, and that attribute has
+  the effect of setting <var title="">property name</var>, return the value that it sets
+  <var title="">property name</var> to.
+
+  <li>If the <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a> is a <a href=http://www.whatwg.org/html/#font><code class=external data-anolis-spec=html>font</code></a> element
+  that has an attribute whose effect is to create a <a class=external data-anolis-spec=html href=http://www.whatwg.org/html/#presentational-hints title="presentational hints">presentational hint</a> for
+  <var title="">property name</var>, return the value that the hint sets <var title="">property
+  name</var> to.
+
+  <li>If the <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a> is in the following list, and <var title="">property name</var>
+  is equal to the CSS property name listed for it, return the string listed for
+  it.
+
+  <p class=XXX>Add any other elements that can be output by the style/unstyle
+  algorithms, or existing browser implementations of execCommand().
+
+  <dl class=switch>
+    <dt><a href=http://www.whatwg.org/html/#the-b-element><code class=external data-anolis-spec=html title="the b element">b</code></a>
+    <dt><a href=http://www.whatwg.org/html/#the-strong-element><code class=external data-anolis-spec=html title="the strong element">strong</code></a>
+    <dd>font-weight: "bold"
+
+    <dt><a href=http://www.whatwg.org/html/#the-i-element><code class=external data-anolis-spec=html title="the i element">i</code></a>
+    <dt><a href=http://www.whatwg.org/html/#the-em-element><code class=external data-anolis-spec=html title="the em element">em</code></a>
+    <dd>font-style: "italic"
+
+    <dt><a href=http://www.whatwg.org/html/#the-u-element><code class=external data-anolis-spec=html title="the u element">u</code></a>
+    <dd>text-decoration: "underline"
+  </dl>
+
+  <li>Return null.
 </ol>
 
 <p>When the user agent is instructed to run a particular method, it must follow
@@ -186,319 +277,411 @@ though the method had actually been called from JavaScript.  In particular,
 if the author has overridden the method with a custom method, the standard
 method must be run rather than the custom one.
 
+<p>When a list or set of <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a>s is assigned to a variable without specifying
+the order, they must be initially in <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#tree-order>tree order</a>, if they share a root.
+(If they don't share a root, the order will be specified.)  When the user agent
+is instructed to run particular steps for each member of a list, it must do so
+sequentially in the list's order.
+
 
 <h2 id=decomposing-a-range-into-nodes><span class=secno>4 </span>Decomposing a Range into Nodes</h2>
-<p>When a user agent is to <dfn id=decompose-a-range>decompose a <code class=external data-anolis-spec=domrange>Range</code></dfn> <var title="">range</var>, it must run the following steps.
-
-<p class=note>The algorithm returns a list of <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a>s in the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a> that
-are not contained in any other <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> in the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a>.  It splits <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a>
-nodes if necessary, but isn't picky about <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#comment><code class=external data-anolis-spec=domcore>Comment</code></a>s or
-<a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#processinginstruction><code class=external data-anolis-spec=domcore>ProcessingInstruction</code></a>s.
+<p>When a user agent is to <dfn id=decompose-a-range>decompose a <code class=external data-anolis-spec=domrange>Range</code></dfn> <var title="">range</var>,
+it must run the following steps.
 
 <ol>
-  <li><p>Let <var title="">start node</var>, <var title="">start offset</var>, <var title="">end node</var>, and <var title="">end offset</var> be the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a>
-  and <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>nodes</a> and <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offsets</a> of <var title="">range</var>,
-  respectively.
+  <li>If <var title="">range</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> and <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> are the same,
+  return an empty list.
 
-  <li><p>If <var title="">start node</var> or <var title="">end node</var> is not an
-  <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a>, <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a>, <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#processinginstruction><code class=external data-anolis-spec=domcore>ProcessingInstruction</code></a>, or <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#comment><code class=external data-anolis-spec=domcore>Comment</code></a> node, or is
-  not an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a> and has no parent, abort these steps.
+  <li>Let <var title="">start node</var>, <var title="">start offset</var>, <var title="">end node</var>,
+  and <var title="">end offset</var> be <var title="">range</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> and
+  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>nodes</a> and <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offsets</a>, respectively.
 
-  <p class=XXX>Figure out something sensible here.
-
-  <li><p>If <var title="">start node</var> and <var title="">end node</var> are both
-  <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> nodes, and <var title="">start node</var> is the same as <var title="">end
-  node</var>, and neither <var title="">start offset</var> nor <var title="">end
-  offset</var> is equal to 0 or the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> of <var title="">start
-  node</var>:
-
+  <li>If <var title="">start node</var> is a <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> node and is the same as <var title="">end
+  node</var>, and <var title="">start offset</var> is neither 0 nor the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a>
+  of <var title="">start node</var>:
+  
   <ol>
-    <li><p>Run <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-text-splittext><code class=external data-anolis-spec=domcore title=dom-Text-splitText>splitText(<var title="">start offset</var>)</code></a> on
-    <var title="">start node</var> and set <var title="">start node</var> to the
-    result.
+    <li>Set <var title="">start node</var> to the result of running <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-text-splittext><code class=external data-anolis-spec=domcore title=dom-Text-splitText>splitText(<var title="">start
+    offset</var>)</code></a> on <var title="">start node</var>.
 
-    <li><p>Run <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-text-splittext><code class=external data-anolis-spec=domcore title=dom-Text-splitText>splitText(<var title="">end offset</var> &minus; <var title="">start offset</var>)</code></a> on <var title="">start node</var>.
+    <li>Set <var title="">end node</var> to <var title="">start node</var>.
 
-    <li><p>Return the list consisting of the single <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> <var title="">start
-    node</var>, and abort these steps.
+    <li>Set <var title="">end offset</var> to <var title="">end offset</var> &minus; <var title="">start
+    offset</var>.
+
+    <li>Set <var title="">start offset</var> to 0.
   </ol>
 
-  <li><p>If <var title="">start node</var> is a <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> node and <var title="">start
-  offset</var> is neither 0 nor the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> of <var title="">start
-  node</var>, run <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-text-splittext><code class=external data-anolis-spec=domcore title=dom-Text-splitText>splitText(<var title="">start offset</var>)</code></a> on
-  <var title="">start node</var> and set <var title="">start node</var> to the
-  returned node.  Set <var title="">start offset</var> to 0.
-
-  <li><p>If <var title="">end node</var> is a <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> node and <var title="">end
-  offset</var> is neither 0 nor the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> of <var title="">end
-  node</var>, run <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-text-splittext><code class=external data-anolis-spec=domcore title=dom-Text-splitText>splitText(<var title="">end offset</var>)</code></a> on
-  <var title="">end node</var>.
-
-  <li><p>If <var title="">start offset</var> is nonzero and equals the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> of
-  <var title="">start node</var>, let <var title="">node</var> be the first <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> after
-  <var title="">start node</var> in <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#tree-order>tree order</a>.  If there is no such <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a>, return
-  the empty list.
-
-  <li><p>Otherwise, if <var title="">start node</var> is an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a> with at least
-  one child, let <var title="">node</var> be the <var title="">start offset</var>th child of
-  <var title="">start node</var>.
-
-  <li><p>Otherwise, let <var title="">node</var> be <var title="">start node</var>.
-
-  <li><p>If <var title="">end node</var> is an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a> and <var title="">end
-  offset</var> is not 0, let <var title="">end</var> be the child of <var title="">end node</var> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> <var title="">end offset</var> &minus; 1.
-
-  <li><p>Otherwise, if <var title="">end offset</var> is 0, let <var title="">end</var> be the first <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> before <var title="">end node</var> in
-  <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#tree-order>tree order</a>.  If there is no such <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a>, return the empty list.
-
-  <li><p>Otherwise, let <var title="">end</var> be <var title="">end node</var>.
-
-  <!-- We try to include a node's parent instead of that node if possible,
-  because this generally reduces the number of nodes we're handling.  So if the
-  string "oo bar" was selected in <b>Foo <i>bar</i></b>, we'd add the <i> to
-  the selection, even if the browser registered the end as the text node "bar".
-  -->
-  <li><p>While <var title="">node</var> is the first child of its parent and <var title="">end</var> is not a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-descendant title=concept-tree-descendant>descendant</a> of <var title="">node</var>'s parent,
-  set <var title="">node</var> to <var title="">node</var>'s parent.
-
-  <li><p>While <var title="">end</var> is the last child of its parent and <var title="">node</var> is not a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-descendant title=concept-tree-descendant>descendant</a> of <var title="">end</var>'s parent,
-  set <var title="">end</var> to <var title="">node</var>'s parent.
-
-  <li><p>Let <var title="">node list</var> be an empty list of <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a>s.
-
-  <li><p>While <var title="">node</var> is not after <var title="">end</var> in
-  <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#tree-order>tree order</a>:
+  <li>Otherwise, if <var title="">start node</var> is a <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> node and <var title="">start
+  offset</var> is neither 0 nor the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> of <var title="">start node</var>:
 
   <ol>
-    <li><p>Append <var title="">node</var> to <var title="">node list</var>.
+    <li>Set <var title="">start node</var> to the result of running <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-text-splittext><code class=external data-anolis-spec=domcore title=dom-Text-splitText>splitText(<var title="">start
+    offset</var>)</code></a> on <var title="">start node</var>.
 
-    <li><p>Set <var title="">node</var> to the first <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> in <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#tree-order>tree order</a> that is
-    after <var title="">node</var> and all its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-descendant title=concept-tree-descendant>descendants</a> (if any).  If no such
-    <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> exists, break out of these substeps.
-
-    <li><p>While <var title="">node</var> is an <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of <var title="">end</var>, set <var title="">node</var> to <var title="">node</var>'s first child.
+    <li>Set <var title="">start offset</var> to 0.
   </ol>
 
-  <li><p>Return <var title="">node list</var>.
+  <li>If <var title="">end node</var> is a <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> node and <var title="">end offset</var> is
+  neither 0 nor the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> of <var title="">end node</var>, run <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-text-splittext><code class=external data-anolis-spec=domcore title=dom-Text-splitText>splitText(<var title="">end
+  offset</var>)</code></a> on <var title="">end node</var>.
+
+  <!-- The next two steps ensure that our fragmented text nodes are contained
+  in the range. -->
+  <li>If <var title="">start node</var> is a <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> node and <var title="">start offset</var>
+  is 0, set <var title="">start offset</var> to the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> of <var title="">start node</var>,
+  then set <var title="">start node</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+
+  <li>If <var title="">end node</var> is a <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> node and <var title="">end offset</var> is
+  its <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a>, set <var title="">end offset</var> to one plus the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> of
+  <var title="">end node</var>, then set <var title="">end node</var> to its parent.
+
+  <li>Set <var title="">range</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> to (<var title="">start node</var>,
+  <var title="">start offset</var>) and its <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> to (<var title="">end node</var>,
+  <var title="">end offset</var>).
+
+  <li>Return a list consisting of every <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in
+  <var title="">range</var> in <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#tree-order>tree order</a>, omitting any whose <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is also
+  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in <var title="">range</var>.
 </ol>
 
 
-<h2 id=unstyling-an-element><span class=secno>5 </span>Unstyling an element</h2>
-<p>When a user agent is to <dfn id=unstyle-an-element>unstyle an element</dfn>, it must run the
-following steps.
+<h2 id="clearing-an-element's-styles"><span class=secno>5 </span>Clearing an element's styles</h2>
+<p>When a user agent is to <dfn id=clear-styles>clear styles</dfn> on an element, it must run
+the following steps:
+
+<div class=note>
+<p>Clearing styles (<a href=#recursively-clear-styles title="recursively clear styles">recursively</a>
+or not) can remove it from its parent and put other nodes in its place.  When
+implementations do something like clear style on all children of an element,
+they should take care not to assume that the set of children won't change as
+they're unstyled.  If the element is removed, the algorithm will return the
+list of nodes inserted in its place.
+
+<p>Clearing styles only removes inline styles from the element.  It doesn't
+ensure that the element isn't inheriting styles from an ancestor (or a style
+rule).  For that, one must <a href=#unstyle-a-node>unstyle a node</a>.
+</div>
 
 <ol>
-  <li><p>Let <var title="">element</var> be the <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a> to be unstyled.
+  <li>Let <var title="">element</var> be the <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a> to be unstyled.
 
-  <li><p>Let <var title="">property name</var> and <var title="">tag list</var> be as
+  <li>Let <var title="">property name</var> and <var title="">tag list</var> be as
   in the invoking algorithm.
 
-  <li><p>Let <var title="">element children</var> be the <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a> children of
-  <var title="">element</var>.
-
-  <li><p><a href=#unstyle-an-element title="unstyle an element">Unstyle</a> each <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a> in
-  <var title="">element children</var>, in order.
-
-  <p class=note>Unstyling an element can change the number of children its
-  parent has, so the list of children to unstyle needs to be computed
-  beforehand.
-
-  <li><p>If either
-
-  <ul>
-    <li><p><var title="">element</var> is an <a href=#html-element>HTML element</a> with
-    <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> either "span" or in <var title="">tag list</var>, and it has
-    only a single attribute, and that attribute is named "style", and
-    that style attribute sets only the CSS property <var title="">property
-    name</var>; or
-
-    <li><p><var title="">element</var> is an <a href=#html-element>HTML element</a> with
-    <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> in <var title="">tag list</var> and it has no attributes,
-  </ul>
-
-  <p>then:
+  <li>If <var title="">element</var> is a <a href=#potentially-relevant-styling-element>potentially relevant styling
+  element</a>:
 
   <ol>
-    <li><p>Let <var title="">children</var> be an empty list of <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a>s.
+    <li>Let <var title="">children</var> be an empty list of <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a>s.
 
-    <li><p>While <var title="">element</var> has children:
+    <li>While <var title="">element</var> has children:
 
     <ol>
-      <li><p>Let <var title="">child</var> be the first child of <var title="">element</var>.
+      <li>Let <var title="">child</var> be the first child of <var title="">element</var>.
 
-      <li><p>Append <var title="">child</var> to <var title="">children</var>.
+      <li>Append <var title="">child</var> to <var title="">children</var>.
 
-      <li><p>Insert <var title="">child</var> as the previous sibling of
+      <li>Insert <var title="">child</var> as the previous sibling of
       <var title="">element</var>.
     </ol>
 
-    <li><p>Remove <var title="">element</var>.
+    <li>Remove <var title="">element</var>.
 
-    <li><p>Return <var title="">children</var>.
+    <li>Return <var title="">children</var>.
   </ol>
 
-  <li><p>Unset the CSS property <var title="">property name</var> of <var title="">element</var>.
+  <li>Unset the CSS property <var title="">property name</var> of <var title="">element</var>.
 
-  <li><p>If <var title="">element</var> is not an <a href=#html-element>HTML element</a> or its
+  <li>If <var title="">element</var> is a <a href=http://www.whatwg.org/html/#font><code class=external data-anolis-spec=html>font</code></a>
+  element:
+
+  <ol>
+    <li>If <var title="">property name</var> is "color", unset <var title="">element</var>'s
+    <a href=http://www.whatwg.org/html/#dom-font-color><code class=external data-anolis-spec=html title=dom-font-color>color</code></a> attribute, if
+    set.
+
+    <li>If <var title="">property name</var> is "font-family", unset
+    <var title="">element</var>'s <a href=http://www.whatwg.org/html/#dom-font-face><code class=external data-anolis-spec=html title=dom-font-face>face</code></a> attribute, if set.
+
+    <li>If <var title="">property name</var> is "font-size", unset <var title="">element</var>'s
+    <a href=http://www.whatwg.org/html/#dom-font-size><code class=external data-anolis-spec=html title=dom-font-size>size</code></a> attribute, if
+    set.
+  </ol>
+
+  <li>If <var title="">element</var> is not an <a href=#html-element>HTML element</a> or its
   <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> is not in <var title="">tag list</var>, return the empty list.
+  <!-- If we get past this step, we're something like <b class=foo> where we
+  want to keep the extra attributes, so we stick them on a span. -->
 
-  <li><p>Let <var title="">new element</var> be a new <a href=#html-element>HTML element</a> with
+  <li>Let <var title="">new element</var> be a new <a href=#html-element>HTML element</a> with
   <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> "span", with the same attributes and <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument><code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument>ownerDocument</code></a> as
   <var title="">element</var>.
 
-  <li><p>Append <var title="">new element</var> to <var title="">element</var>'s
+  <li>Append <var title="">new element</var> to <var title="">element</var>'s
   parent as the previous sibling of <var title="">element</var>.
 
-  <li><p>While <var title="">element</var> has children, append its first child
+  <li>While <var title="">element</var> has children, append its first child
   as the last child of <var title="">new element</var>.
 
-  <li><p>Remove <var title="">element</var>.
+  <li>Remove <var title="">element</var>.
 
-  <li><p>Return the one-<a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> list consisting of <var title="">new element</var>.
+  <li>Return the one-<a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> list consisting of <var title="">new element</var>.
 </ol>
 
 
-<h2 id=styling-a-range><span class=secno>6 </span>Styling a Range</h2>
-<p>When a user agent is to <dfn id=style-a-range>style a <code class=external data-anolis-spec=domrange>Range</code></dfn> <var title="">range</var>, it
-must run the following steps.  There are three inputs: a CSS property name
+<h2 id="recursively-clearing-an-element's-styles"><span class=secno>6 </span>Recursively clearing an element's styles</h2>
+<p>When a user agent is to <dfn id=recursively-clear-styles>recursively clear styles</dfn> on an element,
+it must run the following steps:
+
+<ol>
+  <li>Let <var title="">element</var> be the <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a> to be unstyled.
+
+  <li>Let <var title="">property name</var> and <var title="">tag list</var> be as
+  in the invoking algorithm.
+
+  <li>Let <var title="">element children</var> be the <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a> children of
+  <var title="">element</var>.
+
+  <li><a href=#recursively-clear-styles>Recursively clear styles</a> on each <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a> in <var title="">element
+  children</var>.
+
+  <li><a href=#clear-styles>Clear styles</a> on <var title="">element</var>, and return the resulting
+  list.
+</ol>
+
+
+<h2 id=styling-a-node><span class=secno>7 </span>Styling a Node</h2>
+<p>When a user agent is to <dfn id=style-a-node>style a <code class=external data-anolis-spec=domcore>Node</code></dfn> <var title="">node</var>, it must
+run the following steps.  There are three inputs: a CSS property name
 <var title="">property name</var>, a new value <var title="">property value</var>, and a possibly
 empty list of strings <var title="">tag list</var>.
 
-<ol>
-  <li><p>Let <var title="">node list</var> be the result of <a href=#decompose-a-range title="decompose
-  a range">decomposing</a> <var title="">range</var>.
+<p class=note>This algorithm applies the given style to the node itself, but
+doesn't interfere with conflicting styles on its descendants.  <a href=#recursively-style-a-node title="recursively style a node">Recursive styling</a> removes conflicting
+styles from descendants first.
 
-  <li><p>For each <var title="">node</var> in <var title="">node list</var>, in order:
+<ol>
+  <li>If <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is null, or if <var title="">node</var> is not an
+  <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a>, <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a>, <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#comment><code class=external data-anolis-spec=domcore>Comment</code></a>, or <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#processinginstruction><code class=external data-anolis-spec=domcore>ProcessingInstruction</code></a> node, abort
+  this algorithm. <!-- XXX: What to do here? -->
+
+  <li>If <var title="">node</var> is an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a>:
 
   <ol>
-    <li><p>If <var title="">node</var> is an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a>:
+    <li><a href=#clear-styles>Clear styles</a> on <var title="">node</var>, and let <var title="">new
+    nodes</var> be the result.
+
+    <li>For each <var title="">new node</var> in <var title="">new nodes</var>, <a href=#style-a-node title="style a node">style <var title="">new node</var></a>, with the same inputs
+    as this invocation of the algorithm.
+
+    <li>If <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is null, abort this algorithm.
+  </ol>
+
+  <li>If <var title="">node</var> is an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a> but not a <a href=#phrasing-element>phrasing
+  element</a>:
+
+  <ol>
+    <li>Let <var title="">children</var> be all <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a> of <var title="">node</var>,
+    omitting any that are <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a>s whose <a href=#specified-style>specified style</a> for
+    <var title="">property name</var> is neither null nor equal to <var title="">property
+    value</var>.
+
+    <li><a href=#style-a-node title="style a node">Style</a> each <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> in
+    <var title="">children</var>.
+
+    <li>Abort this algorithm.
+  </ol>
+
+  <li>If <var title="">node</var>'s <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling><code class=external data-anolis-spec=domcore title=dom-Node-previousSibling>previousSibling</code></a> is a <a href=#relevant-styling-element>relevant styling
+  element</a>, append <var title="">node</var> as the last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of its
+  <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling><code class=external data-anolis-spec=domcore title=dom-Node-previousSibling>previousSibling</code></a> and abort this algorithm.
+
+  <li>If <var title="">node</var>'s <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling><code class=external data-anolis-spec=domcore title=dom-Node-nextSibling>nextSibling</code></a> is a <a href=#relevant-styling-element>relevant styling
+  element</a>, insert <var title="">node</var> as the first <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of its
+  <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling><code class=external data-anolis-spec=domcore title=dom-Node-nextSibling>nextSibling</code></a> and abort this algorithm.
+
+  <li>If <var title="">node</var> is a <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#comment><code class=external data-anolis-spec=domcore>Comment</code></a> or <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#processinginstruction><code class=external data-anolis-spec=domcore>ProcessingInstruction</code></a>, abort
+  this algorithm.  <!-- There's no point in making a new element in this case.
+  -->
+
+  <li>If <var title="">node</var> is an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a> and the computed style of
+  <var title="">property name</var> for it is <var title="">property value</var>, abort this
+  algorithm.
+
+  <li>If <var title="">node</var> is a <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> node and the computed style of
+  <var title="">property name</var> for its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is <var title="">property value</var>,
+  abort this algorithm.
+
+  <li>Let <var title="">tag</var> be the first string in <var title="">tag list</var>, if that is
+  not empty, or "span" if it is empty.
+
+  <li>Let <var title="">new parent</var> be the result of calling <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement><code class=external data-anolis-spec=domcore title=dom-Document-createElement>createElement(<var title="">tag</var>)</code></a> on the
+  <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument><code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument>ownerDocument</code></a> of <var title="">node</var>.
+
+  <li>Insert <var title="">new parent</var> in <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> before
+  <var title="">node</var>.
+
+  <li>If the computed value of <var title="">property name</var> for <var title="">new
+  parent</var> is not <var title="">property value</var>, set the CSS property
+  <var title="">property name</var> of <var title="">new parent</var> to <var title="">property
+  value</var>.
+
+  <li>Append <var title="">node</var> to <var title="">new parent</var> as its last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>.
+</ol>
+
+
+<h2 id=recursively-styling-a-node><span class=secno>8 </span>Recursively styling a Node</h2>
+<p>When a user agent is to <dfn id=recursively-style-a-node>recursively style a <code class=external data-anolis-spec=domcore>Node</code></dfn>
+<var title="">node</var>, it must run the following steps.  There are three inputs: a
+CSS property name <var title="">property name</var>, a new value <var title="">property
+value</var>, and a possibly empty list of strings <var title="">tag list</var>.
+
+<ol>
+  <li>If <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is null, or if <var title="">node</var> is not an
+  <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a>, <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a>, <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#comment><code class=external data-anolis-spec=domcore>Comment</code></a>, or <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#processinginstruction><code class=external data-anolis-spec=domcore>ProcessingInstruction</code></a> node, abort
+  this algorithm. <!-- XXX: What to do here? -->
+
+  <li>If <var title="">node</var> is an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a>:
+
+  <ol>
+    <li><a href=#recursively-clear-styles>Recursively clear styles</a> on <var title="">node</var>, and let
+    <var title="">new nodes</var> be the result.
+
+    <li>For each <var title="">new node</var> in <var title="">new nodes</var>, <a href=#recursively-style-a-node title="recursively style a node">recursively style <var title="">new
+    node</var></a>, with the same inputs as this invocation of the
+    algorithm.
+
+    <li>If <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is null, abort this algorithm.
+  </ol>
+
+  <li><a href=#style-a-node title="style a node">Style</a> <var title="">node</var>.
+</ol>
+
+
+<h2 id=styling-a-range><span class=secno>9 </span>Styling a Range</h2>
+<p>When a user agent is to <dfn id=style-a-range>style a <code class=external data-anolis-spec=domrange>Range</code></dfn>, it must <a href=#decompose-a-range title="decompose a range">decompose</a> the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a>, then <a href=#recursively-style-a-node title="recursively style a node">recursively style</a> each <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> in the
+returned list.
+
+
+<h2 id=unstyling-a-node><span class=secno>10 </span>Unstyling a Node</h2>
+<p>When a user agent is to <dfn id=unstyle-a-node>unstyle a <code class=external data-anolis-spec=domcore>Node</code></dfn> <var title="">node</var>, it
+must run the following steps.  There are three inputs: a CSS property name
+<var title="">property name</var>, a new value <var title="">new value</var>, and a possibly
+empty list of strings <var title="">tag list</var>.
+
+<ol>
+  <li>If <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is null, or if <var title="">node</var> is not an
+  <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a> or <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> node, abort this algorithm. <!-- XXX: What to do
+  here?  We want to ignore comments and PIs, but we might want to support
+  detached elements, documents, document fragments, . . . -->
+
+  <li>If <var title="">node</var> is an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a>:
+
+  <ol>
+    <li><a href=#recursively-clear-styles>Recursively clear styles</a> on <var title="">node</var>, and let
+    <var title="">new nodes</var> be the result.
+
+    <li>For each <var title="">new node</var> in <var title="">new nodes</var>, <a href=#unstyle-a-node title="unstyle a node">unstyle <var title="">new node</var></a>, with the same
+    inputs as this invocation of the algorithm.
+
+    <li>If <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is null, abort this algorithm.
+  </ol>
+
+  <li>If <var title="">node</var> is an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a>, let <var title="">current value</var> equal
+  the computed value of <var title="">property name</var> on <var title="">node</var>.
+  Otherwise, let <var title="">current value</var> equal the computed value of
+  <var title="">property name</var> on <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+
+  <li>If <var title="">current value</var> equals <var title="">new value</var>, abort this
+  algorithm.
+
+  <li>Let <var title="">ancestor list</var> be a list of <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a>s, initially empty.
+
+  <li>Let <var title="">current ancestor</var> equal <var title="">node</var>.
+
+  <li>While <var title="">current ancestor</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a>, set
+  <var title="">current ancestor</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>, then append it to
+  <var title="">ancestor list</var>.
+  
+  <li>While <var title="">ancestor list</var> is not empty, and the last member of
+  <var title="">ancestor list</var> has <a href=#specified-style>specified style</a> for <var title="">property
+  name</var> equal to <var title="">new value</var> or null, remove the last member from
+  <var title="">ancestor list</var>.
+
+  <li>While <var title="">ancestor list</var> is not empty:
+
+  <ol>
+    <li>Let <var title="">current ancestor</var> be the last member of <var title="">ancestor
+    list</var>.
+
+    <li>Remove the last member from <var title="">ancestor list</var>.
+
+    <li>Let <var title="">propagated value</var> be the <a href=#specified-style>specified style</a> of
+    <var title="">current ancestor</var> for <var title="">property name</var>.
+
+    <li>If <var title="">propagated value</var> is null, continue this loop from the
+    beginning.
+
+    <li>Let <var title="">children</var> be the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a> of <var title="">current
+    ancestor</var>.
+
+    <li><a href=#clear-styles>Clear styles</a> on <var title="">current ancestor</var>.
+
+    <li>For every <var title="">child</var> in <var title="">children</var>:
 
     <ol>
-      <li><p>Unset the CSS property <var title="">property name</var> of <var title="">node</var>.
+      <li>If <var title="">child</var> is <var title="">node</var>, continue with the next
+      <var title="">child</var>.
 
-      <li><p>If the computed value of <var title="">property name</var> for
-      <var title="">node</var> is not <var title="">property value</var>, set the CSS property
-      <var title="">property name</var> of <var title="">node</var> to <var title="">property value</var>.
-      <!-- This means we don't bother applying the property if the style is
-      already present, e.g., from an ancestor.  But we do apply it if the
-      element is the expected sort of element but the style is wrong anyway,
-      e.g., <span style=font-weight:100><b>Foo</b></span> where b's style is
-      font-weight: bold. -->
+      <li>If <var title="">child</var> is an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a> whose <a href=#specified-style>specified
+      style</a> for <var title="">property name</var> is neither null nor equal to
+      <var title="">propagated value</var>, continue with the next <var title="">child</var>.
 
-      <li><p>Let <var title="">element children</var> be the <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a> children
-      of <var title="">node</var>.
+      <li>If <var title="">child</var> is the last member of <var title="">ancestor list</var>,
+      set <var title="">child</var>'s CSS property <var title="">property name</var> to
+      <var title="">propagated value</var> and continue with the next <var title="">child</var>.
 
-      <li><p><a href=#unstyle-an-element title="unstyle an element">Unstyle</a> each <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a>
-      in <var title="">element children</var>, in order.
+      <p class=note>This style will be removed on the next loop iteration and
+      distributed to its children.
 
-      <p class=note>Unstyling an element can change the number of children its
-      parent has, so the list of children to unstyle needs to be computed
-      beforehand.
+      <li><a href=#style-a-node title="style a node">Style</a> <var title="">child</var>, with
+      <var title="">property name</var> and <var title="">tag list</var> as in this algorithm,
+      and <var title="">property value</var> equal to <var title="">propagated value</var>.
     </ol>
+  </ol>
 
-    <li><p>Otherwise, if <var title="">node</var> is a <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> node:
+  <!-- We might have a rule inherited from someplace where we can't remove it,
+  or maybe even a rule in a stylesheet (although that case is pathological and
+  we generally ignore it) -->
+  <li>If <var title="">node</var> is an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a> and <var title="">property name</var> does
+  not compute to <var title="">new value</var> on it, set <var title="">property name</var> to
+  <var title="">new value</var> on it.
 
-    <ol>
-      <li><p>Let <var title="">tag</var> be the first string in <var title="">tag list</var>, or
-      "span" if <var title="">tag list</var> is empty.
+  <li>If <var title="">node</var> is a <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> node and <var title="">property name</var> does
+  not compute to <var title="">new value</var> on its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>:
 
-      <li><p>Let <var title="">new parent</var> be the result of calling <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement><code class=external data-anolis-spec=domcore title=dom-Document-createElement>createElement(<var title="">tag</var>)</code></a> on
-      the <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument><code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument>ownerDocument</code></a> of <var title="">node</var>.
+  <ol>
+    <li>Let <var title="">new parent</var> be the result of calling <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement><code class=external data-anolis-spec=domcore title=dom-Document-createElement>createElement("span")</code></a> on the
+    <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument><code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument>ownerDocument</code></a> of <var title="">node</var>.
 
-      <li><p>Append <var title="">new parent</var> to <var title="">node</var>'s parent as the
-      previous sibling of <var title="">node</var>.
+    <li>Set <var title="">property name</var> to <var title="">new value</var> on <var title="">new
+    parent</var>.
 
-      <li><p>If the computed value of <var title="">property name</var> on <var title="">new
-      parent</var> is not equal to <var title="">property value</var>, set the CSS
-      property <var title="">property name</var> of <var title="">new parent</var> to
-      <var title="">property value</var>.
-      <!-- This is needed if tag list is empty, but also if the correct style
-      is being suppressed for some reason, like <span
-      style=font-weight:100><b>Foo</b></span> where b is font-weight: bolder.
-      -->
+    <li>Insert <var title="">new parent</var> into <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> before
+    <var title="">node</var>.
 
-      <li><p>Append <var title="">node</var> to <var title="">new parent</var> as
-      its last child.
-    </ol>
-
-    <li><p>Otherwise, do nothing.
+    <li>Append <var title="">node</var> as the last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">new parent</var>.
   </ol>
 </ol>
-<!-- Out of IE9, Gecko, WebKit, and Opera, when asked to (e.g.) bold an
-element, IE9 and WebKit and Opera wrap various descendants in <b> or <strong>;
-Gecko just adds a style attribute.  The latter is simpler, particularly because
-you then don't have to worry about making sure you only insert your tags in a
-valid place (which you have to so that text/html serialization is possible, if
-nothing else).  I originally specced the former approach, available in git
-history. -->
 
 
-<h2 id=unstyling-a-range><span class=secno>7 </span>Unstyling a Range</h2>
+<h2 id=unstyling-a-range><span class=secno>11 </span>Unstyling a Range</h2>
 <p>When a user agent is to <dfn id=unstyle-a-range>unstyle a <code class=external data-anolis-spec=domrange>Range</code></dfn> <var title="">range</var>, it
-must run the following steps.  There are three inputs: a CSS property name
-<var title="">property name</var>, a new value <var title="">property value</var>, and a possibly
-empty list of strings <var title="">tag list</var>.
-
-<ol>
-  <li><p>Let <var title="">node list</var> be the result of <a href=#decompose-a-range title="decompose
-  a range">decomposing</a> <var title="">range</var>.
-
-  <li><p>For each <var title="">node</var> in <var title="">node list</var>, in order:
-
-  <ol>
-    <li><p>If <var title="">node</var> is an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a>:
-
-    <ol>
-      <li><p>Let <var title="">extra nodes</var> be the result of <a href=#unstyle-an-element title="unstyle an element">unstyling</a> <var title="">node</var>.
-
-      <li><p>If <var title="">node</var> no longer has a parent:
-
-      <ol>
-        <li><p>Insert all the <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a>s in <var title="">extra nodes</var> into
-        <var title="">node list</var> immediately after <var title="">node</var>, in order.
-
-        <li><p>Continue with the next <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> in <var title="">node list</var>, if any.
-
-        <p class=note>The next <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> will be the first in <var title="">extra
-        nodes</var>, unless <var title="">extra nodes</var> is empty.
-      </ol>
-
-      <li><p>If the computed value of <var title="">property name</var> for <var title="">node</var> is not <var title="">property value</var>, set the CSS
-      property <var title="">property name</var> of <var title="">node</var> to <var title="">property value</var>.
-
-      <li><p>Let <var title="">element children</var> be the <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a> children
-      of <var title="">node</var>.
-
-      <li><p><a href=#unstyle-an-element title="unstyle an element">Unstyle</a> each <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a>
-      in <var title="">element children</var>, in order.
-
-      <p class=note>Unstyling an element can change the number of children its
-      parent has, so the list of children to unstyle needs to be computed
-      beforehand.
-    </ol>
-
-    <li><p>Otherwise, if <var title="">node</var> is a <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> node and the computed value of <var title="">property name</var> for <var title="">node</var>'s parent is not <var title="">property value</var>:
-
-    <ol>
-      <li><p>Let <var title="">new parent</var> be the result of calling <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement><code class=external data-anolis-spec=domcore title=dom-Document-createElement>createElement("span")</code></a> on the
-      <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument><code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument>ownerDocument</code></a> of <var title="">node</var>.
-
-      <li><p>Set the CSS property <var title="">property name</var> of <var title="">new
-      parent</var> to <var title="">property value</var>.
-
-      <li><p>Insert <var title="">new parent</var> as <var title="">node</var>'s
-      previous sibling.
-
-      <li><p>Append <var title="">node</var> to <var title="">new parent</var> as its
-      child.
-    </ol>
-
-    <li><p>Otherwise, do nothing.
-  </ol>
-</ol>
+must <a href=#decompose-a-range title="decompose a range">decompose</a> the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a>, then <a href=#unstyle-a-node title="unstyle a node">unstyle</a> each <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> in the returned list.
 
 
-<h2 id=commands><span class=secno>8 </span>Commands</h2>
+<h2 id=commands><span class=secno>12 </span>Commands</h2>
 <p>The <dfn id=execcommand() title=execCommand()><code>execCommand(<var title="">commandId</var>,
 <var title="">showUI</var>, <var title="">value</var>)</code></dfn> method on the
 <a href=http://www.whatwg.org/html/#htmldocument><code class=external data-anolis-spec=html>HTMLDocument</code></a> interface allows scripts to
@@ -578,17 +761,17 @@ interoperably implemented than backColor.
 <dd><p><strong>Value</strong>: The value is given by the following algorithm:
 
 <ol>
-  <li><p>Let <var title="">element</var> be the <a href=#beginning-element>beginning element</a> of the
+  <li>Let <var title="">element</var> be the <a href=#beginning-element>beginning element</a> of the
   <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a>.
 
-  <li><p>While the computed style of "background-color" on <var title="">element</var>
+  <li>While the computed style of "background-color" on <var title="">element</var>
   is any fully transparent value, set <var title="">element</var> to its parent.
 
   <p class=XXX>It's intended that for these purposes, the root element will
   have a white background.  Should that be specified somewhere?  I don't think
   all UAs actually do it.
 
-  <li><p>Return the computed style of "background-color" for
+  <li>Return the computed style of "background-color" for
   <var title="">element</var>.
 </ol>
 <!-- Chrome 10 returns rgba(0, 0, 0, 0) if there's no background defined
@@ -625,7 +808,7 @@ boolean, so I'll go with Firefox and Opera. -->
 <dd><p><strong>Action</strong>: The user agent must run the following steps:
 
 <ol>
-  <li><p>If <var title="">value</var> is the empty string, abort these steps and do
+  <li>If <var title="">value</var> is the empty string, abort these steps and do
   nothing.
   <!-- This matches Firefox 4b11 and Chrome 11 dev.  IE 9 RC and Opera 11 both
   treat the request literally.  Gecko and WebKit probably have it right here:
@@ -634,35 +817,35 @@ boolean, so I'll go with Firefox and Opera. -->
   specify "#" for the value, or the author can rewrite it, so it's not like
   this makes the API less useful. -->
 
-  <li><p>Let <var title="">node list</var> be the result of <a href=#decompose-a-range title="decompose a
+  <li>Let <var title="">node list</var> be the result of <a href=#decompose-a-range title="decompose a
   range">decomposing</a> the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a>.
 
-  <li><p>For each <var title="">node</var> in <var title="">node list</var>, in order:
+  <li>For each <var title="">node</var> in <var title="">node list</var>, in order:
 
   <ol>
-    <li><p>Let <var title="">text nodes</var> be a list of all <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> node
+    <li>Let <var title="">text nodes</var> be a list of all <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> node
     <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-descendant title=concept-tree-descendant>descendants</a> of <var title="">node</var>, or <var title="">node</var> itself if it's a
     <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> node.
 
-    <li><p>For each <var title="">text node</var> in <var title="">text nodes</var>, in
+    <li>For each <var title="">text node</var> in <var title="">text nodes</var>, in
     <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#tree-order>tree order</a>:
 
     <ol>
-      <li><p>Let <var title="">ancestor link</var> be the parent of <var title="">text
+      <li>Let <var title="">ancestor link</var> be the parent of <var title="">text
       node</var>.
 
-      <li><p>While <var title="">ancestor link</var> is not an <a href=#html-element>HTML
+      <li>While <var title="">ancestor link</var> is not an <a href=#html-element>HTML
       element</a>, or its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> is not "a", or it has no <a href=#html-attribute>HTML
       attribute</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-attr-local-name title=concept-attr-local-name>local name</a> "href":
 
       <ol>
-        <li><p>If the parent of <var title="">ancestor link</var> is not an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a>,
+        <li>If the parent of <var title="">ancestor link</var> is not an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a>,
         set <var title="">ancestor link</var> to null and break from this loop.
 
-        <li><p>Otherwise, set <var title="">ancestor link</var> to its parent.
+        <li>Otherwise, set <var title="">ancestor link</var> to its parent.
       </ol>
 
-      <li><p>If <var title="">ancestor link</var> is not null, set its "href" attribute
+      <li>If <var title="">ancestor link</var> is not null, set its "href" attribute
       to <var title="">value</var> and continue with the next <var title="">text node</var>.
       <!-- There are three approaches here.  For instance, if you ask browsers
       to create a link to "http://example.org" on the "b" here:
@@ -687,16 +870,16 @@ boolean, so I'll go with Firefox and Opera. -->
       miss out a character when selecting the link you want to change, do you
       really intend to only change the link of part of it? -->
 
-      <li><p>Let <var title="">new parent</var> be the result of calling <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement><code class=external data-anolis-spec=domcore title=dom-Document-createElement>createElement("a")</code></a> on the
+      <li>Let <var title="">new parent</var> be the result of calling <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement><code class=external data-anolis-spec=domcore title=dom-Document-createElement>createElement("a")</code></a> on the
       <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument><code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument>ownerDocument</code></a> of <var title="">text node</var>.
 
-      <li><p>Call <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-element-setattribute><code class=external data-anolis-spec=domcore title=dom-Element-setAttribute>setAttribute("href",
+      <li>Call <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-element-setattribute><code class=external data-anolis-spec=domcore title=dom-Element-setAttribute>setAttribute("href",
       <var title="">value</var>)</code></a> on <var title="">new parent</var>.
 
-      <li><p>Insert <var title="">new parent</var> into <var title="">text node</var>'s parent as
+      <li>Insert <var title="">new parent</var> into <var title="">text node</var>'s parent as
       the previous sibling of <var title="">text node</var>.
 
-      <li><p>Append <var title="">text node</var> to <var title="">new parent</var> as its last
+      <li>Append <var title="">text node</var> to <var title="">new parent</var> as its last
       child.
     </ol>
   </ol>
@@ -796,10 +979,8 @@ matches the other browsers. -->
 
 <dd><p><strong>Action</strong>: The user agent must run the following steps:
 
-<p class=XXX>We need to delete the selection if it's not collapsed.
-
 <ol>
-  <li><p>If <var title="">value</var> is the empty string, abort these steps and do
+  <li>If <var title="">value</var> is the empty string, abort these steps and do
   nothing.
   <!-- Similar logic to createLink, except even more compelling, since an HTML
   document linking to itself as an image is just silly.  In fact, the current
@@ -807,24 +988,26 @@ matches the other browsers. -->
   immediately if the URL is empty.  Firefox 4b11 bails out on an empty string,
   but the other three browsers I tested stick in the <img> anyway. -->
 
-  <li><p>Let (<var title="">node</var>, <var title="">offset</var>) be the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a>'s
+  <li>Run <a href=http://html5.org/specs/dom-range.html#dom-range-deletecontents><code class=external data-anolis-spec=domrange title=dom-Range-deleteContents>deleteContents()</code></a> on the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a>.
+
+  <li>Let (<var title="">node</var>, <var title="">offset</var>) be the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a>'s
   <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a>.
 
-  <li><p>Let <var title="">img</var> be a new <a href=#html-element>HTML element</a> with
+  <li>Let <var title="">img</var> be a new <a href=#html-element>HTML element</a> with
   <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> "img", the same <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument><code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument>ownerDocument</code></a> as <var title="">node</var>, and a
   single <a href=#html-attribute>HTML attribute</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-attr-local-name title=concept-attr-local-name>local name</a> "src" and with
   <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-attr-value title=concept-attr-value>value</a> <var title="">value</var>.
   <!-- No alt text, so it's invalid.  This matches all browsers. -->
 
-  <li><p>If <var title="">node</var> is a <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> node, and <var title="">offset</var> is not
+  <li>If <var title="">node</var> is a <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> node, and <var title="">offset</var> is not
   equal to 0 or the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> of <var title="">node</var>, run <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-text-splittext><code class=external data-anolis-spec=domcore title=dom-Text-splitText>splitText(<var title="">offset</var>)</code></a> on
   <var title="">node</var>.
 
-  <li><p>If <var title="">node</var> is a <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a>, <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#comment><code class=external data-anolis-spec=domcore>Comment</code></a>, or
+  <li>If <var title="">node</var> is a <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a>, <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#comment><code class=external data-anolis-spec=domcore>Comment</code></a>, or
   <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#processinginstruction><code class=external data-anolis-spec=domcore>ProcessingInstruction</code></a> node, run <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-insertbefore><code class=external data-anolis-spec=domcore title=dom-Node-insertBefore>insertBefore(<var title="">img</var>,
   <var title="">node</var>)</code></a> on the parent of <var title="">node</var>.
 
-  <li><p>Otherwise, let <var title="">child</var> be the <var title="">offset</var>th child of
+  <li>Otherwise, let <var title="">child</var> be the <var title="">offset</var>th child of
   <var title="">node</var> (or null if there is no such child), and run <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-insertbefore><code class=external data-anolis-spec=domcore title=dom-Node-insertBefore>insertBefore(<var title="">img</var>,
   <var title="">child</var>)</code></a> on <var title="">node</var>.
 </ol>
@@ -866,27 +1049,27 @@ and reorganizing the DOM.  Revisit this later to see if it's reasonable to spec
 what the other browsers do instead.
 
 <ol>
-  <li><p>Let <var title="">links</var> be a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-collection title=concept-collection>collection</a> rooted at the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a>'s
+  <li>Let <var title="">links</var> be a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-collection title=concept-collection>collection</a> rooted at the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a>'s
   <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-root title=concept-range-root>root</a>, whose filter matches only <a href=#html-element title="HTML element">HTML
   elements</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> "a", that have an <a href=#html-attribute>HTML
   attribute</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-attr-local-name title=concept-attr-local-name>local name</a> "href".
 
-  <li><p>Let <var title="">selected</var> be a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-collection title=concept-collection>collection</a> rooted at the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a>'s
-  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-root title=concept-range-root>root</a>, whose filter matches only <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a>s that are equal to or after
-  the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a>'s <a href=#first-node>first node</a> in <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#tree-order>tree order</a>, and also equal to
-  or before the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a>'s <a href=#last-node>last node</a> in <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#tree-order>tree order</a>.
+  <li>Let <var title="">selected</var> be a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-collection title=concept-collection>collection</a> rooted at the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a>'s
+  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-root title=concept-range-root>root</a>, whose filter matches only <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a>s that are <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in
+  the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a> and <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> nodes that are <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#partially-contained>partially contained</a> in the
+  <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a>.
 
-  <li><p>For each <var title="">link</var> in <var title="">links</var>, in <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#tree-order>tree order</a>:
+  <li>For each <var title="">link</var> in <var title="">links</var>, in <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#tree-order>tree order</a>:
 
   <ol>
-    <li><p>If <var title="">link</var> is not in <var title="">selected</var> and is not an
+    <li>If <var title="">link</var> is not in <var title="">selected</var> and is not an
     <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of any <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> in <var title="">selected</var>, continue with the next
     <var title="">link</var>.
 
-    <li><p>While <var title="">link</var> has children, insert <var title="">link</var>'s first
+    <li>While <var title="">link</var> has children, insert <var title="">link</var>'s first
     child into its parent as <var title="">link</var>'s previous sibling.
 
-    <li><p>Remove <var title="">link</var>.
+    <li>Remove <var title="">link</var>.
 
     <p class=XXX>This means it disappears even if it had an id, class, etc.
     Maybe not what we want?

@@ -1,0 +1,146 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<title>CSS Test: line-break - strict - basic cases Reftest Reference</title>
+		<link rel="author" title="Satoshi Umehara" href="mailto:umehara@est.co.jp" />
+		<style type="text/css">
+			<![CDATA[
+				p.control {
+					border: 1px solid gray;
+					color: blue;
+					font-family: "IPAMincho", "IPAGothic", "IPA明朝", "IPAゴシック";
+					width: 10em;
+				}
+				span.target {
+					background-color: aqua;
+				}
+				span.attention {
+					color: red;
+				}
+			]]>
+		</style>
+	</head>
+	<body>
+		<p>
+			Test passes if the highlighted character in the first line is located at the same position in the next line.
+		</p>
+		<hr />
+		<p class="control">
+			<span>満たすための文字で<br />す<span class="target">ぁ</span>満たす文字</span>
+		</p>
+		<p class="control">
+			<span>満たすための文字で<br />す<span class="target">ぁ</span>満たす文字</span>
+		</p>
+		<hr />
+		<p class="control">
+			<span>満たすための文字で<br />す<span class="target">ー</span>満たす文字</span>
+		</p>
+		<p class="control">
+			<span>満たすための文字で<br />す<span class="target">ー</span>満たす文字</span>
+		</p>
+		<hr />
+		<p class="control">
+			<span>満たすための文字で<br />す<span class="target">‐</span>満たす文字</span>
+		</p>
+		<p class="control">
+			<span>満たすための文字で<br />す<span class="target">‐</span>満たす文字</span>
+		</p>
+		<hr />
+		<p class="control">
+			<span>満たすための文字で<br />す<span class="target">～</span>満たす文字</span>
+		</p>
+		<p class="control">
+			<span>満たすための文字で<br />す<span class="target">～</span>満たす文字</span>
+		</p>
+		<hr />
+		<p class="control">
+			<span>満たすための文字で<br />す<span class="target">＝</span>満たす文字</span>
+		</p>
+		<p class="control">
+			<span>満たすための文字で<br />す<span class="target">＝</span>満たす文字</span>
+		</p>
+		<hr />
+		<p class="control">
+			<span>満たすための文字で<br />す<span class="target">々</span>満たす文字</span>
+		</p>
+		<p class="control">
+			<span>満たすための文字で<br />す<span class="target">々</span>満たす文字</span>
+		</p>
+		<hr />
+		<p class="control">
+			<span>満たすための文字で<br />す<span class="target">…</span>満たす文字</span>
+		</p>
+		<p class="control">
+			<span>満たすための文字で<br />す<span class="target">…</span>満たす文字</span>
+		</p>
+		<hr />
+		<p class="control">
+			<span class="test">Filler Filler<br />Filler<span class="target">;</span> Filler</span>
+		</p>
+		<p class="control">
+			<span class="test">Filler Filler<br />Filler<span class="target">;</span> Filler</span>
+		</p>
+		<hr />
+		<p class="control">
+			<span>満たすための文字で<br />す<span class="target">；</span>満たす文字</span>
+		</p>
+		<p class="control">
+			<span>満たすための文字で<br />す<span class="target">；</span>満たす文字</span>
+		</p>
+		<hr />
+		<p class="control">
+			<span>満たすための文字で<br />す<span class="target">・</span>満たす文字</span>
+		</p>
+		<p class="control">
+			<span>満たすための文字で<br />す<span class="target">・</span>満たす文字</span>
+		</p>
+		<hr />
+		<p class="control">
+			<span class="test">Filler Filler<br />Filler<span class="target">!</span> Filler</span>
+		</p>
+		<p class="control">
+			<span class="test">Filler Filler<br />Filler<span class="target">!</span> Filler</span>
+		</p>
+		<hr />
+		<p class="control">
+			<span>満たすための文字で<br />す<span class="target">！</span>満たす文字</span>
+		</p>
+		<p class="control">
+			<span>満たすための文字で<br />す<span class="target">！</span>満たす文字</span>
+		</p>
+		<hr />
+		<p class="control">
+			<span class="test">Filler Filler<br />Filler<span class="target">%</span> Filler</span>
+		</p>
+		<p class="control">
+			<span class="test">Filler Filler<br />Filler<span class="target">%</span> Filler</span>
+		</p>
+		<hr />
+		<p class="control">
+			<span>満たすための文字で<br />す<span class="target">％</span>満たす文字</span>
+		</p>
+		<p class="control">
+			<span>満たすための文字で<br />す<span class="target">％</span>満たす文字</span>
+		</p>
+		<hr />
+		<p class="control">
+			<span class="test">Filler Text Filler<br /><span class="target">$</span>Text Filler Text</span>
+		</p>
+		<p class="control">
+			<span class="test">Filler Text Filler<br /><span class="target">$</span>Text Filler Text</span>
+		</p>
+		<hr />
+		<p class="control">
+			<span>満たすための文字で<br /><span class="target">＄</span>満たす文字</span>
+		</p>
+		<p class="control">
+			<span>満たすための文字で<br /><span class="target">＄</span>満たす文字</span>
+		</p>
+		<hr />
+		<p>
+			<span class="attention">* You will need a Japanese font.</span><br />
+			If you are unable to see font glyphs for certain characters using the browsers default font, install the <a href="http://ossipedia.ipa.go.jp/ipafont/">IPA Font(http://ossipedia.ipa.go.jp/ipafont/)</a> and reload this page.
+		</p>
+	</body>
+</html>

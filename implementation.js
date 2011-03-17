@@ -2,24 +2,7 @@
 
 var htmlNamespace = "http://www.w3.org/1999/xhtml";
 
-function getNodeIndex(node) {
-	var ret = 0;
-	while (node != node.parentNode.childNodes[ret]) {
-		ret++;
-	}
-	return ret;
-}
-
-function getNodeLength(node) {
-	if (node.nodeType == Node.TEXT_NODE
-	|| node.nodeType == Node.COMMENT_NODE
-	|| node.nodeType == Node.PROCESSING_INSTRUCTION_NODE) {
-		return node.data.length;
-	}
-
-	return node.childNodes.length;
-}
-
+// Utility functions
 function nextNode(node) {
 	if (node.hasChildNodes()) {
 		return node.firstChild;
@@ -52,35 +35,71 @@ function nextNodeDescendants(node) {
 	return node.nextSibling;
 }
 
-function convertProperty(propertyName) {
+function convertProperty(property) {
 	// Special-case for now
 	var map = {
 		"fontStyle": "font-style",
 		"fontWeight": "font-weight",
 		"textDecoration": "text-decoration",
 	};
-	if (typeof map[propertyName] != "undefined") {
-		return map[propertyName];
+	if (typeof map[property] != "undefined") {
+		return map[property];
 	}
 
-	return propertyName;
+	return property;
 }
 
-function cssValuesEqual(propertyName, val1, val2) {
+function cssValuesEqual(property, val1, val2) {
 	// This is a bad hack to work around browser incompatibility.  It wouldn't
 	// work in real life, but it's good enough for a test implementation.
-	var test1 = document.createElement("span");
-	test1.style[propertyName] = val1;
-	var test2 = document.createElement("span");
-	test2.style[propertyName] = val2;
+	if (val1 === null || val2 === null) {
+		return val1 === val2;
+	}
 
-	return test1.style[propertyName] == test2.style[propertyName];
+	if (property == "fontWeight") {
+		return val1 == val2
+			|| (val1.toLowerCase() == "bold" && val2 == "700")
+			|| (val2.toLowerCase() == "bold" && val1 == "700")
+			|| (val1.toLowerCase() == "normal" && val2 == "400")
+			|| (val2.toLowerCase() == "normal" && val1 == "400");
+	}
+	var test1 = document.createElement("span");
+	test1.style[property] = val1;
+	var test2 = document.createElement("span");
+	test2.style[property] = val2;
+
+	return test1.style[property] == test2.style[property];
 }
 
+// Opera 11 puts HTML elements in the null namespace, it seems.
+function isHtmlNamespace(ns) {
+	return ns === null
+		|| ns === htmlNamespace;
+}
+
+
+// Functions for stuff in DOM Range
+function getNodeIndex(node) {
+	var ret = 0;
+	while (node != node.parentNode.childNodes[ret]) {
+		ret++;
+	}
+	return ret;
+}
+
+function getNodeLength(node) {
+	if (node.nodeType == Node.TEXT_NODE
+	|| node.nodeType == Node.COMMENT_NODE
+	|| node.nodeType == Node.PROCESSING_INSTRUCTION_NODE) {
+		return node.data.length;
+	}
+
+	return node.childNodes.length;
+}
 
 /**
  * The position of two boundary points relative to one another, as defined by
- * the spec.
+ * DOM Range.
  */
 function getPosition(nodeA, offsetA, nodeB, offsetB) {
 	// "If node A is the same as node B, return equal if offset A equals offset
@@ -156,54 +175,43 @@ function isContained(node, range) {
 		&& pos2 == "before";
 }
 
+
+// Things defined in the edit command spec (i.e., the interesting stuff)
+
+
+// "A Node is an HTML element if it is an Element whose namespace is the HTML
+// namespace."
 function isHtmlElement(node) {
 	return node
 		&& node.nodeType == Node.ELEMENT_NODE
-		&& node.namespaceURI == htmlNamespace;
+		&& isHtmlNamespace(node.namespaceURI);
 }
 
-function beginningElement(range) {
-	// "If the start node of the Range is a Text, Comment, or
-	// ProcessingInstruction node, and the start offset of the Range is not
-	// equal to the length of its start node, let first node be the Range's
-	// start node."
-	var firstNode = null;
-	if (range.startOffset != getNodeLength(range.startContainer)
-	&& (range.startContainer.nodeType == Node.TEXT_NODE
-	|| range.startContainer.nodeType == Node.COMMENT_NODE
-	|| range.startContainer.nodeType == Node.PROCESSING_INSTRUCTION_NODE)) {
-		firstNode = range.startContainer;
-	// "Otherwise, let first node be the first Node in tree order that is
-	// contained in the Range, if there is any."
-	} else {
-		var firstContained = range.startContainer;
-		while (firstContained != range.endContainer
-		&& !isContained(firstContained, range)) {
-			firstContained = nextNode(firstContained);
-		}
-		if (firstContained != range.endContainer) {
-			firstNode = firstContained;
-		}
-	}
 
-	// "If first node is defined and is an Element, return first node."
-	if (firstNode && firstNode.nodeType == Node.ELEMENT_NODE) {
-		return firstNode;
+/**
+ * "A Node is effectively contained in a Range if either it is contained in the
+ * Range; or it is the Range's start node, it is a Text node, and its length is
+ * different from the Range's start offset; or it is the Range's end node, it
+ * is a Text node, and the Range's end offset is not 0."
+ */
+function isEffectivelyContained(node, range) {
+	if (isContained(node, range)) {
+		return true;
 	}
-
-	// "Otherwise, if first node is defined and its parent is an Element,
-	// return first node's parent."
-	if (firstNode
-	&& firstNode.parentNode
-	&& firstNode.parentNode.nodeType == Node.ELEMENT_NODE) {
-		return firstNode.parentNode;
+	if (node == range.startContainer
+	&& node.nodeType == Node.TEXT_NODE
+	&& getNodeLength(node) != range.startOffset) {
+		return true;
 	}
-
-	// "Return null."
-	return null;
+	if (node == range.endContainer
+	&& node.nodeType == Node.TEXT_NODE
+	&& range.endOffset != 0) {
+		return true;
+	}
+	return false;
 }
 
-function activeRange(doc) {
+function getActiveRange(doc) {
 	// "Let selection be the result of calling getSelection() on the Document."
 	//
 	// We call getSelection() on defaultView instead, because Firefox and Opera
@@ -243,167 +251,152 @@ function activeRange(doc) {
 	}
 }
 
-/**
- * "Given a CSS property name property name, an (optional) value property value
- * for that property, and a possibly empty list of strings tag list, a Node is
- * a potentially relevant styling element if it is an HTML element and one of
- * the following holds:
- *
- *  * Its local name is in tag list and it has no attributes.
- *  * Its local name is in tag list or is "span" or is "font", and it has
- *    exactly one attribute, and that attribute is an HTML attribute with local
- *    name "style", and that attribute sets exactly one CSS property, and that
- *    property is property name, and either property value is undefined or the
- *    value the attribute sets the property to is property value.
- *  * Its local name is "font", and it has exactly one attribute, and that
- *    attribute is a color attribute, and either property value is undefined or
- *    the effect of the attribute is to hint that the CSS color attribute be
- *    set to property value, and property name is "color".
- *  * Its local name is "font", and it has exactly one attribute, and that
- *    attribute is a face attribute, and either property value is undefined or
- *    the effect of the attribute is to hint that the CSS font-family attribute
- *    be set to property value, and property name is "font-family".
- *  * Its local name is "font", and it has exactly one attribute, and that
- *    attribute is a size attribute, and either property value is undefined or
- *    the effect of the attribute is to hint that the CSS font-size attribute
- *    be set to property value, and property name is "font-size"."
- */
-function isPotentiallyRelevantStylingElement(element, propertyName, propertyValue, tagList) {
-	if (!isHtmlElement(element)) {
+// "An unwrappable element is an HTML element which may not be used where only
+// phrasing content is expected (not counting unknown or obsolete elements,
+// which cannot be used at all)."
+//
+// I don't bother implementing this exactly, just well enough for testing.
+function isUnwrappableElement(node) {
+	if (!isHtmlElement(node)) {
 		return false;
 	}
 
-	var localName = element.tagName.toLowerCase();
-
-	if (tagList.indexOf(localName) != -1 && element.attributes.length == 0) {
-		return true;
-	}
-
-	if ((tagList.indexOf(localName) != -1 || localName == "span" || localName == "font")
-	&& element.attributes.length == 1
-	// Not checking namespace because it seems buggy, maybe?
-	//&& element.attributes[0].namespaceURI == htmlNamespace
-	&& element.attributes[0].localName == "style"
-	&& element.style.length == 1
-	&& element.style.item(0) == convertProperty(propertyName)
-	&& (propertyValue === null
-	|| cssValuesEqual(propertyName, element.style[propertyName], propertyValue))) {
-		return true;
-	}
-
-	var fontAttr = null;
-	if (propertyName == "color") {
-		fontAttr = "color";
-	} else if (propertyName == "fontFamily") {
-		fontAttr = "face";
-	} else if (propertyName == "fontSize") {
-		fontAttr = "size";
-	}
-
-	// TODO: cssValuesEqual() is total nonsense for font-size.
-	if (fontAttr
-	&& localName == "font"
-	&& element.attributes.length == 1
-	//&& element.attributes[0].namespaceURI == htmlNamespace
-	&& element.attributes[0].localName == fontAttr
-	&& (propertyValue === null
-	|| cssValuesEqual(propertyName, element[fontAttr], propertyValue))) {
-		return true;
-	}
+	return [
+		"h1", "h2", "h3", "h4", "h5", "h6", "p", "hr", "pre", "blockquote",
+		"ol", "ul", "li", "dl", "dt", "dd", "div", "table", "caption",
+		"colgroup", "col", "tbody", "thead", "tfoot", "tr", "th", "td",
+	].indexOf(node.tagName.toLowerCase()) != -1;
 }
 
 /**
- * "A Node is a relevant styling element if it is a potentially relevant
- * styling element, and its CSS property property name computes to property
- * value."
+ * "specified style" per edit command spec
  */
-function isRelevantStylingElement(node, propertyName, propertyValue, tagList) {
-	return isPotentiallyRelevantStylingElement(node, propertyName, propertyValue, tagList)
-		&& cssValuesEqual(propertyName, getComputedStyle(node)[propertyName], propertyValue);
-}
-
-/**
- * "A phrasing element is either an HTML element that is categorized as
- * phrasing content, or a non-conforming HTML element (which thus has no
- * categories), or an Element that is not an HTML element."
- */
-function isPhrasingElement(element) {
-	if (!element || element.nodeType != Node.ELEMENT_NODE) {
-		return false;
-	}
-
-	if (!isHtmlElement(element)) {
-		return true;
-	}
-
-	// As of March 2011.
-	var nonConforming = ["applet", "acronym", "bgsound", "dir", "frame",
-	"frameset", "noframes", "isindex", "listing", "xmp", "nextid", "noembed",
-	"plaintext", "rb", "strike", "basefont", "big", "blink", "center", "font",
-	"marquee", "multicol", "nobr", "spacer", "tt", "u"];
-
-	// I'm skipping checks for elements that are only sometimes phrasing
-	// content.  I just assume they always are.
-	var phrasingElements = ["a", "abbr", "area", "audio", "b", "bdi", "bdo",
-	"br", "button", "canvas", "cite", "code", "command", "datalist", "del",
-	"dfn", "em", "embed", "i", "iframe", "img", "input", "ins", "kbd",
-	"keygen", "label", "link", "map", "mark", "math", "meta", "meter",
-	"noscript", "object", "output", "progress", "q", "ruby", "s", "samp",
-	"script", "select", "small", "span", "strong", "sub", "sup", "svg",
-	"textarea", "time", "var", "video", "wbr"];
-
-	return nonConforming.indexOf(element.tagName.toLowerCase()) != -1
-		|| phrasingElements.indexOf(element.tagName.toLowerCase()) != -1;
-}
-
-/**
- * "specified style" per spec
- */
-function getSpecifiedStyle(element, propertyName) {
+function getSpecifiedStyle(element, property) {
 	// "If the Element has a style attribute set, and that attribute has the
-	// effect of setting property name, return the value that it sets property
-	// name to."
-	if (element.style[propertyName] != "") {
-		return element.style[propertyName];
+	// effect of setting property, return the value that it sets property to."
+	if (element.style[property] != "") {
+		return element.style[property];
 	}
 
 	// "If the Element is a font element that has an attribute whose effect is
-	// to create a presentational hint for property name, return the value that
-	// the hint sets property name to."
+	// to create a presentational hint for property, return the value that the
+	// hint sets property to."
 	//
-	// I'm cheating on this one for simplicity.  Font-size is especially wrong.
-	if (element.namespaceURI == htmlNamespace
+	// I'm cheating on this one for simplicity.  Font-size is especially wrong,
+	// and will have to be fixed when I implement execCommand() for that.
+	if (isHtmlNamespace(element.namespaceURI)
 	&& element.tagName == "FONT") {
-		if (propertyName == "color" && element.hasAttribute("color")) {
+		if (property == "color" && element.hasAttribute("color")) {
 			return element.color;
 		}
-		if (propertyName == "fontFamily" && element.hasAttribute("face")) {
+		if (property == "fontFamily" && element.hasAttribute("face")) {
 			return element.face;
 		}
-		if (propertyName == "fontSize" && element.hasAttribute("size")) {
+		if (property == "fontSize" && element.hasAttribute("size")) {
 			return element.size;
 		}
 	}
 
-	// "If the Element is in the following list, and property name is equal to
-	// the CSS property name listed for it, return the string listed for it."
+	// "If the Element is in the following list, and property is equal to the
+	// CSS property name listed for it, return the string listed for it."
 	//
 	// A list follows, whose meaning is copied here.
-	if (propertyName == "fontWeight"
+	if (property == "fontWeight"
 	&& (element.tagName == "B" || element.tagName == "STRONG")) {
 		return "bold";
 	}
-	if (propertyName == "fontStyle"
+	if (property == "fontStyle"
 	&& (element.tagName == "I" || element.tagName == "EM")) {
 		return "italic";
 	}
-	if (propertyName == "textDecoration"
+	if (property == "textDecoration"
 	&& element.tagName == "U") {
 		return "underline";
 	}
 
 	// "Return null."
 	return null;
+}
+
+function isSimpleStylingElement(node) {
+	// "A simple styling element is an HTML element for which at least one of
+	// the following holds:"
+	if (!isHtmlElement(node)) {
+		return false;
+	}
+
+	// "It is a b, em, font, i, span, strong, or u element with no attributes."
+	if (node.attributes.length == 0
+	&& ["B", "EM", "FONT", "I", "SPAN", "STRONG", "U"].indexOf(node.tagName) != -1) {
+		return true;
+	}
+
+	// If it's got more than one attribute, everything after this fails.
+	if (node.attributes.length > 1) {
+		return false;
+	}
+
+	// "It is a b, em, font, i, span, strong, or u element with exactly one
+	// attribute, which is style, which sets no CSS properties (including
+	// invalid or unrecognized properties)."
+	//
+	// Not gonna try for invalid or unrecognized.
+	if (node.hasAttribute("style")
+	&& node.style.length == 0) {
+		return true;
+	}
+
+	// "It is a font element with one attribute, which is either color, face,
+	// or size."
+	if (node.tagName == "FONT"
+	&& (node.hasAttribute("color")
+		|| node.hasAttribute("face")
+		|| node.hasAttribute("size")
+	)) {
+		return true;
+	}
+
+	// "It is a b or strong element with one attribute, which is style, and the
+	// only CSS property set by the style attribute (including invalid or
+	// unrecognized properties) is "font-weight"."
+	if ((node.tagName == "B" || node.tagName == "STRONG")
+	&& node.hasAttribute("style")
+	&& node.style.length == 1
+	&& node.style.fontWeight != "") {
+		return true;
+	}
+
+	// "It is an i or em element with one attribute, which is style, and the
+	// only CSS property set by the style attribute (including invalid or
+	// unrecognized properties) is "font-style"."
+	if ((node.tagName == "I" || node.tagName == "EM")
+	&& node.hasAttribute("style")
+	&& node.style.length == 1
+	&& node.style.fontStyle != "") {
+		return true;
+	}
+
+	// "It is a u element with one attribute, which is style, and the only CSS
+	// property set by the style attribute (including invalid or unrecognized
+	// properties) is "text-decoration", which is set to "underline" or
+	// "none"."
+	if (node.tagName == "U"
+	&& node.hasAttribute("style")
+	&& node.style.length == 1
+	&& node.style.textDecoration != "") {
+		return true;
+	}
+
+	// "It is a font or span element with exactly one attribute, which is
+	// style, and the style attribute sets exactly one CSS property (including
+	// invalid or unrecognized properties)."
+	if ((node.tagName == "FONT" || node.tagName == "SPAN")
+	&& node.hasAttribute("style")
+	&& node.style.length == 1) {
+		return true;
+	}
+
+	return false;
 }
 
 function decomposeRange(range) {
@@ -481,21 +474,42 @@ function decomposeRange(range) {
 	range.setStart(startNode, startOffset);
 	range.setEnd(endNode, endOffset);
 
-	// "Return a list consisting of every Node contained in range in tree
-	// order, omitting any whose parent is also contained in range."
+	// "Let cloned range be the result of calling cloneRange() on range."
+	var clonedRange = range.cloneRange();
+
+	// "While the start offset of cloned range is 0, and the parent of cloned
+	// range's start node is not null, set the start of cloned range to (parent
+	// of start node, index of start node)."
+	while (clonedRange.startOffset == 0
+	&& clonedRange.startContainer.parentNode) {
+		clonedRange.setStart(clonedRange.startContainer.parentNode, getNodeIndex(clonedRange.startContainer));
+	}
+
+	// "While the end offset of cloned range equals the length of its end node,
+	// and the parent of clone range's end node is not null, set the end of
+	// cloned range to (parent of end node, 1 + index of end node)."
+	while (clonedRange.endOffset == getNodeLength(clonedRange.endContainer)
+	&& clonedRange.endContainer.parentNode) {
+		clonedRange.setEnd(clonedRange.endContainer.parentNode, 1 + getNodeIndex(clonedRange.endContainer));
+	}
+
+	// "Return a list consisting of every Node contained in cloned range in
+	// tree order, omitting any whose parent is also contained in cloned
+	// range."
 	var ret = [];
-	for (var node = startNode; node != nextNodeDescendants(endNode); node = nextNode(node)) {
-		if (isContained(node, range)
-		&& !isContained(node.parentNode, range)) {
+	for (var node = clonedRange.startContainer; node != nextNodeDescendants(clonedRange.endContainer); node = nextNode(node)) {
+		if (isContained(node, clonedRange)
+		&& !isContained(node.parentNode, clonedRange)) {
 			ret.push(node);
 		}
 	}
 	return ret;
 }
 
-function clearStyles(element, propertyName, tagList) {
-	// "If element is a potentially relevant styling element:"
-	if (isPotentiallyRelevantStylingElement(element, propertyName, null, tagList)) {
+function clearStyles(element, property) {
+	// "If element is a simple styling element and its specified style for
+	// property is not null:"
+	if (isSimpleStylingElement(element) && getSpecifiedStyle(element, property) !== null) {
 		// "Let children be an empty list of Nodes."
 		var children = [];
 
@@ -511,44 +525,42 @@ function clearStyles(element, propertyName, tagList) {
 			element.parentNode.insertBefore(child, element);
 		}
 
-		// "Remove element."
+		// "Remove element from its parent."
 		element.parentNode.removeChild(element);
 
 		// "Return children."
 		return children;
 	}
 
-	// "Unset the CSS property property name of element."
-	element.style[propertyName] = '';
+	// "Unset the CSS property property of element."
+	element.style[property] = '';
 	if (element.getAttribute("style") == "") {
 		element.removeAttribute("style");
 	}
 
 	// "If element is a font element:"
-	if (element.namespaceURI == htmlNamespace && element.tagName == "FONT") {
-		// "If property name is "color", unset element's color attribute, if
-		// set."
-		if (propertyName == "color") {
+	if (isHtmlNamespace(element.namespaceURI) && element.tagName == "FONT") {
+		// "If property is "color", unset element's color attribute, if set."
+		if (property == "color") {
 			element.removeAttribute("color");
 		}
 
-		// "If property name is "font-family", unset element's face attribute,
-		// if set."
-		if (propertyName == "fontFamily") {
+		// "If property is "font-family", unset element's face attribute, if
+		// set."
+		if (property == "fontFamily") {
 			element.removeAttribute("face");
 		}
 
-		// "If property name is "font-size", unset element's size attribute, if
+		// "If property is "font-size", unset element's size attribute, if
 		// set."
-		if (propertyName == "fontSize") {
+		if (property == "fontSize") {
 			element.removeAttribute("size");
 		}
 	}
 
-	// "If element is not an HTML element or its local name is not in tag list,
-	// return the empty list."
-	if (element.namespaceURI != htmlNamespace
-	|| tagList.indexOf(element.tagName.toLowerCase()) == -1) {
+	// "If element's specified style for property is null, return the empty
+	// list."
+	if (getSpecifiedStyle(element, property) === null) {
 		return [];
 	}
 
@@ -570,243 +582,63 @@ function clearStyles(element, propertyName, tagList) {
 		newElement.appendChild(element.firstChild);
 	}
 
-	// "Remove element."
+	// "Remove element from its parent."
 	element.parentNode.removeChild(element);
 
 	// "Return the one-Node list consisting of new element."
 	return [newElement];
 }
 
-function recursivelyClearStyles(element, propertyName, tagList) {
-	// "Let element children be the Element children of element."
-	var elementChildren = [];
-	for (var j = 0; j < element.childNodes.length; j++) {
-		if (element.childNodes[j].nodeType == Node.ELEMENT_NODE) {
-			elementChildren.push(element.childNodes[j]);
-		}
-	}
-
-	// "Recursively clear styles on each Element in element children."
-	for (var j = 0; j < elementChildren.length; j++) {
-		recursivelyClearStyles(elementChildren[j], propertyName, tagList);
-	}
-
-	// "Clear styles on element, and return the resulting list."
-	return clearStyles(element, propertyName, tagList);
-}
-
-function styleNode(node, propertyName, propertyValue, tagList) {
-	// "If node's parent is null, or if node is not an Element, Text, Comment,
-	// or ProcessingInstruction node, abort this algorithm."
+function pushDownStyles(node, property, newValue) {
+	// "If node's parent is not an Element, abort this algorithm."
 	if (!node.parentNode
-	|| [Node.ELEMENT_NODE, Node.TEXT_NODE, Node.COMMENT_NODE,
-	Node.PROCESSING_INSTRUCTION_NODE].indexOf(node.nodeType) == -1) {
+	|| node.parentNode.nodeType != Node.ELEMENT_NODE) {
 		return;
 	}
 
-	// "If node is an Element:"
-	if (node.nodeType == Node.ELEMENT_NODE) {
-		// "Clear styles on node, and let new nodes be the result."
-		var newNodes = clearStyles(node, propertyName, tagList);
-
-		// "For each new node in new nodes, style new node, with the same
-		// inputs as this invocation of the algorithm."
-		for (var i = 0; i < newNodes.length; i++) {
-			styleNode(newNodes[i], propertyName, propertyValue, tagList);
-		}
-
-		// "If node's parent is null, abort this algorithm."
-		if (!node.parentNode) {
-			return;
-		}
-	}
-
-	// "If node is an Element but not a phrasing element:"
+	// "If node is an Element and property computes to new value on node, abort
+	// this algorithm."
 	if (node.nodeType == Node.ELEMENT_NODE
-	&& !isPhrasingElement(node)) {
-		// "Let children be all children of node, omitting any that are
-		// Elements whose specified style for property name is neither null nor
-		// equal to property value."
-		var children = [];
-		for (var i = 0; i < node.childNodes.length; i++) {
-			if (node.childNodes[i].nodeType == Node.ELEMENT_NODE) {
-				var specifiedStyle = getSpecifiedStyle(node.childNodes[i], propertyName);
-
-				if (specifiedStyle !== null
-				&& !cssValuesEqual(propertyName, propertyValue, specifiedStyle)) {
-					continue;
-				}
-			}
-			children.push(node.childNodes[i]);
-		}
-
-		// "Style each Node in children."
-		for (var i = 0; i < children.length; i++) {
-			styleNode(children[i], propertyName, propertyValue, tagList);
-		}
-
-		// "Abort this algorithm."
+	&& cssValuesEqual(property, getComputedStyle(node)[property], newValue)) {
 		return;
 	}
 
-	// "If node's previousSibling is a relevant styling element, append node as
-	// the last child of its previousSibling and abort this algorithm."
-	if (isRelevantStylingElement(node.previousSibling, propertyName, propertyValue, tagList)) {
-		node.previousSibling.appendChild(node);
+	// "If node is not an Element and property computes to new value on node's
+	// parent, abort this algorithm."
+	if (node.nodeType != Node.ELEMENT_NODE
+	&& cssValuesEqual(property, getComputedStyle(node.parentNode)[property], newValue)) {
 		return;
 	}
 
-	// "If node's nextSibling is a relevant styling element, insert node as the
-	// first child of its nextSibling and abort this algorithm."
-	if (isRelevantStylingElement(node.nextSibling, propertyName, propertyValue, tagList)) {
-		node.nextSibling.insertBefore(node, node.nextSibling.childNodes.length
-			? node.nextSibling.childNodes[0]
-			: null);
-		return;
-	}
-
-	// "If node is a Comment or ProcessingInstruction, abort this algorithm."
-	if (node.nodeType == Node.COMMENT_NODE
-	|| node.nodeType == Node.PROCESSING_INSTRUCTION_NODE) {
-		return;
-	}
-
-	// "If node is an Element and the computed style of property name for it is
-	// property value, abort this algorithm."
-	if (node.nodeType == Node.ELEMENT_NODE
-	&& cssValuesEqual(propertyName, getComputedStyle(node)[propertyName], propertyValue)) {
-		return;
-	}
-
-	// "If node is a Text node and the computed style of property name for its
-	// parent is property value, abort this algorithm."
-	if (node.nodeType == Node.TEXT_NODE
-	&& cssValuesEqual(propertyName, getComputedStyle(node.parentNode)[propertyName], propertyValue)) {
-		return;
-	}
-
-	// "Let tag be the first string in tag list, if that is not empty, or
-	// "span" if it is empty."
-	var tag = tagList.length ? tagList[0] : "span";
-
-	// "Let new parent be the result of calling createElement(tag) on the
-	// ownerDocument of node."
-	var newParent = node.ownerDocument.createElement(tag);
-
-	// "Insert new parent in node's parent before node."
-	node.parentNode.insertBefore(newParent, node);
-
-	// "If the computed value of property name for new parent is not property
-	// value, set the CSS property property name of new parent to property
-	// value."
-	if (!cssValuesEqual(propertyName, getComputedStyle(newParent)[propertyName], propertyValue)) {
-		newParent.style[propertyName] = propertyValue;
-	}
-
-	// "Append node to new parent as its last child."
-	newParent.appendChild(node);
-}
-
-function recursivelyStyleNode(node, propertyName, propertyValue, tagList) {
-	// "If node's parent is null, or if node is not an Element, Text, Comment,
-	// or ProcessingInstruction node, abort this algorithm."
-	if (!node.parentNode
-	|| [Node.ELEMENT_NODE, Node.TEXT_NODE, Node.COMMENT_NODE,
-	Node.PROCESSING_INSTRUCTION_NODE].indexOf(node.nodeType) == -1) {
-		return;
-	}
-
-	// "If node is an Element:"
-	if (node.nodeType == Node.ELEMENT_NODE) {
-		// "Recursively clear styles on node, and let new nodes be the result."
-		var newNodes = recursivelyClearStyles(node, propertyName, tagList);
-
-		// "For each new node in new nodes, recursively style new node, with
-		// the same inputs as this invocation of the algorithm."
-		for (var i = 0; i < newNodes.length; i++) {
-			recursivelyStyleNode(newNodes[i], propertyName, propertyValue, tagList);
-		}
-
-		// "If node's parent is null, abort this algorithm."
-		if (!node.parentNode) {
-			return;
-		}
-	}
-
-	// "Style node."
-	styleNode(node, propertyName, propertyValue, tagList);
-}
-
-// "When a user agent is to style a Range, it must decompose the Range, then
-// recursively style each Node in the returned list."
-function styleRange(range, propertyName, propertyValue, tagList) {
-	var nodeList = decomposeRange(range);
-	for (var i = 0; i < nodeList.length; i++) {
-		recursivelyStyleNode(nodeList[i], propertyName, propertyValue, tagList);
-	}
-}
-
-function unstyleNode(node, propertyName, newValue, tagList) {
-	// "If node's parent is null, or if node is not an Element or Text node,
-	// abort this algorithm."
-	if (!node.parentNode
-	|| (node.nodeType != Node.ELEMENT_NODE && node.nodeType != Node.TEXT_NODE)) {
-		return;
-	}
-
-	// "If node is an Element:"
-	if (node.nodeType == Node.ELEMENT_NODE) {
-		// "Recursively clear styles on node, and let new nodes be the result."
-		var newNodes = recursivelyClearStyles(node, propertyName, tagList);
-
-		// "For each new node in new nodes, unstyle new node, with the same
-		// inputs as this invocation of the algorithm."
-		for (var i = 0; i < newNodes.length; i++) {
-			unstyleNode(newNodes[i], propertyName, newValue, tagList);
-		}
-
-		// "If node's parent is null, abort this algorithm."
-		if (!node.parentNode) {
-			return;
-		}
-	}
-
-	// "If node is an Element, let current value equal the computed value of
-	// property name on node. Otherwise, let current value equal the computed
-	// value of property name on node's parent."
-	var currentValue;
-	if (node.nodeType == Node.ELEMENT_NODE) {
-		currentValue = getComputedStyle(node)[propertyName];
-	} else {
-		currentValue = getComputedStyle(node.parentNode)[propertyName];
-	}
-
-	// "If current value equals new value, abort this algorithm."
-	if (cssValuesEqual(propertyName, currentValue, newValue)) {
-		return;
-	}
+	// "Let current ancestor be node's parent."
+	var currentAncestor = node.parentNode;
 
 	// "Let ancestor list be a list of Nodes, initially empty."
 	var ancestorList = [];
 
-	// "Let current ancestor equal node."
-	var currentAncestor = node;
-
-	// "While current ancestor's parent is an Element, set current ancestor to
-	// its parent, then append it to ancestor list."
-	while (currentAncestor.parentNode
-	&& currentAncestor.parentNode.nodeType == Node.ELEMENT_NODE) {
-		currentAncestor = currentAncestor.parentNode;
+	// "While current ancestor is an Element and property does not compute to
+	// new value on it, append current ancestor to ancestor list, then set
+	// current ancestor to its parent."
+	while (currentAncestor
+	&& currentAncestor.nodeType == Node.ELEMENT_NODE
+	&& !cssValuesEqual(property, getComputedStyle(currentAncestor)[property], newValue)) {
 		ancestorList.push(currentAncestor);
+		currentAncestor = currentAncestor.parentNode;
 	}
 
-	// "While ancestor list is not empty, and the last member of ancestor list
-	// has specified style for property name equal to new value or null, remove
-	// the last member from ancestor list."
-	while (ancestorList.length
-	&& (getSpecifiedStyle(ancestorList[ancestorList.length - 1], propertyName) === null
-	|| cssValuesEqual(propertyName, newValue, getSpecifiedStyle(ancestorList[ancestorList.length - 1], propertyName)))) {
-		ancestorList.pop();
+	// "If ancestor list is not empty, and the specified style of property on
+	// the last member of ancestor list is null, abort this algorithm."
+	if (ancestorList.length != 0
+	&& getSpecifiedStyle(ancestorList[ancestorList.length - 1], property) === null) {
+		return;
+	}
+
+	// "If ancestor list is not empty, and the parent of the last member of
+	// ancestor list is not an Element, abort this algorithm."
+	if (ancestorList.length != 0
+	&& (!ancestorList.slice(-1)[0]
+	|| ancestorList.slice(-1)[0].nodeType != Node.ELEMENT_NODE)) {
+		return;
 	}
 
 	// "While ancestor list is not empty:"
@@ -816,8 +648,8 @@ function unstyleNode(node, propertyName, newValue, tagList) {
 		var currentAncestor = ancestorList.pop();
 
 		// "Let propagated value be the specified style of current ancestor for
-		// property name."
-		var propagatedValue = getSpecifiedStyle(currentAncestor, propertyName);
+		// property."
+		var propagatedValue = getSpecifiedStyle(currentAncestor, property);
 
 		// "If propagated value is null, continue this loop from the
 		// beginning."
@@ -832,7 +664,7 @@ function unstyleNode(node, propertyName, newValue, tagList) {
 		}
 
 		// "Clear styles on current ancestor."
-		clearStyles(currentAncestor, propertyName, tagList);
+		clearStyles(currentAncestor, property);
 
 		// "For every child in children:"
 		for (var i = 0; i < children.length; i++) {
@@ -847,64 +679,223 @@ function unstyleNode(node, propertyName, newValue, tagList) {
 			// is neither null nor equal to propagated value, continue with the
 			// next child."
 			if (child.nodeType == Node.ELEMENT_NODE
-			&& getSpecifiedStyle(child, propertyName) !== null
-			&& !cssValuesEqual(propertyName, propagatedValue, getSpecifiedStyle(child, propertyName))) {
+			&& getSpecifiedStyle(child, property) !== null
+			&& !cssValuesEqual(property, propagatedValue, getSpecifiedStyle(child, property))) {
 				continue;
 			}
 
 			// "If child is the last member of ancestor list, set child's CSS
-			// property property name to propagated value and continue with the
-			// next child."
+			// property property to propagated value and continue with the next
+			// child."
 			if (child == ancestorList[ancestorList.length - 1]) {
-				child.style[propertyName] = propagatedValue;
+				child.style[property] = propagatedValue;
 				continue;
 			}
 
-			// "Style child, with property name and tag list as in this
-			// algorithm, and property value equal to propagated value."
-			styleNode(child, propertyName, propagatedValue, tagList);
+			// "Force the style of child, with property as in this algorithm
+			// and new value equal to propagated value."
+			forceStyle(child, property, propagatedValue);
 		}
-	}
-
-	// "If node is an Element and property name does not compute to new value
-	// on it, set property name to new value on it."
-	if (node.nodeType == Node.ELEMENT_NODE
-	&& !cssValuesEqual(propertyName, newValue, getComputedStyle(node)[propertyName])) {
-		node.style[propertyName] = newValue;
-	}
-
-	// "If node is a Text node and property name does not compute to new value
-	// on its parent:"
-	if (node.nodeType == Node.TEXT_NODE
-	&& !cssValuesEqual(propertyName, newValue, getComputedStyle(node.parentNode)[propertyName])) {
-		// "Let new parent be the result of calling createElement("span") on
-		// the ownerDocument of node."
-		var newParent = node.ownerDocument.createElement("span");
-
-		// "Set property name to new value on new parent."
-		newParent.style[propertyName] = newValue;
-
-		// "Insert new parent into node's parent before node."
-		node.parentNode.insertBefore(newParent, node);
-
-		// "Append node as the last child of new parent."
-		newParent.appendChild(node);
 	}
 }
 
-// "When a user agent is to unstyle a Range range, it must decompose the Range,
-// then unstyle each Node in the returned list."
-function unstyleRange(range, propertyName, propertyValue, tagList) {
-	var nodeList = decomposeRange(range);
+function forceStyle(node, property, newValue) {
+	// "If node is an Element and property computes to new value on node, abort
+	// this algorithm."
+	if (node.nodeType == Node.ELEMENT_NODE
+	&& cssValuesEqual(property, getComputedStyle(node)[property], newValue)) {
+		return;
+	}
 
-	for (var i = 0; i < nodeList.length; i++) {
-		unstyleNode(nodeList[i], propertyName, propertyValue, tagList);
+	// "If node is not an Element, node's parent is an Element, and property
+	// computes to new value on node's parent, abort this algorithm."
+	if (node.nodeType != Node.ELEMENT_NODE
+	&& node.parentNode.nodeType == Node.ELEMENT_NODE
+	&& cssValuesEqual(property, getComputedStyle(node.parentNode)[property], newValue)) {
+		return;
+	}
+
+	// "If node is an unwrappable element:"
+	if (isUnwrappableElement(node)) {
+		// "Let children be all children of node, omitting any that are
+		// Elements whose specified style for property is neither null nor
+		// equal to new value."
+		var children = [];
+		for (var i = 0; i < node.childNodes.length; i++) {
+			if (node.childNodes[i].nodeType == Node.ELEMENT_NODE) {
+				var specifiedStyle = getSpecifiedStyle(node.childNodes[i], property);
+
+				if (specifiedStyle !== null
+				&& !cssValuesEqual(property, newValue, specifiedStyle)) {
+					continue;
+				}
+			}
+			children.push(node.childNodes[i]);
+		}
+
+		// "Force the style of each Node in children, with property and new
+		// value as in this invocation of the algorithm."
+		for (var i = 0; i < children.length; i++) {
+			forceStyle(children[i], property, newValue);
+		}
+
+		// "Abort this algorithm."
+		return;
+	}
+
+	// "If node's previousSibling is a simple styling element whose specified
+	// style and computed style for property are both new value, append node as
+	// the last child of its previousSibling and abort this algorithm."
+	if (isSimpleStylingElement(node.previousSibling)
+	&& cssValuesEqual(property, getSpecifiedStyle(node.previousSibling, property), newValue)
+	&& cssValuesEqual(property, getComputedStyle(node.previousSibling)[property], newValue)) {
+		node.previousSibling.appendChild(node);
+		return;
+	}
+
+	// "If node's nextSibling is a simple styling element whose specified style
+	// and computed style for property are both new value, insert node as the
+	// first child of its nextSibling and abort this algorithm."
+	if (isSimpleStylingElement(node.nextSibling)
+	&& cssValuesEqual(property, getSpecifiedStyle(node.nextSibling, property), newValue)
+	&& cssValuesEqual(property, getComputedStyle(node.nextSibling)[property], newValue)) {
+		node.nextSibling.insertBefore(node, node.nextSibling.childNodes.length
+			? node.nextSibling.childNodes[0]
+			: null);
+		return;
+	}
+
+	// "If node is a Comment or ProcessingInstruction, abort this algorithm."
+	if (node.nodeType == Node.COMMENT_NODE
+	|| node.nodeType == Node.PROCESSING_INSTRUCTION_NODE) {
+		return;
+	}
+
+	// "If node is an Element and property computes to new value on node, abort
+	// this algorithm."
+	if (node.nodeType == Node.ELEMENT_NODE
+	&& cssValuesEqual(property, getComputedStyle(node)[property], newValue)) {
+		return;
+	}
+
+	// "If node is not an Element, node's parent is an Element, and property
+	// computes to new value on node's parent, abort this algorithm."
+	if (node.nodeType != Node.ELEMENT_NODE
+	&& node.parentNode.nodeType == Node.ELEMENT_NODE
+	&& cssValuesEqual(property, getComputedStyle(node.parentNode)[property], newValue)) {
+		return;
+	}
+
+	// "If property is "font-weight" and new value is "bold", let tag be "b"."
+	var tag;
+	if (property == "fontWeight" && newValue == "bold") {
+		tag = "b";
+	// "If property is "font-style" and new value is "italic", let tag be "i"."
+	} else if (property == "fontStyle" && newValue == "italic") {
+		tag = "i";
+	// "If property is "text-decoration" and new value is "underline", let tag
+	// be "u"."
+	} else if (property == "textDecoration" && newValue == "underline") {
+		tag = "u";
+	// "If tag is not set, let tag be "span"."
+	} else {
+		tag = "span";
+	}
+
+	// "Let new parent be the result of calling createElement(tag) on the
+	// ownerDocument of node."
+	var newParent = node.ownerDocument.createElement(tag);
+
+	// "Insert new parent in node's parent before node."
+	node.parentNode.insertBefore(newParent, node);
+
+	// "If the computed value of property for new parent is not new value, set
+	// the CSS property property of new parent to new value."
+	if (!cssValuesEqual(property, getComputedStyle(newParent)[property], newValue)) {
+		newParent.style[property] = newValue;
+	}
+
+	// "Append node to new parent as its last child."
+	newParent.appendChild(node);
+
+	// "If node is an Element and the computed value of property for node is
+	// not new value, set the CSS property property of node to new value."
+	if (node.nodeType == Node.ELEMENT_NODE
+	&& !cssValuesEqual(property, getComputedStyle(node)[property], newValue)) {
+		node.style[property] = newValue;
+	}
+}
+
+function styleNode(node, property, newValue) {
+	// "If node is a Document, style its Element child (if it has one) and
+	// abort this algorithm."
+	if (node.nodeType == Node.DOCUMENT_NODE) {
+		for (var i = 0; i < node.childNodes.length; i++) {
+			if (node.childNodes[i].nodeType == Node.ELEMENT_NODE) {
+				styleNode(node.childNodes[i], property, newValue);
+				break;
+			}
+		}
+		return;
+	}
+
+	// "If node is a DocumentFragment, let children be a list of its children.
+	// Style each member of children, then abort this algorithm."
+	if (node.nodeType == Node.DOCUMENT_FRAGMENT_NODE) {
+		var children = [];
+		for (var i = 0; i < node.childNodes.length; i++) {
+			children.push(node.childNodes[i]);
+		}
+		for (var i = 0; i < children.length; i++) {
+			styleNode(children[i], property, newValue);
+		}
+		return;
+	}
+
+	// "If node's parent is null, or if node is a DocumentType, abort this
+	// algorithm."
+	if (!node.parentNode || node.nodeType == Node.DOCUMENT_TYPE_NODE) {
+		return;
+	}
+
+	// "If node is an Element:"
+	if (node.nodeType == Node.ELEMENT_NODE) {
+		// "Clear styles on node, and let new nodes be the result."
+		var newNodes = clearStyles(node, property);
+
+		// "For each new node in new nodes, style new node, with the same
+		// inputs as this invocation of the algorithm."
+		for (var i = 0; i < newNodes.length; i++) {
+			styleNode(newNodes[i], property, newValue);
+		}
+
+		// "If node's parent is null, abort this algorithm."
+		if (!node.parentNode) {
+			return;
+		}
+	}
+
+	// "Push down styles on node."
+	pushDownStyles(node, property, newValue);
+
+	// "Force the style of node."
+	forceStyle(node, property, newValue);
+
+	// "Let children be the children of node."
+	var children = [];
+	for (var i = 0; i < node.childNodes.length; i++) {
+		children.push(node.childNodes[i]);
+	}
+
+	// "Style each member of children."
+	for (var i = 0; i < children.length; i++) {
+		styleNode(children[i], property, newValue);
 	}
 }
 
 function myExecCommand(commandId, showUI, value) {
 	commandId = commandId.toLowerCase();
-	var range = activeRange(document);
+	var range = getActiveRange(document);
 
 	if (!range) {
 		return;
@@ -912,13 +903,17 @@ function myExecCommand(commandId, showUI, value) {
 
 	switch (commandId) {
 		case "bold":
-		if (getState("bold", range)) {
-			unstyleRange(range, "fontWeight", "normal", ["b", "strong"]);
-		} else {
-			styleRange(range, "fontWeight", "bold", ["b", "strong"]);
+		// "Decompose the Range. If the state of the Range for this command is
+		// then true, style each returned Node with property "font-weight" and
+		// new value "bold". Otherwise, style them with new value "normal"."
+		var nodeList = decomposeRange(range);
+		var newValue = getState("bold", range) ? "normal" : "bold";
+		for (var i = 0; i < nodeList.length; i++) {
+			styleNode(nodeList[i], "fontWeight", newValue);
 		}
 		break;
 
+		/*
 		case "createlink":
 		// "If value is the empty string, do nothing."
 		if (value === "") {
@@ -957,7 +952,7 @@ function myExecCommand(commandId, showUI, value) {
 				// "While ancestor link is not an HTML element, or its local
 				// name is not "a", or it has no HTML attribute with local name
 				// "href":"
-				while (ancestorLink.namespaceURI != htmlNamespace
+				while (!isHtmlNamespace(ancestorLink.namespaceURI)
 				|| ancestorLink.nodeType != Node.ELEMENT_NODE
 				|| ancestorLink.tagName != "A"
 				|| !ancestorLink.hasAttribute("href")) {
@@ -994,22 +989,16 @@ function myExecCommand(commandId, showUI, value) {
 				newParent.appendChild(textNode);
 			}
 		}
-
-		case "foreColor":
-		// Hacky test to see if the color is valid
-		var testEl = document.createElement("span");
-		testEl.style.color = value;
-		if (testEl.style.color === "") {
-			return;
-		}
-		styleRange(range, "color", value, []);
-		break;
+		*/
 
 		case "italic":
-		if (getState("italic", range)) {
-			unstyleRange(range, "fontStyle", "normal", ["i", "em"]);
-		} else {
-			styleRange(range, "fontStyle", "italic", ["i", "em"]);
+		// "Decompose the Range. If the state of the Range for this command is
+		// then true, style each returned Node with property "font-style" and
+		// new value "italic". Otherwise, style them with new value "normal"."
+		var nodeList = decomposeRange(range);
+		var newValue = getState("italic", range) ? "normal" : "italic";
+		for (var i = 0; i < nodeList.length; i++) {
+			styleNode(nodeList[i], "fontStyle", newValue);
 		}
 		break;
 
@@ -1020,7 +1009,7 @@ function myExecCommand(commandId, showUI, value) {
 
 function myQueryCommandState(commandId) {
 	commandId = commandId.toLowerCase();
-	var range = activeRange(document);
+	var range = getActiveRange(document);
 
 	if (!range) {
 		return false;
@@ -1030,29 +1019,69 @@ function myQueryCommandState(commandId) {
 }
 
 function getState(commandId, range) {
-	var style = getComputedStyle(beginningElement(range));
-
-	switch (commandId) {
-		case "bold":
-		return style.fontWeight == "bold"
-			|| (/^[0-9]+$/.test(style.fontWeight) && style.fontWeight >= 700);
-
-		case "italic":
-		return style.fontStyle == "italic" || style.fontStyle == "oblique";
-
-		default:
+	if (commandId != "bold"
+	&& commandId != "italic") {
 		return false;
 	}
+
+	var node = range.startContainer;
+	var stop = nextNode(range.endContainer);
+
+	for (node = range.startContainer; node && node != nextNodeDescendants(range.endContainer); node = nextNode(node)) {
+		if (!isEffectivelyContained(node, range)) {
+			continue;
+		}
+
+		var element;
+		if (node.nodeType == Node.TEXT_NODE) {
+			element = node.parentNode;
+		} else {
+			element = node;
+		}
+
+		if (element.nodeType != Node.ELEMENT_NODE) {
+			continue;
+		}
+
+		var style = getComputedStyle(element);
+
+		if (commandId == "bold") {
+			// "True if every Element that is effectively contained in the
+			// Range has computed font-weight at least 700, and the parent of
+			// every Text node that is effectively contained in the Range has
+			// computed font-weight at least 700. Otherwise false."
+			if (style.fontWeight != "bold"
+			&& style.fontWeight != "700"
+			&& style.fontWeight != "800"
+			&& style.fontWeight != "900") {
+				return false;
+			}
+		} else if (commandId == "italic") {
+			// "True if every Element that is effectively contained in the
+			// Range has computed font-style "italic" or "oblique", and the
+			// parent of every Text node that is effectively contained in the
+			// Range has computed font-style "italic" or "oblique". Otherwise
+			// false."
+			if (style.fontStyle != "italic"
+			&& style.fontStyle != "oblique") {
+				return false;
+			}
+		}
+	}
+
+	return true;
 }
 
 function myQueryCommandValue(commandId) {
 	commandId = commandId.toLowerCase();
-	var range = activeRange(document);
+	var range = getActiveRange(document);
 
 	if (!range) {
 		return "";
 	}
 
+	return "";
+	/*
 	var style = getComputedStyle(beginningElement(range));
 
 	switch (commandId) {
@@ -1081,5 +1110,5 @@ function myQueryCommandValue(commandId) {
 
 		default:
 		return "";
-	}
+	}*/
 }

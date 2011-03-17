@@ -1,7 +1,31 @@
 <!doctype html>
-<table border=1>
-	<tr><th>Input <th>Spec <th>Browser
-</table>
+<title>Auto-running execCommand() bold tests</title>
+<style>
+.yes { color: green }
+.no { color: red }
+b, strong { font-weight: bold }
+.bold { font-weight: bold }
+.notbold { font-weight: normal }
+td > div:first-child {
+	padding-bottom: 0.2em;
+	border-bottom: 1px solid black;
+}
+td > div:last-child {
+	padding-top: 0.2em;
+}
+</style>
+<p>Legend: {[ are the selection anchor, }] are the selection focus, {}
+represent an element boundary point, [] represent a text node boundary point.
+Syntax and some of the tests taken from <a
+href=http://www.browserscope.org/richtext2/test>Browserscope</a>.
+
+<p><label>Enter new test here: <input></label>
+<button onclick="addTest(document.querySelector('input').value)">Add test</button>
+
+<div>
+<table border=1><tr><th>Input <th>Spec <th>Browser <th>Same?</table>
+</div>
+
 <script src=implementation.js></script>
 <script>
 // Note: this data format can only yield selections whose start and end are
@@ -26,37 +50,139 @@ var tests = [
 	'<b>{<p>foo</p><p>bar</p>}<p>baz</p></b>',
 	'<b><p>foo[<i>bar</i>}</p><p>baz</p></b>',
 	'foo [bar <b>baz] qoz</b> quz sic',
-	'foo bar <b>baz [qoz</b> quz] sic'
+	'foo bar <b>baz [qoz</b> quz] sic',
+	'<b id=foo>bar [baz] qoz</b>',
+	'foo<span style="font-weight: 100">[bar]</span>baz',
+	'foo<span style="font-weight: 400">[bar]</span>baz',
+	'foo<span style="font-weight: 700">[bar]</span>baz',
+	'foo<span style="font-weight: 900">[bar]</span>baz',
+	'foo<span style="font-weight: normal">[bar]</span>baz',
+	'foo<span style="font-weight: 100">[bar</span>]baz',
+	'foo<span style="font-weight: 400">[bar</span>]baz',
+	'foo<span style="font-weight: 700">[bar</span>]baz',
+	'foo<span style="font-weight: 900">[bar</span>]baz',
+	'foo<span style="font-weight: normal">[bar</span>]baz',
+	'foo[<span style="font-weight: 100">bar]</span>baz',
+	'foo[<span style="font-weight: 400">bar]</span>baz',
+	'foo[<span style="font-weight: 700">bar]</span>baz',
+	'foo[<span style="font-weight: 900">bar]</span>baz',
+	'foo[<span style="font-weight: normal">bar]</span>baz',
+	'foo[<span style="font-weight: 100">bar</span>]baz',
+	'foo[<span style="font-weight: 400">bar</span>]baz',
+	'foo[<span style="font-weight: 700">bar</span>]baz',
+	'foo[<span style="font-weight: 900">bar</span>]baz',
+	'foo[<span style="font-weight: normal">bar</span>]baz',
+	'<span style="font-weight: 100">foo[bar]baz</span>',
+	'<span style="font-weight: 400">foo[bar]baz</span>',
+	'<span style="font-weight: 700">foo[bar]baz</span>',
+	'<span style="font-weight: 900">foo[bar]baz</span>',
+	'<span style="font-weight: normal">foo[bar]baz</span>',
+	'{<span style="font-weight: 100">foobar]baz</span>',
+	'{<span style="font-weight: 400">foobar]baz</span>',
+	'{<span style="font-weight: 700">foobar]baz</span>',
+	'{<span style="font-weight: 900">foobar]baz</span>',
+	'{<span style="font-weight: normal">foobar]baz</span>',
+	'<span style="font-weight: 100">foo[barbaz</span>}',
+	'<span style="font-weight: 400">foo[barbaz</span>}',
+	'<span style="font-weight: 700">foo[barbaz</span>}',
+	'<span style="font-weight: 900">foo[barbaz</span>}',
+	'<span style="font-weight: normal">foo[barbaz</span>}',
+	'<h3>Foo[bar]baz</h3>',
+	'{<h3>Foobar]baz</h3>',
+	'<h3>Foo[barbaz</h3>}',
+	'<h3>[Foobarbaz]</h3>',
+	'{<h3>Foobarbaz]</h3>',
+	'<h3>[Foobarbaz</h3>}',
+	'{<h3>Foobarbaz</h3>}',
+	'<b>Foo<span style="font-weight: normal">bar<b>[baz]</b>quz</span>qoz</b>',
+	'<b>Foo<span style="font-weight: normal">[bar]</span>baz</b>',
+	'{<b>Foo</b> <b>bar</b>}',
+	'{<h3>Foo</h3><b>bar</b>}',
+	'<i><b>Foo</b></i>[bar]<i><b>baz</b></i>',
+	'<i><b>Foo</b></i>[bar]<b>baz</b>',
+	'<b>Foo</b>[bar]<i><b>baz</b></i>',
+	'{<p><p> <p>Foo</p>}',
+	'[Foo<span class=notbold>bar</span>baz]',
 ];
 
-var table = document.querySelector("table");
-table.contentEditable = "true";
 for (var i = 0; i < tests.length; i++) {
+	addTest(tests[i]);
+}
+
+function addTest(test) {
+	document.querySelector("div").contentEditable = "true";
+	var table = document.querySelector("table");
+
 	var tr = document.createElement("tr");
-	table.appendChild(tr);
+	// Insert at the top, because Chrome debugger doesn't let you scroll down
+	// while you're stopped at a breakpoint . . .
+	//if (table.childNodes.length == 1) {
+		table.appendChild(tr);
+	//} else {
+	//	table.insertBefore(tr, table.childNodes[1]);
+	//}
 
 	var inputCell = document.createElement("td");
-	inputCell.textContent = tests[i];
+	inputCell.innerHTML = test;
+	inputCell.innerHTML = "<div>" + inputCell.innerHTML + "</div><div>" + inputCell.innerHTML.replace(/\&/g, "&amp;").replace(/</g, "&lt;") + "</div>";
 	tr.appendChild(inputCell);
 
 	var specCell = document.createElement("td");
-	specCell.innerHTML = tests[i];
+	specCell.innerHTML = test;
 	tr.appendChild(specCell);
-	selectBrackets(specCell);
-	myExecCommand("bold");
-	specCell.textContent = specCell.innerHTML;
+	try {
+		selectBrackets(specCell);
+		myExecCommand("bold");
+		specCell.innerHTML = "<div>" + specCell.innerHTML + "</div><div>" + specCell.innerHTML.replace(/\&/g, "&amp;").replace(/</g, "&lt;") + "</div>";
+	} catch (e) {
+		specCell.textContent = "Exception: " + e;
+	}
 
 	var browserCell = document.createElement("td");
-	browserCell.innerHTML = tests[i];
+	browserCell.innerHTML = test;
 	tr.appendChild(browserCell);
-	selectBrackets(browserCell);
-	document.execCommand("bold", null, false);
-	browserCell.textContent = browserCell.innerHTML;
+	try {
+		selectBrackets(browserCell);
+		try {
+			document.execCommand("styleWithCSS", null, false);
+		} catch (e) {
+			// IE, we don't care
+		}
+		document.execCommand("bold", null, false);
+		browserCell.innerHTML = "<div>" + browserCell.innerHTML + "</div><div>" + browserCell.innerHTML.replace(/\&/g, "&amp;").replace(/</g, "&lt;") + "</div>";
+	} catch (e) {
+		browserCell.textContent = "Exception: " + e;
+	}
+
+	var sameCell = document.createElement("td");
+	// Ad hoc normalization to avoid basically spurious mismatches
+	var normalizedSpecCell = specCell.lastChild.textContent
+		.replace(/;? ?"/g, '"');
+	var normalizedBrowserCell = browserCell.lastChild.textContent
+		.replace(/;? ?"/g, '"')
+		.replace(/ class="Apple-style-span"/g, "");
+	if (normalizedSpecCell == normalizedBrowserCell) {
+		sameCell.className = "yes";
+		sameCell.innerHTML = "&#x2713;";
+	} else {
+		sameCell.className = "no";
+		sameCell.innerHTML = "&#x2717;";
+	}
+	tr.appendChild(sameCell);
+
+	getSelection().removeAllRanges();
+	document.querySelector("div").contentEditable = "inherit";
 }
-getSelection().removeAllRanges();
-table.contentEditable = false;
 
 function selectBrackets(node) {
+	if (node.textContent.replace(/[^{[]/g, "").length != 1) {
+		throw "Need one [ or {, found " + node.textContent.replace(/[^{[]/g, "").length;
+	}
+
+	if (node.textContent.replace(/[^}\]]/g, "").length != 1) {
+		throw "Need one ] or }, found " + node.textContent.replace(/[^}\]]/g, "").length;
+	}
+
 	var startNode, startOffset, endNode, endOffset;
 
 	var cur = node;
@@ -123,7 +249,18 @@ function selectBrackets(node) {
 		}
 	}
 
-	if ("extend" in getSelection()) {
+	if (navigator.userAgent.indexOf("Opera") != -1) {
+		// Yes, browser sniffing is evil, but I can't be bothered to debug
+		// Opera.
+		var range = document.createRange();
+		range.setStart(startNode, startOffset);
+		range.setEnd(endNode, endOffset);
+		if (range.collapsed) {
+			range.setEnd(startNode, startOffset);
+		}
+		getSelection().removeAllRanges();
+		getSelection().addRange(range);
+	} else if ("extend" in getSelection()) {
 		// WebKit behaves unreasonably for collapse(), so do that manually.
 		var range = document.createRange();
 		range.setStart(startNode, startOffset);
@@ -132,16 +269,22 @@ function selectBrackets(node) {
 		getSelection().extend(endNode, endOffset);
 	} else {
 		// IE9.  Selections have no direction, so we just make the selection
-		// always forwards;
-		var range = document.createRange();
+		// always forwards.
+		var range;
+		if (getSelection().rangeCount) {
+			range = getSelection().getRangeAt(0);
+		} else {
+			range = document.createRange();
+		}
 		range.setStart(startNode, startOffset);
 		range.setEnd(endNode, endOffset);
 		if (range.collapsed) {
 			// Phooey, we got them backwards.
 			range.setEnd(startNode, startOffset);
 		}
-		getSelection().removeAllRanges();
-		getSelection().addRange(range);
+		if (!getSelection().rangeCount) {
+			getSelection().addRange(range);
+		}
 	}
 }
 </script>

@@ -32,7 +32,7 @@ policies and contribution forms [3].
  *
  * == Synchronous Tests ==
  *
- * To create a sunchronous test use the test() function:
+ * To create a synchronous test use the test() function:
  *
  * test(test_function, name, properties)
  *

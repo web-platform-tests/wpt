@@ -1,0 +1,36 @@
+# CSS Text Level 3
+# http://www.w3.org/TR/css3-text/
+== ../text-transform-kana-001.xht text-transform-kana-001-ref.xht			# text-transform - large-kana - basic cases
+== ../text-transform-fullwidth-001.xht text-transform-fullwidth-001-ref.xht		# text-transform - fullwidth - basic cases
+== ../text-transform-capitalize-001.xht text-transform-capitalize-001-ref.xht		# text-transform - capitalize - basic cases
+== ../text-transform-none-001.xht text-transform-none-001-ref.xht			# text-transform - none - basic cases
+== ../text-transform-uppercase-001.xht text-transform-uppercase-001-ref.xht		# text-transform - uppercase - basic cases
+== ../text-transform-lowercase-001.xht text-transform-lowercase-001-ref.xht		# text-transform - lowercase - basic cases
+== ../text-indent-percentage-001.xht text-indent-percentage-001-ref.xht			# text-indent - percentege - basic cases
+== ../white-space-collapsing-discard-001.xht white-space-collapsing-discard-001-ref.xht	# white-space-collapsing - discard - basic cases
+== ../white-space-collapsing-preserve-breaks-001.xht white-space-collapsing-preserve-breaks-001-ref.xht	# white-space-collapsing - preserve-breaks - basic cases
+== ../text-emphasis-color-001.xht text-emphasis-color-001-ref.xht			#  text-emphasis-color - basic cases
+== ../white-space-collapsing-trim-inner-001.xht white-space-collapsing-trim-inner-001-ref.xht	# white-space-collapsing - trim-inner - basic cases
+== ../text-decoration-line-line-through-001.xht text-decoration-line-line-through-001-ref.xht	# text-decoration-line - line-through - basic cases
+== ../text-decoration-line-none-001.xht text-decoration-line-none-001-ref.xht		# text-decoration-line - none - basic cases
+== ../text-decoration-line-overline-001.xht text-decoration-line-overline-001-ref.xht	# text-decoration-line - overline - basic cases
+== ../text-decoration-line-underline-001.xht text-decoration-line-underline-001-ref.xht	# text-decoration-line - underline - basic cases
+== ../text-emphasis-style-filled-001.xht text-emphasis-style-filled-001-ref.xht		#  text-emphasis-style - filled - basic cases
+== ../text-emphasis-style-none-001.xht text-emphasis-style-none-001-ref.xht		#  text-emphasis-style - none - basic cases
+== ../text-emphasis-style-open-001.xht text-emphasis-style-open-001-ref.xht		#  text-emphasis-style - open - basic cases
+== ../text-emphasis-style-shape-001.xht text-emphasis-style-shape-001-ref.xht		#  text-emphasis-style - shape - basic cases
+== ../text-emphasis-style-string-001.xht text-emphasis-style-string-001-ref.xht		#  text-emphasis-style - string - basic cases
+== ../line-break-auto-001.xht line-break-auto-001-ref.xht				# line-break - auto - basic cases
+== ../line-break-loose-001.xht line-break-loose-001-ref.xht				# line-break - loose - basic cases
+== ../line-break-normal-001.xht line-break-normal-001-ref.xht				# line-break - normal - basic cases
+== ../line-break-strict-001.xht line-break-strict-001-ref.xht				# line-break - strict - basic cases
+== ../word-break-normal-001.xht word-break-normal-001-ref.xht				# word-break - normal - basic cases
+== ../word-break-break-all-001.xht word-break-break-all-001-ref.xht			# word-break - break-all - basic cases
+== ../word-break-keep-all-001.xht word-break-keep-all-001-ref.xht			# word-break - keep-all - basic cases
+== ../word-break-keep-words-001.xht word-break-keep-words-001-ref.xht			# word-break - keep-words - basic cases
+
+
+
+
+
+

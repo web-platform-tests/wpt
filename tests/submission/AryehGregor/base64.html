@@ -5,7 +5,107 @@
 <script src=../../resources/testharness.js></script>
 <script src=../../resources/testharnessreport.js></script>
 <script>
+// From WebIDL:
+//
+// * The value of the Function object’s length property is a Number determined
+//   as follows:
+//
+//   1. Let S be the effective overload set for regular operations (if the
+//      operation is a regular operation) or for static operations (if the
+//      operation is a static operation) with identifier id on interface I and
+//      with argument count 0 (for the ECMAScript language binding).
+//   2. Return the maximum argument list length of the functions in the entries
+//      of S.
+//
+// As far as I understand it, this means the length must be 1 here.
+test(function() {
+	assert_equals(btoa.length, 1);
+}, "btoa.length must equal the maximum number of arguments, namely 1");
+
+test(function() {
+	assert_equals(atob.length, 1);
+}, "atob.length must equal the maximum number of arguments, namely 1");
+
+/**
+ * Returns a string representing val.  Basically just adds quotes for strings,
+ * and passes through other recognized types literally.
+ */
+function stringRep(val) {
+	if (val === null) {
+		// typeof is object, so the switch isn't useful
+		return "null";
+	}
+	// In JavaScript, -0 === 0 and String(-0) == "0", so we have to
+	// special-case.
+	if (val === -0 && 1/val === -Infinity) {
+		return "-0";
+	}
+	switch (typeof val) {
+		case "string":
+			for (var i = 0; i < 32; i++) {
+				var replace = "\\";
+				switch (i) {
+					case 0: replace += "0"; break;
+					case 1: replace += "x01"; break;
+					case 2: replace += "x02"; break;
+					case 3: replace += "x03"; break;
+					case 4: replace += "x04"; break;
+					case 5: replace += "x05"; break;
+					case 6: replace += "x06"; break;
+					case 7: replace += "x07"; break;
+					case 8: replace += "b"; break;
+					case 9: replace += "t"; break;
+					case 10: replace += "n"; break;
+					case 11: replace += "v"; break;
+					case 12: replace += "f"; break;
+					case 13: replace += "r"; break;
+					case 14: replace += "x0e"; break;
+					case 15: replace += "x0f"; break;
+					case 16: replace += "x10"; break;
+					case 17: replace += "x11"; break;
+					case 18: replace += "x12"; break;
+					case 19: replace += "x13"; break;
+					case 20: replace += "x14"; break;
+					case 21: replace += "x15"; break;
+					case 22: replace += "x16"; break;
+					case 23: replace += "x17"; break;
+					case 24: replace += "x18"; break;
+					case 25: replace += "x19"; break;
+					case 26: replace += "x1a"; break;
+					case 27: replace += "x1b"; break;
+					case 28: replace += "x1c"; break;
+					case 29: replace += "x1d"; break;
+					case 30: replace += "x1e"; break;
+					case 31: replace += "x1f"; break;
+				}
+				val = val.replace(String.fromCharCode(i), replace);
+			}
+			return '"' + val.replace('"', '\\"') + '"';
+		case "boolean":
+		case "undefined":
+		case "number":
+			return val + "";
+		default:
+			return typeof val + ' "' + val + '"';
+	}
+}
+
+/**
+ * btoa() as defined by the HTML5 spec, which mostly just references RFC4648.
+ */
 function mybtoa(s) {
+	// String conversion as required by WebIDL.
+	s = String(s);
+
+	// "The btoa() method must throw an INVALID_CHARACTER_ERR exception if the
+	// method's first argument contains any character whose code point is
+	// greater than U+00FF."
+	for (var i = 0; i < s.length; i++) {
+		if (s.charCodeAt(i) > 255) {
+			return "INVALID_CHARACTER_ERR";
+		}
+	}
+
 	var out = "";
 	for (var i = 0; i < s.length; i += 3) {
 		out += btoaLookup(s.charCodeAt(i) >> 2);
@@ -24,6 +124,10 @@ function mybtoa(s) {
 	return out;
 }
 
+/**
+ * Lookup table for mybtoa(), which converts a six-bit number into the
+ * corresponding ASCII character.
+ */
 function btoaLookup(idx) {
 	if (idx < 26) {
 		return String.fromCharCode(idx + 'A'.charCodeAt(0));
@@ -43,18 +147,69 @@ function btoaLookup(idx) {
 	// Throw INVALID_CHARACTER_ERR exception here -- won't be hit in the tests.
 }
 
+/**
+ * Implementation of atob() according to the HTML spec.
+ */
 function myatob(input) {
+	// WebIDL requires DOMStrings to just be converted using ECMAScript
+	// ToString, which amounts to calling String(), except possibly for null,
+	// which we don't test because it's unclear.  (There are also exceptions
+	// for undefined, but they aren't relevant to us.)
+	input = String(input);
+
+	// "If the length of input divides by 4 leaving no remainder, then: if
+	// input ends with one or two U+003D EQUALS SIGN (=) characters, remove
+	// them from input."
 	if (input.length % 4 == 0 && /==?$/.test(input)) {
 		input = input.replace(/==?$/, "");
 	}
-	// Throw exceptions here in some cases -- won't be hit in the tests.
+
+	// "If the length of input divides by 4 leaving a remainder of 1, throw an
+	// INVALID_CHARACTER_ERR exception and abort these steps."
+	//
+	// "If input contains a character that is not in the following list of
+	// characters and character ranges, throw an INVALID_CHARACTER_ERR
+	// exception and abort these steps:
+	//
+	// U+002B PLUS SIGN (+)
+	// U+002F SOLIDUS (/)
+	// U+0030 DIGIT ZERO (0) to U+0039 DIGIT NINE (9)
+	// U+0041 LATIN CAPITAL LETTER A to U+005A LATIN CAPITAL LETTER Z
+	// U+0061 LATIN SMALL LETTER A to U+007A LATIN SMALL LETTER Z"
+	if (input.length % 4 == 1
+	|| !/^[+/0-9A-Za-z]*$/.test(input)) {
+		return "INVALID_CHARACTER_ERR";
+	}
+
+	// "Let output be a string, initially empty."
 	var output = "";
-	// We append bits via left-shift and or.
+
+	// "Let buffer be a buffer that can have bits appended to it, initially
+	// empty."
+	//
+	// We append bits via left-shift and or.  accumulatedBits is used to track
+	// when we've gotten to 24 bits.
 	var buffer = 0;
 	var accumulatedBits = 0;
+
+	// "While position does not point past the end of input, run these
+	// substeps:"
 	for (var i = 0; i < input.length; i++) {
+		// "Find the character pointed to by position in the first column of
+		// the following table. Let n be the number given in the second cell of
+		// the same row."
+		//
+		// "Append to buffer the six bits corresponding to number, most
+		// significant bit first."
+		//
+		// atobLookup() implements the table from the spec.
 		buffer <<= 6;
 		buffer |= atobLookup(input[i]);
+
+		// "If buffer has accumulated 24 bits, interpret them as three 8-bit
+		// big-endian numbers. Append the three characters with code points
+		// equal to those numbers to output, in the same order, and then empty
+		// buffer."
 		accumulatedBits += 6;
 		if (accumulatedBits == 24) {
 			output += String.fromCharCode((buffer & 0xff0000) >> 16);
@@ -62,7 +217,16 @@ function myatob(input) {
 			output += String.fromCharCode(buffer & 0xff);
 			buffer = accumulatedBits = 0;
 		}
+
+		// "Advance position by one character."
 	}
+
+	// "If buffer is not empty, it contains either 12 or 18 bits. If it
+	// contains 12 bits, discard the last four and interpret the remaining
+	// eight as an 8-bit big-endian number. If it contains 18 bits, discard the
+	// last two and interpret the remaining 16 as two 8-bit big-endian numbers.
+	// Append the one or two characters with code points equal to those one or
+	// two numbers to output, in the same order."
 	if (accumulatedBits == 12) {
 		buffer >>= 4;
 		output += String.fromCharCode(buffer);
@@ -71,9 +235,15 @@ function myatob(input) {
 		output += String.fromCharCode((buffer & 0xff00) >> 8);
 		output += String.fromCharCode(buffer & 0xff);
 	}
+
+	// "Return output."
 	return output;
 }
 
+/**
+ * A lookup table for atob(), which converts an ASCII character to the
+ * corresponding six-bit number.
+ */
 function atobLookup(chr) {
 	if (/[A-Z]/.test(chr)) {
 		return chr.charCodeAt(0) - "A".charCodeAt(0);
@@ -94,6 +264,7 @@ function atobLookup(chr) {
 }
 
 function btoaException(input) {
+	input = String(input);
 	for (var i = 0; i < input.length; i++) {
 		if (input.charCodeAt(i) > 255) {
 			return true;
@@ -103,14 +274,19 @@ function btoaException(input) {
 }
 
 function testBtoa(input) {
-	if (btoaException(input)) {
-		assert_throws("INVALID_CHARACTER_ERR",
-			function() { btoa(input) }
-		);
-	} else {
-		assert_equals(btoa(input), mybtoa(input));
-		assert_equals(atob(btoa(input)), input);
+	// "The btoa() method must throw an INVALID_CHARACTER_ERR exception if the
+	// method's first argument contains any character whose code point is
+	// greater than U+00FF."
+	var normalizedInput = String(input);
+	for (var i = 0; i < normalizedInput.length; i++) {
+		if (normalizedInput.charCodeAt(i) > 255) {
+			assert_throws("INVALID_CHARACTER_ERR", function() { btoa(input); },
+				"Code unit " + i + " has value " + normalizedInput.charCodeAt(i) + ", which is greater than 255");
+			return;
+		}
 	}
+	assert_equals(btoa(input), mybtoa(input));
+	assert_equals(atob(btoa(input)), String(input), "atob(btoa(input)) must be the same as String(input)");
 }
 
 var tests = ["עברית", "", "a", "ab", "abc", "abcd", "abcde",
@@ -118,6 +294,8 @@ var tests = ["עברית", "", "a", "ab", "abc", "abcd", "abcde",
 	// possibly to fail btoa().  I actually can't tell what's happening here,
 	// but it doesn't hurt.
 	"\xff\xff\xc0",
+	// WebIDL tests.  TODO: Add null once the spec on that is clear.
+	undefined, 7, 1.5, true, false, NaN, +Infinity, -Infinity
 ];
 for (var i = 0; i < 258; i++) {
 	tests.push(String.fromCharCode(i));
@@ -130,10 +308,11 @@ tests.push(String.fromCharCode(65535));
 tests.push(String.fromCharCode(0xd800, 0xdc00));
 tests = tests.map(
 	function(elem) {
-		if (btoaException(elem)) {
-			return ['btoa("' + elem + '") throws exception', elem];
+		var expected = mybtoa(elem);
+		if (expected === "INVALID_CHARACTER_ERR") {
+			return ["btoa("  + stringRep(elem) + ") must raise INVALID_CHARACTER_ERR", elem];
 		}
-		return ['btoa("' + elem + '") == "' + mybtoa(elem) + '"', elem];
+		return ["btoa(" + stringRep(elem) + ") == " + stringRep(mybtoa(elem)), elem];
 	}
 );
 
@@ -141,31 +320,43 @@ var everything = "";
 for (var i = 0; i < 256; i++) {
 	everything += String.fromCharCode(i);
 }
-tests.push(["btoa applied to first 256 code points concatenated should work", everything]);
+tests.push(["btoa(first 256 code points concatenated)", everything]);
 
 generate_tests(testBtoa, tests);
 
-function atobException(input) {
-	if (input.length % 4 == 0 && /==?$/.test(input)) {
-		input = input.replace(/==?$/, "");
-	}
-	if (input.length % 4 == 1) {
-		return true;
-	}
-	if (!/^[+\/0-9A-Za-z]*$/.test(input)) {
-		return true;
-	}
-	return false;
-}
-
 function testAtob(input) {
-	if (atobException(input)) {
-		assert_throws("INVALID_CHARACTER_ERR",
-			function() { atob(input) }
-		);
-	} else {
-		assert_equals(atob(input), myatob(input));
+	// "If the length of input divides by 4 leaving no remainder, then: if
+	// input ends with one or two U+003D EQUALS SIGN (=) characters, remove
+	// them from input."
+	var normalizedInput = String(input);
+	if (normalizedInput.length % 4 == 0) {
+		normalizedInput = normalizedInput.replace(/==?$/, "");
 	}
+
+	// "If the length of input divides by 4 leaving a remainder of 1, throw an
+	// INVALID_CHARACTER_ERR exception and abort these steps."
+	if (normalizedInput.length % 4 == 1) {
+		assert_throws("INVALID_CHARACTER_ERR", function() { atob(input) },
+			"After stripping one or two trailing equals signs (if appropriate), input has length with remainder 1 when divided by 4");
+		return;
+	}
+
+	// "If input contains a character that is not in the following list of
+	// characters and character ranges, throw an INVALID_CHARACTER_ERR
+	// exception and abort these steps:
+	//
+	// U+002B PLUS SIGN (+)
+	// U+002F SOLIDUS (/)
+	// U+0030 DIGIT ZERO (0) to U+0039 DIGIT NINE (9)
+	// U+0041 LATIN CAPITAL LETTER A to U+005A LATIN CAPITAL LETTER Z
+	// U+0061 LATIN SMALL LETTER A to U+007A LATIN SMALL LETTER Z"
+	if (!/^[+/0-9A-Za-z]*$/.test(normalizedInput)) {
+		assert_throws("INVALID_CHARACTER_ERR", function() { atob(input) },
+			"After stripping one or two trailing equals signs (if appropriate), input contains an invalid character");
+		return;
+	}
+
+	assert_equals(atob(input), myatob(input));
 }
 
 var tests = ["", "abcd", " abcd", "abcd ", "abcd===", " abcd===", "abcd=== ",
@@ -189,13 +380,16 @@ var tests = ["", "abcd", " abcd", "abcd ", "abcd===", " abcd===", "abcd=== ",
 	"/", "A/", "AA/", "AAAA/",
 	// But this one is possible:
 	"AAA/",
+	// Doesn't hurt to throw in some random garbage:
+	"\0", undefined, 7, 1.5, true, false, NaN, +Infinity, -Infinity
 ];
 tests = tests.map(
 	function(elem) {
-		if (atobException(elem)) {
-			return ['atob("' + elem + '") throws exception', elem];
+		var expected = myatob(elem);
+		if (expected === "INVALID_CHARACTER_ERR") {
+			return ["atob(" + stringRep(elem) + ") must raise INVALID_CHARACTER_ERR", elem];
 		}
-		return ['atob("' + elem + '") == "' + myatob(elem) + '"', elem];
+		return ["atob(" + stringRep(elem) + ") == " + stringRep(myatob(elem)), elem];
 	}
 );
 

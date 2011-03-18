@@ -297,7 +297,7 @@ it must run the following steps.
   <li>If <var>start node</var> is a [[text]] node and is the same as <var>end
   node</var>, and <var>start offset</var> is neither 0 nor the [[nodelength]]
   of <var>start node</var>:
-  
+
   <ol>
     <li>Set <var>start node</var> to the result of running <code
     data-anolis-spec=domcore title=dom-Text-splitText>splitText(<var>start
@@ -539,6 +539,25 @@ styles">pushing down styles</span> don't work to achieve the desired style.
 After forcing the style, descendants might still have different style.
 
 <ol>
+  <!-- Even if the style matches, we stick it in a preceding sibling if
+  possible.  This ensures "a<cite>b</cite>c" -> "<i>a<cite>b</cite>c</i>"
+  instead of "<i>a</i><cite>b</cite><i>c</i>". -->
+  <li>If <var>node</var> is an [[element]], [[text]], [[comment]], or
+  [[processinginstruction]] node, and is not an <span>unwrappable
+  element</span>:
+
+  <ol>
+    <li>If <var>node</var>'s [[previoussibling]] is a <span>simple styling
+    element</span> whose <span>specified style</span> and computed style for
+    <var>property</var> are both <var>new value</var>, append <var>node</var>
+    as the last [[child]] of its [[previoussibling]] and abort this algorithm.
+
+    <li>If <var>node</var>'s [[nextsibling]] is a <span>simple styling
+    element</span> whose <span>specified style</span> and computed style for
+    <var>property</var> are both <var>new value</var>, insert <var>node</var>
+    as the first [[child]] of its [[nextsibling]] and abort this algorithm.
+  </ol>
+
   <li>If <var>node</var> is an [[element]] and <var>property</var> computes to
   <var>new value</var> on <var>node</var>, abort this algorithm.
 
@@ -559,16 +578,6 @@ After forcing the style, descendants might still have different style.
 
     <li>Abort this algorithm.
   </ol>
-
-  <li>If <var>node</var>'s [[previoussibling]] is a <span>simple styling
-  element</span> whose <span>specified style</span> and computed style for
-  <var>property</var> are both <var>new value</var>, append <var>node</var> as
-  the last [[child]] of its [[previoussibling]] and abort this algorithm.
-
-  <li>If <var>node</var>'s [[nextsibling]] is a <span>simple styling
-  element</span> whose <span>specified style</span> and computed style for
-  <var>property</var> are both <var>new value</var>, insert <var>node</var> as
-  the first [[child]] of its [[nextsibling]] and abort this algorithm.
 
   <!-- At this point we have to make a new element as a wrapper.  This isn't
   worth the effort for comments or PIs, so abort in that case. -->
@@ -608,8 +617,17 @@ After forcing the style, descendants might still have different style.
   <li>Append <var>node</var> to <var>new parent</var> as its last [[child]].
 
   <li>If <var>node</var> is an [[element]] and the computed value of
-  <var>property</var> for <var>node</var> is not <var>new value</var>, set the
-  CSS property <var>property</var> of <var>node</var> to <var>new value</var>.
+  <var>property</var> for <var>node</var> is not <var>new value</var>:
+
+  <ol>
+    <li>Set the CSS property <var>property</var> of <var>node</var> to <var>new
+    value</var>.
+
+    <li>Insert <var>node</var> into the [[parent]] of <var>new parent</var>
+    before <var>new parent</var>.
+
+    <li>Remove <var>new parent</var> from its [[parent]].
+  </ol>
 </ol>
 
 

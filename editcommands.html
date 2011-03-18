@@ -27,7 +27,7 @@
 <body class=draft>
 <div class=head id=head>
 <h1>HTML Editing Commands</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-17-march-2011>Work in Progress &mdash; Last Update 17 March 2011</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-18-march-2011>Work in Progress &mdash; Last Update 18 March 2011</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;ayg+spec@aryeh.name&gt;
@@ -306,7 +306,7 @@ it must run the following steps.
   <li>If <var title="">start node</var> is a <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> node and is the same as <var title="">end
   node</var>, and <var title="">start offset</var> is neither 0 nor the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a>
   of <var title="">start node</var>:
-  
+
   <ol>
     <li>Set <var title="">start node</var> to the result of running <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-text-splittext><code class=external data-anolis-spec=domcore title=dom-Text-splitText>splitText(<var title="">start
     offset</var>)</code></a> on <var title="">start node</var>.
@@ -543,6 +543,25 @@ styles">pushing down styles</a> don't work to achieve the desired style.
 After forcing the style, descendants might still have different style.
 
 <ol>
+  <!-- Even if the style matches, we stick it in a preceding sibling if
+  possible.  This ensures "a<cite>b</cite>c" -> "<i>a<cite>b</cite>c</i>"
+  instead of "<i>a</i><cite>b</cite><i>c</i>". -->
+  <li>If <var title="">node</var> is an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a>, <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a>, <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#comment><code class=external data-anolis-spec=domcore>Comment</code></a>, or
+  <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#processinginstruction><code class=external data-anolis-spec=domcore>ProcessingInstruction</code></a> node, and is not an <a href=#unwrappable-element>unwrappable
+  element</a>:
+
+  <ol>
+    <li>If <var title="">node</var>'s <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling><code class=external data-anolis-spec=domcore title=dom-Node-previousSibling>previousSibling</code></a> is a <a href=#simple-styling-element>simple styling
+    element</a> whose <a href=#specified-style>specified style</a> and computed style for
+    <var title="">property</var> are both <var title="">new value</var>, append <var title="">node</var>
+    as the last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of its <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling><code class=external data-anolis-spec=domcore title=dom-Node-previousSibling>previousSibling</code></a> and abort this algorithm.
+
+    <li>If <var title="">node</var>'s <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling><code class=external data-anolis-spec=domcore title=dom-Node-nextSibling>nextSibling</code></a> is a <a href=#simple-styling-element>simple styling
+    element</a> whose <a href=#specified-style>specified style</a> and computed style for
+    <var title="">property</var> are both <var title="">new value</var>, insert <var title="">node</var>
+    as the first <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of its <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling><code class=external data-anolis-spec=domcore title=dom-Node-nextSibling>nextSibling</code></a> and abort this algorithm.
+  </ol>
+
   <li>If <var title="">node</var> is an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a> and <var title="">property</var> computes to
   <var title="">new value</var> on <var title="">node</var>, abort this algorithm.
 
@@ -563,16 +582,6 @@ After forcing the style, descendants might still have different style.
 
     <li>Abort this algorithm.
   </ol>
-
-  <li>If <var title="">node</var>'s <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling><code class=external data-anolis-spec=domcore title=dom-Node-previousSibling>previousSibling</code></a> is a <a href=#simple-styling-element>simple styling
-  element</a> whose <a href=#specified-style>specified style</a> and computed style for
-  <var title="">property</var> are both <var title="">new value</var>, append <var title="">node</var> as
-  the last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of its <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling><code class=external data-anolis-spec=domcore title=dom-Node-previousSibling>previousSibling</code></a> and abort this algorithm.
-
-  <li>If <var title="">node</var>'s <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling><code class=external data-anolis-spec=domcore title=dom-Node-nextSibling>nextSibling</code></a> is a <a href=#simple-styling-element>simple styling
-  element</a> whose <a href=#specified-style>specified style</a> and computed style for
-  <var title="">property</var> are both <var title="">new value</var>, insert <var title="">node</var> as
-  the first <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of its <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling><code class=external data-anolis-spec=domcore title=dom-Node-nextSibling>nextSibling</code></a> and abort this algorithm.
 
   <!-- At this point we have to make a new element as a wrapper.  This isn't
   worth the effort for comments or PIs, so abort in that case. -->
@@ -610,8 +619,17 @@ After forcing the style, descendants might still have different style.
   <li>Append <var title="">node</var> to <var title="">new parent</var> as its last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>.
 
   <li>If <var title="">node</var> is an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a> and the computed value of
-  <var title="">property</var> for <var title="">node</var> is not <var title="">new value</var>, set the
-  CSS property <var title="">property</var> of <var title="">node</var> to <var title="">new value</var>.
+  <var title="">property</var> for <var title="">node</var> is not <var title="">new value</var>:
+
+  <ol>
+    <li>Set the CSS property <var title="">property</var> of <var title="">node</var> to <var title="">new
+    value</var>.
+
+    <li>Insert <var title="">node</var> into the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of <var title="">new parent</var>
+    before <var title="">new parent</var>.
+
+    <li>Remove <var title="">new parent</var> from its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+  </ol>
 </ol>
 
 

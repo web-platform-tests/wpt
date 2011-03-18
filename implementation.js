@@ -265,6 +265,7 @@ function isUnwrappableElement(node) {
 		"h1", "h2", "h3", "h4", "h5", "h6", "p", "hr", "pre", "blockquote",
 		"ol", "ul", "li", "dl", "dt", "dd", "div", "table", "caption",
 		"colgroup", "col", "tbody", "thead", "tfoot", "tr", "th", "td",
+		"address"
 	].indexOf(node.tagName.toLowerCase()) != -1;
 }
 
@@ -700,6 +701,38 @@ function pushDownStyles(node, property, newValue) {
 }
 
 function forceStyle(node, property, newValue) {
+	// "If node is an Element, Text, Comment, or ProcessingInstruction node,
+	// and is not an unwrappable element:"
+	if ((node.nodeType == Node.ELEMENT_NODE
+	|| node.nodeType == Node.TEXT_NODE
+	|| node.nodeType == Node.COMMENT_NODE
+	|| node.nodeType == Node.PROCESSING_INSTRUCTION_NODE)
+	&& !isUnwrappableElement(node)) {
+		// "If node's previousSibling is a simple styling element whose
+		// specified style and computed style for property are both new value,
+		// append node as the last child of its previousSibling and abort this
+		// algorithm."
+		if (isSimpleStylingElement(node.previousSibling)
+		&& cssValuesEqual(property, getSpecifiedStyle(node.previousSibling, property), newValue)
+		&& cssValuesEqual(property, getComputedStyle(node.previousSibling)[property], newValue)) {
+			node.previousSibling.appendChild(node);
+			return;
+		}
+
+		// "If node's nextSibling is a simple styling element whose specified
+		// style and computed style for property are both new value, insert
+		// node as the first child of its nextSibling and abort this
+		// algorithm."
+		if (isSimpleStylingElement(node.nextSibling)
+		&& cssValuesEqual(property, getSpecifiedStyle(node.nextSibling, property), newValue)
+		&& cssValuesEqual(property, getComputedStyle(node.nextSibling)[property], newValue)) {
+			node.nextSibling.insertBefore(node, node.nextSibling.childNodes.length
+				? node.nextSibling.childNodes[0]
+				: null);
+			return;
+		}
+	}
+
 	// "If node is an Element and property computes to new value on node, abort
 	// this algorithm."
 	if (node.nodeType == Node.ELEMENT_NODE
@@ -743,28 +776,6 @@ function forceStyle(node, property, newValue) {
 		return;
 	}
 
-	// "If node's previousSibling is a simple styling element whose specified
-	// style and computed style for property are both new value, append node as
-	// the last child of its previousSibling and abort this algorithm."
-	if (isSimpleStylingElement(node.previousSibling)
-	&& cssValuesEqual(property, getSpecifiedStyle(node.previousSibling, property), newValue)
-	&& cssValuesEqual(property, getComputedStyle(node.previousSibling)[property], newValue)) {
-		node.previousSibling.appendChild(node);
-		return;
-	}
-
-	// "If node's nextSibling is a simple styling element whose specified style
-	// and computed style for property are both new value, insert node as the
-	// first child of its nextSibling and abort this algorithm."
-	if (isSimpleStylingElement(node.nextSibling)
-	&& cssValuesEqual(property, getSpecifiedStyle(node.nextSibling, property), newValue)
-	&& cssValuesEqual(property, getComputedStyle(node.nextSibling)[property], newValue)) {
-		node.nextSibling.insertBefore(node, node.nextSibling.childNodes.length
-			? node.nextSibling.childNodes[0]
-			: null);
-		return;
-	}
-
 	// "If node is a Comment or ProcessingInstruction, abort this algorithm."
 	if (node.nodeType == Node.COMMENT_NODE
 	|| node.nodeType == Node.PROCESSING_INSTRUCTION_NODE) {
@@ -788,7 +799,7 @@ function forceStyle(node, property, newValue) {
 
 	// "If property is "font-weight" and new value is "bold", let tag be "b"."
 	var tag;
-	if (property == "fontWeight" && newValue == "bold") {
+	if (property == "fontWeight" && (newValue == "bold" || newValue == "700")) {
 		tag = "b";
 	// "If property is "font-style" and new value is "italic", let tag be "i"."
 	} else if (property == "fontStyle" && newValue == "italic") {
@@ -819,10 +830,17 @@ function forceStyle(node, property, newValue) {
 	newParent.appendChild(node);
 
 	// "If node is an Element and the computed value of property for node is
-	// not new value, set the CSS property property of node to new value."
+	// not new value:"
 	if (node.nodeType == Node.ELEMENT_NODE
 	&& !cssValuesEqual(property, getComputedStyle(node)[property], newValue)) {
+		// "Set the CSS property property of node to new value."
 		node.style[property] = newValue;
+
+		// "Insert node into the parent of new parent before new parent."
+		newParent.parentNode.insertBefore(node, newParent);
+
+		// "Remove new parent from its parent."
+		newParent.parentNode.removeChild(newParent);
 	}
 }
 
@@ -893,9 +911,12 @@ function styleNode(node, property, newValue) {
 	}
 }
 
-function myExecCommand(commandId, showUI, value) {
+function myExecCommand(commandId, showUI, value, range) {
 	commandId = commandId.toLowerCase();
-	var range = getActiveRange(document);
+
+	if (typeof range == "undefined") {
+		range = getActiveRange(document);
+	}
 
 	if (!range) {
 		return;
@@ -990,6 +1011,28 @@ function myExecCommand(commandId, showUI, value) {
 			}
 		}
 		*/
+
+		case "fontname":
+		// "Decompose the Range, then style each returned Node with property
+		// equal to "font-family" and new value equal to value."
+		var nodeList = decomposeRange(range);
+		for (var i = 0; i < nodeList.length; i++) {
+			styleNode(nodeList[i], "fontFamily", value);
+		}
+		break;
+
+		case "forecolor":
+		// "If value is not a valid CSS color, the user agent must do nothing
+		// and abort these steps. Otherwise, it must decompose the Range, then
+		// style each returned Node with property equal to "color" and new
+		// value equal to value."
+		//
+		// Ignore validation for now.
+		var nodeList = decomposeRange(range);
+		for (var i = 0; i < nodeList.length; i++) {
+			styleNode(nodeList[i], "color", value);
+		}
+		break;
 
 		case "italic":
 		// "Decompose the Range. If the state of the Range for this command is

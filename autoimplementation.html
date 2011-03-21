@@ -323,7 +323,7 @@ function addTest(command, test) {
 			// IE, we don't care
 		}
 		document.execCommand(command, false, value);
-		browserCell.lastChild.textContent = browserCell.innerHTML;
+		browserCell.lastChild.textContent = browserCell.firstChild.innerHTML;
 	} catch (e) {
 		browserCell.textContent = "Exception: " + e;
 	}

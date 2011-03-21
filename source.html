@@ -202,13 +202,22 @@ following algorithm:
 not be used where only [[phrasingcontent]] is expected (not counting unknown or
 obsolete elements, which cannot be used at all).
 
-<p>The <dfn>effective style</dfn> of an [[element]] <var>element</var> for a
-given <var>property</var> is returned by the following algorithm, which will
-return a CSS value:
+<p>The <dfn>effective style</dfn> of a [[node]] <var>node</var> for a given
+<var>property</var> is returned by the following algorithm, which will return
+either a CSS value or null:
 
 <ol>
+  <li>If <var>node</var> is neither an [[element]] nor a [[text]] node, return
+  null.
+
+  <li>If <var>node</var> is a [[text]] node and its [[parent]] is null, return
+  null.
+
+  <li>If <var>node</var> is a [[text]] node, return the <span>effective
+  style</span> of its [[parent]] for <var>property</var>.
+
   <li>If <var>property</var> is "text-decoration", and the "text-decoration"
-  property of <var>element</var> or any of its [[ancestors]] computes to
+  property of <var>node</var> or any of its [[ancestors]] computes to
   "underline", return "underline".  Otherwise, return "none".
 
   <p class=XXX>We ignore the possibility of text-decorations other than
@@ -218,18 +227,18 @@ return a CSS value:
   <li>If <var>property</var> is "background-color":
 
   <ol>
-    <li>While the computed style of "background-color" on <var>element</var> is
-    any fully transparent value, and <var>element</var>'s [[parent]] is an
-    [[element]], set <var>element</var> to its parent.
+    <li>While the computed style of "background-color" on <var>node</var> is
+    any fully transparent value, and <var>node</var>'s [[parent]] is an
+    [[element]], set <var>node</var> to its [[parent]].
 
-    <li>If the computed style of "background-color" on <var>element</var> is
+    <li>If the computed style of "background-color" on <var>node</var> is
     a fully transparent value, return "rgb(255, 255, 255)".
 
     <li>Otherwise, return the computed style of "background-color" for
-    <var>element</var>.
+    <var>node</var>.
   </ol>
 
-  <li>Return the computed style of <var>property</var> for <var>element</var>.
+  <li>Return the computed style of <var>property</var> for <var>node</var>.
 </ol>
 
 <p>The <dfn>specified style</dfn> of an [[element]] for a given
@@ -488,13 +497,8 @@ id=foo> into <span id=foo> instead of <font id=foo>, but probably not worth it.
   <li>If <var>node</var>'s [[parent]] is not an [[element]], abort this
   algorithm. <!-- E.g., a text node child of a document fragment. -->
 
-  <li>If <var>node</var> is an [[element]] and the <span>effective style</span>
-  of <var>property</var> is <var>new value</var> on <var>node</var>, abort this
-  algorithm.
-
-  <li>If <var>node</var> is not an [[element]] and the <span>effective
-  style</span> of <var>property</var> is <var>new value</var> on
-  <var>node</var>'s [[parent]], abort this algorithm.
+  <li>If the <span>effective style</span> of <var>property</var> is <var>new
+  value</var> on <var>node</var>, abort this algorithm.
 
   <li>Let <var>current ancestor</var> be <var>node</var>'s [[parent]].
 
@@ -655,14 +659,8 @@ After forcing the style, descendants might still have different style.
     this algorithm.
   </ol>
 
-  <li>If <var>node</var> is an [[element]] and the <span>effective style</span>
-  of <var>property</var> is <var>new value</var> on <var>node</var>, abort this
-  algorithm.
-
-  <li>If <var>node</var> is not an [[element]], <var>node</var>'s [[parent]] is
-  an [[element]], and the <span>effective style</span> of <var>property</var>
-  is <var>new value</var> on <var>node</var>'s [[parent]], abort this
-  algorithm.
+  <li>If the <span>effective style</span> of <var>property</var> is <var>new
+  value</var> on <var>node</var>, abort this algorithm.
 
   <li>If <var>node</var> is an <span>unwrappable element</span>:
 
@@ -683,14 +681,8 @@ After forcing the style, descendants might still have different style.
   <li>If <var>node</var> is a [[comment]] or [[processinginstruction]], abort
   this algorithm.
 
-  <li>If <var>node</var> is an [[element]] and the <span>effective style</span>
-  of <var>property</var> is <var>new value</var> on <var>node</var>, abort this
-  algorithm.
-
-  <li>If <var>node</var> is not an [[element]], <var>node</var>'s [[parent]] is
-  an [[element]], and the <span>effective style</span> of <var>property</var>
-  is <var>new value</var> on <var>node</var>'s [[parent]], abort this
-  algorithm.
+  <li>If the <span>effective style</span> of <var>property</var> is <var>new
+  value</var> on <var>node</var>, abort this algorithm.
 
   <li>If <var>property</var> is "font-weight" and <var>new value</var> is
   "bold", let <var>tag</var> be "b".
@@ -939,14 +931,12 @@ across the board, as with foreColor. -->
 <dd><p><strong>Action</strong>: <span>Decompose</span> the [[range]].  If the
 state of the [[range]] for this command is then true, <span>style</span> each
 returned [[node]] with <var>property</var> "font-weight" and <var>new
-value</var> "bold".  Otherwise, <span>style</span> them with <var>new
-value</var> "normal".
+value</var> "normal".  Otherwise, <span>style</span> them with <var>new
+value</var> "bold".
 
-<dd><p><strong>State</strong>: True if every [[element]] that is
-<span>effectively contained</span> in the [[range]] has computed font-weight at
-least 700, and the [[parent]] of every [[text]] node that is <span>effectively
-contained</span> in the [[range]] has computed font-weight at least 700.
-Otherwise false.
+<dd><p><strong>State</strong>: True if every [[node]] that is <span>effectively
+contained</span> in the [[range]] has <span>effective style</span> either null
+or at least 700 for font-weight.  Otherwise false.
 
 <dd><p><strong>Value</strong>: Always the empty string.
 <!-- We have lots of options here (and presumably for all the others where
@@ -1185,16 +1175,30 @@ matches the other browsers. -->
 <dd><p><strong>Action</strong>: <span>Decompose</span> the [[range]].  If the
 state of the [[range]] for this command is then true, <span>style</span> each
 returned [[node]] with <var>property</var> "font-style" and <var>new
-value</var> "italic".  Otherwise, <span>style</span> them with <var>new
-value</var> "normal".
+value</var> "normal".  Otherwise, <span>style</span> them with <var>new
+value</var> "italic".
 
-<dd><p><strong>State</strong>: True if every [[element]] that is
-<span>effectively contained</span> in the [[range]] has computed font-style
-"italic" or "oblique", and the [[parent]] of every [[text]] node that is
-<span>effectively contained</span> in the [[range]] has computed font-style
-"italic" or "oblique".  Otherwise false.
+<dd><p><strong>State</strong>: True if every [[node]] that is <span>effectively
+contained</span> in the [[range]] has <span>effective style</span> either null,
+"italic", or "oblique" for font-style.  Otherwise false.
 
 <dd><p><strong>Value</strong>: Always the empty string.
+
+
+<dt><code title><dfn title=command-underline>underline</dfn></code>
+
+<dd><p><strong>Action</strong>: <span>Decompose</span> the [[range]].  If the
+state of the [[range]] for this command is then true, <span>style</span> each
+returned [[node]] with <var>property</var> "text-decoration" and <var>new
+value</var> "none".  Otherwise, <span>style</span> them with <var>new
+value</var> "underline".
+
+<dd><p><strong>State</strong>: True if every [[node]] that is <span>effectively
+contained</span> in the [[range]] has <span>effective style</span> either null
+or "underline" for text-decoration.  Otherwise false.
+
+<dd><p><strong>Value</strong>: Always the empty string.
+</dl>
 
 
 <dt><code title><dfn title=command-unlink>unlink</dfn></code>
@@ -1242,18 +1246,6 @@ what the other browsers do instead.
 <dd><p><strong>State</strong>: Always false.
 
 <dd><p><strong>Value</strong>: Always the empty string.
-
-
-<dt><code title><dfn title=command-underline>underline</dfn></code>
-
-<dd class=XXX><p><strong>Action</strong>: ???  This is totally unreasonable,
-because CSS text-decoration is a nightmare.  Styling is easy, unstyling is only
-possible through massive hacks.
-
-<dd class=XXX><p><strong>State</strong>: ...
-
-<dd><p><strong>Value</strong>: Always the empty string.
-</dl>
 
 
 <h2 class=no-num id=references>References</h2><!--REFS-->

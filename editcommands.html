@@ -212,13 +212,22 @@ following algorithm:
 not be used where only <a class=external data-anolis-spec=html href=http://www.whatwg.org/html/#phrasing-content>phrasing content</a> is expected (not counting unknown or
 obsolete elements, which cannot be used at all).
 
-<p>The <dfn id=effective-style>effective style</dfn> of an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a> <var title="">element</var> for a
-given <var title="">property</var> is returned by the following algorithm, which will
-return a CSS value:
+<p>The <dfn id=effective-style>effective style</dfn> of a <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> <var title="">node</var> for a given
+<var title="">property</var> is returned by the following algorithm, which will return
+either a CSS value or null:
 
 <ol>
+  <li>If <var title="">node</var> is neither an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a> nor a <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> node, return
+  null.
+
+  <li>If <var title="">node</var> is a <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> node and its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is null, return
+  null.
+
+  <li>If <var title="">node</var> is a <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> node, return the <a href=#effective-style>effective
+  style</a> of its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> for <var title="">property</var>.
+
   <li>If <var title="">property</var> is "text-decoration", and the "text-decoration"
-  property of <var title="">element</var> or any of its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestors</a> computes to
+  property of <var title="">node</var> or any of its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestors</a> computes to
   "underline", return "underline".  Otherwise, return "none".
 
   <p class=XXX>We ignore the possibility of text-decorations other than
@@ -228,18 +237,18 @@ return a CSS value:
   <li>If <var title="">property</var> is "background-color":
 
   <ol>
-    <li>While the computed style of "background-color" on <var title="">element</var> is
-    any fully transparent value, and <var title="">element</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is an
-    <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a>, set <var title="">element</var> to its parent.
+    <li>While the computed style of "background-color" on <var title="">node</var> is
+    any fully transparent value, and <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is an
+    <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a>, set <var title="">node</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
 
-    <li>If the computed style of "background-color" on <var title="">element</var> is
+    <li>If the computed style of "background-color" on <var title="">node</var> is
     a fully transparent value, return "rgb(255, 255, 255)".
 
     <li>Otherwise, return the computed style of "background-color" for
-    <var title="">element</var>.
+    <var title="">node</var>.
   </ol>
 
-  <li>Return the computed style of <var title="">property</var> for <var title="">element</var>.
+  <li>Return the computed style of <var title="">property</var> for <var title="">node</var>.
 </ol>
 
 <p>The <dfn id=specified-style>specified style</dfn> of an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a> for a given
@@ -492,13 +501,8 @@ id=foo> into <span id=foo> instead of <font id=foo>, but probably not worth it.
   <li>If <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is not an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a>, abort this
   algorithm. <!-- E.g., a text node child of a document fragment. -->
 
-  <li>If <var title="">node</var> is an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a> and the <a href=#effective-style>effective style</a>
-  of <var title="">property</var> is <var title="">new value</var> on <var title="">node</var>, abort this
-  algorithm.
-
-  <li>If <var title="">node</var> is not an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a> and the <a href=#effective-style>effective
-  style</a> of <var title="">property</var> is <var title="">new value</var> on
-  <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>, abort this algorithm.
+  <li>If the <a href=#effective-style>effective style</a> of <var title="">property</var> is <var title="">new
+  value</var> on <var title="">node</var>, abort this algorithm.
 
   <li>Let <var title="">current ancestor</var> be <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
 
@@ -659,14 +663,8 @@ After forcing the style, descendants might still have different style.
     this algorithm.
   </ol>
 
-  <li>If <var title="">node</var> is an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a> and the <a href=#effective-style>effective style</a>
-  of <var title="">property</var> is <var title="">new value</var> on <var title="">node</var>, abort this
-  algorithm.
-
-  <li>If <var title="">node</var> is not an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a>, <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is
-  an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a>, and the <a href=#effective-style>effective style</a> of <var title="">property</var>
-  is <var title="">new value</var> on <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>, abort this
-  algorithm.
+  <li>If the <a href=#effective-style>effective style</a> of <var title="">property</var> is <var title="">new
+  value</var> on <var title="">node</var>, abort this algorithm.
 
   <li>If <var title="">node</var> is an <a href=#unwrappable-element>unwrappable element</a>:
 
@@ -687,14 +685,8 @@ After forcing the style, descendants might still have different style.
   <li>If <var title="">node</var> is a <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#comment><code class=external data-anolis-spec=domcore>Comment</code></a> or <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#processinginstruction><code class=external data-anolis-spec=domcore>ProcessingInstruction</code></a>, abort
   this algorithm.
 
-  <li>If <var title="">node</var> is an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a> and the <a href=#effective-style>effective style</a>
-  of <var title="">property</var> is <var title="">new value</var> on <var title="">node</var>, abort this
-  algorithm.
-
-  <li>If <var title="">node</var> is not an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a>, <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is
-  an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a>, and the <a href=#effective-style>effective style</a> of <var title="">property</var>
-  is <var title="">new value</var> on <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>, abort this
-  algorithm.
+  <li>If the <a href=#effective-style>effective style</a> of <var title="">property</var> is <var title="">new
+  value</var> on <var title="">node</var>, abort this algorithm.
 
   <li>If <var title="">property</var> is "font-weight" and <var title="">new value</var> is
   "bold", let <var title="">tag</var> be "b".
@@ -937,14 +929,12 @@ across the board, as with foreColor. -->
 <dd><p><strong>Action</strong>: <a href=#decompose>Decompose</a> the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a>.  If the
 state of the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a> for this command is then true, <a href=#style>style</a> each
 returned <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> with <var title="">property</var> "font-weight" and <var title="">new
-value</var> "bold".  Otherwise, <a href=#style>style</a> them with <var title="">new
-value</var> "normal".
+value</var> "normal".  Otherwise, <a href=#style>style</a> them with <var title="">new
+value</var> "bold".
 
-<dd><p><strong>State</strong>: True if every <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a> that is
-<a href=#effectively-contained>effectively contained</a> in the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a> has computed font-weight at
-least 700, and the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of every <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> node that is <a href=#effectively-contained>effectively
-contained</a> in the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a> has computed font-weight at least 700.
-Otherwise false.
+<dd><p><strong>State</strong>: True if every <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> that is <a href=#effectively-contained>effectively
+contained</a> in the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a> has <a href=#effective-style>effective style</a> either null
+or at least 700 for font-weight.  Otherwise false.
 
 <dd><p><strong>Value</strong>: Always the empty string.
 <!-- We have lots of options here (and presumably for all the others where
@@ -1173,16 +1163,30 @@ matches the other browsers. -->
 <dd><p><strong>Action</strong>: <a href=#decompose>Decompose</a> the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a>.  If the
 state of the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a> for this command is then true, <a href=#style>style</a> each
 returned <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> with <var title="">property</var> "font-style" and <var title="">new
-value</var> "italic".  Otherwise, <a href=#style>style</a> them with <var title="">new
-value</var> "normal".
+value</var> "normal".  Otherwise, <a href=#style>style</a> them with <var title="">new
+value</var> "italic".
 
-<dd><p><strong>State</strong>: True if every <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a> that is
-<a href=#effectively-contained>effectively contained</a> in the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a> has computed font-style
-"italic" or "oblique", and the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of every <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> node that is
-<a href=#effectively-contained>effectively contained</a> in the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a> has computed font-style
-"italic" or "oblique".  Otherwise false.
+<dd><p><strong>State</strong>: True if every <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> that is <a href=#effectively-contained>effectively
+contained</a> in the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a> has <a href=#effective-style>effective style</a> either null,
+"italic", or "oblique" for font-style.  Otherwise false.
 
 <dd><p><strong>Value</strong>: Always the empty string.
+
+
+<dt><code title=""><dfn id=command-underline title=command-underline>underline</dfn></code>
+
+<dd><p><strong>Action</strong>: <a href=#decompose>Decompose</a> the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a>.  If the
+state of the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a> for this command is then true, <a href=#style>style</a> each
+returned <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> with <var title="">property</var> "text-decoration" and <var title="">new
+value</var> "none".  Otherwise, <a href=#style>style</a> them with <var title="">new
+value</var> "underline".
+
+<dd><p><strong>State</strong>: True if every <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> that is <a href=#effectively-contained>effectively
+contained</a> in the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a> has <a href=#effective-style>effective style</a> either null
+or "underline" for text-decoration.  Otherwise false.
+
+<dd><p><strong>Value</strong>: Always the empty string.
+</dl>
 
 
 <dt><code title=""><dfn id=command-unlink title=command-unlink>unlink</dfn></code>
@@ -1230,18 +1234,6 @@ what the other browsers do instead.
 <dd><p><strong>State</strong>: Always false.
 
 <dd><p><strong>Value</strong>: Always the empty string.
-
-
-<dt><code title=""><dfn id=command-underline title=command-underline>underline</dfn></code>
-
-<dd class=XXX><p><strong>Action</strong>: ???  This is totally unreasonable,
-because CSS text-decoration is a nightmare.  Styling is easy, unstyling is only
-possible through massive hacks.
-
-<dd class=XXX><p><strong>State</strong>: ...
-
-<dd><p><strong>Value</strong>: Always the empty string.
-</dl>
 
 
 <h2 class=no-num id=references>References</h2><!--REFS-->

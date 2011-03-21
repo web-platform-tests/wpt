@@ -272,50 +272,68 @@ function isUnwrappableElement(node) {
 /**
  * "effective style" per edit command spec
  */
-function getEffectiveStyle(element, property) {
+function getEffectiveStyle(node, property) {
+	// "If node is neither an Element nor a Text node, return null."
+	if (node.nodeType != Node.ELEMENT_NODE
+	&& node.nodeType != Node.TEXT_NODE) {
+		return null;
+	}
+
+	// "If node is a Text node and its parent is null, return null."
+	if (node.nodeType == Node.TEXT_NODE
+	&& !node.parentNode) {
+		return null;
+	}
+
+	// "If node is a Text node, return the effective style of its parent for
+	// property."
+	if (node.nodeType == Node.TEXT_NODE) {
+		return getEffectiveStyle(node.parentNode, property);
+	}
+
 	// "If property is "text-decoration", and the "text-decoration" property of
-	// element or any of its ancestors computes to "underline", return
+	// node or any of its ancestors computes to "underline", return
 	// "underline". Otherwise, return "none"."
 	if (property == "textDecoration") {
 		do {
-			if (getComputedStyle(element).textDecoration == "underline") {
+			if (getComputedStyle(node).textDecoration == "underline") {
 				return "underline";
 			}
-			element = element.parentNode;
-		} while (element && element.nodeType == Node.ELEMENT_NODE);
+			node = node.parentNode;
+		} while (node && node.nodeType == Node.ELEMENT_NODE);
 		return "none";
 	}
 
 	// "If property is "background-color":"
 	if (property == "backgroundColor") {
-		// "While the computed style of "background-color" on element is any
-		// fully transparent value, and element's parent is an Element, set
-		// element to its parent."
+		// "While the computed style of "background-color" on node is any
+		// fully transparent value, and node's parent is an Element, set
+		// node to its parent."
 		//
 		// Another lame hack to avoid flawed APIs.
-		while ((getComputedStyle(element).backgroundColor == "rgba(0, 0, 0, 0)"
-		|| getComputedStyle(element).backgroundColor === ""
-		|| getComputedStyle(element).backgroundColor == "transparent")
-		&& element.parentNode
-		&& element.parentNode.nodeType == Node.ELEMENT_NODE) {
-			element = element.parentNode;
+		while ((getComputedStyle(node).backgroundColor == "rgba(0, 0, 0, 0)"
+		|| getComputedStyle(node).backgroundColor === ""
+		|| getComputedStyle(node).backgroundColor == "transparent")
+		&& node.parentNode
+		&& node.parentNode.nodeType == Node.ELEMENT_NODE) {
+			node = node.parentNode;
 		}
 
-		// "If the computed style of "background-color" on element is a fully
+		// "If the computed style of "background-color" on node is a fully
 		// transparent value, return "rgb(255, 255, 255)"."
-		if (getComputedStyle(element).backgroundColor == "rgba(0, 0, 0, 0)"
-        || getComputedStyle(element).backgroundColor === ""
-        || getComputedStyle(element).backgroundColor == "transparent") {
+		if (getComputedStyle(node).backgroundColor == "rgba(0, 0, 0, 0)"
+        || getComputedStyle(node).backgroundColor === ""
+        || getComputedStyle(node).backgroundColor == "transparent") {
 			return "rgb(255, 255, 255)";
 		}
 
 		// "Otherwise, return the computed style of "background-color" for
-		// element."
-		return getComputedStyle(element).backgroundColor;
+		// node."
+		return getComputedStyle(node).backgroundColor;
 	}
 
-	// "Return the computed style of property for element."
-	return getComputedStyle(element)[property];
+	// "Return the computed style of property for node."
+	return getComputedStyle(node)[property];
 }
 
 /**
@@ -646,17 +664,9 @@ function pushDownStyles(node, property, newValue) {
 		return;
 	}
 
-	// "If node is an Element and the effective style of property is new value
-	// on node, abort this algorithm."
-	if (node.nodeType == Node.ELEMENT_NODE
-	&& cssValuesEqual(property, getEffectiveStyle(node, property), newValue)) {
-		return;
-	}
-
-	// "If node is not an Element and the effective style of property is new
-	// value on node's parent, abort this algorithm."
-	if (node.nodeType != Node.ELEMENT_NODE
-	&& cssValuesEqual(property, getEffectiveStyle(node.parentNode, property), newValue)) {
+	// "If the effective style of property is new value on node, abort this
+	// algorithm."
+	if (cssValuesEqual(property, getEffectiveStyle(node, property), newValue)) {
 		return;
 	}
 
@@ -782,19 +792,9 @@ function forceStyle(node, property, newValue) {
 		}
 	}
 
-	// "If node is an Element and the effective style of property is new value
-	// on node, abort this algorithm."
-	if (node.nodeType == Node.ELEMENT_NODE
-	&& cssValuesEqual(property, getEffectiveStyle(node, property), newValue)) {
-		return;
-	}
-
-	// "If node is not an Element, node's parent is an Element, and the
-	// effective style of property is new value on node's parent, abort this
+	// "If the effective style of property is new value on node, abort this
 	// algorithm."
-	if (node.nodeType != Node.ELEMENT_NODE
-	&& node.parentNode.nodeType == Node.ELEMENT_NODE
-	&& cssValuesEqual(property, getEffectiveStyle(node.parentNode, property), newValue)) {
+	if (cssValuesEqual(property, getEffectiveStyle(node, property), newValue)) {
 		return;
 	}
 
@@ -832,19 +832,9 @@ function forceStyle(node, property, newValue) {
 		return;
 	}
 
-	// "If node is an Element and the effective style of property is new value
-	// on node, abort this algorithm."
-	if (node.nodeType == Node.ELEMENT_NODE
-	&& cssValuesEqual(property, getEffectiveStyle(node, property), newValue)) {
-		return;
-	}
-
-	// "If node is not an Element, node's parent is an Element, and the
-	// effective style of property is new value on node's parent, abort this
+	// "If the effective style of property is new value on node, abort this
 	// algorithm."
-	if (node.nodeType != Node.ELEMENT_NODE
-	&& node.parentNode.nodeType == Node.ELEMENT_NODE
-	&& cssValuesEqual(property, getEffectiveStyle(node.parentNode, property), newValue)) {
+	if (cssValuesEqual(property, getEffectiveStyle(node, property), newValue)) {
 		return;
 	}
 
@@ -977,7 +967,7 @@ function myExecCommand(commandId, showUI, value, range) {
 		case "bold":
 		// "Decompose the Range. If the state of the Range for this command is
 		// then true, style each returned Node with property "font-weight" and
-		// new value "bold". Otherwise, style them with new value "normal"."
+		// new value "normal". Otherwise, style them with new value "bold"."
 		var nodeList = decomposeRange(range);
 		var newValue = getState("bold", range) ? "normal" : "bold";
 		for (var i = 0; i < nodeList.length; i++) {
@@ -1088,11 +1078,23 @@ function myExecCommand(commandId, showUI, value, range) {
 		case "italic":
 		// "Decompose the Range. If the state of the Range for this command is
 		// then true, style each returned Node with property "font-style" and
-		// new value "italic". Otherwise, style them with new value "normal"."
+		// new value "normal". Otherwise, style them with new value "italic"."
 		var nodeList = decomposeRange(range);
 		var newValue = getState("italic", range) ? "normal" : "italic";
 		for (var i = 0; i < nodeList.length; i++) {
 			styleNode(nodeList[i], "fontStyle", newValue);
+		}
+		break;
+
+		case "underline":
+		// "Decompose the Range. If the state of the Range for this command is
+		// then true, style each returned Node with property "text-decoration"
+		// and new value "none". Otherwise, style them with new value
+		// "underline"."
+		var nodeList = decomposeRange(range);
+		var newValue = getState("underline", range) ? "none" : "underline";
+		for (var i = 0; i < nodeList.length; i++) {
+			styleNode(nodeList[i], "textDecoration", newValue);
 		}
 		break;
 
@@ -1126,38 +1128,34 @@ function getState(commandId, range) {
 			continue;
 		}
 
-		var element;
-		if (node.nodeType == Node.TEXT_NODE) {
-			element = node.parentNode;
-		} else {
-			element = node;
-		}
-
-		if (element.nodeType != Node.ELEMENT_NODE) {
-			continue;
-		}
-
-		var style = getComputedStyle(element);
-
 		if (commandId == "bold") {
-			// "True if every Element that is effectively contained in the
-			// Range has computed font-weight at least 700, and the parent of
-			// every Text node that is effectively contained in the Range has
-			// computed font-weight at least 700. Otherwise false."
-			if (style.fontWeight != "bold"
-			&& style.fontWeight != "700"
-			&& style.fontWeight != "800"
-			&& style.fontWeight != "900") {
+			// "True if every Node that is effectively contained in the Range
+			// has effective style either null or at least 700 for font-weight.
+			// Otherwise false."
+			var weight = getEffectiveStyle(node, "fontWeight");
+			if (weight !== null
+			&& weight !== "bold"
+			&& weight !== "700"
+			&& weight !== "800"
+			&& weight !== "900") {
 				return false;
 			}
 		} else if (commandId == "italic") {
-			// "True if every Element that is effectively contained in the
-			// Range has computed font-style "italic" or "oblique", and the
-			// parent of every Text node that is effectively contained in the
-			// Range has computed font-style "italic" or "oblique". Otherwise
-			// false."
-			if (style.fontStyle != "italic"
-			&& style.fontStyle != "oblique") {
+			// "True if every Node that is effectively contained in the Range
+			// has effective style either null, "italic", or "oblique" for
+			// font-style. Otherwise false."
+			var style = getEffectiveStyle(node, "fontStyle");
+			if (style !== null
+			&& style !== "italic"
+			&& style !== "oblique") {
+				return false;
+			}
+		} else if (commandId == "underline") {
+			// "True if every Node that is effectively contained in the Range
+			// has effective style either null or "underline" for
+			// text-decoration. Otherwise false."
+			var decoration = getEffectiveStyle(node, "textDecoration");
+			if (decoration !== null && decoration !== "underline") {
 				return false;
 			}
 		}

@@ -30,7 +30,9 @@ href=http://www.browserscope.org/richtext2/test>Browserscope</a>.
 	<li><a href=#bold>bold</a>
 	<li><a href=#fontname>fontname</a>
 	<li><a href=#forecolor>forecolor</a>
+	<li><a href=#hilitecolor>hilitecolor</a>
 	<li><a href=#italic>italic</a>
+	<li><a href=#underline>underline</a>
 </ul>
 
 <div id=bold>
@@ -39,7 +41,7 @@ href=http://www.browserscope.org/richtext2/test>Browserscope</a>.
 <table border=1><tr><th>Input <th>Spec <th>Browser <th>Same?</table>
 
 <p><label>Enter new test here: <input></label>
-<button onclick="addTest('bold', document.querySelector('input').value)">Add test</button>
+<button onclick="addTest('bold', document.querySelector('#bold input').value)">Add test</button>
 </div>
 
 <div id=fontname>
@@ -50,7 +52,7 @@ href=http://www.browserscope.org/richtext2/test>Browserscope</a>.
 <table border=1><tr><th>Input <th>Spec <th>Browser <th>Same?</table>
 
 <p><label>Enter new test here: <input></label>
-<button onclick="addTest('bold', document.querySelector('input').value)">Add test</button>
+<button onclick="addTest('bold', document.querySelector('#fontname input').value)">Add test</button>
 </div>
 
 <div id=forecolor>
@@ -61,7 +63,18 @@ href=http://www.browserscope.org/richtext2/test>Browserscope</a>.
 <table border=1><tr><th>Input <th>Spec <th>Browser <th>Same?</table>
 
 <p><label>Enter new test here: <input></label>
-<button onclick="addTest('forecolor', document.querySelector('input').value)">Add test</button>
+<button onclick="addTest('forecolor', document.querySelector('#forecolor input').value)">Add test</button>
+</div>
+
+<div id=hilitecolor>
+<h1>hilitecolor</h1>
+
+<p>Tests set the color to "#FF8888".
+
+<table border=1><tr><th>Input <th>Spec <th>Browser <th>Same?</table>
+
+<p><label>Enter new test here: <input></label>
+<button onclick="addTest('hilitecolor', document.querySelector('#hilitecolor input').value)">Add test</button>
 </div>
 
 <div id=italic>
@@ -70,11 +83,29 @@ href=http://www.browserscope.org/richtext2/test>Browserscope</a>.
 <table border=1><tr><th>Input <th>Spec <th>Browser <th>Same?</table>
 
 <p><label>Enter new test here: <input></label>
-<button onclick="addTest('italic', document.querySelector('input').value)">Add test</button>
+<button onclick="addTest('italic', document.querySelector('#italic input').value)">Add test</button>
+</div>
+
+<div id=underline>
+<h1>underline</h1>
+
+<table border=1><tr><th>Input <th>Spec <th>Browser <th>Same?</table>
+
+<p><label>Enter new test here: <input></label>
+<button onclick="addTest('underline', document.querySelector('#underline input').value)">Add test</button>
 </div>
 
 <script src=implementation.js></script>
 <script>
+var values = {
+	bold: null,
+	fontname: "serif",
+	forecolor: "#FF0000",
+	hilitecolor: "#FF8888",
+	italic: null,
+	underline: null,
+};
+
 var tests = {
 	bold: [
 		'foo[bar]baz',
@@ -86,6 +117,8 @@ var tests = {
 		'foo[<b>bar</b>]baz',
 		'foo[<b>bar]</b>baz',
 		'foo<b>[bar</b>]baz',
+		'foo<span style="font-weight: normal"><b>{bar}</b></span>baz',
+		'foo{<b></b>}baz',
 		'foo<strong>[bar]</strong>baz',
 		'foo[<strong>bar</strong>]baz',
 		'foo[<strong>bar]</strong>baz',
@@ -198,6 +231,16 @@ var tests = {
 		'foo<span id=purple>ba[r</span>ba]z',
 		'<span style="color: rgb(255, 0, 0)">foo<span id=purple>b[a]r</span>baz</span>',
 	],
+	hilitecolor: [
+		'foo[bar]baz',
+		'foo]bar[baz',
+		'{<p><p> <p>Foo</p>}',
+		'foo[bar<i>baz]qoz</i>quz',
+		'<p style="background-color: rgb(255, 136, 136)">foo[bar]baz</p>',
+		'<p style="background-color: #ff8888">foo[bar]baz</p>',
+		'<p style="background-color: aqua">foo[bar]baz</p>',
+		'{<p style="background-color: aqua">foo</p><p>bar</p>}',
+	],
 	italic: [
 		'foo[bar]baz',
 		'foo]bar[baz',
@@ -250,6 +293,16 @@ var tests = {
 		'foo [bar <i>baz] qoz</i> quz sic',
 		'foo bar <i>baz [qoz</i> quz] sic',
 	],
+	underline: [
+		'foo[bar]baz',
+		'foo]bar[baz',
+		'{<p><p> <p>Foo</p>}',
+		'foo[bar<b>baz]qoz</b>quz',
+		'foo<u>[bar]</u>baz',
+		'foo<span style="text-decoration: underline">[bar]</span>baz',
+		'<u>foo[bar]baz</u>',
+		'<u>foo[b<span style="color:red">ar]ba</span>z</u>',
+	],
 };
 
 for (testCat in tests) {
@@ -296,12 +349,7 @@ function doInputCell(tr, test) {
 }
 
 function doSpecCell(tr, test, command) {
-	var value = {
-		bold: null,
-		fontname: "serif",
-		forecolor: "#FF0000",
-		italic: null,
-	}[command];
+	var value = values[command];
 
 	var specCell = document.createElement("td");
 	specCell.innerHTML = "<div></div><div></div>";
@@ -324,18 +372,8 @@ function doSpecCell(tr, test, command) {
 }
 
 function doBrowserCell(tr, test, command) {
-	var value = {
-		bold: null,
-		fontname: "serif",
-		forecolor: "#FF0000",
-		italic: null,
-	}[command];
-	var styleWithCss = {
-		bold: false,
-		fontname: true,
-		forecolor: true,
-		italic: false,
-	}[command];
+	var value = values[command];
+	var styleWithCss = command != "bold" && command != "italic" && command != "underline";
 
 	var browserCell = document.createElement("td");
 	browserCell.innerHTML = "<div></div><div></div>";

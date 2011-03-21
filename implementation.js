@@ -192,7 +192,8 @@ function isHtmlElement(node) {
  * "A Node is effectively contained in a Range if either it is contained in the
  * Range; or it is the Range's start node, it is a Text node, and its length is
  * different from the Range's start offset; or it is the Range's end node, it
- * is a Text node, and the Range's end offset is not 0."
+ * is a Text node, and the Range's end offset is not 0; or it has at least one
+ * child, and all its children are effectively contained in the Range."
  */
 function isEffectivelyContained(node, range) {
 	if (isContained(node, range)) {
@@ -206,6 +207,14 @@ function isEffectivelyContained(node, range) {
 	if (node == range.endContainer
 	&& node.nodeType == Node.TEXT_NODE
 	&& range.endOffset != 0) {
+		return true;
+	}
+	if (node.childNodes.length != 0) {
+		for (var i = 0; i < node.childNodes.length; i++) {
+			if (!isEffectivelyContained(node.childNodes[i], range)) {
+				return false;
+			}
+		}
 		return true;
 	}
 	return false;
@@ -1075,6 +1084,19 @@ function myExecCommand(commandId, showUI, value, range) {
 		}
 		break;
 
+		case "hilitecolor":
+		// "If value is not a valid CSS color, do nothing and abort these
+		// steps. Otherwise, decompose the Range, then style each returned Node
+		// with property equal to "background-color" and new value equal to
+		// value."
+		//
+		// Ignore validation for now.
+		var nodeList = decomposeRange(range);
+		for (var i = 0; i < nodeList.length; i++) {
+			styleNode(nodeList[i], "backgroundColor", value);
+		}
+		break;
+
 		case "italic":
 		// "Decompose the Range. If the state of the Range for this command is
 		// then true, style each returned Node with property "font-style" and
@@ -1116,22 +1138,32 @@ function myQueryCommandState(commandId) {
 
 function getState(commandId, range) {
 	if (commandId != "bold"
-	&& commandId != "italic") {
+	&& commandId != "italic"
+	&& commandId != "underline") {
 		return false;
 	}
 
+	// XXX: This algorithm for getting all effectively contained nodes might be
+	// wrong . . .
 	var node = range.startContainer;
+	while (node.parentNode && node.parentNode.firstChild == node) {
+		node = node.parentNode;
+	}
 	var stop = nextNode(range.endContainer);
 
-	for (node = range.startContainer; node && node != nextNodeDescendants(range.endContainer); node = nextNode(node)) {
+	for (; node && node != nextNodeDescendants(range.endContainer); node = nextNode(node)) {
 		if (!isEffectivelyContained(node, range)) {
 			continue;
 		}
 
+		if (node.nodeType != Node.TEXT_NODE) {
+			continue;
+		}
+
 		if (commandId == "bold") {
-			// "True if every Node that is effectively contained in the Range
-			// has effective style either null or at least 700 for font-weight.
-			// Otherwise false."
+			// "True if every Text node that is effectively contained in the
+			// Range has effective style either null or at least 700 for
+			// font-weight. Otherwise false."
 			var weight = getEffectiveStyle(node, "fontWeight");
 			if (weight !== null
 			&& weight !== "bold"
@@ -1141,9 +1173,9 @@ function getState(commandId, range) {
 				return false;
 			}
 		} else if (commandId == "italic") {
-			// "True if every Node that is effectively contained in the Range
-			// has effective style either null, "italic", or "oblique" for
-			// font-style. Otherwise false."
+			// "True if every Text node that is effectively contained in the
+			// Range has effective style either null, "italic", or "oblique"
+			// for font-style. Otherwise false."
 			var style = getEffectiveStyle(node, "fontStyle");
 			if (style !== null
 			&& style !== "italic"
@@ -1151,8 +1183,8 @@ function getState(commandId, range) {
 				return false;
 			}
 		} else if (commandId == "underline") {
-			// "True if every Node that is effectively contained in the Range
-			// has effective style either null or "underline" for
+			// "True if every Text node that is effectively contained in the
+			// Range has effective style either null or "underline" for
 			// text-decoration. Otherwise false."
 			var decoration = getEffectiveStyle(node, "textDecoration");
 			if (decoration !== null && decoration !== "underline") {

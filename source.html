@@ -170,11 +170,12 @@ is [[contained]] in the [[range]]; or it is the [[range]]'s [[rangestart]]
 [[bpnode]], it is a [[text]] node, and its [[nodelength]] is different from the
 [[range]]'s [[rangestart]] [[bpoffset]]; or it is the [[range]]'s [[rangeend]]
 [[bpnode]], it is a [[text]] node, and the [[range]]'s [[rangeend]]
-[[bpoffset]] is not 0.
+[[bpoffset]] is not 0; or it has at least one [[child]], and all its
+[[children]] are <span>effectively contained</span> in the [[range]].
 
-<p class=note>A node is <span>effectively contained</span> in a range if and
-only if it would be [[contained]] after the range is <span
-title=decompose>decomposed</span>.
+<p class=XXX>A node is supposed to be <span>effectively contained</span> in a
+range if and only if it would be [[contained]] after the range is <span
+title=decompose>decomposed</span>.  Is this actually right?
 
 <p>The <dfn>active range</dfn> of a [[document]] is the value returned by the
 following algorithm:
@@ -888,44 +889,6 @@ meanings, are as follows.  These values must be compared to the argument in an
 <span data-anolis-spec=domcore>ASCII case-insensitive</span> manner.
 
 <dl>
-<dt><code title><dfn title=command-backColor>backColor</dfn></code>
-
-<dd><p><strong>Action</strong>: If <var>value</var> is not a valid CSS color,
-the user agent must do nothing and abort these steps.  Otherwise, it must
-<span>decompose</span> the [[range]], then <span>style</span> each returned
-[[node]] with <var>property</var> equal to "background-color" and <var>new
-value</var> equal to <var>value</var>.
-<!-- Firefox documentation says it normally sets the background color of the
-document, but I can't get it to work at all in brief testing in 4b11.  (It says
-it behaves differently in styleWithCss mode.)  Opera 11 appears to set the
-background color of the nearest block container of the cursor, or something.
-IE 9 RC and Chrome 10 behave as I'd expect, namely, they set the background of
-the selection, just like all the other styling features.  I go with IE/WebKit.
-
-Invalid colors are probably the same craziness as with foreColor.
-
-Chrome 10 dev actually sets background, not background-color, so it resets all
-the other background stuff.  I go with IE 9 RC and Opera 11, which only set
-background-color. -->
-
-<p class=XXX>Firefox and Opera use backColor to set the background color of the
-whole document.  The hiliteColor command can then be used to set the background
-of the selection (supported in all my test browsers except IE).  This
-terminology is inconsistent with foreColor, but the model I've specced leaves
-no way to change the document's overall background color.  I'm not sure how
-important this is, but maybe I should switch, since hiliteColor is more
-interoperably implemented than backColor.
-
-<dd><p><strong>State</strong>: Always false.
-
-<dd><p><strong>Value</strong>: The <span>effective style</span> for
-"background-color" on . . .
-<!-- Chrome 10 returns rgba(0, 0, 0, 0) if there's no background defined
-anywhere.  Opera 11 returns rgb(255, 255, 255) as I'd like.  Firefox 4b11 just
-throws an exception for some reason.  IE 9 RC seems to return the number 0
-across the board, as with foreColor. -->
-
-
 <dt><code title><dfn title=command-bold>bold</dfn></code>
 
 <dd><p><strong>Action</strong>: <span>Decompose</span> the [[range]].  If the
@@ -934,9 +897,9 @@ returned [[node]] with <var>property</var> "font-weight" and <var>new
 value</var> "normal".  Otherwise, <span>style</span> them with <var>new
 value</var> "bold".
 
-<dd><p><strong>State</strong>: True if every [[node]] that is <span>effectively
-contained</span> in the [[range]] has <span>effective style</span> either null
-or at least 700 for font-weight.  Otherwise false.
+<dd><p><strong>State</strong>: True if every [[text]] node that is
+<span>effectively contained</span> in the [[range]] has <span>effective
+style</span> either null or at least 700 for font-weight.  Otherwise false.
 
 <dd><p><strong>Value</strong>: Always the empty string.
 <!-- We have lots of options here (and presumably for all the others where
@@ -1122,6 +1085,20 @@ for . . .
 matches the other browsers. -->
 
 
+<dt><code title><dfn title=command-hiliteColor>hiliteColor</dfn></code>
+
+<dd><p><strong>Action</strong>: If <var>value</var> is not a valid CSS color,
+do nothing and abort these steps.  Otherwise, <span>decompose</span> the
+[[range]], then <span>style</span> each returned [[node]] with
+<var>property</var> equal to "background-color" and <var>new value</var> equal
+to <var>value</var>.
+
+<dd><p><strong>State</strong>: Always false.
+
+<dd><p><strong>Value</strong>: The <span>effective style</span> for
+"background-color" on . . .
+
+
 <dt><code title><dfn title=command-insertimage>insertImage</dfn></code>
 
 <dd><p><strong>Action</strong>: The user agent must run the following steps:
@@ -1178,9 +1155,10 @@ returned [[node]] with <var>property</var> "font-style" and <var>new
 value</var> "normal".  Otherwise, <span>style</span> them with <var>new
 value</var> "italic".
 
-<dd><p><strong>State</strong>: True if every [[node]] that is <span>effectively
-contained</span> in the [[range]] has <span>effective style</span> either null,
-"italic", or "oblique" for font-style.  Otherwise false.
+<dd><p><strong>State</strong>: True if every [[text]] node that is
+<span>effectively contained</span> in the [[range]] has <span>effective
+style</span> either null, "italic", or "oblique" for font-style.  Otherwise
+false.
 
 <dd><p><strong>Value</strong>: Always the empty string.
 
@@ -1193,9 +1171,41 @@ returned [[node]] with <var>property</var> "text-decoration" and <var>new
 value</var> "none".  Otherwise, <span>style</span> them with <var>new
 value</var> "underline".
 
-<dd><p><strong>State</strong>: True if every [[node]] that is <span>effectively
-contained</span> in the [[range]] has <span>effective style</span> either null
-or "underline" for text-decoration.  Otherwise false.
+<div class=XXX>
+<p>This can change the color of underlines if it pushes them down.
+The right way to fix this is probably to require text-decoration-color&nbsp;&ndash;
+granted it won't work in old (or current) browsers, but the only other way
+would be to turn something like
+
+<xmp><u><span style="color: red" id=x>
+foo
+bar
+baz
+</span></u></xmp>
+
+<p>into something like
+
+<xmp><span style="color: red" id=x><u style="color: black"><span style="color:
+red">
+foo
+</span></u>bar<u style="color: black"><span style="color: red">
+baz
+</span></u></span></xmp>
+
+<p>which is totally not worth it for a corner case.  Instead we could do
+
+<xmp><span style="color: red" id=x><u style="text-decoration-color: black">
+foo
+</u>bar<u style="text-decoration-color: black">
+baz
+</u></span></xmp>
+
+<p>although that's not a whole lot better . . .
+</div>
+
+<dd><p><strong>State</strong>: True if every [[text]] node that is
+<span>effectively contained</span> in the [[range]] has <span>effective
+style</span> either null or "underline" for text-decoration.  Otherwise false.
 
 <dd><p><strong>Value</strong>: Always the empty string.
 </dl>
@@ -1262,8 +1272,8 @@ what the other browsers do instead.
   <li>Julie Parent, Ojan Vafai, Alex Russel, and Eric Seidel for their <a
   href=http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2009-December/024627.html>research</a>
   on how browsers and other rich text editors behave in many common scenarios
-  <li>Ryosuke Niwa, Julie Parent, and Roland Steiner for their feedback on
-  drafts of this document
+  <li>Ehsan Akhgari, Ryosuke Niwa, Julie Parent, and Roland Steiner for their
+  feedback on drafts of this document
 </ul>
 
 <script src=http://www.whatwg.org/specs/web-apps/current-work/dfn.js></script>

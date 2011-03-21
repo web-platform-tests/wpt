@@ -27,7 +27,7 @@
 <body class=draft>
 <div class=head id=head>
 <h1>HTML Editing Commands</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-18-march-2011>Work in Progress &mdash; Last Update 18 March 2011</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-21-march-2011>Work in Progress &mdash; Last Update 21 March 2011</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;ayg+spec@aryeh.name&gt;
@@ -379,8 +379,9 @@ children of an element, they should take care not to assume that the set of
 children won't change as they're unstyled.  If the element is removed, the
 algorithm will return the list of nodes inserted in its place.
 
-<p class=XXX>This should probably convert, e.g., &lt;font color=red id=foo&gt;
-into &lt;span id=foo&gt; instead of &lt;font id=foo&gt;.
+<!-- If we wanted to be extra-pedantic, we could convert, e.g., <font color=red
+id=foo> into <span id=foo> instead of <font id=foo>, but probably not worth it.
+-->
 
 <ol>
   <li>Let <var title="">element</var> be the <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a> to be unstyled.
@@ -551,10 +552,69 @@ After forcing the style, descendants might still have different style.
   element</a>:
 
   <ol>
+    <!-- Handle cases like bolding "bar" in "<i><b>Foo</b></i>bar".
+    Theoretically this algorithm could pointlessly reorganize the DOM in the
+    event of unreasonable style rules, but it's not a big enough deal for us to
+    care, probably. -->
+    <!-- This is probably more complicated than we want, given how likely this
+    is to come up, so I've commented it out for now.
+    <li>Let <var title>candidate</var> be <var title>node</var>'s <code data-anolis-spec=domcore title=dom-Node-previousSibling>previousSibling</code>.
+
+    <li>While <var title>candidate</var> is a <span>simple styling element</span>,
+    and <var title>candidate</var> has exactly one <span data-anolis-spec=domcore title=concept-tree-child>child</span>, and that <span data-anolis-spec=domcore title=concept-tree-child>child</span> is
+    also a <span>simple styling element</span>, and <var title>candidate</var>'s
+    <span>specified style</span> for <var title>property</var> is not <var title>new
+    value</var>, set <var title>candidate</var> to its <span data-anolis-spec=domcore title=concept-tree-child>child</span>.
+
+    <li>If <var title>candidate</var> is a <span>simple styling element</span> whose
+    <span>specified style</span> and computed style for <var title>property</var> are
+    both <var title>new value</var>, and <var title>candidate</var> is not the
+    <code data-anolis-spec=domcore title=dom-Node-previousSibling>previousSibling</code> of <var title>node</var>:
+
+    <ol>
+      <li>While <var title>candidate</var> has <span data-anolis-spec=domcore title=concept-tree-child>children</span>, append the first
+      <span data-anolis-spec=domcore title=concept-tree-child>child</span> of <var title>candidate</var> as the last <span data-anolis-spec=domcore title=concept-tree-child>child</span> of
+      <var title>candidate</var>'s <span data-anolis-spec=domcore title=concept-tree-parent>parent</span>.
+
+      <li>Insert <var title>candidate</var> into <var title>node</var>'s <span data-anolis-spec=domcore title=concept-tree-parent>parent</span> before
+      <var title>node</var>.
+
+      <li>Append the <code data-anolis-spec=domcore title=dom-Node-previousSibling>previousSibling</code> of <var title>candidate</var> as the last
+      <span data-anolis-spec=domcore title=concept-tree-child>child</span> of <var title>candidate</var>.
+    </ol>
+    -->
+
     <li>If <var title="">node</var>'s <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling><code class=external data-anolis-spec=domcore title=dom-Node-previousSibling>previousSibling</code></a> is a <a href=#simple-styling-element>simple styling
     element</a> whose <a href=#specified-style>specified style</a> and computed style for
     <var title="">property</var> are both <var title="">new value</var>, append <var title="">node</var>
     as the last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of its <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling><code class=external data-anolis-spec=domcore title=dom-Node-previousSibling>previousSibling</code></a> and abort this algorithm.
+
+    <!--
+    <li>Let <var title>candidate</var> be <var title>node</var>'s <code data-anolis-spec=domcore title=dom-Node-nextSibling>nextSibling</code>.
+
+    <li>While <var title>candidate</var> is a <span>simple styling element</span>,
+    and <var title>candidate</var> has exactly one <span data-anolis-spec=domcore title=concept-tree-child>child</span>, and that <span data-anolis-spec=domcore title=concept-tree-child>child</span> is
+    also a <span>simple styling element</span>, and <var title>candidate</var>'s
+    <span>specified style</span> for <var title>property</var> is not <var title>new
+    value</var>, set <var title>candidate</var> to its <span data-anolis-spec=domcore title=concept-tree-child>child</span>.
+
+    <li>If <var title>candidate</var> is a <span>simple styling element</span> whose
+    <span>specified style</span> and computed style for <var title>property</var> are
+    both <var title>new value</var>, and <var title>candidate</var> is not the
+    <code data-anolis-spec=domcore title=dom-Node-nextSibling>nextSibling</code> of <var title>node</var>:
+
+    <ol>
+      <li>While <var title>candidate</var> has <span data-anolis-spec=domcore title=concept-tree-child>children</span>, append the first
+      <span data-anolis-spec=domcore title=concept-tree-child>child</span> of <var title>candidate</var> as the last <span data-anolis-spec=domcore title=concept-tree-child>child</span> of
+      <var title>candidate</var>'s <span data-anolis-spec=domcore title=concept-tree-parent>parent</span>.
+
+      <li>Insert <var title>candidate</var> into <var title>node</var>'s <span data-anolis-spec=domcore title=concept-tree-parent>parent</span> after
+      <var title>node</var>.
+
+      <li>Append the <code data-anolis-spec=domcore title=dom-Node-nextSibling>nextSibling</code> of <var title>candidate</var> as the last
+      <span data-anolis-spec=domcore title=concept-tree-child>child</span> of <var title>candidate</var>.
+    </ol>
+    -->
 
     <li>If <var title="">node</var>'s <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling><code class=external data-anolis-spec=domcore title=dom-Node-nextSibling>nextSibling</code></a> is a <a href=#simple-styling-element>simple styling
     element</a> whose <a href=#specified-style>specified style</a> and computed style for

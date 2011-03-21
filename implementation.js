@@ -270,6 +270,55 @@ function isUnwrappableElement(node) {
 }
 
 /**
+ * "effective style" per edit command spec
+ */
+function getEffectiveStyle(element, property) {
+	// "If property is "text-decoration", and the "text-decoration" property of
+	// element or any of its ancestors computes to "underline", return
+	// "underline". Otherwise, return "none"."
+	if (property == "textDecoration") {
+		do {
+			if (getComputedStyle(element).textDecoration == "underline") {
+				return "underline";
+			}
+			element = element.parentNode;
+		} while (element && element.nodeType == Node.ELEMENT_NODE);
+		return "none";
+	}
+
+	// "If property is "background-color":"
+	if (property == "backgroundColor") {
+		// "While the computed style of "background-color" on element is any
+		// fully transparent value, and element's parent is an Element, set
+		// element to its parent."
+		//
+		// Another lame hack to avoid flawed APIs.
+		while ((getComputedStyle(element).backgroundColor == "rgba(0, 0, 0, 0)"
+		|| getComputedStyle(element).backgroundColor === ""
+		|| getComputedStyle(element).backgroundColor == "transparent")
+		&& element.parentNode
+		&& element.parentNode.nodeType == Node.ELEMENT_NODE) {
+			element = element.parentNode;
+		}
+
+		// "If the computed style of "background-color" on element is a fully
+		// transparent value, return "rgb(255, 255, 255)"."
+		if (getComputedStyle(element).backgroundColor == "rgba(0, 0, 0, 0)"
+        || getComputedStyle(element).backgroundColor === ""
+        || getComputedStyle(element).backgroundColor == "transparent") {
+			return "rgb(255, 255, 255)";
+		}
+
+		// "Otherwise, return the computed style of "background-color" for
+		// element."
+		return getComputedStyle(element).backgroundColor;
+	}
+
+	// "Return the computed style of property for element."
+	return getComputedStyle(element)[property];
+}
+
+/**
  * "specified style" per edit command spec
  */
 function getSpecifiedStyle(element, property) {
@@ -597,17 +646,17 @@ function pushDownStyles(node, property, newValue) {
 		return;
 	}
 
-	// "If node is an Element and property computes to new value on node, abort
-	// this algorithm."
+	// "If node is an Element and the effective style of property is new value
+	// on node, abort this algorithm."
 	if (node.nodeType == Node.ELEMENT_NODE
-	&& cssValuesEqual(property, getComputedStyle(node)[property], newValue)) {
+	&& cssValuesEqual(property, getEffectiveStyle(node, property), newValue)) {
 		return;
 	}
 
-	// "If node is not an Element and property computes to new value on node's
-	// parent, abort this algorithm."
+	// "If node is not an Element and the effective style of property is new
+	// value on node's parent, abort this algorithm."
 	if (node.nodeType != Node.ELEMENT_NODE
-	&& cssValuesEqual(property, getComputedStyle(node.parentNode)[property], newValue)) {
+	&& cssValuesEqual(property, getEffectiveStyle(node.parentNode, property), newValue)) {
 		return;
 	}
 
@@ -617,12 +666,12 @@ function pushDownStyles(node, property, newValue) {
 	// "Let ancestor list be a list of Nodes, initially empty."
 	var ancestorList = [];
 
-	// "While current ancestor is an Element and property does not compute to
-	// new value on it, append current ancestor to ancestor list, then set
-	// current ancestor to its parent."
+	// "While current ancestor is an Element and the effective style of
+	// property is not new value on it, append current ancestor to ancestor
+	// list, then set current ancestor to its parent."
 	while (currentAncestor
 	&& currentAncestor.nodeType == Node.ELEMENT_NODE
-	&& !cssValuesEqual(property, getComputedStyle(currentAncestor)[property], newValue)) {
+	&& !cssValuesEqual(property, getEffectiveStyle(currentAncestor, property), newValue)) {
 		ancestorList.push(currentAncestor);
 		currentAncestor = currentAncestor.parentNode;
 	}
@@ -709,23 +758,23 @@ function forceStyle(node, property, newValue) {
 	|| node.nodeType == Node.PROCESSING_INSTRUCTION_NODE)
 	&& !isUnwrappableElement(node)) {
 		// "If node's previousSibling is a simple styling element whose
-		// specified style and computed style for property are both new value,
+		// specified style and effective style for property are both new value,
 		// append node as the last child of its previousSibling and abort this
 		// algorithm."
 		if (isSimpleStylingElement(node.previousSibling)
 		&& cssValuesEqual(property, getSpecifiedStyle(node.previousSibling, property), newValue)
-		&& cssValuesEqual(property, getComputedStyle(node.previousSibling)[property], newValue)) {
+		&& cssValuesEqual(property, getEffectiveStyle(node.previousSibling, property), newValue)) {
 			node.previousSibling.appendChild(node);
 			return;
 		}
 
 		// "If node's nextSibling is a simple styling element whose specified
-		// style and computed style for property are both new value, insert
+		// style and effective style for property are both new value, insert
 		// node as the first child of its nextSibling and abort this
 		// algorithm."
 		if (isSimpleStylingElement(node.nextSibling)
 		&& cssValuesEqual(property, getSpecifiedStyle(node.nextSibling, property), newValue)
-		&& cssValuesEqual(property, getComputedStyle(node.nextSibling)[property], newValue)) {
+		&& cssValuesEqual(property, getEffectiveStyle(node.nextSibling, property), newValue)) {
 			node.nextSibling.insertBefore(node, node.nextSibling.childNodes.length
 				? node.nextSibling.childNodes[0]
 				: null);
@@ -733,18 +782,19 @@ function forceStyle(node, property, newValue) {
 		}
 	}
 
-	// "If node is an Element and property computes to new value on node, abort
-	// this algorithm."
+	// "If node is an Element and the effective style of property is new value
+	// on node, abort this algorithm."
 	if (node.nodeType == Node.ELEMENT_NODE
-	&& cssValuesEqual(property, getComputedStyle(node)[property], newValue)) {
+	&& cssValuesEqual(property, getEffectiveStyle(node, property), newValue)) {
 		return;
 	}
 
-	// "If node is not an Element, node's parent is an Element, and property
-	// computes to new value on node's parent, abort this algorithm."
+	// "If node is not an Element, node's parent is an Element, and the
+	// effective style of property is new value on node's parent, abort this
+	// algorithm."
 	if (node.nodeType != Node.ELEMENT_NODE
 	&& node.parentNode.nodeType == Node.ELEMENT_NODE
-	&& cssValuesEqual(property, getComputedStyle(node.parentNode)[property], newValue)) {
+	&& cssValuesEqual(property, getEffectiveStyle(node.parentNode, property), newValue)) {
 		return;
 	}
 
@@ -782,18 +832,19 @@ function forceStyle(node, property, newValue) {
 		return;
 	}
 
-	// "If node is an Element and property computes to new value on node, abort
-	// this algorithm."
+	// "If node is an Element and the effective style of property is new value
+	// on node, abort this algorithm."
 	if (node.nodeType == Node.ELEMENT_NODE
-	&& cssValuesEqual(property, getComputedStyle(node)[property], newValue)) {
+	&& cssValuesEqual(property, getEffectiveStyle(node, property), newValue)) {
 		return;
 	}
 
-	// "If node is not an Element, node's parent is an Element, and property
-	// computes to new value on node's parent, abort this algorithm."
+	// "If node is not an Element, node's parent is an Element, and the
+	// effective style of property is new value on node's parent, abort this
+	// algorithm."
 	if (node.nodeType != Node.ELEMENT_NODE
 	&& node.parentNode.nodeType == Node.ELEMENT_NODE
-	&& cssValuesEqual(property, getComputedStyle(node.parentNode)[property], newValue)) {
+	&& cssValuesEqual(property, getEffectiveStyle(node.parentNode, property), newValue)) {
 		return;
 	}
 
@@ -820,19 +871,19 @@ function forceStyle(node, property, newValue) {
 	// "Insert new parent in node's parent before node."
 	node.parentNode.insertBefore(newParent, node);
 
-	// "If the computed value of property for new parent is not new value, set
+	// "If the effective style of property for new parent is not new value, set
 	// the CSS property property of new parent to new value."
-	if (!cssValuesEqual(property, getComputedStyle(newParent)[property], newValue)) {
+	if (!cssValuesEqual(property, getEffectiveStyle(newParent, property), newValue)) {
 		newParent.style[property] = newValue;
 	}
 
 	// "Append node to new parent as its last child."
 	newParent.appendChild(node);
 
-	// "If node is an Element and the computed value of property for node is
+	// "If node is an Element and the effective style of property for node is
 	// not new value:"
 	if (node.nodeType == Node.ELEMENT_NODE
-	&& !cssValuesEqual(property, getComputedStyle(node)[property], newValue)) {
+	&& !cssValuesEqual(property, getEffectiveStyle(node, property), newValue)) {
 		// "Set the CSS property property of node to new value."
 		node.style[property] = newValue;
 

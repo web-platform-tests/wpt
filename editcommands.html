@@ -212,6 +212,36 @@ following algorithm:
 not be used where only <a class=external data-anolis-spec=html href=http://www.whatwg.org/html/#phrasing-content>phrasing content</a> is expected (not counting unknown or
 obsolete elements, which cannot be used at all).
 
+<p>The <dfn id=effective-style>effective style</dfn> of an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a> <var title="">element</var> for a
+given <var title="">property</var> is returned by the following algorithm, which will
+return a CSS value:
+
+<ol>
+  <li>If <var title="">property</var> is "text-decoration", and the "text-decoration"
+  property of <var title="">element</var> or any of its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestors</a> computes to
+  "underline", return "underline".  Otherwise, return "none".
+
+  <p class=XXX>We ignore the possibility of text-decorations other than
+  underline for now, so we pretend that there are only two possible values:
+  "underline" and "none".
+
+  <li>If <var title="">property</var> is "background-color":
+
+  <ol>
+    <li>While the computed style of "background-color" on <var title="">element</var> is
+    any fully transparent value, and <var title="">element</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is an
+    <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a>, set <var title="">element</var> to its parent.
+
+    <li>If the computed style of "background-color" on <var title="">element</var> is
+    a fully transparent value, return "rgb(255, 255, 255)".
+
+    <li>Otherwise, return the computed style of "background-color" for
+    <var title="">element</var>.
+  </ol>
+
+  <li>Return the computed style of <var title="">property</var> for <var title="">element</var>.
+</ol>
+
 <p>The <dfn id=specified-style>specified style</dfn> of an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a> for a given
 <var title="">property</var> is returned by the following algorithm, which will return
 either a CSS value or null:
@@ -277,6 +307,10 @@ which at least one of the following holds:
   <a href=http://www.whatwg.org/html/#the-style-attribute><code class=external data-anolis-spec=html title="the style attribute">style</code></a>, and the <a href=http://www.whatwg.org/html/#the-style-attribute><code class=external data-anolis-spec=html title="the style attribute">style</code></a> attribute sets exactly one CSS property
   (including invalid or unrecognized properties).
 </ol>
+
+<p class=note>Conceptually, a <a href=#simple-styling-element>simple styling element</a> is an element
+which has a <a href=#specified-style>specified style</a> for exactly one CSS property, but does
+nothing else.
 
 <p>When the user agent is instructed to run a particular method, it must follow
 the steps defined for that method in the appropriate specification, not act as
@@ -458,21 +492,22 @@ id=foo> into <span id=foo> instead of <font id=foo>, but probably not worth it.
   <li>If <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is not an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a>, abort this
   algorithm. <!-- E.g., a text node child of a document fragment. -->
 
-  <li>If <var title="">node</var> is an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a> and <var title="">property</var> computes to
-  <var title="">new value</var> on <var title="">node</var>, abort this algorithm.
-
-  <li>If <var title="">node</var> is not an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a> and <var title="">property</var> computes
-  to <var title="">new value</var> on <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>, abort this
+  <li>If <var title="">node</var> is an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a> and the <a href=#effective-style>effective style</a>
+  of <var title="">property</var> is <var title="">new value</var> on <var title="">node</var>, abort this
   algorithm.
+
+  <li>If <var title="">node</var> is not an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a> and the <a href=#effective-style>effective
+  style</a> of <var title="">property</var> is <var title="">new value</var> on
+  <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>, abort this algorithm.
 
   <li>Let <var title="">current ancestor</var> be <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
 
   <li>Let <var title="">ancestor list</var> be a list of <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a>s, initially empty.
 
-  <li>While <var title="">current ancestor</var> is an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a> and
-  <var title="">property</var> does not compute to <var title="">new value</var> on it, append
-  <var title="">current ancestor</var> to <var title="">ancestor list</var>, then set
-  <var title="">current ancestor</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+  <li>While <var title="">current ancestor</var> is an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a> and the
+  <a href=#effective-style>effective style</a> of <var title="">property</var> is not <var title="">new
+  value</var> on it, append <var title="">current ancestor</var> to <var title="">ancestor
+  list</var>, then set <var title="">current ancestor</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
 
   <!-- We can only remove specified styles, so if the style isn't specified,
   give up. -->
@@ -585,9 +620,10 @@ After forcing the style, descendants might still have different style.
     -->
 
     <li>If <var title="">node</var>'s <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling><code class=external data-anolis-spec=domcore title=dom-Node-previousSibling>previousSibling</code></a> is a <a href=#simple-styling-element>simple styling
-    element</a> whose <a href=#specified-style>specified style</a> and computed style for
-    <var title="">property</var> are both <var title="">new value</var>, append <var title="">node</var>
-    as the last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of its <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling><code class=external data-anolis-spec=domcore title=dom-Node-previousSibling>previousSibling</code></a> and abort this algorithm.
+    element</a> whose <a href=#specified-style>specified style</a> and <a href=#effective-style>effective
+    style</a> for <var title="">property</var> are both <var title="">new value</var>, append
+    <var title="">node</var> as the last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of its <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling><code class=external data-anolis-spec=domcore title=dom-Node-previousSibling>previousSibling</code></a> and abort
+    this algorithm.
 
     <!--
     <li>Let <var title>candidate</var> be <var title>node</var>'s <code data-anolis-spec=domcore title=dom-Node-nextSibling>nextSibling</code>.
@@ -617,17 +653,20 @@ After forcing the style, descendants might still have different style.
     -->
 
     <li>If <var title="">node</var>'s <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling><code class=external data-anolis-spec=domcore title=dom-Node-nextSibling>nextSibling</code></a> is a <a href=#simple-styling-element>simple styling
-    element</a> whose <a href=#specified-style>specified style</a> and computed style for
-    <var title="">property</var> are both <var title="">new value</var>, insert <var title="">node</var>
-    as the first <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of its <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling><code class=external data-anolis-spec=domcore title=dom-Node-nextSibling>nextSibling</code></a> and abort this algorithm.
+    element</a> whose <a href=#specified-style>specified style</a> and <a href=#effective-style>effective
+    style</a> for <var title="">property</var> are both <var title="">new value</var>, insert
+    <var title="">node</var> as the first <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of its <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling><code class=external data-anolis-spec=domcore title=dom-Node-nextSibling>nextSibling</code></a> and abort
+    this algorithm.
   </ol>
 
-  <li>If <var title="">node</var> is an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a> and <var title="">property</var> computes to
-  <var title="">new value</var> on <var title="">node</var>, abort this algorithm.
+  <li>If <var title="">node</var> is an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a> and the <a href=#effective-style>effective style</a>
+  of <var title="">property</var> is <var title="">new value</var> on <var title="">node</var>, abort this
+  algorithm.
 
   <li>If <var title="">node</var> is not an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a>, <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is
-  an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a>, and <var title="">property</var> computes to <var title="">new value</var> on
-  <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>, abort this algorithm.
+  an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a>, and the <a href=#effective-style>effective style</a> of <var title="">property</var>
+  is <var title="">new value</var> on <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>, abort this
+  algorithm.
 
   <li>If <var title="">node</var> is an <a href=#unwrappable-element>unwrappable element</a>:
 
@@ -648,12 +687,14 @@ After forcing the style, descendants might still have different style.
   <li>If <var title="">node</var> is a <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#comment><code class=external data-anolis-spec=domcore>Comment</code></a> or <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#processinginstruction><code class=external data-anolis-spec=domcore>ProcessingInstruction</code></a>, abort
   this algorithm.
 
-  <li>If <var title="">node</var> is an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a> and <var title="">property</var> computes to
-  <var title="">new value</var> on <var title="">node</var>, abort this algorithm.
+  <li>If <var title="">node</var> is an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a> and the <a href=#effective-style>effective style</a>
+  of <var title="">property</var> is <var title="">new value</var> on <var title="">node</var>, abort this
+  algorithm.
 
   <li>If <var title="">node</var> is not an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a>, <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is
-  an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a>, and <var title="">property</var> computes to <var title="">new value</var> on
-  <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>, abort this algorithm.
+  an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a>, and the <a href=#effective-style>effective style</a> of <var title="">property</var>
+  is <var title="">new value</var> on <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>, abort this
+  algorithm.
 
   <li>If <var title="">property</var> is "font-weight" and <var title="">new value</var> is
   "bold", let <var title="">tag</var> be "b".
@@ -672,14 +713,14 @@ After forcing the style, descendants might still have different style.
   <li>Insert <var title="">new parent</var> in <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> before
   <var title="">node</var>.
 
-  <li>If the computed value of <var title="">property</var> for <var title="">new parent</var> is
-  not <var title="">new value</var>, set the CSS property <var title="">property</var> of
-  <var title="">new parent</var> to <var title="">new value</var>.
+  <li>If the <a href=#effective-style>effective style</a> of <var title="">property</var> for <var title="">new
+  parent</var> is not <var title="">new value</var>, set the CSS property
+  <var title="">property</var> of <var title="">new parent</var> to <var title="">new value</var>.
 
   <li>Append <var title="">node</var> to <var title="">new parent</var> as its last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>.
 
-  <li>If <var title="">node</var> is an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a> and the computed value of
-  <var title="">property</var> for <var title="">node</var> is not <var title="">new value</var>:
+  <li>If <var title="">node</var> is an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a> and the <a href=#effective-style>effective style</a>
+  of <var title="">property</var> for <var title="">node</var> is not <var title="">new value</var>:
 
   <ol>
     <li>Set the CSS property <var title="">property</var> of <var title="">node</var> to <var title="">new
@@ -883,21 +924,8 @@ interoperably implemented than backColor.
 
 <dd><p><strong>State</strong>: Always false.
 
-<dd><p><strong>Value</strong>: The value is given by the following algorithm:
-
-<ol>
-  <li class=XXX>...
-
-  <li>While the computed style of "background-color" on <var title="">element</var>
-  is any fully transparent value, set <var title="">element</var> to its parent.
-
-  <p class=XXX>It's intended that for these purposes, the root element will
-  have a white background.  Should that be specified somewhere?  I don't think
-  all UAs actually do it.
-
-  <li>Return the computed style of "background-color" for
-  <var title="">element</var>.
-</ol>
+<dd><p><strong>Value</strong>: The <a href=#effective-style>effective style</a> for
+"background-color" on . . .
 <!-- Chrome 10 returns rgba(0, 0, 0, 0) if there's no background defined
 anywhere.  Opera 11 returns rgb(255, 255, 255) as I'd like.  Firefox 4b11 just
 throws an exception for some reason.  IE 9 RC seems to return the number 0

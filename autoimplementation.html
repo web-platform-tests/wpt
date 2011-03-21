@@ -1,6 +1,7 @@
 <!doctype html>
 <title>Auto-running execCommand() tests</title>
 <style>
+body { font-family: serif }
 .yes { color: green }
 .no { color: red }
 b, strong { font-weight: bold }
@@ -271,6 +272,7 @@ function addTest(command, test) {
 function doSetup(command) {
 	var div = document.getElementById(command);
 	div.contentEditable = "true";
+	div.spellcheck = false;
 	var table = div.querySelector("table");
 
 	var tr = document.createElement("tr");
@@ -287,8 +289,9 @@ function doSetup(command) {
 
 function doInputCell(tr, test) {
 	var inputCell = document.createElement("td");
-	inputCell.innerHTML = test;
-	inputCell.innerHTML = "<div>" + inputCell.innerHTML + "</div><div>" + inputCell.innerHTML.replace(/\&/g, "&amp;").replace(/</g, "&lt;") + "</div>";
+	inputCell.innerHTML = "<div></div><div></div>";
+	inputCell.firstChild.innerHTML = test;
+	inputCell.lastChild.textContent = inputCell.firstChild.innerHTML;
 	tr.appendChild(inputCell);
 }
 
@@ -301,8 +304,7 @@ function doSpecCell(tr, test, command) {
 	}[command];
 
 	var specCell = document.createElement("td");
-	specCell.appendChild(document.createElement("div"));
-	specCell.appendChild(document.createElement("div"));
+	specCell.innerHTML = "<div></div><div></div>";
 	specCell.firstChild.innerHTML = test;
 	tr.appendChild(specCell);
 	try {
@@ -336,8 +338,7 @@ function doBrowserCell(tr, test, command) {
 	}[command];
 
 	var browserCell = document.createElement("td");
-	browserCell.appendChild(document.createElement("div"));
-	browserCell.appendChild(document.createElement("div"));
+	browserCell.innerHTML = "<div></div><div></div>";
 	browserCell.firstChild.innerHTML = test;
 	tr.appendChild(browserCell);
 	try {
@@ -472,10 +473,13 @@ function setSelection(startNode, startOffset, endNode, endOffset) {
 		getSelection().addRange(range);
 	} else if ("extend" in getSelection()) {
 		// WebKit behaves unreasonably for collapse(), so do that manually.
+		/*
 		var range = document.createRange();
 		range.setStart(startNode, startOffset);
 		getSelection().removeAllRanges();
 		getSelection().addRange(range);
+		*/
+		getSelection().collapse(startNode, startOffset);
 		getSelection().extend(endNode, endOffset);
 	} else {
 		// IE9.  Selections have no direction, so we just make the selection

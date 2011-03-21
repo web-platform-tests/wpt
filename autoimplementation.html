@@ -258,19 +258,17 @@ for (testCat in tests) {
 }
 
 function addTest(command, test) {
-	var value = {
-		bold: null,
-		fontname: "serif",
-		forecolor: "#FF0000",
-		italic: null,
-	}[command];
-	var styleWithCss = {
-		bold: false,
-		fontname: true,
-		forecolor: true,
-		italic: false,
-	}[command];
+	var tr = doSetup(command);
 
+	doInputCell(tr, test);
+	doSpecCell(tr, test, command);
+	doBrowserCell(tr, test, command);
+	doSameCell(tr);
+
+	doTearDown(command);
+}
+
+function doSetup(command) {
 	var div = document.getElementById(command);
 	div.contentEditable = "true";
 	var table = div.querySelector("table");
@@ -284,10 +282,23 @@ function addTest(command, test) {
 	//	table.insertBefore(tr, table.childNodes[1]);
 	//}
 
+	return tr;
+}
+
+function doInputCell(tr, test) {
 	var inputCell = document.createElement("td");
 	inputCell.innerHTML = test;
 	inputCell.innerHTML = "<div>" + inputCell.innerHTML + "</div><div>" + inputCell.innerHTML.replace(/\&/g, "&amp;").replace(/</g, "&lt;") + "</div>";
 	tr.appendChild(inputCell);
+}
+
+function doSpecCell(tr, test, command) {
+	var value = {
+		bold: null,
+		fontname: "serif",
+		forecolor: "#FF0000",
+		italic: null,
+	}[command];
 
 	var specCell = document.createElement("td");
 	specCell.appendChild(document.createElement("div"));
@@ -308,6 +319,21 @@ function addTest(command, test) {
 	} catch (e) {
 		specCell.textContent = "Exception: " + e;
 	}
+}
+
+function doBrowserCell(tr, test, command) {
+	var value = {
+		bold: null,
+		fontname: "serif",
+		forecolor: "#FF0000",
+		italic: null,
+	}[command];
+	var styleWithCss = {
+		bold: false,
+		fontname: true,
+		forecolor: true,
+		italic: false,
+	}[command];
 
 	var browserCell = document.createElement("td");
 	browserCell.appendChild(document.createElement("div"));
@@ -327,12 +353,14 @@ function addTest(command, test) {
 	} catch (e) {
 		browserCell.textContent = "Exception: " + e;
 	}
+}
 
+function doSameCell(tr) {
 	var sameCell = document.createElement("td");
 	// Ad hoc normalization to avoid basically spurious mismatches
-	var normalizedSpecCell = specCell.lastChild.textContent
+	var normalizedSpecCell = tr.childNodes[1].lastChild.textContent
 		.replace(/;? ?"/g, '"');
-	var normalizedBrowserCell = browserCell.lastChild.textContent
+	var normalizedBrowserCell = tr.childNodes[2].lastChild.textContent
 		.replace(/;? ?"/g, '"')
 		.replace(/<(\/?)strong/g, '<$1b')
 		.replace(/<(\/?)em/g, '<$1i')
@@ -345,9 +373,11 @@ function addTest(command, test) {
 		sameCell.innerHTML = "&#x2717;";
 	}
 	tr.appendChild(sameCell);
+}
 
+function doTearDown(command) {
 	getSelection().removeAllRanges();
-	div.contentEditable = "inherit";
+	document.getElementById(command).contentEditable = "inherit";
 }
 
 function parseBrackets(node) {

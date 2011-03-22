@@ -19,7 +19,7 @@ v.addEventListener("pause", function() {
    assert_true(true);
   });
   t.done();
-});
+}, false);
 v.src = getVideoURI("http://media.w3.org/2010/05/video/movie_300") + "?" + new Date() + Math.random();
 v.play();
 v.pause();

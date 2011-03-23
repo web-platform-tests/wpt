@@ -48,7 +48,8 @@ href=http://www.whatwg.org/specs/web-apps/current-work/multipage/dnd.html#editin
 APIs</a> section.  Although this spec is still very incomplete and will likely
 be changed heavily before it's finished, feedback to <a
 href=http://lists.whatwg.org/listinfo.cgi/whatwg-whatwg.org>the WHATWG list</a>
-is encouraged, particularly from implementers.
+is encouraged, particularly from implementers and particularly from authors who
+have experience using this feature.
 
 
 <h2 class=no-num>Table of contents</h2>
@@ -155,6 +156,9 @@ included in HTML comments so as not to distract the reader.
   set.  I should be doing things like not doing anything if the selection isn't
   editable, making sure not to break out of contenteditable regions, etc.
 </ul>
+
+<p class=XXX>A variety of other issues are also noted in the text, formatted
+like this.
 
 
 <h2>Definitions</h2>
@@ -1172,35 +1176,39 @@ value</var> "none".  Otherwise, <span>style</span> them with <var>new
 value</var> "underline".
 
 <div class=XXX>
-<p>This can change the color of underlines if it pushes them down.
-The right way to fix this is probably to require text-decoration-color&nbsp;&ndash;
-granted it won't work in old (or current) browsers, but the only other way
-would be to turn something like
+<p>There are a few problems with underline, because underlines in CSS are
+horrible:
 
-<xmp><u><span style="color: red" id=x>
-foo
-bar
-baz
-</span></u></xmp>
+<ul>
+  <li>Pushing down underlines can change their color, since the color of an
+  underline follows the color of the element where it's declared instead of the
+  text it's drawn under.  This could be fixed by adding a special case for this
+  condition and inserting extra color rules, such as by setting a color on the
+  underlining element and then having another element inside it that resets the
+  color.  Horrible, but . . .
 
-<p>into something like
+  <li>Pushing down underlines can change their thickness in some rendering
+  engines, like Gecko (but not WebKit as of March 2011).  This could be worked
+  around similarly to the previous.
 
-<xmp><span style="color: red" id=x><u style="color: black"><span style="color:
-red">
-foo
-</span></u>bar<u style="color: black"><span style="color: red">
-baz
-</span></u></span></xmp>
+  <li>The preceding two points can't be avoided, because the only way to remove
+  underlines in CSS is to push down styles (unlike most other things where you
+  could override it).
 
-<p>which is totally not worth it for a corner case.  Instead we could do
+  <li>But more generally, from a user's perspective, color and thickness of
+  underlines is going to be more or less random if they're applying them to
+  text with varying size or color.  If they underline a bunch of text all at
+  once, it will all get the same color/thickness, probably.  But if they
+  underline letter-by-letter, it probably will vary.  But sometimes when they
+  underline a bunch of text at once it will also vary, if the algorithm decides
+  to create multiple elements for whatever reason (like an intervening
+  unwrappable element).  This is unlikely to match user expectations.
+</ul>
 
-<xmp><span style="color: red" id=x><u style="text-decoration-color: black">
-foo
-</u>bar<u style="text-decoration-color: black">
-baz
-</u></span></xmp>
-
-<p>although that's not a whole lot better . . .
+<p>For now I'm just going to ignore the issue, since any attempt to fix it
+would be a pretty ugly hack unless someone fixes up how CSS underlines work,
+and I have bigger fish to fry.  But it's something to think about in the
+future.
 </div>
 
 <dd><p><strong>State</strong>: True if every [[text]] node that is

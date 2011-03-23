@@ -1,13 +1,18 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
  <head>
-  <title>CSS Test: The bidi algorithm and inlines in CSS</title>
+  <title>CSS Test: Bidi Codes, White space, and Tree structure</title>
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
   <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/box/inline/bidi/004.html" type="text/html"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#bidi-box-model"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#direction"/>
   <link rel="help" href="http://www.w3.org/TR/CSS21/text.html#white-space-model"/>
   <link rel="help" href="http://unicode.org/reports/tr9/"/>
+  <meta name="assert" content="The final order of characters in a block container
+     is the same as if markup had been stripped, consecutive space collapsed in
+     logical order, and the resulting character sequence, including any bidi codes,
+     had been passed to an implementation of the Unicode bidirectional algorithm
+     for plain text that produced the same line-breaks as the styled text."/>
   <style type="text/css">
    div p { clear: left; border: solid; margin: 1em; padding: 0.5em; background: #FFFFCC; color: black; }
    .test { line-height: 3em; }

@@ -2,6 +2,8 @@
 
 var htmlNamespace = "http://www.w3.org/1999/xhtml";
 
+var cssStylingFlag = false;
+
 // Utility functions
 function nextNode(node) {
 	if (node.hasChildNodes()) {
@@ -262,10 +264,22 @@ function getActiveRange(doc) {
 
 // "An unwrappable element is an HTML element which may not be used where only
 // phrasing content is expected (not counting unknown or obsolete elements,
-// which cannot be used at all)."
+// which cannot be used at all); or any Element whose display property computes
+// to something other than "inline", "inline-block", or "inline-table"."
 //
 // I don't bother implementing this exactly, just well enough for testing.
 function isUnwrappableElement(node) {
+	if (!node || node.nodeType != Node.ELEMENT_NODE) {
+		return false;
+	}
+
+	var display = getComputedStyle(node).display;
+	if (display != "inline"
+	&& display != "inline-block"
+	&& display != "inline-table") {
+		return true;
+	}
+
 	if (!isHtmlElement(node)) {
 		return false;
 	}
@@ -395,6 +409,52 @@ function getSpecifiedStyle(element, property) {
 	return null;
 }
 
+// "A styling element is a b, em, i, span, strong, or u element with no
+// attributes except possibly style, or a font element with no attributes
+// except possibly style, color, face, and/or size."
+function isStylingElement(node) {
+	if (!isHtmlElement(node)) {
+		return false;
+	}
+
+	if (["B", "EM", "I", "SPAN", "STRONG", "U"].indexOf(node.tagName) != -1) {
+		if (node.attributes.length == 0) {
+			return true;
+		}
+
+		if (node.attributes.length == 1
+		&& node.hasAttribute("style")) {
+			return true;
+		}
+	}
+
+	if (node.tagName == "FONT") {
+		var numAttrs = node.attributes.length;
+
+		if (node.hasAttribute("style")) {
+			numAttrs--;
+		}
+
+		if (node.hasAttribute("color")) {
+			numAttrs--;
+		}
+
+		if (node.hasAttribute("face")) {
+			numAttrs--;
+		}
+
+		if (node.hasAttribute("size")) {
+			numAttrs--;
+		}
+
+		if (numAttrs == 0) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
 function isSimpleStylingElement(node) {
 	// "A simple styling element is an HTML element for which at least one of
 	// the following holds:"
@@ -402,9 +462,13 @@ function isSimpleStylingElement(node) {
 		return false;
 	}
 
+	// Only these elements can possibly be a simple styling element.
+	if (["B", "EM", "FONT", "I", "SPAN", "STRONG", "U"].indexOf(node.tagName) == -1) {
+		return false;
+	}
+
 	// "It is a b, em, font, i, span, strong, or u element with no attributes."
-	if (node.attributes.length == 0
-	&& ["B", "EM", "FONT", "I", "SPAN", "STRONG", "U"].indexOf(node.tagName) != -1) {
+	if (node.attributes.length == 0) {
 		return true;
 	}
 
@@ -423,19 +487,19 @@ function isSimpleStylingElement(node) {
 		return true;
 	}
 
-	// "It is a font element with one attribute, which is either color, face,
-	// or size."
+	// "It is a font element with exactly one attribute, which is either color,
+	// face, or size."
 	if (node.tagName == "FONT"
 	&& (node.hasAttribute("color")
-		|| node.hasAttribute("face")
-		|| node.hasAttribute("size")
+	|| node.hasAttribute("face")
+	|| node.hasAttribute("size")
 	)) {
 		return true;
 	}
 
-	// "It is a b or strong element with one attribute, which is style, and the
-	// only CSS property set by the style attribute (including invalid or
-	// unrecognized properties) is "font-weight"."
+	// "It is a b or strong element with exactly one attribute, which is style,
+	// and the style attribute sets exactly one CSS property (including invalid
+	// or unrecognized properties), which is "font-weight"."
 	if ((node.tagName == "B" || node.tagName == "STRONG")
 	&& node.hasAttribute("style")
 	&& node.style.length == 1
@@ -443,9 +507,9 @@ function isSimpleStylingElement(node) {
 		return true;
 	}
 
-	// "It is an i or em element with one attribute, which is style, and the
-	// only CSS property set by the style attribute (including invalid or
-	// unrecognized properties) is "font-style"."
+	// "It is an i or em element with exactly one attribute, which is style,
+	// and the style attribute sets exactly one CSS property (including invalid
+	// or unrecognized properties), which is "font-style"."
 	if ((node.tagName == "I" || node.tagName == "EM")
 	&& node.hasAttribute("style")
 	&& node.style.length == 1
@@ -453,10 +517,10 @@ function isSimpleStylingElement(node) {
 		return true;
 	}
 
-	// "It is a u element with one attribute, which is style, and the only CSS
-	// property set by the style attribute (including invalid or unrecognized
-	// properties) is "text-decoration", which is set to "underline" or
-	// "none"."
+	// "It is a u element with exactly one attribute, which is style, and the
+	// style attribute sets exactly one CSS property (including invalid or
+	// unrecognized properties), which is "text-decoration", which is set to
+	// "underline" or "none"."
 	if (node.tagName == "U"
 	&& node.hasAttribute("style")
 	&& node.style.length == 1
@@ -769,6 +833,11 @@ function pushDownStyles(node, property, newValue) {
 }
 
 function forceStyle(node, property, newValue) {
+	// "If node's parent is null, abort this algorithm."
+	if (!node.parentNode) {
+		return;
+	}
+
 	// "If node is an Element, Text, Comment, or ProcessingInstruction node,
 	// and is not an unwrappable element:"
 	if ((node.nodeType == Node.ELEMENT_NODE
@@ -776,28 +845,110 @@ function forceStyle(node, property, newValue) {
 	|| node.nodeType == Node.COMMENT_NODE
 	|| node.nodeType == Node.PROCESSING_INSTRUCTION_NODE)
 	&& !isUnwrappableElement(node)) {
-		// "If node's previousSibling is a simple styling element whose
-		// specified style and effective style for property are both new value,
-		// append node as the last child of its previousSibling and abort this
-		// algorithm."
-		if (isSimpleStylingElement(node.previousSibling)
-		&& cssValuesEqual(property, getSpecifiedStyle(node.previousSibling, property), newValue)
-		&& cssValuesEqual(property, getEffectiveStyle(node.previousSibling, property), newValue)) {
-			node.previousSibling.appendChild(node);
-			return;
+		// "Let candidate be node's previousSibling."
+		var candidate = node.previousSibling;
+
+		// "While candidate is a styling element, and candidate has exactly one
+		// child, and that child is also a styling element, and candidate is
+		// not a simple styling element or candidate's specified style for
+		// property is not new value, set candidate to its child."
+		while (isStylingElement(candidate)
+		&& candidate.childNodes.length == 1
+		&& isStylingElement(candidate.firstChild)
+		&& (!isSimpleStylingElement(candidate)
+		|| !cssValuesEqual(property, getSpecifiedStyle(candidate, property), newValue))) {
+			candidate = candidate.firstChild;
 		}
 
-		// "If node's nextSibling is a simple styling element whose specified
-		// style and effective style for property are both new value, insert
-		// node as the first child of its nextSibling and abort this
-		// algorithm."
-		if (isSimpleStylingElement(node.nextSibling)
-		&& cssValuesEqual(property, getSpecifiedStyle(node.nextSibling, property), newValue)
-		&& cssValuesEqual(property, getEffectiveStyle(node.nextSibling, property), newValue)) {
-			node.nextSibling.insertBefore(node, node.nextSibling.childNodes.length
-				? node.nextSibling.childNodes[0]
-				: null);
-			return;
+		// "If candidate is a simple styling element whose specified style and
+		// effective style for property are both new value, and candidate is
+		// not the previousSibling of node:"
+		if (isSimpleStylingElement(candidate)
+		&& cssValuesEqual(property, getSpecifiedStyle(candidate, property), newValue)
+		&& cssValuesEqual(property, getEffectiveStyle(candidate, property), newValue)
+		&& candidate != node.previousSibling) {
+			// "While candidate has children, append the first child of
+			// candidate as the last child of candidate's parent."
+			while (candidate.childNodes.length > 0) {
+				candidate.parentNode.appendChild(candidate.firstChild);
+			}
+
+			// "Insert candidate into node's parent before node."
+			node.parentNode.insertBefore(candidate, node);
+
+			// "Append the previousSibling of candidate as the last child of
+			// candidate."
+			candidate.appendChild(candidate.previousSibling);
+		}
+
+		// "Let candidate be node's nextSibling."
+		var candidate = node.nextSibling;
+
+		// "While candidate is a styling element, and candidate has exactly one
+		// child, and that child is also a styling element, and candidate is
+		// not a simple styling element or candidate's specified style for
+		// property is not new value, set candidate to its child."
+		while (isStylingElement(candidate)
+		&& candidate.childNodes.length == 1
+		&& isStylingElement(candidate.firstChild)
+		&& (!isSimpleStylingElement(candidate)
+		|| !cssValuesEqual(property, getSpecifiedStyle(candidate, property), newValue))) {
+			candidate = candidate.firstChild;
+		}
+
+		// "If candidate is a simple styling element whose specified style and
+		// effective style for property are both new value, and candidate is
+		// not the nextSibling of node:"
+		if (isSimpleStylingElement(candidate)
+		&& cssValuesEqual(property, getSpecifiedStyle(candidate, property), newValue)
+		&& cssValuesEqual(property, getEffectiveStyle(candidate, property), newValue)
+		&& candidate != node.nextSibling) {
+			// "While candidate has children, append the first child of
+			// candidate as the last child of candidate's parent."
+			while (candidate.childNodes.length > 0) {
+				candidate.parentNode.appendChild(candidate.firstChild);
+			}
+
+			// "Insert candidate into node's parent after node."
+			node.parentNode.insertBefore(candidate, node.nextSibling);
+
+			// "Append the nextSibling of candidate as the last child of
+			// candidate."
+			candidate.appendChild(candidate.nextSibling);
+		}
+
+		// "Let previous sibling and next sibling be node's previousSibling and
+		// nextSibling."
+		var previousSibling = node.previousSibling;
+		var nextSibling = node.nextSibling;
+
+		// "If previous sibling is a simple styling element whose specified
+		// style and effective style for property are both new value, append
+		// node as the last child of previous sibling."
+		if (isSimpleStylingElement(previousSibling)
+		&& cssValuesEqual(property, getSpecifiedStyle(previousSibling, property), newValue)
+		&& cssValuesEqual(property, getEffectiveStyle(previousSibling, property), newValue)) {
+			previousSibling.appendChild(node);
+		}
+
+		// "If next sibling is a simple styling element whose specified style
+		// and effective style for property are both new value:"
+		if (isSimpleStylingElement(nextSibling)
+		&& cssValuesEqual(property, getSpecifiedStyle(nextSibling, property), newValue)
+		&& cssValuesEqual(property, getEffectiveStyle(nextSibling, property), newValue)) {
+			// "If node is not a child of previous sibling, insert node as the
+			// first child of next sibling."
+			if (node.parentNode != previousSibling) {
+				nextSibling.insertBefore(node, nextSibling.firstChild);
+			// "Otherwise, while next sibling has children, append the first
+			// child of next sibling as the last child of previous sibling.
+			// Then remove next sibling from its parent."
+			} else {
+				while (nextSibling.childNodes.length) {
+					previousSibling.appendChild(nextSibling.firstChild);
+				}
+				nextSibling.parentNode.removeChild(nextSibling);
+			}
 		}
 	}
 
@@ -847,25 +998,62 @@ function forceStyle(node, property, newValue) {
 		return;
 	}
 
-	// "If property is "font-weight" and new value is "bold", let tag be "b"."
-	var tag;
-	if (property == "fontWeight" && (newValue == "bold" || newValue == "700")) {
-		tag = "b";
-	// "If property is "font-style" and new value is "italic", let tag be "i"."
-	} else if (property == "fontStyle" && newValue == "italic") {
-		tag = "i";
-	// "If property is "text-decoration" and new value is "underline", let tag
-	// be "u"."
-	} else if (property == "textDecoration" && newValue == "underline") {
-		tag = "u";
-	// "If tag is not set, let tag be "span"."
-	} else {
-		tag = "span";
+	// "Let new parent be null."
+	var newParent = null;
+
+	// "If the CSS styling flag is false:"
+	if (!cssStylingFlag) {
+		// "If property is "font-weight" and new value is "bold", let new
+		// parent be the result of calling createElement("b") on the
+		// ownerDocument of node."
+		if (property == "fontWeight" && (newValue == "bold" || newValue == "700")) {
+			newParent = node.ownerDocument.createElement("b");
+		}
+
+		// "If property is "font-style" and new value is "italic", let new
+		// parent be the result of calling createElement("i") on the
+		// ownerDocument of node."
+		if (property == "fontStyle" && newValue == "italic") {
+			newParent = node.ownerDocument.createElement("i");
+		}
+
+		// "If property is "text-decoration" and new value is "underline", let
+		// new parent be the result of calling createElement("u") on the
+		// ownerDocument of node."
+		if (property == "textDecoration" && newValue == "underline") {
+			newParent = node.ownerDocument.createElement("u");
+		}
+
+		// "If property is "color", let new parent be the result of calling
+		// createElement("font") on the ownerDocument of node, then set the
+		// color attribute of new parent to new value."
+		if (property == "color") {
+			newParent = node.ownerDocument.createElement("font");
+			newParent.color = newValue;
+		}
+
+		// "If property is "font-family", let new parent be the result of
+		// calling createElement("font") on the ownerDocument of node, then set
+		// the face attribute of new parent to new value."
+		if (property == "fontFamily") {
+			newParent = node.ownerDocument.createElement("font");
+			newParent.face = newValue;
+		}
+
+		// "If property is "font-size", let new parent be the result of calling
+		// createElement("font") on the ownerDocument of node, then set the
+		// size attribute of new parent to new value."
+		if (property == "fontSize") {
+			newParent = node.ownerDocument.createElement("font");
+			newParent.size = newValue;
+		}
 	}
 
-	// "Let new parent be the result of calling createElement(tag) on the
-	// ownerDocument of node."
-	var newParent = node.ownerDocument.createElement(tag);
+	// "If new parent is null, let new parent be the result of calling
+	// createElement("span") on the ownerDocument of node."
+	if (!newParent) {
+		newParent = node.ownerDocument.createElement("span");
+	}
 
 	// "Insert new parent in node's parent before node."
 	node.parentNode.insertBefore(newParent, node);
@@ -883,14 +1071,41 @@ function forceStyle(node, property, newValue) {
 	// not new value:"
 	if (node.nodeType == Node.ELEMENT_NODE
 	&& !cssValuesEqual(property, getEffectiveStyle(node, property), newValue)) {
-		// "Set the CSS property property of node to new value."
-		node.style[property] = newValue;
-
 		// "Insert node into the parent of new parent before new parent."
 		newParent.parentNode.insertBefore(node, newParent);
 
 		// "Remove new parent from its parent."
 		newParent.parentNode.removeChild(newParent);
+
+		// "If new parent is a span, set the CSS property property of node to
+		// new value."
+		if (newParent.tagName == "SPAN") {
+			node.style[property] = newValue;
+
+			// "Otherwise:"
+		} else {
+			// "Let children be all children of node, omitting any that are
+			// Elements whose specified style for property is neither null nor
+			// equal to new value."
+			var children = [];
+			for (var i = 0; i < node.childNodes.length; i++) {
+				if (node.childNodes[i].nodeType == Node.ELEMENT_NODE) {
+					var specifiedStyle = getSpecifiedStyle(node.childNodes[i], property);
+
+					if (specifiedStyle !== null
+					&& !cssValuesEqual(property, newValue, specifiedStyle)) {
+						continue;
+					}
+				}
+				children.push(node.childNodes[i]);
+			}
+
+			// "Force the style of each Node in children, with property and new
+			// value as in this invocation of the algorithm."
+			for (var i = 0; i < children.length; i++) {
+				forceStyle(children[i], property, newValue);
+			}
+		}
 	}
 }
 
@@ -964,12 +1179,14 @@ function styleNode(node, property, newValue) {
 function myExecCommand(commandId, showUI, value, range) {
 	commandId = commandId.toLowerCase();
 
-	if (typeof range == "undefined") {
-		range = getActiveRange(document);
-	}
+	if (commandId != "stylewithcss" && commandId != "usecss") {
+		if (typeof range == "undefined") {
+			range = getActiveRange(document);
+		}
 
-	if (!range) {
-		return;
+		if (!range) {
+			return;
+		}
 	}
 
 	switch (commandId) {
@@ -1108,6 +1325,12 @@ function myExecCommand(commandId, showUI, value, range) {
 		}
 		break;
 
+		case "stylewithcss":
+		// "Convert value to a boolean according to the algorithm in WebIDL,
+		// and set the CSS styling flag to the result."
+		cssStylingFlag = Boolean(value);
+		break;
+
 		case "underline":
 		// "Decompose the Range. If the state of the Range for this command is
 		// then true, style each returned Node with property "text-decoration"
@@ -1118,6 +1341,12 @@ function myExecCommand(commandId, showUI, value, range) {
 		for (var i = 0; i < nodeList.length; i++) {
 			styleNode(nodeList[i], "textDecoration", newValue);
 		}
+		break;
+
+		case "usecss":
+		// "Convert value to a boolean according to the algorithm in WebIDL,
+		// and set the CSS styling flag to the negation of the result."
+		cssStylingFlag = !value;
 		break;
 
 		default:
@@ -1137,6 +1366,10 @@ function myQueryCommandState(commandId) {
 }
 
 function getState(commandId, range) {
+	if (commandId == "stylewithcss") {
+		return cssStylingFlag;
+	}
+
 	if (commandId != "bold"
 	&& commandId != "italic"
 	&& commandId != "underline") {

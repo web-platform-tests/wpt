@@ -197,7 +197,9 @@ following algorithm:
 
   <li>Return the last [[range]] in <var>selection</var> whose [[rangestart]]
   is <var>start</var>.
-  <!-- This is what Firefox seems to do, no reason to change it . . . -->
+
+  <p class=XXX>Double-check that this is what Firefox actually does.  It seems
+  pretty baroque.
 
   <p class=note>In user agents that support only one [[range]] per
   [[selection]], the active range is simply the only one in the selection.
@@ -205,7 +207,16 @@ following algorithm:
 
 <p>An <dfn>unwrappable element</dfn> is an <span>HTML element</span> which may
 not be used where only [[phrasingcontent]] is expected (not counting unknown or
-obsolete elements, which cannot be used at all).
+obsolete elements, which cannot be used at all); or any [[element]] whose
+display property computes to something other than "inline", "inline-block", or
+"inline-table".
+
+<p class=XXX>Currently when we hit an unwrappable element, we ignore it and
+style its children.  Alternatively, if we would otherwise create a span with a
+style element on it, maybe we could put the style element directly on the
+unwrappable element.  This would produce shorter markup in many cases, but
+would also cause problems for things like background-color that do something
+different on block elements.
 
 <p>The <dfn>effective style</dfn> of a [[node]] <var>node</var> for a given
 <var>property</var> is returned by the following algorithm, which will return
@@ -281,6 +292,19 @@ either a CSS value or null:
   <li>Return null.
 </ol>
 
+<p>A <dfn>styling element</dfn> is a [[b]], [[em]], [[i]], [[span]],
+[[strong]], or [[u]] element with no attributes except possibly [[style]], or
+a [[font]] element with no attributes except possibly [[style]], [[fontcolor]],
+[[fontface]], and/or [[fontsize]].
+
+<p class=note>Conceptually, a <span>styling element</span> is a phrasing
+element whose only purpose is to style text.  Thus changing around styling
+elements (such as moving them, breaking them up, deleting them, or switching
+them with other styling elements) is fine as long as the style is preserved.
+In fact, some styling elements are supposed to have semantics other than
+styling, but the algorithms here treat them as styling elements anyway, for
+compatibility with legacy user-agents that treat them that way.
+
 <p>A <dfn>simple styling element</dfn> is an <span>HTML element</span> for
 which at least one of the following holds:
 
@@ -292,30 +316,36 @@ which at least one of the following holds:
   element with exactly one attribute, which is [[style]], which sets no CSS
   properties (including invalid or unrecognized properties).
 
-  <li>It is a [[font]] element with one attribute, which is either
+  <li>It is a [[font]] element with exactly one attribute, which is either
   [[fontcolor]], [[fontface]], or [[fontsize]].
 
-  <li>It is a [[b]] or [[strong]] element with one attribute, which is
-  [[style]], and the only CSS property set by the [[style]] attribute
-  (including invalid or unrecognized properties) is "font-weight".
+  <li>It is a [[b]] or [[strong]] element with exactly one attribute, which is
+  [[style]], and the [[style]] attribute sets exactly one CSS property
+  (including invalid or unrecognized properties), which is "font-weight".
 
-  <li>It is an [[i]] or [[em]] element with one attribute, which is [[style]],
-  and the only CSS property set by the [[style]] attribute (including invalid
-  or unrecognized properties) is "font-style".
+  <li>It is an [[i]] or [[em]] element with exactly one attribute, which is
+  [[style]], and the [[style]] attribute sets exactly one CSS property
+  (including invalid or unrecognized properties), which is "font-style".
 
-  <li>It is a [[u]] element with one attribute, which is [[style]], and the
-  only CSS property set by the [[style]] attribute (including invalid or
-  unrecognized properties) is "text-decoration", which is set to "underline" or
-  "none".
+  <li>It is a [[u]] element with exactly one attribute, which is [[style]], and
+  the [[style]] attribute sets exactly one CSS property (including invalid or
+  unrecognized properties), which is "text-decoration", which is set to
+  "underline" or "none".
 
   <li>It is a [[font]] or [[span]] element with exactly one attribute, which is
   [[style]], and the [[style]] attribute sets exactly one CSS property
   (including invalid or unrecognized properties).
 </ol>
 
-<p class=note>Conceptually, a <span>simple styling element</span> is an element
-which has a <span>specified style</span> for exactly one CSS property, but does
-nothing else.
+<p class=note>Conceptually, a <span>simple styling element</span> is a
+<span>styling element</span> which <span title="specified
+style">specifies</span> at most one CSS property.
+
+<p>The <dfn>CSS styling flag</dfn> is a boolean flag, which must initially be
+false.
+
+<p class=XXX>Is the styling flag associated with the document, with the editing
+host, what?  Needs reverse-engineering.
 
 <p>When the user agent is instructed to run a particular method, it must follow
 the steps defined for that method in the appropriate specification, not act as
@@ -472,7 +502,7 @@ id=foo> into <span id=foo> instead of <font id=foo>, but probably not worth it.
     set.
   </ol>
 
-  <li>If <var>element</var>'s <var>specified style</var> for
+  <li>If <var>element</var>'s <span>specified style</span> for
   <var>property</var> is null, return the empty list.
   <!-- If we get past this step, we're something like <b class=foo> where we
   want to keep the extra attributes, so we stick them on a span. -->
@@ -498,6 +528,32 @@ id=foo> into <span id=foo> instead of <font id=foo>, but probably not worth it.
 <var>node</var>, given a CSS property name <var>property</var> and a new value
 <var>new value</var>, it must run the following steps:
 
+<!-- This algorithm goes up to just below the nearest ancestor with the right
+style, then re-applies the bad styles repeatedly going down, omitting the
+things we want to have the new style.  This is basically what WebKit does,
+although WebKit sometimes starts higher up and therefore makes more intrusive
+changes, often creating more markup.
+
+Gecko instead seems to start breaking up elements from the bottom, so that the
+range consists of a few consecutive siblings, and it can then break up the
+problematic element into a maximum of two pieces.  The spec's approach seems to
+create fewer elements and simpler markup (or at least markup that's no more
+complex) in every case I throw at it.
+
+Gecko's approach does have the major advantage that it gets underlines right in
+many cases for free.  E.g.,
+
+  <u>foo<font color=red>[bar]baz</font></u>
+  -> <u>foo</u><font color=red>bar<u>baz</u></font> (spec)
+  -> <u>foo</u><font color=red>bar</font><u><font color=red>baz</font></u> (Gecko)
+
+The spec's markup here is much shorter and contains fewer elements, but is
+wrong: the underline under "baz" has changed color from black to red.  It might
+be worth trying to copy Gecko's results in such cases, but that won't solve all
+underline problems, so perhaps it's not worth it.
+
+Opera also seems to break up the markup surrounding the range, but even more
+aggressively: even if it doesn't need to pull down styles. -->
 <ol>
   <li>If <var>node</var>'s [[parent]] is not an [[element]], abort this
   algorithm. <!-- E.g., a text node child of a document fragment. -->
@@ -584,32 +640,36 @@ styles">pushing down styles</span> don't work to achieve the desired style.
 After forcing the style, descendants might still have different style.
 
 <ol>
-  <!-- Even if the style matches, we stick it in a preceding sibling if
-  possible.  This ensures "a<cite>b</cite>c" -> "<i>a<cite>b</cite>c</i>"
-  instead of "<i>a</i><cite>b</cite><i>c</i>". -->
+  <li>If <var>node</var>'s [[parent]] is null, abort this algorithm.
+
   <li>If <var>node</var> is an [[element]], [[text]], [[comment]], or
   [[processinginstruction]] node, and is not an <span>unwrappable
   element</span>:
 
   <ol>
-    <!-- Handle cases like bolding "bar" in "<i><b>Foo</b></i>bar".
+    <!-- Even if the style matches, we stick it in a preceding sibling if
+    possible.  This ensures "a<cite>b</cite>c" -> "<i>a<cite>b</cite>c</i>"
+    instead of "<i>a</i><cite>b</cite><i>c</i>".  While we're at it, we also
+    handle more elaborate cases like <b>foo</b>[bar]<b>baz</b> and even
+    <i><b>foo</b></i>[bar]<i><b>baz</b></i> (the latter becomes
+    <b><i>foo</i>bar<i>baz</i></b>).
+
     Theoretically this algorithm could pointlessly reorganize the DOM in the
     event of unreasonable style rules, but it's not a big enough deal for us to
-    care, probably. -->
-    <!-- This is probably more complicated than we want, given how likely this
-    is to come up, so I've commented it out for now.
+    care, since the resulting style will still be right. -->
     <li>Let <var>candidate</var> be <var>node</var>'s [[previoussibling]].
 
-    <li>While <var>candidate</var> is a <span>simple styling element</span>,
-    and <var>candidate</var> has exactly one [[child]], and that [[child]] is
-    also a <span>simple styling element</span>, and <var>candidate</var>'s
+    <li>While <var>candidate</var> is a <span>styling element</span>, and
+    <var>candidate</var> has exactly one [[child]], and that [[child]] is also
+    a <span>styling element</span>, and <var>candidate</var> is not a
+    <span>simple styling element</span> or <var>candidate</var>'s
     <span>specified style</span> for <var>property</var> is not <var>new
     value</var>, set <var>candidate</var> to its [[child]].
 
     <li>If <var>candidate</var> is a <span>simple styling element</span> whose
-    <span>specified style</span> and computed style for <var>property</var> are
-    both <var>new value</var>, and <var>candidate</var> is not the
-    [[previoussibling]] of <var>node</var>:
+    <span>specified style</span> and <span>effective style</span> for
+    <var>property</var> are both <var>new value</var>, and <var>candidate</var>
+    is not the [[previoussibling]] of <var>node</var>:
 
     <ol>
       <li>While <var>candidate</var> has [[children]], append the first
@@ -622,27 +682,20 @@ After forcing the style, descendants might still have different style.
       <li>Append the [[previoussibling]] of <var>candidate</var> as the last
       [[child]] of <var>candidate</var>.
     </ol>
-    -->
 
-    <li>If <var>node</var>'s [[previoussibling]] is a <span>simple styling
-    element</span> whose <span>specified style</span> and <span>effective
-    style</span> for <var>property</var> are both <var>new value</var>, append
-    <var>node</var> as the last [[child]] of its [[previoussibling]] and abort
-    this algorithm.
-
-    <!--
     <li>Let <var>candidate</var> be <var>node</var>'s [[nextsibling]].
 
-    <li>While <var>candidate</var> is a <span>simple styling element</span>,
-    and <var>candidate</var> has exactly one [[child]], and that [[child]] is
-    also a <span>simple styling element</span>, and <var>candidate</var>'s
+    <li>While <var>candidate</var> is a <span>styling element</span>, and
+    <var>candidate</var> has exactly one [[child]], and that [[child]] is also
+    a <span>styling element</span>, and <var>candidate</var> is not a
+    <span>simple styling element</span> or <var>candidate</var>'s
     <span>specified style</span> for <var>property</var> is not <var>new
     value</var>, set <var>candidate</var> to its [[child]].
 
     <li>If <var>candidate</var> is a <span>simple styling element</span> whose
-    <span>specified style</span> and computed style for <var>property</var> are
-    both <var>new value</var>, and <var>candidate</var> is not the
-    [[nextsibling]] of <var>node</var>:
+    <span>specified style</span> and <span>effective style</span> for
+    <var>property</var> are both <var>new value</var>, and <var>candidate</var>
+    is not the [[nextsibling]] of <var>node</var>:
 
     <ol>
       <li>While <var>candidate</var> has [[children]], append the first
@@ -655,13 +708,28 @@ After forcing the style, descendants might still have different style.
       <li>Append the [[nextsibling]] of <var>candidate</var> as the last
       [[child]] of <var>candidate</var>.
     </ol>
-    -->
 
-    <li>If <var>node</var>'s [[nextsibling]] is a <span>simple styling
-    element</span> whose <span>specified style</span> and <span>effective
-    style</span> for <var>property</var> are both <var>new value</var>, insert
-    <var>node</var> as the first [[child]] of its [[nextsibling]] and abort
-    this algorithm.
+    <li>Let <var>previous sibling</var> and <var>next sibling</var> be
+    <var>node</var>'s [[previoussibling]] and [[nextsibling]].
+
+    <li>If <var>previous sibling</var> is a <span>simple styling element</span>
+    whose <span>specified style</span> and <span>effective style</span> for
+    <var>property</var> are both <var>new value</var>, append <var>node</var>
+    as the last [[child]] of <var>previous sibling</var>.
+
+    <li>If <var>next sibling</var> is a <span>simple styling element</span>
+    whose <span>specified style</span> and <span>effective style</span> for
+    <var>property</var> are both <var>new value</var>:
+
+    <ol>
+      <li>If <var>node</var> is not a [[child]] of <var>previous sibling</var>,
+      insert <var>node</var> as the first [[child]] of <var>next sibling</var>.
+
+      <li>Otherwise, while <var>next sibling</var> has [[children]], append the
+      first [[child]] of <var>next sibling</var> as the last [[child]] of
+      <var>previous sibling</var>.  Then remove <var>next sibling</var> from
+      its [[parent]].
+    </ol>
   </ol>
 
   <li>If the <span>effective style</span> of <var>property</var> is <var>new
@@ -689,20 +757,55 @@ After forcing the style, descendants might still have different style.
   <li>If the <span>effective style</span> of <var>property</var> is <var>new
   value</var> on <var>node</var>, abort this algorithm.
 
-  <li>If <var>property</var> is "font-weight" and <var>new value</var> is
-  "bold", let <var>tag</var> be "b".
+  <li>Let <var>new parent</var> be null.
 
-  <li>If <var>property</var> is "font-style" and <var>new value</var> is
-  "italic", let <var>tag</var> be "i".
+  <li>If the <span>CSS styling flag</span> is false:
 
-  <li>If <var>property</var> is "text-decoration" and <var>new value</var> is
-  "underline", let <var>tag</var> be "u".
+  <ol>
+    <li>If <var>property</var> is "font-weight" and <var>new value</var> is
+    "bold", let <var>new parent</var> be the result of calling <code
+    data-anolis-spec=domcore
+    title=dom-Document-createElement>createElement("b")</code> on the
+    [[ownerdocument]] of <var>node</var>.
 
-  <li>If <var>tag</var> is not set, let <var>tag</var> be "span".
+    <li>If <var>property</var> is "font-style" and <var>new value</var> is
+    "italic", let <var>new parent</var> be the result of calling <code
+    data-anolis-spec=domcore
+    title=dom-Document-createElement>createElement("i")</code> on the
+    [[ownerdocument]] of <var>node</var>.
 
-  <li>Let <var>new parent</var> be the result of calling <code
-  data-anolis-spec=domcore
-  title=dom-Document-createElement>createElement(<var>tag</var>)</code> on the
+    <li>If <var>property</var> is "text-decoration" and <var>new value</var> is
+    "underline", let <var>new parent</var> be the result of calling <code
+    data-anolis-spec=domcore
+    title=dom-Document-createElement>createElement("u")</code> on the
+    [[ownerdocument]] of <var>node</var>.
+
+    <li>If <var>property</var> is "color", let <var>new parent</var> be the
+    result of calling <code data-anolis-spec=domcore
+    title=dom-Document-createElement>createElement("font")</code> on the
+    [[ownerdocument]] of <var>node</var>, then set the [[fontcolor]] attribute
+    of <var>new parent</var> to <var>new value</var>.
+
+    <p class=XXX>This can be wrong if, e.g., the color has an alpha channel.
+    We also need to specify exactly how it's serialized, since CSSOM doesn't
+    cover this.  It might be best to always output simple colors.
+
+    <li>If <var>property</var> is "font-family", let <var>new parent</var> be
+    the result of calling <code data-anolis-spec=domcore
+    title=dom-Document-createElement>createElement("font")</code> on the
+    [[ownerdocument]] of <var>node</var>, then set the [[fontface]] attribute
+    of <var>new parent</var> to <var>new value</var>.
+
+    <li>If <var>property</var> is "font-size", let <var>new parent</var> be the
+    result of calling <code data-anolis-spec=domcore
+    title=dom-Document-createElement>createElement("font")</code> on the
+    [[ownerdocument]] of <var>node</var>, then set the [[fontsize]] attribute
+    of <var>new parent</var> to <var>new value</var>.
+  </ol>
+
+  <li>If <var>new parent</var> is null, let <var>new parent</var> be the result
+  of calling <code data-anolis-spec=domcore
+  title=dom-Document-createElement>createElement("span")</code> on the
   [[ownerdocument]] of <var>node</var>.
 
   <li>Insert <var>new parent</var> in <var>node</var>'s [[parent]] before
@@ -718,13 +821,25 @@ After forcing the style, descendants might still have different style.
   of <var>property</var> for <var>node</var> is not <var>new value</var>:
 
   <ol>
-    <li>Set the CSS property <var>property</var> of <var>node</var> to <var>new
-    value</var>.
-
     <li>Insert <var>node</var> into the [[parent]] of <var>new parent</var>
     before <var>new parent</var>.
 
     <li>Remove <var>new parent</var> from its [[parent]].
+
+    <li>If <var>new parent</var> is a [[span]], set the CSS property
+    <var>property</var> of <var>node</var> to <var>new value</var>.
+
+    <li>Otherwise:
+
+    <ol>
+      <li>Let <var>children</var> be all [[children]] of <var>node</var>,
+      omitting any that are [[element]]s whose <span>specified style</span> for
+      <var>property</var> is neither null nor equal to <var>new value</var>.
+
+      <li><span>Force the style</span> of each [[node]] in <var>children</var>,
+      with <var>property</var> and <var>new value</var> as in this invocation
+      of the algorithm.
+    </ol>
   </ol>
 </ol>
 
@@ -835,7 +950,7 @@ as desired.
 
   <li>Let <var>children</var> be the [[children]] of <var>node</var>.
 
-  <li><span>Style</span> each member of [[children]].
+  <li><span>Style</span> each member of <var>children</var>.
 
   <p class=note>Styling a node involves clearing its styles, which can remove
   it from the tree.  Implementers should be careful to compute the list of
@@ -1167,6 +1282,20 @@ false.
 <dd><p><strong>Value</strong>: Always the empty string.
 
 
+<dt><code title><dfn title=command-stylewithcss>styleWithCSS</dfn></code>
+
+<dd><p><strong>Action</strong>: Convert <var>value</var> to a boolean according
+to the algorithm in WebIDL, and set the <span>CSS styling flag</span> to the
+result.
+
+<p class=XXX>Properly cross-reference.
+
+<dd><p><strong>State</strong>: True if the <span>CSS styling flag</span> is
+true, otherwise false.
+
+<dd><p><strong>Value</strong>:
+
+
 <dt><code title><dfn title=command-underline>underline</dfn></code>
 
 <dd><p><strong>Action</strong>: <span>Decompose</span> the [[range]].  If the
@@ -1216,7 +1345,6 @@ future.
 style</span> either null or "underline" for text-decoration.  Otherwise false.
 
 <dd><p><strong>Value</strong>: Always the empty string.
-</dl>
 
 
 <dt><code title><dfn title=command-unlink>unlink</dfn></code>
@@ -1264,6 +1392,24 @@ what the other browsers do instead.
 <dd><p><strong>State</strong>: Always false.
 
 <dd><p><strong>Value</strong>: Always the empty string.
+
+
+<dt><code title><dfn title=command-usecss>useCSS</dfn></code>
+
+<dd><p><strong>Action</strong>: Convert <var>value</var> to a boolean according
+to the algorithm in WebIDL, and set the <span>CSS styling flag</span> to the
+negation of the result.  Since the effect of this command is the opposite of
+what one would expect, user agents are encouraged to point authors to <code
+title=command-stylewithcss>styleWithCSS</code> when <code
+title=command-usecss>useCSS</code> is used, such as by logging a warning to an
+error console.
+
+<p class=XXX>Properly cross-reference.
+
+<dd><p><strong>State</strong>:
+
+<dd><p><strong>Value</strong>:
+</dl>
 
 
 <h2 class=no-num id=references>References</h2><!--REFS-->

@@ -39,6 +39,7 @@ href=http://www.browserscope.org/richtext2/test>Browserscope</a>.
 <h1>bold</h1>
 
 <table border=1><tr><th>Input <th>Spec <th>Browser <th>Same?</table>
+<table border=1><tr><th>Input <th>Spec <th>Browser <th>Same?</table>
 
 <p><label>Enter new test here: <input></label>
 <button onclick="addTest('bold', document.querySelector('#bold input').value)">Add test</button>
@@ -47,8 +48,9 @@ href=http://www.browserscope.org/richtext2/test>Browserscope</a>.
 <div id=fontname>
 <h1>fontname</h1>
 
-<p>Tests set the font-family to "serif".
+<p>Tests set the font-family to "sans-serif".  Note that the body's font-family is "serif".
 
+<table border=1><tr><th>Input <th>Spec <th>Browser <th>Same?</table>
 <table border=1><tr><th>Input <th>Spec <th>Browser <th>Same?</table>
 
 <p><label>Enter new test here: <input></label>
@@ -60,6 +62,7 @@ href=http://www.browserscope.org/richtext2/test>Browserscope</a>.
 
 <p>Tests set the color to "#FF0000".
 
+<table border=1><tr><th>Input <th>Spec <th>Browser <th>Same?</table>
 <table border=1><tr><th>Input <th>Spec <th>Browser <th>Same?</table>
 
 <p><label>Enter new test here: <input></label>
@@ -81,6 +84,7 @@ href=http://www.browserscope.org/richtext2/test>Browserscope</a>.
 <h1>italic</h1>
 
 <table border=1><tr><th>Input <th>Spec <th>Browser <th>Same?</table>
+<table border=1><tr><th>Input <th>Spec <th>Browser <th>Same?</table>
 
 <p><label>Enter new test here: <input></label>
 <button onclick="addTest('italic', document.querySelector('#italic input').value)">Add test</button>
@@ -89,6 +93,7 @@ href=http://www.browserscope.org/richtext2/test>Browserscope</a>.
 <div id=underline>
 <h1>underline</h1>
 
+<table border=1><tr><th>Input <th>Spec <th>Browser <th>Same?</table>
 <table border=1><tr><th>Input <th>Spec <th>Browser <th>Same?</table>
 
 <p><label>Enter new test here: <input></label>
@@ -99,7 +104,7 @@ href=http://www.browserscope.org/richtext2/test>Browserscope</a>.
 <script>
 var values = {
 	bold: null,
-	fontname: "serif",
+	fontname: "sans-serif",
 	forecolor: "#FF0000",
 	hilitecolor: "#FF8888",
 	italic: null,
@@ -112,17 +117,26 @@ var tests = {
 		'foo]bar[baz',
 		'{<p><p> <p>Foo</p>}',
 		'foo[bar<i>baz]qoz</i>quz',
+
 		'foo<span style="font-weight: bold">[bar]</span>baz',
 		'foo<b>[bar]</b>baz',
 		'foo<b>bar</b>[baz]',
 		'[foo]<b>bar</b>baz',
+		'<b>foo</b>[bar]<b>baz</b>',
 		'foo<strong>bar</strong>[baz]',
 		'[foo]<strong>bar</strong>baz',
+		'<strong>foo</strong>[bar]<strong>baz</strong>',
+		'<b>foo</b>[bar]<strong>baz</strong>',
+		'<strong>foo</strong>[bar]<b>baz</b>',
 		'foo[<b>bar</b>]baz',
 		'foo[<b>bar]</b>baz',
 		'foo<b>[bar</b>]baz',
-		'foo<span style="font-weight: normal"><b>{bar}</b></span>baz',
+
 		'foo{<b></b>}baz',
+		'foo{<i></i>}baz',
+		'foo{<b><i></i></b>}baz',
+		'foo{<i><b></b></i>}baz',
+
 		'foo<strong>[bar]</strong>baz',
 		'foo[<strong>bar</strong>]baz',
 		'foo[<strong>bar]</strong>baz',
@@ -131,11 +145,15 @@ var tests = {
 		'foo[<span style="font-weight: bold">bar</span>]baz',
 		'foo[<span style="font-weight: bold">bar]</span>baz',
 		'foo<span style="font-weight: bold">[bar</span>]baz',
+
 		'<b>{<p>foo</p><p>bar</p>}<p>baz</p></b>',
 		'<b><p>foo[<i>bar</i>}</p><p>baz</p></b>',
+
 		'foo [bar <b>baz] qoz</b> quz sic',
 		'foo bar <b>baz [qoz</b> quz] sic',
+
 		'<b id=purple>bar [baz] qoz</b>',
+
 		'foo<span style="font-weight: 100">[bar]</span>baz',
 		'foo<span style="font-weight: 400">[bar]</span>baz',
 		'foo<span style="font-weight: 700">[bar]</span>baz',
@@ -158,6 +176,7 @@ var tests = {
 		'<span style="font-weight: 400">foo[barbaz</span>}',
 		'<span style="font-weight: 700">foo[barbaz</span>}',
 		'<span style="font-weight: 900">foo[barbaz</span>}',
+
 		'<h3>Foo[bar]baz</h3>',
 		'{<h3>Foobar]baz</h3>',
 		'<h3>Foo[barbaz</h3>}',
@@ -165,13 +184,19 @@ var tests = {
 		'{<h3>Foobarbaz]</h3>',
 		'<h3>[Foobarbaz</h3>}',
 		'{<h3>Foobarbaz</h3>}',
+
 		'<b>Foo<span style="font-weight: normal">bar<b>[baz]</b>quz</span>qoz</b>',
 		'<b>Foo<span style="font-weight: normal">[bar]</span>baz</b>',
+
 		'{<b>Foo</b> <b>bar</b>}',
 		'{<h3>Foo</h3><b>bar</b>}',
+
 		'<i><b>Foo</b></i>[bar]<i><b>baz</b></i>',
 		'<i><b>Foo</b></i>[bar]<b>baz</b>',
 		'<b>Foo</b>[bar]<i><b>baz</b></i>',
+		'<font color=red face=monospace><b>Foo</b></font>[bar]',
+
+		'foo<span style="font-weight: normal"><b>{bar}</b></span>baz',
 		'[Foo<span class=notbold>bar</span>baz]',
 	],
 	fontname: [
@@ -214,8 +239,8 @@ var tests = {
 		'foo<samp>b[ar</samp>baz]',
 		'foo<tt>b[ar</tt>baz]',
 
-		'foo<span style="font-family: serif">[bar]</span>baz',
-		'foo<span style="font-family: serif">b[a]r</span>baz',
+		'foo<span style="font-family: sans-serif">[bar]</span>baz',
+		'foo<span style="font-family: sans-serif">b[a]r</span>baz',
 		'foo<span style="font-family: monospace">[bar]</span>baz',
 		'foo<span style="font-family: monospace">b[a]r</span>baz',
 	],
@@ -306,6 +331,10 @@ var tests = {
 		'foo<span style="text-decoration: underline">[bar]</span>baz',
 		'<u>foo[bar]baz</u>',
 		'<u>foo[b<span style="color:red">ar]ba</span>z</u>',
+		'<u>foo[b<span style="color:red" id=foo>ar]ba</span>z</u>',
+		'<u>foo[b<span style="font-size:3em">ar]ba</span>z</u>',
+		'<u>foo[b<i>ar]ba</i>z</u>',
+		'<p style="text-decoration: underline">foo[bar]baz</p>',
 	],
 };
 
@@ -316,21 +345,33 @@ for (testCat in tests) {
 }
 
 function addTest(command, test) {
-	var tr = doSetup(command);
+	var doubleTesting = ["bold", "italic", "underline", "forecolor",
+	"fontname", "fontsize"].indexOf(command) != -1;
+
+	var tr = doSetup(command, 0);
 
 	doInputCell(tr, test);
-	doSpecCell(tr, test, command);
-	doBrowserCell(tr, test, command);
+	doSpecCell(tr, test, command, false);
+	doBrowserCell(tr, test, command, false);
 	doSameCell(tr);
+
+	if (doubleTesting) {
+		var tr = doSetup(command, 1);
+
+		doInputCell(tr, test);
+		doSpecCell(tr, test, command, true);
+		doBrowserCell(tr, test, command, true);
+		doSameCell(tr);
+	}
 
 	doTearDown(command);
 }
 
-function doSetup(command) {
+function doSetup(command, idx) {
 	var div = document.getElementById(command);
 	div.contentEditable = "true";
 	div.spellcheck = false;
-	var table = div.querySelector("table");
+	var table = div.querySelectorAll("table")[idx];
 
 	var tr = document.createElement("tr");
 	// Insert at the top, because Chrome debugger doesn't let you scroll down
@@ -352,7 +393,7 @@ function doInputCell(tr, test) {
 	tr.appendChild(inputCell);
 }
 
-function doSpecCell(tr, test, command) {
+function doSpecCell(tr, test, command, styleWithCss) {
 	var value = values[command];
 
 	var specCell = document.createElement("td");
@@ -368,16 +409,32 @@ function doSpecCell(tr, test, command) {
 		if (range.collapsed) {
 			range.setEnd(points[0], points[1]);
 		}
+		myExecCommand("styleWithCSS", false, styleWithCss);
 		myExecCommand(command, false, value, range);
 		specCell.lastChild.textContent = specCell.firstChild.innerHTML;
 	} catch (e) {
-		specCell.textContent = "Exception: " + e;
+		specCell.lastChild.style.color = "red";
+		specCell.lastChild.style.fontWeight = "bold";
+		specCell.lastChild.textContent = "Note, exception: " + e;
+	}
+
+	var key = "execcommand-" + command
+		+ "-" + Number(myQueryCommandState("styleWithCSS"))
+		+ "-" + test;
+
+	var oldValue = localStorage[key];
+	localStorage[key] = specCell.lastChild.textContent;
+
+	if (oldValue !== null && oldValue !== undefined && oldValue != specCell.lastChild.textContent) {
+		specCell.appendChild(document.createElement("div"));
+		specCell.lastChild.style.color = "red";
+		specCell.lastChild.style.fontWeight = "bold";
+		specCell.lastChild.textContent = "Note, last run produced different markup: " + oldValue;
 	}
 }
 
-function doBrowserCell(tr, test, command) {
+function doBrowserCell(tr, test, command, styleWithCss) {
 	var value = values[command];
-	var styleWithCss = command != "bold" && command != "italic" && command != "underline";
 
 	var browserCell = document.createElement("td");
 	browserCell.innerHTML = "<div></div><div></div>";
@@ -387,10 +444,8 @@ function doBrowserCell(tr, test, command) {
 		var points = parseBrackets(browserCell);
 		setSelection(points[0], points[1], points[2], points[3]);
 		try {
-			document.execCommand("styleWithCss", false, styleWithCss);
-		} catch (e) {
-			// IE, we don't care
-		}
+			document.execCommand("styleWithCSS", false, styleWithCss);
+		} catch (e) {}
 		document.execCommand(command, false, value);
 		browserCell.lastChild.textContent = browserCell.firstChild.innerHTML;
 	} catch (e) {
@@ -401,9 +456,9 @@ function doBrowserCell(tr, test, command) {
 function doSameCell(tr) {
 	var sameCell = document.createElement("td");
 	// Ad hoc normalization to avoid basically spurious mismatches
-	var normalizedSpecCell = tr.childNodes[1].lastChild.textContent
+	var normalizedSpecCell = tr.childNodes[1].childNodes[1].textContent
 		.replace(/;? ?"/g, '"');
-	var normalizedBrowserCell = tr.childNodes[2].lastChild.textContent
+	var normalizedBrowserCell = tr.childNodes[2].childNodes[1].textContent
 		.replace(/;? ?"/g, '"')
 		.replace(/<(\/?)strong/g, '<$1b')
 		.replace(/<(\/?)em/g, '<$1i')

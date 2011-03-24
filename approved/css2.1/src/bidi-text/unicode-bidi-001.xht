@@ -1,0 +1,23 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>CSS Test: Unicode-bidi set to 'normal'</title>
+        <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#propdef-unicode-bidi" />
+        <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#direction" />
+        <meta name="flags" content="" />
+        <meta name="assert" content="The property 'unicode-bidi' set to 'normal' doesn't modify the directionality of text." />
+        <style type="text/css">
+            div
+            {
+                direction: rtl;
+                unicode-bidi: normal;
+                border: 2px solid blue;
+            }
+        </style>
+    </head>
+    <body>
+        <p>Test passes if the word "PASS" appears below on the right side of the page.</p>
+        <div>PASS</div>
+    </body>
+</html>

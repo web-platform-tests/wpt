@@ -27,7 +27,7 @@
 <body class=draft>
 <div class=head id=head>
 <h1>HTML Editing Commands</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-23-march-2011>Work in Progress &mdash; Last Update 23 March 2011</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-24-march-2011>Work in Progress &mdash; Last Update 24 March 2011</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;ayg+spec@aryeh.name&gt;
@@ -135,6 +135,9 @@ included in HTML comments so as not to distract the reader.
 
 <h2 id=issues><span class=secno>2 </span>Issues</h2>
 
+<p>This specification is very preliminary, and should not be used for anything
+other than review and comment.
+
 <ul>
   <li>Need to make CSS terminology more precise, about setting/unsetting CSS
   properties.  The intent is to modify the style attribute, CSSOM-style.
@@ -167,6 +170,9 @@ included in HTML comments so as not to distract the reader.
   <li>I don't pay attention to whether designMode/contenteditable is actually
   set.  I should be doing things like not doing anything if the selection isn't
   editable, making sure not to break out of contenteditable regions, etc.
+
+  <li>I haven't yet paid any attention to value parsing.  This is going to be
+  important to specify exactly in some cases, like with colors.
 </ul>
 
 <p class=XXX>A variety of other issues are also noted in the text, formatted
@@ -532,32 +538,38 @@ id=foo> into <span id=foo> instead of <font id=foo>, but probably not worth it.
 <var title="">node</var>, given a CSS property name <var title="">property</var> and a new value
 <var title="">new value</var>, it must run the following steps:
 
-<!-- This algorithm goes up to just below the nearest ancestor with the right
+<div class=XXX>
+<p>This algorithm goes up to just below the nearest ancestor with the right
 style, then re-applies the bad styles repeatedly going down, omitting the
 things we want to have the new style.  This is basically what WebKit does,
 although WebKit sometimes starts higher up and therefore makes more intrusive
-changes, often creating more markup.
+changes, often creating more markup.  IE follows the same general approach too.
 
-Gecko instead seems to start breaking up elements from the bottom, so that the
+<p>Gecko instead seems to start breaking up elements from the bottom, so that the
 range consists of a few consecutive siblings, and it can then break up the
 problematic element into a maximum of two pieces.  The spec's approach seems to
 create fewer elements and simpler markup (or at least markup that's no more
-complex) in every case I throw at it.
+complex) in most cases I throw at it.
 
-Gecko's approach does have the major advantage that it gets underlines right in
+<p>Gecko's approach does have the major advantage that it gets underlines right in
 many cases for free.  E.g.,
 
-  <u>foo<font color=red>[bar]baz</font></u>
+</p><xmp>  <u>foo<font color=red>[bar]baz</font></u>
   -> <u>foo</u><font color=red>bar<u>baz</u></font> (spec)
-  -> <u>foo</u><font color=red>bar</font><u><font color=red>baz</font></u> (Gecko)
+  -> <u>foo</u><font color=red>bar</font><u><font color=red>baz</font></u> (Gecko)</xmp>
 
-The spec's markup here is much shorter and contains fewer elements, but is
+<p>The spec's markup here is much shorter and contains fewer elements, but is
 wrong: the underline under "baz" has changed color from black to red.  It might
 be worth trying to copy Gecko's results in such cases, but that won't solve all
 underline problems, so perhaps it's not worth it.
 
-Opera also seems to break up the markup surrounding the range, but even more
-aggressively: even if it doesn't need to pull down styles. -->
+<p>Opera also seems to break up the markup surrounding the range, but even more
+aggressively: even if it doesn't need to pull down styles.  In some cases this
+does actually result in shorter markup, specifically if the existing tags are
+short (like <a href=http://www.whatwg.org/html/#the-i-element><code class=external data-anolis-spec=html title="the i element">i</code></a> or <a href=http://www.whatwg.org/html/#the-b-element><code class=external data-anolis-spec=html title="the b element">b</code></a>) and we're adding tags that are long (like <a href=http://www.whatwg.org/html/#the-span-element><code class=external data-anolis-spec=html title="the span element">span</code></a>
+with a <a href=http://www.whatwg.org/html/#the-style-attribute><code class=external data-anolis-spec=html title="the style attribute">style</code></a> attribute).
+</div>
+
 <ol>
   <li>If <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is not an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a>, abort this
   algorithm. <!-- E.g., a text node child of a document fragment. -->
@@ -749,6 +761,11 @@ After forcing the style, descendants might still have different style.
     <li><a href=#force-the-style>Force the style</a> of each <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> in <var title="">children</var>,
     with <var title="">property</var> and <var title="">new value</var> as in this invocation of
     the algorithm.
+    <!-- This means that if it has no children, we do nothing.  IE9 inserts an
+    empty wrapper element in that case, but I'm not sure what the point is, and
+    no one else does, so I don't.  WebKit seems to ignore the node if its only
+    child consists solely of whitespace, but I don't see any grounds for that
+    and no one else does, so I don't. -->
 
     <li>Abort this algorithm.
   </ol>
@@ -998,19 +1015,69 @@ meanings, are as follows.  These values must be compared to the argument in an
 <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#ascii-case-insensitive>ASCII case-insensitive</a> manner.
 
 <dl>
+<dt><code title=""><dfn id=command-backcolor title=command-backcolor>backColor</dfn></code>
+
+<dd><strong>Action</strong>:
+
+<div class=XXX>
+<p>We have three behaviors to choose from for this one:
+
+<ol>
+  <li>Chrome 11 dev and IE 9 RC treat it the same as hiliteColor (although IE 9
+  RC doesn't support hiliteColor itself).
+
+  <li>Firefox 4 in non-CSS mode sets the bgcolor of the nearest td or body, or
+  something like that.  In testing, it seems to jump out of contenteditable
+  elements to style non-editable ancestors, which is alarming.
+
+  <li>Firefox 4 in CSS mode and Opera 11 set the background of the nearest
+  block container, although it doesn't seem to be very dependable (probably I
+  just don't get what exactlyit's doing).
+</ol>
+
+<p>(1) is obviously redundant, but has plurality support, so we could spec it
+that way if the other ways were useless.
+
+<p>(3) is incoherent from a user perspective.  For instance, if you try it on
+paragraphs the background will have big gaps where the margins are.  If you try
+it on an inline element that's a child of the editing host, it will do nothing
+or apply the background to everything or such, even though such an inline
+element is visually indistinguishable from one sitting inside a div.  This
+would only make sense if we take considerable effort to ensure that block
+elements all have no margins, or if we wrap things in a div if they have
+margins, or something like that.
+
+<p>That leaves (2).  That might be useful if it actually set the document's
+background color, but it seems like it sets table cell backgrounds sometimes
+instead, which is really confusing.
+
+<p>The path of least resistance seems to be to standardize this as meaning the
+same thing as hiliteColor, and make up new commands if we want to do things
+like set the document background color.  Feedback appreciated on this point.
+</div>
+
+<dd><strong>State</strong>:
+
+<dd><strong>Value</strong>:
+
+
 <dt><code title=""><dfn id=command-bold title=command-bold>bold</dfn></code>
 
-<dd><p><strong>Action</strong>: <a href=#decompose>Decompose</a> the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a>.  If the
+<dd><strong>Action</strong>: <a href=#decompose>Decompose</a> the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a>.  If the
 state of the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a> for this command is then true, <a href=#style>style</a> each
 returned <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> with <var title="">property</var> "font-weight" and <var title="">new
 value</var> "normal".  Otherwise, <a href=#style>style</a> them with <var title="">new
 value</var> "bold".
 
-<dd><p><strong>State</strong>: True if every <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> node that is
+<dd><strong>State</strong>: True if every <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> node that is
 <a href=#effectively-contained>effectively contained</a> in the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a> has <a href=#effective-style>effective
 style</a> either null or at least 700 for font-weight.  Otherwise false.
+<!-- For bold and similar commands, IE 9 RC seems to consider the state true or
+false depending on the first element.  All other browsers follow the same
+general idea as the spec, considering a range bold only if all text in it is
+bold, and this seems to match at least OpenOffice.org's bold feature. -->
 
-<dd><p><strong>Value</strong>: Always the empty string.
+<dd><strong>Value</strong>: Always the empty string.
 <!-- We have lots of options here (and presumably for all the others where
 value is meaningless).  IE 9 RC returns the boolean false, Firefox 4b11 and
 Opera 11 both return the empty string, Chrome 10 returns the string "false".
@@ -1022,7 +1089,7 @@ boolean, so I'll go with Firefox and Opera. -->
 
 <dt><code title=""><dfn id=command-createlink title=command-createlink>createLink</dfn></code>
 
-<dd><p><strong>Action</strong>: The user agent must run the following steps:
+<dd><strong>Action</strong>: The user agent must run the following steps:
 
 <ol>
   <li>If <var title="">value</var> is the empty string, abort these steps and do
@@ -1101,15 +1168,15 @@ boolean, so I'll go with Firefox and Opera. -->
   </ol>
 </ol>
 
-<dd><p><strong>State</strong>: Always false.
+<dd><strong>State</strong>: Always false.
 
-<dd><p><strong>Value</strong>: Always the empty string.
+<dd><strong>Value</strong>: Always the empty string.
 <!-- I'd have expected the value to be the URL, but guess not. -->
 
 
 <dt><code title=""><dfn id=command-fontname title=command-fontname>fontName</dfn></code>
 
-<dd><p><strong>Action</strong>: <a href=#decompose>Decompose</a> the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a>, then
+<dd><strong>Action</strong>: <a href=#decompose>Decompose</a> the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a>, then
 <a href=#style>style</a> each returned <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> with <var title="">property</var> equal to
 "font-family" and <var title="">new value</var> equal to <var title="">value</var>.
 <!-- UAs differ a bit in the details here:
@@ -1133,9 +1200,9 @@ likely that the font list will be fixed by the author (how many users will
 understand CSS font-family syntax?), so I don't think such usability concerns
 apply. -->
 
-<dd><p><strong>State</strong>: Always false.
+<dd><strong>State</strong>: Always false.
 
-<dd><p><strong>Value</strong>: The computed value of the CSS property
+<dd><strong>Value</strong>: The computed value of the CSS property
 "font-family" for . . .
 <!-- Complicated.
 
@@ -1157,7 +1224,7 @@ applicable style rules. -->
 
 <dt><code title=""><dfn id=command-forecolor title=command-forecolor>foreColor</dfn></code>
 
-<dd><p><strong>Action</strong>: If <var title="">value</var> is not a valid CSS color,
+<dd><strong>Action</strong>: If <var title="">value</var> is not a valid CSS color,
 the user agent must do nothing and abort these steps.
 <!-- Browsers are all over the place here.  IE 9 RC seems to treat unrecognized
 colors as black, but everyone else ignores them.  There are also special rules
@@ -1177,36 +1244,66 @@ Otherwise, it must <a href=#decompose>decompose</a> the <a href=http://html5.org
 <a href=#style>style</a> each returned <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> with <var title="">property</var> equal to
 "color" and <var title="">new value</var> equal to <var title="">value</var>.
 
-<dd><p><strong>State</strong>: Always false.
+<dd><strong>State</strong>: Always false.
 <!-- This matches IE 9 RC and Chrome 10.  Opera 11 seems to return true if
 there's some color style applied, false otherwise, which seems fairly useless;
 authors want to use value here, not state.  Firefox 4b11 throws an exception,
 which is an interesting approach, but I'll go with IE/WebKit, which makes at
 least as much sense. -->
 
-<dd><p><strong>Value</strong>: The computed value of the CSS property "color"
+<dd><strong>Value</strong>: The computed value of the CSS property "color"
 for . . .
 <!-- IE 9 RC returns the number 0 always, which makes no sense at all.  This
 matches the other browsers. -->
 
 
 <dt><code title=""><dfn id=command-hilitecolor title=command-hiliteColor>hiliteColor</dfn></code>
+<!-- IE 9 RC doesn't support this.  It uses backColor instead, but Gecko and
+Opera treat that differently, while all non-IE browsers treat hiliteColor the
+same, so I'm standardizing hiliteColor as the way to highlight text. -->
 
-<dd><p><strong>Action</strong>: If <var title="">value</var> is not a valid CSS color,
+<dd><strong>Action</strong>: If <var title="">value</var> is not a valid CSS color,
 do nothing and abort these steps.  Otherwise, <a href=#decompose>decompose</a> the
 <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a>, then <a href=#style>style</a> each returned <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> with
 <var title="">property</var> equal to "background-color" and <var title="">new value</var> equal
 to <var title="">value</var>.
 
-<dd><p><strong>State</strong>: Always false.
+<div class=XXX>
+<p>This is tricky, because background-color does different things on block and
+inline elements.  Given the name ("hiliteColor"), we really only want to apply
+it to inline elements.  This is how everyone but Gecko behaves, but Gecko
+sometimes applies it to blocks too.  We don't do this in the spec.
 
-<dd><p><strong>Value</strong>: The <a href=#effective-style>effective style</a> for
+<p>Clearing is also an issue.  If the user has a whole block selected which
+already has an existing background-color, do we want to clear that, or just
+wrap its children?  Obviously Gecko clears it (sets it, in fact).  WebKit also
+clears it, as does the current spec, but IE and Opera don't.  The reason we
+shouldn't clear it is because the user is only asking for a highlight, and
+highlights should be on top of the block's background, not instead of it.
+
+<p>Finally, what about pushing down?  Pushing down styles is not supposed to
+change the visible result, that's the whole point, but pushing down from a
+block to inlines will remove the coloring from the parts of the block not
+covered by inlines.  WebKit does it anyway, and so does the current spec, but
+non-WebKit browsers seem not to do it (although this is probably because none
+of them ever push down inline styles, they only break up formatting elements
+like <a href=http://www.whatwg.org/html/#the-b-element><code class=external data-anolis-spec=html title="the b element">b</code></a>).
+
+<p>My current thought is to change things so that hiliteColor never touches
+background-color on blocks.  If users want to remove it, they'll have to use
+removeFormat.  I'll return to this after I figure out what to do about
+backColor.
+</div>
+
+<dd><strong>State</strong>: Always false.
+
+<dd><strong>Value</strong>: The <a href=#effective-style>effective style</a> for
 "background-color" on . . .
 
 
 <dt><code title=""><dfn id=command-insertimage title=command-insertimage>insertImage</dfn></code>
 
-<dd><p><strong>Action</strong>: The user agent must run the following steps:
+<dd><strong>Action</strong>: The user agent must run the following steps:
 
 <ol>
   <li>If <var title="">value</var> is the empty string, abort these steps and do
@@ -1241,44 +1338,44 @@ to <var title="">value</var>.
   <var title="">child</var>)</code></a> on <var title="">node</var>.
 </ol>
 
-<dd><p><strong>State</strong>:
+<dd><strong>State</strong>:
 
-<dd><p><strong>Value</strong>:
+<dd><strong>Value</strong>:
 
 
 <dt><code title=""><dfn id=command-italic title=command-italic>italic</dfn></code>
 
-<dd><p><strong>Action</strong>: <a href=#decompose>Decompose</a> the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a>.  If the
+<dd><strong>Action</strong>: <a href=#decompose>Decompose</a> the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a>.  If the
 state of the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a> for this command is then true, <a href=#style>style</a> each
 returned <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> with <var title="">property</var> "font-style" and <var title="">new
 value</var> "normal".  Otherwise, <a href=#style>style</a> them with <var title="">new
 value</var> "italic".
 
-<dd><p><strong>State</strong>: True if every <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> node that is
+<dd><strong>State</strong>: True if every <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> node that is
 <a href=#effectively-contained>effectively contained</a> in the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a> has <a href=#effective-style>effective
 style</a> either null, "italic", or "oblique" for font-style.  Otherwise
 false.
 
-<dd><p><strong>Value</strong>: Always the empty string.
+<dd><strong>Value</strong>: Always the empty string.
 
 
 <dt><code title=""><dfn id=command-stylewithcss title=command-stylewithcss>styleWithCSS</dfn></code>
 
-<dd><p><strong>Action</strong>: Convert <var title="">value</var> to a boolean according
+<dd><strong>Action</strong>: Convert <var title="">value</var> to a boolean according
 to the algorithm in WebIDL, and set the <a href=#css-styling-flag>CSS styling flag</a> to the
 result.
 
 <p class=XXX>Properly cross-reference.
 
-<dd><p><strong>State</strong>: True if the <a href=#css-styling-flag>CSS styling flag</a> is
+<dd><strong>State</strong>: True if the <a href=#css-styling-flag>CSS styling flag</a> is
 true, otherwise false.
 
-<dd><p><strong>Value</strong>:
+<dd><strong>Value</strong>:
 
 
 <dt><code title=""><dfn id=command-underline title=command-underline>underline</dfn></code>
 
-<dd><p><strong>Action</strong>: <a href=#decompose>Decompose</a> the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a>.  If the
+<dd><strong>Action</strong>: <a href=#decompose>Decompose</a> the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a>.  If the
 state of the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a> for this command is then true, <a href=#style>style</a> each
 returned <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> with <var title="">property</var> "text-decoration" and <var title="">new
 value</var> "none".  Otherwise, <a href=#style>style</a> them with <var title="">new
@@ -1320,16 +1417,16 @@ and I have bigger fish to fry.  But it's something to think about in the
 future.
 </div>
 
-<dd><p><strong>State</strong>: True if every <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> node that is
+<dd><strong>State</strong>: True if every <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> node that is
 <a href=#effectively-contained>effectively contained</a> in the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a> has <a href=#effective-style>effective
 style</a> either null or "underline" for text-decoration.  Otherwise false.
 
-<dd><p><strong>Value</strong>: Always the empty string.
+<dd><strong>Value</strong>: Always the empty string.
 
 
 <dt><code title=""><dfn id=command-unlink title=command-unlink>unlink</dfn></code>
 
-<dd><p><strong>Action</strong>: The user agent must execute the following
+<dd><strong>Action</strong>: The user agent must execute the following
 steps:
 <!-- IE 9 RC unlinks the whole link you're pointing at.  Others just unlink
 your selection, which does nothing if you have nothing selected.
@@ -1369,14 +1466,14 @@ what the other browsers do instead.
   </ol>
 </ol>
 
-<dd><p><strong>State</strong>: Always false.
+<dd><strong>State</strong>: Always false.
 
-<dd><p><strong>Value</strong>: Always the empty string.
+<dd><strong>Value</strong>: Always the empty string.
 
 
 <dt><code title=""><dfn id=command-usecss title=command-usecss>useCSS</dfn></code>
 
-<dd><p><strong>Action</strong>: Convert <var title="">value</var> to a boolean according
+<dd><strong>Action</strong>: Convert <var title="">value</var> to a boolean according
 to the algorithm in WebIDL, and set the <a href=#css-styling-flag>CSS styling flag</a> to the
 negation of the result.  Since the effect of this command is the opposite of
 what one would expect, user agents are encouraged to point authors to <a href=#command-stylewithcss><code title=command-stylewithcss>styleWithCSS</code></a> when <a href=#command-usecss><code title=command-usecss>useCSS</code></a> is used, such as by logging a warning to an
@@ -1384,9 +1481,9 @@ error console.
 
 <p class=XXX>Properly cross-reference.
 
-<dd><p><strong>State</strong>:
+<dd><strong>State</strong>:
 
-<dd><p><strong>Value</strong>:
+<dd><strong>Value</strong>:
 </dl>
 
 

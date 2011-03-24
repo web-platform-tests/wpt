@@ -23,10 +23,14 @@ listing, plaintext, pre, xmp { white-space: pre-wrap }
 <p>Legend: {[ are the selection anchor, }] are the selection focus, {}
 represent an element boundary point, [] represent a text node boundary point.
 Syntax and some of the tests taken from <a
-href=http://www.browserscope.org/richtext2/test>Browserscope</a>.
+href=http://www.browserscope.org/richtext2/test>Browserscope</a>.  data-start
+and data-end attributes also represent element boundary points, with the node
+being the element with the attribute and the offset given as the attribute
+value, for cases where HTML parsing doesn't allow text nodes.
 
 <h1>Table of Contents</h1>
 <ul>
+	<li><a href=#backcolor>backcolor</a>
 	<li><a href=#bold>bold</a>
 	<li><a href=#fontname>fontname</a>
 	<li><a href=#forecolor>forecolor</a>
@@ -35,8 +39,24 @@ href=http://www.browserscope.org/richtext2/test>Browserscope</a>.
 	<li><a href=#underline>underline</a>
 </ul>
 
+<div id=backcolor>
+<h1>backcolor</h1>
+
+<button onclick="runTests('backcolor')">Run tests</button>
+
+<p>Tests set the color to "#FF8888".
+
+<table border=1><tr><th>Input <th>Spec <th>Browser <th>Same?</table>
+<table border=1><tr><th>Input <th>Spec <th>Browser <th>Same?</table>
+
+<p><label>Enter new test here: <input></label>
+<button onclick="addTest('backcolor', document.querySelector('#backcolor input').value)">Add test</button>
+</div>
+
 <div id=bold>
 <h1>bold</h1>
+
+<button onclick="runTests('bold')">Run tests</button>
 
 <table border=1><tr><th>Input <th>Spec <th>Browser <th>Same?</table>
 <table border=1><tr><th>Input <th>Spec <th>Browser <th>Same?</table>
@@ -48,17 +68,21 @@ href=http://www.browserscope.org/richtext2/test>Browserscope</a>.
 <div id=fontname>
 <h1>fontname</h1>
 
+<button onclick="runTests('fontname')">Run tests</button>
+
 <p>Tests set the font-family to "sans-serif".  Note that the body's font-family is "serif".
 
 <table border=1><tr><th>Input <th>Spec <th>Browser <th>Same?</table>
 <table border=1><tr><th>Input <th>Spec <th>Browser <th>Same?</table>
 
 <p><label>Enter new test here: <input></label>
-<button onclick="addTest('bold', document.querySelector('#fontname input').value)">Add test</button>
+<button onclick="addTest('fontname', document.querySelector('#fontname input').value)">Add test</button>
 </div>
 
 <div id=forecolor>
 <h1>forecolor</h1>
+
+<button onclick="runTests('forecolor')">Run tests</button>
 
 <p>Tests set the color to "#FF0000".
 
@@ -72,7 +96,9 @@ href=http://www.browserscope.org/richtext2/test>Browserscope</a>.
 <div id=hilitecolor>
 <h1>hilitecolor</h1>
 
-<p>Tests set the color to "#FF8888".
+<button onclick="runTests('hilitecolor')">Run tests</button>
+
+<p>Tests set the color to "#FF8888".  In IE we run backColor instead of hiliteColor.
 
 <table border=1><tr><th>Input <th>Spec <th>Browser <th>Same?</table>
 
@@ -82,6 +108,8 @@ href=http://www.browserscope.org/richtext2/test>Browserscope</a>.
 
 <div id=italic>
 <h1>italic</h1>
+
+<button onclick="runTests('italic')">Run tests</button>
 
 <table border=1><tr><th>Input <th>Spec <th>Browser <th>Same?</table>
 <table border=1><tr><th>Input <th>Spec <th>Browser <th>Same?</table>
@@ -93,6 +121,8 @@ href=http://www.browserscope.org/richtext2/test>Browserscope</a>.
 <div id=underline>
 <h1>underline</h1>
 
+<button onclick="runTests('underline')">Run tests</button>
+
 <table border=1><tr><th>Input <th>Spec <th>Browser <th>Same?</table>
 <table border=1><tr><th>Input <th>Spec <th>Browser <th>Same?</table>
 
@@ -103,6 +133,7 @@ href=http://www.browserscope.org/richtext2/test>Browserscope</a>.
 <script src=implementation.js></script>
 <script>
 var values = {
+	backcolor: "#FF8888",
 	bold: null,
 	fontname: "sans-serif",
 	forecolor: "#FF0000",
@@ -112,10 +143,27 @@ var values = {
 };
 
 var tests = {
+	backcolor: [
+		'<p>foo[bar]baz',
+		'<p>foo]bar[baz',
+		'<div><p>foo[bar]baz</p></div>',
+
+		'<table><tbody><tr><td>foo<td>b[a]r<td>baz</table>',
+		'<table><tbody><tr data-start=1 data-end=2><td>foo<td>bar<td>baz</table>',
+		'<table><tbody><tr data-start=0 data-end=2><td>foo<td>bar<td>baz</table>',
+		'<table><tbody data-start=0 data-end=1><tr><td>foo<td>bar<td>baz</table>',
+		'<table data-start=0 data-end=1><tbody><tr><td>foo<td>bar<td>baz</table>',
+		'{<table><tr><td>foo<td>bar<td>baz</table>}',
+
+		'{<p><p> <p>foo</p>}',
+		'{<p>foo</p><p>bar</p>}',
+		'<p>[foo</p><p>bar]</p>',
+		'<p>foo[bar<i>baz]qoz</i>quz',
+	],
 	bold: [
 		'foo[bar]baz',
 		'foo]bar[baz',
-		'{<p><p> <p>Foo</p>}',
+		'{<p><p> <p>foo</p>}',
 		'foo[bar<i>baz]qoz</i>quz',
 
 		'foo<span style="font-weight: bold">[bar]</span>baz',
@@ -177,32 +225,34 @@ var tests = {
 		'<span style="font-weight: 700">foo[barbaz</span>}',
 		'<span style="font-weight: 900">foo[barbaz</span>}',
 
-		'<h3>Foo[bar]baz</h3>',
-		'{<h3>Foobar]baz</h3>',
-		'<h3>Foo[barbaz</h3>}',
-		'<h3>[Foobarbaz]</h3>',
-		'{<h3>Foobarbaz]</h3>',
-		'<h3>[Foobarbaz</h3>}',
-		'{<h3>Foobarbaz</h3>}',
+		'<h3>foo[bar]baz</h3>',
+		'{<h3>foobar]baz</h3>',
+		'<h3>foo[barbaz</h3>}',
+		'<h3>[foobarbaz]</h3>',
+		'{<h3>foobarbaz]</h3>',
+		'<h3>[foobarbaz</h3>}',
+		'{<h3>foobarbaz</h3>}',
 
-		'<b>Foo<span style="font-weight: normal">bar<b>[baz]</b>quz</span>qoz</b>',
-		'<b>Foo<span style="font-weight: normal">[bar]</span>baz</b>',
+		'<b>foo<span style="font-weight: normal">bar<b>[baz]</b>quz</span>qoz</b>',
+		'<b>foo<span style="font-weight: normal">[bar]</span>baz</b>',
 
-		'{<b>Foo</b> <b>bar</b>}',
-		'{<h3>Foo</h3><b>bar</b>}',
+		'{<b>foo</b> <b>bar</b>}',
+		'{<h3>foo</h3><b>bar</b>}',
 
-		'<i><b>Foo</b></i>[bar]<i><b>baz</b></i>',
-		'<i><b>Foo</b></i>[bar]<b>baz</b>',
-		'<b>Foo</b>[bar]<i><b>baz</b></i>',
-		'<font color=red face=monospace><b>Foo</b></font>[bar]',
+		'<i><b>foo</b></i>[bar]<i><b>baz</b></i>',
+		'<i><b>foo</b></i>[bar]<b>baz</b>',
+		'<b>foo</b>[bar]<i><b>baz</b></i>',
+		'<font color=red face=monospace><b>foo</b></font>[bar]',
 
 		'foo<span style="font-weight: normal"><b>{bar}</b></span>baz',
-		'[Foo<span class=notbold>bar</span>baz]',
+		'[foo<span class=notbold>bar</span>baz]',
+
+		'<p style="font-weight: bold">foo[bar]baz</p>',
 	],
 	fontname: [
 		'foo[bar]baz',
 		'foo]bar[baz',
-		'{<p><p> <p>Foo</p>}',
+		'{<p><p> <p>foo</p>}',
 
 		'foo<code>[bar]</code>baz',
 		'foo<kbd>[bar]</kbd>baz',
@@ -247,7 +297,7 @@ var tests = {
 	forecolor: [
 		'foo[bar]baz',
 		'foo]bar[baz',
-		'{<p><p> <p>Foo</p>}',
+		'{<p><p> <p>foo</p>}',
 		'foo[bar<i>baz]qoz</i>quz',
 		'foo<font color=red>[bar]</font>baz',
 		'foo{<font color=red>bar</font>}baz',
@@ -263,17 +313,24 @@ var tests = {
 	hilitecolor: [
 		'foo[bar]baz',
 		'foo]bar[baz',
-		'{<p><p> <p>Foo</p>}',
+		'{<p><p> <p>foo</p>}',
 		'foo[bar<i>baz]qoz</i>quz',
 		'<p style="background-color: rgb(255, 136, 136)">foo[bar]baz</p>',
 		'<p style="background-color: #ff8888">foo[bar]baz</p>',
 		'<p style="background-color: aqua">foo[bar]baz</p>',
 		'{<p style="background-color: aqua">foo</p><p>bar</p>}',
+		'<span style="background-color: #ff8888">foo<span style="background-color: aqua">[bar]</span>baz</span>',
+		'<span style="background-color: #f88">foo<span style="background-color: aqua">[bar]</span>baz</span>',
+		'<span style="background-color: rgb(255, 136, 136)">foo<span style="background-color: aqua">[bar]</span>baz</span>',
+		'<span style="background-color: #ff8888">foo<span style="background-color: aqua">b[ar]</span>baz</span>',
+		'<p style="background-color: #ff8888">foo<span style="background-color: aqua">b[ar]</span>baz</p>',
+		'<div style="background-color: #ff8888"><p style="background-color: aqua">b[ar]</p></div>',
+		'<span style="display: block; background-color: #ff8888"><span style="display: block; background-color: aqua">b[ar]</span></span>',
 	],
 	italic: [
 		'foo[bar]baz',
 		'foo]bar[baz',
-		'{<p><p> <p>Foo</p>}',
+		'{<p><p> <p>foo</p>}',
 		'foo[bar<b>baz]qoz</b>quz',
 		'foo<span style="font-style: italic">[bar]</span>baz',
 		'foo<address>[bar]</address>baz',
@@ -325,7 +382,7 @@ var tests = {
 	underline: [
 		'foo[bar]baz',
 		'foo]bar[baz',
-		'{<p><p> <p>Foo</p>}',
+		'{<p><p> <p>foo</p>}',
 		'foo[bar<b>baz]qoz</b>quz',
 		'foo<u>[bar]</u>baz',
 		'foo<span style="text-decoration: underline">[bar]</span>baz',
@@ -338,15 +395,35 @@ var tests = {
 	],
 };
 
-for (testCat in tests) {
-	for (var i = 0; i < tests[testCat].length; i++) {
-		addTest(testCat, tests[testCat][i]);
+function runTests(command) {
+	var runTestsButton = document.querySelector("#" + command + " button");
+	runTestsButton.parentNode.removeChild(runTestsButton);
+
+	var addTestButton = document.querySelector("#" + command + " button");
+	var input = document.querySelector("#" + command + " input");
+	for (var i = 0; i < tests[command].length; i++) {
+		// The following code should logically be equivalent to:
+		//   addTest(command, tests[command][i]);
+		// But that only works to set one cell, in IE9.  All the other tests
+		// fail.  So, um, WTF, but it works.
+		input.value = tests[command][i];
+		input.focus();
+		addTestButton.click();
 	}
+	input.value = "";
 }
 
 function addTest(command, test) {
-	var doubleTesting = ["bold", "italic", "underline", "forecolor",
-	"fontname", "fontsize"].indexOf(command) != -1;
+	var doubleTesting = ["backcolor", "bold", "italic", "underline",
+	"forecolor", "fontname", "fontsize"].indexOf(command) != -1;
+
+	// I tried to feature-detect styleWithCSS, but it was too much of a pain,
+	// with Firefox randomly throwing exceptions all over the place.  So I'm
+	// just browser-sniffing here.
+	if (navigator.userAgent.indexOf("Opera") != -1
+	|| navigator.userAgent.indexOf("MSIE") != -1) {
+		doubleTesting = false;
+	}
 
 	var tr = doSetup(command, 0);
 
@@ -368,10 +445,7 @@ function addTest(command, test) {
 }
 
 function doSetup(command, idx) {
-	var div = document.getElementById(command);
-	div.contentEditable = "true";
-	div.spellcheck = false;
-	var table = div.querySelectorAll("table")[idx];
+	var table = document.querySelectorAll("#" + command + " > table")[idx];
 
 	var tr = document.createElement("tr");
 	// Insert at the top, because Chrome debugger doesn't let you scroll down
@@ -397,11 +471,9 @@ function doSpecCell(tr, test, command, styleWithCss) {
 	var value = values[command];
 
 	var specCell = document.createElement("td");
-	specCell.innerHTML = "<div></div><div></div>";
-	specCell.firstChild.innerHTML = test;
 	tr.appendChild(specCell);
 	try {
-		var points = parseBrackets(specCell);
+		var points = setupCell(specCell, test);
 		var range = document.createRange();
 		range.setStart(points[0], points[1]);
 		range.setEnd(points[2], points[3]);
@@ -436,12 +508,22 @@ function doSpecCell(tr, test, command, styleWithCss) {
 function doBrowserCell(tr, test, command, styleWithCss) {
 	var value = values[command];
 
+	if (command == "hilitecolor" && navigator.userAgent.indexOf("MSIE") != -1) {
+		// IE behaves differently, and I want to see how it works.
+		command = "backcolor";
+	}
+
+	if (command == "hilitecolor") {
+		// Firefox refuses to do anything unless styleWithCSS is true.
+		styleWithCss = true;
+	}
+
 	var browserCell = document.createElement("td");
-	browserCell.innerHTML = "<div></div><div></div>";
-	browserCell.firstChild.innerHTML = test;
 	tr.appendChild(browserCell);
 	try {
-		var points = parseBrackets(browserCell);
+		var points = setupCell(browserCell, test);
+		browserCell.firstChild.contentEditable = "true";
+		browserCell.firstChild.spellcheck = false;
 		setSelection(points[0], points[1], points[2], points[3]);
 		try {
 			document.execCommand("styleWithCSS", false, styleWithCss);
@@ -451,26 +533,57 @@ function doBrowserCell(tr, test, command, styleWithCss) {
 	} catch (e) {
 		browserCell.textContent = "Exception: " + e;
 	}
+	browserCell.firstChild.contentEditable = "inherit";
+	browserCell.firstChild.removeAttribute("spellcheck");
 }
 
 function doSameCell(tr) {
 	var sameCell = document.createElement("td");
-	// Ad hoc normalization to avoid basically spurious mismatches
-	var normalizedSpecCell = tr.childNodes[1].childNodes[1].textContent
-		.replace(/;? ?"/g, '"');
-	var normalizedBrowserCell = tr.childNodes[2].childNodes[1].textContent
-		.replace(/;? ?"/g, '"')
-		.replace(/<(\/?)strong/g, '<$1b')
-		.replace(/<(\/?)em/g, '<$1i')
-		.replace(/ class="Apple-style-span"/g, "");
-	if (normalizedSpecCell == normalizedBrowserCell) {
+	var exception = false;
+	try {
+		// Ad hoc normalization to avoid basically spurious mismatches
+		var normalizedSpecCell = tr.childNodes[1].childNodes[1].textContent
+			.replace(/;? ?"/g, '"')
+			.replace(/<(\/?)strong/g, '<$1b')
+			.replace(/<(\/?)em/g, '<$1i')
+			.replace(/#[0-9a-fA-F]{6}/g, function(match) { return match.toUpperCase(); });
+		var normalizedBrowserCell = tr.childNodes[2].childNodes[1].textContent
+			.replace(/;? ?"/g, '"')
+			.replace(/<(\/?)strong/g, '<$1b')
+			.replace(/<(\/?)em/g, '<$1i')
+			.replace(/#[0-9a-fA-F]{6}/g, function(match) { return match.toUpperCase(); })
+			.replace(/ class="Apple-style-span"/g, "");
+		if (navigator.userAgent.indexOf("MSIE") != -1) {
+			// IE produces <font style> instead of <span style>, so let's
+			// translate all <span>s to <font>s.
+			normalizedSpecCell = normalizedSpecCell
+				.replace(/<(\/?)span/g, '<$1font');
+			normalizedBrowserCell = normalizedBrowserCell
+				.replace(/<(\/?)span/g, '<$1font');
+		}
+	} catch (e) {
+		exception = true;
+	}
+	if (!exception && normalizedSpecCell == normalizedBrowserCell) {
 		sameCell.className = "yes";
-		sameCell.innerHTML = "&#x2713;";
+		sameCell.textContent = "\u2713";
 	} else {
 		sameCell.className = "no";
-		sameCell.innerHTML = "&#x2717;";
+		sameCell.textContent = "\u2717";
 	}
 	tr.appendChild(sameCell);
+
+	// Insert zero-width spaces so IE doesn't stretch the screen
+	try {
+		tr.childNodes[2].childNodes[1].textContent =
+			tr.childNodes[2].childNodes[1].textContent
+			.replace(/</g, "\u200B<")
+			.replace(/>/g, ">\u200B");
+		tr.childNodes[1].childNodes[1].textContent =
+			tr.childNodes[1].childNodes[1].textContent
+			.replace(/</g, "\u200B<")
+			.replace(/>/g, ">\u200B");
+	} catch (e) {};
 }
 
 function doTearDown(command) {
@@ -478,16 +591,48 @@ function doTearDown(command) {
 	document.getElementById(command).contentEditable = "inherit";
 }
 
-function parseBrackets(node) {
-	if (node.textContent.replace(/[^{[]/g, "").length != 1) {
-		throw "Need one [ or {, found " + node.textContent.replace(/[^{[]/g, "").length;
+function setupCell(cell, test) {
+	// A variety of checks to avoid simple errors.  Not foolproof, of course.
+	var startMarkers = /\{|\[|data-start/.exec(test);
+	if (!startMarkers) {
+		startMarkers = [];
+	}
+	if (startMarkers.length != 1) {
+		throw "Need exactly one start marker ([ or { or data-start), found " + startMarkers.length;
 	}
 
-	if (node.textContent.replace(/[^}\]]/g, "").length != 1) {
-		throw "Need one ] or }, found " + node.textContent.replace(/[^}\]]/g, "").length;
+	var endMarkers = /\}|\]|data-end/.exec(test);
+	if (!endMarkers) {
+		endMarkers = [];
 	}
+	if (endMarkers.length != 1) {
+		throw "Need exactly one end marker (] or } or data-end), found " + endMarkers.length;
+	}
+
+	cell.innerHTML = "<div></div><div></div>";
+	node = cell.firstChild;
+	node.innerHTML = test;
 
 	var startNode, startOffset, endNode, endOffset;
+
+	// For braces that don't lie inside text nodes, we can't just set
+	// innerHTML, because that might disturb the DOM.  For instance, if the
+	// brace is right before a <tr>, it could get moved outside the table
+	// entirely, which messes everything up pretty badly.  So we instead
+	// allow using data attributes: data-start and data-end on the start and
+	// end nodes, with a numeric value indicating the offset.  This format
+	// doesn't allow the parent div to be a start or end node, but in that case
+	// you can always use the curly braces.
+	if (node.querySelector("[data-start]")) {
+		startNode = node.querySelector("[data-start]");
+		startOffset = startNode.getAttribute("data-start");
+		startNode.removeAttribute("data-start");
+	}
+	if (node.querySelector("[data-end]")) {
+		endNode = node.querySelector("[data-end]");
+		endOffset = endNode.getAttribute("data-end");
+		endNode.removeAttribute("data-end");
+	}
 
 	var cur = node;
 	while (true) {

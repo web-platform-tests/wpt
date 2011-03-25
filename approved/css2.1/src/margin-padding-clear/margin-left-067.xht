@@ -1,0 +1,39 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>CSS Test: Margin-left using inches with a nominal value, 1in</title>
+        <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#propdef-margin-left" />
+        <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#margin-properties" />
+        <meta name="flags" content="" />
+        <meta name="assert" content="The 'margin-left' property sets a nominal length value in inches." />
+        <style type="text/css">
+            div
+            {
+                height: 1in;
+                width: 0;
+            }
+            #wrapper
+            {
+                border-left: 0.2in solid red;
+            }
+            #div1
+            {
+                margin-left: 1in;
+            }
+            #div2
+            {
+                border-left: 0.2in solid black;
+                margin-left: -1.2in;
+            }
+        </style>
+    </head>
+    <body>
+        <p>Test passes if there is no red visible on the page.</p>
+        <div id="wrapper">
+            <div id="div1">
+                <div id="div2"></div>
+            </div>
+        </div>
+    </body>
+</html>

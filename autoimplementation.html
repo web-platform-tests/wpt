@@ -445,6 +445,8 @@ function addTest(command, test) {
 }
 
 function doSetup(command, idx) {
+	document.getElementById(command).contentEditable = "true";
+	document.getElementById(command).spellcheck = false;
 	var table = document.querySelectorAll("#" + command + " > table")[idx];
 
 	var tr = document.createElement("tr");
@@ -522,8 +524,6 @@ function doBrowserCell(tr, test, command, styleWithCss) {
 	tr.appendChild(browserCell);
 	try {
 		var points = setupCell(browserCell, test);
-		browserCell.firstChild.contentEditable = "true";
-		browserCell.firstChild.spellcheck = false;
 		setSelection(points[0], points[1], points[2], points[3]);
 		try {
 			document.execCommand("styleWithCSS", false, styleWithCss);
@@ -533,8 +533,6 @@ function doBrowserCell(tr, test, command, styleWithCss) {
 	} catch (e) {
 		browserCell.textContent = "Exception: " + e;
 	}
-	browserCell.firstChild.contentEditable = "inherit";
-	browserCell.firstChild.removeAttribute("spellcheck");
 }
 
 function doSameCell(tr) {
@@ -589,6 +587,7 @@ function doSameCell(tr) {
 function doTearDown(command) {
 	getSelection().removeAllRanges();
 	document.getElementById(command).contentEditable = "inherit";
+	document.getElementById(command).removeAttribute("spellcheck");
 }
 
 function setupCell(cell, test) {

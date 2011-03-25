@@ -1,0 +1,42 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>CSS Test: Containing Blocks - Block-level elements position based on right-to-left direction and parent element is fixed</title>
+        <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#containing-block-details" />
+        <meta name="flags" content="" />
+        <meta name="assert" content="The contining block is formed by the padding edge for block-level elements." />
+        <style type="text/css">
+            div
+            {
+                border: solid black;
+                padding: 1in;
+                position: fixed;
+                width: 0;
+            }
+            span
+            {
+                display: block;
+            }
+            #span1
+            {
+                direction: rtl;
+            }
+            span span
+            {
+                background: blue;
+                height: 1in;
+                position: absolute;
+                width: 1in;
+            }
+        </style>
+    </head>
+    <body>
+        <p>Test passes if the blue box is in the lower-left corner of the black box.</p>
+        <div>
+            <span id="span1">
+                <span></span>
+            </span>
+        </div>
+    </body>
+</html>

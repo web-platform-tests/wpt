@@ -246,6 +246,8 @@ var tests = {
 
 		'foo<span style="font-weight: normal"><b>{bar}</b></span>baz',
 		'[foo<span class=notbold>bar</span>baz]',
+		'<b><span class=notbold>[foo]</span></b>',
+		'<b><span class=notbold>foo[bar]baz</span></b>',
 
 		'<p style="font-weight: bold">foo[bar]baz</p>',
 	],

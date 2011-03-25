@@ -363,6 +363,13 @@ function getEffectiveStyle(node, property) {
  * "specified style" per edit command spec
  */
 function getSpecifiedStyle(element, property) {
+	// "If property is "background-color" and the Element's display property
+	// does not compute to "inline", return null."
+	if (property == "backgroundColor"
+	&& getComputedStyle(element).display != "inline") {
+		return null;
+	}
+
 	// "If the Element has a style attribute set, and that attribute has the
 	// effect of setting property, return the value that it sets property to."
 	if (element.style[property] != "") {
@@ -648,9 +655,14 @@ function decomposeRange(range) {
 }
 
 function clearStyles(element, property) {
-	// "If element is a simple styling element and its specified style for
-	// property is not null:"
-	if (isSimpleStylingElement(element) && getSpecifiedStyle(element, property) !== null) {
+	// "If element's specified style for property is null, return the empty
+	// list."
+	if (getSpecifiedStyle(element, property) === null) {
+		return [];
+	}
+
+	// "If element is a simple styling element:"
+	if (isSimpleStylingElement(element)) {
 		// "Let children be an empty list of Nodes."
 		var children = [];
 

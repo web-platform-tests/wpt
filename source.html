@@ -268,6 +268,15 @@ either a CSS value or null:
 either a CSS value or null:
 
 <ol>
+  <li>If <var>property</var> is "background-color" and the [[element]]'s
+  display property does not compute to "inline", return null.  <!-- This is
+  because we currently only use background-color for hiliteColor, which we only
+  want to work as a highlight.  In CSS terms, this means that we only want to
+  consider backgrounds that are applied to inline boxes.  Roughly speaking,
+  "specified style" means "style we're able to change", and we don't change
+  non-inline background-colors.  Maybe the name "specified style" is
+  misleading, though. -->
+
   <li>If the [[element]] has a <code data-anolis-spec=html
   title="the style attribute">style</code> attribute set, and that attribute has
   the effect of setting <var>property</var>, return the value that it sets
@@ -467,8 +476,12 @@ id=foo> into <span id=foo> instead of <font id=foo>, but probably not worth it.
 
   <li>Let <var>property</var> be as in the invoking algorithm.
 
-  <li>If <var>element</var> is a <span>simple styling element</span> and its
-  <span>specified style</span> for <var>property</var> is not null:
+  <li>If <var>element</var>'s <span>specified style</span> for
+  <var>property</var> is null, return the empty list.  <!-- We want to abort
+  early so that we don't try unsetting background-color on a non-inline
+  element. -->
+
+  <li>If <var>element</var> is a <span>simple styling element</span>:
 
   <ol>
     <li>Let <var>children</var> be an empty list of [[node]]s.
@@ -1274,40 +1287,24 @@ matches the other browsers. -->
 <dt><code title><dfn title=command-hiliteColor>hiliteColor</dfn></code>
 <!-- IE 9 RC doesn't support this.  It uses backColor instead, but Gecko and
 Opera treat that differently, while all non-IE browsers treat hiliteColor the
-same, so I'm standardizing hiliteColor as the way to highlight text. -->
+same, so I'm standardizing hiliteColor as the way to highlight text.
+
+This is slightly tricky, because background-color does different things on
+block and inline elements.  Given the name ("hiliteColor"), we really only want
+to apply it to inline elements.  This is how everyone but Gecko behaves, but
+Gecko sometimes applies it to blocks too.  WebKit doesn't set it on non-inline
+elements, but does clear it and push it down from them.
+
+The spec doesn't do any of these: background-color on non-inline elements is
+not touched by hiliteColor, neither created nor removed.  If users want to
+remove the style, they need to use removeFormat.  Adding it usually makes no
+sense; see the comment for backColor. -->
 
 <dd><strong>Action</strong>: If <var>value</var> is not a valid CSS color,
 do nothing and abort these steps.  Otherwise, <span>decompose</span> the
 [[range]], then <span>style</span> each returned [[node]] with
 <var>property</var> equal to "background-color" and <var>new value</var> equal
 to <var>value</var>.
-
-<div class=XXX>
-<p>This is tricky, because background-color does different things on block and
-inline elements.  Given the name ("hiliteColor"), we really only want to apply
-it to inline elements.  This is how everyone but Gecko behaves, but Gecko
-sometimes applies it to blocks too.  We don't do this in the spec.
-
-<p>Clearing is also an issue.  If the user has a whole block selected which
-already has an existing background-color, do we want to clear that, or just
-wrap its children?  Obviously Gecko clears it (sets it, in fact).  WebKit also
-clears it, as does the current spec, but IE and Opera don't.  The reason we
-shouldn't clear it is because the user is only asking for a highlight, and
-highlights should be on top of the block's background, not instead of it.
-
-<p>Finally, what about pushing down?  Pushing down styles is not supposed to
-change the visible result, that's the whole point, but pushing down from a
-block to inlines will remove the coloring from the parts of the block not
-covered by inlines.  WebKit does it anyway, and so does the current spec, but
-non-WebKit browsers seem not to do it (although this is probably because none
-of them ever push down inline styles, they only break up formatting elements
-like [[b]]).
-
-<p>My current thought is to change things so that hiliteColor never touches
-background-color on blocks.  If users want to remove it, they'll have to use
-removeFormat.  I'll return to this after I figure out what to do about
-backColor.
-</div>
 
 <dd><strong>State</strong>: Always false.
 

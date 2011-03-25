@@ -27,7 +27,7 @@
 <body class=draft>
 <div class=head id=head>
 <h1>HTML Editing Commands</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-24-march-2011>Work in Progress &mdash; Last Update 24 March 2011</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-25-march-2011>Work in Progress &mdash; Last Update 25 March 2011</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;ayg+spec@aryeh.name&gt;
@@ -278,6 +278,15 @@ either a CSS value or null:
 either a CSS value or null:
 
 <ol>
+  <li>If <var title="">property</var> is "background-color" and the <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a>'s
+  display property does not compute to "inline", return null.  <!-- This is
+  because we currently only use background-color for hiliteColor, which we only
+  want to work as a highlight.  In CSS terms, this means that we only want to
+  consider backgrounds that are applied to inline boxes.  Roughly speaking,
+  "specified style" means "style we're able to change", and we don't change
+  non-inline background-colors.  Maybe the name "specified style" is
+  misleading, though. -->
+
   <li>If the <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a> has a <a href=http://www.whatwg.org/html/#the-style-attribute><code class=external data-anolis-spec=html title="the style attribute">style</code></a> attribute set, and that attribute has
   the effect of setting <var title="">property</var>, return the value that it sets
   <var title="">property</var> to.
@@ -472,8 +481,12 @@ id=foo> into <span id=foo> instead of <font id=foo>, but probably not worth it.
 
   <li>Let <var title="">property</var> be as in the invoking algorithm.
 
-  <li>If <var title="">element</var> is a <a href=#simple-styling-element>simple styling element</a> and its
-  <a href=#specified-style>specified style</a> for <var title="">property</var> is not null:
+  <li>If <var title="">element</var>'s <a href=#specified-style>specified style</a> for
+  <var title="">property</var> is null, return the empty list.  <!-- We want to abort
+  early so that we don't try unsetting background-color on a non-inline
+  element. -->
+
+  <li>If <var title="">element</var> is a <a href=#simple-styling-element>simple styling element</a>:
 
   <ol>
     <li>Let <var title="">children</var> be an empty list of <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a>s.
@@ -1260,40 +1273,24 @@ matches the other browsers. -->
 <dt><code title=""><dfn id=command-hilitecolor title=command-hiliteColor>hiliteColor</dfn></code>
 <!-- IE 9 RC doesn't support this.  It uses backColor instead, but Gecko and
 Opera treat that differently, while all non-IE browsers treat hiliteColor the
-same, so I'm standardizing hiliteColor as the way to highlight text. -->
+same, so I'm standardizing hiliteColor as the way to highlight text.
+
+This is slightly tricky, because background-color does different things on
+block and inline elements.  Given the name ("hiliteColor"), we really only want
+to apply it to inline elements.  This is how everyone but Gecko behaves, but
+Gecko sometimes applies it to blocks too.  WebKit doesn't set it on non-inline
+elements, but does clear it and push it down from them.
+
+The spec doesn't do any of these: background-color on non-inline elements is
+not touched by hiliteColor, neither created nor removed.  If users want to
+remove the style, they need to use removeFormat.  Adding it usually makes no
+sense; see the comment for backColor. -->
 
 <dd><strong>Action</strong>: If <var title="">value</var> is not a valid CSS color,
 do nothing and abort these steps.  Otherwise, <a href=#decompose>decompose</a> the
 <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a>, then <a href=#style>style</a> each returned <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> with
 <var title="">property</var> equal to "background-color" and <var title="">new value</var> equal
 to <var title="">value</var>.
-
-<div class=XXX>
-<p>This is tricky, because background-color does different things on block and
-inline elements.  Given the name ("hiliteColor"), we really only want to apply
-it to inline elements.  This is how everyone but Gecko behaves, but Gecko
-sometimes applies it to blocks too.  We don't do this in the spec.
-
-<p>Clearing is also an issue.  If the user has a whole block selected which
-already has an existing background-color, do we want to clear that, or just
-wrap its children?  Obviously Gecko clears it (sets it, in fact).  WebKit also
-clears it, as does the current spec, but IE and Opera don't.  The reason we
-shouldn't clear it is because the user is only asking for a highlight, and
-highlights should be on top of the block's background, not instead of it.
-
-<p>Finally, what about pushing down?  Pushing down styles is not supposed to
-change the visible result, that's the whole point, but pushing down from a
-block to inlines will remove the coloring from the parts of the block not
-covered by inlines.  WebKit does it anyway, and so does the current spec, but
-non-WebKit browsers seem not to do it (although this is probably because none
-of them ever push down inline styles, they only break up formatting elements
-like <a href=http://www.whatwg.org/html/#the-b-element><code class=external data-anolis-spec=html title="the b element">b</code></a>).
-
-<p>My current thought is to change things so that hiliteColor never touches
-background-color on blocks.  If users want to remove it, they'll have to use
-removeFormat.  I'll return to this after I figure out what to do about
-backColor.
-</div>
 
 <dd><strong>State</strong>: Always false.
 

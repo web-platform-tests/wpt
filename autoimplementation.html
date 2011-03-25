@@ -39,6 +39,7 @@ don't support styleWithCSS.)
 	<li><a href=#forecolor>forecolor</a>
 	<li><a href=#hilitecolor>hilitecolor</a>
 	<li><a href=#italic>italic</a>
+	<li><a href=#subscript>subscript</a>
 	<li><a href=#underline>underline</a>
 </ul>
 
@@ -122,6 +123,21 @@ been written, so the spec column does nothing.
 <button onclick="addTest('italic', document.querySelector('#italic input').value)">Add test</button>
 </div>
 
+<div id=subscript>
+<h1>subscript</h1>
+
+<button onclick="runTests('subscript')">Run tests</button>
+
+<p><strong>Note:</strong> No spec has yet been written, so the spec column does
+nothing.
+
+<table border=1><tr><th>Input <th>Spec <th>Browser <th>Same?</table>
+<table border=1><tr><th>Input <th>Spec <th>Browser <th>Same?</table>
+
+<p><label>Enter new test here: <input></label>
+<button onclick="addTest('subscript', document.querySelector('#subscript input').value)">Add test</button>
+</div>
+
 <div id=underline>
 <h1>underline</h1>
 
@@ -143,6 +159,7 @@ var values = {
 	forecolor: "#FF0000",
 	hilitecolor: "#FF8888",
 	italic: null,
+	subscript: null,
 	underline: null,
 };
 
@@ -430,6 +447,37 @@ var tests = {
 		'foo [bar <i>baz] qoz</i> quz sic',
 		'foo bar <i>baz [qoz</i> quz] sic',
 	],
+	subscript: [
+		'foo[bar]baz',
+		'foo]bar[baz',
+		'{<p><p> <p>foo</p>}',
+		'foo[bar<b>baz]qoz</b>quz',
+
+		'<table><tbody><tr><td>foo<td>b[a]r<td>baz</table>',
+		'<table><tbody><tr data-start=1 data-end=2><td>foo<td>bar<td>baz</table>',
+		'<table><tbody><tr data-start=0 data-end=2><td>foo<td>bar<td>baz</table>',
+		'<table><tbody data-start=0 data-end=1><tr><td>foo<td>bar<td>baz</table>',
+		'<table data-start=0 data-end=1><tbody><tr><td>foo<td>bar<td>baz</table>',
+		'{<table><tr><td>foo<td>bar<td>baz</table>}',
+
+		'foo<sub>[bar]</sub>baz',
+		'foo<sub>b[a]r</sub>baz',
+		'foo<sup>[bar]</sup>baz',
+		'foo<sup>b[a]r</sup>baz',
+
+		'foo<sub><sub>[bar]</sub></sub>baz',
+		'foo<sub><sub>b[a]r</sub></sub>baz',
+		'foo<sub>b<sub>[a]</sub>r</sub>baz',
+		'foo<sup><sup>[bar]</sup></sup>baz',
+		'foo<sup><sup>b[a]r</sup></sup>baz',
+		'foo<sup>b<sup>[a]</sup>r</sup>baz',
+		'foo<sub><sup>[bar]</sup></sub>baz',
+		'foo<sub><sup>b[a]r</sup></sub>baz',
+		'foo<sub>b<sup>[a]</sup>r</sub>baz',
+		'foo<sup><sub>[bar]</sub></sup>baz',
+		'foo<sup><sub>b[a]r</sub></sup>baz',
+		'foo<sup>b<sub>[a]</sub>r</sup>baz',
+	],
 	underline: [
 		'foo[bar]baz',
 		'foo]bar[baz',
@@ -474,7 +522,8 @@ function runTests(command) {
 
 function addTest(command, test) {
 	var doubleTesting = ["backcolor", "bold", "italic", "underline",
-	"forecolor", "fontname", "fontsize"].indexOf(command) != -1;
+	"forecolor", "fontname", "fontsize", "superscript",
+	"subscript"].indexOf(command) != -1;
 
 	// I tried to feature-detect styleWithCSS, but it was too much of a pain,
 	// with Firefox randomly throwing exceptions all over the place.  So I'm

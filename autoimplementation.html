@@ -33,9 +33,7 @@ don't support styleWithCSS.)
 
 <h1>Table of Contents</h1>
 <ul>
-	<!--
 	<li><a href=#backcolor>backcolor</a>
-	-->
 	<li><a href=#bold>bold</a>
 	<li><a href=#fontname>fontname</a>
 	<li><a href=#forecolor>forecolor</a>
@@ -44,13 +42,13 @@ don't support styleWithCSS.)
 	<li><a href=#underline>underline</a>
 </ul>
 
-<!--
 <div id=backcolor>
 <h1>backcolor</h1>
 
 <button onclick="runTests('backcolor')">Run tests</button>
 
-<p>Tests set the color to "#FF8888".
+<p>Tests set the color to "#FF8888".  <strong>Note:</strong> No spec has yet
+been written, so the spec column does nothing.
 
 <table border=1><tr><th>Input <th>Spec <th>Browser <th>Same?</table>
 <table border=1><tr><th>Input <th>Spec <th>Browser <th>Same?</table>
@@ -58,7 +56,6 @@ don't support styleWithCSS.)
 <p><label>Enter new test here: <input></label>
 <button onclick="addTest('backcolor', document.querySelector('#backcolor input').value)">Add test</button>
 </div>
--->
 
 <div id=bold>
 <h1>bold</h1>
@@ -140,7 +137,7 @@ don't support styleWithCSS.)
 <script src=implementation.js></script>
 <script>
 var values = {
-	//backcolor: "#FF8888",
+	backcolor: "#FF8888",
 	bold: null,
 	fontname: "sans-serif",
 	forecolor: "#FF0000",
@@ -150,7 +147,6 @@ var values = {
 };
 
 var tests = {
-	/*
 	backcolor: [
 		'<p>foo[bar]baz',
 		'<p>foo]bar[baz',
@@ -168,7 +164,6 @@ var tests = {
 		'<p>[foo</p><p>bar]</p>',
 		'<p>foo[bar<i>baz]qoz</i>quz',
 	],
-	*/
 	bold: [
 		'foo[bar]baz',
 		'foo]bar[baz',

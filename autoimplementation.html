@@ -30,7 +30,9 @@ value, for cases where HTML parsing doesn't allow text nodes.
 
 <h1>Table of Contents</h1>
 <ul>
+	<!--
 	<li><a href=#backcolor>backcolor</a>
+	-->
 	<li><a href=#bold>bold</a>
 	<li><a href=#fontname>fontname</a>
 	<li><a href=#forecolor>forecolor</a>
@@ -39,6 +41,7 @@ value, for cases where HTML parsing doesn't allow text nodes.
 	<li><a href=#underline>underline</a>
 </ul>
 
+<!--
 <div id=backcolor>
 <h1>backcolor</h1>
 
@@ -52,6 +55,7 @@ value, for cases where HTML parsing doesn't allow text nodes.
 <p><label>Enter new test here: <input></label>
 <button onclick="addTest('backcolor', document.querySelector('#backcolor input').value)">Add test</button>
 </div>
+-->
 
 <div id=bold>
 <h1>bold</h1>
@@ -133,7 +137,7 @@ value, for cases where HTML parsing doesn't allow text nodes.
 <script src=implementation.js></script>
 <script>
 var values = {
-	backcolor: "#FF8888",
+	//backcolor: "#FF8888",
 	bold: null,
 	fontname: "sans-serif",
 	forecolor: "#FF0000",
@@ -143,6 +147,7 @@ var values = {
 };
 
 var tests = {
+	/*
 	backcolor: [
 		'<p>foo[bar]baz',
 		'<p>foo]bar[baz',
@@ -160,6 +165,7 @@ var tests = {
 		'<p>[foo</p><p>bar]</p>',
 		'<p>foo[bar<i>baz]qoz</i>quz',
 	],
+	*/
 	bold: [
 		'foo[bar]baz',
 		'foo]bar[baz',

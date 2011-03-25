@@ -1,0 +1,22 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>CSS Test: Background with (color image)</title>
+        <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="help" href="http://www.w3.org/TR/CSS21/colors.html#propdef-background" />
+        <link rel="help" href="http://www.w3.org/TR/CSS21/colors.html#background-properties" />
+        <meta name="flags" content="image" />
+        <meta name="assert" content="Background with (color image) sets the background of the element to the color specified (not shown) and places the image in its initial position." />
+        <style type="text/css">
+            div
+            {
+                background: red url("../support/green_box.png");
+                height: 50px;
+            }
+        </style>
+    </head>
+    <body>
+        <p>Test passes if there is a green box below.</p>
+        <div></div>
+    </body>
+</html>

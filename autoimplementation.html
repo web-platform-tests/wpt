@@ -172,6 +172,13 @@ var tests = {
 		'{<p><p> <p>foo</p>}',
 		'foo[bar<i>baz]qoz</i>quz',
 
+		'<table><tbody><tr><td>foo<td>b[a]r<td>baz</table>',
+		'<table><tbody><tr data-start=1 data-end=2><td>foo<td>bar<td>baz</table>',
+		'<table><tbody><tr data-start=0 data-end=2><td>foo<td>bar<td>baz</table>',
+		'<table><tbody data-start=0 data-end=1><tr><td>foo<td>bar<td>baz</table>',
+		'<table data-start=0 data-end=1><tbody><tr><td>foo<td>bar<td>baz</table>',
+		'{<table><tr><td>foo<td>bar<td>baz</table>}',
+
 		'foo<span style="font-weight: bold">[bar]</span>baz',
 		'foo<b>[bar]</b>baz',
 		'foo<b>bar</b>[baz]',
@@ -262,6 +269,13 @@ var tests = {
 		'foo]bar[baz',
 		'{<p><p> <p>foo</p>}',
 
+		'<table><tbody><tr><td>foo<td>b[a]r<td>baz</table>',
+		'<table><tbody><tr data-start=1 data-end=2><td>foo<td>bar<td>baz</table>',
+		'<table><tbody><tr data-start=0 data-end=2><td>foo<td>bar<td>baz</table>',
+		'<table><tbody data-start=0 data-end=1><tr><td>foo<td>bar<td>baz</table>',
+		'<table data-start=0 data-end=1><tbody><tr><td>foo<td>bar<td>baz</table>',
+		'{<table><tr><td>foo<td>bar<td>baz</table>}',
+
 		'foo<code>[bar]</code>baz',
 		'foo<kbd>[bar]</kbd>baz',
 		'foo<listing>[bar]</listing>baz',
@@ -307,6 +321,14 @@ var tests = {
 		'foo]bar[baz',
 		'{<p><p> <p>foo</p>}',
 		'foo[bar<i>baz]qoz</i>quz',
+
+		'<table><tbody><tr><td>foo<td>b[a]r<td>baz</table>',
+		'<table><tbody><tr data-start=1 data-end=2><td>foo<td>bar<td>baz</table>',
+		'<table><tbody><tr data-start=0 data-end=2><td>foo<td>bar<td>baz</table>',
+		'<table><tbody data-start=0 data-end=1><tr><td>foo<td>bar<td>baz</table>',
+		'<table data-start=0 data-end=1><tbody><tr><td>foo<td>bar<td>baz</table>',
+		'{<table><tr><td>foo<td>bar<td>baz</table>}',
+
 		'foo<font color=red>[bar]</font>baz',
 		'foo{<font color=red>bar</font>}baz',
 		'<span style="color: red">foo<span style="color: blue">[bar]</span>baz</span>',
@@ -323,6 +345,14 @@ var tests = {
 		'foo]bar[baz',
 		'{<p><p> <p>foo</p>}',
 		'foo[bar<i>baz]qoz</i>quz',
+
+		'<table><tbody><tr><td>foo<td>b[a]r<td>baz</table>',
+		'<table><tbody><tr data-start=1 data-end=2><td>foo<td>bar<td>baz</table>',
+		'<table><tbody><tr data-start=0 data-end=2><td>foo<td>bar<td>baz</table>',
+		'<table><tbody data-start=0 data-end=1><tr><td>foo<td>bar<td>baz</table>',
+		'<table data-start=0 data-end=1><tbody><tr><td>foo<td>bar<td>baz</table>',
+		'{<table><tr><td>foo<td>bar<td>baz</table>}',
+
 		'<p style="background-color: rgb(255, 136, 136)">foo[bar]baz</p>',
 		'<p style="background-color: #ff8888">foo[bar]baz</p>',
 		'<p style="background-color: aqua">foo[bar]baz</p>',
@@ -340,6 +370,14 @@ var tests = {
 		'foo]bar[baz',
 		'{<p><p> <p>foo</p>}',
 		'foo[bar<b>baz]qoz</b>quz',
+
+		'<table><tbody><tr><td>foo<td>b[a]r<td>baz</table>',
+		'<table><tbody><tr data-start=1 data-end=2><td>foo<td>bar<td>baz</table>',
+		'<table><tbody><tr data-start=0 data-end=2><td>foo<td>bar<td>baz</table>',
+		'<table><tbody data-start=0 data-end=1><tr><td>foo<td>bar<td>baz</table>',
+		'<table data-start=0 data-end=1><tbody><tr><td>foo<td>bar<td>baz</table>',
+		'{<table><tr><td>foo<td>bar<td>baz</table>}',
+
 		'foo<span style="font-style: italic">[bar]</span>baz',
 		'foo<address>[bar]</address>baz',
 		'foo<cite>[bar]</cite>baz',
@@ -392,6 +430,14 @@ var tests = {
 		'foo]bar[baz',
 		'{<p><p> <p>foo</p>}',
 		'foo[bar<b>baz]qoz</b>quz',
+
+		'<table><tbody><tr><td>foo<td>b[a]r<td>baz</table>',
+		'<table><tbody><tr data-start=1 data-end=2><td>foo<td>bar<td>baz</table>',
+		'<table><tbody><tr data-start=0 data-end=2><td>foo<td>bar<td>baz</table>',
+		'<table><tbody data-start=0 data-end=1><tr><td>foo<td>bar<td>baz</table>',
+		'<table data-start=0 data-end=1><tbody><tr><td>foo<td>bar<td>baz</table>',
+		'{<table><tr><td>foo<td>bar<td>baz</table>}',
+
 		'foo<u>[bar]</u>baz',
 		'foo<span style="text-decoration: underline">[bar]</span>baz',
 		'<u>foo[bar]baz</u>',

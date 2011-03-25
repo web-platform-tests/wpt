@@ -1399,8 +1399,8 @@ value</var> "none".  Otherwise, <span>style</span> them with <var>new
 value</var> "underline".
 
 <div class=XXX>
-<p>There are a few problems with underline, because underlines in CSS are
-horrible:
+<p>There are a lot of problems with underline color and thickness, because
+text-decoration in CSS is horrible:
 
 <ul>
   <li>Pushing down underlines can change their color, since the color of an
@@ -1408,30 +1408,45 @@ horrible:
   text it's drawn under.  This could be fixed by adding a special case for this
   condition and inserting extra color rules, such as by setting a color on the
   underlining element and then having another element inside it that resets the
-  color.  Horrible, but . . .
+  color.  Horrible, but that's text-decoration for you.  Alternatively, the new
+  text-decoration-color property in the CSS 3 Text draft could come in handy
+  here, in which case we'd degrade pretty gracefully in legacy UAs.
 
-  <li>Pushing down underlines can change their thickness in some rendering
-  engines, like Gecko (but not WebKit as of March 2011).  This could be worked
-  around similarly to the previous.
+  <li>Underline thickness depends on font-size in all rendering engines but
+  WebKit, so pushing them down creates thickness problems as well as color
+  problems.  Working around this is a similar story to the previous, except we
+  have no text-decoration-width property yet (see <a
+  href="http://lists.w3.org/Archives/Public/www-style/2011Mar/0593.html">feedback
+  to www-style</a>).
 
   <li>The preceding two points can't be avoided, because the only way to remove
   underlines in CSS is to push down styles (unlike most other things where you
-  could override it).
+  could override it).  Recent (February 2011) CSS 3 Text drafts have added
+  support for a "text-decoration-line: cancel-underline" property, but we can
+  only use that if there's no other possibility, since it won't work in legacy
+  browsers.  (Although we should use it once there's no other possibility.)
 
-  <li>But more generally, from a user's perspective, color and thickness of
+  <li>More generally, from a user's perspective, color and thickness of
   underlines is going to be more or less random if they're applying them to
   text with varying size or color.  If they underline a bunch of text all at
   once, it will all get the same color/thickness, probably.  But if they
   underline letter-by-letter, it probably will vary.  But sometimes when they
   underline a bunch of text at once it will also vary, if the algorithm decides
   to create multiple elements for whatever reason (like an intervening
-  unwrappable element).  This is unlikely to match user expectations.
+  unwrappable element).  This is unlikely to match user expectations.  There's
+  not much we can do about this without entirely revamping text-decoration, so
+  we'll have to live with it.
+
+  <li>Currently we don't treat non-underline text-decorations properly, because
+  we have no way to set (or cancel) underlines independently of other
+  text-decorations from within CSS.  I've sent <a
+  href="http://lists.w3.org/Archives/Public/www-style/2011Mar/0591.html">feedback
+  to www-style</a>.
 </ul>
 
-<p>For now I'm just going to ignore the issue, since any attempt to fix it
-would be a pretty ugly hack unless someone fixes up how CSS underlines work,
-and I have bigger fish to fry.  But it's something to think about in the
-future.
+<p>I'll revisit some of these issues when I get feedback on www-style, either
+using the newly-specced features or working around their absence as the case
+may be.
 </div>
 
 <dd><strong>State</strong>: True if every [[text]] node that is

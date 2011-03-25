@@ -1,0 +1,56 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>CSS Test: Margin-right applied to element with display table-caption</title>
+        <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#propdef-margin-right" />
+        <link rel="help" href="http://www.w3.org/TR/CSS21/box.html#margin-properties" />
+        <meta name="flags" content="" />
+        <meta name="assert" content="The 'margin-right' property applies to elements with a display of table-caption." />
+        <style type="text/css">
+            div
+            {
+                direction: rtl;
+            }
+            #wrapper
+            {
+                border-right: 10px solid blue;
+            }
+            #wrapper, #test
+            {
+                height: 200px;
+                width: 200px;
+            }
+            #test
+            {
+                border-right: 10px solid orange;
+                display: table-caption;
+                margin-right: 50px;
+            }
+            #table
+            {
+                border-collapse: collapse;
+                display: table;
+            }
+            #row
+            {
+                display: table-row;
+            }
+            #cell
+            {
+                display: table-cell;
+            }
+        </style>
+    </head>
+    <body>
+        <p>Test passes if there is space between the blue and orange lines below.</p>
+        <div id="wrapper">
+            <div id="table">
+                <div id="test"></div>
+                <div id="row">
+                    <div id="cell"></div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

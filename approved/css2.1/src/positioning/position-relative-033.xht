@@ -1,0 +1,33 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>CSS Test: Relatively positioned box has no impact on boxes which follow and boxes may overlap</title>
+        <link rel="author" title="Microsoft" href="http://www.microsoft.com/" />
+        <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#comp-relpos" />
+        <meta name="flags" content="may" />
+        <meta name="assert" content="Offsetting a box with relative positioning has no effect on the boxes which follow and boxes may overlap." />
+        <style type="text/css">
+            span
+            {
+                color: orange;
+                font: 16px Ahem;
+            }
+            #span1
+            {
+                border: 2px solid blue;
+            }
+            #span2
+            {
+                color: yellow;
+                position: relative;
+                left: -6em;
+            }
+        </style>
+    </head>
+    <body>
+        <p>Test passes if below the yellow box is on the left-hand side of the blue box and the orange box is on the right-hand side fo the blue box.</p>
+        <div>
+            <span id="span1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="span2">XXXXXX</span>XXXXXX</span>
+        </div>
+    </body>
+</html>

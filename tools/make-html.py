@@ -1,4 +1,4 @@
-#!/opt/local/bin/python2.6
+#!/usr/bin/python
 
 # HTMLMake
 # Converts all files of specified extension from XHTML to HTML

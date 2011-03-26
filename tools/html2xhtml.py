@@ -1,4 +1,4 @@
-#!/opt/local/bin/python2.6
+#!/usr/bin/python
 
 # This file is licensed under CC Zero
 

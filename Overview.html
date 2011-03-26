@@ -48,7 +48,7 @@
 <p><a href="http://www.w3.org/"><img alt="W3C" height="48" src="http://www.w3.org/Icons/w3c_home" width="72"></a></p>
 <!--end-logo-->
  <h1>DOM Core</h1>
- <h2 class="no-num no-toc" id="editor-s-draft-12-march-2011">Editor's Draft 12 March 2011</h2>
+ <h2 class="no-num no-toc" id="editor-s-draft-26-march-2011">Editor's Draft 26 March 2011</h2>
 
  <dl>
   <dt>This Version:
@@ -90,7 +90,7 @@ publications and the latest revision of this technical report can be found in
 the <a href="http://www.w3.org/TR/">W3C technical reports index</a> at
 http://www.w3.org/TR/.</i>
 
-<p>This is the 12 March 2011 Editor's Draft of DOM Core. Please send
+<p>This is the 26 March 2011 Editor's Draft of DOM Core. Please send
 comments to
 <a href="mailto:www-dom@w3.org?subject=%5BDOMCore%5D%20">www-dom@w3.org</a>
 (<a href="http://lists.w3.org/Archives/Public/www-dom/">archived</a>)
@@ -752,6 +752,9 @@ attribute ... <a href="http://www.w3.org/2008/webapps/track/issues/172">More inf
 method is invoked these steps must be run:</p>
 
 <ol>
+ <li><p>If <var title="">type</var> is the empty string, throw a
+ <code title="dom-DOMException-SYNTAX_ERR"><a href="#dom-domexception-syntax_err">SYNTAX_ERR</a></code> exception and
+ terminate these steps.
  <li><p>If the <a href="#dispatch-flag">dispatch flag</a> is set, terminate these steps.
  <li><p>Unset the <a href="#stop-propagation-flag">stop propagation flag</a>,
  <a href="#stop-immediate-propagation-flag">stop immediate propagation flag</a>, <a href="#canceled-flag">canceled flag</a>,
@@ -847,7 +850,8 @@ method is invoked these steps must be run:
 <p>When the
 <dfn id="dom-eventtarget-dispatchevent" title="dom-EventTarget-dispatchEvent"><code>dispatchEvent(<var title="">event</var>)</code></dfn> method is invoked these steps must be run:
 <ol>
- <li><p>If <var title="">event</var>'s <a href="#dispatch-flag">dispatch flag</a> is set throw
+ <li><p>If <var title="">event</var>'s <a href="#dispatch-flag">dispatch flag</a> is set, or if its
+ <a href="#concept-event-type" title="concept-event-type">type</a> is the empty string, throw
  an <code title="dom-DOMException-INVALID_STATE_ERR"><a href="#dom-domexception-invalid_state_err">INVALID_STATE_ERR</a></code>
  exception and terminate these steps.
  <li><p>Unset <var title="">event</var>'s <a href="#trusted-flag">trusted flag</a>.

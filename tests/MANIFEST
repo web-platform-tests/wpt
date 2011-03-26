@@ -57,6 +57,7 @@ Element-siblingElement-null.html
 Element-siblingElement-null.svg
 Element-siblingElement-null.xhtml
 Element-tagName.html
+EventTarget-dispatchEvent.html
 Node-appendChild.html
 Node-cloneNode.html
 Node-hasAttributes.html

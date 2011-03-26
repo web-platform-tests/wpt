@@ -719,6 +719,7 @@ flags that are all initially unset:</p>
  <li><dfn id="cancel-flag">cancel flag</dfn>
  <li><dfn id="canceled-flag">canceled flag</dfn>
  <li><dfn id="trusted-flag">trusted flag</dfn>
+ <li><dfn id="initialized-flag">initialized flag</dfn>
  <li><dfn id="dispatch-flag">dispatch flag</dfn>
 </ul>
 <p>When the
@@ -752,9 +753,7 @@ attribute ... <a href="http://www.w3.org/2008/webapps/track/issues/172">More inf
 method is invoked these steps must be run:</p>
 
 <ol>
- <li><p>If <var title="">type</var> is the empty string, throw a
- <code title="dom-DOMException-SYNTAX_ERR"><a href="#dom-domexception-syntax_err">SYNTAX_ERR</a></code> exception and
- terminate these steps.
+ <li><p>Set the <a href="#initialized-flag">initialized flag</a>.
  <li><p>If the <a href="#dispatch-flag">dispatch flag</a> is set, terminate these steps.
  <li><p>Unset the <a href="#stop-propagation-flag">stop propagation flag</a>,
  <a href="#stop-immediate-propagation-flag">stop immediate propagation flag</a>, <a href="#canceled-flag">canceled flag</a>,
@@ -851,8 +850,8 @@ method is invoked these steps must be run:
 <dfn id="dom-eventtarget-dispatchevent" title="dom-EventTarget-dispatchEvent"><code>dispatchEvent(<var title="">event</var>)</code></dfn> method is invoked these steps must be run:
 <ol>
  <li><p>If <var title="">event</var>'s <a href="#dispatch-flag">dispatch flag</a> is set, or if its
- <a href="#concept-event-type" title="concept-event-type">type</a> is the empty string, throw
- an <code title="dom-DOMException-INVALID_STATE_ERR"><a href="#dom-domexception-invalid_state_err">INVALID_STATE_ERR</a></code>
+ <a href="#initialized-flag">initialized flag</a> isn't set, throw an
+ <code title="dom-DOMException-INVALID_STATE_ERR"><a href="#dom-domexception-invalid_state_err">INVALID_STATE_ERR</a></code>
  exception and terminate these steps.
  <li><p>Unset <var title="">event</var>'s <a href="#trusted-flag">trusted flag</a>.
  <li><p><a href="#concept-event-dispatch" title="concept-event-dispatch">Dispatch</a> the

@@ -666,6 +666,7 @@ flags that are all initially unset:</p>
  <li><dfn>cancel flag</dfn>
  <li><dfn>canceled flag</dfn>
  <li><dfn>trusted flag</dfn>
+ <li><dfn>initialized flag</dfn>
  <li><dfn>dispatch flag</dfn>
 </ul>
 <p>When the
@@ -699,9 +700,7 @@ attribute ... <a href="http://www.w3.org/2008/webapps/track/issues/172">More inf
 method is invoked these steps must be run:</p>
 
 <ol>
- <li><p>If <var title>type</var> is the empty string, throw a
- <code title=dom-DOMException-SYNTAX_ERR>SYNTAX_ERR</code> exception and
- terminate these steps.
+ <li><p>Set the <span>initialized flag</span>.
  <li><p>If the <span>dispatch flag</span> is set, terminate these steps.
  <li><p>Unset the <span>stop propagation flag</span>,
  <span>stop immediate propagation flag</span>, <span>canceled flag</span>,
@@ -798,8 +797,8 @@ method is invoked these steps must be run:
 <dfn title=dom-EventTarget-dispatchEvent><code>dispatchEvent(<var title>event</var>)</code></dfn> method is invoked these steps must be run:
 <ol>
  <li><p>If <var title>event</var>'s <span>dispatch flag</span> is set, or if its
- <span title=concept-event-type>type</span> is the empty string, throw
- an <code title=dom-DOMException-INVALID_STATE_ERR>INVALID_STATE_ERR</code>
+ <span>initialized flag</span> isn't set, throw an
+ <code title=dom-DOMException-INVALID_STATE_ERR>INVALID_STATE_ERR</code>
  exception and terminate these steps.
  <li><p>Unset <var title>event</var>'s <span>trusted flag</span>.
  <li><p><span title=concept-event-dispatch>Dispatch</span> the

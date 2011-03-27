@@ -226,7 +226,7 @@ different on block elements.
 
 <p>The <dfn>effective style</dfn> of a [[node]] <var>node</var> for a given
 <var>property</var> is returned by the following algorithm, which will return
-either a CSS value or null:
+either a string or null:
 
 <ol>
   <li>If <var>node</var> is neither an [[element]] nor a [[text]] node, return
@@ -237,14 +237,6 @@ either a CSS value or null:
 
   <li>If <var>node</var> is a [[text]] node, return the <span>effective
   style</span> of its [[parent]] for <var>property</var>.
-
-  <li>If <var>property</var> is "text-decoration", and the "text-decoration"
-  property of <var>node</var> or any of its [[ancestors]] computes to
-  "underline", return "underline".  Otherwise, return "none".
-
-  <p class=XXX>We ignore the possibility of text-decorations other than
-  underline for now, so we pretend that there are only two possible values:
-  "underline" and "none".
 
   <li>If <var>property</var> is "background-color":
 
@@ -258,6 +250,49 @@ either a CSS value or null:
 
     <li>Otherwise, return the computed style of "background-color" for
     <var>node</var>.
+  </ol>
+
+  <li>If <var>property</var> is "text-decoration", and the "text-decoration"
+  property of <var>node</var> or any of its [[ancestors]] computes to
+  "underline", return "underline".  Otherwise, return "none".
+
+  <p class=XXX>We ignore the possibility of text-decorations other than
+  underline for now, so we pretend that there are only two possible values:
+  "underline" and "none".
+
+  <li>If <var>property</var> is "vertical-align":
+
+  <p class=XXX>We massively abuse this property.  Maybe we shouldn't be using
+  the CSS names here.
+
+  <ol>
+    <li>Let <var>affected by subscript</var> and <var>affected by
+    superscript</var> be two boolean variables, both initially false.
+
+    <li>While <var>node</var> is an [[element]] whose "display" property
+    computes to "inline":
+
+    <ol>
+      <li>If <var>node</var>'s "vertical-align" property computes to "sub", set
+      <var>affected by subscript</var> to true.
+
+      <li>Otherwise, if <var>node</var>'s "vertical-align" property computes to
+      "super", set <var>affected by superscript</var> to true.
+
+      <li>Otherwise, if <var>node</var>'s "vertical-align" property computes to
+      some value other than "baseline", return the string "mixed".
+
+      <li>Set <var>node</var> to its [[parent]].
+    </ol>
+
+    <li>If <var>affected by subscript</var> and <var>affected by
+    superscript</var> are both true, return the string "mixed".
+
+    <li>If <var>affected by subscript</var> is true, return "sub".
+
+    <li>If <var>affected by superscript</var> is true, return "super".
+
+    <li>Return "baseline".
   </ol>
 
   <li>Return the computed style of <var>property</var> for <var>node</var>.
@@ -276,6 +311,23 @@ either a CSS value or null:
   "specified style" means "style we're able to change", and we don't change
   non-inline background-colors.  Maybe the name "specified style" is
   misleading, though. -->
+
+  <li>If <var>property</var> is "vertical-align":
+
+  <ol>
+    <li>If the computed value of the [[element]]'s "display" property is
+    neither "inline" nor "inline-block" nor "inline-table", return null.
+
+    <li>If the [[element]] has a [[style]] attribute set, and that attribute
+    has the effect of setting "vertical-align", return the value that it sets
+    "vertical-align" to.
+
+    <li>If the [[element]] is a [[sup]], return "super".
+
+    <li>If the [[element]] is a [[sub]], return "sub".
+
+    <li>Return null.
+  </ol>
 
   <li>If the [[element]] has a <code data-anolis-spec=html
   title="the style attribute">style</code> attribute set, and that attribute has
@@ -308,9 +360,9 @@ either a CSS value or null:
 </ol>
 
 <p>A <dfn>styling element</dfn> is a [[b]], [[em]], [[i]], [[span]],
-[[strong]], or [[u]] element with no attributes except possibly [[style]], or
-a [[font]] element with no attributes except possibly [[style]], [[fontcolor]],
-[[fontface]], and/or [[fontsize]].
+[[strong]], [[sub]], [[sup]], or [[u]] element with no attributes except
+possibly [[style]], or a [[font]] element with no attributes except possibly
+[[style]], [[fontcolor]], [[fontface]], and/or [[fontsize]].
 
 <p class=note>Conceptually, a <span>styling element</span> is a phrasing
 element whose only purpose is to style text.  Thus changing around styling
@@ -323,13 +375,13 @@ compatibility with legacy user-agents that treat them that way.
 <p>A <dfn>simple styling element</dfn> is an <span>HTML element</span> for
 which at least one of the following holds:
 
-<ol>
-  <li>It is a [[b]], [[em]], [[font]], [[i]], [[span]], [[strong]], or [[u]]
-  element with no attributes.
+<ul>
+  <li>It is a [[b]], [[em]], [[font]], [[i]], [[span]], [[strong]], [[sub]],
+  [[sup]], or [[u]] element with no attributes.
 
-  <li>It is a [[b]], [[em]], [[font]], [[i]], [[span]], [[strong]], or [[u]]
-  element with exactly one attribute, which is [[style]], which sets no CSS
-  properties (including invalid or unrecognized properties).
+  <li>It is a [[b]], [[em]], [[font]], [[i]], [[span]], [[strong]], [[sub]],
+  [[sup]], or [[u]] element with exactly one attribute, which is [[style]],
+  which sets no CSS properties (including invalid or unrecognized properties).
 
   <li>It is a [[font]] element with exactly one attribute, which is either
   [[fontcolor]], [[fontface]], or [[fontsize]].
@@ -347,10 +399,14 @@ which at least one of the following holds:
   unrecognized properties), which is "text-decoration", which is set to
   "underline" or "none".
 
+  <li>It is a [[sub]] or [[sub]] element with exactly one attribute, which is
+  [[style]], and the [[style]] attribute sets exactly one CSS property
+  (including invalid or unrecognized properties), which is "vertical-align".
+
   <li>It is a [[font]] or [[span]] element with exactly one attribute, which is
   [[style]], and the [[style]] attribute sets exactly one CSS property
   (including invalid or unrecognized properties).
-</ol>
+</ul>
 
 <p class=note>Conceptually, a <span>simple styling element</span> is a
 <span>styling element</span> which <span title="specified
@@ -832,6 +888,22 @@ After forcing the style, descendants might still have different style.
     [[ownerdocument]] of <var>node</var>, then set the [[fontsize]] attribute
     of <var>new parent</var> to <var>new value</var>.
   </ol>
+
+  <!-- We always use sup/sub elements, even in CSS mode, following Gecko and
+  contradicting WebKit.  This is because <span style="vertical-align:
+  sub/super">, the obvious equivalent (and what WebKit uses), behaves quite
+  differently: it doesn't reduce font-size, which is ugly. -->
+  <li>If <var>property</var> is "vertical-align" and <var>new value</var> is
+  "sub", let <var>new parent</var> be the result of calling <code
+  data-anolis-spec=domcore
+  title=dom-Document-createElement>createElement("sub")</code> on the
+  [[ownerdocument]] of <var>node</var>.
+
+  <li>If <var>property</var> is "vertical-align" and <var>new value</var> is
+  "super", let <var>new parent</var> be the result of calling <code
+  data-anolis-spec=domcore
+  title=dom-Document-createElement>createElement("sup")</code> on the
+  [[ownerdocument]] of <var>node</var>.
 
   <li>If <var>new parent</var> is null, let <var>new parent</var> be the result
   of calling <code data-anolis-spec=domcore
@@ -1386,6 +1458,42 @@ result.
 
 <dd><strong>State</strong>: True if the <span>CSS styling flag</span> is
 true, otherwise false.
+
+<dd><strong>Value</strong>:
+
+
+<dt><code title><dfn title=command-subscript>subscript</dfn></code>
+
+<dd><strong>Action</strong>: <span>Decompose</span> the [[range]].  If the
+state of the [[range]] for this command is then true, <span>style</span> each
+returned [[node]] with <var>property</var> "vertical-align" and <var>new
+value</var> "baseline".  Otherwise, <span>style</span> them with <var>new
+value</var> "baseline", then <span>style</span> them again with <var>new
+value</var> "sub".
+
+<p class=XXX>This doesn't work, because we'll have removed some of the things
+that we want to style in some cases.  Need to define what happens to a range
+when you style its nodes, then re-decompose the same range before re-styling.
+
+<dd><strong>State</strong>: True if every [[text]] node that is
+<span>effectively contained</span> in the [[range]] has <span>effective
+style</span> either null or "sub" for "vertical-align".  Otherwise false.
+
+<dd><strong>Value</strong>:
+
+
+<dt><code title><dfn title=command-superscript>superscript</dfn></code>
+
+<dd><strong>Action</strong>: <span>Decompose</span> the [[range]].  If the
+state of the [[range]] for this command is then true, <span>style</span> each
+returned [[node]] with <var>property</var> "vertical-align" and <var>new
+value</var> "baseline".  Otherwise, <span>style</span> them with <var>new
+value</var> "baseline", then <span>style</span> them again with <var>new
+value</var> "super".
+
+<dd><strong>State</strong>: True if every [[text]] node that is
+<span>effectively contained</span> in the [[range]] has <span>effective
+style</span> either null or "super" for "vertical-align".  Otherwise false.
 
 <dd><strong>Value</strong>:
 

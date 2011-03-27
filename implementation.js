@@ -58,6 +58,13 @@ function cssValuesEqual(property, val1, val2) {
 		return val1 === val2;
 	}
 
+	if (property == "verticalAlign") {
+		// Fake property values
+		if (val1 == "mixed" || val2 == "mixed") {
+			return val1 === val2;
+		}
+	}
+
 	if (property == "fontWeight") {
 		return val1 == val2
 			|| (val1.toLowerCase() == "bold" && val2 == "700")
@@ -314,19 +321,6 @@ function getEffectiveStyle(node, property) {
 		return getEffectiveStyle(node.parentNode, property);
 	}
 
-	// "If property is "text-decoration", and the "text-decoration" property of
-	// node or any of its ancestors computes to "underline", return
-	// "underline". Otherwise, return "none"."
-	if (property == "textDecoration") {
-		do {
-			if (getComputedStyle(node).textDecoration == "underline") {
-				return "underline";
-			}
-			node = node.parentNode;
-		} while (node && node.nodeType == Node.ELEMENT_NODE);
-		return "none";
-	}
-
 	// "If property is "background-color":"
 	if (property == "backgroundColor") {
 		// "While the computed style of "background-color" on node is any
@@ -355,6 +349,71 @@ function getEffectiveStyle(node, property) {
 		return getComputedStyle(node).backgroundColor;
 	}
 
+	// "If property is "text-decoration", and the "text-decoration" property of
+	// node or any of its ancestors computes to "underline", return
+	// "underline". Otherwise, return "none"."
+	if (property == "textDecoration") {
+		do {
+			if (getComputedStyle(node).textDecoration == "underline") {
+				return "underline";
+			}
+			node = node.parentNode;
+		} while (node && node.nodeType == Node.ELEMENT_NODE);
+		return "none";
+	}
+
+	// "If property is "vertical-align":"
+	if (property == "verticalAlign") {
+		// "Let affected by subscript and affected by superscript be two
+		// boolean variables, both initially false."
+		var affectedBySubscript = false;
+		var affectedBySuperscript = false;
+
+		// "While node is an Element whose "display" property computes to
+		// "inline":"
+		while (node
+		&& node.nodeType == Node.ELEMENT_NODE
+		&& getComputedStyle(node).display == "inline") {
+			var verticalAlign = getComputedStyle(node).verticalAlign;
+
+			// "If node's "vertical-align" property computes to "sub", set
+			// affected by subscript to true."
+			if (verticalAlign == "sub") {
+				affectedBySubscript = true;
+			// "Otherwise, if node's "vertical-align" property computes to
+			// "super", set affected by superscript to true."
+			} else if (verticalAlign == "super") {
+				affectedBySuperscript = true;
+			// "Otherwise, if node's "vertical-align" property computes to some
+			// value other than "baseline", return the string "mixed"."
+			} else if (verticalAlign != "baseline") {
+				return "mixed";
+			}
+
+			// "Set node to its parent."
+			node = node.parentNode;
+		}
+
+		// "If affected by subscript and affected by superscript are both true,
+		// return the string "mixed"."
+		if (affectedBySubscript && affectedBySuperscript) {
+			return "mixed";
+		}
+
+		// "If affected by subscript is true, return "sub"."
+		if (affectedBySubscript) {
+			return "sub";
+		}
+
+		// "If affected by superscript is true, return "super"."
+		if (affectedBySuperscript) {
+			return "super";
+		}
+
+		// "Return "baseline"."
+		return "baseline";
+	}
+
 	// "Return the computed style of property for node."
 	return getComputedStyle(node)[property];
 }
@@ -367,6 +426,39 @@ function getSpecifiedStyle(element, property) {
 	// does not compute to "inline", return null."
 	if (property == "backgroundColor"
 	&& getComputedStyle(element).display != "inline") {
+		return null;
+	}
+
+	// "If property is "vertical-align":"
+	if (property == "verticalAlign") {
+		// "If the computed value of the Element's "display" property is
+		// neither "inline" nor "inline-block" nor "inline-table", return
+		// null."
+		var style = getComputedStyle(element);
+		if (style.display != "inline"
+		&& style.display != "inline-block"
+		&& style.display != "inline-table") {
+			return null;
+		}
+
+		// "If the Element has a style attribute set, and that attribute has
+		// the effect of setting "vertical-align", return the value that it
+		// sets "vertical-align" to."
+		if (element.style.verticalAlign != "") {
+			return element.style.verticalAlign;
+		}
+
+		// "If the Element is a sup, return "super"."
+		if (isHtmlElement(element) && element.tagName == "SUP") {
+			return "super";
+		}
+
+		// "If the Element is a sub, return "sub"."
+		if (isHtmlElement(element) && element.tagName == "SUB") {
+			return "sub";
+		}
+
+		// "Return null."
 		return null;
 	}
 
@@ -416,15 +508,15 @@ function getSpecifiedStyle(element, property) {
 	return null;
 }
 
-// "A styling element is a b, em, i, span, strong, or u element with no
-// attributes except possibly style, or a font element with no attributes
+// "A styling element is a b, em, i, span, strong, sub, sup, or u element with
+// no attributes except possibly style, or a font element with no attributes
 // except possibly style, color, face, and/or size."
 function isStylingElement(node) {
 	if (!isHtmlElement(node)) {
 		return false;
 	}
 
-	if (["B", "EM", "I", "SPAN", "STRONG", "U"].indexOf(node.tagName) != -1) {
+	if (["B", "EM", "I", "SPAN", "STRONG", "SUB", "SUP", "U"].indexOf(node.tagName) != -1) {
 		if (node.attributes.length == 0) {
 			return true;
 		}
@@ -470,11 +562,12 @@ function isSimpleStylingElement(node) {
 	}
 
 	// Only these elements can possibly be a simple styling element.
-	if (["B", "EM", "FONT", "I", "SPAN", "STRONG", "U"].indexOf(node.tagName) == -1) {
+	if (["B", "EM", "FONT", "I", "SPAN", "STRONG", "SUB", "SUP", "U"].indexOf(node.tagName) == -1) {
 		return false;
 	}
 
-	// "It is a b, em, font, i, span, strong, or u element with no attributes."
+	// "It is a b, em, font, i, span, strong, sub, sup, or u element with no
+	// attributes."
 	if (node.attributes.length == 0) {
 		return true;
 	}
@@ -484,9 +577,9 @@ function isSimpleStylingElement(node) {
 		return false;
 	}
 
-	// "It is a b, em, font, i, span, strong, or u element with exactly one
-	// attribute, which is style, which sets no CSS properties (including
-	// invalid or unrecognized properties)."
+	// "It is a b, em, font, i, span, strong, sub, sup, or u element with
+	// exactly one attribute, which is style, which sets no CSS properties
+	// (including invalid or unrecognized properties)."
 	//
 	// Not gonna try for invalid or unrecognized.
 	if (node.hasAttribute("style")
@@ -531,7 +624,18 @@ function isSimpleStylingElement(node) {
 	if (node.tagName == "U"
 	&& node.hasAttribute("style")
 	&& node.style.length == 1
-	&& node.style.textDecoration != "") {
+	&& (node.style.textDecoration == "underline"
+	|| node.style.textDecoration == "none")) {
+		return true;
+	}
+
+	// "It is a sub or sub element with exactly one attribute, which is style,
+	// and the style attribute sets exactly one CSS property (including invalid
+	// or unrecognized properties), which is "vertical-align"."
+	if ((node.tagName == "SUB" || node.tagName == "SUP")
+	&& node.hasAttribute("style")
+	&& node.style.length == 1
+	&& node.style.verticalAlign != "") {
 		return true;
 	}
 
@@ -1061,6 +1165,20 @@ function forceStyle(node, property, newValue) {
 		}
 	}
 
+	// "If property is "vertical-align" and new value is "sub", let new parent
+	// be the result of calling createElement("sub") on the ownerDocument of
+	// node."
+	if (property == "verticalAlign" && newValue == "sub") {
+		newParent = node.ownerDocument.createElement("sub");
+	}
+
+	// "If property is "vertical-align" and new value is "super", let new
+	// parent be the result of calling createElement("sup") on the
+	// ownerDocument of node."
+	if (property == "verticalAlign" && newValue == "super") {
+		newParent = node.ownerDocument.createElement("sup");
+	}
+
 	// "If new parent is null, let new parent be the result of calling
 	// createElement("span") on the ownerDocument of node."
 	if (!newParent) {
@@ -1343,6 +1461,46 @@ function myExecCommand(commandId, showUI, value, range) {
 		cssStylingFlag = Boolean(value);
 		break;
 
+		case "subscript":
+		// "Decompose the Range. If the state of the Range for this command is
+		// then true, style each returned Node with property "vertical-align"
+		// and new value "baseline". Otherwise, style them with new value
+		// "baseline", then style them again with new value "sub"."
+		var nodeList = decomposeRange(range);
+		if (getState(commandId, range)) {
+			for (var i = 0; i < nodeList.length; i++) {
+				styleNode(nodeList[i], "verticalAlign", "baseline");
+			}
+		} else {
+			for (var i = 0; i < nodeList.length; i++) {
+				styleNode(nodeList[i], "verticalAlign", "baseline");
+			}
+			for (var i = 0; i < nodeList.length; i++) {
+				styleNode(nodeList[i], "verticalAlign", "sub");
+			}
+		}
+		break;
+
+		case "superscript":
+		// "Decompose the Range. If the state of the Range for this command is
+		// then true, style each returned Node with property "vertical-align"
+		// and new value "baseline". Otherwise, style them with new value
+		// "baseline", then style them again with new value "super"."
+		var nodeList = decomposeRange(range);
+		if (getState(commandId, range)) {
+			for (var i = 0; i < nodeList.length; i++) {
+				styleNode(nodeList[i], "verticalAlign", "baseline");
+			}
+		} else {
+			for (var i = 0; i < nodeList.length; i++) {
+				styleNode(nodeList[i], "verticalAlign", "baseline");
+			}
+			for (var i = 0; i < nodeList.length; i++) {
+				styleNode(nodeList[i], "verticalAlign", "super");
+			}
+		}
+		break;
+
 		case "underline":
 		// "Decompose the Range. If the state of the Range for this command is
 		// then true, style each returned Node with property "text-decoration"
@@ -1384,7 +1542,9 @@ function getState(commandId, range) {
 
 	if (commandId != "bold"
 	&& commandId != "italic"
-	&& commandId != "underline") {
+	&& commandId != "underline"
+	&& commandId != "subscript"
+	&& commandId != "superscript") {
 		return false;
 	}
 
@@ -1433,6 +1593,22 @@ function getState(commandId, range) {
 			// text-decoration. Otherwise false."
 			var decoration = getEffectiveStyle(node, "textDecoration");
 			if (decoration !== null && decoration !== "underline") {
+				return false;
+			}
+		} else if (commandId == "subscript") {
+			// "True if every Text node that is effectively contained in the
+			// Range has effective style either null or "sub" for
+			// "vertical-align". Otherwise false."
+			var verticalAlign = getEffectiveStyle(node, "verticalAlign");
+			if (verticalAlign !== null && verticalAlign !== "sub") {
+				return false;
+			}
+		} else if (commandId == "superscript") {
+			// "True if every Text node that is effectively contained in the
+			// Range has effective style either null or "super" for
+			// "vertical-align". Otherwise false."
+			var verticalAlign = getEffectiveStyle(node, "verticalAlign");
+			if (verticalAlign !== null && verticalAlign !== "super") {
 				return false;
 			}
 		}

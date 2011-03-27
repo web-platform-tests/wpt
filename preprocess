@@ -53,6 +53,8 @@ replace = {
     'span': '<code data-anolis-spec=html title="the span element">span</code>',
     'strong': '<code data-anolis-spec=html title="the strong element">strong</code>',
     'style': '<code data-anolis-spec=html title="the style attribute">style</code>',
+    'sub': '<code data-anolis-spec=html title="the sub and sup elements">sub</code>',
+    'sup': '<code data-anolis-spec=html title="the sub and sup elements">sup</code>',
     'text': '<code data-anolis-spec=domcore>Text</code>',
     'treeorder': '<span data-anolis-spec=domcore>tree order</span>',
     'u': '<code data-anolis-spec=html title="the u element">u</code>',

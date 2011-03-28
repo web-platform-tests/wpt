@@ -6,6 +6,7 @@
   <link rel="help" href="http://www.w3.org/TR/REC-CSS1#font-size"/>
   <link rel="author" title="CSS1 Test Suite Contributors" href="http://www.w3.org/Style/CSS/Test/CSS1/current/tsack.html"/>
   <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
+  <meta name="flags" content="invalid"/>
   <style type="text/css"><![CDATA[
    .j { font-size: 3em; color: navy; font-family: Ahem; }
    .a { font-size: 1em; }

@@ -322,6 +322,112 @@ policies and contribution forms [3].
     expose(on_event, 'on_event');
 
     /*
+    * Convert a value to a nice, human-readable string
+    */
+    function format_value(val)
+    {
+        if (val === null)
+        {
+            // typeof is object, so the switch isn't useful
+            return "null";
+        }
+        // In JavaScript, -0 === 0 and String(-0) == "0", so we have to
+        // special-case.
+        if (val === -0 && 1/val === -Infinity)
+        {
+            return "-0";
+        }
+        // Special-case Node objects, since those come up a lot in my tests.  I
+        // ignore namespaces.
+        if (typeof val == "object" && val instanceof Node)
+        {
+            switch (val.nodeType)
+            {
+            case Node.ELEMENT_NODE:
+                var ret = "Element node <";
+                if (val.namespaceURI == "http://www.w3.org/1999/xhtml" || val.namespaceURI === null)
+                {
+                    ret += val.tagName.toLowerCase();
+                }
+                else
+                {
+                    ret += val.tagName;
+                }
+                for (var i = 0; i < val.attributes.length; i++)
+                {
+                    ret += " " + val.attributes[i].name + "=" + format_value(val.attributes[i].value);
+                }
+                ret += ">";
+                return ret;
+            case Node.TEXT_NODE:
+                return "Text node with data " + format_value(val.data) + " and parent " + format_value(val.parentNode);
+            case Node.PROCESSING_INSTRUCTION_NODE:
+                return "ProcessingInstruction node with target " + format_value(val.target) + " and data " + format_value(val.data);
+            case Node.COMMENT_NODE:
+                return "Comment node with data " + format_value(val.data);
+            case Node.DOCUMENT_NODE:
+                return "Document node";
+            case Node.DOCUMENT_TYPE_NODE:
+                return "DocumentType node";
+            case Node.DOCUMENT_FRAGMENT_NODE:
+                return "DocumentFragment node";
+            default:
+                return "Node object of unknown type";
+            }
+        }
+        switch (typeof val)
+        {
+        case "string":
+            for (var i = 0; i < 32; i++)
+            {
+                var replace = "\\";
+                switch (i) {
+                case 0: replace += "0"; break;
+                case 1: replace += "x01"; break;
+                case 2: replace += "x02"; break;
+                case 3: replace += "x03"; break;
+                case 4: replace += "x04"; break;
+                case 5: replace += "x05"; break;
+                case 6: replace += "x06"; break;
+                case 7: replace += "x07"; break;
+                case 8: replace += "b"; break;
+                case 9: replace += "t"; break;
+                case 10: replace += "n"; break;
+                case 11: replace += "v"; break;
+                case 12: replace += "f"; break;
+                case 13: replace += "r"; break;
+                case 14: replace += "x0e"; break;
+                case 15: replace += "x0f"; break;
+                case 16: replace += "x10"; break;
+                case 17: replace += "x11"; break;
+                case 18: replace += "x12"; break;
+                case 19: replace += "x13"; break;
+                case 20: replace += "x14"; break;
+                case 21: replace += "x15"; break;
+                case 22: replace += "x16"; break;
+                case 23: replace += "x17"; break;
+                case 24: replace += "x18"; break;
+                case 25: replace += "x19"; break;
+                case 26: replace += "x1a"; break;
+                case 27: replace += "x1b"; break;
+                case 28: replace += "x1c"; break;
+                case 29: replace += "x1d"; break;
+                case 30: replace += "x1e"; break;
+                case 31: replace += "x1f"; break;
+                }
+                val = val.replace(String.fromCharCode(i), replace);
+            }
+            return '"' + val.replace('"', '\\"') + '"';
+        case "boolean":
+        case "undefined":
+        case "number":
+            return String(val);
+        default:
+            return typeof val + ' "' + val + '"';
+        }
+    }
+
+    /*
     * Assertions
     */
 
@@ -349,7 +455,7 @@ policies and contribution forms [3].
           */
          var message = make_message("assert_equals", description,
                                     "expected ${expected} but got ${actual}",
-                                    {expected:String(expected), actual:String(actual)});
+                                    {expected:format_value(expected), actual:format_value(actual)});
          if (expected !== expected)
          {
              //NaN case

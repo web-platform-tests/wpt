@@ -317,7 +317,7 @@ function processTestResults()
 function getTestResultXmlFiles()
 {
     // points to location of the approvedtest.txt file
-    var uri = "http://test.w3.org/html/tests/harness/approvedtests.txt";
+    var uri = "http://w3c-test.org/html/tests/harness/approvedtests.txt";
     //var uri = "http://localhost/approvedtests.txt";
    
     var xmlhttp = new XMLHttpRequest();
@@ -345,7 +345,7 @@ function getTestResultXmlFiles()
             }
 
             // points to location of xml files
-            oIframe.src = 'http://test.w3.org/html/tests/reporting/';
+            oIframe.src = 'http://w3c-test.org/html/tests/reporting/';
             // for testing
             //oIframe.src = 'http://localhost/reporting/';
         }

@@ -9,7 +9,7 @@ policies and contribution forms [3].
 */
 
 /*
- * == Introducion ==
+ * == Introduction ==
  *
  * This file provides a framework for writing testcases. It is intended to
  * provide a convenient API for making common assertions, and to work both

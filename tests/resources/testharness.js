@@ -77,6 +77,12 @@ policies and contribution forms [3].
  *
  * The properties argument is identical to that for test().
  *
+ * In many cases it is convenient to run a step in response to an event or a
+ * callback. A convenient method of doing this is through the step_func method
+ * which returns a function that, when called runs a test step. For example
+ *
+ * object.some_event = t.step_func(function(e) {assert_true(e.a)});
+ *
  * == Making assertions ==
  *
  * Functions for making assertions start assert_
@@ -747,6 +753,15 @@ policies and contribution forms [3].
                 throw e;
             }
         }
+    };
+
+    Test.prototype.step_func = function(func, this_obj)
+    {
+        return function()
+        {
+            this.step.apply(this, [func, this_obj].concat(
+                                Array.prototype.slice(arguments)));
+        };
     };
 
     Test.prototype.set_timeout = function()

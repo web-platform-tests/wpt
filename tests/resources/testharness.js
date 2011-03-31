@@ -580,7 +580,7 @@ policies and contribution forms [3].
     expose(_assert_own_property("assert_exists"), "assert_exists");
     expose(_assert_own_property("assert_own_property"), "assert_own_property");
 
-    function _ssert_not_exists (object, property_name, description)
+    function assert_not_exists (object, property_name, description)
     {
         var message = make_message(
             "assert_not_exists", description,
@@ -751,7 +751,7 @@ policies and contribution forms [3].
 
         try
         {
-            func.apply(this_obj);
+            func.apply(this_obj, Array.prototype.slice.call(arguments, 2));
         }
         catch(e)
         {
@@ -772,10 +772,11 @@ policies and contribution forms [3].
 
     Test.prototype.step_func = function(func, this_obj)
     {
+        var test_this = this;
         return function()
         {
-            this.step.apply(this, [func, this_obj].concat(
-                                Array.prototype.slice(arguments)));
+            test_this.step.apply(test_this, [func, this_obj].concat(
+                                     Array.prototype.slice.call(arguments)));
         };
     };
 

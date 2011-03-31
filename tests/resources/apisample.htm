@@ -69,6 +69,9 @@
         assert_throws("TEST_ERR", function() {throw e});
     }, "Test assert_throws with non-DOM-exception expected to Fail");
 
+    var t = async_test("Test step_func")
+    setTimeout(t.step_func(function (){assert_true(true); t.done();}, 0));
+
     async_test("test should timeout (fail) with the default of 2 seconds").step(function(){});
 
     async_test("test should timeout (fail) with a custom set timeout value of 1 second",

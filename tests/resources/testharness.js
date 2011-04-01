@@ -77,6 +77,12 @@ policies and contribution forms [3].
  *
  * The properties argument is identical to that for test().
  *
+ * In many cases it is convenient to run a step in response to an event or a
+ * callback. A convenient method of doing this is through the step_func method
+ * which returns a function that, when called runs a test step. For example
+ *
+ * object.some_event = t.step_func(function(e) {assert_true(e.a)});
+ *
  * == Making assertions ==
  *
  * Functions for making assertions start assert_
@@ -208,15 +214,16 @@ policies and contribution forms [3].
  * assert_regexp_match(actual, expected, description)
  *   asserts that /actual/ matches the regexp /expected/
  *
- * assert_exists(object, property_name, description)
- *   asserts that object has an own property property_name
- *
- * assert_not_exists(object, property_name, description)
- *   assert that object does not have own property property_name
+ * assert_own_property(object, property_name, description)
+ *   assert that object has own property property_name
  *
  * assert_inherits(object, property_name, description)
  *   assert that object does not have an own property named property_name
  *   but that property_name is present in the prototype chain for object
+ *
+ * assert_idl_attribute(object, attribute_name, description)
+ *   assert that an object that is an instance of some interface has the
+ *   attribute attribute_name following the conditions specified by WebIDL
  *
  * assert_readonly(object, property_name, description)
  *   assert that property property_name on object is readonly
@@ -234,6 +241,13 @@ policies and contribution forms [3].
  *   asserts if called. Used to ensure that some codepath is *not* taken e.g.
  *   an event does not fire.
  *
+ * assert_exists(object, property_name, description)
+ *   *** deprecated ***
+ *   asserts that object has an own property property_name
+ *
+ * assert_not_exists(object, property_name, description)
+ *   *** deprecated ***
+ *   assert that object does not have own property property_name
  */
 
 (function ()
@@ -552,41 +566,48 @@ policies and contribution forms [3].
     }
     expose(assert_regexp_match, "assert_regexp_match");
 
-    function assert_exists(object, property_name, description)
+
+    function _assert_own_property(name) {
+        return function(object, property_name, description)
+        {
+            var message = make_message(
+                name, description,
+                "expected property ${p} missing", {p:property_name});
+
+            assert(object.hasOwnProperty(property_name), message);
+        };
+    }
+    expose(_assert_own_property("assert_exists"), "assert_exists");
+    expose(_assert_own_property("assert_own_property"), "assert_own_property");
+
+    function assert_not_exists (object, property_name, description)
     {
-         var message = make_message(
-             "assert_exists", description,
-             "expected property ${p} missing", {p:property_name});
+        var message = make_message(
+            "assert_not_exists", description,
+            "unexpected property ${p} found", {p:property_name});
 
-         assert(object.hasOwnProperty(property_name), message);
-    };
-    expose(assert_exists, "assert_exists");
-
-    function assert_not_exists(object, property_name, description)
-    {
-         var message = make_message(
-             "assert_not_exists", description,
-             "unexpected property ${p} found", {p:property_name});
-
-         assert(!object.hasOwnProperty(property_name), message);
+        assert(!object.hasOwnProperty(property_name), message);
     };
     expose(assert_not_exists, "assert_not_exists");
 
-  function assert_inherits(object, property_name, description)
-    {
-         var message = make_message(
-             "assert_inherits", description,
-             "property ${p} found on object expected in prototype chain",
-           {p:property_name});
-         assert(!object.hasOwnProperty(property_name), message);
+    function _assert_inherits(name) {
+        return function (object, property_name, description)
+        {
+            var message = make_message(
+                name, description,
+                "property ${p} found on object expected in prototype chain",
+                {p:property_name});
+            assert(!object.hasOwnProperty(property_name), message);
 
-         message = make_message(
-             "assert_inherits", description,
-             "property ${p} not found in prototype chain",
-           {p:property_name});
-         assert(property_name in object, message);
-    };
-    expose(assert_inherits, "assert_inherits");
+            message = make_message(
+                name, description,
+                "property ${p} not found in prototype chain",
+                {p:property_name});
+            assert(property_name in object, message);
+        };
+    }
+    expose(_assert_inherits("assert_inherits"), "assert_inherits");
+    expose(_assert_inherits("assert_idl_attribute"), "assert_idl_attribute");
 
     function assert_readonly(object, property_name, description)
     {
@@ -730,7 +751,7 @@ policies and contribution forms [3].
 
         try
         {
-            func.apply(this_obj);
+            func.apply(this_obj, Array.prototype.slice.call(arguments, 2));
         }
         catch(e)
         {
@@ -747,6 +768,16 @@ policies and contribution forms [3].
                 throw e;
             }
         }
+    };
+
+    Test.prototype.step_func = function(func, this_obj)
+    {
+        var test_this = this;
+        return function()
+        {
+            test_this.step.apply(test_this, [func, this_obj].concat(
+                                     Array.prototype.slice.call(arguments)));
+        };
     };
 
     Test.prototype.set_timeout = function()

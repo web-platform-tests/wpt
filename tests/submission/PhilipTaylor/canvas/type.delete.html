@@ -6,7 +6,7 @@
 <body class="show_output">
 
 <h1><a href="index.type.html">type</a>.delete</h1>
-<p class="desc">window.HTMLCanvasElement interface object is DontDelete</p>
+<p class="desc">window.HTMLCanvasElement interface object is [[Configurable]]</p>
 
 <div class="refs">Spec references:
 <ul>
@@ -21,8 +21,8 @@
 <script>
 _addTest(function(canvas, ctx) {
 
-delete window.HTMLCanvasElement;
-_assert(window.HTMLCanvasElement, "window.HTMLCanvasElement");
+_assertSame(delete window.HTMLCanvasElement, true, "delete window.HTMLCanvasElement", "true");
+_assertSame(window.HTMLCanvasElement, undefined, "window.HTMLCanvasElement", "undefined");
 
 
 });

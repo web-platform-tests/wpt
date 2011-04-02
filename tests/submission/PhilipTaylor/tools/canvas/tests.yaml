@@ -40,13 +40,13 @@
     @assert window.HTMLCanvasElement;
 
 - name: type.delete
-  desc: window.HTMLCanvasElement interface object is DontDelete
+  desc: window.HTMLCanvasElement interface object is [[Configurable]]
   notes: *bindings
   testing:
     - canvas.type
   code: |
-    delete window.HTMLCanvasElement;
-    @assert window.HTMLCanvasElement;
+    @assert delete window.HTMLCanvasElement === true;
+    @assert window.HTMLCanvasElement === undefined;
 
 - name: type.prototype
   desc: window.HTMLCanvasElement has prototype, which is { ReadOnly, DontDelete }. prototype has getContext, which is not

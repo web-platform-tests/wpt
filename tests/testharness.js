@@ -9,7 +9,7 @@ policies and contribution forms [3].
 */
 
 /*
- * == Introducion ==
+ * == Introduction ==
  *
  * This file provides a framework for writing testcases. It is intended to
  * provide a convenient API for making common assertions, and to work both
@@ -19,7 +19,7 @@ policies and contribution forms [3].
  * == Basic Usage ==
  *
  * To use this file, import the script into the test document:
- * <script src="http://test.w3.org/resources/testharness.js"></script>
+ * <script src="http://w3c-test.org/resources/testharness.js"></script>
  *
  * Within each file one may define one or more tests. Each test is atomic
  * in the sense that a single test has a single result (pass/fail/timeout).
@@ -32,9 +32,9 @@ policies and contribution forms [3].
  *
  * == Synchronous Tests ==
  *
- * To create a sunchronous test use the test() function:
+ * To create a synchronous test use the test() function:
  *
- * test(test_function, name)
+ * test(test_function, name, properties)
  *
  * test_function is a function that contains the code to test. For example a
  * trivial passing test would be:
@@ -42,6 +42,15 @@ policies and contribution forms [3].
  * test(function() {assert_true(true)}, "assert_true with true")
  *
  * The function passed in is run in the test() call.
+ *
+ * properties is an object that overrides default test properties. The recognised properties
+ * are:
+ *    timeout - the test timeout in ms
+ *
+ * e.g.
+ * test(test_function, "Sample test", {timeout:1000})
+ *
+ * would run test_function with a timeout of 1s.
  *
  * == Asynchronous Tests ==
  *
@@ -52,6 +61,9 @@ policies and contribution forms [3].
  *
  * To create a test, one starts by getting a Test object using async_test:
  *
+ * async_test(name, properties)
+ *
+ * e.g.
  * var t = async_test("Simple async test")
  *
  * Assertions can be added to the test by calling the step method of the test
@@ -62,6 +74,14 @@ policies and contribution forms [3].
  * When all the steps are complete, the done() method must be called:
  *
  * t.done();
+ *
+ * The properties argument is identical to that for test().
+ *
+ * In many cases it is convenient to run a step in response to an event or a
+ * callback. A convenient method of doing this is through the step_func method
+ * which returns a function that, when called runs a test step. For example
+ *
+ * object.some_event = t.step_func(function(e) {assert_true(e.a)});
  *
  * == Making assertions ==
  *
@@ -175,6 +195,59 @@ policies and contribution forms [3].
  * These are given the same arguments as the corresponding internal callbacks
  * described above.
  *
+ * == List of assertions ==
+ *
+ * assert_true(actual, description)
+ *   asserts that /actual/ is strictly true
+ *
+ * assert_false(actual, description)
+ *   asserts that /actual/ is strictly false
+ *
+ * assert_equals(actual, expected, description)
+ *   asserts that /actual/ is strictly equal to /expected/
+ *
+ * assert_array_equals(actual, expected, description)
+ *   asserts that /actual/ and /expected/ have the same length and the value of
+ *   each indexed property in /actual/ is the strictly equal to the corresponding
+ *   property value in /expected/
+ *
+ * assert_regexp_match(actual, expected, description)
+ *   asserts that /actual/ matches the regexp /expected/
+ *
+ * assert_own_property(object, property_name, description)
+ *   assert that object has own property property_name
+ *
+ * assert_inherits(object, property_name, description)
+ *   assert that object does not have an own property named property_name
+ *   but that property_name is present in the prototype chain for object
+ *
+ * assert_idl_attribute(object, attribute_name, description)
+ *   assert that an object that is an instance of some interface has the
+ *   attribute attribute_name following the conditions specified by WebIDL
+ *
+ * assert_readonly(object, property_name, description)
+ *   assert that property property_name on object is readonly
+ *
+ * assert_throws(code_or_object, func, description)
+ *   code_or_object - either a DOM error code as a string e.g. "NAMESPACE_ERR"
+ *                    or an object that should be thrown
+ *   func - a function that should throw
+ *
+ *   assert that func throws either a DOMException with error code
+ *   code_or_object (if code_or_object is a string) or that it throws an object
+ *   code_or_object
+ *
+ * assert_unreached(description)
+ *   asserts if called. Used to ensure that some codepath is *not* taken e.g.
+ *   an event does not fire.
+ *
+ * assert_exists(object, property_name, description)
+ *   *** deprecated ***
+ *   asserts that object has an own property property_name
+ *
+ * assert_not_exists(object, property_name, description)
+ *   *** deprecated ***
+ *   assert that object does not have own property property_name
  */
 
 (function ()
@@ -185,8 +258,8 @@ policies and contribution forms [3].
     var default_test_timeout = 2000;
 
     /*
-    * API functions
-    */
+     * API functions
+     */
 
     var name_counter = 0;
     function next_default_name()
@@ -263,13 +336,119 @@ policies and contribution forms [3].
     expose(on_event, 'on_event');
 
     /*
-    * Assertions
-    */
+     * Convert a value to a nice, human-readable string
+     */
+    function format_value(val)
+    {
+        if (val === null)
+        {
+            // typeof is object, so the switch isn't useful
+            return "null";
+        }
+        // In JavaScript, -0 === 0 and String(-0) == "0", so we have to
+        // special-case.
+        if (val === -0 && 1/val === -Infinity)
+        {
+            return "-0";
+        }
+        // Special-case Node objects, since those come up a lot in my tests.  I
+        // ignore namespaces.
+        if (typeof val == "object" && val instanceof Node)
+        {
+            switch (val.nodeType)
+            {
+            case Node.ELEMENT_NODE:
+                var ret = "Element node <";
+                if (val.namespaceURI == "http://www.w3.org/1999/xhtml" || val.namespaceURI === null)
+                {
+                    ret += val.tagName.toLowerCase();
+                }
+                else
+                {
+                    ret += val.tagName;
+                }
+                for (var i = 0; i < val.attributes.length; i++)
+                {
+                    ret += " " + val.attributes[i].name + "=" + format_value(val.attributes[i].value);
+                }
+                ret += ">";
+                return ret;
+            case Node.TEXT_NODE:
+                return "Text node with data " + format_value(val.data) + " and parent " + format_value(val.parentNode);
+            case Node.PROCESSING_INSTRUCTION_NODE:
+                return "ProcessingInstruction node with target " + format_value(val.target) + " and data " + format_value(val.data);
+            case Node.COMMENT_NODE:
+                return "Comment node with data " + format_value(val.data);
+            case Node.DOCUMENT_NODE:
+                return "Document node";
+            case Node.DOCUMENT_TYPE_NODE:
+                return "DocumentType node";
+            case Node.DOCUMENT_FRAGMENT_NODE:
+                return "DocumentFragment node";
+            default:
+                return "Node object of unknown type";
+            }
+        }
+        switch (typeof val)
+        {
+        case "string":
+            for (var i = 0; i < 32; i++)
+            {
+                var replace = "\\";
+                switch (i) {
+                case 0: replace += "0"; break;
+                case 1: replace += "x01"; break;
+                case 2: replace += "x02"; break;
+                case 3: replace += "x03"; break;
+                case 4: replace += "x04"; break;
+                case 5: replace += "x05"; break;
+                case 6: replace += "x06"; break;
+                case 7: replace += "x07"; break;
+                case 8: replace += "b"; break;
+                case 9: replace += "t"; break;
+                case 10: replace += "n"; break;
+                case 11: replace += "v"; break;
+                case 12: replace += "f"; break;
+                case 13: replace += "r"; break;
+                case 14: replace += "x0e"; break;
+                case 15: replace += "x0f"; break;
+                case 16: replace += "x10"; break;
+                case 17: replace += "x11"; break;
+                case 18: replace += "x12"; break;
+                case 19: replace += "x13"; break;
+                case 20: replace += "x14"; break;
+                case 21: replace += "x15"; break;
+                case 22: replace += "x16"; break;
+                case 23: replace += "x17"; break;
+                case 24: replace += "x18"; break;
+                case 25: replace += "x19"; break;
+                case 26: replace += "x1a"; break;
+                case 27: replace += "x1b"; break;
+                case 28: replace += "x1c"; break;
+                case 29: replace += "x1d"; break;
+                case 30: replace += "x1e"; break;
+                case 31: replace += "x1f"; break;
+                }
+                val = val.replace(String.fromCharCode(i), replace);
+            }
+            return '"' + val.replace('"', '\\"') + '"';
+        case "boolean":
+        case "undefined":
+        case "number":
+            return String(val);
+        default:
+            return typeof val + ' "' + val + '"';
+        }
+    }
+
+    /*
+     * Assertions
+     */
 
     function assert_true(actual, description)
     {
         var message = make_message("assert_true", description,
-                                   "expected true got ${actual}", {actual:actual});
+                                   "expected true got ${actual}", {actual:String(actual)});
         assert(actual === true, message);
     };
     expose(assert_true, "assert_true");
@@ -277,7 +456,7 @@ policies and contribution forms [3].
     function assert_false(actual, description)
     {
         var message = make_message("assert_false", description,
-                                   "expected false got ${actual}", {actual:actual});
+                                   "expected false got ${actual}", {actual:String(actual)});
         assert(actual === false, message);
     };
     expose(assert_false, "assert_false");
@@ -290,7 +469,7 @@ policies and contribution forms [3].
           */
          var message = make_message("assert_equals", description,
                                     "expected ${expected} but got ${actual}",
-                                    {expected:String(expected), actual:String(actual)});
+                                    {expected:format_value(expected), actual:format_value(actual)});
          if (expected !== expected)
          {
              //NaN case
@@ -376,25 +555,59 @@ policies and contribution forms [3].
     }
     expose(assert_array_equals, "assert_array_equals");
 
-    function assert_exists(object, property_name, description)
-    {
-         var message = make_message(
-             "assert_exists", description,
-             "expected property ${p} missing", {p:property_name});
+    function assert_regexp_match(actual, expected, description) {
+        /*
+         * Test if a string (actual) matches a regexp (expected)
+         */
+        var message = make_message("assert_regexp_match", description,
+                                   "expected ${expected} but got ${actual}",
+                                   {expected:String(expected), actual:String(actual)});
+        assert(expected.test(actual), message);
+    }
+    expose(assert_regexp_match, "assert_regexp_match");
 
-         assert(object.hasOwnProperty(property_name), message);
-    };
-    expose(assert_exists, "assert_exists");
+
+    function _assert_own_property(name) {
+        return function(object, property_name, description)
+        {
+            var message = make_message(
+                name, description,
+                "expected property ${p} missing", {p:property_name});
+
+            assert(object.hasOwnProperty(property_name), message);
+        };
+    }
+    expose(_assert_own_property("assert_exists"), "assert_exists");
+    expose(_assert_own_property("assert_own_property"), "assert_own_property");
 
     function assert_not_exists(object, property_name, description)
     {
-         var message = make_message(
-             "assert_not_exists", description,
-             "unexpected property ${p} found", {p:property_name});
+        var message = make_message(
+            "assert_not_exists", description,
+            "unexpected property ${p} found", {p:property_name});
 
-         assert(!object.hasOwnProperty(property_name), message);
+        assert(!object.hasOwnProperty(property_name), message);
     };
     expose(assert_not_exists, "assert_not_exists");
+
+    function _assert_inherits(name) {
+        return function (object, property_name, description)
+        {
+            var message = make_message(
+                name, description,
+                "property ${p} found on object expected in prototype chain",
+                {p:property_name});
+            assert(!object.hasOwnProperty(property_name), message);
+
+            message = make_message(
+                name, description,
+                "property ${p} not found in prototype chain",
+                {p:property_name});
+            assert(property_name in object, message);
+        };
+    }
+    expose(_assert_inherits("assert_inherits"), "assert_inherits");
+    expose(_assert_inherits("assert_idl_attribute"), "assert_idl_attribute");
 
     function assert_readonly(object, property_name, description)
     {
@@ -538,7 +751,7 @@ policies and contribution forms [3].
 
         try
         {
-            func.apply(this_obj);
+            func.apply(this_obj, Array.prototype.slice.call(arguments, 2));
         }
         catch(e)
         {
@@ -555,6 +768,16 @@ policies and contribution forms [3].
                 throw e;
             }
         }
+    };
+
+    Test.prototype.step_func = function(func, this_obj)
+    {
+        var test_this = this;
+        return function()
+        {
+            test_this.step.apply(test_this, [func, this_obj].concat(
+                                     Array.prototype.slice.call(arguments)));
+        };
     };
 
     Test.prototype.set_timeout = function()
@@ -589,9 +812,9 @@ policies and contribution forms [3].
     };
 
 
-   /*
-    * Harness
-    */
+    /*
+     * Harness
+     */
 
     function TestsStatus()
     {
@@ -621,6 +844,7 @@ policies and contribution forms [3].
         //All tests can't be done until the load event fires
         this.all_loaded = false;
         this.wait_for_finish = false;
+        this.processing_callbacks = false;
 
         this.timeout_length = default_timeout;
         this.timeout_id = null;
@@ -709,7 +933,8 @@ policies and contribution forms [3].
     };
 
     Tests.prototype.all_done = function() {
-        return this.all_loaded && this.num_pending === 0 && !this.wait_for_finish;
+        return (this.all_loaded && this.num_pending === 0 &&
+                !this.wait_for_finish && !this.processing_callbacks);
     };
 
     Tests.prototype.start = function() {
@@ -753,6 +978,7 @@ policies and contribution forms [3].
 
     Tests.prototype.notify_result = function(test) {
         var this_obj = this;
+        this.processing_callbacks = true;
         forEach(this.test_done_callbacks,
                 function(callback)
                 {
@@ -772,6 +998,7 @@ policies and contribution forms [3].
                 }
             }
         }
+        this.processing_callbacks = false;
         if (this.all_done())
         {
             this.complete();
@@ -790,7 +1017,6 @@ policies and contribution forms [3].
     Tests.prototype.notify_complete = function()
     {
         clearTimeout(this.timeout_id);
-
         var this_obj = this;
         if (this.status.status === null)
         {
@@ -1076,7 +1302,7 @@ policies and contribution forms [3].
                 rv.push(components[i]);
                 if (components[i+1])
                 {
-                    rv.push(substitutions[components[i+1]]);
+                    rv.push(String(substitutions[components[i+1]]));
                 }
             }
             return rv;
@@ -1095,7 +1321,7 @@ policies and contribution forms [3].
         function substitute_attrs(attrs, rv)
         {
             rv[1] = {};
-            for (name in template[1])
+            for (var name in template[1])
             {
                 if (attrs.hasOwnProperty(name))
                 {
@@ -1148,7 +1374,7 @@ policies and contribution forms [3].
         else
         {
             var element = document.createElement(template[0]);
-            for (name in template[1]) {
+            for (var name in template[1]) {
                 if (template[1].hasOwnProperty(name))
                 {
                     element.setAttribute(name, template[1][name]);
@@ -1212,7 +1438,7 @@ policies and contribution forms [3].
 
     function make_message(function_name, description, error, substitutions)
     {
-        var message = substitute([["span", {"class":"assert"}, "${function_name}:"],
+        var message = substitute([["span", {"class":"assert"}, "${function_name}: "],
                                   function()
                                   {
                                       if (description) {

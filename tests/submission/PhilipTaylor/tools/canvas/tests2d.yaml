@@ -8608,11 +8608,13 @@
   expected: green
 
 - name: 2d.drawImage.null
-  #mozilla: { bug: TODO }
+  desc: Both null and undefined are mapped to null by WebIDL, so a TYPE_MISMATCH_ERR is thrown
+  notes: *bindings
   testing:
     - 2d.drawImage.type
   code: |
-    @assert throws TYPE_MISMATCH_ERR ctx.drawImage(null, 0, 0); @moz-todo
+    @assert throws TYPE_MISMATCH_ERR ctx.drawImage(null, 0, 0);
+    @assert throws TYPE_MISMATCH_ERR ctx.drawImage(undefined, 0, 0);
 
 - name: 2d.drawImage.wrongtype
   #mozilla: { bug: TODO }
@@ -8621,9 +8623,8 @@
   testing:
     - 2d.drawImage.type
   code: |
-    @assert throws TypeError ctx.drawImage(undefined, 0, 0);
-    @assert throws TypeError ctx.drawImage(0, 0, 0);
-    @assert throws TypeError ctx.drawImage("", 0, 0);
+    @assert throws TypeError ctx.drawImage(0, 0, 0); @moz-todo
+    @assert throws TypeError ctx.drawImage("", 0, 0); @moz-todo
     @assert throws TypeError ctx.drawImage(document.createElement('p'), 0, 0); @moz-todo
 
 - name: 2d.drawImage.floatsource

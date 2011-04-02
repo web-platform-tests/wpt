@@ -1579,7 +1579,7 @@
     - 2d.serializecolour.transparent
   code: |
     ctx.fillStyle = 'rgba(0,0,0,0)';
-    @assert ctx.fillStyle == 'rgba(0, 0, 0, 0.0)';
+    @assert ctx.fillStyle == 'rgba(0, 0, 0, 0)';
 
 - name: 2d.fillStyle.default
   testing:
@@ -4454,7 +4454,7 @@
   testing:
     - 2d.shadow.color.initial
   code: |
-    @assert ctx.shadowColor === 'rgba(0, 0, 0, 0.0)';
+    @assert ctx.shadowColor === 'rgba(0, 0, 0, 0)';
 
 - name: 2d.shadow.attributes.shadowColor.valid
   testing:
@@ -4465,7 +4465,7 @@
     @assert ctx.shadowColor === '#00ff00';
 
     ctx.shadowColor = 'RGBA(0,255, 0,0)';
-    @assert ctx.shadowColor === 'rgba(0, 255, 0, 0.0)';
+    @assert ctx.shadowColor === 'rgba(0, 255, 0, 0)';
 
 - name: 2d.shadow.attributes.shadowColor.invalid
   testing:

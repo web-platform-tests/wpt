@@ -9147,7 +9147,7 @@
     @nonfinite @assert throws NOT_SUPPORTED_ERR ctx.createImageData(<10 Infinity -Infinity NaN>, <10 Infinity -Infinity NaN>); @moz-todo
 
 - name: 2d.imageData.create1.zero
-  desc: createImageData(null) throws INDEX_SIZE_ERR
+  desc: createImageData(null) throws NOT_SUPPORTED_ERR
   testing:
     - 2d.imageData.create.null
   code: |

@@ -440,6 +440,7 @@ policies and contribution forms [3].
             return typeof val + ' "' + val + '"';
         }
     }
+    expose(format_value, "format_value");
 
     /*
      * Assertions

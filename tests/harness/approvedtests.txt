@@ -921,3 +921,4 @@ http://w3c-test.org/html/tests/approved/xhtml5/html_style_in_comment.xhtml
 http://w3c-test.org/html/tests/approved/xhtml5/img_border_percent.xhtml
 http://w3c-test.org/html/tests/approved/xhtml5/object_border_perc.xhtml
 http://w3c-test.org/html/tests/approved/xhtml5/object_border_pixel.xhtml
+http://w3c-test.org/html/tests/approved/base64.html

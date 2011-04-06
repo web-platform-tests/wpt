@@ -184,18 +184,18 @@ like this.
 
 <h2 id=definitions><span class=secno>3 </span>Definitions</h2>
 
-<p>A <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> is an <dfn id=html-element>HTML element</dfn> if it is an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a> whose
+<p>A <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> is an <dfn id=html-element>HTML element</dfn> if it is an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a> whose
 <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-namespace title=concept-element-namespace>namespace</a> is the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#html-namespace>HTML namespace</a>.  An <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#attr><code class=external data-anolis-spec=domcore>Attr</code></a> is an <dfn id=html-attribute>HTML attribute</dfn> if its
 <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-attr-namespace title=concept-attr-namespace>namespace</a> is
 the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#html-namespace>HTML namespace</a>.
 
-<p>A <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> is <dfn id=effectively-contained>effectively contained</dfn> in a <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a> if either it
-is <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a>; or it is the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a>
+<p>A <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> is <dfn id=effectively-contained>effectively contained</dfn> in a <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> if either it
+is <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>; or it is the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a>
 <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>, it is a <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> node, and its <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> is different from the
-<a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a>; or it is the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a>
-<a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>, it is a <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> node, and the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a>
+<a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a>; or it is the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a>
+<a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>, it is a <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> node, and the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a>
 <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a> is not 0; or it has at least one <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>, and all its
-<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a> are <a href=#effectively-contained>effectively contained</a> in the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a>.
+<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a> are <a href=#effectively-contained>effectively contained</a> in the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>.
 
 <p class=XXX>A node is supposed to be <a href=#effectively-contained>effectively contained</a> in a
 range if and only if it would be <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> after the range is <a href=#decompose title=decompose>decomposed</a>.  Is this actually right?
@@ -207,20 +207,20 @@ following algorithm:
   <li>Let <var title="">selection</var> be the result of calling <a href=http://html5.org/specs/dom-range.html#dom-document-getselection><code class=external data-anolis-spec=domrange title=dom-Document-getSelection>getSelection()</code></a> on
   the <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#document><code class=external data-anolis-spec=domcore>Document</code></a>.
 
-  <li>If there are no <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a>s associated with <var title="">selection</var>,
+  <li>If there are no <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>ranges</a> associated with <var title="">selection</var>,
   return null.
 
   <li>Let <var title="">start</var> be the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point title=concept-boundary-point>boundary point</a> with the earliest
-  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-bp-position title=concept-bp-position>position</a> among all of <var title="">selection</var>'s <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a>s'
+  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-bp-position title=concept-bp-position>position</a> among all of <var title="">selection</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>ranges</a>'
   <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>starts</a>.
 
-  <li>Return the last <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a> in <var title="">selection</var> whose <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a>
+  <li>Return the last <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> in <var title="">selection</var> whose <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a>
   is <var title="">start</var>.
 
   <p class=XXX>Double-check that this is what Firefox actually does.  It seems
   pretty baroque.
 
-  <p class=note>In user agents that support only one <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a> per
+  <p class=note>In user agents that support only one <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> per
   <a href=http://html5.org/specs/dom-range.html#selection><code class=external data-anolis-spec=domrange>Selection</code></a>, the active range is simply the only one in the selection.
 </ol>
 
@@ -237,7 +237,7 @@ unwrappable element.  This would produce shorter markup in many cases, but
 would also cause problems for things like background-color that do something
 different on block elements.
 
-<p>The <dfn id=effective-style>effective style</dfn> of a <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> <var title="">node</var> for a given
+<p>The <dfn id=effective-style>effective style</dfn> of a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> <var title="">node</var> for a given
 <var title="">property</var> is returned by the following algorithm, which will return
 either a string or null:
 
@@ -424,13 +424,13 @@ which at least one of the following holds:
 <a href=#styling-element>styling element</a> which <a href=#specified-style title="specified
 style">specifies</a> at most one CSS property.
 
-<p>When the user agent is to move a <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> to a new location, <dfn id=preserving-ranges>preserving
-ranges</dfn>, it must remove the <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> from its original <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>, then
+<p>When the user agent is to move a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> to a new location, <dfn id=preserving-ranges>preserving
+ranges</dfn>, it must remove the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> from its original <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>, then
 insert it in the new location.  In doing so, however, it must ignore the
 regular <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#range-mutation-rules>range mutation rules</a>, and instead follow these rules:
 
 <ol>
-  <li>Let <var title="">node</var> be the moved <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a>, <var title="">old parent</var> and
+  <li>Let <var title="">node</var> be the moved <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>, <var title="">old parent</var> and
   <var title="">old index</var> be the old <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> and <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a>, and <var title="">new
   parent</var> and <var title="">new index</var> be the new <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> and <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a>.
 
@@ -464,7 +464,7 @@ though the method had actually been called from JavaScript.  In particular,
 if the author has overridden the method with a custom method, the standard
 method must be run rather than the custom one.
 
-<p>When a list or set of <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a>s is assigned to a variable without specifying
+<p>When a list or set of <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a> is assigned to a variable without specifying
 the order, they must be initially in <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#tree-order>tree order</a>, if they share a root.
 (If they don't share a root, the order will be specified.)  When the user agent
 is instructed to run particular steps for each member of a list, it must do so
@@ -472,7 +472,7 @@ sequentially in the list's order.
 
 
 <h2 id=decomposing-a-range-into-nodes><span class=secno>4 </span>Decomposing a range into nodes</h2>
-<p>When a user agent is to <dfn id=decompose>decompose</dfn> a <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a> <var title="">range</var>,
+<p>When a user agent is to <dfn id=decompose>decompose</dfn> a <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> <var title="">range</var>,
 it must run the following steps.
 
 <p class=note>For this algorithm to be correct, it is essential that user
@@ -508,7 +508,7 @@ agents follow the <a class=external data-anolis-spec=domrange href=http://html5.
   <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> of <var title="">cloned range</var> to (<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a>
   <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>, 1 + <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> of <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>).
 
-  <li>Return a list consisting of every <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in <var title="">cloned
+  <li>Return a list consisting of every <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in <var title="">cloned
   range</var> in <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#tree-order>tree order</a>, omitting any whose <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is also
   <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in <var title="">cloned range</var>.
 </ol>
@@ -595,12 +595,12 @@ id=foo> into <span id=foo> instead of <font id=foo>, but probably not worth it.
 
   <li>Remove <var title="">element</var> from its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
 
-  <li>Return the one-<a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> list consisting of <var title="">new element</var>.
+  <li>Return the one-<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> list consisting of <var title="">new element</var>.
 </ol>
 
 
 <h2 id=pushing-down-styles><span class=secno>6 </span>Pushing down styles</h2>
-<p>When a user agent is to <dfn id=push-down-styles>push down styles</dfn> to a <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a>
+<p>When a user agent is to <dfn id=push-down-styles>push down styles</dfn> to a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>
 <var title="">node</var>, given a CSS property name <var title="">property</var> and a new value
 <var title="">new value</var>, it must run the following steps:
 
@@ -645,7 +645,7 @@ with a <a href=http://www.whatwg.org/html/#the-style-attribute><code class=exter
 
   <li>Let <var title="">current ancestor</var> be <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
 
-  <li>Let <var title="">ancestor list</var> be a list of <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a>s, initially empty.
+  <li>Let <var title="">ancestor list</var> be a list of <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a>, initially empty.
 
   <li>While <var title="">current ancestor</var> is an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a> and the
   <a href=#effective-style>effective style</a> of <var title="">property</var> is not <var title="">new
@@ -710,7 +710,7 @@ with a <a href=http://www.whatwg.org/html/#the-style-attribute><code class=exter
 
 
 <h2 id=forcing-the-style-of-a-node><span class=secno>7 </span>Forcing the style of a node</h2>
-<p>When a user agent is to <dfn id=force-the-style>force the style</dfn> of a <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a>
+<p>When a user agent is to <dfn id=force-the-style>force the style</dfn> of a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>
 <var title="">node</var>, given a CSS property name <var title="">property</var> and a new value
 <var title="">new value</var>, it must run the following steps.
 
@@ -836,7 +836,7 @@ After forcing the style, descendants might still have different style.
     omitting any that are <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a>s whose <a href=#specified-style>specified style</a> for
     <var title="">property</var> is neither null nor equal to <var title="">new value</var>.
 
-    <li><a href=#force-the-style>Force the style</a> of each <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> in <var title="">children</var>,
+    <li><a href=#force-the-style>Force the style</a> of each <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> in <var title="">children</var>,
     with <var title="">property</var> and <var title="">new value</var> as in this invocation of
     the algorithm.
     <!-- This means that if it has no children, we do nothing.  IE9 inserts an
@@ -939,7 +939,7 @@ After forcing the style, descendants might still have different style.
       omitting any that are <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a>s whose <a href=#specified-style>specified style</a> for
       <var title="">property</var> is neither null nor equal to <var title="">new value</var>.
 
-      <li><a href=#force-the-style>Force the style</a> of each <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> in <var title="">children</var>,
+      <li><a href=#force-the-style>Force the style</a> of each <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> in <var title="">children</var>,
       with <var title="">property</var> and <var title="">new value</var> as in this invocation
       of the algorithm.
     </ol>
@@ -948,7 +948,7 @@ After forcing the style, descendants might still have different style.
 
 
 <h2 id=styling-a-node><span class=secno>8 </span>Styling a node</h2>
-<p>When a user agent is to <dfn id=style>style</dfn> a <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> <var title="">node</var>, it must
+<p>When a user agent is to <dfn id=style>style</dfn> a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> <var title="">node</var>, it must
 run the following steps.  There are two inputs: a CSS property name
 <var title="">property</var> and a new value <var title="">new value</var>.
 
@@ -1155,14 +1155,14 @@ like set the document background color.  Feedback appreciated on this point.
 
 <dt><code title=""><dfn id=command-bold title=command-bold>bold</dfn></code>
 
-<dd><strong>Action</strong>: <a href=#decompose>Decompose</a> the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a>.  If the
-state of the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a> for this command is then true, <a href=#style>style</a> each
-returned <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> with <var title="">property</var> "font-weight" and <var title="">new
+<dd><strong>Action</strong>: <a href=#decompose>Decompose</a> the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>.  If the
+state of the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> for this command is then true, <a href=#style>style</a> each
+returned <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> with <var title="">property</var> "font-weight" and <var title="">new
 value</var> "normal".  Otherwise, <a href=#style>style</a> them with <var title="">new
 value</var> "bold".
 
 <dd><strong>State</strong>: True if every <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> node that is
-<a href=#effectively-contained>effectively contained</a> in the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a> has <a href=#effective-style>effective
+<a href=#effectively-contained>effectively contained</a> in the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> has <a href=#effective-style>effective
 style</a> either null or at least 700 for font-weight.  Otherwise false.
 <!-- For bold and similar commands, IE 9 RC seems to consider the state true or
 false depending on the first element.  All other browsers follow the same
@@ -1193,7 +1193,7 @@ boolean, so I'll go with Firefox and Opera. -->
   specify "#" for the value, or the author can rewrite it, so it's not like
   this makes the API less useful. -->
 
-  <li>Let <var title="">node list</var> be the result of <a href=#decompose title=decompose>decomposing</a> the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a>.
+  <li>Let <var title="">node list</var> be the result of <a href=#decompose title=decompose>decomposing</a> the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>.
 
   <li>For each <var title="">node</var> in <var title="">node list</var>, in order:
 
@@ -1268,8 +1268,8 @@ boolean, so I'll go with Firefox and Opera. -->
 
 <dt><code title=""><dfn id=command-fontname title=command-fontname>fontName</dfn></code>
 
-<dd><strong>Action</strong>: <a href=#decompose>Decompose</a> the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a>, then
-<a href=#style>style</a> each returned <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> with <var title="">property</var> equal to
+<dd><strong>Action</strong>: <a href=#decompose>Decompose</a> the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>, then
+<a href=#style>style</a> each returned <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> with <var title="">property</var> equal to
 "font-family" and <var title="">new value</var> equal to <var title="">value</var>.
 <!-- UAs differ a bit in the details here:
 
@@ -1332,8 +1332,8 @@ Firefox seems to stick to just CSS colors, so with any luck that works.
 except in Opera, which tries to parse it in some crazy way and winds up with
 "#00b025".  rgba() colors don't work as uniformly, but I don't see any reason
 to prohibit them.  Best to just match CSS. -->
-Otherwise, it must <a href=#decompose>decompose</a> the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a>, then
-<a href=#style>style</a> each returned <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> with <var title="">property</var> equal to
+Otherwise, it must <a href=#decompose>decompose</a> the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>, then
+<a href=#style>style</a> each returned <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> with <var title="">property</var> equal to
 "color" and <var title="">new value</var> equal to <var title="">value</var>.
 
 <dd><strong>State</strong>: Always false.
@@ -1367,7 +1367,7 @@ sense; see the comment for backColor. -->
 
 <dd><strong>Action</strong>: If <var title="">value</var> is not a valid CSS color,
 do nothing and abort these steps.  Otherwise, <a href=#decompose>decompose</a> the
-<a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a>, then <a href=#style>style</a> each returned <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> with
+<a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>, then <a href=#style>style</a> each returned <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> with
 <var title="">property</var> equal to "background-color" and <var title="">new value</var> equal
 to <var title="">value</var>.
 
@@ -1390,9 +1390,9 @@ to <var title="">value</var>.
   immediately if the URL is empty.  Firefox 4b11 bails out on an empty string,
   but the other three browsers I tested stick in the <img> anyway. -->
 
-  <li>Run <a href=http://html5.org/specs/dom-range.html#dom-range-deletecontents><code class=external data-anolis-spec=domrange title=dom-Range-deleteContents>deleteContents()</code></a> on the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a>.
+  <li>Run <a href=http://html5.org/specs/dom-range.html#dom-range-deletecontents><code class=external data-anolis-spec=domrange title=dom-Range-deleteContents>deleteContents()</code></a> on the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>.
 
-  <li>Let (<var title="">node</var>, <var title="">offset</var>) be the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a>'s
+  <li>Let (<var title="">node</var>, <var title="">offset</var>) be the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>'s
   <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a>.
 
   <li>Let <var title="">img</var> be a new <a href=#html-element>HTML element</a> with
@@ -1421,14 +1421,14 @@ to <var title="">value</var>.
 
 <dt><code title=""><dfn id=command-italic title=command-italic>italic</dfn></code>
 
-<dd><strong>Action</strong>: <a href=#decompose>Decompose</a> the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a>.  If the
-state of the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a> for this command is then true, <a href=#style>style</a> each
-returned <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> with <var title="">property</var> "font-style" and <var title="">new
+<dd><strong>Action</strong>: <a href=#decompose>Decompose</a> the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>.  If the
+state of the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> for this command is then true, <a href=#style>style</a> each
+returned <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> with <var title="">property</var> "font-style" and <var title="">new
 value</var> "normal".  Otherwise, <a href=#style>style</a> them with <var title="">new
 value</var> "italic".
 
 <dd><strong>State</strong>: True if every <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> node that is
-<a href=#effectively-contained>effectively contained</a> in the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a> has <a href=#effective-style>effective
+<a href=#effectively-contained>effectively contained</a> in the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> has <a href=#effective-style>effective
 style</a> either null, "italic", or "oblique" for font-style.  Otherwise
 false.
 
@@ -1451,15 +1451,15 @@ true, otherwise false.
 
 <dt><code title=""><dfn id=command-subscript title=command-subscript>subscript</dfn></code>
 
-<dd><strong>Action</strong>: <a href=#decompose>Decompose</a> the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a>.  If the
-state of the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a> for this command is then true, <a href=#style>style</a> each
-returned <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> with <var title="">property</var> "vertical-align" and <var title="">new
+<dd><strong>Action</strong>: <a href=#decompose>Decompose</a> the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>.  If the
+state of the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> for this command is then true, <a href=#style>style</a> each
+returned <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> with <var title="">property</var> "vertical-align" and <var title="">new
 value</var> "baseline".  Otherwise, <a href=#style>style</a> them with <var title="">new
-value</var> "baseline", then <a href=#decompose>decompose</a> the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a> again and
-<a href=#style>style</a> each returned <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> with <var title="">new value</var> "sub".
+value</var> "baseline", then <a href=#decompose>decompose</a> the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> again and
+<a href=#style>style</a> each returned <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> with <var title="">new value</var> "sub".
 
 <dd><strong>State</strong>: True if every <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> node that is
-<a href=#effectively-contained>effectively contained</a> in the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a> has <a href=#effective-style>effective
+<a href=#effectively-contained>effectively contained</a> in the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> has <a href=#effective-style>effective
 style</a> either null or "sub" for "vertical-align".  Otherwise false.
 
 <dd><strong>Value</strong>:
@@ -1467,15 +1467,15 @@ style</a> either null or "sub" for "vertical-align".  Otherwise false.
 
 <dt><code title=""><dfn id=command-superscript title=command-superscript>superscript</dfn></code>
 
-<dd><strong>Action</strong>: <a href=#decompose>Decompose</a> the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a>.  If the
-state of the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a> for this command is then true, <a href=#style>style</a> each
-returned <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> with <var title="">property</var> "vertical-align" and <var title="">new
+<dd><strong>Action</strong>: <a href=#decompose>Decompose</a> the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>.  If the
+state of the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> for this command is then true, <a href=#style>style</a> each
+returned <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> with <var title="">property</var> "vertical-align" and <var title="">new
 value</var> "baseline".  Otherwise, <a href=#style>style</a> them with <var title="">new
-value</var> "baseline", then <a href=#decompose>decompose</a> the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a> again and
-<a href=#style>style</a> each returned <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> with <var title="">new value</var> "super".
+value</var> "baseline", then <a href=#decompose>decompose</a> the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> again and
+<a href=#style>style</a> each returned <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> with <var title="">new value</var> "super".
 
 <dd><strong>State</strong>: True if every <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> node that is
-<a href=#effectively-contained>effectively contained</a> in the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a> has <a href=#effective-style>effective
+<a href=#effectively-contained>effectively contained</a> in the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> has <a href=#effective-style>effective
 style</a> either null or "super" for "vertical-align".  Otherwise false.
 
 <dd><strong>Value</strong>:
@@ -1483,9 +1483,9 @@ style</a> either null or "super" for "vertical-align".  Otherwise false.
 
 <dt><code title=""><dfn id=command-underline title=command-underline>underline</dfn></code>
 
-<dd><strong>Action</strong>: <a href=#decompose>Decompose</a> the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a>.  If the
-state of the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a> for this command is then true, <a href=#style>style</a> each
-returned <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> with <var title="">property</var> "text-decoration" and <var title="">new
+<dd><strong>Action</strong>: <a href=#decompose>Decompose</a> the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>.  If the
+state of the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> for this command is then true, <a href=#style>style</a> each
+returned <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> with <var title="">property</var> "text-decoration" and <var title="">new
 value</var> "none".  Otherwise, <a href=#style>style</a> them with <var title="">new
 value</var> "underline".
 
@@ -1539,7 +1539,7 @@ may be.
 </div>
 
 <dd><strong>State</strong>: True if every <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> node that is
-<a href=#effectively-contained>effectively contained</a> in the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a> has <a href=#effective-style>effective
+<a href=#effectively-contained>effectively contained</a> in the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> has <a href=#effective-style>effective
 style</a> either null or "underline" for text-decoration.  Otherwise false.
 
 <dd><strong>Value</strong>: Always the empty string.
@@ -1560,21 +1560,21 @@ and reorganizing the DOM.  Revisit this later to see if it's reasonable to spec
 what the other browsers do instead.
 
 <ol>
-  <li>Let <var title="">links</var> be a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-collection title=concept-collection>collection</a> rooted at the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a>'s
+  <li>Let <var title="">links</var> be a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-collection title=concept-collection>collection</a> rooted at the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>'s
   <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-root title=concept-range-root>root</a>, whose filter matches only <a href=#html-element title="HTML element">HTML
   elements</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> "a", that have an <a href=#html-attribute>HTML
   attribute</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-attr-local-name title=concept-attr-local-name>local name</a> "href".
 
-  <li>Let <var title="">selected</var> be a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-collection title=concept-collection>collection</a> rooted at the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a>'s
-  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-root title=concept-range-root>root</a>, whose filter matches only <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a>s that are <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in
-  the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a> and <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> nodes that are <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#partially-contained>partially contained</a> in the
-  <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a>.
+  <li>Let <var title="">selected</var> be a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-collection title=concept-collection>collection</a> rooted at the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>'s
+  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-root title=concept-range-root>root</a>, whose filter matches only <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a> that are <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in
+  the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> and <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> nodes that are <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#partially-contained>partially contained</a> in the
+  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>.
 
   <li>For each <var title="">link</var> in <var title="">links</var>, in <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#tree-order>tree order</a>:
 
   <ol>
     <li>If <var title="">link</var> is not in <var title="">selected</var> and is not an
-    <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of any <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> in <var title="">selected</var>, continue with the next
+    <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of any <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> in <var title="">selected</var>, continue with the next
     <var title="">link</var>.
 
     <li>While <var title="">link</var> has children, insert <var title="">link</var>'s first

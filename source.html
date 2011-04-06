@@ -197,11 +197,11 @@ following algorithm:
   <li>Let <var>selection</var> be the result of calling [[getselection]] on
   the [[document]].
 
-  <li>If there are no [[range]]s associated with <var>selection</var>,
+  <li>If there are no [[ranges]] associated with <var>selection</var>,
   return null.
 
   <li>Let <var>start</var> be the [[boundarypoint]] with the earliest
-  [[bpposition]] among all of <var>selection</var>'s [[range]]s'
+  [[bpposition]] among all of <var>selection</var>'s [[ranges]]'
   [[rangestarts]].
 
   <li>Return the last [[range]] in <var>selection</var> whose [[rangestart]]
@@ -455,7 +455,7 @@ though the method had actually been called from JavaScript.  In particular,
 if the author has overridden the method with a custom method, the standard
 method must be run rather than the custom one.
 
-<p>When a list or set of [[node]]s is assigned to a variable without specifying
+<p>When a list or set of [[nodes]] is assigned to a variable without specifying
 the order, they must be initially in [[treeorder]], if they share a root.
 (If they don't share a root, the order will be specified.)  When the user agent
 is instructed to run particular steps for each member of a list, it must do so
@@ -641,7 +641,7 @@ with a [[style]] attribute).
 
   <li>Let <var>current ancestor</var> be <var>node</var>'s [[parent]].
 
-  <li>Let <var>ancestor list</var> be a list of [[node]]s, initially empty.
+  <li>Let <var>ancestor list</var> be a list of [[nodes]], initially empty.
 
   <li>While <var>current ancestor</var> is an [[element]] and the
   <span>effective style</span> of <var>property</var> is not <var>new
@@ -1592,7 +1592,7 @@ what the other browsers do instead.
   attribute</span> with [[attrlocalname]] "href".
 
   <li>Let <var>selected</var> be a [[collection]] rooted at the [[range]]'s
-  [[rangeroot]], whose filter matches only [[node]]s that are [[contained]] in
+  [[rangeroot]], whose filter matches only [[nodes]] that are [[contained]] in
   the [[range]] and [[text]] nodes that are [[partiallycontained]] in the
   [[range]].
 

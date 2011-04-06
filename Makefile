@@ -3,7 +3,7 @@ ANOLIS = anolis
 #all: editcommands.html xrefs.json
 all: editcommands.html
 
-intermediate.html: source.html Makefile
+intermediate.html: source.html preprocess Makefile
 	./preprocess
 
 editcommands.html: intermediate.html data Makefile

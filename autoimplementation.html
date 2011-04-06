@@ -46,6 +46,7 @@ blank in IE and Opera, which don't support styleWithCSS.)
 	<li><a href=#subscript>subscript</a>
 	<li><a href=#superscript>superscript</a>
 	<li><a href=#underline>underline</a>
+	<li><a href=#unlink>unlink</a>
 </ul>
 
 <button onclick="for (var command in tests) runTests(command)">Run all tests</button>
@@ -180,6 +181,20 @@ spec has known errors and its output should probably be ignored.
 <button onclick="addTest('underline', document.querySelector('#underline input').value)">Add test</button>
 </div>
 
+<div id=unlink>
+<h1>unlink</h1>
+
+<button onclick="runTests('unlink')">Run tests</button>
+
+<p><strong>Note:</strong> No spec has yet been written, so the spec column does
+nothing.
+
+<table border=1><tr><th>Input <th>Spec <th>Browser <th>Same?</table>
+
+<p><label>Enter new test here: <input></label>
+<button onclick="addTest('unlink', document.querySelector('#unlink input').value)">Add test</button>
+</div>
+
 <script src=implementation.js></script>
 <script>
 var values = {
@@ -193,6 +208,7 @@ var values = {
 	subscript: null,
 	superscript: null,
 	underline: null,
+	unlink: null,
 };
 
 var tests = {
@@ -598,6 +614,42 @@ var tests = {
 		'<u>foo[b<span style="font-size:3em">ar]ba</span>z</u>',
 		'<u>foo[b<i>ar]ba</i>z</u>',
 		'<p style="text-decoration: underline">foo[bar]baz</p>',
+	],
+	unlink: [
+		'foo[bar]baz',
+		'foo]bar[baz',
+		'{<p><p> <p>foo</p>}',
+
+		'<table><tbody><tr><td>foo<td>b[a]r<td>baz</table>',
+		'<table><tbody><tr data-start=1 data-end=2><td>foo<td>bar<td>baz</table>',
+		'<table><tbody><tr data-start=0 data-end=2><td>foo<td>bar<td>baz</table>',
+		'<table><tbody data-start=0 data-end=1><tr><td>foo<td>bar<td>baz</table>',
+		'<table data-start=0 data-end=1><tbody><tr><td>foo<td>bar<td>baz</table>',
+		'{<table><tr><td>foo<td>bar<td>baz</table>}',
+
+		'<a href=http://www.google.com/>foo[bar]baz</a>',
+		'<a href=http://www.google.com/>foo[barbaz</a>}',
+		'{<a href=http://www.google.com/>foobar]baz</a>',
+		'{<a href=http://www.google.com/>foobarbaz</a>}',
+		'<a href=http://www.google.com/>[foobarbaz]</a>',
+
+		'foo<a href=http://www.google.com/>[bar]</a>baz',
+		'foo[<a href=http://www.google.com/>bar</a>]baz',
+		'foo<a href=http://www.google.com/>[bar</a>baz]',
+		'[foo<a href=http://www.google.com/>bar]</a>baz',
+		'[foo<a href=http://www.google.com/>bar</a>baz]',
+
+		'<a id=foo href=http://www.google.com/>foo[bar]baz</a>',
+		'<a id=foo href=http://www.google.com/>[foobarbaz]</a>',
+		'foo<a id=foo href=http://www.google.com/>[bar]</a>baz',
+		'foo[<a id=foo href=http://www.google.com/>bar</a>]baz',
+		'[foo<a id=foo href=http://www.google.com/>bar</a>baz]',
+
+		'<a name=foo>foo[bar]baz</a>',
+		'<a name=foo>[foobarbaz]</a>',
+		'foo<a name=foo>[bar]</a>baz',
+		'foo[<a name=foo>bar</a>]baz',
+		'[foo<a name=foo>bar</a>baz]',
 	],
 };
 

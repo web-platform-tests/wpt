@@ -40,7 +40,7 @@
 
 <h2 class=no-num id=status-of-this-document>Status of this Document</h2>
 <p>This document is an early draft of a specification for HTML editing APIs,
-defining <a href=#execcommand()><code>execCommand()</code></a> and related functions.  It will eventually
+defining <code><a href=#execcommand()>execCommand()</a></code> and related functions.  It will eventually
 be merged into the main <a href=http://www.whatwg.org/html>HTML</a>
 specification, replacing the <a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/dnd.html#editing-apis>Editing
 APIs</a> section.  Although this spec is still very incomplete and will likely
@@ -105,7 +105,7 @@ included in HTML comments so as not to distract the reader.
   or remove it or anything.  At most convert it to a span, if it's some type of
   presentational element (where "presentational" here really means "browsers
   produce it in response to execCommand() so we need to treat it as
-  presentational", so it includes things like <a href=http://www.whatwg.org/html/#the-strong-element><code class=external data-anolis-spec=html title="the strong element">strong</code></a> and <a href=http://www.whatwg.org/html/#the-em-element><code class=external data-anolis-spec=html title="the em element">em</code></a>).
+  presentational", so it includes things like <code class=external data-anolis-spec=html title="the strong element"><a href=http://www.whatwg.org/html/#the-strong-element>strong</a></code> and <code class=external data-anolis-spec=html title="the em element"><a href=http://www.whatwg.org/html/#the-em-element>em</a></code>).
 
   <li>Don't interfere with more markup than necessary.  If the user modifies
   only a small run of text, don't go around simplifying ancestors or siblings
@@ -113,8 +113,8 @@ included in HTML comments so as not to distract the reader.
   was actually modified.
 
   <li>But if we are already changing around something's style, convert existing
-  styles to the preferred format.  For instance, we use <a href=http://www.whatwg.org/html/#the-b-element><code class=external data-anolis-spec=html title="the b element">b</code></a> for bold, and
-  convert <a href=http://www.whatwg.org/html/#the-strong-element><code class=external data-anolis-spec=html title="the strong element">strong</code></a> and &lt;<a href=http://www.whatwg.org/html/#the-span-element><code class=external data-anolis-spec=html title="the span element">span</code></a> <a href=http://www.whatwg.org/html/#the-style-attribute><code class=external data-anolis-spec=html title="the style attribute">style</code></a>="font-weight: bold"&gt; if we
+  styles to the preferred format.  For instance, we use <code class=external data-anolis-spec=html title="the b element"><a href=http://www.whatwg.org/html/#the-b-element>b</a></code> for bold, and
+  convert <code class=external data-anolis-spec=html title="the strong element"><a href=http://www.whatwg.org/html/#the-strong-element>strong</a></code> and &lt;<code class=external data-anolis-spec=html title="the span element"><a href=http://www.whatwg.org/html/#the-span-element>span</a></code> <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code>="font-weight: bold"&gt; if we
   happen to be modifying that node anyway.
 
   <li>Don't make the document less conforming than it originally was.  If we
@@ -184,16 +184,16 @@ like this.
 
 <h2 id=definitions><span class=secno>3 </span>Definitions</h2>
 
-<p>A <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> is an <dfn id=html-element>HTML element</dfn> if it is an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a> whose
-<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-namespace title=concept-element-namespace>namespace</a> is the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#html-namespace>HTML namespace</a>.  An <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#attr><code class=external data-anolis-spec=domcore>Attr</code></a> is an <dfn id=html-attribute>HTML attribute</dfn> if its
+<p>A <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> is an <dfn id=html-element>HTML element</dfn> if it is an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> whose
+<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-namespace title=concept-element-namespace>namespace</a> is the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#html-namespace>HTML namespace</a>.  An <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#attr>Attr</a></code> is an <dfn id=html-attribute>HTML attribute</dfn> if its
 <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-attr-namespace title=concept-attr-namespace>namespace</a> is
 the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#html-namespace>HTML namespace</a>.
 
 <p>A <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> is <dfn id=effectively-contained>effectively contained</dfn> in a <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> if either it
 is <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>; or it is the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a>
-<a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>, it is a <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> node, and its <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> is different from the
+<a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>, it is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node, and its <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> is different from the
 <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a>; or it is the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a>
-<a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>, it is a <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> node, and the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a>
+<a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>, it is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node, and the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a>
 <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a> is not 0; or it has at least one <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>, and all its
 <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a> are <a href=#effectively-contained>effectively contained</a> in the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>.
 <!-- Logically, the effectively contained nodes are supposed to be the ones
@@ -205,7 +205,7 @@ splitText() is returned. -->
 
 <p>An <dfn id=unwrappable-element>unwrappable element</dfn> is an <a href=#html-element>HTML element</a> which may
 not be used where only <a class=external data-anolis-spec=html href=http://www.whatwg.org/html/#phrasing-content>phrasing content</a> is expected (not counting unknown or
-obsolete elements, which cannot be used at all); or any <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a> whose
+obsolete elements, which cannot be used at all); or any <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> whose
 display property computes to something other than "inline", "inline-block", or
 "inline-table".
 
@@ -221,13 +221,13 @@ different on block elements.
 either a string or null:
 
 <ol>
-  <li>If <var title="">node</var> is neither an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a> nor a <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> node, return
+  <li>If <var title="">node</var> is neither an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> nor a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node, return
   null.
 
-  <li>If <var title="">node</var> is a <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> node and its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is null, return
+  <li>If <var title="">node</var> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node and its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is null, return
   null.
 
-  <li>If <var title="">node</var> is a <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> node, return the <a href=#effective-style>effective
+  <li>If <var title="">node</var> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node, return the <a href=#effective-style>effective
   style</a> of its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> for <var title="">property</var>.
 
   <li>If <var title="">property</var> is "background-color":
@@ -235,7 +235,7 @@ either a string or null:
   <ol>
     <li>While the computed style of "background-color" on <var title="">node</var> is
     any fully transparent value, and <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is an
-    <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a>, set <var title="">node</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+    <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>, set <var title="">node</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
 
     <li>If the computed style of "background-color" on <var title="">node</var> is
     a fully transparent value, return "rgb(255, 255, 255)".
@@ -261,7 +261,7 @@ either a string or null:
     <li>Let <var title="">affected by subscript</var> and <var title="">affected by
     superscript</var> be two boolean variables, both initially false.
 
-    <li>While <var title="">node</var> is an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a> whose "display" property
+    <li>While <var title="">node</var> is an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> whose "display" property
     computes to "inline":
 
     <ol>
@@ -290,12 +290,12 @@ either a string or null:
   <li>Return the computed style of <var title="">property</var> for <var title="">node</var>.
 </ol>
 
-<p>The <dfn id=specified-style>specified style</dfn> of an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a> for a given
+<p>The <dfn id=specified-style>specified style</dfn> of an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> for a given
 <var title="">property</var> is returned by the following algorithm, which will return
 either a CSS value or null:
 
 <ol>
-  <li>If <var title="">property</var> is "background-color" and the <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a>'s
+  <li>If <var title="">property</var> is "background-color" and the <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>'s
   display property does not compute to "inline", return null.  <!-- This is
   because we currently only use background-color for hiliteColor, which we only
   want to work as a highlight.  In CSS terms, this means that we only want to
@@ -307,53 +307,53 @@ either a CSS value or null:
   <li>If <var title="">property</var> is "vertical-align":
 
   <ol>
-    <li>If the computed value of the <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a>'s "display" property is
+    <li>If the computed value of the <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>'s "display" property is
     neither "inline" nor "inline-block" nor "inline-table", return null.
 
-    <li>If the <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a> has a <a href=http://www.whatwg.org/html/#the-style-attribute><code class=external data-anolis-spec=html title="the style attribute">style</code></a> attribute set, and that attribute
+    <li>If the <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> has a <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code> attribute set, and that attribute
     has the effect of setting "vertical-align", return the value that it sets
     "vertical-align" to.
 
-    <li>If the <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a> is a <a href=http://www.whatwg.org/html/#the-sub-and-sup-elements><code class=external data-anolis-spec=html title="the sub and sup elements">sup</code></a>, return "super".
+    <li>If the <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> is a <code class=external data-anolis-spec=html title="the sub and sup elements"><a href=http://www.whatwg.org/html/#the-sub-and-sup-elements>sup</a></code>, return "super".
 
-    <li>If the <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a> is a <a href=http://www.whatwg.org/html/#the-sub-and-sup-elements><code class=external data-anolis-spec=html title="the sub and sup elements">sub</code></a>, return "sub".
+    <li>If the <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> is a <code class=external data-anolis-spec=html title="the sub and sup elements"><a href=http://www.whatwg.org/html/#the-sub-and-sup-elements>sub</a></code>, return "sub".
 
     <li>Return null.
   </ol>
 
-  <li>If the <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a> has a <a href=http://www.whatwg.org/html/#the-style-attribute><code class=external data-anolis-spec=html title="the style attribute">style</code></a> attribute set, and that attribute has
+  <li>If the <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> has a <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code> attribute set, and that attribute has
   the effect of setting <var title="">property</var>, return the value that it sets
   <var title="">property</var> to.
 
-  <li>If the <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a> is a <a href=http://www.whatwg.org/html/#font><code class=external data-anolis-spec=html>font</code></a> element
+  <li>If the <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> is a <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/html/#font>font</a></code> element
   that has an attribute whose effect is to create a <a class=external data-anolis-spec=html href=http://www.whatwg.org/html/#presentational-hints title="presentational hints">presentational hint</a> for
   <var title="">property</var>, return the value that the hint sets <var title="">property</var>
   to.
 
-  <li>If the <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a> is in the following list, and <var title="">property</var> is
+  <li>If the <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> is in the following list, and <var title="">property</var> is
   equal to the CSS property name listed for it, return the string listed for
   it.
 
   <dl class=switch>
-    <dt><a href=http://www.whatwg.org/html/#the-b-element><code class=external data-anolis-spec=html title="the b element">b</code></a>
-    <dt><a href=http://www.whatwg.org/html/#the-strong-element><code class=external data-anolis-spec=html title="the strong element">strong</code></a>
+    <dt><code class=external data-anolis-spec=html title="the b element"><a href=http://www.whatwg.org/html/#the-b-element>b</a></code>
+    <dt><code class=external data-anolis-spec=html title="the strong element"><a href=http://www.whatwg.org/html/#the-strong-element>strong</a></code>
     <dd>font-weight: "bold"
 
-    <dt><a href=http://www.whatwg.org/html/#the-i-element><code class=external data-anolis-spec=html title="the i element">i</code></a>
-    <dt><a href=http://www.whatwg.org/html/#the-em-element><code class=external data-anolis-spec=html title="the em element">em</code></a>
+    <dt><code class=external data-anolis-spec=html title="the i element"><a href=http://www.whatwg.org/html/#the-i-element>i</a></code>
+    <dt><code class=external data-anolis-spec=html title="the em element"><a href=http://www.whatwg.org/html/#the-em-element>em</a></code>
     <dd>font-style: "italic"
 
-    <dt><a href=http://www.whatwg.org/html/#the-u-element><code class=external data-anolis-spec=html title="the u element">u</code></a>
+    <dt><code class=external data-anolis-spec=html title="the u element"><a href=http://www.whatwg.org/html/#the-u-element>u</a></code>
     <dd>text-decoration: "underline"
   </dl>
 
   <li>Return null.
 </ol>
 
-<p>A <dfn id=styling-element>styling element</dfn> is a <a href=http://www.whatwg.org/html/#the-b-element><code class=external data-anolis-spec=html title="the b element">b</code></a>, <a href=http://www.whatwg.org/html/#the-em-element><code class=external data-anolis-spec=html title="the em element">em</code></a>, <a href=http://www.whatwg.org/html/#the-i-element><code class=external data-anolis-spec=html title="the i element">i</code></a>, <a href=http://www.whatwg.org/html/#the-span-element><code class=external data-anolis-spec=html title="the span element">span</code></a>,
-<a href=http://www.whatwg.org/html/#the-strong-element><code class=external data-anolis-spec=html title="the strong element">strong</code></a>, <a href=http://www.whatwg.org/html/#the-sub-and-sup-elements><code class=external data-anolis-spec=html title="the sub and sup elements">sub</code></a>, <a href=http://www.whatwg.org/html/#the-sub-and-sup-elements><code class=external data-anolis-spec=html title="the sub and sup elements">sup</code></a>, or <a href=http://www.whatwg.org/html/#the-u-element><code class=external data-anolis-spec=html title="the u element">u</code></a> element with no attributes except
-possibly <a href=http://www.whatwg.org/html/#the-style-attribute><code class=external data-anolis-spec=html title="the style attribute">style</code></a>, or a <a href=http://www.whatwg.org/html/#font><code class=external data-anolis-spec=html title=font>font</code></a> element with no attributes except possibly
-<a href=http://www.whatwg.org/html/#the-style-attribute><code class=external data-anolis-spec=html title="the style attribute">style</code></a>, <a href=http://www.whatwg.org/html/#dom-font-color><code class=external data-anolis-spec=html title=dom-font-color>color</code></a>, <a href=http://www.whatwg.org/html/#dom-font-face><code class=external data-anolis-spec=html title=dom-font-face>face</code></a>, and/or <a href=http://www.whatwg.org/html/#dom-font-size><code class=external data-anolis-spec=html title=dom-font-size>size</code></a>.
+<p>A <dfn id=styling-element>styling element</dfn> is a <code class=external data-anolis-spec=html title="the b element"><a href=http://www.whatwg.org/html/#the-b-element>b</a></code>, <code class=external data-anolis-spec=html title="the em element"><a href=http://www.whatwg.org/html/#the-em-element>em</a></code>, <code class=external data-anolis-spec=html title="the i element"><a href=http://www.whatwg.org/html/#the-i-element>i</a></code>, <code class=external data-anolis-spec=html title="the span element"><a href=http://www.whatwg.org/html/#the-span-element>span</a></code>,
+<code class=external data-anolis-spec=html title="the strong element"><a href=http://www.whatwg.org/html/#the-strong-element>strong</a></code>, <code class=external data-anolis-spec=html title="the sub and sup elements"><a href=http://www.whatwg.org/html/#the-sub-and-sup-elements>sub</a></code>, <code class=external data-anolis-spec=html title="the sub and sup elements"><a href=http://www.whatwg.org/html/#the-sub-and-sup-elements>sup</a></code>, or <code class=external data-anolis-spec=html title="the u element"><a href=http://www.whatwg.org/html/#the-u-element>u</a></code> element with no attributes except
+possibly <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code>, or a <code class=external data-anolis-spec=html title=font><a href=http://www.whatwg.org/html/#font>font</a></code> element with no attributes except possibly
+<code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code>, <code class=external data-anolis-spec=html title=dom-font-color><a href=http://www.whatwg.org/html/#dom-font-color>color</a></code>, <code class=external data-anolis-spec=html title=dom-font-face><a href=http://www.whatwg.org/html/#dom-font-face>face</a></code>, and/or <code class=external data-anolis-spec=html title=dom-font-size><a href=http://www.whatwg.org/html/#dom-font-size>size</a></code>.
 
 <p class=note>Conceptually, a <a href=#styling-element>styling element</a> is a phrasing
 element whose only purpose is to style text.  Thus changing around styling
@@ -367,35 +367,35 @@ compatibility with legacy user-agents that treat them that way.
 which at least one of the following holds:
 
 <ul>
-  <li>It is a <a href=http://www.whatwg.org/html/#the-b-element><code class=external data-anolis-spec=html title="the b element">b</code></a>, <a href=http://www.whatwg.org/html/#the-em-element><code class=external data-anolis-spec=html title="the em element">em</code></a>, <a href=http://www.whatwg.org/html/#font><code class=external data-anolis-spec=html title=font>font</code></a>, <a href=http://www.whatwg.org/html/#the-i-element><code class=external data-anolis-spec=html title="the i element">i</code></a>, <a href=http://www.whatwg.org/html/#the-span-element><code class=external data-anolis-spec=html title="the span element">span</code></a>, <a href=http://www.whatwg.org/html/#the-strong-element><code class=external data-anolis-spec=html title="the strong element">strong</code></a>, <a href=http://www.whatwg.org/html/#the-sub-and-sup-elements><code class=external data-anolis-spec=html title="the sub and sup elements">sub</code></a>,
-  <a href=http://www.whatwg.org/html/#the-sub-and-sup-elements><code class=external data-anolis-spec=html title="the sub and sup elements">sup</code></a>, or <a href=http://www.whatwg.org/html/#the-u-element><code class=external data-anolis-spec=html title="the u element">u</code></a> element with no attributes.
+  <li>It is a <code class=external data-anolis-spec=html title="the b element"><a href=http://www.whatwg.org/html/#the-b-element>b</a></code>, <code class=external data-anolis-spec=html title="the em element"><a href=http://www.whatwg.org/html/#the-em-element>em</a></code>, <code class=external data-anolis-spec=html title=font><a href=http://www.whatwg.org/html/#font>font</a></code>, <code class=external data-anolis-spec=html title="the i element"><a href=http://www.whatwg.org/html/#the-i-element>i</a></code>, <code class=external data-anolis-spec=html title="the span element"><a href=http://www.whatwg.org/html/#the-span-element>span</a></code>, <code class=external data-anolis-spec=html title="the strong element"><a href=http://www.whatwg.org/html/#the-strong-element>strong</a></code>, <code class=external data-anolis-spec=html title="the sub and sup elements"><a href=http://www.whatwg.org/html/#the-sub-and-sup-elements>sub</a></code>,
+  <code class=external data-anolis-spec=html title="the sub and sup elements"><a href=http://www.whatwg.org/html/#the-sub-and-sup-elements>sup</a></code>, or <code class=external data-anolis-spec=html title="the u element"><a href=http://www.whatwg.org/html/#the-u-element>u</a></code> element with no attributes.
 
-  <li>It is a <a href=http://www.whatwg.org/html/#the-b-element><code class=external data-anolis-spec=html title="the b element">b</code></a>, <a href=http://www.whatwg.org/html/#the-em-element><code class=external data-anolis-spec=html title="the em element">em</code></a>, <a href=http://www.whatwg.org/html/#font><code class=external data-anolis-spec=html title=font>font</code></a>, <a href=http://www.whatwg.org/html/#the-i-element><code class=external data-anolis-spec=html title="the i element">i</code></a>, <a href=http://www.whatwg.org/html/#the-span-element><code class=external data-anolis-spec=html title="the span element">span</code></a>, <a href=http://www.whatwg.org/html/#the-strong-element><code class=external data-anolis-spec=html title="the strong element">strong</code></a>, <a href=http://www.whatwg.org/html/#the-sub-and-sup-elements><code class=external data-anolis-spec=html title="the sub and sup elements">sub</code></a>,
-  <a href=http://www.whatwg.org/html/#the-sub-and-sup-elements><code class=external data-anolis-spec=html title="the sub and sup elements">sup</code></a>, or <a href=http://www.whatwg.org/html/#the-u-element><code class=external data-anolis-spec=html title="the u element">u</code></a> element with exactly one attribute, which is <a href=http://www.whatwg.org/html/#the-style-attribute><code class=external data-anolis-spec=html title="the style attribute">style</code></a>,
+  <li>It is a <code class=external data-anolis-spec=html title="the b element"><a href=http://www.whatwg.org/html/#the-b-element>b</a></code>, <code class=external data-anolis-spec=html title="the em element"><a href=http://www.whatwg.org/html/#the-em-element>em</a></code>, <code class=external data-anolis-spec=html title=font><a href=http://www.whatwg.org/html/#font>font</a></code>, <code class=external data-anolis-spec=html title="the i element"><a href=http://www.whatwg.org/html/#the-i-element>i</a></code>, <code class=external data-anolis-spec=html title="the span element"><a href=http://www.whatwg.org/html/#the-span-element>span</a></code>, <code class=external data-anolis-spec=html title="the strong element"><a href=http://www.whatwg.org/html/#the-strong-element>strong</a></code>, <code class=external data-anolis-spec=html title="the sub and sup elements"><a href=http://www.whatwg.org/html/#the-sub-and-sup-elements>sub</a></code>,
+  <code class=external data-anolis-spec=html title="the sub and sup elements"><a href=http://www.whatwg.org/html/#the-sub-and-sup-elements>sup</a></code>, or <code class=external data-anolis-spec=html title="the u element"><a href=http://www.whatwg.org/html/#the-u-element>u</a></code> element with exactly one attribute, which is <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code>,
   which sets no CSS properties (including invalid or unrecognized properties).
 
-  <li>It is a <a href=http://www.whatwg.org/html/#font><code class=external data-anolis-spec=html title=font>font</code></a> element with exactly one attribute, which is either
-  <a href=http://www.whatwg.org/html/#dom-font-color><code class=external data-anolis-spec=html title=dom-font-color>color</code></a>, <a href=http://www.whatwg.org/html/#dom-font-face><code class=external data-anolis-spec=html title=dom-font-face>face</code></a>, or <a href=http://www.whatwg.org/html/#dom-font-size><code class=external data-anolis-spec=html title=dom-font-size>size</code></a>.
+  <li>It is a <code class=external data-anolis-spec=html title=font><a href=http://www.whatwg.org/html/#font>font</a></code> element with exactly one attribute, which is either
+  <code class=external data-anolis-spec=html title=dom-font-color><a href=http://www.whatwg.org/html/#dom-font-color>color</a></code>, <code class=external data-anolis-spec=html title=dom-font-face><a href=http://www.whatwg.org/html/#dom-font-face>face</a></code>, or <code class=external data-anolis-spec=html title=dom-font-size><a href=http://www.whatwg.org/html/#dom-font-size>size</a></code>.
 
-  <li>It is a <a href=http://www.whatwg.org/html/#the-b-element><code class=external data-anolis-spec=html title="the b element">b</code></a> or <a href=http://www.whatwg.org/html/#the-strong-element><code class=external data-anolis-spec=html title="the strong element">strong</code></a> element with exactly one attribute, which is
-  <a href=http://www.whatwg.org/html/#the-style-attribute><code class=external data-anolis-spec=html title="the style attribute">style</code></a>, and the <a href=http://www.whatwg.org/html/#the-style-attribute><code class=external data-anolis-spec=html title="the style attribute">style</code></a> attribute sets exactly one CSS property
+  <li>It is a <code class=external data-anolis-spec=html title="the b element"><a href=http://www.whatwg.org/html/#the-b-element>b</a></code> or <code class=external data-anolis-spec=html title="the strong element"><a href=http://www.whatwg.org/html/#the-strong-element>strong</a></code> element with exactly one attribute, which is
+  <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code>, and the <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code> attribute sets exactly one CSS property
   (including invalid or unrecognized properties), which is "font-weight".
 
-  <li>It is an <a href=http://www.whatwg.org/html/#the-i-element><code class=external data-anolis-spec=html title="the i element">i</code></a> or <a href=http://www.whatwg.org/html/#the-em-element><code class=external data-anolis-spec=html title="the em element">em</code></a> element with exactly one attribute, which is
-  <a href=http://www.whatwg.org/html/#the-style-attribute><code class=external data-anolis-spec=html title="the style attribute">style</code></a>, and the <a href=http://www.whatwg.org/html/#the-style-attribute><code class=external data-anolis-spec=html title="the style attribute">style</code></a> attribute sets exactly one CSS property
+  <li>It is an <code class=external data-anolis-spec=html title="the i element"><a href=http://www.whatwg.org/html/#the-i-element>i</a></code> or <code class=external data-anolis-spec=html title="the em element"><a href=http://www.whatwg.org/html/#the-em-element>em</a></code> element with exactly one attribute, which is
+  <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code>, and the <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code> attribute sets exactly one CSS property
   (including invalid or unrecognized properties), which is "font-style".
 
-  <li>It is a <a href=http://www.whatwg.org/html/#the-u-element><code class=external data-anolis-spec=html title="the u element">u</code></a> element with exactly one attribute, which is <a href=http://www.whatwg.org/html/#the-style-attribute><code class=external data-anolis-spec=html title="the style attribute">style</code></a>, and
-  the <a href=http://www.whatwg.org/html/#the-style-attribute><code class=external data-anolis-spec=html title="the style attribute">style</code></a> attribute sets exactly one CSS property (including invalid or
+  <li>It is a <code class=external data-anolis-spec=html title="the u element"><a href=http://www.whatwg.org/html/#the-u-element>u</a></code> element with exactly one attribute, which is <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code>, and
+  the <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code> attribute sets exactly one CSS property (including invalid or
   unrecognized properties), which is "text-decoration", which is set to
   "underline" or "none".
 
-  <li>It is a <a href=http://www.whatwg.org/html/#the-sub-and-sup-elements><code class=external data-anolis-spec=html title="the sub and sup elements">sub</code></a> or <a href=http://www.whatwg.org/html/#the-sub-and-sup-elements><code class=external data-anolis-spec=html title="the sub and sup elements">sub</code></a> element with exactly one attribute, which is
-  <a href=http://www.whatwg.org/html/#the-style-attribute><code class=external data-anolis-spec=html title="the style attribute">style</code></a>, and the <a href=http://www.whatwg.org/html/#the-style-attribute><code class=external data-anolis-spec=html title="the style attribute">style</code></a> attribute sets exactly one CSS property
+  <li>It is a <code class=external data-anolis-spec=html title="the sub and sup elements"><a href=http://www.whatwg.org/html/#the-sub-and-sup-elements>sub</a></code> or <code class=external data-anolis-spec=html title="the sub and sup elements"><a href=http://www.whatwg.org/html/#the-sub-and-sup-elements>sub</a></code> element with exactly one attribute, which is
+  <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code>, and the <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code> attribute sets exactly one CSS property
   (including invalid or unrecognized properties), which is "vertical-align".
 
-  <li>It is a <a href=http://www.whatwg.org/html/#font><code class=external data-anolis-spec=html title=font>font</code></a> or <a href=http://www.whatwg.org/html/#the-span-element><code class=external data-anolis-spec=html title="the span element">span</code></a> element with exactly one attribute, which is
-  <a href=http://www.whatwg.org/html/#the-style-attribute><code class=external data-anolis-spec=html title="the style attribute">style</code></a>, and the <a href=http://www.whatwg.org/html/#the-style-attribute><code class=external data-anolis-spec=html title="the style attribute">style</code></a> attribute sets exactly one CSS property
+  <li>It is a <code class=external data-anolis-spec=html title=font><a href=http://www.whatwg.org/html/#font>font</a></code> or <code class=external data-anolis-spec=html title="the span element"><a href=http://www.whatwg.org/html/#the-span-element>span</a></code> element with exactly one attribute, which is
+  <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code>, and the <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code> attribute sets exactly one CSS property
   (including invalid or unrecognized properties).
 </ul>
 
@@ -461,19 +461,19 @@ agents follow the <a class=external data-anolis-spec=domrange href=http://html5.
   <li>If <var title="">range</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> and <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> are the same,
   return an empty list.
 
-  <li>If <var title="">range</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> is a <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> node and
+  <li>If <var title="">range</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node and
   its <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a> is neither 0 nor the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> of its
-  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>, run <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-text-splittext><code class=external data-anolis-spec=domcore title=dom-Text-splitText>splitText()</code></a> on its <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>
+  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>, run <code class=external data-anolis-spec=domcore title=dom-Text-splitText><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-text-splittext>splitText()</a></code> on its <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>
   with argument equal to its <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a>.
 
-  <li>If <var title="">range</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> is a <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> node and
+  <li>If <var title="">range</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node and
   its <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a> is neither 0 nor the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> of its
-  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>, run <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-text-splittext><code class=external data-anolis-spec=domcore title=dom-Text-splitText>splitText()</code></a> on its <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>
+  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>, run <code class=external data-anolis-spec=domcore title=dom-Text-splitText><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-text-splittext>splitText()</a></code> on its <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>
   with argument equal to its <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a>.
 
   <!-- Now we want to make sure our range contains as many nodes as possible,
   such as by changing <tag>[foo]</tag> to {<tag>foo</tag>}. -->
-  <li>Let <var title="">cloned range</var> be the result of calling <a href=http://html5.org/specs/dom-range.html#dom-range-clonerange><code class=external data-anolis-spec=domrange title=dom-Range-cloneRange>cloneRange()</code></a> on
+  <li>Let <var title="">cloned range</var> be the result of calling <code class=external data-anolis-spec=domrange title=dom-Range-cloneRange><a href=http://html5.org/specs/dom-range.html#dom-range-clonerange>cloneRange()</a></code> on
   <var title="">range</var>.
 
   <li>While the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a> of <var title="">cloned range</var> is 0,
@@ -508,7 +508,7 @@ id=foo> into <span id=foo> instead of <font id=foo>, but probably not worth it.
 -->
 
 <ol>
-  <li>Let <var title="">element</var> be the <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a> to be unstyled.
+  <li>Let <var title="">element</var> be the <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> to be unstyled.
 
   <li>Let <var title="">property</var> be as in the invoking algorithm.
 
@@ -537,19 +537,19 @@ id=foo> into <span id=foo> instead of <font id=foo>, but probably not worth it.
 
   <li>Unset the CSS property <var title="">property</var> of <var title="">element</var>.
 
-  <li>If <var title="">element</var> is a <a href=http://www.whatwg.org/html/#font><code class=external data-anolis-spec=html>font</code></a>
+  <li>If <var title="">element</var> is a <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/html/#font>font</a></code>
   element:
 
   <ol>
     <li>If <var title="">property</var> is "color", unset <var title="">element</var>'s
-    <a href=http://www.whatwg.org/html/#dom-font-color><code class=external data-anolis-spec=html title=dom-font-color>color</code></a> attribute, if
+    <code class=external data-anolis-spec=html title=dom-font-color><a href=http://www.whatwg.org/html/#dom-font-color>color</a></code> attribute, if
     set.
 
     <li>If <var title="">property</var> is "font-family", unset
-    <var title="">element</var>'s <a href=http://www.whatwg.org/html/#dom-font-face><code class=external data-anolis-spec=html title=dom-font-face>face</code></a> attribute, if set.
+    <var title="">element</var>'s <code class=external data-anolis-spec=html title=dom-font-face><a href=http://www.whatwg.org/html/#dom-font-face>face</a></code> attribute, if set.
 
     <li>If <var title="">property</var> is "font-size", unset <var title="">element</var>'s
-    <a href=http://www.whatwg.org/html/#dom-font-size><code class=external data-anolis-spec=html title=dom-font-size>size</code></a> attribute, if
+    <code class=external data-anolis-spec=html title=dom-font-size><a href=http://www.whatwg.org/html/#dom-font-size>size</a></code> attribute, if
     set.
   </ol>
 
@@ -559,7 +559,7 @@ id=foo> into <span id=foo> instead of <font id=foo>, but probably not worth it.
   want to keep the extra attributes, so we stick them on a span. -->
 
   <li>Let <var title="">new element</var> be a new <a href=#html-element>HTML element</a> with
-  <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> "span", with the same attributes and <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument><code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument>ownerDocument</code></a> as
+  <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> "span", with the same attributes and <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> as
   <var title="">element</var>.
 
   <li>Insert <var title="">new element</var> into the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of <var title="">element</var>
@@ -611,12 +611,12 @@ underline problems, so perhaps it's not worth it.
 <p>Opera also seems to break up the markup surrounding the range, but even more
 aggressively: even if it doesn't need to pull down styles.  In some cases this
 does actually result in shorter markup, specifically if the existing tags are
-short (like <a href=http://www.whatwg.org/html/#the-i-element><code class=external data-anolis-spec=html title="the i element">i</code></a> or <a href=http://www.whatwg.org/html/#the-b-element><code class=external data-anolis-spec=html title="the b element">b</code></a>) and we're adding tags that are long (like <a href=http://www.whatwg.org/html/#the-span-element><code class=external data-anolis-spec=html title="the span element">span</code></a>
-with a <a href=http://www.whatwg.org/html/#the-style-attribute><code class=external data-anolis-spec=html title="the style attribute">style</code></a> attribute).
+short (like <code class=external data-anolis-spec=html title="the i element"><a href=http://www.whatwg.org/html/#the-i-element>i</a></code> or <code class=external data-anolis-spec=html title="the b element"><a href=http://www.whatwg.org/html/#the-b-element>b</a></code>) and we're adding tags that are long (like <code class=external data-anolis-spec=html title="the span element"><a href=http://www.whatwg.org/html/#the-span-element>span</a></code>
+with a <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code> attribute).
 </div>
 
 <ol>
-  <li>If <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is not an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a>, abort this
+  <li>If <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is not an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>, abort this
   algorithm. <!-- E.g., a text node child of a document fragment. -->
 
   <li>If the <a href=#effective-style>effective style</a> of <var title="">property</var> is <var title="">new
@@ -626,7 +626,7 @@ with a <a href=http://www.whatwg.org/html/#the-style-attribute><code class=exter
 
   <li>Let <var title="">ancestor list</var> be a list of <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a>, initially empty.
 
-  <li>While <var title="">current ancestor</var> is an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a> and the
+  <li>While <var title="">current ancestor</var> is an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> and the
   <a href=#effective-style>effective style</a> of <var title="">property</var> is not <var title="">new
   value</var> on it, append <var title="">current ancestor</var> to <var title="">ancestor
   list</var>, then set <var title="">current ancestor</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
@@ -641,7 +641,7 @@ with a <a href=http://www.whatwg.org/html/#the-style-attribute><code class=exter
   style, pushing down styles is pointless.  It will create extra markup for no
   purpose. -->
   <li>If <var title="">ancestor list</var> is not empty, and the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of the last
-  member of <var title="">ancestor list</var> is not an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a>, abort this
+  member of <var title="">ancestor list</var> is not an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>, abort this
   algorithm.
 
   <li>While <var title="">ancestor list</var> is not empty:
@@ -669,7 +669,7 @@ with a <a href=http://www.whatwg.org/html/#the-style-attribute><code class=exter
       <li>If <var title="">child</var> is <var title="">node</var>, continue with the next
       <var title="">child</var>.
 
-      <li>If <var title="">child</var> is an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a> whose <a href=#specified-style>specified
+      <li>If <var title="">child</var> is an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> whose <a href=#specified-style>specified
       style</a> for <var title="">property</var> is neither null nor equal to
       <var title="">propagated value</var>, continue with the next <var title="">child</var>.
 
@@ -703,8 +703,8 @@ After forcing the style, descendants might still have different style.
 <ol>
   <li>If <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is null, abort this algorithm.
 
-  <li>If <var title="">node</var> is an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a>, <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a>, <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#comment><code class=external data-anolis-spec=domcore>Comment</code></a>, or
-  <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#processinginstruction><code class=external data-anolis-spec=domcore>ProcessingInstruction</code></a> node, and is not an <a href=#unwrappable-element>unwrappable
+  <li>If <var title="">node</var> is an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>, <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code>, <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#comment>Comment</a></code>, or
+  <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#processinginstruction>ProcessingInstruction</a></code> node, and is not an <a href=#unwrappable-element>unwrappable
   element</a>:
 
   <ol>
@@ -718,7 +718,7 @@ After forcing the style, descendants might still have different style.
     Theoretically this algorithm could pointlessly reorganize the DOM in the
     event of unreasonable style rules, but it's not a big enough deal for us to
     care, since the resulting style will still be right. -->
-    <li>Let <var title="">candidate</var> be <var title="">node</var>'s <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling><code class=external data-anolis-spec=domcore title=dom-Node-previousSibling>previousSibling</code></a>.
+    <li>Let <var title="">candidate</var> be <var title="">node</var>'s <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code>.
 
     <li>While <var title="">candidate</var> is a <a href=#styling-element>styling element</a>, and
     <var title="">candidate</var> has exactly one <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>, and that <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> is also
@@ -730,7 +730,7 @@ After forcing the style, descendants might still have different style.
     <li>If <var title="">candidate</var> is a <a href=#simple-styling-element>simple styling element</a> whose
     <a href=#specified-style>specified style</a> and <a href=#effective-style>effective style</a> for
     <var title="">property</var> are both <var title="">new value</var>, and <var title="">candidate</var>
-    is not the <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling><code class=external data-anolis-spec=domcore title=dom-Node-previousSibling>previousSibling</code></a> of <var title="">node</var>:
+    is not the <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code> of <var title="">node</var>:
 
     <ol>
       <li>While <var title="">candidate</var> has <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, insert the first
@@ -738,7 +738,7 @@ After forcing the style, descendants might still have different style.
       immediately before <var title="">candidate</var>, <a href=#preserving-ranges>preserving ranges</a>.
 
       <li>Insert <var title="">candidate</var> into <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> before
-      <var title="">node</var>'s <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling><code class=external data-anolis-spec=domcore title=dom-Node-previousSibling>previousSibling</code></a>.  <!-- If candidate had no
+      <var title="">node</var>'s <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code>.  <!-- If candidate had no
       children, any boundary point inside it will get moved to its parent here,
       which is okay.  We don't want to preserve ranges, because that would move
       boundary points that originally were in candidate but were moved to its
@@ -746,11 +746,11 @@ After forcing the style, descendants might still have different style.
       previous sibling so that boundary points before and after the previous
       sibling wind up before or after candidate. -->
 
-      <li>Append the <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling><code class=external data-anolis-spec=domcore title=dom-Node-nextSibling>nextSibling</code></a> of <var title="">candidate</var> as the last
+      <li>Append the <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code> of <var title="">candidate</var> as the last
       <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">candidate</var>, <a href=#preserving-ranges>preserving ranges</a>.
     </ol>
 
-    <li>Let <var title="">candidate</var> be <var title="">node</var>'s <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling><code class=external data-anolis-spec=domcore title=dom-Node-nextSibling>nextSibling</code></a>.
+    <li>Let <var title="">candidate</var> be <var title="">node</var>'s <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code>.
 
     <li>While <var title="">candidate</var> is a <a href=#styling-element>styling element</a>, and
     <var title="">candidate</var> has exactly one <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>, and that <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> is also
@@ -762,7 +762,7 @@ After forcing the style, descendants might still have different style.
     <li>If <var title="">candidate</var> is a <a href=#simple-styling-element>simple styling element</a> whose
     <a href=#specified-style>specified style</a> and <a href=#effective-style>effective style</a> for
     <var title="">property</var> are both <var title="">new value</var>, and <var title="">candidate</var>
-    is not the <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling><code class=external data-anolis-spec=domcore title=dom-Node-nextSibling>nextSibling</code></a> of <var title="">node</var>:
+    is not the <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code> of <var title="">node</var>:
 
     <ol>
       <li>While <var title="">candidate</var> has <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, insert the first
@@ -776,12 +776,12 @@ After forcing the style, descendants might still have different style.
       previous sibling: a boundary point at the place it's inserted moves
       before the new node, not after. -->
 
-      <li>Append the <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling><code class=external data-anolis-spec=domcore title=dom-Node-nextSibling>nextSibling</code></a> of <var title="">candidate</var> as the last
+      <li>Append the <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code> of <var title="">candidate</var> as the last
       <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">candidate</var>, <a href=#preserving-ranges>preserving ranges</a>.
     </ol>
 
     <li>Let <var title="">previous sibling</var> and <var title="">next sibling</var> be
-    <var title="">node</var>'s <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling><code class=external data-anolis-spec=domcore title=dom-Node-previousSibling>previousSibling</code></a> and <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling><code class=external data-anolis-spec=domcore title=dom-Node-nextSibling>nextSibling</code></a>.
+    <var title="">node</var>'s <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code> and <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code>.
 
     <li>If <var title="">previous sibling</var> is a <a href=#simple-styling-element>simple styling element</a>
     whose <a href=#specified-style>specified style</a> and <a href=#effective-style>effective style</a> for
@@ -812,7 +812,7 @@ After forcing the style, descendants might still have different style.
 
   <ol>
     <li>Let <var title="">children</var> be all <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a> of <var title="">node</var>,
-    omitting any that are <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a>s whose <a href=#specified-style>specified style</a> for
+    omitting any that are <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>s whose <a href=#specified-style>specified style</a> for
     <var title="">property</var> is neither null nor equal to <var title="">new value</var>.
 
     <li><a href=#force-the-style>Force the style</a> of each <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> in <var title="">children</var>,
@@ -829,7 +829,7 @@ After forcing the style, descendants might still have different style.
 
   <!-- At this point we have to make a new element as a wrapper.  This isn't
   worth the effort for comments or PIs, so abort in that case. -->
-  <li>If <var title="">node</var> is a <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#comment><code class=external data-anolis-spec=domcore>Comment</code></a> or <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#processinginstruction><code class=external data-anolis-spec=domcore>ProcessingInstruction</code></a>, abort
+  <li>If <var title="">node</var> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#comment>Comment</a></code> or <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#processinginstruction>ProcessingInstruction</a></code>, abort
   this algorithm.
 
   <li>If the <a href=#effective-style>effective style</a> of <var title="">property</var> is <var title="">new
@@ -841,20 +841,20 @@ After forcing the style, descendants might still have different style.
 
   <ol>
     <li>If <var title="">property</var> is "font-weight" and <var title="">new value</var> is
-    "bold", let <var title="">new parent</var> be the result of calling <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement><code class=external data-anolis-spec=domcore title=dom-Document-createElement>createElement("b")</code></a> on the
-    <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument><code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument>ownerDocument</code></a> of <var title="">node</var>.
+    "bold", let <var title="">new parent</var> be the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("b")</a></code> on the
+    <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">node</var>.
 
     <li>If <var title="">property</var> is "font-style" and <var title="">new value</var> is
-    "italic", let <var title="">new parent</var> be the result of calling <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement><code class=external data-anolis-spec=domcore title=dom-Document-createElement>createElement("i")</code></a> on the
-    <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument><code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument>ownerDocument</code></a> of <var title="">node</var>.
+    "italic", let <var title="">new parent</var> be the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("i")</a></code> on the
+    <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">node</var>.
 
     <li>If <var title="">property</var> is "text-decoration" and <var title="">new value</var> is
-    "underline", let <var title="">new parent</var> be the result of calling <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement><code class=external data-anolis-spec=domcore title=dom-Document-createElement>createElement("u")</code></a> on the
-    <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument><code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument>ownerDocument</code></a> of <var title="">node</var>.
+    "underline", let <var title="">new parent</var> be the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("u")</a></code> on the
+    <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">node</var>.
 
     <li>If <var title="">property</var> is "color", let <var title="">new parent</var> be the
-    result of calling <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement><code class=external data-anolis-spec=domcore title=dom-Document-createElement>createElement("font")</code></a> on the
-    <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument><code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument>ownerDocument</code></a> of <var title="">node</var>, then set the <a href=http://www.whatwg.org/html/#dom-font-color><code class=external data-anolis-spec=html title=dom-font-color>color</code></a> attribute
+    result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("font")</a></code> on the
+    <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">node</var>, then set the <code class=external data-anolis-spec=html title=dom-font-color><a href=http://www.whatwg.org/html/#dom-font-color>color</a></code> attribute
     of <var title="">new parent</var> to <var title="">new value</var>.
 
     <p class=XXX>This can be wrong if, e.g., the color has an alpha channel.
@@ -862,13 +862,13 @@ After forcing the style, descendants might still have different style.
     cover this.  It might be best to always output simple colors.
 
     <li>If <var title="">property</var> is "font-family", let <var title="">new parent</var> be
-    the result of calling <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement><code class=external data-anolis-spec=domcore title=dom-Document-createElement>createElement("font")</code></a> on the
-    <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument><code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument>ownerDocument</code></a> of <var title="">node</var>, then set the <a href=http://www.whatwg.org/html/#dom-font-face><code class=external data-anolis-spec=html title=dom-font-face>face</code></a> attribute
+    the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("font")</a></code> on the
+    <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">node</var>, then set the <code class=external data-anolis-spec=html title=dom-font-face><a href=http://www.whatwg.org/html/#dom-font-face>face</a></code> attribute
     of <var title="">new parent</var> to <var title="">new value</var>.
 
     <li>If <var title="">property</var> is "font-size", let <var title="">new parent</var> be the
-    result of calling <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement><code class=external data-anolis-spec=domcore title=dom-Document-createElement>createElement("font")</code></a> on the
-    <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument><code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument>ownerDocument</code></a> of <var title="">node</var>, then set the <a href=http://www.whatwg.org/html/#dom-font-size><code class=external data-anolis-spec=html title=dom-font-size>size</code></a> attribute
+    result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("font")</a></code> on the
+    <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">node</var>, then set the <code class=external data-anolis-spec=html title=dom-font-size><a href=http://www.whatwg.org/html/#dom-font-size>size</a></code> attribute
     of <var title="">new parent</var> to <var title="">new value</var>.
   </ol>
 
@@ -877,16 +877,16 @@ After forcing the style, descendants might still have different style.
   sub/super">, the obvious equivalent (and what WebKit uses), behaves quite
   differently: it doesn't reduce font-size, which is ugly. -->
   <li>If <var title="">property</var> is "vertical-align" and <var title="">new value</var> is
-  "sub", let <var title="">new parent</var> be the result of calling <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement><code class=external data-anolis-spec=domcore title=dom-Document-createElement>createElement("sub")</code></a> on the
-  <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument><code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument>ownerDocument</code></a> of <var title="">node</var>.
+  "sub", let <var title="">new parent</var> be the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("sub")</a></code> on the
+  <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">node</var>.
 
   <li>If <var title="">property</var> is "vertical-align" and <var title="">new value</var> is
-  "super", let <var title="">new parent</var> be the result of calling <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement><code class=external data-anolis-spec=domcore title=dom-Document-createElement>createElement("sup")</code></a> on the
-  <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument><code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument>ownerDocument</code></a> of <var title="">node</var>.
+  "super", let <var title="">new parent</var> be the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("sup")</a></code> on the
+  <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">node</var>.
 
   <li>If <var title="">new parent</var> is null, let <var title="">new parent</var> be the result
-  of calling <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement><code class=external data-anolis-spec=domcore title=dom-Document-createElement>createElement("span")</code></a> on the
-  <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument><code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument>ownerDocument</code></a> of <var title="">node</var>.
+  of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("span")</a></code> on the
+  <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">node</var>.
 
   <li>Insert <var title="">new parent</var> in <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> before
   <var title="">node</var>.  <!-- This preserves boundary points correctly, as usual.
@@ -899,7 +899,7 @@ After forcing the style, descendants might still have different style.
   <li>Append <var title="">node</var> to <var title="">new parent</var> as its last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>,
   <a href=#preserving-ranges>preserving ranges</a>.
 
-  <li>If <var title="">node</var> is an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a> and the <a href=#effective-style>effective style</a>
+  <li>If <var title="">node</var> is an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> and the <a href=#effective-style>effective style</a>
   of <var title="">property</var> for <var title="">node</var> is not <var title="">new value</var>:
 
   <ol>
@@ -908,14 +908,14 @@ After forcing the style, descendants might still have different style.
 
     <li>Remove <var title="">new parent</var> from its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
 
-    <li>If <var title="">new parent</var> is a <a href=http://www.whatwg.org/html/#the-span-element><code class=external data-anolis-spec=html title="the span element">span</code></a>, set the CSS property
+    <li>If <var title="">new parent</var> is a <code class=external data-anolis-spec=html title="the span element"><a href=http://www.whatwg.org/html/#the-span-element>span</a></code>, set the CSS property
     <var title="">property</var> of <var title="">node</var> to <var title="">new value</var>.
 
     <li>Otherwise:
 
     <ol>
       <li>Let <var title="">children</var> be all <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a> of <var title="">node</var>,
-      omitting any that are <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a>s whose <a href=#specified-style>specified style</a> for
+      omitting any that are <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>s whose <a href=#specified-style>specified style</a> for
       <var title="">property</var> is neither null nor equal to <var title="">new value</var>.
 
       <li><a href=#force-the-style>Force the style</a> of each <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> in <var title="">children</var>,
@@ -943,7 +943,7 @@ from an ancestor we can't reach).  Any other failures are bugs.
 
 <p>First, if the node is an element with an inline style rule for this
 property, we unset it ("clearing styles").  This step also removes <a href=#simple-styling-element title="simple styling element">simple styling elements</a> entirely, and
-replaces elements like <a href=http://www.whatwg.org/html/#the-b-element><code class=external data-anolis-spec=html title="the b element">b</code></a> or <a href=http://www.whatwg.org/html/#font><code class=external data-anolis-spec=html title=font>font</code></a> with <a href=http://www.whatwg.org/html/#the-span-element><code class=external data-anolis-spec=html title="the span element">span</code></a>s if they aren't simple
+replaces elements like <code class=external data-anolis-spec=html title="the b element"><a href=http://www.whatwg.org/html/#the-b-element>b</a></code> or <code class=external data-anolis-spec=html title=font><a href=http://www.whatwg.org/html/#font>font</a></code> with <code class=external data-anolis-spec=html title="the span element"><a href=http://www.whatwg.org/html/#the-span-element>span</a></code>s if they aren't simple
 styling elements.  This will be sufficient if the desired style is inherited
 from an ancestor, or if it's the default (like font-style: normal) and no
 conflicting style is inherited from an ancestor.  Even if clearing styles
@@ -998,20 +998,20 @@ as desired.
 </div>
 
 <ol>
-  <li>If <var title="">node</var> is a <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#document><code class=external data-anolis-spec=domcore>Document</code></a>, <a href=#style>style</a> its <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a>
+  <li>If <var title="">node</var> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#document>Document</a></code>, <a href=#style>style</a> its <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>
   <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> (if it has one) and abort this algorithm.
 
-  <li>If <var title="">node</var> is a <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#documentfragment><code class=external data-anolis-spec=domcore>DocumentFragment</code></a>, let <var title="">children</var> be
+  <li>If <var title="">node</var> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#documentfragment>DocumentFragment</a></code>, let <var title="">children</var> be
   a list of its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>.  <a href=#style>Style</a> each member of <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>,
   then abort this algorithm.
 
-  <li>If <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is null, or if <var title="">node</var> is a <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#documenttype><code class=external data-anolis-spec=domcore>DocumentType</code></a>, abort this algorithm.
+  <li>If <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is null, or if <var title="">node</var> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#documenttype>DocumentType</a></code>, abort this algorithm.
 
   <p class=XXX>We could style detached elements, but maybe it's not worth the
   effort.  Is execCommand() even supposed to work on things that don't descend
   from a document?  Needs investigation.
 
-  <li>If <var title="">node</var> is an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a>:
+  <li>If <var title="">node</var> is an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>:
 
   <ol>
     <li><a href=#clear-styles>Clear styles</a> on <var title="">node</var>, and let <var title="">new
@@ -1041,7 +1041,7 @@ as desired.
 <h2 id=commands><span class=secno>9 </span>Commands</h2>
 <p>The <dfn id=execcommand() title=execCommand()><code>execCommand(<var title="">commandId</var>,
 <var title="">showUI</var>, <var title="">value</var>)</code></dfn> method on the
-<a href=http://www.whatwg.org/html/#htmldocument><code class=external data-anolis-spec=html>HTMLDocument</code></a> interface allows scripts to
+<code class=external data-anolis-spec=html><a href=http://www.whatwg.org/html/#htmldocument>HTMLDocument</a></code> interface allows scripts to
 perform actions on the current selection or at the current caret position.
 Generally, these commands would be used to implement editor UI, for example
 having a "delete" button on a toolbar.
@@ -1050,13 +1050,13 @@ having a "delete" button on a toolbar.
 respectively. The <var title="">showUI</var> and <var title="">value</var>
 parameters, even if specified, are ignored except where otherwise stated.
 
-<p>When <a href=#execcommand()><code>execCommand()</code></a> is invoked, the user agent must take the
+<p>When <code><a href=#execcommand()>execCommand()</a></code> is invoked, the user agent must take the
 action from the list below given by <var title="">commandId</var> on the
 <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>'s first <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>.  If no action is given or if there is no
 <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> in the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>, do nothing.
 
 <p>The <dfn id=querycommandstate() title=queryCommandState()><code>queryCommandState(<var title="">commandId</var>)</code></dfn>
-method on the <a href=http://www.whatwg.org/html/#htmldocument><code class=external data-anolis-spec=html>HTMLDocument</code></a> interface must
+method on the <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/html/#htmldocument>HTMLDocument</a></code> interface must
 return the state of <var title="">commandId</var> on the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>'s
 first <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>, as given by the list below.  If there is no <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> in the
 <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>, or if <var title="">commandId</var> is not on the list,
@@ -1069,7 +1069,7 @@ Requesting the state of an unknown command throws an exception in IE 9 RC
 and Firefox 4b11, and returns boolean false in Chrome 10 and Opera 11. -->
 
 <p>The <dfn id=querycommandvalue() title=queryCommandValue()><code>queryCommandValue(<var title="">commandId</var>)</code></dfn>
-method on the <a href=http://www.whatwg.org/html/#htmldocument><code class=external data-anolis-spec=html>HTMLDocument</code></a> interface must
+method on the <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/html/#htmldocument>HTMLDocument</a></code> interface must
 return the value of <var title="">commandId</var> on the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>'s
 first <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>, as given by the list below.  If there is no <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> in the
 <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>, or if <var title="">commandId</var> is not on the list,
@@ -1140,7 +1140,7 @@ returned <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/d
 value</var> "normal".  Otherwise, <a href=#style>style</a> them with <var title="">new
 value</var> "bold".
 
-<dd><strong>State</strong>: True if every <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> node that is
+<dd><strong>State</strong>: True if every <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node that is
 <a href=#effectively-contained>effectively contained</a> in the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> has <a href=#effective-style>effective
 style</a> either null or at least 700 for font-weight.  Otherwise false.
 <!-- For bold and similar commands, IE 9 RC seems to consider the state true or
@@ -1177,9 +1177,9 @@ boolean, so I'll go with Firefox and Opera. -->
   <li>For each <var title="">node</var> in <var title="">node list</var>, in order:
 
   <ol>
-    <li>Let <var title="">text nodes</var> be a list of all <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> node
+    <li>Let <var title="">text nodes</var> be a list of all <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node
     <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-descendant title=concept-tree-descendant>descendants</a> of <var title="">node</var>, or <var title="">node</var> itself if it's a
-    <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> node.
+    <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node.
 
     <li>For each <var title="">text node</var> in <var title="">text nodes</var>, in
     <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#tree-order>tree order</a>:
@@ -1193,7 +1193,7 @@ boolean, so I'll go with Firefox and Opera. -->
       attribute</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-attr-local-name title=concept-attr-local-name>local name</a> "href":
 
       <ol>
-        <li>If the parent of <var title="">ancestor link</var> is not an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a>,
+        <li>If the parent of <var title="">ancestor link</var> is not an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>,
         set <var title="">ancestor link</var> to null and break from this loop.
 
         <li>Otherwise, set <var title="">ancestor link</var> to its parent.
@@ -1224,11 +1224,11 @@ boolean, so I'll go with Firefox and Opera. -->
       miss out a character when selecting the link you want to change, do you
       really intend to only change the link of part of it? -->
 
-      <li>Let <var title="">new parent</var> be the result of calling <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement><code class=external data-anolis-spec=domcore title=dom-Document-createElement>createElement("a")</code></a> on the
-      <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument><code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument>ownerDocument</code></a> of <var title="">text node</var>.
+      <li>Let <var title="">new parent</var> be the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("a")</a></code> on the
+      <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">text node</var>.
 
-      <li>Call <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-element-setattribute><code class=external data-anolis-spec=domcore title=dom-Element-setAttribute>setAttribute("href",
-      <var title="">value</var>)</code></a> on <var title="">new parent</var>.
+      <li>Call <code class=external data-anolis-spec=domcore title=dom-Element-setAttribute><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-element-setattribute>setAttribute("href",
+      <var title="">value</var>)</a></code> on <var title="">new parent</var>.
 
       <li>Insert <var title="">new parent</var> into <var title="">text node</var>'s parent as
       the previous sibling of <var title="">text node</var>.
@@ -1369,28 +1369,28 @@ to <var title="">value</var>.
   immediately if the URL is empty.  Firefox 4b11 bails out on an empty string,
   but the other three browsers I tested stick in the <img> anyway. -->
 
-  <li>Run <a href=http://html5.org/specs/dom-range.html#dom-range-deletecontents><code class=external data-anolis-spec=domrange title=dom-Range-deleteContents>deleteContents()</code></a> on the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>.
+  <li>Run <code class=external data-anolis-spec=domrange title=dom-Range-deleteContents><a href=http://html5.org/specs/dom-range.html#dom-range-deletecontents>deleteContents()</a></code> on the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>.
 
   <li>Let (<var title="">node</var>, <var title="">offset</var>) be the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>'s
   <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a>.
 
   <li>Let <var title="">img</var> be a new <a href=#html-element>HTML element</a> with
-  <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> "img", the same <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument><code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument>ownerDocument</code></a> as <var title="">node</var>, and a
+  <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> "img", the same <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> as <var title="">node</var>, and a
   single <a href=#html-attribute>HTML attribute</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-attr-local-name title=concept-attr-local-name>local name</a> "src" and with
   <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-attr-value title=concept-attr-value>value</a> <var title="">value</var>.
   <!-- No alt text, so it's invalid.  This matches all browsers. -->
 
-  <li>If <var title="">node</var> is a <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> node, and <var title="">offset</var> is not
-  equal to 0 or the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> of <var title="">node</var>, run <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-text-splittext><code class=external data-anolis-spec=domcore title=dom-Text-splitText>splitText(<var title="">offset</var>)</code></a> on
+  <li>If <var title="">node</var> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node, and <var title="">offset</var> is not
+  equal to 0 or the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> of <var title="">node</var>, run <code class=external data-anolis-spec=domcore title=dom-Text-splitText><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-text-splittext>splitText(<var title="">offset</var>)</a></code> on
   <var title="">node</var>.
 
-  <li>If <var title="">node</var> is a <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a>, <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#comment><code class=external data-anolis-spec=domcore>Comment</code></a>, or
-  <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#processinginstruction><code class=external data-anolis-spec=domcore>ProcessingInstruction</code></a> node, run <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-insertbefore><code class=external data-anolis-spec=domcore title=dom-Node-insertBefore>insertBefore(<var title="">img</var>,
-  <var title="">node</var>)</code></a> on the parent of <var title="">node</var>.
+  <li>If <var title="">node</var> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code>, <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#comment>Comment</a></code>, or
+  <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#processinginstruction>ProcessingInstruction</a></code> node, run <code class=external data-anolis-spec=domcore title=dom-Node-insertBefore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-insertbefore>insertBefore(<var title="">img</var>,
+  <var title="">node</var>)</a></code> on the parent of <var title="">node</var>.
 
   <li>Otherwise, let <var title="">child</var> be the <var title="">offset</var>th child of
-  <var title="">node</var> (or null if there is no such child), and run <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-insertbefore><code class=external data-anolis-spec=domcore title=dom-Node-insertBefore>insertBefore(<var title="">img</var>,
-  <var title="">child</var>)</code></a> on <var title="">node</var>.
+  <var title="">node</var> (or null if there is no such child), and run <code class=external data-anolis-spec=domcore title=dom-Node-insertBefore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-insertbefore>insertBefore(<var title="">img</var>,
+  <var title="">child</var>)</a></code> on <var title="">node</var>.
 </ol>
 
 <dd><strong>State</strong>:
@@ -1406,7 +1406,7 @@ returned <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/d
 value</var> "normal".  Otherwise, <a href=#style>style</a> them with <var title="">new
 value</var> "italic".
 
-<dd><strong>State</strong>: True if every <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> node that is
+<dd><strong>State</strong>: True if every <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node that is
 <a href=#effectively-contained>effectively contained</a> in the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> has <a href=#effective-style>effective
 style</a> either null, "italic", or "oblique" for font-style.  Otherwise
 false.
@@ -1437,7 +1437,7 @@ value</var> "baseline".  Otherwise, <a href=#style>style</a> them with <var titl
 value</var> "baseline", then <a href=#decompose>decompose</a> the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> again and
 <a href=#style>style</a> each returned <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> with <var title="">new value</var> "sub".
 
-<dd><strong>State</strong>: True if every <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> node that is
+<dd><strong>State</strong>: True if every <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node that is
 <a href=#effectively-contained>effectively contained</a> in the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> has <a href=#effective-style>effective
 style</a> either null or "sub" for "vertical-align".  Otherwise false.
 
@@ -1453,7 +1453,7 @@ value</var> "baseline".  Otherwise, <a href=#style>style</a> them with <var titl
 value</var> "baseline", then <a href=#decompose>decompose</a> the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> again and
 <a href=#style>style</a> each returned <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> with <var title="">new value</var> "super".
 
-<dd><strong>State</strong>: True if every <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> node that is
+<dd><strong>State</strong>: True if every <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node that is
 <a href=#effectively-contained>effectively contained</a> in the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> has <a href=#effective-style>effective
 style</a> either null or "super" for "vertical-align".  Otherwise false.
 
@@ -1517,7 +1517,7 @@ using the newly-specced features or working around their absence as the case
 may be.
 </div>
 
-<dd><strong>State</strong>: True if every <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> node that is
+<dd><strong>State</strong>: True if every <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node that is
 <a href=#effectively-contained>effectively contained</a> in the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> has <a href=#effective-style>effective
 style</a> either null or "underline" for text-decoration.  Otherwise false.
 
@@ -1546,7 +1546,7 @@ what the other browsers do instead.
 
   <li>Let <var title="">selected</var> be a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-collection title=concept-collection>collection</a> rooted at the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>'s
   <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-root title=concept-range-root>root</a>, whose filter matches only <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a> that are <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in
-  the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> and <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> nodes that are <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#partially-contained>partially contained</a> in the
+  the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> and <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> nodes that are <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#partially-contained>partially contained</a> in the
   <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>.
 
   <li>For each <var title="">link</var> in <var title="">links</var>, in <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#tree-order>tree order</a>:
@@ -1576,7 +1576,7 @@ what the other browsers do instead.
 <dd><strong>Action</strong>: Convert <var title="">value</var> to a boolean according
 to the algorithm in WebIDL, and set the <a href=#css-styling-flag>CSS styling flag</a> to the
 negation of the result.  Since the effect of this command is the opposite of
-what one would expect, user agents are encouraged to point authors to <a href=#command-stylewithcss><code title=command-stylewithcss>styleWithCSS</code></a> when <a href=#command-usecss><code title=command-usecss>useCSS</code></a> is used, such as by logging a warning to an
+what one would expect, user agents are encouraged to point authors to <code title=command-stylewithcss><a href=#command-stylewithcss>styleWithCSS</a></code> when <code title=command-usecss><a href=#command-usecss>useCSS</a></code> is used, such as by logging a warning to an
 error console.
 
 <p class=XXX>Properly cross-reference.

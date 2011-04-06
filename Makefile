@@ -8,7 +8,7 @@ intermediate.html: source.html preprocess Makefile
 
 editcommands.html: intermediate.html data Makefile
 	$(ANOLIS) --output-encoding=ascii --omit-optional-tags --enable=xspecxref \
-	--enable=refs --use-strict $< $@
+	--w3c-compat-xref-a-placement --enable=refs --use-strict $< $@
 
 # Hangs and it's useless for me anyway, kill it
 #xrefs.json: intermediate.html Makefile

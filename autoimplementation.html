@@ -696,13 +696,16 @@ function doSameCell(tr) {
 	var sameCell = document.createElement("td");
 	var exception = false;
 	try {
-		// Ad hoc normalization to avoid basically spurious mismatches
+		// Ad hoc normalization to avoid basically spurious mismatches.  For
+		// now this includes ignoring where the selection goes.
 		var normalizedSpecCell = tr.childNodes[1].childNodes[1].textContent
+			.replace(/[[\]{}]/g, "")
 			.replace(/;? ?"/g, '"')
 			.replace(/<(\/?)strong/g, '<$1b')
 			.replace(/<(\/?)em/g, '<$1i')
 			.replace(/#[0-9a-fA-F]{6}/g, function(match) { return match.toUpperCase(); });
 		var normalizedBrowserCell = tr.childNodes[2].childNodes[1].textContent
+			.replace(/[[\]{}]/g, "")
 			.replace(/;? ?"/g, '"')
 			.replace(/<(\/?)strong/g, '<$1b')
 			.replace(/<(\/?)em/g, '<$1i')

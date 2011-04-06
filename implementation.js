@@ -1376,7 +1376,6 @@ function myExecCommand(commandId, showUI, value, range) {
 		}
 		break;
 
-		/*
 		case "createlink":
 		// "If value is the empty string, do nothing."
 		if (value === "") {
@@ -1405,16 +1404,15 @@ function myExecCommand(commandId, showUI, value, range) {
 				}
 			}
 
-			// "For each text node in text nodes, in tree order:"
+			// "For each text node in text nodes:"
 			for (var j = 0; j < textNodes.length; j++) {
 				var textNode = textNodes[j];
 
 				// "Let ancestor link be the parent of text node."
 				var ancestorLink = textNode.parentNode;
 
-				// "While ancestor link is not an HTML element, or its local
-				// name is not "a", or it has no HTML attribute with local name
-				// "href":"
+				// "While ancestor link is not an a element or has no href
+				// attribute:"
 				while (!isHtmlNamespace(ancestorLink.namespaceURI)
 				|| ancestorLink.nodeType != Node.ELEMENT_NODE
 				|| ancestorLink.tagName != "A"
@@ -1431,28 +1429,30 @@ function myExecCommand(commandId, showUI, value, range) {
 					ancestorLink = ancestorLink.parentNode;
 				}
 
-				// "If ancestor link is not null, set its "href" attribute to
+				// "If ancestor link is not null, set its href attribute to
 				// value and continue with the next text node."
 				if (ancestorLink) {
 					ancestorLink.setAttribute("href", value);
 					continue;
 				}
 
-				// "Let new parent be a new HTML element with local name "a",
-				// the same ownerDocument as text node, and a single HTML
-				// attribute with local name "href" and value value."
+				// "Let new parent be the result of calling createElement("a")
+				// on the ownerDocument of text node."
 				var newParent = textNode.ownerDocument.createElement("a");
+
+				// "Call setAttribute("href", value) on new parent."
 				newParent.setAttribute("href", value);
 
 				// "Insert new parent into text node's parent as the previous
 				// sibling of text node."
 				textNode.parentNode.insertBefore(newParent, textNode);
 
-				// "Append text node to new parent as its last child."
-				newParent.appendChild(textNode);
+				// "Append text node to new parent as its last child,
+				// preserving ranges."
+				movePreservingRanges(textNode, newParent, 0);
 			}
 		}
-		*/
+		break;
 
 		case "fontname":
 		// "Decompose the Range, then style each returned Node with property

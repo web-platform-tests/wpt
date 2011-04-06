@@ -1098,6 +1098,11 @@ exception in IE and Firefox.  Need to consider changing to that behavior.
 meanings, are as follows.  These values must be compared to the argument in an
 <span data-anolis-spec=domcore>ASCII case-insensitive</span> manner.
 
+<!-- Notes on commands I've looked at but haven't bothered specifying yet:
+
+* decreaseFontSize, increaseFontSize: Only implemented in Gecko and Opera.
+-->
+
 <dl>
 <dt><code title><dfn title=command-backcolor>backColor</dfn></code>
 
@@ -1195,25 +1200,23 @@ boolean, so I'll go with Firefox and Opera. -->
     [[descendants]] of <var>node</var>, or <var>node</var> itself if it's a
     [[text]] node.
 
-    <li>For each <var>text node</var> in <var>text nodes</var>, in
-    [[treeorder]]:
+    <li>For each <var>text node</var> in <var>text nodes</var>:
 
     <ol>
       <li>Let <var>ancestor link</var> be the parent of <var>text
       node</var>.
 
-      <li>While <var>ancestor link</var> is not an <span>HTML
-      element</span>, or its [[localname]] is not "a", or it has no <span>HTML
-      attribute</span> with [[attrlocalname]] "href":
+      <li>While <var>ancestor link</var> is not an <code data-anolis-spec=html
+      title="the a element">a</code> element or has no [[href]] attribute:
 
       <ol>
         <li>If the parent of <var>ancestor link</var> is not an [[element]],
         set <var>ancestor link</var> to null and break from this loop.
 
-        <li>Otherwise, set <var>ancestor link</var> to its parent.
+        <li>Otherwise, set <var>ancestor link</var> to its [[parent]].
       </ol>
 
-      <li>If <var>ancestor link</var> is not null, set its "href" attribute
+      <li>If <var>ancestor link</var> is not null, set its [[href]] attribute
       to <var>value</var> and continue with the next <var>text node</var>.
       <!-- There are three approaches here.  For instance, if you ask browsers
       to create a link to "http://example.org" on the "b" here:
@@ -1251,7 +1254,7 @@ boolean, so I'll go with Firefox and Opera. -->
       the previous sibling of <var>text node</var>.
 
       <li>Append <var>text node</var> to <var>new parent</var> as its last
-      child.
+      child, <span>preserving ranges</span>.
     </ol>
   </ol>
 </ol>

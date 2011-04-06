@@ -1085,6 +1085,11 @@ exception in IE and Firefox.  Need to consider changing to that behavior.
 meanings, are as follows.  These values must be compared to the argument in an
 <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#ascii-case-insensitive>ASCII case-insensitive</a> manner.
 
+<!-- Notes on commands I've looked at but haven't bothered specifying yet:
+
+* decreaseFontSize, increaseFontSize: Only implemented in Gecko and Opera.
+-->
+
 <dl>
 <dt><code title=""><dfn id=command-backcolor title=command-backcolor>backColor</dfn></code>
 
@@ -1181,25 +1186,22 @@ boolean, so I'll go with Firefox and Opera. -->
     <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-descendant title=concept-tree-descendant>descendants</a> of <var title="">node</var>, or <var title="">node</var> itself if it's a
     <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node.
 
-    <li>For each <var title="">text node</var> in <var title="">text nodes</var>, in
-    <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#tree-order>tree order</a>:
+    <li>For each <var title="">text node</var> in <var title="">text nodes</var>:
 
     <ol>
       <li>Let <var title="">ancestor link</var> be the parent of <var title="">text
       node</var>.
 
-      <li>While <var title="">ancestor link</var> is not an <a href=#html-element>HTML
-      element</a>, or its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> is not "a", or it has no <a href=#html-attribute>HTML
-      attribute</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-attr-local-name title=concept-attr-local-name>local name</a> "href":
+      <li>While <var title="">ancestor link</var> is not an <code class=external data-anolis-spec=html title="the a element"><a href=http://www.whatwg.org/html/#the-a-element>a</a></code> element or has no <code class=external data-anolis-spec=html title=attr-hyperlink-href><a href=http://www.whatwg.org/html/#attr-hyperlink-href>href</a></code> attribute:
 
       <ol>
         <li>If the parent of <var title="">ancestor link</var> is not an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>,
         set <var title="">ancestor link</var> to null and break from this loop.
 
-        <li>Otherwise, set <var title="">ancestor link</var> to its parent.
+        <li>Otherwise, set <var title="">ancestor link</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
       </ol>
 
-      <li>If <var title="">ancestor link</var> is not null, set its "href" attribute
+      <li>If <var title="">ancestor link</var> is not null, set its <code class=external data-anolis-spec=html title=attr-hyperlink-href><a href=http://www.whatwg.org/html/#attr-hyperlink-href>href</a></code> attribute
       to <var title="">value</var> and continue with the next <var title="">text node</var>.
       <!-- There are three approaches here.  For instance, if you ask browsers
       to create a link to "http://example.org" on the "b" here:
@@ -1234,7 +1236,7 @@ boolean, so I'll go with Firefox and Opera. -->
       the previous sibling of <var title="">text node</var>.
 
       <li>Append <var title="">text node</var> to <var title="">new parent</var> as its last
-      child.
+      child, <a href=#preserving-ranges>preserving ranges</a>.
     </ol>
   </ol>
 </ol>

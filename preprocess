@@ -31,6 +31,7 @@ replace = {
     'fontsize': '<code data-anolis-spec=html title=dom-font-size>size</code>',
     'getselection': '<code data-anolis-spec=domrange title=dom-Document-getSelection>getSelection()</code>',
     'htmlnamespace': '<span data-anolis-spec=domcore>HTML namespace</span>',
+    'href': '<code data-anolis-spec=html title=attr-hyperlink-href>href</code>',
     'i': '<code data-anolis-spec=html title="the i element">i</code>',
     'index': '<span data-anolis-spec=domrange title=concept-indexof>index</span>',
     'localname': '<span data-anolis-spec=domcore title=concept-element-local-name>local name</span>',

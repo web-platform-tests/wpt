@@ -185,34 +185,12 @@ is [[contained]] in the [[range]]; or it is the [[range]]'s [[rangestart]]
 [[bpnode]], it is a [[text]] node, and the [[range]]'s [[rangeend]]
 [[bpoffset]] is not 0; or it has at least one [[child]], and all its
 [[children]] are <span>effectively contained</span> in the [[range]].
-
-<p class=XXX>A node is supposed to be <span>effectively contained</span> in a
-range if and only if it would be [[contained]] after the range is <span
-title=decompose>decomposed</span>.  Is this actually right?
-
-<p>The <dfn>active range</dfn> of a [[document]] is the value returned by the
-following algorithm:
-
-<ol>
-  <li>Let <var>selection</var> be the result of calling [[getselection]] on
-  the [[document]].
-
-  <li>If there are no [[ranges]] associated with <var>selection</var>,
-  return null.
-
-  <li>Let <var>start</var> be the [[boundarypoint]] with the earliest
-  [[bpposition]] among all of <var>selection</var>'s [[ranges]]'
-  [[rangestarts]].
-
-  <li>Return the last [[range]] in <var>selection</var> whose [[rangestart]]
-  is <var>start</var>.
-
-  <p class=XXX>Double-check that this is what Firefox actually does.  It seems
-  pretty baroque.
-
-  <p class=note>In user agents that support only one [[range]] per
-  [[selection]], the active range is simply the only one in the selection.
-</ol>
+<!-- Logically, the effectively contained nodes are supposed to be the ones
+returned by decomposing the range, or their descendants.  We can't actually
+define it that way, because decomposing the range has side effects (calling
+splitText()), and anyway text nodes might not be returned by decomposing even
+if they're effectively contained: it might be that the new node created by
+splitText() is returned. -->
 
 <p>An <dfn>unwrappable element</dfn> is an <span>HTML element</span> which may
 not be used where only [[phrasingcontent]] is expected (not counting unknown or
@@ -1085,15 +1063,15 @@ parameters, even if specified, are ignored except where otherwise stated.
 
 <p>When <code>execCommand()</code> is invoked, the user agent must take the
 action from the list below given by <var>commandId</var> on the
-[[contextobject]]'s <span>active range</span>.  If no action is given or if
-there is no <span>active range</span>, do nothing.
+[[contextobject]]'s first [[range]].  If no action is given or if there is no
+[[range]] in the [[contextobject]], do nothing.
 
 <p>The <dfn
 title=queryCommandState()><code>queryCommandState(<var>commandId</var>)</code></dfn>
 method on the <code data-anolis-spec=html>HTMLDocument</code> interface must
 return the state of <var>commandId</var> on the [[contextobject]]'s
-<span>active range</span>, as given by the list below.  If there is no
-<span>active range</span>, or if <var>commandId</var> is not on the list,
+first [[range]], as given by the list below.  If there is no [[range]] in the
+[[contextobject]], or if <var>commandId</var> is not on the list,
 return false.
 <!-- Gecko throws an exception if there are no ranges in the selection, but
 other engines seem to just return false, which seems like nicer behavior
@@ -1106,8 +1084,8 @@ and Firefox 4b11, and returns boolean false in Chrome 10 and Opera 11. -->
 title=queryCommandValue()><code>queryCommandValue(<var>commandId</var>)</code></dfn>
 method on the <code data-anolis-spec=html>HTMLDocument</code> interface must
 return the value of <var>commandId</var> on the [[contextobject]]'s
-<span>active range</span>, as given by the list below.  If there is no
-<span>active range</span>, or if <var>commandId</var> is not on the list,
+first [[range]], as given by the list below.  If there is no [[range]] in the
+[[contextobject]], or if <var>commandId</var> is not on the list,
 return the empty string.
 <!-- Requesting the value of an unknown command throws an exception in
 IE 9 RC and in Firefox 4b11.  It returns boolean false in Chrome 10, and the

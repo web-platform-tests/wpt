@@ -196,33 +196,12 @@ is <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-r
 <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>, it is a <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> node, and the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a>
 <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a> is not 0; or it has at least one <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>, and all its
 <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a> are <a href=#effectively-contained>effectively contained</a> in the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>.
-
-<p class=XXX>A node is supposed to be <a href=#effectively-contained>effectively contained</a> in a
-range if and only if it would be <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> after the range is <a href=#decompose title=decompose>decomposed</a>.  Is this actually right?
-
-<p>The <dfn id=active-range>active range</dfn> of a <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#document><code class=external data-anolis-spec=domcore>Document</code></a> is the value returned by the
-following algorithm:
-
-<ol>
-  <li>Let <var title="">selection</var> be the result of calling <a href=http://html5.org/specs/dom-range.html#dom-document-getselection><code class=external data-anolis-spec=domrange title=dom-Document-getSelection>getSelection()</code></a> on
-  the <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#document><code class=external data-anolis-spec=domcore>Document</code></a>.
-
-  <li>If there are no <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>ranges</a> associated with <var title="">selection</var>,
-  return null.
-
-  <li>Let <var title="">start</var> be the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point title=concept-boundary-point>boundary point</a> with the earliest
-  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-bp-position title=concept-bp-position>position</a> among all of <var title="">selection</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>ranges</a>'
-  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>starts</a>.
-
-  <li>Return the last <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> in <var title="">selection</var> whose <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a>
-  is <var title="">start</var>.
-
-  <p class=XXX>Double-check that this is what Firefox actually does.  It seems
-  pretty baroque.
-
-  <p class=note>In user agents that support only one <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> per
-  <a href=http://html5.org/specs/dom-range.html#selection><code class=external data-anolis-spec=domrange>Selection</code></a>, the active range is simply the only one in the selection.
-</ol>
+<!-- Logically, the effectively contained nodes are supposed to be the ones
+returned by decomposing the range, or their descendants.  We can't actually
+define it that way, because decomposing the range has side effects (calling
+splitText()), and anyway text nodes might not be returned by decomposing even
+if they're effectively contained: it might be that the new node created by
+splitText() is returned. -->
 
 <p>An <dfn id=unwrappable-element>unwrappable element</dfn> is an <a href=#html-element>HTML element</a> which may
 not be used where only <a class=external data-anolis-spec=html href=http://www.whatwg.org/html/#phrasing-content>phrasing content</a> is expected (not counting unknown or
@@ -1073,14 +1052,14 @@ parameters, even if specified, are ignored except where otherwise stated.
 
 <p>When <a href=#execcommand()><code>execCommand()</code></a> is invoked, the user agent must take the
 action from the list below given by <var title="">commandId</var> on the
-<a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>'s <a href=#active-range>active range</a>.  If no action is given or if
-there is no <a href=#active-range>active range</a>, do nothing.
+<a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>'s first <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>.  If no action is given or if there is no
+<a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> in the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>, do nothing.
 
 <p>The <dfn id=querycommandstate() title=queryCommandState()><code>queryCommandState(<var title="">commandId</var>)</code></dfn>
 method on the <a href=http://www.whatwg.org/html/#htmldocument><code class=external data-anolis-spec=html>HTMLDocument</code></a> interface must
 return the state of <var title="">commandId</var> on the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>'s
-<a href=#active-range>active range</a>, as given by the list below.  If there is no
-<a href=#active-range>active range</a>, or if <var title="">commandId</var> is not on the list,
+first <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>, as given by the list below.  If there is no <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> in the
+<a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>, or if <var title="">commandId</var> is not on the list,
 return false.
 <!-- Gecko throws an exception if there are no ranges in the selection, but
 other engines seem to just return false, which seems like nicer behavior
@@ -1092,8 +1071,8 @@ and Firefox 4b11, and returns boolean false in Chrome 10 and Opera 11. -->
 <p>The <dfn id=querycommandvalue() title=queryCommandValue()><code>queryCommandValue(<var title="">commandId</var>)</code></dfn>
 method on the <a href=http://www.whatwg.org/html/#htmldocument><code class=external data-anolis-spec=html>HTMLDocument</code></a> interface must
 return the value of <var title="">commandId</var> on the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>'s
-<a href=#active-range>active range</a>, as given by the list below.  If there is no
-<a href=#active-range>active range</a>, or if <var title="">commandId</var> is not on the list,
+first <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>, as given by the list below.  If there is no <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> in the
+<a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>, or if <var title="">commandId</var> is not on the list,
 return the empty string.
 <!-- Requesting the value of an unknown command throws an exception in
 IE 9 RC and in Firefox 4b11.  It returns boolean false in Chrome 10, and the

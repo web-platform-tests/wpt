@@ -134,16 +134,19 @@ other than review and comment.
   <li>Also not sure about computed style.  There are differences between
   "computed" and "used" and things like that, what do we actually want here?
 
-  <li>The wording I use for DOM stuff is a bit of a mess, often either
-  imprecise or unreasonably verbose.  I'm not quite sure how to fix it.
+  <li>The wording I use for DOM stuff is not maximally precise.  Really I want
+  DOM Core to define nice concepts that I can xref, like "insert a node".  I
+  don't want to have to explicitly refer to DOM methods like insertBefore()
+  every time I want to move things.
 
   <li>I haven't put any thought yet into collapsed ranges or selections.
   Currently my algorithms mostly do nothing if the selection is collapsed,
   which is of course wrong.  E.g., bold with collapsed selection should put
   &lt;b>&lt;/b> at the cursor, generally.
 
-  <li>I also don't pay attention to what happens to the selection when you
-  mutate the DOM.  This is essential.
+  <li>Some more thought needs to go into what happens to the selection when you
+  mutate the DOM.  In some cases the results are pretty arbitrary.  It might
+  make sense to do some kind of normalization.
 
   <li>JavaScript can modify the DOM synchronously in some cases, such as DOM
   mutation events and onunload when moving around iframes and objects.  This
@@ -412,6 +415,34 @@ which at least one of the following holds:
 <span>styling element</span> which <span title="specified
 style">specifies</span> at most one CSS property.
 
+<p>When the user agent is to move a [[node]] to a new location, <dfn>preserving
+ranges</dfn>, it must remove the [[node]] from its original [[parent]], then
+insert it in the new location.  In doing so, however, it must ignore the
+regular [[rangemutationrules]], and instead follow these rules:
+
+<ol>
+  <li>Let <var>node</var> be the moved [[node]], <var>old parent</var> and
+  <var>old index</var> be the old [[parent]] and [[index]], and <var>new
+  parent</var> and <var>new index</var> be the new [[parent]] and [[index]].
+
+  <li>If a [[boundarypoint]]'s [[bpnode]] is the same as or a [[descendant]] of
+  <var>node</var>, leave it unchanged, so it moves to the new location.  <!--
+  This is actually implicit, but I state it anyway for completeness. -->
+
+  <li>If a [[boundarypoint]]'s [[bpnode]] is <var>new parent</var> and its
+  [[bpoffset]] is greater than <var>new index</var>, add one to its
+  [[bpoffset]].
+
+  <li>If a [[boundarypoint]]'s [[bpnode]] is <var>old parent</var> and its
+  [[bpoffset]] is <var>old index</var> or <var>old index</var> + 1, set its
+  [[bpnode]] to <var>new parent</var> and add <var>new index</var> &minus;
+  <var>old index</var> to its [[bpoffset]].
+
+  <li>If a [[boundarypoint]]'s [[bpnode]] is <var>old parent</var> and its
+  [[bpoffset]] is greater than <var>old index</var> + 1, subtract one from its
+  [[bpoffset]].
+</ol>
+
 <p>The <dfn>CSS styling flag</dfn> is a boolean flag, which must initially be
 false.
 
@@ -435,60 +466,25 @@ sequentially in the list's order.
 <p>When a user agent is to <dfn>decompose</dfn> a [[range]] <var>range</var>,
 it must run the following steps.
 
+<p class=note>For this algorithm to be correct, it is essential that user
+agents follow the [[rangemutationrules]], particularly those for <code
+title>splitText()</code>.
+
 <ol>
   <li>If <var>range</var>'s [[rangestart]] and [[rangeend]] are the same,
   return an empty list.
 
-  <li>Let <var>start node</var>, <var>start offset</var>, <var>end node</var>,
-  and <var>end offset</var> be <var>range</var>'s [[rangestart]] and
-  [[rangeend]] [[bpnodes]] and [[bpoffsets]], respectively.
+  <li>If <var>range</var>'s [[rangestart]] [[bpnode]] is a [[text]] node and
+  its [[rangestart]] [[bpoffset]] is neither 0 nor the [[nodelength]] of its
+  [[rangestart]] [[bpnode]], run <code data-anolis-spec=domcore
+  title=dom-Text-splitText>splitText()</code> on its [[rangestart]] [[bpnode]]
+  with argument equal to its [[rangestart]] [[bpoffset]].
 
-  <li>If <var>start node</var> is a [[text]] node and is the same as <var>end
-  node</var>, and <var>start offset</var> is neither 0 nor the [[nodelength]]
-  of <var>start node</var>:
-
-  <ol>
-    <li>Set <var>start node</var> to the result of running <code
-    data-anolis-spec=domcore title=dom-Text-splitText>splitText(<var>start
-    offset</var>)</code> on <var>start node</var>.
-
-    <li>Set <var>end node</var> to <var>start node</var>.
-
-    <li>Set <var>end offset</var> to <var>end offset</var> &minus; <var>start
-    offset</var>.
-
-    <li>Set <var>start offset</var> to 0.
-  </ol>
-
-  <li>Otherwise, if <var>start node</var> is a [[text]] node and <var>start
-  offset</var> is neither 0 nor the [[nodelength]] of <var>start node</var>:
-
-  <ol>
-    <li>Set <var>start node</var> to the result of running <code
-    data-anolis-spec=domcore title=dom-Text-splitText>splitText(<var>start
-    offset</var>)</code> on <var>start node</var>.
-
-    <li>Set <var>start offset</var> to 0.
-  </ol>
-
-  <li>If <var>end node</var> is a [[text]] node and <var>end offset</var> is
-  neither 0 nor the [[nodelength]] of <var>end node</var>, run <code
-  data-anolis-spec=domcore title=dom-Text-splitText>splitText(<var>end
-  offset</var>)</code> on <var>end node</var>.
-
-  <!-- The next two steps ensure that our fragmented text nodes are contained
-  in the range. -->
-  <li>If <var>start node</var> is a [[text]] node and <var>start offset</var>
-  is 0, set <var>start offset</var> to the [[index]] of <var>start node</var>,
-  then set <var>start node</var> to its [[parent]].
-
-  <li>If <var>end node</var> is a [[text]] node and <var>end offset</var> is
-  its [[nodelength]], set <var>end offset</var> to one plus the [[index]] of
-  <var>end node</var>, then set <var>end node</var> to its parent.
-
-  <li>Set <var>range</var>'s [[rangestart]] to (<var>start node</var>,
-  <var>start offset</var>) and its [[rangeend]] to (<var>end node</var>,
-  <var>end offset</var>).
+  <li>If <var>range</var>'s [[rangeend]] [[bpnode]] is a [[text]] node and
+  its [[rangeend]] [[bpoffset]] is neither 0 nor the [[nodelength]] of its
+  [[rangeend]] [[bpnode]], run <code data-anolis-spec=domcore
+  title=dom-Text-splitText>splitText()</code> on its [[rangeend]] [[bpnode]]
+  with argument equal to its [[rangeend]] [[bpoffset]].
 
   <!-- Now we want to make sure our range contains as many nodes as possible,
   such as by changing <tag>[foo]</tag> to {<tag>foo</tag>}. -->
@@ -540,20 +536,17 @@ id=foo> into <span id=foo> instead of <font id=foo>, but probably not worth it.
   <li>If <var>element</var> is a <span>simple styling element</span>:
 
   <ol>
-    <li>Let <var>children</var> be an empty list of [[node]]s.
+    <li>Let <var>children</var> be the [[children]] of <var>element</var>.
 
-    <li>While <var>element</var> has children:
-
-    <ol>
-      <li>Let <var>child</var> be the first child of <var>element</var>.
-
-      <li>Append <var>child</var> to <var>children</var>.
-
-      <li>Insert <var>child</var> as the previous sibling of
-      <var>element</var>.
-    </ol>
+    <li>While <var>element</var> has [[children]], insert its first [[child]]
+    into its [[parent]] immediately before it, <span>preserving ranges</span>.
 
     <li>Remove <var>element</var> from its [[parent]].
+    <!-- Notice that a boundary point that was immediately before or after the
+    element will now be immediately before or after its children, just because
+    of the regular range mutation rules, without needing to worry about
+    preserving ranges.  Preserving ranges is only necessary for the sake of
+    boundary points in the element or its descendants. -->
 
     <li>Return <var>children</var>.
   </ol>
@@ -586,11 +579,15 @@ id=foo> into <span id=foo> instead of <font id=foo>, but probably not worth it.
   [[localname]] "span", with the same attributes and [[ownerdocument]] as
   <var>element</var>.
 
-  <li>Append <var>new element</var> to <var>element</var>'s
-  parent as the previous sibling of <var>element</var>.
+  <li>Insert <var>new element</var> into the [[parent]] of <var>element</var>
+  immediately before it.
+  <!-- This means that the boundary point immediately before the element goes
+  before the new element, and after we remove the old element, the boundary
+  point immediately after the old element will be immediately after the new
+  element, because of the regular range mutation rules. -->
 
-  <li>While <var>element</var> has children, append its first child
-  as the last child of <var>new element</var>.
+  <li>While <var>element</var> has [[children]], append its first [[child]] as
+  the last [[child]] of <var>new element</var>, <span>preserving ranges</span>.
 
   <li>Remove <var>element</var> from its [[parent]].
 
@@ -753,15 +750,21 @@ After forcing the style, descendants might still have different style.
     is not the [[previoussibling]] of <var>node</var>:
 
     <ol>
-      <li>While <var>candidate</var> has [[children]], append the first
-      [[child]] of <var>candidate</var> as the last [[child]] of
-      <var>candidate</var>'s [[parent]].
+      <li>While <var>candidate</var> has [[children]], insert the first
+      [[child]] of <var>candidate</var> into <var>candidate</var>'s [[parent]]
+      immediately before <var>candidate</var>, <span>preserving ranges</span>.
 
       <li>Insert <var>candidate</var> into <var>node</var>'s [[parent]] before
-      <var>node</var>.
+      <var>node</var>'s [[previoussibling]].  <!-- If candidate had no
+      children, any boundary point inside it will get moved to its parent here,
+      which is okay.  We don't want to preserve ranges, because that would move
+      boundary points that originally were in candidate but were moved to its
+      parent by the last step to move to node's parent.  We move to before the
+      previous sibling so that boundary points before and after the previous
+      sibling wind up before or after candidate. -->
 
-      <li>Append the [[previoussibling]] of <var>candidate</var> as the last
-      [[child]] of <var>candidate</var>.
+      <li>Append the [[nextsibling]] of <var>candidate</var> as the last
+      [[child]] of <var>candidate</var>, <span>preserving ranges</span>.
     </ol>
 
     <li>Let <var>candidate</var> be <var>node</var>'s [[nextsibling]].
@@ -779,15 +782,19 @@ After forcing the style, descendants might still have different style.
     is not the [[nextsibling]] of <var>node</var>:
 
     <ol>
-      <li>While <var>candidate</var> has [[children]], append the first
-      [[child]] of <var>candidate</var> as the last [[child]] of
-      <var>candidate</var>'s [[parent]].
+      <li>While <var>candidate</var> has [[children]], insert the first
+      [[child]] of <var>candidate</var> into <var>candidate</var>'s [[parent]]
+      immediately before <var>candidate</var>, <span>preserving ranges</span>.
 
       <li>Insert <var>candidate</var> into <var>node</var>'s [[parent]] after
-      <var>node</var>.
+      <var>node</var>. <!-- Thus candidate is between the same boundary points
+      as node's next sibling, not the same as node.  When inserting, the new
+      thing always gets put in the same place as its next sibling, not its
+      previous sibling: a boundary point at the place it's inserted moves
+      before the new node, not after. -->
 
       <li>Append the [[nextsibling]] of <var>candidate</var> as the last
-      [[child]] of <var>candidate</var>.
+      [[child]] of <var>candidate</var>, <span>preserving ranges</span>.
     </ol>
 
     <li>Let <var>previous sibling</var> and <var>next sibling</var> be
@@ -796,7 +803,8 @@ After forcing the style, descendants might still have different style.
     <li>If <var>previous sibling</var> is a <span>simple styling element</span>
     whose <span>specified style</span> and <span>effective style</span> for
     <var>property</var> are both <var>new value</var>, append <var>node</var>
-    as the last [[child]] of <var>previous sibling</var>.
+    as the last [[child]] of <var>previous sibling</var>, <span>preserving
+    ranges</span>.
 
     <li>If <var>next sibling</var> is a <span>simple styling element</span>
     whose <span>specified style</span> and <span>effective style</span> for
@@ -804,12 +812,13 @@ After forcing the style, descendants might still have different style.
 
     <ol>
       <li>If <var>node</var> is not a [[child]] of <var>previous sibling</var>,
-      insert <var>node</var> as the first [[child]] of <var>next sibling</var>.
+      insert <var>node</var> as the first [[child]] of <var>next
+      sibling</var>, <span>preserving ranges</span>.
 
       <li>Otherwise, while <var>next sibling</var> has [[children]], append the
       first [[child]] of <var>next sibling</var> as the last [[child]] of
-      <var>previous sibling</var>.  Then remove <var>next sibling</var> from
-      its [[parent]].
+      <var>previous sibling</var>, <span>preserving ranges</span>.  Then remove
+      <var>next sibling</var> from its [[parent]].
     </ol>
   </ol>
 
@@ -911,20 +920,22 @@ After forcing the style, descendants might still have different style.
   [[ownerdocument]] of <var>node</var>.
 
   <li>Insert <var>new parent</var> in <var>node</var>'s [[parent]] before
-  <var>node</var>.
+  <var>node</var>.  <!-- This preserves boundary points correctly, as usual.
+  -->
 
   <li>If the <span>effective style</span> of <var>property</var> for <var>new
   parent</var> is not <var>new value</var>, set the CSS property
   <var>property</var> of <var>new parent</var> to <var>new value</var>.
 
-  <li>Append <var>node</var> to <var>new parent</var> as its last [[child]].
+  <li>Append <var>node</var> to <var>new parent</var> as its last [[child]],
+  <span>preserving ranges</span>.
 
   <li>If <var>node</var> is an [[element]] and the <span>effective style</span>
   of <var>property</var> for <var>node</var> is not <var>new value</var>:
 
   <ol>
     <li>Insert <var>node</var> into the [[parent]] of <var>new parent</var>
-    before <var>new parent</var>.
+    before <var>new parent</var>, <span>preserving ranges</span>.
 
     <li>Remove <var>new parent</var> from its [[parent]].
 
@@ -1468,12 +1479,8 @@ true, otherwise false.
 state of the [[range]] for this command is then true, <span>style</span> each
 returned [[node]] with <var>property</var> "vertical-align" and <var>new
 value</var> "baseline".  Otherwise, <span>style</span> them with <var>new
-value</var> "baseline", then <span>style</span> them again with <var>new
-value</var> "sub".
-
-<p class=XXX>This doesn't work, because we'll have removed some of the things
-that we want to style in some cases.  Need to define what happens to a range
-when you style its nodes, then re-decompose the same range before re-styling.
+value</var> "baseline", then <span>decompose</span> the [[range]] again and
+<span>style</span> each returned [[node]] with <var>new value</var> "sub".
 
 <dd><strong>State</strong>: True if every [[text]] node that is
 <span>effectively contained</span> in the [[range]] has <span>effective
@@ -1488,8 +1495,8 @@ style</span> either null or "sub" for "vertical-align".  Otherwise false.
 state of the [[range]] for this command is then true, <span>style</span> each
 returned [[node]] with <var>property</var> "vertical-align" and <var>new
 value</var> "baseline".  Otherwise, <span>style</span> them with <var>new
-value</var> "baseline", then <span>style</span> them again with <var>new
-value</var> "super".
+value</var> "baseline", then <span>decompose</span> the [[range]] again and
+<span>style</span> each returned [[node]] with <var>new value</var> "super".
 
 <dd><strong>State</strong>: True if every [[text]] node that is
 <span>effectively contained</span> in the [[range]] has <span>effective

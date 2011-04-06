@@ -27,7 +27,7 @@
 <body class=draft>
 <div class=head id=head>
 <h1>HTML Editing Commands</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-27-march-2011>Work in Progress &mdash; Last Update 27 March 2011</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-6-april-2011>Work in Progress &mdash; Last Update 6 April 2011</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;ayg+spec@aryeh.name&gt;
@@ -147,16 +147,19 @@ other than review and comment.
   <li>Also not sure about computed style.  There are differences between
   "computed" and "used" and things like that, what do we actually want here?
 
-  <li>The wording I use for DOM stuff is a bit of a mess, often either
-  imprecise or unreasonably verbose.  I'm not quite sure how to fix it.
+  <li>The wording I use for DOM stuff is not maximally precise.  Really I want
+  DOM Core to define nice concepts that I can xref, like "insert a node".  I
+  don't want to have to explicitly refer to DOM methods like insertBefore()
+  every time I want to move things.
 
   <li>I haven't put any thought yet into collapsed ranges or selections.
   Currently my algorithms mostly do nothing if the selection is collapsed,
   which is of course wrong.  E.g., bold with collapsed selection should put
   &lt;b&gt;&lt;/b&gt; at the cursor, generally.
 
-  <li>I also don't pay attention to what happens to the selection when you
-  mutate the DOM.  This is essential.
+  <li>Some more thought needs to go into what happens to the selection when you
+  mutate the DOM.  In some cases the results are pretty arbitrary.  It might
+  make sense to do some kind of normalization.
 
   <li>JavaScript can modify the DOM synchronously in some cases, such as DOM
   mutation events and onunload when moving around iframes and objects.  This
@@ -421,6 +424,34 @@ which at least one of the following holds:
 <a href=#styling-element>styling element</a> which <a href=#specified-style title="specified
 style">specifies</a> at most one CSS property.
 
+<p>When the user agent is to move a <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> to a new location, <dfn id=preserving-ranges>preserving
+ranges</dfn>, it must remove the <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> from its original <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>, then
+insert it in the new location.  In doing so, however, it must ignore the
+regular <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#range-mutation-rules>range mutation rules</a>, and instead follow these rules:
+
+<ol>
+  <li>Let <var title="">node</var> be the moved <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a>, <var title="">old parent</var> and
+  <var title="">old index</var> be the old <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> and <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a>, and <var title="">new
+  parent</var> and <var title="">new index</var> be the new <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> and <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a>.
+
+  <li>If a <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point title=concept-boundary-point>boundary point</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> is the same as or a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-descendant title=concept-tree-descendant>descendant</a> of
+  <var title="">node</var>, leave it unchanged, so it moves to the new location.  <!--
+  This is actually implicit, but I state it anyway for completeness. -->
+
+  <li>If a <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point title=concept-boundary-point>boundary point</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> is <var title="">new parent</var> and its
+  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a> is greater than <var title="">new index</var>, add one to its
+  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a>.
+
+  <li>If a <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point title=concept-boundary-point>boundary point</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> is <var title="">old parent</var> and its
+  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a> is <var title="">old index</var> or <var title="">old index</var> + 1, set its
+  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> to <var title="">new parent</var> and add <var title="">new index</var> &minus;
+  <var title="">old index</var> to its <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a>.
+
+  <li>If a <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point title=concept-boundary-point>boundary point</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> is <var title="">old parent</var> and its
+  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a> is greater than <var title="">old index</var> + 1, subtract one from its
+  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a>.
+</ol>
+
 <p>The <dfn id=css-styling-flag>CSS styling flag</dfn> is a boolean flag, which must initially be
 false.
 
@@ -444,57 +475,22 @@ sequentially in the list's order.
 <p>When a user agent is to <dfn id=decompose>decompose</dfn> a <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a> <var title="">range</var>,
 it must run the following steps.
 
+<p class=note>For this algorithm to be correct, it is essential that user
+agents follow the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#range-mutation-rules>range mutation rules</a>, particularly those for <code title="">splitText()</code>.
+
 <ol>
   <li>If <var title="">range</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> and <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> are the same,
   return an empty list.
 
-  <li>Let <var title="">start node</var>, <var title="">start offset</var>, <var title="">end node</var>,
-  and <var title="">end offset</var> be <var title="">range</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> and
-  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>nodes</a> and <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offsets</a>, respectively.
+  <li>If <var title="">range</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> is a <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> node and
+  its <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a> is neither 0 nor the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> of its
+  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>, run <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-text-splittext><code class=external data-anolis-spec=domcore title=dom-Text-splitText>splitText()</code></a> on its <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>
+  with argument equal to its <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a>.
 
-  <li>If <var title="">start node</var> is a <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> node and is the same as <var title="">end
-  node</var>, and <var title="">start offset</var> is neither 0 nor the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a>
-  of <var title="">start node</var>:
-
-  <ol>
-    <li>Set <var title="">start node</var> to the result of running <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-text-splittext><code class=external data-anolis-spec=domcore title=dom-Text-splitText>splitText(<var title="">start
-    offset</var>)</code></a> on <var title="">start node</var>.
-
-    <li>Set <var title="">end node</var> to <var title="">start node</var>.
-
-    <li>Set <var title="">end offset</var> to <var title="">end offset</var> &minus; <var title="">start
-    offset</var>.
-
-    <li>Set <var title="">start offset</var> to 0.
-  </ol>
-
-  <li>Otherwise, if <var title="">start node</var> is a <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> node and <var title="">start
-  offset</var> is neither 0 nor the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> of <var title="">start node</var>:
-
-  <ol>
-    <li>Set <var title="">start node</var> to the result of running <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-text-splittext><code class=external data-anolis-spec=domcore title=dom-Text-splitText>splitText(<var title="">start
-    offset</var>)</code></a> on <var title="">start node</var>.
-
-    <li>Set <var title="">start offset</var> to 0.
-  </ol>
-
-  <li>If <var title="">end node</var> is a <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> node and <var title="">end offset</var> is
-  neither 0 nor the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> of <var title="">end node</var>, run <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-text-splittext><code class=external data-anolis-spec=domcore title=dom-Text-splitText>splitText(<var title="">end
-  offset</var>)</code></a> on <var title="">end node</var>.
-
-  <!-- The next two steps ensure that our fragmented text nodes are contained
-  in the range. -->
-  <li>If <var title="">start node</var> is a <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> node and <var title="">start offset</var>
-  is 0, set <var title="">start offset</var> to the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> of <var title="">start node</var>,
-  then set <var title="">start node</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
-
-  <li>If <var title="">end node</var> is a <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> node and <var title="">end offset</var> is
-  its <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a>, set <var title="">end offset</var> to one plus the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> of
-  <var title="">end node</var>, then set <var title="">end node</var> to its parent.
-
-  <li>Set <var title="">range</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> to (<var title="">start node</var>,
-  <var title="">start offset</var>) and its <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> to (<var title="">end node</var>,
-  <var title="">end offset</var>).
+  <li>If <var title="">range</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> is a <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> node and
+  its <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a> is neither 0 nor the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> of its
+  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>, run <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-text-splittext><code class=external data-anolis-spec=domcore title=dom-Text-splitText>splitText()</code></a> on its <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>
+  with argument equal to its <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a>.
 
   <!-- Now we want to make sure our range contains as many nodes as possible,
   such as by changing <tag>[foo]</tag> to {<tag>foo</tag>}. -->
@@ -545,20 +541,17 @@ id=foo> into <span id=foo> instead of <font id=foo>, but probably not worth it.
   <li>If <var title="">element</var> is a <a href=#simple-styling-element>simple styling element</a>:
 
   <ol>
-    <li>Let <var title="">children</var> be an empty list of <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a>s.
+    <li>Let <var title="">children</var> be the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a> of <var title="">element</var>.
 
-    <li>While <var title="">element</var> has children:
-
-    <ol>
-      <li>Let <var title="">child</var> be the first child of <var title="">element</var>.
-
-      <li>Append <var title="">child</var> to <var title="">children</var>.
-
-      <li>Insert <var title="">child</var> as the previous sibling of
-      <var title="">element</var>.
-    </ol>
+    <li>While <var title="">element</var> has <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, insert its first <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>
+    into its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> immediately before it, <a href=#preserving-ranges>preserving ranges</a>.
 
     <li>Remove <var title="">element</var> from its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+    <!-- Notice that a boundary point that was immediately before or after the
+    element will now be immediately before or after its children, just because
+    of the regular range mutation rules, without needing to worry about
+    preserving ranges.  Preserving ranges is only necessary for the sake of
+    boundary points in the element or its descendants. -->
 
     <li>Return <var title="">children</var>.
   </ol>
@@ -590,11 +583,15 @@ id=foo> into <span id=foo> instead of <font id=foo>, but probably not worth it.
   <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> "span", with the same attributes and <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument><code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument>ownerDocument</code></a> as
   <var title="">element</var>.
 
-  <li>Append <var title="">new element</var> to <var title="">element</var>'s
-  parent as the previous sibling of <var title="">element</var>.
+  <li>Insert <var title="">new element</var> into the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of <var title="">element</var>
+  immediately before it.
+  <!-- This means that the boundary point immediately before the element goes
+  before the new element, and after we remove the old element, the boundary
+  point immediately after the old element will be immediately after the new
+  element, because of the regular range mutation rules. -->
 
-  <li>While <var title="">element</var> has children, append its first child
-  as the last child of <var title="">new element</var>.
+  <li>While <var title="">element</var> has <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, append its first <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> as
+  the last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">new element</var>, <a href=#preserving-ranges>preserving ranges</a>.
 
   <li>Remove <var title="">element</var> from its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
 
@@ -757,15 +754,21 @@ After forcing the style, descendants might still have different style.
     is not the <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling><code class=external data-anolis-spec=domcore title=dom-Node-previousSibling>previousSibling</code></a> of <var title="">node</var>:
 
     <ol>
-      <li>While <var title="">candidate</var> has <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, append the first
-      <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">candidate</var> as the last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of
-      <var title="">candidate</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+      <li>While <var title="">candidate</var> has <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, insert the first
+      <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">candidate</var> into <var title="">candidate</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>
+      immediately before <var title="">candidate</var>, <a href=#preserving-ranges>preserving ranges</a>.
 
       <li>Insert <var title="">candidate</var> into <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> before
-      <var title="">node</var>.
+      <var title="">node</var>'s <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling><code class=external data-anolis-spec=domcore title=dom-Node-previousSibling>previousSibling</code></a>.  <!-- If candidate had no
+      children, any boundary point inside it will get moved to its parent here,
+      which is okay.  We don't want to preserve ranges, because that would move
+      boundary points that originally were in candidate but were moved to its
+      parent by the last step to move to node's parent.  We move to before the
+      previous sibling so that boundary points before and after the previous
+      sibling wind up before or after candidate. -->
 
-      <li>Append the <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling><code class=external data-anolis-spec=domcore title=dom-Node-previousSibling>previousSibling</code></a> of <var title="">candidate</var> as the last
-      <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">candidate</var>.
+      <li>Append the <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling><code class=external data-anolis-spec=domcore title=dom-Node-nextSibling>nextSibling</code></a> of <var title="">candidate</var> as the last
+      <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">candidate</var>, <a href=#preserving-ranges>preserving ranges</a>.
     </ol>
 
     <li>Let <var title="">candidate</var> be <var title="">node</var>'s <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling><code class=external data-anolis-spec=domcore title=dom-Node-nextSibling>nextSibling</code></a>.
@@ -783,15 +786,19 @@ After forcing the style, descendants might still have different style.
     is not the <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling><code class=external data-anolis-spec=domcore title=dom-Node-nextSibling>nextSibling</code></a> of <var title="">node</var>:
 
     <ol>
-      <li>While <var title="">candidate</var> has <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, append the first
-      <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">candidate</var> as the last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of
-      <var title="">candidate</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+      <li>While <var title="">candidate</var> has <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, insert the first
+      <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">candidate</var> into <var title="">candidate</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>
+      immediately before <var title="">candidate</var>, <a href=#preserving-ranges>preserving ranges</a>.
 
       <li>Insert <var title="">candidate</var> into <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> after
-      <var title="">node</var>.
+      <var title="">node</var>. <!-- Thus candidate is between the same boundary points
+      as node's next sibling, not the same as node.  When inserting, the new
+      thing always gets put in the same place as its next sibling, not its
+      previous sibling: a boundary point at the place it's inserted moves
+      before the new node, not after. -->
 
       <li>Append the <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling><code class=external data-anolis-spec=domcore title=dom-Node-nextSibling>nextSibling</code></a> of <var title="">candidate</var> as the last
-      <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">candidate</var>.
+      <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">candidate</var>, <a href=#preserving-ranges>preserving ranges</a>.
     </ol>
 
     <li>Let <var title="">previous sibling</var> and <var title="">next sibling</var> be
@@ -800,7 +807,8 @@ After forcing the style, descendants might still have different style.
     <li>If <var title="">previous sibling</var> is a <a href=#simple-styling-element>simple styling element</a>
     whose <a href=#specified-style>specified style</a> and <a href=#effective-style>effective style</a> for
     <var title="">property</var> are both <var title="">new value</var>, append <var title="">node</var>
-    as the last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">previous sibling</var>.
+    as the last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">previous sibling</var>, <a href=#preserving-ranges>preserving
+    ranges</a>.
 
     <li>If <var title="">next sibling</var> is a <a href=#simple-styling-element>simple styling element</a>
     whose <a href=#specified-style>specified style</a> and <a href=#effective-style>effective style</a> for
@@ -808,12 +816,13 @@ After forcing the style, descendants might still have different style.
 
     <ol>
       <li>If <var title="">node</var> is not a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">previous sibling</var>,
-      insert <var title="">node</var> as the first <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">next sibling</var>.
+      insert <var title="">node</var> as the first <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">next
+      sibling</var>, <a href=#preserving-ranges>preserving ranges</a>.
 
       <li>Otherwise, while <var title="">next sibling</var> has <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, append the
       first <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">next sibling</var> as the last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of
-      <var title="">previous sibling</var>.  Then remove <var title="">next sibling</var> from
-      its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+      <var title="">previous sibling</var>, <a href=#preserving-ranges>preserving ranges</a>.  Then remove
+      <var title="">next sibling</var> from its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
     </ol>
   </ol>
 
@@ -901,20 +910,22 @@ After forcing the style, descendants might still have different style.
   <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument><code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument>ownerDocument</code></a> of <var title="">node</var>.
 
   <li>Insert <var title="">new parent</var> in <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> before
-  <var title="">node</var>.
+  <var title="">node</var>.  <!-- This preserves boundary points correctly, as usual.
+  -->
 
   <li>If the <a href=#effective-style>effective style</a> of <var title="">property</var> for <var title="">new
   parent</var> is not <var title="">new value</var>, set the CSS property
   <var title="">property</var> of <var title="">new parent</var> to <var title="">new value</var>.
 
-  <li>Append <var title="">node</var> to <var title="">new parent</var> as its last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>.
+  <li>Append <var title="">node</var> to <var title="">new parent</var> as its last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>,
+  <a href=#preserving-ranges>preserving ranges</a>.
 
   <li>If <var title="">node</var> is an <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element><code class=external data-anolis-spec=domcore>Element</code></a> and the <a href=#effective-style>effective style</a>
   of <var title="">property</var> for <var title="">node</var> is not <var title="">new value</var>:
 
   <ol>
     <li>Insert <var title="">node</var> into the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of <var title="">new parent</var>
-    before <var title="">new parent</var>.
+    before <var title="">new parent</var>, <a href=#preserving-ranges>preserving ranges</a>.
 
     <li>Remove <var title="">new parent</var> from its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
 
@@ -1444,12 +1455,8 @@ true, otherwise false.
 state of the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a> for this command is then true, <a href=#style>style</a> each
 returned <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> with <var title="">property</var> "vertical-align" and <var title="">new
 value</var> "baseline".  Otherwise, <a href=#style>style</a> them with <var title="">new
-value</var> "baseline", then <a href=#style>style</a> them again with <var title="">new
-value</var> "sub".
-
-<p class=XXX>This doesn't work, because we'll have removed some of the things
-that we want to style in some cases.  Need to define what happens to a range
-when you style its nodes, then re-decompose the same range before re-styling.
+value</var> "baseline", then <a href=#decompose>decompose</a> the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a> again and
+<a href=#style>style</a> each returned <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> with <var title="">new value</var> "sub".
 
 <dd><strong>State</strong>: True if every <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> node that is
 <a href=#effectively-contained>effectively contained</a> in the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a> has <a href=#effective-style>effective
@@ -1464,8 +1471,8 @@ style</a> either null or "sub" for "vertical-align".  Otherwise false.
 state of the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a> for this command is then true, <a href=#style>style</a> each
 returned <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> with <var title="">property</var> "vertical-align" and <var title="">new
 value</var> "baseline".  Otherwise, <a href=#style>style</a> them with <var title="">new
-value</var> "baseline", then <a href=#style>style</a> them again with <var title="">new
-value</var> "super".
+value</var> "baseline", then <a href=#decompose>decompose</a> the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a> again and
+<a href=#style>style</a> each returned <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#node><code class=external data-anolis-spec=domcore>Node</code></a> with <var title="">new value</var> "super".
 
 <dd><strong>State</strong>: True if every <a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text><code class=external data-anolis-spec=domcore>Text</code></a> node that is
 <a href=#effectively-contained>effectively contained</a> in the <a href=http://html5.org/specs/dom-range.html#range><code class=external data-anolis-spec=domrange>Range</code></a> has <a href=#effective-style>effective

@@ -37,6 +37,26 @@ function nextNodeDescendants(node) {
 	return node.nextSibling;
 }
 
+/**
+ * Returns true if ancestor is an ancestor of descendant, false otherwise.
+ */
+function isAncestor(ancestor, descendant) {
+	if (!ancestor || !descendant) {
+		return false;
+	}
+	while (descendant && descendant != ancestor) {
+		descendant = descendant.parentNode;
+	}
+	return descendant == ancestor;
+}
+
+/**
+ * Returns true if descendant is a descendant of ancestor, false otherwise.
+ */
+function isDescendant(descendant, ancestor) {
+	return isAncestor(ancestor, descendant);
+}
+
 function convertProperty(property) {
 	// Special-case for now
 	var map = {
@@ -651,6 +671,75 @@ function isSimpleStylingElement(node) {
 	return false;
 }
 
+function movePreservingRanges(node, newParent, newIndex) {
+	// "When the user agent is to move a Node to a new location, preserving
+	// ranges, it must remove the Node from its original parent, then insert it
+	// in the new location. In doing so, however, it must ignore the regular
+	// range mutation rules, and instead follow these rules:"
+
+	// "Let node be the moved Node, old parent and old index be the old parent
+	// and index, and new parent and new index be the new parent and index."
+	var oldParent = node.parentNode;
+	var oldIndex = getNodeIndex(node);
+
+	// We only even attempt to preserve the global range object, not every
+	// range out there (the latter is probably impossible).
+	var start = [globalRange.startContainer, globalRange.startOffset];
+	var end = [globalRange.endContainer, globalRange.endOffset];
+
+	// "If a boundary point's node is the same as or a descendant of node,
+	// leave it unchanged, so it moves to the new location."
+	//
+	// No modifications necessary.
+
+	// "If a boundary point's node is new parent and its offset is greater than
+	// new index, add one to its offset."
+	if (globalRange.startContainer == newParent
+	&& globalRange.startOffset > newIndex) {
+		start[1]++;
+	}
+	if (globalRange.endContainer == newParent
+	&& globalRange.endOffset > newIndex) {
+		end[1]++;
+	}
+
+	// "If a boundary point's node is old parent and its offset is old index or
+	// old index + 1, set its node to new parent and add new index − old index
+	// to its offset."
+	if (globalRange.startContainer == oldParent
+	&& (globalRange.startOffset == oldIndex
+	|| globalRange.startOffset == oldIndex + 1)) {
+		start[0] = newParent;
+		start[1] += newIndex - oldIndex;
+	}
+	if (globalRange.endContainer == oldParent
+	&& (globalRange.endOffset == oldIndex
+	|| globalRange.endOffset == oldIndex + 1)) {
+		end[0] = newParent;
+		end[1] += newIndex - oldIndex;
+	}
+
+	// "If a boundary point's node is old parent and its offset is greater than
+	// old index + 1, subtract one from its offset."
+	if (globalRange.startContainer == oldParent
+	&& globalRange.startOffset > oldIndex + 1) {
+		start[1]--;
+	}
+	if (globalRange.endContainer == oldParent
+	&& globalRange.endOffset > oldIndex + 1) {
+		end[1]--;
+	}
+
+	// Now actually move it and preserve the range.
+	if (newParent.childNodes.length == newIndex) {
+		newParent.appendChild(node);
+	} else {
+		newParent.insertBefore(node, newParent.childNodes[newIndex]);
+	}
+	globalRange.setStart(start[0], start[1]);
+	globalRange.setEnd(end[0], end[1]);
+}
+
 function decomposeRange(range) {
 	// "If range's start and end are the same, return an empty list."
 	if (range.startContainer == range.endContainer
@@ -658,73 +747,33 @@ function decomposeRange(range) {
 		return [];
 	}
 
-	// "Let start node, start offset, end node, and end offset be range's start
-	// and end nodes and offsets, respectively."
-	var startNode = range.startContainer;
-	var startOffset = range.startOffset;
-	var endNode = range.endContainer;
-	var endOffset = range.endOffset;
-
-	// "If start node is a Text node and is the same as end node, and start
-	// offset is neither 0 nor the length of start node:"
-	if (startNode.nodeType == Node.TEXT_NODE
-	&& startNode == endNode
-	&& startOffset != 0
-	&& startOffset != getNodeLength(startNode)) {
-		// "Set start node to the result of running splitText(start offset) on
-		// start node."
-		startNode = startNode.splitText(startOffset);
-
-		// "Set end node to start node."
-		endNode = startNode;
-
-		// "Set end offset to end offset − start offset."
-		endOffset -= startOffset;
-
-		// "Set start offset to 0."
-		startOffset = 0;
-
-	// "Otherwise, if start node is a Text node and start offset is neither 0
-	// nor the length of start node:"
-	} else if (startNode.nodeType == Node.TEXT_NODE
-	&& startOffset != 0
-	&& startOffset != getNodeLength(startNode)) {
-		// "Set start node to the result of running splitText(start offset) on
-		// start node."
-		startNode = startNode.splitText(startOffset);
-
-		// "Set start offset to 0."
-		startOffset = 0;
+	// "If range's start node is a Text node and its start offset is neither 0
+	// nor the length of its start node, run splitText() on its start node with
+	// argument equal to its start offset."
+	if (range.startContainer.nodeType == Node.TEXT_NODE
+	&& range.startOffset != 0
+	&& range.startOffset != getNodeLength(range.startContainer)) {
+		// Account for UAs not following range mutation rules
+		if (range.startContainer == range.endContainer) {
+			var newEndOffset = range.endOffset - range.startOffset;
+			var newText = range.startContainer.splitText(range.startOffset);
+			range.setStart(newText, 0);
+			range.setEnd(newText, newEndOffset);
+		} else {
+			var newText = range.startContainer.splitText(range.startOffset);
+			range.setStart(newText, 0);
+		}
 	}
 
-	// "If end node is a Text node and end offset is neither 0 nor the length
-	// of end node, run splitText(end offset) on end node."
-	if (endNode.nodeType == Node.TEXT_NODE
-	&& endOffset != 0
-	&& endOffset != getNodeLength(endNode)) {
-		endNode.splitText(endOffset);
+	// "If range's end node is a Text node and its end offset is neither 0 nor
+	// the length of its end node, run splitText() on its end node with
+	// argument equal to its end offset."
+	if (range.endContainer.nodeType == Node.TEXT_NODE
+	&& range.endOffset != 0
+	&& range.endOffset != getNodeLength(range.endContainer)) {
+		range.endContainer.splitText(range.endOffset);
+		// No correction should be needed here
 	}
-
-	// "If start node is a Text node and start offset is 0, set start offset to
-	// the index of start node, then set start node to its parent."
-	if (startNode.nodeType == Node.TEXT_NODE
-	&& startOffset == 0) {
-		startOffset = getNodeIndex(startNode);
-		startNode = startNode.parentNode;
-	}
-
-	// "If end node is a Text node and end offset is its length, set end offset
-	// to one plus the index of end node, then set end node to its parent."
-	if (endNode.nodeType == Node.TEXT_NODE
-	&& endOffset == getNodeLength(endNode)) {
-		endOffset = 1 + getNodeIndex(endNode);
-		endNode = endNode.parentNode;
-	}
-
-	// "Set range's start to (start node, start offset) and its end to (end
-	// node, end offset)."
-	range.setStart(startNode, startOffset);
-	range.setEnd(endNode, endOffset);
 
 	// "Let cloned range be the result of calling cloneRange() on range."
 	var clonedRange = range.cloneRange();
@@ -767,19 +816,13 @@ function clearStyles(element, property) {
 
 	// "If element is a simple styling element:"
 	if (isSimpleStylingElement(element)) {
-		// "Let children be an empty list of Nodes."
-		var children = [];
+		// "Let children be the children of element."
+		var children = Array.prototype.slice.call(element.childNodes);
 
-		// "While element has children:"
-		while (element.hasChildNodes()) {
-			// "Let child be the first child of element."
-			var child = element.firstChild;
-
-			// "Append child to children."
-			children.push(child);
-
-			// "Insert child as the previous sibling of element."
-			element.parentNode.insertBefore(child, element);
+		// "While element has children, insert its first child into its parent
+		// immediately before it, preserving ranges."
+		while (element.childNodes.length) {
+			movePreservingRanges(element.firstChild, element.parentNode, getNodeIndex(element));
 		}
 
 		// "Remove element from its parent."
@@ -829,14 +872,13 @@ function clearStyles(element, property) {
 		newElement.setAttribute(element.attributes[j].localName, element.attributes[j].value);
 	}
 
-	// "Append new element to element's parent as the previous sibling of
-	// element."
+	// "Insert new element into the parent of element immediately before it."
 	element.parentNode.insertBefore(newElement, element);
 
-	// "While element has children, append its first child as the last
-	// child of new element."
-	while (element.hasChildNodes()) {
-		newElement.appendChild(element.firstChild);
+	// "While element has children, append its first child as the last child of
+	// new element, preserving ranges."
+	while (element.childNodes.length) {
+		movePreservingRanges(element.firstChild, newElement, newElement.childNodes.length);
 	}
 
 	// "Remove element from its parent."
@@ -907,10 +949,7 @@ function pushDownStyles(node, property, newValue) {
 		}
 
 		// "Let children be the children of current ancestor."
-		var children = [];
-		for (var i = 0; i < currentAncestor.childNodes.length; i++) {
-			children.push(currentAncestor.childNodes[i]);
-		}
+		var children = Array.prototype.slice.call(currentAncestor.childNodes);
 
 		// "Clear styles on current ancestor."
 		clearStyles(currentAncestor, property);
@@ -983,18 +1022,20 @@ function forceStyle(node, property, newValue) {
 		&& cssValuesEqual(property, getSpecifiedStyle(candidate, property), newValue)
 		&& cssValuesEqual(property, getEffectiveStyle(candidate, property), newValue)
 		&& candidate != node.previousSibling) {
-			// "While candidate has children, append the first child of
-			// candidate as the last child of candidate's parent."
+			// "While candidate has children, insert the first child of
+			// candidate into candidate's parent immediately before candidate,
+			// preserving ranges."
 			while (candidate.childNodes.length > 0) {
-				candidate.parentNode.appendChild(candidate.firstChild);
+				movePreservingRanges(candidate.firstChild, candidate.parentNode, getNodeIndex(candidate));
 			}
 
-			// "Insert candidate into node's parent before node."
-			node.parentNode.insertBefore(candidate, node);
+			// "Insert candidate into node's parent before node's
+			// previousSibling."
+			node.parentNode.insertBefore(candidate, node.previousSibling);
 
-			// "Append the previousSibling of candidate as the last child of
-			// candidate."
-			candidate.appendChild(candidate.previousSibling);
+			// "Append the nextSibling of candidate as the last child of
+			// candidate, preserving ranges."
+			movePreservingRanges(candidate.nextSibling, candidate, candidate.childNodes.length);
 		}
 
 		// "Let candidate be node's nextSibling."
@@ -1019,18 +1060,19 @@ function forceStyle(node, property, newValue) {
 		&& cssValuesEqual(property, getSpecifiedStyle(candidate, property), newValue)
 		&& cssValuesEqual(property, getEffectiveStyle(candidate, property), newValue)
 		&& candidate != node.nextSibling) {
-			// "While candidate has children, append the first child of
-			// candidate as the last child of candidate's parent."
+			// "While candidate has children, insert the first child of
+			// candidate into candidate's parent immediately before candidate,
+			// preserving ranges."
 			while (candidate.childNodes.length > 0) {
-				candidate.parentNode.appendChild(candidate.firstChild);
+				movePreservingRanges(candidate.firstChild, candidate.parentNode, getNodeIndex(candidate));
 			}
 
 			// "Insert candidate into node's parent after node."
 			node.parentNode.insertBefore(candidate, node.nextSibling);
 
 			// "Append the nextSibling of candidate as the last child of
-			// candidate."
-			candidate.appendChild(candidate.nextSibling);
+			// candidate, preserving ranges."
+			movePreservingRanges(candidate.nextSibling, candidate, candidate.childNodes.length);
 		}
 
 		// "Let previous sibling and next sibling be node's previousSibling and
@@ -1040,11 +1082,11 @@ function forceStyle(node, property, newValue) {
 
 		// "If previous sibling is a simple styling element whose specified
 		// style and effective style for property are both new value, append
-		// node as the last child of previous sibling."
+		// node as the last child of previous sibling, preserving ranges."
 		if (isSimpleStylingElement(previousSibling)
 		&& cssValuesEqual(property, getSpecifiedStyle(previousSibling, property), newValue)
 		&& cssValuesEqual(property, getEffectiveStyle(previousSibling, property), newValue)) {
-			previousSibling.appendChild(node);
+			movePreservingRanges(node, previousSibling, previousSibling.childNodes.length);
 		}
 
 		// "If next sibling is a simple styling element whose specified style
@@ -1053,15 +1095,15 @@ function forceStyle(node, property, newValue) {
 		&& cssValuesEqual(property, getSpecifiedStyle(nextSibling, property), newValue)
 		&& cssValuesEqual(property, getEffectiveStyle(nextSibling, property), newValue)) {
 			// "If node is not a child of previous sibling, insert node as the
-			// first child of next sibling."
+			// first child of next sibling, preserving ranges."
 			if (node.parentNode != previousSibling) {
-				nextSibling.insertBefore(node, nextSibling.firstChild);
+				movePreservingRanges(node, nextSibling, 0);
 			// "Otherwise, while next sibling has children, append the first
-			// child of next sibling as the last child of previous sibling.
-			// Then remove next sibling from its parent."
+			// child of next sibling as the last child of previous sibling,
+			// preserving ranges.  Then remove next sibling from its parent."
 			} else {
 				while (nextSibling.childNodes.length) {
-					previousSibling.appendChild(nextSibling.firstChild);
+					movePreservingRanges(nextSibling.firstChild, previousSibling, previousSibling.childNodes.length);
 				}
 				nextSibling.parentNode.removeChild(nextSibling);
 			}
@@ -1194,15 +1236,16 @@ function forceStyle(node, property, newValue) {
 		newParent.style[property] = newValue;
 	}
 
-	// "Append node to new parent as its last child."
-	newParent.appendChild(node);
+	// "Append node to new parent as its last child, preserving ranges."
+	movePreservingRanges(node, newParent, newParent.childNodes.length);
 
 	// "If node is an Element and the effective style of property for node is
 	// not new value:"
 	if (node.nodeType == Node.ELEMENT_NODE
 	&& !cssValuesEqual(property, getEffectiveStyle(node, property), newValue)) {
-		// "Insert node into the parent of new parent before new parent."
-		newParent.parentNode.insertBefore(node, newParent);
+		// "Insert node into the parent of new parent before new parent,
+		// preserving ranges."
+		movePreservingRanges(node, newParent.parentNode, getNodeIndex(newParent));
 
 		// "Remove new parent from its parent."
 		newParent.parentNode.removeChild(newParent);
@@ -1295,16 +1338,16 @@ function styleNode(node, property, newValue) {
 	forceStyle(node, property, newValue);
 
 	// "Let children be the children of node."
-	var children = [];
-	for (var i = 0; i < node.childNodes.length; i++) {
-		children.push(node.childNodes[i]);
-	}
+	var children = Array.prototype.slice.call(node.childNodes);
 
 	// "Style each member of children."
 	for (var i = 0; i < children.length; i++) {
 		styleNode(children[i], property, newValue);
 	}
 }
+
+// This is bad :(
+var globalRange = null;
 
 function myExecCommand(commandId, showUI, value, range) {
 	commandId = commandId.toLowerCase();
@@ -1318,6 +1361,8 @@ function myExecCommand(commandId, showUI, value, range) {
 			return;
 		}
 	}
+
+	globalRange = range;
 
 	switch (commandId) {
 		case "bold":
@@ -1465,7 +1510,8 @@ function myExecCommand(commandId, showUI, value, range) {
 		// "Decompose the Range. If the state of the Range for this command is
 		// then true, style each returned Node with property "vertical-align"
 		// and new value "baseline". Otherwise, style them with new value
-		// "baseline", then style them again with new value "sub"."
+		// "baseline", then decompose the Range again and style each returned
+		// Node with new value "sub"."
 		var nodeList = decomposeRange(range);
 		if (getState(commandId, range)) {
 			for (var i = 0; i < nodeList.length; i++) {
@@ -1475,6 +1521,7 @@ function myExecCommand(commandId, showUI, value, range) {
 			for (var i = 0; i < nodeList.length; i++) {
 				styleNode(nodeList[i], "verticalAlign", "baseline");
 			}
+			var nodeList = decomposeRange(range);
 			for (var i = 0; i < nodeList.length; i++) {
 				styleNode(nodeList[i], "verticalAlign", "sub");
 			}
@@ -1485,7 +1532,8 @@ function myExecCommand(commandId, showUI, value, range) {
 		// "Decompose the Range. If the state of the Range for this command is
 		// then true, style each returned Node with property "vertical-align"
 		// and new value "baseline". Otherwise, style them with new value
-		// "baseline", then style them again with new value "super"."
+		// "baseline", then decompose the Range again and style each returned
+		// Node with new value "super"."
 		var nodeList = decomposeRange(range);
 		if (getState(commandId, range)) {
 			for (var i = 0; i < nodeList.length; i++) {
@@ -1495,6 +1543,7 @@ function myExecCommand(commandId, showUI, value, range) {
 			for (var i = 0; i < nodeList.length; i++) {
 				styleNode(nodeList[i], "verticalAlign", "baseline");
 			}
+			var nodeList = decomposeRange(range);
 			for (var i = 0; i < nodeList.length; i++) {
 				styleNode(nodeList[i], "verticalAlign", "super");
 			}

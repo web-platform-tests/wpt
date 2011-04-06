@@ -26,10 +26,13 @@ Syntax and some of the tests taken from <a
 href=http://www.browserscope.org/richtext2/test>Browserscope</a>.  data-start
 and data-end attributes also represent element boundary points, with the node
 being the element with the attribute and the offset given as the attribute
-value, for cases where HTML parsing doesn't allow text nodes.  Where two tables
-are given for a single command, the first is with styleWithCSS false and the
-second is with it true.  (The second table is left blank in IE and Opera, which
-don't support styleWithCSS.)
+value, for cases where HTML parsing doesn't allow text nodes.  Currently we
+don't really pay attention to reversed selections at all, so they might get
+displayed as forwards or such.
+
+<p>Where two tables are given for a single command, the first is with
+styleWithCSS false and the second is with it true.  (The second table is left
+blank in IE and Opera, which don't support styleWithCSS.)
 
 <h1>Table of Contents</h1>
 <ul>
@@ -40,8 +43,11 @@ don't support styleWithCSS.)
 	<li><a href=#hilitecolor>hilitecolor</a>
 	<li><a href=#italic>italic</a>
 	<li><a href=#subscript>subscript</a>
+	<li><a href=#superscript>superscript</a>
 	<li><a href=#underline>underline</a>
 </ul>
+
+<button onclick="for (var command in tests) runTests(command)">Run all tests</button>
 
 <div id=backcolor>
 <h1>backcolor</h1>
@@ -128,14 +134,23 @@ been written, so the spec column does nothing.
 
 <button onclick="runTests('subscript')">Run tests</button>
 
-<p><strong>Note:</strong> The subscript spec is still buggy and unstable, so
-don't pay much attention to what's in the spec column.
-
 <table border=1><tr><th>Input <th>Spec <th>Browser <th>Same?</table>
 <table border=1><tr><th>Input <th>Spec <th>Browser <th>Same?</table>
 
 <p><label>Enter new test here: <input></label>
 <button onclick="addTest('subscript', document.querySelector('#subscript input').value)">Add test</button>
+</div>
+
+<div id=superscript>
+<h1>superscript</h1>
+
+<button onclick="runTests('superscript')">Run tests</button>
+
+<table border=1><tr><th>Input <th>Spec <th>Browser <th>Same?</table>
+<table border=1><tr><th>Input <th>Spec <th>Browser <th>Same?</table>
+
+<p><label>Enter new test here: <input></label>
+<button onclick="addTest('superscript', document.querySelector('#superscript input').value)">Add test</button>
 </div>
 
 <div id=underline>
@@ -160,6 +175,7 @@ var values = {
 	hilitecolor: "#FF8888",
 	italic: null,
 	subscript: null,
+	superscript: null,
 	underline: null,
 };
 
@@ -478,6 +494,37 @@ var tests = {
 		'foo<sup><sub>b[a]r</sub></sup>baz',
 		'foo<sup>b<sub>[a]</sub>r</sup>baz',
 	],
+	superscript: [
+		'foo[bar]baz',
+		'foo]bar[baz',
+		'{<p><p> <p>foo</p>}',
+		'foo[bar<b>baz]qoz</b>quz',
+
+		'<table><tbody><tr><td>foo<td>b[a]r<td>baz</table>',
+		'<table><tbody><tr data-start=1 data-end=2><td>foo<td>bar<td>baz</table>',
+		'<table><tbody><tr data-start=0 data-end=2><td>foo<td>bar<td>baz</table>',
+		'<table><tbody data-start=0 data-end=1><tr><td>foo<td>bar<td>baz</table>',
+		'<table data-start=0 data-end=1><tbody><tr><td>foo<td>bar<td>baz</table>',
+		'{<table><tr><td>foo<td>bar<td>baz</table>}',
+
+		'foo<sub>[bar]</sub>baz',
+		'foo<sub>b[a]r</sub>baz',
+		'foo<sup>[bar]</sup>baz',
+		'foo<sup>b[a]r</sup>baz',
+
+		'foo<sub><sub>[bar]</sub></sub>baz',
+		'foo<sub><sub>b[a]r</sub></sub>baz',
+		'foo<sub>b<sub>[a]</sub>r</sub>baz',
+		'foo<sup><sup>[bar]</sup></sup>baz',
+		'foo<sup><sup>b[a]r</sup></sup>baz',
+		'foo<sup>b<sup>[a]</sup>r</sup>baz',
+		'foo<sub><sup>[bar]</sup></sub>baz',
+		'foo<sub><sup>b[a]r</sup></sub>baz',
+		'foo<sub>b<sup>[a]</sup>r</sub>baz',
+		'foo<sup><sub>[bar]</sub></sup>baz',
+		'foo<sup><sub>b[a]r</sub></sup>baz',
+		'foo<sup>b<sub>[a]</sub>r</sup>baz',
+	],
 	underline: [
 		'foo[bar]baz',
 		'foo]bar[baz',
@@ -522,8 +569,8 @@ function runTests(command) {
 
 function addTest(command, test) {
 	var doubleTesting = ["backcolor", "bold", "italic", "underline",
-	"forecolor", "fontname", "fontsize", "superscript",
-	"subscript"].indexOf(command) != -1;
+	"forecolor", "fontname", "fontsize", "subscript",
+	"superscript"].indexOf(command) != -1;
 
 	// I tried to feature-detect styleWithCSS, but it was too much of a pain,
 	// with Firefox randomly throwing exceptions all over the place.  So I'm
@@ -593,6 +640,7 @@ function doSpecCell(tr, test, command, styleWithCss) {
 		}
 		myExecCommand("styleWithCSS", false, styleWithCss);
 		myExecCommand(command, false, value, range);
+		addBrackets(range);
 		specCell.lastChild.textContent = specCell.firstChild.innerHTML;
 	} catch (e) {
 		specCell.lastChild.style.color = "red";
@@ -637,6 +685,7 @@ function doBrowserCell(tr, test, command, styleWithCss) {
 			document.execCommand("styleWithCSS", false, styleWithCss);
 		} catch (e) {}
 		document.execCommand(command, false, value);
+		addBrackets(getSelection().getRangeAt(0));
 		browserCell.lastChild.textContent = browserCell.firstChild.innerHTML;
 	} catch (e) {
 		browserCell.textContent = "Exception: " + e;
@@ -847,6 +896,43 @@ function setSelection(startNode, startOffset, endNode, endOffset) {
 		}
 		if (!getSelection().rangeCount) {
 			getSelection().addRange(range);
+		}
+	}
+}
+
+/**
+ * Add brackets at the start and end points of the given range, so that they're
+ * visible.
+ */
+function addBrackets(range) {
+	// Do the end first, so that if the range is collapsed, the start point
+	// will be inserted before the end point.
+	if (range.endContainer.nodeType == Node.TEXT_NODE) {
+		range.endContainer.insertData(range.endOffset, "]");
+	} else {
+		// As everyone knows, the only node types are Text and Element.
+		if (range.endOffset != range.endContainer.childNodes.length
+		&& range.endContainer.childNodes[range.endOffset].nodeType == Node.TEXT_NODE) {
+			range.endContainer.childNodes[range.endOffset].insertData(0, "}");
+		} else if (range.endOffset != 0
+		&& range.endContainer.childNodes[range.endOffset - 1].nodeType == Node.TEXT_NODE) {
+			range.endContainer.childNodes[range.endOffset - 1].appendData("}");
+		} else {
+			// No idea how this will work for tables . . .
+			range.endContainer.insertBefore(document.createTextNode("}"), range.endContainer.childNodes[range.endOffset]);
+		}
+	}
+	if (range.startContainer.nodeType == Node.TEXT_NODE) {
+		range.startContainer.insertData(range.startOffset, "[");
+	} else {
+		if (range.startOffset != range.startContainer.childNodes.length
+		&& range.startContainer.childNodes[range.startOffset].nodeType == Node.TEXT_NODE) {
+			range.startContainer.childNodes[range.startOffset].insertData(0, "{");
+		} else if (range.startOffset != 0
+		&& range.startContainer.childNodes[range.startOffset - 1].nodeType == Node.TEXT_NODE) {
+			range.startContainer.childNodes[range.startOffset - 1].appendData("{");
+		} else {
+			range.startContainer.insertBefore(document.createTextNode("{"), range.startContainer.childNodes[range.startOffset]);
 		}
 	}
 }

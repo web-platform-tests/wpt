@@ -230,7 +230,7 @@ either a string or null:
   <li>If <var title="">node</var> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node, return the <a href=#effective-value>effective
   value</a> of its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> for <var title="">command</var>.
 
-  <li>If <var title="">command</var> is "createLink":
+  <li>If <var title="">command</var> is "createLink" or "unlink":
 
   <ol>
     <li>While <var title="">node</var> is not null, and is not an <code class=external data-anolis-spec=html title="the a element"><a href=http://www.whatwg.org/html/#the-a-element>a</a></code> element that has
@@ -304,7 +304,7 @@ return either a string or null:
   <li>If <var title="">command</var> is "hiliteColor" and the <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>'s
   display property does not compute to "inline", return null.
 
-  <li>If <var title="">command</var> is "createLink":
+  <li>If <var title="">command</var> is "createLink" or "unlink":
 
   <ol>
     <li>If <var title="">element</var> is an <code class=external data-anolis-spec=html title="the a element"><a href=http://www.whatwg.org/html/#the-a-element>a</a></code> element and has an <code class=external data-anolis-spec=html title=attr-hyperlink-href><a href=http://www.whatwg.org/html/#attr-hyperlink-href>href</a></code>
@@ -564,7 +564,7 @@ id=foo> into <span id=foo> instead of <font id=foo>, but probably not worth it.
   </ol>
 
   <li>If <var title="">element</var> is an <code class=external data-anolis-spec=html title="the a element"><a href=http://www.whatwg.org/html/#the-a-element>a</a></code> element and <var title="">command</var> is
-  "createLink", unset the <code class=external data-anolis-spec=html title=attr-hyperlink-href><a href=http://www.whatwg.org/html/#attr-hyperlink-href>href</a></code> property of <var title="">element</var>.
+  "createLink" or "unlink", unset the <code class=external data-anolis-spec=html title=attr-hyperlink-href><a href=http://www.whatwg.org/html/#attr-hyperlink-href>href</a></code> property of <var title="">element</var>.
 
   <li>If <var title="">element</var>'s <a href=#specified-value>specified value</a> for
   <var title="">command</var> is null, return the empty list.
@@ -650,8 +650,10 @@ with a <code class=external data-anolis-spec=html title="the style attribute"><a
   <var title="">command</var> on the last member of <var title="">ancestor list</var>.
 
   <!-- We can only remove specified values, so if the value isn't specified,
-  give up. -->
-  <li>If <var title="">propagated value</var> is null, abort this algorithm.
+  give up.  Unless we're actually trying to push down a null specified value,
+  like for unlink. -->
+  <li>If <var title="">propagated value</var> is null and is not equal to <var title="">new
+  value</var>, abort this algorithm.
 
   <!-- If we go all the way up to the root and still don't have the desired
   value, pushing down values is pointless.  It will create extra markup for no
@@ -711,6 +713,8 @@ different value.
 
 <ol>
   <li>If <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is null, abort this algorithm.
+
+  <li>If <var title="">new value</var> is null, abort this algorithm.
 
   <li>If <var title="">node</var> is an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>, <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code>, <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#comment>Comment</a></code>, or
   <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#processinginstruction>ProcessingInstruction</a></code> node, and is not an <a href=#unwrappable-element>unwrappable
@@ -881,8 +885,8 @@ different value.
     of <var title="">new parent</var> to <var title="">new value</var>.
   </ol>
 
-  <li>If <var title="">command</var> is "createLink", let <var title="">new parent</var> be the
-  result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("a")</a></code> on the
+  <li>If <var title="">command</var> is "createLink" or "unlink", let <var title="">new
+  parent</var> be the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("a")</a></code> on the
   <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">node</var>, then set the <code class=external data-anolis-spec=html title=attr-hyperlink-href><a href=http://www.whatwg.org/html/#attr-hyperlink-href>href</a></code> attribute of
   <var title="">new parent</var> to <var title="">new value</var>.
 
@@ -1528,45 +1532,10 @@ value</a> either null or "underline".  Otherwise false.
 
 <dt><code title=""><dfn id=command-unlink title=command-unlink>unlink</dfn></code>
 
-<dd><strong>Action</strong>: The user agent must execute the following
-steps:
-<!-- IE 9 RC unlinks the whole link you're pointing at.  Others just unlink
-your selection, which does nothing if you have nothing selected.
-Unfortunately, everyone but IE winds up doing some DOM surgery here in some
-cases, creating and splitting elements in some cases. -->
-
-<p class=XXX>This is based on what IE does.  Other browsers only unlink the
-selected portion, which might be more user-friendly but involves chopping up
-and reorganizing the DOM.  Revisit this later to see if it's reasonable to spec
-what the other browsers do instead.
-
-<ol>
-  <li>Let <var title="">links</var> be a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-collection title=concept-collection>collection</a> rooted at the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>'s
-  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-root title=concept-range-root>root</a>, whose filter matches only <a href=#html-element title="HTML element">HTML
-  elements</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> "a", that have an <a href=#html-attribute>HTML
-  attribute</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-attr-local-name title=concept-attr-local-name>local name</a> "href".
-
-  <li>Let <var title="">selected</var> be a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-collection title=concept-collection>collection</a> rooted at the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>'s
-  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-root title=concept-range-root>root</a>, whose filter matches only <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a> that are <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in
-  the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> and <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> nodes that are <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#partially-contained>partially contained</a> in the
-  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>.
-
-  <li>For each <var title="">link</var> in <var title="">links</var>, in <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#tree-order>tree order</a>:
-
-  <ol>
-    <li>If <var title="">link</var> is not in <var title="">selected</var> and is not an
-    <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of any <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> in <var title="">selected</var>, continue with the next
-    <var title="">link</var>.
-
-    <li>While <var title="">link</var> has children, insert <var title="">link</var>'s first
-    child into its parent as <var title="">link</var>'s previous sibling.
-
-    <li>Remove <var title="">link</var>.
-
-    <p class=XXX>This means it disappears even if it had an id, class, etc.
-    Maybe not what we want?
-  </ol>
-</ol>
+<dd><strong>Action</strong>: <a href=#decompose>Decompose</a> the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>, and
+<a href=#set-the-value>set the value</a> of each returned <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> to null.
+<!-- IE 9 RC unlinks the whole link you're pointing at.  We follow the other
+browsers, which operate more consistently with other commands. -->
 
 <dd><strong>State</strong>: Always false.
 

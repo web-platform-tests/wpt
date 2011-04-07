@@ -617,17 +617,6 @@ var tests = {
 		'<p style="text-decoration: underline">foo[bar]baz</p>',
 	],
 	unlink: [
-		'foo[bar]baz',
-		'foo]bar[baz',
-		'{<p><p> <p>foo</p>}',
-
-		'<table><tbody><tr><td>foo<td>b[a]r<td>baz</table>',
-		'<table><tbody><tr data-start=1 data-end=2><td>foo<td>bar<td>baz</table>',
-		'<table><tbody><tr data-start=0 data-end=2><td>foo<td>bar<td>baz</table>',
-		'<table><tbody data-start=0 data-end=1><tr><td>foo<td>bar<td>baz</table>',
-		'<table data-start=0 data-end=1><tbody><tr><td>foo<td>bar<td>baz</table>',
-		'{<table><tr><td>foo<td>bar<td>baz</table>}',
-
 		'<a href=http://www.google.com/>foo[bar]baz</a>',
 		'<a href=http://www.google.com/>foo[barbaz</a>}',
 		'{<a href=http://www.google.com/>foobar]baz</a>',

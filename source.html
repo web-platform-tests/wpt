@@ -219,7 +219,7 @@ either a string or null:
   <li>If <var>node</var> is a [[text]] node, return the <span>effective
   value</span> of its [[parent]] for <var>command</var>.
 
-  <li>If <var>command</var> is "createLink":
+  <li>If <var>command</var> is "createLink" or "unlink":
 
   <ol>
     <li>While <var>node</var> is not null, and is not an [[a]] element that has
@@ -293,7 +293,7 @@ return either a string or null:
   <li>If <var>command</var> is "hiliteColor" and the [[element]]'s
   display property does not compute to "inline", return null.
 
-  <li>If <var>command</var> is "createLink":
+  <li>If <var>command</var> is "createLink" or "unlink":
 
   <ol>
     <li>If <var>element</var> is an [[a]] element and has an [[href]]
@@ -557,7 +557,7 @@ id=foo> into <span id=foo> instead of <font id=foo>, but probably not worth it.
   </ol>
 
   <li>If <var>element</var> is an [[a]] element and <var>command</var> is
-  "createLink", unset the [[href]] property of <var>element</var>.
+  "createLink" or "unlink", unset the [[href]] property of <var>element</var>.
 
   <li>If <var>element</var>'s <span>specified value</span> for
   <var>command</var> is null, return the empty list.
@@ -643,8 +643,10 @@ with a [[style]] attribute).
   <var>command</var> on the last member of <var>ancestor list</var>.
 
   <!-- We can only remove specified values, so if the value isn't specified,
-  give up. -->
-  <li>If <var>propagated value</var> is null, abort this algorithm.
+  give up.  Unless we're actually trying to push down a null specified value,
+  like for unlink. -->
+  <li>If <var>propagated value</var> is null and is not equal to <var>new
+  value</var>, abort this algorithm.
 
   <!-- If we go all the way up to the root and still don't have the desired
   value, pushing down values is pointless.  It will create extra markup for no
@@ -705,6 +707,8 @@ different value.
 
 <ol>
   <li>If <var>node</var>'s [[parent]] is null, abort this algorithm.
+
+  <li>If <var>new value</var> is null, abort this algorithm.
 
   <li>If <var>node</var> is an [[element]], [[text]], [[comment]], or
   [[processinginstruction]] node, and is not an <span>unwrappable
@@ -884,8 +888,8 @@ different value.
     of <var>new parent</var> to <var>new value</var>.
   </ol>
 
-  <li>If <var>command</var> is "createLink", let <var>new parent</var> be the
-  result of calling <code data-anolis-spec=domcore
+  <li>If <var>command</var> is "createLink" or "unlink", let <var>new
+  parent</var> be the result of calling <code data-anolis-spec=domcore
   title=dom-Document-createElement>createElement("a")</code> on the
   [[ownerdocument]] of <var>node</var>, then set the [[href]] attribute of
   <var>new parent</var> to <var>new value</var>.
@@ -1549,45 +1553,10 @@ value</span> either null or "underline".  Otherwise false.
 
 <dt><code title><dfn title=command-unlink>unlink</dfn></code>
 
-<dd><strong>Action</strong>: The user agent must execute the following
-steps:
-<!-- IE 9 RC unlinks the whole link you're pointing at.  Others just unlink
-your selection, which does nothing if you have nothing selected.
-Unfortunately, everyone but IE winds up doing some DOM surgery here in some
-cases, creating and splitting elements in some cases. -->
-
-<p class=XXX>This is based on what IE does.  Other browsers only unlink the
-selected portion, which might be more user-friendly but involves chopping up
-and reorganizing the DOM.  Revisit this later to see if it's reasonable to spec
-what the other browsers do instead.
-
-<ol>
-  <li>Let <var>links</var> be a [[collection]] rooted at the [[range]]'s
-  [[rangeroot]], whose filter matches only <span title="HTML element">HTML
-  elements</span> with [[localname]] "a", that have an <span>HTML
-  attribute</span> with [[attrlocalname]] "href".
-
-  <li>Let <var>selected</var> be a [[collection]] rooted at the [[range]]'s
-  [[rangeroot]], whose filter matches only [[nodes]] that are [[contained]] in
-  the [[range]] and [[text]] nodes that are [[partiallycontained]] in the
-  [[range]].
-
-  <li>For each <var>link</var> in <var>links</var>, in [[treeorder]]:
-
-  <ol>
-    <li>If <var>link</var> is not in <var>selected</var> and is not an
-    [[ancestor]] of any [[node]] in <var>selected</var>, continue with the next
-    <var>link</var>.
-
-    <li>While <var>link</var> has children, insert <var>link</var>'s first
-    child into its parent as <var>link</var>'s previous sibling.
-
-    <li>Remove <var>link</var>.
-
-    <p class=XXX>This means it disappears even if it had an id, class, etc.
-    Maybe not what we want?
-  </ol>
-</ol>
+<dd><strong>Action</strong>: <span>Decompose</span> the [[range]], and
+<span>set the value</span> of each returned [[node]] to null.
+<!-- IE 9 RC unlinks the whole link you're pointing at.  We follow the other
+browsers, which operate more consistently with other commands. -->
 
 <dd><strong>State</strong>: Always false.
 

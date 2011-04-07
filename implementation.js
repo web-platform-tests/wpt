@@ -299,8 +299,8 @@ function getEffectiveValue(node, command) {
 		return getEffectiveValue(node.parentNode, command);
 	}
 
-	// "If command is "createLink":"
-	if (command == "createlink") {
+	// "If command is "createLink" or "unlink":"
+	if (command == "createlink" || command == "unlink") {
 		// "While node is not null, and is not an a element that has an href
 		// attribute, set node to its parent."
 		while (node
@@ -428,8 +428,8 @@ function getSpecifiedValue(element, command) {
 		return null;
 	}
 
-	// "If command is "createLink":"
-	if (command == "createlink") {
+	// "If command is "createLink" or "unlink":"
+	if (command == "createlink" || command == "unlink") {
 		// "If element is an a element and has an href attribute, return the
 		// value of that attribute."
 		if (isHtmlElement(element)
@@ -878,11 +878,11 @@ function clearValue(element, command) {
 		}
 	}
 
-	// "If element is an a element and command is "createLink", unset the href
-	// property of element."
+	// "If element is an a element and command is "createLink" or "unlink",
+	// unset the href property of element."
 	if (isHtmlElement(element)
 	&& element.tagName == "A"
-	&& command == "createlink") {
+	&& (command == "createlink" || command == "unlink")) {
 		element.removeAttribute("href");
 	}
 
@@ -954,8 +954,9 @@ function pushDownValues(node, command, newValue) {
 	// member of ancestor list."
 	var propagatedValue = getSpecifiedValue(ancestorList[ancestorList.length - 1], command);
 
-	// "If propagated value is null, abort this algorithm."
-	if (propagatedValue === null) {
+	// "If propagated value is null and is not equal to new value, abort this
+	// algorithm."
+	if (propagatedValue === null && propagatedValue != newValue) {
 		return;
 	}
 
@@ -1018,6 +1019,11 @@ function pushDownValues(node, command, newValue) {
 function forceValue(node, command, newValue) {
 	// "If node's parent is null, abort this algorithm."
 	if (!node.parentNode) {
+		return;
+	}
+
+	// "If new value is null, abort this algorithm."
+	if (newValue === null) {
 		return;
 	}
 
@@ -1234,10 +1240,10 @@ function forceValue(node, command, newValue) {
 		}
 	}
 
-	// "If command is "createLink", let new parent be the result of calling
-	// createElement("a") on the ownerDocument of node, then set the href
-	// attribute of new parent to new value."
-	if (command == "createlink") {
+	// "If command is "createLink" or "unlink", let new parent be the result of
+	// calling createElement("a") on the ownerDocument of node, then set the
+	// href attribute of new parent to new value."
+	if (command == "createlink" || command == "unlink") {
 		newParent = node.ownerDocument.createElement("a");
 		newParent.setAttribute("href", newValue);
 	}
@@ -1564,6 +1570,15 @@ function myExecCommand(command, showUI, value, range) {
 		var newValue = getState("underline", range) ? "none" : "underline";
 		for (var i = 0; i < nodeList.length; i++) {
 			setNodeValue(nodeList[i], command, newValue);
+		}
+		break;
+
+		case "unlink":
+		// "Decompose the range, and set the value of each returned node to
+		// null."
+		var nodeList = decomposeRange(range);
+		for (var i = 0; i < nodeList.length; i++) {
+			setNodeValue(nodeList[i], command, null);
 		}
 		break;
 

@@ -199,14 +199,14 @@ display property computes to something other than "inline", "inline-block", or
 "inline-table".
 
 <p class=XXX>Currently when we hit an unwrappable element, we ignore it and
-style its children.  Alternatively, if we would otherwise create a span with a
+alter its children.  Alternatively, if we would otherwise create a span with a
 style element on it, maybe we could put the style element directly on the
 unwrappable element.  This would produce shorter markup in many cases, but
 would also cause problems for things like background-color that do something
 different on block elements.
 
-<p>The <dfn>effective style</dfn> of a [[node]] <var>node</var> for a given
-<var>property</var> is returned by the following algorithm, which will return
+<p>The <dfn>effective value</dfn> of a [[node]] <var>node</var> for a given
+<var>command</var> is returned by the following algorithm, which will return
 either a string or null:
 
 <ol>
@@ -217,9 +217,9 @@ either a string or null:
   null.
 
   <li>If <var>node</var> is a [[text]] node, return the <span>effective
-  style</span> of its [[parent]] for <var>property</var>.
+  value</span> of its [[parent]] for <var>command</var>.
 
-  <li>If <var>property</var> is "background-color":
+  <li>If <var>command</var> is "hiliteColor":
 
   <ol>
     <li>While the computed style of "background-color" on <var>node</var> is
@@ -233,18 +233,12 @@ either a string or null:
     <var>node</var>.
   </ol>
 
-  <li>If <var>property</var> is "text-decoration", and the "text-decoration"
+  <li>If <var>command</var> is "underline", and the "text-decoration"
   property of <var>node</var> or any of its [[ancestors]] computes to
-  "underline", return "underline".  Otherwise, return "none".
+  a value containing "underline", return "underline".  Otherwise, return
+  "none".
 
-  <p class=XXX>We ignore the possibility of text-decorations other than
-  underline for now, so we pretend that there are only two possible values:
-  "underline" and "none".
-
-  <li>If <var>property</var> is "vertical-align":
-
-  <p class=XXX>We massively abuse this property.  Maybe we shouldn't be using
-  the CSS names here.
+  <li>If <var>command</var> is "subscript" or "superscript":
 
   <ol>
     <li>Let <var>affected by subscript</var> and <var>affected by
@@ -276,24 +270,19 @@ either a string or null:
     <li>Return "baseline".
   </ol>
 
-  <li>Return the computed style of <var>property</var> for <var>node</var>.
+  <li>Return the computed style for <var>node</var> of the <span>relevant CSS
+  property</span> for <var>command</var>.
 </ol>
 
-<p>The <dfn>specified style</dfn> of an [[element]] for a given
-<var>property</var> is returned by the following algorithm, which will return
-either a CSS value or null:
+<p>The <dfn>specified value</dfn> of an [[element]] for a given
+<var>command</var> is returned by the following algorithm, which will return
+either a string or null:
 
 <ol>
-  <li>If <var>property</var> is "background-color" and the [[element]]'s
-  display property does not compute to "inline", return null.  <!-- This is
-  because we currently only use background-color for hiliteColor, which we only
-  want to work as a highlight.  In CSS terms, this means that we only want to
-  consider backgrounds that are applied to inline boxes.  Roughly speaking,
-  "specified style" means "style we're able to change", and we don't change
-  non-inline background-colors.  Maybe the name "specified style" is
-  misleading, though. -->
+  <li>If <var>command</var> is "hiliteColor" and the [[element]]'s
+  display property does not compute to "inline", return null.
 
-  <li>If <var>property</var> is "vertical-align":
+  <li>If <var>command</var> is "subscript" or "superscript":
 
   <ol>
     <li>If the computed value of the [[element]]'s "display" property is
@@ -310,15 +299,18 @@ either a CSS value or null:
     <li>Return null.
   </ol>
 
-  <li>If the [[element]] has a <code data-anolis-spec=html
-  title="the style attribute">style</code> attribute set, and that attribute has
+  <li>Let <var>property</var> be the <span>relevant CSS property</span> for
+  <var>command</var>.
+
+  <li>If <var>property</var> is null, return null.
+
+  <li>If the [[element]] has a [[style]] attribute set, and that attribute has
   the effect of setting <var>property</var>, return the value that it sets
   <var>property</var> to.
 
-  <li>If the [[element]] is a <code data-anolis-spec=html>font</code> element
-  that has an attribute whose effect is to create a [[presentationalhint]] for
-  <var>property</var>, return the value that the hint sets <var>property</var>
-  to.
+  <li>If the [[element]] is a [[font]] element that has an attribute whose
+  effect is to create a [[presentationalhint]] for <var>property</var>, return
+  the value that the hint sets <var>property</var> to.
 
   <li>If the [[element]] is in the following list, and <var>property</var> is
   equal to the CSS property name listed for it, return the string listed for
@@ -340,20 +332,12 @@ either a CSS value or null:
   <li>Return null.
 </ol>
 
-<p>A <dfn>styling element</dfn> is a [[b]], [[em]], [[i]], [[span]],
+<p>A <dfn>modifiable element</dfn> is a [[b]], [[em]], [[i]], [[span]],
 [[strong]], [[sub]], [[sup]], or [[u]] element with no attributes except
 possibly [[style]], or a [[font]] element with no attributes except possibly
 [[style]], [[fontcolor]], [[fontface]], and/or [[fontsize]].
 
-<p class=note>Conceptually, a <span>styling element</span> is a phrasing
-element whose only purpose is to style text.  Thus changing around styling
-elements (such as moving them, breaking them up, deleting them, or switching
-them with other styling elements) is fine as long as the style is preserved.
-In fact, some styling elements are supposed to have semantics other than
-styling, but the algorithms here treat them as styling elements anyway, for
-compatibility with legacy user-agents that treat them that way.
-
-<p>A <dfn>simple styling element</dfn> is an <span>HTML element</span> for
+<p>A <dfn>simple modifiable element</dfn> is an <span>HTML element</span> for
 which at least one of the following holds:
 
 <ul>
@@ -389,9 +373,9 @@ which at least one of the following holds:
   (including invalid or unrecognized properties).
 </ul>
 
-<p class=note>Conceptually, a <span>simple styling element</span> is a
-<span>styling element</span> which <span title="specified
-style">specifies</span> at most one CSS property.
+<p class=note>Conceptually, a simple modifiable element is a modifiable element
+which <span title="specified value">specifies</span> a value for at most one
+command.
 
 <p>When the user agent is to move a [[node]] to a new location, <dfn>preserving
 ranges</dfn>, it must remove the [[node]] from its original [[parent]], then
@@ -487,31 +471,31 @@ title>splitText()</code>.
 </ol>
 
 
-<h2>Clearing an element's styles</h2>
-<p>When a user agent is to <dfn>clear styles</dfn> on an element, it must run
+<h2>Clearing an element's value</h2>
+<p>When a user agent is to <dfn>clear the value</dfn> of an element, it must run
 the following steps:
 
-<p class=note>Clearing styles can remove it from its parent and put other nodes
-in its place.  When implementations do something like clear style on all
-children of an element, they should take care not to assume that the set of
-children won't change as they're unstyled.  If the element is removed, the
-algorithm will return the list of nodes inserted in its place.
+<p class=note>Clearing the value of an element can remove it from its parent
+and put other nodes in its place.  When implementations do something like clear
+the value of all children of an element, they should take care not to assume
+that the set of children won't change as they're cleared.  If the element is
+removed, the algorithm will return the list of nodes inserted in its place.
 
 <!-- If we wanted to be extra-pedantic, we could convert, e.g., <font color=red
 id=foo> into <span id=foo> instead of <font id=foo>, but probably not worth it.
 -->
 
 <ol>
-  <li>Let <var>element</var> be the [[element]] to be unstyled.
+  <li>Let <var>element</var> be the [[element]] to be cleared.
 
-  <li>Let <var>property</var> be as in the invoking algorithm.
+  <li>Let <var>command</var> be as in the invoking algorithm.
 
-  <li>If <var>element</var>'s <span>specified style</span> for
-  <var>property</var> is null, return the empty list.  <!-- We want to abort
+  <li>If <var>element</var>'s <span>specified value</span> for
+  <var>command</var> is null, return the empty list.  <!-- We want to abort
   early so that we don't try unsetting background-color on a non-inline
   element. -->
 
-  <li>If <var>element</var> is a <span>simple styling element</span>:
+  <li>If <var>element</var> is a <span>simple modifiable element</span>:
 
   <ol>
     <li>Let <var>children</var> be the [[children]] of <var>element</var>.
@@ -529,27 +513,27 @@ id=foo> into <span id=foo> instead of <font id=foo>, but probably not worth it.
     <li>Return <var>children</var>.
   </ol>
 
-  <li>Unset the CSS property <var>property</var> of <var>element</var>.
+  <li>Let <var>property</var> be the <span>relevant CSS property</span> for
+  <var>command</var>.
 
-  <li>If <var>element</var> is a <code data-anolis-spec=html>font</code>
-  element:
+  <li>If <var>property</var> is not null, unset the CSS property
+  <var>property</var> of <var>element</var>.
+
+  <li>If <var>element</var> is a [[font]] element:
 
   <ol>
     <li>If <var>property</var> is "color", unset <var>element</var>'s
-    <code data-anolis-spec=html title=dom-font-color>color</code> attribute, if
-    set.
+    [[fontcolor]] attribute, if set.
 
     <li>If <var>property</var> is "font-family", unset
-    <var>element</var>'s <code data-anolis-spec=html
-    title=dom-font-face>face</code> attribute, if set.
+    <var>element</var>'s [[fontface]] attribute, if set.
 
     <li>If <var>property</var> is "font-size", unset <var>element</var>'s
-    <code data-anolis-spec=html title=dom-font-size>size</code> attribute, if
-    set.
+    [[fontsize]] attribute, if set.
   </ol>
 
-  <li>If <var>element</var>'s <span>specified style</span> for
-  <var>property</var> is null, return the empty list.
+  <li>If <var>element</var>'s <span>specified value</span> for
+  <var>command</var> is null, return the empty list.
   <!-- If we get past this step, we're something like <b class=foo> where we
   want to keep the extra attributes, so we stick them on a span. -->
 
@@ -573,9 +557,9 @@ id=foo> into <span id=foo> instead of <font id=foo>, but probably not worth it.
 </ol>
 
 
-<h2>Pushing down styles</h2>
-<p>When a user agent is to <dfn>push down styles</dfn> to a [[node]]
-<var>node</var>, given a CSS property name <var>property</var> and a new value
+<h2>Pushing down values</h2>
+<p>When a user agent is to <dfn>push down values</dfn> to a [[node]]
+<var>node</var>, given a command <var>command</var> and a new value
 <var>new value</var>, it must run the following steps:
 
 <div class=XXX>
@@ -614,7 +598,7 @@ with a [[style]] attribute).
   <li>If <var>node</var>'s [[parent]] is not an [[element]], abort this
   algorithm. <!-- E.g., a text node child of a document fragment. -->
 
-  <li>If the <span>effective style</span> of <var>property</var> is <var>new
+  <li>If the <span>effective value</span> of <var>command</var> is <var>new
   value</var> on <var>node</var>, abort this algorithm.
 
   <li>Let <var>current ancestor</var> be <var>node</var>'s [[parent]].
@@ -622,22 +606,24 @@ with a [[style]] attribute).
   <li>Let <var>ancestor list</var> be a list of [[nodes]], initially empty.
 
   <li>While <var>current ancestor</var> is an [[element]] and the
-  <span>effective style</span> of <var>property</var> is not <var>new
+  <span>effective value</span> of <var>property</var> is not <var>new
   value</var> on it, append <var>current ancestor</var> to <var>ancestor
   list</var>, then set <var>current ancestor</var> to its [[parent]].
 
-  <!-- We can only remove specified styles, so if the style isn't specified,
+  <li>If <var>ancestor list</var> is empty, abort this algorithm.
+
+  <li>Let <var>propagated value</var> be the <span>specified value</span> of
+  <var>command</var> on the last member of <var>ancestor list</var>.
+
+  <!-- We can only remove specified values, so if the value isn't specified,
   give up. -->
-  <li>If <var>ancestor list</var> is not empty, and the <span>specified
-  style</span> of <var>property</var> on the last member of <var>ancestor
-  list</var> is null, abort this algorithm.
+  <li>If <var>propagated value</var> is null, abort this algorithm.
 
   <!-- If we go all the way up to the root and still don't have the desired
-  style, pushing down styles is pointless.  It will create extra markup for no
+  value, pushing down values is pointless.  It will create extra markup for no
   purpose. -->
-  <li>If <var>ancestor list</var> is not empty, and the [[parent]] of the last
-  member of <var>ancestor list</var> is not an [[element]], abort this
-  algorithm.
+  <li>If the [[parent]] of the last member of <var>ancestor list</var> is not
+  an [[element]], abort this algorithm.
 
   <li>While <var>ancestor list</var> is not empty:
 
@@ -647,16 +633,14 @@ with a [[style]] attribute).
 
     <li>Remove the last member from <var>ancestor list</var>.
 
-    <li>Let <var>propagated value</var> be the <span>specified style</span> of
-    <var>current ancestor</var> for <var>property</var>.
-
-    <li>If <var>propagated value</var> is null, continue this loop from the
-    beginning.
+    <li>If the <span>specified value</span> of <var>current ancestor</var> for
+    <var>command</var> is not null, set <var>propagated value</var> to that
+    value.
 
     <li>Let <var>children</var> be the [[children]] of <var>current
     ancestor</var>.
 
-    <li><span>Clear styles</span> on <var>current ancestor</var>.
+    <li><span>Clear the value</span> of <var>current ancestor</var>.
 
     <li>For every <var>child</var> in <var>children</var>:
 
@@ -665,35 +649,32 @@ with a [[style]] attribute).
       <var>child</var>.
 
       <li>If <var>child</var> is an [[element]] whose <span>specified
-      style</span> for <var>property</var> is neither null nor equal to
+      value</span> for <var>command</var> is neither null nor equal to
       <var>propagated value</var>, continue with the next <var>child</var>.
 
       <li>If <var>child</var> is the last member of <var>ancestor list</var>,
-      set <var>child</var>'s CSS property <var>property</var> to
-      <var>propagated value</var> and continue with the next <var>child</var>.
+      continue with the next <var>child</var>.
 
-      <p class=note>This style will be removed on the next loop iteration and
-      distributed to its children.
-
-      <li><span>Force the style</span> of <var>child</var>, with
-      <var>property</var> as in this algorithm and <var>new value</var> equal
+      <li><span>Force the value</span> of <var>child</var>, with
+      <var>command</var> as in this algorithm and <var>new value</var> equal
       to <var>propagated value</var>.
     </ol>
   </ol>
 </ol>
 
 
-<h2>Forcing the style of a node</h2>
-<p>When a user agent is to <dfn>force the style</dfn> of a [[node]]
-<var>node</var>, given a CSS property name <var>property</var> and a new value
+<h2>Forcing the value of a node</h2>
+<p>When a user agent is to <dfn>force the value</dfn> of a [[node]]
+<var>node</var>, given a command <var>command</var> and a new value
 <var>new value</var>, it must run the following steps.
 
-<p class=note>This algorithm checks if the node has the desired style, and if
+<p class=note>This algorithm checks if the node has the desired value, and if
 not, it wraps the node (or, if that's not possible, its descendants) in a
-<span>simple styling element</span>.  This is only used as a last resort after
-<span title="clear styles">clearing styles</span> and <span title="push down
-styles">pushing down styles</span> don't work to achieve the desired style.
-After forcing the style, descendants might still have different style.
+<span>simple modifiable element</span>.  This is only used as a last resort
+after <span title="clear the value">clearing the value</span> and <span
+title="push down values">pushing down values</span> don't work to achieve the
+desired value.  After forcing the value, descendants might still have a
+different value.
 
 <ol>
   <li>If <var>node</var>'s [[parent]] is null, abort this algorithm.
@@ -703,7 +684,7 @@ After forcing the style, descendants might still have different style.
   element</span>:
 
   <ol>
-    <!-- Even if the style matches, we stick it in a preceding sibling if
+    <!-- Even if the value matches, we stick it in a preceding sibling if
     possible.  This ensures "a<cite>b</cite>c" -> "<i>a<cite>b</cite>c</i>"
     instead of "<i>a</i><cite>b</cite><i>c</i>".  While we're at it, we also
     handle more elaborate cases like <b>foo</b>[bar]<b>baz</b> and even
@@ -715,16 +696,16 @@ After forcing the style, descendants might still have different style.
     care, since the resulting style will still be right. -->
     <li>Let <var>candidate</var> be <var>node</var>'s [[previoussibling]].
 
-    <li>While <var>candidate</var> is a <span>styling element</span>, and
+    <li>While <var>candidate</var> is a <span>modifiable element</span>, and
     <var>candidate</var> has exactly one [[child]], and that [[child]] is also
-    a <span>styling element</span>, and <var>candidate</var> is not a
-    <span>simple styling element</span> or <var>candidate</var>'s
-    <span>specified style</span> for <var>property</var> is not <var>new
+    a <span>modifiable element</span>, and <var>candidate</var> is not a
+    <span>simple modifiable element</span> or <var>candidate</var>'s
+    <span>specified value</span> for <var>command</var> is not <var>new
     value</var>, set <var>candidate</var> to its [[child]].
 
-    <li>If <var>candidate</var> is a <span>simple styling element</span> whose
-    <span>specified style</span> and <span>effective style</span> for
-    <var>property</var> are both <var>new value</var>, and <var>candidate</var>
+    <li>If <var>candidate</var> is a <span>simple modifiable element</span>
+    whose <span>specified value</span> and <span>effective value</span> for
+    <var>command</var> are both <var>new value</var>, and <var>candidate</var>
     is not the [[previoussibling]] of <var>node</var>:
 
     <ol>
@@ -747,16 +728,16 @@ After forcing the style, descendants might still have different style.
 
     <li>Let <var>candidate</var> be <var>node</var>'s [[nextsibling]].
 
-    <li>While <var>candidate</var> is a <span>styling element</span>, and
+    <li>While <var>candidate</var> is a <span>modifiable element</span>, and
     <var>candidate</var> has exactly one [[child]], and that [[child]] is also
-    a <span>styling element</span>, and <var>candidate</var> is not a
-    <span>simple styling element</span> or <var>candidate</var>'s
-    <span>specified style</span> for <var>property</var> is not <var>new
+    a <span>modifiable element</span>, and <var>candidate</var> is not a
+    <span>simple modifiable element</span> or <var>candidate</var>'s
+    <span>specified value</span> for <var>command</var> is not <var>new
     value</var>, set <var>candidate</var> to its [[child]].
 
-    <li>If <var>candidate</var> is a <span>simple styling element</span> whose
-    <span>specified style</span> and <span>effective style</span> for
-    <var>property</var> are both <var>new value</var>, and <var>candidate</var>
+    <li>If <var>candidate</var> is a <span>simple modifiable element</span>
+    whose <span>specified value</span> and <span>effective value</span> for
+    <var>command</var> are both <var>new value</var>, and <var>candidate</var>
     is not the [[nextsibling]] of <var>node</var>:
 
     <ol>
@@ -778,20 +759,20 @@ After forcing the style, descendants might still have different style.
     <li>Let <var>previous sibling</var> and <var>next sibling</var> be
     <var>node</var>'s [[previoussibling]] and [[nextsibling]].
 
-    <li>If <var>previous sibling</var> is a <span>simple styling element</span>
-    whose <span>specified style</span> and <span>effective style</span> for
-    <var>property</var> are both <var>new value</var>, append <var>node</var>
-    as the last [[child]] of <var>previous sibling</var>, <span>preserving
-    ranges</span>.
+    <li>If <var>previous sibling</var> is a <span>simple modifiable
+    element</span> whose <span>specified value</span> and <span>effective
+    value</span> for <var>command</var> are both <var>new value</var>, append
+    <var>node</var> as the last [[child]] of <var>previous sibling</var>,
+    <span>preserving ranges</span>.
 
-    <li>If <var>next sibling</var> is a <span>simple styling element</span>
-    whose <span>specified style</span> and <span>effective style</span> for
-    <var>property</var> are both <var>new value</var>:
+    <li>If <var>next sibling</var> is a <span>simple modifiable element</span>
+    whose <span>specified value</span> and <span>effective value</span> for
+    <var>command</var> are both <var>new value</var>:
 
     <ol>
       <li>If <var>node</var> is not a [[child]] of <var>previous sibling</var>,
-      insert <var>node</var> as the first [[child]] of <var>next
-      sibling</var>, <span>preserving ranges</span>.
+      insert <var>node</var> as the first [[child]] of <var>next sibling</var>,
+      <span>preserving ranges</span>.
 
       <li>Otherwise, while <var>next sibling</var> has [[children]], append the
       first [[child]] of <var>next sibling</var> as the last [[child]] of
@@ -800,18 +781,18 @@ After forcing the style, descendants might still have different style.
     </ol>
   </ol>
 
-  <li>If the <span>effective style</span> of <var>property</var> is <var>new
+  <li>If the <span>effective value</span> of <var>command</var> is <var>new
   value</var> on <var>node</var>, abort this algorithm.
 
   <li>If <var>node</var> is an <span>unwrappable element</span>:
 
   <ol>
     <li>Let <var>children</var> be all [[children]] of <var>node</var>,
-    omitting any that are [[element]]s whose <span>specified style</span> for
-    <var>property</var> is neither null nor equal to <var>new value</var>.
+    omitting any that are [[element]]s whose <span>specified value</span> for
+    <var>command</var> is neither null nor equal to <var>new value</var>.
 
-    <li><span>Force the style</span> of each [[node]] in <var>children</var>,
-    with <var>property</var> and <var>new value</var> as in this invocation of
+    <li><span>Force the value</span> of each [[node]] in <var>children</var>,
+    with <var>command</var> and <var>new value</var> as in this invocation of
     the algorithm.
     <!-- This means that if it has no children, we do nothing.  IE9 inserts an
     empty wrapper element in that case, but I'm not sure what the point is, and
@@ -827,7 +808,7 @@ After forcing the style, descendants might still have different style.
   <li>If <var>node</var> is a [[comment]] or [[processinginstruction]], abort
   this algorithm.
 
-  <li>If the <span>effective style</span> of <var>property</var> is <var>new
+  <li>If the <span>effective value</span> of <var>command</var> is <var>new
   value</var> on <var>node</var>, abort this algorithm.
 
   <li>Let <var>new parent</var> be null.
@@ -835,25 +816,25 @@ After forcing the style, descendants might still have different style.
   <li>If the <span>CSS styling flag</span> is false:
 
   <ol>
-    <li>If <var>property</var> is "font-weight" and <var>new value</var> is
+    <li>If <var>command</var> is "bold" and <var>new value</var> is
     "bold", let <var>new parent</var> be the result of calling <code
     data-anolis-spec=domcore
     title=dom-Document-createElement>createElement("b")</code> on the
     [[ownerdocument]] of <var>node</var>.
 
-    <li>If <var>property</var> is "font-style" and <var>new value</var> is
+    <li>If <var>command</var> is "italic" and <var>new value</var> is
     "italic", let <var>new parent</var> be the result of calling <code
     data-anolis-spec=domcore
     title=dom-Document-createElement>createElement("i")</code> on the
     [[ownerdocument]] of <var>node</var>.
 
-    <li>If <var>property</var> is "text-decoration" and <var>new value</var> is
+    <li>If <var>command</var> is "underline" and <var>new value</var> is
     "underline", let <var>new parent</var> be the result of calling <code
     data-anolis-spec=domcore
     title=dom-Document-createElement>createElement("u")</code> on the
     [[ownerdocument]] of <var>node</var>.
 
-    <li>If <var>property</var> is "color", let <var>new parent</var> be the
+    <li>If <var>command</var> is "foreColor", let <var>new parent</var> be the
     result of calling <code data-anolis-spec=domcore
     title=dom-Document-createElement>createElement("font")</code> on the
     [[ownerdocument]] of <var>node</var>, then set the [[fontcolor]] attribute
@@ -863,13 +844,13 @@ After forcing the style, descendants might still have different style.
     We also need to specify exactly how it's serialized, since CSSOM doesn't
     cover this.  It might be best to always output simple colors.
 
-    <li>If <var>property</var> is "font-family", let <var>new parent</var> be
+    <li>If <var>command</var> is "fontName", let <var>new parent</var> be
     the result of calling <code data-anolis-spec=domcore
     title=dom-Document-createElement>createElement("font")</code> on the
     [[ownerdocument]] of <var>node</var>, then set the [[fontface]] attribute
     of <var>new parent</var> to <var>new value</var>.
 
-    <li>If <var>property</var> is "font-size", let <var>new parent</var> be the
+    <li>If <var>command</var> is "fontSize", let <var>new parent</var> be the
     result of calling <code data-anolis-spec=domcore
     title=dom-Document-createElement>createElement("font")</code> on the
     [[ownerdocument]] of <var>node</var>, then set the [[fontsize]] attribute
@@ -877,16 +858,16 @@ After forcing the style, descendants might still have different style.
   </ol>
 
   <!-- We always use sup/sub elements, even in CSS mode, following Gecko and
-  contradicting WebKit.  This is because <span style="vertical-align:
+  contradicting WebKit.  This is because <span value="vertical-align:
   sub/super">, the obvious equivalent (and what WebKit uses), behaves quite
   differently: it doesn't reduce font-size, which is ugly. -->
-  <li>If <var>property</var> is "vertical-align" and <var>new value</var> is
+  <li>If <var>command</var> is "subscript" and <var>new value</var> is
   "sub", let <var>new parent</var> be the result of calling <code
   data-anolis-spec=domcore
   title=dom-Document-createElement>createElement("sub")</code> on the
   [[ownerdocument]] of <var>node</var>.
 
-  <li>If <var>property</var> is "vertical-align" and <var>new value</var> is
+  <li>If <var>command</var> is "superscript" and <var>new value</var> is
   "super", let <var>new parent</var> be the result of calling <code
   data-anolis-spec=domcore
   title=dom-Document-createElement>createElement("sup")</code> on the
@@ -901,15 +882,16 @@ After forcing the style, descendants might still have different style.
   <var>node</var>.  <!-- This preserves boundary points correctly, as usual.
   -->
 
-  <li>If the <span>effective style</span> of <var>property</var> for <var>new
-  parent</var> is not <var>new value</var>, set the CSS property
-  <var>property</var> of <var>new parent</var> to <var>new value</var>.
+  <li>If the <span>effective value</span> of <var>command</var> for <var>new
+  parent</var> is not <var>new value</var>, and the <span>relevant CSS
+  property</span> for <var>command</var> is not null, set that CSS property of
+  <var>new parent</var> to <var>new value</var>.
 
   <li>Append <var>node</var> to <var>new parent</var> as its last [[child]],
   <span>preserving ranges</span>.
 
-  <li>If <var>node</var> is an [[element]] and the <span>effective style</span>
-  of <var>property</var> for <var>node</var> is not <var>new value</var>:
+  <li>If <var>node</var> is an [[element]] and the <span>effective value</span>
+  of <var>command</var> for <var>node</var> is not <var>new value</var>:
 
   <ol>
     <li>Insert <var>node</var> into the [[parent]] of <var>new parent</var>
@@ -917,28 +899,29 @@ After forcing the style, descendants might still have different style.
 
     <li>Remove <var>new parent</var> from its [[parent]].
 
-    <li>If <var>new parent</var> is a [[span]], set the CSS property
-    <var>property</var> of <var>node</var> to <var>new value</var>.
+    <li>If <var>new parent</var> is a [[span]], and the <span>relevant CSS
+    property</span> for <var>command</var> is not null, set that CSS property
+    of <var>node</var> to <var>new value</var>.
 
     <li>Otherwise:
 
     <ol>
       <li>Let <var>children</var> be all [[children]] of <var>node</var>,
-      omitting any that are [[element]]s whose <span>specified style</span> for
-      <var>property</var> is neither null nor equal to <var>new value</var>.
+      omitting any that are [[element]]s whose <span>specified value</span> for
+      <var>command</var> is neither null nor equal to <var>new value</var>.
 
-      <li><span>Force the style</span> of each [[node]] in <var>children</var>,
-      with <var>property</var> and <var>new value</var> as in this invocation
+      <li><span>Force the value</span> of each [[node]] in <var>children</var>,
+      with <var>command</var> and <var>new value</var> as in this invocation
       of the algorithm.
     </ol>
   </ol>
 </ol>
 
 
-<h2>Styling a node</h2>
-<p>When a user agent is to <dfn>style</dfn> a [[node]] <var>node</var>, it must
-run the following steps.  There are two inputs: a CSS property name
-<var>property</var> and a new value <var>new value</var>.
+<h2>Setting the value of a node</h2>
+<p>When a user agent is to <dfn>set the value</dfn> of a [[node]]
+<var>node</var>, it must run the following steps.  There are two inputs: a
+command <var>command</var> and a new value <var>new value</var>.
 
 <div class=note>
 <p>The effect of this algorithm is to ensure that the node and all its
@@ -952,7 +935,7 @@ from an ancestor we can't reach).  Any other failures are bugs.
 
 <p>First, if the node is an element with an inline style rule for this
 property, we unset it ("clearing styles").  This step also removes <span
-title="simple styling element">simple styling elements</span> entirely, and
+title="simple modifiable element">simple modifiable elements</span> entirely, and
 replaces elements like [[b]] or [[font]] with [[span]]s if they aren't simple
 styling elements.  This will be sufficient if the desired style is inherited
 from an ancestor, or if it's the default (like font-style: normal) and no
@@ -983,7 +966,7 @@ so we can inherit it.  Otherwise, it will just create useless markup.
 
 <p>Finally, if neither of the above strategies worked, we have to add new
 markup to get the desired style ("forcing styles").  First we try just sticking
-it into its previous or next sibling, if that's a <span>simple styling
+it into its previous or next sibling, if that's a <span>simple modifiable
 element</span> (so it won't add any styles or semantics we don't want).
 Otherwise, we create a new simple styling element and wrap it in that.  It's
 common that a previous sibling is the simple styling element we want, because
@@ -1008,12 +991,12 @@ as desired.
 </div>
 
 <ol>
-  <li>If <var>node</var> is a [[document]], <span>style</span> its [[element]]
-  [[child]] (if it has one) and abort this algorithm.
+  <li>If <var>node</var> is a [[document]], <span>set the value</span> of its
+  [[element]] [[child]] (if it has one) and abort this algorithm.
 
   <li>If <var>node</var> is a [[documentfragment]], let <var>children</var> be
-  a list of its [[children]].  <span>Style</span> each member of [[children]],
-  then abort this algorithm.
+  a list of its [[children]].  <span>Set the value</span> of each member of
+  [[children]], then abort this algorithm.
 
   <li>If <var>node</var>'s [[parent]] is null, or if <var>node</var> is a <code
   data-anolis-spec=domcore>DocumentType</code>, abort this algorithm.
@@ -1025,23 +1008,23 @@ as desired.
   <li>If <var>node</var> is an [[element]]:
 
   <ol>
-    <li><span>Clear styles</span> on <var>node</var>, and let <var>new
+    <li><span>Clear the value</span> of <var>node</var>, and let <var>new
     nodes</var> be the result.
 
     <li>For each <var>new node</var> in <var>new nodes</var>,
-    <span>style</span> <var>new node</var>, with the same inputs as this
-    invocation of the algorithm.
+    <span>set the value</span> of <var>new node</var>, with the same inputs as
+    this invocation of the algorithm.
 
     <li>If <var>node</var>'s [[parent]] is null, abort this algorithm.
   </ol>
 
-  <li><span>Push down styles</span> on <var>node</var>.
+  <li><span>Push down values</span> on <var>node</var>.
 
-  <li><span>Force the style</span> of <var>node</var>.
+  <li><span>Force the value</span> of <var>node</var>.
 
   <li>Let <var>children</var> be the [[children]] of <var>node</var>.
 
-  <li><span>Style</span> each member of <var>children</var>.
+  <li><span>Set the value</span> of each member of <var>children</var>.
 
   <p class=note>Styling a node involves clearing its styles, which can remove
   it from the tree.  Implementers should be careful to compute the list of
@@ -1096,7 +1079,9 @@ exception in IE and Firefox.  Need to consider changing to that behavior.
 
 <p>The possible values for <var>commandId</var>, and their corresponding
 meanings, are as follows.  These values must be compared to the argument in an
-<span data-anolis-spec=domcore>ASCII case-insensitive</span> manner.
+<span data-anolis-spec=domcore>ASCII case-insensitive</span> manner.  The
+<dfn>relevant CSS property</dfn> of a command is defined here, and is null if
+omitted for a particular command.
 
 <!-- Notes on commands I've looked at but haven't bothered specifying yet:
 
@@ -1153,14 +1138,14 @@ like set the document background color.  Feedback appreciated on this point.
 <dt><code title><dfn title=command-bold>bold</dfn></code>
 
 <dd><strong>Action</strong>: <span>Decompose</span> the [[range]].  If the
-state of the [[range]] for this command is then true, <span>style</span> each
-returned [[node]] with <var>property</var> "font-weight" and <var>new
-value</var> "normal".  Otherwise, <span>style</span> them with <var>new
+state of the [[range]] for this command is then true, <span>set the
+value</span> of each returned [[node]] with <var>new value</var> "normal".
+Otherwise, <span title="set the value">set their value</span> with <var>new
 value</var> "bold".
 
 <dd><strong>State</strong>: True if every [[text]] node that is
 <span>effectively contained</span> in the [[range]] has <span>effective
-style</span> either null or at least 700 for font-weight.  Otherwise false.
+value</span> either null or at least 700.  Otherwise false.
 <!-- For bold and similar commands, IE 9 RC seems to consider the state true or
 false depending on the first element.  All other browsers follow the same
 general idea as the spec, considering a range bold only if all text in it is
@@ -1174,6 +1159,8 @@ The HTML5 spec as of February 2011 mandates WebKit's behavior.  It makes sense
 to always return a string, a majority of string-returners return the empty
 string, and three out of the four return something that evaluates to false as a
 boolean, so I'll go with Firefox and Opera. -->
+
+<dd><strong>Relevant CSS Property</strong>: "font-weight"
 
 
 <dt><code title><dfn title=command-createlink>createLink</dfn></code>
@@ -1268,8 +1255,8 @@ boolean, so I'll go with Firefox and Opera. -->
 <dt><code title><dfn title=command-fontname>fontName</dfn></code>
 
 <dd><strong>Action</strong>: <span>Decompose</span> the [[range]], then
-<span>style</span> each returned [[node]] with <var>property</var> equal to
-"font-family" and <var>new value</var> equal to <var>value</var>.
+<span>set the value</span> of each returned [[node]] with <var>new value</var>
+equal to <var>value</var>.
 <!-- UAs differ a bit in the details here:
 
 IE 9 RC: Empty string sets <font face="">
@@ -1312,6 +1299,8 @@ I'm just going to punt on this and say it should be the computed value of
 font-family.  I'll leave CSSOM to decide what that means if there are no
 applicable style rules. -->
 
+<dd><strong>Relevant CSS Property</strong>: "font-family"
+
 
 <dt><code title><dfn title=command-forecolor>foreColor</dfn></code>
 
@@ -1331,9 +1320,9 @@ Firefox seems to stick to just CSS colors, so with any luck that works.
 except in Opera, which tries to parse it in some crazy way and winds up with
 "#00b025".  rgba() colors don't work as uniformly, but I don't see any reason
 to prohibit them.  Best to just match CSS. -->
-Otherwise, it must <span>decompose</span> the [[range]], then
-<span>style</span> each returned [[node]] with <var>property</var> equal to
-"color" and <var>new value</var> equal to <var>value</var>.
+Otherwise, it must <span>decompose</span> the [[range]], then <span>set the
+value</span> of each returned [[node]] with <var>new value</var> equal to
+<var>value</var>.
 
 <dd><strong>State</strong>: Always false.
 <!-- This matches IE 9 RC and Chrome 10.  Opera 11 seems to return true if
@@ -1342,10 +1331,10 @@ authors want to use value here, not state.  Firefox 4b11 throws an exception,
 which is an interesting approach, but I'll go with IE/WebKit, which makes at
 least as much sense. -->
 
-<dd><strong>Value</strong>: The computed value of the CSS property "color"
-for . . .
-<!-- IE 9 RC returns the number 0 always, which makes no sense at all.  This
-matches the other browsers. -->
+<dd><strong>Value</strong>:
+<!-- IE 9 RC returns the number 0 always, which makes no sense at all. -->
+
+<dd><strong>Relevant CSS Property</strong>: "color"
 
 
 <dt><code title><dfn title=command-hiliteColor>hiliteColor</dfn></code>
@@ -1366,14 +1355,14 @@ sense; see the comment for backColor. -->
 
 <dd><strong>Action</strong>: If <var>value</var> is not a valid CSS color,
 do nothing and abort these steps.  Otherwise, <span>decompose</span> the
-[[range]], then <span>style</span> each returned [[node]] with
-<var>property</var> equal to "background-color" and <var>new value</var> equal
-to <var>value</var>.
+[[range]], then <span>set the value</span> of each returned [[node]] with
+<var>new value</var> equal to <var>value</var>.
 
 <dd><strong>State</strong>: Always false.
 
-<dd><strong>Value</strong>: The <span>effective style</span> for
-"background-color" on . . .
+<dd><strong>Value</strong>:
+
+<dd><strong>Relevant CSS Property</strong>: "background-color"
 
 
 <dt><code title><dfn title=command-insertimage>insertImage</dfn></code>
@@ -1427,17 +1416,18 @@ to <var>value</var>.
 <dt><code title><dfn title=command-italic>italic</dfn></code>
 
 <dd><strong>Action</strong>: <span>Decompose</span> the [[range]].  If the
-state of the [[range]] for this command is then true, <span>style</span> each
-returned [[node]] with <var>property</var> "font-style" and <var>new
-value</var> "normal".  Otherwise, <span>style</span> them with <var>new
+state of the [[range]] for this command is then true, <span>set the
+value</span> of each returned [[node]] with <var>new value</var> "normal".
+Otherwise, <span title="set the value">set their value</span> with <var>new
 value</var> "italic".
 
 <dd><strong>State</strong>: True if every [[text]] node that is
 <span>effectively contained</span> in the [[range]] has <span>effective
-style</span> either null, "italic", or "oblique" for font-style.  Otherwise
-false.
+value</span> either null, "italic", or "oblique".  Otherwise false.
 
 <dd><strong>Value</strong>: Always the empty string.
+
+<dd><strong>Relevant CSS Property</strong>: "font-style"
 
 
 <dt><code title><dfn title=command-stylewithcss>styleWithCSS</dfn></code>
@@ -1457,41 +1447,47 @@ true, otherwise false.
 <dt><code title><dfn title=command-subscript>subscript</dfn></code>
 
 <dd><strong>Action</strong>: <span>Decompose</span> the [[range]].  If the
-state of the [[range]] for this command is then true, <span>style</span> each
-returned [[node]] with <var>property</var> "vertical-align" and <var>new
-value</var> "baseline".  Otherwise, <span>style</span> them with <var>new
+state of the [[range]] for this command is then true, <span>set the
+value</span> of each returned [[node]] with <var>new value</var> "baseline".
+Otherwise, <span title="set the value">set their value</span> with <var>new
 value</var> "baseline", then <span>decompose</span> the [[range]] again and
-<span>style</span> each returned [[node]] with <var>new value</var> "sub".
+<span>set the value</span> of each returned [[node]] with <var>new value</var>
+"sub".
 
 <dd><strong>State</strong>: True if every [[text]] node that is
 <span>effectively contained</span> in the [[range]] has <span>effective
-style</span> either null or "sub" for "vertical-align".  Otherwise false.
+value</span> either null or "sub".  Otherwise false.
 
 <dd><strong>Value</strong>:
+
+<dd><strong>Relevant CSS Property</strong>: "vertical-align"
 
 
 <dt><code title><dfn title=command-superscript>superscript</dfn></code>
 
 <dd><strong>Action</strong>: <span>Decompose</span> the [[range]].  If the
-state of the [[range]] for this command is then true, <span>style</span> each
-returned [[node]] with <var>property</var> "vertical-align" and <var>new
-value</var> "baseline".  Otherwise, <span>style</span> them with <var>new
+state of the [[range]] for this command is then true, <span>set the
+value</span> of each returned [[node]] with <var>new value</var> "baseline".
+Otherwise, <span title="set the value">set their value</span> with <var>new
 value</var> "baseline", then <span>decompose</span> the [[range]] again and
-<span>style</span> each returned [[node]] with <var>new value</var> "super".
+<span>set the value</span> of each returned [[node]] with <var>new value</var>
+"super".
 
 <dd><strong>State</strong>: True if every [[text]] node that is
 <span>effectively contained</span> in the [[range]] has <span>effective
-style</span> either null or "super" for "vertical-align".  Otherwise false.
+value</span> either null or "super".  Otherwise false.
 
 <dd><strong>Value</strong>:
+
+<dd><strong>Relevant CSS Property</strong>: "vertical-align"
 
 
 <dt><code title><dfn title=command-underline>underline</dfn></code>
 
 <dd><strong>Action</strong>: <span>Decompose</span> the [[range]].  If the
-state of the [[range]] for this command is then true, <span>style</span> each
-returned [[node]] with <var>property</var> "text-decoration" and <var>new
-value</var> "none".  Otherwise, <span>style</span> them with <var>new
+state of the [[range]] for this command is then true, <span>set the
+value</span> of each returned [[node]] with <var>new value</var> "none".
+Otherwise, <span title="set the value">set their value</span> with <var>new
 value</var> "underline".
 
 <div class=XXX>
@@ -1547,9 +1543,11 @@ may be.
 
 <dd><strong>State</strong>: True if every [[text]] node that is
 <span>effectively contained</span> in the [[range]] has <span>effective
-style</span> either null or "underline" for text-decoration.  Otherwise false.
+value</span> either null or "underline".  Otherwise false.
 
 <dd><strong>Value</strong>: Always the empty string.
+
+<dd><strong>Relevant CSS Property</strong>: "text-decoration"
 
 
 <dt><code title><dfn title=command-unlink>unlink</dfn></code>
@@ -1614,7 +1612,7 @@ error console.
 <dd><strong>State</strong>:
 
 <dd><strong>Value</strong>:
-</dl>
+
 
 
 <h2 class=no-num id=references>References</h2><!--REFS-->

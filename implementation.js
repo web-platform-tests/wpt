@@ -71,27 +71,25 @@ function convertProperty(property) {
 	return property;
 }
 
-function cssValuesEqual(property, val1, val2) {
+function valuesEqual(command, val1, val2) {
 	// This is a bad hack to work around browser incompatibility.  It wouldn't
 	// work in real life, but it's good enough for a test implementation.
 	if (val1 === null || val2 === null) {
 		return val1 === val2;
 	}
 
-	if (property == "verticalAlign") {
-		// Fake property values
-		if (val1 == "mixed" || val2 == "mixed") {
-			return val1 === val2;
-		}
+	if (command == "subscript" || command == "superscript") {
+		return val1 === val2;
 	}
 
-	if (property == "fontWeight") {
+	if (command == "bold") {
 		return val1 == val2
 			|| (val1.toLowerCase() == "bold" && val2 == "700")
 			|| (val2.toLowerCase() == "bold" && val1 == "700")
 			|| (val1.toLowerCase() == "normal" && val2 == "400")
 			|| (val2.toLowerCase() == "normal" && val1 == "400");
 	}
+	var property = getRelevantCssProperty(command);
 	var test1 = document.createElement("span");
 	test1.style[property] = val1;
 	var test2 = document.createElement("span");
@@ -249,46 +247,6 @@ function isEffectivelyContained(node, range) {
 	return false;
 }
 
-function getActiveRange(doc) {
-	// "Let selection be the result of calling getSelection() on the Document."
-	//
-	// We call getSelection() on defaultView instead, because Firefox and Opera
-	// don't follow the DOM Range spec here:
-	// https://bugzilla.mozilla.org/show_bug.cgi?id=636512
-	var selection = doc.defaultView.getSelection();
-
-	// "If there are no Ranges associated with selection, return null."
-	if (selection.rangeCount == 0) {
-		return null;
-	}
-
-	// "Let start be the boundary point with the earliest position among all of
-	// selection's Ranges' starts."
-	var startNode = null;
-	var startOffset = null;
-	for (var i = 0; i < selection.rangeCount; i++) {
-		if (startNode === null) {
-			startNode = selection.getRangeAt(i).startContainer;
-			startOffset = selection.getRangeAt(i).startOffset;
-			continue;
-		}
-		var testRange = doc.createRange();
-		testRange.setStart(startNode, startOffset);
-		if (testRange.compareBoundaryPoints(Range.START_TO_START, selection.getRangeAt(i)) < 0) {
-			startNode = selection.getRangeAt(i).startContainer;
-			startOffset = selection.getRangeAt(i).startOffset;
-		}
-	}
-
-	// "Return the last Range in selection whose start is start."
-	for (var i = selection.rangeCount - 1; i >= 0; i--) {
-		if (selection.getRangeAt(i).startContainer == startNode
-		&& selection.getRangeAt(i).startOffset == startOffset) {
-			return selection.getRangeAt(i);
-		}
-	}
-}
-
 // "An unwrappable element is an HTML element which may not be used where only
 // phrasing content is expected (not counting unknown or obsolete elements,
 // which cannot be used at all); or any Element whose display property computes
@@ -320,9 +278,9 @@ function isUnwrappableElement(node) {
 }
 
 /**
- * "effective style" per edit command spec
+ * "effective value" per edit command spec
  */
-function getEffectiveStyle(node, property) {
+function getEffectiveValue(node, command) {
 	// "If node is neither an Element nor a Text node, return null."
 	if (node.nodeType != Node.ELEMENT_NODE
 	&& node.nodeType != Node.TEXT_NODE) {
@@ -335,14 +293,14 @@ function getEffectiveStyle(node, property) {
 		return null;
 	}
 
-	// "If node is a Text node, return the effective style of its parent for
-	// property."
+	// "If node is a Text node, return the effective value of its parent for
+	// command."
 	if (node.nodeType == Node.TEXT_NODE) {
-		return getEffectiveStyle(node.parentNode, property);
+		return getEffectiveValue(node.parentNode, command);
 	}
 
-	// "If property is "background-color":"
-	if (property == "backgroundColor") {
+	// "If command is "hiliteColor":"
+	if (command == "hilitecolor") {
 		// "While the computed style of "background-color" on node is any
 		// fully transparent value, and node's parent is an Element, set
 		// node to its parent."
@@ -369,12 +327,12 @@ function getEffectiveStyle(node, property) {
 		return getComputedStyle(node).backgroundColor;
 	}
 
-	// "If property is "text-decoration", and the "text-decoration" property of
-	// node or any of its ancestors computes to "underline", return
-	// "underline". Otherwise, return "none"."
-	if (property == "textDecoration") {
+	// "If command is "underline", and the "text-decoration" property of node
+	// or any of its ancestors computes to a value containing "underline",
+	// return "underline". Otherwise, return "none"."
+	if (command == "underline") {
 		do {
-			if (getComputedStyle(node).textDecoration == "underline") {
+			if ((" " + getComputedStyle(node).textDecoration + " ").indexOf(" underline ") != -1) {
 				return "underline";
 			}
 			node = node.parentNode;
@@ -382,8 +340,8 @@ function getEffectiveStyle(node, property) {
 		return "none";
 	}
 
-	// "If property is "vertical-align":"
-	if (property == "verticalAlign") {
+	// "If command is "subscript" or "superscript":"
+	if (command == "subscript" || command == "superscript") {
 		// "Let affected by subscript and affected by superscript be two
 		// boolean variables, both initially false."
 		var affectedBySubscript = false;
@@ -434,24 +392,25 @@ function getEffectiveStyle(node, property) {
 		return "baseline";
 	}
 
-	// "Return the computed style of property for node."
-	return getComputedStyle(node)[property];
+	// "Return the computed style for node of the relevant CSS property for
+	// command."
+	return getComputedStyle(node)[getRelevantCssProperty(command)];
 }
 
 /**
- * "specified style" per edit command spec
+ * "specified value" per edit command spec
  */
-function getSpecifiedStyle(element, property) {
-	// "If property is "background-color" and the Element's display property
-	// does not compute to "inline", return null."
-	if (property == "backgroundColor"
+function getSpecifiedValue(element, command) {
+	// "If command is "hiliteColor" and the Element's display property does not
+	// compute to "inline", return null."
+	if (command == "hilitecolor"
 	&& getComputedStyle(element).display != "inline") {
 		return null;
 	}
 
-	// "If property is "vertical-align":"
-	if (property == "verticalAlign") {
-		// "If the computed value of the Element's "display" property is
+	// "If command is "subscript" or "superscript":"
+	if (command == "subscript" || command == "superscript") {
+		// "If the computed style of the Element's "display" property is
 		// neither "inline" nor "inline-block" nor "inline-table", return
 		// null."
 		var style = getComputedStyle(element);
@@ -479,6 +438,14 @@ function getSpecifiedStyle(element, property) {
 		}
 
 		// "Return null."
+		return null;
+	}
+
+	// "Let property be the relevant CSS property for command."
+	var property = getRelevantCssProperty(command);
+
+	// "If property is null, return null."
+	if (property === null) {
 		return null;
 	}
 
@@ -515,7 +482,7 @@ function getSpecifiedStyle(element, property) {
 	&& (element.tagName == "B" || element.tagName == "STRONG")) {
 		return "bold";
 	}
-	if (property == "fontStyle"
+	if (property == "fontValue"
 	&& (element.tagName == "I" || element.tagName == "EM")) {
 		return "italic";
 	}
@@ -528,10 +495,10 @@ function getSpecifiedStyle(element, property) {
 	return null;
 }
 
-// "A styling element is a b, em, i, span, strong, sub, sup, or u element with
+// "A modifiable element is a b, em, i, span, strong, sub, sup, or u element with
 // no attributes except possibly style, or a font element with no attributes
 // except possibly style, color, face, and/or size."
-function isStylingElement(node) {
+function isModifiableElement(node) {
 	if (!isHtmlElement(node)) {
 		return false;
 	}
@@ -574,14 +541,14 @@ function isStylingElement(node) {
 	return false;
 }
 
-function isSimpleStylingElement(node) {
-	// "A simple styling element is an HTML element for which at least one of
-	// the following holds:"
+function isSimpleModifiableElement(node) {
+	// "A simple modifiable element is an HTML element for which at least one
+	// of the following holds:"
 	if (!isHtmlElement(node)) {
 		return false;
 	}
 
-	// Only these elements can possibly be a simple styling element.
+	// Only these elements can possibly be a simple modifiable element.
 	if (["B", "EM", "FONT", "I", "SPAN", "STRONG", "SUB", "SUP", "U"].indexOf(node.tagName) == -1) {
 		return false;
 	}
@@ -807,15 +774,15 @@ function decomposeRange(range) {
 	return ret;
 }
 
-function clearStyles(element, property) {
-	// "If element's specified style for property is null, return the empty
+function clearValue(element, command) {
+	// "If element's specified value for command is null, return the empty
 	// list."
-	if (getSpecifiedStyle(element, property) === null) {
+	if (getSpecifiedValue(element, command) === null) {
 		return [];
 	}
 
-	// "If element is a simple styling element:"
-	if (isSimpleStylingElement(element)) {
+	// "If element is a simple modifiable element:"
+	if (isSimpleModifiableElement(element)) {
 		// "Let children be the children of element."
 		var children = Array.prototype.slice.call(element.childNodes);
 
@@ -832,10 +799,15 @@ function clearStyles(element, property) {
 		return children;
 	}
 
-	// "Unset the CSS property property of element."
-	element.style[property] = '';
-	if (element.getAttribute("style") == "") {
-		element.removeAttribute("style");
+	// "Let property be the relevant CSS property for command."
+	var property = getRelevantCssProperty(command);
+
+	// "If property is not null, unset the CSS property property of element."
+	if (property !== null) {
+		element.style[property] = '';
+		if (element.getAttribute("style") == "") {
+			element.removeAttribute("style");
+		}
 	}
 
 	// "If element is a font element:"
@@ -858,9 +830,9 @@ function clearStyles(element, property) {
 		}
 	}
 
-	// "If element's specified style for property is null, return the empty
+	// "If element's specified value for command is null, return the empty
 	// list."
-	if (getSpecifiedStyle(element, property) === null) {
+	if (getSpecifiedValue(element, command) === null) {
 		return [];
 	}
 
@@ -888,16 +860,16 @@ function clearStyles(element, property) {
 	return [newElement];
 }
 
-function pushDownStyles(node, property, newValue) {
+function pushDownValues(node, command, newValue) {
 	// "If node's parent is not an Element, abort this algorithm."
 	if (!node.parentNode
 	|| node.parentNode.nodeType != Node.ELEMENT_NODE) {
 		return;
 	}
 
-	// "If the effective style of property is new value on node, abort this
+	// "If the effective value of command is new value on node, abort this
 	// algorithm."
-	if (cssValuesEqual(property, getEffectiveStyle(node, property), newValue)) {
+	if (valuesEqual(command, getEffectiveValue(node, command), newValue)) {
 		return;
 	}
 
@@ -907,28 +879,34 @@ function pushDownStyles(node, property, newValue) {
 	// "Let ancestor list be a list of Nodes, initially empty."
 	var ancestorList = [];
 
-	// "While current ancestor is an Element and the effective style of
-	// property is not new value on it, append current ancestor to ancestor
+	// "While current ancestor is an Element and the effective value of
+	// command is not new value on it, append current ancestor to ancestor
 	// list, then set current ancestor to its parent."
 	while (currentAncestor
 	&& currentAncestor.nodeType == Node.ELEMENT_NODE
-	&& !cssValuesEqual(property, getEffectiveStyle(currentAncestor, property), newValue)) {
+	&& !valuesEqual(command, getEffectiveValue(currentAncestor, command), newValue)) {
 		ancestorList.push(currentAncestor);
 		currentAncestor = currentAncestor.parentNode;
 	}
 
-	// "If ancestor list is not empty, and the specified style of property on
-	// the last member of ancestor list is null, abort this algorithm."
-	if (ancestorList.length != 0
-	&& getSpecifiedStyle(ancestorList[ancestorList.length - 1], property) === null) {
+	// "If ancestor list is empty, abort this algorithm."
+	if (!ancestorList.length) {
 		return;
 	}
 
-	// "If ancestor list is not empty, and the parent of the last member of
-	// ancestor list is not an Element, abort this algorithm."
-	if (ancestorList.length != 0
-	&& (!ancestorList.slice(-1)[0]
-	|| ancestorList.slice(-1)[0].nodeType != Node.ELEMENT_NODE)) {
+	// "Let propagated value be the specified value of command on the last
+	// member of ancestor list."
+	var propagatedValue = getSpecifiedValue(ancestorList[ancestorList.length - 1], command);
+
+	// "If propagated value is null, abort this algorithm."
+	if (propagatedValue === null) {
+		return;
+	}
+
+	// "If the parent of the last member of ancestor list is not an Element,
+	// abort this algorithm."
+	if (!ancestorList[ancestorList.length - 1]
+	|| ancestorList[ancestorList.length - 1].nodeType != Node.ELEMENT_NODE) {
 		return;
 	}
 
@@ -938,21 +916,17 @@ function pushDownStyles(node, property, newValue) {
 		// "Remove the last member from ancestor list."
 		var currentAncestor = ancestorList.pop();
 
-		// "Let propagated value be the specified style of current ancestor for
-		// property."
-		var propagatedValue = getSpecifiedStyle(currentAncestor, property);
-
-		// "If propagated value is null, continue this loop from the
-		// beginning."
-		if (propagatedValue === null) {
-			continue;
+		// "If the specified value of current ancestor for command is not null,
+		// set propagated value to that value."
+		if (getSpecifiedValue(currentAncestor, command) !== null) {
+			propagatedValue = getSpecifiedValue(currentAncestor, command);
 		}
 
 		// "Let children be the children of current ancestor."
 		var children = Array.prototype.slice.call(currentAncestor.childNodes);
 
-		// "Clear styles on current ancestor."
-		clearStyles(currentAncestor, property);
+		// "Clear the value of current ancestor."
+		clearValue(currentAncestor, command);
 
 		// "For every child in children:"
 		for (var i = 0; i < children.length; i++) {
@@ -963,31 +937,29 @@ function pushDownStyles(node, property, newValue) {
 				continue;
 			}
 
-			// "If child is an Element whose specified style for property name
+			// "If child is an Element whose specified value for command
 			// is neither null nor equal to propagated value, continue with the
 			// next child."
 			if (child.nodeType == Node.ELEMENT_NODE
-			&& getSpecifiedStyle(child, property) !== null
-			&& !cssValuesEqual(property, propagatedValue, getSpecifiedStyle(child, property))) {
+			&& getSpecifiedValue(child, command) !== null
+			&& !valuesEqual(command, propagatedValue, getSpecifiedValue(child, command))) {
 				continue;
 			}
 
-			// "If child is the last member of ancestor list, set child's CSS
-			// property property to propagated value and continue with the next
-			// child."
+			// "If child is the last member of ancestor list, continue with the
+			// next child."
 			if (child == ancestorList[ancestorList.length - 1]) {
-				child.style[property] = propagatedValue;
 				continue;
 			}
 
-			// "Force the style of child, with property as in this algorithm
+			// "Force the value of child, with command as in this algorithm
 			// and new value equal to propagated value."
-			forceStyle(child, property, propagatedValue);
+			forceValue(child, command, propagatedValue);
 		}
 	}
 }
 
-function forceStyle(node, property, newValue) {
+function forceValue(node, command, newValue) {
 	// "If node's parent is null, abort this algorithm."
 	if (!node.parentNode) {
 		return;
@@ -1003,24 +975,24 @@ function forceStyle(node, property, newValue) {
 		// "Let candidate be node's previousSibling."
 		var candidate = node.previousSibling;
 
-		// "While candidate is a styling element, and candidate has exactly one
-		// child, and that child is also a styling element, and candidate is
-		// not a simple styling element or candidate's specified style for
-		// property is not new value, set candidate to its child."
-		while (isStylingElement(candidate)
+		// "While candidate is a modifiable element, and candidate has exactly one
+		// child, and that child is also a modifiable element, and candidate is
+		// not a simple modifiable element or candidate's specified value for
+		// command is not new value, set candidate to its child."
+		while (isModifiableElement(candidate)
 		&& candidate.childNodes.length == 1
-		&& isStylingElement(candidate.firstChild)
-		&& (!isSimpleStylingElement(candidate)
-		|| !cssValuesEqual(property, getSpecifiedStyle(candidate, property), newValue))) {
+		&& isModifiableElement(candidate.firstChild)
+		&& (!isSimpleModifiableElement(candidate)
+		|| !valuesEqual(command, getSpecifiedValue(candidate, command), newValue))) {
 			candidate = candidate.firstChild;
 		}
 
-		// "If candidate is a simple styling element whose specified style and
-		// effective style for property are both new value, and candidate is
+		// "If candidate is a simple modifiable element whose specified value and
+		// effective value for command are both new value, and candidate is
 		// not the previousSibling of node:"
-		if (isSimpleStylingElement(candidate)
-		&& cssValuesEqual(property, getSpecifiedStyle(candidate, property), newValue)
-		&& cssValuesEqual(property, getEffectiveStyle(candidate, property), newValue)
+		if (isSimpleModifiableElement(candidate)
+		&& valuesEqual(command, getSpecifiedValue(candidate, command), newValue)
+		&& valuesEqual(command, getEffectiveValue(candidate, command), newValue)
 		&& candidate != node.previousSibling) {
 			// "While candidate has children, insert the first child of
 			// candidate into candidate's parent immediately before candidate,
@@ -1041,24 +1013,24 @@ function forceStyle(node, property, newValue) {
 		// "Let candidate be node's nextSibling."
 		var candidate = node.nextSibling;
 
-		// "While candidate is a styling element, and candidate has exactly one
-		// child, and that child is also a styling element, and candidate is
-		// not a simple styling element or candidate's specified style for
-		// property is not new value, set candidate to its child."
-		while (isStylingElement(candidate)
+		// "While candidate is a modifiable element, and candidate has exactly one
+		// child, and that child is also a modifiable element, and candidate is
+		// not a simple modifiable element or candidate's specified value for
+		// command is not new value, set candidate to its child."
+		while (isModifiableElement(candidate)
 		&& candidate.childNodes.length == 1
-		&& isStylingElement(candidate.firstChild)
-		&& (!isSimpleStylingElement(candidate)
-		|| !cssValuesEqual(property, getSpecifiedStyle(candidate, property), newValue))) {
+		&& isModifiableElement(candidate.firstChild)
+		&& (!isSimpleModifiableElement(candidate)
+		|| !valuesEqual(command, getSpecifiedValue(candidate, command), newValue))) {
 			candidate = candidate.firstChild;
 		}
 
-		// "If candidate is a simple styling element whose specified style and
-		// effective style for property are both new value, and candidate is
+		// "If candidate is a simple modifiable element whose specified value and
+		// effective value for command are both new value, and candidate is
 		// not the nextSibling of node:"
-		if (isSimpleStylingElement(candidate)
-		&& cssValuesEqual(property, getSpecifiedStyle(candidate, property), newValue)
-		&& cssValuesEqual(property, getEffectiveStyle(candidate, property), newValue)
+		if (isSimpleModifiableElement(candidate)
+		&& valuesEqual(command, getSpecifiedValue(candidate, command), newValue)
+		&& valuesEqual(command, getEffectiveValue(candidate, command), newValue)
 		&& candidate != node.nextSibling) {
 			// "While candidate has children, insert the first child of
 			// candidate into candidate's parent immediately before candidate,
@@ -1080,20 +1052,20 @@ function forceStyle(node, property, newValue) {
 		var previousSibling = node.previousSibling;
 		var nextSibling = node.nextSibling;
 
-		// "If previous sibling is a simple styling element whose specified
-		// style and effective style for property are both new value, append
+		// "If previous sibling is a simple modifiable element whose specified
+		// value and effective value for command are both new value, append
 		// node as the last child of previous sibling, preserving ranges."
-		if (isSimpleStylingElement(previousSibling)
-		&& cssValuesEqual(property, getSpecifiedStyle(previousSibling, property), newValue)
-		&& cssValuesEqual(property, getEffectiveStyle(previousSibling, property), newValue)) {
+		if (isSimpleModifiableElement(previousSibling)
+		&& valuesEqual(command, getSpecifiedValue(previousSibling, command), newValue)
+		&& valuesEqual(command, getEffectiveValue(previousSibling, command), newValue)) {
 			movePreservingRanges(node, previousSibling, previousSibling.childNodes.length);
 		}
 
-		// "If next sibling is a simple styling element whose specified style
-		// and effective style for property are both new value:"
-		if (isSimpleStylingElement(nextSibling)
-		&& cssValuesEqual(property, getSpecifiedStyle(nextSibling, property), newValue)
-		&& cssValuesEqual(property, getEffectiveStyle(nextSibling, property), newValue)) {
+		// "If next sibling is a simple modifiable element whose specified value
+		// and effective value for command are both new value:"
+		if (isSimpleModifiableElement(nextSibling)
+		&& valuesEqual(command, getSpecifiedValue(nextSibling, command), newValue)
+		&& valuesEqual(command, getEffectiveValue(nextSibling, command), newValue)) {
 			// "If node is not a child of previous sibling, insert node as the
 			// first child of next sibling, preserving ranges."
 			if (node.parentNode != previousSibling) {
@@ -1110,34 +1082,34 @@ function forceStyle(node, property, newValue) {
 		}
 	}
 
-	// "If the effective style of property is new value on node, abort this
+	// "If the effective value of command is new value on node, abort this
 	// algorithm."
-	if (cssValuesEqual(property, getEffectiveStyle(node, property), newValue)) {
+	if (valuesEqual(command, getEffectiveValue(node, command), newValue)) {
 		return;
 	}
 
 	// "If node is an unwrappable element:"
 	if (isUnwrappableElement(node)) {
 		// "Let children be all children of node, omitting any that are
-		// Elements whose specified style for property is neither null nor
+		// Elements whose specified value for command is neither null nor
 		// equal to new value."
 		var children = [];
 		for (var i = 0; i < node.childNodes.length; i++) {
 			if (node.childNodes[i].nodeType == Node.ELEMENT_NODE) {
-				var specifiedStyle = getSpecifiedStyle(node.childNodes[i], property);
+				var specifiedValue = getSpecifiedValue(node.childNodes[i], command);
 
-				if (specifiedStyle !== null
-				&& !cssValuesEqual(property, newValue, specifiedStyle)) {
+				if (specifiedValue !== null
+				&& !valuesEqual(command, newValue, specifiedValue)) {
 					continue;
 				}
 			}
 			children.push(node.childNodes[i]);
 		}
 
-		// "Force the style of each Node in children, with property and new
+		// "Force the value of each Node in children, with command and new
 		// value as in this invocation of the algorithm."
 		for (var i = 0; i < children.length; i++) {
-			forceStyle(children[i], property, newValue);
+			forceValue(children[i], command, newValue);
 		}
 
 		// "Abort this algorithm."
@@ -1150,9 +1122,9 @@ function forceStyle(node, property, newValue) {
 		return;
 	}
 
-	// "If the effective style of property is new value on node, abort this
+	// "If the effective value of command is new value on node, abort this
 	// algorithm."
-	if (cssValuesEqual(property, getEffectiveStyle(node, property), newValue)) {
+	if (valuesEqual(command, getEffectiveValue(node, command), newValue)) {
 		return;
 	}
 
@@ -1161,63 +1133,61 @@ function forceStyle(node, property, newValue) {
 
 	// "If the CSS styling flag is false:"
 	if (!cssStylingFlag) {
-		// "If property is "font-weight" and new value is "bold", let new
-		// parent be the result of calling createElement("b") on the
-		// ownerDocument of node."
-		if (property == "fontWeight" && (newValue == "bold" || newValue == "700")) {
+		// "If command is "bold" and new value is "bold", let new parent be the
+		// result of calling createElement("b") on the ownerDocument of node."
+		if (command == "bold" && (newValue == "bold" || newValue == "700")) {
 			newParent = node.ownerDocument.createElement("b");
 		}
 
-		// "If property is "font-style" and new value is "italic", let new
-		// parent be the result of calling createElement("i") on the
-		// ownerDocument of node."
-		if (property == "fontStyle" && newValue == "italic") {
+		// "If command is "italic" and new value is "italic", let new parent be
+		// the result of calling createElement("i") on the ownerDocument of
+		// node."
+		if (command == "italic" && newValue == "italic") {
 			newParent = node.ownerDocument.createElement("i");
 		}
 
-		// "If property is "text-decoration" and new value is "underline", let
-		// new parent be the result of calling createElement("u") on the
+		// "If command is "underline" and new value is "underline", let new
+		// parent be the result of calling createElement("u") on the
 		// ownerDocument of node."
-		if (property == "textDecoration" && newValue == "underline") {
+		if (command == "underline" && newValue == "underline") {
 			newParent = node.ownerDocument.createElement("u");
 		}
 
-		// "If property is "color", let new parent be the result of calling
+		// "If command is "foreColor", let new parent be the result of calling
 		// createElement("font") on the ownerDocument of node, then set the
 		// color attribute of new parent to new value."
-		if (property == "color") {
+		if (command == "forecolor") {
 			newParent = node.ownerDocument.createElement("font");
 			newParent.color = newValue;
 		}
 
-		// "If property is "font-family", let new parent be the result of
-		// calling createElement("font") on the ownerDocument of node, then set
-		// the face attribute of new parent to new value."
-		if (property == "fontFamily") {
+		// "If command is "fontName", let new parent be the result of calling
+		// createElement("font") on the ownerDocument of node, then set the
+		// face attribute of new parent to new value."
+		if (command == "fontname") {
 			newParent = node.ownerDocument.createElement("font");
 			newParent.face = newValue;
 		}
 
-		// "If property is "font-size", let new parent be the result of calling
+		// "If command is "fontSize", let new parent be the result of calling
 		// createElement("font") on the ownerDocument of node, then set the
 		// size attribute of new parent to new value."
-		if (property == "fontSize") {
+		if (command == "fontsize") {
 			newParent = node.ownerDocument.createElement("font");
 			newParent.size = newValue;
 		}
 	}
 
-	// "If property is "vertical-align" and new value is "sub", let new parent
-	// be the result of calling createElement("sub") on the ownerDocument of
-	// node."
-	if (property == "verticalAlign" && newValue == "sub") {
+	// "If command is "subscript" and new value is "sub", let new parent be the
+	// result of calling createElement("sub") on the ownerDocument of node."
+	if (command == "subscript" && newValue == "sub") {
 		newParent = node.ownerDocument.createElement("sub");
 	}
 
-	// "If property is "vertical-align" and new value is "super", let new
-	// parent be the result of calling createElement("sup") on the
-	// ownerDocument of node."
-	if (property == "verticalAlign" && newValue == "super") {
+	// "If command is "superscript" and new value is "super", let new parent be
+	// the result of calling createElement("sup") on the ownerDocument of
+	// node."
+	if (command == "superscript" && newValue == "super") {
 		newParent = node.ownerDocument.createElement("sup");
 	}
 
@@ -1230,19 +1200,22 @@ function forceStyle(node, property, newValue) {
 	// "Insert new parent in node's parent before node."
 	node.parentNode.insertBefore(newParent, node);
 
-	// "If the effective style of property for new parent is not new value, set
-	// the CSS property property of new parent to new value."
-	if (!cssValuesEqual(property, getEffectiveStyle(newParent, property), newValue)) {
+	// "If the effective value of command for new parent is not new value, and
+	// the relevant CSS property for command is not null, set that CSS property
+	// of new parent to new value."
+	var property = getRelevantCssProperty(command);
+	if (property !== null
+	&& !valuesEqual(command, getEffectiveValue(newParent, command), newValue)) {
 		newParent.style[property] = newValue;
 	}
 
 	// "Append node to new parent as its last child, preserving ranges."
 	movePreservingRanges(node, newParent, newParent.childNodes.length);
 
-	// "If node is an Element and the effective style of property for node is
+	// "If node is an Element and the effective value of command for node is
 	// not new value:"
 	if (node.nodeType == Node.ELEMENT_NODE
-	&& !cssValuesEqual(property, getEffectiveStyle(node, property), newValue)) {
+	&& !valuesEqual(command, getEffectiveValue(node, command), newValue)) {
 		// "Insert node into the parent of new parent before new parent,
 		// preserving ranges."
 		movePreservingRanges(node, newParent.parentNode, getNodeIndex(newParent));
@@ -1250,45 +1223,46 @@ function forceStyle(node, property, newValue) {
 		// "Remove new parent from its parent."
 		newParent.parentNode.removeChild(newParent);
 
-		// "If new parent is a span, set the CSS property property of node to
-		// new value."
-		if (newParent.tagName == "SPAN") {
+		// "If new parent is a span, and the relevant CSS property for command
+		// is not null, set that CSS property of node to new value."
+		if (newParent.tagName == "SPAN"
+		&& property !== null) {
 			node.style[property] = newValue;
 
 			// "Otherwise:"
 		} else {
 			// "Let children be all children of node, omitting any that are
-			// Elements whose specified style for property is neither null nor
+			// Elements whose specified value for command is neither null nor
 			// equal to new value."
 			var children = [];
 			for (var i = 0; i < node.childNodes.length; i++) {
 				if (node.childNodes[i].nodeType == Node.ELEMENT_NODE) {
-					var specifiedStyle = getSpecifiedStyle(node.childNodes[i], property);
+					var specifiedValue = getSpecifiedValue(node.childNodes[i], command);
 
-					if (specifiedStyle !== null
-					&& !cssValuesEqual(property, newValue, specifiedStyle)) {
+					if (specifiedValue !== null
+					&& !valuesEqual(command, newValue, specifiedValue)) {
 						continue;
 					}
 				}
 				children.push(node.childNodes[i]);
 			}
 
-			// "Force the style of each Node in children, with property and new
+			// "Force the value of each Node in children, with command and new
 			// value as in this invocation of the algorithm."
 			for (var i = 0; i < children.length; i++) {
-				forceStyle(children[i], property, newValue);
+				forceValue(children[i], command, newValue);
 			}
 		}
 	}
 }
 
-function styleNode(node, property, newValue) {
-	// "If node is a Document, style its Element child (if it has one) and
-	// abort this algorithm."
+function setNodeValue(node, command, newValue) {
+	// "If node is a Document, set the value of its Element child (if it has
+	// one) and abort this algorithm."
 	if (node.nodeType == Node.DOCUMENT_NODE) {
 		for (var i = 0; i < node.childNodes.length; i++) {
 			if (node.childNodes[i].nodeType == Node.ELEMENT_NODE) {
-				styleNode(node.childNodes[i], property, newValue);
+				setNodeValue(node.childNodes[i], command, newValue);
 				break;
 			}
 		}
@@ -1296,14 +1270,14 @@ function styleNode(node, property, newValue) {
 	}
 
 	// "If node is a DocumentFragment, let children be a list of its children.
-	// Style each member of children, then abort this algorithm."
+	// Set the value of each member of children, then abort this algorithm."
 	if (node.nodeType == Node.DOCUMENT_FRAGMENT_NODE) {
 		var children = [];
 		for (var i = 0; i < node.childNodes.length; i++) {
 			children.push(node.childNodes[i]);
 		}
 		for (var i = 0; i < children.length; i++) {
-			styleNode(children[i], property, newValue);
+			setNodeValue(children[i], command, newValue);
 		}
 		return;
 	}
@@ -1316,13 +1290,13 @@ function styleNode(node, property, newValue) {
 
 	// "If node is an Element:"
 	if (node.nodeType == Node.ELEMENT_NODE) {
-		// "Clear styles on node, and let new nodes be the result."
-		var newNodes = clearStyles(node, property);
+		// "Clear the value of node, and let new nodes be the result."
+		var newNodes = clearValue(node, command);
 
-		// "For each new node in new nodes, style new node, with the same
-		// inputs as this invocation of the algorithm."
+		// "For each new node in new nodes, set the value of new node, with the
+		// same inputs as this invocation of the algorithm."
 		for (var i = 0; i < newNodes.length; i++) {
-			styleNode(newNodes[i], property, newValue);
+			setNodeValue(newNodes[i], command, newValue);
 		}
 
 		// "If node's parent is null, abort this algorithm."
@@ -1331,30 +1305,48 @@ function styleNode(node, property, newValue) {
 		}
 	}
 
-	// "Push down styles on node."
-	pushDownStyles(node, property, newValue);
+	// "Push down values on node."
+	pushDownValues(node, command, newValue);
 
-	// "Force the style of node."
-	forceStyle(node, property, newValue);
+	// "Force the value of node."
+	forceValue(node, command, newValue);
 
 	// "Let children be the children of node."
 	var children = Array.prototype.slice.call(node.childNodes);
 
-	// "Style each member of children."
+	// "Set the value of each member of children."
 	for (var i = 0; i < children.length; i++) {
-		styleNode(children[i], property, newValue);
+		setNodeValue(children[i], command, newValue);
 	}
 }
 
 // This is bad :(
 var globalRange = null;
 
-function myExecCommand(commandId, showUI, value, range) {
-	commandId = commandId.toLowerCase();
+function getRelevantCssProperty(command) {
+	var prop = {
+		bold: "fontWeight",
+		fontname: "fontFamily",
+		forecolor: "color",
+		hilitecolor: "backgroundColor",
+		italic: "fontStyle",
+		subscript: "verticalAlign",
+		superscript: "verticalAlign",
+		underline: "textDecoration",
+	}[command];
 
-	if (commandId != "stylewithcss" && commandId != "usecss") {
-		if (typeof range == "undefined") {
-			range = getActiveRange(document);
+	if (typeof prop == "undefined") {
+		return null;
+	}
+	return prop;
+}
+
+function myExecCommand(command, showUI, value, range) {
+	command = command.toLowerCase();
+
+	if (command != "stylewithcss" && command != "usecss") {
+		if (typeof range == "undefined" && getSelection().rangeCount) {
+			range = getSelection().getRangeAt(0);
 		}
 
 		if (!range) {
@@ -1364,15 +1356,15 @@ function myExecCommand(commandId, showUI, value, range) {
 
 	globalRange = range;
 
-	switch (commandId) {
+	switch (command) {
 		case "bold":
-		// "Decompose the Range. If the state of the Range for this command is
-		// then true, style each returned Node with property "font-weight" and
-		// new value "normal". Otherwise, style them with new value "bold"."
+		// "Decompose the range. If the state of the range for this command is
+		// then true, set the value of each returned node with new value
+		// "normal". Otherwise, set their value with new value "bold"."
 		var nodeList = decomposeRange(range);
 		var newValue = getState("bold", range) ? "normal" : "bold";
 		for (var i = 0; i < nodeList.length; i++) {
-			styleNode(nodeList[i], "fontWeight", newValue);
+			setNodeValue(nodeList[i], command, newValue);
 		}
 		break;
 
@@ -1455,48 +1447,46 @@ function myExecCommand(commandId, showUI, value, range) {
 		break;
 
 		case "fontname":
-		// "Decompose the Range, then style each returned Node with property
-		// equal to "font-family" and new value equal to value."
+		// "Decompose the range, then set the value of each returned node with
+		// new value equal to value."
 		var nodeList = decomposeRange(range);
 		for (var i = 0; i < nodeList.length; i++) {
-			styleNode(nodeList[i], "fontFamily", value);
+			setNodeValue(nodeList[i], command, value);
 		}
 		break;
 
 		case "forecolor":
 		// "If value is not a valid CSS color, the user agent must do nothing
-		// and abort these steps. Otherwise, it must decompose the Range, then
-		// style each returned Node with property equal to "color" and new
-		// value equal to value."
+		// and abort these steps. Otherwise, it must decompose the range, then
+		// set the value of each returned node with new value equal to value."
 		//
 		// Ignore validation for now.
 		var nodeList = decomposeRange(range);
 		for (var i = 0; i < nodeList.length; i++) {
-			styleNode(nodeList[i], "color", value);
+			setNodeValue(nodeList[i], command, value);
 		}
 		break;
 
 		case "hilitecolor":
 		// "If value is not a valid CSS color, do nothing and abort these
-		// steps. Otherwise, decompose the Range, then style each returned Node
-		// with property equal to "background-color" and new value equal to
-		// value."
+		// steps. Otherwise, decompose the range, then set the value of each
+		// returned node with new value equal to value."
 		//
 		// Ignore validation for now.
 		var nodeList = decomposeRange(range);
 		for (var i = 0; i < nodeList.length; i++) {
-			styleNode(nodeList[i], "backgroundColor", value);
+			setNodeValue(nodeList[i], command, value);
 		}
 		break;
 
 		case "italic":
-		// "Decompose the Range. If the state of the Range for this command is
-		// then true, style each returned Node with property "font-style" and
-		// new value "normal". Otherwise, style them with new value "italic"."
+		// "Decompose the range. If the state of the range for this command is
+		// then true, set the value of each returned node with new value
+		// "normal". Otherwise, set their value with new value "italic"."
 		var nodeList = decomposeRange(range);
 		var newValue = getState("italic", range) ? "normal" : "italic";
 		for (var i = 0; i < nodeList.length; i++) {
-			styleNode(nodeList[i], "fontStyle", newValue);
+			setNodeValue(nodeList[i], command, newValue);
 		}
 		break;
 
@@ -1507,58 +1497,57 @@ function myExecCommand(commandId, showUI, value, range) {
 		break;
 
 		case "subscript":
-		// "Decompose the Range. If the state of the Range for this command is
-		// then true, style each returned Node with property "vertical-align"
-		// and new value "baseline". Otherwise, style them with new value
-		// "baseline", then decompose the Range again and style each returned
-		// Node with new value "sub"."
+		// "Decompose the range. If the state of the range for this command is
+		// then true, set the value of each returned node with new value
+		// "baseline". Otherwise, set their value with new value "baseline",
+		// then decompose the range again and set the value of each returned
+		// node with new value "sub"."
 		var nodeList = decomposeRange(range);
-		if (getState(commandId, range)) {
+		if (getState(command, range)) {
 			for (var i = 0; i < nodeList.length; i++) {
-				styleNode(nodeList[i], "verticalAlign", "baseline");
+				setNodeValue(nodeList[i], command, "baseline");
 			}
 		} else {
 			for (var i = 0; i < nodeList.length; i++) {
-				styleNode(nodeList[i], "verticalAlign", "baseline");
+				setNodeValue(nodeList[i], command, "baseline");
 			}
 			var nodeList = decomposeRange(range);
 			for (var i = 0; i < nodeList.length; i++) {
-				styleNode(nodeList[i], "verticalAlign", "sub");
+				setNodeValue(nodeList[i], command, "sub");
 			}
 		}
 		break;
 
 		case "superscript":
-		// "Decompose the Range. If the state of the Range for this command is
-		// then true, style each returned Node with property "vertical-align"
-		// and new value "baseline". Otherwise, style them with new value
-		// "baseline", then decompose the Range again and style each returned
-		// Node with new value "super"."
+		// "Decompose the range. If the state of the range for this command is
+		// then true, set the value of each returned node with new value
+		// "baseline". Otherwise, set their value with new value "baseline",
+		// then decompose the range again and set the value of each returned
+		// node with new value "super"."
 		var nodeList = decomposeRange(range);
-		if (getState(commandId, range)) {
+		if (getState(command, range)) {
 			for (var i = 0; i < nodeList.length; i++) {
-				styleNode(nodeList[i], "verticalAlign", "baseline");
+				setNodeValue(nodeList[i], command, "baseline");
 			}
 		} else {
 			for (var i = 0; i < nodeList.length; i++) {
-				styleNode(nodeList[i], "verticalAlign", "baseline");
+				setNodeValue(nodeList[i], command, "baseline");
 			}
 			var nodeList = decomposeRange(range);
 			for (var i = 0; i < nodeList.length; i++) {
-				styleNode(nodeList[i], "verticalAlign", "super");
+				setNodeValue(nodeList[i], command, "super");
 			}
 		}
 		break;
 
 		case "underline":
-		// "Decompose the Range. If the state of the Range for this command is
-		// then true, style each returned Node with property "text-decoration"
-		// and new value "none". Otherwise, style them with new value
-		// "underline"."
+		// "Decompose the range. If the state of the range for this command is
+		// then true, set the value of each returned node with new value
+		// "none". Otherwise, set their value with new value "underline"."
 		var nodeList = decomposeRange(range);
 		var newValue = getState("underline", range) ? "none" : "underline";
 		for (var i = 0; i < nodeList.length; i++) {
-			styleNode(nodeList[i], "textDecoration", newValue);
+			setNodeValue(nodeList[i], command, newValue);
 		}
 		break;
 
@@ -1573,27 +1562,28 @@ function myExecCommand(commandId, showUI, value, range) {
 	}
 }
 
-function myQueryCommandState(commandId) {
-	commandId = commandId.toLowerCase();
-	var range = getActiveRange(document);
+function myQueryCommandState(command) {
+	command = command.toLowerCase();
 
-	if (!range) {
+	if (!getSelection().rangeCount) {
 		return false;
 	}
 
-	return getState(commandId, range);
+	var range = getSelection().getRangeAt(0);
+
+	return getState(command, range);
 }
 
-function getState(commandId, range) {
-	if (commandId == "stylewithcss") {
+function getState(command, range) {
+	if (command == "stylewithcss") {
 		return cssStylingFlag;
 	}
 
-	if (commandId != "bold"
-	&& commandId != "italic"
-	&& commandId != "underline"
-	&& commandId != "subscript"
-	&& commandId != "superscript") {
+	if (command != "bold"
+	&& command != "italic"
+	&& command != "underline"
+	&& command != "subscript"
+	&& command != "superscript") {
 		return false;
 	}
 
@@ -1614,49 +1604,49 @@ function getState(commandId, range) {
 			continue;
 		}
 
-		if (commandId == "bold") {
+		if (command == "bold") {
 			// "True if every Text node that is effectively contained in the
-			// Range has effective style either null or at least 700 for
-			// font-weight. Otherwise false."
-			var weight = getEffectiveStyle(node, "fontWeight");
-			if (weight !== null
-			&& weight !== "bold"
-			&& weight !== "700"
-			&& weight !== "800"
-			&& weight !== "900") {
+			// range has effective value either null or at least 700. Otherwise
+			// false."
+			var fontWeight = getEffectiveValue(node, command);
+			if (fontWeight !== null
+			&& fontWeight !== "bold"
+			&& fontWeight !== "700"
+			&& fontWeight !== "800"
+			&& fontWeight !== "900") {
 				return false;
 			}
-		} else if (commandId == "italic") {
+		} else if (command == "italic") {
 			// "True if every Text node that is effectively contained in the
-			// Range has effective style either null, "italic", or "oblique"
-			// for font-style. Otherwise false."
-			var style = getEffectiveStyle(node, "fontStyle");
-			if (style !== null
-			&& style !== "italic"
-			&& style !== "oblique") {
+			// range has effective value either null, "italic", or "oblique".
+			// Otherwise false."
+			var fontStyle = getEffectiveValue(node, command);
+			if (fontStyle !== null
+			&& fontStyle !== "italic"
+			&& fontStyle !== "oblique") {
 				return false;
 			}
-		} else if (commandId == "underline") {
+		} else if (command == "underline") {
 			// "True if every Text node that is effectively contained in the
-			// Range has effective style either null or "underline" for
-			// text-decoration. Otherwise false."
-			var decoration = getEffectiveStyle(node, "textDecoration");
-			if (decoration !== null && decoration !== "underline") {
+			// range has effective value either null or "underline". Otherwise
+			// false."
+			var textDecoration = getEffectiveValue(node, command);
+			if (textDecoration !== null && textDecoration !== "underline") {
 				return false;
 			}
-		} else if (commandId == "subscript") {
+		} else if (command == "subscript") {
 			// "True if every Text node that is effectively contained in the
-			// Range has effective style either null or "sub" for
-			// "vertical-align". Otherwise false."
-			var verticalAlign = getEffectiveStyle(node, "verticalAlign");
+			// range has effective value either null or "sub". Otherwise
+			// false."
+			var verticalAlign = getEffectiveValue(node, command);
 			if (verticalAlign !== null && verticalAlign !== "sub") {
 				return false;
 			}
-		} else if (commandId == "superscript") {
+		} else if (command == "superscript") {
 			// "True if every Text node that is effectively contained in the
-			// Range has effective style either null or "super" for
-			// "vertical-align". Otherwise false."
-			var verticalAlign = getEffectiveStyle(node, "verticalAlign");
+			// range has effective value either null or "super". Otherwise
+			// false."
+			var verticalAlign = getEffectiveValue(node, command);
 			if (verticalAlign !== null && verticalAlign !== "super") {
 				return false;
 			}
@@ -1666,43 +1656,14 @@ function getState(commandId, range) {
 	return true;
 }
 
-function myQueryCommandValue(commandId) {
-	commandId = commandId.toLowerCase();
-	var range = getActiveRange(document);
+function myQueryCommandValue(command) {
+	command = command.toLowerCase();
 
-	if (!range) {
+	if (!getSelection().rangeCount) {
 		return "";
 	}
 
+	var range = getSelection().getRangeAt(0);
+
 	return "";
-	/*
-	var style = getComputedStyle(beginningElement(range));
-
-	switch (commandId) {
-		case "backcolor":
-		// "Let element be the beginning element of the Range."
-		var element = beginningElement(range);
-		// "While the computed style of "background-color" on element is any
-		// fully transparent value, set element to its parent."
-		while (element.nodeType == Node.ELEMENT_NODE
-		&& (getComputedStyle(element).backgroundColor == "rgba(0, 0, 0, 0)"
-		|| getComputedStyle(element).backgroundColor === ""
-		|| getComputedStyle(element).backgroundColor == "transparent")) {
-			element = element.parentNode;
-		}
-		// "Return the computed style of "background-color" for element."
-		if (element.nodeType != Node.ELEMENT_NODE) {
-			return 'rgb(255, 255, 255)';
-		}
-		return getComputedStyle(element).backgroundColor;
-
-		case "fontname":
-		return style.fontFamily;
-
-		case "forecolor":
-		return style.color;
-
-		default:
-		return "";
-	}*/
 }

@@ -281,21 +281,15 @@ function isUnwrappableElement(node) {
  * "effective value" per edit command spec
  */
 function getEffectiveValue(node, command) {
-	// "If node is neither an Element nor a Text node, return null."
+	// "If neither node nor its parent is an Element, return null."
 	if (node.nodeType != Node.ELEMENT_NODE
-	&& node.nodeType != Node.TEXT_NODE) {
+	&& (!node.parentNode || node.parentNode.nodeType != Node.ELEMENT_NODE)) {
 		return null;
 	}
 
-	// "If node is a Text node and its parent is null, return null."
-	if (node.nodeType == Node.TEXT_NODE
-	&& !node.parentNode) {
-		return null;
-	}
-
-	// "If node is a Text node, return the effective value of its parent for
+	// "If node is not an Element, return the effective value of its parent for
 	// command."
-	if (node.nodeType == Node.TEXT_NODE) {
+	if (node.nodeType != Node.ELEMENT_NODE) {
 		return getEffectiveValue(node.parentNode, command);
 	}
 
@@ -401,7 +395,7 @@ function getEffectiveValue(node, command) {
 
 	// "If command is "underline", and the "text-decoration" property of node
 	// or any of its ancestors computes to a value containing "underline",
-	// return "underline". Otherwise, return "none"."
+	// return "underline". Otherwise, return null."
 	if (command == "underline") {
 		do {
 			if ((" " + getComputedStyle(node).textDecoration + " ").indexOf(" underline ") != -1) {
@@ -409,7 +403,7 @@ function getEffectiveValue(node, command) {
 			}
 			node = node.parentNode;
 		} while (node && node.nodeType == Node.ELEMENT_NODE);
-		return "none";
+		return null;
 	}
 
 	// "Return the computed style for node of the relevant CSS property for
@@ -475,6 +469,28 @@ function getSpecifiedValue(element, command) {
 		return null;
 	}
 
+	// "If command is "underline", and element has a style attribute set, and
+	// that attribute sets "text-decoration":"
+	if (command == "underline"
+	&& element.style.textDecoration != "") {
+		// "If element's style attribute sets "text-decoration" to a value
+		// containing "underline", return "underline"."
+		if (element.style.textDecoration.indexOf("underline") != -1) {
+			return "underline";
+		}
+
+		// "Return null."
+		return null;
+	}
+
+	// "If command is "underline" and element is a u element, return
+	// "underline"."
+	if (command == "underline"
+	&& isHtmlElement(element)
+	&& element.tagName == "U") {
+		return "underline";
+	}
+
 	// "Let property be the relevant CSS property for command."
 	var property = getRelevantCssProperty(command);
 
@@ -519,10 +535,6 @@ function getSpecifiedValue(element, command) {
 	if (property == "fontValue"
 	&& (element.tagName == "I" || element.tagName == "EM")) {
 		return "italic";
-	}
-	if (property == "textDecoration"
-	&& element.tagName == "U") {
-		return "underline";
 	}
 
 	// "Return null."
@@ -847,12 +859,25 @@ function clearValue(element, command) {
 		return children;
 	}
 
-	// "Let property be the relevant CSS property for command."
-	var property = getRelevantCssProperty(command);
+	// "If command is "underline", and element has a style attribute that sets
+	// "text-decoration" to some value containing "underline", delete
+	// "underline" from the value."
+	if (command == "underline"
+	&& element.style.textDecoration.indexOf("underline") != -1) {
+		if (element.style.textDecoration == "underline") {
+			element.style.textDecoration = "";
+		} else {
+			element.style.textDecoration = element.style.textDecoration.replace("underline", "");
+		}
+		if (element.getAttribute("style") == "") {
+			element.removeAttribute("style");
+		}
+	}
 
-	// "If property is not null, unset the CSS property property of element."
-	if (property !== null) {
-		element.style[property] = '';
+	// "If the relevant CSS property for command is not null, unset the CSS
+	// property property of element."
+	if (getRelevantCssProperty(command) !== null) {
+		element.style[getRelevantCssProperty(command)] = '';
 		if (element.getAttribute("style") == "") {
 			element.removeAttribute("style");
 		}
@@ -860,20 +885,18 @@ function clearValue(element, command) {
 
 	// "If element is a font element:"
 	if (isHtmlNamespace(element.namespaceURI) && element.tagName == "FONT") {
-		// "If property is "color", unset element's color attribute, if set."
-		if (property == "color") {
+		// "If command is "foreColor", unset element's color attribute, if set."
+		if (command == "forecolor") {
 			element.removeAttribute("color");
 		}
 
-		// "If property is "font-family", unset element's face attribute, if
-		// set."
-		if (property == "fontFamily") {
+		// "If command is "fontName", unset element's face attribute, if set."
+		if (command == "fontname") {
 			element.removeAttribute("face");
 		}
 
-		// "If property is "font-size", unset element's size attribute, if
-		// set."
-		if (property == "fontSize") {
+		// "If command is "fontSize", unset element's size attribute, if set."
+		if (command == "fontsize") {
 			element.removeAttribute("size");
 		}
 	}
@@ -962,8 +985,8 @@ function pushDownValues(node, command, newValue) {
 
 	// "If the parent of the last member of ancestor list is not an Element,
 	// abort this algorithm."
-	if (!ancestorList[ancestorList.length - 1]
-	|| ancestorList[ancestorList.length - 1].nodeType != Node.ELEMENT_NODE) {
+	if (!ancestorList[ancestorList.length - 1].parentNode
+	|| ancestorList[ancestorList.length - 1].parentNode.nodeType != Node.ELEMENT_NODE) {
 		return;
 	}
 
@@ -1279,6 +1302,15 @@ function forceValue(node, command, newValue) {
 		newParent.style[property] = newValue;
 	}
 
+	// "If command is "underline", and new value is "underline", and the
+	// effective value of "underline" for new parent is not "underline", set
+	// the "text-decoration" property of new parent to "underline"."
+	if (command == "underline"
+	&& newValue == "underline"
+	&& getEffectiveValue(newParent, "underline") != "underline") {
+		newParent.style.textDecoration = "underline";
+	}
+
 	// "Append node to new parent as its last child, preserving ranges."
 	movePreservingRanges(node, newParent, newParent.childNodes.length);
 
@@ -1293,11 +1325,27 @@ function forceValue(node, command, newValue) {
 		// "Remove new parent from its parent."
 		newParent.parentNode.removeChild(newParent);
 
-		// "If new parent is a span, and the relevant CSS property for command
-		// is not null, set that CSS property of node to new value."
+		// "If new parent is a span, and either command is "underline" or the
+		// relevant CSS property for command is not null:"
 		if (newParent.tagName == "SPAN"
-		&& property !== null) {
-			node.style[property] = newValue;
+		&& (command == "underline" || property !== null)) {
+			// "If the relevant CSS property for command is not null, set that
+			// CSS property of node to new value."
+			if (property !== null) {
+				node.style[property] = newValue;
+			}
+
+			// "If command is "underline" and new value is "underline", alter
+			// the "text-decoration" property of node to include "underline"
+			// (preserving "overline" or "line-through" if present)."
+			if (command == "underline" && newValue == "underline") {
+				if (node.style.textDecoration == ""
+				|| node.style.textDecoration == "none") {
+					node.style.textDecoration = "underline";
+				} else {
+					node.style.textDecoration += " underline";
+				}
+			}
 
 			// "Otherwise:"
 		} else {
@@ -1402,7 +1450,6 @@ function getRelevantCssProperty(command) {
 		italic: "fontStyle",
 		subscript: "verticalAlign",
 		superscript: "verticalAlign",
-		underline: "textDecoration",
 	}[command];
 
 	if (typeof prop == "undefined") {
@@ -1564,10 +1611,10 @@ function myExecCommand(command, showUI, value, range) {
 
 		case "underline":
 		// "Decompose the range. If the state of the range for this command is
-		// then true, set the value of each returned node with new value
-		// "none". Otherwise, set their value with new value "underline"."
+		// then true, set the value of each returned node to null. Otherwise,
+		// set their value to "underline"."
 		var nodeList = decomposeRange(range);
-		var newValue = getState("underline", range) ? "none" : "underline";
+		var newValue = getState("underline", range) ? null : "underline";
 		for (var i = 0; i < nodeList.length; i++) {
 			setNodeValue(nodeList[i], command, newValue);
 		}
@@ -1637,11 +1684,9 @@ function getState(command, range) {
 
 		if (command == "bold") {
 			// "True if every Text node that is effectively contained in the
-			// range has effective value either null or at least 700. Otherwise
-			// false."
+			// range has effective value at least 700. Otherwise false."
 			var fontWeight = getEffectiveValue(node, command);
-			if (fontWeight !== null
-			&& fontWeight !== "bold"
+			if (fontWeight !== "bold"
 			&& fontWeight !== "700"
 			&& fontWeight !== "800"
 			&& fontWeight !== "900") {
@@ -1649,36 +1694,32 @@ function getState(command, range) {
 			}
 		} else if (command == "italic") {
 			// "True if every Text node that is effectively contained in the
-			// range has effective value either null, "italic", or "oblique".
+			// range has effective value either "italic" or "oblique".
 			// Otherwise false."
 			var fontStyle = getEffectiveValue(node, command);
-			if (fontStyle !== null
-			&& fontStyle !== "italic"
+			if (fontStyle !== "italic"
 			&& fontStyle !== "oblique") {
 				return false;
 			}
 		} else if (command == "underline") {
 			// "True if every Text node that is effectively contained in the
-			// range has effective value either null or "underline". Otherwise
-			// false."
+			// range has effective value "underline". Otherwise false."
 			var textDecoration = getEffectiveValue(node, command);
-			if (textDecoration !== null && textDecoration !== "underline") {
+			if (textDecoration !== "underline") {
 				return false;
 			}
 		} else if (command == "subscript") {
 			// "True if every Text node that is effectively contained in the
-			// range has effective value either null or "sub". Otherwise
-			// false."
+			// range has effective value "sub". Otherwise false."
 			var verticalAlign = getEffectiveValue(node, command);
-			if (verticalAlign !== null && verticalAlign !== "sub") {
+			if (verticalAlign !== "sub") {
 				return false;
 			}
 		} else if (command == "superscript") {
 			// "True if every Text node that is effectively contained in the
-			// range has effective value either null or "super". Otherwise
-			// false."
+			// range has effective value "super". Otherwise false."
 			var verticalAlign = getEffectiveValue(node, command);
-			if (verticalAlign !== null && verticalAlign !== "super") {
+			if (verticalAlign !== "super") {
 				return false;
 			}
 		}

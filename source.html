@@ -210,13 +210,10 @@ different on block elements.
 either a string or null:
 
 <ol>
-  <li>If <var>node</var> is neither an [[element]] nor a [[text]] node, return
+  <li>If neither <var>node</var> nor its [[parent]] is an [[element]], return
   null.
 
-  <li>If <var>node</var> is a [[text]] node and its [[parent]] is null, return
-  null.
-
-  <li>If <var>node</var> is a [[text]] node, return the <span>effective
+  <li>If <var>node</var> is not an [[element]], return the <span>effective
   value</span> of its [[parent]] for <var>command</var>.
 
   <li>If <var>command</var> is "createLink" or "unlink":
@@ -279,7 +276,7 @@ either a string or null:
   <li>If <var>command</var> is "underline", and the "text-decoration"
   property of <var>node</var> or any of its [[ancestors]] computes to
   a value containing "underline", return "underline".  Otherwise, return
-  "none".
+  null.
 
   <li>Return the computed style for <var>node</var> of the <span>relevant CSS
   property</span> for <var>command</var>.
@@ -319,6 +316,19 @@ return either a string or null:
     <li>Return null.
   </ol>
 
+  <li>If <var>command</var> is "underline", and <var>element</var> has a
+  [[style]] attribute set, and that attribute sets "text-decoration":
+
+  <ol>
+    <li>If <var>element</var>'s [[style]] attribute sets "text-decoration" to a
+    value containing "underline", return "underline".
+
+    <li>Return null.
+  </ol>
+
+  <li>If <var>command</var> is "underline" and <var>element</var> is a [[u]]
+  element, return "underline".
+
   <li>Let <var>property</var> be the <span>relevant CSS property</span> for
   <var>command</var>.
 
@@ -344,9 +354,6 @@ return either a string or null:
     <dt>[[i]]
     <dt>[[em]]
     <dd>font-style: "italic"
-
-    <dt>[[u]]
-    <dd>text-decoration: "underline"
   </dl>
 
   <li>Return null.
@@ -537,22 +544,23 @@ id=foo> into <span id=foo> instead of <font id=foo>, but probably not worth it.
     <li>Return <var>children</var>.
   </ol>
 
-  <li>Let <var>property</var> be the <span>relevant CSS property</span> for
-  <var>command</var>.
+  <li>If <var>command</var> is "underline", and <var>element</var> has a
+  [[style]] attribute that sets "text-decoration" to some value containing
+  "underline", delete "underline" from the value.
 
-  <li>If <var>property</var> is not null, unset the CSS property
-  <var>property</var> of <var>element</var>.
+  <li>If the <span>relevant CSS property</span> for <var>command</var> is not
+  null, unset that property of <var>element</var>.
 
   <li>If <var>element</var> is a [[font]] element:
 
   <ol>
-    <li>If <var>property</var> is "color", unset <var>element</var>'s
+    <li>If <var>command</var> is "foreColor", unset <var>element</var>'s
     [[fontcolor]] attribute, if set.
 
-    <li>If <var>property</var> is "font-family", unset
-    <var>element</var>'s [[fontface]] attribute, if set.
+    <li>If <var>command</var> is "fontName", unset <var>element</var>'s
+    [[fontface]] attribute, if set.
 
-    <li>If <var>property</var> is "font-size", unset <var>element</var>'s
+    <li>If <var>command</var> is "fontSize", unset <var>element</var>'s
     [[fontsize]] attribute, if set.
   </ol>
 
@@ -924,6 +932,11 @@ different value.
   property</span> for <var>command</var> is not null, set that CSS property of
   <var>new parent</var> to <var>new value</var>.
 
+  <li>If <var>command</var> is "underline", and <var>new value</var> is
+  "underline", and the <span>effective value</span> of "underline" for <var>new
+  parent</var> is not "underline", set the "text-decoration" property of
+  <var>new parent</var> to "underline".
+
   <li>Append <var>node</var> to <var>new parent</var> as its last [[child]],
   <span>preserving ranges</span>.
 
@@ -936,9 +949,19 @@ different value.
 
     <li>Remove <var>new parent</var> from its [[parent]].
 
-    <li>If <var>new parent</var> is a [[span]], and the <span>relevant CSS
-    property</span> for <var>command</var> is not null, set that CSS property
-    of <var>node</var> to <var>new value</var>.
+    <li>If <var>new parent</var> is a [[span]], and either <var>command</var>
+    is "underline" or the <span>relevant CSS property</span> for
+    <var>command</var> is not null:
+
+    <ol>
+      <li>If the <span>relevant CSS property</span> for <var>command</var> is
+      not null, set that CSS property of <var>node</var> to <var>new
+      value</var>.
+
+      <li>If <var>command</var> is "underline" and <var>new value</var> is
+      "underline", alter the "text-decoration" property of <var>node</var> to
+      include "underline" (preserving "overline" or "line-through" if present).
+    </ol>
 
     <li>Otherwise:
 
@@ -1182,7 +1205,7 @@ value</var> "bold".
 
 <dd><strong>State</strong>: True if every [[text]] node that is
 <span>effectively contained</span> in the [[range]] has <span>effective
-value</span> either null or at least 700.  Otherwise false.
+value</span> at least 700.  Otherwise false.
 <!-- For bold and similar commands, IE 9 RC seems to consider the state true or
 false depending on the first element.  All other browsers follow the same
 general idea as the spec, considering a range bold only if all text in it is
@@ -1424,7 +1447,7 @@ value</var> "italic".
 
 <dd><strong>State</strong>: True if every [[text]] node that is
 <span>effectively contained</span> in the [[range]] has <span>effective
-value</span> either null, "italic", or "oblique".  Otherwise false.
+value</span> either "italic" or "oblique".  Otherwise false.
 
 <dd><strong>Value</strong>: Always the empty string.
 
@@ -1457,7 +1480,7 @@ value</var> "baseline", then <span>decompose</span> the [[range]] again and
 
 <dd><strong>State</strong>: True if every [[text]] node that is
 <span>effectively contained</span> in the [[range]] has <span>effective
-value</span> either null or "sub".  Otherwise false.
+value</span> "sub".  Otherwise false.
 
 <dd><strong>Value</strong>:
 
@@ -1476,7 +1499,7 @@ value</var> "baseline", then <span>decompose</span> the [[range]] again and
 
 <dd><strong>State</strong>: True if every [[text]] node that is
 <span>effectively contained</span> in the [[range]] has <span>effective
-value</span> either null or "super".  Otherwise false.
+value</span> "super".  Otherwise false.
 
 <dd><strong>Value</strong>:
 
@@ -1487,9 +1510,8 @@ value</span> either null or "super".  Otherwise false.
 
 <dd><strong>Action</strong>: <span>Decompose</span> the [[range]].  If the
 state of the [[range]] for this command is then true, <span>set the
-value</span> of each returned [[node]] with <var>new value</var> "none".
-Otherwise, <span title="set the value">set their value</span> with <var>new
-value</var> "underline".
+value</span> of each returned [[node]] to null.  Otherwise, <span title="set
+the value">set their value</span> to "underline".
 
 <div class=XXX>
 <p>There are a lot of problems with underline color and thickness, because
@@ -1544,11 +1566,9 @@ may be.
 
 <dd><strong>State</strong>: True if every [[text]] node that is
 <span>effectively contained</span> in the [[range]] has <span>effective
-value</span> either null or "underline".  Otherwise false.
+value</span> "underline".  Otherwise false.
 
 <dd><strong>Value</strong>: Always the empty string.
-
-<dd><strong>Relevant CSS Property</strong>: "text-decoration"
 
 
 <dt><code title><dfn title=command-unlink>unlink</dfn></code>

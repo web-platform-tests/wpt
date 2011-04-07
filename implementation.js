@@ -393,12 +393,25 @@ function getEffectiveValue(node, command) {
 		return "baseline";
 	}
 
+	// "If command is "strikethrough", and the "text-decoration" property of
+	// node or any of its ancestors computes to a value containing
+	// "line-through", return "line-through". Otherwise, return null."
+	if (command == "strikethrough") {
+		do {
+			if (getComputedStyle(node).textDecoration.indexOf("line-through") != -1) {
+				return "line-through";
+			}
+			node = node.parentNode;
+		} while (node && node.nodeType == Node.ELEMENT_NODE);
+		return null;
+	}
+
 	// "If command is "underline", and the "text-decoration" property of node
 	// or any of its ancestors computes to a value containing "underline",
 	// return "underline". Otherwise, return null."
 	if (command == "underline") {
 		do {
-			if ((" " + getComputedStyle(node).textDecoration + " ").indexOf(" underline ") != -1) {
+			if (getComputedStyle(node).textDecoration.indexOf("underline") != -1) {
 				return "underline";
 			}
 			node = node.parentNode;
@@ -467,6 +480,28 @@ function getSpecifiedValue(element, command) {
 
 		// "Return null."
 		return null;
+	}
+
+	// "If command is "strikethrough", and element has a style attribute set,
+	// and that attribute sets "text-decoration":"
+	if (command == "strikethrough"
+	&& element.style.textDecoration != "") {
+		// "If element's style attribute sets "text-decoration" to a value
+		// containing "line-through", return "line-through"."
+		if (element.style.textDecoration.indexOf("line-through") != -1) {
+			return "line-through";
+		}
+
+		// "Return null."
+		return null;
+	}
+
+	// "If command is "strikethrough" and element is a s element, return
+	// "line-through"."
+	if (command == "strikethrough"
+	&& isHtmlElement(element)
+	&& element.tagName == "S") {
+		return "line-through";
 	}
 
 	// "If command is "underline", and element has a style attribute set, and
@@ -541,7 +576,7 @@ function getSpecifiedValue(element, command) {
 	return null;
 }
 
-// "A modifiable element is a b, em, i, span, strong, sub, sup, or u element
+// "A modifiable element is a b, em, i, s, span, strong, sub, sup, or u element
 // with no attributes except possibly style; or a font element with no
 // attributes except possibly style, color, face, and/or size; or an a element
 // with no attributes except possibly style and/or href."
@@ -550,7 +585,7 @@ function isModifiableElement(node) {
 		return false;
 	}
 
-	if (["B", "EM", "I", "SPAN", "STRONG", "SUB", "SUP", "U"].indexOf(node.tagName) != -1) {
+	if (["B", "EM", "I", "S", "SPAN", "STRONG", "SUB", "SUP", "U"].indexOf(node.tagName) != -1) {
 		if (node.attributes.length == 0) {
 			return true;
 		}
@@ -603,12 +638,12 @@ function isSimpleModifiableElement(node) {
 	}
 
 	// Only these elements can possibly be a simple modifiable element.
-	if (["A", "B", "EM", "FONT", "I", "SPAN", "STRONG", "SUB", "SUP", "U"].indexOf(node.tagName) == -1) {
+	if (["A", "B", "EM", "FONT", "I", "S", "SPAN", "STRONG", "SUB", "SUP", "U"].indexOf(node.tagName) == -1) {
 		return false;
 	}
 
-	// "It is an a, b, em, font, i, span, strong, sub, sup, or u element with
-	// no attributes."
+	// "It is an a, b, em, font, i, s, span, strong, sub, sup, or u element
+	// with no attributes."
 	if (node.attributes.length == 0) {
 		return true;
 	}
@@ -618,8 +653,8 @@ function isSimpleModifiableElement(node) {
 		return false;
 	}
 
-	// "It is an a, b, em, font, i, span, strong, sub, sup, or u element with
-	// exactly one attribute, which is style, which sets no CSS properties
+	// "It is an a, b, em, font, i, s, span, strong, sub, sup, or u element
+	// with exactly one attribute, which is style, which sets no CSS properties
 	// (including invalid or unrecognized properties)."
 	//
 	// Not gonna try for invalid or unrecognized.
@@ -664,14 +699,28 @@ function isSimpleModifiableElement(node) {
 		return true;
 	}
 
+	// "It is an s element with exactly one attribute, which is style, and the
+	// style attribute sets exactly one CSS property (including invalid or
+	// unrecognized properties), which is "text-decoration", which is set to
+	// "line-through" or "underline" or "none"."
+	if (node.tagName == "S"
+	&& node.hasAttribute("style")
+	&& node.style.length == 1
+	&& (node.style.textDecoration == "line-through"
+	|| node.style.textDecoration == "underline"
+	|| node.style.textDecoration == "none")) {
+		return true;
+	}
+
 	// "It is a u element with exactly one attribute, which is style, and the
 	// style attribute sets exactly one CSS property (including invalid or
 	// unrecognized properties), which is "text-decoration", which is set to
-	// "underline" or "none"."
+	// "line-through" or "underline" or "none"."
 	if (node.tagName == "U"
 	&& node.hasAttribute("style")
 	&& node.style.length == 1
-	&& (node.style.textDecoration == "underline"
+	&& (node.style.textDecoration == "line-through"
+	|| node.style.textDecoration == "underline"
 	|| node.style.textDecoration == "none")) {
 		return true;
 	}
@@ -857,6 +906,21 @@ function clearValue(element, command) {
 
 		// "Return children."
 		return children;
+	}
+
+	// "If command is "strikethrough", and element has a style attribute that
+	// sets "text-decoration" to some value containing "line-through", delete
+	// "line-through" from the value."
+	if (command == "strikethrough"
+	&& element.style.textDecoration.indexOf("line-through") != -1) {
+		if (element.style.textDecoration == "line-through") {
+			element.style.textDecoration = "";
+		} else {
+			element.style.textDecoration = element.style.textDecoration.replace("line-through", "");
+		}
+		if (element.getAttribute("style") == "") {
+			element.removeAttribute("style");
+		}
 	}
 
 	// "If command is "underline", and element has a style attribute that sets
@@ -1231,6 +1295,13 @@ function forceValue(node, command, newValue) {
 			newParent = node.ownerDocument.createElement("i");
 		}
 
+		// "If command is "strikethrough" and new value is "line-through", let
+		// new parent be the result of calling createElement("s") on the
+		// ownerDocument of node."
+		if (command == "strikethrough" && newValue == "line-through") {
+			newParent = node.ownerDocument.createElement("s");
+		}
+
 		// "If command is "underline" and new value is "underline", let new
 		// parent be the result of calling createElement("u") on the
 		// ownerDocument of node."
@@ -1302,6 +1373,15 @@ function forceValue(node, command, newValue) {
 		newParent.style[property] = newValue;
 	}
 
+	// "If command is "strikethrough", and new value is "line-through", and the
+	// effective value of "strikethrough" for new parent is not "line-through",
+	// set the "text-decoration" property of new parent to "line-through"."
+	if (command == "strikethrough"
+	&& newValue == "line-through"
+	&& getEffectiveValue(newParent, "strikethrough") != "line-through") {
+		newParent.style.textDecoration = "line-through";
+	}
+
 	// "If command is "underline", and new value is "underline", and the
 	// effective value of "underline" for new parent is not "underline", set
 	// the "text-decoration" property of new parent to "underline"."
@@ -1325,14 +1405,28 @@ function forceValue(node, command, newValue) {
 		// "Remove new parent from its parent."
 		newParent.parentNode.removeChild(newParent);
 
-		// "If new parent is a span, and either command is "underline" or the
-		// relevant CSS property for command is not null:"
+		// "If new parent is a span, and either command is "underline" or
+		// command is "strikethrough" or the relevant CSS property for command
+		// is not null:"
 		if (newParent.tagName == "SPAN"
-		&& (command == "underline" || property !== null)) {
+		&& (command == "underline" || command == "strikethrough" || property !== null)) {
 			// "If the relevant CSS property for command is not null, set that
 			// CSS property of node to new value."
 			if (property !== null) {
 				node.style[property] = newValue;
+			}
+
+			// "If command is "strikethrough" and new value is "line-through",
+			// alter the "text-decoration" property of node to include
+			// "line-through" (preserving "overline" or "underline" if
+			// present)."
+			if (command == "strikethrough" && newValue == "line-through") {
+				if (node.style.textDecoration == ""
+				|| node.style.textDecoration == "none") {
+					node.style.textDecoration = "line-through";
+				} else {
+					node.style.textDecoration += " line-through";
+				}
 			}
 
 			// "If command is "underline" and new value is "underline", alter
@@ -1347,7 +1441,7 @@ function forceValue(node, command, newValue) {
 				}
 			}
 
-			// "Otherwise:"
+		// "Otherwise:"
 		} else {
 			// "Let children be all children of node, omitting any that are
 			// Elements whose specified value for command is neither null nor
@@ -1559,6 +1653,17 @@ function myExecCommand(command, showUI, value, range) {
 		}
 		break;
 
+		case "strikethrough":
+		// "Decompose the range. If the state of the range for this command is
+		// then true, set the value of each returned node to null. Otherwise,
+		// set their value to "line-through"."
+		var nodeList = decomposeRange(range);
+		var newValue = getState(command, range) ? null : "line-through";
+		for (var i = 0; i < nodeList.length; i++) {
+			setNodeValue(nodeList[i], command, newValue);
+		}
+		break;
+
 		case "stylewithcss":
 		// "Convert value to a boolean according to the algorithm in WebIDL,
 		// and set the CSS styling flag to the result."
@@ -1659,6 +1764,7 @@ function getState(command, range) {
 
 	if (command != "bold"
 	&& command != "italic"
+	&& command != "strikethrough"
 	&& command != "underline"
 	&& command != "subscript"
 	&& command != "superscript") {
@@ -1699,6 +1805,13 @@ function getState(command, range) {
 			var fontStyle = getEffectiveValue(node, command);
 			if (fontStyle !== "italic"
 			&& fontStyle !== "oblique") {
+				return false;
+			}
+		} else if (command == "strikethrough") {
+			// "True if every Text node that is effectively contained in the
+			// range has effective value "line-through". Otherwise false."
+			var textDecoration = getEffectiveValue(node, command);
+			if (textDecoration !== "line-through") {
 				return false;
 			}
 		} else if (command == "underline") {

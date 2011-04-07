@@ -43,6 +43,7 @@ blank in IE and Opera, which don't support styleWithCSS.)
 	<li><a href=#forecolor>forecolor</a>
 	<li><a href=#hilitecolor>hilitecolor</a>
 	<li><a href=#italic>italic</a>
+	<li><a href=#strikethrough>strikethrough</a>
 	<li><a href=#subscript>subscript</a>
 	<li><a href=#superscript>superscript</a>
 	<li><a href=#underline>underline</a>
@@ -144,6 +145,18 @@ been written, so the spec column does nothing.
 <button onclick="addTest('italic', document.querySelector('#italic input').value)">Add test</button>
 </div>
 
+<div id=strikethrough>
+<h1>strikethrough</h1>
+
+<button onclick="runTests('strikethrough')">Run tests</button>
+
+<table border=1><tr><th>Input <th>Spec <th>Browser <th>Same?</table>
+<table border=1><tr><th>Input <th>Spec <th>Browser <th>Same?</table>
+
+<p><label>Enter new test here: <input></label>
+<button onclick="addTest('strikethrough', document.querySelector('#strikethrough input').value)">Add test</button>
+</div>
+
 <div id=subscript>
 <h1>subscript</h1>
 
@@ -204,6 +217,7 @@ var values = {
 	forecolor: "#FF0000",
 	hilitecolor: "#FF8888",
 	italic: null,
+	strikethrough: null,
 	subscript: null,
 	superscript: null,
 	underline: null,
@@ -532,6 +546,28 @@ var tests = {
 		'foo [bar <i>baz] qoz</i> quz sic',
 		'foo bar <i>baz [qoz</i> quz] sic',
 	],
+	strikethrough: [
+		'foo[bar]baz',
+		'foo]bar[baz',
+		'{<p><p> <p>foo</p>}',
+		'foo[bar<b>baz]qoz</b>quz',
+
+		'<table><tbody><tr><td>foo<td>b[a]r<td>baz</table>',
+		'<table><tbody><tr data-start=1 data-end=2><td>foo<td>bar<td>baz</table>',
+		'<table><tbody><tr data-start=0 data-end=2><td>foo<td>bar<td>baz</table>',
+		'<table><tbody data-start=0 data-end=1><tr><td>foo<td>bar<td>baz</table>',
+		'<table data-start=0 data-end=1><tbody><tr><td>foo<td>bar<td>baz</table>',
+		'{<table><tr><td>foo<td>bar<td>baz</table>}',
+
+		'foo<s>[bar]</s>baz',
+		'foo<span style="text-decoration: line-through">[bar]</span>baz',
+		'<s>foo[bar]baz</s>',
+		'<s>foo[b<span style="color:red">ar]ba</span>z</s>',
+		'<s>foo[b<span style="color:red" id=foo>ar]ba</span>z</s>',
+		'<s>foo[b<span style="font-size:3em">ar]ba</span>z</s>',
+		'<s>foo[b<i>ar]ba</i>z</s>',
+		'<p style="text-decoration: line-through">foo[bar]baz</p>',
+	],
 	subscript: [
 		'foo[bar]baz',
 		'foo]bar[baz',
@@ -662,8 +698,8 @@ function runTests(command) {
 }
 
 function addTest(command, test) {
-	var doubleTesting = ["backcolor", "bold", "italic", "underline",
-	"forecolor", "fontname", "fontsize", "subscript",
+	var doubleTesting = ["backcolor", "bold", "italic", "strikethrough",
+	"underline", "forecolor", "fontname", "fontsize", "subscript",
 	"superscript"].indexOf(command) != -1;
 
 	// I tried to feature-detect styleWithCSS, but it was too much of a pain,
@@ -799,6 +835,7 @@ function doSameCell(tr) {
 			.replace(/: /g, ":")
 			.replace(/;? ?"/g, '"')
 			.replace(/<(\/?)strong/g, '<$1b')
+			.replace(/<(\/?)strike/g, '<$1s')
 			.replace(/<(\/?)em/g, '<$1i')
 			.replace(/#[0-9a-fA-F]{6}/g, function(match) { return match.toUpperCase(); });
 		var normalizedBrowserCell = tr.childNodes[2].childNodes[1].textContent
@@ -806,6 +843,7 @@ function doSameCell(tr) {
 			.replace(/: /g, ":")
 			.replace(/;? ?"/g, '"')
 			.replace(/<(\/?)strong/g, '<$1b')
+			.replace(/<(\/?)strike/g, '<$1s')
 			.replace(/<(\/?)em/g, '<$1i')
 			.replace(/#[0-9a-fA-F]{6}/g, function(match) { return match.toUpperCase(); })
 			.replace(/ class="Apple-style-span"/g, "");

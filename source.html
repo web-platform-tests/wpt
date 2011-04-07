@@ -273,6 +273,11 @@ either a string or null:
     <li>Return "baseline".
   </ol>
 
+  <li>If <var>command</var> is "strikethrough", and the "text-decoration"
+  property of <var>node</var> or any of its [[ancestors]] computes to
+  a value containing "line-through", return "line-through".  Otherwise, return
+  null.
+
   <li>If <var>command</var> is "underline", and the "text-decoration"
   property of <var>node</var> or any of its [[ancestors]] computes to
   a value containing "underline", return "underline".  Otherwise, return
@@ -315,6 +320,19 @@ return either a string or null:
 
     <li>Return null.
   </ol>
+
+  <li>If <var>command</var> is "strikethrough", and <var>element</var> has a
+  [[style]] attribute set, and that attribute sets "text-decoration":
+
+  <ol>
+    <li>If <var>element</var>'s [[style]] attribute sets "text-decoration" to a
+    value containing "line-through", return "line-through".
+
+    <li>Return null.
+  </ol>
+
+  <li>If <var>command</var> is "strikethrough" and <var>element</var> is an
+  [[s]] element, return "line-through".
 
   <li>If <var>command</var> is "underline", and <var>element</var> has a
   [[style]] attribute set, and that attribute sets "text-decoration":
@@ -359,7 +377,7 @@ return either a string or null:
   <li>Return null.
 </ol>
 
-<p>A <dfn>modifiable element</dfn> is a [[b]], [[em]], [[i]], [[span]],
+<p>A <dfn>modifiable element</dfn> is a [[b]], [[em]], [[i]], [[s]], [[span]],
 [[strong]], [[sub]], [[sup]], or [[u]] element with no attributes except
 possibly [[style]]; or a [[font]] element with no attributes except possibly
 [[style]], [[fontcolor]], [[fontface]], and/or [[fontsize]]; or an [[a]]
@@ -369,13 +387,13 @@ element with no attributes except possibly [[style]] and/or [[href]].
 which at least one of the following holds:
 
 <ul>
-  <li>It is an [[a]], [[b]], [[em]], [[font]], [[i]], [[span]], [[strong]],
-  [[sub]], [[sup]], or [[u]] element with no attributes.
+  <li>It is an [[a]], [[b]], [[em]], [[font]], [[i]], [[s]], [[span]],
+  [[strong]], [[sub]], [[sup]], or [[u]] element with no attributes.
 
-  <li>It is an [[a]], [[b]], [[em]], [[font]], [[i]], [[span]], [[strong]],
-  [[sub]], [[sup]], or [[u]] element with exactly one attribute, which is
-  [[style]], which sets no CSS properties (including invalid or unrecognized
-  properties).
+  <li>It is an [[a]], [[b]], [[em]], [[font]], [[i]], [[s]], [[span]],
+  [[strong]], [[sub]], [[sup]], or [[u]] element with exactly one attribute,
+  which is [[style]], which sets no CSS properties (including invalid or
+  unrecognized properties).
 
   <li>It is an [[a]] element with exactly one attribute, which is [[href]].
 
@@ -390,10 +408,15 @@ which at least one of the following holds:
   [[style]], and the [[style]] attribute sets exactly one CSS property
   (including invalid or unrecognized properties), which is "font-style".
 
+  <li>It is an [[s]] element with exactly one attribute, which is [[style]], and
+  the [[style]] attribute sets exactly one CSS property (including invalid or
+  unrecognized properties), which is "text-decoration", which is set to
+  "line-through" or "underline" or "none".
+
   <li>It is a [[u]] element with exactly one attribute, which is [[style]], and
   the [[style]] attribute sets exactly one CSS property (including invalid or
   unrecognized properties), which is "text-decoration", which is set to
-  "underline" or "none".
+  "line-through" or "underline" or "none".
 
   <li>It is a [[sub]] or [[sup]] element with exactly one attribute, which is
   [[style]], and the [[style]] attribute sets exactly one CSS property
@@ -543,6 +566,10 @@ id=foo> into <span id=foo> instead of <font id=foo>, but probably not worth it.
 
     <li>Return <var>children</var>.
   </ol>
+
+  <li>If <var>command</var> is "strikethrough", and <var>element</var> has a
+  [[style]] attribute that sets "text-decoration" to some value containing
+  "line-through", delete "line-through" from the value.
 
   <li>If <var>command</var> is "underline", and <var>element</var> has a
   [[style]] attribute that sets "text-decoration" to some value containing
@@ -867,6 +894,16 @@ different value.
     title=dom-Document-createElement>createElement("i")</code> on the
     [[ownerdocument]] of <var>node</var>.
 
+    <li>If <var>command</var> is "strikethrough" and <var>new value</var> is
+    "line-through", let <var>new parent</var> be the result of calling <code
+    data-anolis-spec=domcore
+    title=dom-Document-createElement>createElement("s")</code> on the
+    [[ownerdocument]] of <var>node</var>.
+
+    <p class=XXX>Actual UAs use strike, not s, but s is shorter and HTML5 makes
+    strike invalid.  I've gone with s for now, but maybe we want to change the
+    spec to require strike.
+
     <li>If <var>command</var> is "underline" and <var>new value</var> is
     "underline", let <var>new parent</var> be the result of calling <code
     data-anolis-spec=domcore
@@ -932,6 +969,11 @@ different value.
   property</span> for <var>command</var> is not null, set that CSS property of
   <var>new parent</var> to <var>new value</var>.
 
+  <li>If <var>command</var> is "strikethrough", and <var>new value</var> is
+  "line-through", and the <span>effective value</span> of "strikethrough" for
+  <var>new parent</var> is not "line-through", set the "text-decoration"
+  property of <var>new parent</var> to "line-through".
+
   <li>If <var>command</var> is "underline", and <var>new value</var> is
   "underline", and the <span>effective value</span> of "underline" for <var>new
   parent</var> is not "underline", set the "text-decoration" property of
@@ -950,13 +992,18 @@ different value.
     <li>Remove <var>new parent</var> from its [[parent]].
 
     <li>If <var>new parent</var> is a [[span]], and either <var>command</var>
-    is "underline" or the <span>relevant CSS property</span> for
-    <var>command</var> is not null:
+    is "underline" or <var>command</var> is "strikethrough" or the
+    <span>relevant CSS property</span> for <var>command</var> is not null:
 
     <ol>
       <li>If the <span>relevant CSS property</span> for <var>command</var> is
       not null, set that CSS property of <var>node</var> to <var>new
       value</var>.
+
+      <li>If <var>command</var> is "strikethrough" and <var>new value</var> is
+      "line-through", alter the "text-decoration" property of <var>node</var>
+      to include "line-through" (preserving "overline" or "underline" if
+      present).
 
       <li>If <var>command</var> is "underline" and <var>new value</var> is
       "underline", alter the "text-decoration" property of <var>node</var> to
@@ -1452,6 +1499,22 @@ value</span> either "italic" or "oblique".  Otherwise false.
 <dd><strong>Value</strong>: Always the empty string.
 
 <dd><strong>Relevant CSS Property</strong>: "font-style"
+
+
+<dt><code title><dfn title=command-strikethrough>strikethrough</dfn></code>
+
+<dd><strong>Action</strong>: <span>Decompose</span> the [[range]].  If the
+state of the [[range]] for this command is then true, <span>set the
+value</span> of each returned [[node]] to null.  Otherwise, <span title="set
+the value">set their value</span> to "line-through".
+
+<p class=XXX>Has all the same problems as underline.
+
+<dd><strong>State</strong>: True if every [[text]] node that is
+<span>effectively contained</span> in the [[range]] has <span>effective
+value</span> "line-through".  Otherwise false.
+
+<dd><strong>Value</strong>: Always the empty string.
 
 
 <dt><code title><dfn title=command-stylewithcss>styleWithCSS</dfn></code>

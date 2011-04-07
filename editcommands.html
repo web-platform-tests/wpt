@@ -284,6 +284,11 @@ either a string or null:
     <li>Return "baseline".
   </ol>
 
+  <li>If <var title="">command</var> is "strikethrough", and the "text-decoration"
+  property of <var title="">node</var> or any of its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestors</a> computes to
+  a value containing "line-through", return "line-through".  Otherwise, return
+  null.
+
   <li>If <var title="">command</var> is "underline", and the "text-decoration"
   property of <var title="">node</var> or any of its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestors</a> computes to
   a value containing "underline", return "underline".  Otherwise, return
@@ -326,6 +331,19 @@ return either a string or null:
 
     <li>Return null.
   </ol>
+
+  <li>If <var title="">command</var> is "strikethrough", and <var title="">element</var> has a
+  <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code> attribute set, and that attribute sets "text-decoration":
+
+  <ol>
+    <li>If <var title="">element</var>'s <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code> attribute sets "text-decoration" to a
+    value containing "line-through", return "line-through".
+
+    <li>Return null.
+  </ol>
+
+  <li>If <var title="">command</var> is "strikethrough" and <var title="">element</var> is an
+  <code class=external data-anolis-spec=html title="the s element"><a href=http://www.whatwg.org/html/#the-s-element>s</a></code> element, return "line-through".
 
   <li>If <var title="">command</var> is "underline", and <var title="">element</var> has a
   <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code> attribute set, and that attribute sets "text-decoration":
@@ -370,7 +388,7 @@ return either a string or null:
   <li>Return null.
 </ol>
 
-<p>A <dfn id=modifiable-element>modifiable element</dfn> is a <code class=external data-anolis-spec=html title="the b element"><a href=http://www.whatwg.org/html/#the-b-element>b</a></code>, <code class=external data-anolis-spec=html title="the em element"><a href=http://www.whatwg.org/html/#the-em-element>em</a></code>, <code class=external data-anolis-spec=html title="the i element"><a href=http://www.whatwg.org/html/#the-i-element>i</a></code>, <code class=external data-anolis-spec=html title="the span element"><a href=http://www.whatwg.org/html/#the-span-element>span</a></code>,
+<p>A <dfn id=modifiable-element>modifiable element</dfn> is a <code class=external data-anolis-spec=html title="the b element"><a href=http://www.whatwg.org/html/#the-b-element>b</a></code>, <code class=external data-anolis-spec=html title="the em element"><a href=http://www.whatwg.org/html/#the-em-element>em</a></code>, <code class=external data-anolis-spec=html title="the i element"><a href=http://www.whatwg.org/html/#the-i-element>i</a></code>, <code class=external data-anolis-spec=html title="the s element"><a href=http://www.whatwg.org/html/#the-s-element>s</a></code>, <code class=external data-anolis-spec=html title="the span element"><a href=http://www.whatwg.org/html/#the-span-element>span</a></code>,
 <code class=external data-anolis-spec=html title="the strong element"><a href=http://www.whatwg.org/html/#the-strong-element>strong</a></code>, <code class=external data-anolis-spec=html title="the sub and sup elements"><a href=http://www.whatwg.org/html/#the-sub-and-sup-elements>sub</a></code>, <code class=external data-anolis-spec=html title="the sub and sup elements"><a href=http://www.whatwg.org/html/#the-sub-and-sup-elements>sup</a></code>, or <code class=external data-anolis-spec=html title="the u element"><a href=http://www.whatwg.org/html/#the-u-element>u</a></code> element with no attributes except
 possibly <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code>; or a <code class=external data-anolis-spec=html title=font><a href=http://www.whatwg.org/html/#font>font</a></code> element with no attributes except possibly
 <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code>, <code class=external data-anolis-spec=html title=dom-font-color><a href=http://www.whatwg.org/html/#dom-font-color>color</a></code>, <code class=external data-anolis-spec=html title=dom-font-face><a href=http://www.whatwg.org/html/#dom-font-face>face</a></code>, and/or <code class=external data-anolis-spec=html title=dom-font-size><a href=http://www.whatwg.org/html/#dom-font-size>size</a></code>; or an <code class=external data-anolis-spec=html title="the a element"><a href=http://www.whatwg.org/html/#the-a-element>a</a></code>
@@ -380,13 +398,13 @@ element with no attributes except possibly <code class=external data-anolis-spec
 which at least one of the following holds:
 
 <ul>
-  <li>It is an <code class=external data-anolis-spec=html title="the a element"><a href=http://www.whatwg.org/html/#the-a-element>a</a></code>, <code class=external data-anolis-spec=html title="the b element"><a href=http://www.whatwg.org/html/#the-b-element>b</a></code>, <code class=external data-anolis-spec=html title="the em element"><a href=http://www.whatwg.org/html/#the-em-element>em</a></code>, <code class=external data-anolis-spec=html title=font><a href=http://www.whatwg.org/html/#font>font</a></code>, <code class=external data-anolis-spec=html title="the i element"><a href=http://www.whatwg.org/html/#the-i-element>i</a></code>, <code class=external data-anolis-spec=html title="the span element"><a href=http://www.whatwg.org/html/#the-span-element>span</a></code>, <code class=external data-anolis-spec=html title="the strong element"><a href=http://www.whatwg.org/html/#the-strong-element>strong</a></code>,
-  <code class=external data-anolis-spec=html title="the sub and sup elements"><a href=http://www.whatwg.org/html/#the-sub-and-sup-elements>sub</a></code>, <code class=external data-anolis-spec=html title="the sub and sup elements"><a href=http://www.whatwg.org/html/#the-sub-and-sup-elements>sup</a></code>, or <code class=external data-anolis-spec=html title="the u element"><a href=http://www.whatwg.org/html/#the-u-element>u</a></code> element with no attributes.
+  <li>It is an <code class=external data-anolis-spec=html title="the a element"><a href=http://www.whatwg.org/html/#the-a-element>a</a></code>, <code class=external data-anolis-spec=html title="the b element"><a href=http://www.whatwg.org/html/#the-b-element>b</a></code>, <code class=external data-anolis-spec=html title="the em element"><a href=http://www.whatwg.org/html/#the-em-element>em</a></code>, <code class=external data-anolis-spec=html title=font><a href=http://www.whatwg.org/html/#font>font</a></code>, <code class=external data-anolis-spec=html title="the i element"><a href=http://www.whatwg.org/html/#the-i-element>i</a></code>, <code class=external data-anolis-spec=html title="the s element"><a href=http://www.whatwg.org/html/#the-s-element>s</a></code>, <code class=external data-anolis-spec=html title="the span element"><a href=http://www.whatwg.org/html/#the-span-element>span</a></code>,
+  <code class=external data-anolis-spec=html title="the strong element"><a href=http://www.whatwg.org/html/#the-strong-element>strong</a></code>, <code class=external data-anolis-spec=html title="the sub and sup elements"><a href=http://www.whatwg.org/html/#the-sub-and-sup-elements>sub</a></code>, <code class=external data-anolis-spec=html title="the sub and sup elements"><a href=http://www.whatwg.org/html/#the-sub-and-sup-elements>sup</a></code>, or <code class=external data-anolis-spec=html title="the u element"><a href=http://www.whatwg.org/html/#the-u-element>u</a></code> element with no attributes.
 
-  <li>It is an <code class=external data-anolis-spec=html title="the a element"><a href=http://www.whatwg.org/html/#the-a-element>a</a></code>, <code class=external data-anolis-spec=html title="the b element"><a href=http://www.whatwg.org/html/#the-b-element>b</a></code>, <code class=external data-anolis-spec=html title="the em element"><a href=http://www.whatwg.org/html/#the-em-element>em</a></code>, <code class=external data-anolis-spec=html title=font><a href=http://www.whatwg.org/html/#font>font</a></code>, <code class=external data-anolis-spec=html title="the i element"><a href=http://www.whatwg.org/html/#the-i-element>i</a></code>, <code class=external data-anolis-spec=html title="the span element"><a href=http://www.whatwg.org/html/#the-span-element>span</a></code>, <code class=external data-anolis-spec=html title="the strong element"><a href=http://www.whatwg.org/html/#the-strong-element>strong</a></code>,
-  <code class=external data-anolis-spec=html title="the sub and sup elements"><a href=http://www.whatwg.org/html/#the-sub-and-sup-elements>sub</a></code>, <code class=external data-anolis-spec=html title="the sub and sup elements"><a href=http://www.whatwg.org/html/#the-sub-and-sup-elements>sup</a></code>, or <code class=external data-anolis-spec=html title="the u element"><a href=http://www.whatwg.org/html/#the-u-element>u</a></code> element with exactly one attribute, which is
-  <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code>, which sets no CSS properties (including invalid or unrecognized
-  properties).
+  <li>It is an <code class=external data-anolis-spec=html title="the a element"><a href=http://www.whatwg.org/html/#the-a-element>a</a></code>, <code class=external data-anolis-spec=html title="the b element"><a href=http://www.whatwg.org/html/#the-b-element>b</a></code>, <code class=external data-anolis-spec=html title="the em element"><a href=http://www.whatwg.org/html/#the-em-element>em</a></code>, <code class=external data-anolis-spec=html title=font><a href=http://www.whatwg.org/html/#font>font</a></code>, <code class=external data-anolis-spec=html title="the i element"><a href=http://www.whatwg.org/html/#the-i-element>i</a></code>, <code class=external data-anolis-spec=html title="the s element"><a href=http://www.whatwg.org/html/#the-s-element>s</a></code>, <code class=external data-anolis-spec=html title="the span element"><a href=http://www.whatwg.org/html/#the-span-element>span</a></code>,
+  <code class=external data-anolis-spec=html title="the strong element"><a href=http://www.whatwg.org/html/#the-strong-element>strong</a></code>, <code class=external data-anolis-spec=html title="the sub and sup elements"><a href=http://www.whatwg.org/html/#the-sub-and-sup-elements>sub</a></code>, <code class=external data-anolis-spec=html title="the sub and sup elements"><a href=http://www.whatwg.org/html/#the-sub-and-sup-elements>sup</a></code>, or <code class=external data-anolis-spec=html title="the u element"><a href=http://www.whatwg.org/html/#the-u-element>u</a></code> element with exactly one attribute,
+  which is <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code>, which sets no CSS properties (including invalid or
+  unrecognized properties).
 
   <li>It is an <code class=external data-anolis-spec=html title="the a element"><a href=http://www.whatwg.org/html/#the-a-element>a</a></code> element with exactly one attribute, which is <code class=external data-anolis-spec=html title=attr-hyperlink-href><a href=http://www.whatwg.org/html/#attr-hyperlink-href>href</a></code>.
 
@@ -401,10 +419,15 @@ which at least one of the following holds:
   <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code>, and the <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code> attribute sets exactly one CSS property
   (including invalid or unrecognized properties), which is "font-style".
 
+  <li>It is an <code class=external data-anolis-spec=html title="the s element"><a href=http://www.whatwg.org/html/#the-s-element>s</a></code> element with exactly one attribute, which is <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code>, and
+  the <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code> attribute sets exactly one CSS property (including invalid or
+  unrecognized properties), which is "text-decoration", which is set to
+  "line-through" or "underline" or "none".
+
   <li>It is a <code class=external data-anolis-spec=html title="the u element"><a href=http://www.whatwg.org/html/#the-u-element>u</a></code> element with exactly one attribute, which is <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code>, and
   the <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code> attribute sets exactly one CSS property (including invalid or
   unrecognized properties), which is "text-decoration", which is set to
-  "underline" or "none".
+  "line-through" or "underline" or "none".
 
   <li>It is a <code class=external data-anolis-spec=html title="the sub and sup elements"><a href=http://www.whatwg.org/html/#the-sub-and-sup-elements>sub</a></code> or <code class=external data-anolis-spec=html title="the sub and sup elements"><a href=http://www.whatwg.org/html/#the-sub-and-sup-elements>sup</a></code> element with exactly one attribute, which is
   <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code>, and the <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code> attribute sets exactly one CSS property
@@ -550,6 +573,10 @@ id=foo> into <span id=foo> instead of <font id=foo>, but probably not worth it.
 
     <li>Return <var title="">children</var>.
   </ol>
+
+  <li>If <var title="">command</var> is "strikethrough", and <var title="">element</var> has a
+  <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code> attribute that sets "text-decoration" to some value containing
+  "line-through", delete "line-through" from the value.
 
   <li>If <var title="">command</var> is "underline", and <var title="">element</var> has a
   <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code> attribute that sets "text-decoration" to some value containing
@@ -869,6 +896,14 @@ different value.
     "italic", let <var title="">new parent</var> be the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("i")</a></code> on the
     <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">node</var>.
 
+    <li>If <var title="">command</var> is "strikethrough" and <var title="">new value</var> is
+    "line-through", let <var title="">new parent</var> be the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("s")</a></code> on the
+    <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">node</var>.
+
+    <p class=XXX>Actual UAs use strike, not s, but s is shorter and HTML5 makes
+    strike invalid.  I've gone with s for now, but maybe we want to change the
+    spec to require strike.
+
     <li>If <var title="">command</var> is "underline" and <var title="">new value</var> is
     "underline", let <var title="">new parent</var> be the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("u")</a></code> on the
     <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">node</var>.
@@ -923,6 +958,11 @@ different value.
   property</a> for <var title="">command</var> is not null, set that CSS property of
   <var title="">new parent</var> to <var title="">new value</var>.
 
+  <li>If <var title="">command</var> is "strikethrough", and <var title="">new value</var> is
+  "line-through", and the <a href=#effective-value>effective value</a> of "strikethrough" for
+  <var title="">new parent</var> is not "line-through", set the "text-decoration"
+  property of <var title="">new parent</var> to "line-through".
+
   <li>If <var title="">command</var> is "underline", and <var title="">new value</var> is
   "underline", and the <a href=#effective-value>effective value</a> of "underline" for <var title="">new
   parent</var> is not "underline", set the "text-decoration" property of
@@ -941,13 +981,18 @@ different value.
     <li>Remove <var title="">new parent</var> from its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
 
     <li>If <var title="">new parent</var> is a <code class=external data-anolis-spec=html title="the span element"><a href=http://www.whatwg.org/html/#the-span-element>span</a></code>, and either <var title="">command</var>
-    is "underline" or the <a href=#relevant-css-property>relevant CSS property</a> for
-    <var title="">command</var> is not null:
+    is "underline" or <var title="">command</var> is "strikethrough" or the
+    <a href=#relevant-css-property>relevant CSS property</a> for <var title="">command</var> is not null:
 
     <ol>
       <li>If the <a href=#relevant-css-property>relevant CSS property</a> for <var title="">command</var> is
       not null, set that CSS property of <var title="">node</var> to <var title="">new
       value</var>.
+
+      <li>If <var title="">command</var> is "strikethrough" and <var title="">new value</var> is
+      "line-through", alter the "text-decoration" property of <var title="">node</var>
+      to include "line-through" (preserving "overline" or "underline" if
+      present).
 
       <li>If <var title="">command</var> is "underline" and <var title="">new value</var> is
       "underline", alter the "text-decoration" property of <var title="">node</var> to
@@ -1433,6 +1478,22 @@ value</a> either "italic" or "oblique".  Otherwise false.
 <dd><strong>Value</strong>: Always the empty string.
 
 <dd><strong>Relevant CSS Property</strong>: "font-style"
+
+
+<dt><code title=""><dfn id=command-strikethrough title=command-strikethrough>strikethrough</dfn></code>
+
+<dd><strong>Action</strong>: <a href=#decompose>Decompose</a> the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>.  If the
+state of the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> for this command is then true, <a href=#set-the-value>set the
+value</a> of each returned <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> to null.  Otherwise, <a href=#set-the-value title="set
+the value">set their value</a> to "line-through".
+
+<p class=XXX>Has all the same problems as underline.
+
+<dd><strong>State</strong>: True if every <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node that is
+<a href=#effectively-contained>effectively contained</a> in the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> has <a href=#effective-value>effective
+value</a> "line-through".  Otherwise false.
+
+<dd><strong>Value</strong>: Always the empty string.
 
 
 <dt><code title=""><dfn id=command-stylewithcss title=command-stylewithcss>styleWithCSS</dfn></code>

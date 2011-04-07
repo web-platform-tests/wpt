@@ -299,6 +299,26 @@ function getEffectiveValue(node, command) {
 		return getEffectiveValue(node.parentNode, command);
 	}
 
+	// "If command is "createLink":"
+	if (command == "createlink") {
+		// "While node is not null, and is not an a element that has an href
+		// attribute, set node to its parent."
+		while (node
+		&& (!isHtmlElement(node)
+		|| node.tagName != "A"
+		|| !node.hasAttribute("href"))) {
+			node = node.parentNode;
+		}
+
+		// "If node is null, return null."
+		if (!node) {
+			return null;
+		}
+
+		// "Return the value of node's href attribute."
+		return node.getAttribute("href");
+	}
+
 	// "If command is "hiliteColor":"
 	if (command == "hilitecolor") {
 		// "While the computed style of "background-color" on node is any
@@ -325,19 +345,6 @@ function getEffectiveValue(node, command) {
 		// "Otherwise, return the computed style of "background-color" for
 		// node."
 		return getComputedStyle(node).backgroundColor;
-	}
-
-	// "If command is "underline", and the "text-decoration" property of node
-	// or any of its ancestors computes to a value containing "underline",
-	// return "underline". Otherwise, return "none"."
-	if (command == "underline") {
-		do {
-			if ((" " + getComputedStyle(node).textDecoration + " ").indexOf(" underline ") != -1) {
-				return "underline";
-			}
-			node = node.parentNode;
-		} while (node && node.nodeType == Node.ELEMENT_NODE);
-		return "none";
 	}
 
 	// "If command is "subscript" or "superscript":"
@@ -392,6 +399,19 @@ function getEffectiveValue(node, command) {
 		return "baseline";
 	}
 
+	// "If command is "underline", and the "text-decoration" property of node
+	// or any of its ancestors computes to a value containing "underline",
+	// return "underline". Otherwise, return "none"."
+	if (command == "underline") {
+		do {
+			if ((" " + getComputedStyle(node).textDecoration + " ").indexOf(" underline ") != -1) {
+				return "underline";
+			}
+			node = node.parentNode;
+		} while (node && node.nodeType == Node.ELEMENT_NODE);
+		return "none";
+	}
+
 	// "Return the computed style for node of the relevant CSS property for
 	// command."
 	return getComputedStyle(node)[getRelevantCssProperty(command)];
@@ -401,16 +421,30 @@ function getEffectiveValue(node, command) {
  * "specified value" per edit command spec
  */
 function getSpecifiedValue(element, command) {
-	// "If command is "hiliteColor" and the Element's display property does not
+	// "If command is "hiliteColor" and element's display property does not
 	// compute to "inline", return null."
 	if (command == "hilitecolor"
 	&& getComputedStyle(element).display != "inline") {
 		return null;
 	}
 
+	// "If command is "createLink":"
+	if (command == "createlink") {
+		// "If element is an a element and has an href attribute, return the
+		// value of that attribute."
+		if (isHtmlElement(element)
+		&& element.tagName == "A"
+		&& element.hasAttribute("href")) {
+			return element.getAttribute("href");
+		}
+
+		// "Return null."
+		return null;
+	}
+
 	// "If command is "subscript" or "superscript":"
 	if (command == "subscript" || command == "superscript") {
-		// "If the computed style of the Element's "display" property is
+		// "If the computed style of element's "display" property is
 		// neither "inline" nor "inline-block" nor "inline-table", return
 		// null."
 		var style = getComputedStyle(element);
@@ -420,19 +454,19 @@ function getSpecifiedValue(element, command) {
 			return null;
 		}
 
-		// "If the Element has a style attribute set, and that attribute has
+		// "If element has a style attribute set, and that attribute has
 		// the effect of setting "vertical-align", return the value that it
 		// sets "vertical-align" to."
 		if (element.style.verticalAlign != "") {
 			return element.style.verticalAlign;
 		}
 
-		// "If the Element is a sup, return "super"."
+		// "If element is a sup, return "super"."
 		if (isHtmlElement(element) && element.tagName == "SUP") {
 			return "super";
 		}
 
-		// "If the Element is a sub, return "sub"."
+		// "If element is a sub, return "sub"."
 		if (isHtmlElement(element) && element.tagName == "SUB") {
 			return "sub";
 		}
@@ -449,13 +483,13 @@ function getSpecifiedValue(element, command) {
 		return null;
 	}
 
-	// "If the Element has a style attribute set, and that attribute has the
+	// "If element has a style attribute set, and that attribute has the
 	// effect of setting property, return the value that it sets property to."
 	if (element.style[property] != "") {
 		return element.style[property];
 	}
 
-	// "If the Element is a font element that has an attribute whose effect is
+	// "If element is a font element that has an attribute whose effect is
 	// to create a presentational hint for property, return the value that the
 	// hint sets property to."
 	//
@@ -474,7 +508,7 @@ function getSpecifiedValue(element, command) {
 		}
 	}
 
-	// "If the Element is in the following list, and property is equal to the
+	// "If element is in the following list, and property is equal to the
 	// CSS property name listed for it, return the string listed for it."
 	//
 	// A list follows, whose meaning is copied here.
@@ -495,9 +529,10 @@ function getSpecifiedValue(element, command) {
 	return null;
 }
 
-// "A modifiable element is a b, em, i, span, strong, sub, sup, or u element with
-// no attributes except possibly style, or a font element with no attributes
-// except possibly style, color, face, and/or size."
+// "A modifiable element is a b, em, i, span, strong, sub, sup, or u element
+// with no attributes except possibly style; or a font element with no
+// attributes except possibly style, color, face, and/or size; or an a element
+// with no attributes except possibly style and/or href."
 function isModifiableElement(node) {
 	if (!isHtmlElement(node)) {
 		return false;
@@ -514,22 +549,29 @@ function isModifiableElement(node) {
 		}
 	}
 
-	if (node.tagName == "FONT") {
+	if (node.tagName == "FONT" || node.tagName == "A") {
 		var numAttrs = node.attributes.length;
 
 		if (node.hasAttribute("style")) {
 			numAttrs--;
 		}
 
-		if (node.hasAttribute("color")) {
-			numAttrs--;
+		if (node.tagName == "FONT") {
+			if (node.hasAttribute("color")) {
+				numAttrs--;
+			}
+
+			if (node.hasAttribute("face")) {
+				numAttrs--;
+			}
+
+			if (node.hasAttribute("size")) {
+				numAttrs--;
+			}
 		}
 
-		if (node.hasAttribute("face")) {
-			numAttrs--;
-		}
-
-		if (node.hasAttribute("size")) {
+		if (node.tagName == "A"
+		&& node.hasAttribute("href")) {
 			numAttrs--;
 		}
 
@@ -549,12 +591,12 @@ function isSimpleModifiableElement(node) {
 	}
 
 	// Only these elements can possibly be a simple modifiable element.
-	if (["B", "EM", "FONT", "I", "SPAN", "STRONG", "SUB", "SUP", "U"].indexOf(node.tagName) == -1) {
+	if (["A", "B", "EM", "FONT", "I", "SPAN", "STRONG", "SUB", "SUP", "U"].indexOf(node.tagName) == -1) {
 		return false;
 	}
 
-	// "It is a b, em, font, i, span, strong, sub, sup, or u element with no
-	// attributes."
+	// "It is an a, b, em, font, i, span, strong, sub, sup, or u element with
+	// no attributes."
 	if (node.attributes.length == 0) {
 		return true;
 	}
@@ -564,13 +606,19 @@ function isSimpleModifiableElement(node) {
 		return false;
 	}
 
-	// "It is a b, em, font, i, span, strong, sub, sup, or u element with
+	// "It is an a, b, em, font, i, span, strong, sub, sup, or u element with
 	// exactly one attribute, which is style, which sets no CSS properties
 	// (including invalid or unrecognized properties)."
 	//
 	// Not gonna try for invalid or unrecognized.
 	if (node.hasAttribute("style")
 	&& node.style.length == 0) {
+		return true;
+	}
+
+	// "It is an a element with exactly one attribute, which is href."
+	if (node.tagName == "A"
+	&& node.hasAttribute("href")) {
 		return true;
 	}
 
@@ -626,10 +674,10 @@ function isSimpleModifiableElement(node) {
 		return true;
 	}
 
-	// "It is a font or span element with exactly one attribute, which is
+	// "It is an a, font, or span element with exactly one attribute, which is
 	// style, and the style attribute sets exactly one CSS property (including
 	// invalid or unrecognized properties)."
-	if ((node.tagName == "FONT" || node.tagName == "SPAN")
+	if ((node.tagName == "A" || node.tagName == "FONT" || node.tagName == "SPAN")
 	&& node.hasAttribute("style")
 	&& node.style.length == 1) {
 		return true;
@@ -828,6 +876,14 @@ function clearValue(element, command) {
 		if (property == "fontSize") {
 			element.removeAttribute("size");
 		}
+	}
+
+	// "If element is an a element and command is "createLink", unset the href
+	// property of element."
+	if (isHtmlElement(element)
+	&& element.tagName == "A"
+	&& command == "createlink") {
+		element.removeAttribute("href");
 	}
 
 	// "If element's specified value for command is null, return the empty
@@ -1178,6 +1234,14 @@ function forceValue(node, command, newValue) {
 		}
 	}
 
+	// "If command is "createLink", let new parent be the result of calling
+	// createElement("a") on the ownerDocument of node, then set the href
+	// attribute of new parent to new value."
+	if (command == "createlink") {
+		newParent = node.ownerDocument.createElement("a");
+		newParent.setAttribute("href", newValue);
+	}
+
 	// "If command is "subscript" and new value is "sub", let new parent be the
 	// result of calling createElement("sub") on the ownerDocument of node."
 	if (command == "subscript" && newValue == "sub") {
@@ -1369,80 +1433,32 @@ function myExecCommand(command, showUI, value, range) {
 		break;
 
 		case "createlink":
-		// "If value is the empty string, do nothing."
+		// "If value is the empty string, abort these steps and do nothing."
 		if (value === "") {
 			break;
 		}
 
-		// "Let node list be the result of decomposing the Range."
+		// "Decompose the range, and let node list be the result."
 		var nodeList = decomposeRange(range);
 
-		// "For each node in node list, in order:"
+		// "For each a element that has an href attribute and is an ancestor of
+		// some node in node list, set that element's href attribute to value."
 		for (var i = 0; i < nodeList.length; i++) {
-			var node = nodeList[i];
-
-			// "Let text nodes be a list of all Text node descendants of node,
-			// or node itself if it's a Text node."
-			var textNodes = [];
-			if (node.nodeType == Node.TEXT_NODE) {
-				textNodes.push(node);
-			} else {
-				for (var cur = node.firstChild;
-				cur && cur.compareDocumentPosition(node) & Node.DOCUMENT_POSITION_CONTAINS;
-				cur = nextNode(cur)) {
-					if (cur.nodeType == Node.TEXT_NODE) {
-						textNodes.push(cur);
-					}
+			var candidate = nodeList[i].parentNode;
+			while (candidate) {
+				if (isHtmlElement(candidate)
+				&& candidate.tagName == "A"
+				&& candidate.hasAttribute("href")) {
+					candidate.setAttribute("href", value);
 				}
+
+				candidate = candidate.parentNode;
 			}
+		}
 
-			// "For each text node in text nodes:"
-			for (var j = 0; j < textNodes.length; j++) {
-				var textNode = textNodes[j];
-
-				// "Let ancestor link be the parent of text node."
-				var ancestorLink = textNode.parentNode;
-
-				// "While ancestor link is not an a element or has no href
-				// attribute:"
-				while (!isHtmlNamespace(ancestorLink.namespaceURI)
-				|| ancestorLink.nodeType != Node.ELEMENT_NODE
-				|| ancestorLink.tagName != "A"
-				|| !ancestorLink.hasAttribute("href")) {
-					// "If the parent of ancestor link is not an Element, set
-					// ancestor link to null and break from this loop."
-					if (!ancestorLink.parentNode
-					|| ancestorLink.parentNode.nodeType != Node.ELEMENT_NODE) {
-						ancestorLink = null;
-						break;
-					}
-
-					// "Otherwise, set ancestor link to its parent."
-					ancestorLink = ancestorLink.parentNode;
-				}
-
-				// "If ancestor link is not null, set its href attribute to
-				// value and continue with the next text node."
-				if (ancestorLink) {
-					ancestorLink.setAttribute("href", value);
-					continue;
-				}
-
-				// "Let new parent be the result of calling createElement("a")
-				// on the ownerDocument of text node."
-				var newParent = textNode.ownerDocument.createElement("a");
-
-				// "Call setAttribute("href", value) on new parent."
-				newParent.setAttribute("href", value);
-
-				// "Insert new parent into text node's parent as the previous
-				// sibling of text node."
-				textNode.parentNode.insertBefore(newParent, textNode);
-
-				// "Append text node to new parent as its last child,
-				// preserving ranges."
-				movePreservingRanges(textNode, newParent, 0);
-			}
+		// "Set the value of each node in node list to value."
+		for (var i = 0; i < nodeList.length; i++) {
+			setNodeValue(nodeList[i], command, value);
 		}
 		break;
 

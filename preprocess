@@ -6,6 +6,7 @@
 # in Anolis proper.
 
 replace = {
+    'a': '<code data-anolis-spec=html title="the a element">a</code>',
     'ancestor': '<span data-anolis-spec=domcore title=concept-tree-ancestor>ancestor</span>',
     'attrlocalname': '<span data-anolis-spec=domcore title=concept-attr-local-name>local name</span>',
     'attrvalue': '<span data-anolis-spec=domcore title=concept-attr-value>value</span>',

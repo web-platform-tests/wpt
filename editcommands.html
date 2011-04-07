@@ -230,6 +230,17 @@ either a string or null:
   <li>If <var title="">node</var> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node, return the <a href=#effective-value>effective
   value</a> of its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> for <var title="">command</var>.
 
+  <li>If <var title="">command</var> is "createLink":
+
+  <ol>
+    <li>While <var title="">node</var> is not null, and is not an <code class=external data-anolis-spec=html title="the a element"><a href=http://www.whatwg.org/html/#the-a-element>a</a></code> element that has
+    an <code class=external data-anolis-spec=html title=attr-hyperlink-href><a href=http://www.whatwg.org/html/#attr-hyperlink-href>href</a></code> attribute, set <var title="">node</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+
+    <li>If <var title="">node</var> is null, return null.
+
+    <li>Return the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-attr-value title=concept-attr-value>value</a> of <var title="">node</var>'s <code class=external data-anolis-spec=html title=attr-hyperlink-href><a href=http://www.whatwg.org/html/#attr-hyperlink-href>href</a></code> attribute.
+  </ol>
+
   <li>If <var title="">command</var> is "hiliteColor":
 
   <ol>
@@ -243,11 +254,6 @@ either a string or null:
     <li>Otherwise, return the computed style of "background-color" for
     <var title="">node</var>.
   </ol>
-
-  <li>If <var title="">command</var> is "underline", and the "text-decoration"
-  property of <var title="">node</var> or any of its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestors</a> computes to
-  a value containing "underline", return "underline".  Otherwise, return
-  "none".
 
   <li>If <var title="">command</var> is "subscript" or "superscript":
 
@@ -281,31 +287,45 @@ either a string or null:
     <li>Return "baseline".
   </ol>
 
+  <li>If <var title="">command</var> is "underline", and the "text-decoration"
+  property of <var title="">node</var> or any of its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestors</a> computes to
+  a value containing "underline", return "underline".  Otherwise, return
+  "none".
+
   <li>Return the computed style for <var title="">node</var> of the <a href=#relevant-css-property>relevant CSS
   property</a> for <var title="">command</var>.
 </ol>
 
-<p>The <dfn id=specified-value>specified value</dfn> of an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> for a given
-<var title="">command</var> is returned by the following algorithm, which will return
-either a string or null:
+<p>The <dfn id=specified-value>specified value</dfn> of an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> <var title="">element</var> for a
+given <var title="">command</var> is returned by the following algorithm, which will
+return either a string or null:
 
 <ol>
   <li>If <var title="">command</var> is "hiliteColor" and the <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>'s
   display property does not compute to "inline", return null.
 
+  <li>If <var title="">command</var> is "createLink":
+
+  <ol>
+    <li>If <var title="">element</var> is an <code class=external data-anolis-spec=html title="the a element"><a href=http://www.whatwg.org/html/#the-a-element>a</a></code> element and has an <code class=external data-anolis-spec=html title=attr-hyperlink-href><a href=http://www.whatwg.org/html/#attr-hyperlink-href>href</a></code>
+    attribute, return the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-attr-value title=concept-attr-value>value</a> of that attribute.
+
+    <li>Return null.
+  </ol>
+
   <li>If <var title="">command</var> is "subscript" or "superscript":
 
   <ol>
-    <li>If the computed value of the <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>'s "display" property is
+    <li>If the computed value of <var title="">element</var>'s "display" property is
     neither "inline" nor "inline-block" nor "inline-table", return null.
 
-    <li>If the <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> has a <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code> attribute set, and that attribute
+    <li>If <var title="">element</var> has a <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code> attribute set, and that attribute
     has the effect of setting "vertical-align", return the value that it sets
     "vertical-align" to.
 
-    <li>If the <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> is a <code class=external data-anolis-spec=html title="the sub and sup elements"><a href=http://www.whatwg.org/html/#the-sub-and-sup-elements>sup</a></code>, return "super".
+    <li>If <var title="">element</var> is a <code class=external data-anolis-spec=html title="the sub and sup elements"><a href=http://www.whatwg.org/html/#the-sub-and-sup-elements>sup</a></code>, return "super".
 
-    <li>If the <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> is a <code class=external data-anolis-spec=html title="the sub and sup elements"><a href=http://www.whatwg.org/html/#the-sub-and-sup-elements>sub</a></code>, return "sub".
+    <li>If <var title="">element</var> is a <code class=external data-anolis-spec=html title="the sub and sup elements"><a href=http://www.whatwg.org/html/#the-sub-and-sup-elements>sub</a></code>, return "sub".
 
     <li>Return null.
   </ol>
@@ -315,15 +335,15 @@ either a string or null:
 
   <li>If <var title="">property</var> is null, return null.
 
-  <li>If the <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> has a <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code> attribute set, and that attribute has
+  <li>If <var title="">element</var> has a <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code> attribute set, and that attribute has
   the effect of setting <var title="">property</var>, return the value that it sets
   <var title="">property</var> to.
 
-  <li>If the <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> is a <code class=external data-anolis-spec=html title=font><a href=http://www.whatwg.org/html/#font>font</a></code> element that has an attribute whose
+  <li>If <var title="">element</var> is a <code class=external data-anolis-spec=html title=font><a href=http://www.whatwg.org/html/#font>font</a></code> element that has an attribute whose
   effect is to create a <a class=external data-anolis-spec=html href=http://www.whatwg.org/html/#presentational-hints title="presentational hints">presentational hint</a> for <var title="">property</var>, return
   the value that the hint sets <var title="">property</var> to.
 
-  <li>If the <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> is in the following list, and <var title="">property</var> is
+  <li>If <var title="">element</var> is in the following list, and <var title="">property</var> is
   equal to the CSS property name listed for it, return the string listed for
   it.
 
@@ -345,19 +365,23 @@ either a string or null:
 
 <p>A <dfn id=modifiable-element>modifiable element</dfn> is a <code class=external data-anolis-spec=html title="the b element"><a href=http://www.whatwg.org/html/#the-b-element>b</a></code>, <code class=external data-anolis-spec=html title="the em element"><a href=http://www.whatwg.org/html/#the-em-element>em</a></code>, <code class=external data-anolis-spec=html title="the i element"><a href=http://www.whatwg.org/html/#the-i-element>i</a></code>, <code class=external data-anolis-spec=html title="the span element"><a href=http://www.whatwg.org/html/#the-span-element>span</a></code>,
 <code class=external data-anolis-spec=html title="the strong element"><a href=http://www.whatwg.org/html/#the-strong-element>strong</a></code>, <code class=external data-anolis-spec=html title="the sub and sup elements"><a href=http://www.whatwg.org/html/#the-sub-and-sup-elements>sub</a></code>, <code class=external data-anolis-spec=html title="the sub and sup elements"><a href=http://www.whatwg.org/html/#the-sub-and-sup-elements>sup</a></code>, or <code class=external data-anolis-spec=html title="the u element"><a href=http://www.whatwg.org/html/#the-u-element>u</a></code> element with no attributes except
-possibly <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code>, or a <code class=external data-anolis-spec=html title=font><a href=http://www.whatwg.org/html/#font>font</a></code> element with no attributes except possibly
-<code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code>, <code class=external data-anolis-spec=html title=dom-font-color><a href=http://www.whatwg.org/html/#dom-font-color>color</a></code>, <code class=external data-anolis-spec=html title=dom-font-face><a href=http://www.whatwg.org/html/#dom-font-face>face</a></code>, and/or <code class=external data-anolis-spec=html title=dom-font-size><a href=http://www.whatwg.org/html/#dom-font-size>size</a></code>.
+possibly <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code>; or a <code class=external data-anolis-spec=html title=font><a href=http://www.whatwg.org/html/#font>font</a></code> element with no attributes except possibly
+<code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code>, <code class=external data-anolis-spec=html title=dom-font-color><a href=http://www.whatwg.org/html/#dom-font-color>color</a></code>, <code class=external data-anolis-spec=html title=dom-font-face><a href=http://www.whatwg.org/html/#dom-font-face>face</a></code>, and/or <code class=external data-anolis-spec=html title=dom-font-size><a href=http://www.whatwg.org/html/#dom-font-size>size</a></code>; or an <code class=external data-anolis-spec=html title="the a element"><a href=http://www.whatwg.org/html/#the-a-element>a</a></code>
+element with no attributes except possibly <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code> and/or <code class=external data-anolis-spec=html title=attr-hyperlink-href><a href=http://www.whatwg.org/html/#attr-hyperlink-href>href</a></code>.
 
 <p>A <dfn id=simple-modifiable-element>simple modifiable element</dfn> is an <a href=#html-element>HTML element</a> for
 which at least one of the following holds:
 
 <ul>
-  <li>It is a <code class=external data-anolis-spec=html title="the b element"><a href=http://www.whatwg.org/html/#the-b-element>b</a></code>, <code class=external data-anolis-spec=html title="the em element"><a href=http://www.whatwg.org/html/#the-em-element>em</a></code>, <code class=external data-anolis-spec=html title=font><a href=http://www.whatwg.org/html/#font>font</a></code>, <code class=external data-anolis-spec=html title="the i element"><a href=http://www.whatwg.org/html/#the-i-element>i</a></code>, <code class=external data-anolis-spec=html title="the span element"><a href=http://www.whatwg.org/html/#the-span-element>span</a></code>, <code class=external data-anolis-spec=html title="the strong element"><a href=http://www.whatwg.org/html/#the-strong-element>strong</a></code>, <code class=external data-anolis-spec=html title="the sub and sup elements"><a href=http://www.whatwg.org/html/#the-sub-and-sup-elements>sub</a></code>,
-  <code class=external data-anolis-spec=html title="the sub and sup elements"><a href=http://www.whatwg.org/html/#the-sub-and-sup-elements>sup</a></code>, or <code class=external data-anolis-spec=html title="the u element"><a href=http://www.whatwg.org/html/#the-u-element>u</a></code> element with no attributes.
+  <li>It is an <code class=external data-anolis-spec=html title="the a element"><a href=http://www.whatwg.org/html/#the-a-element>a</a></code>, <code class=external data-anolis-spec=html title="the b element"><a href=http://www.whatwg.org/html/#the-b-element>b</a></code>, <code class=external data-anolis-spec=html title="the em element"><a href=http://www.whatwg.org/html/#the-em-element>em</a></code>, <code class=external data-anolis-spec=html title=font><a href=http://www.whatwg.org/html/#font>font</a></code>, <code class=external data-anolis-spec=html title="the i element"><a href=http://www.whatwg.org/html/#the-i-element>i</a></code>, <code class=external data-anolis-spec=html title="the span element"><a href=http://www.whatwg.org/html/#the-span-element>span</a></code>, <code class=external data-anolis-spec=html title="the strong element"><a href=http://www.whatwg.org/html/#the-strong-element>strong</a></code>,
+  <code class=external data-anolis-spec=html title="the sub and sup elements"><a href=http://www.whatwg.org/html/#the-sub-and-sup-elements>sub</a></code>, <code class=external data-anolis-spec=html title="the sub and sup elements"><a href=http://www.whatwg.org/html/#the-sub-and-sup-elements>sup</a></code>, or <code class=external data-anolis-spec=html title="the u element"><a href=http://www.whatwg.org/html/#the-u-element>u</a></code> element with no attributes.
 
-  <li>It is a <code class=external data-anolis-spec=html title="the b element"><a href=http://www.whatwg.org/html/#the-b-element>b</a></code>, <code class=external data-anolis-spec=html title="the em element"><a href=http://www.whatwg.org/html/#the-em-element>em</a></code>, <code class=external data-anolis-spec=html title=font><a href=http://www.whatwg.org/html/#font>font</a></code>, <code class=external data-anolis-spec=html title="the i element"><a href=http://www.whatwg.org/html/#the-i-element>i</a></code>, <code class=external data-anolis-spec=html title="the span element"><a href=http://www.whatwg.org/html/#the-span-element>span</a></code>, <code class=external data-anolis-spec=html title="the strong element"><a href=http://www.whatwg.org/html/#the-strong-element>strong</a></code>, <code class=external data-anolis-spec=html title="the sub and sup elements"><a href=http://www.whatwg.org/html/#the-sub-and-sup-elements>sub</a></code>,
-  <code class=external data-anolis-spec=html title="the sub and sup elements"><a href=http://www.whatwg.org/html/#the-sub-and-sup-elements>sup</a></code>, or <code class=external data-anolis-spec=html title="the u element"><a href=http://www.whatwg.org/html/#the-u-element>u</a></code> element with exactly one attribute, which is <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code>,
-  which sets no CSS properties (including invalid or unrecognized properties).
+  <li>It is an <code class=external data-anolis-spec=html title="the a element"><a href=http://www.whatwg.org/html/#the-a-element>a</a></code>, <code class=external data-anolis-spec=html title="the b element"><a href=http://www.whatwg.org/html/#the-b-element>b</a></code>, <code class=external data-anolis-spec=html title="the em element"><a href=http://www.whatwg.org/html/#the-em-element>em</a></code>, <code class=external data-anolis-spec=html title=font><a href=http://www.whatwg.org/html/#font>font</a></code>, <code class=external data-anolis-spec=html title="the i element"><a href=http://www.whatwg.org/html/#the-i-element>i</a></code>, <code class=external data-anolis-spec=html title="the span element"><a href=http://www.whatwg.org/html/#the-span-element>span</a></code>, <code class=external data-anolis-spec=html title="the strong element"><a href=http://www.whatwg.org/html/#the-strong-element>strong</a></code>,
+  <code class=external data-anolis-spec=html title="the sub and sup elements"><a href=http://www.whatwg.org/html/#the-sub-and-sup-elements>sub</a></code>, <code class=external data-anolis-spec=html title="the sub and sup elements"><a href=http://www.whatwg.org/html/#the-sub-and-sup-elements>sup</a></code>, or <code class=external data-anolis-spec=html title="the u element"><a href=http://www.whatwg.org/html/#the-u-element>u</a></code> element with exactly one attribute, which is
+  <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code>, which sets no CSS properties (including invalid or unrecognized
+  properties).
+
+  <li>It is an <code class=external data-anolis-spec=html title="the a element"><a href=http://www.whatwg.org/html/#the-a-element>a</a></code> element with exactly one attribute, which is <code class=external data-anolis-spec=html title=attr-hyperlink-href><a href=http://www.whatwg.org/html/#attr-hyperlink-href>href</a></code>.
 
   <li>It is a <code class=external data-anolis-spec=html title=font><a href=http://www.whatwg.org/html/#font>font</a></code> element with exactly one attribute, which is either
   <code class=external data-anolis-spec=html title=dom-font-color><a href=http://www.whatwg.org/html/#dom-font-color>color</a></code>, <code class=external data-anolis-spec=html title=dom-font-face><a href=http://www.whatwg.org/html/#dom-font-face>face</a></code>, or <code class=external data-anolis-spec=html title=dom-font-size><a href=http://www.whatwg.org/html/#dom-font-size>size</a></code>.
@@ -375,12 +399,12 @@ which at least one of the following holds:
   unrecognized properties), which is "text-decoration", which is set to
   "underline" or "none".
 
-  <li>It is a <code class=external data-anolis-spec=html title="the sub and sup elements"><a href=http://www.whatwg.org/html/#the-sub-and-sup-elements>sub</a></code> or <code class=external data-anolis-spec=html title="the sub and sup elements"><a href=http://www.whatwg.org/html/#the-sub-and-sup-elements>sub</a></code> element with exactly one attribute, which is
+  <li>It is a <code class=external data-anolis-spec=html title="the sub and sup elements"><a href=http://www.whatwg.org/html/#the-sub-and-sup-elements>sub</a></code> or <code class=external data-anolis-spec=html title="the sub and sup elements"><a href=http://www.whatwg.org/html/#the-sub-and-sup-elements>sup</a></code> element with exactly one attribute, which is
   <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code>, and the <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code> attribute sets exactly one CSS property
   (including invalid or unrecognized properties), which is "vertical-align".
 
-  <li>It is a <code class=external data-anolis-spec=html title=font><a href=http://www.whatwg.org/html/#font>font</a></code> or <code class=external data-anolis-spec=html title="the span element"><a href=http://www.whatwg.org/html/#the-span-element>span</a></code> element with exactly one attribute, which is
-  <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code>, and the <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code> attribute sets exactly one CSS property
+  <li>It is an <code class=external data-anolis-spec=html title="the a element"><a href=http://www.whatwg.org/html/#the-a-element>a</a></code>, <code class=external data-anolis-spec=html title=font><a href=http://www.whatwg.org/html/#font>font</a></code>, or <code class=external data-anolis-spec=html title="the span element"><a href=http://www.whatwg.org/html/#the-span-element>span</a></code> element with exactly one attribute,
+  which is <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code>, and the <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code> attribute sets exactly one CSS property
   (including invalid or unrecognized properties).
 </ul>
 
@@ -538,6 +562,9 @@ id=foo> into <span id=foo> instead of <font id=foo>, but probably not worth it.
     <li>If <var title="">property</var> is "font-size", unset <var title="">element</var>'s
     <code class=external data-anolis-spec=html title=dom-font-size><a href=http://www.whatwg.org/html/#dom-font-size>size</a></code> attribute, if set.
   </ol>
+
+  <li>If <var title="">element</var> is an <code class=external data-anolis-spec=html title="the a element"><a href=http://www.whatwg.org/html/#the-a-element>a</a></code> element and <var title="">command</var> is
+  "createLink", unset the <code class=external data-anolis-spec=html title=attr-hyperlink-href><a href=http://www.whatwg.org/html/#attr-hyperlink-href>href</a></code> property of <var title="">element</var>.
 
   <li>If <var title="">element</var>'s <a href=#specified-value>specified value</a> for
   <var title="">command</var> is null, return the empty list.
@@ -854,6 +881,11 @@ different value.
     of <var title="">new parent</var> to <var title="">new value</var>.
   </ol>
 
+  <li>If <var title="">command</var> is "createLink", let <var title="">new parent</var> be the
+  result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("a")</a></code> on the
+  <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">node</var>, then set the <code class=external data-anolis-spec=html title=attr-hyperlink-href><a href=http://www.whatwg.org/html/#attr-hyperlink-href>href</a></code> attribute of
+  <var title="">new parent</var> to <var title="">new value</var>.
+
   <!-- We always use sup/sub elements, even in CSS mode, following Gecko and
   contradicting WebKit.  This is because <span value="vertical-align:
   sub/super">, the obvious equivalent (and what WebKit uses), behaves quite
@@ -1165,68 +1197,37 @@ boolean, so I'll go with Firefox and Opera. -->
   specify "#" for the value, or the author can rewrite it, so it's not like
   this makes the API less useful. -->
 
-  <li>Let <var title="">node list</var> be the result of <a href=#decompose title=decompose>decomposing</a> the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>.
+  <li><a href=#decompose>Decompose</a> the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>, and let <var title="">node list</var> be the
+  result.
 
-  <li>For each <var title="">node</var> in <var title="">node list</var>, in order:
+  <li>For each <code class=external data-anolis-spec=html title="the a element"><a href=http://www.whatwg.org/html/#the-a-element>a</a></code> element that has an <code class=external data-anolis-spec=html title=attr-hyperlink-href><a href=http://www.whatwg.org/html/#attr-hyperlink-href>href</a></code> attribute and is an
+  <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of some <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> in <var title="">node list</var>, set that element's
+  <code class=external data-anolis-spec=html title=attr-hyperlink-href><a href=http://www.whatwg.org/html/#attr-hyperlink-href>href</a></code> attribute to <var title="">value</var>.
+  <!-- There are three approaches here.  For instance, if you ask browsers to
+  create a link to "http://example.org" on the "b" here:
 
-  <ol>
-    <li>Let <var title="">text nodes</var> be a list of all <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node
-    <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-descendant title=concept-tree-descendant>descendants</a> of <var title="">node</var>, or <var title="">node</var> itself if it's a
-    <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node.
+    <a href=http://example.com><b>Abc</b></a>
 
-    <li>For each <var title="">text node</var> in <var title="">text nodes</var>:
+  Chrome 10 dev produces:
 
-    <ol>
-      <li>Let <var title="">ancestor link</var> be the parent of <var title="">text
-      node</var>.
+    <b><a href=http://example.com>A</a><a href=http://example.org>b</a>
+    <a href=http://example.com>c</a></b>
 
-      <li>While <var title="">ancestor link</var> is not an <code class=external data-anolis-spec=html title="the a element"><a href=http://www.whatwg.org/html/#the-a-element>a</a></code> element or has no <code class=external data-anolis-spec=html title=attr-hyperlink-href><a href=http://www.whatwg.org/html/#attr-hyperlink-href>href</a></code> attribute:
+  Firefox 4b11 produces (roughly):
 
-      <ol>
-        <li>If the parent of <var title="">ancestor link</var> is not an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>,
-        set <var title="">ancestor link</var> to null and break from this loop.
+    <a href=http://example.com><b>A<a href=http://example.org>b</a>c</b></a>
 
-        <li>Otherwise, set <var title="">ancestor link</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
-      </ol>
+  IE 9 RC and Opera 11 produce simply:
 
-      <li>If <var title="">ancestor link</var> is not null, set its <code class=external data-anolis-spec=html title=attr-hyperlink-href><a href=http://www.whatwg.org/html/#attr-hyperlink-href>href</a></code> attribute
-      to <var title="">value</var> and continue with the next <var title="">text node</var>.
-      <!-- There are three approaches here.  For instance, if you ask browsers
-      to create a link to "http://example.org" on the "b" here:
+    <a href=http://example.org><b>Abc</b></a>
 
-        <a href=http://example.com><b>Abc</b></a>
+  The last behavior produces valid markup (unlike Gecko), is simple (unlike
+  WebKit), and probably best matches user expectations.  If you happen to miss
+  out a character when selecting the link you want to change, do you really
+  intend to only change the link of part of it? -->
 
-      Chrome 10 dev produces:
-
-        <b><a href=http://example.com>A</a><a href=http://example.org>b</a>
-        <a href=http://example.com>c</a></b>
-
-      Firefox 4b11 produces (roughly):
-
-        <a href=http://example.com><b>A<a href=http://example.org>b</a>c</b></a>
-
-      IE 9 RC and Opera 11 produce simply:
-
-        <a href=http://example.org><b>Abc</b></a>
-
-      The last behavior produces valid markup (unlike Gecko), is simple (unlike
-      WebKit), and probably best matches user expectations.  If you happen to
-      miss out a character when selecting the link you want to change, do you
-      really intend to only change the link of part of it? -->
-
-      <li>Let <var title="">new parent</var> be the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("a")</a></code> on the
-      <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">text node</var>.
-
-      <li>Call <code class=external data-anolis-spec=domcore title=dom-Element-setAttribute><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-element-setattribute>setAttribute("href",
-      <var title="">value</var>)</a></code> on <var title="">new parent</var>.
-
-      <li>Insert <var title="">new parent</var> into <var title="">text node</var>'s parent as
-      the previous sibling of <var title="">text node</var>.
-
-      <li>Append <var title="">text node</var> to <var title="">new parent</var> as its last
-      child, <a href=#preserving-ranges>preserving ranges</a>.
-    </ol>
-  </ol>
+  <li><a href=#set-the-value>Set the value</a> of each <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> in <var title="">node list</var> to
+  <var title="">value</var>.
 </ol>
 
 <dd><strong>State</strong>: Always false.

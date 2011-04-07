@@ -219,6 +219,17 @@ either a string or null:
   <li>If <var>node</var> is a [[text]] node, return the <span>effective
   value</span> of its [[parent]] for <var>command</var>.
 
+  <li>If <var>command</var> is "createLink":
+
+  <ol>
+    <li>While <var>node</var> is not null, and is not an [[a]] element that has
+    an [[href]] attribute, set <var>node</var> to its [[parent]].
+
+    <li>If <var>node</var> is null, return null.
+
+    <li>Return the [[attrvalue]] of <var>node</var>'s [[href]] attribute.
+  </ol>
+
   <li>If <var>command</var> is "hiliteColor":
 
   <ol>
@@ -232,11 +243,6 @@ either a string or null:
     <li>Otherwise, return the computed style of "background-color" for
     <var>node</var>.
   </ol>
-
-  <li>If <var>command</var> is "underline", and the "text-decoration"
-  property of <var>node</var> or any of its [[ancestors]] computes to
-  a value containing "underline", return "underline".  Otherwise, return
-  "none".
 
   <li>If <var>command</var> is "subscript" or "superscript":
 
@@ -270,31 +276,45 @@ either a string or null:
     <li>Return "baseline".
   </ol>
 
+  <li>If <var>command</var> is "underline", and the "text-decoration"
+  property of <var>node</var> or any of its [[ancestors]] computes to
+  a value containing "underline", return "underline".  Otherwise, return
+  "none".
+
   <li>Return the computed style for <var>node</var> of the <span>relevant CSS
   property</span> for <var>command</var>.
 </ol>
 
-<p>The <dfn>specified value</dfn> of an [[element]] for a given
-<var>command</var> is returned by the following algorithm, which will return
-either a string or null:
+<p>The <dfn>specified value</dfn> of an [[element]] <var>element</var> for a
+given <var>command</var> is returned by the following algorithm, which will
+return either a string or null:
 
 <ol>
   <li>If <var>command</var> is "hiliteColor" and the [[element]]'s
   display property does not compute to "inline", return null.
 
+  <li>If <var>command</var> is "createLink":
+
+  <ol>
+    <li>If <var>element</var> is an [[a]] element and has an [[href]]
+    attribute, return the [[attrvalue]] of that attribute.
+
+    <li>Return null.
+  </ol>
+
   <li>If <var>command</var> is "subscript" or "superscript":
 
   <ol>
-    <li>If the computed value of the [[element]]'s "display" property is
+    <li>If the computed value of <var>element</var>'s "display" property is
     neither "inline" nor "inline-block" nor "inline-table", return null.
 
-    <li>If the [[element]] has a [[style]] attribute set, and that attribute
+    <li>If <var>element</var> has a [[style]] attribute set, and that attribute
     has the effect of setting "vertical-align", return the value that it sets
     "vertical-align" to.
 
-    <li>If the [[element]] is a [[sup]], return "super".
+    <li>If <var>element</var> is a [[sup]], return "super".
 
-    <li>If the [[element]] is a [[sub]], return "sub".
+    <li>If <var>element</var> is a [[sub]], return "sub".
 
     <li>Return null.
   </ol>
@@ -304,15 +324,15 @@ either a string or null:
 
   <li>If <var>property</var> is null, return null.
 
-  <li>If the [[element]] has a [[style]] attribute set, and that attribute has
+  <li>If <var>element</var> has a [[style]] attribute set, and that attribute has
   the effect of setting <var>property</var>, return the value that it sets
   <var>property</var> to.
 
-  <li>If the [[element]] is a [[font]] element that has an attribute whose
+  <li>If <var>element</var> is a [[font]] element that has an attribute whose
   effect is to create a [[presentationalhint]] for <var>property</var>, return
   the value that the hint sets <var>property</var> to.
 
-  <li>If the [[element]] is in the following list, and <var>property</var> is
+  <li>If <var>element</var> is in the following list, and <var>property</var> is
   equal to the CSS property name listed for it, return the string listed for
   it.
 
@@ -334,19 +354,23 @@ either a string or null:
 
 <p>A <dfn>modifiable element</dfn> is a [[b]], [[em]], [[i]], [[span]],
 [[strong]], [[sub]], [[sup]], or [[u]] element with no attributes except
-possibly [[style]], or a [[font]] element with no attributes except possibly
-[[style]], [[fontcolor]], [[fontface]], and/or [[fontsize]].
+possibly [[style]]; or a [[font]] element with no attributes except possibly
+[[style]], [[fontcolor]], [[fontface]], and/or [[fontsize]]; or an [[a]]
+element with no attributes except possibly [[style]] and/or [[href]].
 
 <p>A <dfn>simple modifiable element</dfn> is an <span>HTML element</span> for
 which at least one of the following holds:
 
 <ul>
-  <li>It is a [[b]], [[em]], [[font]], [[i]], [[span]], [[strong]], [[sub]],
-  [[sup]], or [[u]] element with no attributes.
+  <li>It is an [[a]], [[b]], [[em]], [[font]], [[i]], [[span]], [[strong]],
+  [[sub]], [[sup]], or [[u]] element with no attributes.
 
-  <li>It is a [[b]], [[em]], [[font]], [[i]], [[span]], [[strong]], [[sub]],
-  [[sup]], or [[u]] element with exactly one attribute, which is [[style]],
-  which sets no CSS properties (including invalid or unrecognized properties).
+  <li>It is an [[a]], [[b]], [[em]], [[font]], [[i]], [[span]], [[strong]],
+  [[sub]], [[sup]], or [[u]] element with exactly one attribute, which is
+  [[style]], which sets no CSS properties (including invalid or unrecognized
+  properties).
+
+  <li>It is an [[a]] element with exactly one attribute, which is [[href]].
 
   <li>It is a [[font]] element with exactly one attribute, which is either
   [[fontcolor]], [[fontface]], or [[fontsize]].
@@ -364,12 +388,12 @@ which at least one of the following holds:
   unrecognized properties), which is "text-decoration", which is set to
   "underline" or "none".
 
-  <li>It is a [[sub]] or [[sub]] element with exactly one attribute, which is
+  <li>It is a [[sub]] or [[sup]] element with exactly one attribute, which is
   [[style]], and the [[style]] attribute sets exactly one CSS property
   (including invalid or unrecognized properties), which is "vertical-align".
 
-  <li>It is a [[font]] or [[span]] element with exactly one attribute, which is
-  [[style]], and the [[style]] attribute sets exactly one CSS property
+  <li>It is an [[a]], [[font]], or [[span]] element with exactly one attribute,
+  which is [[style]], and the [[style]] attribute sets exactly one CSS property
   (including invalid or unrecognized properties).
 </ul>
 
@@ -531,6 +555,9 @@ id=foo> into <span id=foo> instead of <font id=foo>, but probably not worth it.
     <li>If <var>property</var> is "font-size", unset <var>element</var>'s
     [[fontsize]] attribute, if set.
   </ol>
+
+  <li>If <var>element</var> is an [[a]] element and <var>command</var> is
+  "createLink", unset the [[href]] property of <var>element</var>.
 
   <li>If <var>element</var>'s <span>specified value</span> for
   <var>command</var> is null, return the empty list.
@@ -857,6 +884,12 @@ different value.
     of <var>new parent</var> to <var>new value</var>.
   </ol>
 
+  <li>If <var>command</var> is "createLink", let <var>new parent</var> be the
+  result of calling <code data-anolis-spec=domcore
+  title=dom-Document-createElement>createElement("a")</code> on the
+  [[ownerdocument]] of <var>node</var>, then set the [[href]] attribute of
+  <var>new parent</var> to <var>new value</var>.
+
   <!-- We always use sup/sub elements, even in CSS mode, following Gecko and
   contradicting WebKit.  This is because <span value="vertical-align:
   sub/super">, the obvious equivalent (and what WebKit uses), behaves quite
@@ -1177,73 +1210,37 @@ boolean, so I'll go with Firefox and Opera. -->
   specify "#" for the value, or the author can rewrite it, so it's not like
   this makes the API less useful. -->
 
-  <li>Let <var>node list</var> be the result of <span
-  title=decompose>decomposing</span> the [[range]].
+  <li><span>Decompose</span> the [[range]], and let <var>node list</var> be the
+  result.
 
-  <li>For each <var>node</var> in <var>node list</var>, in order:
+  <li>For each [[a]] element that has an [[href]] attribute and is an
+  [[ancestor]] of some [[node]] in <var>node list</var>, set that element's
+  [[href]] attribute to <var>value</var>.
+  <!-- There are three approaches here.  For instance, if you ask browsers to
+  create a link to "http://example.org" on the "b" here:
 
-  <ol>
-    <li>Let <var>text nodes</var> be a list of all [[text]] node
-    [[descendants]] of <var>node</var>, or <var>node</var> itself if it's a
-    [[text]] node.
+    <a href=http://example.com><b>Abc</b></a>
 
-    <li>For each <var>text node</var> in <var>text nodes</var>:
+  Chrome 10 dev produces:
 
-    <ol>
-      <li>Let <var>ancestor link</var> be the parent of <var>text
-      node</var>.
+    <b><a href=http://example.com>A</a><a href=http://example.org>b</a>
+    <a href=http://example.com>c</a></b>
 
-      <li>While <var>ancestor link</var> is not an <code data-anolis-spec=html
-      title="the a element">a</code> element or has no [[href]] attribute:
+  Firefox 4b11 produces (roughly):
 
-      <ol>
-        <li>If the parent of <var>ancestor link</var> is not an [[element]],
-        set <var>ancestor link</var> to null and break from this loop.
+    <a href=http://example.com><b>A<a href=http://example.org>b</a>c</b></a>
 
-        <li>Otherwise, set <var>ancestor link</var> to its [[parent]].
-      </ol>
+  IE 9 RC and Opera 11 produce simply:
 
-      <li>If <var>ancestor link</var> is not null, set its [[href]] attribute
-      to <var>value</var> and continue with the next <var>text node</var>.
-      <!-- There are three approaches here.  For instance, if you ask browsers
-      to create a link to "http://example.org" on the "b" here:
+    <a href=http://example.org><b>Abc</b></a>
 
-        <a href=http://example.com><b>Abc</b></a>
+  The last behavior produces valid markup (unlike Gecko), is simple (unlike
+  WebKit), and probably best matches user expectations.  If you happen to miss
+  out a character when selecting the link you want to change, do you really
+  intend to only change the link of part of it? -->
 
-      Chrome 10 dev produces:
-
-        <b><a href=http://example.com>A</a><a href=http://example.org>b</a>
-        <a href=http://example.com>c</a></b>
-
-      Firefox 4b11 produces (roughly):
-
-        <a href=http://example.com><b>A<a href=http://example.org>b</a>c</b></a>
-
-      IE 9 RC and Opera 11 produce simply:
-
-        <a href=http://example.org><b>Abc</b></a>
-
-      The last behavior produces valid markup (unlike Gecko), is simple (unlike
-      WebKit), and probably best matches user expectations.  If you happen to
-      miss out a character when selecting the link you want to change, do you
-      really intend to only change the link of part of it? -->
-
-      <li>Let <var>new parent</var> be the result of calling <code
-      data-anolis-spec=domcore
-      title=dom-Document-createElement>createElement("a")</code> on the
-      [[ownerdocument]] of <var>text node</var>.
-
-      <li>Call <code data-anolis-spec=domcore
-      title=dom-Element-setAttribute>setAttribute("href",
-      <var>value</var>)</code> on <var>new parent</var>.
-
-      <li>Insert <var>new parent</var> into <var>text node</var>'s parent as
-      the previous sibling of <var>text node</var>.
-
-      <li>Append <var>text node</var> to <var>new parent</var> as its last
-      child, <span>preserving ranges</span>.
-    </ol>
-  </ol>
+  <li><span>Set the value</span> of each [[node]] in <var>node list</var> to
+  <var>value</var>.
 </ol>
 
 <dd><strong>State</strong>: Always false.

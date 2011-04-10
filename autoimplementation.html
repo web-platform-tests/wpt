@@ -7,6 +7,9 @@ body { font-family: serif }
 b, strong { font-weight: bold }
 .bold { font-weight: bold }
 .notbold { font-weight: normal }
+.underline { text-decoration: underline }
+.line-through { text-decoration: line-through }
+.underline-and-line-through { text-decoration: underline line-through }
 #purple { color: purple }
 td > div:first-child {
 	padding-bottom: 0.2em;
@@ -559,6 +562,15 @@ var tests = {
 		'<table data-start=0 data-end=1><tbody><tr><td>foo<td>bar<td>baz</table>',
 		'{<table><tr><td>foo<td>bar<td>baz</table>}',
 
+		'foo<u>[bar]</u>baz',
+		'foo<span style="text-decoration: underline">[bar]</span>baz',
+		'<u>foo[bar]baz</u>',
+		'<u>foo[b<span style="color:red">ar]ba</span>z</u>',
+		'<u>foo[b<span style="color:red" id=foo>ar]ba</span>z</u>',
+		'<u>foo[b<span style="font-size:3em">ar]ba</span>z</u>',
+		'<u>foo[b<i>ar]ba</i>z</u>',
+		'<p style="text-decoration: underline">foo[bar]baz</p>',
+
 		'foo<s>[bar]</s>baz',
 		'foo<span style="text-decoration: line-through">[bar]</span>baz',
 		'<s>foo[bar]baz</s>',
@@ -567,6 +579,27 @@ var tests = {
 		'<s>foo[b<span style="font-size:3em">ar]ba</span>z</s>',
 		'<s>foo[b<i>ar]ba</i>z</s>',
 		'<p style="text-decoration: line-through">foo[bar]baz</p>',
+
+		'foo<span style="text-decoration: underline line-through">[bar]</span>baz',
+		'foo<span style="text-decoration: underline line-through">b[a]r</span>baz',
+		'foo<s style="text-decoration: underline">[bar]</s>baz',
+		'foo<s style="text-decoration: underline">b[a]r</s>baz',
+		'foo<u style="text-decoration: line-through">[bar]</u>baz',
+		'foo<u style="text-decoration: line-through">b[a]r</u>baz',
+		'foo<s style="text-decoration: overline">[bar]</s>baz',
+		'foo<s style="text-decoration: overline">b[a]r</s>baz',
+		'foo<u style="text-decoration: overline">[bar]</u>baz',
+		'foo<u style="text-decoration: overline">b[a]r</u>baz',
+
+		'<p style="text-decoration: line-through">foo[bar]baz</p>',
+		'<p style="text-decoration: overline">foo[bar]baz</p>',
+
+		'foo<span class="underline">[bar]</span>baz',
+		'foo<span class="underline">b[a]r</span>baz',
+		'foo<span class="line-through">[bar]</span>baz',
+		'foo<span class="line-through">b[a]r</span>baz',
+		'foo<span class="underline-and-line-through">[bar]</span>baz',
+		'foo<span class="underline-and-line-through">b[a]r</span>baz',
 	],
 	subscript: [
 		'foo[bar]baz',
@@ -651,6 +684,36 @@ var tests = {
 		'<u>foo[b<span style="font-size:3em">ar]ba</span>z</u>',
 		'<u>foo[b<i>ar]ba</i>z</u>',
 		'<p style="text-decoration: underline">foo[bar]baz</p>',
+
+		'foo<s>[bar]</s>baz',
+		'foo<span style="text-decoration: line-through">[bar]</span>baz',
+		'<s>foo[bar]baz</s>',
+		'<s>foo[b<span style="color:red">ar]ba</span>z</s>',
+		'<s>foo[b<span style="color:red" id=foo>ar]ba</span>z</s>',
+		'<s>foo[b<span style="font-size:3em">ar]ba</span>z</s>',
+		'<s>foo[b<i>ar]ba</i>z</s>',
+		'<p style="text-decoration: line-through">foo[bar]baz</p>',
+
+		'foo<span style="text-decoration: underline line-through">[bar]</span>baz',
+		'foo<span style="text-decoration: underline line-through">b[a]r</span>baz',
+		'foo<s style="text-decoration: underline">[bar]</s>baz',
+		'foo<s style="text-decoration: underline">b[a]r</s>baz',
+		'foo<u style="text-decoration: line-through">[bar]</u>baz',
+		'foo<u style="text-decoration: line-through">b[a]r</u>baz',
+		'foo<s style="text-decoration: overline">[bar]</s>baz',
+		'foo<s style="text-decoration: overline">b[a]r</s>baz',
+		'foo<u style="text-decoration: overline">[bar]</u>baz',
+		'foo<u style="text-decoration: overline">b[a]r</u>baz',
+
+		'<p style="text-decoration: line-through">foo[bar]baz</p>',
+		'<p style="text-decoration: overline">foo[bar]baz</p>',
+
+		'foo<span class="underline">[bar]</span>baz',
+		'foo<span class="underline">b[a]r</span>baz',
+		'foo<span class="line-through">[bar]</span>baz',
+		'foo<span class="line-through">b[a]r</span>baz',
+		'foo<span class="underline-and-line-through">[bar]</span>baz',
+		'foo<span class="underline-and-line-through">b[a]r</span>baz',
 	],
 	unlink: [
 		'<a href=http://www.google.com/>foo[bar]baz</a>',

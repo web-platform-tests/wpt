@@ -27,7 +27,7 @@
 <body class=draft>
 <div class=head id=head>
 <h1>HTML Editing Commands</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-7-april-2011>Work in Progress &mdash; Last Update 7 April 2011</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-10-april-2011>Work in Progress &mdash; Last Update 10 April 2011</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;ayg+spec@aryeh.name&gt;
@@ -419,23 +419,20 @@ which at least one of the following holds:
   <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code>, and the <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code> attribute sets exactly one CSS property
   (including invalid or unrecognized properties), which is "font-style".
 
-  <li>It is an <code class=external data-anolis-spec=html title="the s element"><a href=http://www.whatwg.org/html/#the-s-element>s</a></code> element with exactly one attribute, which is <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code>, and
-  the <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code> attribute sets exactly one CSS property (including invalid or
-  unrecognized properties), which is "text-decoration", which is set to
-  "line-through" or "underline" or "none".
-
-  <li>It is a <code class=external data-anolis-spec=html title="the u element"><a href=http://www.whatwg.org/html/#the-u-element>u</a></code> element with exactly one attribute, which is <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code>, and
-  the <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code> attribute sets exactly one CSS property (including invalid or
-  unrecognized properties), which is "text-decoration", which is set to
-  "line-through" or "underline" or "none".
-
   <li>It is a <code class=external data-anolis-spec=html title="the sub and sup elements"><a href=http://www.whatwg.org/html/#the-sub-and-sup-elements>sub</a></code> or <code class=external data-anolis-spec=html title="the sub and sup elements"><a href=http://www.whatwg.org/html/#the-sub-and-sup-elements>sup</a></code> element with exactly one attribute, which is
   <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code>, and the <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code> attribute sets exactly one CSS property
   (including invalid or unrecognized properties), which is "vertical-align".
 
   <li>It is an <code class=external data-anolis-spec=html title="the a element"><a href=http://www.whatwg.org/html/#the-a-element>a</a></code>, <code class=external data-anolis-spec=html title=font><a href=http://www.whatwg.org/html/#font>font</a></code>, or <code class=external data-anolis-spec=html title="the span element"><a href=http://www.whatwg.org/html/#the-span-element>span</a></code> element with exactly one attribute,
   which is <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code>, and the <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code> attribute sets exactly one CSS property
-  (including invalid or unrecognized properties).
+  (including invalid or unrecognized properties), and that property is not
+  "text-decoration".
+
+  <li>It is an <code class=external data-anolis-spec=html title="the a element"><a href=http://www.whatwg.org/html/#the-a-element>a</a></code>, <code class=external data-anolis-spec=html title=font><a href=http://www.whatwg.org/html/#font>font</a></code>, <code class=external data-anolis-spec=html title="the s element"><a href=http://www.whatwg.org/html/#the-s-element>s</a></code>, <code class=external data-anolis-spec=html title="the span element"><a href=http://www.whatwg.org/html/#the-span-element>span</a></code>, or <code class=external data-anolis-spec=html title="the u element"><a href=http://www.whatwg.org/html/#the-u-element>u</a></code> element with exactly
+  one attribute, which is <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code>, and the <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code> attribute sets exactly
+  one CSS property (including invalid or unrecognized properties), which is
+  "text-decoration", which is set to "line-through" or "underline" or
+  "overline" or "none".
 </ul>
 
 <p class=note>Conceptually, a simple modifiable element is a modifiable element

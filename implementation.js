@@ -699,32 +699,6 @@ function isSimpleModifiableElement(node) {
 		return true;
 	}
 
-	// "It is an s element with exactly one attribute, which is style, and the
-	// style attribute sets exactly one CSS property (including invalid or
-	// unrecognized properties), which is "text-decoration", which is set to
-	// "line-through" or "underline" or "none"."
-	if (node.tagName == "S"
-	&& node.hasAttribute("style")
-	&& node.style.length == 1
-	&& (node.style.textDecoration == "line-through"
-	|| node.style.textDecoration == "underline"
-	|| node.style.textDecoration == "none")) {
-		return true;
-	}
-
-	// "It is a u element with exactly one attribute, which is style, and the
-	// style attribute sets exactly one CSS property (including invalid or
-	// unrecognized properties), which is "text-decoration", which is set to
-	// "line-through" or "underline" or "none"."
-	if (node.tagName == "U"
-	&& node.hasAttribute("style")
-	&& node.style.length == 1
-	&& (node.style.textDecoration == "line-through"
-	|| node.style.textDecoration == "underline"
-	|| node.style.textDecoration == "none")) {
-		return true;
-	}
-
 	// "It is a sub or sub element with exactly one attribute, which is style,
 	// and the style attribute sets exactly one CSS property (including invalid
 	// or unrecognized properties), which is "vertical-align"."
@@ -737,10 +711,27 @@ function isSimpleModifiableElement(node) {
 
 	// "It is an a, font, or span element with exactly one attribute, which is
 	// style, and the style attribute sets exactly one CSS property (including
-	// invalid or unrecognized properties)."
+	// invalid or unrecognized properties), and that property is not
+	// "text-decoration"."
 	if ((node.tagName == "A" || node.tagName == "FONT" || node.tagName == "SPAN")
 	&& node.hasAttribute("style")
-	&& node.style.length == 1) {
+	&& node.style.length == 1
+	&& node.style.textDecoration == "") {
+		return true;
+	}
+
+	// "It is an a, font, s, span, or u element with exactly one attribute,
+	// which is style, and the style attribute sets exactly one CSS property
+	// (including invalid or unrecognized properties), which is
+	// "text-decoration", which is set to "line-through" or "underline" or
+	// "overline" or "none"."
+	if (["A", "FONT", "S", "SPAN", "U"].indexOf(node.tagName) != -1
+	&& node.hasAttribute("style")
+	&& node.style.length == 1
+	&& (node.style.textDecoration == "line-through"
+	|| node.style.textDecoration == "underline"
+	|| node.style.textDecoration == "overline"
+	|| node.style.textDecoration == "none")) {
 		return true;
 	}
 

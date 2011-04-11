@@ -4,6 +4,9 @@
 body { font-family: serif }
 .yes { color: green }
 .no { color: red }
+/* http://www.w3.org/Bugs/Public/show_bug.cgi?id=12154
+ * https://bugzilla.mozilla.org/show_bug.cgi?id=589124
+ * https://bugs.webkit.org/show_bug.cgi?id=56400 */
 b, strong { font-weight: bold }
 .bold { font-weight: bold }
 .notbold { font-weight: normal }
@@ -43,6 +46,7 @@ blank in IE and Opera, which don't support styleWithCSS.)
 	<li><a href=#bold>bold</a>
 	<li><a href=#createlink>createlink</a>
 	<li><a href=#fontname>fontname</a>
+	<li><a href=#fontsize>fontsize</a>
 	<li><a href=#forecolor>forecolor</a>
 	<li><a href=#hilitecolor>hilitecolor</a>
 	<li><a href=#italic>italic</a>
@@ -66,8 +70,8 @@ been written, so the spec column does nothing.
 <table border=1><tr><th>Input <th>Spec <th>Browser <th>Same?</table>
 <table border=1><tr><th>Input <th>Spec <th>Browser <th>Same?</table>
 
-<p><label>Enter new test here: <input></label>
-<button onclick="addTest('backcolor', document.querySelector('#backcolor input').value)">Add test</button>
+<p><label>New test input: <input></label><label>New test value: <input></label>
+<button onclick="addTest('backcolor')">Add test</button>
 </div>
 
 <div id=bold>
@@ -78,8 +82,8 @@ been written, so the spec column does nothing.
 <table border=1><tr><th>Input <th>Spec <th>Browser <th>Same?</table>
 <table border=1><tr><th>Input <th>Spec <th>Browser <th>Same?</table>
 
-<p><label>Enter new test here: <input></label>
-<button onclick="addTest('bold', document.querySelector('#bold input').value)">Add test</button>
+<p><label>New test input: <input></label>
+<button onclick="addTest('bold')">Add test</button>
 </div>
 
 <div id=createlink>
@@ -87,12 +91,10 @@ been written, so the spec column does nothing.
 
 <button onclick="runTests('createlink')">Run tests</button>
 
-<p>Tests set the href to "http://www.google.com/".
-
 <table border=1><tr><th>Input <th>Spec <th>Browser <th>Same?</table>
 
-<p><label>Enter new test here: <input></label>
-<button onclick="addTest('createlink', document.querySelector('#createlink input').value)">Add test</button>
+<p><label>New test input: <input></label><label>New test value: <input></label>
+<button onclick="addTest('createlink')">Add test</button>
 </div>
 
 <div id=fontname>
@@ -100,13 +102,25 @@ been written, so the spec column does nothing.
 
 <button onclick="runTests('fontname')">Run tests</button>
 
-<p>Tests set the font-family to "sans-serif".  Note that the body's font-family is "serif".
+<p>Note that the body's font-family is "serif".
 
 <table border=1><tr><th>Input <th>Spec <th>Browser <th>Same?</table>
 <table border=1><tr><th>Input <th>Spec <th>Browser <th>Same?</table>
 
-<p><label>Enter new test here: <input></label>
-<button onclick="addTest('fontname', document.querySelector('#fontname input').value)">Add test</button>
+<p><label>New test input: <input></label><label>New test value: <input></label>
+<button onclick="addTest('fontname')">Add test</button>
+</div>
+
+<div id=fontsize>
+<h1>fontsize</h1>
+
+<button onclick="runTests('fontsize')">Run tests</button>
+
+<table border=1><tr><th>Input <th>Spec <th>Browser <th>Same?</table>
+<table border=1><tr><th>Input <th>Spec <th>Browser <th>Same?</table>
+
+<p><label>New test input: <input></label><label>New test value: <input></label>
+<button onclick="addTest('fontsize')">Add test</button>
 </div>
 
 <div id=forecolor>
@@ -114,13 +128,11 @@ been written, so the spec column does nothing.
 
 <button onclick="runTests('forecolor')">Run tests</button>
 
-<p>Tests set the color to "#FF0000".
-
 <table border=1><tr><th>Input <th>Spec <th>Browser <th>Same?</table>
 <table border=1><tr><th>Input <th>Spec <th>Browser <th>Same?</table>
 
-<p><label>Enter new test here: <input></label>
-<button onclick="addTest('forecolor', document.querySelector('#forecolor input').value)">Add test</button>
+<p><label>New test input: <input></label><label>New test value: <input></label>
+<button onclick="addTest('forecolor')">Add test</button>
 </div>
 
 <div id=hilitecolor>
@@ -128,12 +140,12 @@ been written, so the spec column does nothing.
 
 <button onclick="runTests('hilitecolor')">Run tests</button>
 
-<p>Tests set the color to "#FF8888".  In IE we run backColor instead of hiliteColor.
+<p>In IE we run backColor instead of hiliteColor.
 
 <table border=1><tr><th>Input <th>Spec <th>Browser <th>Same?</table>
 
-<p><label>Enter new test here: <input></label>
-<button onclick="addTest('hilitecolor', document.querySelector('#hilitecolor input').value)">Add test</button>
+<p><label>New test input: <input></label><label>New test value: <input></label>
+<button onclick="addTest('hilitecolor')">Add test</button>
 </div>
 
 <div id=italic>
@@ -144,8 +156,8 @@ been written, so the spec column does nothing.
 <table border=1><tr><th>Input <th>Spec <th>Browser <th>Same?</table>
 <table border=1><tr><th>Input <th>Spec <th>Browser <th>Same?</table>
 
-<p><label>Enter new test here: <input></label>
-<button onclick="addTest('italic', document.querySelector('#italic input').value)">Add test</button>
+<p><label>New test input: <input></label>
+<button onclick="addTest('italic')">Add test</button>
 </div>
 
 <div id=strikethrough>
@@ -156,8 +168,8 @@ been written, so the spec column does nothing.
 <table border=1><tr><th>Input <th>Spec <th>Browser <th>Same?</table>
 <table border=1><tr><th>Input <th>Spec <th>Browser <th>Same?</table>
 
-<p><label>Enter new test here: <input></label>
-<button onclick="addTest('strikethrough', document.querySelector('#strikethrough input').value)">Add test</button>
+<p><label>New test input: <input></label>
+<button onclick="addTest('strikethrough')">Add test</button>
 </div>
 
 <div id=subscript>
@@ -168,8 +180,8 @@ been written, so the spec column does nothing.
 <table border=1><tr><th>Input <th>Spec <th>Browser <th>Same?</table>
 <table border=1><tr><th>Input <th>Spec <th>Browser <th>Same?</table>
 
-<p><label>Enter new test here: <input></label>
-<button onclick="addTest('subscript', document.querySelector('#subscript input').value)">Add test</button>
+<p><label>New test input: <input></label>
+<button onclick="addTest('subscript')">Add test</button>
 </div>
 
 <div id=superscript>
@@ -180,8 +192,8 @@ been written, so the spec column does nothing.
 <table border=1><tr><th>Input <th>Spec <th>Browser <th>Same?</table>
 <table border=1><tr><th>Input <th>Spec <th>Browser <th>Same?</table>
 
-<p><label>Enter new test here: <input></label>
-<button onclick="addTest('superscript', document.querySelector('#superscript input').value)">Add test</button>
+<p><label>New test input: <input></label>
+<button onclick="addTest('superscript')">Add test</button>
 </div>
 
 <div id=underline>
@@ -192,8 +204,8 @@ been written, so the spec column does nothing.
 <table border=1><tr><th>Input <th>Spec <th>Browser <th>Same?</table>
 <table border=1><tr><th>Input <th>Spec <th>Browser <th>Same?</table>
 
-<p><label>Enter new test here: <input></label>
-<button onclick="addTest('underline', document.querySelector('#underline input').value)">Add test</button>
+<p><label>New test input: <input></label>
+<button onclick="addTest('underline')">Add test</button>
 </div>
 
 <div id=unlink>
@@ -203,27 +215,12 @@ been written, so the spec column does nothing.
 
 <table border=1><tr><th>Input <th>Spec <th>Browser <th>Same?</table>
 
-<p><label>Enter new test here: <input></label>
-<button onclick="addTest('unlink', document.querySelector('#unlink input').value)">Add test</button>
+<p><label>New test input: <input></label>
+<button onclick="addTest('unlink')">Add test</button>
 </div>
 
 <script src=implementation.js></script>
 <script>
-var values = {
-	backcolor: "#FF8888",
-	bold: null,
-	createlink: "http://www.google.com/",
-	fontname: "sans-serif",
-	forecolor: "#FF0000",
-	hilitecolor: "#FF8888",
-	italic: null,
-	strikethrough: null,
-	subscript: null,
-	superscript: null,
-	underline: null,
-	unlink: null,
-};
-
 var tests = {
 	backcolor: [
 		'<p>foo[bar]baz',
@@ -429,6 +426,76 @@ var tests = {
 		'foo<span style="font-family: sans-serif">b[a]r</span>baz',
 		'foo<span style="font-family: monospace">[bar]</span>baz',
 		'foo<span style="font-family: monospace">b[a]r</span>baz',
+	],
+	fontsize: [
+		["1", 'foo[bar]baz'],
+		["0", 'foo[bar]baz'],
+		["-5", 'foo[bar]baz'],
+		["6", 'foo[bar]baz'],
+		["7", 'foo[bar]baz'],
+		["8", 'foo[bar]baz'],
+		["100", 'foo[bar]baz'],
+		["2em", 'foo[bar]baz'],
+		["20pt", 'foo[bar]baz'],
+		["xx-large", 'foo[bar]baz'],
+		[" 1 ", 'foo[bar]baz'],
+		["1.", 'foo[bar]baz'],
+		["1.0", 'foo[bar]baz'],
+		["1.0e2", 'foo[bar]baz'],
+		["1.1", 'foo[bar]baz'],
+		["1.9", 'foo[bar]baz'],
+		["+0", 'foo[bar]baz'],
+		["+1", 'foo[bar]baz'],
+		["+9", 'foo[bar]baz'],
+		["-0", 'foo[bar]baz'],
+		["-1", 'foo[bar]baz'],
+		["-9", 'foo[bar]baz'],
+		["", 'foo[bar]baz'],
+
+		'{<p><p> <p>foo</p>}',
+		'foo[bar<i>baz]qoz</i>quz',
+
+		'<table><tbody><tr><td>foo<td>b[a]r<td>baz</table>',
+		'<table><tbody><tr data-start=1 data-end=2><td>foo<td>bar<td>baz</table>',
+		'<table><tbody><tr data-start=0 data-end=2><td>foo<td>bar<td>baz</table>',
+		'<table><tbody data-start=0 data-end=1><tr><td>foo<td>bar<td>baz</table>',
+		'<table data-start=0 data-end=1><tbody><tr><td>foo<td>bar<td>baz</table>',
+		'{<table><tr><td>foo<td>bar<td>baz</table>}',
+
+		'foo<font size=1>[bar]</font>baz',
+		'<font size=1>foo[bar]baz</font>',
+		'foo<font size=3>[bar]</font>baz',
+		'<font size=3>foo[bar]baz</font>',
+		'foo<font size=4>[bar]</font>baz',
+		'<font size=4>foo[bar]baz</font>',
+		'foo<font size=+1>[bar]</font>baz',
+		'<font size=+1>foo[bar]baz</font>',
+		'<font size=4>foo<font size=1>b[a]r</font>baz</font>',
+
+		'foo<span style="font-size: xx-small">[bar]</span>baz',
+		'<span style="font-size: xx-small">foo[bar]baz</span>',
+		'foo<span style="font-size: medium">[bar]</span>baz',
+		'<span style="font-size: medium">foo[bar]baz</span>',
+		'foo<span style="font-size: large">[bar]</span>baz',
+		'<span style="font-size: large">foo[bar]baz</span>',
+		'<span style="font-size: large">foo<span style="font-size: xx-small">b[a]r</span>baz</span>',
+
+		'foo<span style="font-size: 2em">[bar]</span>baz',
+		'<span style="font-size: 2em">foo[bar]baz</span>',
+
+		'<p style="font-size: xx-small">foo[bar]baz</p>',
+		'<p style="font-size: medium">foo[bar]baz</p>',
+		'<p style="font-size: large">foo[bar]baz</p>',
+		'<p style="font-size: 2em">foo[bar]baz</p>',
+
+		["3", '<p style="font-size: xx-small">foo[bar]baz</p>'],
+		["3", '<p style="font-size: medium">foo[bar]baz</p>'],
+		["3", '<p style="font-size: large">foo[bar]baz</p>'],
+		["3", '<p style="font-size: 2em">foo[bar]baz</p>'],
+
+		// Minor algorithm bug: this changes the size of the "b" and "r" in
+		// "bar" when we pull down styles
+		["3", '<font size=6>foo <span style="font-size: 2em">b[a]r</span> baz</font>'],
 	],
 	forecolor: [
 		'foo[bar]baz',
@@ -739,25 +806,42 @@ var tests = {
 	],
 };
 
+var defaultValues = {
+	backcolor: "#FF8888",
+	createlink: "http://www.google.com/",
+	fontname: "sans-serif",
+	fontsize: "4",
+	forecolor: "#FF0000",
+	hilitecolor: "#FF8888",
+};
+
 function runTests(command) {
 	var runTestsButton = document.querySelector("#" + command + " button");
 	runTestsButton.parentNode.removeChild(runTestsButton);
 
 	var addTestButton = document.querySelector("#" + command + " button");
-	var input = document.querySelector("#" + command + " input");
+	var inputs = document.getElementById(command).getElementsByTagName("input");
 	for (var i = 0; i < tests[command].length; i++) {
-		// The following code should logically be equivalent to:
-		//   addTest(command, tests[command][i]);
-		// But that only works to set one cell, in IE9.  All the other tests
-		// fail.  So, um, WTF, but it works.
-		input.value = tests[command][i];
-		input.focus();
+		// This code actually focuses and clicks everything because for some
+		// reason, anything else doesn't work in IE9 . . .
+		if (typeof tests[command][i] == "string") {
+			inputs[0].value = tests[command][i];
+			if (inputs.length == 2) {
+				inputs[1].value = defaultValues[command]
+			}
+		} else {
+			inputs[0].value = tests[command][i][1];
+			inputs[1].value = tests[command][i][0];
+		}
+		inputs[0].focus();
 		addTestButton.click();
 	}
-	input.value = "";
+	for (var i = 0; i < inputs.length; i++) {
+		inputs[i].value = "";
+	}
 }
 
-function addTest(command, test) {
+function addTest(command) {
 	var doubleTesting = ["backcolor", "bold", "italic", "strikethrough",
 	"underline", "forecolor", "fontname", "fontsize", "subscript",
 	"superscript"].indexOf(command) != -1;
@@ -771,6 +855,14 @@ function addTest(command, test) {
 	}
 
 	var tr = doSetup(command, 0);
+
+	var test;
+	var inputs = document.getElementById(command).getElementsByTagName("input");
+	if (inputs.length == 1) {
+		test = inputs[0].value;
+	} else {
+		test = [inputs[1].value, inputs[0].value];
+	}
 
 	doInputCell(tr, test);
 	doSpecCell(tr, test, command, false);
@@ -807,15 +899,28 @@ function doSetup(command, idx) {
 }
 
 function doInputCell(tr, test) {
+	var value = null;
+	if (typeof test != "string") {
+		value = test[0];
+		test = test[1];
+	}
 	var inputCell = document.createElement("td");
 	inputCell.innerHTML = "<div></div><div></div>";
 	inputCell.firstChild.innerHTML = test;
 	inputCell.lastChild.textContent = inputCell.firstChild.innerHTML;
+	if (value !== null) {
+		inputCell.lastChild.textContent += ' (value: "' + value + '")';
+	}
 	tr.appendChild(inputCell);
 }
 
 function doSpecCell(tr, test, command, styleWithCss) {
-	var value = values[command];
+	var value;
+
+	if (typeof test != "string") {
+		value = test[0];
+		test = test[1];
+	}
 
 	var specCell = document.createElement("td");
 	tr.appendChild(specCell);
@@ -840,7 +945,7 @@ function doSpecCell(tr, test, command, styleWithCss) {
 
 	var key = "execcommand-" + command
 		+ "-" + Number(myQueryCommandState("styleWithCSS"))
-		+ "-" + test;
+		+ "-" + tr.firstChild.lastChild.textContent;
 
 	var oldValue = localStorage[key];
 	localStorage[key] = specCell.lastChild.textContent;
@@ -854,7 +959,12 @@ function doSpecCell(tr, test, command, styleWithCss) {
 }
 
 function doBrowserCell(tr, test, command, styleWithCss) {
-	var value = values[command];
+	var value;
+
+	if (typeof test != "string") {
+		value = test[0];
+		test = test[1];
+	}
 
 	if (command == "hilitecolor" && navigator.userAgent.indexOf("MSIE") != -1) {
 		// IE behaves differently, and I want to see how it works.

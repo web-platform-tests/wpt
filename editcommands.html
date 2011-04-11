@@ -27,7 +27,7 @@
 <body class=draft>
 <div class=head id=head>
 <h1>HTML Editing Commands</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-10-april-2011>Work in Progress &mdash; Last Update 10 April 2011</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-11-april-2011>Work in Progress &mdash; Last Update 11 April 2011</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;ayg+spec@aryeh.name&gt;
@@ -302,6 +302,9 @@ either a string or null:
 given <var title="">command</var> is returned by the following algorithm, which will
 return either a string or null:
 
+<p class=XXX>"Specified value" already means something in CSS, I need to find a
+different name.
+
 <ol>
   <li>If <var title="">command</var> is "hiliteColor" and the <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>'s
   display property does not compute to "inline", return null.
@@ -369,7 +372,8 @@ return either a string or null:
 
   <li>If <var title="">element</var> is a <code class=external data-anolis-spec=html title=font><a href=http://www.whatwg.org/html/#font>font</a></code> element that has an attribute whose
   effect is to create a <a class=external data-anolis-spec=html href=http://www.whatwg.org/html/#presentational-hints title="presentational hints">presentational hint</a> for <var title="">property</var>, return
-  the value that the hint sets <var title="">property</var> to.
+  the value that the hint sets <var title="">property</var> to.  (For a <code class=external data-anolis-spec=html title=dom-font-size><a href=http://www.whatwg.org/html/#dom-font-size>size</a></code> of
+  7, this will be the non-CSS value "xxx-large".)
 
   <li>If <var title="">element</var> is in the following list, and <var title="">property</var> is
   equal to the CSS property name listed for it, return the string listed for
@@ -720,6 +724,11 @@ with a <code class=external data-anolis-spec=html title="the style attribute"><a
       value</a> for <var title="">command</var> is neither null nor equal to
       <var title="">propagated value</var>, continue with the next <var title="">child</var>.
 
+      <p class=XXX>This will be incorrect for relative font sizes.  If the font
+      size on the parent was removed and the font size on the child is in ems
+      or percents or something, it will now change value.  This isn't likely to
+      come up, so we'll ignore it for now.
+
       <li>If <var title="">child</var> is the last member of <var title="">ancestor list</var>,
       continue with the next <var title="">child</var>.
 
@@ -918,17 +927,34 @@ different value.
     the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("font")</a></code> on the
     <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">node</var>, then set the <code class=external data-anolis-spec=html title=dom-font-face><a href=http://www.whatwg.org/html/#dom-font-face>face</a></code> attribute
     of <var title="">new parent</var> to <var title="">new value</var>.
-
-    <li>If <var title="">command</var> is "fontSize", let <var title="">new parent</var> be the
-    result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("font")</a></code> on the
-    <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">node</var>, then set the <code class=external data-anolis-spec=html title=dom-font-size><a href=http://www.whatwg.org/html/#dom-font-size>size</a></code> attribute
-    of <var title="">new parent</var> to <var title="">new value</var>.
   </ol>
 
   <li>If <var title="">command</var> is "createLink" or "unlink", let <var title="">new
   parent</var> be the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("a")</a></code> on the
   <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">node</var>, then set the <code class=external data-anolis-spec=html title=attr-hyperlink-href><a href=http://www.whatwg.org/html/#attr-hyperlink-href>href</a></code> attribute of
   <var title="">new parent</var> to <var title="">new value</var>.
+
+  <!-- WebKit is the only engine that ever outputs anything but font tags for
+  fontSize.  For size=7, it uses font-size: -webkit-xxx-large.  We just output
+  a font tag no matter what. -->
+  <li>If <var title="">command</var> is "fontSize"; and <var title="">new value</var> is one of
+  "xx-small", "small", "medium", "large", "x-large", "xx-large", or
+  "xxx-large"; and either the <a href=#css-styling-flag>CSS styling flag</a> is false, or
+  <var title="">new value</var> is "xxx-large": let <var title="">new parent</var> be the result
+  of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("font")</a></code> on the
+  <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">node</var>, then set the <code class=external data-anolis-spec=html title=dom-font-size><a href=http://www.whatwg.org/html/#dom-font-size>size</a></code> attribute of
+  <var title="">new parent</var> to the number from the following table based on
+  <var title="">new value</var>:
+
+  <dl class=switch>
+    <dt>xx-small <dd>1
+    <dt>small <dd>2
+    <dt>normal <dd>3
+    <dt>large <dd>4
+    <dt>x-large <dd>5
+    <dt>xx-large <dd>6
+    <dt>xxx-large <dd>7
+  </dl>
 
   <!-- We always use sup/sub elements, even in CSS mode, following Gecko and
   contradicting WebKit.  This is because <span value="vertical-align:
@@ -953,7 +979,8 @@ different value.
   <li>If the <a href=#effective-value>effective value</a> of <var title="">command</var> for <var title="">new
   parent</var> is not <var title="">new value</var>, and the <a href=#relevant-css-property>relevant CSS
   property</a> for <var title="">command</var> is not null, set that CSS property of
-  <var title="">new parent</var> to <var title="">new value</var>.
+  <var title="">new parent</var> to <var title="">new value</var> (if the new value would be
+  valid).
 
   <li>If <var title="">command</var> is "strikethrough", and <var title="">new value</var> is
   "line-through", and the <a href=#effective-value>effective value</a> of "strikethrough" for
@@ -977,8 +1004,10 @@ different value.
 
     <li>Remove <var title="">new parent</var> from its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
 
-    <li>If <var title="">new parent</var> is a <code class=external data-anolis-spec=html title="the span element"><a href=http://www.whatwg.org/html/#the-span-element>span</a></code>, and either <var title="">command</var>
-    is "underline" or <var title="">command</var> is "strikethrough" or the
+    <li>If <var title="">new parent</var> is a <code class=external data-anolis-spec=html title="the span element"><a href=http://www.whatwg.org/html/#the-span-element>span</a></code>, and either a)
+    <var title="">command</var> is "underline" or "strikethrough", or b)
+    <var title="">command</var> is "fontSize" and <var title="">new value</var> is not
+    "xxx-large", or c) <var title="">command</var> is not "fontSize" and the
     <a href=#relevant-css-property>relevant CSS property</a> for <var title="">command</var> is not null:
 
     <ol>
@@ -1353,6 +1382,116 @@ font-family.  I'll leave CSSOM to decide what that means if there are no
 applicable style rules. -->
 
 <dd><strong>Relevant CSS Property</strong>: "font-family"
+
+
+<dt><code title=""><dfn id=command-fontsize title=command-fontsize>fontSize</dfn></code>
+
+<dd><strong>Action</strong>:
+<!--
+IE 9: Parses the value as a number (allowing floating-point), rounds to the
+  nearest integer, then clamps to the range 1 to 7.  If the value is not a
+  valid number, including if it has trailing characters (like "2em"), does
+  nothing.  Normalizes relative sizes, so "+0" is the same as "+3", etc.
+  Treats empty string the same as "1".
+Firefox 4.0: Passes the value through literally to <font size=>, so "2em" gets
+  you <font size="2em">.  Always uses <font>, even with styleWithCss true.
+  Ignores the command if the value is the empty string.
+Chrome 12 dev: Parses the value as a legacy font size, so "2em" becomes "2",
+  then outputs a <font> with the resulting number.  If there is no resulting
+  number, like for a value of "xx-small", does nothing.  In styleWithCss mode,
+  outputs a span with corresponding CSS keywords: 1 = x-small, 2 = small,
+  . . ., 6 = xx-large, 7 = -webkit-xxx-large.  Normalizes relative sizes, so
+  "+0" is the same as "3", etc.  Ignores the command if the value is the empty
+  string.
+Opera 11: Parses the value as an integer (ignoring floating-point as trailing
+  characters), then outputs that.  This means that "+0" becomes <font size=0>
+  instead of <font size=+0> or <font size=3>.  Non-numeric values get
+  interpreted as 0.  Does not clamp, and is willing to output negative numbers.
+  Treats empty string as "0".
+
+What all of these have in common is that they force the author to deal with
+legacy font values and don't let them use CSS.  This is undesirable, so I
+ignore how implementations behave.  Practically any value that did the same
+thing in IE and Firefox should still do the same thing here, so I'm only
+respecifying non-interoperable behavior anyway.
+-->
+<ol>
+  <li>If <var title="">value</var> is the empty string, do nothing and abort these
+  steps.
+
+  <li><a class=external data-anolis-spec=html href=http://www.whatwg.org/html/#strip-leading-and-trailing-whitespace>Strip leading and trailing whitespace</a>
+  from <var title="">value</var>.
+
+  <li>If <var title="">value</var> is a <a class=external data-anolis-spec=html href=http://www.whatwg.org/html/#valid-floating-point-number>valid floating point
+  number</a>, or would be a <a class=external data-anolis-spec=html href=http://www.whatwg.org/html/#valid-floating-point-number>valid floating point
+  number</a> if a single leading "+" character were stripped:
+
+  <ol>
+    <li>If the first character of <var title="">value</var> is "+", delete the character
+    and let <var title="">mode</var> be "relative-plus".
+
+    <li>Otherwise, if the first character of <var title="">value</var> is "-", delete
+    the character and let <var title="">mode</var> be "relative-minus".
+
+    <li>Otherwise, let <var title="">mode</var> be "absolute".
+
+    <li>Apply the <a class=external data-anolis-spec=html href=http://www.whatwg.org/html/#rules-for-parsing-non-negative-integers>rules for parsing non-negative
+    integers</a> to <var title="">value</var>, and let <var title="">number</var> be the
+    result.
+
+    <li>If <var title="">mode</var> is "relative-plus", add three to <var title="">number</var>.
+
+    <li>If <var title="">mode</var> is "relative-minus", negate <var title="">number</var>, then
+    add three to it.
+
+    <li>If <var title="">number</var> is less than one, let <var title="">number</var> equal 1.
+
+    <li>If <var title="">number</var> is greater than seven, let <var title="">number</var> equal
+    7.
+
+    <li>Set <var title="">value</var> to the string here corresponding to
+    <var title="">number</var>:
+
+    <dl class=switch>
+      <dt>1 <dd>xx-small
+      <dt>2 <dd>small
+      <dt>3 <dd>normal
+      <dt>4 <dd>large
+      <dt>5 <dd>x-large
+      <dt>6 <dd>xx-large
+      <dt>7 <dd>xxx-large
+    </dl>
+
+    <p class=XXX>The entry for 7 here is an issue: there's no CSS value that
+    corresponds to it.  Even if we got one added to the drafts, it wouldn't be
+    backward-compatible to use it.  WebKit is the only engine that supports CSS
+    output for fontSize, and it uses -webkit-xxx-large in this case, which is
+    unworkable.  Instead, we just always output a font tag for size 7.  If
+    authors want conforming markup, they'll need to give CSS sizes above size
+    7, not legacy sizes.
+  </ol>
+
+  <li>If <var title="">value</var> is not one of the strings "xx-small", "x-small",
+  "small", "medium", "large", "x-large", "xx-large", "xxx-large", and is not a
+  valid CSS absolute length, then do nothing and abort these steps.
+
+  <p class=XXX>Not sure this is the best way to do it.  We don't want to allow
+  relative lengths, because those can have very weird user-visible behavior.
+  For instance, a size of 2em would sometimes double the text size, but if you
+  applied it a second time it would do nothing, but if you deselected one
+  character it would suddenly double the size again.  Current UAs just only
+  allow numeric values.  There's no harm in allowing "x-small" and absolute
+  sizes, I don't think.
+
+  <li><a href=#decompose>Decompose</a> the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>, then <a href=#set-the-value>set the value</a> of
+  each returned <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> to <var title="">value</var>.
+</ol>
+
+<dd><strong>State</strong>:
+
+<dd><strong>Value</strong>:
+
+<dd><strong>Relevant CSS Property</strong>: "font-size"
 
 
 <dt><code title=""><dfn id=command-forecolor title=command-forecolor>foreColor</dfn></code>

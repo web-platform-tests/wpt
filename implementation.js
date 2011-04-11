@@ -60,6 +60,8 @@ function isDescendant(descendant, ancestor) {
 function convertProperty(property) {
 	// Special-case for now
 	var map = {
+		"fontFamily": "font-family",
+		"fontSize": "font-size",
 		"fontStyle": "font-style",
 		"fontWeight": "font-weight",
 		"textDecoration": "text-decoration",
@@ -71,9 +73,25 @@ function convertProperty(property) {
 	return property;
 }
 
+// Return the <font size=X> value for the given CSS size, or undefined if there
+// is none.
+function getFontSize(cssVal) {
+	return {
+		"xx-small": 1,
+		"small": 2,
+		"medium": 3,
+		"large": 4,
+		"x-large": 5,
+		"xx-large": 6,
+		"xxx-large": 7
+	}[cssVal];
+}
+
+// This entire function is a massive hack to work around browser
+// incompatibility.  It wouldn't work in real life, but it's good enough for a
+// test implementation.  It's not clear how all this should actually be specced
+// in practice, since CSS defines no notion of equality, does it?
 function valuesEqual(command, val1, val2) {
-	// This is a bad hack to work around browser incompatibility.  It wouldn't
-	// work in real life, but it's good enough for a test implementation.
 	if (val1 === null || val2 === null) {
 		return val1 === val2;
 	}
@@ -95,7 +113,54 @@ function valuesEqual(command, val1, val2) {
 	var test2 = document.createElement("span");
 	test2.style[property] = val2;
 
-	return test1.style[property] == test2.style[property];
+	// Computing style doesn't seem to always work if the elements aren't in
+	// the body?
+	document.body.appendChild(test1);
+	document.body.appendChild(test2);
+
+	// We can't test xxx-large with CSS.  Also, some browsers (WebKit?) don't
+	// actually make <span style="font-size: xx-small"> have the same size as
+	// <font size="1">, and so on.  So we have to test both . . .
+	var test1b = null, test2b = null;
+	if (command == "fontsize") {
+		if (typeof getFontSize(val1) != "undefined") {
+			test1b = document.createElement("font");
+			test1b.size = getFontSize(val1);
+			document.body.appendChild(test1b);
+		}
+		if (typeof getFontSize(val2) != "undefined") {
+			test2b = document.createElement("font");
+			test2b.size = getFontSize(val2);
+			document.body.appendChild(test2b);
+		}
+	}
+
+	var computed1b = test1b
+		? getComputedStyle(test1b)[property]
+		: null;
+	var computed2b = test2b
+		? getComputedStyle(test2b)[property]
+		: null;
+	var computed1 = command == "fontsize" && val1 == "xxx-large"
+		? computed1b
+		: getComputedStyle(test1)[property];
+	var computed2 = command == "fontsize" && val2 == "xxx-large"
+		? computed2b
+		: getComputedStyle(test2)[property];
+
+	document.body.removeChild(test1);
+	document.body.removeChild(test2);
+
+	if (test1b) {
+		document.body.removeChild(test1b);
+	}
+	if (test2b) {
+		document.body.removeChild(test2b);
+	}
+
+	return computed1 == computed2
+		|| computed1 === computed2b
+		|| computed1b === computed2;
 }
 
 // Opera 11 puts HTML elements in the null namespace, it seems.
@@ -542,10 +607,8 @@ function getSpecifiedValue(element, command) {
 
 	// "If element is a font element that has an attribute whose effect is
 	// to create a presentational hint for property, return the value that the
-	// hint sets property to."
-	//
-	// I'm cheating on this one for simplicity.  Font-size is especially wrong,
-	// and will have to be fixed when I implement execCommand() for that.
+	// hint sets property to.  (For a size of 7, this will be the non-CSS value
+	// "xxx-large".)"
 	if (isHtmlNamespace(element.namespaceURI)
 	&& element.tagName == "FONT") {
 		if (property == "color" && element.hasAttribute("color")) {
@@ -555,7 +618,23 @@ function getSpecifiedValue(element, command) {
 			return element.face;
 		}
 		if (property == "fontSize" && element.hasAttribute("size")) {
-			return element.size;
+			// This is not even close to correct in general.
+			var size = parseInt(element.size);
+			if (size < 1) {
+				size = 1;
+			}
+			if (size > 7) {
+				size = 7;
+			}
+			return {
+				1: "xx-small",
+				2: "small",
+				3: "medium",
+				4: "large",
+				5: "x-large",
+				6: "xx-large",
+				7: "xxx-large"
+			}[size];
 		}
 	}
 
@@ -1315,14 +1394,6 @@ function forceValue(node, command, newValue) {
 			newParent = node.ownerDocument.createElement("font");
 			newParent.face = newValue;
 		}
-
-		// "If command is "fontSize", let new parent be the result of calling
-		// createElement("font") on the ownerDocument of node, then set the
-		// size attribute of new parent to new value."
-		if (command == "fontsize") {
-			newParent = node.ownerDocument.createElement("font");
-			newParent.size = newValue;
-		}
 	}
 
 	// "If command is "createLink" or "unlink", let new parent be the result of
@@ -1331,6 +1402,27 @@ function forceValue(node, command, newValue) {
 	if (command == "createlink" || command == "unlink") {
 		newParent = node.ownerDocument.createElement("a");
 		newParent.setAttribute("href", newValue);
+	}
+
+	// "If command is "fontSize"; and new value is one of "xx-small", "small",
+	// "medium", "large", "x-large", "xx-large", or "xxx-large"; and either the
+	// CSS styling flag is false, or new value is "xxx-large": let new parent
+	// be the result of calling createElement("font") on the ownerDocument of
+	// node, then set the size attribute of new parent to the number from the
+	// following table based on new value: [table omitted]"
+	if (command == "fontsize"
+	&& ["xx-small", "small", "medium", "large", "x-large", "xx-large", "xxx-large"].indexOf(newValue) != -1
+	&& (!cssStylingFlag || newValue == "xxx-large")) {
+		newParent = node.ownerDocument.createElement("font");
+		newParent.size = {
+			"xx-small": 1,
+			"small": 2,
+			"medium": 3,
+			"large": 4,
+			"x-large": 5,
+			"xx-large": 6,
+			"xxx-large": 7
+		}[newValue];
 	}
 
 	// "If command is "subscript" and new value is "sub", let new parent be the
@@ -1357,7 +1449,7 @@ function forceValue(node, command, newValue) {
 
 	// "If the effective value of command for new parent is not new value, and
 	// the relevant CSS property for command is not null, set that CSS property
-	// of new parent to new value."
+	// of new parent to new value (if the new value would be valid)."
 	var property = getRelevantCssProperty(command);
 	if (property !== null
 	&& !valuesEqual(command, getEffectiveValue(newParent, command), newValue)) {
@@ -1396,11 +1488,16 @@ function forceValue(node, command, newValue) {
 		// "Remove new parent from its parent."
 		newParent.parentNode.removeChild(newParent);
 
-		// "If new parent is a span, and either command is "underline" or
-		// command is "strikethrough" or the relevant CSS property for command
-		// is not null:"
+		// "If new parent is a span, and either a) command is "underline" or
+		// "strikethrough", or b) command is "fontSize" and new value is not
+		// "xxx-large", or c) command is not "fontSize" and the relevant CSS
+		// property for command is not null:"
 		if (newParent.tagName == "SPAN"
-		&& (command == "underline" || command == "strikethrough" || property !== null)) {
+		&& (
+			(command == "underline" || command == "strikethrough")
+			|| (command == "fontsize" && newValue != "xxx-large")
+			|| (command != "fontsize" && property !== null)
+		)) {
 			// "If the relevant CSS property for command is not null, set that
 			// CSS property of node to new value."
 			if (property !== null) {
@@ -1530,6 +1627,7 @@ function getRelevantCssProperty(command) {
 	var prop = {
 		bold: "fontWeight",
 		fontname: "fontFamily",
+		fontsize: "fontSize",
 		forecolor: "color",
 		hilitecolor: "backgroundColor",
 		italic: "fontStyle",
@@ -1603,6 +1701,96 @@ function myExecCommand(command, showUI, value, range) {
 		case "fontname":
 		// "Decompose the range, then set the value of each returned node with
 		// new value equal to value."
+		var nodeList = decomposeRange(range);
+		for (var i = 0; i < nodeList.length; i++) {
+			setNodeValue(nodeList[i], command, value);
+		}
+		break;
+
+		case "fontsize":
+		// "If value is the empty string, do nothing and abort these steps."
+		if (value === "") {
+			return;
+		}
+
+		// "Strip leading and trailing whitespace from value."
+		//
+		// Cheap hack, not following the actual algorithm.
+		value = value.trim();
+
+		// "If value is a valid floating point number, or would be a valid
+		// floating point number if a single leading "+" character were
+		// stripped:"
+		if (/^[-+]?[0-9]+(\.[0-9]+)?([eE][-+]?[0-9]+)?$/.test(value)) {
+			var mode;
+
+			// "If the first character of value is "+", delete the character
+			// and let mode be "relative-plus"."
+			if (value[0] == "+") {
+				value = value.slice(1);
+				mode = "relative-plus";
+			// "Otherwise, if the first character of value is "-", delete the
+			// character and let mode be "relative-minus"."
+			} else if (value[0] == "-") {
+				value = value.slice(1);
+				mode = "relative-minus";
+			// "Otherwise, let mode be "absolute"."
+			} else {
+				mode = "absolute";
+			}
+
+			// "Apply the rules for parsing non-negative integers to value, and
+			// let number be the result."
+			//
+			// Another cheap hack.
+			var num = parseInt(value);
+
+			// "If mode is "relative-plus", add three to number."
+			if (mode == "relative-plus") {
+				num += 3;
+			}
+
+			// "If mode is "relative-minus", negate number, then add three to
+			// it."
+			if (mode == "relative-minus") {
+				num = 3 - num;
+			}
+
+			// "If number is less than one, let number equal 1."
+			if (num < 1) {
+				num = 1;
+			}
+
+			// "If number is greater than seven, let number equal 7."
+			if (num > 7) {
+				num = 7;
+			}
+
+			// "Set value to the string here corresponding to number:" [table
+			// omitted]
+			value = {
+				1: "xx-small",
+				2: "small",
+				3: "medium",
+				4: "large",
+				5: "x-large",
+				6: "xx-large",
+				7: "xxx-large"
+			}[num];
+		}
+
+		// "If value is not one of the strings "xx-small", "x-small", "small",
+		// "medium", "large", "x-large", "xx-large", "xxx-large", and is not a
+		// valid CSS absolute length, then do nothing and abort these steps."
+		//
+		// More cheap hacks to skip of valid CSS absolute length checks.
+		if (["xx-small", "x-small", "small", "medium", "large", "x-large", "xx-large", "xxx-large"].indexOf(value) == -1
+		&& !/^[0-9]+(\.[0-9]+)?(cm|mm|in|pt|pc)$/.test(value)) {
+			return;
+		}
+
+		// "Decompose the range, then set the value of each returned node to
+		// value."
 		var nodeList = decomposeRange(range);
 		for (var i = 0; i < nodeList.length; i++) {
 			setNodeValue(nodeList[i], command, value);

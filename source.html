@@ -291,6 +291,9 @@ either a string or null:
 given <var>command</var> is returned by the following algorithm, which will
 return either a string or null:
 
+<p class=XXX>"Specified value" already means something in CSS, I need to find a
+different name.
+
 <ol>
   <li>If <var>command</var> is "hiliteColor" and the [[element]]'s
   display property does not compute to "inline", return null.
@@ -358,7 +361,8 @@ return either a string or null:
 
   <li>If <var>element</var> is a [[font]] element that has an attribute whose
   effect is to create a [[presentationalhint]] for <var>property</var>, return
-  the value that the hint sets <var>property</var> to.
+  the value that the hint sets <var>property</var> to.  (For a [[fontsize]] of
+  7, this will be the non-CSS value "xxx-large".)
 
   <li>If <var>element</var> is in the following list, and <var>property</var> is
   equal to the CSS property name listed for it, return the string listed for
@@ -713,6 +717,11 @@ with a [[style]] attribute).
       value</span> for <var>command</var> is neither null nor equal to
       <var>propagated value</var>, continue with the next <var>child</var>.
 
+      <p class=XXX>This will be incorrect for relative font sizes.  If the font
+      size on the parent was removed and the font size on the child is in ems
+      or percents or something, it will now change value.  This isn't likely to
+      come up, so we'll ignore it for now.
+
       <li>If <var>child</var> is the last member of <var>ancestor list</var>,
       continue with the next <var>child</var>.
 
@@ -922,12 +931,6 @@ different value.
     title=dom-Document-createElement>createElement("font")</code> on the
     [[ownerdocument]] of <var>node</var>, then set the [[fontface]] attribute
     of <var>new parent</var> to <var>new value</var>.
-
-    <li>If <var>command</var> is "fontSize", let <var>new parent</var> be the
-    result of calling <code data-anolis-spec=domcore
-    title=dom-Document-createElement>createElement("font")</code> on the
-    [[ownerdocument]] of <var>node</var>, then set the [[fontsize]] attribute
-    of <var>new parent</var> to <var>new value</var>.
   </ol>
 
   <li>If <var>command</var> is "createLink" or "unlink", let <var>new
@@ -935,6 +938,29 @@ different value.
   title=dom-Document-createElement>createElement("a")</code> on the
   [[ownerdocument]] of <var>node</var>, then set the [[href]] attribute of
   <var>new parent</var> to <var>new value</var>.
+
+  <!-- WebKit is the only engine that ever outputs anything but font tags for
+  fontSize.  For size=7, it uses font-size: -webkit-xxx-large.  We just output
+  a font tag no matter what. -->
+  <li>If <var>command</var> is "fontSize"; and <var>new value</var> is one of
+  "xx-small", "small", "medium", "large", "x-large", "xx-large", or
+  "xxx-large"; and either the <span>CSS styling flag</span> is false, or
+  <var>new value</var> is "xxx-large": let <var>new parent</var> be the result
+  of calling <code data-anolis-spec=domcore
+  title=dom-Document-createElement>createElement("font")</code> on the
+  [[ownerdocument]] of <var>node</var>, then set the [[fontsize]] attribute of
+  <var>new parent</var> to the number from the following table based on
+  <var>new value</var>:
+
+  <dl class=switch>
+    <dt>xx-small <dd>1
+    <dt>small <dd>2
+    <dt>normal <dd>3
+    <dt>large <dd>4
+    <dt>x-large <dd>5
+    <dt>xx-large <dd>6
+    <dt>xxx-large <dd>7
+  </dl>
 
   <!-- We always use sup/sub elements, even in CSS mode, following Gecko and
   contradicting WebKit.  This is because <span value="vertical-align:
@@ -964,7 +990,8 @@ different value.
   <li>If the <span>effective value</span> of <var>command</var> for <var>new
   parent</var> is not <var>new value</var>, and the <span>relevant CSS
   property</span> for <var>command</var> is not null, set that CSS property of
-  <var>new parent</var> to <var>new value</var>.
+  <var>new parent</var> to <var>new value</var> (if the new value would be
+  valid).
 
   <li>If <var>command</var> is "strikethrough", and <var>new value</var> is
   "line-through", and the <span>effective value</span> of "strikethrough" for
@@ -988,8 +1015,10 @@ different value.
 
     <li>Remove <var>new parent</var> from its [[parent]].
 
-    <li>If <var>new parent</var> is a [[span]], and either <var>command</var>
-    is "underline" or <var>command</var> is "strikethrough" or the
+    <li>If <var>new parent</var> is a [[span]], and either a)
+    <var>command</var> is "underline" or "strikethrough", or b)
+    <var>command</var> is "fontSize" and <var>new value</var> is not
+    "xxx-large", or c) <var>command</var> is not "fontSize" and the
     <span>relevant CSS property</span> for <var>command</var> is not null:
 
     <ol>
@@ -1368,6 +1397,116 @@ font-family.  I'll leave CSSOM to decide what that means if there are no
 applicable style rules. -->
 
 <dd><strong>Relevant CSS Property</strong>: "font-family"
+
+
+<dt><code title><dfn title=command-fontsize>fontSize</dfn></code>
+
+<dd><strong>Action</strong>:
+<!--
+IE 9: Parses the value as a number (allowing floating-point), rounds to the
+  nearest integer, then clamps to the range 1 to 7.  If the value is not a
+  valid number, including if it has trailing characters (like "2em"), does
+  nothing.  Normalizes relative sizes, so "+0" is the same as "+3", etc.
+  Treats empty string the same as "1".
+Firefox 4.0: Passes the value through literally to <font size=>, so "2em" gets
+  you <font size="2em">.  Always uses <font>, even with styleWithCss true.
+  Ignores the command if the value is the empty string.
+Chrome 12 dev: Parses the value as a legacy font size, so "2em" becomes "2",
+  then outputs a <font> with the resulting number.  If there is no resulting
+  number, like for a value of "xx-small", does nothing.  In styleWithCss mode,
+  outputs a span with corresponding CSS keywords: 1 = x-small, 2 = small,
+  . . ., 6 = xx-large, 7 = -webkit-xxx-large.  Normalizes relative sizes, so
+  "+0" is the same as "3", etc.  Ignores the command if the value is the empty
+  string.
+Opera 11: Parses the value as an integer (ignoring floating-point as trailing
+  characters), then outputs that.  This means that "+0" becomes <font size=0>
+  instead of <font size=+0> or <font size=3>.  Non-numeric values get
+  interpreted as 0.  Does not clamp, and is willing to output negative numbers.
+  Treats empty string as "0".
+
+What all of these have in common is that they force the author to deal with
+legacy font values and don't let them use CSS.  This is undesirable, so I
+ignore how implementations behave.  Practically any value that did the same
+thing in IE and Firefox should still do the same thing here, so I'm only
+respecifying non-interoperable behavior anyway.
+-->
+<ol>
+  <li>If <var>value</var> is the empty string, do nothing and abort these
+  steps.
+
+  <li><span data-anolis-spec=html>Strip leading and trailing whitespace</span>
+  from <var>value</var>.
+
+  <li>If <var>value</var> is a <span data-anolis-spec=html>valid floating point
+  number</span>, or would be a <span data-anolis-spec=html>valid floating point
+  number</span> if a single leading "+" character were stripped:
+
+  <ol>
+    <li>If the first character of <var>value</var> is "+", delete the character
+    and let <var>mode</var> be "relative-plus".
+
+    <li>Otherwise, if the first character of <var>value</var> is "-", delete
+    the character and let <var>mode</var> be "relative-minus".
+
+    <li>Otherwise, let <var>mode</var> be "absolute".
+
+    <li>Apply the <span data-anolis-spec=html>rules for parsing non-negative
+    integers</span> to <var>value</var>, and let <var>number</var> be the
+    result.
+
+    <li>If <var>mode</var> is "relative-plus", add three to <var>number</var>.
+
+    <li>If <var>mode</var> is "relative-minus", negate <var>number</var>, then
+    add three to it.
+
+    <li>If <var>number</var> is less than one, let <var>number</var> equal 1.
+
+    <li>If <var>number</var> is greater than seven, let <var>number</var> equal
+    7.
+
+    <li>Set <var>value</var> to the string here corresponding to
+    <var>number</var>:
+
+    <dl class=switch>
+      <dt>1 <dd>xx-small
+      <dt>2 <dd>small
+      <dt>3 <dd>normal
+      <dt>4 <dd>large
+      <dt>5 <dd>x-large
+      <dt>6 <dd>xx-large
+      <dt>7 <dd>xxx-large
+    </dl>
+
+    <p class=XXX>The entry for 7 here is an issue: there's no CSS value that
+    corresponds to it.  Even if we got one added to the drafts, it wouldn't be
+    backward-compatible to use it.  WebKit is the only engine that supports CSS
+    output for fontSize, and it uses -webkit-xxx-large in this case, which is
+    unworkable.  Instead, we just always output a font tag for size 7.  If
+    authors want conforming markup, they'll need to give CSS sizes above size
+    7, not legacy sizes.
+  </ol>
+
+  <li>If <var>value</var> is not one of the strings "xx-small", "x-small",
+  "small", "medium", "large", "x-large", "xx-large", "xxx-large", and is not a
+  valid CSS absolute length, then do nothing and abort these steps.
+
+  <p class=XXX>Not sure this is the best way to do it.  We don't want to allow
+  relative lengths, because those can have very weird user-visible behavior.
+  For instance, a size of 2em would sometimes double the text size, but if you
+  applied it a second time it would do nothing, but if you deselected one
+  character it would suddenly double the size again.  Current UAs just only
+  allow numeric values.  There's no harm in allowing "x-small" and absolute
+  sizes, I don't think.
+
+  <li><span>Decompose</span> the [[range]], then <span>set the value</span> of
+  each returned [[node]] to <var>value</var>.
+</ol>
+
+<dd><strong>State</strong>:
+
+<dd><strong>Value</strong>:
+
+<dd><strong>Relevant CSS Property</strong>: "font-size"
 
 
 <dt><code title><dfn title=command-forecolor>foreColor</dfn></code>

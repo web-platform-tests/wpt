@@ -50,6 +50,7 @@ blank in IE and Opera, which don't support styleWithCSS.)
 	<li><a href=#fontsize>fontsize</a>
 	<li><a href=#forecolor>forecolor</a>
 	<li><a href=#hilitecolor>hilitecolor</a>
+	<li><a href=#inserthorizontalrule>inserthorizontalrule</a>
 	<li><a href=#insertimage>insertimage</a>
 	<li><a href=#italic>italic</a>
 	<li><a href=#removeformat>removeformat</a>
@@ -149,6 +150,17 @@ been written, so the spec column does nothing.
 
 <p><label>New test input: <input></label><label>New test value: <input></label>
 <button onclick="addTest('hilitecolor')">Add test</button>
+</div>
+
+<div id=inserthorizontalrule>
+<h1>inserthorizontalrule</h1>
+
+<button onclick="runTests('inserthorizontalrule')">Run tests</button>
+
+<table border=1><tr><th>Input <th>Spec <th>Browser <th>Same?</table>
+
+<p><label>New test input: <input></label><label>New test value: <input></label>
+<button onclick="addTest('inserthorizontalrule')">Add test</button>
 </div>
 
 <div id=insertimage>
@@ -576,6 +588,11 @@ var tests = {
 		'<div style="background-color: #ff8888"><p style="background-color: aqua">b[ar]</p></div>',
 		'<span style="display: block; background-color: #ff8888"><span style="display: block; background-color: aqua">b[ar]</span></span>',
 	],
+	inserthorizontalrule: [
+		["abc", 'foo[bar]baz'],
+		'foo[bar]baz',
+		'foo<b>{bar}</b>baz',
+	],
 	insertimage: [
 		["", 'foo[bar]baz'],
 		'foo[bar]baz',
@@ -999,6 +1016,7 @@ var defaultValues = {
 	fontsize: "4",
 	forecolor: "#FF0000",
 	hilitecolor: "#FF8888",
+	inserthorizontalrule: "",
 	insertimage: "/img/lion.svg",
 };
 
@@ -1014,7 +1032,7 @@ function runTests(command) {
 		if (typeof tests[command][i] == "string") {
 			inputs[0].value = tests[command][i];
 			if (inputs.length == 2) {
-				inputs[1].value = defaultValues[command]
+				inputs[1].value = defaultValues[command];
 			}
 		} else {
 			inputs[0].value = tests[command][i][1];

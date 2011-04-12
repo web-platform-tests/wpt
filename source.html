@@ -1583,6 +1583,59 @@ do nothing and abort these steps.  Otherwise, <span>decompose</span> the
 <dd><strong>Relevant CSS Property</strong>: "background-color"
 
 
+<dt><code title><dfn title=command-inserthorizontalrule>insertHorizontalRule</dfn></code>
+
+<dd><strong>Action</strong>:
+<!-- You'd think interop here would be simple, right?  Nope: we have three
+different behaviors across four browsers.  Opera 11.00 is the only one that
+acts more or less like the spec.  IE9 and Chrome 12 dev treat the value as an
+id, which is weird and probably useless, so I don't do it.  Firefox 4.0
+produces <hr size=2 width=100%> instead of <hr>, which is also weird and almost
+definitely useless, so I don't do it. -->
+
+<ol>
+  <li>Run <code data-anolis-spec=domrange
+  title=dom-Range-deleteContents>deleteContents()</code> on the [[range]].
+
+  <li>Let (<var>node</var>, <var>offset</var>) be the [[range]]'s
+  [[rangestart]].
+
+  <li>If <var>node</var> is a [[text]] or [[comment]] node and its [[parent]]
+  is null, abort these steps and do nothing.
+
+  <li>Let <var>hr</var> be the result of calling <code
+  data-anolis-spec=domcore
+  title=dom-Document-createElement>createElement("hr")</code> on the
+  [[ownerdocument]] of <var>node</var> (or on <var>node</var> itself if it's a
+  [[document]]).
+
+  <li>If <var>node</var> is a [[text]] node, and <var>offset</var> is not
+  equal to 0 or the [[nodelength]] of <var>node</var>, run <code
+  data-anolis-spec=domcore
+  title=dom-Text-splitText>splitText(<var>offset</var>)</code> on
+  <var>node</var>.
+
+  <li>If <var>node</var> is a [[text]] node, and <var>offset</var> is equal to
+  the [[nodelength]] of <var>node</var>, set <var>node</var> to its
+  [[nextsibling]].
+
+  <li>If <var>node</var> is null or is a [[text]] or [[comment]] node, run
+  <code data-anolis-spec=domcore
+  title=dom-Node-insertBefore>insertBefore(<var>hr</var>,
+  <var>node</var>)</code> on the parent of <var>node</var>.
+
+  <li>Otherwise, let <var>child</var> be the <var>offset</var>th child of
+  <var>node</var> (or null if there is no such child), and run <code
+  data-anolis-spec=domcore
+  title=dom-Node-insertBefore>insertBefore(<var>hr</var>,
+  <var>child</var>)</code> on <var>node</var>.
+</ol>
+
+<dd><strong>State</strong>:
+
+<dd><strong>Value</strong>:
+
+
 <dt><code title><dfn title=command-insertimage>insertImage</dfn></code>
 
 <dd><strong>Action</strong>:
@@ -1735,7 +1788,7 @@ likely to be common.
   include non-conforming elements, which HTML doesn't give content models.  If
   everything had categories, we'd want something like "either it's
   unrecognized, or it's phrasing content that's not also embedded or
-  interactive.  Except this has weird corner-cases like ins and del that are
+  interactive".  Except this has weird corner-cases like ins and del that are
   sometimes phrasing and sometimes flow.
 
   <li>For each <var>element</var> in <var>affected elements</var>:

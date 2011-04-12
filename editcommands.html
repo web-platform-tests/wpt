@@ -1570,6 +1570,51 @@ do nothing and abort these steps.  Otherwise, <a href=#decompose>decompose</a> t
 <dd><strong>Relevant CSS Property</strong>: "background-color"
 
 
+<dt><code title=""><dfn id=command-inserthorizontalrule title=command-inserthorizontalrule>insertHorizontalRule</dfn></code>
+
+<dd><strong>Action</strong>:
+<!-- You'd think interop here would be simple, right?  Nope: we have three
+different behaviors across four browsers.  Opera 11.00 is the only one that
+acts more or less like the spec.  IE9 and Chrome 12 dev treat the value as an
+id, which is weird and probably useless, so I don't do it.  Firefox 4.0
+produces <hr size=2 width=100%> instead of <hr>, which is also weird and almost
+definitely useless, so I don't do it. -->
+
+<ol>
+  <li>Run <code class=external data-anolis-spec=domrange title=dom-Range-deleteContents><a href=http://html5.org/specs/dom-range.html#dom-range-deletecontents>deleteContents()</a></code> on the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>.
+
+  <li>Let (<var title="">node</var>, <var title="">offset</var>) be the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>'s
+  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a>.
+
+  <li>If <var title="">node</var> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> or <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#comment>Comment</a></code> node and its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>
+  is null, abort these steps and do nothing.
+
+  <li>Let <var title="">hr</var> be the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("hr")</a></code> on the
+  <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">node</var> (or on <var title="">node</var> itself if it's a
+  <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#document>Document</a></code>).
+
+  <li>If <var title="">node</var> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node, and <var title="">offset</var> is not
+  equal to 0 or the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> of <var title="">node</var>, run <code class=external data-anolis-spec=domcore title=dom-Text-splitText><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-text-splittext>splitText(<var title="">offset</var>)</a></code> on
+  <var title="">node</var>.
+
+  <li>If <var title="">node</var> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node, and <var title="">offset</var> is equal to
+  the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> of <var title="">node</var>, set <var title="">node</var> to its
+  <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code>.
+
+  <li>If <var title="">node</var> is null or is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> or <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#comment>Comment</a></code> node, run
+  <code class=external data-anolis-spec=domcore title=dom-Node-insertBefore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-insertbefore>insertBefore(<var title="">hr</var>,
+  <var title="">node</var>)</a></code> on the parent of <var title="">node</var>.
+
+  <li>Otherwise, let <var title="">child</var> be the <var title="">offset</var>th child of
+  <var title="">node</var> (or null if there is no such child), and run <code class=external data-anolis-spec=domcore title=dom-Node-insertBefore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-insertbefore>insertBefore(<var title="">hr</var>,
+  <var title="">child</var>)</a></code> on <var title="">node</var>.
+</ol>
+
+<dd><strong>State</strong>:
+
+<dd><strong>Value</strong>:
+
+
 <dt><code title=""><dfn id=command-insertimage title=command-insertimage>insertImage</dfn></code>
 
 <dd><strong>Action</strong>:
@@ -1713,7 +1758,7 @@ likely to be common.
   include non-conforming elements, which HTML doesn't give content models.  If
   everything had categories, we'd want something like "either it's
   unrecognized, or it's phrasing content that's not also embedded or
-  interactive.  Except this has weird corner-cases like ins and del that are
+  interactive".  Except this has weird corner-cases like ins and del that are
   sometimes phrasing and sometimes flow.
 
   <li>For each <var title="">element</var> in <var title="">affected elements</var>:

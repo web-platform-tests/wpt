@@ -56,6 +56,7 @@ replace = {
     'selection': '<code data-anolis-spec=domrange>Selection</code>',
     'sibling': '<span data-anolis-spec=domcore title=concept-tree-sibling>sibling</span>',
     'span': '<code data-anolis-spec=html title="the span element">span</code>',
+    'strike': '<code data-anolis-spec=html title="the strike element">strike</code>',
     'strong': '<code data-anolis-spec=html title="the strong element">strong</code>',
     'style': '<code data-anolis-spec=html title="the style attribute">style</code>',
     'sub': '<code data-anolis-spec=html title="the sub and sup elements">sub</code>',

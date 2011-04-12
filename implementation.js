@@ -561,11 +561,11 @@ function getSpecifiedValue(element, command) {
 		return null;
 	}
 
-	// "If command is "strikethrough" and element is a s element, return
-	// "line-through"."
+	// "If command is "strikethrough" and element is a s or strike element,
+	// return "line-through"."
 	if (command == "strikethrough"
 	&& isHtmlElement(element)
-	&& element.tagName == "S") {
+	&& (element.tagName == "S" || element.tagName == "STRIKE")) {
 		return "line-through";
 	}
 
@@ -664,7 +664,7 @@ function isModifiableElement(node) {
 		return false;
 	}
 
-	if (["B", "EM", "I", "S", "SPAN", "STRONG", "SUB", "SUP", "U"].indexOf(node.tagName) != -1) {
+	if (["B", "EM", "I", "S", "SPAN", "STRIKE", "STRONG", "SUB", "SUP", "U"].indexOf(node.tagName) != -1) {
 		if (node.attributes.length == 0) {
 			return true;
 		}
@@ -717,12 +717,12 @@ function isSimpleModifiableElement(node) {
 	}
 
 	// Only these elements can possibly be a simple modifiable element.
-	if (["A", "B", "EM", "FONT", "I", "S", "SPAN", "STRONG", "SUB", "SUP", "U"].indexOf(node.tagName) == -1) {
+	if (["A", "B", "EM", "FONT", "I", "S", "SPAN", "STRIKE", "STRONG", "SUB", "SUP", "U"].indexOf(node.tagName) == -1) {
 		return false;
 	}
 
-	// "It is an a, b, em, font, i, s, span, strong, sub, sup, or u element
-	// with no attributes."
+	// "It is an a, b, em, font, i, s, span, strike, strong, sub, sup, or u
+	// element with no attributes."
 	if (node.attributes.length == 0) {
 		return true;
 	}
@@ -732,9 +732,9 @@ function isSimpleModifiableElement(node) {
 		return false;
 	}
 
-	// "It is an a, b, em, font, i, s, span, strong, sub, sup, or u element
-	// with exactly one attribute, which is style, which sets no CSS properties
-	// (including invalid or unrecognized properties)."
+	// "It is an a, b, em, font, i, s, span, strike, strong, sub, sup, or u
+	// element with exactly one attribute, which is style, which sets no CSS
+	// properties (including invalid or unrecognized properties)."
 	//
 	// Not gonna try for invalid or unrecognized.
 	if (node.hasAttribute("style")
@@ -799,12 +799,12 @@ function isSimpleModifiableElement(node) {
 		return true;
 	}
 
-	// "It is an a, font, s, span, or u element with exactly one attribute,
-	// which is style, and the style attribute sets exactly one CSS property
-	// (including invalid or unrecognized properties), which is
+	// "It is an a, font, s, span, strike, or u element with exactly one
+	// attribute, which is style, and the style attribute sets exactly one CSS
+	// property (including invalid or unrecognized properties), which is
 	// "text-decoration", which is set to "line-through" or "underline" or
 	// "overline" or "none"."
-	if (["A", "FONT", "S", "SPAN", "U"].indexOf(node.tagName) != -1
+	if (["A", "FONT", "S", "SPAN", "STRIKE", "U"].indexOf(node.tagName) != -1
 	&& node.hasAttribute("style")
 	&& node.style.length == 1
 	&& (node.style.textDecoration == "line-through"

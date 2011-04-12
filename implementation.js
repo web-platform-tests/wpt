@@ -1118,9 +1118,10 @@ function pushDownValues(node, command, newValue) {
 	}
 
 	// "If the parent of the last member of ancestor list is not an Element,
-	// abort this algorithm."
-	if (!ancestorList[ancestorList.length - 1].parentNode
-	|| ancestorList[ancestorList.length - 1].parentNode.nodeType != Node.ELEMENT_NODE) {
+	// and new value is not null, abort this algorithm."
+	if (newValue !== null
+	&& (!ancestorList[ancestorList.length - 1].parentNode
+	|| ancestorList[ancestorList.length - 1].parentNode.nodeType != Node.ELEMENT_NODE)) {
 		return;
 	}
 
@@ -1139,8 +1140,11 @@ function pushDownValues(node, command, newValue) {
 		// "Let children be the children of current ancestor."
 		var children = Array.prototype.slice.call(currentAncestor.childNodes);
 
-		// "Clear the value of current ancestor."
-		clearValue(currentAncestor, command);
+		// "If the specified value of current ancestor for command is not null,
+		// clear the value of current ancestor."
+		if (getSpecifiedValue(currentAncestor, command) !== null) {
+			clearValue(currentAncestor, command);
+		}
 
 		// "For every child in children:"
 		for (var i = 0; i < children.length; i++) {
@@ -1425,16 +1429,19 @@ function forceValue(node, command, newValue) {
 		}[newValue];
 	}
 
-	// "If command is "subscript" and new value is "sub", let new parent be the
-	// result of calling createElement("sub") on the ownerDocument of node."
-	if (command == "subscript" && newValue == "sub") {
+	// "If command is "subscript" or "superscript" and new value is "sub", let
+	// new parent be the result of calling createElement("sub") on the
+	// ownerDocument of node."
+	if ((command == "subscript" || command == "superscript")
+	&& newValue == "sub") {
 		newParent = node.ownerDocument.createElement("sub");
 	}
 
-	// "If command is "superscript" and new value is "super", let new parent be
-	// the result of calling createElement("sup") on the ownerDocument of
-	// node."
-	if (command == "superscript" && newValue == "super") {
+	// "If command is "subscript" or "superscript" and new value is "super",
+	// let new parent be the result of calling createElement("sup") on the
+	// ownerDocument of node."
+	if ((command == "subscript" || command == "superscript")
+	&& newValue == "super") {
 		newParent = node.ownerDocument.createElement("sup");
 	}
 
@@ -1832,6 +1839,66 @@ function myExecCommand(command, showUI, value, range) {
 		}
 		break;
 
+		case "removeformat":
+		// "Decompose the range, and let node list be the result."
+		var nodeList = decomposeRange(range);
+
+		// "Let affected elements be a list of all HTML elements that are the
+		// same as or descendants of some member of node list and have non-null
+		// parents and satisfy (insert conditions here)."
+		var affectedElements = [];
+		for (var i = 0; i < nodeList.length; i++) {
+			for (
+				var node = nodeList[i];
+				node == nodeList[i] || isDescendant(node, nodeList[i]);
+				node = nextNode(node)
+			) {
+				if (isHtmlElement(node)
+				&& node.parentNode
+				// FIXME: Extremely partial list for testing
+				&& ["A", "AUDIO", "BR", "DIV", "HR", "IMG", "P", "TD", "VIDEO", "WBR"].indexOf(node.tagName) == -1) {
+					affectedElements.push(node);
+				}
+			}
+		}
+
+		// "For each element in affected elements:"
+		for (var i = 0; i < affectedElements.length; i++) {
+			var element = affectedElements[i];
+
+			// "While element has children, insert the first child of element
+			// into the parent of element immediately before element,
+			// preserving ranges."
+			while (element.childNodes.length) {
+				movePreservingRanges(element.firstChild, element.parentNode, getNodeIndex(element));
+			}
+
+			// "Remove element from its parent."
+			element.parentNode.removeChild(element);
+		}
+
+		// "For each of the entries in the following table, in the given order:
+		// decompose the range again; then set the value of the resulting
+		// nodes, with command and new value as given."
+		var table = {
+			"subscript": "baseline",
+			"bold": "normal",
+			"fontname": null,
+			"fontsize": null,
+			"forecolor": null,
+			"hilitecolor": null,
+			"italic": "normal",
+			"strikethrough": null,
+			"underline": null,
+		};
+		for (var command in table) {
+			var nodeList = decomposeRange(range);
+			for (var i = 0; i < nodeList.length; i++) {
+				setNodeValue(nodeList[i], command, table[command]);
+			}
+		}
+		break;
+
 		case "strikethrough":
 		// "Decompose the range. If the state of the range for this command is
 		// then true, set the value of each returned node to null. Otherwise,
@@ -1956,9 +2023,9 @@ function getState(command, range) {
 	while (node.parentNode && node.parentNode.firstChild == node) {
 		node = node.parentNode;
 	}
-	var stop = nextNode(range.endContainer);
+	var stop = nextNodeDescendants(range.endContainer);
 
-	for (; node && node != nextNodeDescendants(range.endContainer); node = nextNode(node)) {
+	for (; node && node != stop; node = nextNode(node)) {
 		if (!isEffectivelyContained(node, range)) {
 			continue;
 		}

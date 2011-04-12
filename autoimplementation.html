@@ -25,6 +25,7 @@ td > div:last-child {
 dfn { font-style: italic }
 /* We don't want test cells to not wrap */
 listing, plaintext, pre, xmp { white-space: pre-wrap }
+video { width: 50px }
 </style>
 <p>Legend: {[ are the selection anchor, }] are the selection focus, {}
 represent an element boundary point, [] represent a text node boundary point.
@@ -50,6 +51,7 @@ blank in IE and Opera, which don't support styleWithCSS.)
 	<li><a href=#forecolor>forecolor</a>
 	<li><a href=#hilitecolor>hilitecolor</a>
 	<li><a href=#italic>italic</a>
+	<li><a href=#removeformat>removeformat</a>
 	<li><a href=#strikethrough>strikethrough</a>
 	<li><a href=#subscript>subscript</a>
 	<li><a href=#superscript>superscript</a>
@@ -158,6 +160,17 @@ been written, so the spec column does nothing.
 
 <p><label>New test input: <input></label>
 <button onclick="addTest('italic')">Add test</button>
+</div>
+
+<div id=removeformat>
+<h1>removeformat</h1>
+
+<button onclick="runTests('removeformat')">Run tests</button>
+
+<table border=1><tr><th>Input <th>Spec <th>Browser <th>Same?</table>
+
+<p><label>New test input: <input></label>
+<button onclick="addTest('removeformat')">Add test</button>
 </div>
 
 <div id=strikethrough>
@@ -496,6 +509,11 @@ var tests = {
 		// Minor algorithm bug: this changes the size of the "b" and "r" in
 		// "bar" when we pull down styles
 		["3", '<font size=6>foo <span style="font-size: 2em">b[a]r</span> baz</font>'],
+
+		["3", 'foo<big>[bar]</big>baz'],
+		["3", 'foo<big>b[a]r</big>baz'],
+		["3", 'foo<small>[bar]</small>baz'],
+		["3", 'foo<small>b[a]r</small>baz'],
 	],
 	forecolor: [
 		'foo[bar]baz',
@@ -612,6 +630,115 @@ var tests = {
 		'foo bar <b>baz [qoz</b> quz] sic',
 		'foo [bar <i>baz] qoz</i> quz sic',
 		'foo bar <i>baz [qoz</i> quz] sic',
+	],
+	removeformat: [
+		'[foo<b>bar</b>baz]',
+		'foo[<b>bar</b>baz]',
+		'foo[<b>bar</b>]baz',
+		'foo<b>[bar]</b>baz',
+		'foo<b>b[a]r</b>baz',
+		'[foo<strong>bar</strong>baz]',
+		'[foo<span style="font-weight: bold">bar</span>baz]',
+		'foo<span style="font-weight: bold">b[a]r</span>baz',
+		'[foo<b id=foo>bar</b>baz]',
+		'foo<b id=foo>b[a]r</b>baz',
+
+		// HTML has lots of inline elements, doesn't it?
+		'[foo<a>bar</a>baz]',
+		'foo<a>b[a]r</a>baz',
+		'[foo<a href=foo>bar</a>baz]',
+		'foo<a href=foo>b[a]r</a>baz',
+		'[foo<abbr>bar</abbr>baz]',
+		'foo<abbr>b[a]r</abbr>baz',
+		'[foo<acronym>bar</acronym>baz]',
+		'foo<acronym>b[a]r</acronym>baz',
+		'[foo<b>bar</b>baz]',
+		'foo<b>b[a]r</b>baz',
+		'[foo<bdi dir=rtl>bar</bdi>baz]',
+		'foo<bdi dir=rtl>b[a]r</bdi>baz',
+		'[foo<bdo dir=rtl>bar</bdo>baz]',
+		'foo<bdo dir=rtl>b[a]r</bdo>baz',
+		'[foo<big>bar</big>baz]',
+		'foo<big>b[a]r</big>baz',
+		'[foo<blink>bar</blink>baz]',
+		'foo<blink>b[a]r</blink>baz',
+		'[foo<cite>bar</cite>baz]',
+		'foo<cite>b[a]r</cite>baz',
+		'[foo<code>bar</code>baz]',
+		'foo<code>b[a]r</code>baz',
+		'[foo<del>bar</del>baz]',
+		'foo<del>b[a]r</del>baz',
+		'[foo<dfn>bar</dfn>baz]',
+		'foo<dfn>b[a]r</dfn>baz',
+		'[foo<em>bar</em>baz]',
+		'foo<em>b[a]r</em>baz',
+		'[foo<font>bar</font>baz]',
+		'foo<font>b[a]r</font>baz',
+		'[foo<font color=red>bar</font>baz]',
+		'foo<font color=red>b[a]r</font>baz',
+		'[foo<i>bar</i>baz]',
+		'foo<i>b[a]r</i>baz',
+		'[foo<ins>bar</ins>baz]',
+		'foo<ins>b[a]r</ins>baz',
+		'[foo<kbd>bar</kbd>baz]',
+		'foo<kbd>b[a]r</kbd>baz',
+		'[foo<mark>bar</mark>baz]',
+		'foo<mark>b[a]r</mark>baz',
+		'[foo<nobr>bar</nobr>baz]',
+		'foo<nobr>b[a]r</nobr>baz',
+		'[foo<q>bar</q>baz]',
+		'foo<q>b[a]r</q>baz',
+		'[foo<samp>bar</samp>baz]',
+		'foo<samp>b[a]r</samp>baz',
+		'[foo<s>bar</s>baz]',
+		'foo<s>b[a]r</s>baz',
+		'[foo<small>bar</small>baz]',
+		'foo<small>b[a]r</small>baz',
+		'[foo<span>bar</span>baz]',
+		'foo<span>b[a]r</span>baz',
+		'[foo<strike>bar</strike>baz]',
+		'foo<strike>b[a]r</strike>baz',
+		'[foo<strong>bar</strong>baz]',
+		'foo<strong>b[a]r</strong>baz',
+		'[foo<sub>bar</sub>baz]',
+		'foo<sub>b[a]r</sub>baz',
+		'[foo<sup>bar</sup>baz]',
+		'foo<sup>b[a]r</sup>baz',
+		'[foo<tt>bar</tt>baz]',
+		'foo<tt>b[a]r</tt>baz',
+		'[foo<u>bar</u>baz]',
+		'foo<u>b[a]r</u>baz',
+		'[foo<var>bar</var>baz]',
+		'foo<var>b[a]r</var>baz',
+
+		// Empty and replaced elements
+		'[foo<br>bar]',
+		'[foo<hr>bar]',
+		'[foo<wbr>bar]',
+		'[foo<img>bar]',
+		'[foo<img src=abc>bar]',
+		'[foo<video></video>bar]',
+		'[foo<video src=abc></video>bar]',
+		'[foo<svg><circle fill=red r=20 cx=20 cy=20 /></svg>bar]',
+
+		// Unrecognized elements
+		'[foo<nonexistentelement>bar</nonexistentelement>baz]',
+		'foo<nonexistentelement>b[a]r</nonexistentelement>baz',
+		'[foo<nonexistentelement style="display: block">bar</nonexistentelement>baz]',
+		'foo<nonexistentelement style="display: block">b[a]r</nonexistentelement>baz',
+
+		'[foo<span id=foo>bar</span>baz]',
+		'foo<span id=foo>b[a]r</span>baz',
+		'[foo<span class=foo>bar</span>baz]',
+		'foo<span class=foo>b[a]r</span>baz',
+		'[foo<b style="font-weight: normal">bar</b>baz]',
+		'foo<b style="font-weight: normal">b[a]r</b>baz',
+		'<p style="background-color: red">foo[bar]baz</p>',
+		'<p><span style="background-color: red">foo[bar]baz</span></p>',
+		'<p style="font-weight: bold">foo[bar]baz</p>',
+		'<b><p style="font-weight: bold">foo[bar]baz</p></b>',
+		'<p style="font-variant: small-caps">foo[bar]baz</p>',
+		'<p style="text-indent: 2em">foo[bar]baz</p>',
 	],
 	strikethrough: [
 		'foo[bar]baz',
@@ -944,7 +1071,7 @@ function doSpecCell(tr, test, command, styleWithCss) {
 	}
 
 	var key = "execcommand-" + command
-		+ "-" + Number(myQueryCommandState("styleWithCSS"))
+		+ "-" + Number(styleWithCss)
 		+ "-" + tr.firstChild.lastChild.textContent;
 
 	var oldValue = localStorage[key];
@@ -980,6 +1107,10 @@ function doBrowserCell(tr, test, command, styleWithCss) {
 	tr.appendChild(browserCell);
 	try {
 		var points = setupCell(browserCell, test);
+		// Work around weird Firefox bug:
+		// https://bugzilla.mozilla.org/show_bug.cgi?id=649138
+		var testDiv = browserCell.firstChild;
+		document.getElementById(command).appendChild(testDiv);
 		setSelection(points[0], points[1], points[2], points[3]);
 		try {
 			document.execCommand("styleWithCSS", false, styleWithCss);
@@ -988,9 +1119,13 @@ function doBrowserCell(tr, test, command, styleWithCss) {
 		if (getSelection().rangeCount) {
 			addBrackets(getSelection().getRangeAt(0));
 		}
+		browserCell.insertBefore(testDiv, browserCell.firstChild);
 		browserCell.lastChild.textContent = browserCell.firstChild.innerHTML;
 	} catch (e) {
 		browserCell.textContent = "Exception: " + e;
+		if (testDiv && testDiv.parentNode) {
+			testDiv.parentNode.removeChild(testDiv);
+		}
 	}
 }
 

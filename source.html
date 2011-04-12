@@ -162,8 +162,14 @@ other than review and comment.
   set.  I should be doing things like not doing anything if the selection isn't
   editable, making sure not to break out of contenteditable regions, etc.
 
-  <li>I haven't yet paid any attention to value parsing.  This is going to be
-  important to specify exactly in some cases, like with colors.
+  <li>I haven't yet paid any attention to value parsing in most cases.  This is
+  going to be important to specify exactly in some cases, like with colors.
+
+  <li>I haven't paid much attention to performance.  The algorithms here aren't
+  performance-critical in most cases, but I might have accidentally included
+  some algorithms that are too slow anyway on large pages.  Generally I haven't
+  worried about throwing nodes away and recreating them multiple times or
+  things like that, as long as it produces the correct result.
 </ul>
 
 <p class=XXX>A variety of other issues are also noted in the text, formatted
@@ -686,9 +692,11 @@ with a [[style]] attribute).
 
   <!-- If we go all the way up to the root and still don't have the desired
   value, pushing down values is pointless.  It will create extra markup for no
-  purpose. -->
+  purpose.  Except if the value is null, which basically just means "try to get
+  rid of anything affecting the current element but don't aim for any specific
+  value". -->
   <li>If the [[parent]] of the last member of <var>ancestor list</var> is not
-  an [[element]], abort this algorithm.
+  an [[element]], and <var>new value</var> is not null, abort this algorithm.
 
   <li>While <var>ancestor list</var> is not empty:
 
@@ -705,7 +713,9 @@ with a [[style]] attribute).
     <li>Let <var>children</var> be the [[children]] of <var>current
     ancestor</var>.
 
-    <li><span>Clear the value</span> of <var>current ancestor</var>.
+    <li>If the <span>specified value</span> of <var>current ancestor</var> for
+    <var>command</var> is not null, <span>clear the value</span> of
+    <var>current ancestor</var>.
 
     <li>For every <var>child</var> in <var>children</var>:
 
@@ -966,15 +976,15 @@ different value.
   contradicting WebKit.  This is because <span value="vertical-align:
   sub/super">, the obvious equivalent (and what WebKit uses), behaves quite
   differently: it doesn't reduce font-size, which is ugly. -->
-  <li>If <var>command</var> is "subscript" and <var>new value</var> is
-  "sub", let <var>new parent</var> be the result of calling <code
-  data-anolis-spec=domcore
+  <li>If <var>command</var> is "subscript" or "superscript" and <var>new
+  value</var> is "sub", let <var>new parent</var> be the result of calling
+  <code data-anolis-spec=domcore
   title=dom-Document-createElement>createElement("sub")</code> on the
   [[ownerdocument]] of <var>node</var>.
 
-  <li>If <var>command</var> is "superscript" and <var>new value</var> is
-  "super", let <var>new parent</var> be the result of calling <code
-  data-anolis-spec=domcore
+  <li>If <var>command</var> is "subscript" or "superscript" and <var>new
+  value</var> is "super", let <var>new parent</var> be the result of calling
+  <code data-anolis-spec=domcore
   title=dom-Document-createElement>createElement("sup")</code> on the
   [[ownerdocument]] of <var>node</var>.
 
@@ -1470,7 +1480,7 @@ respecifying non-interoperable behavior anyway.
     <dl class=switch>
       <dt>1 <dd>xx-small
       <dt>2 <dd>small
-      <dt>3 <dd>normal
+      <dt>3 <dd>medium
       <dt>4 <dd>large
       <dt>5 <dd>x-large
       <dt>6 <dd>xx-large
@@ -1635,6 +1645,120 @@ value</span> either "italic" or "oblique".  Otherwise false.
 <dd><strong>Value</strong>: Always the empty string.
 
 <dd><strong>Relevant CSS Property</strong>: "font-style"
+
+
+<dt><code title><dfn title=command-removeformat>removeFormat</dfn></code>
+<!--
+Tested in IE 9, Firefox 4.0, Chrome 12 dev, Opera 11.00.
+
+Tags stripped by everyone: b big cite code dfn em font i ins kbd samp s small
+  strike strong sub sup tt u var
+Tags left alone by everyone: br hr img
+
+Unrecognized elements: stripped by Firefox and Opera, left alone by IE and
+  Chrome.
+
+blink: stripped only by IE
+abbr: stripped only by Firefox
+a, wbr: stripped only by Opera
+
+nobr: left alone only by Firefox
+acronym, bdo, q: left alone only by Opera
+
+bdi, del, mark, span, svg: treated the same as unknown elements
+
+All elements whose default rendering is display: block are left untouched by
+all browsers (although IE seems to throw an exception on <marquee> for some
+reason).
+
+It's not clear to me why we should leave <a> alone, but everyone but Opera
+does.  In OpenOffice.org 3.2.1, doing "Default Formatting (Ctrl+M)" doesn't
+remove links.  In Microsoft Word 2007, doing "Clear Formatting" also doesn't
+remove links.  Verdict: don't remove links.  Apparently they don't logically
+qualify as "formatting".
+
+Conclusion: leave alone a, br, hr, img, wbr.  Strip everything else, including
+unrecognized elements, although of course not block elements.  Also we should
+probably treat all replaced elements the same as <img>, although I didn't test
+that (somehow I doubt it will come up much).  <video> behaves the same as
+<img>, although Firefox adds tabindex=0 (???), so I'm assuming the rest are
+similar.  Also, I'll keep all foreign elements and form elements.
+
+
+Browsers will split up all these inline elements if the selection is contained
+within them.  Opera does strip unrecognized elements with display: block if
+they're within the selection, but doesn't split them up if they contain the
+selection.
+
+Upon consideration, I've decided to go for something for now that's totally
+different from what any browser does: get rid of all elements actually
+contained in the selection (pretty much matching browsers), but for elements
+containing the selection, I'll just run all the other styling commands in a
+fashion that will reset the style in normal cases.  This avoids having to
+create a lot of new logic to decide exactly what we can split up or not, and
+should be able to correctly remove anything that can actually be created by
+these algorithms.
+
+This approach currently results in incorrect behavior in some cases for
+non-modifiable elements with default styling, like <code>.  The correct
+approach is probably to declare these elements modifiable; this would roughly
+match what browsers do.  I'm ignoring the issue for now, because such elements
+cannot actually be created by implementations of execCommand(), so they're not
+likely to be common.
+-->
+
+<dd><strong>Action</strong>:
+
+<ol>
+  <li><span>Decompose</span> the [[range]], and let <var>node list</var> be the
+  result.
+
+  <li>Let <var>affected elements</var> be a list of all <span title="HTML
+  element">HTML elements</span> that are the same as or [[descendants]] of some
+  member of <var>node list</var> and have non-null [[parents]] and satisfy
+  (insert conditions here).
+
+  <p class=XXX>The conditions are not so simple to define, because we want to
+  include non-conforming elements, which HTML doesn't give content models.  If
+  everything had categories, we'd want something like "either it's
+  unrecognized, or it's phrasing content that's not also embedded or
+  interactive.  Except this has weird corner-cases like ins and del that are
+  sometimes phrasing and sometimes flow.
+
+  <li>For each <var>element</var> in <var>affected elements</var>:
+
+  <ol>
+    <li>While <var>element</var> has [[children]], insert the first [[child]]
+    of <var>element</var> into the [[parent]] of <var>element</var> immediately
+    before <var>element</var>, <span>preserving ranges</span>.
+
+    <li>Remove <var>element</var> from its [[parent]].
+  </ol>
+
+  <li>For each of the entries in the following table, in the given order:
+  <span>decompose</span> the [[range]] again; then <span>set the value</span>
+  of the resulting [[nodes]], with <var>command</var> and <var>new value</var>
+  as given.
+
+  <table>
+    <tr><th><var>command</var> <th><var>new value</var>
+    <tr><td>subscript <td>"baseline"
+    <!-- superscript not needed, subscript does the same thing.  We run this
+    first so <sub>/<sup> won't upset fontSize. -->
+    <tr><td>bold <td>"normal"
+    <tr><td>fontName <td>null
+    <tr><td>fontSize <td>null
+    <tr><td>foreColor <td>null
+    <tr><td>hiliteColor <td>null
+    <tr><td>italic <td>"normal"
+    <tr><td>strikethrough <td>null
+    <tr><td>underline <td>null
+  </table>
+</ol>
+
+<dd><strong>State</strong>:
+
+<dd><strong>Value</strong>:
 
 
 <dt><code title><dfn title=command-strikethrough>strikethrough</dfn></code>

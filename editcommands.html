@@ -27,7 +27,7 @@
 <body class=draft>
 <div class=head id=head>
 <h1>HTML Editing Commands</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-11-april-2011>Work in Progress &mdash; Last Update 11 April 2011</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-12-april-2011>Work in Progress &mdash; Last Update 12 April 2011</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;ayg+spec@aryeh.name&gt;
@@ -174,8 +174,14 @@ other than review and comment.
   set.  I should be doing things like not doing anything if the selection isn't
   editable, making sure not to break out of contenteditable regions, etc.
 
-  <li>I haven't yet paid any attention to value parsing.  This is going to be
-  important to specify exactly in some cases, like with colors.
+  <li>I haven't yet paid any attention to value parsing in most cases.  This is
+  going to be important to specify exactly in some cases, like with colors.
+
+  <li>I haven't paid much attention to performance.  The algorithms here aren't
+  performance-critical in most cases, but I might have accidentally included
+  some algorithms that are too slow anyway on large pages.  Generally I haven't
+  worried about throwing nodes away and recreating them multiple times or
+  things like that, as long as it produces the correct result.
 </ul>
 
 <p class=XXX>A variety of other issues are also noted in the text, formatted
@@ -693,9 +699,11 @@ with a <code class=external data-anolis-spec=html title="the style attribute"><a
 
   <!-- If we go all the way up to the root and still don't have the desired
   value, pushing down values is pointless.  It will create extra markup for no
-  purpose. -->
+  purpose.  Except if the value is null, which basically just means "try to get
+  rid of anything affecting the current element but don't aim for any specific
+  value". -->
   <li>If the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of the last member of <var title="">ancestor list</var> is not
-  an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>, abort this algorithm.
+  an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>, and <var title="">new value</var> is not null, abort this algorithm.
 
   <li>While <var title="">ancestor list</var> is not empty:
 
@@ -712,7 +720,9 @@ with a <code class=external data-anolis-spec=html title="the style attribute"><a
     <li>Let <var title="">children</var> be the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a> of <var title="">current
     ancestor</var>.
 
-    <li><a href=#clear-the-value>Clear the value</a> of <var title="">current ancestor</var>.
+    <li>If the <a href=#specified-value>specified value</a> of <var title="">current ancestor</var> for
+    <var title="">command</var> is not null, <a href=#clear-the-value>clear the value</a> of
+    <var title="">current ancestor</var>.
 
     <li>For every <var title="">child</var> in <var title="">children</var>:
 
@@ -960,12 +970,14 @@ different value.
   contradicting WebKit.  This is because <span value="vertical-align:
   sub/super">, the obvious equivalent (and what WebKit uses), behaves quite
   differently: it doesn't reduce font-size, which is ugly. -->
-  <li>If <var title="">command</var> is "subscript" and <var title="">new value</var> is
-  "sub", let <var title="">new parent</var> be the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("sub")</a></code> on the
+  <li>If <var title="">command</var> is "subscript" or "superscript" and <var title="">new
+  value</var> is "sub", let <var title="">new parent</var> be the result of calling
+  <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("sub")</a></code> on the
   <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">node</var>.
 
-  <li>If <var title="">command</var> is "superscript" and <var title="">new value</var> is
-  "super", let <var title="">new parent</var> be the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("sup")</a></code> on the
+  <li>If <var title="">command</var> is "subscript" or "superscript" and <var title="">new
+  value</var> is "super", let <var title="">new parent</var> be the result of calling
+  <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("sup")</a></code> on the
   <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">node</var>.
 
   <li>If <var title="">new parent</var> is null, let <var title="">new parent</var> be the result
@@ -1455,7 +1467,7 @@ respecifying non-interoperable behavior anyway.
     <dl class=switch>
       <dt>1 <dd>xx-small
       <dt>2 <dd>small
-      <dt>3 <dd>normal
+      <dt>3 <dd>medium
       <dt>4 <dd>large
       <dt>5 <dd>x-large
       <dt>6 <dd>xx-large
@@ -1614,6 +1626,120 @@ value</a> either "italic" or "oblique".  Otherwise false.
 <dd><strong>Value</strong>: Always the empty string.
 
 <dd><strong>Relevant CSS Property</strong>: "font-style"
+
+
+<dt><code title=""><dfn id=command-removeformat title=command-removeformat>removeFormat</dfn></code>
+<!--
+Tested in IE 9, Firefox 4.0, Chrome 12 dev, Opera 11.00.
+
+Tags stripped by everyone: b big cite code dfn em font i ins kbd samp s small
+  strike strong sub sup tt u var
+Tags left alone by everyone: br hr img
+
+Unrecognized elements: stripped by Firefox and Opera, left alone by IE and
+  Chrome.
+
+blink: stripped only by IE
+abbr: stripped only by Firefox
+a, wbr: stripped only by Opera
+
+nobr: left alone only by Firefox
+acronym, bdo, q: left alone only by Opera
+
+bdi, del, mark, span, svg: treated the same as unknown elements
+
+All elements whose default rendering is display: block are left untouched by
+all browsers (although IE seems to throw an exception on <marquee> for some
+reason).
+
+It's not clear to me why we should leave <a> alone, but everyone but Opera
+does.  In OpenOffice.org 3.2.1, doing "Default Formatting (Ctrl+M)" doesn't
+remove links.  In Microsoft Word 2007, doing "Clear Formatting" also doesn't
+remove links.  Verdict: don't remove links.  Apparently they don't logically
+qualify as "formatting".
+
+Conclusion: leave alone a, br, hr, img, wbr.  Strip everything else, including
+unrecognized elements, although of course not block elements.  Also we should
+probably treat all replaced elements the same as <img>, although I didn't test
+that (somehow I doubt it will come up much).  <video> behaves the same as
+<img>, although Firefox adds tabindex=0 (???), so I'm assuming the rest are
+similar.  Also, I'll keep all foreign elements and form elements.
+
+
+Browsers will split up all these inline elements if the selection is contained
+within them.  Opera does strip unrecognized elements with display: block if
+they're within the selection, but doesn't split them up if they contain the
+selection.
+
+Upon consideration, I've decided to go for something for now that's totally
+different from what any browser does: get rid of all elements actually
+contained in the selection (pretty much matching browsers), but for elements
+containing the selection, I'll just run all the other styling commands in a
+fashion that will reset the style in normal cases.  This avoids having to
+create a lot of new logic to decide exactly what we can split up or not, and
+should be able to correctly remove anything that can actually be created by
+these algorithms.
+
+This approach currently results in incorrect behavior in some cases for
+non-modifiable elements with default styling, like <code>.  The correct
+approach is probably to declare these elements modifiable; this would roughly
+match what browsers do.  I'm ignoring the issue for now, because such elements
+cannot actually be created by implementations of execCommand(), so they're not
+likely to be common.
+-->
+
+<dd><strong>Action</strong>:
+
+<ol>
+  <li><a href=#decompose>Decompose</a> the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>, and let <var title="">node list</var> be the
+  result.
+
+  <li>Let <var title="">affected elements</var> be a list of all <a href=#html-element title="HTML
+  element">HTML elements</a> that are the same as or <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-descendant title=concept-tree-descendant>descendants</a> of some
+  member of <var title="">node list</var> and have non-null <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parents</a> and satisfy
+  (insert conditions here).
+
+  <p class=XXX>The conditions are not so simple to define, because we want to
+  include non-conforming elements, which HTML doesn't give content models.  If
+  everything had categories, we'd want something like "either it's
+  unrecognized, or it's phrasing content that's not also embedded or
+  interactive.  Except this has weird corner-cases like ins and del that are
+  sometimes phrasing and sometimes flow.
+
+  <li>For each <var title="">element</var> in <var title="">affected elements</var>:
+
+  <ol>
+    <li>While <var title="">element</var> has <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, insert the first <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>
+    of <var title="">element</var> into the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of <var title="">element</var> immediately
+    before <var title="">element</var>, <a href=#preserving-ranges>preserving ranges</a>.
+
+    <li>Remove <var title="">element</var> from its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+  </ol>
+
+  <li>For each of the entries in the following table, in the given order:
+  <a href=#decompose>decompose</a> the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> again; then <a href=#set-the-value>set the value</a>
+  of the resulting <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a>, with <var title="">command</var> and <var title="">new value</var>
+  as given.
+
+  <table>
+    <tr><th><var title="">command</var> <th><var title="">new value</var>
+    <tr><td>subscript <td>"baseline"
+    <!-- superscript not needed, subscript does the same thing.  We run this
+    first so <sub>/<sup> won't upset fontSize. -->
+    <tr><td>bold <td>"normal"
+    <tr><td>fontName <td>null
+    <tr><td>fontSize <td>null
+    <tr><td>foreColor <td>null
+    <tr><td>hiliteColor <td>null
+    <tr><td>italic <td>"normal"
+    <tr><td>strikethrough <td>null
+    <tr><td>underline <td>null
+  </table>
+</ol>
+
+<dd><strong>State</strong>:
+
+<dd><strong>Value</strong>:
 
 
 <dt><code title=""><dfn id=command-strikethrough title=command-strikethrough>strikethrough</dfn></code>

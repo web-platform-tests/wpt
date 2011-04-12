@@ -1572,7 +1572,7 @@ do nothing and abort these steps.  Otherwise, <a href=#decompose>decompose</a> t
 
 <dt><code title=""><dfn id=command-insertimage title=command-insertimage>insertImage</dfn></code>
 
-<dd><strong>Action</strong>: The user agent must run the following steps:
+<dd><strong>Action</strong>:
 
 <ol>
   <li>If <var title="">value</var> is the empty string, abort these steps and do
@@ -1588,18 +1588,27 @@ do nothing and abort these steps.  Otherwise, <a href=#decompose>decompose</a> t
   <li>Let (<var title="">node</var>, <var title="">offset</var>) be the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>'s
   <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a>.
 
-  <li>Let <var title="">img</var> be a new <a href=#html-element>HTML element</a> with
-  <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> "img", the same <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> as <var title="">node</var>, and a
-  single <a href=#html-attribute>HTML attribute</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-attr-local-name title=concept-attr-local-name>local name</a> "src" and with
-  <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-attr-value title=concept-attr-value>value</a> <var title="">value</var>.
+  <li>If <var title="">node</var> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> or <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#comment>Comment</a></code> node and its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>
+  is null, abort these steps and do nothing.
+
+  <li>Let <var title="">img</var> be the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("img")</a></code> on the
+  <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">node</var> (or on <var title="">node</var> itself if it's a
+  <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#document>Document</a></code>).
+
+  <li>Run <code class=external data-anolis-spec=domcore title=dom-Element-setAttribute><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-element-setattribute>setAttribute("src", <var title="">value</var>)</a></code>
+  on <var title="">img</var>.
   <!-- No alt text, so it's invalid.  This matches all browsers. -->
 
   <li>If <var title="">node</var> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node, and <var title="">offset</var> is not
   equal to 0 or the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> of <var title="">node</var>, run <code class=external data-anolis-spec=domcore title=dom-Text-splitText><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-text-splittext>splitText(<var title="">offset</var>)</a></code> on
   <var title="">node</var>.
 
-  <li>If <var title="">node</var> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code>, <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#comment>Comment</a></code>, or
-  <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#processinginstruction>ProcessingInstruction</a></code> node, run <code class=external data-anolis-spec=domcore title=dom-Node-insertBefore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-insertbefore>insertBefore(<var title="">img</var>,
+  <li>If <var title="">node</var> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node, and <var title="">offset</var> is equal to
+  the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> of <var title="">node</var>, set <var title="">node</var> to its
+  <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code>.
+
+  <li>If <var title="">node</var> is null or is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> or <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#comment>Comment</a></code> node, run
+  <code class=external data-anolis-spec=domcore title=dom-Node-insertBefore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-insertbefore>insertBefore(<var title="">img</var>,
   <var title="">node</var>)</a></code> on the parent of <var title="">node</var>.
 
   <li>Otherwise, let <var title="">child</var> be the <var title="">offset</var>th child of

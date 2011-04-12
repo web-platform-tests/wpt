@@ -1828,6 +1828,66 @@ function myExecCommand(command, showUI, value, range) {
 		}
 		break;
 
+		case "insertimage":
+		// "If value is the empty string, abort these steps and do nothing."
+		if (value === "") {
+			return;
+		}
+
+		// "Run deleteContents() on the range."
+		range.deleteContents();
+
+		// "Let (node, offset) be the range's start."
+		var node = range.startContainer;
+		var offset = range.startOffset;
+
+		// "If node is a Text or Comment node and its parent is null, abort
+		// these steps and do nothing."
+		if (!node.parentNode
+		&& (node.nodeType == Node.TEXT_NODE
+		|| node.nodeType == Node.COMMENT_NODE)) {
+			return;
+		}
+
+		// "Let img be the result of calling createElement("img") on the
+		// ownerDocument of node (or on node itself if it's a Document)."
+		var img = (node.nodeType == Node.DOCUMENT_NODE
+			? node : node.ownerDocument).createElement("img");
+
+		// "Run setAttribute("src", value) on img."
+		img.setAttribute("src", value);
+
+		// "If node is a Text node, and offset is not equal to 0 or the length
+		// of node, run splitText(offset) on node."
+		if (node.nodeType == Node.TEXT_NODE
+		&& offset != 0
+		&& offset != node.length) {
+			node.splitText(offset);
+		}
+
+		// "If node is a Text node, and offset is equal to the length of node,
+		// set node to its nextSibling."
+		if (node.nodeType == Node.TEXT_NODE
+		&& offset == node.length) {
+			node = node.nextSibling;
+		}
+
+		// "If node is null or is a Text or Comment node, run insertBefore(img,
+		// node) on the parent of node."
+		if (!node
+		|| node.nodeType == Node.TEXT_NODE
+		|| node.nodeType == Node.COMMENT_NODE) {
+			node.parentNode.insertBefore(img, node);
+		// "Otherwise, let child be the offsetth child of node (or null if
+		// there is no such child), and run insertBefore(img, child) on node."
+		} else {
+			var child = node.childNodes.length == offset
+				? null
+				: node.childNodes[offset];
+			node.insertBefore(img, child);
+		}
+		break;
+
 		case "italic":
 		// "Decompose the range. If the state of the range for this command is
 		// then true, set the value of each returned node with new value

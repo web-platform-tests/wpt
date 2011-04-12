@@ -1585,7 +1585,7 @@ do nothing and abort these steps.  Otherwise, <span>decompose</span> the
 
 <dt><code title><dfn title=command-insertimage>insertImage</dfn></code>
 
-<dd><strong>Action</strong>: The user agent must run the following steps:
+<dd><strong>Action</strong>:
 
 <ol>
   <li>If <var>value</var> is the empty string, abort these steps and do
@@ -1602,10 +1602,18 @@ do nothing and abort these steps.  Otherwise, <span>decompose</span> the
   <li>Let (<var>node</var>, <var>offset</var>) be the [[range]]'s
   [[rangestart]].
 
-  <li>Let <var>img</var> be a new <span>HTML element</span> with
-  [[localname]] "img", the same [[ownerdocument]] as <var>node</var>, and a
-  single <span>HTML attribute</span> with [[attrlocalname]] "src" and with
-  [[attrvalue]] <var>value</var>.
+  <li>If <var>node</var> is a [[text]] or [[comment]] node and its [[parent]]
+  is null, abort these steps and do nothing.
+
+  <li>Let <var>img</var> be the result of calling <code
+  data-anolis-spec=domcore
+  title=dom-Document-createElement>createElement("img")</code> on the
+  [[ownerdocument]] of <var>node</var> (or on <var>node</var> itself if it's a
+  [[document]]).
+
+  <li>Run <code data-anolis-spec=domcore
+  title=dom-Element-setAttribute>setAttribute("src", <var>value</var>)</code>
+  on <var>img</var>.
   <!-- No alt text, so it's invalid.  This matches all browsers. -->
 
   <li>If <var>node</var> is a [[text]] node, and <var>offset</var> is not
@@ -1614,8 +1622,12 @@ do nothing and abort these steps.  Otherwise, <span>decompose</span> the
   title=dom-Text-splitText>splitText(<var>offset</var>)</code> on
   <var>node</var>.
 
-  <li>If <var>node</var> is a [[text]], [[comment]], or
-  [[processinginstruction]] node, run <code data-anolis-spec=domcore
+  <li>If <var>node</var> is a [[text]] node, and <var>offset</var> is equal to
+  the [[nodelength]] of <var>node</var>, set <var>node</var> to its
+  [[nextsibling]].
+
+  <li>If <var>node</var> is null or is a [[text]] or [[comment]] node, run
+  <code data-anolis-spec=domcore
   title=dom-Node-insertBefore>insertBefore(<var>img</var>,
   <var>node</var>)</code> on the parent of <var>node</var>.
 

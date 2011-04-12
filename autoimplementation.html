@@ -25,7 +25,7 @@ td > div:last-child {
 dfn { font-style: italic }
 /* We don't want test cells to not wrap */
 listing, plaintext, pre, xmp { white-space: pre-wrap }
-video { width: 50px }
+img, video { width: 50px }
 </style>
 <p>Legend: {[ are the selection anchor, }] are the selection focus, {}
 represent an element boundary point, [] represent a text node boundary point.
@@ -50,6 +50,7 @@ blank in IE and Opera, which don't support styleWithCSS.)
 	<li><a href=#fontsize>fontsize</a>
 	<li><a href=#forecolor>forecolor</a>
 	<li><a href=#hilitecolor>hilitecolor</a>
+	<li><a href=#insertimage>insertimage</a>
 	<li><a href=#italic>italic</a>
 	<li><a href=#removeformat>removeformat</a>
 	<li><a href=#strikethrough>strikethrough</a>
@@ -148,6 +149,17 @@ been written, so the spec column does nothing.
 
 <p><label>New test input: <input></label><label>New test value: <input></label>
 <button onclick="addTest('hilitecolor')">Add test</button>
+</div>
+
+<div id=insertimage>
+<h1>insertimage</h1>
+
+<button onclick="runTests('insertimage')">Run tests</button>
+
+<table border=1><tr><th>Input <th>Spec <th>Browser <th>Same?</table>
+
+<p><label>New test input: <input></label><label>New test value: <input></label>
+<button onclick="addTest('insertimage')">Add test</button>
 </div>
 
 <div id=italic>
@@ -563,6 +575,11 @@ var tests = {
 		'<p style="background-color: #ff8888">foo<span style="background-color: aqua">b[ar]</span>baz</p>',
 		'<div style="background-color: #ff8888"><p style="background-color: aqua">b[ar]</p></div>',
 		'<span style="display: block; background-color: #ff8888"><span style="display: block; background-color: aqua">b[ar]</span></span>',
+	],
+	insertimage: [
+		["", 'foo[bar]baz'],
+		'foo[bar]baz',
+		'foo<b>{bar}</b>baz',
 	],
 	italic: [
 		'foo[bar]baz',
@@ -982,6 +999,7 @@ var defaultValues = {
 	fontsize: "4",
 	forecolor: "#FF0000",
 	hilitecolor: "#FF8888",
+	insertimage: "/img/lion.svg",
 };
 
 function runTests(command) {

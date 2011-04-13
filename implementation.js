@@ -646,7 +646,7 @@ function getSpecifiedValue(element, command) {
 	&& (element.tagName == "B" || element.tagName == "STRONG")) {
 		return "bold";
 	}
-	if (property == "fontValue"
+	if (property == "fontStyle"
 	&& (element.tagName == "I" || element.tagName == "EM")) {
 		return "italic";
 	}

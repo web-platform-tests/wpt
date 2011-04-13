@@ -152,11 +152,6 @@ other than review and comment.
   don't want to have to explicitly refer to DOM methods like insertBefore()
   every time I want to move things.
 
-  <li>I haven't put any thought yet into collapsed ranges or selections.
-  Currently my algorithms mostly do nothing if the selection is collapsed,
-  which is of course wrong.  E.g., bold with collapsed selection should put
-  &lt;b&gt;&lt;/b&gt; at the cursor, generally.
-
   <li>Some more thought needs to go into what happens to the selection when you
   mutate the DOM.  In some cases the results are pretty arbitrary.  It might
   make sense to do some kind of normalization.
@@ -1267,6 +1262,11 @@ like set the document background color.  Feedback appreciated on this point.
 
 
 <dt><code title=""><dfn id=command-bold title=command-bold>bold</dfn></code>
+<!-- If the selection is collapsed (but not if it contains nothing but is not
+collapsed), IE9 wraps the whole line in a <strong>.  This seems bizarre and no
+one else does it, so I don't do it.  It's a similar story for similar commands
+(fontName, italic, etc.).  Except not for strikethrough, where it just does
+nothing if the selection is empty.  Why strikethrough?  I don't know. -->
 
 <dd><strong>Action</strong>: <a href=#decompose>Decompose</a> the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>.  If the
 state of the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> for this command is then true, <a href=#set-the-value>set the
@@ -1297,6 +1297,10 @@ boolean, so I'll go with Firefox and Opera. -->
 <dt><code title=""><dfn id=command-createlink title=command-createlink>createLink</dfn></code>
 
 <dd><strong>Action</strong>: The user agent must run the following steps:
+<!-- If the selection doesn't contain anything (meaning, e.g., deleteContents()
+doesn't change anything), then Chrome 12 dev inserts a link at the selection
+start, with the text equal to the link URL.  Other browsers don't do it, so I
+don't either. -->
 
 <ol>
   <li>If <var title="">value</var> is the empty string, abort these steps and do

@@ -54,6 +54,7 @@ var tests = {
 	backcolor: [
 		'foo[]bar',
 		'<span>foo</span>{}<span>bar</span>',
+		'<span>foo[</span><span>]bar</span>',
 		'<p>foo[bar]baz',
 		'<p>foo]bar[baz',
 		'<div><p>foo[bar]baz</p></div>',
@@ -73,6 +74,7 @@ var tests = {
 	bold: [
 		'foo[]bar',
 		'<span>foo</span>{}<span>bar</span>',
+		'<span>foo[</span><span>]bar</span>',
 		'foo[bar]baz',
 		'foo]bar[baz',
 		'{<p><p> <p>foo</p>}',
@@ -173,6 +175,7 @@ var tests = {
 	createlink: [
 		'foo[]bar',
 		'<span>foo</span>{}<span>bar</span>',
+		'<span>foo[</span><span>]bar</span>',
 		'foo[bar]baz',
 		'foo]bar[baz',
 		'{<p><p> <p>foo</p>}',
@@ -213,6 +216,7 @@ var tests = {
 	fontname: [
 		'foo[]bar',
 		'<span>foo</span>{}<span>bar</span>',
+		'<span>foo[</span><span>]bar</span>',
 		'foo[bar]baz',
 		'foo]bar[baz',
 		'{<p><p> <p>foo</p>}',
@@ -267,6 +271,7 @@ var tests = {
 	fontsize: [
 		'foo[]bar',
 		'<span>foo</span>{}<span>bar</span>',
+		'<span>foo[</span><span>]bar</span>',
 		["1", 'foo[bar]baz'],
 		["0", 'foo[bar]baz'],
 		["-5", 'foo[bar]baz'],
@@ -344,6 +349,7 @@ var tests = {
 	forecolor: [
 		'foo[]bar',
 		'<span>foo</span>{}<span>bar</span>',
+		'<span>foo[</span><span>]bar</span>',
 		'foo[bar]baz',
 		'foo]bar[baz',
 		'{<p><p> <p>foo</p>}',
@@ -370,6 +376,7 @@ var tests = {
 	hilitecolor: [
 		'foo[]bar',
 		'<span>foo</span>{}<span>bar</span>',
+		'<span>foo[</span><span>]bar</span>',
 		'foo[bar]baz',
 		'foo]bar[baz',
 		'{<p><p> <p>foo</p>}',
@@ -397,7 +404,9 @@ var tests = {
 	inserthorizontalrule: [
 		'foo[]bar',
 		'<span>foo</span>{}<span>bar</span>',
+		'<span>foo[</span><span>]bar</span>',
 		'<div><b>foo</b>{}<b>bar</b></div>',
+		'<div><b>foo[</b><b>]bar</b></div>',
 		'<div><b>foo</b>{<b>bar</b>}<b>baz</b></div>',
 		'<b>foo[]bar</b>',
 		'<b id=abc>foo[]bar</b>',
@@ -408,6 +417,7 @@ var tests = {
 	insertimage: [
 		'foo[]bar',
 		'<span>foo</span>{}<span>bar</span>',
+		'<span>foo[</span><span>]bar</span>',
 		["", 'foo[bar]baz'],
 		'foo[bar]baz',
 		'foo<b>{bar}</b>baz',
@@ -415,6 +425,7 @@ var tests = {
 	italic: [
 		'foo[]bar',
 		'<span>foo</span>{}<span>bar</span>',
+		'<span>foo[</span><span>]bar</span>',
 		'foo[bar]baz',
 		'foo]bar[baz',
 		'{<p><p> <p>foo</p>}',
@@ -484,6 +495,7 @@ var tests = {
 	removeformat: [
 		'foo[]bar',
 		'<span>foo</span>{}<span>bar</span>',
+		'<span>foo[</span><span>]bar</span>',
 		'[foo<b>bar</b>baz]',
 		'foo[<b>bar</b>baz]',
 		'foo[<b>bar</b>]baz',
@@ -598,6 +610,7 @@ var tests = {
 	strikethrough: [
 		'foo[]bar',
 		'<span>foo</span>{}<span>bar</span>',
+		'<span>foo[</span><span>]bar</span>',
 		'foo[bar]baz',
 		'foo]bar[baz',
 		'{<p><p> <p>foo</p>}',
@@ -673,6 +686,7 @@ var tests = {
 	subscript: [
 		'foo[]bar',
 		'<span>foo</span>{}<span>bar</span>',
+		'<span>foo[</span><span>]bar</span>',
 		'foo[bar]baz',
 		'foo]bar[baz',
 		'{<p><p> <p>foo</p>}',
@@ -706,6 +720,7 @@ var tests = {
 	superscript: [
 		'foo[]bar',
 		'<span>foo</span>{}<span>bar</span>',
+		'<span>foo[</span><span>]bar</span>',
 		'foo[bar]baz',
 		'foo]bar[baz',
 		'{<p><p> <p>foo</p>}',
@@ -739,6 +754,7 @@ var tests = {
 	underline: [
 		'foo[]bar',
 		'<span>foo</span>{}<span>bar</span>',
+		'<span>foo[</span><span>]bar</span>',
 		'foo[bar]baz',
 		'foo]bar[baz',
 		'{<p><p> <p>foo</p>}',
@@ -814,6 +830,7 @@ var tests = {
 	unlink: [
 		'foo[]bar',
 		'<span>foo</span>{}<span>bar</span>',
+		'<span>foo[</span><span>]bar</span>',
 		'<a href=http://www.google.com/>foo[bar]baz</a>',
 		'<a href=http://www.google.com/>foo[barbaz</a>}',
 		'{<a href=http://www.google.com/>foobar]baz</a>',

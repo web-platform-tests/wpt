@@ -961,7 +961,7 @@ function decomposeRange(range) {
 	&& range.endOffset != getNodeLength(range.endContainer)) {
 		// IE seems to mutate the range incorrectly here, so we need correction
 		// here as well.
-		var newStart = [range.startContainer, range.endContainer];
+		var newStart = [range.startContainer, range.startOffset];
 		var newEnd = [range.endContainer, range.endOffset];
 		range.endContainer.splitText(range.endOffset);
 		range.setStart(newStart[0], newStart[1]);

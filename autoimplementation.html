@@ -835,7 +835,7 @@ for (var command in tests) {
 		+ "<button onclick=\"runTests('" + command + "')\">Run tests</button>"
 		+ (command in notes ? "<p>" + notes[command] : "")
 		+ "<table border=1><tr><th>Input <th>Spec <th>Browser <th>Same?</table>"
-		+ (command in doubleTestingCommands ? "<table border=1><tr><th>Input <th>Spec <th>Browser <th>Same?</table>" : "")
+		+ (doubleTestingCommands.indexOf(command) != -1 ? "<table border=1><tr><th>Input <th>Spec <th>Browser <th>Same?</table>" : "")
 		+ "<p><label>New test input: <input></label>"
 		+ (command in defaultValues ? "<label>New test value: <input></label>" : "")
 		+ "<button onclick=\"addTest('" + command + "')\">Add test</button>";

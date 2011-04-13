@@ -52,6 +52,8 @@ blank in IE and Opera, which don't support styleWithCSS.)
 "use strict";
 var tests = {
 	backcolor: [
+		'foo[]bar',
+		'<span>foo</span>{}<span>bar</span>',
 		'<p>foo[bar]baz',
 		'<p>foo]bar[baz',
 		'<div><p>foo[bar]baz</p></div>',
@@ -69,6 +71,8 @@ var tests = {
 		'<p>foo[bar<i>baz]qoz</i>quz',
 	],
 	bold: [
+		'foo[]bar',
+		'<span>foo</span>{}<span>bar</span>',
 		'foo[bar]baz',
 		'foo]bar[baz',
 		'{<p><p> <p>foo</p>}',
@@ -167,6 +171,8 @@ var tests = {
 		'<p style="font-weight: bold">foo[bar]baz</p>',
 	],
 	createlink: [
+		'foo[]bar',
+		'<span>foo</span>{}<span>bar</span>',
 		'foo[bar]baz',
 		'foo]bar[baz',
 		'{<p><p> <p>foo</p>}',
@@ -205,6 +211,8 @@ var tests = {
 		'[foo<a href=otherurl>bar</a>baz]',
 	],
 	fontname: [
+		'foo[]bar',
+		'<span>foo</span>{}<span>bar</span>',
 		'foo[bar]baz',
 		'foo]bar[baz',
 		'{<p><p> <p>foo</p>}',
@@ -257,6 +265,8 @@ var tests = {
 		'foo<span style="font-family: monospace">b[a]r</span>baz',
 	],
 	fontsize: [
+		'foo[]bar',
+		'<span>foo</span>{}<span>bar</span>',
 		["1", 'foo[bar]baz'],
 		["0", 'foo[bar]baz'],
 		["-5", 'foo[bar]baz'],
@@ -332,6 +342,8 @@ var tests = {
 		["3", 'foo<small>b[a]r</small>baz'],
 	],
 	forecolor: [
+		'foo[]bar',
+		'<span>foo</span>{}<span>bar</span>',
 		'foo[bar]baz',
 		'foo]bar[baz',
 		'{<p><p> <p>foo</p>}',
@@ -356,6 +368,8 @@ var tests = {
 		'<span style="color: rgb(255, 0, 0)">foo<span id=purple>b[a]r</span>baz</span>',
 	],
 	hilitecolor: [
+		'foo[]bar',
+		'<span>foo</span>{}<span>bar</span>',
 		'foo[bar]baz',
 		'foo]bar[baz',
 		'{<p><p> <p>foo</p>}',
@@ -381,16 +395,22 @@ var tests = {
 		'<span style="display: block; background-color: #ff8888"><span style="display: block; background-color: aqua">b[ar]</span></span>',
 	],
 	inserthorizontalrule: [
+		'foo[]bar',
+		'<span>foo</span>{}<span>bar</span>',
 		["abc", 'foo[bar]baz'],
 		'foo[bar]baz',
 		'foo<b>{bar}</b>baz',
 	],
 	insertimage: [
+		'foo[]bar',
+		'<span>foo</span>{}<span>bar</span>',
 		["", 'foo[bar]baz'],
 		'foo[bar]baz',
 		'foo<b>{bar}</b>baz',
 	],
 	italic: [
+		'foo[]bar',
+		'<span>foo</span>{}<span>bar</span>',
 		'foo[bar]baz',
 		'foo]bar[baz',
 		'{<p><p> <p>foo</p>}',
@@ -458,6 +478,8 @@ var tests = {
 		'foo bar <i>baz [qoz</i> quz] sic',
 	],
 	removeformat: [
+		'foo[]bar',
+		'<span>foo</span>{}<span>bar</span>',
 		'[foo<b>bar</b>baz]',
 		'foo[<b>bar</b>baz]',
 		'foo[<b>bar</b>]baz',
@@ -570,6 +592,8 @@ var tests = {
 		'{<p style="text-indent: 2em">foobarbaz</p>}',
 	],
 	strikethrough: [
+		'foo[]bar',
+		'<span>foo</span>{}<span>bar</span>',
 		'foo[bar]baz',
 		'foo]bar[baz',
 		'{<p><p> <p>foo</p>}',
@@ -643,6 +667,8 @@ var tests = {
 		'foo<span class="underline-and-line-through">b[a]r</span>baz',
 	],
 	subscript: [
+		'foo[]bar',
+		'<span>foo</span>{}<span>bar</span>',
 		'foo[bar]baz',
 		'foo]bar[baz',
 		'{<p><p> <p>foo</p>}',
@@ -674,6 +700,8 @@ var tests = {
 		'foo<sup>b<sub>[a]</sub>r</sup>baz',
 	],
 	superscript: [
+		'foo[]bar',
+		'<span>foo</span>{}<span>bar</span>',
 		'foo[bar]baz',
 		'foo]bar[baz',
 		'{<p><p> <p>foo</p>}',
@@ -705,6 +733,8 @@ var tests = {
 		'foo<sup>b<sub>[a]</sub>r</sup>baz',
 	],
 	underline: [
+		'foo[]bar',
+		'<span>foo</span>{}<span>bar</span>',
 		'foo[bar]baz',
 		'foo]bar[baz',
 		'{<p><p> <p>foo</p>}',
@@ -778,6 +808,8 @@ var tests = {
 		'foo<span class="underline-and-line-through">b[a]r</span>baz',
 	],
 	unlink: [
+		'foo[]bar',
+		'<span>foo</span>{}<span>bar</span>',
 		'<a href=http://www.google.com/>foo[bar]baz</a>',
 		'<a href=http://www.google.com/>foo[barbaz</a>}',
 		'{<a href=http://www.google.com/>foobar]baz</a>',

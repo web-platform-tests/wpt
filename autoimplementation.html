@@ -49,6 +49,7 @@ blank in IE and Opera, which don't support styleWithCSS.)
 
 <script src=implementation.js></script>
 <script>
+"use strict";
 var tests = {
 	backcolor: [
 		'<p>foo[bar]baz',
@@ -1111,7 +1112,7 @@ function setupCell(cell, test) {
 	}
 
 	cell.innerHTML = "<div></div><div></div>";
-	node = cell.firstChild;
+	var node = cell.firstChild;
 	node.innerHTML = test;
 
 	var startNode, startOffset, endNode, endOffset;
@@ -1169,7 +1170,7 @@ function setupCell(cell, test) {
 		var elStartIdx = data.indexOf("{");
 
 		data = cur.data.replace(/\{/g, "");
-		var elEndIdx = cur.data.indexOf("}");
+		var elEndIdx = data.indexOf("}");
 
 		if (elStartIdx == 0) {
 			startNode = cur.parentNode;

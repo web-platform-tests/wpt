@@ -1770,7 +1770,9 @@ non-modifiable elements with default styling, like <code>.  The correct
 approach is probably to declare these elements modifiable; this would roughly
 match what browsers do.  I'm ignoring the issue for now, because such elements
 cannot actually be created by implementations of execCommand(), so they're not
-likely to be common.
+likely to be common.  Also, the way pushing down styles works right now is that
+the element is destroyed and the style is recreated, which isn't going to work
+for elements like <code> or <tt> or <mark> that we don't normally create.
 -->
 
 <dd><strong>Action</strong>:
@@ -1779,7 +1781,11 @@ likely to be common.
   <li><span>Decompose</span> the [[range]], and let <var>node list</var> be the
   result.
 
-  <li>Let <var>affected elements</var> be a list of all <span title="HTML
+  <li>For each <var>node</var> in <var>node list</var>, unset the [[style]]
+  attribute of <var>node</var> (if it's an [[element]]) and then all its
+  [[element]] [[descendants]].
+
+  <li>Let <var>elements to remove</var> be a list of all <span title="HTML
   element">HTML elements</span> that are the same as or [[descendants]] of some
   member of <var>node list</var> and have non-null [[parents]] and satisfy
   (insert conditions here).
@@ -1791,7 +1797,7 @@ likely to be common.
   interactive".  Except this has weird corner-cases like ins and del that are
   sometimes phrasing and sometimes flow.
 
-  <li>For each <var>element</var> in <var>affected elements</var>:
+  <li>For each <var>element</var> in <var>elements to remove</var>:
 
   <ol>
     <li>While <var>element</var> has [[children]], insert the first [[child]]
@@ -1805,6 +1811,11 @@ likely to be common.
   <span>decompose</span> the [[range]] again; then <span>set the value</span>
   of the resulting [[nodes]], with <var>command</var> and <var>new value</var>
   as given.
+
+  <p class=XXX>This has no relationship to what browsers actually do, although
+  it mostly works okay.  If I don't throw it out and replace it with something
+  more like what browsers do, it still probably needs refinement to handle some
+  elements that it doesn't deal with yet.
 
   <table>
     <tr><th><var>command</var> <th><var>new value</var>

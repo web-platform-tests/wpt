@@ -27,7 +27,7 @@
 <body class=draft>
 <div class=head id=head>
 <h1>HTML Editing Commands</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-12-april-2011>Work in Progress &mdash; Last Update 12 April 2011</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-13-april-2011>Work in Progress &mdash; Last Update 13 April 2011</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;ayg+spec@aryeh.name&gt;
@@ -1740,7 +1740,9 @@ non-modifiable elements with default styling, like <code>.  The correct
 approach is probably to declare these elements modifiable; this would roughly
 match what browsers do.  I'm ignoring the issue for now, because such elements
 cannot actually be created by implementations of execCommand(), so they're not
-likely to be common.
+likely to be common.  Also, the way pushing down styles works right now is that
+the element is destroyed and the style is recreated, which isn't going to work
+for elements like <code> or <tt> or <mark> that we don't normally create.
 -->
 
 <dd><strong>Action</strong>:
@@ -1749,7 +1751,11 @@ likely to be common.
   <li><a href=#decompose>Decompose</a> the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>, and let <var title="">node list</var> be the
   result.
 
-  <li>Let <var title="">affected elements</var> be a list of all <a href=#html-element title="HTML
+  <li>For each <var title="">node</var> in <var title="">node list</var>, unset the <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code>
+  attribute of <var title="">node</var> (if it's an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>) and then all its
+  <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-descendant title=concept-tree-descendant>descendants</a>.
+
+  <li>Let <var title="">elements to remove</var> be a list of all <a href=#html-element title="HTML
   element">HTML elements</a> that are the same as or <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-descendant title=concept-tree-descendant>descendants</a> of some
   member of <var title="">node list</var> and have non-null <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parents</a> and satisfy
   (insert conditions here).
@@ -1761,7 +1767,7 @@ likely to be common.
   interactive".  Except this has weird corner-cases like ins and del that are
   sometimes phrasing and sometimes flow.
 
-  <li>For each <var title="">element</var> in <var title="">affected elements</var>:
+  <li>For each <var title="">element</var> in <var title="">elements to remove</var>:
 
   <ol>
     <li>While <var title="">element</var> has <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, insert the first <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>

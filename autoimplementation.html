@@ -552,6 +552,7 @@ var tests = {
 		'[foo<nonexistentelement style="display: block">bar</nonexistentelement>baz]',
 		'foo<nonexistentelement style="display: block">b[a]r</nonexistentelement>baz',
 
+		// Random stuff
 		'[foo<span id=foo>bar</span>baz]',
 		'foo<span id=foo>b[a]r</span>baz',
 		'[foo<span class=foo>bar</span>baz]',
@@ -563,7 +564,9 @@ var tests = {
 		'<p style="font-weight: bold">foo[bar]baz</p>',
 		'<b><p style="font-weight: bold">foo[bar]baz</p></b>',
 		'<p style="font-variant: small-caps">foo[bar]baz</p>',
+		'{<p style="font-variant: small-caps">foobarbaz</p>}',
 		'<p style="text-indent: 2em">foo[bar]baz</p>',
+		'{<p style="text-indent: 2em">foobarbaz</p>}',
 	],
 	strikethrough: [
 		'foo[bar]baz',

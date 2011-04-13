@@ -1955,10 +1955,24 @@ function myExecCommand(command, showUI, value, range) {
 		// "Decompose the range, and let node list be the result."
 		var nodeList = decomposeRange(range);
 
-		// "Let affected elements be a list of all HTML elements that are the
+		// "For each node in node list, unset the style attribute of node (if
+		// it's an Element) and then all its Element descendants."
+		for (var i = 0; i < nodeList.length; i++) {
+			for (
+				var node = nodeList[i];
+				node != nextNodeDescendants(nodeList[i]);
+				node = nextNode(node)
+			) {
+				if (node.nodeType == Node.ELEMENT_NODE) {
+					node.removeAttribute("style");
+				}
+			}
+		}
+
+		// "Let elements to remove be a list of all HTML elements that are the
 		// same as or descendants of some member of node list and have non-null
 		// parents and satisfy (insert conditions here)."
-		var affectedElements = [];
+		var elementsToRemove = [];
 		for (var i = 0; i < nodeList.length; i++) {
 			for (
 				var node = nodeList[i];
@@ -1969,14 +1983,14 @@ function myExecCommand(command, showUI, value, range) {
 				&& node.parentNode
 				// FIXME: Extremely partial list for testing
 				&& ["A", "AUDIO", "BR", "DIV", "HR", "IMG", "P", "TD", "VIDEO", "WBR"].indexOf(node.tagName) == -1) {
-					affectedElements.push(node);
+					elementsToRemove.push(node);
 				}
 			}
 		}
 
-		// "For each element in affected elements:"
-		for (var i = 0; i < affectedElements.length; i++) {
-			var element = affectedElements[i];
+		// "For each element in elements to remove:"
+		for (var i = 0; i < elementsToRemove.length; i++) {
+			var element = elementsToRemove[i];
 
 			// "While element has children, insert the first child of element
 			// into the parent of element immediately before element,

@@ -165,10 +165,6 @@ other than review and comment.
   Document, comments that are children of a Document, that sort of thing.  Not
   essential for prototyping, but needs to be cleaned up eventually.
 
-  <li>I don't pay attention to whether designMode/contenteditable is actually
-  set.  I should be doing things like not doing anything if the selection isn't
-  editable, making sure not to break out of contenteditable regions, etc.
-
   <li>I haven't yet paid any attention to value parsing in most cases.  This is
   going to be important to specify exactly in some cases, like with colors.
 
@@ -185,10 +181,16 @@ like this.
 
 <h2 id=definitions><span class=secno>3 </span>Definitions</h2>
 
-<p>A <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> is an <dfn id=html-element>HTML element</dfn> if it is an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> whose
-<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-namespace title=concept-element-namespace>namespace</a> is the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#html-namespace>HTML namespace</a>.  An <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#attr>Attr</a></code> is an <dfn id=html-attribute>HTML attribute</dfn> if its
-<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-attr-namespace title=concept-attr-namespace>namespace</a> is
-the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#html-namespace>HTML namespace</a>.
+<p>An <dfn id=html-element>HTML element</dfn> is an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> whose <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-namespace title=concept-element-namespace>namespace</a> is the
+<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#html-namespace>HTML namespace</a>.
+
+<p>Something is <dfn id=editable>editable</dfn> if either it is an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> with a <code class=external data-anolis-spec=html title=attr-contenteditable><a href=http://www.whatwg.org/html/#attr-contenteditable>contenteditable</a></code>
+attribute set to the true state; or it is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#document>Document</a></code> whose <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/html/#designmode>designMode</a></code> is enabled; or it is a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> whose
+<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is <a href=#editable>editable</a>, but which does not have a <code class=external data-anolis-spec=html title=attr-contenteditable><a href=http://www.whatwg.org/html/#attr-contenteditable>contenteditable</a></code>
+attribute set to the false state.
+
+<p>An <dfn id=editing-host>editing host</dfn> is a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> that is <a href=#editable>editable</a>, and
+whose <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is not <a href=#editable>editable</a>.
 
 <p>A <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> is <dfn id=effectively-contained>effectively contained</dfn> in a <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> if either it
 is <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>; or it is the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a>
@@ -204,11 +206,11 @@ splitText()), and anyway text nodes might not be returned by decomposing even
 if they're effectively contained: it might be that the new node created by
 splitText() is returned. -->
 
-<p>An <dfn id=unwrappable-element>unwrappable element</dfn> is an <a href=#html-element>HTML element</a> which may
-not be used where only <a class=external data-anolis-spec=html href=http://www.whatwg.org/html/#phrasing-content>phrasing content</a> is expected (not counting unknown or
+<p>An <dfn id=unwrappable-node>unwrappable node</dfn> is an <a href=#html-element>HTML element</a> which may not
+be used where only <a class=external data-anolis-spec=html href=http://www.whatwg.org/html/#phrasing-content>phrasing content</a> is expected (not counting unknown or
 obsolete elements, which cannot be used at all); or any <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> whose
 display property computes to something other than "inline", "inline-block", or
-"inline-table".
+"inline-table"; or any <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> whose <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is not <a href=#editable>editable</a>.
 
 <p class=XXX>Currently when we hit an unwrappable element, we ignore it and
 alter its children.  Alternatively, if we would otherwise create a span with a
@@ -536,8 +538,8 @@ agents follow the <a class=external data-anolis-spec=domrange href=http://html5.
 
 
 <h2 id="clearing-an-element's-value"><span class=secno>5 </span>Clearing an element's value</h2>
-<p>When a user agent is to <dfn id=clear-the-value>clear the value</dfn> of an element, it must run
-the following steps:
+<p>When a user agent is to <dfn id=clear-the-value>clear the value</dfn> of an element
+<var title="">element</var>, it must run the following steps:
 
 <p class=note>Clearing the value of an element can remove it from its parent
 and put other nodes in its place.  When implementations do something like clear
@@ -550,10 +552,6 @@ id=foo> into <span id=foo> instead of <font id=foo>, but probably not worth it.
 -->
 
 <ol>
-  <li>Let <var title="">element</var> be the <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> to be cleared.
-
-  <li>Let <var title="">command</var> be as in the invoking algorithm.
-
   <li>If <var title="">element</var>'s <a href=#specified-value>specified value</a> for
   <var title="">command</var> is null, return the empty list.  <!-- We want to abort
   early so that we don't try unsetting background-color on a non-inline
@@ -677,8 +675,8 @@ with a <code class=external data-anolis-spec=html title="the style attribute"><a
 
   <li>Let <var title="">ancestor list</var> be a list of <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a>, initially empty.
 
-  <li>While <var title="">current ancestor</var> is an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> and the
-  <a href=#effective-value>effective value</a> of <var title="">property</var> is not <var title="">new
+  <li>While <var title="">current ancestor</var> is an <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>
+  and the <a href=#effective-value>effective value</a> of <var title="">property</var> is not <var title="">new
   value</var> on it, append <var title="">current ancestor</var> to <var title="">ancestor
   list</var>, then set <var title="">current ancestor</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
 
@@ -764,8 +762,8 @@ different value.
   <li>If <var title="">new value</var> is null, abort this algorithm.
 
   <li>If <var title="">node</var> is an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>, <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code>, <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#comment>Comment</a></code>, or
-  <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#processinginstruction>ProcessingInstruction</a></code> node, and is not an <a href=#unwrappable-element>unwrappable
-  element</a>:
+  <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#processinginstruction>ProcessingInstruction</a></code> node, and is not an <a href=#unwrappable-node>unwrappable
+  node</a>:
 
   <ol>
     <!-- Even if the value matches, we stick it in a preceding sibling if
@@ -868,7 +866,7 @@ different value.
   <li>If the <a href=#effective-value>effective value</a> of <var title="">command</var> is <var title="">new
   value</var> on <var title="">node</var>, abort this algorithm.
 
-  <li>If <var title="">node</var> is an <a href=#unwrappable-element>unwrappable element</a>:
+  <li>If <var title="">node</var> is an <a href=#unwrappable-node>unwrappable node</a>:
 
   <ol>
     <li>Let <var title="">children</var> be all <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a> of <var title="">node</var>,
@@ -1102,8 +1100,8 @@ common that a previous sibling is the simple styling element we want, because
 often we'll style several consecutive siblings in succession.  In that case,
 the element created for the first can be reused for the later ones.
 
-<p>This last step works a bit differently if the node is an <a href=#unwrappable-element>unwrappable
-element</a>.  In that case, wrapping it in a simple styling element would
+<p>This last step works a bit differently if the node is an <a href=#unwrappable-node>unwrappable
+node</a>.  In that case, wrapping it in a simple styling element would
 make the document less conforming than it already was.  Instead, we recursively
 force style on its children.  The recursion will terminate when we hit a node
 that's wrappable, or when there are no further descendants.
@@ -1133,6 +1131,49 @@ as desired.
   effort.  Is execCommand() even supposed to work on things that don't descend
   from a document?  Needs investigation.
 
+  <li>If <var title="">node</var> is not <a href=#editable>editable</a>:
+  <!--
+  IE9: Allows everything to be modified by execCommand(), regardless of whether
+    it's editable.
+  Firefox 4.0: Ignores execCommand() if the start and end of the selection are
+    not both editable.  If the start and end are editable but something in the
+    middle is not, seems to relocate the non-editable part in the middle or
+    something like that.
+  Chrome 12 dev: Ignores execCommand() if the start and end of the selection
+    are not both editable.  If the start and end are editable but something in
+    the middle is not, applies the given command but skips the non-editable
+    parts.  But the state doesn't ignore the non-editable parts, so if you bold
+    such a selection you can't unbold it, for instance, since the middle part
+    will remain bold (so it will keep on trying to bold it instead of switching
+    to unbold).
+  Opera 11.00: Ignores execCommand() if the start and end of the selection are
+    not both editable.  If the start and end are editable but something in the
+    middle is not, applies the command to everything, even the non-editable
+    part.
+
+  I chose to go with the non-IE behavior, per this discussion:
+  http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-April/031147.html
+  Ignoring non-editable things is convenient for the common use-case of an
+  editor, where you don't want the user to bold random parts of the UI when
+  they hit the bold button.  For cases where it's not desired, you can always
+  turn designMode on briefly before using execCommand(), so the non-IE behavior
+  is a lot easier to work around than the IE behavior.
+
+  I don't see the value in ever just ignoring execCommand().  If the start and
+  end are not editable, I'm going to say you should still style any editable
+  nodes in between.  I'm also going to ignore non-editable nodes for the
+  purposes of determining state, so (for instance) if all the editable nodes
+  are bolded, it will unbold instead of bolding.
+  -->
+
+  <ol>
+    <li>Let <var title="">children</var> be the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a> of <var title="">node</var>.
+
+    <li><a href=#set-the-value>Set the value</a> of each member of <var title="">children</var>.
+
+    <li>Abort this algorithm.
+  </ol>
+
   <li>If <var title="">node</var> is an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>:
 
   <ol>
@@ -1140,8 +1181,7 @@ as desired.
     nodes</var> be the result.
 
     <li>For each <var title="">new node</var> in <var title="">new nodes</var>,
-    <a href=#set-the-value>set the value</a> of <var title="">new node</var>, with the same inputs as
-    this invocation of the algorithm.
+    <a href=#set-the-value>set the value</a> of <var title="">new node</var>.
 
     <li>If <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is null, abort this algorithm.
   </ol>
@@ -1274,8 +1314,8 @@ value</a> of each returned <a class=external data-anolis-spec=domcore href=http:
 Otherwise, <a href=#set-the-value title="set the value">set their value</a> with <var title="">new
 value</var> "bold".
 
-<dd><strong>State</strong>: True if every <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node that is
-<a href=#effectively-contained>effectively contained</a> in the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> has <a href=#effective-value>effective
+<dd><strong>State</strong>: True if every <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node
+that is <a href=#effectively-contained>effectively contained</a> in the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> has <a href=#effective-value>effective
 value</a> at least 700.  Otherwise false.
 <!-- For bold and similar commands, IE 9 RC seems to consider the state true or
 false depending on the first element.  All other browsers follow the same
@@ -1695,8 +1735,8 @@ value</a> of each returned <a class=external data-anolis-spec=domcore href=http:
 Otherwise, <a href=#set-the-value title="set the value">set their value</a> with <var title="">new
 value</var> "italic".
 
-<dd><strong>State</strong>: True if every <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node that is
-<a href=#effectively-contained>effectively contained</a> in the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> has <a href=#effective-value>effective
+<dd><strong>State</strong>: True if every <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node
+that is <a href=#effectively-contained>effectively contained</a> in the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> has <a href=#effective-value>effective
 value</a> either "italic" or "oblique".  Otherwise false.
 
 <dd><strong>Value</strong>: Always the empty string.
@@ -1838,8 +1878,8 @@ the value">set their value</a> to "line-through".
 
 <p class=XXX>Has all the same problems as underline.
 
-<dd><strong>State</strong>: True if every <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node that is
-<a href=#effectively-contained>effectively contained</a> in the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> has <a href=#effective-value>effective
+<dd><strong>State</strong>: True if every <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node
+that is <a href=#effectively-contained>effectively contained</a> in the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> has <a href=#effective-value>effective
 value</a> "line-through".  Otherwise false.
 
 <dd><strong>Value</strong>: Always the empty string.
@@ -1869,8 +1909,8 @@ value</var> "baseline", then <a href=#decompose>decompose</a> the <a class=exter
 <a href=#set-the-value>set the value</a> of each returned <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> with <var title="">new value</var>
 "sub".
 
-<dd><strong>State</strong>: True if every <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node that is
-<a href=#effectively-contained>effectively contained</a> in the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> has <a href=#effective-value>effective
+<dd><strong>State</strong>: True if every <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node
+that is <a href=#effectively-contained>effectively contained</a> in the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> has <a href=#effective-value>effective
 value</a> "sub".  Otherwise false.
 
 <dd><strong>Value</strong>:
@@ -1888,8 +1928,8 @@ value</var> "baseline", then <a href=#decompose>decompose</a> the <a class=exter
 <a href=#set-the-value>set the value</a> of each returned <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> with <var title="">new value</var>
 "super".
 
-<dd><strong>State</strong>: True if every <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node that is
-<a href=#effectively-contained>effectively contained</a> in the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> has <a href=#effective-value>effective
+<dd><strong>State</strong>: True if every <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node
+that is <a href=#effectively-contained>effectively contained</a> in the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> has <a href=#effective-value>effective
 value</a> "super".  Otherwise false.
 
 <dd><strong>Value</strong>:
@@ -1938,7 +1978,7 @@ text-decoration in CSS is horrible:
   underline letter-by-letter, it probably will vary.  But sometimes when they
   underline a bunch of text at once it will also vary, if the algorithm decides
   to create multiple elements for whatever reason (like an intervening
-  unwrappable element).  This is unlikely to match user expectations.  There's
+  unwrappable node).  This is unlikely to match user expectations.  There's
   not much we can do about this without entirely revamping text-decoration, so
   we'll have to live with it.
 
@@ -1953,8 +1993,8 @@ using the newly-specced features or working around their absence as the case
 may be.
 </div>
 
-<dd><strong>State</strong>: True if every <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node that is
-<a href=#effectively-contained>effectively contained</a> in the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> has <a href=#effective-value>effective
+<dd><strong>State</strong>: True if every <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node
+that is <a href=#effectively-contained>effectively contained</a> in the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> has <a href=#effective-value>effective
 value</a> "underline".  Otherwise false.
 
 <dd><strong>Value</strong>: Always the empty string.

@@ -286,14 +286,32 @@ function isContained(node, range) {
 // Things defined in the edit command spec (i.e., the interesting stuff)
 
 
-// "A Node is an HTML element if it is an Element whose namespace is the HTML
-// namespace."
+// "An HTML element is an Element whose namespace is the HTML namespace."
 function isHtmlElement(node) {
 	return node
 		&& node.nodeType == Node.ELEMENT_NODE
 		&& isHtmlNamespace(node.namespaceURI);
 }
 
+// "Something is editable if either it is an Element with a contenteditable
+// attribute set to the true state; or it is a Document whose designMode is
+// enabled; or it is a node whose parent is editable, but which does not have a
+// contenteditable attribute set to the false state."
+function isEditable(node) {
+	// This is slightly a lie, because we're excluding non-HTML elements with
+	// contentEditable attributes.  Maybe we want to, though . . .
+	return (node instanceof Element && node.contentEditable == "true")
+		|| (node instanceof Document && node.designMode == "on")
+		|| (node instanceof Node && node.contentEditable !== "false" && isEditable(node.parentNode));
+}
+
+// "An editing host is a node that is editable, and whose parent is not
+// editable."
+function isEditingHost(node) {
+	return node instanceof Node
+		&& isEditable(node)
+		&& !isEditable(node.parentNode);
+}
 
 /**
  * "A Node is effectively contained in a Range if either it is contained in the
@@ -327,14 +345,23 @@ function isEffectivelyContained(node, range) {
 	return false;
 }
 
-// "An unwrappable element is an HTML element which may not be used where only
+// "An unwrappable node is an HTML element which may not be used where only
 // phrasing content is expected (not counting unknown or obsolete elements,
 // which cannot be used at all); or any Element whose display property computes
-// to something other than "inline", "inline-block", or "inline-table"."
+// to something other than "inline", "inline-block", or "inline-table"; or any
+// node whose parent is not editable."
 //
 // I don't bother implementing this exactly, just well enough for testing.
-function isUnwrappableElement(node) {
-	if (!node || node.nodeType != Node.ELEMENT_NODE) {
+function isUnwrappableNode(node) {
+	if (!node) {
+		return false;
+	}
+
+	if (!isEditable(node.parentNode)) {
+		return true;
+	}
+
+	if (node.nodeType != Node.ELEMENT_NODE) {
 		return false;
 	}
 
@@ -1112,10 +1139,10 @@ function pushDownValues(node, command, newValue) {
 	// "Let ancestor list be a list of Nodes, initially empty."
 	var ancestorList = [];
 
-	// "While current ancestor is an Element and the effective value of
-	// command is not new value on it, append current ancestor to ancestor
+	// "While current ancestor is an editable Element and the effective value
+	// of command is not new value on it, append current ancestor to ancestor
 	// list, then set current ancestor to its parent."
-	while (currentAncestor
+	while (isEditable(currentAncestor)
 	&& currentAncestor.nodeType == Node.ELEMENT_NODE
 	&& !valuesEqual(command, getEffectiveValue(currentAncestor, command), newValue)) {
 		ancestorList.push(currentAncestor);
@@ -1209,12 +1236,12 @@ function forceValue(node, command, newValue) {
 	}
 
 	// "If node is an Element, Text, Comment, or ProcessingInstruction node,
-	// and is not an unwrappable element:"
+	// and is not an unwrappable node:"
 	if ((node.nodeType == Node.ELEMENT_NODE
 	|| node.nodeType == Node.TEXT_NODE
 	|| node.nodeType == Node.COMMENT_NODE
 	|| node.nodeType == Node.PROCESSING_INSTRUCTION_NODE)
-	&& !isUnwrappableElement(node)) {
+	&& !isUnwrappableNode(node)) {
 		// "Let candidate be node's previousSibling."
 		var candidate = node.previousSibling;
 
@@ -1331,8 +1358,8 @@ function forceValue(node, command, newValue) {
 		return;
 	}
 
-	// "If node is an unwrappable element:"
-	if (isUnwrappableElement(node)) {
+	// "If node is an unwrappable node:"
+	if (isUnwrappableNode(node)) {
 		// "Let children be all children of node, omitting any that are
 		// Elements whose specified value for command is neither null nor
 		// equal to new value."
@@ -1612,6 +1639,20 @@ function setNodeValue(node, command, newValue) {
 	// "If node's parent is null, or if node is a DocumentType, abort this
 	// algorithm."
 	if (!node.parentNode || node.nodeType == Node.DOCUMENT_TYPE_NODE) {
+		return;
+	}
+
+	// "If node is not editable:"
+	if (!isEditable(node)) {
+		// "Let children be the children of node."
+		var children = Array.prototype.slice.call(node.childNodes);
+
+		// "Set the value of each member of children."
+		for (var i = 0; i < children.length; i++) {
+			setNodeValue(children[i], command, newValue);
+		}
+
+		// "Abort this algorithm."
 		return;
 	}
 
@@ -2209,9 +2250,13 @@ function getState(command, range) {
 			continue;
 		}
 
+		if (!isEditable(node)) {
+			continue;
+		}
+
 		if (command == "bold") {
-			// "True if every Text node that is effectively contained in the
-			// range has effective value at least 700. Otherwise false."
+			// "True if every editable Text node that is effectively contained
+			// in the range has effective value at least 700. Otherwise false."
 			var fontWeight = getEffectiveValue(node, command);
 			if (fontWeight !== "bold"
 			&& fontWeight !== "700"
@@ -2220,8 +2265,8 @@ function getState(command, range) {
 				return false;
 			}
 		} else if (command == "italic") {
-			// "True if every Text node that is effectively contained in the
-			// range has effective value either "italic" or "oblique".
+			// "True if every editable Text node that is effectively contained
+			// in the range has effective value either "italic" or "oblique".
 			// Otherwise false."
 			var fontStyle = getEffectiveValue(node, command);
 			if (fontStyle !== "italic"
@@ -2229,29 +2274,30 @@ function getState(command, range) {
 				return false;
 			}
 		} else if (command == "strikethrough") {
-			// "True if every Text node that is effectively contained in the
-			// range has effective value "line-through". Otherwise false."
+			// "True if every editable Text node that is effectively contained
+			// in the range has effective value "line-through". Otherwise
+			// false."
 			var textDecoration = getEffectiveValue(node, command);
 			if (textDecoration !== "line-through") {
 				return false;
 			}
 		} else if (command == "underline") {
-			// "True if every Text node that is effectively contained in the
-			// range has effective value "underline". Otherwise false."
+			// "True if every editable Text node that is effectively contained
+			// in the range has effective value "underline". Otherwise false."
 			var textDecoration = getEffectiveValue(node, command);
 			if (textDecoration !== "underline") {
 				return false;
 			}
 		} else if (command == "subscript") {
-			// "True if every Text node that is effectively contained in the
-			// range has effective value "sub". Otherwise false."
+			// "True if every editable Text node that is effectively contained
+			// in the range has effective value "sub". Otherwise false."
 			var verticalAlign = getEffectiveValue(node, command);
 			if (verticalAlign !== "sub") {
 				return false;
 			}
 		} else if (command == "superscript") {
-			// "True if every Text node that is effectively contained in the
-			// range has effective value "super". Otherwise false."
+			// "True if every editable Text node that is effectively contained
+			// in the range has effective value "super". Otherwise false."
 			var verticalAlign = getEffectiveValue(node, command);
 			if (verticalAlign !== "super") {
 				return false;

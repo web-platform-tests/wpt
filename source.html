@@ -153,10 +153,6 @@ other than review and comment.
   Document, comments that are children of a Document, that sort of thing.  Not
   essential for prototyping, but needs to be cleaned up eventually.
 
-  <li>I don't pay attention to whether designMode/contenteditable is actually
-  set.  I should be doing things like not doing anything if the selection isn't
-  editable, making sure not to break out of contenteditable regions, etc.
-
   <li>I haven't yet paid any attention to value parsing in most cases.  This is
   going to be important to specify exactly in some cases, like with colors.
 
@@ -173,11 +169,19 @@ like this.
 
 <h2>Definitions</h2>
 
-<p>A [[node]] is an <dfn>HTML element</dfn> if it is an [[element]] whose
-[[namespace]] is the [[htmlnamespace]].  An <code
-data-anolis-spec=domcore>Attr</code> is an <dfn>HTML attribute</dfn> if its
-<span data-anolis-spec=domcore title=concept-attr-namespace>namespace</span> is
-the [[htmlnamespace]].
+<p>An <dfn>HTML element</dfn> is an [[element]] whose [[namespace]] is the
+[[htmlnamespace]].
+
+<p>Something is <dfn>editable</dfn> if either it is an [[element]] with a <code
+data-anolis-spec=html title=attr-contenteditable>contenteditable</code>
+attribute set to the true state; or it is a [[document]] whose <code
+data-anolis-spec=html>designMode</code> is enabled; or it is a [[node]] whose
+[[parent]] is <span>editable</span>, but which does not have a <code
+data-anolis-spec=html title=attr-contenteditable>contenteditable</code>
+attribute set to the false state.
+
+<p>An <dfn>editing host</dfn> is a [[node]] that is <span>editable</span>, and
+whose [[parent]] is not <span>editable</span>.
 
 <p>A [[node]] is <dfn>effectively contained</dfn> in a [[range]] if either it
 is [[contained]] in the [[range]]; or it is the [[range]]'s [[rangestart]]
@@ -193,11 +197,11 @@ splitText()), and anyway text nodes might not be returned by decomposing even
 if they're effectively contained: it might be that the new node created by
 splitText() is returned. -->
 
-<p>An <dfn>unwrappable element</dfn> is an <span>HTML element</span> which may
-not be used where only [[phrasingcontent]] is expected (not counting unknown or
+<p>An <dfn>unwrappable node</dfn> is an <span>HTML element</span> which may not
+be used where only [[phrasingcontent]] is expected (not counting unknown or
 obsolete elements, which cannot be used at all); or any [[element]] whose
 display property computes to something other than "inline", "inline-block", or
-"inline-table".
+"inline-table"; or any [[node]] whose [[parent]] is not <span>editable</span>.
 
 <p class=XXX>Currently when we hit an unwrappable element, we ignore it and
 alter its children.  Alternatively, if we would otherwise create a span with a
@@ -529,8 +533,8 @@ title>splitText()</code>.
 
 
 <h2>Clearing an element's value</h2>
-<p>When a user agent is to <dfn>clear the value</dfn> of an element, it must run
-the following steps:
+<p>When a user agent is to <dfn>clear the value</dfn> of an element
+<var>element</var>, it must run the following steps:
 
 <p class=note>Clearing the value of an element can remove it from its parent
 and put other nodes in its place.  When implementations do something like clear
@@ -543,10 +547,6 @@ id=foo> into <span id=foo> instead of <font id=foo>, but probably not worth it.
 -->
 
 <ol>
-  <li>Let <var>element</var> be the [[element]] to be cleared.
-
-  <li>Let <var>command</var> be as in the invoking algorithm.
-
   <li>If <var>element</var>'s <span>specified value</span> for
   <var>command</var> is null, return the empty list.  <!-- We want to abort
   early so that we don't try unsetting background-color on a non-inline
@@ -670,8 +670,8 @@ with a [[style]] attribute).
 
   <li>Let <var>ancestor list</var> be a list of [[nodes]], initially empty.
 
-  <li>While <var>current ancestor</var> is an [[element]] and the
-  <span>effective value</span> of <var>property</var> is not <var>new
+  <li>While <var>current ancestor</var> is an <span>editable</span> [[element]]
+  and the <span>effective value</span> of <var>property</var> is not <var>new
   value</var> on it, append <var>current ancestor</var> to <var>ancestor
   list</var>, then set <var>current ancestor</var> to its [[parent]].
 
@@ -759,7 +759,7 @@ different value.
 
   <li>If <var>node</var> is an [[element]], [[text]], [[comment]], or
   [[processinginstruction]] node, and is not an <span>unwrappable
-  element</span>:
+  node</span>:
 
   <ol>
     <!-- Even if the value matches, we stick it in a preceding sibling if
@@ -862,7 +862,7 @@ different value.
   <li>If the <span>effective value</span> of <var>command</var> is <var>new
   value</var> on <var>node</var>, abort this algorithm.
 
-  <li>If <var>node</var> is an <span>unwrappable element</span>:
+  <li>If <var>node</var> is an <span>unwrappable node</span>:
 
   <ol>
     <li>Let <var>children</var> be all [[children]] of <var>node</var>,
@@ -1113,7 +1113,7 @@ often we'll style several consecutive siblings in succession.  In that case,
 the element created for the first can be reused for the later ones.
 
 <p>This last step works a bit differently if the node is an <span>unwrappable
-element</span>.  In that case, wrapping it in a simple styling element would
+node</span>.  In that case, wrapping it in a simple styling element would
 make the document less conforming than it already was.  Instead, we recursively
 force style on its children.  The recursion will terminate when we hit a node
 that's wrappable, or when there are no further descendants.
@@ -1144,6 +1144,49 @@ as desired.
   effort.  Is execCommand() even supposed to work on things that don't descend
   from a document?  Needs investigation.
 
+  <li>If <var>node</var> is not <span>editable</span>:
+  <!--
+  IE9: Allows everything to be modified by execCommand(), regardless of whether
+    it's editable.
+  Firefox 4.0: Ignores execCommand() if the start and end of the selection are
+    not both editable.  If the start and end are editable but something in the
+    middle is not, seems to relocate the non-editable part in the middle or
+    something like that.
+  Chrome 12 dev: Ignores execCommand() if the start and end of the selection
+    are not both editable.  If the start and end are editable but something in
+    the middle is not, applies the given command but skips the non-editable
+    parts.  But the state doesn't ignore the non-editable parts, so if you bold
+    such a selection you can't unbold it, for instance, since the middle part
+    will remain bold (so it will keep on trying to bold it instead of switching
+    to unbold).
+  Opera 11.00: Ignores execCommand() if the start and end of the selection are
+    not both editable.  If the start and end are editable but something in the
+    middle is not, applies the command to everything, even the non-editable
+    part.
+
+  I chose to go with the non-IE behavior, per this discussion:
+  http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-April/031147.html
+  Ignoring non-editable things is convenient for the common use-case of an
+  editor, where you don't want the user to bold random parts of the UI when
+  they hit the bold button.  For cases where it's not desired, you can always
+  turn designMode on briefly before using execCommand(), so the non-IE behavior
+  is a lot easier to work around than the IE behavior.
+
+  I don't see the value in ever just ignoring execCommand().  If the start and
+  end are not editable, I'm going to say you should still style any editable
+  nodes in between.  I'm also going to ignore non-editable nodes for the
+  purposes of determining state, so (for instance) if all the editable nodes
+  are bolded, it will unbold instead of bolding.
+  -->
+
+  <ol>
+    <li>Let <var>children</var> be the [[children]] of <var>node</var>.
+
+    <li><span>Set the value</span> of each member of <var>children</var>.
+
+    <li>Abort this algorithm.
+  </ol>
+
   <li>If <var>node</var> is an [[element]]:
 
   <ol>
@@ -1151,8 +1194,7 @@ as desired.
     nodes</var> be the result.
 
     <li>For each <var>new node</var> in <var>new nodes</var>,
-    <span>set the value</span> of <var>new node</var>, with the same inputs as
-    this invocation of the algorithm.
+    <span>set the value</span> of <var>new node</var>.
 
     <li>If <var>node</var>'s [[parent]] is null, abort this algorithm.
   </ol>
@@ -1287,8 +1329,8 @@ value</span> of each returned [[node]] with <var>new value</var> "normal".
 Otherwise, <span title="set the value">set their value</span> with <var>new
 value</var> "bold".
 
-<dd><strong>State</strong>: True if every [[text]] node that is
-<span>effectively contained</span> in the [[range]] has <span>effective
+<dd><strong>State</strong>: True if every <span>editable</span> [[text]] node
+that is <span>effectively contained</span> in the [[range]] has <span>effective
 value</span> at least 700.  Otherwise false.
 <!-- For bold and similar commands, IE 9 RC seems to consider the state true or
 false depending on the first element.  All other browsers follow the same
@@ -1727,8 +1769,8 @@ value</span> of each returned [[node]] with <var>new value</var> "normal".
 Otherwise, <span title="set the value">set their value</span> with <var>new
 value</var> "italic".
 
-<dd><strong>State</strong>: True if every [[text]] node that is
-<span>effectively contained</span> in the [[range]] has <span>effective
+<dd><strong>State</strong>: True if every <span>editable</span> [[text]] node
+that is <span>effectively contained</span> in the [[range]] has <span>effective
 value</span> either "italic" or "oblique".  Otherwise false.
 
 <dd><strong>Value</strong>: Always the empty string.
@@ -1870,8 +1912,8 @@ the value">set their value</span> to "line-through".
 
 <p class=XXX>Has all the same problems as underline.
 
-<dd><strong>State</strong>: True if every [[text]] node that is
-<span>effectively contained</span> in the [[range]] has <span>effective
+<dd><strong>State</strong>: True if every <span>editable</span> [[text]] node
+that is <span>effectively contained</span> in the [[range]] has <span>effective
 value</span> "line-through".  Otherwise false.
 
 <dd><strong>Value</strong>: Always the empty string.
@@ -1901,8 +1943,8 @@ value</var> "baseline", then <span>decompose</span> the [[range]] again and
 <span>set the value</span> of each returned [[node]] with <var>new value</var>
 "sub".
 
-<dd><strong>State</strong>: True if every [[text]] node that is
-<span>effectively contained</span> in the [[range]] has <span>effective
+<dd><strong>State</strong>: True if every <span>editable</span> [[text]] node
+that is <span>effectively contained</span> in the [[range]] has <span>effective
 value</span> "sub".  Otherwise false.
 
 <dd><strong>Value</strong>:
@@ -1920,8 +1962,8 @@ value</var> "baseline", then <span>decompose</span> the [[range]] again and
 <span>set the value</span> of each returned [[node]] with <var>new value</var>
 "super".
 
-<dd><strong>State</strong>: True if every [[text]] node that is
-<span>effectively contained</span> in the [[range]] has <span>effective
+<dd><strong>State</strong>: True if every <span>editable</span> [[text]] node
+that is <span>effectively contained</span> in the [[range]] has <span>effective
 value</span> "super".  Otherwise false.
 
 <dd><strong>Value</strong>:
@@ -1971,7 +2013,7 @@ text-decoration in CSS is horrible:
   underline letter-by-letter, it probably will vary.  But sometimes when they
   underline a bunch of text at once it will also vary, if the algorithm decides
   to create multiple elements for whatever reason (like an intervening
-  unwrappable element).  This is unlikely to match user expectations.  There's
+  unwrappable node).  This is unlikely to match user expectations.  There's
   not much we can do about this without entirely revamping text-decoration, so
   we'll have to live with it.
 
@@ -1987,8 +2029,8 @@ using the newly-specced features or working around their absence as the case
 may be.
 </div>
 
-<dd><strong>State</strong>: True if every [[text]] node that is
-<span>effectively contained</span> in the [[range]] has <span>effective
+<dd><strong>State</strong>: True if every <span>editable</span> [[text]] node
+that is <span>effectively contained</span> in the [[range]] has <span>effective
 value</span> "underline".  Otherwise false.
 
 <dd><strong>Value</strong>: Always the empty string.

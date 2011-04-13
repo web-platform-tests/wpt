@@ -16,10 +16,10 @@ b, strong { font-weight: bold }
 #purple { color: purple }
 td > div:first-child {
 	padding-bottom: 0.2em;
-	border-bottom: 1px solid black;
 }
 td > div:last-child {
 	padding-top: 0.2em;
+	border-top: 1px solid black;
 }
 /* https://bugs.webkit.org/show_bug.cgi?id=56670 */
 dfn { font-style: italic }
@@ -397,6 +397,10 @@ var tests = {
 	inserthorizontalrule: [
 		'foo[]bar',
 		'<span>foo</span>{}<span>bar</span>',
+		'<div><b>foo</b>{}<b>bar</b></div>',
+		'<div><b>foo</b>{<b>bar</b>}<b>baz</b></div>',
+		'<b>foo[]bar</b>',
+		'<b id=abc>foo[]bar</b>',
 		["abc", 'foo[bar]baz'],
 		'foo[bar]baz',
 		'foo<b>{bar}</b>baz',
@@ -997,7 +1001,11 @@ function doSpecCell(tr, test, command, styleWithCss) {
 		myExecCommand("styleWithCSS", false, styleWithCss);
 		myExecCommand(command, false, value, range);
 		addBrackets(range);
-		specCell.lastChild.textContent = specCell.firstChild.innerHTML;
+		if (specCell.childNodes.length == 2) {
+			specCell.lastChild.textContent = specCell.firstChild.innerHTML;
+		} else {
+			throw "The cell didn't have two children.  Did something spill outside the test div?";
+		}
 	} catch (e) {
 		specCell.lastChild.style.color = "red";
 		specCell.lastChild.style.fontWeight = "bold";
@@ -1041,10 +1049,15 @@ function doBrowserCell(tr, test, command, styleWithCss) {
 	tr.appendChild(browserCell);
 	try {
 		var points = setupCell(browserCell, test);
+		var testDiv = browserCell.firstChild;
 		// Work around weird Firefox bug:
 		// https://bugzilla.mozilla.org/show_bug.cgi?id=649138
-		var testDiv = browserCell.firstChild;
-		document.getElementById(command).appendChild(testDiv);
+		// But only with removeFormat, because it tends to cause weird behavior
+		// sometimes if content winds up being put outside the div for some
+		// reason: then it's mysteriously below the table.
+		if (command == "removeformat") {
+			document.getElementById(command).appendChild(testDiv);
+		}
 		setSelection(points[0], points[1], points[2], points[3]);
 		try {
 			document.execCommand("styleWithCSS", false, styleWithCss);
@@ -1053,12 +1066,20 @@ function doBrowserCell(tr, test, command, styleWithCss) {
 		if (getSelection().rangeCount) {
 			addBrackets(getSelection().getRangeAt(0));
 		}
-		browserCell.insertBefore(testDiv, browserCell.firstChild);
-		browserCell.lastChild.textContent = browserCell.firstChild.innerHTML;
+		if (testDiv.parentNode != browserCell) {
+			browserCell.insertBefore(testDiv, browserCell.firstChild);
+		}
+		if (browserCell.childNodes.length == 2) {
+			browserCell.lastChild.textContent = browserCell.firstChild.innerHTML;
+		} else {
+			throw "The cell didn't have two children.  Did something spill outside the test div?";
+		}
 	} catch (e) {
-		browserCell.textContent = "Exception: " + e;
-		if (testDiv && testDiv.parentNode) {
-			testDiv.parentNode.removeChild(testDiv);
+		browserCell.lastChild.style.color = "red";
+		browserCell.lastChild.style.fontWeight = "bold";
+		browserCell.lastChild.textContent = "Exception: " + e;
+		if (testDiv && testDiv.parentNode != browserCell) {
+			browserCell.insertBefore(testDiv, browserCell.firstChild);
 		}
 	}
 }
@@ -1085,6 +1106,7 @@ function doSameCell(tr) {
 			.replace(/<(\/?)strike/g, '<$1s')
 			.replace(/<(\/?)em/g, '<$1i')
 			.replace(/#[0-9a-fA-F]{6}/g, function(match) { return match.toUpperCase(); })
+			.replace(/ size="2" width="100%"/g, '')
 			.replace(/ class="Apple-style-span"/g, "");
 		if (navigator.userAgent.indexOf("MSIE") != -1) {
 			// IE produces <font style> instead of <span style>, so let's
@@ -1296,8 +1318,14 @@ function addBrackets(range) {
 		&& range.endContainer.childNodes[range.endOffset - 1].nodeType == Node.TEXT_NODE) {
 			range.endContainer.childNodes[range.endOffset - 1].appendData("}");
 		} else {
-			// No idea how this will work for tables . . .
-			range.endContainer.insertBefore(document.createTextNode("}"), range.endContainer.childNodes[range.endOffset]);
+			// Seems to serialize as I'd want even for tables . . . IE doesn't
+			// allow undefined to be passed as the second argument (it throws
+			// an exception), so we have to explicitly check the number of
+			// children and pass null.
+			range.endContainer.insertBefore(document.createTextNode("}"),
+				range.endContainer.childNodes.length == range.endOffset
+				? null
+				: range.endContainer.childNodes[range.endOffset]);
 		}
 	}
 	if (range.startContainer.nodeType == Node.TEXT_NODE) {
@@ -1310,7 +1338,10 @@ function addBrackets(range) {
 		&& range.startContainer.childNodes[range.startOffset - 1].nodeType == Node.TEXT_NODE) {
 			range.startContainer.childNodes[range.startOffset - 1].appendData("{");
 		} else {
-			range.startContainer.insertBefore(document.createTextNode("{"), range.startContainer.childNodes[range.startOffset]);
+		range.startContainer.insertBefore(document.createTextNode("{"),
+			range.startContainer.childNodes.length == range.startOffset
+			? null
+			: range.startContainer.childNodes[range.startOffset]);
 		}
 	}
 }

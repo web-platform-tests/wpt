@@ -1591,7 +1591,8 @@ different behaviors across four browsers.  Opera 11.00 is the only one that
 acts more or less like the spec.  IE9 and Chrome 12 dev treat the value as an
 id, which is weird and probably useless, so I don't do it.  Firefox 4.0
 produces <hr size=2 width=100%> instead of <hr>, which is also weird and almost
-definitely useless, so I don't do it. -->
+definitely useless, so I don't do it.  Then you have the varying behavior in
+splitting up parents to ensure validity . . . -->
 
 <ol>
   <li>Run <code data-anolis-spec=domrange
@@ -1601,7 +1602,7 @@ definitely useless, so I don't do it. -->
   [[rangestart]].
 
   <li>If <var>node</var> is a [[text]] or [[comment]] node and its [[parent]]
-  is null, abort these steps and do nothing.
+  is null, abort these steps and do nothing further.
 
   <li>Let <var>hr</var> be the result of calling <code
   data-anolis-spec=domcore
@@ -1629,6 +1630,19 @@ definitely useless, so I don't do it. -->
   data-anolis-spec=domcore
   title=dom-Node-insertBefore>insertBefore(<var>hr</var>,
   <var>child</var>)</code> on <var>node</var>.
+
+  <p class=XXX>This is wrong: it can insert the new element inside an inline
+  element, which is invalid.  Browsers break up ancestor inlines to avoid this.
+  So far I've managed to avoid having to do this, which is good because it
+  causes problems (e.g., what if an inline ancestor has an id?), but I don't
+  see any way around it here.  Maybe I need to revisit the insistence on only
+  modifying "modifiable elements"; if non-modifiable elements sneak in somehow,
+  perhaps we need to break them up anyway sometimes.
+
+  <li>Run <code data-anolis-spec=domrange
+  title=dom-Selection-collapse>collapse()</code> on the [[selection]], with
+  first argument equal to the [[parent]] of <var>hr</var> and the second
+  argument equal to one plus the [[index]] of <var>hr</var>.
 </ol>
 
 <dd><strong>State</strong>:
@@ -1689,6 +1703,11 @@ definitely useless, so I don't do it. -->
   data-anolis-spec=domcore
   title=dom-Node-insertBefore>insertBefore(<var>img</var>,
   <var>child</var>)</code> on <var>node</var>.
+
+  <li>Run <code data-anolis-spec=domrange
+  title=dom-Selection-collapse>collapse()</code> on the [[selection]], with
+  first argument equal to the [[parent]] of <var>img</var> and the second
+  argument equal to one plus the [[index]] of <var>img</var>.
 </ol>
 
 <dd><strong>State</strong>:

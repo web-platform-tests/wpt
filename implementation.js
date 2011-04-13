@@ -173,8 +173,23 @@ function isHtmlNamespace(ns) {
 // Functions for stuff in DOM Range
 function getNodeIndex(node) {
 	var ret = 0;
-	while (node != node.parentNode.childNodes[ret]) {
+	// These are no-ops to avoid a completely ridiculous bug in IE where
+	// sometimes a node is not actually equal to any of its parents' children.
+	// Somehow this makes it go away.  Sigh.
+	if (node.nextSibling) {
+		node = node.nextSibling.previousSibling;
+	} else if (node.previousSibling) {
+		node = node.previousSibling.nextSibling;
+	} else {
+		node = node.parentNode.firstChild;
+	}
+	while (ret < node.parentNode.childNodes.length && node != node.parentNode.childNodes[ret]) {
 		ret++;
+	}
+	if (ret >= node.parentNode.childNodes.length) {
+		// This actually happens in IE sometimes (although hopefully not with
+		// my workaround in place).
+		throw "node is not equal to any of its parents' children";
 	}
 	return ret;
 }
@@ -917,8 +932,13 @@ function decomposeRange(range) {
 	if (range.endContainer.nodeType == Node.TEXT_NODE
 	&& range.endOffset != 0
 	&& range.endOffset != getNodeLength(range.endContainer)) {
+		// IE seems to mutate the range incorrectly here, so we need correction
+		// here as well.
+		var newStart = [range.startContainer, range.endContainer];
+		var newEnd = [range.endContainer, range.endOffset];
 		range.endContainer.splitText(range.endOffset);
-		// No correction should be needed here
+		range.setStart(newStart[0], newStart[1]);
+		range.setEnd(newEnd[0], newEnd[1]);
 	}
 
 	// "Let cloned range be the result of calling cloneRange() on range."
@@ -1878,6 +1898,18 @@ function myExecCommand(command, showUI, value, range) {
 				: node.childNodes[offset];
 			node.insertBefore(hr, child);
 		}
+
+		// "Run collapse() on the Selection, with first argument equal to the
+		// parent of hr and the second argument equal to one plus the index of
+		// hr."
+		//
+		// Not everyone actually supports collapse(), so we do it manually
+		// instead.  Also, we need to modify the actual range we're given as
+		// well, for the sake of autoimplementation.html's range-filling-in.
+		range.setStart(hr.parentNode, 1 + getNodeIndex(hr));
+		range.setEnd(hr.parentNode, 1 + getNodeIndex(hr));
+		getSelection().removeAllRanges();
+		getSelection().addRange(range);
 		break;
 
 		case "insertimage":
@@ -1938,6 +1970,23 @@ function myExecCommand(command, showUI, value, range) {
 				: node.childNodes[offset];
 			node.insertBefore(img, child);
 		}
+
+		// "Run collapse() on the Selection, with first argument equal to the
+		// parent of img and the second argument equal to one plus the index of
+		// img."
+		//
+		// Not everyone actually supports collapse(), so we do it manually
+		// instead.  Also, we need to modify the actual range we're given as
+		// well, for the sake of autoimplementation.html's range-filling-in.
+		range.setStart(img.parentNode, 1 + getNodeIndex(img));
+		range.setEnd(img.parentNode, 1 + getNodeIndex(img));
+		getSelection().removeAllRanges();
+		getSelection().addRange(range);
+
+		// IE adds width and height attributes for some reason, so remove those
+		// to actually do what the spec says.
+		img.removeAttribute("width");
+		img.removeAttribute("height");
 		break;
 
 		case "italic":

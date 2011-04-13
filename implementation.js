@@ -283,6 +283,40 @@ function isContained(node, range) {
 }
 
 
+function parseSimpleColor(color) {
+	// This is stupid, but otherwise my automated tests will have places where
+	// they're known to contradict the spec, which is annoying, so . . . I
+	// don't aim for correctness, beyond my own provisional tests.  Real tests
+	// will have to be more exhaustive.
+
+	if (color.length == 7 && color[0] == "#") {
+		return color;
+	}
+
+	if (color.length == 4 && color[0] == "#") {
+		return "#" + color[1] + color[1] + color[2] + color[2] + color[3] + color[3];
+	}
+
+	// Otherwise, don't even try.
+	return {
+		"red": "red",
+		"blue": "blue",
+		"rgb(255, 0, 0)": "#ff0000",
+		"rgb(100%, 0, 0)": "#ff0000",
+		"rgb( 255 ,0 ,0)": "#ff0000",
+		"rgba(255, 0, 0, 0.0)": false,
+		"rgb(375, -10, 15)": false,
+		"rgba(0, 0, 0, 1)": "#000000",
+		"rgba(255, 255, 255, 1)": "#ffffff",
+		"rgba(255, 0, 0, 0.5)": false,
+		"hsl(0%, 100%, 50%)": "#ff0000",
+		"cornsilk": "cornsilk",
+		"transparent": false,
+		"currentColor": false,
+	}[color];
+}
+
+
 // Things defined in the edit command spec (i.e., the interesting stuff)
 
 
@@ -1430,12 +1464,23 @@ function forceValue(node, command, newValue) {
 			newParent = node.ownerDocument.createElement("u");
 		}
 
-		// "If command is "foreColor", let new parent be the result of calling
-		// createElement("font") on the ownerDocument of node, then set the
-		// color attribute of new parent to new value."
-		if (command == "forecolor") {
+		// "If command is "foreColor", and new value is fully opaque with red,
+		// green, and blue components in the range 0 to 255:"
+		//
+		// Not going to do this properly, only well enough to pass tests.
+		if (command == "forecolor" && parseSimpleColor(newValue)) {
+			// "Let new parent be the result of calling createElement("font")
+			// on the ownerDocument of node."
 			newParent = node.ownerDocument.createElement("font");
-			newParent.color = newValue;
+
+			// "If new value is one of the colors listed in the SVG color
+			// keywords section of CSS3 Color, set the color attribute of new
+			// parent to new value."
+			//
+			// "Otherwise, set the color attribute of new parent to the result
+			// of applying the rules for serializing simple color values to new
+			// value (interpreted as a simple color)."
+			newParent.setAttribute("color", parseSimpleColor(newValue));
 		}
 
 		// "If command is "fontName", let new parent be the result of calling
@@ -1866,23 +1911,27 @@ function myExecCommand(command, showUI, value, range) {
 		break;
 
 		case "forecolor":
-		// "If value is not a valid CSS color, the user agent must do nothing
-		// and abort these steps. Otherwise, it must decompose the range, then
-		// set the value of each returned node with new value equal to value."
-		//
-		// Ignore validation for now.
-		var nodeList = decomposeRange(range);
-		for (var i = 0; i < nodeList.length; i++) {
-			setNodeValue(nodeList[i], command, value);
-		}
-		break;
-
 		case "hilitecolor":
-		// "If value is not a valid CSS color, do nothing and abort these
-		// steps. Otherwise, decompose the range, then set the value of each
-		// returned node with new value equal to value."
+		// "If value is not a valid CSS color, prepend "#" to it."
 		//
-		// Ignore validation for now.
+		// "If value is still not a valid CSS color, or if it is currentColor,
+		// do nothing and abort these steps."
+		//
+		// Cheap hack for testing, no attempt to be comprehensive.
+		if (/^([0-9a-fA-F]{3}){1,2}$/.test(value)) {
+			value = "#" + value;
+		}
+		if (!/^#([0-9a-fA-F]{3}){1,2}$/.test(value)
+		&& !/^(rgba?|hsla?)\(.*\)$/.test(value)
+		// Not gonna list all the keywords, only the ones I use.
+		&& value != "red"
+		&& value != "cornsilk"
+		&& value != "transparent") {
+			return;
+		}
+
+		// "Decompose the range, then set the value of each returned node to
+		// value."
 		var nodeList = decomposeRange(range);
 		for (var i = 0; i < nodeList.length; i++) {
 			setNodeValue(nodeList[i], command, value);

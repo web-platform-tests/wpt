@@ -153,9 +153,6 @@ other than review and comment.
   Document, comments that are children of a Document, that sort of thing.  Not
   essential for prototyping, but needs to be cleaned up eventually.
 
-  <li>I haven't yet paid any attention to value parsing in most cases.  This is
-  going to be important to specify exactly in some cases, like with colors.
-
   <li>I haven't paid much attention to performance.  The algorithms here aren't
   performance-critical in most cases, but I might have accidentally included
   some algorithms that are too slow anyway on large pages.  Generally I haven't
@@ -922,15 +919,24 @@ different value.
     title=dom-Document-createElement>createElement("u")</code> on the
     [[ownerdocument]] of <var>node</var>.
 
-    <li>If <var>command</var> is "foreColor", let <var>new parent</var> be the
-    result of calling <code data-anolis-spec=domcore
-    title=dom-Document-createElement>createElement("font")</code> on the
-    [[ownerdocument]] of <var>node</var>, then set the [[fontcolor]] attribute
-    of <var>new parent</var> to <var>new value</var>.
+    <li>If <var>command</var> is "foreColor", and <var>new value</var> is fully
+    opaque with red, green, and blue components in the range 0 to 255:
 
-    <p class=XXX>This can be wrong if, e.g., the color has an alpha channel.
-    We also need to specify exactly how it's serialized, since CSSOM doesn't
-    cover this.  It might be best to always output simple colors.
+    <ol>
+      <li>Let <var>new parent</var> be the result of calling <code
+      data-anolis-spec=domcore
+      title=dom-Document-createElement>createElement("font")</code> on the
+      [[ownerdocument]] of <var>node</var>.
+
+      <li>If <var>new value</var> is one of the colors listed in the SVG color
+      keywords section of CSS3 Color, set the [[fontcolor]] attribute of
+      <var>new parent</var> to <var>new value</var>.
+
+      <li>Otherwise, set the [[fontcolor]] attribute of <var>new parent</var>
+      to the result of applying the <span data-anolis-spec=html>rules for
+      serializing simple color values</span> to <var>new value</var>
+      (interpreted as a <span data-anolis-spec=html>simple color</span>).
+    </ol>
 
     <li>If <var>command</var> is "fontName", let <var>new parent</var> be
     the result of calling <code data-anolis-spec=domcore
@@ -1568,25 +1574,74 @@ respecifying non-interoperable behavior anyway.
 
 <dt><code title><dfn title=command-forecolor>foreColor</dfn></code>
 
-<dd><strong>Action</strong>: If <var>value</var> is not a valid CSS color,
-the user agent must do nothing and abort these steps.
-<!-- Browsers are all over the place here.  IE 9 RC seems to treat unrecognized
-colors as black, but everyone else ignores them.  There are also special rules
-for certain things that aren't valid CSS colors, in some browsers, like:
+<dd><strong>Action</strong>:
+<!-- Color interpretations (wide screen recommended):
 
-IE 9 RC: "ffe" -> "#ffe", "123" -> "#123"
-Firefox 4b11: "ffe" -> no style, "123" -> no style
-Chrome 10 dev: "ffe" -> "#FFFFEE", "123" -> "#000123"
-Opera 11: "ffe" -> "#0f0f0e", "123" -> "#010203"
+                        IE9           Firefox 4.0              Chrome 12 dev            Opera 11.00
+red                     red           red                      #ff0000                  #ff0000
+f                       #f            -                        -                        #f00000
+#f                      #f            -                        -                        #f00000
+f00                     #f00          -                        #ff0000                  #0f0000
+#f00                    #f00          rgb(255, 0, 0)           #ff0000                  #0f0000
+ff0000                  #ff0000       -                        #ff0000                  #ff0000
+#ff0000                 #ff0000       rgb(255, 0, 0)           #ff0000                  #ff0000
+fff000000               #ff0000       -                        -                        #fff000
+#fff000000              #ff0000       -                        -                        #fff000
+rgb(255, 0, 0)          rgb(255,0,0)  rgb(255, 0, 0)           #ff0000                  #00b025
+rgb(100%, 0, 0)         rgb(255,0,0)  -                        -                        #00b010
+rgb( 255 ,0 ,0)         rgb(255,0,0)  rgb(255, 0, 0)           #ff0000                  #00b025
+rgba(255, 0, 0, 0.0)    #005000       rgba(255, 0, 0, 0)       rgba(255, 0, 0, 0.0)     #00ba02
+rgb(375, -10, 15)       rgb(255,0,15) rgb(255, 0, 15)          #ff000f                  #00b037
+rgba(0, 0, 0, 1)        #ba0010       rgb(0, 0, 0)             -                        #00ba00
+rgba(255, 255, 255, 1)  #000055       rgb(255, 255, 255)       #ffffff                  #00ba02
+rgba(255, 0, 0, 0.5)    #005000       rgba(255, 255, 255, 0.5) rgba(255, 0, 0, 0.49804) #00ba02
+hsl(0%, 100%, 50%)      #001050       -                        -                        -
+cornsilk                cornsilk      cornsilk                 #fff8dc                  #fff8dc
+potato quiche           #0000c0       -                        -                        #000a00
+transparent             transparent   -                        rgba(0, 0, 0.0)          #00a000
+currentColor            #c0e000       currentcolor             rgba(0, 0, 0.0)          #c000e0
 
-Firefox seems to stick to just CSS colors, so with any luck that works.
-"limegreen" works as expected in all browsers.  rgb(255, 255, 255) does too,
-except in Opera, which tries to parse it in some crazy way and winds up with
-"#00b025".  rgba() colors don't work as uniformly, but I don't see any reason
-to prohibit them.  Best to just match CSS. -->
-Otherwise, it must <span>decompose</span> the [[range]], then <span>set the
-value</span> of each returned [[node]] with <var>new value</var> equal to
-<var>value</var>.
+The interpretations given for Firefox are only in styleWithCSS mode.  In
+non-styleWithCSS mode, it just outputs the string literally as the <font color>
+attribute value, which can lead to different results.  The given output for
+Chrome is for <font>; the output in styleWithCSS mode is the same, but rgb() is
+used instead of hex notation, and "transparent" and "currentcolor" are passed
+through under those names.  IE and Opera only support <font> to begin with.
+
+Conclusions:
+
+* Everyone accepts simple color keywords and #xxxxxx notation.
+* Opera mangles #xxx, but everyone else handles it fine.
+* The leading # is optional in all browsers but Gecko.
+* rgb() is accepted by everyone but Opera.
+* rgba() is accepted by Gecko and WebKit, but rejected by IE and Opera.
+* hsl() isn't accepted by anyone.
+* IE and Opera mangle unrecognized stuff, Gecko and WebKit ignore.
+* Browsers will happily output stuff like "transparent" and "rgba()" into <font
+  color> even though it won't be uniformly accepted there.
+* Opera and WebKit normalize the output color very aggressively, Gecko leaves
+  keywords intact but otherwise normalizes for CSS output (but doesn't
+  normalize at all for <font>), and IE normalizes inconsistently.
+
+What I'm going to say is that it either has to be a valid CSS color, or
+prefixing it with # must result in a valid CSS color.  For <font>, I'll say
+that the output color should be normalized to #xxxxxx form unless it's an SVG
+color keyword, in which case it's passed through intact.  If the color is not a
+simple color (fully opaque with all channels between 0 and 255), I'll force
+style="" even if styleWithCSS mode is off.  Some of this disagrees with all
+browsers, but it's unlikely to hurt and it makes sense.
+-->
+<ol>
+  <li>If <var>value</var> is not a valid CSS color, prepend "#" to it.
+
+  <li>If <var>value</var> is still not a valid CSS color, or if it is
+  currentColor, do nothing and abort these steps.
+  <!-- currentColor is bad for the same reason as relative font sizes.  It will
+  confuse the algorithm, and doesn't seem very useful anyway. -->
+
+  <li><span>Decompose</span> the [[range]], then <span>set the value</span> of
+  each returned [[node]] to <var>value</var>.
+</ol>
 
 <dd><strong>State</strong>: Always false.
 <!-- This matches IE 9 RC and Chrome 10.  Opera 11 seems to return true if
@@ -1615,12 +1670,25 @@ elements, but does clear it and push it down from them.
 The spec doesn't do any of these: background-color on non-inline elements is
 not touched by hiliteColor, neither created nor removed.  If users want to
 remove the style, they need to use removeFormat.  Adding it usually makes no
-sense; see the comment for backColor. -->
+sense; see the comment for backColor.
 
-<dd><strong>Action</strong>: If <var>value</var> is not a valid CSS color,
-do nothing and abort these steps.  Otherwise, <span>decompose</span> the
-[[range]], then <span>set the value</span> of each returned [[node]] with
-<var>new value</var> equal to <var>value</var>.
+For color parsing, see the comment for foreColor. -->
+
+<dd><strong>Action</strong>:
+
+<ol>
+  <li>If <var>value</var> is not a valid CSS color, prepend "#" to it.
+
+  <li>If <var>value</var> is still not a valid CSS color, or if it is
+  currentColor, do nothing and abort these steps.
+  <!-- currentColor is bad for the same reason as relative font sizes.  It will
+  confuse the algorithm, and doesn't seem very useful anyway.  For hiliteColor
+  you could conceive of it being useful, but it will still confuse the
+  algorithm, so ban it for now anyway. -->
+
+  <li><span>Decompose</span> the [[range]], then <span>set the value</span> of
+  each returned [[node]] to <var>value</var>.
+</ol>
 
 <dd><strong>State</strong>: Always false.
 

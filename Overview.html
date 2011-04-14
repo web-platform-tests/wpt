@@ -48,7 +48,7 @@
 <p><a href="http://www.w3.org/"><img alt="W3C" height="48" src="http://www.w3.org/Icons/w3c_home" width="72"></a></p>
 <!--end-logo-->
  <h1>DOM Core</h1>
- <h2 class="no-num no-toc" id="editor-s-draft-26-march-2011">Editor's Draft 26 March 2011</h2>
+ <h2 class="no-num no-toc" id="editor-s-draft-14-april-2011">Editor's Draft 14 April 2011</h2>
 
  <dl>
   <dt>This Version:
@@ -90,7 +90,7 @@ publications and the latest revision of this technical report can be found in
 the <a href="http://www.w3.org/TR/">W3C technical reports index</a> at
 http://www.w3.org/TR/.</i>
 
-<p>This is the 26 March 2011 Editor's Draft of DOM Core. Please send
+<p>This is the 14 April 2011 Editor's Draft of DOM Core. Please send
 comments to
 <a href="mailto:www-dom@w3.org?subject=%5BDOMCore%5D%20">www-dom@w3.org</a>
 (<a href="http://lists.w3.org/Archives/Public/www-dom/">archived</a>)
@@ -183,8 +183,7 @@ document as other than work in progress.
   <ol class="toc">
    <li><a href="#dom-events"><span class="secno">9.1 </span>DOM Events</a></li>
    <li><a href="#dom-core"><span class="secno">9.2 </span>DOM Core</a></li>
-   <li><a href="#html"><span class="secno">9.3 </span>HTML</a></li>
-   <li><a href="#element-traversal"><span class="secno">9.4 </span>Element Traversal</a></ol></li>
+   <li><a href="#html"><span class="secno">9.3 </span>HTML</a></ol></li>
  <li><a class="no-num" href="#references">References</a>
   <ol class="toc">
    <li><a class="no-num" href="#normative-references">Normative references</a></li>
@@ -2530,17 +2529,17 @@ otherwise [createAttribute]- ->.
   <span>Attr</span> <span title=dom-Element-getAttributeNodeNS>getAttributeNodeNS</span>(DOMString namespace, DOMString localName);
   <span>Attr</span> <span title=dom-Element-setAttributeNode>setAttributeNode</span>(Attr newAttr);
   <span>Attr</span> <span title=dom-Element-removeAttributeNode>removeAttributeNode</span>(Attr oldAttr);
-
-  childElementCount - kill it?!
 -->
-  readonly attribute <a href="#htmlcollection">HTMLCollection</a> <a href="#dom-element-children" title="dom-Element-children">children</a>;
   <a href="#nodelist">NodeList</a> <a href="#dom-element-getelementsbytagname" title="dom-Element-getElementsByTagName">getElementsByTagName</a>(DOMString <var title="">qualifiedName</var>);
   <a href="#nodelist">NodeList</a> <a href="#dom-element-getelementsbytagnamens" title="dom-Element-getElementsByTagNameNS">getElementsByTagNameNS</a>(DOMString <var title="">namespace</var>, DOMString <var title="">localName</var>);
   <a href="#nodelist">NodeList</a> <a href="#dom-element-getelementsbyclassname" title="dom-Element-getElementsByClassName">getElementsByClassName</a>(DOMString <var title="">classNames</var>);
+
+  readonly attribute <a href="#htmlcollection">HTMLCollection</a> <a href="#dom-element-children" title="dom-Element-children">children</a>;
   readonly attribute <a href="#element">Element</a> <a href="#dom-element-firstelementchild" title="dom-Element-firstElementChild">firstElementChild</a>;
   readonly attribute <a href="#element">Element</a> <a href="#dom-element-lastelementchild" title="dom-Element-lastElementChild">lastElementChild</a>;
   readonly attribute <a href="#element">Element</a> <a href="#dom-element-previouselementsibling" title="dom-Element-previousElementSibling">previousElementSibling</a>;
-  readonly attribute <a href="#element">Element</a> <a href="#dom-element-nextelementsibling" title="dom-Element-nextElementSibling">nextElementSibling</a>;<!--
+  readonly attribute <a href="#element">Element</a> <a href="#dom-element-nextelementsibling" title="dom-Element-nextElementSibling">nextElementSibling</a>;
+  readonly attribute unsigned long <a href="#dom-element-childelementcount" title="dom-Element-childElementCount">childElementCount</a>;<!--
 
   readonly attribute TypeInfo schemaTypeInfo;
   void setIdAttribute(DOMString name, boolean isId);
@@ -2834,13 +2833,6 @@ have its name converted to ASCII lowercase before the element is affected.
 
 <hr>
 
-<p>The <dfn id="dom-element-children" title="dom-Element-children"><code>children</code></dfn> attribute
-must return an <code><a href="#htmlcollection">HTMLCollection</a></code>
-<a href="#concept-collection" title="concept-collection">collection</a>, rooted at the
-<a href="#context-object">context object</a>, whose filter matches only
-<a href="#concept-element" title="concept-element">elements</a> whose <a href="#concept-tree-parent" title="concept-tree-parent">parent</a> is the
-<a href="#context-object">context object</a>.
-
 <p>When the
 <dfn id="dom-element-getelementsbytagname" title="dom-Element-getElementsByTagName"><code>getElementsByTagName(<var title="">qualifiedName</var>)</code></dfn>
 method is invoked it must return a
@@ -2886,6 +2878,16 @@ passed the same argument, excluding any
 <p>When invoked with the same argument the same <code><a href="#nodelist">NodeList</a></code> object
 may be returned as returned by an earlier call.
 
+<hr>
+
+<p>The <dfn id="dom-element-children" title="dom-Element-children"><code>children</code></dfn> attribute
+must return an <code><a href="#htmlcollection">HTMLCollection</a></code>
+<a href="#concept-collection" title="concept-collection">collection</a>, rooted at the
+<a href="#context-object">context object</a>, whose filter matches only
+<a href="#concept-element" title="concept-element">elements</a> whose
+<a href="#concept-tree-parent" title="concept-tree-parent">parent</a> is the
+<a href="#context-object">context object</a>.
+
 <p>The
 <dfn id="dom-element-firstelementchild" title="dom-Element-firstElementChild"><code>firstElementChild</code></dfn>
 attribute must return the first <a href="#concept-tree-child" title="concept-tree-child">child</a>
@@ -2911,6 +2913,12 @@ attribute must return the first
 <a href="#concept-tree-following-sibling" title="concept-tree-following-sibling">following sibling</a> of the
 <a href="#context-object">context object</a> that is of type <code><a href="#element">Element</a></code> or null if
 there is no such <a href="#concept-node" title="concept-node">node</a>.
+
+<p>The
+<dfn id="dom-element-childelementcount" title="dom-Element-childElementCount"><code>childElementCount</code></dfn>
+attribute must return the number of
+<a href="#concept-tree-child" title="concept-tree-child">children</a> of the <span>context node</span>
+that are <code><a href="#element">Element</a></code>s.
 
 
 <h4 id="interface-attr"><span class="secno">5.6.1 </span>Interface <code><a href="#attr">Attr</a></code></h4>
@@ -3821,11 +3829,6 @@ will not support them.
 <p>A number of DOM methods behave in a special way based on the
 <a href="#html-namespace">HTML namespace</a> or <a href="#html-document">HTML document</a> variables. This
 specification makes that an intrinsic part of the DOM.
-
-
-<h3 id="element-traversal"><span class="secno">9.4 </span>Element Traversal</h3>
-
-<p>This specification has removed <dfn id="dom-element-childelementcount" title="dom-Element-childElementCount"><code>childElementCount</code></dfn>.
 
 
 

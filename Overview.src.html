@@ -2529,17 +2529,17 @@ otherwise [createAttribute]- ->.
   <span>Attr</span> <span title=dom-Element-getAttributeNodeNS>getAttributeNodeNS</span>(DOMString namespace, DOMString localName);
   <span>Attr</span> <span title=dom-Element-setAttributeNode>setAttributeNode</span>(Attr newAttr);
   <span>Attr</span> <span title=dom-Element-removeAttributeNode>removeAttributeNode</span>(Attr oldAttr);
-
-  childElementCount - kill it?!
 -->
-  readonly attribute <span>HTMLCollection</span> <span title=dom-Element-children>children</span>;
   <span>NodeList</span> <span title=dom-Element-getElementsByTagName>getElementsByTagName</span>(DOMString <var title>qualifiedName</var>);
   <span>NodeList</span> <span title=dom-Element-getElementsByTagNameNS>getElementsByTagNameNS</span>(DOMString <var title>namespace</var>, DOMString <var title>localName</var>);
   <span>NodeList</span> <span title=dom-Element-getElementsByClassName>getElementsByClassName</span>(DOMString <var title>classNames</var>);
+
+  readonly attribute <span>HTMLCollection</span> <span title=dom-Element-children>children</span>;
   readonly attribute <span>Element</span> <span title=dom-Element-firstElementChild>firstElementChild</span>;
   readonly attribute <span>Element</span> <span title=dom-Element-lastElementChild>lastElementChild</span>;
   readonly attribute <span>Element</span> <span title=dom-Element-previousElementSibling>previousElementSibling</span>;
-  readonly attribute <span>Element</span> <span title=dom-Element-nextElementSibling>nextElementSibling</span>;<!--
+  readonly attribute <span>Element</span> <span title=dom-Element-nextElementSibling>nextElementSibling</span>;
+  readonly attribute unsigned long <span title=dom-Element-childElementCount>childElementCount</span>;<!--
 
   readonly attribute TypeInfo schemaTypeInfo;
   void setIdAttribute(DOMString name, boolean isId);
@@ -2833,13 +2833,6 @@ have its name converted to ASCII lowercase before the element is affected.
 
 <hr>
 
-<p>The <dfn title=dom-Element-children><code>children</code></dfn> attribute
-must return an <code>HTMLCollection</code>
-<span title=concept-collection>collection</span>, rooted at the
-<span>context object</span>, whose filter matches only
-<span title=concept-element>elements</span> whose <span title=concept-tree-parent>parent</span> is the
-<span>context object</span>.
-
 <p>When the
 <dfn
 title=dom-Element-getElementsByTagName><code>getElementsByTagName(<var
@@ -2890,6 +2883,16 @@ passed the same argument, excluding any
 <p>When invoked with the same argument the same <code>NodeList</code> object
 may be returned as returned by an earlier call.
 
+<hr>
+
+<p>The <dfn title=dom-Element-children><code>children</code></dfn> attribute
+must return an <code>HTMLCollection</code>
+<span title=concept-collection>collection</span>, rooted at the
+<span>context object</span>, whose filter matches only
+<span title=concept-element>elements</span> whose
+<span title=concept-tree-parent>parent</span> is the
+<span>context object</span>.
+
 <p>The
 <dfn title=dom-Element-firstElementChild><code>firstElementChild</code></dfn>
 attribute must return the first <span title=concept-tree-child>child</span>
@@ -2915,6 +2918,12 @@ attribute must return the first
 <span title=concept-tree-following-sibling>following sibling</span> of the
 <span>context object</span> that is of type <code>Element</code> or null if
 there is no such <span title=concept-node>node</span>.
+
+<p>The
+<dfn title=dom-Element-childElementCount><code>childElementCount</code></dfn>
+attribute must return the number of
+<span title=concept-tree-child>children</span> of the <span>context node</span>
+that are <code>Element</code>s.
 
 
 <h4>Interface <code>Attr</code></h4>
@@ -3858,11 +3867,6 @@ will not support them.
 <p>A number of DOM methods behave in a special way based on the
 <span>HTML namespace</span> or <span>HTML document</span> variables. This
 specification makes that an intrinsic part of the DOM.
-
-
-<h3>Element Traversal</h3>
-
-<p>This specification has removed <dfn title=dom-Element-childElementCount><code>childElementCount</code></dfn>.
 
 
 

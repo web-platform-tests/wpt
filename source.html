@@ -1697,6 +1697,97 @@ For color parsing, see the comment for foreColor. -->
 <dd><strong>Relevant CSS Property</strong>: "background-color"
 
 
+<!--
+<dt><code title><dfn title=command-indent>indent</dfn></code>
+-->
+<!--
+IE9: Outputs <blockquote style="margin-right: 0px" dir="ltr">, or when
+  surrounding RTL blocks, <blockquote style="margin-left: 0px" dir="rtl">.
+Firefox 4.0: In styleWithCSS mode, adds style="margin-left: 40px" to the
+  appropriate block container (or margin-right if it's RTL).  If there's no
+  appropriate block container, adds a div.  In non-styleWithCSS mode, uses
+  <blockquote>, so it indents on both sides.
+Chrome 12 dev: Outputs <blockquote class="webkit-indent-blockquote"
+  style="margin: 0 0 0 40px; border: none; padding: 0px"> in both modes for
+  both LTR and RTL (which is broken for RTL, since it indents only on the
+  right).
+Opera 11.00: Outputs <blockquote>, so it indents on both sides.
+
+For repeated indentation, everyone except Opera that outputs <blockquote>s just
+puts them at the outermost possible location, which works well.  Opera puts
+them in the innermost position, which is broken, because it will even put them
+inside <p> (which will not round-trip through text/html serialization).
+
+Gecko in CSS mode messes up by adding margins even to things like <blockquote>
+that already have margins from CSS rules, instead of nesting a div, so it
+doesn't actually increase the indentation.  However, if an element has an
+explicit left margin (assuming LTR), it will increase the margin to 80px, so it
+works with WebKit's blockquotes.
+-->
+
+<!--
+<dd><strong>Action</strong>:
+
+<ol>
+  <li>Let <var>start node</var>, <var>start offset</var>, <var>end node</var>,
+  and <var>end offset</var> be the [[rangestart]] and [[rangeend]] [[bpnodes]]
+  and [[bpoffsets]] of the [[range]].
+
+  <p class=XXX>Handle corner cases: endpoints are detached, documents, document
+  fragments, html/body, head or things in head . . .
+
+  <li>Repeat the following steps:
+
+  <ol>
+    <li>If <var>start node</var> is a [[text]] or [[comment]] node or
+    <var>start offset</var> is 0, set <var>start offset</var> to the [[index]]
+    of <var>start node</var> and then set <var>start node</var> to its
+    [[parent]].
+
+    <li>Otherwise, if the <var>start offset</var> is equal to the
+    [[nodelength]] of <var>start node</var>, set <var>start offset</var> to one
+    plus the [[index]] of <var>start node</var> and then set <var>start
+    node</var> to its [[parent]].
+
+    <li>Otherwise, if the [[child]] of <var>start node</var> with [[index]]
+    <var>start offset</var> minus one is a [[text]] or [[comment]] node, or an
+    (insert definition here), subtract one from <var>start offset</var>.
+
+    <p class=XXX>The definition should include all inline elements except
+    &lt;br>.  As elsewhere, we have trouble with the exact definition because
+    HTML doesn't classify non-conforming elements, but those are common in
+    editing and need to be handled correctly.
+
+    <li>Otherwise, break from this loop.
+  </ol>
+
+  <li>Repeat the following steps:
+
+  <ol>
+    <li>If <var>end node</var> is a [[text]] or [[comment]] node or <var>end
+    offset</var> is 0, set <var>end offset</var> to the [[index]] of <var>end
+    node</var> and then set <var>end node</var> to its [[parent]].
+
+    <li>Otherwise, if the <var>end offset</var> is equal to the [[nodelength]]
+    of <var>end node</var>, set <var>end offset</var> to one plus the [[index]]
+    of <var>end node</var> and then set <var>end node</var> to its [[parent]].
+
+    <li>Otherwise, if the [[child]] of <var>end node</var> with [[index]]
+    <var>end offset</var> plus one is a [[text]] or [[comment]] node, or an
+    (insert definition here), add one to <var>end offset</var>.
+
+    <p class=XXX>Same definition as before.
+
+    <li>Otherwise, break from this loop.
+  </ol>
+</ol>
+
+<dd><strong>State</strong>:
+
+<dd><strong>Value</strong>:
+-->
+
+
 <dt><code title><dfn title=command-inserthorizontalrule>insertHorizontalRule</dfn></code>
 
 <dd><strong>Action</strong>:
@@ -1988,6 +2079,15 @@ value</span> "line-through".  Otherwise false.
 
 
 <dt><code title><dfn title=command-stylewithcss>styleWithCSS</dfn></code>
+<!-- IE9 and Opera 11.00 don't support this command.  By and large, they act
+the way Gecko and WebKit do when styleWithCSS is off.  Gecko invented it, and
+WebKit also supports it:
+
+https://bugs.webkit.org/show_bug.cgi?id=13490
+
+The default in Firefox 4.0 is off, while all other browsers behave like the
+default is on (and IE/Opera give no way to turn it off), so I default it to on.
+-->
 
 <dd><strong>Action</strong>: Convert <var>value</var> to a boolean according
 to the algorithm in WebIDL, and set the <span>CSS styling flag</span> to the
@@ -2117,6 +2217,10 @@ browsers, which operate more consistently with other commands. -->
 
 
 <dt><code title><dfn title=command-usecss>useCSS</dfn></code>
+<!-- Supported by Firefox 4.0, but not IE9 or Opera 11.00 (which don't support
+styleWithCSS either), nor by Chrome 12 dev (which does support styleWithCSS.
+useCSS was the original feature in Mozilla 1.3, but the meaning is backward, so
+Gecko added styleWithCSS as a replacement. -->
 
 <dd><strong>Action</strong>: Convert <var>value</var> to a boolean according
 to the algorithm in WebIDL, and set the <span>CSS styling flag</span> to the
@@ -2127,6 +2231,10 @@ title=command-usecss>useCSS</code> is used, such as by logging a warning to an
 error console.
 
 <p class=XXX>Properly cross-reference.
+
+<p class=XXX>The meaning of this command is backwards, and only Gecko supports
+it.  It would be great if Gecko would agree to drop support, so that we could
+get rid of it.
 
 <dd><strong>State</strong>:
 

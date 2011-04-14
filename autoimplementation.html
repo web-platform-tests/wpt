@@ -1,4 +1,5 @@
 <!doctype html>
+<meta charset=utf-8>
 <title>Auto-running execCommand() tests</title>
 <style>
 body { font-family: serif }
@@ -430,6 +431,57 @@ var tests = {
 		'<p style="background-color: #ff8888">foo<span style="background-color: aqua">b[ar]</span>baz</p>',
 		'<div style="background-color: #ff8888"><p style="background-color: aqua">b[ar]</p></div>',
 		'<span style="display: block; background-color: #ff8888"><span style="display: block; background-color: aqua">b[ar]</span></span>',
+	],
+	indent: [
+		// All these have a trailing unselected paragraph, because otherwise
+		// Gecko is unhappy: it throws exceptions in non-CSS mode, and in CSS
+		// mode it adds the indentation invisibly to the wrapper div in many
+		// cases.
+		'foo[]bar<p>extra',
+		'<span>foo</span>{}<span>bar</span><p>extra',
+		'<span>foo[</span><span>]bar</span><p>extra',
+		'foo[bar]baz<p>extra',
+		'<p dir=rtl>פו[בר]בז<p dir=rtl>נוםף',
+		'foo]bar[baz<p>extra',
+		'{<p><p> <p>foo</p>}<p>extra',
+		'foo[bar<i>baz]qoz</i>quz<p>extra',
+
+		'<table><tbody><tr><td>foo<td>b[a]r<td>baz</table><p>extra',
+		'<table><tbody><tr data-start=1 data-end=2><td>foo<td>bar<td>baz</table><p>extra',
+		'<table><tbody><tr data-start=0 data-end=2><td>foo<td>bar<td>baz</table><p>extra',
+		'<table><tbody data-start=0 data-end=1><tr><td>foo<td>bar<td>baz</table><p>extra',
+		'<table data-start=0 data-end=1><tbody><tr><td>foo<td>bar<td>baz</table><p>extra',
+		'{<table><tr><td>foo<td>bar<td>baz</table>}<p>extra',
+
+		'<p>foo[bar]</p><p>baz</p><p>extra',
+		'<p>[foobar</p><p>ba]z</p><p>extra',
+		'foo[bar]<br>baz<p>extra',
+		'foo[bar<br>ba]z<p>extra',
+
+		// These mimic existing indentation in various browsers, to see how
+		// they cope with indenting twice.  This is Gecko non-CSS and Opera:
+		'<blockquote><p>foo[bar]</p><p>baz</p></blockquote><p>extra',
+		'<blockquote><p>foo[bar</p><p>b]az</p></blockquote><p>extra',
+		'<blockquote><p>foo[bar]</p></blockquote><p>baz</p><p>extra',
+		'<blockquote><p>foo[bar</p></blockquote><p>b]az</p><p>extra',
+
+		// IE:
+		'<blockquote style="margin-right: 0" dir="ltr"><p>foo[bar]</p><p>baz</p></blockquote><p>extra',
+		'<blockquote style="margin-right: 0" dir="ltr"><p>foo[bar</p><p>b]az</p></blockquote><p>extra',
+		'<blockquote style="margin-right: 0" dir="ltr"><p>foo[bar]</p></blockquote><p>baz</p><p>extra',
+		'<blockquote style="margin-right: 0" dir="ltr"><p>foo[bar</p></blockquote><p>b]az</p><p>extra',
+
+		// Firefox CSS mode:
+		'<p style="margin-left: 40px">foo[bar]</p><p style="margin-left: 40px">baz</p><p>extra',
+		'<p style="margin-left: 40px">foo[bar</p><p style="margin-left: 40px">b]az</p><p>extra',
+		'<p style="margin-left: 40px">foo[bar]</p><p>baz</p><p>extra',
+		'<p style="margin-left: 40px">foo[bar</p><p>b]az</p><p>extra',
+
+		// WebKit:
+		'<blockquote class="webkit-indent-blockquote" style="margin: 0 0 0 40px; border: none; padding: 0px"><p>foo[bar]</p><p>baz</p></blockquote><p>extra',
+		'<blockquote class="webkit-indent-blockquote" style="margin: 0 0 0 40px; border: none; padding: 0px"><p>foo[bar</p><p>b]az</p></blockquote><p>extra',
+		'<blockquote class="webkit-indent-blockquote" style="margin: 0 0 0 40px; border: none; padding: 0px"><p>foo[bar]</p></blockquote><p>baz</p><p>extra',
+		'<blockquote class="webkit-indent-blockquote" style="margin: 0 0 0 40px; border: none; padding: 0px"><p>foo[bar</p></blockquote><p>b]az</p><p>extra',
 	],
 	inserthorizontalrule: [
 		'foo[]bar',
@@ -904,9 +956,19 @@ var notes = {
 	hilitecolor: 'In IE we run backColor instead of hiliteColor.',
 };
 
-var doubleTestingCommands = ["backcolor", "bold", "italic", "strikethrough",
-	"underline", "forecolor", "fontname", "fontsize", "subscript",
-	"superscript"];
+var doubleTestingCommands = [
+	"backcolor",
+	"bold",
+	"fontname",
+	"fontsize",
+	"forecolor",
+	"indent",
+	"italic",
+	"strikethrough",
+	"subscript",
+	"superscript",
+	"underline",
+];
 
 // Set up all the HTML automatically so I can add new commands to test without
 // copy-pasting in five places
@@ -994,18 +1056,10 @@ function addTest(command) {
 }
 
 function doSetup(command, idx) {
-	document.getElementById(command).contentEditable = "true";
-	document.getElementById(command).spellcheck = false;
 	var table = document.querySelectorAll("#" + command + " > table")[idx];
 
 	var tr = document.createElement("tr");
-	// Insert at the top, because Chrome debugger doesn't let you scroll down
-	// while you're stopped at a breakpoint . . .
-	//if (table.childNodes.length == 1) {
-		table.appendChild(tr);
-	//} else {
-	//	table.insertBefore(tr, table.childNodes[1]);
-	//}
+	table.appendChild(tr);
 
 	return tr;
 }
@@ -1045,8 +1099,12 @@ function doSpecCell(tr, test, command, styleWithCss) {
 		if (range.collapsed) {
 			range.setEnd(points[0], points[1]);
 		}
+		specCell.firstChild.contentEditable = "true";
+		specCell.firstChild.spellcheck = false;
 		myExecCommand("styleWithCSS", false, styleWithCss);
 		myExecCommand(command, false, value, range);
+		specCell.firstChild.contentEditable = "inherit";
+		specCell.firstChild.removeAttribute("spellcheck");
 		addBrackets(range);
 		if (specCell.childNodes.length == 2) {
 			specCell.lastChild.textContent = specCell.firstChild.innerHTML;
@@ -1054,6 +1112,8 @@ function doSpecCell(tr, test, command, styleWithCss) {
 			throw "The cell didn't have two children.  Did something spill outside the test div?";
 		}
 	} catch (e) {
+		specCell.firstChild.contentEditable = "inherit";
+		specCell.firstChild.removeAttribute("spellcheck");
 		specCell.lastChild.style.color = "red";
 		specCell.lastChild.style.fontWeight = "bold";
 		specCell.lastChild.textContent = "Note, exception: " + e;
@@ -1096,32 +1156,36 @@ function doBrowserCell(tr, test, command, styleWithCss) {
 	tr.appendChild(browserCell);
 	try {
 		var points = setupCell(browserCell, test);
+
 		var testDiv = browserCell.firstChild;
 		// Work around weird Firefox bug:
 		// https://bugzilla.mozilla.org/show_bug.cgi?id=649138
-		// But only with removeFormat, because it tends to cause weird behavior
-		// sometimes if content winds up being put outside the div for some
-		// reason: then it's mysteriously below the table.
-		if (command == "removeformat") {
-			document.getElementById(command).appendChild(testDiv);
-		}
+		document.body.appendChild(testDiv);
 		setSelection(points[0], points[1], points[2], points[3]);
+		testDiv.contentEditable = "true";
+		testDiv.spellcheck = false;
+
 		try {
 			document.execCommand("styleWithCSS", false, styleWithCss);
 		} catch (e) {}
 		document.execCommand(command, false, value);
+
+		testDiv.contentEditable = "inherit";
+		testDiv.removeAttribute("spellcheck");
 		if (getSelection().rangeCount) {
 			addBrackets(getSelection().getRangeAt(0));
 		}
-		if (testDiv.parentNode != browserCell) {
-			browserCell.insertBefore(testDiv, browserCell.firstChild);
-		}
+		browserCell.insertBefore(testDiv, browserCell.firstChild);
 		if (browserCell.childNodes.length == 2) {
 			browserCell.lastChild.textContent = browserCell.firstChild.innerHTML;
 		} else {
 			throw "The cell didn't have two children.  Did something spill outside the test div?";
 		}
 	} catch (e) {
+		if (testDiv) {
+			testDiv.contenteditable = "inherit";
+			testDiv.removeAttribute("spellcheck");
+		}
 		browserCell.lastChild.style.color = "red";
 		browserCell.lastChild.style.fontWeight = "bold";
 		browserCell.lastChild.textContent = "Exception: " + e;
@@ -1190,8 +1254,6 @@ function doSameCell(tr) {
 
 function doTearDown(command) {
 	getSelection().removeAllRanges();
-	document.getElementById(command).contentEditable = "inherit";
-	document.getElementById(command).removeAttribute("spellcheck");
 }
 
 function setupCell(cell, test) {

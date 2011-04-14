@@ -27,7 +27,7 @@
 <body class=draft>
 <div class=head id=head>
 <h1>HTML Editing Commands</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-13-april-2011>Work in Progress &mdash; Last Update 13 April 2011</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-14-april-2011>Work in Progress &mdash; Last Update 14 April 2011</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;ayg+spec@aryeh.name&gt;
@@ -1681,6 +1681,97 @@ For color parsing, see the comment for foreColor. -->
 <dd><strong>Relevant CSS Property</strong>: "background-color"
 
 
+<!--
+<dt><code title><dfn title=command-indent>indent</dfn></code>
+-->
+<!--
+IE9: Outputs <blockquote style="margin-right: 0px" dir="ltr">, or when
+  surrounding RTL blocks, <blockquote style="margin-left: 0px" dir="rtl">.
+Firefox 4.0: In styleWithCSS mode, adds style="margin-left: 40px" to the
+  appropriate block container (or margin-right if it's RTL).  If there's no
+  appropriate block container, adds a div.  In non-styleWithCSS mode, uses
+  <blockquote>, so it indents on both sides.
+Chrome 12 dev: Outputs <blockquote class="webkit-indent-blockquote"
+  style="margin: 0 0 0 40px; border: none; padding: 0px"> in both modes for
+  both LTR and RTL (which is broken for RTL, since it indents only on the
+  right).
+Opera 11.00: Outputs <blockquote>, so it indents on both sides.
+
+For repeated indentation, everyone except Opera that outputs <blockquote>s just
+puts them at the outermost possible location, which works well.  Opera puts
+them in the innermost position, which is broken, because it will even put them
+inside <p> (which will not round-trip through text/html serialization).
+
+Gecko in CSS mode messes up by adding margins even to things like <blockquote>
+that already have margins from CSS rules, instead of nesting a div, so it
+doesn't actually increase the indentation.  However, if an element has an
+explicit left margin (assuming LTR), it will increase the margin to 80px, so it
+works with WebKit's blockquotes.
+-->
+
+<!--
+<dd><strong>Action</strong>:
+
+<ol>
+  <li>Let <var title>start node</var>, <var title>start offset</var>, <var title>end node</var>,
+  and <var title>end offset</var> be the <span data-anolis-spec=domrange title=concept-range-start>start</span> and <span data-anolis-spec=domrange title=concept-range-end>end</span> <span data-anolis-spec=domrange title=concept-boundary-point-node>nodes</span>
+  and <span data-anolis-spec=domrange title=concept-boundary-point-offset>offsets</span> of the <span data-anolis-spec=domrange title=concept-range>range</span>.
+
+  <p class=XXX>Handle corner cases: endpoints are detached, documents, document
+  fragments, html/body, head or things in head . . .
+
+  <li>Repeat the following steps:
+
+  <ol>
+    <li>If <var title>start node</var> is a <code data-anolis-spec=domcore>Text</code> or <code data-anolis-spec=domcore>Comment</code> node or
+    <var title>start offset</var> is 0, set <var title>start offset</var> to the <span data-anolis-spec=domrange title=concept-indexof>index</span>
+    of <var title>start node</var> and then set <var title>start node</var> to its
+    <span data-anolis-spec=domcore title=concept-tree-parent>parent</span>.
+
+    <li>Otherwise, if the <var title>start offset</var> is equal to the
+    <span data-anolis-spec=domrange title=concept-node-length>length</span> of <var title>start node</var>, set <var title>start offset</var> to one
+    plus the <span data-anolis-spec=domrange title=concept-indexof>index</span> of <var title>start node</var> and then set <var title>start
+    node</var> to its <span data-anolis-spec=domcore title=concept-tree-parent>parent</span>.
+
+    <li>Otherwise, if the <span data-anolis-spec=domcore title=concept-tree-child>child</span> of <var title>start node</var> with <span data-anolis-spec=domrange title=concept-indexof>index</span>
+    <var title>start offset</var> minus one is a <code data-anolis-spec=domcore>Text</code> or <code data-anolis-spec=domcore>Comment</code> node, or an
+    (insert definition here), subtract one from <var title>start offset</var>.
+
+    <p class=XXX>The definition should include all inline elements except
+    &lt;br>.  As elsewhere, we have trouble with the exact definition because
+    HTML doesn't classify non-conforming elements, but those are common in
+    editing and need to be handled correctly.
+
+    <li>Otherwise, break from this loop.
+  </ol>
+
+  <li>Repeat the following steps:
+
+  <ol>
+    <li>If <var title>end node</var> is a <code data-anolis-spec=domcore>Text</code> or <code data-anolis-spec=domcore>Comment</code> node or <var title>end
+    offset</var> is 0, set <var title>end offset</var> to the <span data-anolis-spec=domrange title=concept-indexof>index</span> of <var title>end
+    node</var> and then set <var title>end node</var> to its <span data-anolis-spec=domcore title=concept-tree-parent>parent</span>.
+
+    <li>Otherwise, if the <var title>end offset</var> is equal to the <span data-anolis-spec=domrange title=concept-node-length>length</span>
+    of <var title>end node</var>, set <var title>end offset</var> to one plus the <span data-anolis-spec=domrange title=concept-indexof>index</span>
+    of <var title>end node</var> and then set <var title>end node</var> to its <span data-anolis-spec=domcore title=concept-tree-parent>parent</span>.
+
+    <li>Otherwise, if the <span data-anolis-spec=domcore title=concept-tree-child>child</span> of <var title>end node</var> with <span data-anolis-spec=domrange title=concept-indexof>index</span>
+    <var title>end offset</var> plus one is a <code data-anolis-spec=domcore>Text</code> or <code data-anolis-spec=domcore>Comment</code> node, or an
+    (insert definition here), add one to <var title>end offset</var>.
+
+    <p class=XXX>Same definition as before.
+
+    <li>Otherwise, break from this loop.
+  </ol>
+</ol>
+
+<dd><strong>State</strong>:
+
+<dd><strong>Value</strong>:
+-->
+
+
 <dt><code title=""><dfn id=command-inserthorizontalrule title=command-inserthorizontalrule>insertHorizontalRule</dfn></code>
 
 <dd><strong>Action</strong>:
@@ -1953,6 +2044,15 @@ value</a> "line-through".  Otherwise false.
 
 
 <dt><code title=""><dfn id=command-stylewithcss title=command-stylewithcss>styleWithCSS</dfn></code>
+<!-- IE9 and Opera 11.00 don't support this command.  By and large, they act
+the way Gecko and WebKit do when styleWithCSS is off.  Gecko invented it, and
+WebKit also supports it:
+
+https://bugs.webkit.org/show_bug.cgi?id=13490
+
+The default in Firefox 4.0 is off, while all other browsers behave like the
+default is on (and IE/Opera give no way to turn it off), so I default it to on.
+-->
 
 <dd><strong>Action</strong>: Convert <var title="">value</var> to a boolean according
 to the algorithm in WebIDL, and set the <a href=#css-styling-flag>CSS styling flag</a> to the
@@ -2080,6 +2180,10 @@ browsers, which operate more consistently with other commands. -->
 
 
 <dt><code title=""><dfn id=command-usecss title=command-usecss>useCSS</dfn></code>
+<!-- Supported by Firefox 4.0, but not IE9 or Opera 11.00 (which don't support
+styleWithCSS either), nor by Chrome 12 dev (which does support styleWithCSS.
+useCSS was the original feature in Mozilla 1.3, but the meaning is backward, so
+Gecko added styleWithCSS as a replacement. -->
 
 <dd><strong>Action</strong>: Convert <var title="">value</var> to a boolean according
 to the algorithm in WebIDL, and set the <a href=#css-styling-flag>CSS styling flag</a> to the
@@ -2088,6 +2192,10 @@ what one would expect, user agents are encouraged to point authors to <code titl
 error console.
 
 <p class=XXX>Properly cross-reference.
+
+<p class=XXX>The meaning of this command is backwards, and only Gecko supports
+it.  It would be great if Gecko would agree to drop support, so that we could
+get rid of it.
 
 <dd><strong>State</strong>:
 

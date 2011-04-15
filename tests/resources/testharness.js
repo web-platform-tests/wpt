@@ -352,8 +352,13 @@ policies and contribution forms [3].
             return "-0";
         }
         // Special-case Node objects, since those come up a lot in my tests.  I
-        // ignore namespaces.
-        if (typeof val == "object" && val instanceof Node)
+        // ignore namespaces.  I use duck-typing instead of instanceof, because
+        // instanceof seems not to work reliably in all browsers.
+        if (typeof val == "object"
+        && "nodeType" in val
+        && "nodeName" in val
+        && "nodeValue" in val
+        && "childNodes" in val)
         {
             switch (val.nodeType)
             {
@@ -371,7 +376,7 @@ policies and contribution forms [3].
                 {
                     ret += " " + val.attributes[i].name + "=" + format_value(val.attributes[i].value);
                 }
-                ret += ">";
+                ret += "> with " + val.childNodes.length + (val.childNodes.length == 1 ? " child" : " children");
                 return ret;
             case Node.TEXT_NODE:
                 return "Text node with data " + format_value(val.data) + " and parent " + format_value(val.parentNode);
@@ -380,11 +385,11 @@ policies and contribution forms [3].
             case Node.COMMENT_NODE:
                 return "Comment node with data " + format_value(val.data);
             case Node.DOCUMENT_NODE:
-                return "Document node";
+                return "Document node with " + val.childNodes.length + (val.childNodes.length == 1 ? " child" : " children");
             case Node.DOCUMENT_TYPE_NODE:
                 return "DocumentType node";
             case Node.DOCUMENT_FRAGMENT_NODE:
-                return "DocumentFragment node";
+                return "DocumentFragment node with " + val.childNodes.length + (val.childNodes.length == 1 ? " child" : " children");
             default:
                 return "Node object of unknown type";
             }
@@ -1540,3 +1545,4 @@ policies and contribution forms [3].
     }
 
 })();
+// vim: set expandtab shiftwidth=4 tabstop=4:

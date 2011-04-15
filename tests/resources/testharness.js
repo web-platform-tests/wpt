@@ -1197,12 +1197,15 @@ policies and contribution forms [3].
                                      return;
                                  }
                                  var result_class = element.parentNode.getAttribute("class");
-                                 var checked = element.checked;
-                                 forEach(document.querySelectorAll("table#results > tbody > tr > td."+result_class),
-                                         function(cell)
-                                         {
-                                             cell.parentNode.style.display = checked ? "" : "None";
-                                         });
+                                 var style_element = document.querySelector("style#hide-" + result_class);
+                                 if (!style_element && !element.checked) {
+                                     style_element = document.createElement("style");
+                                     style_element.id = "hide-" + result_class;
+                                     style_element.innerHTML = "table#results > tbody > tr."+result_class+"{display:none}";
+                                     document.body.appendChild(style_element);
+                                 } else if (style_element && element.checked) {
+                                     style_element.parentNode.removeChild(style_element);
+                                 }
                              });
                 });
 
@@ -1218,8 +1221,8 @@ policies and contribution forms [3].
                         function(vars) {
                             var rv = map(vars.tests, function(test) {
                                              var status = status_text[test.status];
-                                             return  ["tr", {},
-                                                      ["td", {"class":status_class(status)}, status],
+                                             return  ["tr", {"class":status_class(status)},
+                                                      ["td", {}, status],
                                                       ["td", {}, test.name],
                                                       ["td", {}, test.message ? test.message : " "]
                                                      ];

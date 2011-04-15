@@ -34,23 +34,23 @@ table#results td {
     border-bottom:thin solid black;
 }
 
-td.pass {
+tr.pass > td:first-child {
     color:green;
 }
 
-td.fail {
+tr.fail > td:first-child {
     color:red;
 }
 
-td.timeout {
+tr.timeout > td:first-child {
     color:red;
 }
 
-td.notrun {
+tr.notrun > td:first-child {
     color:blue;
 }
 
-.pass .fail .timeout .notrun {
+.pass .fail .timeout .notrun > td:first-child {
     font-variant:small-caps;
 }
 

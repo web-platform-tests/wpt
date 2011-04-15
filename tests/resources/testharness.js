@@ -764,6 +764,13 @@ policies and contribution forms [3].
             }
             this.status = this.FAIL;
             this.message = e.message;
+            if (typeof e.stack != "undefined" && typeof e.message == "string") {
+                //Try to make it more informative for some exceptions, at least
+                //in Gecko and WebKit.  This results in a stack dump instead of
+                //just errors like "Cannot read property 'parentNode' of null"
+                //or "root is null".  Makes it a lot longer, of course.
+                this.message += "(stack: " + e.stack + ")";
+            }
             this.done();
             if (debug && e.constructor !== AssertionError) {
                 throw e;

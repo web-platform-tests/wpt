@@ -33,7 +33,7 @@
 
 - name: type.exists
   desc: HTMLCanvasElement is a property of window
-  notes: &bindings Defined in "Language Bindings for DOM Specifications" (draft)
+  notes: &bindings Defined in "Web IDL" (draft)
   testing:
     - canvas.type
   code: |

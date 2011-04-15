@@ -18,7 +18,7 @@
 - name: 2d.type.exists
   DISABLED: need to check with WebIDL
   desc: The 2D context interface is a property of 'window'
-  notes: &bindings Defined in "Language Bindings for DOM Specifications" (draft)
+  notes: &bindings Defined in "Web IDL" (draft)
   testing:
     - context.2d.type
   code: |

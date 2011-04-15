@@ -8,6 +8,18 @@ section#summary {
 
 table#results {
     border-collapse:collapse;
+    table-layout:fixed;
+    width:100%;
+}
+
+table#results th:first-child,
+table#results td:first-child {
+    width:4em;
+}
+
+table#results th:last-child,
+table#results td:last-child {
+    width:50%;
 }
 
 table#results th {

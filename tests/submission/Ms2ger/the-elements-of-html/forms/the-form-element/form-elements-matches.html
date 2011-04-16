@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<title>form.elements: matches</title>
+<link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
+<link rel="help" href="http://www.whatwg.org/html5/#dom-form-elements">
+<body>
+<script src="../../../support/test.js"></script>
+<div id="test">
+<form id="form">
+<input type="image">
+</form>
+</div>
+<script>
+Test.run([function() {
+  Test.is(document.getElementById("form").elements.length, 0);
+},
+function() {
+  var form = document.getElementById("form");
+  var i = document.createElement("input");
+  i.name = "0";
+  form.appendChild(i);
+  Test.is(form.elements["0"], i);
+  Test.is(form.elements.namedItem("0"), i);
+  Test.isList(form.elements, [i]);
+}]);
+</script>

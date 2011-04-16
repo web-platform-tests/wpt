@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<title>link - stylesheet: error events</title>
+<link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
+<link rel="help" href="http://www.whatwg.org/html5/#the-link-element">
+<body>
+<script src="../../../support/test.js"></script>
+<script src="../../../support/test-css.js"></script>
+<div id="test">
+<script>
+var errors = 0, loads = 0;
+</script>
+<script>
+try {
+  var elt = document.createElement("link");
+  elt.onerror = function() {
+    ++errors;
+    Test.pass('Error');
+  };
+  elt.onload = function() {
+    ++loads;
+    Test.fail('Load');
+  }
+  elt.rel = "stylesheet";
+  elt.href = "../../../support/css/404-textcss.cgi";
+  document.getElementsByTagName("head")[0].appendChild(elt);
+
+  elt = document.createElement("link");
+  elt.onerror = function() {
+    ++errors;
+    Test.pass('Error');
+  };
+  elt.onload = function() {
+    ++loads;
+    Test.fail('Load');
+  }
+  elt.rel = "stylesheet";
+  elt.href = "../../../support/css/200-textplain.cgi";
+  document.getElementsByTagName("head")[0].appendChild(elt);
+} catch (e) {
+}
+</script>
+<script>
+onload = function() {
+  try {
+    Test.is(errors, 2);
+    Test.is(loads, 0);
+    Test.is(isRed(document.documentElement), false);
+  } catch (e) {
+    Test.fail("Exception was thrown.");
+  }
+  Test.finish();
+}
+</script>

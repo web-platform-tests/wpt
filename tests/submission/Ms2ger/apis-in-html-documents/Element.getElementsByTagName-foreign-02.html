@@ -1,0 +1,28 @@
+<!doctype html>
+<title>getElementsByTagName and font</title>
+<link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
+<link rel="help" href="http://www.whatwg.org/html5/#apis-in-html-documents">
+<link rel="help" href="http://www.whatwg.org/html5/#parsing">
+<body>
+<script src="../support/test.js"></script>
+<script src="../support/test-utils.js"></script>
+<div id="test">
+<svg id="outer">
+<foreignObject>
+<font></font>
+<svg><font/></svg>
+</foreignObject>
+</svg>
+</div>
+<script>
+var wrapper = document.getElementById("outer");
+Test.run([function() {
+  Test.is(wrapper.getElementsByTagName("FONT").length, 1);
+  Test.is(wrapper.getElementsByTagName("FONT")[0].namespaceURI, gNS.HTML);
+},
+function() {
+  Test.is(wrapper.getElementsByTagName("font").length, 2);
+  Test.is(wrapper.getElementsByTagName("font")[0].namespaceURI, gNS.HTML);
+  Test.is(wrapper.getElementsByTagName("font")[1].namespaceURI, gNS.SVG);
+}]);
+</script>

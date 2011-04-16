@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<title>insertRow(): Empty table</title>
+<link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
+<link rel="help" href="http://www.whatwg.org/html5/#dom-table-insertrow">
+<body>
+<script src="../../../support/test.js"></script>
+<script src="../../../support/test-utils.js"></script>
+<div id="test">
+<table></table>
+</div>
+<script>
+Test.run([function() {
+  var table = document.getElementById("test").getElementsByTagName("table")[0];
+  Test.is(table.childNodes.length, 0);
+  Test.is(table.rows.length, 0);
+
+  Test.separate();
+  var tr = table.insertRow(0);
+  Test.is(tr.tagName, "TR");
+  Test.is(tr.nodeName, "TR");
+  Test.is(tr.namespaceURI, gNS.HTML);
+
+  Test.separate();
+  var tbody = tr.parentNode;
+  Test.ok(tbody, "No tbody!");
+  Test.is(tbody.tagName, "TBODY");
+  Test.is(tbody.nodeName, "TBODY");
+  Test.is(tbody.namespaceURI, gNS.HTML);
+
+  Test.separate();
+  var table2 = tbody.parentNode;
+  Test.ok(table2, "No table!");
+  Test.is(table2, table);
+}]);
+</script>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<title>HTMLHRElement: obsolete attribute reflecting</title>
+<link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
+<link rel="help" href="http://www.whatwg.org/html5/#dom-hr-align">
+<link rel="help" href="http://www.whatwg.org/html5/#dom-hr-color">
+<link rel="help" href="http://www.whatwg.org/html5/#dom-hr-noshade">
+<link rel="help" href="http://www.whatwg.org/html5/#dom-hr-size">
+<link rel="help" href="http://www.whatwg.org/html5/#dom-hr-width">
+<link rel="help" href="http://dev.w3.org/2006/webapi/WebIDL/#es-DOMString">
+<link rel="help" href="http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-262.pdf#page=57">
+<body>
+<script src="../../../support/test.js"></script>
+<script src="../../../support/testReflect.js"></script>
+<div id="test">
+<hr color="blue">
+</div>
+<script>
+var hr = document.getElementById("test").getElementsByTagName("hr")[0];
+Test.run([function() {
+  Test.ok(hr, "No hr");
+  Test.is(hr.color, "blue");
+  Test.is(hr.getAttribute("color"), "blue");
+},
+function() {
+  testDOMStringReflect("align", "align", hr);
+},
+function() {
+  testDOMStringReflect("color", "color", hr);
+},
+function() {
+  testBooleanReflect("noShade", "noshade", hr);
+},
+function() {
+  testDOMStringReflect("size", "size", hr);
+},
+function() {
+  testDOMStringReflect("width", "width", hr);
+}]);
+</script>

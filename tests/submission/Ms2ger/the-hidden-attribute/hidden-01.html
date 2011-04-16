@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<title>The hidden attribute</title>
+<link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
+<link rel="help" href="http://www.whatwg.org/html5/#the-hidden-attribute">
+<body>
+<script src="../support/test.js"></script>
+<script src="../support/testReflect.js"></script>
+<script>
+try {
+  var el = document.createElement("p");
+  Test.is(el.hidden, false);
+  Test.is(el.hasAttribute("hidden"), false);
+
+  Test.separate();
+  testBooleanReflect("hidden", "hidden", el);
+
+  Test.separate();
+  el = document.createElement("xx");
+  Test.is(el.hidden, false);
+  Test.is(el.hasAttribute("hidden"), false);
+
+  Test.separate();
+  testBooleanReflect("hidden", "hidden", el);
+} catch (e) {
+  Test.fail("Exception was thrown.");
+}
+Test.finish();
+</script>

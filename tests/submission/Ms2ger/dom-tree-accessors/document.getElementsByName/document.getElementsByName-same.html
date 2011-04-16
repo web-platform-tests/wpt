@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<title>Calling getElementsByName with the same argument</title>
+<link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
+<link rel="help" href="http://www.whatwg.org/html5/#dom-document-getelementsbyname">
+<body>
+<script src="../../support/test.js"></script>
+<div id="test">
+<div name="abcd"></div>
+</div>
+<script>
+try {
+  var list1 = document.getElementsByName("abcd");
+  var list2 = document.getElementsByName("abcd");
+  Test.is(list1, list2);
+} catch (e) {
+  Test.fail("Exception was thrown.");
+}
+Test.finish();
+</script>

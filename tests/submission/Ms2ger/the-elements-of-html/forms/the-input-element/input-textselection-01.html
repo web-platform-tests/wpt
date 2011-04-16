@@ -1,0 +1,45 @@
+<!DOCTYPE HTML>
+<title>The selection interface members</title>
+<link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
+<link rel="help" href="http://www.whatwg.org/html5/#textFieldSelection">
+<body>
+<script src="../../../support/test.js"></script>
+<script>
+var tests = [];
+var valid = ["text", "search", "url", "tel", "email", "password"];
+var invalid = ["hidden", "datetime", "date", "month", "week", "datetime-local",
+               "number", "range", "color", "checkbox", "radio", "button",
+               "file", "submit", "image", "reset", "button"];
+var input = document.createElement("input");
+for (var i = 0, il = valid.length; i < il; ++i) {
+  tests.push(function(aType) {
+    return function() {
+      input.type = aType;
+      if (Test.is(input.type, aType, "Input type unsupported")) {
+        input.select();
+        var a = input.selectionStart;
+        input.selectionStart = 0;
+        a = input.selectionEnd;
+        input.selectionEnd = 0;
+        input.setSelectionRange(0, 0);
+      }
+    }
+  }(valid[i]));
+}
+for (var j = 0, jl = invalid.length; j < jl; ++j) {
+  tests.push(function(aType) {
+    return function() {
+      input.type = aType;
+      if (Test.is(input.type, aType, "Input type unsupported")) {
+        Test.throws(function() { input.select(); }, "INVALID_STATE_ERR");
+        Test.throws(function() { var a = input.selectionStart; }, "INVALID_STATE_ERR");
+        Test.throws(function() { input.selectionStart = 0; }, "INVALID_STATE_ERR");
+        Test.throws(function() { var a = input.selectionEnd; }, "INVALID_STATE_ERR");
+        Test.throws(function() { input.selectionEnd = 0; }, "INVALID_STATE_ERR");
+        Test.throws(function() { input.setSelectionRange(0, 0); }, "INVALID_STATE_ERR");
+      }
+    }
+  }(invalid[j]));
+}
+Test.run(tests);
+</script>

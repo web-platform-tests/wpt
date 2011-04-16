@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<title>document.write and null/undefined</title>
+<link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
+<link rel="help" href="http://www.whatwg.org/html5/#dom-document-write%28%29">
+<link rel="help" href="http://www.whatwg.org/html5/#documents-in-the-dom">
+<body>
+<script src="../support/test.js"></script>
+<script>
+try {
+  var iframe = document.createElement("iframe");
+  document.body.appendChild(iframe);
+  doc = iframe.contentDocument;
+  doc.open();
+  doc.write(null);
+  doc.close();
+  Test.is(doc.documentElement.textContent, "null");
+  doc.open();
+  doc.write(undefined);
+  doc.close();
+  Test.is(doc.documentElement.textContent, "undefined");
+} catch (e) {
+  Test.fail("Exception was thrown.");
+}
+Test.finish();
+</script>

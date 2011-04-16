@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<title>form.elements: interfaces</title>
+<link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
+<link rel="help" href="http://www.whatwg.org/html5/#dom-form-elements">
+<link rel="help" href="http://www.whatwg.org/html5/#htmlformcontrolscollection">
+<body>
+<script src="../../../support/test.js"></script>
+<script>
+try {
+  var form = document.createElement("form");
+  try {
+    Test.ok(form.elements instanceof HTMLFormControlsCollection);
+  } catch (e) {
+    Test.fail("No exception should have been thrown.");
+  }
+  try {
+    Test.ok(form.elements instanceof HTMLCollection);
+  } catch (e) {
+    Test.fail("No exception should have been thrown.");
+  }
+} catch (e) {
+  Test.fail("No exception should have been thrown.");
+}
+Test.finish();
+</script>

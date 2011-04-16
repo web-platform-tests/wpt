@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<title>document.getElementsByTagName and foreign parser-inserted
+elements</title>
+<link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
+<link rel="help" href="http://www.whatwg.org/html5/#apis-in-html-documents">
+<link rel="help" href="http://www.whatwg.org/html5/#parsing">
+<body>
+<script src="../support/test.js"></script>
+<script src="../support/test-utils.js"></script>
+<div id="test">
+<svg>
+<altglyph/>
+  <altglyphdef/>
+  <altglyphitem/>
+  <animatecolor/>
+  <animatemotion/>
+  <animatetransform/>
+  <clippath/>
+  <feblend/>
+  <fecolormatrix/>
+  <fecomponenttransfer/>
+  <fecomposite/>
+  <feconvolvematrix/>
+  <fediffuselighting/>
+  <fedisplacementmap/>
+  <fedistantlight/>
+  <feflood/>
+  <fefunca/>
+  <fefuncb/>
+  <fefuncg/>
+  <fefuncr/>
+  <fegaussianblur/>
+  <feimage/>
+  <femerge/>
+  <femergenode/>
+  <femorphology/>
+  <feoffset/>
+  <fepointlight/>
+  <fespecularlighting/>
+  <fespotlight/>
+  <fetile/>
+  <feturbulence/>
+  <foreignobject/>
+  <glyphref/>
+  <lineargradient/>
+  <radialgradient/>
+  <textpath/>
+  <ALTGLYPH/>
+  <ALTGLYPHDEF/>
+  <ALTGLYPHITEM/>
+  <ANIMATECOLOR/>
+  <ANIMATEMOTION/>
+  <ANIMATETRANSFORM/>
+  <CLIPPATH/>
+  <FEBLEND/>
+  <FECOLORMATRIX/>
+  <FECOMPONENTTRANSFER/>
+  <FECOMPOSITE/>
+  <FECONVOLVEMATRIX/>
+  <FEDIFFUSELIGHTING/>
+  <FEDISPLACEMENTMAP/>
+  <FEDISTANTLIGHT/>
+  <FEFLOOD/>
+  <FEFUNCA/>
+  <FEFUNCB/>
+  <FEFUNCG/>
+  <FEFUNCR/>
+  <FEGAUSSIANBLUR/>
+  <FEIMAGE/>
+  <FEMERGE/>
+  <FEMERGENODE/>
+  <FEMORPHOLOGY/>
+  <FEOFFSET/>
+  <FEPOINTLIGHT/>
+  <FESPECULARLIGHTING/>
+  <FESPOTLIGHT/>
+  <FETILE/>
+  <FETURBULENCE/>
+  <FOREIGNOBJECT/>
+  <GLYPHREF/>
+  <LINEARGRADIENT/>
+  <RADIALGRADIENT/>
+  <TEXTPATH/>
+</svg>
+<script>
+var elements = [
+  "altGlyph",
+  "altGlyphDef",
+  "altGlyphItem",
+  "animateColor",
+  "animateMotion",
+  "animateTransform",
+  "clipPath",
+  "feBlend",
+  "feColorMatrix",
+  "feComponentTransfer",
+  "feComposite",
+  "feConvolveMatrix",
+  "feDiffuseLighting",
+  "feDisplacementMap",
+  "feDistantLight",
+  "feFlood",
+  "feFuncA",
+  "feFuncB",
+  "feFuncG",
+  "feFuncR",
+  "feGaussianBlur",
+  "feImage",
+  "feMerge",
+  "feMergeNode",
+  "feMorphology",
+  "feOffset",
+  "fePointLight",
+  "feSpecularLighting",
+  "feSpotLight",
+  "feTile",
+  "feTurbulence",
+  "foreignObject",
+  "glyphRef",
+  "linearGradient",
+  "radialGradient",
+  "textPath"];
+</script>
+</div>
+<script>
+try {
+  Test.is(document.getElementsByTagName('svg').length, 1);
+  for (var i = 0, il = elements.length; i < il; ++i) {
+    Test.separate();
+    Test.is(document.getElementsByTagName(elements[i]).length, 2);
+    Test.is(document.getElementsByTagName(elements[i].toUpperCase()).length, 0);
+    Test.is(document.getElementsByTagName(elements[i].toLowerCase()).length, 0);
+    Test.is(document.getElementsByTagNameNS(gNS.SVG, elements[i]).length, 2);
+    Test.is(document.getElementsByTagNameNS(gNS.SVG,
+                                            elements[i].toUpperCase()).length,
+            0);
+    Test.is(document.getElementsByTagNameNS(gNS.SVG,
+                                            elements[i].toLowerCase()).length,
+            0);
+  }
+} catch (e) {
+  Test.fail("Exception was thrown.");
+}
+Test.finish();
+</script>

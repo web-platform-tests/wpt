@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<title>Page load processing model for text files</title>
+<link rel="author" title="Ms2ger" href="ms2ger@gmail.com">
+<link rel="help" href="http://www.whatwg.org/html5/#read-text">
+<body>
+<script src="../support/test.js"></script>
+<script>
+function test() {
+  try {
+    var doc = iframe.contentDocument;
+    Test.is(doc.doctype, null);
+    Test.is(doc.compatMode, "BackCompat");
+    Test.is(doc.documentElement.firstChild.tagName, "HEAD");
+    Test.is(doc.documentElement.lastChild.tagName, "BODY");
+    Test.is(doc.documentElement.lastChild.firstChild.tagName, "PRE");
+    Test.is(doc.documentElement.lastChild.firstChild.firstChild.data, "Text\n");
+  } catch (e) {
+    Test.fail("Exception was thrown.");
+  }
+  Test.finish();
+}
+var iframe = document.body.appendChild(document.createElement("iframe"));
+iframe.onload = test;
+iframe.src = "../support/text/200-textplain.cgi";
+</script>

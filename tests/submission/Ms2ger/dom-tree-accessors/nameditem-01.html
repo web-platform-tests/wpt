@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<title>Named items: img id &amp; name</title>
+<link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
+<link rel="help" href="http://www.whatwg.org/html5/#dom-document-nameditem">
+<body>
+<script src="../support/test.js"></script>
+<div id="test">
+<img id="a" name="b">
+</div>
+<script>
+try {
+  Test.is(document.a, document.getElementsByTagName("img")[0]);
+  Test.is(document['a'], document.getElementsByTagName("img")[0]);
+  Test.is(document.b, document.getElementsByTagName("img")[0]);
+  Test.is(document['b'], document.getElementsByTagName("img")[0]);
+} catch (e) {
+  Test.fail("Exception was thrown.");
+}
+Test.finish();
+</script>

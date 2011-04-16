@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<title>document: fg/bg/link/vlink/alink-color</title>
+<link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
+<link rel="help" href="http://www.whatwg.org/html5/#dom-document-fgcolor">
+<link rel="help" href="http://www.whatwg.org/html5/#dom-body-text">
+<body>
+<script src="../../../support/test.js"></script>
+<script>
+try {
+  Test.is(document.fgColor, document.body.text);
+  Test.is(document.bgColor, document.body.bgColor);
+  Test.is(document.linkColor, document.body.link);
+  Test.is(document.vlinkColor, document.body.vLink);
+  Test.is(document.alinkColor, document.body.aLink);
+  
+  Test.separate();
+  document.fgColor = "blue";
+  Test.is(document.fgColor, "blue");
+  Test.is(document.body.text, "blue");
+  Test.is(document.body.getAttribute("text"), "blue");
+  
+  Test.separate();
+  document.bgColor = "green";
+  Test.is(document.bgColor, "green");
+  Test.is(document.body.bgColor, "green");
+  Test.is(document.body.getAttribute("bgcolor"), "green");
+  
+  Test.separate();
+  document.linkColor = "red";
+  Test.is(document.linkColor, "red");
+  Test.is(document.body.link, "red");
+  Test.is(document.body.getAttribute("link"), "red");
+  
+  Test.separate();
+  document.vlinkColor = "yellow";
+  Test.is(document.vlinkColor, "yellow");
+  Test.is(document.body.vLink, "yellow");
+  Test.is(document.body.getAttribute("vlink"), "yellow");
+  
+  Test.separate();
+  document.alinkColor = "silver";
+  Test.is(document.alinkColor, "silver");
+  Test.is(document.body.aLink, "silver");
+  Test.is(document.body.getAttribute("alink"), "silver");
+} catch (e) {
+  Test.fail("Exception was thrown.");
+}
+Test.finish();
+</script>
+

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<title>link.relList: getters</title>
+<link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
+<link rel="help" href="http://www.whatwg.org/html5/#the-link-element">
+<link rel="help" href="http://www.whatwg.org/html5/#domtokenlist">
+<link id="link" rel="a b c">
+<body>
+<script src="../../../support/test.js"></script>
+<script>
+try {
+  var list = document.getElementById("link").relList;
+
+  Test.ok(list, "No relList");
+
+  Test.is(list.length, 3);
+  Test.is(list.item(0), "a");
+  Test.is(list[0], "a");
+  Test.is(list.item(1), "b");
+  Test.is(list[1], "b");
+  Test.is(list.item(2), "c");
+  Test.is(list[2], "c");
+} catch (e) {
+  Test.fail("Exception was thrown.");
+}
+Test.finish();
+</script>
+

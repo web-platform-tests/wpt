@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<title>HTMLBaseFontElement: attribute reflecting</title>
+<link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
+<link rel="help" href="http://www.whatwg.org/html5/#dom-basefont-color">
+<link rel="help" href="http://www.whatwg.org/html5/#dom-basefont-face">
+<link rel="help" href="http://www.whatwg.org/html5/#dom-basefont-size">
+<link rel="help" href="http://dev.w3.org/2006/webapi/WebIDL/#es-DOMString">
+<link rel="help" href="http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-262.pdf#page=56">
+<link rel="help" href="http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-262.pdf#page=57">
+<body>
+<script src="../../../support/test.js"></script>
+<script src="../../../support/testReflect.js"></script>
+<script>
+try {
+  var el = document.createElement("basefont");
+  testDOMStringReflect("color", "color", el);
+  Test.separate();
+  testDOMStringReflect("face", "face", el);
+  Test.separate();
+  testLongReflect("size", "size", el);
+} catch (e) {
+  Test.fail("Exception was thrown.");
+}
+Test.finish();
+</script>

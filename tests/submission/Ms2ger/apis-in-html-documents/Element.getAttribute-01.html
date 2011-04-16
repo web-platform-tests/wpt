@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<title>Element.getAttribute: lowercasing</title>
+<link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
+<link rel="help" href="http://www.whatwg.org/html5/#apis-in-html-documents">
+<body>
+<script src="../support/test.js"></script>
+<script>
+try {
+  var el = document.createElement("div");
+  el.setAttributeNS("", "ALIGN", "left");
+  Test.is(el.getAttributeNS("", "ALIGN"), "left");
+  Test.is(el.getAttributeNS("", "align"), "");
+  Test.is(el.getAttribute("ALIGN"), null);
+  Test.is(el.getAttribute("align"), null);
+  el.setAttributeNS("", "CHEEseCaKe", "tasty");
+  Test.is(el.getAttributeNS("", "CHEESECAKE"), "");
+  Test.is(el.getAttributeNS("", "CHEEseCaKe"), "tasty");
+  Test.is(el.getAttributeNS("", "cheesecake"), "");
+  Test.is(el.getAttribute("CHEESECAKE"), null);
+  Test.is(el.getAttribute("CHEEseCaKe"), null);
+  Test.is(el.getAttribute("cheesecake"), null);
+} catch (e) {
+  Test.fail("Exception was thrown.");
+}
+Test.finish();
+</script>

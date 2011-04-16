@@ -1,0 +1,29 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Calling getElementsByName with null and undefined</title>
+<link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com"/>
+<link rel="help" href="http://www.whatwg.org/html5/#dom-document-getelementsbyname"/>
+<link rel="help" href="http://dev.w3.org/2006/webapi/WebIDL/#es-DOMString"/>
+<link rel="help" href="http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-262.pdf#page=57"/>
+</head>
+<body>
+<script src="../../support/test.js"></script>
+<script>
+try {
+  var n = document.createElement("div");
+  n.setAttribute("name", "null");
+  document.body.appendChild(n);
+  var u = document.createElement("div");
+  u.setAttribute("name", "undefined");
+  document.body.appendChild(u);
+  
+  Test.is(document.getElementsByName(null)[0], n);
+  Test.is(document.getElementsByName(undefined)[0], u);
+} catch (e) {
+  Test.fail("Exception was thrown.");
+}
+Test.finish();
+</script>
+</body>
+</html>
+

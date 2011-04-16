@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<title>event and htmlFor IDL attributes of HTMLScriptElement</title>
+<link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
+<link rel="help" href="http://www.whatwg.org/html5/#dom-script-event">
+<link rel="help" href="http://www.whatwg.org/html5/#dom-script-htmlfor">
+<body>
+<script src="../../../support/test.js"></script>
+<script>
+try {
+  var script = document.createElement("script");
+  Test.is(script.event, "");
+  Test.is(script.htmlFor, "");
+
+  Test.separate();
+  script.setAttribute("event", "blah");
+  script.setAttribute("for", "blah");
+  Test.is(script.event, "");
+  Test.is(script.htmlFor, "");
+  Test.is(script.getAttribute("event"), "blah");
+  Test.is(script.getAttribute("for"), "blah");
+
+  Test.separate();
+  script.event = "foo";
+  script.htmlFor = "foo";
+  Test.is(script.event, "");
+  Test.is(script.htmlFor, "");
+  Test.is(script.getAttribute("event"), "blah");
+  Test.is(script.getAttribute("for"), "blah");
+
+  Test.separate();
+  script.event = null;
+  script.htmlFor = null;
+  Test.is(script.event, "");
+  Test.is(script.htmlFor, "");
+  Test.is(script.getAttribute("event"), "blah");
+  Test.is(script.getAttribute("for"), "blah");
+
+  Test.separate();
+  script.event = undefined;
+  script.htmlFor = undefined;
+  Test.is(script.event, "");
+  Test.is(script.htmlFor, "");
+  Test.is(script.getAttribute("event"), "blah");
+  Test.is(script.getAttribute("for"), "blah");
+} catch (e) {
+  Test.fail("Exception was thrown.");
+}
+Test.finish();
+</script>

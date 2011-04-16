@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<title>Setting CanvasRenderingContext2D.textAlign</title>
+<link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
+<link rel="help" href="http://www.whatwg.org/html5/#dom-context-2d-textalign">
+<body>
+<script src="../../../support/test.js"></script>
+<div id="test">
+<canvas></canvas>
+</div>
+<script>
+Test.run([function() {
+  var cx = document.getElementById("test")
+                   .getElementsByTagName("canvas")[0]
+                   .getContext("2d");
+  Test.is(cx.textAlign, "start");
+  cx.textAlign = "foo";
+  Test.is(cx.textAlign, "start");
+}]);
+</script>

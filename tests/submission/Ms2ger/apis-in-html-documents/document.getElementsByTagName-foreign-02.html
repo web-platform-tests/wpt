@@ -1,0 +1,23 @@
+<!doctype html>
+<title>getElementsByTagName and font</title>
+<link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
+<link rel="help" href="http://www.whatwg.org/html5/#apis-in-html-documents">
+<link rel="help" href="http://www.whatwg.org/html5/#parsing">
+<body>
+<script src="../support/test.js"></script>
+<script src="../support/test-utils.js"></script>
+<div id="test">
+<font></font>
+<svg><font/></svg>
+</div>
+<script>
+Test.run([function() {
+  Test.is(document.getElementsByTagName("FONT").length, 1);
+  Test.is(document.getElementsByTagName("FONT")[0].namespaceURI, gNS.HTML);
+},
+function() {
+  Test.is(document.getElementsByTagName("font").length, 2);
+  Test.is(document.getElementsByTagName("font")[0].namespaceURI, gNS.HTML);
+  Test.is(document.getElementsByTagName("font")[1].namespaceURI, gNS.SVG);
+}]);
+</script>

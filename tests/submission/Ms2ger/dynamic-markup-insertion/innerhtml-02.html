@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<title>innerHTML in HTML</title>
+<link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
+<link rel="help" href="http://www.whatwg.org/html5/#dom-innerhtml">
+<body>
+<script src="../support/test.js"></script>
+<script>
+try {
+  var el = document.createElement("div");
+  el.appendChild(document.createElement("xmp"))
+    .appendChild(document.createElement("span"))
+    .appendChild(document.createTextNode("<"));
+  Test.is(el.innerHTML, "<xmp><span>&lt;<\/span><\/xmp>");
+
+  el = document.createElement("xmp");
+  el.appendChild(document.createElement("span"))
+    .appendChild(document.createTextNode("<"));
+  Test.is(el.innerHTML, "<span>&lt;<\/span>");
+
+  el = document.createElement("xmp");
+  el.appendChild(document.createTextNode("<"));
+  Test.is(el.innerHTML, "<");
+
+  el = document.createElement("div");
+  el.appendChild(document.createElement("br"));
+  Test.is(el.innerHTML, "<br>");
+} catch (e) {
+  Test.fail("Exception was thrown.");
+}
+Test.finish();
+</script>

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<title>document.head</title>
+<link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
+<link rel="help" href="http://www.whatwg.org/html5/#dom-document-head">
+<body>
+<script src="../support/test.js"></script>
+<script src="../support/test-utils.js"></script>
+<script>
+try {
+  var head = document.getElementsByTagName("head")[0];
+  Test.is(document.head, head);
+  var head2 = document.createElementNS(gNS.HTML, "blah:head");
+  document.documentElement.insertBefore(head2, head);
+  Test.is(document.head, head2);
+  var head3 = document.createElementNS("http://www.example.org/", "blah:head");
+  document.documentElement.insertBefore(head3, head2);
+  Test.is(document.head, head2);
+} catch (e) {
+  Test.fail("Exception was thrown.");
+}
+Test.finish();
+</script>

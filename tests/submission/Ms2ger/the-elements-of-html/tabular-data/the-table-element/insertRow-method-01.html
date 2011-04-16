@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<title>insertRow(): INDEX_SIZE_ERR</title>
+<link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
+<link rel="help" href="http://www.whatwg.org/html5/#dom-table-insertrow">
+<body>
+<script src="../../../support/test.js"></script>
+<div id="test">
+<table>
+<tr>
+<td>
+</table>
+</div>
+<script>
+Test.run([function() {
+  var table = document.getElementById("test").getElementsByTagName("table")[0];
+
+  try {
+    table.insertRow(-2);
+    Test.fail("Expected exception");
+  } catch (e) {
+    Test.is(e.code, DOMException.INDEX_SIZE_ERR);
+  }
+  try {
+    table.insertRow(2);
+    Test.fail("Expected exception");
+  } catch (e) {
+    Test.is(e.code, DOMException.INDEX_SIZE_ERR);
+  }
+}]);
+</script>

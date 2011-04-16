@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<title>HTMLAnchorElement.text setting</title>
+<link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
+<link rel="help" href="http://www.whatwg.org/html5/#dom-a-text">
+<body>
+<script src="../../../support/test.js"></script>
+<div id="test">
+<a href="a">a b c</a>
+<a href="b">a <!--b--> c</a>
+<a href="c">a <b>b</b> c</a>
+<script>
+var d = document.getElementById("test")
+                .appendChild(document.createElement("a"));
+d.href = "d";
+d.appendChild(document.createTextNode("a "));
+d.appendChild(document.createTextNode("b "));
+d.appendChild(document.createTextNode("c "));
+</script>
+</div>
+<script>
+try {
+  var list = document.getElementById("test")
+                     .getElementsByTagName("a");
+  for (var i = 0, il = list.length; i < il; ++i) {
+    list[i].text = "x";
+    Test.is(list[i].text, "x");
+    Test.is(list[i].textContent, "x");
+    Test.is(list[i].firstChild.data, "x");
+    Test.is(list[i].childNodes.length, 1);
+
+    list[i].textContent = "y";
+    Test.is(list[i].text, "y");
+    Test.is(list[i].textContent, "y");
+    Test.is(list[i].firstChild.data, "y");
+    Test.is(list[i].childNodes.length, 1);
+  }
+} catch (e) {
+  Test.fail("Exception was thrown.");
+}
+Test.finish();
+</script>

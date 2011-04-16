@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<title>HTMLUListElement: obsolete attribute reflecting</title>
+<link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
+<link rel="help" href="http://www.whatwg.org/html5/#dom-ul-compact">
+<link rel="help" href="http://www.whatwg.org/html5/#dom-ul-type">
+<link rel="help" href="http://dev.w3.org/2006/webapi/WebIDL/#es-DOMString">
+<link rel="help" href="http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-262.pdf#page=57">
+<body>
+<script src="../../../support/test.js"></script>
+<script src="../../../support/testReflect.js"></script>
+<script>
+Test.run([function() {
+  testBooleanReflect("compact", "compact", document.createElement("ul"));
+},
+function() {
+  testDOMStringReflect("type", "type", document.createElement("ul"));
+}]);
+</script>

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<title>Setting document.body to incorrect values</title>
+<link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
+<link rel="help" href="http://www.whatwg.org/html5/#dom-document-body">
+<link rel="help" href="http://dev.w3.org/2006/webapi/WebIDL/#es-interface">
+<body>
+<script src="../support/test.js"></script>
+<script>
+try {
+  try {
+    document.body = "text";
+    Test.fail("No exception was thrown.");
+  } catch (e) {
+    Test.ok(e instanceof TypeError, "Should've thrown a TypeError.");
+  }
+  try {
+    document.body = document.createElement("div");
+    Test.fail("No exception was thrown.");
+  } catch (e) {
+    Test.is(e.code, DOMException.HIERARCHY_REQUEST_ERR);
+  }
+} catch (e) {
+  Test.fail("Exception was thrown.");
+}
+Test.finish();
+</script>

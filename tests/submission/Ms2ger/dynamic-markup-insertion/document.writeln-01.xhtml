@@ -1,0 +1,24 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>document.writeln in XHTML</title>
+<link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com"/>
+<link rel="help" href="http://www.whatwg.org/html5/#document.writeln%28%29"/>
+</head>
+<body>
+<script src="../support/test.js"></script>
+<script>
+try {
+  try {
+    document.writeln("FAIL: document.writeln actually worked");
+    Test.fail("document.writeln in XHTML should throw an INVALID_ACCESS_ERR " +
+      "exception, but failed silently.");
+  } catch (e) {
+    Test.is(e.code, DOMException.INVALID_STATE_ERR);
+  }
+} catch (e) {
+  Test.fail("Exception was thrown.");
+}
+Test.finish();
+</script>
+</body>
+</html>

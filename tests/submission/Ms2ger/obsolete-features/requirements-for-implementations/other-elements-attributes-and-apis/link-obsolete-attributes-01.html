@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<title>HTMLLinkElement: obsolete attribute reflecting</title>
+<link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
+<link rel="help" href="http://www.whatwg.org/html5/#dom-link-charset">
+<link rel="help" href="http://www.whatwg.org/html5/#dom-link-rev">
+<link rel="help" href="http://www.whatwg.org/html5/#dom-link-target">
+<body>
+<script src="../../../support/test.js"></script>
+<script src="../../../support/testReflect.js"></script>
+<script>
+Test.run([function() {
+  testDOMStringReflect("charset", "charset", document.createElement("link"));
+},
+function() {
+  testDOMStringReflect("rev", "rev", document.createElement("link"));
+},
+function() {
+  testDOMStringReflect("target", "target", document.createElement("link"));
+}]);
+</script>

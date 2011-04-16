@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<title>nodeName, tagName: case-sensitivity</title>
+<link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
+<link rel="help" href="http://www.whatwg.org/html5/#apis-in-html-documents">
+<body>
+<script src="../support/test.js"></script>
+<script src="../support/test-utils.js"></script>
+<script>
+try {
+  var el = document.createElementNS(gNS.HTML, "I");
+  Test.is(el.nodeName, "I");
+  Test.is(el.tagName, "I");
+  el = document.createElementNS(gNS.HTML, "i");
+  Test.is(el.nodeName, "I");
+  Test.is(el.tagName, "I");
+  el = document.createElementNS(gNS.SVG, "svg");
+  Test.is(el.nodeName, "svg");
+  Test.is(el.tagName, "svg");
+  el = document.createElementNS(gNS.SVG, "SVG");
+  Test.is(el.nodeName, "SVG");
+  Test.is(el.tagName, "SVG");
+} catch (e) {
+  Test.fail("Exception was thrown.");
+}
+Test.finish();
+</script>

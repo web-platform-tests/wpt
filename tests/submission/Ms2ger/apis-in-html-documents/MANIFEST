@@ -1,0 +1,9 @@
+document.createElement-foreign-01.html
+document.getElementsByTagName-case-01.html
+document.getElementsByTagName-foreign-01.html
+document.getElementsByTagName-foreign-02.html
+Element.getAttribute-01.html
+Element.getElementsByTagName-foreign-01.html
+Element.getElementsByTagName-foreign-02.html
+Element.setAttribute-01.html
+Element.tagName-Node.nodeName-01.html

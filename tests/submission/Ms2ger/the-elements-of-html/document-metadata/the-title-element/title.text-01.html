@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<title>title.text with comment and element children.</title>
+<link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
+<link rel="help" href="http://www.whatwg.org/html5/#dom-title-text">
+<body>
+<script src="../../../support/test.js"></script>
+<script>
+try {
+  var title = document.getElementsByTagName("title")[0];
+  while (title.childNodes.length)
+    title.removeChild(title.childNodes[0]);
+  title.appendChild(document.createComment("COMMENT"));
+  title.appendChild(document.createTextNode("TEXT"));
+  title.appendChild(document.createElement("a")
+                            .appendChild(document.createTextNode("ELEMENT"))
+                            .parentNode);
+} catch (e) {
+}
+</script>
+<script>
+try {
+  Test.is(title.text, "TEXT");
+  Test.is(title.textContent, "TEXTELEMENT");
+} catch (e) {
+  Test.fail("Exception was thrown.");
+}
+Test.finish();
+</script>

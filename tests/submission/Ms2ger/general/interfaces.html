@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<title>Test of interfaces</title>
+<link rel="author" title="Ms2ger" href="mailto:Ms2ger@gmail.com">
+<link rel="help" href="http://www.whatwg.org/html5/">
+<link rel="help" href="http://dev.w3.org/2006/webapi/WebIDL/#host-objects">
+<link rel="help" href="http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-262.pdf#page=96">
+<style>
+table { border: thin solid; }
+thead > tr > th { border-bottom: medium double; }
+tr.true:nth-child(odd)  { background: #E5FFE5; }
+tr.true:nth-child(even) { background: #DEF8DE; }
+tr.false:nth-child(odd)  { background: #FFE5E5; }
+tr.false:nth-child(even) { background: #F8DEDE; }
+</style>
+<body>
+<script src="../support/test.js"></script>
+<table>
+<thead>
+<tr>
+<th>Element
+<th>Expected interface
+<th>Found interface
+<th>toString
+<th>instanceof
+<tbody></table>
+<script src="interfaces-elements.js"></script>
+<script src="interfaces-expected.js"></script>
+<script>
+try {
+  var t = document.querySelector("tbody");
+  if (t.toString() == "[object]") {
+    // Bah, IE. Give up already.
+    Test.fail("I can't test like this, IE!");
+    throw "epic fail";
+  }
+  function w(s, e) {
+    var i = document.createElement(s).toString().substring(8);
+    i = i.substring(0, i.indexOf(' ') !== -1 ? i.indexOf(' ') : i.indexOf(']'));
+    t.appendChild(document.createElement("tr"))
+     .appendChild(document.createElement("td"))
+     .appendChild(document.createTextNode(s))
+     .parentNode.parentNode
+     .appendChild(document.createElement("td"))
+     .appendChild(document.createTextNode(e))
+     .parentNode.parentNode
+     .appendChild(document.createElement("td"))
+     .appendChild(document.createTextNode(i))
+     .parentNode.parentNode
+     .appendChild(document.createElement("td"))
+     .appendChild(document.createTextNode(e===i))
+     .parentNode.parentNode
+     .appendChild(document.createElement("td"))
+     .appendChild(document.createTextNode(!!(window[e] && document.createElement(s) instanceof window[e])))
+     .parentNode.parentNode.className = e===i&&(window[e] && document.createElement(s) instanceof window[e]);
+  }
+  for (var i = 0, il = elements.length; i < il; ++i) {
+    w(elements[i], "HTML" + expected[i] + "Element");
+  }
+  var results = { "true" : 0, "false" : 0 };
+  for (i = 0, il = t.childNodes.length; i < il; ++i) {
+    switch (t.childNodes[i].lastChild.firstChild.nodeValue) {
+    case "true":
+      Test.pass();
+      break;
+    case "false":
+      Test.fail("Wrong interface");
+      break;
+    }
+    switch (t.childNodes[i].lastChild.previousSibling.firstChild.nodeValue) {
+    case "true":
+      Test.pass();
+      break;
+    case "false":
+      Test.fail("Wrong interface");
+      break;
+    }
+  }
+} catch (e) {
+  console.log(e);
+  if (e !== "epic fail")
+    Test.fail("Exception was thrown");
+}
+Test.finish();
+</script>

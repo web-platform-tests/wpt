@@ -1,0 +1,35 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>innerHTML in XHTML: getting while the document is in an invalid state</title>
+<link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com"/>
+<link rel="help" href="http://www.whatwg.org/html5/#dom-innerhtml"/>
+<link rel="help" href="http://www.whatwg.org/html5/#xml-fragment-serialization-algorithm"/>
+<link rel="help" href="http://www.whatwg.org/html5/#document.title"/>
+</head>
+<body>
+<script src="../support/test.js"></script>
+<script>
+try {
+  try {
+    document.documentElement.appendChild(document.createElement("test:test"));
+    var text = document.documentElement.innerHTML;
+    Test.fail("Should have failed on getting");
+  } catch (e) {
+    Test.is(e.code, DOMException.INVALID_STATE_ERR);
+  }
+
+  Test.separate();
+  document.title = "\f";
+  try {
+    document.getElementsByTagName("title")[0].innerHTML;
+    Test.fail("No exception was thrown");
+  } catch (e) {
+    Test.is(e.code, DOMException.INVALID_STATE_ERR);
+  }
+} catch (e) {
+  Test.fail("Exception was thrown.");
+}
+Test.finish();
+</script>
+</body>
+</html>

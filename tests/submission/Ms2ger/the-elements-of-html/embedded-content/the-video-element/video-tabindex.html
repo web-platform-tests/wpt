@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<title>tabindex on video elements</title>
+<link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
+<link rel="help" href="http://www.whatwg.org/html5/#video">
+<body>
+<script src="../../../support/test.js"></script>
+<div id="test">
+<video></video>
+</div>
+<script>
+try {
+  var el = document.getElementById("test").getElementsByTagName("video")[0];
+  Test.is(el.hasAttribute("tabindex"), false);
+} catch (e) {
+  Test.fail("Exception was thrown.");
+}
+Test.finish();
+</script>

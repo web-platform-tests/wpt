@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<title>HTMLAnchorElement: obsolete attribute reflecting</title>
+<link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
+<link rel="help" href="http://www.whatwg.org/html5/#dom-a-coords">
+<link rel="help" href="http://www.whatwg.org/html5/#dom-a-charset">
+<link rel="help" href="http://www.whatwg.org/html5/#dom-a-name">
+<link rel="help" href="http://www.whatwg.org/html5/#dom-a-rev">
+<link rel="help" href="http://www.whatwg.org/html5/#dom-a-shape">
+<link rel="help" href="http://dev.w3.org/2006/webapi/WebIDL/#es-DOMString">
+<link rel="help" href="http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-262.pdf#page=57">
+<body>
+<script src="../../../support/test.js"></script>
+<script src="../../../support/testReflect.js"></script>
+<div id="test">
+<a coords="a" charset="b" name="c" rev="d" shape="e"></a>
+</div>
+<script>
+try {
+  var el = document.getElementById("test").getElementsByTagName("a")[0];
+  Test.ok(el, "No element");
+  Test.is(el.coords, "a");
+  Test.is(el.getAttribute("coords"), "a");
+  Test.is(el.charset, "b");
+  Test.is(el.getAttribute("charset"), "b");
+  Test.is(el.name, "c");
+  Test.is(el.getAttribute("name"), "c");
+  Test.is(el.rev, "d");
+  Test.is(el.getAttribute("rev"), "d");
+  Test.is(el.shape, "e");
+  Test.is(el.getAttribute("shape"), "e");
+
+  Test.separate();
+  testDOMStringReflect("coords", "coords", el);
+  Test.separate();
+  testDOMStringReflect("charset", "charset", el);
+  Test.separate();
+  testDOMStringReflect("name", "name", el);
+  Test.separate();
+  testDOMStringReflect("rev", "rev", el);
+  Test.separate();
+  testDOMStringReflect("shape", "shape", el);
+} catch (e) {
+  Test.fail("Exception was thrown.");
+}
+Test.finish();
+</script>

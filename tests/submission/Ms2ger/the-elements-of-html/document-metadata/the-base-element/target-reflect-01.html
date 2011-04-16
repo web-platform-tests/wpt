@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<title>Base @target: invalid value reflecting</title>
+<link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
+<link rel="help" href="http://www.whatwg.org/html5/#dom-base-target">
+<link rel="help" href="http://www.whatwg.org/html5/#the-base-element">
+<base target="_aaa">
+<body>
+<script src="../../../support/test.js"></script>
+<script>
+try {
+  var base = document.getElementsByTagName("base")[0];
+  Test.is(base.target, "_aaa");
+  Test.is(base.getAttribute("target"), "_aaa");
+  
+  Test.separate();
+  base.target = "_bbb";
+  Test.is(base.target, "_bbb");
+  Test.is(base.getAttribute("target"), "_bbb");
+  
+  Test.separate();
+  base.setAttribute("target", "_ccc");
+  Test.is(base.target, "_ccc");
+  Test.is(base.getAttribute("target"), "_ccc");
+} catch (e) {
+  Test.fail("Exception was thrown.");
+}
+Test.finish();
+</script>

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<title>getElementsByName and foreign namespaces</title>
+<link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
+<link rel="help" href="http://www.whatwg.org/html5/#dom-document-getelementsbyname">
+<body>
+<script src="../../support/test.js"></script>
+<div id="test">
+<p name="math"><math name="math">
+<mi>a</mi>
+<mo>+</mo>
+<mi>b</mi>
+</math>
+<p name="svg"><svg width="300" height="100" name="svg">
+<rect width="300" height="100" fill="rgb(0,0,255)"/>
+</svg>
+</div>
+<script>
+try {
+  var ps = document.getElementById("test")
+                   .getElementsByTagName("p");
+  Test.is(document.getElementsByName("math").length, 1);
+  Test.is(document.getElementsByName("math")[0], ps[0]);
+  Test.is(document.getElementsByName("svg").length, 1);
+  Test.is(document.getElementsByName("svg")[0], ps[1]);
+} catch (e) {
+  Test.fail("Exception was thrown.");
+}
+Test.finish();
+</script>

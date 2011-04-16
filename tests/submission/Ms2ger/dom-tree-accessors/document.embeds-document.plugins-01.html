@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<title>document.embeds and document.plugins</title>
+<link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
+<link rel="help" href="http://www.whatwg.org/html5/#dom-document-embeds">
+<link rel="help" href="http://www.whatwg.org/html5/#dom-document-plugins">
+<body>
+<script src="../support/test.js"></script>
+<script>
+try {
+  Test.is(document.embeds, document.plugins);
+  Test.is(document.embeds.length, 0);
+  Test.is(document.plugins.length, 0);
+
+  Test.separate();
+  document.body.appendChild(document.createElement("embed"));
+  Test.is(document.embeds, document.plugins);
+  Test.is(document.embeds.length, 1);
+  Test.is(document.plugins.length, 1);
+  Test.is(document.embeds[0], document.getElementsByTagName("embed")[0]);
+  Test.is(document.plugins[0], document.getElementsByTagName("embed")[0]);
+} catch (e) {
+  Test.fail("Exception was thrown.");
+}
+Test.finish();
+</script>

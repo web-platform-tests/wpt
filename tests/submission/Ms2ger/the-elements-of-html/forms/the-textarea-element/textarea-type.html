@@ -1,0 +1,19 @@
+<!DOCTYPE HTML>
+<title>The type IDL attribute</title>
+<link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
+<link rel="help" href="http://www.whatwg.org/html5/#dom-textarea-type">
+<body>
+<script src="../../../support/test.js"></script>
+<div id="test">
+<textarea></textarea>  
+</div>
+<script>
+try {
+  Test.is(document.getElementById("test")
+                  .getElementsByTagName("textarea")[0].type,
+          "textarea");
+} catch (e) {
+  Test.fail("Exception was thrown.");
+}
+Test.finish();
+</script>

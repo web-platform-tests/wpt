@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<title>HTMLHeadingElement: obsolete attribute reflecting</title>
+<link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
+<link rel="help" href="http://www.whatwg.org/html5/#dom-hx-align">
+<link rel="help" href="http://dev.w3.org/2006/webapi/WebIDL/#es-DOMString">
+<link rel="help" href="http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-262.pdf#page=57">
+<body>
+<script src="../../../support/test.js"></script>
+<script src="../../../support/testReflect.js"></script>
+<script>
+try {
+  var el = document.createElement("h1");
+  testDOMStringReflect("align", "align", el);
+
+  Test.separate();
+  el = document.createElement("h2");
+  testDOMStringReflect("align", "align", el);
+
+  Test.separate();
+  el = document.createElement("h3");
+  testDOMStringReflect("align", "align", el);
+
+  Test.separate();
+  el = document.createElement("h4");
+  testDOMStringReflect("align", "align", el);
+
+  Test.separate();
+  el = document.createElement("h5");
+  testDOMStringReflect("align", "align", el);
+
+  Test.separate();
+  el = document.createElement("h6");
+  testDOMStringReflect("align", "align", el);
+
+  Test.separate();
+  el = document.createElement("h7");
+  el.align = "left";
+  Test.is(el.hasAttribute("align"), false);
+} catch (e) {
+  Test.fail("Exception was thrown.");
+}
+Test.finish();
+</script>

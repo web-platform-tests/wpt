@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<title>document.all: willfull violations</title>
+<link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
+<link rel="help" href="http://www.whatwg.org/html5/#dom-document-all">
+<body>
+<script src="../../../support/test.js"></script>
+<script>
+"use strict";
+Test.run([function() {
+  Test.is(Boolean(document.all), false);
+  Test.is(document.all == undefined, true,
+    "(document.all == undefined) isn't true");
+  Test.is(document.all != undefined, false,
+    "(document.all != undefined) isn't false");
+  Test.is(document.all === undefined, false,
+    "(document.all === undefined) isn't false");
+  Test.is(document.all !== undefined, true,
+    "(document.all !== undefined) isn't true");
+  Test.is(typeof document.all, "undefined");
+  Test.is("all" in document, true, "\"all\" in document returns false");
+}]);
+</script>

@@ -2,21 +2,19 @@
 <title>document.head</title>
 <link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
 <link rel="help" href="http://www.whatwg.org/html5/#dom-document-head">
-<body>
-<script src="../support/test.js"></script>
-<script src="../support/test-utils.js"></script>
+<link rel="stylesheet" href="../../../resources/testharness.css">
+<script src="../../../resources/testharness.js"></script>
+<div id="log"></div>
 <script>
-try {
+var HTML = "http://www.w3.org/1999/xhtml";
+test(function() {
   var head = document.getElementsByTagName("head")[0];
-  Test.is(document.head, head);
-  var head2 = document.createElementNS(gNS.HTML, "blah:head");
+  assert_equals(document.head, head);
+  var head2 = document.createElementNS(HTML, "blah:head");
   document.documentElement.insertBefore(head2, head);
-  Test.is(document.head, head2);
+  assert_equals(document.head, head2);
   var head3 = document.createElementNS("http://www.example.org/", "blah:head");
   document.documentElement.insertBefore(head3, head2);
-  Test.is(document.head, head2);
-} catch (e) {
-  Test.fail("Exception was thrown.");
-}
-Test.finish();
+  assert_equals(document.head, head2);
+});
 </script>

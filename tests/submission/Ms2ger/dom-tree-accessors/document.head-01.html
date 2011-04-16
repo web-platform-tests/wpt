@@ -2,23 +2,21 @@
 <title>document.head</title>
 <link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
 <link rel="help" href="http://www.whatwg.org/html5/#dom-document-head">
-<body>
-<script src="../support/test.js"></script>
+<link rel="stylesheet" href="../../../resources/testharness.css">
+<script src="../../../resources/testharness.js"></script>
+<div id="log"></div>
 <script>
-try {
+test(function() {
   var head = document.getElementsByTagName("head")[0];
-  Test.is(document.head, head);
+  assert_equals(document.head, head);
   document.head = "";
-  Test.is(document.head, head);
+  assert_equals(document.head, head);
   document.head = document.createElement("head");
-  Test.is(document.head, head);
+  assert_equals(document.head, head);
   document.documentElement.appendChild(document.createElement("head"));
-  Test.is(document.head, head);
+  assert_equals(document.head, head);
   var head2 = document.createElement("head");
   document.documentElement.insertBefore(head2, head);
-  Test.is(document.head, head2);
-} catch (e) {
-  Test.fail("Exception was thrown.");
-}
-Test.finish();
+  assert_equals(document.head, head2);
+});
 </script>

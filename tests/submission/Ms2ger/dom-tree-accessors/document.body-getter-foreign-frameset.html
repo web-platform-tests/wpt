@@ -2,18 +2,15 @@
 <title>document.body and a frameset in a foreign namespace</title>
 <link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
 <link rel="help" href="http://www.whatwg.org/html5/#dom-document-body">
+<link rel="stylesheet" href="../../../resources/testharness.css">
+<script src="../../../resources/testharness.js"></script>
 <script>
 document.documentElement.appendChild(
   document.createElementNS("http://example.org/test", "frameset"));
 </script>
-<body>
-<script src="../support/test.js"></script>
+<div id="log"></div>
 <script>
-try {
-  Test.is(document.body, document.getElementsByTagName("body")[0]);
-} catch (e) {
-  Test.fail("Exception was thrown.");
-}
-Test.finish();
+test(function() {
+  assert_equals(document.body, document.getElementsByTagName("body")[0]);
+});
 </script>
-

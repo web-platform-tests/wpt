@@ -2,11 +2,12 @@
 <title>document.title and White_Space characters</title>
 <link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
 <link rel="help" href="http://www.whatwg.org/html5/#document.title">
+<link rel="stylesheet" href="../../../resources/testharness.css">
 <meta name="assert" content="Only HTML white space characters should be normalised.">
-<body>
-<script src="../support/test.js"></script>
+<script src="../../../resources/testharness.js"></script>
+<div id="log"></div>
 <script>
-try {
+test(function() {
   var White_Space = [
     "\u000B",
     "\u0085",
@@ -32,11 +33,8 @@ try {
   for (var i = 0, il = White_Space.length; i < il; ++i) {
     document.title = "a" + White_Space[i] + White_Space[i] + "b" +
       White_Space[i] + "c" + i;
-    Test.is(document.title, "a" + White_Space[i] + White_Space[i] + "b" +
+    assert_equals(document.title, "a" + White_Space[i] + White_Space[i] + "b" +
       White_Space[i] + "c" + i);
   }
-} catch (e) {
-  Test.fail("Exception was thrown.");
-}
-Test.finish();
+});
 </script>

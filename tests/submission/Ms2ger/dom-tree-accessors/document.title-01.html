@@ -2,33 +2,31 @@
 <title>document.title with head blown away</title>
 <link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
 <link rel="help" href="http://www.whatwg.org/html5/#document.title">
-<body>
-<script src="../support/test.js"></script>
+<link rel="stylesheet" href="../../../resources/testharness.css">
+<script src="../../../resources/testharness.js"></script>
+<div id="log"></div>
 <script>
-try {
-  Test.is(document.title, "document.title with head blown away");
-
-  Test.separate();
+test(function() {
+  assert_equals(document.title, "document.title with head blown away");
+})
+test(function() {
   var head = document.getElementsByTagName("head")[0];
-  Test.ok(head, "Head gone?!")
+  assert_true(!!head, "Head gone?!")
   head.parentNode.removeChild(head);
-  Test.ok(!document.getElementsByTagName("head")[0], "Head still there?!")
+  assert_false(!!document.getElementsByTagName("head")[0], "Head still there?!")
   document.title = "FAIL";
-  Test.is(document.title, "");
-
-  Test.separate();
+  assert_equals(document.title, "");
+})
+test(function() {
   var title2 = document.createElement("title");
   title2.appendChild(document.createTextNode("PASS"));
   document.body.appendChild(title2);
-  Test.is(document.title, "PASS");
-
-  Test.separate();
+  assert_equals(document.title, "PASS");
+})
+test(function() {
   var title3 = document.createElement("title");
   title3.appendChild(document.createTextNode("PASS2"));
   document.documentElement.insertBefore(title3, document.body);
-  Test.is(document.title, "PASS2");
-} catch (e) {
-  Test.fail("Exception was thrown.");
-}
-Test.finish();
+  assert_equals(document.title, "PASS2");
+})
 </script>

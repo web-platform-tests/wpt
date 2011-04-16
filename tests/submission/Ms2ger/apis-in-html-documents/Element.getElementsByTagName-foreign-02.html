@@ -3,9 +3,9 @@
 <link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
 <link rel="help" href="http://www.whatwg.org/html5/#apis-in-html-documents">
 <link rel="help" href="http://www.whatwg.org/html5/#parsing">
-<body>
-<script src="../support/test.js"></script>
-<script src="../support/test-utils.js"></script>
+<link rel="stylesheet" href="../../../resources/testharness.css">
+<script src="../../../resources/testharness.js"></script>
+<div id="log"></div>
 <div id="test">
 <svg id="outer">
 <foreignObject>
@@ -15,14 +15,15 @@
 </svg>
 </div>
 <script>
+var HTML = "http://www.w3.org/1999/xhtml", SVG = "http://www.w3.org/2000/svg";
 var wrapper = document.getElementById("outer");
-Test.run([function() {
-  Test.is(wrapper.getElementsByTagName("FONT").length, 1);
-  Test.is(wrapper.getElementsByTagName("FONT")[0].namespaceURI, gNS.HTML);
-},
-function() {
-  Test.is(wrapper.getElementsByTagName("font").length, 2);
-  Test.is(wrapper.getElementsByTagName("font")[0].namespaceURI, gNS.HTML);
-  Test.is(wrapper.getElementsByTagName("font")[1].namespaceURI, gNS.SVG);
-}]);
+test(function() {
+  assert_equals(wrapper.getElementsByTagName("FONT").length, 1);
+  assert_equals(wrapper.getElementsByTagName("FONT")[0].namespaceURI, HTML);
+}, "Upper-case font")
+test(function() {
+  assert_equals(wrapper.getElementsByTagName("font").length, 2);
+  assert_equals(wrapper.getElementsByTagName("font")[0].namespaceURI, HTML);
+  assert_equals(wrapper.getElementsByTagName("font")[1].namespaceURI, SVG);
+}, "Lower-case font")
 </script>

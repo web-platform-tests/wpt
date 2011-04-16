@@ -12,14 +12,13 @@
 </div>
 <script>
 var HTML = "http://www.w3.org/1999/xhtml", SVG = "http://www.w3.org/2000/svg";
-var wrapper = document.getElementById("test");
 test(function() {
-  assert_equals(wrapper.getElementsByTagName("FONT").length, 1);
-  assert_equals(wrapper.getElementsByTagName("FONT")[0].namespaceURI, HTML);
+  assert_equals(document.getElementsByTagName("FONT").length, 1);
+  assert_equals(document.getElementsByTagName("FONT")[0].namespaceURI, HTML);
 }, "Upper-case font")
 test(function() {
-  assert_equals(wrapper.getElementsByTagName("font").length, 2);
-  assert_equals(wrapper.getElementsByTagName("font")[0].namespaceURI, HTML);
-  assert_equals(wrapper.getElementsByTagName("font")[1].namespaceURI, SVG);
+  assert_equals(document.getElementsByTagName("font").length, 2);
+  assert_equals(document.getElementsByTagName("font")[0].namespaceURI, HTML);
+  assert_equals(document.getElementsByTagName("font")[1].namespaceURI, SVG);
 }, "Lower-case font")
 </script>

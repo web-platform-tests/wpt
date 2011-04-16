@@ -352,8 +352,13 @@ policies and contribution forms [3].
             return "-0";
         }
         // Special-case Node objects, since those come up a lot in my tests.  I
-        // ignore namespaces.
-        if (typeof val == "object" && val instanceof Node)
+        // ignore namespaces.  I use duck-typing instead of instanceof, because
+        // instanceof seems not to work reliably in all browsers.
+        if (typeof val == "object"
+        && "nodeType" in val
+        && "nodeName" in val
+        && "nodeValue" in val
+        && "childNodes" in val)
         {
             switch (val.nodeType)
             {
@@ -371,7 +376,7 @@ policies and contribution forms [3].
                 {
                     ret += " " + val.attributes[i].name + "=" + format_value(val.attributes[i].value);
                 }
-                ret += ">";
+                ret += "> with " + val.childNodes.length + (val.childNodes.length == 1 ? " child" : " children");
                 return ret;
             case Node.TEXT_NODE:
                 return "Text node with data " + format_value(val.data) + " and parent " + format_value(val.parentNode);
@@ -380,11 +385,11 @@ policies and contribution forms [3].
             case Node.COMMENT_NODE:
                 return "Comment node with data " + format_value(val.data);
             case Node.DOCUMENT_NODE:
-                return "Document node";
+                return "Document node with " + val.childNodes.length + (val.childNodes.length == 1 ? " child" : " children");
             case Node.DOCUMENT_TYPE_NODE:
                 return "DocumentType node";
             case Node.DOCUMENT_FRAGMENT_NODE:
-                return "DocumentFragment node";
+                return "DocumentFragment node with " + val.childNodes.length + (val.childNodes.length == 1 ? " child" : " children");
             default:
                 return "Node object of unknown type";
             }
@@ -440,6 +445,7 @@ policies and contribution forms [3].
             return typeof val + ' "' + val + '"';
         }
     }
+    expose(format_value, "format_value");
 
     /*
      * Assertions
@@ -763,6 +769,13 @@ policies and contribution forms [3].
             }
             this.status = this.FAIL;
             this.message = e.message;
+            if (typeof e.stack != "undefined" && typeof e.message == "string") {
+                //Try to make it more informative for some exceptions, at least
+                //in Gecko and WebKit.  This results in a stack dump instead of
+                //just errors like "Cannot read property 'parentNode' of null"
+                //or "root is null".  Makes it a lot longer, of course.
+                this.message += "(stack: " + e.stack + ")";
+            }
             this.done();
             if (debug && e.constructor !== AssertionError) {
                 throw e;
@@ -1189,12 +1202,15 @@ policies and contribution forms [3].
                                      return;
                                  }
                                  var result_class = element.parentNode.getAttribute("class");
-                                 var checked = element.checked;
-                                 forEach(document.querySelectorAll("table#results > tbody > tr > td."+result_class),
-                                         function(cell)
-                                         {
-                                             cell.parentNode.style.display = checked ? "" : "None";
-                                         });
+                                 var style_element = document.querySelector("style#hide-" + result_class);
+                                 if (!style_element && !element.checked) {
+                                     style_element = document.createElement("style");
+                                     style_element.id = "hide-" + result_class;
+                                     style_element.innerHTML = "table#results > tbody > tr."+result_class+"{display:none}";
+                                     document.body.appendChild(style_element);
+                                 } else if (style_element && element.checked) {
+                                     style_element.parentNode.removeChild(style_element);
+                                 }
                              });
                 });
 
@@ -1210,8 +1226,8 @@ policies and contribution forms [3].
                         function(vars) {
                             var rv = map(vars.tests, function(test) {
                                              var status = status_text[test.status];
-                                             return  ["tr", {},
-                                                      ["td", {"class":status_class(status)}, status],
+                                             return  ["tr", {"class":status_class(status)},
+                                                      ["td", {}, status],
                                                       ["td", {}, test.name],
                                                       ["td", {}, test.message ? test.message : " "]
                                                      ];
@@ -1529,3 +1545,4 @@ policies and contribution forms [3].
     }
 
 })();
+// vim: set expandtab shiftwidth=4 tabstop=4:

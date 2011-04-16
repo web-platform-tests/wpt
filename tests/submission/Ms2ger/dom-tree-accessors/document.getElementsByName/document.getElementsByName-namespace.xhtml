@@ -3,9 +3,11 @@
 <title>getElementsByName and foreign namespaces</title>
 <link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com"/>
 <link rel="help" href="http://www.whatwg.org/html5/#dom-document-getelementsbyname"/>
+<link rel="stylesheet" href="../../../../resources/testharness.css"/>
+<script src="../../../../resources/testharness.js"></script>
 </head>
 <body>
-<script src="../../support/test.js"></script>
+<div id="log"></div>
 <div id="test">
 <p name="math"><math name="math" xmlns="http://www.w3.org/1998/Math/MathML">
 <mi>a</mi>
@@ -17,17 +19,14 @@
 </svg></p>
 </div>
 <script>
-try {
+test(function() {
   var ps = document.getElementById("test")
                    .getElementsByTagName("p");
-  Test.is(document.getElementsByName("math").length, 1);
-  Test.is(document.getElementsByName("math")[0], ps[0]);
-  Test.is(document.getElementsByName("svg").length, 1);
-  Test.is(document.getElementsByName("svg")[0], ps[1]);
-} catch (e) {
-  Test.fail("Exception was thrown.");
-}
-Test.finish();
+  assert_equals(document.getElementsByName("math").length, 1);
+  assert_equals(document.getElementsByName("math")[0], ps[0]);
+  assert_equals(document.getElementsByName("svg").length, 1);
+  assert_equals(document.getElementsByName("svg")[0], ps[1]);
+});
 </script>
 </body>
 </html>

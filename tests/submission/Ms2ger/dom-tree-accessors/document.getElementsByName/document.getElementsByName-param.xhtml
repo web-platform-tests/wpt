@@ -3,9 +3,11 @@
 <title>getElementsByName and the param element</title>
 <link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com"/>
 <link rel="help" href="http://www.whatwg.org/html5/#dom-document-getelementsbyname"/>
+<link rel="stylesheet" href="../../../../resources/testharness.css"/>
+<script src="../../../../resources/testharness.js"></script>
 </head>
 <body>
-<script src="../../support/test.js"></script>
+<div id="log"></div>
 <div id="test">
 <param name="test1"/>
 <object>
@@ -13,17 +15,14 @@
 </object>
 </div>
 <script>
-try {
-  Test.is(document.getElementsByName("test1").length, 1);
-  Test.is(document.getElementsByName("test1")[0],
-          document.getElementsByTagName("param")[0]);
-  Test.is(document.getElementsByName("test2").length, 1);
-  Test.is(document.getElementsByName("test2")[0],
-          document.getElementsByTagName("param")[1]);
-} catch (e) {
-  Test.fail("Exception was thrown.");
-}
-Test.finish();
+test(function() {
+  assert_equals(document.getElementsByName("test1").length, 1);
+  assert_equals(document.getElementsByName("test1")[0],
+                document.getElementsByTagName("param")[0]);
+  assert_equals(document.getElementsByName("test2").length, 1);
+  assert_equals(document.getElementsByName("test2")[0],
+                document.getElementsByTagName("param")[1]);
+});
 </script>
 </body>
 </html>

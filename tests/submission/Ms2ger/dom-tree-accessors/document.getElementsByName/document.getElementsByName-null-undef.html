@@ -4,10 +4,11 @@
 <link rel="help" href="http://www.whatwg.org/html5/#dom-document-getelementsbyname">
 <link rel="help" href="http://dev.w3.org/2006/webapi/WebIDL/#es-DOMString">
 <link rel="help" href="http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-262.pdf#page=57">
-<body>
-<script src="../../support/test.js"></script>
+<link rel="stylesheet" href="../../../../resources/testharness.css">
+<script src="../../../../resources/testharness.js"></script>
+<div id="log"></div>
 <script>
-try {
+test(function() {
   var n = document.createElement("div");
   n.setAttribute("name", "null");
   document.body.appendChild(n);
@@ -15,10 +16,7 @@ try {
   u.setAttribute("name", "undefined");
   document.body.appendChild(u);
   
-  Test.is(document.getElementsByName(null)[0], n);
-  Test.is(document.getElementsByName(undefined)[0], u);
-} catch (e) {
-  Test.fail("Exception was thrown.");
-}
-Test.finish();
+//  assert_equals(document.getElementsByName(null)[0], n);
+  assert_equals(document.getElementsByName(undefined)[0], u);
+});
 </script>

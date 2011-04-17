@@ -7,6 +7,7 @@ dir general
 dir global-attributes
 dir obsolete-features
 dir parsing
+dir rendering
 dir resource-metadata-management
 dir support
 dir the-elements-of-html

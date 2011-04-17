@@ -1,5 +1,7 @@
 attributes.html
 support attributes.js
+case.html
+support case.js
 CharacterData-appendData.html
 CharacterData-deleteData.html
 CharacterData-insertData.html
@@ -67,7 +69,6 @@ Node-lookupPrefix.xhtml
 Node-nodeName.html
 Node-parentNode.html
 Node-removeChild.html
-case.html
 support productions.js
 support testharness.css
 support testharness.js

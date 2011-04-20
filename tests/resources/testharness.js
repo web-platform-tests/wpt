@@ -1294,7 +1294,6 @@ policies and contribution forms [3].
                               }), function(x) {return x !== null;});
         }
     }
-    expose(substitute, "template.substitute");
 
     function substitute_single(template, substitutions)
     {
@@ -1424,7 +1423,6 @@ policies and contribution forms [3].
     {
         return make_dom(substitute(template, substitutions));
     }
-    expose(render, "template.render");
 
     /*
      * Utility funcions

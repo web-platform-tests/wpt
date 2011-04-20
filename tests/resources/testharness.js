@@ -454,7 +454,7 @@ policies and contribution forms [3].
     function assert_true(actual, description)
     {
         var message = make_message("assert_true", description,
-                                   "expected true got ${actual}", {actual:String(actual)});
+                                   "expected true got ${actual}", {actual:actual});
         assert(actual === true, message);
     };
     expose(assert_true, "assert_true");
@@ -462,7 +462,7 @@ policies and contribution forms [3].
     function assert_false(actual, description)
     {
         var message = make_message("assert_false", description,
-                                   "expected false got ${actual}", {actual:String(actual)});
+                                   "expected false got ${actual}", {actual:actual});
         assert(actual === false, message);
     };
     expose(assert_false, "assert_false");
@@ -475,7 +475,7 @@ policies and contribution forms [3].
           */
          var message = make_message("assert_equals", description,
                                     "expected ${expected} but got ${actual}",
-                                    {expected:format_value(expected), actual:format_value(actual)});
+                                    {expected:expected, actual:actual});
          if (expected !== expected)
          {
              //NaN case
@@ -496,6 +496,7 @@ policies and contribution forms [3].
          {
              stack.push(actual);
 
+             var p;
              for (p in actual)
              {
                  var message = make_message(
@@ -567,7 +568,7 @@ policies and contribution forms [3].
          */
         var message = make_message("assert_regexp_match", description,
                                    "expected ${expected} but got ${actual}",
-                                   {expected:String(expected), actual:String(actual)});
+                                   {expected:expected, actual:actual});
         assert(expected.test(actual), message);
     }
     expose(assert_regexp_match, "assert_regexp_match");
@@ -645,7 +646,7 @@ policies and contribution forms [3].
         {
             func.call(this);
             assert(false, make_message("assert_throws", description,
-                                      "${func} did not throw", {func:String(func)}));
+                                      "${func} did not throw", {func:func}));
         }
         catch(e)
         {
@@ -654,52 +655,41 @@ policies and contribution forms [3].
             }
             if (typeof code_or_object === "string")
             {
+                var actual_name = "";
+                if ("code" in e) {
+                    for (var p in DOMException)
+                    {
+                        if (e.code === DOMException[p])
+                        {
+                            actual_name = p;
+                            break;
+                        }
+                    }
+                }
+                var message = "${func} threw with ";
+                message += actual_name ? "code " + actual_name + " (${actual_number})" :
+                    "error number ${actual_number}";
+                message += " expected " + code_or_object;
+                message += e[code_or_object] ? " (${expected_number})" : "";
                 assert(e[code_or_object] !== undefined &&
                        e.code === e[code_or_object],
-                       make_message("assert_throws", description,
-                           [["{text}", "${func} threw with"] ,
-                            function()
-                            {
-                                var actual_name;
-                                for (var p in DOMException)
-                                {
-                                    if (e.code === DOMException[p])
-                                    {
-                                        actual_name = p;
-                                        break;
-                                    }
-                                }
-                                if (actual_name)
-                                {
-                                    return ["{text}", " code " + actual_name + " (${actual_number})"];
-                                }
-                                else
-                                {
-                                    return ["{text}", " error number ${actual_number}"];
-                                }
-                            },
-                            ["{text}"," expected ${expected}"],
-                            function()
-                            {
-                                return e[code_or_object] ?
-                                    ["{text}", " (${expected_number})"] : null;
-                            }
-                           ],
-                                    {func:String(func), actual_number:e.code,
-                                     expected:String(code_or_object),
-                                     expected_number:e[code_or_object]}));
+                       make_message("assert_throws", description, message,
+                           {func:func, actual_number:e.code,
+                            actual_name:actual_name,
+                            expected:code_or_object,
+                            expected_number:e[code_or_object]}));
                 assert(e instanceof DOMException,
-                      make_message("assert_throws", description,
-                                   "thrown exception ${exception} was not a DOMException",
-                                  {exception:String(e)}));
+                make_message("assert_throws", description,
+                             "thrown exception ${exception} was not a DOMException",
+                             {exception:e}));
             }
             else
             {
                 assert(e instanceof Object && "name" in e && e.name == code_or_object.name,
                        make_message("assert_throws", description,
                            "${func} threw ${actual} (${actual_name}) expected ${expected} (${expected_name})",
-                                    {func:String(func), actual:String(e), actual_name:e.name,
-                                     expected:String(code_or_object),
+                                    {func:func, actual:e, actual_name:e.name,
+                                     expected:code_or_object,
                                      expected_name:code_or_object.name}));
             }
         }
@@ -1454,18 +1444,15 @@ policies and contribution forms [3].
 
     function make_message(function_name, description, error, substitutions)
     {
-        var message = substitute([["span", {"class":"assert"}, "${function_name}: "],
-                                  function()
-                                  {
-                                      if (description) {
-                                          return ["span", {"class":"description"}, description];
-                                      } else {
-                                          return null;
-                                      }
-                                  },
-                                  ["div", {"class":"error"}, error]
-                                 ], merge({function_name:function_name},
-                                         substitutions));
+        for (var p in substitutions) {
+            if (substitutions.hasOwnProperty(p)) {
+                substitutions[p] = format_value(substitutions[p]);
+            }
+        }
+        var message = substitute(["{text}", "${function_name}: ${description}" + error],
+                                  merge({function_name:function_name,
+                                         description:(description?description + " ":"")},
+                                        substitutions));
 
         return message;
     }

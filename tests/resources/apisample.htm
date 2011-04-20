@@ -65,6 +65,20 @@
 
     test(function()
     {
+        var a = document.createElement("a")
+        var b = document.createElement("b")
+        assert_throws("NOT_FOUND_ERR", function(){a.removeChild(b)});
+    }, "Test throw DOM exception")
+
+    test(function()
+    {
+        var a = document.createTextNode("a")
+        var b = document.createElement("b")
+        assert_throws("NOT_FOUND_ERR", function(){a.appendChild(b)});
+    }, "Test throw DOM exception expected to fail")
+
+    test(function()
+    {
         var e = {code:0, name:"TEST_ERR", TEST_ERR:0}
         assert_throws("TEST_ERR", function() {throw e});
     }, "Test assert_throws with non-DOM-exception expected to Fail");

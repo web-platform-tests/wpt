@@ -204,7 +204,11 @@ policies and contribution forms [3].
  *   asserts that /actual/ is strictly false
  *
  * assert_equals(actual, expected, description)
- *   asserts that /actual/ is strictly equal to /expected/
+ *   asserts that /actual/ is the same value as /expected/
+ *
+ * assert_not_equals(actual, expected, description)
+ *   asserts that /actual/ is a different value to /expected/. Yes, this means
+ *   that "expected" is a misnomer
  *
  * assert_array_equals(actual, expected, description)
  *   asserts that /actual/ and /expected/ have the same length and the value of
@@ -467,27 +471,50 @@ policies and contribution forms [3].
     };
     expose(assert_false, "assert_false");
 
+    function same_value(x, y) {
+        if (y !== y)
+        {
+            //NaN case
+            return y !== y;
+        }
+        else if (x === 0 && y === 0) {
+            //Distinguish +0 and -0
+            return 1/x === 1/y;
+        }
+        else
+        {
+            //typical case
+            return x === y;
+        }
+    }
+
     function assert_equals(actual, expected, description)
     {
          /*
           * Test if two primitives are equal or two objects
           * are the same object
           */
-         var message = make_message("assert_equals", description,
+        var message = make_message("assert_equals", description,
                                     "expected ${expected} but got ${actual}",
                                     {expected:expected, actual:actual});
-         if (expected !== expected)
-         {
-             //NaN case
-             assert(actual !== actual, message);
-         }
-         else
-         {
-             //typical case
-             assert(actual === expected, message);
-         }
+
+        assert(same_value(actual, expected), message);
     };
     expose(assert_equals, "assert_equals");
+
+    function assert_not_equals(actual, expected, description)
+    {
+         /*
+          * Test if two primitives are unequal or two objects
+          * are different objects
+          */
+         var message = make_message("assert_not_equals", description,
+                                    "got disallowed value ${actual}",
+                                    {actual:actual});
+
+        assert(!same_value(actual, expected), message);
+    };
+    expose(assert_not_equals, "assert_not_equals");
 
     function assert_object_equals(actual, expected, description)
     {

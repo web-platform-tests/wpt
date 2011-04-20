@@ -34,7 +34,22 @@
         assert_equals(document.body, document.getElementsByTagName("body")[0]);
     }
     test(bodyElement, "document.body should be the first body element in the document");
-    
+
+    test(function() {
+        assert_equals(1,1);
+        assert_equals(NaN, NaN, "NaN case");
+        assert_equals(0, 0, "Zero case");
+    }, "assert_equals tests")
+
+    test(function() {
+        assert_equals(-0, 0, "Zero case");
+    }, "assert_equals tests expected to fail")
+
+    test(function() {
+        assert_not_equals({}, {}, "object case");
+        assert_not_equals(-0, 0, "Zero case");
+    }, "assert_not_equals tests")
+
     function testAssertPass()
     {
         assert_true(true);

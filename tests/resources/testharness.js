@@ -1449,12 +1449,11 @@ policies and contribution forms [3].
                 substitutions[p] = format_value(substitutions[p]);
             }
         }
-        var message = substitute(["{text}", "${function_name}: ${description}" + error],
-                                  merge({function_name:function_name,
-                                         description:(description?description + " ":"")},
-                                        substitutions));
-
-        return message;
+        var node_form = substitute(["{text}", "${function_name}: ${description}" + error],
+                                   merge({function_name:function_name,
+                                          description:(description?description + " ":"")},
+                                          substitutions));
+        return node_form.slice(1).join("");
     }
 
     function filter(array, callable, thisObj) {

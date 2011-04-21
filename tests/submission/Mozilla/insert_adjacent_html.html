@@ -1,0 +1,144 @@
+<!DOCTYPE HTML>
+<html>
+<!--
+https://bugzilla.mozilla.org/show_bug.cgi?id=613662
+-->
+<head>
+  <title>insertAdjacentHTML</title>
+  <script src="../../resources/testharness.js"></script>
+</head>
+<body>
+<a target="_blank" href="https://bugzilla.mozilla.org/show_bug.cgi?id=613662">Mozilla Bug 613662</a>
+<p id="display"></p><div id="content" style="display: none"></div><div id="content2" style="display: none"></div><pre id="test">
+<script>
+
+/** Test for Bug 613662 **/
+
+var script_ran = false;
+
+function testPositions(node) {
+  test(function() {
+    script_ran = false;
+    node.insertAdjacentHTML("beforeBegin", "\u003Cscript>script_ran = true;\u003C/script><i></i>");
+    assert_equals(node.previousSibling.localName, "i", "Should have had <i> as previous sibling");
+    assert_false(script_ran, "script should not have run");
+  }, "beforeBegin " + node)
+
+  test(function() {
+    script_ran = false;
+    node.insertAdjacentHTML("Afterbegin", "<b></b>\u003Cscript>script_ran = true;\u003C/script>");
+    assert_equals(node.firstChild.localName, "b", "Should have had <b> as first child");
+    assert_false(script_ran, "script should not have run");
+  }, "afterBegin " + node);
+
+  test(function() {
+    script_ran = false;
+    node.insertAdjacentHTML("BeforeEnd", "\u003Cscript>script_ran = true;\u003C/script><u></u>");
+    assert_equals(node.lastChild.localName, "u", "Should have had <u> as last child");
+    assert_false(script_ran, "script should not have run");
+  }, "BeforeEnd " + node)
+
+  test(function() {
+    script_ran = false;
+    node.insertAdjacentHTML("afterend", "<a></a>\u003Cscript>script_ran = true;\u003C/script>");
+    assert_equals(node.nextSibling.localName, "a", "Should have had <a> as next sibling");
+    assert_false(script_ran, "script should not have run");
+  }, "afterend " + node)
+}
+
+var content = document.getElementById("content");
+testPositions(content); // without next sibling
+testPositions(content); // test again when there's next sibling
+
+test(function() {
+  assert_throws("SYNTAX_ERR", function() {content.insertAdjacentHTML("bar", "foo")});
+});
+
+var parent = document.createElement("div");
+var child = document.createElement("div");
+
+test (function() {
+  assert_throws("NO_MODIFICATION_ALLOWED_ERR", function() {child.insertAdjacentHTML("Beforebegin", "foo")});
+});
+
+test(function() {
+  assert_throws("NO_MODIFICATION_ALLOWED_ERR", function() {child.insertAdjacentHTML("AfterEnd", "foo")})
+});
+
+
+test(function() {
+  child.insertAdjacentHTML("afterBegin", "foo"); // mustn't throw
+  child.insertAdjacentHTML("beforeend", "foo"); // mustn't throw
+
+  parent.appendChild(child);
+});
+
+testPositions(child); // node not in tree but has parent
+
+test(function() {
+  script_ran = false;
+  content.appendChild(parent); // must not run scripts
+  assert_false(script_ran, "script should not have run");  
+});
+
+test(function() {
+  assert_throws("NO_MODIFICATION_ALLOWED_ERR", function() {document.documentElement.insertAdjacentHTML("afterend", "<div></div>")});
+});
+
+var content2 = document.getElementById("content2");
+
+var events = [
+  [ "DOMNodeInserted", document.body ],
+  [ "DOMNodeInserted", document.body ],
+  [ "DOMSubtreeModified", null ],
+  [ "DOMNodeInserted", content2 ],
+  [ "DOMNodeInserted", content2 ],
+  [ "DOMSubtreeModified", null ],
+  [ "DOMNodeInserted", content2 ],
+  [ "DOMNodeInserted", content2 ],
+  [ "DOMSubtreeModified", null ],
+  [ "DOMNodeInserted", document.body ],
+  [ "DOMNodeInserted", document.body ],
+  [ "DOMSubtreeModified", null ],
+  [ "DOMNodeInserted", document.body ],
+  [ "DOMNodeInserted", document.body ],
+  [ "DOMSubtreeModified", null ],
+  [ "DOMNodeInserted", content2 ],
+  [ "DOMNodeInserted", content2 ],
+  [ "DOMSubtreeModified", null ],
+  [ "DOMNodeInserted", content2 ],
+  [ "DOMNodeInserted", content2 ],
+  [ "DOMSubtreeModified", null ],
+  [ "DOMNodeInserted", document.body ],
+  [ "DOMNodeInserted", document.body ],
+  [ "DOMSubtreeModified", null ]
+];
+
+function mutationEventListener(evt) {
+  var expected = events.shift();
+  test(function () {
+    assert_equals(evt.type, expected[0], "Unexpected mutation type");
+    assert_equals(evt.relatedNode, expected[1], "Unexpected related node");
+  }, "Mutation " + expected[0] + " " + expected[1]);
+}
+
+document.addEventListener("DOMSubtreeModified", mutationEventListener, false);
+document.addEventListener("DOMNodeInserted", mutationEventListener, false);
+document.addEventListener("DOMNodeRemoved", mutationEventListener, false);
+document.addEventListener("DOMNodeRemovedFromDocument", mutationEventListener, false);
+document.addEventListener("DOMNodeInsertedIntoDocument", mutationEventListener, false);
+document.addEventListener("DOMAttrModified", mutationEventListener, false);
+document.addEventListener("DOMCharacterDataModified", mutationEventListener, false);
+
+testPositions(content2); // without next sibling
+testPositions(content2); // test again when there's next sibling
+
+test(function() {
+  assert_equals(events.length, 0, "Not all expected events fired.");
+}, "All events fired");
+
+</script>
+</pre>
+<div id="log"></div>
+</body>
+</html>

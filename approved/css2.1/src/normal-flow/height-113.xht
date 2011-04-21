@@ -1,0 +1,20 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+ <head>
+  <title>CSS Test: Nested heights with percentages and borders</title>
+  <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch"/>
+  <link rel="alternate" href="http://www.hixie.ch/tests/adhoc/css/box/block/height/003.html" type="text/html"/>
+  <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#the-height-property" />
+  <style type="text/css">
+   .a { height: 10em; width: 10em; background: red; border: 5em white solid; }
+   .b { height: 100%; background: green; }
+  </style>
+ </head>
+ <body>
+  <p>There should be a green block below and no red on this page.</p>
+  <div class="a">
+   <div class="b">
+   </div>
+  </div>
+ </body>
+</html>

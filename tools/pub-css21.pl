@@ -71,9 +71,9 @@ push @dirs, 'contributors/gtalbot/submitted';
 # Pending XHTML conversion
 # Pending filename conversion
 
-push @dirs, 'contributors/hixie/submitted/css2.1/[bcfgmptuvz]*';
-push @dirs, 'contributors/hixie/submitted/css2.1/selector';
-push @dirs, 'contributors/hixie/submitted/css2.1/syndata';
+#push @dirs, 'contributors/hixie/submitted/css2.1/[bcfgmptuvz]*';
+#push @dirs, 'contributors/hixie/submitted/css2.1/selector';
+#push @dirs, 'contributors/hixie/submitted/css2.1/syndata';
 push @dirs, 'contributors/hixie/submitted/css2.1-reftests/*/reftest.list';
 
 ###############################################################################

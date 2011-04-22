@@ -63,7 +63,7 @@ push @dirs, 'contributors/gabriele/submitted/basic/sec5';
 # Gérard Talbot
 # all selftests
 
-push @dirs, 'contributors/gtalbot/submitted';
+# push @dirs, 'contributors/gtalbot/submitted'; moved to approved/
 
 ###############################################################################
 # Ian Hickson

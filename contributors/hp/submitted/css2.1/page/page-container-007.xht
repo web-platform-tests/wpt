@@ -10,24 +10,26 @@
    
    img {
       position: fixed;
-      top: 0;
-      right: -86px;
+      top: -27px;
+      right: -27px;
     }
     div {
       page-break-after: always;
-      padding-top: 50px;
+      padding-top: 75px;
     }
   
   </style>
  </head>
  <body>
    <div>
-     <img alt="FAIL: image failed to load" src="support/cssom.png"/>
+     <img alt="FAIL: image failed to load" src="support/page-container-007.png"/>
      <p>When displayed on paged media, this test produces two pages.</p>
-     <p>A portion of a logo containing six blue squares appears in the upper right corner of the page, but the characters 'CSS' are not visible on either this page or the second page.</p>
+     <p>A cat must appear in the upper right corner of each page and no red
+       must be visible.</p>
    </div>
    <div>
-     This text appears on page two.  The logo on this page looks exactly like the one on the first page.
+     This text appears on page two. The cat image must be exactly the same
+     as on page 1.
    </div>
  </body>
 </html>

@@ -10,37 +10,44 @@
   <style type="text/css">
     div {   page-break-inside: avoid;
         }
-    html {  border: medium solid purple;
+    html {  border: thick solid orange;
         }
     table, td, th {  
             border: thin solid black;
         }
     #borders-too {
             background: #ff9;
-            border: medium #700 solid;
+            padding: 1em;
+            border: medium purple solid;
         }
     .left-aligned {
             float: left;
+            border: solid thick maroon;
         }
     .right-aligned {
-        float: right;
+            float: right;
+            border: solid thick teal;
         }
     img {
         width: 25%;
-        border: medium green solid;
         vertical-align:baseline;
-		 }
+        }
     h2 {
         clear: both;
         }
     .full-width {
         width: 100%;
         }
+    body { color: gray; }
+		.instruct { color: black; }
    </style>
  </head>
  <body>
-  <div>The contents of this document include headings, "lorem ipsum" paragraphs with a background and a border, a list with bullets, two images, and a table. This test passes if all these items appear within a purple border which spans pages. 
-  </div>
+  <p class="instruct">The contents of this document include headings,
+	"lorem ipsum" paragraphs with a background and a border, a list with
+	bullets, two images, and a table. This test passes if all these items
+	appear within an orange border which spans the pages. 
+  </p>
   <h2>Lorem Ipsum Text</h2>
   <div id="borders-too">
 	  <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Phasellus 
@@ -100,11 +107,10 @@
   </div>
   <h2>Floated images</h2>
   <div>
-    <span>There is an image of a kitten to the left 
-      <img class="left-aligned" alt="FAIL: missing image" src="support/mergatroid.png" />and a couple 
-	of dogs to the right
-      <img class="right-aligned" alt="FAIL: missing image" src="support/bg.png" /> of this paragraph. Each image has a 
-	green border on all sides.
+    <span>There is an maroon-boxed cat to the left 
+      <img class="left-aligned" alt="FAIL: missing image" src="support/cat.png" />and
+      a teal-boxed cat to the right
+      <img class="right-aligned" alt="FAIL: missing image" src="support/cat.png" /> of this paragraph.
     </span>
   </div>
   <h2>Table</h2>

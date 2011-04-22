@@ -90,12 +90,12 @@ push @dirs, 'contributors/jameshopkins/submitted/css2.1/*';
 ###############################################################################
 # Hewlett-Packard
 
-push @dirs, 'contributors/hp/submitted/css2.1/page';
+# push @dirs, 'contributors/hp/submitted/css2.1/page';
 
 ###############################################################################
 # fantasai
 
-push @dirs, 'contributors/fantasai/submitted/css2.1';
+# push @dirs, 'contributors/fantasai/submitted/css2.1';
 push @dirs, 'contributors/fantasai/submitted/css2.1/backgrounds/reftest.list';
 
 ###############################################################################

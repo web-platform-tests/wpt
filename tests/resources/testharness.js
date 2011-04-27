@@ -475,7 +475,7 @@ policies and contribution forms [3].
         if (y !== y)
         {
             //NaN case
-            return y !== y;
+            return x !== x;
         }
         else if (x === 0 && y === 0) {
             //Distinguish +0 and -0

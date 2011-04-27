@@ -357,7 +357,9 @@ policies and contribution forms [3].
         }
         // Special-case Node objects, since those come up a lot in my tests.  I
         // ignore namespaces.  I use duck-typing instead of instanceof, because
-        // instanceof seems not to work reliably in all browsers.
+        // instanceof doesn't work if the node is from another window (like an
+        // iframe's contentWindow):
+        // http://www.w3.org/Bugs/Public/show_bug.cgi?id=12295
         if (typeof val == "object"
         && "nodeType" in val
         && "nodeName" in val
@@ -705,14 +707,10 @@ policies and contribution forms [3].
                             actual_name:actual_name,
                             expected:code_or_object,
                             expected_number:e[code_or_object]}));
-                assert(e instanceof DOMException,
-                make_message("assert_throws", description,
-                             "thrown exception ${exception} was not a DOMException",
-                             {exception:e}));
             }
             else
             {
-                assert(e instanceof Object && "name" in e && e.name == code_or_object.name,
+                assert(typeof e == "object" && "name" in e && e.name == code_or_object.name,
                        make_message("assert_throws", description,
                            "${func} threw ${actual} (${actual_name}) expected ${expected} (${expected_name})",
                                     {func:func, actual:e, actual_name:e.name,

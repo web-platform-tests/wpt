@@ -508,6 +508,7 @@ title>http://www.w3.org/2000/xmlns/</code>.
   const unsigned short <span title=dom-DOMException-URL_MISMATCH_ERR>URL_MISMATCH_ERR</span> = 21;
   const unsigned short <span title=dom-DOMException-QUOTA_EXCEEDED_ERR>QUOTA_EXCEEDED_ERR</span> = 22;
   const unsigned short <span title=dom-DOMException-TIMEOUT_ERR>TIMEOUT_ERR</span> = 23;
+  const unsigned short <span title=dom-DOMException-INVALID_NODE_TYPE_ERR>INVALID_NODE_TYPE_ERR</span> = 24;
   const unsigned short <span title=dom-DOMException-DATA_CLONE_ERR>DATA_CLONE_ERR</span> = 25;
   unsigned short <span title=dom-DOMException-code>code</span>;
   DOMString <span title=dom-DOMException-name>name</span>;
@@ -573,9 +574,12 @@ following:
  <!-- XHR2 -->
  <li><dfn title=dom-DOMException-TIMEOUT_ERR><code>TIMEOUT_ERR</code></dfn> (23):
  a timeout occurred;
+ <!-- DOM Range -->
+ <li><dfn title=dom-DOMException-INVALID_NODE_TYPE_ERR><code>INVALID_NODE_TYPE_ERR</code></dfn> (24):
+ the supplied node is invalid or has an invalid ancestor for this operation;
  <!-- HTML -->
  <li><dfn title=dom-DOMException-DATA_CLONE_ERR><code>DATA_CLONE_ERR</code></dfn> (25):
- the object can not be cloned;
+ the object can not be cloned.
 </ul>
 
 <p>The <dfn title=dom-DOMException-name><code>name</code></dfn> exception

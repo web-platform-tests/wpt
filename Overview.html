@@ -48,7 +48,7 @@
 <p><a href="http://www.w3.org/"><img alt="W3C" height="48" src="http://www.w3.org/Icons/w3c_home" width="72"></a></p>
 <!--end-logo-->
  <h1>DOM Core</h1>
- <h2 class="no-num no-toc" id="editor-s-draft-14-april-2011">Editor's Draft 14 April 2011</h2>
+ <h2 class="no-num no-toc" id="editor-s-draft-27-april-2011">Editor's Draft 27 April 2011</h2>
 
  <dl>
   <dt>This Version:
@@ -90,7 +90,7 @@ publications and the latest revision of this technical report can be found in
 the <a href="http://www.w3.org/TR/">W3C technical reports index</a> at
 http://www.w3.org/TR/.</i>
 
-<p>This is the 14 April 2011 Editor's Draft of DOM Core. Please send
+<p>This is the 27 April 2011 Editor's Draft of DOM Core. Please send
 comments to
 <a href="mailto:www-dom@w3.org?subject=%5BDOMCore%5D%20">www-dom@w3.org</a>
 (<a href="http://lists.w3.org/Archives/Public/www-dom/">archived</a>)
@@ -562,6 +562,7 @@ of the string, where such spaces are removed.
   const unsigned short <a href="#dom-domexception-url_mismatch_err" title="dom-DOMException-URL_MISMATCH_ERR">URL_MISMATCH_ERR</a> = 21;
   const unsigned short <a href="#dom-domexception-quota_exceeded_err" title="dom-DOMException-QUOTA_EXCEEDED_ERR">QUOTA_EXCEEDED_ERR</a> = 22;
   const unsigned short <a href="#dom-domexception-timeout_err" title="dom-DOMException-TIMEOUT_ERR">TIMEOUT_ERR</a> = 23;
+  const unsigned short <a href="#dom-domexception-invalid_node_type_err" title="dom-DOMException-INVALID_NODE_TYPE_ERR">INVALID_NODE_TYPE_ERR</a> = 24;
   const unsigned short <a href="#dom-domexception-data_clone_err" title="dom-DOMException-DATA_CLONE_ERR">DATA_CLONE_ERR</a> = 25;
   unsigned short <a href="#dom-domexception-code" title="dom-DOMException-code">code</a>;
   DOMString <a href="#dom-domexception-name" title="dom-DOMException-name">name</a>;
@@ -625,9 +626,12 @@ following:
  <!-- XHR2 -->
  <li><dfn id="dom-domexception-timeout_err" title="dom-DOMException-TIMEOUT_ERR"><code>TIMEOUT_ERR</code></dfn> (23):
  a timeout occurred;
+ <!-- DOM Range -->
+ <li><dfn id="dom-domexception-invalid_node_type_err" title="dom-DOMException-INVALID_NODE_TYPE_ERR"><code>INVALID_NODE_TYPE_ERR</code></dfn> (24):
+ the supplied node is invalid or has an invalid ancestor for this operation;
  <!-- HTML -->
  <li><dfn id="dom-domexception-data_clone_err" title="dom-DOMException-DATA_CLONE_ERR"><code>DATA_CLONE_ERR</code></dfn> (25):
- the object can not be cloned;
+ the object can not be cloned.
 </ul>
 
 <p>The <dfn id="dom-domexception-name" title="dom-DOMException-name"><code>name</code></dfn> exception

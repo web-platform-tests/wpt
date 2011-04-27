@@ -232,14 +232,15 @@ policies and contribution forms [3].
  * assert_readonly(object, property_name, description)
  *   assert that property property_name on object is readonly
  *
- * assert_throws(code_or_object, func, description)
- *   code_or_object - either a DOM error code as a string e.g. "NAMESPACE_ERR"
- *                    or an object that should be thrown
+ * assert_throws(code, func, description)
+ *   code - a DOMException/RangeException code as a string, e.g. "HIERARCHY_REQUEST_ERR"
  *   func - a function that should throw
  *
- *   assert that func throws either a DOMException with error code
- *   code_or_object (if code_or_object is a string) or that it throws an object
- *   code_or_object
+ *   assert that func throws a DOMException or RangeException (as appropriate)
+ *   with the given code.  If an object is passed for code instead of a string,
+ *   checks that the thrown exception has a property called "name" that matches
+ *   the property of code called "name".  Note, this function will probably be
+ *   rewritten sometime to make more sense.
  *
  * assert_unreached(description)
  *   asserts if called. Used to ensure that some codepath is *not* taken e.g.
@@ -669,7 +670,7 @@ policies and contribution forms [3].
     };
     expose(assert_readonly, "assert_readonly");
 
-    function assert_throws(code_or_object, func, description)
+    function assert_throws(code, func, description)
     {
         try
         {
@@ -682,40 +683,56 @@ policies and contribution forms [3].
             if (e instanceof AssertionError) {
                 throw(e);
             }
-            if (typeof code_or_object === "string")
+            if (typeof code === "object")
             {
-                var actual_name = "";
-                if ("code" in e) {
-                    for (var p in DOMException)
-                    {
-                        if (e.code === DOMException[p])
-                        {
-                            actual_name = p;
-                            break;
-                        }
-                    }
-                }
-                var message = "${func} threw with ";
-                message += actual_name ? "code " + actual_name + " (${actual_number})" :
-                    "error number ${actual_number}";
-                message += " expected " + code_or_object;
-                message += e[code_or_object] ? " (${expected_number})" : "";
-                assert(e[code_or_object] !== undefined &&
-                       e.code === e[code_or_object],
-                       make_message("assert_throws", description, message,
-                           {func:func, actual_number:e.code,
-                            actual_name:actual_name,
-                            expected:code_or_object,
-                            expected_number:e[code_or_object]}));
-            }
-            else
-            {
-                assert(typeof e == "object" && "name" in e && e.name == code_or_object.name,
+                assert(typeof e == "object" && "name" in e && e.name == code.name,
                        make_message("assert_throws", description,
                            "${func} threw ${actual} (${actual_name}) expected ${expected} (${expected_name})",
                                     {func:func, actual:e, actual_name:e.name,
-                                     expected:code_or_object,
-                                     expected_name:code_or_object.name}));
+                                     expected:code,
+                                     expected_name:code.name}));
+                return;
+            }
+            var required_props = {};
+            var expected_type;
+            if (code in DOMException)
+            {
+                expected_type = "DOMException";
+                required_props[code] = DOMException[code];
+                required_props.code = DOMException[code];
+                //Uncomment this when the latest version of every browser
+                //actually implements the spec; otherwise it just creates
+                //zillions of failures
+                //required_props.name = code;
+            }
+            else if (code in RangeException)
+            {
+                expected_type = "RangeException";
+                required_props[code] = RangeException[code];
+                required_props.code = RangeException[code];
+                //As above
+                //required_props.name = code;
+            }
+            else
+            {
+                throw new AssertionError('Test bug: unrecognized code "' + code + '" passed to assert_throws()');
+            }
+            //We'd like to test that e instanceof the appropriate interface,
+            //but we can't, because we don't know what window it was created
+            //in.  It might be an instanceof the appropriate interface on some
+            //unknown other window.  TODO: Work around this somehow?
+
+            assert(typeof e == "object",
+                    make_message("assert_throws", description,
+                        "${func} threw ${e} with type ${type}, not an object",
+                                {func:func, e:e, type:typeof e}));
+
+            for (var prop in required_props)
+            {
+                assert(typeof e == "object" && prop in e && e[prop] == required_props[prop],
+                        make_message("assert_throws", description,
+                            "${func} threw ${e} that is not a " + expected_type + " " + code + ": property ${prop} is equal to ${actual}, expected ${expected}",
+                                {func:func, e:e, prop:prop, actual:e[prop], expected:required_props[prop]}));
             }
         }
     }

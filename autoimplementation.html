@@ -5,6 +5,14 @@
 body { font-family: serif }
 .yes { color: green }
 .no { color: red }
+.yes, .no {
+	text-align: center;
+	vertical-align: middle;
+	font-size: 3em;
+	/* Somehow Opera doesn't render the X's if the font is serif, on my
+	 * machine. */
+	font-family: sans-serif;
+}
 /* http://www.w3.org/Bugs/Public/show_bug.cgi?id=12154
  * https://bugzilla.mozilla.org/show_bug.cgi?id=589124
  * https://bugs.webkit.org/show_bug.cgi?id=56400 */
@@ -42,11 +50,6 @@ body > div > table > tbody > tr > th {
 body > div > table > tbody > tr > td:last-child,
 body > div > table > tbody > tr > th:last-child {
 	width: 10%;
-}
-body > div > table > tbody > tr > td:last-child {
-	text-align: center;
-	vertical-align: middle;
-	font-size: 3em;
 }
 </style>
 <p>Legend: {[ are the selection anchor, }] are the selection focus, {}

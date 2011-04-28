@@ -169,6 +169,9 @@ like this.
 <p>An <dfn>HTML element</dfn> is an [[element]] whose [[namespace]] is the
 [[htmlnamespace]].
 
+<p>An <dfn>inline node</dfn> is either a [[text]] node, or an [[element]] whose
+"display" property computes to "inline", "inline-block", or "inline-table".
+
 <p>Something is <dfn>editable</dfn> if either it is an [[element]] with a <code
 data-anolis-spec=html title=attr-contenteditable>contenteditable</code>
 attribute set to the true state; or it is a [[document]] whose <code
@@ -526,6 +529,73 @@ title>splitText()</code>.
   <li>Return a list consisting of every [[node]] [[contained]] in <var>cloned
   range</var> in [[treeorder]], omitting any whose [[parent]] is also
   [[contained]] in <var>cloned range</var>.
+</ol>
+
+
+<h2>Block-extending a range</h2>
+<p>When a user agent is to <dfn>block-extend</dfn> a [[range]]
+<var>range</var>, it must run the following steps:
+
+<p class=XXX>Surely I can come up with a better name.
+
+<ol>
+  <li>Let <var>start node</var>, <var>start offset</var>, <var>end node</var>,
+  and <var>end offset</var> be the [[rangestart]] and [[rangeend]] [[bpnodes]]
+  and [[bpoffsets]] of <var>range</var>.
+
+  <li>Repeat the following steps:
+
+  <ol>
+    <li>If <var>start node</var> is a [[text]] or [[comment]] node or
+    <var>start offset</var> is 0, set <var>start offset</var> to the [[index]]
+    of <var>start node</var> and then set <var>start node</var> to its
+    [[parent]].
+
+    <li>Otherwise, if <var>start offset</var> is equal to the
+    [[nodelength]] of <var>start node</var>, set <var>start offset</var> to one
+    plus the [[index]] of <var>start node</var> and then set <var>start
+    node</var> to its [[parent]].
+
+    <li>Otherwise, if the [[child]] of <var>start node</var> with [[index]]
+    <var>start offset</var> minus one is a [[text]] or [[comment]] node, or an
+    (insert definition here), subtract one from <var>start offset</var>.
+
+    <p class=XXX>The definition should include all inline elements except
+    &lt;br>.  As elsewhere, we have trouble with the exact definition because
+    HTML doesn't classify non-conforming elements, but those are common in
+    editing and need to be handled correctly.
+    <!-- IE also includes <br> (at least for the purposes of the indent
+    command), but this is unlikely to match user expectations. -->
+
+    <li>Otherwise, break from this loop.
+  </ol>
+
+  <li>Repeat the following steps:
+
+  <ol>
+    <li>If <var>end offset</var> is 0, set <var>end offset</var> to the
+    [[index]] of <var>end node</var> and then set <var>end node</var> to its
+    [[parent]].
+
+    <li>Otherwise, if <var>end node</var> is a [[text]] or [[comment]] node or
+    <var>end offset</var> is equal to the [[nodelength]] of <var>end
+    node</var>, set <var>end offset</var> to one plus the [[index]] of <var>end
+    node</var> and then set <var>end node</var> to its [[parent]].
+
+    <li>Otherwise, if the [[child]] of <var>end node</var> with [[index]]
+    <var>end offset</var> is a [[text]] or [[comment]] node, or an (insert
+    definition here), add one to <var>end offset</var>.
+
+    <p class=XXX>Same definition as before.
+
+    <li>Otherwise, break from this loop.
+  </ol>
+
+  <li>Let <var>new range</var> be a new [[range]] whose [[rangestart]] and
+  [[rangeend]] [[bpnodes]] and [[bpoffsets]] are <var>start node</var>,
+  <var>start offset</var>, <var>end node</var>, and <var>end offset</var>.
+
+  <li>Return <var>new range</var>.
 </ol>
 
 
@@ -1743,82 +1813,42 @@ indenting on both sides.
 
 <dd><strong>Action</strong>:
 
+<p class=XXX>Handle corner cases: endpoints are detached, documents, document
+fragments, html/body, head or things in head . . .
+
 <ol>
-  <li>Let <var>start node</var>, <var>start offset</var>, <var>end node</var>,
-  and <var>end offset</var> be the [[rangestart]] and [[rangeend]] [[bpnodes]]
-  and [[bpoffsets]] of the [[range]].
+  <li><span>Block-extend</span> the [[range]], and let <var>new range</var> be
+  the result.
 
-  <p class=XXX>Handle corner cases: endpoints are detached, documents, document
-  fragments, html/body, head or things in head . . .
-
-  <li>Repeat the following steps:
-
-  <ol>
-    <li>If <var>start node</var> is a [[text]] or [[comment]] node or
-    <var>start offset</var> is 0, set <var>start offset</var> to the [[index]]
-    of <var>start node</var> and then set <var>start node</var> to its
-    [[parent]].
-
-    <li>Otherwise, if <var>start offset</var> is equal to the
-    [[nodelength]] of <var>start node</var>, set <var>start offset</var> to one
-    plus the [[index]] of <var>start node</var> and then set <var>start
-    node</var> to its [[parent]].
-
-    <li>Otherwise, if the [[child]] of <var>start node</var> with [[index]]
-    <var>start offset</var> minus one is a [[text]] or [[comment]] node, or an
-    (insert definition here), subtract one from <var>start offset</var>.
-
-    <p class=XXX>The definition should include all inline elements except
-    &lt;br>.  As elsewhere, we have trouble with the exact definition because
-    HTML doesn't classify non-conforming elements, but those are common in
-    editing and need to be handled correctly.
-
-    <li>Otherwise, break from this loop.
-  </ol>
-
-  <li>Repeat the following steps:
+  <!-- If the first line box in a block box starts with a non-preserved line
+  break, the line break will create an empty line box.  If the line line box in
+  a block box ends with a non-preserved line break, however, it will not create
+  an extra line box.  This means that if you have foo<br>bar, there will be no
+  empty line in between, but if you change it to <div>foo</div><br>bar, you've
+  created an extra line.  Chrome 12 dev thus deletes a <br> that immediately
+  follows a <blockquote> it creates.  Firefox 4.0 and Opera 11.00 instead just
+  includes it in the blockquote, so it has no effect.  The issue doesn't come
+  up for IE9, since it indents the whole block and doesn't treat <br>
+  differently from other inline elements.  I follow WebKit because it produces
+  slightly neater markup. -->
+  <li>If the [[child]] of <var>new range</var>'s [[rangeend]] [[bpnode]] with
+  [[index]] equal to its [[rangeend]] [[bpoffset]] is a [[br]]:
 
   <ol>
-    <li>If <var>end offset</var> is 0, set <var>end offset</var> to the
-    [[index]] of <var>end node</var> and then set <var>end node</var> to its
-    [[parent]].
+    <li>Remove that [[br]] from its [[parent]].
 
-    <li>Otherwise, if <var>end node</var> is a [[text]] or [[comment]] node or
-    <var>end offset</var> is equal to the [[nodelength]] of <var>end
-    node</var>, set <var>end offset</var> to one plus the [[index]] of <var>end
-    node</var> and then set <var>end node</var> to its [[parent]].
-
-    <li>Otherwise, if the [[child]] of <var>end node</var> with [[index]]
-    <var>end offset</var> is a [[text]] or [[comment]] node, or an (insert
-    definition here), add one to <var>end offset</var>.
-
-    <p class=XXX>Same definition as before.
-
-    <li>Otherwise, if the [[child]] of <var>end node</var> with [[index]]
-    <var>end offset</var> is a [[br]], remove it from its [[parent]] and break
-    from this loop.
-    <!-- If the first line box in a block box starts with a non-preserved line
-    break, the line break will create an empty line box.  If the line line box
-    in a block box ends with a non-preserved line break, however, it will not
-    create an extra line box.  This means that if you have foo<br>bar, there
-    will be no empty line in between, but if you change it to
-    <div>foo</div><br>bar, you've created an extra line.  Chrome 12 dev thus
-    deletes a <br> that immediately follows a <blockquote> it creates.  Firefox
-    4.0 and Opera 11.00 instead just includes it in the blockquote, so it has
-    no effect.  The issue doesn't come up for IE9, since it indents the whole
-    block and doesn't treat <br> differently from other inline elements.  I
-    follow WebKit because it produces slightly neater markup. -->
-
-    <li>Otherwise, break from this loop.
+    <li>While the [[rangeend]] [[bpoffset]] of <var>new range</var> is equal to
+    the [[nodelength]] of its [[rangeend]] [[bpnode]], set the [[rangeend]] of
+    <var>new range</var> to ([[parent]] of [[rangeend]] [[bpnode]], 1 +
+    [[index]] of [[rangeend]] [[bpnode]]).
   </ol>
 
-  <li>Let <var>new range</var> be a new [[range]] whose [[rangestart]] and
-  [[rangeend]] [[bpnodes]] and [[bpoffsets]] are <var>start node</var>,
-  <var>start offset</var>, <var>end node</var>, and <var>end offset</var>.
+  <li>Let <var>node list</var> be a list of [[nodes]], initially empty.
 
-  <li>Let <var>node list</var> be all [[nodes]] [[contained]] in <var>new
-  range</var>, omitting any that cannot be the child of a [[blockquote]] and
-  omitting any with an [[ancestor]] already in <var>node list</var>.
+  <li>For each [[node]] <var>node</var> [[contained]] in <var>new range</var>,
+  if <var>node</var> can be the [[child]] of a [[blockquote]] and if no
+  [[ancestor]] of <var>node</var> is in <var>node list</var>, append
+  <var>node</var> to <var>node list</var>.
 
   <li>For each <var>node</var> in <var>node list</var>:
 
@@ -1855,7 +1885,17 @@ indenting on both sides.
     that requires care to get right in mixed-direction cases.  Even once
     browsers start to support margin-start and so on, we can't use them because
     a) we have to work okay in legacy browsers and b) it doesn't help if a
-    nested block has different direction (so should be indented the other way).
+    descendant block has different direction (so should be indented the other
+    way).
+
+    <p class=XXX>IE9 doesn't handle an explicit margin attribute very well when
+    outdenting: it propagates it to the parent when removing the element, which
+    doesn't actually remove the indentation.  So indentation per spec (or
+    Gecko in CSS mode or WebKit) will not be removed correctly by IE.  I'm
+    leaving the style in because this short-term incompatibility is preferable
+    to the long-term incorrectness of adding top/bottom margins or adding
+    margins on both sides.  I can't think of any better way to do this at the
+    moment.
 
     <li>Append <var>node</var> as the last [[child]] of <var>new parent</var>,
     <span>preserving ranges</span>.
@@ -2014,6 +2054,109 @@ value</span> either "italic" or "oblique".  Otherwise false.
 <dd><strong>Value</strong>: Always the empty string.
 
 <dd><strong>Relevant CSS Property</strong>: "font-style"
+
+
+<dt><code title><dfn title=command-outdent>outdent</dfn></code>
+
+<dd><strong>Action</strong>:
+
+<ol>
+  <li><span>Block-extend</span> the [[range]], and let <var>new range</var> be
+  the result.
+
+  <li>Let <var>node list</var> be all [[nodes]] [[contained]] in <var>new
+  range</var>, omitting any whose [[parent]] is also [[contained]] in <var>new
+  range</var>.
+
+  <li>For each <var>node</var> in <var>node list</var>:
+
+  <!--
+  We need to remove all of the following:
+
+  * Plain <blockquote> (produced by Opera 11.00 and non-CSS Firefox 4.0)
+  * <blockquote style="margin-right: 0" dir="ltr"> and <blockquote
+    style="margin-left: 0" dir="rtl"> (IE9)
+  * <blockquote class="webkit-indent-blockquote" style="margin: 0 0 0 40px;
+    border: none; padding: 0px"> (Chrome 12 dev)
+  * <div style="margin-left: 40px"> and <div style="margin-right: 40px">
+    (CSS Firefox 4.0 if no other element available)
+  * <blockquote style="margin: 0 40px"> and <div style="margin: 0 40px"> (spec)
+  * Other random things with display: block whose left or right margin was
+    increased by 40px (CSS Firefox 4.0)
+  -->
+  <ol>
+    <!-- The easy case is when the whole element is indented.  In this case we
+    remove the whole thing indiscriminately.  In the case of blockquotes
+    created by IE, this might change the direction of some children, but then
+    their direction was probably changed incorrectly in the first place, so no
+    harm. -->
+    <li>If <var>node</var> is a [[div]] or [[blockquote]], and it has no
+    attributes other than one or more of
+
+    <ol type=a>
+      <li>a [[style]] attribute that sets no properties other than "margin",
+      "border", "padding", or subproperties of those;
+
+      <li>a <code data-anolis-spec=html title=classes>class</code> attribute
+      that sets exactly one class;
+
+      <li>a <code data-anolis-spec=html title="the dir attribute">dir</code>
+      attribute;
+    </ol>
+
+    then:
+
+    <ol>
+      <li>If <var>node</var>'s last [[child]] and [[nextsibling]] are both
+      <span title="inline node">inline nodes</span> or its first [[child]] and
+      [[previoussibling]] are both <span title="inline node">inline
+      nodes</span>:
+
+      <ol>
+        <li>Let <var>new parent</var> be the result of calling <code
+        data-anolis-spec=domcore
+        title=dom-Document-createElement>createElement("div")</code> on the
+        [[ownerdocument]] of <var>node</var>.
+
+        <li>Insert <var>new parent</var> into <var>node</var>'s [[parent]]
+        immediately before <var>node</var>.
+
+        <li>While <var>node</var> has [[children]], append its first [[child]]
+        as <var>new parent</var>'s last [[child]], <span>preserving
+        ranges</span>.
+      </ol>
+
+      <li>Otherwise, while <var>node</var> has [[children]], insert its first
+      [[child]] into its [[parent]] immediately before it, <span>preserving
+      ranges</span>.
+
+      <li>Remove <var>node</var> from its [[parent]].
+
+      <li>Continue with the next <var>node</var>.
+    </ol>
+  </ol>
+
+  <!-- No browser handles the case of Firefox 4.0 in CSS mode, where it adds a
+  margin attribute to an existing element, including Firefox itself.  So let's
+  just skip it. -->
+
+  <li class=XXX>If it's a blockquote element or an indented div that doesn't
+  otherwise meet our criteria, then . . .
+
+  <li class=XXX>If some ancestor is indenting us, then . . .
+
+  <!-- No indentation to remove from this node, but maybe some descendant has.
+  We only want to remove one level of indentation, so we only run this step if
+  we didn't remove indentation already. -->
+  <li>If <var>node</var> has [[children]], insert all of its [[children]] into
+  <var>node list</var> immediately after <var>node</var>, so that the next
+  <var>node</var> to be processed is the first [[child]] of the current
+  <var>node</var>.
+</ol>
+
+<dd><strong>State</strong>:
+
+<dd><strong>Value</strong>:
 
 
 <dt><code title><dfn title=command-removeformat>removeFormat</dfn></code>

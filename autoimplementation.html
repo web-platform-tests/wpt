@@ -513,6 +513,12 @@ var tests = {
 		'<blockquote class="webkit-indent-blockquote" style="margin: 0 0 0 40px; border: none; padding: 0px"><p>foo[bar</p><p>b]az</p></blockquote><p>extra',
 		'<blockquote class="webkit-indent-blockquote" style="margin: 0 0 0 40px; border: none; padding: 0px"><p>foo[bar]</p></blockquote><p>baz</p><p>extra',
 		'<blockquote class="webkit-indent-blockquote" style="margin: 0 0 0 40px; border: none; padding: 0px"><p>foo[bar</p></blockquote><p>b]az</p><p>extra',
+
+		// Spec:
+		'<blockquote style="margin: 0 40px"><p>foo[bar]</p><p>baz</p></blockquote><p>extra',
+		'<blockquote style="margin: 0 40px"><p>foo[bar</p><p>b]az</p></blockquote><p>extra',
+		'<blockquote style="margin: 0 40px"><p>foo[bar]</p></blockquote><p>baz</p><p>extra',
+		'<blockquote style="margin: 0 40px"><p>foo[bar</p></blockquote><p>b]az</p><p>extra',
 	],
 	inserthorizontalrule: [
 		'foo[]bar',
@@ -604,6 +610,39 @@ var tests = {
 		'foo bar <b>baz [qoz</b> quz] sic',
 		'foo [bar <i>baz] qoz</i> quz sic',
 		'foo bar <i>baz [qoz</i> quz] sic',
+	],
+	outdent: [
+		// These mimic existing indentation in various browsers, to see how
+		// they cope with outdenting various things.  This is Gecko non-CSS and
+		// Opera:
+		'<blockquote><p>foo[bar]</p><p>baz</p></blockquote><p>extra',
+		'<blockquote><p>foo[bar</p><p>b]az</p></blockquote><p>extra',
+		'<blockquote><p>foo[bar]</p></blockquote><p>baz</p><p>extra',
+		'<blockquote><p>foo[bar</p></blockquote><p>b]az</p><p>extra',
+
+		// IE:
+		'<blockquote style="margin-right: 0" dir="ltr"><p>foo[bar]</p><p>baz</p></blockquote><p>extra',
+		'<blockquote style="margin-right: 0" dir="ltr"><p>foo[bar</p><p>b]az</p></blockquote><p>extra',
+		'<blockquote style="margin-right: 0" dir="ltr"><p>foo[bar]</p></blockquote><p>baz</p><p>extra',
+		'<blockquote style="margin-right: 0" dir="ltr"><p>foo[bar</p></blockquote><p>b]az</p><p>extra',
+
+		// Firefox CSS mode:
+		'<p style="margin-left: 40px">foo[bar]</p><p style="margin-left: 40px">baz</p><p>extra',
+		'<p style="margin-left: 40px">foo[bar</p><p style="margin-left: 40px">b]az</p><p>extra',
+		'<p style="margin-left: 40px">foo[bar]</p><p>baz</p><p>extra',
+		'<p style="margin-left: 40px">foo[bar</p><p>b]az</p><p>extra',
+
+		// WebKit:
+		'<blockquote class="webkit-indent-blockquote" style="margin: 0 0 0 40px; border: none; padding: 0px"><p>foo[bar]</p><p>baz</p></blockquote><p>extra',
+		'<blockquote class="webkit-indent-blockquote" style="margin: 0 0 0 40px; border: none; padding: 0px"><p>foo[bar</p><p>b]az</p></blockquote><p>extra',
+		'<blockquote class="webkit-indent-blockquote" style="margin: 0 0 0 40px; border: none; padding: 0px"><p>foo[bar]</p></blockquote><p>baz</p><p>extra',
+		'<blockquote class="webkit-indent-blockquote" style="margin: 0 0 0 40px; border: none; padding: 0px"><p>foo[bar</p></blockquote><p>b]az</p><p>extra',
+
+		// Spec:
+		'<blockquote style="margin: 0 40px"><p>foo[bar]</p><p>baz</p></blockquote><p>extra',
+		'<blockquote style="margin: 0 40px"><p>foo[bar</p><p>b]az</p></blockquote><p>extra',
+		'<blockquote style="margin: 0 40px"><p>foo[bar]</p></blockquote><p>baz</p><p>extra',
+		'<blockquote style="margin: 0 40px"><p>foo[bar</p></blockquote><p>b]az</p><p>extra',
 	],
 	removeformat: [
 		'foo[]bar',
@@ -1241,6 +1280,10 @@ function doSameCell(tr) {
 		var normalizedSpecCell = tr.childNodes[1].lastChild.firstChild.textContent
 			.replace(/[[\]{}]/g, "")
 			.replace(/ style="margin: 0 40px"/g, "")
+			.replace(/ class="webkit-indent-blockquote" style="margin: 0 0 0 40px; border: none; padding: 0px;"/g, '')
+			.replace(/ style="margin-right: 0px;" dir="ltr"/g, '')
+			.replace(/ style="margin-left: 0px;" dir="rtl"/g, '')
+			.replace(/ style="margin-(left|right): 40px;"/g, '')
 			.replace(/: /g, ":")
 			.replace(/;? ?"/g, '"')
 			.replace(/<(\/?)strong/g, '<$1b')
@@ -1249,6 +1292,7 @@ function doSameCell(tr) {
 			.replace(/#[0-9a-fA-F]{6}/g, function(match) { return match.toUpperCase(); });
 		var normalizedBrowserCell = tr.childNodes[2].lastChild.firstChild.textContent
 			.replace(/[[\]{}]/g, "")
+			.replace(/ style="margin: 0 40px"/g, "")
 			.replace(/ class="webkit-indent-blockquote" style="margin: 0 0 0 40px; border: none; padding: 0px;"/g, '')
 			.replace(/ style="margin-right: 0px;" dir="ltr"/g, '')
 			.replace(/ style="margin-left: 0px;" dir="rtl"/g, '')

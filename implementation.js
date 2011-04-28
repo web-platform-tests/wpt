@@ -327,6 +327,15 @@ function isHtmlElement(node) {
 		&& isHtmlNamespace(node.namespaceURI);
 }
 
+// "An inline node is either a Text node, or an Element whose "display"
+// property computes to "inline", "inline-block", or "inline-table"."
+function isInlineNode(node) {
+	return node
+		&& (node.nodeType == Node.TEXT_NODE
+		|| (node.nodeType == Node.ELEMENT_NODE
+		&& ["inline", "inline-block", "inline-table"].indexOf(getComputedStyle(node).display) != -1));
+}
+
 // "Something is editable if either it is an Element with a contenteditable
 // attribute set to the true state; or it is a Document whose designMode is
 // enabled; or it is a node whose parent is editable, but which does not have a
@@ -1032,6 +1041,87 @@ function decomposeRange(range) {
 		}
 	}
 	return ret;
+}
+
+function blockExtendRange(range) {
+	// "Let start node, start offset, end node, and end offset be the start
+	// and end nodes and offsets of the range."
+	var startNode = range.startContainer;
+	var startOffset = range.startOffset;
+	var endNode = range.endContainer;
+	var endOffset = range.endOffset;
+
+	// "Repeat the following steps:"
+	while (true) {
+		// "If start node is a Text or Comment node or start offset is 0,
+		// set start offset to the index of start node and then set start
+		// node to its parent."
+		if (startNode.nodeType == Node.TEXT_NODE
+		|| startNode.nodeType == Node.COMMENT_NODE
+		|| startOffset == 0) {
+			startOffset = getNodeIndex(startNode);
+			startNode = startNode.parentNode;
+
+		// "Otherwise, if start offset is equal to the length of start
+		// node, set start offset to one plus the index of start node and
+		// then set start node to its parent."
+		} else if (startOffset == getNodeLength(startNode)) {
+			startOffset = 1 + getNodeIndex(startNode);
+			startNode = startNode.parentNode;
+
+		// "Otherwise, if the child of start node with index start offset
+		// minus one is a Text or Comment node, or an (insert definition
+		// here), subtract one from start offset."
+		} else if (startNode.childNodes[startOffset - 1].nodeType == Node.TEXT_NODE
+		|| startNode.childNodes[startOffset - 1].nodeType == Node.COMMENT_NODE
+		|| ["B", "I", "SPAN"].indexOf(startNode.childNodes[startOffset - 1].tagName) != -1) {
+			startOffset--;
+
+		// "Otherwise, break from this loop."
+		} else {
+			break;
+		}
+	}
+
+	// "Repeat the following steps:"
+	while (true) {
+		// "If end offset is 0, set end offset to the index of end node and
+		// then set end node to its parent."
+		if (endOffset == 0) {
+			endOffset = getNodeIndex(endNode);
+			endNode = endNode.parentNode;
+
+		// "Otherwise, if end node is a Text or Comment node or end offset
+		// is equal to the length of end node, set end offset to one plus
+		// the index of end node and then set end node to its parent."
+		} else if (endNode.nodeType == Node.TEXT_NODE
+		|| endNode.nodeType == Node.COMMENT_NODE
+		|| endOffset == getNodeLength(endNode)) {
+			endOffset = 1 + getNodeIndex(endNode);
+			endNode = endNode.parentNode;
+
+		// "Otherwise, if the child of end node with index end offset is a
+		// Text or Comment node, or an (insert definition here), add one to
+		// end offset."
+		} else if (endNode.childNodes[endOffset].nodeType == Node.TEXT_NODE
+		|| endNode.childNodes[endOffset].nodeType == Node.COMMENT_NODE
+		|| ["B", "I", "SPAN"].indexOf(endNode.childNodes[endOffset].tagName) != -1) {
+			endOffset++;
+
+		// "Otherwise, break from this loop."
+		} else {
+			break;
+		}
+	}
+
+	// "Let new range be a new range whose start and end nodes and offsets
+	// are start node, start offset, end node, and end offset."
+	var newRange = startNode.ownerDocument.createRange();
+	newRange.setStart(startNode, startOffset);
+	newRange.setEnd(endNode, endOffset);
+
+	// "Return new range."
+	return newRange;
 }
 
 function clearValue(element, command) {
@@ -1939,93 +2029,30 @@ function myExecCommand(command, showUI, value, range) {
 		break;
 
 		case "indent":
-		// "Let start node, start offset, end node, and end offset be the start
-		// and end nodes and offsets of the range."
-		var startNode = range.startContainer;
-		var startOffset = range.startOffset;
-		var endNode = range.endContainer;
-		var endOffset = range.endOffset;
+		// "Block-extend the range, and let new range be the result."
+		var newRange = blockExtendRange(range);
 
-		// "Repeat the following steps:"
-		while (true) {
-			// "If start node is a Text or Comment node or start offset is 0,
-			// set start offset to the index of start node and then set start
-			// node to its parent."
-			if (startNode.nodeType == Node.TEXT_NODE
-			|| startNode.nodeType == Node.COMMENT_NODE
-			|| startOffset == 0) {
-				startOffset = getNodeIndex(startNode);
-				startNode = startNode.parentNode;
+		// "If the child of new range's end node with index equal to its end
+		// offset is a br:"
+		var end = newRange.endContainer.childNodes[newRange.endOffset];
+		if (isHtmlElement(end) && end.tagName == "BR") {
+			// "Remove that br from its parent."
+			end.parentNode.removeChild(br);
 
-			// "Otherwise, if start offset is equal to the length of start
-			// node, set start offset to one plus the index of start node and
-			// then set start node to its parent."
-			} else if (startOffset == getNodeLength(startNode)) {
-				startOffset = 1 + getNodeIndex(startNode);
-				startNode = startNode.parentNode;
-
-			// "Otherwise, if the child of start node with index start offset
-			// minus one is a Text or Comment node, or an (insert definition
-			// here), subtract one from start offset."
-			} else if (startNode.childNodes[startOffset - 1].nodeType == Node.TEXT_NODE
-			|| startNode.childNodes[startOffset - 1].nodeType == Node.COMMENT_NODE
-			|| ["B", "I", "SPAN"].indexOf(startNode.childNodes[startOffset - 1].tagName) != -1) {
-				startOffset--;
-
-			// "Otherwise, break from this loop."
-			} else {
-				break;
+			// "While the end offset of new range is equal to the length of its
+			// end node, set the end of new range to (parent of end node, 1 +
+			// index of end node)."
+			while (newRange.endOffset == getNodeLength(newRange.endContainer)) {
+				newRange.setEnd(newRange.endContainer.parentNode, 1 + getNodeIndex(newRange.endContainer));
 			}
 		}
 
-		// "Repeat the following steps:"
-		while (true) {
-			// "If end offset is 0, set end offset to the index of end node and
-			// then set end node to its parent."
-			if (endOffset == 0) {
-				endOffset = getNodeIndex(endNode);
-				endNode = endNode.parentNode;
-
-			// "Otherwise, if end node is a Text or Comment node or end offset
-			// is equal to the length of end node, set end offset to one plus
-			// the index of end node and then set end node to its parent."
-			} else if (endNode.nodeType == Node.TEXT_NODE
-			|| endNode.nodeType == Node.COMMENT_NODE
-			|| endOffset == getNodeLength(endNode)) {
-				endOffset = 1 + getNodeIndex(endNode);
-				endNode = endNode.parentNode;
-
-			// "Otherwise, if the child of end node with index end offset is a
-			// Text or Comment node, or an (insert definition here), add one to
-			// end offset."
-			} else if (endNode.childNodes[endOffset].nodeType == Node.TEXT_NODE
-			|| endNode.childNodes[endOffset].nodeType == Node.COMMENT_NODE
-			|| ["B", "I", "SPAN"].indexOf(endNode.childNodes[endOffset].tagName) != -1) {
-				endOffset++;
-
-			// "Otherwise, if the child of end node with index end offset is a br,
-			// remove it from its parent and break from this loop."
-			} else if (isHtmlElement(endNode.childNodes[endOffset])
-			&& endNode.childNodes[endOffset].tagName == "BR") {
-				endNode.removeChild(endNode.childNodes[endOffset]);
-				break;
-
-			// "Otherwise, break from this loop."
-			} else {
-				break;
-			}
-		}
-
-		// "Let new range be a new range whose start and end nodes and offsets
-		// are start node, start offset, end node, and end offset."
-		var newRange = startNode.ownerDocument.createRange();
-		newRange.setStart(startNode, startOffset);
-		newRange.setEnd(endNode, endOffset);
-
-		// "Let node list be all nodes contained in new range, omitting any
-		// that cannot be the child of a blockquote and omitting any with an
-		// ancestor already in node list."
+		// "Let node list be a list of nodes, initially empty."
 		var nodeList = [];
+
+		// "For each node node contained in new range, if node can be the child
+		// of a blockquote and if no ancestor of node is in node list, append
+		// node to node list."
 		for (var node = newRange.startContainer; node != nextNodeDescendants(newRange.endContainer); node = nextNode(node)) {
 			if (!isContained(node, newRange)) {
 				continue;
@@ -2036,6 +2063,8 @@ function myExecCommand(command, showUI, value, range) {
 				continue;
 			}
 
+			// We only need to check that the last member isn't an ancestor,
+			// because no ancestor of a member can be in the list.
 			if (nodeList.length
 			&& isAncestor(nodeList[nodeList.length - 1], node)) {
 				continue;
@@ -2084,7 +2113,6 @@ function myExecCommand(command, showUI, value, range) {
 			// ranges."
 			movePreservingRanges(node, newParent, 0);
 		}
-
 		break;
 
 		case "inserthorizontalrule":
@@ -2236,6 +2264,90 @@ function myExecCommand(command, showUI, value, range) {
 		var newValue = getState("italic", range) ? "normal" : "italic";
 		for (var i = 0; i < nodeList.length; i++) {
 			setNodeValue(nodeList[i], command, newValue);
+		}
+		break;
+
+		case "outdent":
+		// "Block-extend the range, and let new range be the result."
+		var newRange = blockExtendRange(range);
+
+		// "Let node list be all nodes contained in new range, omitting any
+		// whose parent is also contained in new range."
+		var nodeList = [];
+		for (
+			var node = newRange.startContainer;
+			node != nextNodeDescendants(newRange.endContainer);
+			node = nextNode(node)
+		) {
+			if (isContained(node, newRange)
+			&& !isContained(node.parentNode, newRange)) {
+				nodeList.push(node);
+			}
+		}
+
+		// "For each node in node list:"
+		for (var i = 0; i < nodeList.length; i++) {
+			var node = nodeList[i];
+
+			// "If node is a div or blockquote, and it has no attributes other
+			// than one or more of
+			//   "a. a style attribute that sets no properties other than
+			//       "margin", "border", "padding", or subproperties of those;
+			//   "b. a class attribute that sets exactly one class;
+			//   "c. a dir attribute;
+			// "then:"
+			//
+			// Not going to implement all the fancy checks, too much effort for
+			// a test implementation.
+			if (isHtmlElement(node)
+			&& (node.tagName == "BLOCKQUOTE"
+			|| (
+				node.tagName == "DIV"
+				&& node.attributes.length == 1
+				&& ["margin-left: 40px", "margin-right: 40px", "margin: 0 40px"].indexOf(node.getAttribute("style")) != -1
+			))) {
+				// "If node's last child and nextSibling are both inline nodes
+				// or its first child and previousSibling are both inline
+				// nodes:"
+				if ((isInlineNode(node.lastChild) && isInlineNode(node.nextSibling))
+				|| (isInlineNode(node.firstChild) && isInlineNode(node.previousSibling))) {
+					// "Let new parent be the result of calling
+					// createElement("div") on the ownerDocument of node."
+					var newParent = node.ownerDocument.createElement("div");
+
+					// "Insert new parent into node's parent immediately before
+					// node."
+					node.parentNode.insertBefore(newParent, node);
+
+					// "While node has children, append its first child as new
+					// parent's last child, preserving ranges."
+					while (node.firstChild) {
+						movePreservingRanges(node.firstChild, newParent, newParent.childNodes.length);
+					}
+
+				// "Otherwise, while node has children, insert its first child
+				// into its parent immediately before it, preserving ranges."
+				} else {
+					while (node.firstChild) {
+						movePreservingRanges(node.firstChild, node.parentNode, getNodeIndex(node));
+					}
+				}
+
+				// "Remove node from its parent."
+				node.parentNode.removeChild(node);
+
+				// "Continue with the next node."
+				continue;
+			}
+
+			// "If node has children, insert all of its children into node list
+			// immediately after node, so that the next node to be processed is
+			// the first child of the current node."
+			if (node.firstChild) {
+				nodeList = nodeList.slice(0, i + 1)
+					.concat(Array.prototype.slice.call(node.childNodes))
+					.concat(nodeList.slice(i + 1));
+			}
 		}
 		break;
 

@@ -11,6 +11,8 @@ replace = {
     'attrlocalname': '<span data-anolis-spec=domcore title=concept-attr-local-name>local name</span>',
     'attrvalue': '<span data-anolis-spec=domcore title=concept-attr-value>value</span>',
     'b': '<code data-anolis-spec=html title="the b element">b</code>',
+    'blockquote': '<code data-anolis-spec=html title="the blockquote element">blockquote</code>',
+    'br': '<code data-anolis-spec=html title="the br element">br</code>',
     'boundarypoint': '<span data-anolis-spec=domrange title=concept-boundary-point>boundary point</span>',
     'bpnode': '<span data-anolis-spec=domrange title=concept-boundary-point-node>node</span>',
     'bpoffset': '<span data-anolis-spec=domrange title=concept-boundary-point-offset>offset</span>',

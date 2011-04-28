@@ -1697,21 +1697,30 @@ For color parsing, see the comment for foreColor. -->
 <dd><strong>Relevant CSS Property</strong>: "background-color"
 
 
-<!--
 <dt><code title><dfn title=command-indent>indent</dfn></code>
--->
 <!--
 IE9: Outputs <blockquote style="margin-right: 0px" dir="ltr">, or when
-  surrounding RTL blocks, <blockquote style="margin-left: 0px" dir="rtl">.
+  surrounding RTL blocks, <blockquote style="margin-left: 0px" dir="rtl">.  The
+  direction seems to go by the end of the selection.  The presence of the dir
+  attribute means that any contents that were inheriting a different dir from
+  an ancestor get their direction changed as a side effect, but if they
+  actually have the opposite dir specified, they won't appear to be indented.
+  It doesn't reset top or bottom margins on the blockquote, so it adds them.
+  If it's not wrapping a block element, like if it's only wrapping up until a
+  <br>, it adds a <p>.
 Firefox 4.0: In styleWithCSS mode, adds style="margin-left: 40px" to the
   appropriate block container (or margin-right if it's RTL).  If there's no
-  appropriate block container, adds a div.  In non-styleWithCSS mode, uses
-  <blockquote>, so it indents on both sides.
+  appropriate block container, adds a div.  If multiple blocks are affected, it
+  goes by the direction of the block whose style it's changing, which winds up
+  being wrong for descendants with different direction.  In non-styleWithCSS
+  mode, uses <blockquote>, so it indents on both sides and also adds top/bottom
+  margins.
 Chrome 12 dev: Outputs <blockquote class="webkit-indent-blockquote"
   style="margin: 0 0 0 40px; border: none; padding: 0px"> in both modes for
   both LTR and RTL (which is broken for RTL, since it indents only on the
-  right).
-Opera 11.00: Outputs <blockquote>, so it indents on both sides.
+  left).
+Opera 11.00: Outputs <blockquote>, so it indents on both sides and on the
+  top/bottom.
 
 For repeated indentation, everyone except Opera that outputs <blockquote>s just
 puts them at the outermost possible location, which works well.  Opera puts
@@ -1723,9 +1732,15 @@ that already have margins from CSS rules, instead of nesting a div, so it
 doesn't actually increase the indentation.  However, if an element has an
 explicit left margin (assuming LTR), it will increase the margin to 80px, so it
 works with WebKit's blockquotes.
+
+
+We have two strategies for handling directionality: always indent on both sides
+(Firefox non-CSS, Opera) or try to figure out heuristically which side we want
+(IE, Firefox CSS).  The latter approach is only possible by adding extra markup
+and complexity, so for now we'll take the easy way out and go with just
+indenting on both sides.
 -->
 
-<!--
 <dd><strong>Action</strong>:
 
 <ol>
@@ -1744,7 +1759,7 @@ works with WebKit's blockquotes.
     of <var>start node</var> and then set <var>start node</var> to its
     [[parent]].
 
-    <li>Otherwise, if the <var>start offset</var> is equal to the
+    <li>Otherwise, if <var>start offset</var> is equal to the
     [[nodelength]] of <var>start node</var>, set <var>start offset</var> to one
     plus the [[index]] of <var>start node</var> and then set <var>start
     node</var> to its [[parent]].
@@ -1764,28 +1779,92 @@ works with WebKit's blockquotes.
   <li>Repeat the following steps:
 
   <ol>
-    <li>If <var>end node</var> is a [[text]] or [[comment]] node or <var>end
-    offset</var> is 0, set <var>end offset</var> to the [[index]] of <var>end
+    <li>If <var>end offset</var> is 0, set <var>end offset</var> to the
+    [[index]] of <var>end node</var> and then set <var>end node</var> to its
+    [[parent]].
+
+    <li>Otherwise, if <var>end node</var> is a [[text]] or [[comment]] node or
+    <var>end offset</var> is equal to the [[nodelength]] of <var>end
+    node</var>, set <var>end offset</var> to one plus the [[index]] of <var>end
     node</var> and then set <var>end node</var> to its [[parent]].
 
-    <li>Otherwise, if the <var>end offset</var> is equal to the [[nodelength]]
-    of <var>end node</var>, set <var>end offset</var> to one plus the [[index]]
-    of <var>end node</var> and then set <var>end node</var> to its [[parent]].
-
     <li>Otherwise, if the [[child]] of <var>end node</var> with [[index]]
-    <var>end offset</var> plus one is a [[text]] or [[comment]] node, or an
-    (insert definition here), add one to <var>end offset</var>.
+    <var>end offset</var> is a [[text]] or [[comment]] node, or an (insert
+    definition here), add one to <var>end offset</var>.
 
     <p class=XXX>Same definition as before.
 
+    <li>Otherwise, if the [[child]] of <var>end node</var> with [[index]]
+    <var>end offset</var> is a [[br]], remove it from its [[parent]] and break
+    from this loop.
+    <!-- If the first line box in a block box starts with a non-preserved line
+    break, the line break will create an empty line box.  If the line line box
+    in a block box ends with a non-preserved line break, however, it will not
+    create an extra line box.  This means that if you have foo<br>bar, there
+    will be no empty line in between, but if you change it to
+    <div>foo</div><br>bar, you've created an extra line.  Chrome 12 dev thus
+    deletes a <br> that immediately follows a <blockquote> it creates.  Firefox
+    4.0 and Opera 11.00 instead just includes it in the blockquote, so it has
+    no effect.  The issue doesn't come up for IE9, since it indents the whole
+    block and doesn't treat <br> differently from other inline elements.  I
+    follow WebKit because it produces slightly neater markup. -->
+
     <li>Otherwise, break from this loop.
+  </ol>
+
+  <li>Let <var>new range</var> be a new [[range]] whose [[rangestart]] and
+  [[rangeend]] [[bpnodes]] and [[bpoffsets]] are <var>start node</var>,
+  <var>start offset</var>, <var>end node</var>, and <var>end offset</var>.
+
+  <li>Let <var>node list</var> be all [[nodes]] [[contained]] in <var>new
+  range</var>, omitting any that cannot be the child of a [[blockquote]] and
+  omitting any with an [[ancestor]] already in <var>node list</var>.
+
+  <li>For each <var>node</var> in <var>node list</var>:
+
+  <ol>
+    <li>If the [[previoussibling]] of <var>node</var> is an <span>HTML
+    element</span>; its "display" property computes to "block"; its
+    "margin-left" and "margin-right" properties compute to "40px"; and its
+    "margin-top" and "margin-bottom" properties compute to "0"; then append
+    <var>node</var> as the last [[child]] of its [[previoussibling]],
+    <span>preserving ranges</span>, and continue with the next <var>node</var>.
+
+    <li>Let <var>tag</var> be "div" if the <span>CSS styling flag</span> is
+    true, otherwise "blockquote".
+    <!-- Firefox 4.0 is the only tested browser that respects the CSS styling
+    flag for indent at all.  For indent, as for inline markup commands like
+    bold, it will modify the inline style of existing elements if available,
+    and only create spans/divs if there are no existing elements where it could
+    add the style instead.  For indent as for other commands, I follow WebKit
+    and always create an extra element, to ensure consistency between CSS and
+    non-CSS modes. -->
+
+    <li>Let <var>new parent</var> be the result of calling <code
+    data-anolis-spec=domcore
+    title=dom-Document-createElement>createElement(<var>tag</var>)</code> on
+    the [[ownerdocument]] of <var>node</var>.
+
+    <li>Insert <var>new parent</var> into <var>node</var>'s [[parent]]
+    immediately before <var>node</var>.
+
+    <li>Set the CSS property "margin" of <var>new parent</var> to "0 40px".
+
+    <p class=XXX>This indents on both sides, so we don't have to worry about
+    directionality.  Preferably we should indent only on the start side, but
+    that requires care to get right in mixed-direction cases.  Even once
+    browsers start to support margin-start and so on, we can't use them because
+    a) we have to work okay in legacy browsers and b) it doesn't help if a
+    nested block has different direction (so should be indented the other way).
+
+    <li>Append <var>node</var> as the last [[child]] of <var>new parent</var>,
+    <span>preserving ranges</span>.
   </ol>
 </ol>
 
 <dd><strong>State</strong>:
 
 <dd><strong>Value</strong>:
--->
 
 
 <dt><code title><dfn title=command-inserthorizontalrule>insertHorizontalRule</dfn></code>

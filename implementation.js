@@ -1896,7 +1896,7 @@ function myExecCommand(command, showUI, value, range) {
 		// "medium", "large", "x-large", "xx-large", "xxx-large", and is not a
 		// valid CSS absolute length, then do nothing and abort these steps."
 		//
-		// More cheap hacks to skip of valid CSS absolute length checks.
+		// More cheap hacks to skip valid CSS absolute length checks.
 		if (["xx-small", "x-small", "small", "medium", "large", "x-large", "xx-large", "xxx-large"].indexOf(value) == -1
 		&& !/^[0-9]+(\.[0-9]+)?(cm|mm|in|pt|pc)$/.test(value)) {
 			return;
@@ -1936,6 +1936,155 @@ function myExecCommand(command, showUI, value, range) {
 		for (var i = 0; i < nodeList.length; i++) {
 			setNodeValue(nodeList[i], command, value);
 		}
+		break;
+
+		case "indent":
+		// "Let start node, start offset, end node, and end offset be the start
+		// and end nodes and offsets of the range."
+		var startNode = range.startContainer;
+		var startOffset = range.startOffset;
+		var endNode = range.endContainer;
+		var endOffset = range.endOffset;
+
+		// "Repeat the following steps:"
+		while (true) {
+			// "If start node is a Text or Comment node or start offset is 0,
+			// set start offset to the index of start node and then set start
+			// node to its parent."
+			if (startNode.nodeType == Node.TEXT_NODE
+			|| startNode.nodeType == Node.COMMENT_NODE
+			|| startOffset == 0) {
+				startOffset = getNodeIndex(startNode);
+				startNode = startNode.parentNode;
+
+			// "Otherwise, if start offset is equal to the length of start
+			// node, set start offset to one plus the index of start node and
+			// then set start node to its parent."
+			} else if (startOffset == getNodeLength(startNode)) {
+				startOffset = 1 + getNodeIndex(startNode);
+				startNode = startNode.parentNode;
+
+			// "Otherwise, if the child of start node with index start offset
+			// minus one is a Text or Comment node, or an (insert definition
+			// here), subtract one from start offset."
+			} else if (startNode.childNodes[startOffset - 1].nodeType == Node.TEXT_NODE
+			|| startNode.childNodes[startOffset - 1].nodeType == Node.COMMENT_NODE
+			|| ["B", "I", "SPAN"].indexOf(startNode.childNodes[startOffset - 1].tagName) != -1) {
+				startOffset--;
+
+			// "Otherwise, break from this loop."
+			} else {
+				break;
+			}
+		}
+
+		// "Repeat the following steps:"
+		while (true) {
+			// "If end offset is 0, set end offset to the index of end node and
+			// then set end node to its parent."
+			if (endOffset == 0) {
+				endOffset = getNodeIndex(endNode);
+				endNode = endNode.parentNode;
+
+			// "Otherwise, if end node is a Text or Comment node or end offset
+			// is equal to the length of end node, set end offset to one plus
+			// the index of end node and then set end node to its parent."
+			} else if (endNode.nodeType == Node.TEXT_NODE
+			|| endNode.nodeType == Node.COMMENT_NODE
+			|| endOffset == getNodeLength(endNode)) {
+				endOffset = 1 + getNodeIndex(endNode);
+				endNode = endNode.parentNode;
+
+			// "Otherwise, if the child of end node with index end offset is a
+			// Text or Comment node, or an (insert definition here), add one to
+			// end offset."
+			} else if (endNode.childNodes[endOffset].nodeType == Node.TEXT_NODE
+			|| endNode.childNodes[endOffset].nodeType == Node.COMMENT_NODE
+			|| ["B", "I", "SPAN"].indexOf(endNode.childNodes[endOffset].tagName) != -1) {
+				endOffset++;
+
+			// "Otherwise, if the child of end node with index end offset is a br,
+			// remove it from its parent and break from this loop."
+			} else if (isHtmlElement(endNode.childNodes[endOffset])
+			&& endNode.childNodes[endOffset].tagName == "BR") {
+				endNode.removeChild(endNode.childNodes[endOffset]);
+				break;
+
+			// "Otherwise, break from this loop."
+			} else {
+				break;
+			}
+		}
+
+		// "Let new range be a new range whose start and end nodes and offsets
+		// are start node, start offset, end node, and end offset."
+		var newRange = startNode.ownerDocument.createRange();
+		newRange.setStart(startNode, startOffset);
+		newRange.setEnd(endNode, endOffset);
+
+		// "Let node list be all nodes contained in new range, omitting any
+		// that cannot be the child of a blockquote and omitting any with an
+		// ancestor already in node list."
+		var nodeList = [];
+		for (var node = newRange.startContainer; node != nextNodeDescendants(newRange.endContainer); node = nextNode(node)) {
+			if (!isContained(node, newRange)) {
+				continue;
+			}
+
+			if (node.nodeType == Node.ELEMENT_NODE
+			&& ["TBODY", "THEAD", "TR", "TH", "TD"].indexOf(node.tagName) != -1) {
+				continue;
+			}
+
+			if (nodeList.length
+			&& isAncestor(nodeList[nodeList.length - 1], node)) {
+				continue;
+			}
+
+			nodeList.push(node);
+		}
+
+		// "For each node in node list:"
+		for (var i = 0; i < nodeList.length; i++) {
+			var node = nodeList[i];
+
+			// "If the previousSibling of node is an HTML element; its
+			// "display" property computes to "block"; its "margin-left" and
+			// "margin-right" properties compute to "40px"; and its
+			// "margin-top" and "margin-bottom" properties compute to "0"; then
+			// append node as the last child of its previousSibling, preserving
+			// ranges, and continue with the next node."
+			if (isHtmlElement(node.previousSibling)) {
+				var style = getComputedStyle(node.previousSibling);
+				if (style.display == "block"
+				&& style.marginLeft == "40px"
+				&& style.marginRight == "40px"
+				&& style.marginTop == "0px"
+				&& style.marginBottom == "0px") {
+					movePreservingRanges(node, node.previousSibling, node.previousSibling.childNodes.length);
+					continue;
+				}
+			}
+
+			// "Let tag be "div" if the CSS styling flag is true, otherwise
+			// "blockquote"."
+			var tag = cssStylingFlag ? "div" : "blockquote";
+
+			// "Let new parent be the result of calling createElement(tag) on
+			// the ownerDocument of node."
+			var newParent = node.ownerDocument.createElement(tag);
+
+			// "Insert new parent into node's parent immediately before node."
+			node.parentNode.insertBefore(newParent, node);
+
+			// "Set the CSS property "margin" of new parent to "0 40px"."
+			newParent.setAttribute("style", "margin: 0 40px");
+
+			// "Append node as the last child of new parent, preserving
+			// ranges."
+			movePreservingRanges(node, newParent, 0);
+		}
+
 		break;
 
 		case "inserthorizontalrule":

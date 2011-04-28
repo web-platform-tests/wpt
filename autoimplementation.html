@@ -15,18 +15,39 @@ b, strong { font-weight: bold }
 .line-through { text-decoration: line-through }
 .underline-and-line-through { text-decoration: underline line-through }
 #purple { color: purple }
-td > div:first-child {
+body > div > table > tbody > tr > td > div:first-child {
 	padding-bottom: 0.2em;
 }
-td > div:last-child {
+body > div > table > tbody > tr > td > div:last-child {
 	padding-top: 0.2em;
 	border-top: 1px solid black;
 }
 /* https://bugs.webkit.org/show_bug.cgi?id=56670 */
 dfn { font-style: italic }
+/* Opera has weird default blockquote style */
+blockquote { margin: 1em 40px }
+/* Let the rendered HTML line up so it's easier to compare whitespace */
+body > div > table > tbody > tr > td { vertical-align: top }
 /* We don't want test cells to not wrap */
 listing, plaintext, pre, xmp { white-space: pre-wrap }
 img, video { width: 50px }
+body > div > table {
+	width: 100%;
+	table-layout: fixed;
+}
+body > div > table > tbody > tr > td,
+body > div > table > tbody > tr > th {
+	width: 30%;
+}
+body > div > table > tbody > tr > td:last-child,
+body > div > table > tbody > tr > th:last-child {
+	width: 10%;
+}
+body > div > table > tbody > tr > td:last-child {
+	text-align: center;
+	vertical-align: middle;
+	font-size: 3em;
+}
 </style>
 <p>Legend: {[ are the selection anchor, }] are the selection focus, {}
 represent an element boundary point, [] represent a text node boundary point.
@@ -442,6 +463,9 @@ var tests = {
 		'<span>foo[</span><span>]bar</span><p>extra',
 		'foo[bar]baz<p>extra',
 		'<p dir=rtl>פו[בר]בז<p dir=rtl>נוםף',
+		'<p dir=rtl>פו[ברבז<p>Foobar]baz<p>Extra',
+		'<p>Foo[barbaz<p dir=rtl>פובר]בז<p>Extra',
+		'<div><p>Foo[barbaz<p dir=rtl>פובר]בז</div><p>Extra',
 		'foo]bar[baz<p>extra',
 		'{<p><p> <p>foo</p>}<p>extra',
 		'foo[bar<i>baz]qoz</i>quz<p>extra',
@@ -456,6 +480,9 @@ var tests = {
 		'<p>foo[bar]</p><p>baz</p><p>extra',
 		'<p>[foobar</p><p>ba]z</p><p>extra',
 		'foo[bar]<br>baz<p>extra',
+		'foo[bar]<br><br><br><br>baz<p>extra',
+		'foobar<br>[ba]z<p>extra',
+		'foobar<br><br><br><br>[ba]z<p>extra',
 		'foo[bar<br>ba]z<p>extra',
 
 		// These mimic existing indentation in various browsers, to see how
@@ -1059,7 +1086,7 @@ function doSetup(command, idx) {
 	var table = document.querySelectorAll("#" + command + " > table")[idx];
 
 	var tr = document.createElement("tr");
-	table.appendChild(tr);
+	table.firstChild.appendChild(tr);
 
 	return tr;
 }
@@ -1117,6 +1144,9 @@ function doSpecCell(tr, test, command, styleWithCss) {
 		specCell.lastChild.style.color = "red";
 		specCell.lastChild.style.fontWeight = "bold";
 		specCell.lastChild.textContent = "Note, exception: " + e;
+		if ("stack" in e) {
+			specCell.lastChild.textContent += " (stack: " + e.stack + ")";
+		}
 	}
 
 	var key = "execcommand-" + command
@@ -1127,10 +1157,10 @@ function doSpecCell(tr, test, command, styleWithCss) {
 	localStorage[key] = specCell.lastChild.textContent;
 
 	if (oldValue !== null && oldValue !== undefined && oldValue != specCell.lastChild.textContent) {
-		specCell.appendChild(document.createElement("div"));
-		specCell.lastChild.style.color = "red";
-		specCell.lastChild.style.fontWeight = "bold";
-		specCell.lastChild.textContent = "Note, last run produced different markup: " + oldValue;
+		specCell.lastChild.appendChild(document.createElement("div"));
+		specCell.lastChild.lastChild.style.color = "red";
+		specCell.lastChild.lastChild.style.fontWeight = "bold";
+		specCell.lastChild.lastChild.textContent = "Note, last run produced different markup: " + oldValue;
 	}
 }
 
@@ -1189,6 +1219,9 @@ function doBrowserCell(tr, test, command, styleWithCss) {
 		browserCell.lastChild.style.color = "red";
 		browserCell.lastChild.style.fontWeight = "bold";
 		browserCell.lastChild.textContent = "Exception: " + e;
+		if ("stack" in e) {
+			specCell.lastChild.textContent += " (stack: " + e.stack + ")";
+		}
 		if (testDiv && testDiv.parentNode != browserCell) {
 			browserCell.insertBefore(testDiv, browserCell.firstChild);
 		}
@@ -1201,16 +1234,21 @@ function doSameCell(tr) {
 	try {
 		// Ad hoc normalization to avoid basically spurious mismatches.  For
 		// now this includes ignoring where the selection goes.
-		var normalizedSpecCell = tr.childNodes[1].childNodes[1].textContent
+		var normalizedSpecCell = tr.childNodes[1].lastChild.firstChild.textContent
 			.replace(/[[\]{}]/g, "")
+			.replace(/ style="margin: 0 40px"/g, "")
 			.replace(/: /g, ":")
 			.replace(/;? ?"/g, '"')
 			.replace(/<(\/?)strong/g, '<$1b')
 			.replace(/<(\/?)strike/g, '<$1s')
 			.replace(/<(\/?)em/g, '<$1i')
 			.replace(/#[0-9a-fA-F]{6}/g, function(match) { return match.toUpperCase(); });
-		var normalizedBrowserCell = tr.childNodes[2].childNodes[1].textContent
+		var normalizedBrowserCell = tr.childNodes[2].lastChild.firstChild.textContent
 			.replace(/[[\]{}]/g, "")
+			.replace(/ class="webkit-indent-blockquote" style="margin: 0 0 0 40px; border: none; padding: 0px;"/g, '')
+			.replace(/ style="margin-right: 0px;" dir="ltr"/g, '')
+			.replace(/ style="margin-left: 0px;" dir="rtl"/g, '')
+			.replace(/ style="margin-(left|right): 40px;"/g, '')
 			.replace(/: /g, ":")
 			.replace(/;? ?"/g, '"')
 			.replace(/<(\/?)strong/g, '<$1b')
@@ -1240,16 +1278,14 @@ function doSameCell(tr) {
 	tr.appendChild(sameCell);
 
 	// Insert zero-width spaces so IE doesn't stretch the screen
-	try {
-		tr.childNodes[2].childNodes[1].textContent =
-			tr.childNodes[2].childNodes[1].textContent
-			.replace(/</g, "\u200B<")
-			.replace(/>/g, ">\u200B");
-		tr.childNodes[1].childNodes[1].textContent =
-			tr.childNodes[1].childNodes[1].textContent
-			.replace(/</g, "\u200B<")
-			.replace(/>/g, ">\u200B");
-	} catch (e) {};
+	for (var i = 0; i <= 2; i++) {
+		try {
+			tr.childNodes[i].lastChild.firstChild.textContent =
+				tr.childNodes[i].lastChild.firstChild.textContent
+				.replace(/</g, "\u200B<")
+				.replace(/>/g, ">\u200B");
+		} catch (e) {};
+	}
 }
 
 function doTearDown(command) {

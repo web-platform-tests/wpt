@@ -1,0 +1,35 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+	<title>previousElementSibling</title>
+	<script type="text/javascript" charset="utf-8">	 
+	 function initTest ()
+	 {
+	   var lec = document.getElementById("last_element_child");
+	   var pes = lec.previousElementSibling;
+     if ( pes
+         && 1 == pes.nodeType 
+         && "middle_element_child" == pes.getAttribute("id") )
+     {
+  	   pes.firstChild.nodeValue = "pass!";
+     }
+	 }
+	</script>
+	
+</head>
+
+<body onload="initTest()">
+
+<h1>Test of previousElementSibling</h1>
+<p id="parentEl">The result of <span id="first_element_child">this test</span> is a 
+  <span id="middle_element_child" style="font-weight:bold;">fail.</span>  
+  
+  
+  
+  <span id="last_element_child" style="display:none;">fnord</span> </p>
+
+</body>
+</html>

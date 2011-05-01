@@ -1,0 +1,30 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+	<title>Null Test</title>
+  <script type="text/javascript" charset="utf-8">
+	 function initTest ()
+	 {
+	   var parentEl = document.getElementById("parentEl");
+	   var fec = parentEl.firstElementChild;
+	   var lec = parentEl.lastElementChild;
+     if ( null == fec 
+         && null == lec )
+     {
+  	   parentEl.firstChild.nodeValue = "Pass!";
+     }
+	 }
+	</script>
+	
+</head>
+
+<body onload="initTest()">
+
+  <h1>Test of firstElementChild and lastChildElement returning null</h1>
+  <p id="parentEl" style="font-weight:bold;">Fail.</p>
+
+</body>
+</html>

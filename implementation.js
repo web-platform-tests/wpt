@@ -336,6 +336,70 @@ function isInlineNode(node) {
 		&& ["inline", "inline-block", "inline-table"].indexOf(getComputedStyle(node).display) != -1));
 }
 
+function setTagName(element, newName) {
+	// "If element is an HTML element with local name equal to new name, return
+	// element."
+	if (isHtmlElement(element) && element.tagName == newName.toUpperCase()) {
+		return element;
+	}
+
+	// "If element's parent is null, return element."
+	if (!element.parentNode) {
+		return element;
+	}
+
+	// "Let replacement element be the result of calling createElement(new
+	// name) on the ownerDocument of element."
+	var replacementElement = element.ownerDocument.createElement(newName);
+
+	// "Insert replacement element into element's parent immediately before
+	// element."
+	element.parentNode.insertBefore(replacementElement, element);
+
+	// "Copy all attributes of element to replacement element, in order."
+	for (var i = 0; i < element.attributes.length; i++) {
+		replacementElement.setAttributeNS(element.attributes[i].namespaceURI, element.attributes[i].name, element.attributes[i].value);
+	}
+
+	// "While element has children, append the first child of element as the
+	// last child of replacement element, preserving ranges."
+	while (element.childNodes.length) {
+		movePreservingRanges(element.firstChild, replacementElement, replacementElement.childNodes.length);
+	}
+
+	// "Remove element from its parent."
+	element.parentNode.removeChild(element);
+
+	// "Return replacement element."
+	return replacementElement;
+}
+
+function removePreservingDescendants(node) {
+	// "Let children be a list of node's children."
+	var children = [].slice.call(node.childNodes);
+
+	// "If node's parent is null, remove all of node's children from node, then
+	// return children."
+	if (!node.parentNode) {
+		while (node.hasChildNodes()) {
+			node.removeChild(node.firstChild);
+		}
+		return children;
+	}
+
+	// "While node has children, insert the first child of node into node's
+	// parent immediately before node, preserving ranges."
+	while (node.hasChildNodes()) {
+		movePreservingRanges(node.firstChild, node.parentNode, getNodeIndex(node));
+	}
+
+	// "Remove node from its parent."
+	node.parentNode.removeChild(node);
+
+	// "Return children."
+	return children;
+}
+
 // "Something is editable if either it is an Element with a contenteditable
 // attribute set to the true state; or it is a Document whose designMode is
 // enabled; or it is a node whose parent is editable, but which does not have a
@@ -2073,45 +2137,9 @@ function myExecCommand(command, showUI, value, range) {
 			nodeList.push(node);
 		}
 
-		// "For each node in node list:"
+		// "Indent each member of node list."
 		for (var i = 0; i < nodeList.length; i++) {
-			var node = nodeList[i];
-
-			// "If the previousSibling of node is an HTML element; its
-			// "display" property computes to "block"; its "margin-left" and
-			// "margin-right" properties compute to "40px"; and its
-			// "margin-top" and "margin-bottom" properties compute to "0"; then
-			// append node as the last child of its previousSibling, preserving
-			// ranges, and continue with the next node."
-			if (isHtmlElement(node.previousSibling)) {
-				var style = getComputedStyle(node.previousSibling);
-				if (style.display == "block"
-				&& style.marginLeft == "40px"
-				&& style.marginRight == "40px"
-				&& style.marginTop == "0px"
-				&& style.marginBottom == "0px") {
-					movePreservingRanges(node, node.previousSibling, node.previousSibling.childNodes.length);
-					continue;
-				}
-			}
-
-			// "Let tag be "div" if the CSS styling flag is true, otherwise
-			// "blockquote"."
-			var tag = cssStylingFlag ? "div" : "blockquote";
-
-			// "Let new parent be the result of calling createElement(tag) on
-			// the ownerDocument of node."
-			var newParent = node.ownerDocument.createElement(tag);
-
-			// "Insert new parent into node's parent immediately before node."
-			node.parentNode.insertBefore(newParent, node);
-
-			// "Set the CSS property "margin" of new parent to "0 40px"."
-			newParent.setAttribute("style", "margin: 0 40px");
-
-			// "Append node as the last child of new parent, preserving
-			// ranges."
-			movePreservingRanges(node, newParent, 0);
+			indentNode(nodeList[i]);
 		}
 		break;
 
@@ -2271,8 +2299,8 @@ function myExecCommand(command, showUI, value, range) {
 		// "Block-extend the range, and let new range be the result."
 		var newRange = blockExtendRange(range);
 
-		// "Let node list be all nodes contained in new range, omitting any
-		// whose parent is also contained in new range."
+		// "Let node list be all nodes contained in new range that have no
+		// children."
 		var nodeList = [];
 		for (
 			var node = newRange.startContainer;
@@ -2280,74 +2308,14 @@ function myExecCommand(command, showUI, value, range) {
 			node = nextNode(node)
 		) {
 			if (isContained(node, newRange)
-			&& !isContained(node.parentNode, newRange)) {
+			&& !node.hasChildNodes()) {
 				nodeList.push(node);
 			}
 		}
 
-		// "For each node in node list:"
+		// "Outdent each member of node list."
 		for (var i = 0; i < nodeList.length; i++) {
-			var node = nodeList[i];
-
-			// "If node is a div or blockquote, and it has no attributes other
-			// than one or more of
-			//   "a. a style attribute that sets no properties other than
-			//       "margin", "border", "padding", or subproperties of those;
-			//   "b. a class attribute that sets exactly one class;
-			//   "c. a dir attribute;
-			// "then:"
-			//
-			// Not going to implement all the fancy checks, too much effort for
-			// a test implementation.
-			if (isHtmlElement(node)
-			&& (node.tagName == "BLOCKQUOTE"
-			|| (
-				node.tagName == "DIV"
-				&& node.attributes.length == 1
-				&& ["margin-left: 40px", "margin-right: 40px", "margin: 0 40px"].indexOf(node.getAttribute("style")) != -1
-			))) {
-				// "If node's last child and nextSibling are both inline nodes
-				// or its first child and previousSibling are both inline
-				// nodes:"
-				if ((isInlineNode(node.lastChild) && isInlineNode(node.nextSibling))
-				|| (isInlineNode(node.firstChild) && isInlineNode(node.previousSibling))) {
-					// "Let new parent be the result of calling
-					// createElement("div") on the ownerDocument of node."
-					var newParent = node.ownerDocument.createElement("div");
-
-					// "Insert new parent into node's parent immediately before
-					// node."
-					node.parentNode.insertBefore(newParent, node);
-
-					// "While node has children, append its first child as new
-					// parent's last child, preserving ranges."
-					while (node.firstChild) {
-						movePreservingRanges(node.firstChild, newParent, newParent.childNodes.length);
-					}
-
-				// "Otherwise, while node has children, insert its first child
-				// into its parent immediately before it, preserving ranges."
-				} else {
-					while (node.firstChild) {
-						movePreservingRanges(node.firstChild, node.parentNode, getNodeIndex(node));
-					}
-				}
-
-				// "Remove node from its parent."
-				node.parentNode.removeChild(node);
-
-				// "Continue with the next node."
-				continue;
-			}
-
-			// "If node has children, insert all of its children into node list
-			// immediately after node, so that the next node to be processed is
-			// the first child of the current node."
-			if (node.firstChild) {
-				nodeList = nodeList.slice(0, i + 1)
-					.concat(Array.prototype.slice.call(node.childNodes))
-					.concat(nodeList.slice(i + 1));
-			}
+			outdentNode(nodeList[i]);
 		}
 		break;
 
@@ -2515,6 +2483,224 @@ function myExecCommand(command, showUI, value, range) {
 		default:
 		break;
 	}
+}
+
+function indentNode(node) {
+	// "If the previousSibling of node is an HTML element; its
+	// "display" property computes to "block"; its "margin-left" and
+	// "margin-right" properties compute to "40px"; and its
+	// "margin-top" and "margin-bottom" properties compute to "0"; then
+	// append node as the last child of its previousSibling, preserving
+	// ranges, then abort these steps."
+	if (isHtmlElement(node.previousSibling)) {
+		var style = getComputedStyle(node.previousSibling);
+		if (style.display == "block"
+		&& style.marginLeft == "40px"
+		&& style.marginRight == "40px"
+		&& style.marginTop == "0px"
+		&& style.marginBottom == "0px") {
+			movePreservingRanges(node, node.previousSibling, node.previousSibling.childNodes.length);
+			return;
+		}
+	}
+
+	// "Let tag be "div" if the CSS styling flag is true, otherwise
+	// "blockquote"."
+	var tag = cssStylingFlag ? "div" : "blockquote";
+
+	// "Let new parent be the result of calling createElement(tag) on
+	// the ownerDocument of node."
+	var newParent = node.ownerDocument.createElement(tag);
+
+	// "Insert new parent into node's parent immediately before node."
+	node.parentNode.insertBefore(newParent, node);
+
+	// "Set the CSS property "margin" of new parent to "0 40px"."
+	newParent.setAttribute("style", "margin: 0 40px");
+
+	// "Append node as the last child of new parent, preserving
+	// ranges."
+	movePreservingRanges(node, newParent, 0);
+}
+
+function outdentNode(node) {
+	// "If node is not editable, abort these steps."
+	if (!isEditable(node)) {
+		return;
+	}
+
+	// "If node is an indentation element:"
+	if (isIndentationElement(node)) {
+		// "If node's last child and nextSibling are both inline nodes or its
+		// first child and previousSibling are both inline nodes, unset all
+		// attributes of node, then set the tag name of node to "div"."
+		if ((isInlineNode(node.lastChild) && isInlineNode(node.nextSibling))
+		|| (isInlineNode(node.firstChild) && isInlineNode(node.previousSibling))) {
+			while (node.attributes.length) {
+				node.removeAttribute(node.attributes[0].name);
+			}
+
+			setTagName(node, "div");
+
+		// "Otherwise, remove node, preserving its descendants."
+		} else {
+			removePreservingDescendants(node);
+		}
+
+		// "Abort these steps."
+		return;
+	}
+
+	// "If node is a potential indentation element:"
+	if (isPotentialIndentationElement(node)) {
+		// "Set the tag name of node to "div"."
+		setTagName(node, "div");
+
+		// "Unset the class and dir attributes of node, if any."
+		node.removeAttribute("class");
+		node.removeAttribute("dir");
+
+		// "Unset the margin, padding, and border CSS properties of node."
+		node.style.margin = "";
+		node.style.padding = "";
+		node.style.border = "";
+		if (node.getAttribute("style") == "") {
+			node.removeAttribute("style");
+		}
+
+		// "Abort these steps."
+		return;
+	}
+
+	// "Let current ancestor be node's parent."
+	var currentAncestor = node.parentNode;
+
+	// "Let ancestor list be a list of nodes, initially empty."
+	var ancestorList = [];
+
+	// "While current ancestor is an editable Element that is not an
+	// indentation element, append current ancestor to ancestor list and then
+	// set current ancestor to its parent."
+	while (isEditable(currentAncestor)
+	&& currentAncestor.nodeType == Node.ELEMENT_NODE
+	&& !isIndentationElement(currentAncestor)) {
+		ancestorList.push(currentAncestor);
+		currentAncestor = currentAncestor.parentNode;
+	}
+
+	// "If current ancestor is not an editable indentation element:"
+	if (!isEditable(currentAncestor)
+	|| !isIndentationElement(currentAncestor)) {
+		// "Let current ancestor be node's parent."
+		currentAncestor = node.parentNode;
+
+		// "Let ancestor list be the empty list."
+		ancestorList = [];
+
+		// "While current ancestor is an editable Element that is not a
+		// potential indentation element, append current ancestor to ancestor
+		// list and then set current ancestor to its parent."
+		while (isEditable(currentAncestor)
+		&& currentAncestor.nodeType == Node.ELEMENT_NODE
+		&& !isPotentialIndentationElement(currentAncestor)) {
+			ancestorList.push(currentAncestor);
+			currentAncestor = currentAncestor.parentNode;
+		}
+	}
+
+	// "If current ancestor is not an editable potential indentation element,
+	// abort these steps."
+	if (!isEditable(currentAncestor)
+	|| !isPotentialIndentationElement(currentAncestor)) {
+		return;
+	}
+
+	// "Append current ancestor to ancestor list."
+	ancestorList.push(currentAncestor);
+
+	// "Let original ancestor be current ancestor."
+	var originalAncestor = currentAncestor;
+
+	// "While ancestor list is not empty:"
+	while (ancestorList.length) {
+		// "Let current ancestor be the last member of ancestor list."
+		//
+		// "Remove the last member of ancestor list."
+		currentAncestor = ancestorList.pop();
+
+		// "Let children be the children of current ancestor."
+		var children = [].slice.call(currentAncestor.childNodes);
+
+		// "For each child in children, if child is neither node nor the last
+		// member of ancestor list, indent child."
+		for (var i = 0; i < children.length; i++) {
+			var child = children[i];
+			if (child != node && child != ancestorList[ancestorList.length - 1]) {
+				indentNode(child);
+			}
+		}
+	}
+
+	// "Outdent original ancestor."
+	outdentNode(originalAncestor);
+}
+
+// "A potential indentation element is either a blockquote, or a div that has a
+// style attribute that sets "margin" or some subproperty of it."
+function isPotentialIndentationElement(node) {
+	if (!isHtmlElement(node)) {
+		return false;
+	}
+
+	if (node.tagName == "BLOCKQUOTE") {
+		return true;
+	}
+
+	if (node.tagName != "DIV") {
+		return false;
+	}
+
+	for (var i = 0; i < node.style.length; i++) {
+		// Approximate check
+		if (/^(-[a-z]+-)?margin/.test(node.style[i])) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+// "An indentation element is a potential indentation element that has no
+// attributes other than one or more of
+//
+//   * "a style attribute that sets no properties other than "margin", "border",
+//     "padding", or subproperties of those;
+//   * "a class attribute;
+//   * "a dir attribute."
+function isIndentationElement(node) {
+	if (!isPotentialIndentationElement(node)) {
+		return false;
+	}
+
+	if (node.tagName != "BLOCKQUOTE" && node.tagName != "DIV") {
+		return false;
+	}
+
+	for (var i = 0; i < node.attributes.length; i++) {
+		if (!isHtmlNamespace(node.attributes[i].namespaceURI)
+		|| ["style", "class", "dir"].indexOf(node.attributes[i].name) == -1) {
+			return false;
+		}
+	}
+
+	for (var i = 0; i < node.style.length; i++) {
+		// This is approximate, but it works well enough for my purposes.
+		if (!/^(-[a-z]+-)?(margin|border|padding)/.test(node.style[i])) {
+			return false;
+		}
+	}
+
+	return true;
 }
 
 function myQueryCommandState(command) {

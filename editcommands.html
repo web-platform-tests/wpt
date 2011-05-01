@@ -27,7 +27,7 @@
 <body class=draft>
 <div class=head id=head>
 <h1>HTML Editing Commands</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-28-april-2011>Work in Progress &mdash; Last Update 28 April 2011</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-1-may-2011>Work in Progress &mdash; Last Update 1 May 2011</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;ayg+spec@aryeh.name&gt;
@@ -184,6 +184,51 @@ like this.
 
 <p>An <dfn id=inline-node>inline node</dfn> is either a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node, or an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> whose
 "display" property computes to "inline", "inline-block", or "inline-table".
+
+<p>To <dfn id=set-the-tag-name>set the tag name</dfn> of an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> <var title="">element</var> to
+<var title="">new name</var>, the user agent must run the following steps:
+
+<ol>
+  <li>If <var title="">element</var> is an <a href=#html-element>HTML element</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a>
+  equal to <var title="">new name</var>, return <var title="">element</var>.
+
+  <li>If <var title="">element</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is null, return <var title="">element</var>.
+
+  <li>Let <var title="">replacement element</var> be the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement(<var title="">new name</var>)</a></code> on
+  the <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">element</var>.
+
+  <li>Insert <var title="">replacement element</var> into <var title="">element</var>'s
+  <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> immediately before <var title="">element</var>.
+
+  <li>Copy all attributes of <var title="">element</var> to <var title="">replacement
+  element</var>, in order.
+
+  <li>While <var title="">element</var> has <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, append the first <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of
+  <var title="">element</var> as the last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">replacement element</var>,
+  <a href=#preserving-ranges>preserving ranges</a>.
+
+  <li>Remove <var title="">element</var> from its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+
+  <li>Return <var title="">replacement element</var>.
+</ol>
+
+<p>To remove a node <var title="">node</var> while <dfn id=preserving-its-descendants>preserving its
+descendants</dfn>:
+
+<ol>
+  <li>Let <var title="">children</var> be a list of <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>.
+
+  <li>If <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is null, remove all of <var title="">node</var>'s
+  <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a> from <var title="">node</var>, then return <var title="">children</var>.
+
+  <li>While <var title="">node</var> has <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, insert the first <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of
+  <var title="">node</var> into <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> immediately before
+  <var title="">node</var>, <a href=#preserving-ranges>preserving ranges</a>.
+
+  <li>Remove <var title="">node</var> from its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+
+  <li>Return <var title="">children</var>.
+</ol>
 
 <p>Something is <dfn id=editable>editable</dfn> if either it is an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> with a <code class=external data-anolis-spec=html title=attr-contenteditable><a href=http://www.whatwg.org/html/#attr-contenteditable>contenteditable</a></code>
 attribute set to the true state; or it is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#document>Document</a></code> whose <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/html/#designmode>designMode</a></code> is enabled; or it is a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> whose
@@ -1835,54 +1880,56 @@ fragments, html/body, head or things in head . . .
   <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of <var title="">node</var> is in <var title="">node list</var>, append
   <var title="">node</var> to <var title="">node list</var>.
 
-  <li>For each <var title="">node</var> in <var title="">node list</var>:
+  <li><a href=#indent>Indent</a> each member of <var title="">node list</var>.
+</ol>
 
-  <ol>
-    <li>If the <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code> of <var title="">node</var> is an <a href=#html-element>HTML
-    element</a>; its "display" property computes to "block"; its
-    "margin-left" and "margin-right" properties compute to "40px"; and its
-    "margin-top" and "margin-bottom" properties compute to "0"; then append
-    <var title="">node</var> as the last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of its <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code>,
-    <a href=#preserving-ranges>preserving ranges</a>, and continue with the next <var title="">node</var>.
+<p>To <dfn id=indent>indent</dfn> a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> <var title="">node</var>:
 
-    <li>Let <var title="">tag</var> be "div" if the <a href=#css-styling-flag>CSS styling flag</a> is
-    true, otherwise "blockquote".
-    <!-- Firefox 4.0 is the only tested browser that respects the CSS styling
-    flag for indent at all.  For indent, as for inline markup commands like
-    bold, it will modify the inline style of existing elements if available,
-    and only create spans/divs if there are no existing elements where it could
-    add the style instead.  For indent as for other commands, I follow WebKit
-    and always create an extra element, to ensure consistency between CSS and
-    non-CSS modes. -->
+<ol>
+  <li>If the <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code> of <var title="">node</var> is an <a href=#html-element>HTML
+  element</a>; its "display" property computes to "block"; its
+  "margin-left" and "margin-right" properties compute to "40px"; and its
+  "margin-top" and "margin-bottom" properties compute to "0"; then append
+  <var title="">node</var> as the last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of its <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code>,
+  <a href=#preserving-ranges>preserving ranges</a>, then abort these steps.
 
-    <li>Let <var title="">new parent</var> be the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement(<var title="">tag</var>)</a></code> on
-    the <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">node</var>.
+  <li>Let <var title="">tag</var> be "div" if the <a href=#css-styling-flag>CSS styling flag</a> is
+  true, otherwise "blockquote".
+  <!-- Firefox 4.0 is the only tested browser that respects the CSS styling
+  flag for indent at all.  For indent, as for inline markup commands like
+  bold, it will modify the inline style of existing elements if available,
+  and only create spans/divs if there are no existing elements where it could
+  add the style instead.  For indent as for other commands, I follow WebKit
+  and always create an extra element, to ensure consistency between CSS and
+  non-CSS modes. -->
 
-    <li>Insert <var title="">new parent</var> into <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>
-    immediately before <var title="">node</var>.
+  <li>Let <var title="">new parent</var> be the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement(<var title="">tag</var>)</a></code> on
+  the <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">node</var>.
 
-    <li>Set the CSS property "margin" of <var title="">new parent</var> to "0 40px".
+  <li>Insert <var title="">new parent</var> into <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>
+  immediately before <var title="">node</var>.
 
-    <p class=XXX>This indents on both sides, so we don't have to worry about
-    directionality.  Preferably we should indent only on the start side, but
-    that requires care to get right in mixed-direction cases.  Even once
-    browsers start to support margin-start and so on, we can't use them because
-    a) we have to work okay in legacy browsers and b) it doesn't help if a
-    descendant block has different direction (so should be indented the other
-    way).
+  <li>Set the CSS property "margin" of <var title="">new parent</var> to "0 40px".
 
-    <p class=XXX>IE9 doesn't handle an explicit margin attribute very well when
-    outdenting: it propagates it to the parent when removing the element, which
-    doesn't actually remove the indentation.  So indentation per spec (or
-    Gecko in CSS mode or WebKit) will not be removed correctly by IE.  I'm
-    leaving the style in because this short-term incompatibility is preferable
-    to the long-term incorrectness of adding top/bottom margins or adding
-    margins on both sides.  I can't think of any better way to do this at the
-    moment.
+  <p class=XXX>This indents on both sides, so we don't have to worry about
+  directionality.  Preferably we should indent only on the start side, but
+  that requires care to get right in mixed-direction cases.  Even once
+  browsers start to support margin-start and so on, we can't use them because
+  a) we have to work okay in legacy browsers and b) it doesn't help if a
+  descendant block has different direction (so should be indented the other
+  way).
 
-    <li>Append <var title="">node</var> as the last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">new parent</var>,
-    <a href=#preserving-ranges>preserving ranges</a>.
-  </ol>
+  <p class=XXX>IE9 doesn't handle an explicit margin attribute very well when
+  outdenting: it propagates it to the parent when removing the element, which
+  doesn't actually remove the indentation.  So indentation per spec (or
+  Gecko in CSS mode or WebKit) will not be removed correctly by IE.  I'm
+  leaving the style in because this short-term incompatibility is preferable
+  to the long-term incorrectness of adding top/bottom margins or adding
+  margins on both sides.  I can't think of any better way to do this at the
+  moment.
+
+  <li>Append <var title="">node</var> as the last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">new parent</var>,
+  <a href=#preserving-ranges>preserving ranges</a>.
 </ol>
 
 <dd><strong>State</strong>:
@@ -2029,92 +2076,176 @@ value</a> either "italic" or "oblique".  Otherwise false.
   the result.
 
   <li>Let <var title="">node list</var> be all <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in <var title="">new
-  range</var>, omitting any whose <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is also <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in <var title="">new
-  range</var>.
+  range</var> that have no <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>.
 
-  <li>For each <var title="">node</var> in <var title="">node list</var>:
+  <li><a href=#outdent>Outdent</a> each member of <var title="">node list</var>.
+</ol>
 
-  <!--
-  We need to remove all of the following:
+<p>To <dfn id=outdent>outdent</dfn> a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> <var title="">node</var>:
 
-  * Plain <blockquote> (produced by Opera 11.00 and non-CSS Firefox 4.0)
-  * <blockquote style="margin-right: 0" dir="ltr"> and <blockquote
-    style="margin-left: 0" dir="rtl"> (IE9)
-  * <blockquote class="webkit-indent-blockquote" style="margin: 0 0 0 40px;
-    border: none; padding: 0px"> (Chrome 12 dev)
-  * <div style="margin-left: 40px"> and <div style="margin-right: 40px">
-    (CSS Firefox 4.0 if no other element available)
-  * <blockquote style="margin: 0 40px"> and <div style="margin: 0 40px"> (spec)
-  * Other random things with display: block whose left or right margin was
-    increased by 40px (CSS Firefox 4.0)
-  -->
+<!--
+Things that are produced for indentation that we need to consider removing:
+
+* Plain <blockquote> (produced by Opera 11.00 and non-CSS Firefox 4.0)
+* <blockquote style="margin-right: 0" dir="ltr"> and <blockquote
+  style="margin-left: 0" dir="rtl"> (IE9)
+* <blockquote class="webkit-indent-blockquote" style="margin: 0 0 0 40px;
+  border: none; padding: 0px"> (Chrome 12 dev)
+* <div style="margin-left: 40px"> and <div style="margin-right: 40px">
+  (CSS Firefox 4.0 if no other element available)
+* <blockquote style="margin: 0 40px"> and <div style="margin: 0 40px"> (spec)
+* Other random things with display: block whose left or right margin was
+  increased by 40px (CSS Firefox 4.0)
+-->
+<ol>
+  <li>If <var title="">node</var> is not <a href=#editable>editable</a>, abort these steps.
+
+  <p class=XXX>Handle this better for nested editable/non-editable.
+
+  <!-- The easy case is when the whole element is indented.  In this case we
+  remove the whole thing indiscriminately.  In the case of blockquotes
+  created by IE, this might change the direction of some children, but then
+  their direction was probably changed incorrectly in the first place, so no
+  harm. -->
+  <li>If <var title="">node</var> is an <a href=#indentation-element>indentation element</a>:
+
   <ol>
-    <!-- The easy case is when the whole element is indented.  In this case we
-    remove the whole thing indiscriminately.  In the case of blockquotes
-    created by IE, this might change the direction of some children, but then
-    their direction was probably changed incorrectly in the first place, so no
-    harm. -->
-    <li>If <var title="">node</var> is a <code class=external data-anolis-spec=html title="the div element"><a href=http://www.whatwg.org/html/#the-div-element>div</a></code> or <code class=external data-anolis-spec=html title="the blockquote element"><a href=http://www.whatwg.org/html/#the-blockquote-element>blockquote</a></code>, and it has no
-    attributes other than one or more of
+    <li>If <var title="">node</var>'s last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> and <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code> are both
+    <a href=#inline-node title="inline node">inline nodes</a> or its first <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> and
+    <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code> are both <a href=#inline-node title="inline node">inline
+    nodes</a>, unset all attributes of <var title="">node</var>, then <a href=#set-the-tag-name>set the
+    tag name</a> of <var title="">node</var> to "div".
+    <!-- In this case, removing it entirely will result in its first or last
+    child becoming part of the previous or next sibling's line box, so we
+    want to keep a div. -->
 
-    <ol type=a>
-      <li>a <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code> attribute that sets no properties other than "margin",
-      "border", "padding", or subproperties of those;
+    <li>Otherwise, remove <var title="">node</var>, <a href=#preserving-its-descendants>preserving its
+    descendants</a>.
 
-      <li>a <code class=external data-anolis-spec=html title=classes><a href=http://www.whatwg.org/html/#classes>class</a></code> attribute
-      that sets exactly one class;
-
-      <li>a <code class=external data-anolis-spec=html title="the dir attribute"><a href=http://www.whatwg.org/html/#the-dir-attribute>dir</a></code>
-      attribute;
-    </ol>
-
-    then:
-
-    <ol>
-      <li>If <var title="">node</var>'s last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> and <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code> are both
-      <a href=#inline-node title="inline node">inline nodes</a> or its first <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> and
-      <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code> are both <a href=#inline-node title="inline node">inline
-      nodes</a>:
-
-      <ol>
-        <li>Let <var title="">new parent</var> be the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("div")</a></code> on the
-        <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">node</var>.
-
-        <li>Insert <var title="">new parent</var> into <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>
-        immediately before <var title="">node</var>.
-
-        <li>While <var title="">node</var> has <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, append its first <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>
-        as <var title="">new parent</var>'s last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>, <a href=#preserving-ranges>preserving
-        ranges</a>.
-      </ol>
-
-      <li>Otherwise, while <var title="">node</var> has <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, insert its first
-      <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> into its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> immediately before it, <a href=#preserving-ranges>preserving
-      ranges</a>.
-
-      <li>Remove <var title="">node</var> from its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
-
-      <li>Continue with the next <var title="">node</var>.
-    </ol>
+    <li>Abort these steps.
   </ol>
 
   <!-- No browser handles the case of Firefox 4.0 in CSS mode, where it adds a
   margin attribute to an existing element, including Firefox itself.  So let's
   just skip it. -->
 
-  <li class=XXX>If it's a blockquote element or an indented div that doesn't
-  otherwise meet our criteria, then . . .
+  <li>If <var title="">node</var> is a <a href=#potential-indentation-element>potential indentation element</a>:
+  <!-- This might be an indentation element that had style added to it by
+  Firefox in CSS mode, for instance (color, font-family, etc.). -->
 
-  <li class=XXX>If some ancestor is indenting us, then . . .
+  <ol>
+    <li><a href=#set-the-tag-name>Set the tag name</a> of <var title="">node</var> to "div".
 
-  <!-- No indentation to remove from this node, but maybe some descendant has.
-  We only want to remove one level of indentation, so we only run this step if
-  we didn't remove indentation already. -->
-  <li>If <var title="">node</var> has <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, insert all of its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a> into
-  <var title="">node list</var> immediately after <var title="">node</var>, so that the next
-  <var title="">node</var> to be processed is the first <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of the current
-  <var title="">node</var>.
+    <li>Unset the <code class=external data-anolis-spec=html title=classes><a href=http://www.whatwg.org/html/#classes>class</a></code> and
+    <code class=external data-anolis-spec=html title="the dir attribute"><a href=http://www.whatwg.org/html/#the-dir-attribute>dir</a></code>
+    attributes of <var title="">node</var>, if any.
+
+    <li>Unset the margin, padding, and border CSS properties of
+    <var title="">node</var>.
+
+    <li>Abort these steps.
+  </ol>
+
+  <!-- Approximate algorithms when an ancestor is causing the indentation
+  appear to be:
+
+  IE9: Go to the innermost element causing indentation.  If the stuff to be
+    outdented includes all the contents of that element, get rid of it, but
+    if it has any attributes, change it to a <p> with those same attributes.
+    This is an excellent idea in general, but unfortunately it preserves
+    explicitly-specified margins in style attributes, which isn't great.  In
+    other cases, it moves the stuff to be outdented outside.  Not clear on
+    all the details, seems to be pretty confusing.  Also does a bunch of
+    seemingly arbitrary normalization like removing divs and some attributes
+    from some things . . .
+  Firefox 4.0: Go to the innermost element causing indentation.  If the stuff
+    to be outdented includes all the contents of that element, get rid of it,
+    even if it has arbitrary attributes.  Otherwise, move the stuff to be
+    outdented outside the indenting element.  If there are any intervening
+    elements that include stuff not to be outdented, wrap the outdented stuff
+    in copies (which can duplicate id's, etc.).
+  Chrome 12 dev: Go to the outermost element causing indentation (even if the
+    current element is itself causing indentation).  Move the text to be
+    outdented outside that outermost element, without regard to any
+    intervening elements.  Then recreate the original styles on the moved
+    text, in some fashion.  Something like that; it confuses me and doesn't
+    seem to be reasonable.
+  Opera 11.00: Like Firefox, except it goes to the outermost element, not the
+    innermost.  Also seems to special-case to avoid duplicate id's, and has a
+    few other quirks.
+
+  Overall, all flawed, so I'll make up my own, patterned after pushing down
+  styles.  First we search ancestors for an indentation element, which we stand
+  a chance of completely removing.  Failing that, we look for a potential
+  indentation element, which we cannot completely remove. -->
+  <li>Let <var title="">current ancestor</var> be <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+
+  <li>Let <var title="">ancestor list</var> be a list of <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a>, initially empty.
+
+  <li>While <var title="">current ancestor</var> is an <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>
+  that is not an <a href=#indentation-element>indentation element</a>, append <var title="">current
+  ancestor</var> to <var title="">ancestor list</var> and then set <var title="">current
+  ancestor</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+
+  <li>If <var title="">current ancestor</var> is not an <a href=#editable>editable</a>
+  <a href=#indentation-element>indentation element</a>:
+
+  <ol>
+    <li>Let <var title="">current ancestor</var> be <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+
+    <li>Let <var title="">ancestor list</var> be the empty list.
+
+    <li>While <var title="">current ancestor</var> is an <a href=#editable>editable</a>
+    <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> that is not a <a href=#potential-indentation-element>potential indentation element</a>,
+    append <var title="">current ancestor</var> to <var title="">ancestor list</var> and then set
+    <var title="">current ancestor</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+  </ol>
+
+  <li>If <var title="">current ancestor</var> is not an <a href=#editable>editable</a>
+  <a href=#potential-indentation-element>potential indentation element</a>, abort these steps.
+
+  <!-- At this point, we have an ancestor to split up. -->
+  <li>Append <var title="">current ancestor</var> to <var title="">ancestor list</var>.
+
+  <li>Let <var title="">original ancestor</var> be <var title="">current ancestor</var>.
+  <!-- We can't outdent it yet, because we need its children to remain intact
+  for the loop. -->
+
+  <li>While <var title="">ancestor list</var> is not empty:
+
+  <ol>
+    <li>Let <var title="">current ancestor</var> be the last member of <var title="">ancestor
+    list</var>.
+
+    <li>Remove the last member of <var title="">ancestor list</var>.
+
+    <li>Let <var title="">children</var> be the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a> of <var title="">current
+    ancestor</var>.
+
+    <li>For each <var title="">child</var> in <var title="">children</var>, if <var title="">child</var>
+    is neither <var title="">node</var> nor the last member of <var title="">ancestor list</var>,
+    <a href=#indent>indent</a> <var title="">child</var>.
+  </ol>
+
+  <li><a href=#outdent>Outdent</a> <var title="">original ancestor</var>.
 </ol>
+
+<p>A <dfn id=potential-indentation-element>potential indentation element</dfn> is either a <code class=external data-anolis-spec=html title="the blockquote element"><a href=http://www.whatwg.org/html/#the-blockquote-element>blockquote</a></code>, or a
+<code class=external data-anolis-spec=html title="the div element"><a href=http://www.whatwg.org/html/#the-div-element>div</a></code> that has a <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code> attribute that sets "margin" or some subproperty
+of it.
+
+<p>An <dfn id=indentation-element>indentation element</dfn> is an <a href=#potential-indentation-element>potential indentation
+element</a> that has no attributes other than one or more of
+
+<ul>
+  <li>a <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code> attribute that sets no properties other than "margin",
+  "border", "padding", or subproperties of those;
+
+  <li>a <code class=external data-anolis-spec=html title=classes><a href=http://www.whatwg.org/html/#classes>class</a></code> attribute;
+
+  <li>a <code class=external data-anolis-spec=html title="the dir attribute"><a href=http://www.whatwg.org/html/#the-dir-attribute>dir</a></code>
+  attribute.
+</ul>
 
 <dd><strong>State</strong>:
 

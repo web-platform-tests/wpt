@@ -621,10 +621,10 @@ var tests = {
 		'<blockquote><p>foo[bar</p></blockquote><p>b]az</p><p>extra',
 
 		// IE:
-		'<blockquote style="margin-right: 0" dir="ltr"><p>foo[bar]</p><p>baz</p></blockquote><p>extra',
-		'<blockquote style="margin-right: 0" dir="ltr"><p>foo[bar</p><p>b]az</p></blockquote><p>extra',
-		'<blockquote style="margin-right: 0" dir="ltr"><p>foo[bar]</p></blockquote><p>baz</p><p>extra',
-		'<blockquote style="margin-right: 0" dir="ltr"><p>foo[bar</p></blockquote><p>b]az</p><p>extra',
+		'<blockquote style="margin-right: 0px;" dir="ltr"><p>foo[bar]</p><p>baz</p></blockquote><p>extra',
+		'<blockquote style="margin-right: 0px;" dir="ltr"><p>foo[bar</p><p>b]az</p></blockquote><p>extra',
+		'<blockquote style="margin-right: 0px;" dir="ltr"><p>foo[bar]</p></blockquote><p>baz</p><p>extra',
+		'<blockquote style="margin-right: 0px;" dir="ltr"><p>foo[bar</p></blockquote><p>b]az</p><p>extra',
 
 		// Firefox CSS mode:
 		'<p style="margin-left: 40px">foo[bar]</p><p style="margin-left: 40px">baz</p><p>extra',
@@ -633,16 +633,34 @@ var tests = {
 		'<p style="margin-left: 40px">foo[bar</p><p>b]az</p><p>extra',
 
 		// WebKit:
-		'<blockquote class="webkit-indent-blockquote" style="margin: 0 0 0 40px; border: none; padding: 0px"><p>foo[bar]</p><p>baz</p></blockquote><p>extra',
-		'<blockquote class="webkit-indent-blockquote" style="margin: 0 0 0 40px; border: none; padding: 0px"><p>foo[bar</p><p>b]az</p></blockquote><p>extra',
-		'<blockquote class="webkit-indent-blockquote" style="margin: 0 0 0 40px; border: none; padding: 0px"><p>foo[bar]</p></blockquote><p>baz</p><p>extra',
-		'<blockquote class="webkit-indent-blockquote" style="margin: 0 0 0 40px; border: none; padding: 0px"><p>foo[bar</p></blockquote><p>b]az</p><p>extra',
+		'<blockquote class="webkit-indent-blockquote" style="margin: 0 0 0 40px; border: none; padding: 0px;"><p>foo[bar]</p><p>baz</p></blockquote><p>extra',
+		'<blockquote class="webkit-indent-blockquote" style="margin: 0 0 0 40px; border: none; padding: 0px;"><p>foo[bar</p><p>b]az</p></blockquote><p>extra',
+		'<blockquote class="webkit-indent-blockquote" style="margin: 0 0 0 40px; border: none; padding: 0px;"><p>foo[bar]</p></blockquote><p>baz</p><p>extra',
+		'<blockquote class="webkit-indent-blockquote" style="margin: 0 0 0 40px; border: none; padding: 0px;"><p>foo[bar</p></blockquote><p>b]az</p><p>extra',
 
 		// Spec:
 		'<blockquote style="margin: 0 40px"><p>foo[bar]</p><p>baz</p></blockquote><p>extra',
 		'<blockquote style="margin: 0 40px"><p>foo[bar</p><p>b]az</p></blockquote><p>extra',
 		'<blockquote style="margin: 0 40px"><p>foo[bar]</p></blockquote><p>baz</p><p>extra',
 		'<blockquote style="margin: 0 40px"><p>foo[bar</p></blockquote><p>b]az</p><p>extra',
+		'<div style="margin: 0 40px"><p>foo[bar]</p><p>baz</p></div><p>extra',
+		'<div style="margin: 0 40px"><p>foo[bar</p><p>b]az</p></div><p>extra',
+		'<div style="margin: 0 40px"><p>foo[bar]</p></div><p>baz</p><p>extra',
+		'<div style="margin: 0 40px"><p>foo[bar</p></div><p>b]az</p><p>extra',
+
+		// Now let's try nesting lots of stuff and see what happens.
+		'<blockquote><blockquote>foo[bar]baz</blockquote></blockquote>',
+		'<blockquote><blockquote data-abc=def>foo[bar]baz</blockquote></blockquote>',
+		'<blockquote data-abc=def><blockquote>foo[bar]baz</blockquote></blockquote>',
+		'<blockquote><div><p>foo[bar]<p>baz</div></blockquote>',
+		'<blockquote><div id=abc><p>foo[bar]<p>baz</div></blockquote>',
+		'<blockquote id=abc><p>foo[bar]<p>baz</blockquote>',
+		'<blockquote style="color: red"><p>foo[bar]<p>baz</blockquote>',
+		'<blockquote><p><b>foo[bar]</b><p>baz</blockquote>',
+		'<blockquote><p><strong>foo[bar]</strong><p>baz</blockquote>',
+		'<blockquote><p><span>foo[bar]</span><p>baz</blockquote>',
+		'<blockquote><blockquote style="color: red"><p>foo[bar]</blockquote><p>baz</blockquote>',
+		'<blockquote style="color: red"><blockquote><p>foo[bar]</blockquote><p>baz</blockquote>',
 	],
 	removeformat: [
 		'foo[]bar',
@@ -1102,10 +1120,12 @@ function addTest(command) {
 
 	var test;
 	var inputs = document.getElementById(command).getElementsByTagName("input");
+	// Strip \u200B (zero-width space) so copy-pasting from the cells works
+	// non-confusingly
 	if (inputs.length == 1) {
-		test = inputs[0].value;
+		test = inputs[0].value.replace(/\u200B/g, "");
 	} else {
-		test = [inputs[1].value, inputs[0].value];
+		test = [inputs[1].value, inputs[0].value.replace(/\u200B/g, "")];
 	}
 
 	doInputCell(tr, test);

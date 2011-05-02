@@ -1393,9 +1393,36 @@ meanings, are as follows.  These values must be compared to the argument in an
 <dfn>relevant CSS property</dfn> of a command is defined here, and is null if
 omitted for a particular command.
 
-<!-- Notes on commands I've looked at but haven't bothered specifying yet:
+<!--
+Things that are only implemented by a couple of browsers and may or may not be
+useful to spec:
 
 * decreaseFontSize, increaseFontSize: Only implemented in Gecko and Opera.
+* contentReadOnly, enableInlineTableEditing, enableObjectResizing, heading,
+  insertBrOnReturn: MDC docs say not implemented in IE (didn't test).
+* readOnly: MDC docs say it's a deprecated equivalent of contentReadOnly, so
+  presumably like useCSS but less popular.
+* 2D-Position, absolutePosition, clearAuthenticationCache, createBookmark,
+  insertButton, insertFieldset, insertIframe, insertInput*, insertMarquee,
+  insertSelectDropdown, insertSelectListbox, insertTextarea, liveResize,
+  multipleSelection, overwrite, print, refresh, saveAs, unbookmark: Mentioned
+  in MSDN docs but not MDC, so presumably IE-only.  Some of these seem
+  inappropriate or useless, others will bear investigation.
+
+Things I haven't looked at:
+
+* copy, cut, paste: Needs attention to security.
+* delete, redo, undo: Needs review of the Google work on this; will probably be
+  quite complicated.
+* formatBlock, insertOrderedList, insertUnorderedList, insertParagraph,
+  justifyCenter, justifyFull, justifyLeft, justifyRight: These look important
+  and should be similar to indent, so they're next on my list.
+* insertHTML: Not supported by IE, but important.  I've seen frameworks that
+  work around its absence in IE by using insertImage and then search and
+  replace.  Will probably need to be defined in terms of insertAdjacentHTML or
+  something.
+* selectAll, unselect: Should be easy, although they seem redundant to just
+  calling methods of the Selection.
 -->
 
 <dl>

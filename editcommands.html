@@ -27,7 +27,7 @@
 <body class=draft>
 <div class=head id=head>
 <h1>HTML Editing Commands</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-1-may-2011>Work in Progress &mdash; Last Update 1 May 2011</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-2-may-2011>Work in Progress &mdash; Last Update 2 May 2011</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;ayg+spec@aryeh.name&gt;
@@ -230,13 +230,19 @@ descendants</dfn>:
   <li>Return <var title="">children</var>.
 </ol>
 
-<p>Something is <dfn id=editable>editable</dfn> if either it is an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> with a <code class=external data-anolis-spec=html title=attr-contenteditable><a href=http://www.whatwg.org/html/#attr-contenteditable>contenteditable</a></code>
-attribute set to the true state; or it is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#document>Document</a></code> whose <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/html/#designmode>designMode</a></code> is enabled; or it is a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> whose
-<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is <a href=#editable>editable</a>, but which does not have a <code class=external data-anolis-spec=html title=attr-contenteditable><a href=http://www.whatwg.org/html/#attr-contenteditable>contenteditable</a></code>
-attribute set to the false state.
+<p>An <dfn id=editing-host>editing host</dfn> is a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> that is either an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> with
+a <code class=external data-anolis-spec=html title=attr-contenteditable><a href=http://www.whatwg.org/html/#attr-contenteditable>contenteditable</a></code>
+attribute set to the true state, or a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#document>Document</a></code> whose <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/html/#designmode>designMode</a></code> is enabled.
 
-<p>An <dfn id=editing-host>editing host</dfn> is a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> that is <a href=#editable>editable</a>, and
-whose <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is not <a href=#editable>editable</a>.
+<p>Something is <dfn id=editable>editable</dfn> if it is a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> which is not an
+<a href=#editing-host>editing host</a>, does not have a <code class=external data-anolis-spec=html title=attr-contenteditable><a href=http://www.whatwg.org/html/#attr-contenteditable>contenteditable</a></code> attribute set to the false
+state, and whose <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is an <a href=#editing-host>editing host</a> or
+<a href=#editable>editable</a>.
+
+<p class=note>The algorithms here will generally not remove or alter the
+attributes of any node that is not editable.  Note that an editing host is not
+editable, so authors are assured that editing commands will only modify the
+editing host's contents and not the editing host itself.
 
 <p>A <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> is <dfn id=effectively-contained>effectively contained</dfn> in a <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> if either it
 is <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>; or it is the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a>
@@ -256,7 +262,7 @@ splitText() is returned. -->
 be used where only <a class=external data-anolis-spec=html href=http://www.whatwg.org/html/#phrasing-content>phrasing content</a> is expected (not counting unknown or
 obsolete elements, which cannot be used at all); or any <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> whose
 display property computes to something other than "inline", "inline-block", or
-"inline-table"; or any <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> whose <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is not <a href=#editable>editable</a>.
+"inline-table"; or any <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> that is not <a href=#editable>editable</a>.
 
 <p class=XXX>Currently when we hit an unwrappable element, we ignore it and
 alter its children.  Alternatively, if we would otherwise create a span with a
@@ -789,7 +795,7 @@ with a <code class=external data-anolis-spec=html title="the style attribute"><a
   <li>Let <var title="">ancestor list</var> be a list of <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a>, initially empty.
 
   <li>While <var title="">current ancestor</var> is an <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>
-  and the <a href=#effective-value>effective value</a> of <var title="">property</var> is not <var title="">new
+  and the <a href=#effective-value>effective value</a> of <var title="">command</var> is not <var title="">new
   value</var> on it, append <var title="">current ancestor</var> to <var title="">ancestor
   list</var>, then set <var title="">current ancestor</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
 
@@ -809,8 +815,9 @@ with a <code class=external data-anolis-spec=html title="the style attribute"><a
   purpose.  Except if the value is null, which basically just means "try to get
   rid of anything affecting the current element but don't aim for any specific
   value". -->
-  <li>If the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of the last member of <var title="">ancestor list</var> is not
-  an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>, and <var title="">new value</var> is not null, abort this algorithm.
+  <li>If the <a href=#effective-value>effective value</a> of <var title="">command</var> is not
+  <var title="">new value</var> on the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of the last member of <var title="">ancestor
+  list</var>, and <var title="">new value</var> is not null, abort this algorithm.
 
   <li>While <var title="">ancestor list</var> is not empty:
 

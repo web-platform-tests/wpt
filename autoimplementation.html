@@ -519,6 +519,15 @@ var tests = {
 		'<blockquote style="margin: 0 40px"><p>foo[bar</p><p>b]az</p></blockquote><p>extra',
 		'<blockquote style="margin: 0 40px"><p>foo[bar]</p></blockquote><p>baz</p><p>extra',
 		'<blockquote style="margin: 0 40px"><p>foo[bar</p></blockquote><p>b]az</p><p>extra',
+		'<div style="margin: 0 40px"><p>foo[bar]</p><p>baz</p></div><p>extra',
+		'<div style="margin: 0 40px"><p>foo[bar</p><p>b]az</p></div><p>extra',
+		'<div style="margin: 0 40px"><p>foo[bar]</p></div><p>baz</p><p>extra',
+		'<div style="margin: 0 40px"><p>foo[bar</p></div><p>b]az</p><p>extra',
+
+		// MDC says "In Firefox, if the selection spans multiple lines at
+		// different levels of indentation, only the least indented lines in
+		// the selection will be indented."  Let's test that.
+		'<blockquote>f[oo<blockquote>b]ar</blockquote></blockquote><p>extra',
 	],
 	inserthorizontalrule: [
 		'foo[]bar',

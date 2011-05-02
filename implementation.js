@@ -400,24 +400,24 @@ function removePreservingDescendants(node) {
 	return children;
 }
 
-// "Something is editable if either it is an Element with a contenteditable
-// attribute set to the true state; or it is a Document whose designMode is
-// enabled; or it is a node whose parent is editable, but which does not have a
-// contenteditable attribute set to the false state."
-function isEditable(node) {
-	// This is slightly a lie, because we're excluding non-HTML elements with
-	// contentEditable attributes.  Maybe we want to, though . . .
-	return (node instanceof Element && node.contentEditable == "true")
-		|| (node instanceof Document && node.designMode == "on")
-		|| (node instanceof Node && node.contentEditable !== "false" && isEditable(node.parentNode));
+// "An editing host is a node that is either an Element with a contenteditable
+// attribute set to the true state, or a Document whose designMode is enabled."
+function isEditingHost(node) {
+	return node
+		&& ((node.nodeType == Node.ELEMENT_NODE && node.contentEditable == "true")
+		|| (node.nodeType == Node.DOCUMENT_NODE && node.designMode == "on"));
 }
 
-// "An editing host is a node that is editable, and whose parent is not
-// editable."
-function isEditingHost(node) {
-	return node instanceof Node
-		&& isEditable(node)
-		&& !isEditable(node.parentNode);
+// "Something is editable if it is a node which is not an editing host, does
+// not have a contenteditable attribute set to the false state, and whose
+// parent is an editing host or editable."
+function isEditable(node) {
+	// This is slightly a lie, because we're excluding non-HTML elements with
+	// contentEditable attributes.
+	return node
+		&& !isEditingHost(node)
+		&& (node.nodeType != Node.ELEMENT_NODE || node.contentEditable != "false")
+		&& (isEditingHost(node.parentNode) || isEditable(node.parentNode));
 }
 
 /**
@@ -456,7 +456,7 @@ function isEffectivelyContained(node, range) {
 // phrasing content is expected (not counting unknown or obsolete elements,
 // which cannot be used at all); or any Element whose display property computes
 // to something other than "inline", "inline-block", or "inline-table"; or any
-// node whose parent is not editable."
+// node that is not editable."
 //
 // I don't bother implementing this exactly, just well enough for testing.
 function isUnwrappableNode(node) {
@@ -464,7 +464,7 @@ function isUnwrappableNode(node) {
 		return false;
 	}
 
-	if (!isEditable(node.parentNode)) {
+	if (!isEditable(node)) {
 		return true;
 	}
 
@@ -1352,11 +1352,11 @@ function pushDownValues(node, command, newValue) {
 		return;
 	}
 
-	// "If the parent of the last member of ancestor list is not an Element,
-	// and new value is not null, abort this algorithm."
+	// "If the effective value of command is not new value on the parent of
+	// the last member of ancestor list, and new value is not null, abort this
+	// algorithm."
 	if (newValue !== null
-	&& (!ancestorList[ancestorList.length - 1].parentNode
-	|| ancestorList[ancestorList.length - 1].parentNode.nodeType != Node.ELEMENT_NODE)) {
+	&& !valuesEqual(command, getEffectiveValue(ancestorList[ancestorList.length - 1].parentNode, command), newValue)) {
 		return;
 	}
 

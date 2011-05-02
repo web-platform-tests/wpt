@@ -219,16 +219,21 @@ descendants</dfn>:
   <li>Return <var>children</var>.
 </ol>
 
-<p>Something is <dfn>editable</dfn> if either it is an [[element]] with a <code
-data-anolis-spec=html title=attr-contenteditable>contenteditable</code>
-attribute set to the true state; or it is a [[document]] whose <code
-data-anolis-spec=html>designMode</code> is enabled; or it is a [[node]] whose
-[[parent]] is <span>editable</span>, but which does not have a <code
-data-anolis-spec=html title=attr-contenteditable>contenteditable</code>
-attribute set to the false state.
+<p>An <dfn>editing host</dfn> is a [[node]] that is either an [[element]] with
+a <code data-anolis-spec=html title=attr-contenteditable>contenteditable</code>
+attribute set to the true state, or a [[document]] whose <code
+data-anolis-spec=html>designMode</code> is enabled.
 
-<p>An <dfn>editing host</dfn> is a [[node]] that is <span>editable</span>, and
-whose [[parent]] is not <span>editable</span>.
+<p>Something is <dfn>editable</dfn> if it is a [[node]] which is not an
+<span>editing host</span>, does not have a <code data-anolis-spec=html
+title=attr-contenteditable>contenteditable</code> attribute set to the false
+state, and whose [[parent]] is an <span>editing host</span> or
+<span>editable</span>.
+
+<p class=note>The algorithms here will generally not remove or alter the
+attributes of any node that is not editable.  Note that an editing host is not
+editable, so authors are assured that editing commands will only modify the
+editing host's contents and not the editing host itself.
 
 <p>A [[node]] is <dfn>effectively contained</dfn> in a [[range]] if either it
 is [[contained]] in the [[range]]; or it is the [[range]]'s [[rangestart]]
@@ -248,7 +253,7 @@ splitText() is returned. -->
 be used where only [[phrasingcontent]] is expected (not counting unknown or
 obsolete elements, which cannot be used at all); or any [[element]] whose
 display property computes to something other than "inline", "inline-block", or
-"inline-table"; or any [[node]] whose [[parent]] is not <span>editable</span>.
+"inline-table"; or any [[node]] that is not <span>editable</span>.
 
 <p class=XXX>Currently when we hit an unwrappable element, we ignore it and
 alter its children.  Alternatively, if we would otherwise create a span with a
@@ -785,7 +790,7 @@ with a [[style]] attribute).
   <li>Let <var>ancestor list</var> be a list of [[nodes]], initially empty.
 
   <li>While <var>current ancestor</var> is an <span>editable</span> [[element]]
-  and the <span>effective value</span> of <var>property</var> is not <var>new
+  and the <span>effective value</span> of <var>command</var> is not <var>new
   value</var> on it, append <var>current ancestor</var> to <var>ancestor
   list</var>, then set <var>current ancestor</var> to its [[parent]].
 
@@ -805,8 +810,9 @@ with a [[style]] attribute).
   purpose.  Except if the value is null, which basically just means "try to get
   rid of anything affecting the current element but don't aim for any specific
   value". -->
-  <li>If the [[parent]] of the last member of <var>ancestor list</var> is not
-  an [[element]], and <var>new value</var> is not null, abort this algorithm.
+  <li>If the <span>effective value</span> of <var>command</var> is not
+  <var>new value</var> on the [[parent]] of the last member of <var>ancestor
+  list</var>, and <var>new value</var> is not null, abort this algorithm.
 
   <li>While <var>ancestor list</var> is not empty:
 

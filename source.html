@@ -588,8 +588,6 @@ title>splitText()</code>.
 <p>When a user agent is to <dfn>block-extend</dfn> a [[range]]
 <var>range</var>, it must run the following steps:
 
-<p class=XXX>Surely I can come up with a better name.
-
 <ol>
   <li>Let <var>start node</var>, <var>start offset</var>, <var>end node</var>,
   and <var>end offset</var> be the [[rangestart]] and [[rangeend]] [[bpnodes]]
@@ -611,6 +609,10 @@ title>splitText()</code>.
     <li>Otherwise, if the [[child]] of <var>start node</var> with [[index]]
     <var>start offset</var> minus one is a [[text]] or [[comment]] node, or an
     (insert definition here), subtract one from <var>start offset</var>.
+
+    <p class=XXX>This is wrong if the child we're currently before is a block
+    element.  We should only decrement if the current and previous children are
+    both inline.  Also, should I just use <span>inline node</span> here?
 
     <p class=XXX>The definition should include all inline elements except
     &lt;br>.  As elsewhere, we have trouble with the exact definition because

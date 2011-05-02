@@ -593,8 +593,6 @@ agents follow the <a class=external data-anolis-spec=domrange href=http://html5.
 <p>When a user agent is to <dfn id=block-extend>block-extend</dfn> a <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>
 <var title="">range</var>, it must run the following steps:
 
-<p class=XXX>Surely I can come up with a better name.
-
 <ol>
   <li>Let <var title="">start node</var>, <var title="">start offset</var>, <var title="">end node</var>,
   and <var title="">end offset</var> be the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> and <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>nodes</a>
@@ -616,6 +614,10 @@ agents follow the <a class=external data-anolis-spec=domrange href=http://html5.
     <li>Otherwise, if the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">start node</var> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a>
     <var title="">start offset</var> minus one is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> or <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#comment>Comment</a></code> node, or an
     (insert definition here), subtract one from <var title="">start offset</var>.
+
+    <p class=XXX>This is wrong if the child we're currently before is a block
+    element.  We should only decrement if the current and previous children are
+    both inline.  Also, should I just use <a href=#inline-node>inline node</a> here?
 
     <p class=XXX>The definition should include all inline elements except
     &lt;br&gt;.  As elsewhere, we have trouble with the exact definition because

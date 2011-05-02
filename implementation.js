@@ -2114,11 +2114,11 @@ function myExecCommand(command, showUI, value, range) {
 		// "Let node list be a list of nodes, initially empty."
 		var nodeList = [];
 
-		// "For each node node contained in new range, if node can be the child
-		// of a blockquote and if no ancestor of node is in node list, append
-		// node to node list."
+		// "For each node node contained in new range, if node is editable and
+		// can be the child of a blockquote and if no ancestor of node is in
+		// node list, append node to node list."
 		for (var node = newRange.startContainer; node != nextNodeDescendants(newRange.endContainer); node = nextNode(node)) {
-			if (!isContained(node, newRange)) {
+			if (!isContained(node, newRange) || !isEditable(node)) {
 				continue;
 			}
 

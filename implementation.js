@@ -2101,7 +2101,7 @@ function myExecCommand(command, showUI, value, range) {
 		var end = newRange.endContainer.childNodes[newRange.endOffset];
 		if (isHtmlElement(end) && end.tagName == "BR") {
 			// "Remove that br from its parent."
-			end.parentNode.removeChild(br);
+			end.parentNode.removeChild(end);
 
 			// "While the end offset of new range is equal to the length of its
 			// end node, set the end of new range to (parent of end node, 1 +

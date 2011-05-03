@@ -2127,8 +2127,8 @@ function myExecCommand(command, showUI, value, range) {
 		var nodeList = [];
 
 		// "For each node node contained in new range, if node is editable and
-		// can be the child of a blockquote and if no ancestor of node is in
-		// node list, append node to node list."
+		// can be the child of a div or ol or ul and if no ancestor of node is
+		// in node list, append node to node list."
 		for (var node = newRange.startContainer; node != nextNodeDescendants(newRange.endContainer); node = nextNode(node)) {
 			if (!isContained(node, newRange) || !isEditable(node)) {
 				continue;
@@ -2498,13 +2498,85 @@ function myExecCommand(command, showUI, value, range) {
 }
 
 function indentNode(node) {
-	// "If the previousSibling of node is an HTML element; its
-	// "display" property computes to "block"; its "margin-left" and
-	// "margin-right" properties compute to "40px"; and its
-	// "margin-top" and "margin-bottom" properties compute to "0"; then
-	// append node as the last child of its previousSibling, preserving
-	// ranges, then abort these steps."
-	if (isHtmlElement(node.previousSibling)) {
+	// "If node is an li whose parent is an ol or ul:"
+	if (isHtmlElement(node)
+	&& node.tagName == "LI"
+	&& isHtmlElement(node.parentNode)
+	&& (node.parentNode.tagName == "OL" || node.parentNode.tagName == "UL")) {
+		// "Let tag be the local name of the parent of node."
+		var tag = node.parentNode.tagName;
+
+		// "If the previousSibling of node is an HTML element with local name
+		// tag, append node as the last child of its previousSibling,
+		// preserving ranges. Then abort these steps."
+		if (isHtmlElement(node.previousSibling)
+		&& node.previousSibling.tagName == tag) {
+			movePreservingRanges(node, node.previousSibling, getNodeLength(node.previousSibling));
+			return;
+		}
+
+		// "If the previousSibling of node is an li, and the last child of its
+		// previousSibling is an HTML element with local name tag, append node
+		// as the last child of the last child of the previousSibling of node,
+		// preserving ranges. Then abort these steps."
+		if (isHtmlElement(node.previousSibling)
+		&& node.previousSibling.tagName == "LI"
+		&& isHtmlElement(node.previousSibling.lastChild)
+		&& node.previousSibling.lastChild.tagName == tag) {
+			movePreservingRanges(node, node.previousSibling.lastChild, getNodeLength(node.previousSibling.lastChild));
+			return;
+		}
+
+		// "If the nextSibling of node is an HTML element with local name tag,
+		// insert node as the first child of its nextSibling, preserving
+		// ranges. Then abort these steps."
+		if (isHtmlElement(node.nextSibling)
+		&& node.nextSibling.tagName == tag) {
+			movePreservingRanges(node, node.nextSibling, 0);
+			return;
+		}
+
+		// "If the nextSibling of node is an li, and the first child of its
+		// nextSibling is an HTML element with local name tag, insert node as
+		// the first child of the first child of the nextSibling of node,
+		// preserving ranges. Then abort these steps."
+		if (isHtmlElement(node.nextSibling)
+		&& node.nextSibling.tagName == "LI"
+		&& isHtmlElement(node.nextSibling.firstChild)
+		&& node.nextSibling.firstChild.tagName == tag) {
+			movePreservingRanges(node, node.nextSibling.firstChild, 0);
+			return;
+		}
+
+		// "Let new parent be the result of calling createElement(tag) on the
+		// ownerDocument of node."
+		var newParent = node.ownerDocument.createElement(tag);
+
+		// "If the previousSibling of node is an li, append new parent as the
+		// last child of the previousSibling of node."
+		if (isHtmlElement(node.previousSibling)
+		&& node.previousSibling.tagName == "LI") {
+			node.previousSibling.appendChild(newParent);
+
+		// "Otherwise, insert new parent into the parent of node immediately
+		// before node."
+		} else {
+			node.parentNode.insertBefore(newParent, node);
+		}
+
+		// "Append node as the last child of new parent, preserving ranges."
+		movePreservingRanges(node, newParent, 0);
+
+		// "Abort these steps."
+		return;
+	}
+
+	// "If the previousSibling of node is an indentation element; its "display"
+	// property computes to "block"; its "margin-left" and "margin-right"
+	// properties compute to "40px"; and its "margin-top" and "margin-bottom"
+	// properties compute to "0"; then append node as the last child of its
+	// previousSibling, preserving ranges, then abort these steps."
+	if (isIndentationElement(node.previousSibling)) {
 		var style = getComputedStyle(node.previousSibling);
 		if (style.display == "block"
 		&& style.marginLeft == "40px"

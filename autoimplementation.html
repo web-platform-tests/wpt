@@ -532,6 +532,17 @@ var tests = {
 		// different levels of indentation, only the least indented lines in
 		// the selection will be indented."  Let's test that.
 		'<blockquote>f[oo<blockquote>b]ar</blockquote></blockquote><p>extra',
+
+		// Lists!
+		'<ol><li>foo<li>[bar]<li>baz</ol>',
+		'<ol><li>foo</ol>[bar]',
+		'<ol><li>[foo]<br>bar<li>baz</ol>',
+		'<ol><li>foo<br>[bar]<li>baz</ol>',
+		'<ol><li>foo<ol><li>[bar]<li>baz</ol><li>quz</ol>',
+		'<ol><li>foo<ul><li>[bar]<li>baz</ul><li>quz</ol>',
+		'<ol><li>foo</li><ol><li>[bar]<li>baz</ol><li>quz</ol>',
+		'<ol><li>foo</li><ul><li>[bar]<li>baz</ul><li>quz</ol>',
+		'<ol><li>foo<li>[bar]<ol><li>baz</ol><li>quz</ol>',
 	],
 	inserthorizontalrule: [
 		'foo[]bar',

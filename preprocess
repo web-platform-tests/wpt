@@ -39,11 +39,13 @@ replace = {
     'href': '<code data-anolis-spec=html title=attr-hyperlink-href>href</code>',
     'i': '<code data-anolis-spec=html title="the i element">i</code>',
     'index': '<span data-anolis-spec=domrange title=concept-indexof>index</span>',
+    'li': '<code data-anolis-spec=html title="the li element">li</code>',
     'localname': '<span data-anolis-spec=domcore title=concept-element-local-name>local name</span>',
     'namespace': '<span data-anolis-spec=domcore title=concept-element-namespace>namespace</span>',
     'nextsibling': '<code data-anolis-spec=domcore title=dom-Node-nextSibling>nextSibling</code>',
     'node': '<span data-anolis-spec=domcore title=concept-node>node</span>',
     'nodelength': '<span data-anolis-spec=domrange title=concept-node-length>length</span>',
+    'ol': '<code data-anolis-spec=html title="the ol element">ol</code>',
     'ownerdocument': '<code data-anolis-spec=domcore title=dom-Node-ownerDocument>ownerDocument</code>',
     'parent': '<span data-anolis-spec=domcore title=concept-tree-parent>parent</span>',
     'partiallycontained': '<span data-anolis-spec=domrange>partially contained</span>',
@@ -68,6 +70,7 @@ replace = {
     'text': '<code data-anolis-spec=domcore>Text</code>',
     'treeorder': '<span data-anolis-spec=domcore>tree order</span>',
     'u': '<code data-anolis-spec=html title="the u element">u</code>',
+    'ul': '<code data-anolis-spec=html title="the ul element">ul</code>',
 }
 
 s = open("source.html", "r").read()

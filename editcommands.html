@@ -1881,7 +1881,7 @@ indenting on both sides.
 
 <dd><strong>Action</strong>:
 
-<p class=XXX>Does not handle lists at all (this is item #1 on my to-do list).
+<p class=XXX>List support is preliminary &ndash; I'm working on it right now.
 
 <p class=XXX>Handle corner cases: endpoints are detached, documents, document
 fragments, html/body, head or things in head . . .
@@ -1917,8 +1917,8 @@ fragments, html/body, head or things in head . . .
 
   <li>For each <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> <var title="">node</var> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in <var title="">new range</var>,
   if <var title="">node</var> is <a href=#editable>editable</a> and can be the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of a
-  <code class=external data-anolis-spec=html title="the blockquote element"><a href=http://www.whatwg.org/html/#the-blockquote-element>blockquote</a></code> and if no <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of <var title="">node</var> is in <var title="">node
-  list</var>, append <var title="">node</var> to <var title="">node list</var>.
+  <code class=external data-anolis-spec=html title="the div element"><a href=http://www.whatwg.org/html/#the-div-element>div</a></code> or <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code> or <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code> and if no <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of <var title="">node</var> is in
+  <var title="">node list</var>, append <var title="">node</var> to <var title="">node list</var>.
 
   <li><a href=#indent>Indent</a> each member of <var title="">node list</var>.
 </ol>
@@ -1926,7 +1926,55 @@ fragments, html/body, head or things in head . . .
 <p>To <dfn id=indent>indent</dfn> a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> <var title="">node</var>:
 
 <ol>
-  <li>If the <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code> of <var title="">node</var> is an <a href=#html-element>HTML
+  <li>If <var title="">node</var> is an <code class=external data-anolis-spec=html title="the li element"><a href=http://www.whatwg.org/html/#the-li-element>li</a></code> whose <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code> or <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code>:
+
+  <ol>
+    <li>Let <var title="">tag</var> be the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> of the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of
+    <var title="">node</var>.
+
+    <li>If the <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code> of <var title="">node</var> is an <a href=#html-element>HTML
+    element</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> <var title="">tag</var>, append <var title="">node</var> as
+    the last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of its <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code>, <a href=#preserving-ranges>preserving
+    ranges</a>.  Then abort these steps.
+
+    <li>If the <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code> of <var title="">node</var> is an <code class=external data-anolis-spec=html title="the li element"><a href=http://www.whatwg.org/html/#the-li-element>li</a></code>, and the
+    last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of its <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code> is an <a href=#html-element>HTML element</a>
+    with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> <var title="">tag</var>, append <var title="">node</var> as the last
+    <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of the last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of the <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code> of
+    <var title="">node</var>, <a href=#preserving-ranges>preserving ranges</a>.  Then abort these steps.
+
+    <li>If the <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code> of <var title="">node</var> is an <a href=#html-element>HTML
+    element</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> <var title="">tag</var>, insert <var title="">node</var> as
+    the first <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of its <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code>, <a href=#preserving-ranges>preserving ranges</a>.
+    Then abort these steps.
+
+    <li>If the <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code> of <var title="">node</var> is an <code class=external data-anolis-spec=html title="the li element"><a href=http://www.whatwg.org/html/#the-li-element>li</a></code>, and the first
+    <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of its <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code> is an <a href=#html-element>HTML element</a> with
+    <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> <var title="">tag</var>, insert <var title="">node</var> as the first <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>
+    of the first <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of the <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code> of <var title="">node</var>,
+    <a href=#preserving-ranges>preserving ranges</a>.  Then abort these steps.
+
+    <li>Let <var title="">new parent</var> be the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement(<var title="">tag</var>)</a></code> on
+    the <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">node</var>.
+
+    <li>If the <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code> of <var title="">node</var> is an <code class=external data-anolis-spec=html title="the li element"><a href=http://www.whatwg.org/html/#the-li-element>li</a></code>, append
+    <var title="">new parent</var> as the last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of the <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code> of
+    <var title="">node</var>.
+    <!-- This matches Opera 11.10.  IE9, Firefox 4.0, and Chrome 12 dev all add
+    the new list element as a child of the parent list unconditionally.
+    There's no visible difference, but Opera's version is conforming (and makes
+    more semantic sense). -->
+
+    <li>Otherwise, insert <var title="">new parent</var> into the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of
+    <var title="">node</var> immediately before <var title="">node</var>.
+
+    <li>Append <var title="">node</var> as the last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">new parent</var>,
+    <a href=#preserving-ranges>preserving ranges</a>.
+
+    <li>Abort these steps.
+  </ol>
+
+  <li>If the <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code> of <var title="">node</var> is an <a href=#indentation-element>indentation
   element</a>; its "display" property computes to "block"; its
   "margin-left" and "margin-right" properties compute to "40px"; and its
   "margin-top" and "margin-bottom" properties compute to "0"; then append
@@ -2117,53 +2165,106 @@ bullet style throughout, for no particular reason.
 
 * In an existing ordered list equivalent to <ol><li>foo<li>bar<li>baz</ol>quz:
   * Select "bar", do "ol":
-    * Word/OO: Remove indent, change "3" to "2".
-    * Browsers: Remove indent, change "3" to "1".
-    * Correct behavior: Unclear.
+    * Word/OO: Remove indent and number "2", change "3" to "2".
+    * Browsers: Remove indent and number "2", change "3" to "1".
+    * Spec: Same as browsers.
   * Select "bar", do "ul":
     * Word: Leave indent the same, change "2" to a bullet, change "3" to "2".
     * OO: Increase indent, change "2" to a bullet, change "3" to "2".
     * IE: Change all numbers to bullets.
     * Firefox/Chrome/Opera: Leave indent the same, change "2" to a bullet, change "3" to "1".
-    * Correct behavior: Either Word, or Firefox/Chrome/Opera.  Unclear.
+    * Spec: Same as Firefox/Chrome/Opera.
   * Select "bar", do "indent":
     * Word/OO'/Browsers: Increase indent, change "2" to "a", change "3" to "2".
     * OO: Increase indent, do not change any numbers.
-    * Correct behavior: OO'/Word/Browsers.
+    * Spec: Same as Word/OO'/Browsers.
   * Select "bar", do "outdent":
     * Word: Do nothing.
     * OO: Leave indent the same, de-indent "2" so it goes past the left margin (?!), do not change any numbers.
     * OO': Option grayed out.
     * Browsers: Remove indent and the number "2", change "3" to "1".
-    * Correct behavior: Probably should be the same as "ol".
+    * Spec: Same as browsers.
   * Select "quz", do "ol":
     * Word/OO/IE/Chrome: Add as fourth item to existing list, numbered "4".
     * Firefox/Opera: Create new list, number the item "1".
-    * Correct behavior: OO/Word/IE/Chrome.
+    * Spec: Same as OO/Word/IE/Chrome.
+* In an existing ordered list equivalent to <ol><li>foo<br>bar<li>baz</ol>:
+  * Select "foo", do "ol":
+    * Word/OO/IE/Chrome/Opera: Remove indent from both "foo" and "bar", change "2" -> "1".
+    * Firefox: Increase indent for "foo" only, add additional "a" marker after "1" and before "foo".
+    * Spec: Same as Word/OO/IE/Chrome/Opera.
+  * Select "foo", do "ul":
+    * Word/Opera: Change "1" -> bullet, "2" -> "1".
+    * OO: Increase indent for both "foo" and "bar", change "1" -> bullet, "2" -> "1".
+    * IE: Change all numbers to bullets.
+    * Firefox: Increase indent for "foo" only, add additional bullet marker after "1" and before "foo".
+    * Chrome: Remove indent from "bar", change "1" -> bullet, "2" -> "1".
+    * Spec: Same as Word/Opera.
+  * Select "foo", do "indent":
+    * Word: Increase indent for whole list.
+    * OO: Increase indent for both "foo" and "bar".
+    * OO': Increase indent for "foo", change "1" -> "a".
+    * IE/Firefox non-CSS/Opera: Increase indent for both "foo" and "bar", change "1" -> "a", "2" -> "1".
+    * Firefox CSS: Increase indent for "foo" only (<div style="margin-left: 40px">).
+    * Chrome: Increase indent for "foo" only, add "a" before "foo", move "1" to be before "bar".
+    * Spec: Same as IE/Firefox non-CSS/Opera.
+  * Select "foo", do "outdent":
+    * Word: Decrease indent for whole list, so it goes past the left margin.
+    * OO: Decrease indent for "bar" and "1." (so "1." goes past the left margin), but not "foo".
+    * OO': Option grayed out.
+    * IE/Chrome/Opera: Remove indent from both "foo" and "bar", remove "1", change "2" -> "1".
+    * Firefox: Do nothing.
+    * Spec: Same as IE/Chrome/Opera.
+  * Select "bar", do "ol":
+    * Word/OO/IE/Chrome/Opera: Remove indent from both "foo" and "bar", change "2" -> "1".
+    * Firefox: Increase indent for "bar" only, add "a" marker before it.
+    * Spec: Same as Word/OO/IE/Chrome/Opera.
+  * Select "bar", do "ul":
+    * Word/Opera: Change "1" -> bullet, "2" -> "1".
+    * OO: Increase indent for both "foo" and "bar", change "1" -> bullet, "2" -> "1".
+    * IE: Change all numbers to bullets.
+    * Firefox: Increase indent for "bar" only, add bullet marker before it.
+    * Chrome: Remove indent from "foo", change "1" -> bullet and move it before "bar", change "2" -> "1".
+    * Spec: Same as Word/Opera.
+  * Select "bar", do "indent":
+    * Word: Increase indent for whole list.
+    * OO: Increase indent for both "foo" and "bar".
+    * OO': Increase indent for "foo", change "1" -> "a".
+    * IE/Firefox non-CSS/Opera: Increase indent for both "foo" and "bar", change "1" -> "a", "2" -> "1".
+    * Firefox CSS: Increase indent for "bar" only (<div style="margin-left: 40px">).
+    * Chrome: Increase indent for "bar" only, add "a" before "bar", move "bar" above "foo" (?!).
+    * Spec: Same as IE/Firefox non-CSS/Opera.
+  * Select "bar", do "outdent":
+    * Word: Decrease indent for whole list, so it goes past the left margin.
+    * OO: Decrease indent for "bar" and "1." (so "1." goes past the left margin), but not "foo".
+    * OO': Option grayed out.
+    * IE/Chrome/Opera: Remove indent from both "foo" and "bar", remove "1", change "2" -> "1".
+    * Firefox: Do nothing.
+    * Spec: Same as IE/Chrome/Opera.
 * In an existing nested ordered list equivalent to <ol><li>foo<ol><li>bar<li>baz</ol><li>quz</ol>:
   * Select "bar", do "ol":
     * Word/IE/Firefox: Decrease indent, remove "a" ("bar" is aligned with "foo" with no marker of its own), change "b" -> "a".
     * OO: Remove all indent, change "b" -> "a".
     * Chrome: Decrease indent, change "a" -> "2", "b" -> "a", "2" -> "3".
     * Opera: Decrease indent, change "a" -> "2", "b" -> "a", "2" -> "4", insert extra "3" list marker before new "a".
-    * Correct behavior: Either Word/IE/Firefox or Chrome.  Unclear.
+    * Spec: Same as Chrome.
   * Select "bar", do "ul":
     * Word/Firefox/Chrome: Change "a" -> bullet, "b" -> "a".
     * OO: Increase indent, change "a" -> bullet, "b" -> "a".
     * IE: Change "a" and "b" to bullets.
     * Opera: Change "a" -> bullet, "b" -> "a", "2" -> "4", insert extra list markers "2" and "3" before new bullet and "a".
-    * Correct behavior: Presumably Word/Firefox/Chrome.
+    * Spec: Same as Word/Firefox/Chrome.
   * Select "bar", do "indent":
     * Word/OO'/IE: Increase indent, change "a" -> "i", leave "b" alone.
     * OO: Increase indent, do not change numbers.
     * Firefox/Chrome/Opera: Increase indent, change "a" -> "i", "b" -> "a".
-    * Correct behavior: Either OO'/Word/IE, or Firefox/Chrome/Opera.  Unclear.
+    * Spec: Same as Firefox/Chrome/Opera.
   * Select "bar", do "outdent":
     * Word/OO'/IE/Chrome: Decrease indent, change "a" -> "2", "b" -> "a", "2" -> "3".
     * OO: Leave indent the same, de-indent "a" so it goes past the left margin (?!).
     * Firefox: Decrease indent, remove "a" ("bar" is aligned with "foo" with no marker of its own), change "b" -> "a".
     * Opera: Decrease indent, change "a" -> "2", "b" -> "a", "2" -> "4", insert extra list marker "3" before new "a".
-    * Correct behavior: Probably should be the same as "ol".
+    * Spec: Same as Word/OO'/IE/Chrome.
 * In existing nested lists equivalent to <ol><li>foo<ul><li>bar<li>baz</ul><li>quz</ol>:
   * Select "bar", do "ol":
     * Word: Change all bullets to numbers.  (Not letters, even though indented!)
@@ -2171,32 +2272,65 @@ bullet style throughout, for no particular reason.
     * IE: Change all bullets to letters.
     * Firefox/Chrome: Change first bullet to "a".
     * Opera: Change first bullet -> "a", "2" -> "4", insert extra list markers "2" and "3" before new "a" and bullet.
-    * Correct behavior: Presumably Firefox/Chrome.
+    * Spec: Same as Firefox/Chrome.
   * Select "bar", do "ul":
     * Word/IE/Firefox: Decrease indent, remove first bullet ("bar" is aligned with "foo" with no marker of its own).
     * OO: Remove all indent, remove first bullet, leave all else the same.
     * Chrome: Decrease indent, change first bullet -> "2", "2" -> "3".
     * Opera: Decrease indent, change first bullet -> "2", "2" -> "4", insert extra list marker "3" before old bullet.
-    * Correct behavior: Either Word/IE/Firefox or Chrome.  Unclear.
+    * Spec: Same as Chrome.
   * Select "bar", do "indent":
     * Word: Increase indent, change first bullet to "i" (?!).
     * OO/OO'/Firefox/Chrome/Opera: Increase indent.
     * IE: Increase indent, change "2" -> "3" (?!?!).  (I don't see from the markup why the 2 actually changes to a 3.  The markup seems to be as other browsers.)
-    * Correct behavior: OO/OO'/Firefox/Chrome/Opera.
+    * Spec: Same as OO/OO'/Firefox/Chrome/Opera.
   * Select "bar", do "outdent":
     * Word/IE/Chrome: Decrease indent, change first bullet -> "2", "2" -> "3".
     * OO: Usual crazy stuff, move bullet left but leave text alone.
     * OO': Option grayed out.  (Interesting.)
     * Firefox: Decrease indent, remove first bullet ("bar" is aligned with "foo" with no marker of its own).
     * Opera: Decrease indent, change first bullet -> "2", "2" -> "4", insert extra list marker "3" before old bullet.
-    * Correct behavior: Either Word/IE/Chrome or Firefox.  Unclear.
+    * Spec: Same as Word/IE/Chrome.
+* In an existing nested ordered list equivalent to <ol><li>foo<li>bar<ol><li>baz</ol><li>quz</ol>:
+  * Select "bar", do "ol":
+    * Word/OO: Remove indent and "2", change "3" -> "2".
+    * IE/Chrome/Opera: Remove indent and "2", decrease indent of "baz", change "2" and "3" -> "1".
+    * Firefox: Increase indent, add extra "a" marker between "2" and "bar".
+    * Spec: Different from all of them: remove indent and "2", change "3" -> "1".
+  * Select "bar", do "ul":
+    * Word: Change "2" -> bullet.
+    * OO: Increase indent, change "2" -> bullet, "3" -> "2".
+    * IE: Change "1", "2", "3" -> bullets (and "a" to "1").
+    * Firefox: Increase indent, add extra bullet marker between "2" and "bar".
+    * Chrome: Decrease indent of "baz", change "2" -> bullet, "a" and "3" -> "1".
+    * Opera: Change "2" -> bullet, "a" and "3" -> "1".
+    * Spec: Different from all of them: change "2" -> bullet, "3" -> "1".
+  * Select "bar", do "indent":
+    * Word/OO': Increase indent, change "2" -> "a", "a" -> "b", "3" -> "2".
+    * OO: Increase indent (double amount, past "baz").
+    * Firefox non-CSS/Opera: Increase indent of both "bar" and "baz", change "2" -> "a", "a" -> "i", "3" -> "2".
+    * Firefox CSS: Increase indent.
+    * Chrome: Increase indent, add "a" marker before "bar", move "2" marker to before the "a" marker of "baz".
+    * Spec: Same as Word/OO'.
+  * Select "bar", do "outdent":
+    * Word/Firefox: Do nothing.
+    * OO: Decrease indent on "2", leave "bar" alone.
+    * OO': Option grayed out.
+    * IE: Decrease indent of "baz", change "2" and "3" -> "1", "a" -> "2".
+    * Chrome/Opera: Decrease indent of "bar" and "baz", remove "2", change "a" and "3" -> "1".
+    * Spec: Different from all of them: remove indent and "2", change "3" -> "1".
+* In an existing nested ordered list equivalent to <ol><li>foo<li>bar<ol><li>baz</ol>quz<li>qoz</ol>:
+  * Does not appear to be possible in Word or OO.
+  * Also might be impossible to actually make such a list using execCommand() in browsers.
+  * Suffice it to say that there's a lot of variation.
 
 Ignoring the conceptual model of HTML, which users won't understand, here's the
 conceptual model I've developed for lists: text is divided up into blocks.
 Each block has an indentation level and a list marker type.  The list marker
 type can be either nothing, ordered, or unordered.  A list block cannot have
 indentation level less than one.  Any given piece of text is part of only one
-block.
+block.  A block may be visually non-contiguous, such as if a single list block
+is interrupted by a further-indented block.
 
 To find the right number (or letter) for an ordered-list block, look at the
 immediately preceding block, but skip over any blocks of higher indentation
@@ -2214,35 +2348,41 @@ block.
 
 What this means from an HTML perspective, roughly:
 
-* A block is basically a line of text, like a CSS line box.
+* A list block is the entire contents of an <li> element, ignoring any nested
+  list elements or indentation elements.  A non-list block is a line box.
 * Indentation level is equal to the number of ancestor elements that are either
   <li>s or indentation elements (blockquotes or indenting divs).
 * To find the list marker type, go to the first ancestor that's either an <li>
   or indentation element.
 * Correct numbering should automatically follow from the way <ol> works in HTML
   (which is one of the reasons I use this model).
-* An ol command in an ordered-list block decreases the indentation level by
-  one, and either merges with the previous block or adopts its list marker
-  type.  In an unordered-list block, it breaks up the parent <ul> and creates a
-  new one-element <ol>, or merges with the next or previous <ol> if any.  In a
-  non-list block, it creates a new <ol>, or merges with the next or previous
-  <ol> if any.  The ul command works similarly.
+* An ol command in an ordered-list block removes the surrounding <li>,
+  migrating its contents into the parent of the <ol>.  This splits up the <ol> if
+  it's not the first or last child, and wraps the contents in a new <li> if
+  necessary.  If there's another list or indentation element nested in the <li>
+  we're removing, it will get re-wrapped in a new <ol>, outside the
+  newly-created <li>, so that it maintains its indentation.  This might cause
+  the new <li> to wind up in multiple pieces, if the original block was not
+  contiguous, which means the non-contiguous block is split into several blocks
+  (with different numbers).
+* An ol command in an unordered-list block breaks up the parent <ul> and puts a
+  new <ol> in between the two pieces, moving the parent <li> into it.  If the
+  <li> was the first or last child, we merge with an existing adjacent <ol> if
+  possible.  All children stay as they are.
+* An ol command in a non-list block with indentation zero wraps it in a new
+  <ol><li>, or merges with an adjacent <ol> if possible.
+* An ol command in a non-list block with nonzero indentation converts the
+  parent to an <ol><li>, breaking it up if necessary.
+* The ul command works similarly to ol.
 * indent in a non-list block wraps in an indentation element.  In a list block,
-  it wraps the <li> in an extra <ol> or <ul> as appropriate.  (This often
-  creates non-conforming markup, like
-  <ol><li>foo</li><ol><li>bar</li></ol></ol>.)
+  it wraps the <li> in an extra <ol> or <ul> as appropriate.  With merging.
+  Whatever.  Let me just write the spec.
 * outdent in a non-list block strips an indentation element, if one is present.
   In a list block, it breaks apart the parent <ol> or <ul> and makes the
-  affected block a sibling in between the newly-split list elements.
+  affected block a sibling in between the newly-split list elements.  Will
+  create new <li>s, etc. etc.
 
-Problem: a block needs to be able to have multiple lines.  If it's a list
-block, this means it gets no extra markers, just one for the whole block.  This
-means it has to be possible to have non-contiguous blocks, for cases like
-<ol><li>foo<ol><li>bar</ol>baz</ol>.  We cannot simply consider "foo" and "baz"
-to be in separate blocks, because then baz has to have a list marker type of
-none, which will mess up subsequent list numbering and be indistinguishable
-from <ol><li>foo<ol><li>bar</ol></ol><blockquote>baz</blockquote>.  What's the
-expected behavior here?  Needs testing.
+Sheesh, lists are complicated.
 -->
 
 

@@ -617,19 +617,14 @@ title>splitText()</code>.
     node</var> to its [[parent]].
 
     <li>Otherwise, if the [[child]] of <var>start node</var> with [[index]]
-    <var>start offset</var> minus one is a [[text]] or [[comment]] node, or an
-    (insert definition here), subtract one from <var>start offset</var>.
-
-    <p class=XXX>This is wrong if the child we're currently before is a block
-    element.  We should only decrement if the current and previous children are
-    both inline.  Also, should I just use <span>inline node</span> here?
-
-    <p class=XXX>The definition should include all inline elements except
-    &lt;br>.  As elsewhere, we have trouble with the exact definition because
-    HTML doesn't classify non-conforming elements, but those are common in
-    editing and need to be handled correctly.
+    <var>start offset</var> and its [[previoussibling]] are both <span
+    title="inline node">inline nodes</span> and neither is a [[br]], subtract
+    one from <var>start offset</var>.
     <!-- IE also includes <br> (at least for the purposes of the indent
     command), but this is unlikely to match user expectations. -->
+
+    <p class=XXX>This is wrong in the presence of comments or display: none or
+    probably other things.  Do we care?
 
     <li>Otherwise, break from this loop.
   </ol>
@@ -647,10 +642,9 @@ title>splitText()</code>.
     node</var> and then set <var>end node</var> to its [[parent]].
 
     <li>Otherwise, if the [[child]] of <var>end node</var> with [[index]]
-    <var>end offset</var> is a [[text]] or [[comment]] node, or an (insert
-    definition here), add one to <var>end offset</var>.
-
-    <p class=XXX>Same definition as before.
+    <var>end offset</var> and its [[previoussibling]] are both <span
+    title="inline node">inline nodes</span> and neither is a [[br]], add one to
+    <var>end offset</var>.
 
     <li>Otherwise, break from this loop.
   </ol>

@@ -622,19 +622,13 @@ agents follow the <a class=external data-anolis-spec=domrange href=http://html5.
     node</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
 
     <li>Otherwise, if the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">start node</var> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a>
-    <var title="">start offset</var> minus one is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> or <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#comment>Comment</a></code> node, or an
-    (insert definition here), subtract one from <var title="">start offset</var>.
-
-    <p class=XXX>This is wrong if the child we're currently before is a block
-    element.  We should only decrement if the current and previous children are
-    both inline.  Also, should I just use <a href=#inline-node>inline node</a> here?
-
-    <p class=XXX>The definition should include all inline elements except
-    &lt;br&gt;.  As elsewhere, we have trouble with the exact definition because
-    HTML doesn't classify non-conforming elements, but those are common in
-    editing and need to be handled correctly.
+    <var title="">start offset</var> and its <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code> are both <a href=#inline-node title="inline node">inline nodes</a> and neither is a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code>, subtract
+    one from <var title="">start offset</var>.
     <!-- IE also includes <br> (at least for the purposes of the indent
     command), but this is unlikely to match user expectations. -->
+
+    <p class=XXX>This is wrong in the presence of comments or display: none or
+    probably other things.  Do we care?
 
     <li>Otherwise, break from this loop.
   </ol>
@@ -652,10 +646,8 @@ agents follow the <a class=external data-anolis-spec=domrange href=http://html5.
     node</var> and then set <var title="">end node</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
 
     <li>Otherwise, if the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">end node</var> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a>
-    <var title="">end offset</var> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> or <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#comment>Comment</a></code> node, or an (insert
-    definition here), add one to <var title="">end offset</var>.
-
-    <p class=XXX>Same definition as before.
+    <var title="">end offset</var> and its <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code> are both <a href=#inline-node title="inline node">inline nodes</a> and neither is a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code>, add one to
+    <var title="">end offset</var>.
 
     <li>Otherwise, break from this loop.
   </ol>

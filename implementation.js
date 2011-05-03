@@ -1133,12 +1133,18 @@ function blockExtendRange(range) {
 			startOffset = 1 + getNodeIndex(startNode);
 			startNode = startNode.parentNode;
 
-		// "Otherwise, if the child of start node with index start offset
-		// minus one is a Text or Comment node, or an (insert definition
-		// here), subtract one from start offset."
-		} else if (startNode.childNodes[startOffset - 1].nodeType == Node.TEXT_NODE
-		|| startNode.childNodes[startOffset - 1].nodeType == Node.COMMENT_NODE
-		|| ["B", "I", "SPAN"].indexOf(startNode.childNodes[startOffset - 1].tagName) != -1) {
+		// "Otherwise, if the child of start node with index start offset and
+		// its previousSibling are both inline nodes and neither is a br,
+		// subtract one from start offset."
+		} else if (isInlineNode(startNode.childNodes[startOffset])
+		&& isInlineNode(startNode.childNodes[startOffset].previousSibling)
+		&& (
+			!isHtmlElement(startNode.childNodes[startOffset])
+			|| startNode.childNodes[startOffset].tagName != "BR"
+		) && (
+			!isHtmlElement(startNode.childNodes[startOffset].previousSibling)
+			|| startNode.childNodes[startOffset].previousSibling.tagName != "BR"
+		)) {
 			startOffset--;
 
 		// "Otherwise, break from this loop."
@@ -1164,12 +1170,18 @@ function blockExtendRange(range) {
 			endOffset = 1 + getNodeIndex(endNode);
 			endNode = endNode.parentNode;
 
-		// "Otherwise, if the child of end node with index end offset is a
-		// Text or Comment node, or an (insert definition here), add one to
-		// end offset."
-		} else if (endNode.childNodes[endOffset].nodeType == Node.TEXT_NODE
-		|| endNode.childNodes[endOffset].nodeType == Node.COMMENT_NODE
-		|| ["B", "I", "SPAN"].indexOf(endNode.childNodes[endOffset].tagName) != -1) {
+		// "Otherwise, if the child of end node with index end offset and its
+		// previousSibling are both inline nodes and neither is a br, add one
+		// to end offset."
+		} else if (isInlineNode(endNode.childNodes[endOffset])
+		&& isInlineNode(endNode.childNodes[endOffset].previousSibling)
+		&& (
+			!isHtmlElement(endNode.childNodes[endOffset])
+			|| endNode.childNodes[endOffset].tagName != "BR"
+		) && (
+			!isHtmlElement(endNode.childNodes[endOffset].previousSibling)
+			|| endNode.childNodes[endOffset].previousSibling.tagName != "BR"
+		)) {
 			endOffset++;
 
 		// "Otherwise, break from this loop."

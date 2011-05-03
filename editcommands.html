@@ -27,7 +27,7 @@
 <body class=draft>
 <div class=head id=head>
 <h1>HTML Editing Commands</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-2-may-2011>Work in Progress &mdash; Last Update 2 May 2011</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-3-may-2011>Work in Progress &mdash; Last Update 3 May 2011</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;ayg+spec@aryeh.name&gt;
@@ -118,11 +118,15 @@ included in HTML comments so as not to distract the reader.
   convert <code class=external data-anolis-spec=html title="the strong element"><a href=http://www.whatwg.org/html/#the-strong-element>strong</a></code> and &lt;<code class=external data-anolis-spec=html title="the span element"><a href=http://www.whatwg.org/html/#the-span-element>span</a></code> <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code>="font-weight: bold"&gt; if we
   happen to be modifying that node anyway.
 
-  <li>Don't make the document less conforming than it originally was.  If we
-  happen to make it more conforming, good, although we don't have to go out of
-  our way to do that.  (In the future, I'll add a mode that supports using
-  obsolete presentational elements instead of CSS for the sake of e-mail
-  clients and such, and this rule will be bent in that mode.)
+  <li>Try not to make the document less conforming than it originally was.  If
+  we happen to make it more conforming, good, although we don't have to go out
+  of our way to do that.  In some cases we do make the document less
+  conforming, generally because there's some clear use-case that requires it or
+  because it matches existing browsers behavior.  (For instance, see the
+  <code title=command-stylewithcss><a href=#command-stylewithcss>styleWithCSS</a></code> = false mode, and the
+  fact that <code title=command-insertimage><a href=#command-insertimage>insertImage</a></code> doesn't add an
+  alt attribute, and how list-related commands can make list elements nested in
+  one another directly without intervening &lt;li&gt;, etc.)
 
   <li>Keep the markup as concise as possible.  (I've received feedback that
   this is very important to authors.)  Ideally, the markup should look as
@@ -131,6 +135,12 @@ included in HTML comments so as not to distract the reader.
   having to use inline CSS, and make sure to tidy up any styles on elements
   that we happen to be modifying anyway.  Previous principles take precedence
   over this one, however.
+
+  <li>I'm generally ignoring the existence of processing instructions, so
+  they'll be treated more or less randomly.  (I'm ensuring that behavior is
+  well-defined, I just don't care what it is.)  Comments are also unlikely to
+  occur much for our purposes, but I try a little harder to make them behave
+  not too unreasonably.
 </ul>
 
 

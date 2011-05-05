@@ -2253,6 +2253,17 @@ function myExecCommand(command, showUI, value, range) {
 			nodeList.push(node);
 		}
 
+		// "If the first member of node list is an li whose parent is an ol or
+		// ul, and its previousSibling is an li as well, normalize sublists of
+		// its previousSibling."
+		if (nodeList.length
+		&& isHtmlElement(nodeList[0], "LI")
+		&& (isHtmlElement(nodeList[0].parentNode, "OL")
+			|| isHtmlElement(nodeList[0].parentNode, "UL"))
+		&& isHtmlElement(nodeList[0].previousSibling, "LI")) {
+			normalizeSublists(nodeList[0].previousSibling);
+		}
+
 		// "Indent each member of node list."
 		for (var i = 0; i < nodeList.length; i++) {
 			indentNode(nodeList[i]);

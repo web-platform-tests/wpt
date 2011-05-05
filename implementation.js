@@ -2552,17 +2552,8 @@ function indentNode(node) {
 		// ownerDocument of node."
 		var newParent = node.ownerDocument.createElement(tag);
 
-		// "If the previousSibling of node is an li, append new parent as the
-		// last child of the previousSibling of node."
-		if (isHtmlElement(node.previousSibling)
-		&& node.previousSibling.tagName == "LI") {
-			node.previousSibling.appendChild(newParent);
-
-		// "Otherwise, insert new parent into the parent of node immediately
-		// before node."
-		} else {
-			node.parentNode.insertBefore(newParent, node);
-		}
+		// "Insert new parent into the parent of node immediately before node."
+		node.parentNode.insertBefore(newParent, node);
 
 		// "Append node as the last child of new parent, preserving ranges."
 		movePreservingRanges(node, newParent, 0);

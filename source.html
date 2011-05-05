@@ -1977,16 +1977,28 @@ fragments, html/body, head or things in head . . .
     title=dom-Document-createElement>createElement(<var>tag</var>)</code> on
     the [[ownerdocument]] of <var>node</var>.
 
-    <li>If the [[previoussibling]] of <var>node</var> is an [[li]], append
-    <var>new parent</var> as the last [[child]] of the [[previoussibling]] of
-    <var>node</var>.
-    <!-- This matches Opera 11.10.  IE9, Firefox 4.0, and Chrome 12 dev all add
-    the new list element as a child of the parent list unconditionally.
-    There's no visible difference, but Opera's version is conforming (and makes
-    more semantic sense). -->
+    <li>Insert <var>new parent</var> into the [[parent]] of <var>node</var>
+    immediately before <var>node</var>.
+    <!--
+    This matches IE9, Firefox 4.0, and Chrome 12 dev.  If there's a preceding
+    <li>, Opera 11.10 instead adds the new parent to the end of that <li>, so
+    it's not the child of another list, which is invalid.  But the other
+    browsers' way of doing things makes things simpler.  E.g., if we want to
+    indent an <li> and it has <ol>/<ul> children, we have to distinguish
+    between the case where we want to indent the whole <li> or only the first
+    part.  It also allows things like
 
-    <li>Otherwise, insert <var>new parent</var> into the [[parent]] of
-    <var>node</var> immediately before <var>node</var>.
+      <ol><li>
+        foo
+        <ol><li>bar</li></ol>
+        baz
+      </li></ol>
+
+    in which case it's unclear what we should do if the user selects "foo" and
+    indents.  I've filed a bug on HTML5:
+
+    http://www.w3.org/Bugs/Public/show_bug.cgi?id=12609
+    -->
 
     <li>Append <var>node</var> as the last [[child]] of <var>new parent</var>,
     <span>preserving ranges</span>.

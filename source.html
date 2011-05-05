@@ -594,58 +594,46 @@ title>splitText()</code>.
 </ol>
 
 
-<h2>Normalizing sublists in a range</h2>
-<p>When a user agent is to <dfn>normalize sublists</dfn> in a [[range]]
-<var>range</var>, it must run the following steps:
+<h2>Normalizing sublists of a list item</h2>
+<p>When a user agent is to <dfn>normalize sublists</dfn> in an [[li]]
+<var>item</var>, it must run the following steps:
 
 <ol>
-  <li>Let <var>items</var> be a list of [[nodes]], initially empty.
+  <li>If <var>item</var> is not <span>editable</span> or its [[parent]] is not
+  <span>editable</span>, abort these steps.
 
-  <li>If there is some [[li]] element that is an <span
-  data-anolis-spec=domrange>ancestor container</span> of <var>range</var>'s
-  [[rangestart]] and [[rangeend]] [[bpnodes]], append the last such element in
-  [[treeorder]] to <var>items</var>.
-  <!-- We don't want to add more than that, because it would disturb upper
-  parts of the DOM that we don't actually need to change. -->
+  <li>Let <var>new item</var> be null.
 
-  <li>Append to <var>items</var> every [[li]] element that is [[contained]] or
-  [[partiallycontained]] in <var>range</var>.
-
-  <li>For each <var>item</var> in <var>items</var>:
+  <li>While <var>item</var> has an [[ol]] or [[ul]] [[child]]:
 
   <ol>
-    <li>Let <var>new item</var> be null.
+    <li>Let <var>child</var> be the last [[child]] of <var>item</var>.
 
-    <li>While <var>item</var> has an [[ol]] or [[ul]] [[child]]:
+    <li>If <var>child</var> is an [[ol]] or [[ul]], or <var>new item</var> is
+    null and <var>child</var> is a [[text]] node whose <code
+    data-anolis-spec=domcore title=dom-CharacterData-data>data</code>
+    consists of zero of more <span data-anolis-spec=domcore title="space
+    character">space characters</span>:
 
     <ol>
-      <li>Let <var>child</var> be the last [[child]] of <var>item</var>.
+      <li>Set <var>new item</var> to null.
 
-      <li>If <var>child</var> is an [[ol]] or [[ul]], or <var>new item</var> is
-      null and <var>child</var> is a [[text]] node whose <code
-      data-anolis-spec=domcore title=dom-CharacterData-data>data</code>
-      consists of zero of more <span data-anolis-spec=domcore title="space
-      character">space characters</span>:
+      <li>Insert <var>child</var> into the [[parent]] of <var>item</var>
+      immediately following <var>item</var>, <span>preserving ranges</span>.
+    </ol>
 
-      <ol>
-        <li>Set <var>new item</var> to null.
+    <li>Otherwise:
 
-        <li>Insert <var>child</var> into the [[parent]] of <var>item</var>
-        immediately following <var>item</var>, <span>preserving ranges</span>.
-      </ol>
+    <ol>
+      <li>If <var>new item</var> is null, let <var>new item</var> be the
+      result of calling <code data-anolis-spec=domcore
+      title=dom-Document-createElement>createElement("li")</code> on the
+      [[ownerdocument]] of <var>item</var>, then insert <var>new item</var>
+      into the [[parent]] of <var>item</var> immediately after
+      <var>item</var>.
 
-      <li>Otherwise:
-
-      <ol>
-        <li>If <var>new item</var> is null, let <var>new item</var> be the
-        result of calling <code data-anolis-spec=domcore
-        title=dom-Document-createElement>createElement("li")</code> on the
-        [[ownerdocument]] of <var>item</var>, then insert <var>new item</var>
-        into the [[parent]] of <var>item</var> immediately after
-        <var>item</var>.
-
-        <li>Insert <var>child</var> into <var>new item</var> as its first
-        [[child]], <span>preserving ranges</span>.
+      <li>Insert <var>child</var> into <var>new item</var> as its first
+      [[child]], <span>preserving ranges</span>.
     </ol>
   </ol>
 </ol>
@@ -1969,7 +1957,13 @@ indenting on both sides.
 fragments, html/body, head or things in head . . .
 
 <ol>
-  <li><span>Normalize sublists</span> in the [[range]].
+  <li>If the [[range]]'s [[rangestart]] [[bpnode]] has an [[li]]
+  [[ancestorcontainer]], <span>normalize sublists</span> of the last such
+  [[li]] in [[treeorder]].
+
+  <li>If the [[range]]'s [[rangeend]] [[bpnode]] has an [[li]]
+  [[ancestorcontainer]], <span>normalize sublists</span> of the last such
+  [[li]] in [[treeorder]].
 
   <li><span>Block-extend</span> the [[range]], and let <var>new range</var> be
   the result.
@@ -2004,6 +1998,12 @@ fragments, html/body, head or things in head . . .
   [[div]] or [[ol]] or [[ul]] and if no [[ancestor]] of <var>node</var> is in
   <var>node list</var>, append <var>node</var> to <var>node list</var>.
 
+  <li>If the first member of <var>node list</var> is an [[li]] whose [[parent]]
+  is an [[ol]] or [[ul]], and its [[previoussibling]] is an [[li]] as well,
+  <span>normalize sublists</span> of its [[previoussibling]].
+  <!-- Otherwise the last child of the previous sibling might be a list, which
+  the li wouldn't get appended to. -->
+
   <li><span>Indent</span> each member of <var>node list</var>.
 </ol>
 
@@ -2021,22 +2021,10 @@ fragments, html/body, head or things in head . . .
     the last [[child]] of its [[previoussibling]], <span>preserving
     ranges</span>.  Then abort these steps.
 
-    <li>If the [[previoussibling]] of <var>node</var> is an [[li]], and the
-    last [[child]] of its [[previoussibling]] is an <span>HTML element</span>
-    with [[localname]] <var>tag</var>, append <var>node</var> as the last
-    [[child]] of the last [[child]] of the [[previoussibling]] of
-    <var>node</var>, <span>preserving ranges</span>.  Then abort these steps.
-
     <li>If the [[nextsibling]] of <var>node</var> is an <span>HTML
     element</span> with [[localname]] <var>tag</var>, insert <var>node</var> as
     the first [[child]] of its [[nextsibling]], <span>preserving ranges</span>.
     Then abort these steps.
-
-    <li>If the [[nextsibling]] of <var>node</var> is an [[li]], and the first
-    [[child]] of its [[nextsibling]] is an <span>HTML element</span> with
-    [[localname]] <var>tag</var>, insert <var>node</var> as the first [[child]]
-    of the first [[child]] of the [[nextsibling]] of <var>node</var>,
-    <span>preserving ranges</span>.  Then abort these steps.
 
     <li>Let <var>new parent</var> be the result of calling <code
     data-anolis-spec=domcore

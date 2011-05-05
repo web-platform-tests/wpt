@@ -1111,79 +1111,46 @@ function decomposeRange(range) {
 	return ret;
 }
 
-function normalizeSublists(range) {
-	// "Let items be a list of nodes, initially empty."
-	var items = [];
-
-	// "If there is some li element that is an ancestor container of range's
-	// start and end nodes, append the last such element in tree order to
-	// items."
-	for (
-		var node = range.commonAncestorContainer;
-		node;
-		node = node.parentNode
-	) {
-		if (isHtmlElement(node, "LI")) {
-			items.push(node);
-			break;
-		}
+function normalizeSublists(item) {
+	// "If item is not editable or its parent is not editable, abort these
+	// steps."
+	if (!isEditable(item) || !isEditable(item.parentNode)) {
+		return;
 	}
 
-	// "Append to items every li element that is contained or partially
-	// contained in range."
-	for (
-		var node = range.commonAncestorContainer;
-		isDescendant(node, range.commonAncestorContainer);
-		node = nextNode(node)
-	) {
-		if (!isHtmlElement(node, "LI")) {
-			continue;
-		}
+	// "Let new item be null."
+	var newItem = null;
 
-		if (isContained(node, range) || isPartiallyContained(node, range)) {
-			items.push(node);
-		}
-	}
+	// "While item has an ol or ul child:"
+	while ([].some.call(item.childNodes, function (node) { return isHtmlElement(node, "OL") || isHtmlElement(node, "UL") })) {
+		// "Let child be the last child of item."
+		var child = item.lastChild;
 
-	// "For each item in items:"
-	for (var i = 0; i < items.length; i++) {
-		var item = items[i];
+		// "If child is an ol or ul, or new item is null and child is a Text
+		// node whose data consists of zero of more space characters:"
+		if (isHtmlElement(child, "OL")
+		|| isHtmlElement(child, "UL")
+		|| (!newItem && child.nodeType == Node.TEXT_NODE && /^[ \t\n\f\r]*$/.test(child.data))) {
+			// "Set new item to null."
+			newItem = null;
 
-		// "Let new item be null."
-		var newItem = null;
+			// "Insert child into the parent of item immediately following
+			// item, preserving ranges."
+			movePreservingRanges(child, item.parentNode, 1 + getNodeIndex(item));
 
-		// "While item has an ol or ul child:"
-		while ([].some.call(item.childNodes, function (node) { return isHtmlElement(node, "OL") || isHtmlElement(node, "UL") })) {
-			// "Let child be the last child of item."
-			var child = item.lastChild;
-
-			// "If child is an ol or ul, or new item is null and child is a
-			// Text node whose data consists of zero of more space characters:"
-			if (isHtmlElement(child, "OL")
-			|| isHtmlElement(child, "UL")
-			|| (!newItem && child.nodeType == Node.TEXT_NODE && /^[ \t\n\f\r]*$/.test(child.data))) {
-				// "Set new item to null."
-				newItem = null;
-
-				// "Insert child into the parent of item immediately following
-				// item, preserving ranges."
-				movePreservingRanges(child, item.parentNode, 1 + getNodeIndex(item));
-
-			// "Otherwise:"
-			} else {
-				// "If new item is null, let new item be the result of calling
-				// createElement("li") on the ownerDocument of item, then
-				// insert new item into the parent of item immediately after
-				// item."
-				if (!newItem) {
-					newItem = item.ownerDocument.createElement("li");
-					item.parentNode.insertBefore(newItem, item.nextSibling);
-				}
-
-				// "Insert child into new item as its first child, preserving
-				// ranges."
-				movePreservingRanges(child, newItem, 0);
+		// "Otherwise:"
+		} else {
+			// "If new item is null, let new item be the result of calling
+			// createElement("li") on the ownerDocument of item, then insert
+			// new item into the parent of item immediately after item."
+			if (!newItem) {
+				newItem = item.ownerDocument.createElement("li");
+				item.parentNode.insertBefore(newItem, item.nextSibling);
 			}
+
+			// "Insert child into new item as its first child, preserving
+			// ranges."
+			movePreservingRanges(child, newItem, 0);
 		}
 	}
 }
@@ -2224,8 +2191,31 @@ function myExecCommand(command, showUI, value, range) {
 		break;
 
 		case "indent":
-		// "Normalize sublists in the range."
-		normalizeSublists(range);
+		// "If the range's start node has an li ancestor container, normalize
+		// sublists of the last such li in tree order."
+		for (
+			var ancestorContainer = range.startContainer;
+			ancestorContainer;
+			ancestorContainer = ancestorContainer.parentNode
+		) {
+			if (isHtmlElement(ancestorContainer, "LI")) {
+				normalizeSublists(ancestorContainer);
+				break;
+			}
+		}
+
+		// "If the range's end node has an li ancestor container, normalize
+		// sublists of the last such li in tree order."
+		for (
+			var ancestorContainer = range.endContainer;
+			ancestorContainer;
+			ancestorContainer = ancestorContainer.parentNode
+		) {
+			if (isHtmlElement(ancestorContainer, "LI")) {
+				normalizeSublists(ancestorContainer);
+				break;
+			}
+		}
 
 		// "Block-extend the range, and let new range be the result."
 		var newRange = blockExtendRange(range);

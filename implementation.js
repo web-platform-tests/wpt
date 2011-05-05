@@ -1196,78 +1196,116 @@ function blockExtendRange(range) {
 	var endNode = range.endContainer;
 	var endOffset = range.endOffset;
 
-	// "Repeat the following steps:"
-	while (true) {
-		// "If start node is a Text or Comment node or start offset is 0,
-		// set start offset to the index of start node and then set start
-		// node to its parent."
-		if (startNode.nodeType == Node.TEXT_NODE
-		|| startNode.nodeType == Node.COMMENT_NODE
-		|| startOffset == 0) {
-			startOffset = getNodeIndex(startNode);
-			startNode = startNode.parentNode;
-
-		// "Otherwise, if start offset is equal to the length of start
-		// node, set start offset to one plus the index of start node and
-		// then set start node to its parent."
-		} else if (startOffset == getNodeLength(startNode)) {
-			startOffset = 1 + getNodeIndex(startNode);
-			startNode = startNode.parentNode;
-
-		// "Otherwise, if the child of start node with index start offset and
-		// its previousSibling are both inline nodes and neither is a br,
-		// subtract one from start offset."
-		} else if (isInlineNode(startNode.childNodes[startOffset])
-		&& isInlineNode(startNode.childNodes[startOffset].previousSibling)
-		&& (
-			!isHtmlElement(startNode.childNodes[startOffset])
-			|| startNode.childNodes[startOffset].tagName != "BR"
-		) && (
-			!isHtmlElement(startNode.childNodes[startOffset].previousSibling)
-			|| startNode.childNodes[startOffset].previousSibling.tagName != "BR"
-		)) {
-			startOffset--;
-
-		// "Otherwise, break from this loop."
-		} else {
+	// "If some ancestor container of start node is an li, set start offset to
+	// the index of the last such li in tree order, and set start node to that
+	// li's parent."
+	var inLi = false;
+	for (
+		var ancestorContainer = startNode;
+		ancestorContainer;
+		ancestorContainer = ancestorContainer.parentNode
+	) {
+		if (isHtmlElement(ancestorContainer, "LI")) {
+			startOffset = getNodeIndex(ancestorContainer);
+			startNode = ancestorContainer.parentNode;
+			inLi = true;
 			break;
 		}
 	}
 
-	// "Repeat the following steps:"
-	while (true) {
-		// "If end offset is 0, set end offset to the index of end node and
-		// then set end node to its parent."
-		if (endOffset == 0) {
-			endOffset = getNodeIndex(endNode);
-			endNode = endNode.parentNode;
+	// "Otherwise, repeat the following steps:"
+	if (!inLi) {
+		while (true) {
+			// "If start node is a Text or Comment node or start offset is 0,
+			// set start offset to the index of start node and then set start
+			// node to its parent."
+			if (startNode.nodeType == Node.TEXT_NODE
+			|| startNode.nodeType == Node.COMMENT_NODE
+			|| startOffset == 0) {
+				startOffset = getNodeIndex(startNode);
+				startNode = startNode.parentNode;
 
-		// "Otherwise, if end node is a Text or Comment node or end offset
-		// is equal to the length of end node, set end offset to one plus
-		// the index of end node and then set end node to its parent."
-		} else if (endNode.nodeType == Node.TEXT_NODE
-		|| endNode.nodeType == Node.COMMENT_NODE
-		|| endOffset == getNodeLength(endNode)) {
-			endOffset = 1 + getNodeIndex(endNode);
-			endNode = endNode.parentNode;
+			// "Otherwise, if start offset is equal to the length of start
+			// node, set start offset to one plus the index of start node and
+			// then set start node to its parent."
+			} else if (startOffset == getNodeLength(startNode)) {
+				startOffset = 1 + getNodeIndex(startNode);
+				startNode = startNode.parentNode;
 
-		// "Otherwise, if the child of end node with index end offset and its
-		// previousSibling are both inline nodes and neither is a br, add one
-		// to end offset."
-		} else if (isInlineNode(endNode.childNodes[endOffset])
-		&& isInlineNode(endNode.childNodes[endOffset].previousSibling)
-		&& (
-			!isHtmlElement(endNode.childNodes[endOffset])
-			|| endNode.childNodes[endOffset].tagName != "BR"
-		) && (
-			!isHtmlElement(endNode.childNodes[endOffset].previousSibling)
-			|| endNode.childNodes[endOffset].previousSibling.tagName != "BR"
-		)) {
-			endOffset++;
+			// "Otherwise, if the child of start node with index start offset and
+			// its previousSibling are both inline nodes and neither is a br,
+			// subtract one from start offset."
+			} else if (isInlineNode(startNode.childNodes[startOffset])
+			&& isInlineNode(startNode.childNodes[startOffset].previousSibling)
+			&& (
+				!isHtmlElement(startNode.childNodes[startOffset])
+				|| startNode.childNodes[startOffset].tagName != "BR"
+			) && (
+				!isHtmlElement(startNode.childNodes[startOffset].previousSibling)
+				|| startNode.childNodes[startOffset].previousSibling.tagName != "BR"
+			)) {
+				startOffset--;
 
-		// "Otherwise, break from this loop."
-		} else {
+			// "Otherwise, break from this loop."
+			} else {
+				break;
+			}
+		}
+	}
+
+	// "If some ancestor container of end node is an li, set end offset to one
+	// plus the index of the last such li in tree order, and set end node to
+	// that li's parent."
+	var inLi = false;
+	for (
+		var ancestorContainer = endNode;
+		ancestorContainer;
+		ancestorContainer = ancestorContainer.parentNode
+	) {
+		if (isHtmlElement(ancestorContainer, "LI")) {
+			endOffset = 1 + getNodeIndex(ancestorContainer);
+			endNode = ancestorContainer.parentNode;
+			inLi = true;
 			break;
+		}
+	}
+
+	// "Otherwise, repeat the following steps:"
+	if (!inLi) {
+		while (true) {
+			// "If end offset is 0, set end offset to the index of end node and
+			// then set end node to its parent."
+			if (endOffset == 0) {
+				endOffset = getNodeIndex(endNode);
+				endNode = endNode.parentNode;
+
+			// "Otherwise, if end node is a Text or Comment node or end offset
+			// is equal to the length of end node, set end offset to one plus
+			// the index of end node and then set end node to its parent."
+			} else if (endNode.nodeType == Node.TEXT_NODE
+			|| endNode.nodeType == Node.COMMENT_NODE
+			|| endOffset == getNodeLength(endNode)) {
+				endOffset = 1 + getNodeIndex(endNode);
+				endNode = endNode.parentNode;
+
+			// "Otherwise, if the child of end node with index end offset and its
+			// previousSibling are both inline nodes and neither is a br, add one
+			// to end offset."
+			} else if (isInlineNode(endNode.childNodes[endOffset])
+			&& isInlineNode(endNode.childNodes[endOffset].previousSibling)
+			&& (
+				!isHtmlElement(endNode.childNodes[endOffset])
+				|| endNode.childNodes[endOffset].tagName != "BR"
+			) && (
+				!isHtmlElement(endNode.childNodes[endOffset].previousSibling)
+				|| endNode.childNodes[endOffset].previousSibling.tagName != "BR"
+			)) {
+				endOffset++;
+
+			// "Otherwise, break from this loop."
+			} else {
+				break;
+			}
 		}
 	}
 

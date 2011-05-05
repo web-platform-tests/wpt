@@ -659,7 +659,11 @@ title>splitText()</code>.
   and <var>end offset</var> be the [[rangestart]] and [[rangeend]] [[bpnodes]]
   and [[bpoffsets]] of <var>range</var>.
 
-  <li>Repeat the following steps:
+  <li>If some [[ancestorcontainer]] of <var>start node</var> is an [[li]], set
+  <var>start offset</var> to the [[index]] of the last such [[li]] in
+  [[treeorder]], and set <var>start node</var> to that [[li]]'s [[parent]].
+
+  <li>Otherwise, repeat the following steps:
 
   <ol>
     <li>If <var>start node</var> is a [[text]] or [[comment]] node or
@@ -685,7 +689,11 @@ title>splitText()</code>.
     <li>Otherwise, break from this loop.
   </ol>
 
-  <li>Repeat the following steps:
+  <li>If some [[ancestorcontainer]] of <var>end node</var> is an [[li]], set
+  <var>end offset</var> to one plus the [[index]] of the last such [[li]] in
+  [[treeorder]], and set <var>end node</var> to that [[li]]'s [[parent]].
+
+  <li>Otherwise, repeat the following steps:
 
   <ol>
     <li>If <var>end offset</var> is 0, set <var>end offset</var> to the

@@ -1166,7 +1166,6 @@ function blockExtendRange(range) {
 	// "If some ancestor container of start node is an li, set start offset to
 	// the index of the last such li in tree order, and set start node to that
 	// li's parent."
-	var inLi = false;
 	for (
 		var ancestorContainer = startNode;
 		ancestorContainer;
@@ -1175,55 +1174,51 @@ function blockExtendRange(range) {
 		if (isHtmlElement(ancestorContainer, "LI")) {
 			startOffset = getNodeIndex(ancestorContainer);
 			startNode = ancestorContainer.parentNode;
-			inLi = true;
 			break;
 		}
 	}
 
-	// "Otherwise, repeat the following steps:"
-	if (!inLi) {
-		while (true) {
-			// "If start node is a Text or Comment node or start offset is 0,
-			// set start offset to the index of start node and then set start
-			// node to its parent."
-			if (startNode.nodeType == Node.TEXT_NODE
-			|| startNode.nodeType == Node.COMMENT_NODE
-			|| startOffset == 0) {
-				startOffset = getNodeIndex(startNode);
-				startNode = startNode.parentNode;
+	// "Repeat the following steps:"
+	while (true) {
+		// "If start node is a Text or Comment node or start offset is 0,
+		// set start offset to the index of start node and then set start
+		// node to its parent."
+		if (startNode.nodeType == Node.TEXT_NODE
+		|| startNode.nodeType == Node.COMMENT_NODE
+		|| startOffset == 0) {
+			startOffset = getNodeIndex(startNode);
+			startNode = startNode.parentNode;
 
-			// "Otherwise, if start offset is equal to the length of start
-			// node, set start offset to one plus the index of start node and
-			// then set start node to its parent."
-			} else if (startOffset == getNodeLength(startNode)) {
-				startOffset = 1 + getNodeIndex(startNode);
-				startNode = startNode.parentNode;
+		// "Otherwise, if start offset is equal to the length of start
+		// node, set start offset to one plus the index of start node and
+		// then set start node to its parent."
+		} else if (startOffset == getNodeLength(startNode)) {
+			startOffset = 1 + getNodeIndex(startNode);
+			startNode = startNode.parentNode;
 
-			// "Otherwise, if the child of start node with index start offset and
-			// its previousSibling are both inline nodes and neither is a br,
-			// subtract one from start offset."
-			} else if (isInlineNode(startNode.childNodes[startOffset])
-			&& isInlineNode(startNode.childNodes[startOffset].previousSibling)
-			&& (
-				!isHtmlElement(startNode.childNodes[startOffset])
-				|| startNode.childNodes[startOffset].tagName != "BR"
-			) && (
-				!isHtmlElement(startNode.childNodes[startOffset].previousSibling)
-				|| startNode.childNodes[startOffset].previousSibling.tagName != "BR"
-			)) {
-				startOffset--;
+		// "Otherwise, if the child of start node with index start offset and
+		// its previousSibling are both inline nodes and neither is a br,
+		// subtract one from start offset."
+		} else if (isInlineNode(startNode.childNodes[startOffset])
+		&& isInlineNode(startNode.childNodes[startOffset].previousSibling)
+		&& (
+			!isHtmlElement(startNode.childNodes[startOffset])
+			|| startNode.childNodes[startOffset].tagName != "BR"
+		) && (
+			!isHtmlElement(startNode.childNodes[startOffset].previousSibling)
+			|| startNode.childNodes[startOffset].previousSibling.tagName != "BR"
+		)) {
+			startOffset--;
 
-			// "Otherwise, break from this loop."
-			} else {
-				break;
-			}
+		// "Otherwise, break from this loop."
+		} else {
+			break;
 		}
 	}
 
 	// "If some ancestor container of end node is an li, set end offset to one
 	// plus the index of the last such li in tree order, and set end node to
 	// that li's parent."
-	var inLi = false;
 	for (
 		var ancestorContainer = endNode;
 		ancestorContainer;
@@ -1232,47 +1227,44 @@ function blockExtendRange(range) {
 		if (isHtmlElement(ancestorContainer, "LI")) {
 			endOffset = 1 + getNodeIndex(ancestorContainer);
 			endNode = ancestorContainer.parentNode;
-			inLi = true;
 			break;
 		}
 	}
 
-	// "Otherwise, repeat the following steps:"
-	if (!inLi) {
-		while (true) {
-			// "If end offset is 0, set end offset to the index of end node and
-			// then set end node to its parent."
-			if (endOffset == 0) {
-				endOffset = getNodeIndex(endNode);
-				endNode = endNode.parentNode;
+	// "Repeat the following steps:"
+	while (true) {
+		// "If end offset is 0, set end offset to the index of end node and
+		// then set end node to its parent."
+		if (endOffset == 0) {
+			endOffset = getNodeIndex(endNode);
+			endNode = endNode.parentNode;
 
-			// "Otherwise, if end node is a Text or Comment node or end offset
-			// is equal to the length of end node, set end offset to one plus
-			// the index of end node and then set end node to its parent."
-			} else if (endNode.nodeType == Node.TEXT_NODE
-			|| endNode.nodeType == Node.COMMENT_NODE
-			|| endOffset == getNodeLength(endNode)) {
-				endOffset = 1 + getNodeIndex(endNode);
-				endNode = endNode.parentNode;
+		// "Otherwise, if end node is a Text or Comment node or end offset
+		// is equal to the length of end node, set end offset to one plus
+		// the index of end node and then set end node to its parent."
+		} else if (endNode.nodeType == Node.TEXT_NODE
+		|| endNode.nodeType == Node.COMMENT_NODE
+		|| endOffset == getNodeLength(endNode)) {
+			endOffset = 1 + getNodeIndex(endNode);
+			endNode = endNode.parentNode;
 
-			// "Otherwise, if the child of end node with index end offset and its
-			// previousSibling are both inline nodes and neither is a br, add one
-			// to end offset."
-			} else if (isInlineNode(endNode.childNodes[endOffset])
-			&& isInlineNode(endNode.childNodes[endOffset].previousSibling)
-			&& (
-				!isHtmlElement(endNode.childNodes[endOffset])
-				|| endNode.childNodes[endOffset].tagName != "BR"
-			) && (
-				!isHtmlElement(endNode.childNodes[endOffset].previousSibling)
-				|| endNode.childNodes[endOffset].previousSibling.tagName != "BR"
-			)) {
-				endOffset++;
+		// "Otherwise, if the child of end node with index end offset and its
+		// previousSibling are both inline nodes and neither is a br, add one
+		// to end offset."
+		} else if (isInlineNode(endNode.childNodes[endOffset])
+		&& isInlineNode(endNode.childNodes[endOffset].previousSibling)
+		&& (
+			!isHtmlElement(endNode.childNodes[endOffset])
+			|| endNode.childNodes[endOffset].tagName != "BR"
+		) && (
+			!isHtmlElement(endNode.childNodes[endOffset].previousSibling)
+			|| endNode.childNodes[endOffset].previousSibling.tagName != "BR"
+		)) {
+			endOffset++;
 
-			// "Otherwise, break from this loop."
-			} else {
-				break;
-			}
+		// "Otherwise, break from this loop."
+		} else {
+			break;
 		}
 	}
 
@@ -2191,30 +2183,30 @@ function myExecCommand(command, showUI, value, range) {
 		break;
 
 		case "indent":
-		// "If the range's start node has an li ancestor container, normalize
-		// sublists of the last such li in tree order."
-		for (
-			var ancestorContainer = range.startContainer;
-			ancestorContainer;
-			ancestorContainer = ancestorContainer.parentNode
-		) {
-			if (isHtmlElement(ancestorContainer, "LI")) {
-				normalizeSublists(ancestorContainer);
-				break;
+		// "Let items be a list of all lis that are ancestor containers of the
+		// range's start and/or end node."
+		//
+		// Has to be in tree order, remember!
+		var items = [];
+		for (var node = range.endContainer; node != range.commonAncestorContainer; node = node.parentNode) {
+			if (isHtmlElement(node, "LI")) {
+				items.unshift(node);
+			}
+		}
+		for (var node = range.startContainer; node != range.commonAncestorContainer; node = node.parentNode) {
+			if (isHtmlElement(node, "LI")) {
+				items.unshift(node);
+			}
+		}
+		for (var node = range.commonAncestorContainer; node; node = node.parentNode) {
+			if (isHtmlElement(node, "LI")) {
+				items.unshift(node);
 			}
 		}
 
-		// "If the range's end node has an li ancestor container, normalize
-		// sublists of the last such li in tree order."
-		for (
-			var ancestorContainer = range.endContainer;
-			ancestorContainer;
-			ancestorContainer = ancestorContainer.parentNode
-		) {
-			if (isHtmlElement(ancestorContainer, "LI")) {
-				normalizeSublists(ancestorContainer);
-				break;
-			}
+		// "For each item in items, normalize sublists of item."
+		for (var i = 0; i < items.length; i++) {
+			normalizeSublists(items[i]);
 		}
 
 		// "Block-extend the range, and let new range be the result."
@@ -2610,11 +2602,9 @@ function myExecCommand(command, showUI, value, range) {
 }
 
 function indentNode(node) {
-	// "If node is an li whose parent is an ol or ul:"
-	if (isHtmlElement(node)
-	&& node.tagName == "LI"
-	&& isHtmlElement(node.parentNode)
-	&& (node.parentNode.tagName == "OL" || node.parentNode.tagName == "UL")) {
+	// "If node's parent is an ol or ul:"
+	if (isHtmlElement(node.parentNode, "OL")
+	|| isHtmlElement(node.parentNode, "UL")) {
 		// "Let tag be the local name of the parent of node."
 		var tag = node.parentNode.tagName;
 
@@ -2627,36 +2617,12 @@ function indentNode(node) {
 			return;
 		}
 
-		// "If the previousSibling of node is an li, and the last child of its
-		// previousSibling is an HTML element with local name tag, append node
-		// as the last child of the last child of the previousSibling of node,
-		// preserving ranges. Then abort these steps."
-		if (isHtmlElement(node.previousSibling)
-		&& node.previousSibling.tagName == "LI"
-		&& isHtmlElement(node.previousSibling.lastChild)
-		&& node.previousSibling.lastChild.tagName == tag) {
-			movePreservingRanges(node, node.previousSibling.lastChild, getNodeLength(node.previousSibling.lastChild));
-			return;
-		}
-
 		// "If the nextSibling of node is an HTML element with local name tag,
 		// insert node as the first child of its nextSibling, preserving
 		// ranges. Then abort these steps."
 		if (isHtmlElement(node.nextSibling)
 		&& node.nextSibling.tagName == tag) {
 			movePreservingRanges(node, node.nextSibling, 0);
-			return;
-		}
-
-		// "If the nextSibling of node is an li, and the first child of its
-		// nextSibling is an HTML element with local name tag, insert node as
-		// the first child of the first child of the nextSibling of node,
-		// preserving ranges. Then abort these steps."
-		if (isHtmlElement(node.nextSibling)
-		&& node.nextSibling.tagName == "LI"
-		&& isHtmlElement(node.nextSibling.firstChild)
-		&& node.nextSibling.firstChild.tagName == tag) {
-			movePreservingRanges(node, node.nextSibling.firstChild, 0);
 			return;
 		}
 

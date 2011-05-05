@@ -535,6 +535,7 @@ var tests = {
 
 		// Lists!
 		'<ol><li>foo<li>[bar]<li>baz</ol>',
+		'<ol data-start=1 data-end=2><li>foo<li>bar<li>baz</ol>',
 		'<ol><li>foo</ol>[bar]',
 		'<ol><li>[foo]<br>bar<li>baz</ol>',
 		'<ol><li>foo<br>[bar]<li>baz</ol>',
@@ -543,12 +544,23 @@ var tests = {
 		'<ol><li>foo<ol><li>bar<li>[baz]</ol><li>quz</ol>',
 		'<ol><li>foo</li><ol><li>[bar]<li>baz</ol><li>quz</ol>',
 		'<ol><li>foo</li><ol><li>bar<li>[baz]</ol><li>quz</ol>',
+		'<ol><li>foo<ol><li>b[a]r</ol><li>baz</ol>',
+		'<ol><li>foo</li><ol><li>b[a]r</ol><li>baz</ol>',
+		'<ol><li>foo{<ol><li>bar</ol>}<li>baz</ol>',
+		'<ol><li>foo</li>{<ol><li>bar</ol>}<li>baz</ol>',
 		'<ol><li>[foo]<ol><li>bar</ol><li>baz</ol>',
 		'<ol><li>[foo]</li><ol><li>bar</ol><li>baz</ol>',
 		'<ol><li>foo<li>[bar]<ol><li>baz</ol><li>quz</ol>',
 		'<ol><li>foo<li>[bar]</li><ol><li>baz</ol><li>quz</ol>',
 		'<ol><li>foo<ol><li>bar<li>baz</ol><li>[quz]</ol>',
 		'<ol><li>foo</li><ol><li>bar<li>baz</ol><li>[quz]</ol>',
+
+		// Try indenting multiple items at once.
+		'<ol><li>foo<li>b[ar<li>baz]</ol>',
+		'<ol><li>[foo<ol><li>bar]</ol><li>baz</ol>',
+		'<ol><li>[foo</li><ol><li>bar]</ol><li>baz</ol>',
+		'<ol><li>[foo<ol><li>bar</ol><li>baz]</ol>',
+		'<ol><li>[foo</li><ol><li>bar</ol><li>baz]</ol>',
 	],
 	inserthorizontalrule: [
 		'foo[]bar',

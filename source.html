@@ -651,7 +651,7 @@ title>splitText()</code>.
   <var>start offset</var> to the [[index]] of the last such [[li]] in
   [[treeorder]], and set <var>start node</var> to that [[li]]'s [[parent]].
 
-  <li>Otherwise, repeat the following steps:
+  <li>Repeat the following steps:
 
   <ol>
     <li>If <var>start node</var> is a [[text]] or [[comment]] node or
@@ -681,7 +681,7 @@ title>splitText()</code>.
   <var>end offset</var> to one plus the [[index]] of the last such [[li]] in
   [[treeorder]], and set <var>end node</var> to that [[li]]'s [[parent]].
 
-  <li>Otherwise, repeat the following steps:
+  <li>Repeat the following steps:
 
   <ol>
     <li>If <var>end offset</var> is 0, set <var>end offset</var> to the
@@ -1957,13 +1957,14 @@ indenting on both sides.
 fragments, html/body, head or things in head . . .
 
 <ol>
-  <li>If the [[range]]'s [[rangestart]] [[bpnode]] has an [[li]]
-  [[ancestorcontainer]], <span>normalize sublists</span> of the last such
-  [[li]] in [[treeorder]].
+  <li>Let <var>items</var> be a list of all [[li]]s that are
+  [[ancestorcontainers]] of the [[range]]'s [[rangestart]] and/or [[rangeend]]
+  [[bpnode]].
 
-  <li>If the [[range]]'s [[rangeend]] [[bpnode]] has an [[li]]
-  [[ancestorcontainer]], <span>normalize sublists</span> of the last such
-  [[li]] in [[treeorder]].
+  <li>For each <var>item</var> in <var>items</var>, <span>normalize
+  sublists</span> of <var>item</var>.
+  <!-- This overnormalizes, but it seems like the simplest solution for now.
+  -->
 
   <li><span>Block-extend</span> the [[range]], and let <var>new range</var> be
   the result.
@@ -2010,7 +2011,7 @@ fragments, html/body, head or things in head . . .
 <p>To <dfn>indent</dfn> a [[node]] <var>node</var>:
 
 <ol>
-  <li>If <var>node</var> is an [[li]] whose [[parent]] is an [[ol]] or [[ul]]:
+  <li>If <var>node</var>'s [[parent]] is an [[ol]] or [[ul]]:
 
   <ol>
     <li>Let <var>tag</var> be the [[localname]] of the [[parent]] of

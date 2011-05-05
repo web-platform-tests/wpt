@@ -59,12 +59,13 @@ have experience using this feature.
  <li><a href=#issues><span class=secno>2 </span>Issues</a></li>
  <li><a href=#definitions><span class=secno>3 </span>Definitions</a></li>
  <li><a href=#decomposing-a-range-into-nodes><span class=secno>4 </span>Decomposing a range into nodes</a></li>
- <li><a href=#block-extending-a-range><span class=secno>5 </span>Block-extending a range</a></li>
- <li><a href="#clearing-an-element's-value"><span class=secno>6 </span>Clearing an element's value</a></li>
- <li><a href=#pushing-down-values><span class=secno>7 </span>Pushing down values</a></li>
- <li><a href=#forcing-the-value-of-a-node><span class=secno>8 </span>Forcing the value of a node</a></li>
- <li><a href=#setting-the-value-of-a-node><span class=secno>9 </span>Setting the value of a node</a></li>
- <li><a href=#commands><span class=secno>10 </span>Commands</a></li>
+ <li><a href=#normalizing-sublists-in-a-range><span class=secno>5 </span>Normalizing sublists in a range</a></li>
+ <li><a href=#block-extending-a-range><span class=secno>6 </span>Block-extending a range</a></li>
+ <li><a href="#clearing-an-element's-value"><span class=secno>7 </span>Clearing an element's value</a></li>
+ <li><a href=#pushing-down-values><span class=secno>8 </span>Pushing down values</a></li>
+ <li><a href=#forcing-the-value-of-a-node><span class=secno>9 </span>Forcing the value of a node</a></li>
+ <li><a href=#setting-the-value-of-a-node><span class=secno>10 </span>Setting the value of a node</a></li>
+ <li><a href=#commands><span class=secno>11 </span>Commands</a></li>
  <li><a class=no-num href=#references>References</a></li>
  <li><a class=no-num href=#acknowledgements>Acknowledgements</a></ol>
 <!--end-toc-->
@@ -599,7 +600,60 @@ agents follow the <a class=external data-anolis-spec=domrange href=http://html5.
 </ol>
 
 
-<h2 id=block-extending-a-range><span class=secno>5 </span>Block-extending a range</h2>
+<h2 id=normalizing-sublists-in-a-range><span class=secno>5 </span>Normalizing sublists in a range</h2>
+<p>When a user agent is to <dfn id=normalize-sublists>normalize sublists</dfn> in a <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>
+<var title="">range</var>, it must run the following steps:
+
+<ol>
+  <li>Let <var title="">items</var> be a list of <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a>, initially empty.
+
+  <li>If there is some <code class=external data-anolis-spec=html title="the li element"><a href=http://www.whatwg.org/html/#the-li-element>li</a></code> element that is an <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#ancestor-container>ancestor container</a> of <var title="">range</var>'s
+  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> and <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>nodes</a>, append the last such element in
+  <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#tree-order>tree order</a> to <var title="">items</var>.
+  <!-- We don't want to add more than that, because it would disturb upper
+  parts of the DOM that we don't actually need to change. -->
+
+  <li>Append to <var title="">items</var> every <code class=external data-anolis-spec=html title="the li element"><a href=http://www.whatwg.org/html/#the-li-element>li</a></code> element that is <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> or
+  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#partially-contained>partially contained</a> in <var title="">range</var>.
+
+  <li>For each <var title="">item</var> in <var title="">items</var>:
+
+  <ol>
+    <li>Let <var title="">new item</var> be null.
+
+    <li>While <var title="">item</var> has an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code> or <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>:
+
+    <ol>
+      <li>Let <var title="">child</var> be the last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">item</var>.
+
+      <li>If <var title="">child</var> is an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code> or <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code>, or <var title="">new item</var> is
+      null and <var title="">child</var> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node whose <code class=external data-anolis-spec=domcore title=dom-CharacterData-data><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-data>data</a></code>
+      consists of zero of more <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#space-character title="space
+      character">space characters</a>:
+
+      <ol>
+        <li>Set <var title="">new item</var> to null.
+
+        <li>Insert <var title="">child</var> into the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of <var title="">item</var>
+        immediately following <var title="">item</var>, <a href=#preserving-ranges>preserving ranges</a>.
+      </ol>
+
+      <li>Otherwise:
+
+      <ol>
+        <li>If <var title="">new item</var> is null, let <var title="">new item</var> be the
+        result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("li")</a></code> on the
+        <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">item</var>, then insert <var title="">new item</var>
+        into the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of <var title="">item</var> immediately after
+        <var title="">item</var>.
+
+        <li>Insert <var title="">child</var> into <var title="">new item</var> as its first
+        <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>, <a href=#preserving-ranges>preserving ranges</a>.
+    </ol>
+  </ol>
+</ol>
+
+<h2 id=block-extending-a-range><span class=secno>6 </span>Block-extending a range</h2>
 <p>When a user agent is to <dfn id=block-extend>block-extend</dfn> a <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>
 <var title="">range</var>, it must run the following steps:
 
@@ -660,7 +714,7 @@ agents follow the <a class=external data-anolis-spec=domrange href=http://html5.
 </ol>
 
 
-<h2 id="clearing-an-element's-value"><span class=secno>6 </span>Clearing an element's value</h2>
+<h2 id="clearing-an-element's-value"><span class=secno>7 </span>Clearing an element's value</h2>
 <p>When a user agent is to <dfn id=clear-the-value>clear the value</dfn> of an element
 <var title="">element</var>, it must run the following steps:
 
@@ -750,7 +804,7 @@ id=foo> into <span id=foo> instead of <font id=foo>, but probably not worth it.
 </ol>
 
 
-<h2 id=pushing-down-values><span class=secno>7 </span>Pushing down values</h2>
+<h2 id=pushing-down-values><span class=secno>8 </span>Pushing down values</h2>
 <p>When a user agent is to <dfn id=push-down-values>push down values</dfn> to a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>
 <var title="">node</var>, given a command <var title="">command</var> and a new value
 <var title="">new value</var>, it must run the following steps:
@@ -868,7 +922,7 @@ with a <code class=external data-anolis-spec=html title="the style attribute"><a
 </ol>
 
 
-<h2 id=forcing-the-value-of-a-node><span class=secno>8 </span>Forcing the value of a node</h2>
+<h2 id=forcing-the-value-of-a-node><span class=secno>9 </span>Forcing the value of a node</h2>
 <p>When a user agent is to <dfn id=force-the-value>force the value</dfn> of a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>
 <var title="">node</var>, given a command <var title="">command</var> and a new value
 <var title="">new value</var>, it must run the following steps.
@@ -1178,7 +1232,7 @@ different value.
 </ol>
 
 
-<h2 id=setting-the-value-of-a-node><span class=secno>9 </span>Setting the value of a node</h2>
+<h2 id=setting-the-value-of-a-node><span class=secno>10 </span>Setting the value of a node</h2>
 <p>When a user agent is to <dfn id=set-the-value>set the value</dfn> of a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>
 <var title="">node</var>, it must run the following steps.  There are two inputs: a
 command <var title="">command</var> and a new value <var title="">new value</var>.
@@ -1332,7 +1386,7 @@ as desired.
 </ol>
 
 
-<h2 id=commands><span class=secno>10 </span>Commands</h2>
+<h2 id=commands><span class=secno>11 </span>Commands</h2>
 <p>The <dfn id=execcommand() title=execCommand()><code>execCommand(<var title="">commandId</var>,
 <var title="">showUI</var>, <var title="">value</var>)</code></dfn> method on the
 <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/html/#htmldocument>HTMLDocument</a></code> interface allows scripts to
@@ -1887,6 +1941,8 @@ indenting on both sides.
 fragments, html/body, head or things in head . . .
 
 <ol>
+  <li><a href=#normalize-sublists>Normalize sublists</a> in the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>.
+
   <li><a href=#block-extend>Block-extend</a> the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>, and let <var title="">new range</var> be
   the result.
 
@@ -2925,4 +2981,4 @@ get rid of it.
 
 <script src=http://www.whatwg.org/specs/web-apps/current-work/dfn.js></script>
 <!-- vim: set expandtab shiftwidth=2 tabstop=2: -->
-</dl>
+</dl></ol>

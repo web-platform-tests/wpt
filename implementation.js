@@ -321,10 +321,14 @@ function parseSimpleColor(color) {
 
 
 // "An HTML element is an Element whose namespace is the HTML namespace."
-function isHtmlElement(node) {
+//
+// I allow an extra argument to more easily check whether something is a
+// particular HTML element, like isHtmlElement(node, "OL").
+function isHtmlElement(node, tag) {
 	return node
 		&& node.nodeType == Node.ELEMENT_NODE
-		&& isHtmlNamespace(node.namespaceURI);
+		&& isHtmlNamespace(node.namespaceURI)
+		&& (typeof tag == "undefined" || node.tagName == tag);
 }
 
 // "An inline node is either a Text node, or an Element whose "display"
@@ -1105,6 +1109,83 @@ function decomposeRange(range) {
 		}
 	}
 	return ret;
+}
+
+function normalizeSublists(range) {
+	// "Let items be a list of nodes, initially empty."
+	var items = [];
+
+	// "If there is some li element that is an ancestor container of range's
+	// start and end nodes, append the last such element in tree order to
+	// items."
+	for (
+		var node = range.commonAncestorContainer;
+		node;
+		node = node.parentNode
+	) {
+		if (isHtmlElement(node, "LI")) {
+			items.push(node);
+			break;
+		}
+	}
+
+	// "Append to items every li element that is contained or partially
+	// contained in range."
+	for (
+		var node = range.commonAncestorContainer;
+		isDescendant(node, range.commonAncestorContainer);
+		node = nextNode(node)
+	) {
+		if (!isHtmlElement(node, "LI")) {
+			continue;
+		}
+
+		if (isContained(node, range) || isPartiallyContained(node, range)) {
+			items.push(node);
+		}
+	}
+
+	// "For each item in items:"
+	for (var i = 0; i < items.length; i++) {
+		var item = items[i];
+
+		// "Let new item be null."
+		var newItem = null;
+
+		// "While item has an ol or ul child:"
+		while ([].some.call(item.childNodes, function (node) { return isHtmlElement(node, "OL") || isHtmlElement(node, "UL") })) {
+			// "Let child be the last child of item."
+			var child = item.lastChild;
+
+			// "If child is an ol or ul, or new item is null and child is a
+			// Text node whose data consists of zero of more space characters:"
+			if (isHtmlElement(child, "OL")
+			|| isHtmlElement(child, "UL")
+			|| (!newItem && child.nodeType == Node.TEXT_NODE && /^[ \t\n\f\r]*$/.test(child.data))) {
+				// "Set new item to null."
+				newItem = null;
+
+				// "Insert child into the parent of item immediately following
+				// item, preserving ranges."
+				movePreservingRanges(child, item.parentNode, 1 + getNodeIndex(item));
+
+			// "Otherwise:"
+			} else {
+				// "If new item is null, let new item be the result of calling
+				// createElement("li") on the ownerDocument of item, then
+				// insert new item into the parent of item immediately after
+				// item."
+				if (!newItem) {
+					newItem = item.ownerDocument.createElement("li");
+					item.parentNode.insertBefore(newItem, item.nextSibling);
+				}
+
+				// "Insert child into new item as its first child, preserving
+				// ranges."
+				movePreservingRanges(child, newItem, 0);
+			}
+		}
+	}
 }
 
 function blockExtendRange(range) {
@@ -2105,6 +2186,9 @@ function myExecCommand(command, showUI, value, range) {
 		break;
 
 		case "indent":
+		// "Normalize sublists in the range."
+		normalizeSublists(range);
+
 		// "Block-extend the range, and let new range be the result."
 		var newRange = blockExtendRange(range);
 

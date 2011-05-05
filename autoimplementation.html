@@ -555,7 +555,9 @@ var tests = {
 		'<ol><li>foo<ol><li>[bar]<li>baz</ol><li>quz</ol>',
 		'<ol><li>foo<ol><li>bar<li>[baz]</ol><li>quz</ol>',
 		'<ol><li>foo</li><ol><li>[bar]<li>baz</ol><li>quz</ol>',
+		'<ol><li>foo</li><ol data-start=0 data-end=1><li>bar<li>baz</ol><li>quz</ol>',
 		'<ol><li>foo</li><ol><li>bar<li>[baz]</ol><li>quz</ol>',
+		'<ol><li>foo</li><ol data-start=1 data-end=2><li>bar<li>baz</ol><li>quz</ol>',
 		'<ol><li>foo<ol><li>b[a]r</ol><li>baz</ol>',
 		'<ol><li>foo</li><ol><li>b[a]r</ol><li>baz</ol>',
 		'<ol><li>foo{<ol><li>bar</ol>}<li>baz</ol>',
@@ -571,8 +573,16 @@ var tests = {
 		'<ol><li>foo<li>b[ar<li>baz]</ol>',
 		'<ol><li>[foo<ol><li>bar]</ol><li>baz</ol>',
 		'<ol><li>[foo</li><ol><li>bar]</ol><li>baz</ol>',
-		'<ol><li>[foo<ol><li>bar</ol><li>baz]</ol>',
-		'<ol><li>[foo</li><ol><li>bar</ol><li>baz]</ol>',
+		'<ol><li>foo<ol><li>b[ar</ol><li>b]az</ol>',
+		'<ol><li>foo</li><ol><li>b[ar</ol><li>b]az</ol>',
+		'<ol><li>[foo<ol><li>bar</ol><li>baz]</ol><p>extra',
+		'<ol><li>[foo</li><ol><li>bar</ol><li>baz]</ol><p>extra',
+
+		// We probably can't actually get this DOM . . .
+		'<ol><li>[foo]<ol><li>bar</ol>baz</ol>',
+		'<ol><li>foo<ol><li>[bar]</ol>baz</ol>',
+		'<ol><li>foo<ol><li>bar</ol>[baz]</ol>',
+		'<ol><li>[foo<ol><li>bar]</ol>baz</ol>',
 	],
 	inserthorizontalrule: [
 		'foo[]bar',

@@ -2005,35 +2005,75 @@ fragments, html/body, head or things in head . . .
   <!-- Otherwise the last child of the previous sibling might be a list, which
   the li wouldn't get appended to. -->
 
-  <li><span>Indent</span> each member of <var>node list</var>.
+  <li>While <var>node list</var> is not empty:
+
+  <ol>
+    <li>Let <var>sublist</var> be a list of [[nodes]], initially empty.
+
+    <li>Remove the first member of <var>node list</var> and append it to
+    <var>sublist</var>.
+
+    <li>While the first member of <var>node list</var> is the [[nextsibling]]
+    of the last member of <var>sublist</var>, remove the first member of
+    <var>node list</var> and append it to <var>sublist</var>.
+
+    <li><span>Indent</span> <var>sublist</var>.
+  </ol>
 </ol>
 
-<p>To <dfn>indent</dfn> a [[node]] <var>node</var>:
+<!--
+We have to handle entire lists of siblings at once, or else we'd wind up doing
+something like
+
+  <ol>
+    {<li>foo</li>
+    <ol><li>bar</li></ol>}
+  </ol>
+  ->
+  <ol><ol>
+    <li>foo</li>
+    <li>bar</li>
+  </ol></ol>
+  ->
+  <ol><ol><ol>
+    <li>foo</li>
+    <li>bar</li>
+  </ol></ol></ol>
+
+since by the time we got to doing the <ol> that originally contained "bar", we
+won't remember that we aren't supposed to indent "foo" a second time.
+-->
+<p>To <dfn>indent</dfn> a list <var>node list</var> of consecutive [[sibling]]
+[[nodes]]:
 
 <ol>
-  <li>If <var>node</var>'s [[parent]] is an [[ol]] or [[ul]]:
+  <li>Let <var>first node</var> be the first member of <var>node list</var>.
+
+  <li>If <var>first node</var>'s [[parent]] is an [[ol]] or [[ul]]:
 
   <ol>
     <li>Let <var>tag</var> be the [[localname]] of the [[parent]] of
-    <var>node</var>.
+    <var>first node</var>.
 
-    <li>If the [[previoussibling]] of <var>node</var> is an <span>HTML
-    element</span> with [[localname]] <var>tag</var>, append <var>node</var> as
-    the last [[child]] of its [[previoussibling]], <span>preserving
-    ranges</span>.  Then abort these steps.
-
-    <li>If the [[nextsibling]] of <var>node</var> is an <span>HTML
-    element</span> with [[localname]] <var>tag</var>, insert <var>node</var> as
-    the first [[child]] of its [[nextsibling]], <span>preserving ranges</span>.
+    <li>If the [[previoussibling]] of the first member of <var>node list</var>
+    is an <span>HTML element</span> with [[localname]] <var>tag</var>, then for
+    each <var>node</var> in <var>node list</var>, append <var>node</var> as the
+    last [[child]] of its [[previoussibling]], <span>preserving ranges</span>.
     Then abort these steps.
+
+    <li>If the [[nextsibling]] of the last member of <var>node list</var> is an
+    <span>HTML element</span> with [[localname]] <var>tag</var>, then for each
+    <var>node</var> in <var>node list</var> <em>in reverse order</em>, insert
+    <var>node</var> as the first [[child]] of its [[nextsibling]],
+    <span>preserving ranges</span>.  Then abort these steps.
 
     <li>Let <var>new parent</var> be the result of calling <code
     data-anolis-spec=domcore
     title=dom-Document-createElement>createElement(<var>tag</var>)</code> on
-    the [[ownerdocument]] of <var>node</var>.
+    the [[ownerdocument]] of <var>first node</var>.
 
-    <li>Insert <var>new parent</var> into the [[parent]] of <var>node</var>
-    immediately before <var>node</var>.
+    <li>Insert <var>new parent</var> into the [[parent]] of <var>first
+    node</var> immediately before <var>first node</var>.
     <!--
     This matches IE9, Firefox 4.0, and Chrome 12 dev.  If there's a preceding
     <li>, Opera 11.10 instead adds the new parent to the end of that <li>, so
@@ -2055,18 +2095,28 @@ fragments, html/body, head or things in head . . .
     http://www.w3.org/Bugs/Public/show_bug.cgi?id=12609
     -->
 
-    <li>Append <var>node</var> as the last [[child]] of <var>new parent</var>,
+    <li>For each <var>node</var> in <var>node list</var>, append
+    <var>node</var> as the last [[child]] of <var>new parent</var>,
     <span>preserving ranges</span>.
 
     <li>Abort these steps.
   </ol>
 
-  <li>If the [[previoussibling]] of <var>node</var> is an <span>indentation
-  element</span>; its "display" property computes to "block"; its
-  "margin-left" and "margin-right" properties compute to "40px"; and its
-  "margin-top" and "margin-bottom" properties compute to "0"; then append
-  <var>node</var> as the last [[child]] of its [[previoussibling]],
-  <span>preserving ranges</span>, then abort these steps.
+  <li>If the [[previoussibling]] of the first member of <var>node list</var> is
+  an <span>indentation element</span>; its "display" property computes to
+  "block"; its "margin-left" and "margin-right" properties compute to "40px";
+  and its "margin-top" and "margin-bottom" properties compute to "0"; then
+  for each <var>node</var> in <var>node list</var>, append <var>node</var> as
+  the last [[child]] of its [[previoussibling]], <span>preserving
+  ranges</span>.  Then abort these steps.
+
+  <li>If the [[nextsibling]] of the last member of <var>node list</var> is an
+  <span>indentation element</span>; its "display" property computes to "block";
+  its "margin-left" and "margin-right" properties compute to "40px"; and its
+  "margin-top" and "margin-bottom" properties compute to "0"; then for each
+  <var>node</var> in <var>node list</var>, <em>in reverse order</em>, insert
+  <var>node</var> as the first [[child]] of its [[nextsibling]],
+  <span>preserving ranges</span>.  Then abort these steps.
 
   <li>Let <var>tag</var> be "div" if the <span>CSS styling flag</span> is
   true, otherwise "blockquote".
@@ -2081,10 +2131,10 @@ fragments, html/body, head or things in head . . .
   <li>Let <var>new parent</var> be the result of calling <code
   data-anolis-spec=domcore
   title=dom-Document-createElement>createElement(<var>tag</var>)</code> on
-  the [[ownerdocument]] of <var>node</var>.
+  the [[ownerdocument]] of <var>first node</var>.
 
   <li>Insert <var>new parent</var> into <var>node</var>'s [[parent]]
-  immediately before <var>node</var>.
+  immediately before <var>first node</var>.
 
   <li>Set the CSS property "margin" of <var>new parent</var> to "0 40px".
 
@@ -2105,8 +2155,9 @@ fragments, html/body, head or things in head . . .
   margins on both sides.  I can't think of any better way to do this at the
   moment.
 
-  <li>Append <var>node</var> as the last [[child]] of <var>new parent</var>,
-  <span>preserving ranges</span>.
+  <li>For each <var>node</var> in <var>node list</var>, append <var>node</var>
+  as the last [[child]] of <var>new parent</var>, <span>preserving
+  ranges</span>.
 </ol>
 
 <dd><strong>State</strong>:

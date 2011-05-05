@@ -499,33 +499,45 @@ var tests = {
 		'<blockquote><p>foo[bar</p><p>b]az</p></blockquote><p>extra',
 		'<blockquote><p>foo[bar]</p></blockquote><p>baz</p><p>extra',
 		'<blockquote><p>foo[bar</p></blockquote><p>b]az</p><p>extra',
+		'<p>[foo]<blockquote><p>bar</blockquote><p>extra',
+		'<p>[foo<blockquote><p>b]ar</blockquote><p>extra',
 
 		// IE:
 		'<blockquote style="margin-right: 0" dir="ltr"><p>foo[bar]</p><p>baz</p></blockquote><p>extra',
 		'<blockquote style="margin-right: 0" dir="ltr"><p>foo[bar</p><p>b]az</p></blockquote><p>extra',
 		'<blockquote style="margin-right: 0" dir="ltr"><p>foo[bar]</p></blockquote><p>baz</p><p>extra',
 		'<blockquote style="margin-right: 0" dir="ltr"><p>foo[bar</p></blockquote><p>b]az</p><p>extra',
+		'<p>[foo]<blockquote style="margin-right: 0" dir="ltr"><p>bar</blockquote><p>extra',
+		'<p>[foo<blockquote style="margin-right: 0" dir="ltr"><p>b]ar</blockquote><p>extra',
 
 		// Firefox CSS mode:
 		'<p style="margin-left: 40px">foo[bar]</p><p style="margin-left: 40px">baz</p><p>extra',
 		'<p style="margin-left: 40px">foo[bar</p><p style="margin-left: 40px">b]az</p><p>extra',
 		'<p style="margin-left: 40px">foo[bar]</p><p>baz</p><p>extra',
 		'<p style="margin-left: 40px">foo[bar</p><p>b]az</p><p>extra',
+		'<p>[foo]<p style="margin-left: 40px">bar<p>extra',
+		'<p>[foo<p style="margin-left: 40px">b]ar<p>extra',
 
 		// WebKit:
 		'<blockquote class="webkit-indent-blockquote" style="margin: 0 0 0 40px; border: none; padding: 0px"><p>foo[bar]</p><p>baz</p></blockquote><p>extra',
 		'<blockquote class="webkit-indent-blockquote" style="margin: 0 0 0 40px; border: none; padding: 0px"><p>foo[bar</p><p>b]az</p></blockquote><p>extra',
 		'<blockquote class="webkit-indent-blockquote" style="margin: 0 0 0 40px; border: none; padding: 0px"><p>foo[bar]</p></blockquote><p>baz</p><p>extra',
 		'<blockquote class="webkit-indent-blockquote" style="margin: 0 0 0 40px; border: none; padding: 0px"><p>foo[bar</p></blockquote><p>b]az</p><p>extra',
+		'<p>[foo]<blockquote class="webkit-indent-blockquote" style="margin: 0 0 0 40px; border: none; padding: 0px"><p>bar</blockquote><p>extra',
+		'<p>[foo<blockquote class="webkit-indent-blockquote" style="margin: 0 0 0 40px; border: none; padding: 0px"><p>b]ar</blockquote><p>extra',
 
 		// Spec:
 		'<blockquote style="margin: 0 40px"><p>foo[bar]</p><p>baz</p></blockquote><p>extra',
 		'<blockquote style="margin: 0 40px"><p>foo[bar</p><p>b]az</p></blockquote><p>extra',
 		'<blockquote style="margin: 0 40px"><p>foo[bar]</p></blockquote><p>baz</p><p>extra',
 		'<blockquote style="margin: 0 40px"><p>foo[bar</p></blockquote><p>b]az</p><p>extra',
+		'<p>[foo]<blockquote style="margin: 0 40px"><p>bar</blockquote><p>extra',
+		'<p>[foo<blockquote style="margin: 0 40px"><p>b]ar</blockquote><p>extra',
 		'<div style="margin: 0 40px"><p>foo[bar]</p><p>baz</p></div><p>extra',
 		'<div style="margin: 0 40px"><p>foo[bar</p><p>b]az</p></div><p>extra',
 		'<div style="margin: 0 40px"><p>foo[bar]</p></div><p>baz</p><p>extra',
+		'<p>[foo]<div style="margin: 0 40px"><p>bar</div><p>extra',
+		'<p>[foo<div style="margin: 0 40px"><p>b]ar</div><p>extra',
 		'<div style="margin: 0 40px"><p>foo[bar</p></div><p>b]az</p><p>extra',
 
 		// MDC says "In Firefox, if the selection spans multiple lines at

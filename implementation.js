@@ -2264,9 +2264,24 @@ function myExecCommand(command, showUI, value, range) {
 			normalizeSublists(nodeList[0].previousSibling);
 		}
 
-		// "Indent each member of node list."
-		for (var i = 0; i < nodeList.length; i++) {
-			indentNode(nodeList[i]);
+		// "While node list is not empty:"
+		while (nodeList.length) {
+			// "Let sublist be a list of nodes, initially empty."
+			var sublist = [];
+
+			// "Remove the first member of node list and append it to sublist."
+			sublist.push(nodeList.shift());
+
+			// "While the first member of node list is the nextSibling of the
+			// last member of sublist, remove the first member of node list and
+			// append it to sublist."
+			while (nodeList.length
+			&& nodeList[0] == sublist[sublist.length - 1].nextSibling) {
+				sublist.push(nodeList.shift());
+			}
+
+			// "Indent sublist."
+			indentNodes(sublist);
 		}
 		break;
 
@@ -2612,58 +2627,92 @@ function myExecCommand(command, showUI, value, range) {
 	}
 }
 
-function indentNode(node) {
-	// "If node's parent is an ol or ul:"
-	if (isHtmlElement(node.parentNode, "OL")
-	|| isHtmlElement(node.parentNode, "UL")) {
-		// "Let tag be the local name of the parent of node."
-		var tag = node.parentNode.tagName;
+function indentNodes(nodeList) {
+	// "Let first node be the first member of node list."
+	var firstNode = nodeList[0];
 
-		// "If the previousSibling of node is an HTML element with local name
-		// tag, append node as the last child of its previousSibling,
-		// preserving ranges. Then abort these steps."
-		if (isHtmlElement(node.previousSibling)
-		&& node.previousSibling.tagName == tag) {
-			movePreservingRanges(node, node.previousSibling, getNodeLength(node.previousSibling));
+	// "If first node's parent is an ol or ul:"
+	if (isHtmlElement(firstNode.parentNode, "OL")
+	|| isHtmlElement(firstNode.parentNode, "UL")) {
+		// "Let tag be the local name of the parent of first node."
+		var tag = firstNode.parentNode.tagName;
+
+		// "If the previousSibling of the first member of node list is an HTML
+		// element with local name tag, then for each node in node list, append
+		// node as the last child of its previousSibling, preserving ranges.
+		// Then abort these steps."
+		if (isHtmlElement(nodeList[0].previousSibling, tag)) {
+			for (var i = 0; i < nodeList.length; i++) {
+				movePreservingRanges(nodeList[i], nodeList[i].previousSibling, nodeList[i].previousSibling.childNodes.length);
+			}
 			return;
 		}
 
-		// "If the nextSibling of node is an HTML element with local name tag,
-		// insert node as the first child of its nextSibling, preserving
-		// ranges. Then abort these steps."
-		if (isHtmlElement(node.nextSibling)
-		&& node.nextSibling.tagName == tag) {
-			movePreservingRanges(node, node.nextSibling, 0);
+		// "If the nextSibling of the last member of node list is an HTML
+		// element with local name tag, then for each node in node list in
+		// reverse order, insert node as the first child of its nextSibling,
+		// preserving ranges. Then abort these steps."
+		if (isHtmlElement(nodeList[nodeList.length - 1].nextSibling, tag)) {
+			for (var i = nodeList.length - 1; i >= 0; i--) {
+				movePreservingRanges(nodeList[i], nodeList[i].nextSibling, 0);
+			}
 			return;
 		}
 
 		// "Let new parent be the result of calling createElement(tag) on the
-		// ownerDocument of node."
-		var newParent = node.ownerDocument.createElement(tag);
+		// ownerDocument of first node."
+		var newParent = firstNode.ownerDocument.createElement(tag);
 
-		// "Insert new parent into the parent of node immediately before node."
-		node.parentNode.insertBefore(newParent, node);
+		// "Insert new parent into the parent of first node immediately before
+		// first node."
+		firstNode.parentNode.insertBefore(newParent, firstNode);
 
-		// "Append node as the last child of new parent, preserving ranges."
-		movePreservingRanges(node, newParent, 0);
+		// "For each node in node list, append node as the last child of new
+		// parent, preserving ranges."
+		for (var i = 0; i < nodeList.length; i++) {
+			movePreservingRanges(nodeList[i], newParent, newParent.childNodes.length);
+		}
 
 		// "Abort these steps."
 		return;
 	}
 
-	// "If the previousSibling of node is an indentation element; its "display"
-	// property computes to "block"; its "margin-left" and "margin-right"
-	// properties compute to "40px"; and its "margin-top" and "margin-bottom"
-	// properties compute to "0"; then append node as the last child of its
-	// previousSibling, preserving ranges, then abort these steps."
-	if (isIndentationElement(node.previousSibling)) {
-		var style = getComputedStyle(node.previousSibling);
+	// "If the previousSibling of the first member of node list is an
+	// indentation element; its "display" property computes to "block"; its
+	// "margin-left" and "margin-right" properties compute to "40px"; and its
+	// "margin-top" and "margin-bottom" properties compute to "0"; then for
+	// each node in node list, append node as the last child of its
+	// previousSibling, preserving ranges. Then abort these steps."
+	if (isIndentationElement(nodeList[0].previousSibling)) {
+		var style = getComputedStyle(nodeList[0].previousSibling);
 		if (style.display == "block"
 		&& style.marginLeft == "40px"
 		&& style.marginRight == "40px"
 		&& style.marginTop == "0px"
 		&& style.marginBottom == "0px") {
-			movePreservingRanges(node, node.previousSibling, node.previousSibling.childNodes.length);
+			for (var i = 0; i < nodeList.length; i++) {
+				movePreservingRanges(nodeList[i], nodeList[i].previousSibling, nodeList[i].previousSibling.childNodes.length);
+			}
+			return;
+		}
+	}
+
+	// "If the nextSibling of the last member of node list is an indentation
+	// element; its "display" property computes to "block"; its "margin-left"
+	// and "margin-right" properties compute to "40px"; and its "margin-top"
+	// and "margin-bottom" properties compute to "0"; then for each node in
+	// node list, in reverse order, insert node as the first child of its
+	// nextSibling, preserving ranges. Then abort these steps."
+	if (isIndentationElement(nodeList[nodeList.length - 1].nextSibling)) {
+		var style = getComputedStyle(nodeList[nodeList.length - 1].nextSibling);
+		if (style.display == "block"
+		&& style.marginLeft == "40px"
+		&& style.marginRight == "40px"
+		&& style.marginTop == "0px"
+		&& style.marginBottom == "0px") {
+			for (var i = nodeList.length - 1; i >= 0; i--) {
+				movePreservingRanges(nodeList[i], nodeList[i].nextSibling, 0);
+			}
 			return;
 		}
 	}
@@ -2673,18 +2722,20 @@ function indentNode(node) {
 	var tag = cssStylingFlag ? "div" : "blockquote";
 
 	// "Let new parent be the result of calling createElement(tag) on
-	// the ownerDocument of node."
-	var newParent = node.ownerDocument.createElement(tag);
+	// the ownerDocument of first node."
+	var newParent = firstNode.ownerDocument.createElement(tag);
 
-	// "Insert new parent into node's parent immediately before node."
-	node.parentNode.insertBefore(newParent, node);
+	// "Insert new parent into node's parent immediately before first node."
+	firstNode.parentNode.insertBefore(newParent, firstNode);
 
 	// "Set the CSS property "margin" of new parent to "0 40px"."
 	newParent.setAttribute("style", "margin: 0 40px");
 
-	// "Append node as the last child of new parent, preserving
-	// ranges."
-	movePreservingRanges(node, newParent, 0);
+	// "For each node in node list, append node as the last child of new
+	// parent, preserving ranges."
+	for (var i = 0; i < nodeList.length; i++) {
+		movePreservingRanges(nodeList[i], newParent, newParent.childNodes.length);
+	}
 }
 
 function outdentNode(node) {

@@ -1986,33 +1986,73 @@ fragments, html/body, head or things in head . . .
   <!-- Otherwise the last child of the previous sibling might be a list, which
   the li wouldn't get appended to. -->
 
-  <li><a href=#indent>Indent</a> each member of <var title="">node list</var>.
+  <li>While <var title="">node list</var> is not empty:
+
+  <ol>
+    <li>Let <var title="">sublist</var> be a list of <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a>, initially empty.
+
+    <li>Remove the first member of <var title="">node list</var> and append it to
+    <var title="">sublist</var>.
+
+    <li>While the first member of <var title="">node list</var> is the <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code>
+    of the last member of <var title="">sublist</var>, remove the first member of
+    <var title="">node list</var> and append it to <var title="">sublist</var>.
+
+    <li><a href=#indent>Indent</a> <var title="">sublist</var>.
+  </ol>
 </ol>
 
-<p>To <dfn id=indent>indent</dfn> a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> <var title="">node</var>:
+<!--
+We have to handle entire lists of siblings at once, or else we'd wind up doing
+something like
+
+  <ol>
+    {<li>foo</li>
+    <ol><li>bar</li></ol>}
+  </ol>
+  ->
+  <ol><ol>
+    <li>foo</li>
+    <li>bar</li>
+  </ol></ol>
+  ->
+  <ol><ol><ol>
+    <li>foo</li>
+    <li>bar</li>
+  </ol></ol></ol>
+
+since by the time we got to doing the <ol> that originally contained "bar", we
+won't remember that we aren't supposed to indent "foo" a second time.
+-->
+<p>To <dfn id=indent>indent</dfn> a list <var title="">node list</var> of consecutive <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-sibling title=concept-tree-sibling>sibling</a>
+<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a>:
 
 <ol>
-  <li>If <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code> or <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code>:
+  <li>Let <var title="">first node</var> be the first member of <var title="">node list</var>.
+
+  <li>If <var title="">first node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code> or <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code>:
 
   <ol>
     <li>Let <var title="">tag</var> be the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> of the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of
-    <var title="">node</var>.
+    <var title="">first node</var>.
 
-    <li>If the <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code> of <var title="">node</var> is an <a href=#html-element>HTML
-    element</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> <var title="">tag</var>, append <var title="">node</var> as
-    the last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of its <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code>, <a href=#preserving-ranges>preserving
-    ranges</a>.  Then abort these steps.
-
-    <li>If the <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code> of <var title="">node</var> is an <a href=#html-element>HTML
-    element</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> <var title="">tag</var>, insert <var title="">node</var> as
-    the first <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of its <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code>, <a href=#preserving-ranges>preserving ranges</a>.
+    <li>If the <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code> of the first member of <var title="">node list</var>
+    is an <a href=#html-element>HTML element</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> <var title="">tag</var>, then for
+    each <var title="">node</var> in <var title="">node list</var>, append <var title="">node</var> as the
+    last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of its <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code>, <a href=#preserving-ranges>preserving ranges</a>.
     Then abort these steps.
 
-    <li>Let <var title="">new parent</var> be the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement(<var title="">tag</var>)</a></code> on
-    the <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">node</var>.
+    <li>If the <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code> of the last member of <var title="">node list</var> is an
+    <a href=#html-element>HTML element</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> <var title="">tag</var>, then for each
+    <var title="">node</var> in <var title="">node list</var> <em>in reverse order</em>, insert
+    <var title="">node</var> as the first <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of its <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code>,
+    <a href=#preserving-ranges>preserving ranges</a>.  Then abort these steps.
 
-    <li>Insert <var title="">new parent</var> into the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of <var title="">node</var>
-    immediately before <var title="">node</var>.
+    <li>Let <var title="">new parent</var> be the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement(<var title="">tag</var>)</a></code> on
+    the <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">first node</var>.
+
+    <li>Insert <var title="">new parent</var> into the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of <var title="">first
+    node</var> immediately before <var title="">first node</var>.
     <!--
     This matches IE9, Firefox 4.0, and Chrome 12 dev.  If there's a preceding
     <li>, Opera 11.10 instead adds the new parent to the end of that <li>, so
@@ -2034,18 +2074,28 @@ fragments, html/body, head or things in head . . .
     http://www.w3.org/Bugs/Public/show_bug.cgi?id=12609
     -->
 
-    <li>Append <var title="">node</var> as the last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">new parent</var>,
+    <li>For each <var title="">node</var> in <var title="">node list</var>, append
+    <var title="">node</var> as the last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">new parent</var>,
     <a href=#preserving-ranges>preserving ranges</a>.
 
     <li>Abort these steps.
   </ol>
 
-  <li>If the <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code> of <var title="">node</var> is an <a href=#indentation-element>indentation
-  element</a>; its "display" property computes to "block"; its
-  "margin-left" and "margin-right" properties compute to "40px"; and its
-  "margin-top" and "margin-bottom" properties compute to "0"; then append
-  <var title="">node</var> as the last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of its <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code>,
-  <a href=#preserving-ranges>preserving ranges</a>, then abort these steps.
+  <li>If the <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code> of the first member of <var title="">node list</var> is
+  an <a href=#indentation-element>indentation element</a>; its "display" property computes to
+  "block"; its "margin-left" and "margin-right" properties compute to "40px";
+  and its "margin-top" and "margin-bottom" properties compute to "0"; then
+  for each <var title="">node</var> in <var title="">node list</var>, append <var title="">node</var> as
+  the last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of its <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code>, <a href=#preserving-ranges>preserving
+  ranges</a>.  Then abort these steps.
+
+  <li>If the <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code> of the last member of <var title="">node list</var> is an
+  <a href=#indentation-element>indentation element</a>; its "display" property computes to "block";
+  its "margin-left" and "margin-right" properties compute to "40px"; and its
+  "margin-top" and "margin-bottom" properties compute to "0"; then for each
+  <var title="">node</var> in <var title="">node list</var>, <em>in reverse order</em>, insert
+  <var title="">node</var> as the first <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of its <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code>,
+  <a href=#preserving-ranges>preserving ranges</a>.  Then abort these steps.
 
   <li>Let <var title="">tag</var> be "div" if the <a href=#css-styling-flag>CSS styling flag</a> is
   true, otherwise "blockquote".
@@ -2058,10 +2108,10 @@ fragments, html/body, head or things in head . . .
   non-CSS modes. -->
 
   <li>Let <var title="">new parent</var> be the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement(<var title="">tag</var>)</a></code> on
-  the <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">node</var>.
+  the <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">first node</var>.
 
   <li>Insert <var title="">new parent</var> into <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>
-  immediately before <var title="">node</var>.
+  immediately before <var title="">first node</var>.
 
   <li>Set the CSS property "margin" of <var title="">new parent</var> to "0 40px".
 
@@ -2082,8 +2132,9 @@ fragments, html/body, head or things in head . . .
   margins on both sides.  I can't think of any better way to do this at the
   moment.
 
-  <li>Append <var title="">node</var> as the last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">new parent</var>,
-  <a href=#preserving-ranges>preserving ranges</a>.
+  <li>For each <var title="">node</var> in <var title="">node list</var>, append <var title="">node</var>
+  as the last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">new parent</var>, <a href=#preserving-ranges>preserving
+  ranges</a>.
 </ol>
 
 <dd><strong>State</strong>:

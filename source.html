@@ -597,6 +597,25 @@ title>splitText()</code>.
 <h2>Normalizing sublists of a list item</h2>
 <p>When a user agent is to <dfn>normalize sublists</dfn> in an [[li]]
 <var>item</var>, it must run the following steps:
+<!--
+This algorithm implies that we don't support a sublist in the middle of an
+item, only at the end.  For instance,
+
+  <li>foo<ol>...</ol>bar</li>
+
+gets transformed to
+
+  <li>foo</li><ol>...</ol><li>bar</li>
+
+which in particular creates an extra list marker for "bar".  This is okay; we
+don't need to expose all of HTML's markup abilities through execCommand().
+Similarly, the superscript and subscript commands don't allow nesting.  I
+didn't see any way to get a sublist in the middle of an item in Word 2007 or in
+OpenOffice.org 3.2.1 Ubuntu package, nor in  any browser using just
+execCommand(), so it should be no big problem if we require that such nesting
+not occur.  (Existing browsers behave weirdly and inconsistently when
+confronted with this kind of nesting.)
+-->
 
 <ol>
   <li>If <var>item</var> is not <span>editable</span> or its [[parent]] is not
@@ -1947,6 +1966,11 @@ We have two strategies for handling directionality: always indent on both sides
 (IE, Firefox CSS).  The latter approach is only possible by adding extra markup
 and complexity, so for now we'll take the easy way out and go with just
 indenting on both sides.
+
+
+This reasoning doesn't discuss lists.  For research on lists, see the comment
+for insertOrderedList.  List handling is more complicated and I wound up
+differing from all browsers in lots of ways.
 -->
 
 <dd><strong>Action</strong>:

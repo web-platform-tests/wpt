@@ -2501,9 +2501,43 @@ function myExecCommand(command, showUI, value, range) {
 			}
 		}
 
-		// "Outdent each member of node list."
-		for (var i = 0; i < nodeList.length; i++) {
-			outdentNode(nodeList[i]);
+		// "While node list is not empty:"
+		while (nodeList.length) {
+			// "While the first member of node list is an ol or ul or is not
+			// the child of an ol or ul, outdent it and remove it from node
+			// list."
+			while (nodeList.length
+			&& (isHtmlElement(nodeList[0], "OL")
+			|| isHtmlElement(nodeList[0], "UL")
+			|| (!isHtmlElement(nodeList[0].parentNode, "OL")
+			&& !isHtmlElement(nodeList[0].parentNode, "UL")))) {
+				outdentNode(nodeList.shift());
+			}
+
+			// "If node list is empty, break from these substeps."
+			if (!nodeList.length) {
+				break;
+			}
+
+			// "Let sublist be a list of nodes, initially empty."
+			var sublist = [];
+
+			// "Remove the first member of node list and append it to sublist."
+			sublist.push(nodeList.shift());
+
+			// "While the first member of node list is the nextSibling of the
+			// last member of sublist, and the first member of node list is not
+			// an ol or ul, remove the first member of node list and append it
+			// to sublist."
+			while (nodeList.length
+			&& nodeList[0] == sublist[sublist.length - 1].nextSibling
+			&& !isHtmlElement(nodeList[0], "OL")
+			&& !isHtmlElement(nodeList[0], "UL")) {
+				sublist.push(nodeList.shift());
+			}
+
+			// "List-outdent sublist."
+			listOutdent(sublist);
 		}
 		break;
 
@@ -2856,60 +2890,6 @@ function outdentNode(node) {
 		return;
 	}
 
-	// "If node is an li whose parent is an ol or ul:"
-	if (isHtmlElement(node, "LI")
-	&& (isHtmlElement(node.parentNode, "OL")
-	|| isHtmlElement(node.parentNode, "UL"))) {
-		// "Let parent be the parent of node."
-		var parent_ = node.parentNode;
-
-		// "If parent's parent is not an ol or ul, unset the value attribute of
-		// node if set, then set the tag name of node to "div" and set node to
-		// the result."
-		if (!isHtmlElement(parent_.parentNode, "OL")
-		&& !isHtmlElement(parent_.parentNode, "UL")) {
-			node.removeAttribute("value");
-			node = setTagName(node, "div");
-		}
-
-		// "If node's previousSibling is null, insert node into the parent of
-		// parent immediately before parent, preserving ranges, then abort
-		// these steps."
-		if (!node.previousSibling) {
-			movePreservingRanges(node, parent_.parentNode, getNodeIndex(parent_));
-			return;
-		}
-
-		// "If node's nextSibling is null, insert node into the parent of
-		// parent immediately after parent, preserving ranges, then abort these
-		// steps."
-		if (!node.nextSibling) {
-			movePreservingRanges(node, parent_.parentNode, 1 + getNodeIndex(parent_));
-			return;
-		}
-
-		// "Let new parent be the result of calling cloneNode(false) on
-		// parent."
-		var newParent = parent_.cloneNode(false);
-
-		// "Insert new parent into the parent of parent immediately after
-		// parent."
-		parent_.parentNode.insertBefore(newParent, parent_.nextSibling);
-
-		// "While node's nextSibling is not null, insert the last child of
-		// parent as the first child of new parent, preserving ranges."
-		while (node.nextSibling) {
-			movePreservingRanges(parent_.lastChild, newParent, 0);
-		}
-
-		// "Insert node into the parent of parent immediately after parent,
-		// preserving ranges."
-		movePreservingRanges(node, parent_.parentNode, 1+ getNodeIndex(parent_));
-
-		// "Abort these steps."
-		return;
-	}
-
 	// "If node is an indentation element:"
 	if (isIndentationElement(node)) {
 		// "If node's last child and nextSibling are both inline nodes or its
@@ -3029,6 +3009,139 @@ function outdentNode(node) {
 
 	// "Outdent original ancestor."
 	outdentNode(originalAncestor);
+}
+
+function listOutdent(nodeList) {
+	// "Let parent be the parent of the first member of node list."
+	var parent_ = nodeList[0].parentNode;
+
+	// "If the previousSibling of the first member of node list is null:"
+	if (!nodeList[0].previousSibling) {
+		// "For each node in node list:"
+		for (var i = 0; i < nodeList.length; i++) {
+			var node = nodeList[i];
+
+			// "If node is an li, unset its value attribute if set."
+			if (isHtmlElement(node, "LI")) {
+				node.removeAttribute("value");
+			}
+
+			// "If node is an li with no attributes, and the parent of parent
+			// is not an ol or ul:"
+			if (isHtmlElement(node, "LI")
+			&& !node.attributes.length
+			&& !isHtmlElement(parent_.parentNode, "OL")
+			&& !isHtmlElement(parent_.parentNode, "UL")) {
+				// "If the previousSibling of parent and the first child of
+				// node are both inline nodes, let br be the result of calling
+				// createElement("br") on the ownerDocument of node, then
+				// insert br into the parent of parent immediately before
+				// parent."
+				if (isInlineNode(parent_.previousSibling)
+				&& isInlineNode(node.firstChild)) {
+					var br = node.ownerDocument.createElement("br");
+					parent_.parentNode.insertBefore(br, parent_);
+				}
+
+				// "While node has children, insert the first child of node
+				// into the parent of parent immediately before parent,
+				// preserving ranges."
+				while (node.hasChildNodes()) {
+					movePreservingRanges(node.firstChild, parent_.parentNode, getNodeIndex(parent_));
+				}
+
+				// "Remove node from its parent."
+				node.parentNode.removeChild(node);
+
+			// "Otherwise:"
+			} else {
+				// "Insert node into the parent of parent immediately before
+				// parent, preserving ranges."
+				movePreservingRanges(node, parent_.parentNode, getNodeIndex(parent_));
+
+				// "If node is an li and the parent of parent is not an ol or
+				// ul, set the tag name of node to div."
+				if (isHtmlElement(node, "LI")
+				&& !isHtmlElement(parent_.parentNode, "OL")
+				&& !isHtmlElement(parent_.parentNode, "UL")) {
+					setTagName(node, "div");
+				}
+			}
+		}
+
+		// "Abort these steps."
+		return;
+	}
+
+	// "If the nextSibling of the last member of node list is not null:"
+	if (nodeList[nodeList.length - 1].nextSibling) {
+		// "Let new parent be the result of calling cloneNode(false) on
+		// parent."
+		var newParent = parent_.cloneNode(false);
+
+		// "Insert new parent into the parent of parent immediately after
+		// parent."
+		parent_.parentNode.insertBefore(newParent, parent_.nextSibling);
+
+		// "While nextSibling of the last member of node list is not null,
+		// insert the last child of parent as the first child of new
+		// parent, preserving ranges."
+		while (nodeList[nodeList.length - 1].nextSibling) {
+			movePreservingRanges(parent_.lastChild, newParent, 0);
+		}
+	}
+
+	// "For each node in node list, in reverse order:"
+	for (var i = nodeList.length - 1; i >= 0; i--) {
+		var node = nodeList[i];
+
+		// "If node is an li, unset its value attribute if set."
+		if (isHtmlElement(node, "LI")) {
+			node.removeAttribute("value");
+		}
+
+		// "If node is an li with no attributes, and the parent of parent
+		// is not an ol or ul:"
+		if (isHtmlElement(node, "LI")
+		&& !node.attributes.length
+		&& !isHtmlElement(parent_.parentNode, "OL")
+		&& !isHtmlElement(parent_.parentNode, "UL")) {
+			// "If the last child of node and the nextSibling of parent are
+			// both inline nodes, let br be the result of calling
+			// createElement("br") on the ownerDocument of node, then
+			// insert br into the parent of parent immediately after
+			// parent."
+			if (isInlineNode(node.lastChild)
+			&& isInlineNode(parent_.nextSibling)) {
+				var br = node.ownerDocument.createElement("br");
+				parent_.parentNode.insertBefore(br, parent_.nextSibling);
+			}
+
+			// "While node has children, insert the last child of node into
+			// the parent of parent immediately after parent, preserving
+			// ranges."
+			while (node.hasChildNodes()) {
+				movePreservingRanges(node.lastChild, parent_.parentNode, 1 + getNodeIndex(parent_));
+			}
+
+			// "Remove node from its parent."
+			node.parentNode.removeChild(node);
+
+		// "Otherwise:"
+		} else {
+			// "Insert node into the parent of parent immediately after
+			// parent, preserving ranges."
+			movePreservingRanges(node, parent_.parentNode, 1 + getNodeIndex(parent_));
+
+			// "If node is an li and the parent of parent is not an ol or
+			// ul, set the tag name of node to div."
+			if (isHtmlElement(node, "LI")
+			&& !isHtmlElement(parent_.parentNode, "OL")
+			&& !isHtmlElement(parent_.parentNode, "UL")) {
+				setTagName(node, "div");
+			}
+		}
+	}
 }
 
 // "A potential indentation element is either a blockquote, or a div that has a

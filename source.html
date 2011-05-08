@@ -1999,7 +1999,7 @@ fragments, html/body, head or things in head . . .
   the result.
 
   <!-- If the first line box in a block box starts with a non-preserved line
-  break, the line break will create an empty line box.  If the line line box in
+  break, the line break will create an empty line box.  If the last line box in
   a block box ends with a non-preserved line break, however, it will not create
   an extra line box.  This means that if you have foo<br>bar, there will be no
   empty line in between, but if you change it to <div>foo</div><br>bar, you've
@@ -2623,7 +2623,27 @@ value</span> either "italic" or "oblique".  Otherwise false.
     <var>node list</var>.
   </ol>
 
-  <li><span>Outdent</span> each member of <var>node list</var>.
+  <li>While <var>node list</var> is not empty:
+
+  <ol>
+    <li>While the first member of <var>node list</var> is an [[ol]] or [[ul]]
+    or is not the [[child]] of an [[ol]] or [[ul]], <span>outdent</span> it and
+    remove it from <var>node list</var>.
+
+    <li>If <var>node list</var> is empty, break from these substeps.
+
+    <li>Let <var>sublist</var> be a list of [[nodes]], initially empty.
+
+    <li>Remove the first member of <var>node list</var> and append it to
+    <var>sublist</var>.
+
+    <li>While the first member of <var>node list</var> is the [[nextsibling]]
+    of the last member of <var>sublist</var>, and the first member of <var>node
+    list</var> is not an [[ol]] or [[ul]], remove the first member of <var>node
+    list</var> and append it to <var>sublist</var>.
+
+    <li><span>List-outdent</span> <var>sublist</var>.
+  </ol>
 </ol>
 
 <p>To <dfn>outdent</dfn> a [[node]] <var>node</var>:
@@ -2649,8 +2669,6 @@ insertOrderedList.
   <li>If <var>node</var> is not <span>editable</span>, abort these steps.
 
   <p class=XXX>Handle this better for nested editable/non-editable.
-
-  <!-- First we handle the list case, because it's simpler. -->
 
   <li>If <var>node</var> is an [[ol]] or [[ul]] with no attributes except
   possibly <code data-anolis-spec=html title=attr-ol-reversed>reversed</code>,
@@ -2708,50 +2726,6 @@ insertOrderedList.
     the <code data-anolis-spec=html title=attr-li-value>value</code> attribute
     of <var>child</var> if set, then <span>set the tag name</span> of
     <var>child</var> to "div".
-
-    <li>Abort these steps.
-  </ol>
-
-  <li>If <var>node</var> is an [[li]] whose [[parent]] is an [[ol]] or [[ul]]:
-
-  <ol>
-    <li>Let <var>parent</var> be the [[parent]] of <var>node</var>.
-
-    <li>If <var>parent</var>'s [[parent]] is not an [[ol]] or [[ul]], unset the
-    <code data-anolis-spec=html title=attr-li-value>value</code> attribute of
-    <var>node</var> if set, then <span>set the tag name</span> of
-    <var>node</var> to "div" and set <var>node</var> to the result.
-
-    <li>If <var>node</var>'s [[previoussibling]] is null, insert
-    <var>node</var> into the [[parent]] of <var>parent</var> immediately before
-    <var>parent</var>, <span>preserving ranges</span>, then abort these steps.
-
-    <li>If <var>node</var>'s [[nextsibling]] is null, insert <var>node</var>
-    into the [[parent]] of <var>parent</var> immediately after
-    <var>parent</var>, <span>preserving ranges</span>, then abort these steps.
-
-    <!-- Otherwise, have to split up the list. -->
-
-    <li>Let <var>new parent</var> be the result of calling <code
-    data-anolis-spec=domcore title=dom-Node-cloneNode>cloneNode(false)</code>
-    on <var>parent</var>.
-
-    <p class=XXX>This will duplicate id's, as well as other bad things.  Do we
-    care?  We don't want to not copy attributes at all, because that wouldn't
-    copy style attributes, and Firefox in CSS mode will actually add style
-    attributes to any elements it feels like.  If we do exclude id's, even
-    though they'd only occur if someone manually added them, do we want to
-    exclude other things like itemid or accesskey or . . .
-
-    <li>Insert <var>new parent</var> into the [[parent]] of <var>parent</var>
-    immediately after <var>parent</var>, <span>preserving ranges</span>.
-
-    <li>While <var>node</var>'s [[nextsibling]] is not null, insert the last
-    [[child]] of <var>parent</var> as the first [[child]] of <var>new
-    parent</var>, <span>preserving ranges</span>.
-
-    <li>Insert <var>node</var> into the [[parent]] of <var>parent</var>
-    immediately after <var>parent</var>.
 
     <li>Abort these steps.
   </ol>
@@ -2888,6 +2862,119 @@ insertOrderedList.
   </ol>
 
   <li><span>Outdent</span> <var>original ancestor</var>.
+</ol>
+
+<p>To <dfn>list-outdent</dfn> a list <var>node list</var> of consecutive
+[[sibling]] [[nodes]]:
+
+<ol>
+  <li>Let <var>parent</var> be the [[parent]] of the first member of <var>node
+  list</var>.
+
+  <li>If the [[previoussibling]] of the first member of <var>node list</var> is
+  null:
+
+  <ol>
+    <li>For each <var>node</var> in <var>node list</var>:
+
+    <ol>
+      <li>If <var>node</var> is an [[li]], unset its <code data-anolis-spec=html
+      title=attr-li-value>value</code> attribute if set.
+
+      <li>If <var>node</var> is an [[li]] with no attributes, and the [[parent]]
+      of <var>parent</var> is not an [[ol]] or [[ul]]:
+
+      <ol>
+        <li>If the [[previoussibling]] of <var>parent</var> and the first
+        [[child]] of <var>node</var> are both <span title="inline node">inline
+        nodes</span>, let <var>br</var> be the result of calling <code
+        data-anolis-spec=domcore
+        title=dom-Document-createElement>createElement("br")</code> on the
+        [[ownerdocument]] of <var>node</var>, then insert <var>br</var> into
+        the [[parent]] of <var>parent</var> immediately before
+        <var>parent</var>.
+
+        <li>While <var>node</var> has [[children]], insert the first [[child]] of
+        <var>node</var> into the [[parent]] of <var>parent</var> immediately
+        before <var>parent</var>, <span>preserving ranges</span>.
+
+        <li>Remove <var>node</var> from its [[parent]].
+      </ol>
+
+      <li>Otherwise:
+
+      <ol>
+        <li>Insert <var>node</var> into the [[parent]] of <var>parent</var>
+        immediately before <var>parent</var>, <span>preserving ranges</span>.
+
+        <li>If <var>node</var> is an [[li]] and the [[parent]] of
+        <var>parent</var> is not an [[ol]] or [[ul]], <span>set the tag
+        name</span> of <var>node</var> to [[div]].
+      </ol>
+    </ol>
+
+    <li>Abort these steps.
+  </ol>
+
+  <li>If the [[nextsibling]] of the last member of <var>node list</var> is not
+  null:
+
+  <ol>
+    <li>Let <var>new parent</var> be the result of calling <code
+    data-anolis-spec=domcore title=dom-Node-cloneNode>cloneNode(false)</code>
+    on <var>parent</var>.
+
+    <p class=XXX>This will duplicate id's, as well as other bad things.  Do we
+    care?  We don't want to not copy attributes at all, because that wouldn't
+    copy style attributes, and Firefox in CSS mode will actually add style
+    attributes to any elements it feels like.  If we do exclude id's, even
+    though they'd only occur if someone manually added them, do we want to
+    exclude other things like itemid or accesskey or . . .
+
+    <li>Insert <var>new parent</var> into the [[parent]] of <var>parent</var>
+    immediately after <var>parent</var>.
+
+    <li>While [[nextsibling]] of the last member of <var>node list</var> is not
+    null, insert the last [[child]] of <var>parent</var> as the first [[child]]
+    of <var>new parent</var>, <span>preserving ranges</span>.
+  </ol>
+
+  <li>For each <var>node</var> in <var>node list</var>, <em>in reverse
+  order</em>:
+
+  <ol>
+    <li>If <var>node</var> is an [[li]], unset its <code data-anolis-spec=html
+    title=attr-li-value>value</code> attribute if set.
+
+    <li>If <var>node</var> is an [[li]] with no attributes, and the [[parent]]
+    of <var>parent</var> is not an [[ol]] or [[ul]]:
+
+    <ol>
+      <li>If the last [[child]] of <var>node</var> and the [[nextsibling]] of
+      <var>parent</var> are both <span title="inline node">inline nodes</span>,
+      let <var>br</var> be the result of calling <code data-anolis-spec=domcore
+      title=dom-Document-createElement>createElement("br")</code> on the
+      [[ownerdocument]] of <var>node</var>, then insert <var>br</var> into the
+      [[parent]] of <var>parent</var> immediately after <var>parent</var>.
+
+      <li>While <var>node</var> has [[children]], insert the last [[child]] of
+      <var>node</var> into the [[parent]] of <var>parent</var> immediately
+      after <var>parent</var>, <span>preserving ranges</span>.
+
+      <li>Remove <var>node</var> from its [[parent]].
+    </ol>
+
+    <li>Otherwise:
+
+    <ol>
+      <li>Insert <var>node</var> into the [[parent]] of <var>parent</var>
+      immediately after <var>parent</var>, <span>preserving ranges</span>.
+
+      <li>If <var>node</var> is an [[li]] and the [[parent]] of
+      <var>parent</var> is not an [[ol]] or [[ul]], <span>set the tag
+      name</span> of <var>node</var> to [[div]].
+    </ol>
+  </ol>
 </ol>
 
 <p>A <dfn>potential indentation element</dfn> is either a [[blockquote]], or a

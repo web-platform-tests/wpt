@@ -2467,16 +2467,36 @@ function myExecCommand(command, showUI, value, range) {
 		// "Block-extend the range, and let new range be the result."
 		var newRange = blockExtendRange(range);
 
-		// "Let node list be all nodes contained in new range that have no
-		// children."
+		// "Let node list be a list of nodes, initially empty."
 		var nodeList = [];
+
+		// "For each node node contained in node list:"
 		for (
 			var node = newRange.startContainer;
 			node != nextNodeDescendants(newRange.endContainer);
 			node = nextNode(node)
 		) {
-			if (isContained(node, newRange)
-			&& !node.hasChildNodes()) {
+			if (!isContained(node, newRange)) {
+				continue;
+			}
+
+			// "If some ancestor of node is in node list, continue with the
+			// next node."
+			//
+			// We only need to check the last node on the list, if you think
+			// about it.
+			if (isAncestor(nodeList[nodeList.length - 1], node)) {
+				continue;
+			}
+
+			// "If node has no children, or is an ol or ul, or is an li whose
+			// parent is an ol or ul, append it to node list."
+			if (!node.hasChildNodes()
+			|| isHtmlElement(node, "OL")
+			|| isHtmlElement(node, "UL")
+			|| (isHtmlElement(node, "LI")
+			&& (isHtmlElement(node.parentNode, "OL")
+			|| isHtmlElement(node.parentNode, "UL")))) {
 				nodeList.push(node);
 			}
 		}
@@ -2789,11 +2809,12 @@ function outdentNode(node) {
 			var child = node.firstChild;
 
 			// "If child is an li and the parent of node is not an ol or ul,
-			// set the tag name of child to "div"."
+			// set the tag name of child to "div", and set child to the
+			// result."
 			if (isHtmlElement(child, "LI")
 			&& !isHtmlElement(node.parentNode, "OL")
 			&& !isHtmlElement(node.parentNode, "UL")) {
-				setTagName(child, "div");
+				child = setTagName(child, "div");
 			}
 
 			// "Insert child into the parent of node immediately before node,
@@ -2817,8 +2838,8 @@ function outdentNode(node) {
 		node.removeAttribute("start");
 		node.removeAttribute("type");
 
-		// "Set the tag name of node to "div"."
-		setTagName(node, "div");
+		// "Set the tag name of node to "div", and set node to the result."
+		node = setTagName(node, "div");
 
 		// "For each li child child of node, unset the value attribute of child
 		// if set, then set the tag name of child to "div"."
@@ -2843,11 +2864,12 @@ function outdentNode(node) {
 		var parent_ = node.parentNode;
 
 		// "If parent's parent is not an ol or ul, unset the value attribute of
-		// node if set, then set the tag name of node to "div"."
+		// node if set, then set the tag name of node to "div" and set node to
+		// the result."
 		if (!isHtmlElement(parent_.parentNode, "OL")
 		&& !isHtmlElement(parent_.parentNode, "UL")) {
 			node.removeAttribute("value");
-			setTagName(node, "div");
+			node = setTagName(node, "div");
 		}
 
 		// "If node's previousSibling is null, insert node into the parent of
@@ -2880,8 +2902,9 @@ function outdentNode(node) {
 			movePreservingRanges(parent_.lastChild, newParent, 0);
 		}
 
-		// "Insert node into the parent of parent immediately after parent."
-		parent_.parentNode.insertBefore(node, parent_.nextSibling);
+		// "Insert node into the parent of parent immediately after parent,
+		// preserving ranges."
+		movePreservingRanges(node, parent_.parentNode, 1+ getNodeIndex(parent_));
 
 		// "Abort these steps."
 		return;
@@ -2911,8 +2934,8 @@ function outdentNode(node) {
 
 	// "If node is a potential indentation element:"
 	if (isPotentialIndentationElement(node)) {
-		// "Set the tag name of node to "div"."
-		setTagName(node, "div");
+		// "Set the tag name of node to "div", and set node to the result."
+		node = setTagName(node, "div");
 
 		// "Unset the class and dir attributes of node, if any."
 		node.removeAttribute("class");

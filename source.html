@@ -2610,8 +2610,18 @@ value</span> either "italic" or "oblique".  Otherwise false.
   <li><span>Block-extend</span> the [[range]], and let <var>new range</var> be
   the result.
 
-  <li>Let <var>node list</var> be all [[nodes]] [[contained]] in <var>new
-  range</var> that have no [[children]].
+  <li>Let <var>node list</var> be a list of [[nodes]], initially empty.
+
+  <li>For each [[node]] <var>node</var> [[contained]] in <var>node list</var>:
+
+  <ol>
+    <li>If some [[ancestor]] of <var>node</var> is in <var>node list</var>,
+    continue with the next <var>node</var>.
+
+    <li>If <var>node</var> has no [[children]], or is an [[ol]] or [[ul]], or
+    is an [[li]] whose [[parent]] is an [[ol]] or [[ul]], append it to
+    <var>node list</var>.
+  </ol>
 
   <li><span>Outdent</span> each member of <var>node list</var>.
 </ol>
@@ -2669,7 +2679,7 @@ insertOrderedList.
 
       <li>If <var>child</var> is an [[li]] and the [[parent]] of
       <var>node</var> is not an [[ol]] or [[ul]], <span>set the tag name</span>
-      of <var>child</var> to "div".
+      of <var>child</var> to "div", and set <var>child</var> to the result.
 
       <li>Insert <var>child</var> into the [[parent]] of <var>node</var>
       immediately before <var>node</var>, <span>preserving ranges</span>.
@@ -2691,7 +2701,8 @@ insertOrderedList.
     title=attr-ol-type>type</code> attributes of <var>node</var>, if any are
     set.
 
-    <li><span>Set the tag name</span> of <var>node</var> to "div".
+    <li><span>Set the tag name</span> of <var>node</var> to "div", and set
+    <var>node</var> to the result.
 
     <li>For each [[li]] [[child]] <var>child</var> of <var>node</var>, unset
     the <code data-anolis-spec=html title=attr-li-value>value</code> attribute
@@ -2709,7 +2720,7 @@ insertOrderedList.
     <li>If <var>parent</var>'s [[parent]] is not an [[ol]] or [[ul]], unset the
     <code data-anolis-spec=html title=attr-li-value>value</code> attribute of
     <var>node</var> if set, then <span>set the tag name</span> of
-    <var>node</var> to "div".
+    <var>node</var> to "div" and set <var>node</var> to the result.
 
     <li>If <var>node</var>'s [[previoussibling]] is null, insert
     <var>node</var> into the [[parent]] of <var>parent</var> immediately before
@@ -2733,7 +2744,7 @@ insertOrderedList.
     exclude other things like itemid or accesskey or . . .
 
     <li>Insert <var>new parent</var> into the [[parent]] of <var>parent</var>
-    immediately after <var>parent</var>.
+    immediately after <var>parent</var>, <span>preserving ranges</span>.
 
     <li>While <var>node</var>'s [[nextsibling]] is not null, insert the last
     [[child]] of <var>parent</var> as the first [[child]] of <var>new
@@ -2777,7 +2788,8 @@ insertOrderedList.
   Firefox in CSS mode, for instance (color, font-family, etc.). -->
 
   <ol>
-    <li><span>Set the tag name</span> of <var>node</var> to "div".
+    <li><span>Set the tag name</span> of <var>node</var> to "div", and set
+    <var>node</var> to the result.
 
     <li>Unset the <code data-anolis-spec=html title=classes>class</code> and
     <code data-anolis-spec=html title="the dir attribute">dir</code>
@@ -2860,7 +2872,7 @@ insertOrderedList.
     <li>Let <var>current ancestor</var> be the last member of <var>ancestor
     list</var>.
 
-    <li>Remove the last member of <var>ancestor list</var>.
+    <li>Remove the last member from <var>ancestor list</var>.
 
     <li>Let <var>target</var> be the [[child]] of <var>current ancestor</var>
     that is equal to either <var>node</var> or the last member of <var>ancestor

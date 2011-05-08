@@ -1333,6 +1333,10 @@ function doSpecCell(tr, test, command, styleWithCss) {
 		if ("stack" in e) {
 			specCell.lastChild.textContent += " (stack: " + e.stack + ")";
 		}
+
+		// Don't bother comparing to localStorage, this is always wrong no
+		// matter what.
+		return;
 	}
 
 	var key = "execcommand-" + command
@@ -1340,13 +1344,23 @@ function doSpecCell(tr, test, command, styleWithCss) {
 		+ "-" + tr.firstChild.lastChild.textContent;
 
 	var oldValue = localStorage[key];
-	localStorage[key] = specCell.lastChild.textContent;
+	var newValue = specCell.lastChild.textContent;
 
-	if (oldValue !== null && oldValue !== undefined && oldValue != specCell.lastChild.textContent) {
+	if (oldValue !== null && oldValue !== undefined && oldValue !== newValue) {
 		specCell.lastChild.appendChild(document.createElement("div"));
 		specCell.lastChild.lastChild.style.color = "red";
 		specCell.lastChild.lastChild.style.fontWeight = "bold";
 		specCell.lastChild.lastChild.textContent = "Note, last run produced different markup: " + oldValue;
+
+		var button = document.createElement("button");
+		specCell.lastChild.lastChild.appendChild(button);
+		button.textContent = "Store new result";
+		button.onclick = (function(key, val, button) { return function() {
+			localStorage[key] = val;
+			button.parentNode.removeChild(button);
+		} })(key, newValue, button);
+	} else {
+		localStorage[key] = newValue;
 	}
 }
 

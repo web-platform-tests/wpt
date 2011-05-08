@@ -161,13 +161,20 @@ other than review and comment.
 
   <li>I'm sloppy about handling things like nodes that don't descend from a
   Document, comments that are children of a Document, that sort of thing.  Not
-  essential for prototyping, but needs to be cleaned up eventually.
+  essential for prototyping, but needs to be cleaned up eventually.  Mostly we
+  should be able to avoid the problems by requiring that everything be
+  editable, since that immediately means it has to descend from an element or
+  Document (and cannot be parentless itself).
 
   <li>I haven't paid much attention to performance.  The algorithms here aren't
   performance-critical in most cases, but I might have accidentally included
   some algorithms that are too slow anyway on large pages.  Generally I haven't
   worried about throwing nodes away and recreating them multiple times or
   things like that, as long as it produces the correct result.
+
+  <li>I need to pay more attention to whitespace-only nodes.  In most cases
+  these will have no visual effect, but they'll make many algorithms behave
+  differently: decomposing a range, block-extending, etc.
 </ul>
 
 <p class=XXX>A variety of other issues are also noted in the text, formatted
@@ -1975,8 +1982,6 @@ differing from all browsers in lots of ways.
 
 <dd><strong>Action</strong>:
 
-<p class=XXX>List support is preliminary &ndash; I'm working on it right now.
-
 <p class=XXX>Handle corner cases: endpoints are detached, documents, document
 fragments, html/body, head or things in head . . .
 
@@ -2071,6 +2076,8 @@ won't remember that we aren't supposed to indent "foo" a second time.
 [[nodes]]:
 
 <ol>
+  <li>If <var>node list</var> is empty, do nothing and abort these steps.
+
   <li>Let <var>first node</var> be the first member of <var>node list</var>.
 
   <li>If <var>first node</var>'s [[parent]] is an [[ol]] or [[ul]]:
@@ -2590,9 +2597,16 @@ value</span> either "italic" or "oblique".  Otherwise false.
 
 <dd><strong>Action</strong>:
 
-<p class=XXX>Does not handle lists at all (this is item #1 on my to-do list).
-
 <ol>
+  <li>Let <var>items</var> be a list of all [[li]]s that are
+  [[ancestorcontainers]] of the [[range]]'s [[rangestart]] and/or [[rangeend]]
+  [[bpnode]].
+
+  <li>For each <var>item</var> in <var>items</var>, <span>normalize
+  sublists</span> of <var>item</var>.
+  <!-- This overnormalizes, but it seems like the simplest solution for now.
+  -->
+
   <li><span>Block-extend</span> the [[range]], and let <var>new range</var> be
   the result.
 
@@ -2617,11 +2631,119 @@ Things that are produced for indentation that we need to consider removing:
 * <blockquote style="margin: 0 40px"> and <div style="margin: 0 40px"> (spec)
 * Other random things with display: block whose left or right margin was
   increased by 40px (CSS Firefox 4.0)
+
+For discussion on the list-related stuff, see the comment for
+insertOrderedList.
 -->
 <ol>
   <li>If <var>node</var> is not <span>editable</span>, abort these steps.
 
   <p class=XXX>Handle this better for nested editable/non-editable.
+
+  <!-- First we handle the list case, because it's simpler. -->
+
+  <li>If <var>node</var> is an [[ol]] or [[ul]] with no attributes except
+  possibly <code data-anolis-spec=html title=attr-ol-reversed>reversed</code>,
+  <code data-anolis-spec=html title=attr-ol-start>start</code>, and/or <code
+  data-anolis-spec=html title=attr-ol-type>type</code>; or is an [[ol]] or
+  [[ul]] whose [[parent]] is also an [[ol]] or [[ul]]:
+  <!-- If it has reversed/start/type, those can't reasonably be preserved no
+  matter what.  Not clear how it's supposed to get them, anyway. -->
+
+  <div class=XXX>
+  <p>We don't handle a case like
+
+  <xmp><ol><ol style="color: red"><li>foo<li>bar</ol><li>baz</xmp>
+
+  <p>If the inner [[ol]] is selected to be outdented, "foo" and "bar" will stop
+  being red.  It seems nontrivial to handle this case in general, since we
+  can't group [[li]]s.  If the list we're outdenting is a child of a non-list,
+  then we can just change it to a div.
+  </div>
+
+  <ol>
+    <li>While <var>node</var> has [[children]]:
+
+    <ol>
+      <li>Let <var>child</var> be the first [[child]] of <var>node</var>.
+
+      <li>If <var>child</var> is an [[li]] and the [[parent]] of
+      <var>node</var> is not an [[ol]] or [[ul]], <span>set the tag name</span>
+      of <var>child</var> to "div".
+
+      <li>Insert <var>child</var> into the [[parent]] of <var>node</var>
+      immediately before <var>node</var>, <span>preserving ranges</span>.
+    </ol>
+
+    <li>Remove <var>node</var> from its [[parent]].
+
+    <li>Abort these steps.
+  </ol>
+
+  <li>If <var>node</var> is an [[ol]] or [[ul]]:
+  <!-- But it has non-list attributes, and its parent is not an ol/ul, or we'd
+  have handled it in the previous step. -->
+
+  <ol>
+    <li>Unset the <code data-anolis-spec=html
+    title=attr-ol-reversed>reversed</code>, <code data-anolis-spec=html
+    title=attr-ol-start>start</code>, and <code data-anolis-spec=html
+    title=attr-ol-type>type</code> attributes of <var>node</var>, if any are
+    set.
+
+    <li><span>Set the tag name</span> of <var>node</var> to "div".
+
+    <li>For each [[li]] [[child]] <var>child</var> of <var>node</var>, unset
+    the <code data-anolis-spec=html title=attr-li-value>value</code> attribute
+    of <var>child</var> if set, then <span>set the tag name</span> of
+    <var>child</var> to "div".
+
+    <li>Abort these steps.
+  </ol>
+
+  <li>If <var>node</var> is an [[li]] whose [[parent]] is an [[ol]] or [[ul]]:
+
+  <ol>
+    <li>Let <var>parent</var> be the [[parent]] of <var>node</var>.
+
+    <li>If <var>parent</var>'s [[parent]] is not an [[ol]] or [[ul]], unset the
+    <code data-anolis-spec=html title=attr-li-value>value</code> attribute of
+    <var>node</var> if set, then <span>set the tag name</span> of
+    <var>node</var> to "div".
+
+    <li>If <var>node</var>'s [[previoussibling]] is null, insert
+    <var>node</var> into the [[parent]] of <var>parent</var> immediately before
+    <var>parent</var>, <span>preserving ranges</span>, then abort these steps.
+
+    <li>If <var>node</var>'s [[nextsibling]] is null, insert <var>node</var>
+    into the [[parent]] of <var>parent</var> immediately after
+    <var>parent</var>, <span>preserving ranges</span>, then abort these steps.
+
+    <!-- Otherwise, have to split up the list. -->
+
+    <li>Let <var>new parent</var> be the result of calling <code
+    data-anolis-spec=domcore title=dom-Node-cloneNode>cloneNode(false)</code>
+    on <var>parent</var>.
+
+    <p class=XXX>This will duplicate id's, as well as other bad things.  Do we
+    care?  We don't want to not copy attributes at all, because that wouldn't
+    copy style attributes, and Firefox in CSS mode will actually add style
+    attributes to any elements it feels like.  If we do exclude id's, even
+    though they'd only occur if someone manually added them, do we want to
+    exclude other things like itemid or accesskey or . . .
+
+    <li>Insert <var>new parent</var> into the [[parent]] of <var>parent</var>
+    immediately after <var>parent</var>.
+
+    <li>While <var>node</var>'s [[nextsibling]] is not null, insert the last
+    [[child]] of <var>parent</var> as the first [[child]] of <var>new
+    parent</var>, <span>preserving ranges</span>.
+
+    <li>Insert <var>node</var> into the [[parent]] of <var>parent</var>
+    immediately after <var>parent</var>.
+
+    <li>Abort these steps.
+  </ol>
 
   <!-- The easy case is when the whole element is indented.  In this case we
   remove the whole thing indiscriminately.  In the case of blockquotes
@@ -2740,12 +2862,17 @@ Things that are produced for indentation that we need to consider removing:
 
     <li>Remove the last member of <var>ancestor list</var>.
 
-    <li>Let <var>children</var> be the [[children]] of <var>current
-    ancestor</var>.
+    <li>Let <var>target</var> be the [[child]] of <var>current ancestor</var>
+    that is equal to either <var>node</var> or the last member of <var>ancestor
+    list</var>.
 
-    <li>For each <var>child</var> in <var>children</var>, if <var>child</var>
-    is neither <var>node</var> nor the last member of <var>ancestor list</var>,
-    <span>indent</span> <var>child</var>.
+    <li>Let <var>preceding siblings</var> be the [[precedingsiblings]] of
+    <var>target</var>, and let <var>following siblings</var> be the
+    [[followingsiblings]] of <var>target</var>.
+
+    <li><span>Indent</span> <var>preceding siblings</var>.
+
+    <li><span>Indent</span> <var>following siblings</var>.
   </ol>
 
   <li><span>Outdent</span> <var>original ancestor</var>.

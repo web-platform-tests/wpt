@@ -2438,6 +2438,32 @@ function myExecCommand(command, showUI, value, range) {
 		break;
 
 		case "outdent":
+		// "Let items be a list of all lis that are ancestor containers of the
+		// range's start and/or end node."
+		//
+		// Has to be in tree order, remember!
+		var items = [];
+		for (var node = range.endContainer; node != range.commonAncestorContainer; node = node.parentNode) {
+			if (isHtmlElement(node, "LI")) {
+				items.unshift(node);
+			}
+		}
+		for (var node = range.startContainer; node != range.commonAncestorContainer; node = node.parentNode) {
+			if (isHtmlElement(node, "LI")) {
+				items.unshift(node);
+			}
+		}
+		for (var node = range.commonAncestorContainer; node; node = node.parentNode) {
+			if (isHtmlElement(node, "LI")) {
+				items.unshift(node);
+			}
+		}
+
+		// "For each item in items, normalize sublists of item."
+		for (var i = 0; i < items.length; i++) {
+			normalizeSublists(items[i]);
+		}
+
 		// "Block-extend the range, and let new range be the result."
 		var newRange = blockExtendRange(range);
 
@@ -2628,6 +2654,11 @@ function myExecCommand(command, showUI, value, range) {
 }
 
 function indentNodes(nodeList) {
+	// "If node list is empty, do nothing and abort these steps."
+	if (!nodeList.length) {
+		return;
+	}
+
 	// "Let first node be the first member of node list."
 	var firstNode = nodeList[0];
 
@@ -2744,6 +2775,118 @@ function outdentNode(node) {
 		return;
 	}
 
+	// "If node is an ol or ul with no attributes except possibly reversed,
+	// start, and/or type; or is an ol or ul whose parent is also an ol or ul:"
+	if ((isHtmlElement(node, "OL") || isHtmlElement(node, "UL"))
+	&& (
+		isHtmlElement(node.parentNode, "OL")
+		|| isHtmlElement(node.parentNode, "UL")
+		|| [].every.call(node.attributes, function (attr) { return ["reversed", "start", "type"].indexOf(attr.name) != -1 })
+	)) {
+		// "While node has children:"
+		while (node.hasChildNodes()) {
+			// "Let child be the first child of node."
+			var child = node.firstChild;
+
+			// "If child is an li and the parent of node is not an ol or ul,
+			// set the tag name of child to "div"."
+			if (isHtmlElement(child, "LI")
+			&& !isHtmlElement(node.parentNode, "OL")
+			&& !isHtmlElement(node.parentNode, "UL")) {
+				setTagName(child, "div");
+			}
+
+			// "Insert child into the parent of node immediately before node,
+			// preserving ranges."
+			movePreservingRanges(child, node.parentNode, getNodeIndex(node));
+		}
+
+		// "Remove node from its parent."
+		node.parentNode.removeChild(node);
+
+		// "Abort these steps."
+		return;
+	}
+
+	// "If node is an ol or ul:"
+	if (isHtmlElement(node, "OL")
+	|| isHtmlElement(node, "UL")) {
+		// "Unset the reversed, start, and type attributes of node, if any are
+		// set."
+		node.removeAttribute("reversed");
+		node.removeAttribute("start");
+		node.removeAttribute("type");
+
+		// "Set the tag name of node to "div"."
+		setTagName(node, "div");
+
+		// "For each li child child of node, unset the value attribute of child
+		// if set, then set the tag name of child to "div"."
+		for (var i = 0; i < node.childNodes.length; i++) {
+			var child = node.childNodes[i];
+
+			if (isHtmlElement(child, "LI")) {
+				child.removeAttribute("value");
+				setTagName(child, "div");
+			}
+		}
+
+		// "Abort these steps."
+		return;
+	}
+
+	// "If node is an li whose parent is an ol or ul:"
+	if (isHtmlElement(node, "LI")
+	&& (isHtmlElement(node.parentNode, "OL")
+	|| isHtmlElement(node.parentNode, "UL"))) {
+		// "Let parent be the parent of node."
+		var parent_ = node.parentNode;
+
+		// "If parent's parent is not an ol or ul, unset the value attribute of
+		// node if set, then set the tag name of node to "div"."
+		if (!isHtmlElement(parent_.parentNode, "OL")
+		&& !isHtmlElement(parent_.parentNode, "UL")) {
+			node.removeAttribute("value");
+			setTagName(node, "div");
+		}
+
+		// "If node's previousSibling is null, insert node into the parent of
+		// parent immediately before parent, preserving ranges, then abort
+		// these steps."
+		if (!node.previousSibling) {
+			movePreservingRanges(node, parent_.parentNode, getNodeIndex(parent_));
+			return;
+		}
+
+		// "If node's nextSibling is null, insert node into the parent of
+		// parent immediately after parent, preserving ranges, then abort these
+		// steps."
+		if (!node.nextSibling) {
+			movePreservingRanges(node, parent_.parentNode, 1 + getNodeIndex(parent_));
+			return;
+		}
+
+		// "Let new parent be the result of calling cloneNode(false) on
+		// parent."
+		var newParent = parent_.cloneNode(false);
+
+		// "Insert new parent into the parent of parent immediately after
+		// parent."
+		parent_.parentNode.insertBefore(newParent, parent_.nextSibling);
+
+		// "While node's nextSibling is not null, insert the last child of
+		// parent as the first child of new parent, preserving ranges."
+		while (node.nextSibling) {
+			movePreservingRanges(parent_.lastChild, newParent, 0);
+		}
+
+		// "Insert node into the parent of parent immediately after parent."
+		parent_.parentNode.insertBefore(node, parent_.nextSibling);
+
+		// "Abort these steps."
+		return;
+	}
+
 	// "If node is an indentation element:"
 	if (isIndentationElement(node)) {
 		// "If node's last child and nextSibling are both inline nodes or its
@@ -2843,17 +2986,22 @@ function outdentNode(node) {
 		// "Remove the last member of ancestor list."
 		currentAncestor = ancestorList.pop();
 
-		// "Let children be the children of current ancestor."
-		var children = [].slice.call(currentAncestor.childNodes);
+		// "Let target be the child of current ancestor that is equal to either
+		// node or the last member of ancestor list."
+		var target = node.parentNode == currentAncestor
+			? node
+			: ancestorList[ancestorList.length - 1];
 
-		// "For each child in children, if child is neither node nor the last
-		// member of ancestor list, indent child."
-		for (var i = 0; i < children.length; i++) {
-			var child = children[i];
-			if (child != node && child != ancestorList[ancestorList.length - 1]) {
-				indentNode(child);
-			}
-		}
+		// "Let preceding siblings be the preceding siblings of target, and let
+		// following siblings be the following siblings of target."
+		var precedingSiblings = [].slice.call(currentAncestor.childNodes, 0, getNodeIndex(target));
+		var followingSiblings = [].slice.call(currentAncestor.childNodes, 1 + getNodeIndex(target));
+
+		// "Indent preceding siblings."
+		indentNodes(precedingSiblings);
+
+		// "Indent following siblings."
+		indentNodes(followingSiblings);
 	}
 
 	// "Outdent original ancestor."

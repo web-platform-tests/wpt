@@ -652,6 +652,84 @@ var tests = {
 
 		'<ol><li>foo</ol>[bar]',
 		'<ul><li>foo</ul>[bar]',
+
+		// Various <ol> stuff
+		'<ol><li>foo<li>[bar]<li>baz</ol>',
+		'<ol data-start=1 data-end=2><li>foo<li>bar<li>baz</ol>',
+		'<ol><li>foo</ol>[bar]',
+		'<ol><li>[foo]<br>bar<li>baz</ol>',
+		'<ol><li>foo<br>[bar]<li>baz</ol>',
+		'<ol><li><div>[foo]</div>bar<li>baz</ol>',
+		'<ol><li>foo<ol><li>[bar]<li>baz</ol><li>quz</ol>',
+		'<ol><li>foo<ol><li>bar<li>[baz]</ol><li>quz</ol>',
+		'<ol><li>foo</li><ol><li>[bar]<li>baz</ol><li>quz</ol>',
+		'<ol><li>foo</li><ol data-start=0 data-end=1><li>bar<li>baz</ol><li>quz</ol>',
+		'<ol><li>foo</li><ol><li>bar<li>[baz]</ol><li>quz</ol>',
+		'<ol><li>foo</li><ol data-start=1 data-end=2><li>bar<li>baz</ol><li>quz</ol>',
+		'<ol><li>foo<ol><li>b[a]r</ol><li>baz</ol>',
+		'<ol><li>foo</li><ol><li>b[a]r</ol><li>baz</ol>',
+		'<ol><li>foo{<ol><li>bar</ol>}<li>baz</ol>',
+		'<ol><li>foo</li>{<ol><li>bar</ol>}<li>baz</ol>',
+		'<ol><li>[foo]<ol><li>bar</ol><li>baz</ol>',
+		'<ol><li>[foo]</li><ol><li>bar</ol><li>baz</ol>',
+		'<ol><li>foo<li>[bar]<ol><li>baz</ol><li>quz</ol>',
+		'<ol><li>foo<li>[bar]</li><ol><li>baz</ol><li>quz</ol>',
+		'<ol><li>foo<ol><li>bar<li>baz</ol><li>[quz]</ol>',
+		'<ol><li>foo</li><ol><li>bar<li>baz</ol><li>[quz]</ol>',
+
+		// Multiple items at once.
+		'<ol><li>foo<li>b[ar<li>baz]</ol>',
+		'<ol><li>[foo<ol><li>bar]</ol><li>baz</ol>',
+		'<ol><li>[foo</li><ol><li>bar]</ol><li>baz</ol>',
+		'<ol><li>foo<ol><li>b[ar</ol><li>b]az</ol>',
+		'<ol><li>foo</li><ol><li>b[ar</ol><li>b]az</ol>',
+		'<ol><li>[foo<ol><li>bar</ol><li>baz]</ol><p>extra',
+		'<ol><li>[foo</li><ol><li>bar</ol><li>baz]</ol><p>extra',
+
+		// We probably can't actually get this DOM . . .
+		'<ol><li>[foo]<ol><li>bar</ol>baz</ol>',
+		'<ol><li>foo<ol><li>[bar]</ol>baz</ol>',
+		'<ol><li>foo<ol><li>bar</ol>[baz]</ol>',
+		'<ol><li>[foo<ol><li>bar]</ol>baz</ol>',
+
+		// Same stuff but with <ul>
+		'<ul><li>foo<li>[bar]<li>baz</ul>',
+		'<ol data-start=1 data-end=2><li>foo<li>bar<li>baz</ul>',
+		'<ul><li>foo</ul>[bar]',
+		'<ul><li>[foo]<br>bar<li>baz</ul>',
+		'<ul><li>foo<br>[bar]<li>baz</ul>',
+		'<ul><li><div>[foo]</div>bar<li>baz</ul>',
+		'<ul><li>foo<ul><li>[bar]<li>baz</ul><li>quz</ul>',
+		'<ul><li>foo<ul><li>bar<li>[baz]</ul><li>quz</ul>',
+		'<ul><li>foo</li><ul><li>[bar]<li>baz</ul><li>quz</ul>',
+		'<ul><li>foo</li><ol data-start=0 data-end=1><li>bar<li>baz</ul><li>quz</ul>',
+		'<ul><li>foo</li><ul><li>bar<li>[baz]</ul><li>quz</ul>',
+		'<ul><li>foo</li><ol data-start=1 data-end=2><li>bar<li>baz</ul><li>quz</ul>',
+		'<ul><li>foo<ul><li>b[a]r</ul><li>baz</ul>',
+		'<ul><li>foo</li><ul><li>b[a]r</ul><li>baz</ul>',
+		'<ul><li>foo{<ul><li>bar</ul>}<li>baz</ul>',
+		'<ul><li>foo</li>{<ul><li>bar</ul>}<li>baz</ul>',
+		'<ul><li>[foo]<ul><li>bar</ul><li>baz</ul>',
+		'<ul><li>[foo]</li><ul><li>bar</ul><li>baz</ul>',
+		'<ul><li>foo<li>[bar]<ul><li>baz</ul><li>quz</ul>',
+		'<ul><li>foo<li>[bar]</li><ul><li>baz</ul><li>quz</ul>',
+		'<ul><li>foo<ul><li>bar<li>baz</ul><li>[quz]</ul>',
+		'<ul><li>foo</li><ul><li>bar<li>baz</ul><li>[quz]</ul>',
+
+		// Multiple items at once.
+		'<ul><li>foo<li>b[ar<li>baz]</ul>',
+		'<ul><li>[foo<ul><li>bar]</ul><li>baz</ul>',
+		'<ul><li>[foo</li><ul><li>bar]</ul><li>baz</ul>',
+		'<ul><li>foo<ul><li>b[ar</ul><li>b]az</ul>',
+		'<ul><li>foo</li><ul><li>b[ar</ul><li>b]az</ul>',
+		'<ul><li>[foo<ul><li>bar</ul><li>baz]</ul><p>extra',
+		'<ul><li>[foo</li><ul><li>bar</ul><li>baz]</ul><p>extra',
+
+		// We probably can't actually get this DOM . . .
+		'<ul><li>[foo]<ul><li>bar</ul>baz</ul>',
+		'<ul><li>foo<ul><li>[bar]</ul>baz</ul>',
+		'<ul><li>foo<ul><li>bar</ul>[baz]</ul>',
+		'<ul><li>[foo<ul><li>bar]</ul>baz</ul>',
 	],
 	insertunorderedlist: [
 	],
@@ -809,7 +887,7 @@ var tests = {
 		'<ol><li>foo<ol><li>bar<li>baz</ol><li>[quz]</ol>',
 		'<ol><li>foo</li><ol><li>bar<li>baz</ol><li>[quz]</ol>',
 
-		// Try indenting multiple items at once.
+		// Try outdenting multiple items at once.
 		'<ol><li>foo<li>b[ar<li>baz]</ol>',
 		'<ol><li>[foo<ol><li>bar]</ol><li>baz</ol>',
 		'<ol><li>[foo</li><ol><li>bar]</ol><li>baz</ol>',

@@ -218,7 +218,7 @@ like this.
   <li>Return <var>replacement element</var>.
 </ol>
 
-<p>To remove a node <var>node</var> while <dfn>preserving its
+<p>To remove a [[node]] <var>node</var> while <dfn>preserving its
 descendants</dfn>:
 
 <ol>
@@ -234,6 +234,33 @@ descendants</dfn>:
   <li>Remove <var>node</var> from its [[parent]].
 
   <li>Return <var>children</var>.
+</ol>
+
+<p>To <dfn>split the parent</dfn> of a [[node]] <var>node</var>:
+
+<ol>
+  <li>If <var>node</var>'s [[parent]] or [[nextsibling]] is null, do nothing
+  and abort these steps.
+
+  <li>Let <var>parent</var> be the [[parent]] of <var>node</var>.
+
+  <li>Let <var>new parent</var> be the result of calling <code
+  data-anolis-spec=domcore title=dom-Node-cloneNode>cloneNode(false)</code>
+  on <var>parent</var>.
+
+  <p class=XXX>This will duplicate id's, as well as other bad things.  Do we
+  care?  We don't want to not copy attributes at all, because that wouldn't
+  copy style attributes, and Firefox in CSS mode will actually add style
+  attributes to any elements it feels like.  If we do exclude id's, even though
+  they'd only occur if someone manually added them, do we want to exclude other
+  things like itemid or accesskey or . . .
+
+  <li>Insert <var>new parent</var> into the [[parent]] of <var>parent</var>
+  immediately after <var>parent</var>.
+
+  <li>While the [[nextsibling]] of <var>node</var> is not null, insert the last
+  [[child]] of <var>parent</var> as the first [[child]] of <var>new
+  parent</var>, <span>preserving ranges</span>.
 </ol>
 
 <p>An <dfn>editing host</dfn> is a [[node]] that is either an [[element]] with
@@ -2574,6 +2601,195 @@ What this means from an HTML perspective, roughly:
 
 Sheesh, lists are complicated.
 -->
+<dt><code title><dfn title=command-insertorderedlist>insertOrderedList</dfn></code>
+
+<dd><strong>Action</strong>:
+
+<ol>
+  <li>Let <var>items</var> be a list of all [[li]]s that are
+  [[ancestorcontainers]] of the [[range]]'s [[rangestart]] and/or [[rangeend]]
+  [[bpnode]].
+
+  <li>For each <var>item</var> in <var>items</var>, <span>normalize
+  sublists</span> of <var>item</var>.
+  <!-- This overnormalizes, but it seems like the simplest solution for now.
+  -->
+
+  <li><span>Block-extend</span> the [[range]], and let <var>new range</var> be
+  the result.
+
+  <li>If the [[child]] of <var>new range</var>'s [[rangeend]] [[bpnode]] with
+  [[index]] equal to its [[rangeend]] [[bpoffset]] is a [[br]]:
+
+  <ol>
+    <li>Remove that [[br]] from its [[parent]].
+
+    <li>While the [[rangeend]] [[bpoffset]] of <var>new range</var> is equal to
+    the [[nodelength]] of its [[rangeend]] [[bpnode]], set the [[rangeend]] of
+    <var>new range</var> to ([[parent]] of [[rangeend]] [[bpnode]], 1 +
+    [[index]] of [[rangeend]] [[bpnode]]).
+  </ol>
+
+  <li>Let <var>node list</var> be a list of [[nodes]], initially empty.
+
+  <li>For each [[node]] <var>node</var> [[contained]] in <var>new range</var>,
+  if <var>node</var> is <span>editable</span>; the last member of <var>node
+  list</var> (if any) is not an [[ancestor]] of <var>node</var>; and
+  either <var>node</var> is an [[ol]] or [[ul]], or its [[parent]] is an [[ol]]
+  or [[ul]], or it can be the [[child]] of an [[li]]; then append
+  <var>node</var> to <var>node list</var>.
+
+  <li>While <var>node list</var> is not empty:
+
+  <ol>
+    <li>Let <var>sublist</var> be an empty list of [[nodes]].
+
+    <li>If the first member of <var>node list</var> is a [[br]], append it to
+    <var>sublist</var> (without removing it from <var>node list</var>).
+    <!-- It will be removed later, since in every pass we get rid of the first
+    member of node list if it's a br. -->
+
+    <li>Otherwise, remove the first member of <var>node list</var> and append
+    it to <var>sublist</var>.
+
+    <li>If the first member of <var>sublist</var> is an [[ol]],
+    <span>outdent</span> it.
+
+    <li>Otherwise, if the first member of <var>sublist</var> is a [[ul]],
+    <span>set the tag name</span> of the first member of <var>sublist</var> to
+    "ol".
+
+    <li>Otherwise, if the [[parent]] of the first member of <var>sublist</var>
+    is an <span>editable</span> [[ol]]:
+    <!-- Outdent -->
+
+    <ol>
+      <li>While <var>node list</var> is not empty, and the first member of
+      <var>node list</var> is the [[nextsibling]] of the last member of
+      <var>sublist</var>, and the first member of <var>node list</var> is not
+      an [[ol]] or [[ul]], remove the first member from <var>node list</var>
+      and append it to <var>sublist</var>.
+
+      <li><span>List-outdent</span> <var>sublist</var>.
+    </ol>
+
+    <li>Otherwise, if the [[parent]] of the first member of <var>sublist</var>
+    is an <span>editable</span> [[ul]]:
+    <!-- Split up the parent -->
+
+    <ol>
+      <li>While <var>node list</var> is not empty, and the first member of
+      <var>node list</var> is the [[nextsibling]] of the last member of
+      <var>sublist</var>, and the first member of <var>node list</var> is not
+      an [[ol]] or [[ul]], remove the first member from <var>node list</var>
+      and append it to <var>sublist</var>.
+
+      <li>If the [[previoussibling]] of the first member of <var>sublist</var>
+      is null:
+
+      <ol>
+        <li>Let <var>ol</var> be the [[previoussibling]] of the [[parent]] of
+        the first member of <var>sublist</var>.
+
+        <li>If <var>ol</var> is not an [[ol]], let <var>ol</var> be the result
+        of calling <code data-anolis-spec=domcore
+        title=dom-Document-createElement>createElement("ol")</code> on the
+        [[ownerdocument]] of the first member of <var>sublist</var>.  Then
+        insert <var>ol</var> into the [[parent]] of the [[parent]] of the first
+        member of <var>sublist</var>, immediately before the [[parent]] of the
+        first member of <var>sublist</var>.
+
+        <li>For each <var>node</var> in <var>sublist</var>, append
+        <var>node</var> as the last [[child]] of <var>ol</var>,
+        <span>preserving ranges</span>.
+      </ol>
+
+      <li>Otherwise:
+
+      <ol>
+        <li><span>Split the parent</span> of the last member of
+        <var>sublist</var>.
+
+        <li>Let <var>ol</var> be the [[nextsibling]] of the [[parent]] of the
+        first member of <var>sublist</var>.
+
+        <li>If <var>ol</var> is not an [[ol]], let <var>ol</var> be the result
+        of calling <code data-anolis-spec=domcore
+        title=dom-Document-createElement>createElement("ol")</code> on the
+        [[ownerdocument]] of the first member of <var>sublist</var>.  Then
+        insert <var>ol</var> into the [[parent]] of the [[parent]] of the first
+        member of <var>sublist</var>, immediately after the [[parent]] of the
+        first member of <var>sublist</var>.
+
+        <li>For each <var>node</var> in <var>sublist</var> <em>in reverse
+        order</em>, insert <var>node</var> as the first [[child]] of
+        <var>ol</var>, <span>preserving ranges</span>.
+      </ol>
+    </ol>
+
+    <li>Otherwise:
+    <!-- General case.  Add an ol wrapper for each line.  <br> breaks apart
+    <li>'s, and multiple consecutive <br>s or trailing <br>s become empty
+    <li>s. -->
+
+    <ol>
+      <li>While <var>node list</var> is not empty, and the first member of
+      <var>node list</var> is the [[nextsibling]] of the last member of
+      <var>sublist</var>, and the last member of <var>sublist</var> and first
+      member of <var>node list</var> are both <span title="inline node">inline
+      nodes</span> that are not [[br]]s, remove the first member from <var>node
+      list</var> and append it to <var>sublist</var>.
+
+      <li>Let <var>li</var> be the result of calling <code
+      data-anolis-spec=domcore
+      title=dom-Document-createElement>createElement("li")</code> on the
+      [[ownerdocument]] of the first member of <var>sublist</var>.
+
+      <li>If the [[nextsibling]] of the last member of <var>sublist</var> is an
+      [[ol]]:
+
+      <ol>
+        <li>Insert <var>li</var> as the first [[child]] of the [[nextsibling]]
+        of the last member of <var>sublist</var>.
+
+        <li>If the first member of <var>sublist</var> is a [[br]], remove it
+        from <var>sublist</var>.
+
+        <li>For each <var>node</var> in <var>sublist</var> <em>in reverse
+        order</em>, insert <var>node</var> as the first [[child]] of
+        <var>li</var>, <span>preserving ranges</span>.
+      </ol>
+
+      <li>Otherwise:
+
+      <ol>
+        <li>Let <var>ol</var> be the [[previoussibling]] of the first member of
+        <var>sublist</var>.
+
+        <li>If <var>ol</var> is not an [[ol]], let <var>ol</var> be the result
+        of calling <code data-anolis-spec=domcore
+        title=dom-Document-createElement>createElement("ol")</code> on the
+        [[ownerdocument]] of the first member of <var>sublist</var>.  Insert
+        <var>ol</var> into the [[parent]] of the first member of
+        <var>sublist</var> immediately before the first member of
+        <var>sublist</var>.
+
+        <li>Append <var>li</var> as the last [[child]] of <var>ol</var>.
+
+        <li>If the first member of <var>sublist</var> is a [[br]], remove it
+        from <var>sublist</var>.
+
+        <li>For each <var>node</var> in <var>sublist</var>, append
+        <var>node</var> as the last [[child]] of <var>li</var>,
+        <span>preserving ranges</span>.
+      </ol>
+    </ol>
+
+    <li>If the first member of <var>node list</var> is a [[br]], remove the
+    first member of <var>node list</var> from its [[parent]], then remove it
+    from <var>node list</var>.
+  </ol>
+</ol>
 
 
 <dt><code title><dfn title=command-italic>italic</dfn></code>
@@ -2916,28 +3132,7 @@ insertOrderedList.
     <li>Abort these steps.
   </ol>
 
-  <li>If the [[nextsibling]] of the last member of <var>node list</var> is not
-  null:
-
-  <ol>
-    <li>Let <var>new parent</var> be the result of calling <code
-    data-anolis-spec=domcore title=dom-Node-cloneNode>cloneNode(false)</code>
-    on <var>parent</var>.
-
-    <p class=XXX>This will duplicate id's, as well as other bad things.  Do we
-    care?  We don't want to not copy attributes at all, because that wouldn't
-    copy style attributes, and Firefox in CSS mode will actually add style
-    attributes to any elements it feels like.  If we do exclude id's, even
-    though they'd only occur if someone manually added them, do we want to
-    exclude other things like itemid or accesskey or . . .
-
-    <li>Insert <var>new parent</var> into the [[parent]] of <var>parent</var>
-    immediately after <var>parent</var>.
-
-    <li>While [[nextsibling]] of the last member of <var>node list</var> is not
-    null, insert the last [[child]] of <var>parent</var> as the first [[child]]
-    of <var>new parent</var>, <span>preserving ranges</span>.
-  </ol>
+  <li><span>Split the parent</span> of the last member of <var>node list</var>.
 
   <li>For each <var>node</var> in <var>node list</var>, <em>in reverse
   order</em>:

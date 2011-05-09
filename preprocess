@@ -50,6 +50,7 @@ replace = {
     'nodelength': '<span data-anolis-spec=domrange title=concept-node-length>length</span>',
     'ol': '<code data-anolis-spec=html title="the ol element">ol</code>',
     'ownerdocument': '<code data-anolis-spec=domcore title=dom-Node-ownerDocument>ownerDocument</code>',
+    'p': '<code data-anolis-spec=html title="the p element">p</code>',
     'parent': '<span data-anolis-spec=domcore title=concept-tree-parent>parent</span>',
     'partiallycontained': '<span data-anolis-spec=domrange>partially contained</span>',
     'phrasingcontent': '<span data-anolis-spec=html>phrasing content</span>',

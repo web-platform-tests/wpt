@@ -172,6 +172,11 @@ function isHtmlNamespace(ns) {
 
 // Functions for stuff in DOM Range
 function getNodeIndex(node) {
+	if (!node.parentNode) {
+		// No preceding siblings, so . . .
+		return 0;
+	}
+
 	var ret = 0;
 	// These are no-ops to avoid a completely ridiculous bug in IE where
 	// sometimes a node is not actually equal to any of its parents' children.
@@ -995,12 +1000,13 @@ function isSimpleModifiableElement(node) {
 
 function movePreservingRanges(node, newParent, newIndex) {
 	// "When the user agent is to move a Node to a new location, preserving
-	// ranges, it must remove the Node from its original parent, then insert it
-	// in the new location. In doing so, however, it must ignore the regular
-	// range mutation rules, and instead follow these rules:"
+	// ranges, it must remove the Node from its original parent (if any), then
+	// insert it in the new location. In doing so, however, it must ignore the
+	// regular range mutation rules, and instead follow these rules:"
 
 	// "Let node be the moved Node, old parent and old index be the old parent
-	// and index, and new parent and new index be the new parent and index."
+	// (which may be null) and index, and new parent and new index be the new
+	// parent and index."
 	var oldParent = node.parentNode;
 	var oldIndex = getNodeIndex(node);
 
@@ -2626,33 +2632,49 @@ function myExecCommand(command, showUI, value, range) {
 				}
 			// "Otherwise:"
 			} else {
-				// "While node list is not empty, and the first member of node
-				// list is the nextSibling of the last member of sublist, and
-				// the last member of sublist and first member of node list are
-				// both inline nodes that are not brs, remove the first member
-				// from node list and append it to sublist."
-				while (nodeList.length
-				&& nodeList[0] == sublist[sublist.length -1].nextSibling
-				&& isInlineNode(nodeList[0])
-				&& isInlineNode(sublist[sublist.length -1])
-				&& !isHtmlElement(nodeList[0], "BR")
-				&& !isHtmlElement(sublist[sublist.length -1], "BR")) {
-					sublist.push(nodeList.shift());
-				}
+				// "If the first member of sublist is a p or li or div, set the
+				// tag name of the first member of sublist to "li", and let li
+				// be the result.  Remove the first member of sublist, and
+				// append li to sublist."
+				var li;
+				if (isHtmlElement(sublist[0], "P")
+				|| isHtmlElement(sublist[0], "LI")
+				|| isHtmlElement(sublist[0], "DIV")) {
+					li = setTagName(sublist[0], "LI");
+					sublist = [li];
 
-				// "Let li be the result of calling createElement("li") on the
-				// ownerDocument of the first member of sublist."
-				var li = sublist[0].ownerDocument.createElement("li");
+				// "Otherwise:"
+				} else {
+					// "While node list is not empty, and the first member of
+					// node list is the nextSibling of the last member of
+					// sublist, and the last member of sublist and first member
+					// of node list are both inline nodes that are not brs,
+					// remove the first member from node list and append it to
+					// sublist."
+					while (nodeList.length
+					&& nodeList[0] == sublist[sublist.length -1].nextSibling
+					&& isInlineNode(nodeList[0])
+					&& isInlineNode(sublist[sublist.length -1])
+					&& !isHtmlElement(nodeList[0], "BR")
+					&& !isHtmlElement(sublist[sublist.length -1], "BR")) {
+						sublist.push(nodeList.shift());
+					}
+
+					// "Let li be the result of calling createElement("li") on
+					// the ownerDocument of the first member of sublist."
+					var li = sublist[0].ownerDocument.createElement("li");
+				}
 
 				// "If the nextSibling of the last member of sublist is an ol:"
 				if (isHtmlElement(sublist[sublist.length - 1].nextSibling, "OL")) {
 					// "Insert li as the first child of the nextSibling of the
-					// last member of sublist."
-					sublist[sublist.length - 1].nextSibling.insertBefore(li, sublist[sublist.length - 1].nextSibling.firstChild);
+					// last member of sublist, preserving ranges."
+					movePreservingRanges(li, sublist[sublist.length - 1].nextSibling, 0);
 
-					// "If the first member of sublist is a br, remove it from
-					// sublist."
-					if (isHtmlElement(sublist[0], "BR")) {
+					// "If the first member of sublist is a br or li, remove it
+					// from sublist."
+					if (isHtmlElement(sublist[0], "BR")
+					|| isHtmlElement(sublist[0], "LI")) {
 						sublist.shift();
 					}
 
@@ -2677,12 +2699,13 @@ function myExecCommand(command, showUI, value, range) {
 						sublist[0].parentNode.insertBefore(ol, sublist[0]);
 					}
 
-					// "Append li as the last child of ol."
-					ol.appendChild(li);
+					// "Append li as the last child of ol, preserving ranges."
+					movePreservingRanges(li, ol, ol.childNodes.length);
 
-					// "If the first member of sublist is a br, remove it from
-					// sublist."
-					if (isHtmlElement(sublist[0], "BR")) {
+					// "If the first member of sublist is a br or li, remove it
+					// from sublist."
+					if (isHtmlElement(sublist[0], "BR")
+					|| isHtmlElement(sublist[0], "LI")) {
 						sublist.shift();
 					}
 

@@ -625,33 +625,20 @@ var tests = {
 
 		'<p>foo<p>[bar]<p>baz',
 		'<p>foo<blockquote>[bar]</blockquote><p>baz',
-		'<ol><li>foo<li>[bar]<li>baz</ol>',
-		'<ul><li>foo<li>[bar]<li>baz</ul>',
 		'<dl><dt>foo<dd>[bar]<dt>baz<dd>quz</dl>',
 		'<dl><dt>foo<dd>bar<dt>[baz]<dd>quz</dl>',
 
 		'<p>foo<p>b[a]r<p>baz',
 		'<p>foo<blockquote>b[a]r</blockquote><p>baz',
-		'<ol><li>foo<li>b[a]r<li>baz</ol>',
-		'<ul><li>foo<li>b[a]r<li>baz</ul>',
 		'<dl><dt>foo<dd>b[a]r<dt>baz<dd>quz</dl>',
 		'<dl><dt>foo<dd>bar<dt>b[a]z<dd>quz</dl>',
 
 		'<p>[foo<p>bar]<p>baz',
 		'<p>[foo<blockquote>bar]</blockquote><p>baz',
-		'<ol><li>[foo<li>bar]<li>baz</ol>',
-		'<ul><li>[foo<li>bar]<li>baz</ul>',
 		'<dl><dt>[foo<dd>bar]<dt>baz<dd>quz</dl>',
 		'<dl><dt>foo<dd>[bar<dt>baz]<dd>quz</dl>',
 
 		'<p>[foo<blockquote><p>bar]<p>baz</blockquote>',
-		'<ol><li><ol><li>foo<li>[bar]</ol><li>baz</ol>',
-		'<ol><li><ul><li>foo<li>[bar]</ul><li>baz</ol>',
-		'<ul><li><ol><li>foo<li>[bar]</ol><li>baz</ul>',
-		'<ul><li><ul><li>foo<li>[bar]</ol><li>baz</ul>',
-
-		'<ol><li>foo</ol>[bar]',
-		'<ul><li>foo</ul>[bar]',
 
 		// Various <ol> stuff
 		'<ol><li>foo<li>[bar]<li>baz</ol>',

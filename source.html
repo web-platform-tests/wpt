@@ -535,14 +535,15 @@ which <span title="specified value">specifies</span> a value for at most one
 command.
 
 <p>When the user agent is to move a [[node]] to a new location, <dfn>preserving
-ranges</dfn>, it must remove the [[node]] from its original [[parent]], then
-insert it in the new location.  In doing so, however, it must ignore the
-regular [[rangemutationrules]], and instead follow these rules:
+ranges</dfn>, it must remove the [[node]] from its original [[parent]] (if
+any), then insert it in the new location.  In doing so, however, it must ignore
+the regular [[rangemutationrules]], and instead follow these rules:
 
 <ol>
   <li>Let <var>node</var> be the moved [[node]], <var>old parent</var> and
-  <var>old index</var> be the old [[parent]] and [[index]], and <var>new
-  parent</var> and <var>new index</var> be the new [[parent]] and [[index]].
+  <var>old index</var> be the old [[parent]] (which may be null) and [[index]],
+  and <var>new parent</var> and <var>new index</var> be the new [[parent]] and
+  [[index]].
 
   <li>If a [[boundarypoint]]'s [[bpnode]] is the same as or a [[descendant]] of
   <var>node</var>, leave it unchanged, so it moves to the new location.  <!--
@@ -2733,27 +2734,38 @@ Sheesh, lists are complicated.
     <li>s. -->
 
     <ol>
-      <li>While <var>node list</var> is not empty, and the first member of
-      <var>node list</var> is the [[nextsibling]] of the last member of
-      <var>sublist</var>, and the last member of <var>sublist</var> and first
-      member of <var>node list</var> are both <span title="inline node">inline
-      nodes</span> that are not [[br]]s, remove the first member from <var>node
-      list</var> and append it to <var>sublist</var>.
+      <li>If the first member of <var>sublist</var> is a [[p]] or [[li]] or
+      [[div]], <span>set the tag name</span> of the first member of
+      <var>sublist</var> to "li", and let <var>li</var> be the result.  Remove
+      the first member of <var>sublist</var>, and append <var>li</var> to
+      <var>sublist</var>.
 
-      <li>Let <var>li</var> be the result of calling <code
-      data-anolis-spec=domcore
-      title=dom-Document-createElement>createElement("li")</code> on the
-      [[ownerdocument]] of the first member of <var>sublist</var>.
+      <li>Otherwise:
+
+      <ol>
+        <li>While <var>node list</var> is not empty, and the first member of
+        <var>node list</var> is the [[nextsibling]] of the last member of
+        <var>sublist</var>, and the last member of <var>sublist</var> and first
+        member of <var>node list</var> are both <span title="inline
+        node">inline nodes</span> that are not [[br]]s, remove the first member
+        from <var>node list</var> and append it to <var>sublist</var>.
+
+        <li>Let <var>li</var> be the result of calling <code
+        data-anolis-spec=domcore
+        title=dom-Document-createElement>createElement("li")</code> on the
+        [[ownerdocument]] of the first member of <var>sublist</var>.
+      </ol>
 
       <li>If the [[nextsibling]] of the last member of <var>sublist</var> is an
       [[ol]]:
 
       <ol>
         <li>Insert <var>li</var> as the first [[child]] of the [[nextsibling]]
-        of the last member of <var>sublist</var>.
+        of the last member of <var>sublist</var>, <span>preserving
+        ranges</span>.
 
-        <li>If the first member of <var>sublist</var> is a [[br]], remove it
-        from <var>sublist</var>.
+        <li>If the first member of <var>sublist</var> is a [[br]] or [[li]],
+        remove it from <var>sublist</var>.
 
         <li>For each <var>node</var> in <var>sublist</var> <em>in reverse
         order</em>, insert <var>node</var> as the first [[child]] of
@@ -2774,10 +2786,11 @@ Sheesh, lists are complicated.
         <var>sublist</var> immediately before the first member of
         <var>sublist</var>.
 
-        <li>Append <var>li</var> as the last [[child]] of <var>ol</var>.
+        <li>Append <var>li</var> as the last [[child]] of <var>ol</var>,
+        <span>preserving ranges</span>.
 
-        <li>If the first member of <var>sublist</var> is a [[br]], remove it
-        from <var>sublist</var>.
+        <li>If the first member of <var>sublist</var> is a [[br]] or [[li]],
+        remove it from <var>sublist</var>.
 
         <li>For each <var>node</var> in <var>sublist</var>, append
         <var>node</var> as the last [[child]] of <var>li</var>,

@@ -27,7 +27,7 @@
 <body class=draft>
 <div class=head id=head>
 <h1>HTML Editing Commands</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-9-may-2011>Work in Progress &mdash; Last Update 9 May 2011</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-10-may-2011>Work in Progress &mdash; Last Update 10 May 2011</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;ayg+spec@aryeh.name&gt;
@@ -2498,6 +2498,62 @@ bullet style throughout, for no particular reason.
   * Does not appear to be possible in Word or OO.
   * Also might be impossible to actually make such a list using execCommand() in browsers.
   * Suffice it to say that there's a lot of variation.
+* In an existing indented region equivalent to foo<blockquote>bar</blockquote>baz:
+  * Select "bar", do "ol":
+    * Word/OO/Firefox/Chrome: Increase indent, add "1".
+    * IE: Increase indent, add "a".
+    * Opera: Add "1" (but do not increase indent).
+  * Select "foobar", do "ol":
+    * Word/IE: Increase indent of both, add "1" before "foo" and "a" before
+      "bar".
+    * OO: Increase indent of "bar" one step, increase indent of "foo" two steps
+      so it's aligned with "bar", add "1" before "foo" and "2" before "bar".
+    * Firefox: Increase indent of both, add "1" before foo", add "2" before
+      "bar" aligned with the "1" of "foo" (so large gap between "2" and "bar").
+    * Chrome: Increase indent of "foo", add "1" before "foo" and "2" before
+      "bar".
+    * Opera: Mash everything together on one line.  But if you do
+      <p>foo</p><blockquote>bar</blockquote><p>baz</p> instead, same as Chrome.
+  * Select "foo" and do "ol", then select "bar" and do "ol":
+    * Word/OO/Firefox/Opera: Different than doing both at once (often in
+      exciting ways).
+    * IE/Chrome: Same as doing both at once.
+* In an existing multi-line indented region equivalent to <blockquote>foo<br>bar<br>baz</blockquote>:
+  * Select "bar", do "ol":
+    * Word/OO/Firefox/Chrome: Increase indent, add "1".
+    * IE: Increase indent of everything, add "a" before "foo".  If you do
+      <blockquote><p>foo<p>bar<p>baz</blockquote>, same as
+      Word/OO/Firefox/Chrome.
+    * Opera: Don't increase indent of anything, add "1" before "bar".
+* In an existing multi-line indented region equivalent to <blockquote>foo<br>bar</blockquote>baz:
+  * Select "barbaz", do "ol":
+    * Word: Indent both, add "a" before "bar" and "2" before "baz".
+    * OO: Indent "baz", add "1" before "bar" and "2" before "baz".
+    * IE: Indent everything, add "a" before "foo" and "1" before "baz".  If you
+      do <blockquote><p>foo<p>bar</blockquote><p>baz, indent "bar" and "baz"
+      and put "1" before each.
+    * Firefox: Indent "bar" and put "1" before it, put "baz" after "bar" on the
+      same line.  If you do <blockquote><p>foo<p>bar</blockquote><p>baz, same
+      as Chrome.
+    * Chrome: Indent "bar" once and "baz" twice, put "1" before "bar" and "2"
+      before "baz".
+    * Opera: Put a "1" before "bar" and move "baz" to the same line.  If you do
+      <blockquote><p>foo<p>bar</blockquote><p>baz, indent "baz", put a "1"
+      before "bar" and a "2" before "baz".
+  * Select "bar", do "ol", then select "baz" and do "ol":
+    * Word/OO/Opera: Different from if you do both together.
+    * IE: Different with <br>, same with <p>.
+    * Firefox: Three behaviors, depending on whether you do it in one step with
+      <br>, one step with <p>, or two steps with either (same behavior
+      regardless with two steps).
+    * Chrome: Same behavior in all four cases.
+* <blockquote>foo<ol><li>bar</ol></blockquote>baz:
+  * Select "baz", do "ol":
+    * Word/OO/Chrome: Add "baz" as a new item to existing list.
+    * IE/Firefox/Opera: Make "baz" its own new list.
+* <ul><li>foo</li><ol><li>bar</li></ol></ul>baz:
+  * Select "baz", do "ol":
+    * IE/Firefox/Chrome/Opera: Separate list.
 
 Ignoring the conceptual model of HTML, which users won't understand, here's the
 conceptual model I've developed for lists: text is divided up into blocks.
@@ -2592,7 +2648,8 @@ Sheesh, lists are complicated.
 
   <li>For each <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> <var title="">node</var> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in <var title="">new range</var>,
   if <var title="">node</var> is <a href=#editable>editable</a>; the last member of <var title="">node
-  list</var> (if any) is not an <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of <var title="">node</var>; and
+  list</var> (if any) is not an <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of <var title="">node</var>;
+  <var title="">node</var> is not a <a href=#potential-indentation-element>potential indentation element</a>; and
   either <var title="">node</var> is an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code> or <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code>, or its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code>
   or <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code>, or it can be the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of an <code class=external data-anolis-spec=html title="the li element"><a href=http://www.whatwg.org/html/#the-li-element>li</a></code>; then append
   <var title="">node</var> to <var title="">node list</var>.
@@ -2689,6 +2746,20 @@ Sheesh, lists are complicated.
     <li>s. -->
 
     <ol>
+      <li>Let <var title="">extra indentation</var> equal 0.
+
+      <li>Let <var title="">ancestor</var> be the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of the first member of
+      <var title="">sublist</var>.
+
+      <li>While <var title="">ancestor</var> is an <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>:
+
+      <ol>
+        <li>If <var title="">ancestor</var> is a <a href=#potential-indentation-element>potential indentation
+        element</a>, increment <var title="">extra indentation</var>.
+
+        <li>Set <var title="">ancestor</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+      </ol>
+
       <li>If the first member of <var title="">sublist</var> is a <code class=external data-anolis-spec=html title="the p element"><a href=http://www.whatwg.org/html/#the-p-element>p</a></code> or <code class=external data-anolis-spec=html title="the li element"><a href=http://www.whatwg.org/html/#the-li-element>li</a></code> or
       <code class=external data-anolis-spec=html title="the div element"><a href=http://www.whatwg.org/html/#the-div-element>div</a></code>, <a href=#set-the-tag-name>set the tag name</a> of the first member of
       <var title="">sublist</var> to "li", and let <var title="">li</var> be the result.  Remove
@@ -2708,6 +2779,10 @@ Sheesh, lists are complicated.
         <li>Let <var title="">li</var> be the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("li")</a></code> on the
         <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of the first member of <var title="">sublist</var>.
       </ol>
+
+      <li>Repeat the following a number of times equal to <var title="">extra
+      indentation</var>: for each <var title="">node</var> in <var title="">sublist</var>,
+      <a href=#outdent>outdent</a> <var title="">node</var>.
 
       <li>If the <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code> of the last member of <var title="">sublist</var> is an
       <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code>:
@@ -2749,6 +2824,10 @@ Sheesh, lists are complicated.
         <a href=#preserving-ranges>preserving ranges</a>.
       </ol>
     </ol>
+
+    <li>Repeat the following a number of times equal to <var title="">extra
+    indentation</var>: <a href=#indent>indent</a> the one-<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> list containing
+    <var title="">li</var>.
 
     <li>If the first member of <var title="">node list</var> is a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code>, remove the
     first member of <var title="">node list</var> from its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>, then remove it
@@ -2915,17 +2994,25 @@ insertOrderedList.
   <li>If <var title="">node</var> is an <a href=#indentation-element>indentation element</a>:
 
   <ol>
-    <li>If <var title="">node</var>'s last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> and <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code> are both
-    <a href=#inline-node title="inline node">inline nodes</a> or its first <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> and
-    <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code> are both <a href=#inline-node title="inline node">inline
-    nodes</a>, unset all attributes of <var title="">node</var>, then <a href=#set-the-tag-name>set the
-    tag name</a> of <var title="">node</var> to "div".
-    <!-- In this case, removing it entirely will result in its first or last
-    child becoming part of the previous or next sibling's line box, so we
-    want to keep a div. -->
+    <li>If <var title="">node</var>'s <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code> and first <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> are both
+    <a href=#inline-node title="inline node">inline nodes</a>, and its <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code>
+    is not a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code>, then call <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("br")</a></code> on the
+    <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">node</var>, and insert the result into
+    <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> immediately before <var title="">node</var>.
 
-    <li>Otherwise, remove <var title="">node</var>, <a href=#preserving-its-descendants>preserving its
-    descendants</a>.
+    <li>If <var title="">node</var>'s last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> and <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code> are both <a href=#inline-node title="inline node">inline nodes</a>, and its last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> is not a
+    <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code>, then call <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("br")</a></code> on the
+    <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">node</var>, and insert the result into
+    <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> immediately after <var title="">node</var>.
+
+    <!-- Just to be pedantic . . . it could happen! -->
+    <li>If <var title="">node</var> has no <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, and its <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code> and
+    <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code> are both <a href=#inline-node title="inline node">inline nodes</a>, and
+    its <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code> is not a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code>, then call <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("br")</a></code> on the
+    <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">node</var>, and insert the result into
+    <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> immediately before <var title="">node</var>.
+
+    <li>Remove <var title="">node</var>, <a href=#preserving-its-descendants>preserving its descendants</a>.
 
     <li>Abort these steps.
   </ol>

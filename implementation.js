@@ -2504,9 +2504,10 @@ function myExecCommand(command, showUI, value, range) {
 		var nodeList = [];
 
 		// "For each node node contained in new range, if node is editable; the
-		// last member of node list (if any) is not an ancestor of node; and
-		// either node is an ol or ul, or its parent is an ol or ul, or it can
-		// be the child of an li; then append node to node list."
+		// last member of node list (if any) is not an ancestor of node; node
+		// is not a potential indentation element; and either node is an ol or
+		// ul, or its parent is an ol or ul, or it can be the child of an li;
+		// then append node to node list."
 		for (
 			var node = newRange.startContainer;
 			node != nextNodeDescendants(newRange.endContainer);
@@ -2515,6 +2516,7 @@ function myExecCommand(command, showUI, value, range) {
 			if (isEditable(node)
 			&& isContained(node, newRange)
 			&& (!nodeList.length || !isAncestor(nodeList[nodeList.length - 1], node))
+			&& !isPotentialIndentationElement(node)
 			&& (isHtmlElement(node, "OL")
 			|| isHtmlElement(node, "UL")
 			|| isHtmlElement(node.parentNode, "OL")
@@ -2632,6 +2634,27 @@ function myExecCommand(command, showUI, value, range) {
 				}
 			// "Otherwise:"
 			} else {
+				// "Let extra indentation equal 0."
+				var extraIndentation = 0;
+
+				// "Let ancestor be the parent of the first member of
+				// sublist."
+				var ancestor = sublist[0].parentNode;
+
+				// "While ancestor is an editable Element:"
+				while (ancestor
+				&& isEditable(ancestor)
+				&& ancestor.nodeType == Node.ELEMENT_NODE) {
+					// "If ancestor is a potential indentation element,
+					// increment extra indentation."
+					if (isPotentialIndentationElement(ancestor)) {
+						extraIndentation++;
+					}
+
+					// "Set ancestor to its parent."
+					var ancestor = ancestor.parentNode;
+				}
+
 				// "If the first member of sublist is a p or li or div, set the
 				// tag name of the first member of sublist to "li", and let li
 				// be the result.  Remove the first member of sublist, and
@@ -2663,6 +2686,14 @@ function myExecCommand(command, showUI, value, range) {
 					// "Let li be the result of calling createElement("li") on
 					// the ownerDocument of the first member of sublist."
 					var li = sublist[0].ownerDocument.createElement("li");
+				}
+
+				// "Repeat the following a number of times equal to extra
+				// indentation: for each node in sublist, outdent node."
+				for (var i = 0; i < extraIndentation; i++) {
+					for (var j = 0; j < sublist.length; j++) {
+						outdentNode(sublist[j]);
+					}
 				}
 
 				// "If the nextSibling of the last member of sublist is an ol:"
@@ -2715,6 +2746,12 @@ function myExecCommand(command, showUI, value, range) {
 						movePreservingRanges(sublist[i], li, li.childNodes.length);
 					}
 				}
+			}
+
+			// "Repeat the following a number of times equal to extra
+			// indentation: indent the one-node list containing li."
+			for (var i = 0; i < extraIndentation; i++) {
+				indentNodes([li]);
 			}
 
 			// "If the first member of node list is a br, remove the first
@@ -3193,21 +3230,39 @@ function outdentNode(node) {
 
 	// "If node is an indentation element:"
 	if (isIndentationElement(node)) {
-		// "If node's last child and nextSibling are both inline nodes or its
-		// first child and previousSibling are both inline nodes, unset all
-		// attributes of node, then set the tag name of node to "div"."
-		if ((isInlineNode(node.lastChild) && isInlineNode(node.nextSibling))
-		|| (isInlineNode(node.firstChild) && isInlineNode(node.previousSibling))) {
-			while (node.attributes.length) {
-				node.removeAttribute(node.attributes[0].name);
-			}
-
-			setTagName(node, "div");
-
-		// "Otherwise, remove node, preserving its descendants."
-		} else {
-			removePreservingDescendants(node);
+		// "If node's previousSibling and first child are both inline nodes,
+		// and its previousSibling is not a br, then call createElement("br")
+		// on the ownerDocument of node, and insert the result into node's
+		// parent immediately before node."
+		if (isInlineNode(node.previousSibling)
+		&& isInlineNode(node.firstChild)
+		&& !isHtmlElement(node.previousSibling, "BR")) {
+			node.parentNode.insertBefore(node.ownerDocument.createElement("br"), node);
 		}
+
+		// "If node's last child and nextSibling are both inline nodes, and its
+		// last child is not a br, then call createElement("br") on the
+		// ownerDocument of node, and insert the result into node's parent
+		// immediately after node."
+		if (isInlineNode(node.lastChild)
+		&& isInlineNode(node.nextSibling)
+		&& !isHtmlElement(node.lastChild, "BR")) {
+			node.parentNode.insertBefore(node.ownerDocument.createElement("br"), node.nextSibling);
+		}
+
+		// "If node has no children, and its previousSibling and nextSibling
+		// are both inline nodes, and its previousSibling is not a br, then
+		// call createElement("br") on the ownerDocument of node, and insert
+		// the result into node's parent immediately before node."
+		if (!node.hasChildNodes()
+		&& isInlineNode(node.previousSibling)
+		&& isInlineNode(node.nextSibling)
+		&& !isHtmlElement(node.previousSibling, "BR")) {
+			node.parentNode.insertBefore(node.ownerDocument.createElement("br"), node);
+		}
+
+		// "Remove node, preserving its descendants."
+		removePreservingDescendants(node);
 
 		// "Abort these steps."
 		return;

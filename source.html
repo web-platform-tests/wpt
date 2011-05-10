@@ -2541,6 +2541,62 @@ bullet style throughout, for no particular reason.
   * Does not appear to be possible in Word or OO.
   * Also might be impossible to actually make such a list using execCommand() in browsers.
   * Suffice it to say that there's a lot of variation.
+* In an existing indented region equivalent to foo<blockquote>bar</blockquote>baz:
+  * Select "bar", do "ol":
+    * Word/OO/Firefox/Chrome: Increase indent, add "1".
+    * IE: Increase indent, add "a".
+    * Opera: Add "1" (but do not increase indent).
+  * Select "foobar", do "ol":
+    * Word/IE: Increase indent of both, add "1" before "foo" and "a" before
+      "bar".
+    * OO: Increase indent of "bar" one step, increase indent of "foo" two steps
+      so it's aligned with "bar", add "1" before "foo" and "2" before "bar".
+    * Firefox: Increase indent of both, add "1" before foo", add "2" before
+      "bar" aligned with the "1" of "foo" (so large gap between "2" and "bar").
+    * Chrome: Increase indent of "foo", add "1" before "foo" and "2" before
+      "bar".
+    * Opera: Mash everything together on one line.  But if you do
+      <p>foo</p><blockquote>bar</blockquote><p>baz</p> instead, same as Chrome.
+  * Select "foo" and do "ol", then select "bar" and do "ol":
+    * Word/OO/Firefox/Opera: Different than doing both at once (often in
+      exciting ways).
+    * IE/Chrome: Same as doing both at once.
+* In an existing multi-line indented region equivalent to <blockquote>foo<br>bar<br>baz</blockquote>:
+  * Select "bar", do "ol":
+    * Word/OO/Firefox/Chrome: Increase indent, add "1".
+    * IE: Increase indent of everything, add "a" before "foo".  If you do
+      <blockquote><p>foo<p>bar<p>baz</blockquote>, same as
+      Word/OO/Firefox/Chrome.
+    * Opera: Don't increase indent of anything, add "1" before "bar".
+* In an existing multi-line indented region equivalent to <blockquote>foo<br>bar</blockquote>baz:
+  * Select "barbaz", do "ol":
+    * Word: Indent both, add "a" before "bar" and "2" before "baz".
+    * OO: Indent "baz", add "1" before "bar" and "2" before "baz".
+    * IE: Indent everything, add "a" before "foo" and "1" before "baz".  If you
+      do <blockquote><p>foo<p>bar</blockquote><p>baz, indent "bar" and "baz"
+      and put "1" before each.
+    * Firefox: Indent "bar" and put "1" before it, put "baz" after "bar" on the
+      same line.  If you do <blockquote><p>foo<p>bar</blockquote><p>baz, same
+      as Chrome.
+    * Chrome: Indent "bar" once and "baz" twice, put "1" before "bar" and "2"
+      before "baz".
+    * Opera: Put a "1" before "bar" and move "baz" to the same line.  If you do
+      <blockquote><p>foo<p>bar</blockquote><p>baz, indent "baz", put a "1"
+      before "bar" and a "2" before "baz".
+  * Select "bar", do "ol", then select "baz" and do "ol":
+    * Word/OO/Opera: Different from if you do both together.
+    * IE: Different with <br>, same with <p>.
+    * Firefox: Three behaviors, depending on whether you do it in one step with
+      <br>, one step with <p>, or two steps with either (same behavior
+      regardless with two steps).
+    * Chrome: Same behavior in all four cases.
+* <blockquote>foo<ol><li>bar</ol></blockquote>baz:
+  * Select "baz", do "ol":
+    * Word/OO/Chrome: Add "baz" as a new item to existing list.
+    * IE/Firefox/Opera: Make "baz" its own new list.
+* <ul><li>foo</li><ol><li>bar</li></ol></ul>baz:
+  * Select "baz", do "ol":
+    * IE/Firefox/Chrome/Opera: Separate list.
 
 Ignoring the conceptual model of HTML, which users won't understand, here's the
 conceptual model I've developed for lists: text is divided up into blocks.
@@ -2635,7 +2691,8 @@ Sheesh, lists are complicated.
 
   <li>For each [[node]] <var>node</var> [[contained]] in <var>new range</var>,
   if <var>node</var> is <span>editable</span>; the last member of <var>node
-  list</var> (if any) is not an [[ancestor]] of <var>node</var>; and
+  list</var> (if any) is not an [[ancestor]] of <var>node</var>;
+  <var>node</var> is not a <span>potential indentation element</span>; and
   either <var>node</var> is an [[ol]] or [[ul]], or its [[parent]] is an [[ol]]
   or [[ul]], or it can be the [[child]] of an [[li]]; then append
   <var>node</var> to <var>node list</var>.
@@ -2734,6 +2791,20 @@ Sheesh, lists are complicated.
     <li>s. -->
 
     <ol>
+      <li>Let <var>extra indentation</var> equal 0.
+
+      <li>Let <var>ancestor</var> be the [[parent]] of the first member of
+      <var>sublist</var>.
+
+      <li>While <var>ancestor</var> is an <span>editable</span> [[element]]:
+
+      <ol>
+        <li>If <var>ancestor</var> is a <span>potential indentation
+        element</span>, increment <var>extra indentation</var>.
+
+        <li>Set <var>ancestor</var> to its [[parent]].
+      </ol>
+
       <li>If the first member of <var>sublist</var> is a [[p]] or [[li]] or
       [[div]], <span>set the tag name</span> of the first member of
       <var>sublist</var> to "li", and let <var>li</var> be the result.  Remove
@@ -2755,6 +2826,10 @@ Sheesh, lists are complicated.
         title=dom-Document-createElement>createElement("li")</code> on the
         [[ownerdocument]] of the first member of <var>sublist</var>.
       </ol>
+
+      <li>Repeat the following a number of times equal to <var>extra
+      indentation</var>: for each <var>node</var> in <var>sublist</var>,
+      <span>outdent</span> <var>node</var>.
 
       <li>If the [[nextsibling]] of the last member of <var>sublist</var> is an
       [[ol]]:
@@ -2797,6 +2872,10 @@ Sheesh, lists are complicated.
         <span>preserving ranges</span>.
       </ol>
     </ol>
+
+    <li>Repeat the following a number of times equal to <var>extra
+    indentation</var>: <span>indent</span> the one-[[node]] list containing
+    <var>li</var>.
 
     <li>If the first member of <var>node list</var> is a [[br]], remove the
     first member of <var>node list</var> from its [[parent]], then remove it
@@ -2967,17 +3046,30 @@ insertOrderedList.
   <li>If <var>node</var> is an <span>indentation element</span>:
 
   <ol>
-    <li>If <var>node</var>'s last [[child]] and [[nextsibling]] are both
-    <span title="inline node">inline nodes</span> or its first [[child]] and
-    [[previoussibling]] are both <span title="inline node">inline
-    nodes</span>, unset all attributes of <var>node</var>, then <span>set the
-    tag name</span> of <var>node</var> to "div".
-    <!-- In this case, removing it entirely will result in its first or last
-    child becoming part of the previous or next sibling's line box, so we
-    want to keep a div. -->
+    <li>If <var>node</var>'s [[previoussibling]] and first [[child]] are both
+    <span title="inline node">inline nodes</span>, and its [[previoussibling]]
+    is not a [[br]], then call <code data-anolis-spec=domcore
+    title=dom-Document-createElement>createElement("br")</code> on the
+    [[ownerdocument]] of <var>node</var>, and insert the result into
+    <var>node</var>'s [[parent]] immediately before <var>node</var>.
 
-    <li>Otherwise, remove <var>node</var>, <span>preserving its
-    descendants</span>.
+    <li>If <var>node</var>'s last [[child]] and [[nextsibling]] are both <span
+    title="inline node">inline nodes</span>, and its last [[child]] is not a
+    [[br]], then call <code data-anolis-spec=domcore
+    title=dom-Document-createElement>createElement("br")</code> on the
+    [[ownerdocument]] of <var>node</var>, and insert the result into
+    <var>node</var>'s [[parent]] immediately after <var>node</var>.
+
+    <!-- Just to be pedantic . . . it could happen! -->
+    <li>If <var>node</var> has no [[children]], and its [[previoussibling]] and
+    [[nextsibling]] are both <span title="inline node">inline nodes</span>, and
+    its [[previoussibling]] is not a [[br]], then call <code
+    data-anolis-spec=domcore
+    title=dom-Document-createElement>createElement("br")</code> on the
+    [[ownerdocument]] of <var>node</var>, and insert the result into
+    <var>node</var>'s [[parent]] immediately before <var>node</var>.
+
+    <li>Remove <var>node</var>, <span>preserving its descendants</span>.
 
     <li>Abort these steps.
   </ol>

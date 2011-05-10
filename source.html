@@ -263,6 +263,23 @@ descendants</dfn>:
   parent</var>, <span>preserving ranges</span>.
 </ol>
 
+<p>To <dfn>remove extraneous line breaks</dfn> from a [[node]] <var>node</var>:
+
+<ol>
+  <li>If <var>node</var> is not an [[element]], or it is an <span>inline
+  node</span>, do nothing and abort these steps.
+
+  <li>If the [[previoussibling]] of <var>node</var> is a [[br]], and the
+  [[previoussibling]] of the [[previoussibling]] of <var>node</var> is an
+  <span>inline node</span> that is not a [[br]], remove the [[previoussibling]]
+  of <var>node</var> from its [[parent]].
+
+  <li>If <var>node</var> has at least two [[children]], and its last [[child]]
+  is a [[br]], and its second-to-last [[child]] is an <span>inline node</span>
+  that is not a [[br]], remove the last [[child]] of <var>node</var> from
+  <var>node</var>.
+</ol>
+
 <p>An <dfn>editing host</dfn> is a [[node]] that is either an [[element]] with
 a <code data-anolis-spec=html title=attr-contenteditable>contenteditable</code>
 attribute set to the true state, or a [[document]] whose <code
@@ -720,8 +737,8 @@ confronted with this kind of nesting.)
 
     <li>Otherwise, if the [[child]] of <var>start node</var> with [[index]]
     <var>start offset</var> and its [[previoussibling]] are both <span
-    title="inline node">inline nodes</span> and neither is a [[br]], subtract
-    one from <var>start offset</var>.
+    title="inline node">inline nodes</span> and the [[previoussibling]] isn't a
+    [[br]], subtract one from <var>start offset</var>.
     <!-- IE also includes <br> (at least for the purposes of the indent
     command), but this is unlikely to match user expectations. -->
 
@@ -749,11 +766,19 @@ confronted with this kind of nesting.)
 
     <li>Otherwise, if the [[child]] of <var>end node</var> with [[index]]
     <var>end offset</var> and its [[previoussibling]] are both <span
-    title="inline node">inline nodes</span> and neither is a [[br]], add one to
+    title="inline node">inline nodes</span>, and the [[child]] of <var>end
+    node</var> with [[index]] <var>end offset</var> isn't a [[br]], add one to
     <var>end offset</var>.
 
     <li>Otherwise, break from this loop.
   </ol>
+
+  <li>If the [[child]] of <var>end node</var> with [[index]] <var>end
+  offset</var> is a [[br]], add one to <var>end offset</var>.
+
+  <li>While <var>end offset</var> is equal to the [[nodelength]] of <var>end
+  node</var>, set <var>end offset</var> to one plus the [[index]] of <var>end
+  node</var> and then set <var>end node</var> to its [[parent]].
 
   <li>Let <var>new range</var> be a new [[range]] whose [[rangestart]] and
   [[rangeend]] [[bpnodes]] and [[bpoffsets]] are <var>start node</var>,
@@ -2026,29 +2051,6 @@ fragments, html/body, head or things in head . . .
   <li><span>Block-extend</span> the [[range]], and let <var>new range</var> be
   the result.
 
-  <!-- If the first line box in a block box starts with a non-preserved line
-  break, the line break will create an empty line box.  If the last line box in
-  a block box ends with a non-preserved line break, however, it will not create
-  an extra line box.  This means that if you have foo<br>bar, there will be no
-  empty line in between, but if you change it to <div>foo</div><br>bar, you've
-  created an extra line.  Chrome 12 dev thus deletes a <br> that immediately
-  follows a <blockquote> it creates.  Firefox 4.0 and Opera 11.00 instead just
-  includes it in the blockquote, so it has no effect.  The issue doesn't come
-  up for IE9, since it indents the whole block and doesn't treat <br>
-  differently from other inline elements.  I follow WebKit because it produces
-  slightly neater markup. -->
-  <li>If the [[child]] of <var>new range</var>'s [[rangeend]] [[bpnode]] with
-  [[index]] equal to its [[rangeend]] [[bpoffset]] is a [[br]]:
-
-  <ol>
-    <li>Remove that [[br]] from its [[parent]].
-
-    <li>While the [[rangeend]] [[bpoffset]] of <var>new range</var> is equal to
-    the [[nodelength]] of its [[rangeend]] [[bpnode]], set the [[rangeend]] of
-    <var>new range</var> to ([[parent]] of [[rangeend]] [[bpnode]], 1 +
-    [[index]] of [[rangeend]] [[bpnode]]).
-  </ol>
-
   <li>Let <var>node list</var> be a list of [[nodes]], initially empty.
 
   <li>For each [[node]] <var>node</var> [[contained]] in <var>new range</var>,
@@ -2169,6 +2171,8 @@ won't remember that we aren't supposed to indent "foo" a second time.
   the last [[child]] of its [[previoussibling]], <span>preserving
   ranges</span>.  Then abort these steps.
 
+  <p class=XXX>This might put things on the same line when they shouldn't be.
+
   <li>If the [[nextsibling]] of the last member of <var>node list</var> is an
   <span>indentation element</span>; its "display" property computes to "block";
   its "margin-left" and "margin-right" properties compute to "40px"; and its
@@ -2217,6 +2221,8 @@ won't remember that we aren't supposed to indent "foo" a second time.
   <li>For each <var>node</var> in <var>node list</var>, append <var>node</var>
   as the last [[child]] of <var>new parent</var>, <span>preserving
   ranges</span>.
+
+  <li><span>Remove extraneous line breaks</span> from <var>new parent</var>.
 </ol>
 
 <dd><strong>State</strong>:
@@ -2675,18 +2681,6 @@ Sheesh, lists are complicated.
   <li><span>Block-extend</span> the [[range]], and let <var>new range</var> be
   the result.
 
-  <li>If the [[child]] of <var>new range</var>'s [[rangeend]] [[bpnode]] with
-  [[index]] equal to its [[rangeend]] [[bpoffset]] is a [[br]]:
-
-  <ol>
-    <li>Remove that [[br]] from its [[parent]].
-
-    <li>While the [[rangeend]] [[bpoffset]] of <var>new range</var> is equal to
-    the [[nodelength]] of its [[rangeend]] [[bpnode]], set the [[rangeend]] of
-    <var>new range</var> to ([[parent]] of [[rangeend]] [[bpnode]], 1 +
-    [[index]] of [[rangeend]] [[bpnode]]).
-  </ol>
-
   <li>Let <var>node list</var> be a list of [[nodes]], initially empty.
 
   <li>For each [[node]] <var>node</var> [[contained]] in <var>new range</var>,
@@ -2702,13 +2696,8 @@ Sheesh, lists are complicated.
   <ol>
     <li>Let <var>sublist</var> be an empty list of [[nodes]].
 
-    <li>If the first member of <var>node list</var> is a [[br]], append it to
-    <var>sublist</var> (without removing it from <var>node list</var>).
-    <!-- It will be removed later, since in every pass we get rid of the first
-    member of node list if it's a br. -->
-
-    <li>Otherwise, remove the first member of <var>node list</var> and append
-    it to <var>sublist</var>.
+    <li>Remove the first member of <var>node list</var> and append it to
+    <var>sublist</var>.
 
     <li>If the first member of <var>sublist</var> is an [[ol]],
     <span>outdent</span> it.
@@ -2818,8 +2807,9 @@ Sheesh, lists are complicated.
         <var>node list</var> is the [[nextsibling]] of the last member of
         <var>sublist</var>, and the last member of <var>sublist</var> and first
         member of <var>node list</var> are both <span title="inline
-        node">inline nodes</span> that are not [[br]]s, remove the first member
-        from <var>node list</var> and append it to <var>sublist</var>.
+        node">inline nodes</span>, and the last member of <var>sublist</var> is
+        not a [[br]], remove the first member from <var>node list</var> and
+        append it to <var>sublist</var>.
 
         <li>Let <var>li</var> be the result of calling <code
         data-anolis-spec=domcore
@@ -2831,6 +2821,11 @@ Sheesh, lists are complicated.
       indentation</var>: for each <var>node</var> in <var>sublist</var>,
       <span>outdent</span> <var>node</var>.
 
+      <!-- That might have created an extra <br> at some point. -->
+      <li>If the last member of <var>sublist</var> is not a [[br]] but its
+      [[nextsibling]] is, append the [[nextsibling]] of the last member of
+      <var>sublist</var> to <var>sublist</var>.
+
       <li>If the [[nextsibling]] of the last member of <var>sublist</var> is an
       [[ol]]:
 
@@ -2839,8 +2834,8 @@ Sheesh, lists are complicated.
         of the last member of <var>sublist</var>, <span>preserving
         ranges</span>.
 
-        <li>If the first member of <var>sublist</var> is a [[br]] or [[li]],
-        remove it from <var>sublist</var>.
+        <li>If the first member of <var>sublist</var> is an [[li]], remove it
+        from <var>sublist</var>.
 
         <li>For each <var>node</var> in <var>sublist</var> <em>in reverse
         order</em>, insert <var>node</var> as the first [[child]] of
@@ -2864,8 +2859,8 @@ Sheesh, lists are complicated.
         <li>Append <var>li</var> as the last [[child]] of <var>ol</var>,
         <span>preserving ranges</span>.
 
-        <li>If the first member of <var>sublist</var> is a [[br]] or [[li]],
-        remove it from <var>sublist</var>.
+        <li>If the first member of <var>sublist</var> is an [[li]], remove it
+        from <var>sublist</var>.
 
         <li>For each <var>node</var> in <var>sublist</var>, append
         <var>node</var> as the last [[child]] of <var>li</var>,
@@ -2873,13 +2868,13 @@ Sheesh, lists are complicated.
       </ol>
     </ol>
 
+    <li><span>Remove extraneous line breaks</span> from <var>ol</var>.
+
+    <li><span>Remove extraneous line breaks</span> from <var>li</var>.
+
     <li>Repeat the following a number of times equal to <var>extra
     indentation</var>: <span>indent</span> the one-[[node]] list containing
     <var>li</var>.
-
-    <li>If the first member of <var>node list</var> is a [[br]], remove the
-    first member of <var>node list</var> from its [[parent]], then remove it
-    from <var>node list</var>.
   </ol>
 </ol>
 
@@ -3172,6 +3167,10 @@ insertOrderedList.
     <li>Let <var>target</var> be the [[child]] of <var>current ancestor</var>
     that is equal to either <var>node</var> or the last member of <var>ancestor
     list</var>.
+
+    <li>If <var>target</var> is an <span>inline node</span> that is not a
+    [[br]], and its [[nextsibling]] is a [[br]], remove <var>target</var>'s
+    [[nextsibling]] from its [[parent]].
 
     <li>Let <var>preceding siblings</var> be the [[precedingsiblings]] of
     <var>target</var>, and let <var>following siblings</var> be the

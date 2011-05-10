@@ -432,6 +432,35 @@ function splitParent(node) {
 	}
 }
 
+function removeExtraneousLineBreaks(node) {
+	// "If node is not an Element, or it is an inline node, do nothing and
+	// abort these steps."
+	if (!node
+	|| node.nodeType != Node.ELEMENT_NODE
+	|| isInlineNode(node)) {
+		return;
+	}
+
+	// "If the previousSibling of node is a br, and the previousSibling of the
+	// previousSibling of node is an inline node that is not a br, remove the
+	// previousSibling of node from its parent."
+	if (isHtmlElement(node.previousSibling, "BR")
+	&& isInlineNode(node.previousSibling.previousSibling)
+	&& !isHtmlElement(node.previousSibling.previousSibling, "BR")) {
+		node.parentNode.removeChild(node.previousSibling);
+	}
+
+	// "If node has at least two children, and its last child is a br, and its
+	// second-to-last child is an inline node that is not a br, remove the last
+	// child of node from node."
+	if (node.childNodes.length >= 2
+	&& isHtmlElement(node.lastChild, "BR")
+	&& isInlineNode(node.lastChild.previousSibling)
+	&& !isHtmlElement(node.lastChild.previousSibling, "BR")) {
+		node.removeChild(node.lastChild);
+	}
+}
+
 // "An editing host is a node that is either an Element with a contenteditable
 // attribute set to the true state, or a Document whose designMode is enabled."
 function isEditingHost(node) {
@@ -1226,17 +1255,11 @@ function blockExtendRange(range) {
 			startNode = startNode.parentNode;
 
 		// "Otherwise, if the child of start node with index start offset and
-		// its previousSibling are both inline nodes and neither is a br,
-		// subtract one from start offset."
+		// its previousSibling are both inline nodes and the previousSibling
+		// isn't a br, subtract one from start offset."
 		} else if (isInlineNode(startNode.childNodes[startOffset])
 		&& isInlineNode(startNode.childNodes[startOffset].previousSibling)
-		&& (
-			!isHtmlElement(startNode.childNodes[startOffset])
-			|| startNode.childNodes[startOffset].tagName != "BR"
-		) && (
-			!isHtmlElement(startNode.childNodes[startOffset].previousSibling)
-			|| startNode.childNodes[startOffset].previousSibling.tagName != "BR"
-		)) {
+		&& !isHtmlElement(startNode.childNodes[startOffset].previousSibling, "BR")) {
 			startOffset--;
 
 		// "Otherwise, break from this loop."
@@ -1278,23 +1301,30 @@ function blockExtendRange(range) {
 			endNode = endNode.parentNode;
 
 		// "Otherwise, if the child of end node with index end offset and its
-		// previousSibling are both inline nodes and neither is a br, add one
-		// to end offset."
+		// previousSibling are both inline nodes, and the child of end node
+		// with index end offset isn't a br, add one to end offset."
 		} else if (isInlineNode(endNode.childNodes[endOffset])
 		&& isInlineNode(endNode.childNodes[endOffset].previousSibling)
-		&& (
-			!isHtmlElement(endNode.childNodes[endOffset])
-			|| endNode.childNodes[endOffset].tagName != "BR"
-		) && (
-			!isHtmlElement(endNode.childNodes[endOffset].previousSibling)
-			|| endNode.childNodes[endOffset].previousSibling.tagName != "BR"
-		)) {
+		&& !isHtmlElement(endNode.childNodes[endOffset], "BR")) {
 			endOffset++;
 
 		// "Otherwise, break from this loop."
 		} else {
 			break;
 		}
+	}
+
+	// "If the child of end node with index end offset is a br, add one to end
+	// offset."
+	if (isHtmlElement(endNode.childNodes[endOffset], "BR")) {
+		endOffset++;
+	}
+
+	// "While end offset is equal to the length of end node, set end offset to
+	// one plus the index of end node and then set end node to its parent."
+	while (endOffset == getNodeLength(endNode)) {
+		endOffset = 1 + getNodeIndex(endNode);
+		endNode = endNode.parentNode;
 	}
 
 	// "Let new range be a new range whose start and end nodes and offsets
@@ -2241,21 +2271,6 @@ function myExecCommand(command, showUI, value, range) {
 		// "Block-extend the range, and let new range be the result."
 		var newRange = blockExtendRange(range);
 
-		// "If the child of new range's end node with index equal to its end
-		// offset is a br:"
-		var end = newRange.endContainer.childNodes[newRange.endOffset];
-		if (isHtmlElement(end) && end.tagName == "BR") {
-			// "Remove that br from its parent."
-			end.parentNode.removeChild(end);
-
-			// "While the end offset of new range is equal to the length of its
-			// end node, set the end of new range to (parent of end node, 1 +
-			// index of end node)."
-			while (newRange.endOffset == getNodeLength(newRange.endContainer)) {
-				newRange.setEnd(newRange.endContainer.parentNode, 1 + getNodeIndex(newRange.endContainer));
-			}
-		}
-
 		// "Let node list be a list of nodes, initially empty."
 		var nodeList = [];
 
@@ -2485,21 +2500,6 @@ function myExecCommand(command, showUI, value, range) {
 		// "Block-extend the range, and let new range be the result."
 		var newRange = blockExtendRange(range);
 
-		// "If the child of new range's end node with index equal to its end
-		// offset is a br:"
-		var end = newRange.endContainer.childNodes[newRange.endOffset];
-		if (isHtmlElement(end) && end.tagName == "BR") {
-			// "Remove that br from its parent."
-			end.parentNode.removeChild(end);
-
-			// "While the end offset of new range is equal to the length of its
-			// end node, set the end of new range to (parent of end node, 1 +
-			// index of end node)."
-			while (newRange.endOffset == getNodeLength(newRange.endContainer)) {
-				newRange.setEnd(newRange.endContainer.parentNode, 1 + getNodeIndex(newRange.endContainer));
-			}
-		}
-
 		// "Let node list be a list of nodes, initially empty."
 		var nodeList = [];
 
@@ -2534,15 +2534,8 @@ function myExecCommand(command, showUI, value, range) {
 			// "Let sublist be an empty list of nodes."
 			var sublist = [];
 
-			// "If the first member of node list is a br, append it to sublist
-			// (without removing it from node list)."
-			if (isHtmlElement(nodeList[0], "BR")) {
-				sublist.push(nodeList[0]);
-
-			// "Otherwise, remove the first member of node list and append it to sublist."
-			} else {
-				sublist.push(nodeList.shift());
-			}
+			// "Remove the first member of node list and append it to sublist."
+			sublist.push(nodeList.shift());
 
 			// "If the first member of sublist is an ol, outdent it."
 			if (isHtmlElement(sublist[0], "OL")) {
@@ -2671,14 +2664,13 @@ function myExecCommand(command, showUI, value, range) {
 					// "While node list is not empty, and the first member of
 					// node list is the nextSibling of the last member of
 					// sublist, and the last member of sublist and first member
-					// of node list are both inline nodes that are not brs,
-					// remove the first member from node list and append it to
-					// sublist."
+					// of node list are both inline nodes, and the last member
+					// of sublist is not a br, remove the first member from
+					// node list and append it to sublist."
 					while (nodeList.length
 					&& nodeList[0] == sublist[sublist.length -1].nextSibling
 					&& isInlineNode(nodeList[0])
 					&& isInlineNode(sublist[sublist.length -1])
-					&& !isHtmlElement(nodeList[0], "BR")
 					&& !isHtmlElement(sublist[sublist.length -1], "BR")) {
 						sublist.push(nodeList.shift());
 					}
@@ -2696,16 +2688,23 @@ function myExecCommand(command, showUI, value, range) {
 					}
 				}
 
+				// "If the last member of sublist is not a br but its
+				// nextSibling is, append the nextSibling of the last member of
+				// sublist to sublist."
+				if (!isHtmlElement(sublist[sublist.length - 1], "BR")
+				&& isHtmlElement(sublist[sublist.length - 1].nextSibling, "BR")) {
+					sublist.push(sublist[sublist.length - 1].nextSibling);
+				}
+
 				// "If the nextSibling of the last member of sublist is an ol:"
 				if (isHtmlElement(sublist[sublist.length - 1].nextSibling, "OL")) {
 					// "Insert li as the first child of the nextSibling of the
 					// last member of sublist, preserving ranges."
 					movePreservingRanges(li, sublist[sublist.length - 1].nextSibling, 0);
 
-					// "If the first member of sublist is a br or li, remove it
-					// from sublist."
-					if (isHtmlElement(sublist[0], "BR")
-					|| isHtmlElement(sublist[0], "LI")) {
+					// "If the first member of sublist is an li, remove it from
+					// sublist."
+					if (isHtmlElement(sublist[0], "LI")) {
 						sublist.shift();
 					}
 
@@ -2733,10 +2732,9 @@ function myExecCommand(command, showUI, value, range) {
 					// "Append li as the last child of ol, preserving ranges."
 					movePreservingRanges(li, ol, ol.childNodes.length);
 
-					// "If the first member of sublist is a br or li, remove it
-					// from sublist."
-					if (isHtmlElement(sublist[0], "BR")
-					|| isHtmlElement(sublist[0], "LI")) {
+					// "If the first member of sublist is an li, remove it from
+					// sublist."
+					if (isHtmlElement(sublist[0], "LI")) {
 						sublist.shift();
 					}
 
@@ -2748,18 +2746,16 @@ function myExecCommand(command, showUI, value, range) {
 				}
 			}
 
+			// "Remove extraneous line breaks from ol."
+			removeExtraneousLineBreaks(ol);
+
+			// "Remove extraneous line breaks from li."
+			removeExtraneousLineBreaks(li);
+
 			// "Repeat the following a number of times equal to extra
 			// indentation: indent the one-node list containing li."
 			for (var i = 0; i < extraIndentation; i++) {
 				indentNodes([li]);
-			}
-
-			// "If the first member of node list is a br, remove the first
-			// member of node list from its parent, then remove it from node
-			// list."
-			if (isHtmlElement(nodeList[0], "BR")) {
-				nodeList[0].parentNode.removeChild(nodeList[0]);
-				nodeList.shift();
 			}
 		}
 		break;
@@ -3159,6 +3155,9 @@ function indentNodes(nodeList) {
 	for (var i = 0; i < nodeList.length; i++) {
 		movePreservingRanges(nodeList[i], newParent, newParent.childNodes.length);
 	}
+
+	// "Remove extraneous line breaks from new parent."
+	removeExtraneousLineBreaks(newParent);
 }
 
 function outdentNode(node) {
@@ -3350,6 +3349,14 @@ function outdentNode(node) {
 		var target = node.parentNode == currentAncestor
 			? node
 			: ancestorList[ancestorList.length - 1];
+
+		// "If target is an inline node that is not a br, and its nextSibling
+		// is a br, remove target's nextSibling from its parent."
+		if (isInlineNode(target)
+		&& !isHtmlElement(target, "BR")
+		&& isHtmlElement(target.nextSibling, "BR")) {
+			target.parentNode.removeChild(target.nextSibling);
+		}
 
 		// "Let preceding siblings be the preceding siblings of target, and let
 		// following siblings be the following siblings of target."

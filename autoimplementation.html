@@ -1433,8 +1433,8 @@ function doSpecCell(tr, test, command, styleWithCss) {
 		specCell.firstChild.removeAttribute("spellcheck");
 		specCell.lastChild.style.color = "red";
 		specCell.lastChild.style.fontWeight = "bold";
-		specCell.lastChild.textContent = "Note, exception: " + e;
-		if ("stack" in e) {
+		specCell.lastChild.textContent = "Exception: " + e;
+		if (typeof e == "object" && "stack" in e) {
 			specCell.lastChild.textContent += " (stack: " + e.stack + ")";
 		}
 
@@ -1454,7 +1454,7 @@ function doSpecCell(tr, test, command, styleWithCss) {
 		specCell.lastChild.appendChild(document.createElement("div"));
 		specCell.lastChild.lastChild.style.color = "red";
 		specCell.lastChild.lastChild.style.fontWeight = "bold";
-		specCell.lastChild.lastChild.textContent = "Note, last run produced different markup: " + oldValue;
+		specCell.lastChild.lastChild.textContent = "Last run produced different markup: " + oldValue;
 
 		var button = document.createElement("button");
 		specCell.lastChild.lastChild.appendChild(button);
@@ -1523,7 +1523,7 @@ function doBrowserCell(tr, test, command, styleWithCss) {
 		browserCell.lastChild.style.color = "red";
 		browserCell.lastChild.style.fontWeight = "bold";
 		browserCell.lastChild.textContent = "Exception: " + e;
-		if ("stack" in e) {
+		if (typeof e == "object" && "stack" in e) {
 			specCell.lastChild.textContent += " (stack: " + e.stack + ")";
 		}
 		if (testDiv && testDiv.parentNode != browserCell) {
@@ -1602,24 +1602,29 @@ function doTearDown(command) {
 }
 
 function setupCell(cell, test) {
-	// A variety of checks to avoid simple errors.  Not foolproof, of course.
-	var startMarkers = /\{|\[|data-start/.exec(test);
-	if (!startMarkers) {
-		startMarkers = [];
-	}
-	if (startMarkers.length != 1) {
-		throw "Need exactly one start marker ([ or { or data-start), found " + startMarkers.length;
-	}
-
-	var endMarkers = /\}|\]|data-end/.exec(test);
-	if (!endMarkers) {
-		endMarkers = [];
-	}
-	if (endMarkers.length != 1) {
-		throw "Need exactly one end marker (] or } or data-end), found " + endMarkers.length;
-	}
-
 	cell.innerHTML = "<div></div><div></div>";
+
+	// A variety of checks to avoid simple errors.  Not foolproof, of course.
+	var re = /\{|\[|data-start/g;
+	var markers = [];
+	var marker;
+	while (marker = re.exec(test)) {
+		markers.push(marker);
+	}
+	if (markers.length != 1) {
+		throw "Need exactly one start marker ([ or { or data-start), found " + markers.length;
+	}
+
+	var re = /\}|\]|data-end/g;
+	var markers = [];
+	var marker;
+	while (marker = re.exec(test)) {
+		markers.push(marker);
+	}
+	if (markers.length != 1) {
+		throw "Need exactly one end marker (] or } or data-end), found " + markers.length;
+	}
+
 	var node = cell.firstChild;
 	node.innerHTML = test;
 

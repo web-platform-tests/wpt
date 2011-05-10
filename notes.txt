@@ -2,6 +2,9 @@
 
 vBulletin (http://www.vbulletin.com/forum/clientscript/vbulletin_textedit.js):
 
+* Link given now actually goes to a copy of CKEditor, since they realized
+  rolling their own editor wasn't a good idea.  This applies more to older
+  versions.
 * Lots and lots and lots of browser sniffing.  Only appears to support IE,
   Firefox, Opera.
 * Forces CSS mode off: if (is_moz) this.editdoc.execCommand('useCSS', false, true);
@@ -29,6 +32,8 @@ vBulletin (http://www.vbulletin.com/forum/clientscript/vbulletin_textedit.js):
   only the empty string and null, but also translates rgb() syntax to #xxxxxx
   syntax ("translate_silly_hex()").  This one seems to be used only for setting
   id's, though.
+* Sets p { margin: 0 } somewhere for the editable document, presumably to
+  account for IE and Opera.
 
 jwysiwyg (https://github.com/akzhan/jwysiwyg):
 

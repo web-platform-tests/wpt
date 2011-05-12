@@ -647,7 +647,7 @@ title>splitText()</code>.
 
 
 <h2>Normalizing sublists of a list item</h2>
-<p>When a user agent is to <dfn>normalize sublists</dfn> in an [[li]]
+<p>When a user agent is to <dfn>normalize sublists</dfn> in a [[node]]
 <var>item</var>, it must run the following steps:
 <!--
 This algorithm implies that we don't support a sublist in the middle of an
@@ -670,8 +670,8 @@ confronted with this kind of nesting.)
 -->
 
 <ol>
-  <li>If <var>item</var> is not <span>editable</span> or its [[parent]] is not
-  <span>editable</span>, abort these steps.
+  <li>If <var>item</var> is not an [[li]] or it is not <span>editable</span> or
+  its [[parent]] is not <span>editable</span>, abort these steps.
 
   <li>Let <var>new item</var> be null.
 
@@ -2577,6 +2577,16 @@ bullet style throughout, for no particular reason.
     * Word/OO/Firefox/Opera: Different than doing both at once (often in
       exciting ways).
     * IE/Chrome: Same as doing both at once.
+* <p>foo</p><blockquote><p>bar</p><p>baz</p></blockquote>
+  * Select "foobar" and do "ol":
+    * Word: One-item list with sublist.
+    * OO/Firefox/Chrome/Opera: One two-item list, unindented.
+    * IE9: Two one-item lists.
+  * Select "foo", do "ol", then select "bar" and do "ol":
+    * Word/OO/Chrome: One two-item list, unindented.
+    * IE9/Firefox: Two one-item lists.
+    * Opera: Two one-item lists, both unindented.
+  * Desired behavior: One-item list with sublist in both cases.
 * In an existing multi-line indented region equivalent to <blockquote>foo<br>bar<br>baz</blockquote>:
   * Select "bar", do "ol":
     * Word/OO/Firefox/Chrome: Increase indent, add "1".
@@ -2700,6 +2710,25 @@ Sheesh, lists are complicated.
   either <var>node</var> is an [[ol]] or [[ul]], or its [[parent]] is an [[ol]]
   or [[ul]], or it can be the [[child]] of an [[li]]; then append
   <var>node</var> to <var>node list</var>.
+  <!--
+  We exclude potential indentation elements so that selecting some random text
+  and doing indent followed by insertOrderedList will have the same result as
+  the reverse.  Specifically,
+
+    <blockquote>[foo]</blockquote> ->
+    <blockquote><ol><li>[foo]</li></ol></blockquote>
+
+  per spec and Firefox 4.0 and (more or less) Chrome 12 dev.  Opera 11.10
+  instead does <ol><li>foo</li></ol>, so the indentation vanishes.  IE9 does
+  <ol><ol><li>foo</li></ol></ol>, but that doesn't make semantic sense and is
+  different from how it would work if you reversed the commands.
+  OpenOffice.org 3.2.1 (Ubuntu) and Word 2007 both agree with the spec in this
+  case.
+  -->
+
+  <p class=XXX>Similar to a number of other places in the spec, "can be the
+  child" is not well-defined, and it's not clear what the right definition
+  should be.
 
   <li>While <var>node list</var> is not empty:
 
@@ -2790,20 +2819,6 @@ Sheesh, lists are complicated.
     <li>s. -->
 
     <ol>
-      <li>Let <var>extra indentation</var> equal 0.
-
-      <li>Let <var>ancestor</var> be the [[parent]] of the first member of
-      <var>sublist</var>.
-
-      <li>While <var>ancestor</var> is an <span>editable</span> [[element]]:
-
-      <ol>
-        <li>If <var>ancestor</var> is a <span>potential indentation
-        element</span>, increment <var>extra indentation</var>.
-
-        <li>Set <var>ancestor</var> to its [[parent]].
-      </ol>
-
       <li>If the first member of <var>sublist</var> is a [[p]] or [[li]] or
       [[div]], <span>set the tag name</span> of the first member of
       <var>sublist</var> to "li", and let <var>li</var> be the result.  Remove
@@ -2827,15 +2842,6 @@ Sheesh, lists are complicated.
         [[ownerdocument]] of the first member of <var>sublist</var>.
       </ol>
 
-      <li>Repeat the following a number of times equal to <var>extra
-      indentation</var>: for each <var>node</var> in <var>sublist</var>,
-      <span>outdent</span> <var>node</var>.
-
-      <!-- That might have created an extra <br> at some point. -->
-      <li>If the last member of <var>sublist</var> is not a [[br]] but its
-      [[nextsibling]] is, append the [[nextsibling]] of the last member of
-      <var>sublist</var> to <var>sublist</var>.
-
       <li>If the [[nextsibling]] of the last member of <var>sublist</var> is an
       [[ol]]:
 
@@ -2858,13 +2864,35 @@ Sheesh, lists are complicated.
         <li>Let <var>ol</var> be the [[previoussibling]] of the first member of
         <var>sublist</var>.
 
-        <li>If <var>ol</var> is not an [[ol]], let <var>ol</var> be the result
-        of calling <code data-anolis-spec=domcore
+        <li>Let <var>original parent</var> be the [[parent]] of the first
+        member of <var>sublist</var>.
+
+        <li>If <var>ol</var> is null, and <var>original parent</var> is an
+        <span>editable</span> <span>indentation element</span>, and the
+        [[previoussibling]] of <var>original parent</var> is an
+        <span>editable</span> [[ol]]:
+
+        <ol>
+          <li>Let <var>ol</var> be the [[previoussibling]] of <var>original
+          parent</var>.
+
+          <li><span>Normalize sublists</span> of <var>ol</var>'s last [[child]].
+
+          <li>If <var>ol</var>'s last [[child]] is not an <span>editable</span>
+          [[ol]], call <code data-anolis-spec=domcore
+          title=dom-Document-createElement>createElement("ol")</code> on the
+          [[ownerdocument]] of <var>ol</var>, and append the result as the last
+          [[child]] of <var>ol</var>.
+
+          <li>Set <var>ol</var> to its last [[child]].
+        </ol>
+
+        <li>If <var>ol</var> is not an <span>editable</span> [[ol]], let
+        <var>ol</var> be the result of calling <code data-anolis-spec=domcore
         title=dom-Document-createElement>createElement("ol")</code> on the
         [[ownerdocument]] of the first member of <var>sublist</var>.  Insert
-        <var>ol</var> into the [[parent]] of the first member of
-        <var>sublist</var> immediately before the first member of
-        <var>sublist</var>.
+        <var>ol</var> into <var>original parent</var> immediately before the
+        first member of <var>sublist</var>.
 
         <li>Append <var>li</var> as the last [[child]] of <var>ol</var>,
         <span>preserving ranges</span>.
@@ -2875,16 +2903,17 @@ Sheesh, lists are complicated.
         <li>For each <var>node</var> in <var>sublist</var>, append
         <var>node</var> as the last [[child]] of <var>li</var>,
         <span>preserving ranges</span>.
+
+        <li>If <var>original parent</var> has no [[children]], remove it from
+        its [[parent]].
+        <!-- This might happen if it's an indentation element whose previous
+        sibling is an ol, for instance. -->
       </ol>
     </ol>
 
     <li><span>Remove extraneous line breaks</span> from <var>ol</var>.
 
     <li><span>Remove extraneous line breaks</span> from <var>li</var>.
-
-    <li>Repeat the following a number of times equal to <var>extra
-    indentation</var>: <span>indent</span> the one-[[node]] list containing
-    <var>li</var>.
   </ol>
 </ol>
 

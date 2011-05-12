@@ -1170,9 +1170,11 @@ function decomposeRange(range) {
 }
 
 function normalizeSublists(item) {
-	// "If item is not editable or its parent is not editable, abort these
-	// steps."
-	if (!isEditable(item) || !isEditable(item.parentNode)) {
+	// "If item is not an li or it is not editable or its parent is not
+	// editable, abort these steps."
+	if (!isHtmlElement(item, "LI")
+	|| !isEditable(item)
+	|| !isEditable(item.parentNode)) {
 		return;
 	}
 
@@ -2627,27 +2629,6 @@ function myExecCommand(command, showUI, value, range) {
 				}
 			// "Otherwise:"
 			} else {
-				// "Let extra indentation equal 0."
-				var extraIndentation = 0;
-
-				// "Let ancestor be the parent of the first member of
-				// sublist."
-				var ancestor = sublist[0].parentNode;
-
-				// "While ancestor is an editable Element:"
-				while (ancestor
-				&& isEditable(ancestor)
-				&& ancestor.nodeType == Node.ELEMENT_NODE) {
-					// "If ancestor is a potential indentation element,
-					// increment extra indentation."
-					if (isPotentialIndentationElement(ancestor)) {
-						extraIndentation++;
-					}
-
-					// "Set ancestor to its parent."
-					var ancestor = ancestor.parentNode;
-				}
-
 				// "If the first member of sublist is a p or li or div, set the
 				// tag name of the first member of sublist to "li", and let li
 				// be the result.  Remove the first member of sublist, and
@@ -2680,22 +2661,6 @@ function myExecCommand(command, showUI, value, range) {
 					var li = sublist[0].ownerDocument.createElement("li");
 				}
 
-				// "Repeat the following a number of times equal to extra
-				// indentation: for each node in sublist, outdent node."
-				for (var i = 0; i < extraIndentation; i++) {
-					for (var j = 0; j < sublist.length; j++) {
-						outdentNode(sublist[j]);
-					}
-				}
-
-				// "If the last member of sublist is not a br but its
-				// nextSibling is, append the nextSibling of the last member of
-				// sublist to sublist."
-				if (!isHtmlElement(sublist[sublist.length - 1], "BR")
-				&& isHtmlElement(sublist[sublist.length - 1].nextSibling, "BR")) {
-					sublist.push(sublist[sublist.length - 1].nextSibling);
-				}
-
 				// "If the nextSibling of the last member of sublist is an ol:"
 				if (isHtmlElement(sublist[sublist.length - 1].nextSibling, "OL")) {
 					// "Insert li as the first child of the nextSibling of the
@@ -2719,14 +2684,44 @@ function myExecCommand(command, showUI, value, range) {
 					// sublist."
 					var ol = sublist[0].previousSibling;
 
-					// "If ol is not an ol, let ol be the result of calling
-					// createElement("ol") on the ownerDocument of the first
-					// member of sublist. Insert ol into the parent of the
-					// first member of sublist immediately before the first
-					// member of sublist."
-					if (!isHtmlElement(ol, "OL")) {
+					// "Let original parent be the parent of the first member
+					// of sublist."
+					var originalParent = sublist[0].parentNode;
+
+					// "If ol is null, and original parent is an editable
+					// indentation element, and the previousSibling of original
+					// parent is an editable ol:"
+					if (!ol
+					&& isEditable(originalParent)
+					&& isIndentationElement(originalParent)
+					&& isEditable(originalParent.previousSibling)
+					&& isHtmlElement(originalParent.previousSibling, "OL")) {
+						// "Let ol be the previousSibling of original parent."
+						ol = originalParent.previousSibling;
+
+						// "Normalize sublists of ol's last child."
+						normalizeSublists(ol.lastChild);
+
+						// "If ol's last child is not an editable ol, call
+						// createElement("ol") on the ownerDocument of ol, and
+						// append the result as the last child of ol."
+						if (!isEditable(ol.lastChild)
+						|| !isHtmlElement(ol.lastChild, "OL")) {
+							ol.appendChild(ol.ownerDocument.createElement("ol"));
+						}
+
+						// "Set ol to its last child."
+						ol = ol.lastChild;
+					}
+
+					// "If ol is not an editable ol, let ol be the result of
+					// calling createElement("ol") on the ownerDocument of the
+					// first member of sublist. Insert ol into original parent
+					// immediately before the first member of sublist."
+					if (!isEditable(ol)
+					|| !isHtmlElement(ol, "OL")) {
 						ol = sublist[0].ownerDocument.createElement("ol");
-						sublist[0].parentNode.insertBefore(ol, sublist[0]);
+						originalParent.insertBefore(ol, sublist[0]);
 					}
 
 					// "Append li as the last child of ol, preserving ranges."
@@ -2743,6 +2738,12 @@ function myExecCommand(command, showUI, value, range) {
 					for (var i = 0; i < sublist.length; i++) {
 						movePreservingRanges(sublist[i], li, li.childNodes.length);
 					}
+
+					// "If original parent has no children, remove it from its
+					// parent."
+					if (!originalParent.hasChildNodes()) {
+						originalParent.parentNode.removeChild(originalParent);
+					}
 				}
 			}
 
@@ -2751,12 +2752,6 @@ function myExecCommand(command, showUI, value, range) {
 
 			// "Remove extraneous line breaks from li."
 			removeExtraneousLineBreaks(li);
-
-			// "Repeat the following a number of times equal to extra
-			// indentation: indent the one-node list containing li."
-			for (var i = 0; i < extraIndentation; i++) {
-				indentNodes([li]);
-			}
 		}
 		break;
 

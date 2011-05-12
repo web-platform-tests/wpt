@@ -652,7 +652,7 @@ agents follow the <a class=external data-anolis-spec=domrange href=http://html5.
 
 
 <h2 id=normalizing-sublists-of-a-list-item><span class=secno>5 </span>Normalizing sublists of a list item</h2>
-<p>When a user agent is to <dfn id=normalize-sublists>normalize sublists</dfn> in an <code class=external data-anolis-spec=html title="the li element"><a href=http://www.whatwg.org/html/#the-li-element>li</a></code>
+<p>When a user agent is to <dfn id=normalize-sublists>normalize sublists</dfn> in a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>
 <var title="">item</var>, it must run the following steps:
 <!--
 This algorithm implies that we don't support a sublist in the middle of an
@@ -675,8 +675,8 @@ confronted with this kind of nesting.)
 -->
 
 <ol>
-  <li>If <var title="">item</var> is not <a href=#editable>editable</a> or its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is not
-  <a href=#editable>editable</a>, abort these steps.
+  <li>If <var title="">item</var> is not an <code class=external data-anolis-spec=html title="the li element"><a href=http://www.whatwg.org/html/#the-li-element>li</a></code> or it is not <a href=#editable>editable</a> or
+  its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is not <a href=#editable>editable</a>, abort these steps.
 
   <li>Let <var title="">new item</var> be null.
 
@@ -2534,6 +2534,16 @@ bullet style throughout, for no particular reason.
     * Word/OO/Firefox/Opera: Different than doing both at once (often in
       exciting ways).
     * IE/Chrome: Same as doing both at once.
+* <p>foo</p><blockquote><p>bar</p><p>baz</p></blockquote>
+  * Select "foobar" and do "ol":
+    * Word: One-item list with sublist.
+    * OO/Firefox/Chrome/Opera: One two-item list, unindented.
+    * IE9: Two one-item lists.
+  * Select "foo", do "ol", then select "bar" and do "ol":
+    * Word/OO/Chrome: One two-item list, unindented.
+    * IE9/Firefox: Two one-item lists.
+    * Opera: Two one-item lists, both unindented.
+  * Desired behavior: One-item list with sublist in both cases.
 * In an existing multi-line indented region equivalent to <blockquote>foo<br>bar<br>baz</blockquote>:
   * Select "bar", do "ol":
     * Word/OO/Firefox/Chrome: Increase indent, add "1".
@@ -2657,6 +2667,25 @@ Sheesh, lists are complicated.
   either <var title="">node</var> is an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code> or <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code>, or its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code>
   or <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code>, or it can be the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of an <code class=external data-anolis-spec=html title="the li element"><a href=http://www.whatwg.org/html/#the-li-element>li</a></code>; then append
   <var title="">node</var> to <var title="">node list</var>.
+  <!--
+  We exclude potential indentation elements so that selecting some random text
+  and doing indent followed by insertOrderedList will have the same result as
+  the reverse.  Specifically,
+
+    <blockquote>[foo]</blockquote> ->
+    <blockquote><ol><li>[foo]</li></ol></blockquote>
+
+  per spec and Firefox 4.0 and (more or less) Chrome 12 dev.  Opera 11.10
+  instead does <ol><li>foo</li></ol>, so the indentation vanishes.  IE9 does
+  <ol><ol><li>foo</li></ol></ol>, but that doesn't make semantic sense and is
+  different from how it would work if you reversed the commands.
+  OpenOffice.org 3.2.1 (Ubuntu) and Word 2007 both agree with the spec in this
+  case.
+  -->
+
+  <p class=XXX>Similar to a number of other places in the spec, "can be the
+  child" is not well-defined, and it's not clear what the right definition
+  should be.
 
   <li>While <var title="">node list</var> is not empty:
 
@@ -2745,20 +2774,6 @@ Sheesh, lists are complicated.
     <li>s. -->
 
     <ol>
-      <li>Let <var title="">extra indentation</var> equal 0.
-
-      <li>Let <var title="">ancestor</var> be the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of the first member of
-      <var title="">sublist</var>.
-
-      <li>While <var title="">ancestor</var> is an <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>:
-
-      <ol>
-        <li>If <var title="">ancestor</var> is a <a href=#potential-indentation-element>potential indentation
-        element</a>, increment <var title="">extra indentation</var>.
-
-        <li>Set <var title="">ancestor</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
-      </ol>
-
       <li>If the first member of <var title="">sublist</var> is a <code class=external data-anolis-spec=html title="the p element"><a href=http://www.whatwg.org/html/#the-p-element>p</a></code> or <code class=external data-anolis-spec=html title="the li element"><a href=http://www.whatwg.org/html/#the-li-element>li</a></code> or
       <code class=external data-anolis-spec=html title="the div element"><a href=http://www.whatwg.org/html/#the-div-element>div</a></code>, <a href=#set-the-tag-name>set the tag name</a> of the first member of
       <var title="">sublist</var> to "li", and let <var title="">li</var> be the result.  Remove
@@ -2779,15 +2794,6 @@ Sheesh, lists are complicated.
         <li>Let <var title="">li</var> be the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("li")</a></code> on the
         <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of the first member of <var title="">sublist</var>.
       </ol>
-
-      <li>Repeat the following a number of times equal to <var title="">extra
-      indentation</var>: for each <var title="">node</var> in <var title="">sublist</var>,
-      <a href=#outdent>outdent</a> <var title="">node</var>.
-
-      <!-- That might have created an extra <br> at some point. -->
-      <li>If the last member of <var title="">sublist</var> is not a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code> but its
-      <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code> is, append the <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code> of the last member of
-      <var title="">sublist</var> to <var title="">sublist</var>.
 
       <li>If the <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code> of the last member of <var title="">sublist</var> is an
       <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code>:
@@ -2811,12 +2817,33 @@ Sheesh, lists are complicated.
         <li>Let <var title="">ol</var> be the <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code> of the first member of
         <var title="">sublist</var>.
 
-        <li>If <var title="">ol</var> is not an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code>, let <var title="">ol</var> be the result
-        of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("ol")</a></code> on the
+        <li>Let <var title="">original parent</var> be the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of the first
+        member of <var title="">sublist</var>.
+
+        <li>If <var title="">ol</var> is null, and <var title="">original parent</var> is an
+        <a href=#editable>editable</a> <a href=#indentation-element>indentation element</a>, and the
+        <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code> of <var title="">original parent</var> is an
+        <a href=#editable>editable</a> <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code>:
+
+        <ol>
+          <li>Let <var title="">ol</var> be the <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code> of <var title="">original
+          parent</var>.
+
+          <li><a href=#normalize-sublists>Normalize sublists</a> of <var title="">ol</var>'s last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>.
+
+          <li>If <var title="">ol</var>'s last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> is not an <a href=#editable>editable</a>
+          <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code>, call <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("ol")</a></code> on the
+          <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">ol</var>, and append the result as the last
+          <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">ol</var>.
+
+          <li>Set <var title="">ol</var> to its last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>.
+        </ol>
+
+        <li>If <var title="">ol</var> is not an <a href=#editable>editable</a> <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code>, let
+        <var title="">ol</var> be the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("ol")</a></code> on the
         <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of the first member of <var title="">sublist</var>.  Insert
-        <var title="">ol</var> into the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of the first member of
-        <var title="">sublist</var> immediately before the first member of
-        <var title="">sublist</var>.
+        <var title="">ol</var> into <var title="">original parent</var> immediately before the
+        first member of <var title="">sublist</var>.
 
         <li>Append <var title="">li</var> as the last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">ol</var>,
         <a href=#preserving-ranges>preserving ranges</a>.
@@ -2827,16 +2854,17 @@ Sheesh, lists are complicated.
         <li>For each <var title="">node</var> in <var title="">sublist</var>, append
         <var title="">node</var> as the last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">li</var>,
         <a href=#preserving-ranges>preserving ranges</a>.
+
+        <li>If <var title="">original parent</var> has no <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, remove it from
+        its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+        <!-- This might happen if it's an indentation element whose previous
+        sibling is an ol, for instance. -->
       </ol>
     </ol>
 
     <li><a href=#remove-extraneous-line-breaks>Remove extraneous line breaks</a> from <var title="">ol</var>.
 
     <li><a href=#remove-extraneous-line-breaks>Remove extraneous line breaks</a> from <var title="">li</var>.
-
-    <li>Repeat the following a number of times equal to <var title="">extra
-    indentation</var>: <a href=#indent>indent</a> the one-<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> list containing
-    <var title="">li</var>.
   </ol>
 </ol>
 

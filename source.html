@@ -1492,17 +1492,19 @@ respectively. The <var>showUI</var> and <var>value</var>
 parameters, even if specified, are ignored except where otherwise stated.
 
 <p>When <code>execCommand()</code> is invoked, the user agent must take the
-action from the list below given by <var>commandId</var> on the
-[[contextobject]]'s first [[range]].  If no action is given or if there is no
-[[range]] in the [[contextobject]], do nothing.
+action from the list below given by <var>commandId</var> on the first [[range]]
+of the [[selection]] given by invoking [[getselection]] on the
+[[contextobject]].  If no action is given in the list for <var>commandId</var>,
+or if there is no [[range]] in that [[selection]], do nothing.
 
 <p>The <dfn
 title=queryCommandState()><code>queryCommandState(<var>commandId</var>)</code></dfn>
 method on the <code data-anolis-spec=html>HTMLDocument</code> interface must
-return the state of <var>commandId</var> on the [[contextobject]]'s
-first [[range]], as given by the list below.  If there is no [[range]] in the
-[[contextobject]], or if <var>commandId</var> is not on the list,
-return false.
+return the state of <var>commandId</var> on the first [[range]] of the
+[[selection]] given by invoking [[getselection]] on the [[contextobject]], as
+given by the list below.  If no state is given in the list for
+<var>commandId</var>, or if there is no [[range]] in that [[selection]], return
+false.
 <!-- Gecko throws an exception if there are no ranges in the selection, but
 other engines seem to just return false, which seems like nicer behavior
 anyway.
@@ -1513,10 +1515,11 @@ and Firefox 4b11, and returns boolean false in Chrome 10 and Opera 11. -->
 <p>The <dfn
 title=queryCommandValue()><code>queryCommandValue(<var>commandId</var>)</code></dfn>
 method on the <code data-anolis-spec=html>HTMLDocument</code> interface must
-return the value of <var>commandId</var> on the [[contextobject]]'s
-first [[range]], as given by the list below.  If there is no [[range]] in the
-[[contextobject]], or if <var>commandId</var> is not on the list,
-return the empty string.
+return the value of <var>commandId</var> on the first [[range]] of the
+[[selection]] given by invoking [[getselection]] on the [[contextobject]], as
+given by the list below.  If no value is given in the list for
+<var>commandId</var>, or there is no [[range]] in that [[selection]], return
+the empty string.
 <!-- Requesting the value of an unknown command throws an exception in
 IE 9 RC and in Firefox 4b11.  It returns boolean false in Chrome 10, and the
 empty string in Opera 11. -->
@@ -3620,8 +3623,8 @@ get rid of it.
   <li>Julie Parent, Ojan Vafai, Alex Russel, and Eric Seidel for their <a
   href=http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2009-December/024627.html>research</a>
   on how browsers and other rich text editors behave in many common scenarios
-  <li>Ehsan Akhgari, Ryosuke Niwa, Julie Parent, and Roland Steiner for their
-  feedback on drafts of this document
+  <li>Ehsan Akhgari, Tim Down, Ryosuke Niwa, Julie Parent, and Roland Steiner
+  for their feedback on drafts of this document
 </ul>
 
 <script src=http://www.whatwg.org/specs/web-apps/current-work/dfn.js></script>

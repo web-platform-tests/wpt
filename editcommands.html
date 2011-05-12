@@ -27,7 +27,7 @@
 <body class=draft>
 <div class=head id=head>
 <h1>HTML Editing Commands</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-10-may-2011>Work in Progress &mdash; Last Update 10 May 2011</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-12-may-2011>Work in Progress &mdash; Last Update 12 May 2011</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;ayg+spec@aryeh.name&gt;
@@ -1474,16 +1474,18 @@ respectively. The <var title="">showUI</var> and <var title="">value</var>
 parameters, even if specified, are ignored except where otherwise stated.
 
 <p>When <code><a href=#execcommand()>execCommand()</a></code> is invoked, the user agent must take the
-action from the list below given by <var title="">commandId</var> on the
-<a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>'s first <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>.  If no action is given or if there is no
-<a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> in the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>, do nothing.
+action from the list below given by <var title="">commandId</var> on the first <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>
+of the <code class=external data-anolis-spec=domrange><a href=http://html5.org/specs/dom-range.html#selection>Selection</a></code> given by invoking <code class=external data-anolis-spec=domrange title=dom-Document-getSelection><a href=http://html5.org/specs/dom-range.html#dom-document-getselection>getSelection()</a></code> on the
+<a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>.  If no action is given in the list for <var title="">commandId</var>,
+or if there is no <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> in that <code class=external data-anolis-spec=domrange><a href=http://html5.org/specs/dom-range.html#selection>Selection</a></code>, do nothing.
 
 <p>The <dfn id=querycommandstate() title=queryCommandState()><code>queryCommandState(<var title="">commandId</var>)</code></dfn>
 method on the <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/html/#htmldocument>HTMLDocument</a></code> interface must
-return the state of <var title="">commandId</var> on the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>'s
-first <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>, as given by the list below.  If there is no <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> in the
-<a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>, or if <var title="">commandId</var> is not on the list,
-return false.
+return the state of <var title="">commandId</var> on the first <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> of the
+<code class=external data-anolis-spec=domrange><a href=http://html5.org/specs/dom-range.html#selection>Selection</a></code> given by invoking <code class=external data-anolis-spec=domrange title=dom-Document-getSelection><a href=http://html5.org/specs/dom-range.html#dom-document-getselection>getSelection()</a></code> on the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>, as
+given by the list below.  If no state is given in the list for
+<var title="">commandId</var>, or if there is no <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> in that <code class=external data-anolis-spec=domrange><a href=http://html5.org/specs/dom-range.html#selection>Selection</a></code>, return
+false.
 <!-- Gecko throws an exception if there are no ranges in the selection, but
 other engines seem to just return false, which seems like nicer behavior
 anyway.
@@ -1493,10 +1495,11 @@ and Firefox 4b11, and returns boolean false in Chrome 10 and Opera 11. -->
 
 <p>The <dfn id=querycommandvalue() title=queryCommandValue()><code>queryCommandValue(<var title="">commandId</var>)</code></dfn>
 method on the <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/html/#htmldocument>HTMLDocument</a></code> interface must
-return the value of <var title="">commandId</var> on the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>'s
-first <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>, as given by the list below.  If there is no <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> in the
-<a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>, or if <var title="">commandId</var> is not on the list,
-return the empty string.
+return the value of <var title="">commandId</var> on the first <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> of the
+<code class=external data-anolis-spec=domrange><a href=http://html5.org/specs/dom-range.html#selection>Selection</a></code> given by invoking <code class=external data-anolis-spec=domrange title=dom-Document-getSelection><a href=http://html5.org/specs/dom-range.html#dom-document-getselection>getSelection()</a></code> on the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>, as
+given by the list below.  If no value is given in the list for
+<var title="">commandId</var>, or there is no <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> in that <code class=external data-anolis-spec=domrange><a href=http://html5.org/specs/dom-range.html#selection>Selection</a></code>, return
+the empty string.
 <!-- Requesting the value of an unknown command throws an exception in
 IE 9 RC and in Firefox 4b11.  It returns boolean false in Chrome 10, and the
 empty string in Opera 11. -->
@@ -3553,8 +3556,8 @@ get rid of it.
   <li>Ian Hickson, for overseeing it
   <li>Julie Parent, Ojan Vafai, Alex Russel, and Eric Seidel for their <a href=http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2009-December/024627.html>research</a>
   on how browsers and other rich text editors behave in many common scenarios
-  <li>Ehsan Akhgari, Ryosuke Niwa, Julie Parent, and Roland Steiner for their
-  feedback on drafts of this document
+  <li>Ehsan Akhgari, Tim Down, Ryosuke Niwa, Julie Parent, and Roland Steiner
+  for their feedback on drafts of this document
 </ul>
 
 <script src=http://www.whatwg.org/specs/web-apps/current-work/dfn.js></script>

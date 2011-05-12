@@ -14,6 +14,10 @@ body { font-family: serif }
 	font-family: sans-serif;
 	border-color: black;
 }
+.alert {
+	color: red;
+	font-weight: bold;
+}
 /* http://www.w3.org/Bugs/Public/show_bug.cgi?id=12154
  * https://bugzilla.mozilla.org/show_bug.cgi?id=589124
  * https://bugs.webkit.org/show_bug.cgi?id=56400 */
@@ -1469,8 +1473,7 @@ function doSpecCell(tr, test, command, styleWithCss) {
 	} catch (e) {
 		specCell.firstChild.contentEditable = "inherit";
 		specCell.firstChild.removeAttribute("spellcheck");
-		specCell.lastChild.style.color = "red";
-		specCell.lastChild.style.fontWeight = "bold";
+		specCell.lastChild.className = "alert";
 		specCell.lastChild.textContent = "Exception: " + e;
 		if (typeof e == "object" && "stack" in e) {
 			specCell.lastChild.textContent += " (stack: " + e.stack + ")";
@@ -1485,17 +1488,23 @@ function doSpecCell(tr, test, command, styleWithCss) {
 		+ "-" + Number(styleWithCss)
 		+ "-" + tr.firstChild.lastChild.textContent;
 
-	var oldValue = localStorage[key];
+	// Use getItem() instead of direct property access to work around Firefox
+	// bug: https://bugzilla.mozilla.org/show_bug.cgi?id=532062
+	var oldValue = localStorage.getItem(key);
 	var newValue = specCell.lastChild.textContent;
 
-	if (oldValue !== null && oldValue !== undefined && oldValue !== newValue) {
-		specCell.lastChild.appendChild(document.createElement("div"));
-		specCell.lastChild.lastChild.style.color = "red";
-		specCell.lastChild.lastChild.style.fontWeight = "bold";
-		specCell.lastChild.lastChild.textContent = "Last run produced different markup: " + oldValue;
+	if (oldValue === null || oldValue !== newValue) {
+		var alertDiv = document.createElement("div");
+		specCell.lastChild.appendChild(alertDiv);
+		alertDiv.className = "alert";
+		if (oldValue === null) {
+			alertDiv.textContent = "Newly added test result";
+		} else {
+			alertDiv.textContent = "Last run produced different markup: " + oldValue;
+		}
 
 		var button = document.createElement("button");
-		specCell.lastChild.lastChild.appendChild(button);
+		alertDiv.appendChild(button);
 		button.textContent = "Store new result";
 		button.className = "store-new-result";
 		button.onclick = (function(key, val, button) { return function() {
@@ -1569,8 +1578,7 @@ function doBrowserCell(tr, test, command, styleWithCss) {
 			testDiv.contenteditable = "inherit";
 			testDiv.removeAttribute("spellcheck");
 		}
-		browserCell.lastChild.style.color = "red";
-		browserCell.lastChild.style.fontWeight = "bold";
+		browserCell.lastChild.className = "alert";
 		browserCell.lastChild.textContent = "Exception: " + e;
 		if (typeof e == "object" && "stack" in e) {
 			specCell.lastChild.textContent += " (stack: " + e.stack + ")";

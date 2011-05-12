@@ -1,0 +1,5 @@
+# reftest.list snippet
+== ../multicol-000.xht multicol-000-ref.xht
+== ../multicol-001.xht multicol-000-ref.xht
+== ../multicol-002.xht multicol-000-ref.xht
+

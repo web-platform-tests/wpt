@@ -1497,8 +1497,19 @@ function doSpecCell(tr, test, command, styleWithCss) {
 		var button = document.createElement("button");
 		specCell.lastChild.lastChild.appendChild(button);
 		button.textContent = "Store new result";
+		button.className = "store-new-result";
 		button.onclick = (function(key, val, button) { return function() {
 			localStorage[key] = val;
+			// Make it easier to do mass updates, and also to jump to the next
+			// new result
+			var buttons = document.getElementsByClassName("store-new-result");
+			for (var i = 0; i < buttons.length; i++) {
+				if (button == buttons[i]
+				&& i + 1 < buttons.length) {
+					buttons[i + 1].focus();
+					break;
+				}
+			}
 			button.parentNode.removeChild(button);
 		} })(key, newValue, button);
 	} else {

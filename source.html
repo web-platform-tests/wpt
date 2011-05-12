@@ -1527,6 +1527,13 @@ empty string in Opera 11. -->
 <p class=XXX>Querying the value or state of an unrecognized command throws an
 exception in IE and Firefox.  Need to consider changing to that behavior.
 
+<p class=XXX>I say "first range" because I think that's what Gecko actually
+does, and Gecko is the only one that allows multiple ranges in a selection.
+This is keeping in mind that it stores ranges sorted by start, not by the order
+the user added them, and silently removes or shortens existing ranges to avoid
+overlap.  It probably makes the most sense in the long term to have the command
+affect all ranges.  But I'll leave this for later.
+
 <p>The possible values for <var>commandId</var>, and their corresponding
 meanings, are as follows.  These values must be compared to the argument in an
 <span data-anolis-spec=domcore>ASCII case-insensitive</span> manner.  The

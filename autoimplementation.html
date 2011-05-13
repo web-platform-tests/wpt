@@ -14,7 +14,7 @@ body { font-family: serif }
 	font-family: sans-serif;
 	border-color: black;
 }
-.alert {
+div.alert {
 	color: red;
 	font-weight: bold;
 }
@@ -73,6 +73,25 @@ displayed as forwards or such.
 <p>Where two tables are given for a single command, the first is with
 styleWithCSS false and the second is with it true.  (The second table is left
 blank in IE and Opera, which don't support styleWithCSS.)
+
+<p>
+<!-- Note: this is completely not a hack at all. -->
+<style id=alerts>/* tr:not(.alert):not(:first-child) { display: none } */</style>
+
+<label><input id=alert-checkbox type=checkbox checked onclick='updateAlertRowStyle()'> Display non-alert rows</label>
+
+<script>
+function updateAlertRowStyle() {
+	var checked = document.querySelector("#alert-checkbox").checked;
+	var style = document.querySelector("#alerts");
+	if (checked && !/^\/\*/.test(style.textContent)) {
+		style.textContent = "/* " + style.textContent + " */";
+	} else if (!checked) {
+		style.textContent = style.textContent.replace(/(\/\* | \*\/)/g, "");
+	}
+}
+updateAlertRowStyle();
+</script>
 
 <h1>Table of Contents</h1>
 <ul>
@@ -1473,6 +1492,7 @@ function doSpecCell(tr, test, command, styleWithCss) {
 	} catch (e) {
 		specCell.firstChild.contentEditable = "inherit";
 		specCell.firstChild.removeAttribute("spellcheck");
+		specCell.parentNode.className = "alert";
 		specCell.lastChild.className = "alert";
 		specCell.lastChild.textContent = "Exception: " + e;
 		if (typeof e == "object" && "stack" in e) {
@@ -1494,6 +1514,7 @@ function doSpecCell(tr, test, command, styleWithCss) {
 	var newValue = specCell.lastChild.textContent;
 
 	if (oldValue === null || oldValue !== newValue) {
+		specCell.parentNode.className = "alert";
 		var alertDiv = document.createElement("div");
 		specCell.lastChild.appendChild(alertDiv);
 		alertDiv.className = "alert";
@@ -1578,6 +1599,7 @@ function doBrowserCell(tr, test, command, styleWithCss) {
 			testDiv.contenteditable = "inherit";
 			testDiv.removeAttribute("spellcheck");
 		}
+		browserCell.parentNode.className = "alert";
 		browserCell.lastChild.className = "alert";
 		browserCell.lastChild.textContent = "Exception: " + e;
 		if (typeof e == "object" && "stack" in e) {

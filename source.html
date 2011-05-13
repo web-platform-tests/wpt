@@ -2391,46 +2391,19 @@ splitting up parents to ensure validity . . . -->
   <li>Run <code data-anolis-spec=domrange
   title=dom-Range-deleteContents>deleteContents()</code> on the [[range]].
 
-  <li>Let (<var>node</var>, <var>offset</var>) be the [[range]]'s
-  [[rangestart]].
-
-  <li>If <var>node</var> is a [[text]] or [[comment]] node and its [[parent]]
-  is null, abort these steps and do nothing further.
-
   <li>Let <var>hr</var> be the result of calling <code
   data-anolis-spec=domcore
   title=dom-Document-createElement>createElement("hr")</code> on the
-  [[ownerdocument]] of <var>node</var> (or on <var>node</var> itself if it's a
-  [[document]]).
+  [[contextobject]].
 
-  <li>If <var>node</var> is a [[text]] node, and <var>offset</var> is not
-  equal to 0 or the [[nodelength]] of <var>node</var>, run <code
-  data-anolis-spec=domcore
-  title=dom-Text-splitText>splitText(<var>offset</var>)</code> on
-  <var>node</var>.
-
-  <li>If <var>node</var> is a [[text]] node, and <var>offset</var> is equal to
-  the [[nodelength]] of <var>node</var>, set <var>node</var> to its
-  [[nextsibling]].
-
-  <li>If <var>node</var> is null or is a [[text]] or [[comment]] node, run
-  <code data-anolis-spec=domcore
-  title=dom-Node-insertBefore>insertBefore(<var>hr</var>,
-  <var>node</var>)</code> on the parent of <var>node</var>.
-
-  <li>Otherwise, let <var>child</var> be the <var>offset</var>th child of
-  <var>node</var> (or null if there is no such child), and run <code
-  data-anolis-spec=domcore
-  title=dom-Node-insertBefore>insertBefore(<var>hr</var>,
-  <var>child</var>)</code> on <var>node</var>.
-
-  <p class=XXX>This is wrong: it can insert the new element inside an inline
-  element, which is invalid.  Browsers break up ancestor inlines to avoid this.
-  So far I've managed to avoid having to do this, which is good because it
-  causes problems (e.g., what if an inline ancestor has an id?), but I don't
-  see any way around it here.  Maybe I need to revisit the insistence on only
-  modifying "modifiable elements"; if non-modifiable elements sneak in somehow,
-  perhaps we need to break them up anyway sometimes.
+  <li>Run <code data-anolis-spec=domrange
+  title=dom-Range-insertNode>insertNode(<var>hr</var>)</code> on the [[range]].
+  <!-- This might put it in an inline element, where it's invalid.  This is
+  what IE9 and Chrome 12 dev appear to do.  Firefox 4.0 breaks up inline
+  ancestors, and Opera 11.10 seems to put it before the first inline ancestor
+  instead of where the cursor is.  Breaking up elements is kind of evil, so
+  I'll go with IE/WebKit.  Even though it produces invalid markup, it does
+  still work. -->
 
   <li>Run <code data-anolis-spec=domrange
   title=dom-Selection-collapse>collapse()</code> on the [[selection]], with

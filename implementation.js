@@ -2460,52 +2460,12 @@ function myExecCommand(command, showUI, value, range) {
 		// "Run deleteContents() on the range."
 		range.deleteContents();
 
-		// "Let (node, offset) be the range's start."
-		var node = range.startContainer;
-		var offset = range.startOffset;
-
-		// "If node is a Text or Comment node and its parent is null, abort
-		// these steps and do nothing."
-		if (!node.parentNode
-		&& (node.nodeType == Node.TEXT_NODE
-		|| node.nodeType == Node.COMMENT_NODE)) {
-			return;
-		}
-
 		// "Let hr be the result of calling createElement("hr") on the
-		// ownerDocument of node (or on node itself if it's a Document)."
-		var hr = (node.nodeType == Node.DOCUMENT_NODE
-			? node : node.ownerDocument).createElement("hr");
+		// context object."
+		var hr = document.createElement("hr");
 
-		// "If node is a Text node, and offset is not equal to 0 or the length
-		// of node, run splitText(offset) on node."
-		if (node.nodeType == Node.TEXT_NODE
-		&& offset != 0
-		&& offset != node.length) {
-			node.splitText(offset);
-		}
-
-		// "If node is a Text node, and offset is equal to the length of node,
-		// set node to its nextSibling."
-		if (node.nodeType == Node.TEXT_NODE
-		&& offset == node.length) {
-			node = node.nextSibling;
-		}
-
-		// "If node is null or is a Text or Comment node, run insertBefore(hr,
-		// node) on the parent of node."
-		if (!node
-		|| node.nodeType == Node.TEXT_NODE
-		|| node.nodeType == Node.COMMENT_NODE) {
-			node.parentNode.insertBefore(hr, node);
-		// "Otherwise, let child be the offsetth child of node (or null if
-		// there is no such child), and run insertBefore(img, child) on node."
-		} else {
-			var child = node.childNodes.length == offset
-				? null
-				: node.childNodes[offset];
-			node.insertBefore(hr, child);
-		}
+		// "Run insertNode(hr) on the range."
+		range.insertNode(hr);
 
 		// "Run collapse() on the Selection, with first argument equal to the
 		// parent of hr and the second argument equal to one plus the index of

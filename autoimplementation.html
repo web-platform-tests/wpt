@@ -638,6 +638,7 @@ var tests = {
 		'foo[bar<b>baz]qoz</b>quz',
 		'foo<br>[bar]',
 		'f[oo<br>b]ar<br>baz',
+		'<p>[foo]<br>bar</p>',
 
 		'<table><tbody><tr><td>foo<td>b[a]r<td>baz</table>',
 		'<table><tbody><tr data-start=1 data-end=2><td>foo<td>bar<td>baz</table>',
@@ -1483,12 +1484,25 @@ function doSpecCell(tr, test, command, styleWithCss) {
 		myExecCommand(command, false, value, range);
 		specCell.firstChild.contentEditable = "inherit";
 		specCell.firstChild.removeAttribute("spellcheck");
+		var compareDiv1 = specCell.firstChild.cloneNode(true);
 		addBrackets(range);
-		if (specCell.childNodes.length == 2) {
-			specCell.lastChild.textContent = specCell.firstChild.innerHTML;
-		} else {
+
+		if (specCell.childNodes.length != 2) {
 			throw "The cell didn't have two children.  Did something spill outside the test div?";
 		}
+
+		compareDiv1.normalize();
+		var compareDiv2 = compareDiv1.cloneNode(false);
+		compareDiv2.innerHTML = compareDiv1.innerHTML;
+		if (compareDiv1.innerHTML != compareDiv2.innerHTML) {
+			throw "DOM does not round-trip through serialization!  "
+				+ compareDiv1.innerHTML + " vs. " + compareDiv2.innerHTML;
+		}
+		if (!compareDiv1.isEqualNode(compareDiv2)) {
+			throw "DOM does not round-trip through serialization!";
+		}
+
+		specCell.lastChild.textContent = specCell.firstChild.innerHTML;
 	} catch (e) {
 		specCell.firstChild.contentEditable = "inherit";
 		specCell.firstChild.removeAttribute("spellcheck");
@@ -1511,7 +1525,7 @@ function doSpecCell(tr, test, command, styleWithCss) {
 	// Use getItem() instead of direct property access to work around Firefox
 	// bug: https://bugzilla.mozilla.org/show_bug.cgi?id=532062
 	var oldValue = localStorage.getItem(key);
-	var newValue = specCell.lastChild.textContent;
+	var newValue = specCell.lastChild.firstChild.textContent;
 
 	if (oldValue === null || oldValue !== newValue) {
 		specCell.parentNode.className = "alert";
@@ -1528,20 +1542,27 @@ function doSpecCell(tr, test, command, styleWithCss) {
 		alertDiv.appendChild(button);
 		button.textContent = "Store new result";
 		button.className = "store-new-result";
-		button.onclick = (function(key, val, button) { return function() {
+		button.onclick = (function(key, val, alertDiv) { return function() {
 			localStorage[key] = val;
 			// Make it easier to do mass updates, and also to jump to the next
 			// new result
 			var buttons = document.getElementsByClassName("store-new-result");
 			for (var i = 0; i < buttons.length; i++) {
-				if (button == buttons[i]
+				if (isDescendant(buttons[i], alertDiv)
 				&& i + 1 < buttons.length) {
 					buttons[i + 1].focus();
 					break;
 				}
 			}
-			button.parentNode.removeChild(button);
-		} })(key, newValue, button);
+			var tr = alertDiv;
+			while (tr.tagName != "TR") {
+				tr = tr.parentNode;
+			}
+			alertDiv.parentNode.removeChild(alertDiv);
+			if (!tr.querySelector(".alert")) {
+				tr.classList.remove("alert");
+			}
+		} })(key, newValue, alertDiv);
 	}
 }
 
@@ -1583,15 +1604,37 @@ function doBrowserCell(tr, test, command, styleWithCss) {
 
 		testDiv.contentEditable = "inherit";
 		testDiv.removeAttribute("spellcheck");
+		var compareDiv1 = browserCell.firstChild.cloneNode(true);
+
 		if (getSelection().rangeCount) {
 			addBrackets(getSelection().getRangeAt(0));
 		}
 		browserCell.insertBefore(testDiv, browserCell.firstChild);
-		if (browserCell.childNodes.length == 2) {
-			browserCell.lastChild.textContent = browserCell.firstChild.innerHTML;
-		} else {
+
+		if (!browserCell.childNodes.length == 2) {
 			throw "The cell didn't have two children.  Did something spill outside the test div?";
 		}
+
+		compareDiv1.normalize();
+		// Sigh, Gecko is crazy
+		var treeWalker = document.createTreeWalker(compareDiv1, NodeFilter.SHOW_ELEMENT, null, null);
+		while (treeWalker.nextNode()) {
+			treeWalker.currentNode.removeAttribute("_moz_dirty");
+			if (treeWalker.currentNode.getAttribute("type") == "_moz") {
+				treeWalker.currentNode.removeAttribute("type");
+			}
+		}
+		var compareDiv2 = compareDiv1.cloneNode(false);
+		compareDiv2.innerHTML = compareDiv1.innerHTML;
+		if (compareDiv1.innerHTML != compareDiv2.innerHTML) {
+			throw "DOM does not round-trip through serialization!  "
+				+ compareDiv1.innerHTML + " vs. " + compareDiv2.innerHTML;
+		}
+		if (!compareDiv1.isEqualNode(compareDiv2)) {
+			throw "DOM does not round-trip through serialization!";
+		}
+
+		browserCell.lastChild.textContent = browserCell.firstChild.innerHTML;
 	} catch (e) {
 		if (testDiv) {
 			testDiv.contenteditable = "inherit";

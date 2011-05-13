@@ -1298,10 +1298,35 @@ different value.
     of <var title="">new parent</var> to <var title="">new value</var>.
   </ol>
 
-  <li>If <var title="">command</var> is "createLink" or "unlink", let <var title="">new
-  parent</var> be the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("a")</a></code> on the
-  <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">node</var>, then set the <code class=external data-anolis-spec=html title=attr-hyperlink-href><a href=http://www.whatwg.org/html/#attr-hyperlink-href>href</a></code> attribute of
-  <var title="">new parent</var> to <var title="">new value</var>.
+  <li>If <var title="">command</var> is "createLink" or "unlink":
+
+  <ol>
+    <li>Let <var title="">new parent</var> be the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("a")</a></code> on the
+    <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">node</var>.
+
+    <li>Set the <code class=external data-anolis-spec=html title=attr-hyperlink-href><a href=http://www.whatwg.org/html/#attr-hyperlink-href>href</a></code> attribute of <var title="">new parent</var> to <var title="">new
+    value</var>.
+
+    <!-- Nested a elements are bad, because they can't be serialized to
+    text/html.  hrefs should already have been cleared in a previous step, but
+    we might have <a name> or such lurking about. -->
+    <li>Let <var title="">ancestor</var> be <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+
+    <li>While <var title="">ancestor</var> is not null:
+
+    <ol>
+      <li>If <var title="">ancestor</var> is an <code class=external data-anolis-spec=html title="the a element"><a href=http://www.whatwg.org/html/#the-a-element>a</a></code>, <a href=#set-the-tag-name>set the tag name</a> of
+      <var title="">ancestor</var> to "span", and let <var title="">ancestor</var> be the
+      result.
+
+      <p class=XXX>This will mean any link-specific attributes will be
+      transferred, which makes them both invalid and useless.  Is that okay?  I
+      don't really want to list them all, because that sort of list is prone to
+      bitrot.
+
+      <li>Set <var title="">ancestor</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+    </ol>
+  </ol>
 
   <!-- WebKit is the only engine that ever outputs anything but font tags for
   fontSize.  For size=7, it uses font-size: -webkit-xxx-large.  We just output

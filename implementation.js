@@ -1905,12 +1905,29 @@ function forceValue(node, command, newValue) {
 		}
 	}
 
-	// "If command is "createLink" or "unlink", let new parent be the result of
-	// calling createElement("a") on the ownerDocument of node, then set the
-	// href attribute of new parent to new value."
+	// "If command is "createLink" or "unlink":"
 	if (command == "createlink" || command == "unlink") {
+		// "Let new parent be the result of calling createElement("a") on the
+		// ownerDocument of node."
 		newParent = node.ownerDocument.createElement("a");
+
+		// "Set the href attribute of new parent to new value."
 		newParent.setAttribute("href", newValue);
+
+		// "Let ancestor be node's parent."
+		var ancestor = node.parentNode;
+
+		// "While ancestor is not null:"
+		while (ancestor) {
+			// "If ancestor is an a, set the tag name of ancestor to "span",
+			// and let ancestor be the result."
+			if (isHtmlElement(ancestor, "A")) {
+				ancestor = setTagName(ancestor, "span");
+			}
+
+			// "Set ancestor to its parent."
+			ancestor = ancestor.parentNode;
+		}
 	}
 
 	// "If command is "fontSize"; and new value is one of "xx-small", "small",

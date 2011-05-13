@@ -1314,11 +1314,37 @@ different value.
     of <var>new parent</var> to <var>new value</var>.
   </ol>
 
-  <li>If <var>command</var> is "createLink" or "unlink", let <var>new
-  parent</var> be the result of calling <code data-anolis-spec=domcore
-  title=dom-Document-createElement>createElement("a")</code> on the
-  [[ownerdocument]] of <var>node</var>, then set the [[href]] attribute of
-  <var>new parent</var> to <var>new value</var>.
+  <li>If <var>command</var> is "createLink" or "unlink":
+
+  <ol>
+    <li>Let <var>new parent</var> be the result of calling <code
+    data-anolis-spec=domcore
+    title=dom-Document-createElement>createElement("a")</code> on the
+    [[ownerdocument]] of <var>node</var>.
+
+    <li>Set the [[href]] attribute of <var>new parent</var> to <var>new
+    value</var>.
+
+    <!-- Nested a elements are bad, because they can't be serialized to
+    text/html.  hrefs should already have been cleared in a previous step, but
+    we might have <a name> or such lurking about. -->
+    <li>Let <var>ancestor</var> be <var>node</var>'s [[parent]].
+
+    <li>While <var>ancestor</var> is not null:
+
+    <ol>
+      <li>If <var>ancestor</var> is an [[a]], <span>set the tag name</span> of
+      <var>ancestor</var> to "span", and let <var>ancestor</var> be the
+      result.
+
+      <p class=XXX>This will mean any link-specific attributes will be
+      transferred, which makes them both invalid and useless.  Is that okay?  I
+      don't really want to list them all, because that sort of list is prone to
+      bitrot.
+
+      <li>Set <var>ancestor</var> to its [[parent]].
+    </ol>
+  </ol>
 
   <!-- WebKit is the only engine that ever outputs anything but font tags for
   fontSize.  For size=7, it uses font-size: -webkit-xxx-large.  We just output

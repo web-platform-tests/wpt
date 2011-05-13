@@ -1799,14 +1799,15 @@ don't either. -->
 
     <a href=http://example.com><b>A<a href=http://example.org>b</a>c</b></a>
 
-  IE 9 RC and Opera 11 produce simply:
+  (This doesn't round-trip through text/html serialization.)  IE 9 RC and Opera
+  11 produce simply:
 
     <a href=http://example.org><b>Abc</b></a>
 
-  The last behavior produces valid markup (unlike Gecko), is simple (unlike
-  WebKit), and probably best matches user expectations.  If you happen to miss
-  out a character when selecting the link you want to change, do you really
-  intend to only change the link of part of it? -->
+  The last behavior probably best matches user expectations.  If you happen to
+  miss out a character when selecting the link you want to change, do you
+  really intend to only change the link of part of it?
+  -->
 
   <li><span>Set the value</span> of each [[node]] in <var>node list</var> to
   <var>value</var>.
@@ -3621,10 +3622,23 @@ value</span> "underline".  Otherwise false.
 
 <dt><code title><dfn title=command-unlink>unlink</dfn></code>
 
-<dd><strong>Action</strong>: <span>Decompose</span> the [[range]], and
-<span>set the value</span> of each returned [[node]] to null.
-<!-- IE 9 RC unlinks the whole link you're pointing at.  We follow the other
-browsers, which operate more consistently with other commands. -->
+<dd><strong>Action</strong>:
+<!--
+IE 9 RC unlinks the whole link you're pointing at, while others only
+unlink the current text.  The latter behavior seems less expected, as with
+createLink, although I can't articulate precisely why.  Word 2007 and
+OpenOffice.org 3.2.1 (Ubuntu) seem to give an option to remove the whole link
+or none of it, which backs the spec's requirement.  See also #whatwg logs
+starting at 2011-05-13 at 16:53 EDT (UTC-0400).
+-->
+
+<ol>
+  <li>Let <var>hyperlinks</var> be a list of every [[a]] element that has an
+  [[href]] attribute and is [[contained]] in the [[range]] or is an
+  [[ancestor]] of one of its [[boundarypoints]].
+
+  <li><span>Clear the value</span> of each member of <var>hyperlinks</var>.
+</ol>
 
 <dd><strong>State</strong>: Always false.
 

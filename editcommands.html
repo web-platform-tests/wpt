@@ -1774,14 +1774,15 @@ don't either. -->
 
     <a href=http://example.com><b>A<a href=http://example.org>b</a>c</b></a>
 
-  IE 9 RC and Opera 11 produce simply:
+  (This doesn't round-trip through text/html serialization.)  IE 9 RC and Opera
+  11 produce simply:
 
     <a href=http://example.org><b>Abc</b></a>
 
-  The last behavior produces valid markup (unlike Gecko), is simple (unlike
-  WebKit), and probably best matches user expectations.  If you happen to miss
-  out a character when selecting the link you want to change, do you really
-  intend to only change the link of part of it? -->
+  The last behavior probably best matches user expectations.  If you happen to
+  miss out a character when selecting the link you want to change, do you
+  really intend to only change the link of part of it?
+  -->
 
   <li><a href=#set-the-value>Set the value</a> of each <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> in <var title="">node list</var> to
   <var title="">value</var>.
@@ -3559,10 +3560,23 @@ value</a> "underline".  Otherwise false.
 
 <dt><code title=""><dfn id=command-unlink title=command-unlink>unlink</dfn></code>
 
-<dd><strong>Action</strong>: <a href=#decompose>Decompose</a> the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>, and
-<a href=#set-the-value>set the value</a> of each returned <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> to null.
-<!-- IE 9 RC unlinks the whole link you're pointing at.  We follow the other
-browsers, which operate more consistently with other commands. -->
+<dd><strong>Action</strong>:
+<!--
+IE 9 RC unlinks the whole link you're pointing at, while others only
+unlink the current text.  The latter behavior seems less expected, as with
+createLink, although I can't articulate precisely why.  Word 2007 and
+OpenOffice.org 3.2.1 (Ubuntu) seem to give an option to remove the whole link
+or none of it, which backs the spec's requirement.  See also #whatwg logs
+starting at 2011-05-13 at 16:53 EDT (UTC-0400).
+-->
+
+<ol>
+  <li>Let <var title="">hyperlinks</var> be a list of every <code class=external data-anolis-spec=html title="the a element"><a href=http://www.whatwg.org/html/#the-a-element>a</a></code> element that has an
+  <code class=external data-anolis-spec=html title=attr-hyperlink-href><a href=http://www.whatwg.org/html/#attr-hyperlink-href>href</a></code> attribute and is <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> or is an
+  <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of one of its <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point title=concept-boundary-point>boundary points</a>.
+
+  <li><a href=#clear-the-value>Clear the value</a> of each member of <var title="">hyperlinks</var>.
+</ol>
 
 <dd><strong>State</strong>: Always false.
 

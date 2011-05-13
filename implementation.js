@@ -3095,11 +3095,40 @@ function myExecCommand(command, showUI, value, range) {
 		break;
 
 		case "unlink":
-		// "Decompose the range, and set the value of each returned node to
-		// null."
-		var nodeList = decomposeRange(range);
-		for (var i = 0; i < nodeList.length; i++) {
-			setNodeValue(nodeList[i], command, null);
+		// "Let hyperlinks be a list of every a element that has an href
+		// attribute and is contained in the range or is an ancestor of one of
+		// its boundary points."
+		//
+		// As usual, take care to ensure it's tree order.  The correctness of
+		// the following is left as an exercise for the reader.
+		var hyperlinks = [];
+		for (
+			var node = range.startContainer;
+			node;
+			node = node.parentNode
+		) {
+			if (isHtmlElement(node, "A")
+			&& node.hasAttribute("href")) {
+				hyperlinks.unshift(node);
+			}
+		}
+		for (
+			var node = range.startContainer;
+			node != nextNodeDescendants(range.endContainer);
+			node = nextNode(node)
+		) {
+			if (isHtmlElement(node, "A")
+			&& node.hasAttribute("href")
+			&& (isContained(node, range)
+			|| isAncestor(node, range.endContainer)
+			|| node == range.endContainer)) {
+				hyperlinks.push(node);
+			}
+		}
+
+		// "Clear the value of each member of hyperlinks."
+		for (var i = 0; i < hyperlinks.length; i++) {
+			clearValue(hyperlinks[i], command);
 		}
 		break;
 

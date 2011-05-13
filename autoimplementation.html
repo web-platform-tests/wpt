@@ -271,6 +271,14 @@ var tests = {
 		'foo<a href=otherurl>[bar</a>baz]',
 		'[foo<a href=otherurl>bar]</a>baz',
 		'[foo<a href=otherurl>bar</a>baz]',
+
+		'<a href=otherurl><b>foo[bar]baz</b></a>',
+		'<a href=otherurl><b>foo[barbaz</b></a>}',
+		'{<a href=otherurl><b>foobar]baz</b></a>',
+		'<a href=otherurl><b>[foobarbaz]</b></a>',
+
+		'<a name=abc>foo[bar]baz</a>',
+		'<a name=abc><b>foo[bar]baz</b></a>',
 	],
 	fontname: [
 		'foo[]bar',
@@ -1296,18 +1304,21 @@ var tests = {
 		'{<a href=http://www.google.com/>foobarbaz</a>}',
 		'<a href=http://www.google.com/>[foobarbaz]</a>',
 
+		'foo<a href=http://www.google.com/>b[]ar</a>baz',
 		'foo<a href=http://www.google.com/>[bar]</a>baz',
 		'foo[<a href=http://www.google.com/>bar</a>]baz',
 		'foo<a href=http://www.google.com/>[bar</a>baz]',
 		'[foo<a href=http://www.google.com/>bar]</a>baz',
 		'[foo<a href=http://www.google.com/>bar</a>baz]',
 
+		'<a id=foo href=http://www.google.com/>foobar[]baz</a>',
 		'<a id=foo href=http://www.google.com/>foo[bar]baz</a>',
 		'<a id=foo href=http://www.google.com/>[foobarbaz]</a>',
 		'foo<a id=foo href=http://www.google.com/>[bar]</a>baz',
 		'foo[<a id=foo href=http://www.google.com/>bar</a>]baz',
 		'[foo<a id=foo href=http://www.google.com/>bar</a>baz]',
 
+		'<a name=foo>foobar[]baz</a>',
 		'<a name=foo>foo[bar]baz</a>',
 		'<a name=foo>[foobarbaz]</a>',
 		'foo<a name=foo>[bar]</a>baz',

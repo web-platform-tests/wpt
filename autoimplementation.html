@@ -1619,9 +1619,11 @@ function doBrowserCell(tr, test, command, styleWithCss) {
 		// Sigh, Gecko is crazy
 		var treeWalker = document.createTreeWalker(compareDiv1, NodeFilter.SHOW_ELEMENT, null, null);
 		while (treeWalker.nextNode()) {
-			treeWalker.currentNode.removeAttribute("_moz_dirty");
-			if (treeWalker.currentNode.getAttribute("type") == "_moz") {
-				treeWalker.currentNode.removeAttribute("type");
+			var remove = [].filter.call(treeWalker.currentNode.attributes, function(attrib) {
+				return /^_moz_/.test(attrib.name) || attrib.value == "_moz";
+			});
+			for (var i = 0; i < remove.length; i++) {
+				treeWalker.currentNode.removeAttribute(remove[i].name);
 			}
 		}
 		var compareDiv2 = compareDiv1.cloneNode(false);

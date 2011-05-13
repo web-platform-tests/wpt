@@ -2449,26 +2449,9 @@ splitting up parents to ensure validity . . . -->
   on <var>img</var>.
   <!-- No alt text, so it's invalid.  This matches all browsers. -->
 
-  <li>If <var>node</var> is a [[text]] node, and <var>offset</var> is not
-  equal to 0 or the [[nodelength]] of <var>node</var>, run <code
-  data-anolis-spec=domcore
-  title=dom-Text-splitText>splitText(<var>offset</var>)</code> on
-  <var>node</var>.
-
-  <li>If <var>node</var> is a [[text]] node, and <var>offset</var> is equal to
-  the [[nodelength]] of <var>node</var>, set <var>node</var> to its
-  [[nextsibling]].
-
-  <li>If <var>node</var> is null or is a [[text]] or [[comment]] node, run
-  <code data-anolis-spec=domcore
-  title=dom-Node-insertBefore>insertBefore(<var>img</var>,
-  <var>node</var>)</code> on the parent of <var>node</var>.
-
-  <li>Otherwise, let <var>child</var> be the <var>offset</var>th child of
-  <var>node</var> (or null if there is no such child), and run <code
-  data-anolis-spec=domcore
-  title=dom-Node-insertBefore>insertBefore(<var>img</var>,
-  <var>child</var>)</code> on <var>node</var>.
+  <li>Run <code data-anolis-spec=domrange
+  title=dom-Range-insertNode>insertNode(<var>img</var>)</code> on the
+  [[range]].
 
   <li>Run <code data-anolis-spec=domrange
   title=dom-Selection-collapse>collapse()</code> on the [[selection]], with

@@ -2532,35 +2532,8 @@ function myExecCommand(command, showUI, value, range) {
 		// "Run setAttribute("src", value) on img."
 		img.setAttribute("src", value);
 
-		// "If node is a Text node, and offset is not equal to 0 or the length
-		// of node, run splitText(offset) on node."
-		if (node.nodeType == Node.TEXT_NODE
-		&& offset != 0
-		&& offset != node.length) {
-			node.splitText(offset);
-		}
-
-		// "If node is a Text node, and offset is equal to the length of node,
-		// set node to its nextSibling."
-		if (node.nodeType == Node.TEXT_NODE
-		&& offset == node.length) {
-			node = node.nextSibling;
-		}
-
-		// "If node is null or is a Text or Comment node, run insertBefore(img,
-		// node) on the parent of node."
-		if (!node
-		|| node.nodeType == Node.TEXT_NODE
-		|| node.nodeType == Node.COMMENT_NODE) {
-			node.parentNode.insertBefore(img, node);
-		// "Otherwise, let child be the offsetth child of node (or null if
-		// there is no such child), and run insertBefore(img, child) on node."
-		} else {
-			var child = node.childNodes.length == offset
-				? null
-				: node.childNodes[offset];
-			node.insertBefore(img, child);
-		}
+		// "Run insertNode(img) on the range."
+		range.insertNode(img);
 
 		// "Run collapse() on the Selection, with first argument equal to the
 		// parent of img and the second argument equal to one plus the index of

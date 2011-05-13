@@ -27,7 +27,7 @@
 <body class=draft>
 <div class=head id=head>
 <h1>HTML Editing Commands</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-12-may-2011>Work in Progress &mdash; Last Update 12 May 2011</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-13-may-2011>Work in Progress &mdash; Last Update 13 May 2011</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;ayg+spec@aryeh.name&gt;
@@ -2407,21 +2407,8 @@ splitting up parents to ensure validity . . . -->
   on <var title="">img</var>.
   <!-- No alt text, so it's invalid.  This matches all browsers. -->
 
-  <li>If <var title="">node</var> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node, and <var title="">offset</var> is not
-  equal to 0 or the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> of <var title="">node</var>, run <code class=external data-anolis-spec=domcore title=dom-Text-splitText><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-text-splittext>splitText(<var title="">offset</var>)</a></code> on
-  <var title="">node</var>.
-
-  <li>If <var title="">node</var> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node, and <var title="">offset</var> is equal to
-  the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> of <var title="">node</var>, set <var title="">node</var> to its
-  <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code>.
-
-  <li>If <var title="">node</var> is null or is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> or <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#comment>Comment</a></code> node, run
-  <code class=external data-anolis-spec=domcore title=dom-Node-insertBefore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-insertbefore>insertBefore(<var title="">img</var>,
-  <var title="">node</var>)</a></code> on the parent of <var title="">node</var>.
-
-  <li>Otherwise, let <var title="">child</var> be the <var title="">offset</var>th child of
-  <var title="">node</var> (or null if there is no such child), and run <code class=external data-anolis-spec=domcore title=dom-Node-insertBefore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-insertbefore>insertBefore(<var title="">img</var>,
-  <var title="">child</var>)</a></code> on <var title="">node</var>.
+  <li>Run <code class=external data-anolis-spec=domrange title=dom-Range-insertNode><a href=http://html5.org/specs/dom-range.html#dom-range-insertnode>insertNode(<var title="">img</var>)</a></code> on the
+  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>.
 
   <li>Run <code class=external data-anolis-spec=domrange title=dom-Selection-collapse><a href=http://html5.org/specs/dom-range.html#dom-selection-collapse>collapse()</a></code> on the <code class=external data-anolis-spec=domrange><a href=http://html5.org/specs/dom-range.html#selection>Selection</a></code>, with
   first argument equal to the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of <var title="">img</var> and the second

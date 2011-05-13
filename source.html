@@ -2961,12 +2961,22 @@ Sheesh, lists are complicated.
           <li>Set <var>ol</var> to its last [[child]].
         </ol>
 
-        <li>If <var>ol</var> is not an <span>editable</span> [[ol]], let
-        <var>ol</var> be the result of calling <code data-anolis-spec=domcore
-        title=dom-Document-createElement>createElement("ol")</code> on the
-        [[ownerdocument]] of the first member of <var>sublist</var>.  Insert
-        <var>ol</var> into <var>original parent</var> immediately before the
-        first member of <var>sublist</var>.
+        <li>If <var>ol</var> is not an <span>editable</span> [[ol]]:
+
+        <ol>
+          <li>If <var>original parent</var> is a [[p]], <span>split the
+          parent</span> of <var>sublist</var>, with <var>new parent</var> null,
+          and then set <var>original parent</var> to the [[parent]] of the
+          first member of <var>sublist</var>.
+
+          <li>Let <var>ol</var> be the result of calling <code
+          data-anolis-spec=domcore
+          title=dom-Document-createElement>createElement("ol")</code> on the
+          [[ownerdocument]] of the first member of <var>sublist</var>.
+
+          <li>Insert <var>ol</var> into <var>original parent</var> immediately
+          before the first member of <var>sublist</var>.
+        </ol>
 
         <li>Append <var>li</var> as the last [[child]] of <var>ol</var>,
         <span>preserving ranges</span>.

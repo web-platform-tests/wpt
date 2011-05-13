@@ -2912,11 +2912,20 @@ Sheesh, lists are complicated.
           <li>Set <var title="">ol</var> to its last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>.
         </ol>
 
-        <li>If <var title="">ol</var> is not an <a href=#editable>editable</a> <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code>, let
-        <var title="">ol</var> be the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("ol")</a></code> on the
-        <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of the first member of <var title="">sublist</var>.  Insert
-        <var title="">ol</var> into <var title="">original parent</var> immediately before the
-        first member of <var title="">sublist</var>.
+        <li>If <var title="">ol</var> is not an <a href=#editable>editable</a> <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code>:
+
+        <ol>
+          <li>If <var title="">original parent</var> is a <code class=external data-anolis-spec=html title="the p element"><a href=http://www.whatwg.org/html/#the-p-element>p</a></code>, <a href=#split-the-parent>split the
+          parent</a> of <var title="">sublist</var>, with <var title="">new parent</var> null,
+          and then set <var title="">original parent</var> to the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of the
+          first member of <var title="">sublist</var>.
+
+          <li>Let <var title="">ol</var> be the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("ol")</a></code> on the
+          <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of the first member of <var title="">sublist</var>.
+
+          <li>Insert <var title="">ol</var> into <var title="">original parent</var> immediately
+          before the first member of <var title="">sublist</var>.
+        </ol>
 
         <li>Append <var title="">li</var> as the last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">ol</var>,
         <a href=#preserving-ranges>preserving ranges</a>.

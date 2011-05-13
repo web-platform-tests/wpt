@@ -2779,13 +2779,26 @@ function myExecCommand(command, showUI, value, range) {
 						ol = ol.lastChild;
 					}
 
-					// "If ol is not an editable ol, let ol be the result of
-					// calling createElement("ol") on the ownerDocument of the
-					// first member of sublist. Insert ol into original parent
-					// immediately before the first member of sublist."
+					// "If ol is not an editable ol:
 					if (!isEditable(ol)
 					|| !isHtmlElement(ol, "OL")) {
+						// "If original parent is a p, split the parent of
+						// sublist, with new parent null, and then set original
+						// parent to the parent of the first member of
+						// sublist."
+						if (isHtmlElement(originalParent, "P")) {
+							splitParent(sublist, null);
+
+							originalParent = sublist[0].parentNode;
+						}
+
+						// "Let ol be the result of calling createElement("ol")
+						// on the ownerDocument of the first member of
+						// sublist."
 						ol = sublist[0].ownerDocument.createElement("ol");
+
+						// "Insert ol into original parent immediately before
+						// the first member of sublist."
 						originalParent.insertBefore(ol, sublist[0]);
 					}
 

@@ -1604,7 +1604,7 @@ function doBrowserCell(tr, test, command, styleWithCss) {
 
 		testDiv.contentEditable = "inherit";
 		testDiv.removeAttribute("spellcheck");
-		var compareDiv1 = browserCell.firstChild.cloneNode(true);
+		var compareDiv1 = testDiv.cloneNode(true);
 
 		if (getSelection().rangeCount) {
 			addBrackets(getSelection().getRangeAt(0));

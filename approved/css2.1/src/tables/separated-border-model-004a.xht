@@ -1,0 +1,77 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+ <head>
+ 
+  <title>CSS Test: width of CSS table in border-collapse separate model</title>
+
+  <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
+  <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#separated-borders" title="17.6.1 The separated borders model" />
+  <meta content="" name="flags" />
+  <meta content="The width of a CSS table is the distance from the left inner padding edge to the right inner padding edge (including the table border-spacing but excluding table padding and table borders)." name="assert" />
+
+  <style type="text/css"><![CDATA[
+  div#table
+  {
+  background-color: green;
+  border: white solid 25px;
+  border-spacing: 17px 0;
+  display: table;
+  padding: 0px;
+  table-layout: fixed;
+  width: 100px; 
+  /* 
+  The set width (100px) is larger than sum of columns' width plus cell spacing 
+  and cell borders
+
+   17px   (left-most border-spacing)
+   16px   (div#td's width)
+   17px   (right-most border-spacing)
+  -----
+   50px : sum of columns plus cell spacing and cell borders
+
+   100px (width of table)
+  - 50px (sum of columns plus cell spacing and cell borders)
+  ------
+    50px : such extra (exceeding) 50px width will be distributed over 
+    the columns, therefore given to the unique cell of the table.
+  */
+  }
+
+  div#tr {display: table-row;}
+
+  div#td
+  {
+  display: table-cell;
+  height: 100px;
+  width: 16px;
+  }
+
+  div#reference
+  {
+  background-color: green;
+  height: 100px;
+  left: 25px;
+  position: relative;
+  top: -21px;  /* To make both squares' width easy to compare visually */
+  width: 100px;
+  }
+  ]]></style>
+
+ </head>
+
+ <body>
+
+  <p>Test passes if there are 2 filled green squares with the <strong>same width</strong>.</p>
+
+  <div id="table">
+   <div id="tr">
+    <div id="td"></div>
+   </div>
+  </div>
+
+  <div id="reference"></div>
+
+ </body>
+</html>

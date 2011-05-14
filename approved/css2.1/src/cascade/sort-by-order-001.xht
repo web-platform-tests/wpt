@@ -1,0 +1,39 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+ <head>
+
+  <title>CSS Test: Casdading order - sort by order specified</title>
+
+  <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/" />
+  <link rel="help" title="6.4.1 Cascading order" href="http://www.w3.org/TR/CSS21/cascade.html#cascading-order" />
+  <meta content="" name="flags" />
+  <meta content="If 2 declarations have the same weight (normal or !important), the same origin (author, user or user agent) and the same specificity, then the latter specified wins." name="assert" />
+
+  <style type="text/css"><![CDATA[
+  div#hgroup > h1  /* a=0 b=1 c=0 d=2 -> specificity = 0,1,0,2 */
+  {
+  background-color: red;
+  color: white;
+  }
+  
+  div > h1#heading /* a=0 b=1 c=0 d=2 -> specificity = 0,1,0,2 */ 
+  {
+  background-color: green;
+  color: white;
+  }
+  ]]></style>
+
+ </head>
+
+ <body>
+
+  <p>Test passes if the sentence has a green background and no red.</p>
+
+  <div id="hgroup">
+    <h1 id="heading">This sentence should have a green background.</h1>
+  </div>
+
+ </body>
+</html>

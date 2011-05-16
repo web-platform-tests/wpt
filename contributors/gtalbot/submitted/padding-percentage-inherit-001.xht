@@ -29,6 +29,7 @@
   div#parent
   {
   background-color: lime;
+  height: 150px;
   padding: 20%; /* 20% of 300px == 60px; */
   width: 150px;
   }
@@ -36,16 +37,13 @@
   div#child
   {
   padding: inherit; 
-  /* computes to 20% which is then applied on #child's containing block width: 20% of 150px == 30px */
+  /* computes to 20% which is then applied 
+  on #child's containing block width: 20% of 150px == 30px */
   }
 
   div#abs-pos-overlapping-lime
   {
   left: 98px;
-  position: absolute;
-  top: 162px;
-  }
-
   /*
        8px (body's margin-left)
    +  60px (#parent's padding-left) 
@@ -53,6 +51,9 @@
   ==================
       98px
   */
+  position: absolute;
+  top: 162px;
+  }
 
   /* 
   max(8px, 16px) (margin collapsing between body's margin-top and p's margin-top) 
@@ -70,16 +71,16 @@
 
  <body>
 
-  <p>Test passes if there is a bright green<br />
-  square below and if there is no red.</p>
+  <p>Test passes if there is a filled<br />
+  bright green square and no red.</p>
 
   <div id="grand-parent">
     <div id="parent">
-      <div id="child"><img src="support/red_box.png" alt="Image download support must be enabled" /></div>
+      <div id="child"><img src="support/100x100-red.png" alt="Image download support must be enabled" /></div>
     </div>
   </div>
 
-  <div id="abs-pos-overlapping-lime"><img src="support/lime_color.png" alt="Image download support must be enabled" /></div>
+  <div id="abs-pos-overlapping-lime"><img src="support/100x100-lime.png" alt="Image download support must be enabled" /></div>
 
  </body>
 </html>

@@ -41,6 +41,8 @@
   width of containing block :    0px
   
   Therefore 'width: auto' must be resolved as 'width: 200px'.
+  Therefore div#child's green border-right should overlap perfectly 
+  div#containing-block's red border-right.
   */  
   ]]></style>
 
@@ -48,7 +50,7 @@
 
  <body>
 
-  <p>Test passes if there is a green square below and if there is no red.</p>
+  <p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
 
   <div id="containing-block">
     <div id="child"></div>

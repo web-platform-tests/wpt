@@ -3120,13 +3120,7 @@ insertOrderedList.
 <ol>
   <li>If <var>node</var> is not <span>editable</span>, abort these steps.
 
-  <li>If <var>node</var> is an [[ol]] or [[ul]] with no attributes except
-  possibly <code data-anolis-spec=html title=attr-ol-reversed>reversed</code>,
-  <code data-anolis-spec=html title=attr-ol-start>start</code>, and/or <code
-  data-anolis-spec=html title=attr-ol-type>type</code>; or is an [[ol]] or
-  [[ul]] whose [[parent]] is also an [[ol]] or [[ul]]:
-  <!-- If it has reversed/start/type, those can't reasonably be preserved no
-  matter what.  Not clear how it's supposed to get them, anyway. -->
+  <li>If <var>node</var> is an [[ol]] or [[ul]]:
 
   <div class=XXX>
   <p>We don't handle a case like
@@ -3140,20 +3134,6 @@ insertOrderedList.
   </div>
 
   <ol>
-    <li>Let <var>children</var> be the [[children]] of <var>node</var>.
-
-    <li>Remove <var>node</var>, <span>preserving its descendants</span>.
-
-    <li><span>Fix orphaned list items</span> in <var>children</var>.
-
-    <li>Abort these steps.
-  </ol>
-
-  <li>If <var>node</var> is an [[ol]] or [[ul]]:
-  <!-- But it has non-list attributes, and its parent is not an ol/ul, or we'd
-  have handled it in the previous step. -->
-
-  <ol>
     <li>Unset the <code data-anolis-spec=html
     title=attr-ol-reversed>reversed</code>, <code data-anolis-spec=html
     title=attr-ol-start>start</code>, and <code data-anolis-spec=html
@@ -3162,7 +3142,10 @@ insertOrderedList.
 
     <li>Let <var>children</var> be the [[children]] of <var>node</var>.
 
-    <li><span>Set the tag name</span> of <var>node</var> to "div".
+    <li>If <var>node</var> has attributes, and its [[parent]] or not an [[ol]]
+    or [[ul]], <span>set the tag name</span> of <var>node</var> to "div".
+
+    <li>Otherwise remove <var>node</var>, <span>preserving its descendants</span>.
 
     <li><span>Fix orphaned list items</span> in <var>children</var>.
 

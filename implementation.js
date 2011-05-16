@@ -3246,27 +3246,6 @@ function outdentNode(node) {
 		return;
 	}
 
-	// "If node is an ol or ul with no attributes except possibly reversed,
-	// start, and/or type; or is an ol or ul whose parent is also an ol or ul:"
-	if ((isHtmlElement(node, "OL") || isHtmlElement(node, "UL"))
-	&& (
-		isHtmlElement(node.parentNode, "OL")
-		|| isHtmlElement(node.parentNode, "UL")
-		|| [].every.call(node.attributes, function (attr) { return ["reversed", "start", "type"].indexOf(attr.name) != -1 })
-	)) {
-		// "Let children be the children of node."
-		var children = [].slice.call(node.childNodes);
-
-		// "Remove node, preserving its descendants."
-		removePreservingDescendants(node);
-
-		// "Fix orphaned list items in children."
-		fixOrphanedListItems(children);
-
-		// "Abort these steps."
-		return;
-	}
-
 	// "If node is an ol or ul:"
 	if (isHtmlElement(node, "OL")
 	|| isHtmlElement(node, "UL")) {
@@ -3279,8 +3258,17 @@ function outdentNode(node) {
 		// "Let children be the children of node."
 		var children = [].slice.call(node.childNodes);
 
-		// "Set the tag name of node to "div"."
-		setTagName(node, "div");
+		// "If node has attributes, and its parent or not an ol or ul, set the
+		// tag name of node to "div"."
+		if (node.attributes.length
+		&& !isHtmlElement(node.parentNode, "OL")
+		&& !isHtmlElement(node.parentNode, "UL")) {
+			setTagName(node, "div");
+
+		// "Otherwise remove node, preserving its descendants."
+		} else {
+			removePreservingDescendants(node);
+		}
 
 		// "Fix orphaned list items in children."
 		fixOrphanedListItems(children);

@@ -3072,12 +3072,7 @@ insertOrderedList.
 <ol>
   <li>If <var title="">node</var> is not <a href=#editable>editable</a>, abort these steps.
 
-  <li>If <var title="">node</var> is an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code> or <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code> with no attributes except
-  possibly <code class=external data-anolis-spec=html title=attr-ol-reversed><a href=http://www.whatwg.org/html/#attr-ol-reversed>reversed</a></code>,
-  <code class=external data-anolis-spec=html title=attr-ol-start><a href=http://www.whatwg.org/html/#attr-ol-start>start</a></code>, and/or <code class=external data-anolis-spec=html title=attr-ol-type><a href=http://www.whatwg.org/html/#attr-ol-type>type</a></code>; or is an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code> or
-  <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code> whose <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is also an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code> or <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code>:
-  <!-- If it has reversed/start/type, those can't reasonably be preserved no
-  matter what.  Not clear how it's supposed to get them, anyway. -->
+  <li>If <var title="">node</var> is an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code> or <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code>:
 
   <div class=XXX>
   <p>We don't handle a case like
@@ -3091,26 +3086,15 @@ insertOrderedList.
   </div>
 
   <ol>
-    <li>Let <var title="">children</var> be the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a> of <var title="">node</var>.
-
-    <li>Remove <var title="">node</var>, <a href=#preserving-its-descendants>preserving its descendants</a>.
-
-    <li><a href=#fix-orphaned-list-items>Fix orphaned list items</a> in <var title="">children</var>.
-
-    <li>Abort these steps.
-  </ol>
-
-  <li>If <var title="">node</var> is an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code> or <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code>:
-  <!-- But it has non-list attributes, and its parent is not an ol/ul, or we'd
-  have handled it in the previous step. -->
-
-  <ol>
     <li>Unset the <code class=external data-anolis-spec=html title=attr-ol-reversed><a href=http://www.whatwg.org/html/#attr-ol-reversed>reversed</a></code>, <code class=external data-anolis-spec=html title=attr-ol-start><a href=http://www.whatwg.org/html/#attr-ol-start>start</a></code>, and <code class=external data-anolis-spec=html title=attr-ol-type><a href=http://www.whatwg.org/html/#attr-ol-type>type</a></code> attributes of <var title="">node</var>, if any are
     set.
 
     <li>Let <var title="">children</var> be the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a> of <var title="">node</var>.
 
-    <li><a href=#set-the-tag-name>Set the tag name</a> of <var title="">node</var> to "div".
+    <li>If <var title="">node</var> has attributes, and its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> or not an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code>
+    or <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code>, <a href=#set-the-tag-name>set the tag name</a> of <var title="">node</var> to "div".
+
+    <li>Otherwise remove <var title="">node</var>, <a href=#preserving-its-descendants>preserving its descendants</a>.
 
     <li><a href=#fix-orphaned-list-items>Fix orphaned list items</a> in <var title="">children</var>.
 

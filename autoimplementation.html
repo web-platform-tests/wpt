@@ -790,6 +790,16 @@ var tests = {
 		'<p>[foo<div style="margin: 0 40px"><p>bar]<p>baz</div>',
 		'<ol><li>foo</ol><div style="margin: 0 40px"><p>[bar]<p>baz</div>',
 
+		// Attributes
+		'<ul id=abc><li>foo<li>[bar]<li>baz</ul>',
+		'<ul style=color:red><li>foo<li>[bar]<li>baz</ul>',
+		'<ul style=text-indent:1em><li>foo<li>[bar]<li>baz</ul>',
+		'<ul id=abc><li>[foo]<li>bar<li>baz</ul>',
+		'<ul style=color:red><li>[foo]<li>bar<li>baz</ul>',
+		'<ul style=text-indent:1em><li>[foo]<li>bar<li>baz</ul>',
+		'<ul id=abc><li>foo<li>bar<li>[baz]</ul>',
+		'<ul style=color:red><li>foo<li>bar<li>[baz]</ul>',
+		'<ul style=text-indent:1em><li>foo<li>bar<li>[baz]</ul>',
 	],
 	insertunorderedlist: [
 	],

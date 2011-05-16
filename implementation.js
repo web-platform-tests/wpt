@@ -2489,22 +2489,9 @@ function myExecCommand(command, showUI, value, range) {
 		// "Run deleteContents() on the range."
 		range.deleteContents();
 
-		// "Let (node, offset) be the range's start."
-		var node = range.startContainer;
-		var offset = range.startOffset;
-
-		// "If node is a Text or Comment node and its parent is null, abort
-		// these steps and do nothing."
-		if (!node.parentNode
-		&& (node.nodeType == Node.TEXT_NODE
-		|| node.nodeType == Node.COMMENT_NODE)) {
-			return;
-		}
-
 		// "Let img be the result of calling createElement("img") on the
-		// ownerDocument of node (or on node itself if it's a Document)."
-		var img = (node.nodeType == Node.DOCUMENT_NODE
-			? node : node.ownerDocument).createElement("img");
+		// context object."
+		var img = document.createElement("img");
 
 		// "Run setAttribute("src", value) on img."
 		img.setAttribute("src", value);

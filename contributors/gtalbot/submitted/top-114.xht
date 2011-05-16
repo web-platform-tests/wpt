@@ -15,13 +15,13 @@
   <style type="text/css"><![CDATA[
   div {position: relative;}  
   
-  #grand-parent-rel-pos
+  div#grand-parent-rel-pos
   {
   height: 400px;
   width: 600px;
   }
 
-  #red-rel-pos-overlapped
+  div#red-rel-pos-overlapped
   {
   background-color: red;
   color: white;
@@ -31,7 +31,7 @@
   width: 100px;
   }
 
-  #parent-rel-pos
+  div#parent-rel-pos
   {
   height: 0px;
   left: 50%; /* 50% x 600px == 300px */
@@ -41,9 +41,10 @@
   width: 100px;
   }
 
-  #green-child-rel-pos-inherit-overlapping
+  div#green-child-rel-pos-inherit-overlapping
   {
   background-color: green;
+  height: 100px;
   left: 0px;
   top: inherit;
   /*
@@ -63,7 +64,6 @@
   block (#parent-rel-pos) which is 0px.
   =====================================
   */
-  height: 100px;
   width: 100px;
   }
   ]]></style>
@@ -72,7 +72,7 @@
 
  <body>
 
-  <p>Test is passed if there is a green square and if there is no red.</p>
+  <p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
 
   <div id="grand-parent-rel-pos">
     <div id="red-rel-pos-overlapped">test FAILED</div>

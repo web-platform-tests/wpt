@@ -2864,9 +2864,9 @@ function myExecCommand(command, showUI, value, range) {
 				continue;
 			}
 
-			// "If the last member of node list is an ancestor of node, or if
-			// node is not editable, continue with the next node."
-			if (isAncestor(nodeList[nodeList.length - 1], node)
+			// "If the last member of node list (if any) is an ancestor of
+			// node, or if node is not editable, continue with the next node."
+			if ((nodeList.length && isAncestor(nodeList[nodeList.length - 1], node))
 			|| !isEditable(node)) {
 				continue;
 			}

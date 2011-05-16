@@ -3072,42 +3072,6 @@ insertOrderedList.
 <ol>
   <li>If <var title="">node</var> is not <a href=#editable>editable</a>, abort these steps.
 
-  <li>If <var title="">node</var> is an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code> or <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code>:
-
-  <div class=XXX>
-  <p>We don't handle a case like
-
-  </p><xmp><ol><ol style="color: red"><li>foo<li>bar</ol><li>baz</ol></xmp>
-
-  <p>If the inner <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code> is selected to be outdented, "foo" and "bar" will stop
-  being red.  It seems nontrivial to handle this case in general, since we
-  can't group <code class=external data-anolis-spec=html title="the li element"><a href=http://www.whatwg.org/html/#the-li-element>li</a></code>s.  If the list we're outdenting is a child of a non-list,
-  then we can just change it to a div.
-  </div>
-  <!--
-  Chrome 12 dev seems to special-case style attributes by converting them to
-  the corresponding inline markup elements (at least in easy cases like color).
-  For other attributes and non-WebKit browsers (IE9/FF4/O11.10), it looks like
-  all the attributes are just removed.  Maybe we should try to copy WebKit
-  here.
-  -->
-
-  <ol>
-    <li>Unset the <code class=external data-anolis-spec=html title=attr-ol-reversed><a href=http://www.whatwg.org/html/#attr-ol-reversed>reversed</a></code>, <code class=external data-anolis-spec=html title=attr-ol-start><a href=http://www.whatwg.org/html/#attr-ol-start>start</a></code>, and <code class=external data-anolis-spec=html title=attr-ol-type><a href=http://www.whatwg.org/html/#attr-ol-type>type</a></code> attributes of <var title="">node</var>, if any are
-    set.
-
-    <li>Let <var title="">children</var> be the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a> of <var title="">node</var>.
-
-    <li>If <var title="">node</var> has attributes, and its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> or not an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code>
-    or <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code>, <a href=#set-the-tag-name>set the tag name</a> of <var title="">node</var> to "div".
-
-    <li>Otherwise remove <var title="">node</var>, <a href=#preserving-its-descendants>preserving its descendants</a>.
-
-    <li><a href=#fix-orphaned-list-items>Fix orphaned list items</a> in <var title="">children</var>.
-
-    <li>Abort these steps.
-  </ol>
-
   <!-- The easy case is when the whole element is indented.  In this case we
   remove the whole thing indiscriminately.  In the case of blockquotes
   created by IE, this might change the direction of some children, but then
@@ -3191,6 +3155,47 @@ insertOrderedList.
     <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> that is not a <a href=#potential-indentation-element>potential indentation element</a>,
     append <var title="">current ancestor</var> to <var title="">ancestor list</var> and then set
     <var title="">current ancestor</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+  </ol>
+
+  <li>If <var title="">current ancestor</var> is not an <a href=#editable>editable</a>
+  <a href=#potential-indentation-element>potential indentation element</a>, and <var title="">node</var> is an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code>
+  or <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code>:
+  <!-- This matches IE9 and Firefox 4.0.  When asked to outdent a list wrapped
+  in an indentation element, Chrome 12 dev removes the list instead of the
+  indentation element.  Opera 11.10 seems to remove both. -->
+
+  <div class=XXX>
+  <p>We don't handle a case like
+
+  </p><xmp><ol><ol style="color: red"><li>foo<li>bar</ol><li>baz</ol></xmp>
+
+  <p>If the inner <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code> is selected to be outdented, "foo" and "bar" will stop
+  being red.  It seems nontrivial to handle this case in general, since we
+  can't group <code class=external data-anolis-spec=html title="the li element"><a href=http://www.whatwg.org/html/#the-li-element>li</a></code>s.  If the list we're outdenting is a child of a non-list,
+  then we can just change it to a div.
+  </div>
+  <!--
+  Chrome 12 dev seems to special-case style attributes by converting them to
+  the corresponding inline markup elements (at least in easy cases like color).
+  For other attributes and non-WebKit browsers (IE9/FF4/O11.10), it looks like
+  all the attributes are just removed.  Maybe we should try to copy WebKit
+  here.
+  -->
+
+  <ol>
+    <li>Unset the <code class=external data-anolis-spec=html title=attr-ol-reversed><a href=http://www.whatwg.org/html/#attr-ol-reversed>reversed</a></code>, <code class=external data-anolis-spec=html title=attr-ol-start><a href=http://www.whatwg.org/html/#attr-ol-start>start</a></code>, and <code class=external data-anolis-spec=html title=attr-ol-type><a href=http://www.whatwg.org/html/#attr-ol-type>type</a></code> attributes of <var title="">node</var>, if any are
+    set.
+
+    <li>Let <var title="">children</var> be the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a> of <var title="">node</var>.
+
+    <li>If <var title="">node</var> has attributes, and its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> or not an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code>
+    or <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code>, <a href=#set-the-tag-name>set the tag name</a> of <var title="">node</var> to "div".
+
+    <li>Otherwise remove <var title="">node</var>, <a href=#preserving-its-descendants>preserving its descendants</a>.
+
+    <li><a href=#fix-orphaned-list-items>Fix orphaned list items</a> in <var title="">children</var>.
+
+    <li>Abort these steps.
   </ol>
 
   <li>If <var title="">current ancestor</var> is not an <a href=#editable>editable</a>

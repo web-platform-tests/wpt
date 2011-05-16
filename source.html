@@ -3120,45 +3120,6 @@ insertOrderedList.
 <ol>
   <li>If <var>node</var> is not <span>editable</span>, abort these steps.
 
-  <li>If <var>node</var> is an [[ol]] or [[ul]]:
-
-  <div class=XXX>
-  <p>We don't handle a case like
-
-  <xmp><ol><ol style="color: red"><li>foo<li>bar</ol><li>baz</ol></xmp>
-
-  <p>If the inner [[ol]] is selected to be outdented, "foo" and "bar" will stop
-  being red.  It seems nontrivial to handle this case in general, since we
-  can't group [[li]]s.  If the list we're outdenting is a child of a non-list,
-  then we can just change it to a div.
-  </div>
-  <!--
-  Chrome 12 dev seems to special-case style attributes by converting them to
-  the corresponding inline markup elements (at least in easy cases like color).
-  For other attributes and non-WebKit browsers (IE9/FF4/O11.10), it looks like
-  all the attributes are just removed.  Maybe we should try to copy WebKit
-  here.
-  -->
-
-  <ol>
-    <li>Unset the <code data-anolis-spec=html
-    title=attr-ol-reversed>reversed</code>, <code data-anolis-spec=html
-    title=attr-ol-start>start</code>, and <code data-anolis-spec=html
-    title=attr-ol-type>type</code> attributes of <var>node</var>, if any are
-    set.
-
-    <li>Let <var>children</var> be the [[children]] of <var>node</var>.
-
-    <li>If <var>node</var> has attributes, and its [[parent]] or not an [[ol]]
-    or [[ul]], <span>set the tag name</span> of <var>node</var> to "div".
-
-    <li>Otherwise remove <var>node</var>, <span>preserving its descendants</span>.
-
-    <li><span>Fix orphaned list items</span> in <var>children</var>.
-
-    <li>Abort these steps.
-  </ol>
-
   <!-- The easy case is when the whole element is indented.  In this case we
   remove the whole thing indiscriminately.  In the case of blockquotes
   created by IE, this might change the direction of some children, but then
@@ -3242,6 +3203,50 @@ insertOrderedList.
     [[element]] that is not a <span>potential indentation element</span>,
     append <var>current ancestor</var> to <var>ancestor list</var> and then set
     <var>current ancestor</var> to its [[parent]].
+  </ol>
+
+  <li>If <var>current ancestor</var> is not an <span>editable</span>
+  <span>potential indentation element</span>, and <var>node</var> is an [[ol]]
+  or [[ul]]:
+  <!-- This matches IE9 and Firefox 4.0.  When asked to outdent a list wrapped
+  in an indentation element, Chrome 12 dev removes the list instead of the
+  indentation element.  Opera 11.10 seems to remove both. -->
+
+  <div class=XXX>
+  <p>We don't handle a case like
+
+  <xmp><ol><ol style="color: red"><li>foo<li>bar</ol><li>baz</ol></xmp>
+
+  <p>If the inner [[ol]] is selected to be outdented, "foo" and "bar" will stop
+  being red.  It seems nontrivial to handle this case in general, since we
+  can't group [[li]]s.  If the list we're outdenting is a child of a non-list,
+  then we can just change it to a div.
+  </div>
+  <!--
+  Chrome 12 dev seems to special-case style attributes by converting them to
+  the corresponding inline markup elements (at least in easy cases like color).
+  For other attributes and non-WebKit browsers (IE9/FF4/O11.10), it looks like
+  all the attributes are just removed.  Maybe we should try to copy WebKit
+  here.
+  -->
+
+  <ol>
+    <li>Unset the <code data-anolis-spec=html
+    title=attr-ol-reversed>reversed</code>, <code data-anolis-spec=html
+    title=attr-ol-start>start</code>, and <code data-anolis-spec=html
+    title=attr-ol-type>type</code> attributes of <var>node</var>, if any are
+    set.
+
+    <li>Let <var>children</var> be the [[children]] of <var>node</var>.
+
+    <li>If <var>node</var> has attributes, and its [[parent]] or not an [[ol]]
+    or [[ul]], <span>set the tag name</span> of <var>node</var> to "div".
+
+    <li>Otherwise remove <var>node</var>, <span>preserving its descendants</span>.
+
+    <li><span>Fix orphaned list items</span> in <var>children</var>.
+
+    <li>Abort these steps.
   </ol>
 
   <li>If <var>current ancestor</var> is not an <span>editable</span>

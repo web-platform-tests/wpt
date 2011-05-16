@@ -979,6 +979,10 @@ var tests = {
 		'<ol><li>foo</li><ol id=abc><li>[bar<li>baz]</ol><li>quz</ol>',
 		'<ol><li>foo</li><ol style=color:red><li>[bar<li>baz]</ol><li>quz</ol>',
 		'<ol><li>foo</li><ol style=text-indent:1em><li>[bar<li>baz]</ol><li>quz</ol>',
+
+		// List inside indentation element
+		'<blockquote><ol><li>[foo]</ol></blockquote><p>extra',
+		'<blockquote>foo<ol><li>[bar]</ol>baz</blockquote><p>extra',
 	],
 	removeformat: [
 		'foo[]bar',

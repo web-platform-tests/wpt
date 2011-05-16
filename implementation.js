@@ -3246,37 +3246,6 @@ function outdentNode(node) {
 		return;
 	}
 
-	// "If node is an ol or ul:"
-	if (isHtmlElement(node, "OL")
-	|| isHtmlElement(node, "UL")) {
-		// "Unset the reversed, start, and type attributes of node, if any are
-		// set."
-		node.removeAttribute("reversed");
-		node.removeAttribute("start");
-		node.removeAttribute("type");
-
-		// "Let children be the children of node."
-		var children = [].slice.call(node.childNodes);
-
-		// "If node has attributes, and its parent or not an ol or ul, set the
-		// tag name of node to "div"."
-		if (node.attributes.length
-		&& !isHtmlElement(node.parentNode, "OL")
-		&& !isHtmlElement(node.parentNode, "UL")) {
-			setTagName(node, "div");
-
-		// "Otherwise remove node, preserving its descendants."
-		} else {
-			removePreservingDescendants(node);
-		}
-
-		// "Fix orphaned list items in children."
-		fixOrphanedListItems(children);
-
-		// "Abort these steps."
-		return;
-	}
-
 	// "If node is an indentation element, remove node, preserving its
 	// descendants.  Then abort these steps."
 	if (isIndentationElement(node)) {
@@ -3339,6 +3308,40 @@ function outdentNode(node) {
 			ancestorList.push(currentAncestor);
 			currentAncestor = currentAncestor.parentNode;
 		}
+	}
+
+	// "If current ancestor is not an editable potential indentation element,
+	// and node is an ol or ul:"
+	if ((!isEditable(currentAncestor)
+	|| !isPotentialIndentationElement(currentAncestor))
+	&& (isHtmlElement(node, "OL")
+	|| isHtmlElement(node, "UL"))) {
+		// "Unset the reversed, start, and type attributes of node, if any are
+		// set."
+		node.removeAttribute("reversed");
+		node.removeAttribute("start");
+		node.removeAttribute("type");
+
+		// "Let children be the children of node."
+		var children = [].slice.call(node.childNodes);
+
+		// "If node has attributes, and its parent or not an ol or ul, set the
+		// tag name of node to "div"."
+		if (node.attributes.length
+		&& !isHtmlElement(node.parentNode, "OL")
+		&& !isHtmlElement(node.parentNode, "UL")) {
+			setTagName(node, "div");
+
+		// "Otherwise remove node, preserving its descendants."
+		} else {
+			removePreservingDescendants(node);
+		}
+
+		// "Fix orphaned list items in children."
+		fixOrphanedListItems(children);
+
+		// "Abort these steps."
+		return;
 	}
 
 	// "If current ancestor is not an editable potential indentation element,

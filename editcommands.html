@@ -2992,12 +2992,33 @@ value</a> either "italic" or "oblique".  Otherwise false.
   <li>For each <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> <var title="">node</var> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in <var title="">node list</var>:
 
   <ol>
-    <li>If some <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of <var title="">node</var> is in <var title="">node list</var>,
+    <li>If the last member of <var title="">node list</var> is an <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of
+    <var title="">node</var>, or if <var title="">node</var> is not <a href=#editable>editable</a>,
     continue with the next <var title="">node</var>.
 
-    <li>If <var title="">node</var> has no <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, or is an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code> or <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code>, or
-    is an <code class=external data-anolis-spec=html title="the li element"><a href=http://www.whatwg.org/html/#the-li-element>li</a></code> whose <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code> or <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code>, append it to
-    <var title="">node list</var>.
+    <!--
+    This step is kind of weird.  For regular outdenting, we start at the inside
+    and outdent going out, so that we remove the innermost indentation, on the
+    theory that that will produce the cleanest markup (remove the most nodes).
+    For lists, we remove the outermost indentation, because it makes a
+    difference whether we remove inner or outer indentation, and logically we
+    want to remove outer.  E.g.,
+
+      <ol><li>foo</li><ul><li>bar</li></ul></ol>
+
+    should become
+
+      foo<ul><li>bar</li></ul>
+
+    not
+
+      foo<ol><li>bar</li></ol>.
+
+    But this is a bit weird and I'm wondering if it's really correct.
+    -->
+    <li>If <var title="">node</var> has no <a href=#editable>editable</a> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-descendant title=concept-tree-descendant>descendants</a>, or is
+    an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code> or <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code>, or is an <code class=external data-anolis-spec=html title="the li element"><a href=http://www.whatwg.org/html/#the-li-element>li</a></code> whose <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code> or
+    <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code>, append it to <var title="">node list</var>.
   </ol>
 
   <li>While <var title="">node list</var> is not empty:
@@ -3045,8 +3066,6 @@ insertOrderedList.
 <ol>
   <li>If <var title="">node</var> is not <a href=#editable>editable</a>, abort these steps.
 
-  <p class=XXX>Handle this better for nested editable/non-editable.
-
   <li>If <var title="">node</var> is an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code> or <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code> with no attributes except
   possibly <code class=external data-anolis-spec=html title=attr-ol-reversed><a href=http://www.whatwg.org/html/#attr-ol-reversed>reversed</a></code>,
   <code class=external data-anolis-spec=html title=attr-ol-start><a href=http://www.whatwg.org/html/#attr-ol-start>start</a></code>, and/or <code class=external data-anolis-spec=html title=attr-ol-type><a href=http://www.whatwg.org/html/#attr-ol-type>type</a></code>; or is an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code> or
@@ -3057,7 +3076,7 @@ insertOrderedList.
   <div class=XXX>
   <p>We don't handle a case like
 
-  </p><xmp><ol><ol style="color: red"><li>foo<li>bar</ol><li>baz</xmp>
+  </p><xmp><ol><ol style="color: red"><li>foo<li>bar</ol><li>baz</ol></xmp>
 
   <p>If the inner <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code> is selected to be outdented, "foo" and "bar" will stop
   being red.  It seems nontrivial to handle this case in general, since we
@@ -3066,20 +3085,11 @@ insertOrderedList.
   </div>
 
   <ol>
-    <li>While <var title="">node</var> has <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>:
+    <li>Let <var title="">children</var> be the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a> of <var title="">node</var>.
 
-    <ol>
-      <li>Let <var title="">child</var> be the first <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">node</var>.
+    <li>Remove <var title="">node</var>, <a href=#preserving-its-descendants>preserving its descendants</a>.
 
-      <li>If <var title="">child</var> is an <code class=external data-anolis-spec=html title="the li element"><a href=http://www.whatwg.org/html/#the-li-element>li</a></code> and the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of
-      <var title="">node</var> is not an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code> or <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code>, <a href=#set-the-tag-name>set the tag name</a>
-      of <var title="">child</var> to "div", and set <var title="">child</var> to the result.
-
-      <li>Insert <var title="">child</var> into the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of <var title="">node</var>
-      immediately before <var title="">node</var>, <a href=#preserving-ranges>preserving ranges</a>.
-    </ol>
-
-    <li>Remove <var title="">node</var> from its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+    <li><a href=#fix-orphaned-list-items>Fix orphaned list items</a> in <var title="">children</var>.
 
     <li>Abort these steps.
   </ol>
@@ -3092,13 +3102,11 @@ insertOrderedList.
     <li>Unset the <code class=external data-anolis-spec=html title=attr-ol-reversed><a href=http://www.whatwg.org/html/#attr-ol-reversed>reversed</a></code>, <code class=external data-anolis-spec=html title=attr-ol-start><a href=http://www.whatwg.org/html/#attr-ol-start>start</a></code>, and <code class=external data-anolis-spec=html title=attr-ol-type><a href=http://www.whatwg.org/html/#attr-ol-type>type</a></code> attributes of <var title="">node</var>, if any are
     set.
 
-    <li><a href=#set-the-tag-name>Set the tag name</a> of <var title="">node</var> to "div", and set
-    <var title="">node</var> to the result.
+    <li>Let <var title="">children</var> be the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a> of <var title="">node</var>.
 
-    <li>For each <code class=external data-anolis-spec=html title="the li element"><a href=http://www.whatwg.org/html/#the-li-element>li</a></code> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> <var title="">child</var> of <var title="">node</var>, unset
-    the <code class=external data-anolis-spec=html title=attr-li-value><a href=http://www.whatwg.org/html/#attr-li-value>value</a></code> attribute
-    of <var title="">child</var> if set, then <a href=#set-the-tag-name>set the tag name</a> of
-    <var title="">child</var> to "div".
+    <li><a href=#set-the-tag-name>Set the tag name</a> of <var title="">node</var> to "div".
+
+    <li><a href=#fix-orphaned-list-items>Fix orphaned list items</a> in <var title="">children</var>.
 
     <li>Abort these steps.
   </ol>
@@ -3108,31 +3116,9 @@ insertOrderedList.
   created by IE, this might change the direction of some children, but then
   their direction was probably changed incorrectly in the first place, so no
   harm. -->
-  <li>If <var title="">node</var> is an <a href=#indentation-element>indentation element</a>:
-
-  <ol>
-    <li>If <var title="">node</var>'s <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code> and first <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> are both
-    <a href=#inline-node title="inline node">inline nodes</a>, and its <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code>
-    is not a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code>, then call <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("br")</a></code> on the
-    <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">node</var>, and insert the result into
-    <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> immediately before <var title="">node</var>.
-
-    <li>If <var title="">node</var>'s last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> and <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code> are both <a href=#inline-node title="inline node">inline nodes</a>, and its last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> is not a
-    <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code>, then call <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("br")</a></code> on the
-    <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">node</var>, and insert the result into
-    <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> immediately after <var title="">node</var>.
-
-    <!-- Just to be pedantic . . . it could happen! -->
-    <li>If <var title="">node</var> has no <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, and its <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code> and
-    <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code> are both <a href=#inline-node title="inline node">inline nodes</a>, and
-    its <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code> is not a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code>, then call <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("br")</a></code> on the
-    <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">node</var>, and insert the result into
-    <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> immediately before <var title="">node</var>.
-
-    <li>Remove <var title="">node</var>, <a href=#preserving-its-descendants>preserving its descendants</a>.
-
-    <li>Abort these steps.
-  </ol>
+  <li>If <var title="">node</var> is an <a href=#indentation-element>indentation element</a>, remove
+  <var title="">node</var>, <a href=#preserving-its-descendants>preserving its descendants</a>.  Then abort these
+  steps.
 
   <!-- No browser handles the case of Firefox 4.0 in CSS mode, where it adds a
   margin attribute to an existing element, including Firefox itself.  So let's
@@ -3143,15 +3129,14 @@ insertOrderedList.
   Firefox in CSS mode, for instance (color, font-family, etc.). -->
 
   <ol>
-    <li><a href=#set-the-tag-name>Set the tag name</a> of <var title="">node</var> to "div", and set
-    <var title="">node</var> to the result.
-
     <li>Unset the <code class=external data-anolis-spec=html title=classes><a href=http://www.whatwg.org/html/#classes>class</a></code> and
     <code class=external data-anolis-spec=html title="the dir attribute"><a href=http://www.whatwg.org/html/#the-dir-attribute>dir</a></code>
     attributes of <var title="">node</var>, if any.
 
     <li>Unset the margin, padding, and border CSS properties of
     <var title="">node</var>.
+
+    <li><a href=#set-the-tag-name>Set the tag name</a> of <var title="">node</var> to "div".
 
     <li>Abort these steps.
   </ol>
@@ -3256,16 +3241,28 @@ insertOrderedList.
   <li><a href=#split-the-parent>Split the parent</a> of <var title="">node list</var>, with <var title="">new
   parent</var> null.
 
-  <li>For each <var title="">node</var> in <var title="">node list</var>:
+  <li><a href=#fix-orphaned-list-items>Fix orphaned list items</a> in <var title="">node list</var>.
+</ol>
+
+<p>To <dfn id=fix-orphaned-list-items>fix orphaned list items</dfn> in a list of <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a> <var title="">node
+list</var>:
+
+<ol>
+  <li>For each <code class=external data-anolis-spec=html title="the li element"><a href=http://www.whatwg.org/html/#the-li-element>li</a></code> <var title="">item</var> in <var title="">node list</var>:
 
   <ol>
-    <li>If <var title="">node</var> is an <code class=external data-anolis-spec=html title="the li element"><a href=http://www.whatwg.org/html/#the-li-element>li</a></code> with no attributes and its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>
-    is not an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code> or <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code>, remove <var title="">node</var> from its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>,
-    <a href=#preserving-its-descendants>preserving its descendants</a>.
+      <li>If <var title="">item</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is not an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code>, unset
+      <var title="">item</var>'s <code class=external data-anolis-spec=html title=attr-li-value><a href=http://www.whatwg.org/html/#attr-li-value>value</a></code> attribute, if set.
+      <!-- IE9, Firefox 4.0, and Opera 11.10 keep the value attribute even if
+      the parent is now a ul.  Chrome 12 dev strips it even if the parent is
+      now an ol.  The spec makes more sense. -->
 
-    <li>Otherwise, if <var title="">node</var> is an <code class=external data-anolis-spec=html title="the li element"><a href=http://www.whatwg.org/html/#the-li-element>li</a></code> and its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is not an
-    <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code> or <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code>, <a href=#set-the-tag-name>set the tag name</a> of <var title="">node</var> to
-    "div".
+      <li>If <var title="">item</var> has no attributes and its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is not an
+      <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code> or <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code>, remove <var title="">item</var>, <a href=#preserving-its-descendants>preserving its
+      descendants</a>.
+
+      <li>Otherwise, if <var title="">item</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is not an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code> or
+      <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code>, <a href=#set-the-tag-name>set the tag name</a> of <var title="">item</var> to "div".
   </ol>
 </ol>
 

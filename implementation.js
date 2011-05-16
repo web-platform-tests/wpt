@@ -584,6 +584,16 @@ function isEditable(node) {
 		&& (isEditingHost(node.parentNode) || isEditable(node.parentNode));
 }
 
+function hasEditableDescendants(node) {
+	for (var i = 0; i < node.childNodes.length; i++) {
+		if (isEditable(node.childNodes[i])
+		|| hasEditableDescendants(node.childNodes[i])) {
+			return true;
+		}
+	}
+	return false;
+}
+
 /**
  * "A Node is effectively contained in a Range if either it is contained in the
  * Range; or it is the Range's start node, it is a Text node, and its length is
@@ -2851,18 +2861,16 @@ function myExecCommand(command, showUI, value, range) {
 				continue;
 			}
 
-			// "If some ancestor of node is in node list, continue with the
-			// next node."
-			//
-			// We only need to check the last node on the list, if you think
-			// about it.
-			if (isAncestor(nodeList[nodeList.length - 1], node)) {
+			// "If the last member of node list is an ancestor of node, or if
+			// node is not editable, continue with the next node."
+			if (isAncestor(nodeList[nodeList.length - 1], node)
+			|| !isEditable(node)) {
 				continue;
 			}
 
-			// "If node has no children, or is an ol or ul, or is an li whose
-			// parent is an ol or ul, append it to node list."
-			if (!node.hasChildNodes()
+			// "If node has no editable descendants, or is an ol or ul, or is
+			// an li whose parent is an ol or ul, append it to node list."
+			if (!hasEditableDescendants(node)
 			|| isHtmlElement(node, "OL")
 			|| isHtmlElement(node, "UL")
 			|| (isHtmlElement(node, "LI")
@@ -3240,27 +3248,14 @@ function outdentNode(node) {
 		|| isHtmlElement(node.parentNode, "UL")
 		|| [].every.call(node.attributes, function (attr) { return ["reversed", "start", "type"].indexOf(attr.name) != -1 })
 	)) {
-		// "While node has children:"
-		while (node.hasChildNodes()) {
-			// "Let child be the first child of node."
-			var child = node.firstChild;
+		// "Let children be the children of node."
+		var children = [].slice.call(node.childNodes);
 
-			// "If child is an li and the parent of node is not an ol or ul,
-			// set the tag name of child to "div", and set child to the
-			// result."
-			if (isHtmlElement(child, "LI")
-			&& !isHtmlElement(node.parentNode, "OL")
-			&& !isHtmlElement(node.parentNode, "UL")) {
-				child = setTagName(child, "div");
-			}
+		// "Remove node, preserving its descendants."
+		removePreservingDescendants(node);
 
-			// "Insert child into the parent of node immediately before node,
-			// preserving ranges."
-			movePreservingRanges(child, node.parentNode, getNodeIndex(node));
-		}
-
-		// "Remove node from its parent."
-		node.parentNode.removeChild(node);
+		// "Fix orphaned list items in children."
+		fixOrphanedListItems(children);
 
 		// "Abort these steps."
 		return;
@@ -3275,69 +3270,28 @@ function outdentNode(node) {
 		node.removeAttribute("start");
 		node.removeAttribute("type");
 
-		// "Set the tag name of node to "div", and set node to the result."
-		node = setTagName(node, "div");
+		// "Let children be the children of node."
+		var children = [].slice.call(node.childNodes);
 
-		// "For each li child child of node, unset the value attribute of child
-		// if set, then set the tag name of child to "div"."
-		for (var i = 0; i < node.childNodes.length; i++) {
-			var child = node.childNodes[i];
+		// "Set the tag name of node to "div"."
+		setTagName(node, "div");
 
-			if (isHtmlElement(child, "LI")) {
-				child.removeAttribute("value");
-				setTagName(child, "div");
-			}
-		}
+		// "Fix orphaned list items in children."
+		fixOrphanedListItems(children);
 
 		// "Abort these steps."
 		return;
 	}
 
-	// "If node is an indentation element:"
+	// "If node is an indentation element, remove node, preserving its
+	// descendants.  Then abort these steps."
 	if (isIndentationElement(node)) {
-		// "If node's previousSibling and first child are both inline nodes,
-		// and its previousSibling is not a br, then call createElement("br")
-		// on the ownerDocument of node, and insert the result into node's
-		// parent immediately before node."
-		if (isInlineNode(node.previousSibling)
-		&& isInlineNode(node.firstChild)
-		&& !isHtmlElement(node.previousSibling, "BR")) {
-			node.parentNode.insertBefore(node.ownerDocument.createElement("br"), node);
-		}
-
-		// "If node's last child and nextSibling are both inline nodes, and its
-		// last child is not a br, then call createElement("br") on the
-		// ownerDocument of node, and insert the result into node's parent
-		// immediately after node."
-		if (isInlineNode(node.lastChild)
-		&& isInlineNode(node.nextSibling)
-		&& !isHtmlElement(node.lastChild, "BR")) {
-			node.parentNode.insertBefore(node.ownerDocument.createElement("br"), node.nextSibling);
-		}
-
-		// "If node has no children, and its previousSibling and nextSibling
-		// are both inline nodes, and its previousSibling is not a br, then
-		// call createElement("br") on the ownerDocument of node, and insert
-		// the result into node's parent immediately before node."
-		if (!node.hasChildNodes()
-		&& isInlineNode(node.previousSibling)
-		&& isInlineNode(node.nextSibling)
-		&& !isHtmlElement(node.previousSibling, "BR")) {
-			node.parentNode.insertBefore(node.ownerDocument.createElement("br"), node);
-		}
-
-		// "Remove node, preserving its descendants."
 		removePreservingDescendants(node);
-
-		// "Abort these steps."
 		return;
 	}
 
 	// "If node is a potential indentation element:"
 	if (isPotentialIndentationElement(node)) {
-		// "Set the tag name of node to "div", and set node to the result."
-		node = setTagName(node, "div");
-
 		// "Unset the class and dir attributes of node, if any."
 		node.removeAttribute("class");
 		node.removeAttribute("dir");
@@ -3349,6 +3303,9 @@ function outdentNode(node) {
 		if (node.getAttribute("style") == "") {
 			node.removeAttribute("style");
 		}
+
+		// "Set the tag name of node to "div"."
+		setTagName(node, "div");
 
 		// "Abort these steps."
 		return;
@@ -3444,24 +3401,36 @@ function listOutdent(nodeList) {
 	// "Split the parent of node list, with new parent null."
 	splitParent(nodeList, null);
 
-	// "For each node in node list:"
+	// "Fix orphaned list items in node list."
+	fixOrphanedListItems(nodeList);
+}
+
+function fixOrphanedListItems(nodeList) {
+	// "For each li item in node list:"
 	for (var i = 0; i < nodeList.length; i++) {
-		var node = nodeList[i];
+		var item = nodeList[i];
+		if (!isHtmlElement(item, "LI")) {
+			continue;
+		}
 
-		// "If node is an li with no attributes and its parent is not an ol or
-		// ul, remove node from its parent, preserving its descendants."
-		if (isHtmlElement(node, "LI")
-		&& !node.attributes.length
-		&& !isHtmlElement(node.parentNode, "OL")
-		&& !isHtmlElement(node.parentNode, "UL")) {
-			removePreservingDescendants(node);
+		// "If item's parent is not an ol, unset item's value attribute, if
+		// set."
+		if (!isHtmlElement(item.parentNode, "OL")) {
+			item.removeAttribute("value");
+		}
 
-		// "Otherwise, if node is an li and its parent is not an ol or ul, set
-		// the tag name of node to "div"."
-		} else if (isHtmlElement(node, "LI")
-		&& !isHtmlElement(node.parentNode, "OL")
-		&& !isHtmlElement(node.parentNode, "UL")) {
-			setTagName(node, "div");
+		// "If item has no attributes and its parent is not an ol or ul, remove
+		// item, preserving its descendants."
+		if (!item.attributes.length
+		&& !isHtmlElement(item.parentNode, "OL")
+		&& !isHtmlElement(item.parentNode, "UL")) {
+			removePreservingDescendants(item);
+
+		// "Otherwise, if item's parent is not an ol or ul, set the tag name of
+		// item to "div"."
+		} else if (!isHtmlElement(item.parentNode, "OL")
+		&& !isHtmlElement(item.parentNode, "UL")) {
+			setTagName(item, "div");
 		}
 	}
 }

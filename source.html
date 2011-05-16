@@ -3040,12 +3040,33 @@ value</span> either "italic" or "oblique".  Otherwise false.
   <li>For each [[node]] <var>node</var> [[contained]] in <var>node list</var>:
 
   <ol>
-    <li>If some [[ancestor]] of <var>node</var> is in <var>node list</var>,
+    <li>If the last member of <var>node list</var> is an [[ancestor]] of
+    <var>node</var>, or if <var>node</var> is not <span>editable</span>,
     continue with the next <var>node</var>.
 
-    <li>If <var>node</var> has no [[children]], or is an [[ol]] or [[ul]], or
-    is an [[li]] whose [[parent]] is an [[ol]] or [[ul]], append it to
-    <var>node list</var>.
+    <!--
+    This step is kind of weird.  For regular outdenting, we start at the inside
+    and outdent going out, so that we remove the innermost indentation, on the
+    theory that that will produce the cleanest markup (remove the most nodes).
+    For lists, we remove the outermost indentation, because it makes a
+    difference whether we remove inner or outer indentation, and logically we
+    want to remove outer.  E.g.,
+
+      <ol><li>foo</li><ul><li>bar</li></ul></ol>
+
+    should become
+
+      foo<ul><li>bar</li></ul>
+
+    not
+
+      foo<ol><li>bar</li></ol>.
+
+    But this is a bit weird and I'm wondering if it's really correct.
+    -->
+    <li>If <var>node</var> has no <span>editable</span> [[descendants]], or is
+    an [[ol]] or [[ul]], or is an [[li]] whose [[parent]] is an [[ol]] or
+    [[ul]], append it to <var>node list</var>.
   </ol>
 
   <li>While <var>node list</var> is not empty:
@@ -3093,8 +3114,6 @@ insertOrderedList.
 <ol>
   <li>If <var>node</var> is not <span>editable</span>, abort these steps.
 
-  <p class=XXX>Handle this better for nested editable/non-editable.
-
   <li>If <var>node</var> is an [[ol]] or [[ul]] with no attributes except
   possibly <code data-anolis-spec=html title=attr-ol-reversed>reversed</code>,
   <code data-anolis-spec=html title=attr-ol-start>start</code>, and/or <code
@@ -3106,7 +3125,7 @@ insertOrderedList.
   <div class=XXX>
   <p>We don't handle a case like
 
-  <xmp><ol><ol style="color: red"><li>foo<li>bar</ol><li>baz</xmp>
+  <xmp><ol><ol style="color: red"><li>foo<li>bar</ol><li>baz</ol></xmp>
 
   <p>If the inner [[ol]] is selected to be outdented, "foo" and "bar" will stop
   being red.  It seems nontrivial to handle this case in general, since we
@@ -3115,20 +3134,11 @@ insertOrderedList.
   </div>
 
   <ol>
-    <li>While <var>node</var> has [[children]]:
+    <li>Let <var>children</var> be the [[children]] of <var>node</var>.
 
-    <ol>
-      <li>Let <var>child</var> be the first [[child]] of <var>node</var>.
+    <li>Remove <var>node</var>, <span>preserving its descendants</span>.
 
-      <li>If <var>child</var> is an [[li]] and the [[parent]] of
-      <var>node</var> is not an [[ol]] or [[ul]], <span>set the tag name</span>
-      of <var>child</var> to "div", and set <var>child</var> to the result.
-
-      <li>Insert <var>child</var> into the [[parent]] of <var>node</var>
-      immediately before <var>node</var>, <span>preserving ranges</span>.
-    </ol>
-
-    <li>Remove <var>node</var> from its [[parent]].
+    <li><span>Fix orphaned list items</span> in <var>children</var>.
 
     <li>Abort these steps.
   </ol>
@@ -3144,13 +3154,11 @@ insertOrderedList.
     title=attr-ol-type>type</code> attributes of <var>node</var>, if any are
     set.
 
-    <li><span>Set the tag name</span> of <var>node</var> to "div", and set
-    <var>node</var> to the result.
+    <li>Let <var>children</var> be the [[children]] of <var>node</var>.
 
-    <li>For each [[li]] [[child]] <var>child</var> of <var>node</var>, unset
-    the <code data-anolis-spec=html title=attr-li-value>value</code> attribute
-    of <var>child</var> if set, then <span>set the tag name</span> of
-    <var>child</var> to "div".
+    <li><span>Set the tag name</span> of <var>node</var> to "div".
+
+    <li><span>Fix orphaned list items</span> in <var>children</var>.
 
     <li>Abort these steps.
   </ol>
@@ -3160,36 +3168,9 @@ insertOrderedList.
   created by IE, this might change the direction of some children, but then
   their direction was probably changed incorrectly in the first place, so no
   harm. -->
-  <li>If <var>node</var> is an <span>indentation element</span>:
-
-  <ol>
-    <li>If <var>node</var>'s [[previoussibling]] and first [[child]] are both
-    <span title="inline node">inline nodes</span>, and its [[previoussibling]]
-    is not a [[br]], then call <code data-anolis-spec=domcore
-    title=dom-Document-createElement>createElement("br")</code> on the
-    [[ownerdocument]] of <var>node</var>, and insert the result into
-    <var>node</var>'s [[parent]] immediately before <var>node</var>.
-
-    <li>If <var>node</var>'s last [[child]] and [[nextsibling]] are both <span
-    title="inline node">inline nodes</span>, and its last [[child]] is not a
-    [[br]], then call <code data-anolis-spec=domcore
-    title=dom-Document-createElement>createElement("br")</code> on the
-    [[ownerdocument]] of <var>node</var>, and insert the result into
-    <var>node</var>'s [[parent]] immediately after <var>node</var>.
-
-    <!-- Just to be pedantic . . . it could happen! -->
-    <li>If <var>node</var> has no [[children]], and its [[previoussibling]] and
-    [[nextsibling]] are both <span title="inline node">inline nodes</span>, and
-    its [[previoussibling]] is not a [[br]], then call <code
-    data-anolis-spec=domcore
-    title=dom-Document-createElement>createElement("br")</code> on the
-    [[ownerdocument]] of <var>node</var>, and insert the result into
-    <var>node</var>'s [[parent]] immediately before <var>node</var>.
-
-    <li>Remove <var>node</var>, <span>preserving its descendants</span>.
-
-    <li>Abort these steps.
-  </ol>
+  <li>If <var>node</var> is an <span>indentation element</span>, remove
+  <var>node</var>, <span>preserving its descendants</span>.  Then abort these
+  steps.
 
   <!-- No browser handles the case of Firefox 4.0 in CSS mode, where it adds a
   margin attribute to an existing element, including Firefox itself.  So let's
@@ -3200,15 +3181,14 @@ insertOrderedList.
   Firefox in CSS mode, for instance (color, font-family, etc.). -->
 
   <ol>
-    <li><span>Set the tag name</span> of <var>node</var> to "div", and set
-    <var>node</var> to the result.
-
     <li>Unset the <code data-anolis-spec=html title=classes>class</code> and
     <code data-anolis-spec=html title="the dir attribute">dir</code>
     attributes of <var>node</var>, if any.
 
     <li>Unset the margin, padding, and border CSS properties of
     <var>node</var>.
+
+    <li><span>Set the tag name</span> of <var>node</var> to "div".
 
     <li>Abort these steps.
   </ol>
@@ -3313,16 +3293,29 @@ insertOrderedList.
   <li><span>Split the parent</span> of <var>node list</var>, with <var>new
   parent</var> null.
 
-  <li>For each <var>node</var> in <var>node list</var>:
+  <li><span>Fix orphaned list items</span> in <var>node list</var>.
+</ol>
+
+<p>To <dfn>fix orphaned list items</dfn> in a list of [[nodes]] <var>node
+list</var>:
+
+<ol>
+  <li>For each [[li]] <var>item</var> in <var>node list</var>:
 
   <ol>
-    <li>If <var>node</var> is an [[li]] with no attributes and its [[parent]]
-    is not an [[ol]] or [[ul]], remove <var>node</var> from its [[parent]],
-    <span>preserving its descendants</span>.
+      <li>If <var>item</var>'s [[parent]] is not an [[ol]], unset
+      <var>item</var>'s <code data-anolis-spec=html
+      title=attr-li-value>value</code> attribute, if set.
+      <!-- IE9, Firefox 4.0, and Opera 11.10 keep the value attribute even if
+      the parent is now a ul.  Chrome 12 dev strips it even if the parent is
+      now an ol.  The spec makes more sense. -->
 
-    <li>Otherwise, if <var>node</var> is an [[li]] and its [[parent]] is not an
-    [[ol]] or [[ul]], <span>set the tag name</span> of <var>node</var> to
-    "div".
+      <li>If <var>item</var> has no attributes and its [[parent]] is not an
+      [[ol]] or [[ul]], remove <var>item</var>, <span>preserving its
+      descendants</span>.
+
+      <li>Otherwise, if <var>item</var>'s [[parent]] is not an [[ol]] or
+      [[ul]], <span>set the tag name</span> of <var>item</var> to "div".
   </ol>
 </ol>
 

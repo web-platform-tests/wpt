@@ -958,6 +958,17 @@ var tests = {
 		'<ol><li>foo<ol><li>[bar]</ol>baz</ol>',
 		'<ol><li>foo<ol><li>bar</ol>[baz]</ol>',
 		'<ol><li>[foo<ol><li>bar]</ol>baz</ol>',
+
+		// Random stuff
+		'foo<ol><li>[bar<li>baz]</ol>quz',
+		'foo<ol start=5><li>[bar]</ol>baz',
+		'foo<ol id=abc><li>[bar]</ol>baz',
+		'foo<ol style=color:red><li>[bar]</ol>baz',
+		'foo<ol><li value=5>[bar]</ol>baz',
+		'foo<ol><li id=abc>[bar]</ol>baz',
+		'foo<ol><li style=color:red>[bar]</ol>baz',
+		'<ol><li>foo</li><ol><li value=5>[bar]</ol></ol>',
+		'<ul><li>foo</li><ol><li value=5>[bar]</ol></ul>',
 	],
 	removeformat: [
 		'foo[]bar',

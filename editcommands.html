@@ -2809,7 +2809,10 @@ Sheesh, lists are complicated.
       an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code> or <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code>, remove the first member from <var title="">node list</var>
       and append it to <var title="">sublist</var>.
 
-      <li><a href=#list-outdent>List-outdent</a> <var title="">sublist</var>.
+      <li><a href=#split-the-parent>Split the parent</a> of <var title="">sublist</var>, with <var title="">new
+      parent</var> null.
+
+      <li><a href=#fix-orphaned-list-items>Fix orphaned list items</a> in <var title="">sublist</var>.
     </ol>
 
     <li>Otherwise, if the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of the first member of <var title="">sublist</var>
@@ -3040,7 +3043,10 @@ value</a> either "italic" or "oblique".  Otherwise false.
     list</var> is not an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code> or <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code>, remove the first member of <var title="">node
     list</var> and append it to <var title="">sublist</var>.
 
-    <li><a href=#list-outdent>List-outdent</a> <var title="">sublist</var>.
+    <li><a href=#split-the-parent>Split the parent</a> of <var title="">sublist</var>, with <var title="">new
+    parent</var> null.
+
+    <li><a href=#fix-orphaned-list-items>Fix orphaned list items</a> in <var title="">sublist</var>.
   </ol>
 </ol>
 
@@ -3232,16 +3238,6 @@ insertOrderedList.
   </ol>
 
   <li><a href=#outdent>Outdent</a> <var title="">original ancestor</var>.
-</ol>
-
-<p>To <dfn id=list-outdent>list-outdent</dfn> a list <var title="">node list</var> of consecutive
-<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-sibling title=concept-tree-sibling>sibling</a> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a>:
-
-<ol>
-  <li><a href=#split-the-parent>Split the parent</a> of <var title="">node list</var>, with <var title="">new
-  parent</var> null.
-
-  <li><a href=#fix-orphaned-list-items>Fix orphaned list items</a> in <var title="">node list</var>.
 </ol>
 
 <p>To <dfn id=fix-orphaned-list-items>fix orphaned list items</dfn> in a list of <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a> <var title="">node

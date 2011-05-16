@@ -2616,8 +2616,11 @@ function myExecCommand(command, showUI, value, range) {
 					sublist.push(nodeList.shift());
 				}
 
-				// "List-outdent sublist."
-				listOutdent(sublist);
+				// "Split the parent of sublist, with new parent null."
+				splitParent(sublist, null);
+
+				// "Fix orphaned list items in sublist."
+				fixOrphanedListItems(sublist);
 
 			// "Otherwise, if the parent of the first member of sublist is an
 			// editable ul:"
@@ -2915,8 +2918,11 @@ function myExecCommand(command, showUI, value, range) {
 				sublist.push(nodeList.shift());
 			}
 
-			// "List-outdent sublist."
-			listOutdent(sublist);
+			// "Split the parent of sublist, with new parent null."
+			splitParent(sublist, null);
+
+			// "Fix orphaned list items in sublist."
+			fixOrphanedListItems(sublist);
 		}
 		break;
 
@@ -3395,14 +3401,6 @@ function outdentNode(node) {
 
 	// "Outdent original ancestor."
 	outdentNode(originalAncestor);
-}
-
-function listOutdent(nodeList) {
-	// "Split the parent of node list, with new parent null."
-	splitParent(nodeList, null);
-
-	// "Fix orphaned list items in node list."
-	fixOrphanedListItems(nodeList);
 }
 
 function fixOrphanedListItems(nodeList) {

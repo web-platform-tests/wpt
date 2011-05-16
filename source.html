@@ -2850,7 +2850,10 @@ Sheesh, lists are complicated.
       an [[ol]] or [[ul]], remove the first member from <var>node list</var>
       and append it to <var>sublist</var>.
 
-      <li><span>List-outdent</span> <var>sublist</var>.
+      <li><span>Split the parent</span> of <var>sublist</var>, with <var>new
+      parent</var> null.
+
+      <li><span>Fix orphaned list items</span> in <var>sublist</var>.
     </ol>
 
     <li>Otherwise, if the [[parent]] of the first member of <var>sublist</var>
@@ -3088,7 +3091,10 @@ value</span> either "italic" or "oblique".  Otherwise false.
     list</var> is not an [[ol]] or [[ul]], remove the first member of <var>node
     list</var> and append it to <var>sublist</var>.
 
-    <li><span>List-outdent</span> <var>sublist</var>.
+    <li><span>Split the parent</span> of <var>sublist</var>, with <var>new
+    parent</var> null.
+
+    <li><span>Fix orphaned list items</span> in <var>sublist</var>.
   </ol>
 </ol>
 
@@ -3284,16 +3290,6 @@ insertOrderedList.
   </ol>
 
   <li><span>Outdent</span> <var>original ancestor</var>.
-</ol>
-
-<p>To <dfn>list-outdent</dfn> a list <var>node list</var> of consecutive
-[[sibling]] [[nodes]]:
-
-<ol>
-  <li><span>Split the parent</span> of <var>node list</var>, with <var>new
-  parent</var> null.
-
-  <li><span>Fix orphaned list items</span> in <var>node list</var>.
 </ol>
 
 <p>To <dfn>fix orphaned list items</dfn> in a list of [[nodes]] <var>node

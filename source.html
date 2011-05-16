@@ -261,8 +261,7 @@ descendants</dfn>:
 </ol>
 
 <p>To <dfn>split the parent</dfn> of a list <var>node list</var> of consecutive
-[[sibling]] [[nodes]], with <var>new parent</var> either null or an
-[[element]]:
+[[sibling]] [[nodes]]:
 
 <ol>
   <li>Let <var>original parent</var> be the [[parent]] of the first member of
@@ -296,33 +295,18 @@ descendants</dfn>:
   </div>
 
   <ol>
-    <li>If <var>new parent</var> is null:
+    <li>If the last member of <var>node list</var> and the [[nextsibling]] of
+    <var>original parent</var> are both <span title="inline node">inline
+    nodes</span>, call <code data-anolis-spec=domcore
+    title=dom-Document-createElement>createElement("br")</code> on the
+    [[ownerdocument]] of <var>original parent</var>, then insert the result
+    into the [[parent]] of <var>original parent</var> immediately after
+    <var>original parent</var>.
 
-    <ol>
-      <li>If the last member of <var>node list</var> and the [[nextsibling]] of
-      <var>original parent</var> are both <span title="inline node">inline
-      nodes</span>, call <code data-anolis-spec=domcore
-      title=dom-Document-createElement>createElement("br")</code> on the
-      [[ownerdocument]] of <var>original parent</var>, then insert the result
-      into the [[parent]] of <var>original parent</var> immediately after
-      <var>original parent</var>.
-
-      <li>For each <var>node</var> in <var>node list</var>, <em>in reverse
-      order</em>, insert <var>node</var> into the [[parent]] of <var>original
-      parent</var> immediately after <var>original parent</var>,
-      <span>preserving ranges</span>.
-    </ol>
-
-    <li>Otherwise:
-
-    <ol>
-      <li>Insert <var>new parent</var> into the [[parent]] of <var>original
-      parent</var> immediately after <var>original parent</var>.
-
-      <li>For each <var>node</var> in <var>node list</var>, <em>in reverse
-      order</em>, insert <var>node</var> as the first [[child]] of <var>new
-      parent</var>, <span>preserving ranges</span>.
-    </ol>
+    <li>For each <var>node</var> in <var>node list</var>, <em>in reverse
+    order</em>, insert <var>node</var> into the [[parent]] of <var>original
+    parent</var> immediately after <var>original parent</var>, <span>preserving
+    ranges</span>.
 
     <li>Abort these steps.
   </ol>
@@ -351,31 +335,57 @@ descendants</dfn>:
     <span>preserving ranges</span>.
   </ol>
 
-  <li>If <var>new parent</var> is null:
+  <li>If the first member of <var>node list</var> and the [[previoussibling]]
+  of <var>original parent</var> are both <span title="inline node">inline
+  nodes</span>, call <code data-anolis-spec=domcore
+  title=dom-Document-createElement>createElement("br")</code> on the
+  [[ownerdocument]] of <var>original parent</var>, then insert the result into
+  the [[parent]] of <var>original parent</var> immediately before <var>original
+  parent</var>.
 
-  <ol>
-    <li>If the first member of <var>node list</var> and the [[previoussibling]]
-    of <var>original parent</var> are both <span title="inline node">inline
-    nodes</span>, call <code data-anolis-spec=domcore
-    title=dom-Document-createElement>createElement("br")</code> on the
-    [[ownerdocument]] of <var>original parent</var>, then insert the result
-    into the [[parent]] of <var>original parent</var> immediately before
-    <var>original parent</var>.
+  <li>For each <var>node</var> in <var>node list</var>, insert <var>node</var>
+  into the [[parent]] of <var>original parent</var> immediately before
+  <var>original parent</var>, <span>preserving ranges</span>.
+</ol>
 
-    <li>For each <var>node</var> in <var>node list</var>, insert
-    <var>node</var> into the [[parent]] of <var>original parent</var>
-    immediately before <var>original parent</var>, <span>preserving
-    ranges</span>.
+<p>To <dfn>wrap</dfn> a list <var>node list</var> of consecutive [[sibling]]
+[[nodes]], given <dfn>sibling criteria</dfn> and <dfn>new parent
+instructions</dfn>:
 
-    <li>Abort these steps.
-  </ol>
+<ol>
+  <li>If <var>node list</var> is empty, or the first member of <var>node
+  list</var> is not <span>editable</span>, abort these steps.
 
-  <li>Insert <var>new parent</var> into the [[parent]] of <var>original
-  parent</var> immediately before <var>original parent</var>.
+  <li>If the [[previoussibling]] of the first member of <var>node list</var>
+  is <span>editable</span> and meets the <span>sibling criteria</span>, then
+  for each <var>node</var> in <var>node list</var>, append <var>node</var> as
+  the last [[child]] of its [[previoussibling]], <span>preserving
+  ranges</span>.  Then abort these steps.
+
+  <li>If the [[nextsibling]] of the last member of <var>node list</var> is
+  <span>editable</span> and meets the <span>sibling criteria</span>, then for
+  each <var>node</var> in <var>node list</var>, <em>in reverse order</em>,
+  insert <var>node</var> as the first [[child]] of its [[nextsibling]],
+  <span>preserving ranges</span>.  Then abort these steps.
+
+  <li>Run the <span>new parent instructions</span>, and let <var>new
+  parent</var> be the result.
+
+  <li>If <var>new parent</var> cannot be the [[child]] of the [[parent]] of the
+  first member of <var>node list</var>, <span>split the parent</span> of
+  <var>node list</var>.
+
+  <p class=XXX>"Cannot be the child" needs to be defined.
+
+  <li>Insert <var>new parent</var> into the [[parent]] of the first member of
+  <var>node list</var> immediately before the first member of <var>node
+  list</var>.
 
   <li>For each <var>node</var> in <var>node list</var>, append <var>node</var>
   as the last [[child]] of <var>new parent</var>, <span>preserving
   ranges</span>.
+
+  <li><span>Remove extraneous line breaks</span> from <var>new parent</var>.
 </ol>
 
 <p>To <dfn>remove extraneous line breaks</dfn> from a [[node]] <var>node</var>:
@@ -2268,25 +2278,13 @@ won't remember that we aren't supposed to indent "foo" a second time.
     <li>Let <var>tag</var> be the [[localname]] of the [[parent]] of
     <var>first node</var>.
 
-    <li>If the [[previoussibling]] of the first member of <var>node list</var>
-    is an <span>HTML element</span> with [[localname]] <var>tag</var>, then for
-    each <var>node</var> in <var>node list</var>, append <var>node</var> as the
-    last [[child]] of its [[previoussibling]], <span>preserving ranges</span>.
-    Then abort these steps.
-
-    <li>If the [[nextsibling]] of the last member of <var>node list</var> is an
-    <span>HTML element</span> with [[localname]] <var>tag</var>, then for each
-    <var>node</var> in <var>node list</var> <em>in reverse order</em>, insert
-    <var>node</var> as the first [[child]] of its [[nextsibling]],
-    <span>preserving ranges</span>.  Then abort these steps.
-
-    <li>Let <var>new parent</var> be the result of calling <code
+    <li><span>Wrap</span> <var>node list</var>, with <span>sibling
+    criteria</span> matching only <span title="HTML element">HTML
+    elements</span> with [[localname]] <var>tag</var> and <span>new parent
+    instructions</span> returning the result of calling <code
     data-anolis-spec=domcore
     title=dom-Document-createElement>createElement(<var>tag</var>)</code> on
     the [[ownerdocument]] of <var>first node</var>.
-
-    <li>Insert <var>new parent</var> into the [[parent]] of <var>first
-    node</var> immediately before <var>first node</var>.
     <!--
     This matches IE9, Firefox 4.0, and Chrome 12 dev.  If there's a preceding
     <li>, Opera 11.10 instead adds the new parent to the end of that <li>, so
@@ -2308,30 +2306,8 @@ won't remember that we aren't supposed to indent "foo" a second time.
     http://www.w3.org/Bugs/Public/show_bug.cgi?id=12609
     -->
 
-    <li>For each <var>node</var> in <var>node list</var>, append
-    <var>node</var> as the last [[child]] of <var>new parent</var>,
-    <span>preserving ranges</span>.
-
     <li>Abort these steps.
   </ol>
-
-  <li>If the [[previoussibling]] of the first member of <var>node list</var> is
-  an <span>indentation element</span>; its "display" property computes to
-  "block"; its "margin-left" and "margin-right" properties compute to "40px";
-  and its "margin-top" and "margin-bottom" properties compute to "0"; then
-  for each <var>node</var> in <var>node list</var>, append <var>node</var> as
-  the last [[child]] of its [[previoussibling]], <span>preserving
-  ranges</span>.  Then abort these steps.
-
-  <p class=XXX>This might put things on the same line when they shouldn't be.
-
-  <li>If the [[nextsibling]] of the last member of <var>node list</var> is an
-  <span>indentation element</span>; its "display" property computes to "block";
-  its "margin-left" and "margin-right" properties compute to "40px"; and its
-  "margin-top" and "margin-bottom" properties compute to "0"; then for each
-  <var>node</var> in <var>node list</var>, <em>in reverse order</em>, insert
-  <var>node</var> as the first [[child]] of its [[nextsibling]],
-  <span>preserving ranges</span>.  Then abort these steps.
 
   <li>Let <var>tag</var> be "div" if the <span>CSS styling flag</span> is
   true, otherwise "blockquote".
@@ -2343,15 +2319,15 @@ won't remember that we aren't supposed to indent "foo" a second time.
   and always create an extra element, to ensure consistency between CSS and
   non-CSS modes. -->
 
-  <li>Let <var>new parent</var> be the result of calling <code
+  <li><span>Wrap</span> <var>node list</var>.  <span>Sibling criteria</span>
+  must match only an <span>indentation element</span> whose "display" property
+  computes to "block" and whose "margin-left" and "margin-right" properties
+  compute to "40px", and whose "margin-top" and "margin-bottom" properties
+  compute to "0".  The <span>new parent instructions</span> are to call <code
   data-anolis-spec=domcore
-  title=dom-Document-createElement>createElement(<var>tag</var>)</code> on
-  the [[ownerdocument]] of <var>first node</var>.
-
-  <li>Insert <var>new parent</var> into <var>node</var>'s [[parent]]
-  immediately before <var>first node</var>.
-
-  <li>Set the CSS property "margin" of <var>new parent</var> to "0 40px".
+  title=dom-Document-createElement>createElement(<var>tag</var>)</code> on the
+  [[ownerdocument]] of <var>first node</var>, then set the CSS property
+  "margin" of the returned node to "0 40px", then return the returned node.
 
   <p class=XXX>This indents on both sides, so we don't have to worry about
   directionality.  Preferably we should indent only on the start side, but
@@ -2369,12 +2345,6 @@ won't remember that we aren't supposed to indent "foo" a second time.
   to the long-term incorrectness of adding top/bottom margins or adding
   margins on both sides.  I can't think of any better way to do this at the
   moment.
-
-  <li>For each <var>node</var> in <var>node list</var>, append <var>node</var>
-  as the last [[child]] of <var>new parent</var>, <span>preserving
-  ranges</span>.
-
-  <li><span>Remove extraneous line breaks</span> from <var>new parent</var>.
 </ol>
 
 <dd><strong>State</strong>:
@@ -2850,8 +2820,7 @@ Sheesh, lists are complicated.
       an [[ol]] or [[ul]], remove the first member from <var>node list</var>
       and append it to <var>sublist</var>.
 
-      <li><span>Split the parent</span> of <var>sublist</var>, with <var>new
-      parent</var> null.
+      <li><span>Split the parent</span> of <var>sublist</var>.
 
       <li><span>Fix orphaned list items</span> in <var>sublist</var>.
     </ol>
@@ -2867,26 +2836,14 @@ Sheesh, lists are complicated.
       an [[ol]] or [[ul]], remove the first member from <var>node list</var>
       and append it to <var>sublist</var>.
 
-      <li>If the [[previoussibling]] of the [[parent]] of the first member of
-      <var>sublist</var> is an <span>editable</span> [[ol]], and the
-      [[previoussibling]] of the first member of <var>sublist</var> is null,
-      then for each <var>node</var> in <var>sublist</var>, append
-      <var>node</var> as the last [[child]] of the [[previoussibling]] of the
-      [[parent]] of <var>node</var>, <span>preserving ranges</span>.
+      <li><span>Split the parent</span> of <var>sublist</var>.
 
-      <li>Otherwise, if the [[nextsibling]] of the [[parent]] of the first
-      member of <var>sublist</var> is an <span>editable</span> [[ol]], and the
-      [[nextsibling]] of the last member of <var>sublist</var> is null, then
-      for each <var>node</var> in <var>sublist</var> <em>in reverse order</em>,
-      insert <var>node</var> as the first [[child]] of the [[nextsibling]] of
-      the [[parent]] of <var>node</var>, <span>preserving ranges</span>.
-
-      <li>Otherwise, let <var>ol</var> be the result of calling <code
+      <li><span>Wrap</span> <var>sublist</var>, with <span>sibling
+      criteria</span> matching any [[ol]], and with <span>new parent
+      instructions</span> returning the result of calling <code
       data-anolis-spec=domcore
       title=dom-Document-createElement>createElement("ol")</code> on the
-      [[ownerdocument]] of the first member of <var>sublist</var>.  Then
-      <span>split the parent</span> of <var>sublist</var>, with <var>new
-      parent</var> <var>ol</var>.
+      [[contextobject]].
     </ol>
 
     <li>Otherwise:
@@ -2967,9 +2924,9 @@ Sheesh, lists are complicated.
 
         <ol>
           <li>If <var>original parent</var> is a [[p]], <span>split the
-          parent</span> of <var>sublist</var>, with <var>new parent</var> null,
-          and then set <var>original parent</var> to the [[parent]] of the
-          first member of <var>sublist</var>.
+          parent</span> of <var>sublist</var>, and then set <var>original
+          parent</var> to the [[parent]] of the first member of
+          <var>sublist</var>.
 
           <li>Let <var>ol</var> be the result of calling <code
           data-anolis-spec=domcore
@@ -3091,8 +3048,7 @@ value</span> either "italic" or "oblique".  Otherwise false.
     list</var> is not an [[ol]] or [[ul]], remove the first member of <var>node
     list</var> and append it to <var>sublist</var>.
 
-    <li><span>Split the parent</span> of <var>sublist</var>, with <var>new
-    parent</var> null.
+    <li><span>Split the parent</span> of <var>sublist</var>.
 
     <li><span>Fix orphaned list items</span> in <var>sublist</var>.
   </ol>

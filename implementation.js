@@ -435,7 +435,7 @@ function removePreservingDescendants(node) {
 	return children;
 }
 
-function splitParent(nodeList, newParent) {
+function splitParent(nodeList) {
 	// "Let original parent be the parent of the first member of node list."
 	var originalParent = nodeList[0].parentNode;
 
@@ -450,35 +450,20 @@ function splitParent(nodeList, newParent) {
 	// and the nextSibling of the last member of node list is null:"
 	if (nodeList[0].previousSibling
 	&& !nodeList[nodeList.length - 1].nextSibling) {
-		// "If new parent is null:"
-		if (!newParent) {
-			// "If the last member of node list and the nextSibling of original
-			// parent are both inline nodes, call createElement("br") on the
-			// ownerDocument of original parent, then insert the result into
-			// the parent of original parent immediately after original
-			// parent."
-			if (isInlineNode(nodeList[nodeList.length - 1])
-			&& isInlineNode(originalParent.nextSibling)) {
-				originalParent.parentNode.insertBefore(originalParent.ownerDocument.createElement("br"), originalParent.nextSibling);
-			}
+		// "If the last member of node list and the nextSibling of original
+		// parent are both inline nodes, call createElement("br") on the
+		// ownerDocument of original parent, then insert the result into the
+		// parent of original parent immediately after original parent."
+		if (isInlineNode(nodeList[nodeList.length - 1])
+		&& isInlineNode(originalParent.nextSibling)) {
+			originalParent.parentNode.insertBefore(originalParent.ownerDocument.createElement("br"), originalParent.nextSibling);
+		}
 
-			// "For each node in node list, in reverse order, insert node into
-			// the parent of original parent immediately after original parent,
-			// preserving ranges."
-			for (var i = nodeList.length - 1; i >= 0; i--) {
-				movePreservingRanges(nodeList[i], originalParent.parentNode, 1 + getNodeIndex(originalParent));
-			}
-		// "Otherwise:"
-		} else {
-			// "Insert new parent into the parent of original parent
-			// immediately after original parent."
-			originalParent.parentNode.insertBefore(newParent, originalParent.nextSibling);
-
-			// "For each node in node list, in reverse order, insert node as
-			// the first child of new parent, preserving ranges."
-			for (var i = nodeList.length - 1; i >= 0; i--) {
-				movePreservingRanges(nodeList[i], newParent, 0);
-			}
+		// "For each node in node list, in reverse order, insert node into the
+		// parent of original parent immediately after original parent,
+		// preserving ranges."
+		for (var i = nodeList.length - 1; i >= 0; i--) {
+			movePreservingRanges(nodeList[i], originalParent.parentNode, 1 + getNodeIndex(originalParent));
 		}
 
 		// "Abort these steps."
@@ -503,36 +488,77 @@ function splitParent(nodeList, newParent) {
 		}
 	}
 
-	// "If new parent is null:"
-	if (!newParent) {
-		// "If the first member of node list and the previousSibling of
-		// original parent are both inline nodes, call createElement("br") on
-		// the ownerDocument of original parent, then insert the result into
-		// the parent of original parent immediately before original parent."
-		if (isInlineNode(nodeList[0])
-		&& isInlineNode(originalParent.previousSibling)) {
-			originalParent.parentNode.insertBefore(originalParent.ownerDocument.createElement("br"), originalParent);
-		}
+	// "If the first member of node list and the previousSibling of original
+	// parent are both inline nodes, call createElement("br") on the
+	// ownerDocument of original parent, then insert the result into the parent
+	// of original parent immediately before original parent."
+	if (isInlineNode(nodeList[0])
+	&& isInlineNode(originalParent.previousSibling)) {
+		originalParent.parentNode.insertBefore(originalParent.ownerDocument.createElement("br"), originalParent);
+	}
 
-		// "For each node in node list, insert node into the parent of original
-		// parent immediately before original parent, preserving ranges."
-		for (var i = 0; i < nodeList.length; i++) {
-			movePreservingRanges(nodeList[i], originalParent.parentNode, getNodeIndex(originalParent));
-		}
+	// "For each node in node list, insert node into the parent of original
+	// parent immediately before original parent, preserving ranges."
+	for (var i = 0; i < nodeList.length; i++) {
+		movePreservingRanges(nodeList[i], originalParent.parentNode, getNodeIndex(originalParent));
+	}
+}
 
-		// "Abort these steps."
+function wrap(nodeList, siblingCriteria, newParentInstructions) {
+	// "If node list is empty, or the first member of node list is not
+	// editable, abort these steps."
+	if (!nodeList.length
+	|| !isEditable(nodeList[0])) {
 		return;
 	}
 
-	// "Insert new parent into the parent of original parent immediately before
-	// original parent."
-	originalParent.parentNode.insertBefore(newParent, originalParent);
+	// "If the previousSibling of the first member of node list is editable and
+	// meets the sibling criteria, then for each node in node list, append node
+	// as the last child of its previousSibling, preserving ranges. Then abort
+	// these steps."
+	if (isEditable(nodeList[0].previousSibling)
+	&& siblingCriteria(nodeList[0].previousSibling)) {
+		for (var i = 0; i < nodeList.length; i++) {
+			movePreservingRanges(nodeList[i], nodeList[i].previousSibling, -1);
+		}
+		return;
+	}
+
+	// "If the nextSibling of the last member of node list is editable and
+	// meets the sibling criteria, then for each node in node list, in reverse
+	// order, insert node as the first child of its nextSibling, preserving
+	// ranges. Then abort these steps."
+	if (isEditable(nodeList[nodeList.length - 1].nextSibling)
+	&& siblingCriteria(nodeList[nodeList.length - 1].nextSibling)) {
+		for (var i = nodeList.length - 1; i >= 0; i--) {
+			movePreservingRanges(nodeList[i], nodeList[i].nextSibling, 0);
+		}
+		return;
+	}
+
+	// "Run the new parent instructions, and let new parent be the result."
+	var newParent = newParentInstructions();
+
+	// "If new parent cannot be the child of the parent of the first member of
+	// node list, split the parent of node list."
+	//
+	// Hack for now, as usual.  Don't use this for inline elements!
+	if (isHtmlElement(nodeList[0].parentNode, "P")) {
+		splitParent(nodeList);
+	}
+
+	// "Insert new parent into the parent of the first member of node list
+	// immediately before the first member of node list."
+	nodeList[0].parentNode.insertBefore(newParent, nodeList[0]);
 
 	// "For each node in node list, append node as the last child of new
 	// parent, preserving ranges."
 	for (var i = 0; i < nodeList.length; i++) {
-		movePreservingRanges(nodeList[i], newParent, newParent.childNodes.length);
+		movePreservingRanges(nodeList[i], newParent, -1);
 	}
+
+	// "Remove extraneous line breaks from new parent."
+	removeExtraneousLineBreaks(newParent);
 }
 
 function removeExtraneousLineBreaks(node) {
@@ -2597,10 +2623,12 @@ function myExecCommand(command, showUI, value, range) {
 			// "If the first member of sublist is an ol, outdent it."
 			if (isHtmlElement(sublist[0], "OL")) {
 				outdentNode(sublist[0]);
+
 			// "Otherwise, if the first member of sublist is a ul, set the tag
 			// name of the first member of sublist to "ol"."
 			} else if (isHtmlElement(sublist[0], "UL")) {
 				setTagName(sublist[0], "ol");
+
 			// "Otherwise, if the parent of the first member of sublist is an
 			// editable ol:"
 			} else if (isHtmlElement(sublist[0].parentNode, "OL")
@@ -2617,7 +2645,7 @@ function myExecCommand(command, showUI, value, range) {
 				}
 
 				// "Split the parent of sublist, with new parent null."
-				splitParent(sublist, null);
+				splitParent(sublist);
 
 				// "Fix orphaned list items in sublist."
 				fixOrphanedListItems(sublist);
@@ -2637,38 +2665,16 @@ function myExecCommand(command, showUI, value, range) {
 					sublist.push(nodeList.shift());
 				}
 
-				// "If the previousSibling of the parent of the first member of
-				// sublist is an editable ol, and the previousSibling of the
-				// first member of sublist is null, then for each node in
-				// sublist, append node as the last child of the
-				// previousSibling of the parent of node, preserving ranges."
-				if (isEditable(sublist[0].parentNode.previousSibling)
-				&& isHtmlElement(sublist[0].parentNode.previousSibling, "OL")
-				&& !sublist[0].previousSibling) {
-					for (var i = 0; i < sublist.length; i++) {
-						movePreservingRanges(sublist[i], sublist[i].parentNode.previousSibling, -1);
-					}
+				// "Split the parent of sublist."
+				splitParent(sublist);
 
-				// "Otherwise, if the nextSibling of the parent of the first
-				// member of sublist is an editable ol, and the nextSibling of
-				// the last member of sublist is null, then for each node in
-				// sublist in reverse order, insert node as the first child of
-				// the nextSibling of the parent of node, preserving ranges."
-				} else if (isEditable(sublist[0].parentNode.nextSibling)
-				&& isHtmlElement(sublist[0].parentNode.nextSibling, "OL")
-				&& !sublist[sublist.length - 1].nextSibling) {
-					for (var i = sublist.length - 1; i >= 0; i--) {
-						movePreservingRanges(sublist[i], sublist[i].parentNode.nextSibling, 0);
-					}
+				// "Wrap sublist, with sibling criteria matching any ol, and
+				// with new parent instructions returning the result of calling
+				// createElement("ol") on the context object."
+				wrap(sublist,
+					function(node) { return isHtmlElement(node, "OL") },
+					function() { return document.createElement("ol") });
 
-				// "Otherwise, let ol be the result of calling
-				// createElement("ol") on the ownerDocument of the first member
-				// of sublist. Then split the parent of sublist, with new
-				// parent ol."
-				} else {
-					var ol = sublist[0].ownerDocument.createElement("ol");
-					splitParent(sublist, ol);
-				}
 			// "Otherwise:"
 			} else {
 				// "If the first member of sublist is a p or li or div, set the
@@ -2764,7 +2770,7 @@ function myExecCommand(command, showUI, value, range) {
 						// parent to the parent of the first member of
 						// sublist."
 						if (isHtmlElement(originalParent, "P")) {
-							splitParent(sublist, null);
+							splitParent(sublist);
 
 							originalParent = sublist[0].parentNode;
 						}
@@ -2919,7 +2925,7 @@ function myExecCommand(command, showUI, value, range) {
 			}
 
 			// "Split the parent of sublist, with new parent null."
-			splitParent(sublist, null);
+			splitParent(sublist);
 
 			// "Fix orphaned list items in sublist."
 			fixOrphanedListItems(sublist);
@@ -3136,108 +3142,45 @@ function indentNodes(nodeList) {
 		// "Let tag be the local name of the parent of first node."
 		var tag = firstNode.parentNode.tagName;
 
-		// "If the previousSibling of the first member of node list is an HTML
-		// element with local name tag, then for each node in node list, append
-		// node as the last child of its previousSibling, preserving ranges.
-		// Then abort these steps."
-		if (isHtmlElement(nodeList[0].previousSibling, tag)) {
-			for (var i = 0; i < nodeList.length; i++) {
-				movePreservingRanges(nodeList[i], nodeList[i].previousSibling, nodeList[i].previousSibling.childNodes.length);
-			}
-			return;
-		}
-
-		// "If the nextSibling of the last member of node list is an HTML
-		// element with local name tag, then for each node in node list in
-		// reverse order, insert node as the first child of its nextSibling,
-		// preserving ranges. Then abort these steps."
-		if (isHtmlElement(nodeList[nodeList.length - 1].nextSibling, tag)) {
-			for (var i = nodeList.length - 1; i >= 0; i--) {
-				movePreservingRanges(nodeList[i], nodeList[i].nextSibling, 0);
-			}
-			return;
-		}
-
-		// "Let new parent be the result of calling createElement(tag) on the
-		// ownerDocument of first node."
-		var newParent = firstNode.ownerDocument.createElement(tag);
-
-		// "Insert new parent into the parent of first node immediately before
-		// first node."
-		firstNode.parentNode.insertBefore(newParent, firstNode);
-
-		// "For each node in node list, append node as the last child of new
-		// parent, preserving ranges."
-		for (var i = 0; i < nodeList.length; i++) {
-			movePreservingRanges(nodeList[i], newParent, newParent.childNodes.length);
-		}
+		// "Wrap node list, with sibling criteria matching only HTML elements
+		// with local name tag and new parent instructions returning the result
+		// of calling createElement(tag) on the ownerDocument of first node."
+		wrap(nodeList,
+			function(node) { return isHtmlElement(node, tag) },
+			function() { return firstNode.ownerDocument.createElement(tag) });
 
 		// "Abort these steps."
 		return;
-	}
-
-	// "If the previousSibling of the first member of node list is an
-	// indentation element; its "display" property computes to "block"; its
-	// "margin-left" and "margin-right" properties compute to "40px"; and its
-	// "margin-top" and "margin-bottom" properties compute to "0"; then for
-	// each node in node list, append node as the last child of its
-	// previousSibling, preserving ranges. Then abort these steps."
-	if (isIndentationElement(nodeList[0].previousSibling)) {
-		var style = getComputedStyle(nodeList[0].previousSibling);
-		if (style.display == "block"
-		&& style.marginLeft == "40px"
-		&& style.marginRight == "40px"
-		&& style.marginTop == "0px"
-		&& style.marginBottom == "0px") {
-			for (var i = 0; i < nodeList.length; i++) {
-				movePreservingRanges(nodeList[i], nodeList[i].previousSibling, nodeList[i].previousSibling.childNodes.length);
-			}
-			return;
-		}
-	}
-
-	// "If the nextSibling of the last member of node list is an indentation
-	// element; its "display" property computes to "block"; its "margin-left"
-	// and "margin-right" properties compute to "40px"; and its "margin-top"
-	// and "margin-bottom" properties compute to "0"; then for each node in
-	// node list, in reverse order, insert node as the first child of its
-	// nextSibling, preserving ranges. Then abort these steps."
-	if (isIndentationElement(nodeList[nodeList.length - 1].nextSibling)) {
-		var style = getComputedStyle(nodeList[nodeList.length - 1].nextSibling);
-		if (style.display == "block"
-		&& style.marginLeft == "40px"
-		&& style.marginRight == "40px"
-		&& style.marginTop == "0px"
-		&& style.marginBottom == "0px") {
-			for (var i = nodeList.length - 1; i >= 0; i--) {
-				movePreservingRanges(nodeList[i], nodeList[i].nextSibling, 0);
-			}
-			return;
-		}
 	}
 
 	// "Let tag be "div" if the CSS styling flag is true, otherwise
 	// "blockquote"."
 	var tag = cssStylingFlag ? "div" : "blockquote";
 
-	// "Let new parent be the result of calling createElement(tag) on
-	// the ownerDocument of first node."
-	var newParent = firstNode.ownerDocument.createElement(tag);
-
-	// "Insert new parent into node's parent immediately before first node."
-	firstNode.parentNode.insertBefore(newParent, firstNode);
-
-	// "Set the CSS property "margin" of new parent to "0 40px"."
-	newParent.setAttribute("style", "margin: 0 40px");
-
-	// "For each node in node list, append node as the last child of new
-	// parent, preserving ranges."
-	for (var i = 0; i < nodeList.length; i++) {
-		movePreservingRanges(nodeList[i], newParent, newParent.childNodes.length);
-	}
-
-	// "Remove extraneous line breaks from new parent."
-	removeExtraneousLineBreaks(newParent);
+	// "Wrap node list. Sibling criteria must match only an indentation element
+	// whose "display" property computes to "block" and whose "margin-left" and
+	// "margin-right" properties compute to "40px", and whose "margin-top" and
+	// "margin-bottom" properties compute to "0". The new parent instructions
+	// are to call createElement(tag) on the ownerDocument of first node, then
+	// set the CSS property "margin" of the returned node to "0 40px", then
+	// return the returned node."
+	wrap(nodeList,
+		function(node) {
+			if (!isIndentationElement(node)) {
+				return false;
+			}
+			var style = getComputedStyle(node);
+			return style.display == "block"
+				&& style.marginLeft == "40px"
+				&& style.marginRight == "40px"
+				&& style.marginTop == "0px"
+				&& style.marginBottom == "0px";
+		},
+		function() {
+			var ret = firstNode.ownerDocument.createElement(tag);
+			ret.setAttribute("style", "margin: 0 40px");
+			return ret;
+		});
 }
 
 function outdentNode(node) {

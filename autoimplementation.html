@@ -81,6 +81,8 @@ blank in IE and Opera, which don't support styleWithCSS.)
 <label><input id=alert-checkbox type=checkbox checked onclick='updateAlertRowStyle()'> Display non-alert rows</label>
 
 <script>
+// Confusingly, we're storing a string here, not a boolean.
+document.querySelector("#alert-checkbox").checked = localStorage["display-alerts"] != "false";
 function updateAlertRowStyle() {
 	var checked = document.querySelector("#alert-checkbox").checked;
 	var style = document.querySelector("#alerts");
@@ -89,6 +91,7 @@ function updateAlertRowStyle() {
 	} else if (!checked) {
 		style.textContent = style.textContent.replace(/(\/\* | \*\/)/g, "");
 	}
+	localStorage["display-alerts"] = checked;
 }
 updateAlertRowStyle();
 </script>

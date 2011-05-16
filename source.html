@@ -3132,6 +3132,13 @@ insertOrderedList.
   can't group [[li]]s.  If the list we're outdenting is a child of a non-list,
   then we can just change it to a div.
   </div>
+  <!--
+  Chrome 12 dev seems to special-case style attributes by converting them to
+  the corresponding inline markup elements (at least in easy cases like color).
+  For other attributes and non-WebKit browsers (IE9/FF4/O11.10), it looks like
+  all the attributes are just removed.  Maybe we should try to copy WebKit
+  here.
+  -->
 
   <ol>
     <li>Unset the <code data-anolis-spec=html

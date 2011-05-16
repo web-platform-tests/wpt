@@ -959,8 +959,7 @@ var tests = {
 		'<ol><li>foo<ol><li>bar</ol>[baz]</ol>',
 		'<ol><li>[foo<ol><li>bar]</ol>baz</ol>',
 
-		// Random stuff
-		'foo<ol><li>[bar<li>baz]</ol>quz',
+		// Attribute handling on lists
 		'foo<ol start=5><li>[bar]</ol>baz',
 		'foo<ol id=abc><li>[bar]</ol>baz',
 		'foo<ol style=color:red><li>[bar]</ol>baz',
@@ -969,6 +968,14 @@ var tests = {
 		'foo<ol><li style=color:red>[bar]</ol>baz',
 		'<ol><li>foo</li><ol><li value=5>[bar]</ol></ol>',
 		'<ul><li>foo</li><ol><li value=5>[bar]</ol></ul>',
+		'<ol><li>foo</li><ol start=5><li>[bar]</ol><li>baz</ol>',
+		'<ol><li>foo</li><ol id=abc><li>[bar]</ol><li>baz</ol>',
+		'<ol><li>foo</li><ol style=color:red><li>[bar]</ol><li>baz</ol>',
+		'<ol><li>foo</li><ol style=text-indent:1em><li>[bar]</ol><li>baz</ol>',
+		'<ol><li>foo</li><ol start=5><li>[bar<li>baz]</ol><li>quz</ol>',
+		'<ol><li>foo</li><ol id=abc><li>[bar<li>baz]</ol><li>quz</ol>',
+		'<ol><li>foo</li><ol style=color:red><li>[bar<li>baz]</ol><li>quz</ol>',
+		'<ol><li>foo</li><ol style=text-indent:1em><li>[bar<li>baz]</ol><li>quz</ol>',
 	],
 	removeformat: [
 		'foo[]bar',

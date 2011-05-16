@@ -3084,6 +3084,13 @@ insertOrderedList.
   can't group <code class=external data-anolis-spec=html title="the li element"><a href=http://www.whatwg.org/html/#the-li-element>li</a></code>s.  If the list we're outdenting is a child of a non-list,
   then we can just change it to a div.
   </div>
+  <!--
+  Chrome 12 dev seems to special-case style attributes by converting them to
+  the corresponding inline markup elements (at least in easy cases like color).
+  For other attributes and non-WebKit browsers (IE9/FF4/O11.10), it looks like
+  all the attributes are just removed.  Maybe we should try to copy WebKit
+  here.
+  -->
 
   <ol>
     <li>Unset the <code class=external data-anolis-spec=html title=attr-ol-reversed><a href=http://www.whatwg.org/html/#attr-ol-reversed>reversed</a></code>, <code class=external data-anolis-spec=html title=attr-ol-start><a href=http://www.whatwg.org/html/#attr-ol-start>start</a></code>, and <code class=external data-anolis-spec=html title=attr-ol-type><a href=http://www.whatwg.org/html/#attr-ol-type>type</a></code> attributes of <var title="">node</var>, if any are

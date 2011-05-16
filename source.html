@@ -174,7 +174,9 @@ other than review and comment.
 
   <li>I need to pay more attention to whitespace-only nodes.  In most cases
   these will have no visual effect, but they'll make many algorithms behave
-  differently: decomposing a range, block-extending, etc.
+  differently: decomposing a range, block-extending, etc.  In at least some
+  cases, it's not even possible for the cursor to wind up in them, so maybe we
+  don't need to bother marking them up or anything.
 
   <li>Tim Down <a href="http://lists.whatwg.org/pipermail/whatwg-whatwg.org/2011-May/031655.html">points
   out</a> that browsers have special behavior for formatting commands when the

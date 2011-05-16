@@ -2854,7 +2854,7 @@ function myExecCommand(command, showUI, value, range) {
 		// "Let node list be a list of nodes, initially empty."
 		var nodeList = [];
 
-		// "For each node node contained in node list:"
+		// "For each node node contained in new range:"
 		for (
 			var node = newRange.startContainer;
 			node != nextNodeDescendants(newRange.endContainer);

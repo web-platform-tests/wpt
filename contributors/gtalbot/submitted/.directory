@@ -1,8 +1,5 @@
 [Dolphin]
 AdditionalInfo=2
-ShowPreview=true
-Timestamp=2011,1,10,22,0,17
+Timestamp=2011,2,4,14,45,3
+Version=2
 ViewMode=1
-
-[Settings]
-ShowDotFiles=true

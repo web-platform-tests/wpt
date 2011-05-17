@@ -650,6 +650,8 @@ var tests = {
 		'foo<br>[bar]',
 		'f[oo<br>b]ar<br>baz',
 		'<p>[foo]<br>bar</p>',
+		'[foo<ol><li>bar]</ol>baz',
+		'foo<ol><li>[bar</ol>baz]',
 
 		'<table><tbody><tr><td>foo<td>b[a]r<td>baz</table>',
 		'<table><tbody><tr data-start=1 data-end=2><td>foo<td>bar<td>baz</table>',

@@ -352,7 +352,7 @@ function isInlineNode(node) {
 function setTagName(element, newName) {
 	// "If element is an HTML element with local name equal to new name, return
 	// element."
-	if (isHtmlElement(element) && element.tagName == newName.toUpperCase()) {
+	if (isHtmlElement(element, newName.toUpperCase())) {
 		return element;
 	}
 
@@ -925,12 +925,12 @@ function getSpecifiedValue(element, command) {
 		}
 
 		// "If element is a sup, return "super"."
-		if (isHtmlElement(element) && element.tagName == "SUP") {
+		if (isHtmlElement(element, "SUP")) {
 			return "super";
 		}
 
 		// "If element is a sub, return "sub"."
-		if (isHtmlElement(element) && element.tagName == "SUB") {
+		if (isHtmlElement(element, "SUB")) {
 			return "sub";
 		}
 
@@ -955,8 +955,7 @@ function getSpecifiedValue(element, command) {
 	// "If command is "strikethrough" and element is a s or strike element,
 	// return "line-through"."
 	if (command == "strikethrough"
-	&& isHtmlElement(element)
-	&& (element.tagName == "S" || element.tagName == "STRIKE")) {
+	&& isHtmlElement(element, ["S", "STRIKE"])) {
 		return "line-through";
 	}
 
@@ -977,8 +976,7 @@ function getSpecifiedValue(element, command) {
 	// "If command is "underline" and element is a u element, return
 	// "underline"."
 	if (command == "underline"
-	&& isHtmlElement(element)
-	&& element.tagName == "U") {
+	&& isHtmlElement(element, "U")) {
 		return "underline";
 	}
 
@@ -1368,14 +1366,13 @@ function normalizeSublists(item) {
 	var newItem = null;
 
 	// "While item has an ol or ul child:"
-	while ([].some.call(item.childNodes, function (node) { return isHtmlElement(node, "OL") || isHtmlElement(node, "UL") })) {
+	while ([].some.call(item.childNodes, function (node) { return isHtmlElement(node, ["OL", "UL"]) })) {
 		// "Let child be the last child of item."
 		var child = item.lastChild;
 
 		// "If child is an ol or ul, or new item is null and child is a Text
 		// node whose data consists of zero of more space characters:"
-		if (isHtmlElement(child, "OL")
-		|| isHtmlElement(child, "UL")
+		if (isHtmlElement(child, ["OL", "UL"])
 		|| (!newItem && child.nodeType == Node.TEXT_NODE && /^[ \t\n\f\r]*$/.test(child.data))) {
 			// "Set new item to null."
 			newItem = null;
@@ -1609,8 +1606,7 @@ function clearValue(element, command) {
 
 	// "If element is an a element and command is "createLink" or "unlink",
 	// unset the href property of element."
-	if (isHtmlElement(element)
-	&& element.tagName == "A"
+	if (isHtmlElement(element, "A")
 	&& (command == "createlink" || command == "unlink")) {
 		element.removeAttribute("href");
 	}
@@ -2303,8 +2299,7 @@ function myExecCommand(command, showUI, value, range) {
 		for (var i = 0; i < nodeList.length; i++) {
 			var candidate = nodeList[i].parentNode;
 			while (candidate) {
-				if (isHtmlElement(candidate)
-				&& candidate.tagName == "A"
+				if (isHtmlElement(candidate, "A")
 				&& candidate.hasAttribute("href")) {
 					candidate.setAttribute("href", value);
 				}
@@ -2507,8 +2502,7 @@ function myExecCommand(command, showUI, value, range) {
 		// its previousSibling."
 		if (nodeList.length
 		&& isHtmlElement(nodeList[0], "LI")
-		&& (isHtmlElement(nodeList[0].parentNode, "OL")
-			|| isHtmlElement(nodeList[0].parentNode, "UL"))
+		&& isHtmlElement(nodeList[0].parentNode, ["OL", "UL"])
 		&& isHtmlElement(nodeList[0].previousSibling, "LI")) {
 			normalizeSublists(nodeList[0].previousSibling);
 		}
@@ -2642,10 +2636,8 @@ function myExecCommand(command, showUI, value, range) {
 			&& isContained(node, newRange)
 			&& (!nodeList.length || !isAncestor(nodeList[nodeList.length - 1], node))
 			&& !isPotentialIndentationElement(node)
-			&& (isHtmlElement(node, "OL")
-			|| isHtmlElement(node, "UL")
-			|| isHtmlElement(node.parentNode, "OL")
-			|| isHtmlElement(node.parentNode, "UL")
+			&& (isHtmlElement(node, ["OL", "UL"])
+			|| isHtmlElement(node.parentNode, ["OL", "UL"])
 			// As usual with content restrictions, we fake it for testing
 			// purposes.
 			|| !isHtmlElement(node)
@@ -2674,56 +2666,40 @@ function myExecCommand(command, showUI, value, range) {
 				continue;
 			}
 
+			// "Let original parent be the parent of node."
+			var originalParent = node.parentNode;
+
 			// "Let sublist be a list of nodes, initially consisting of node."
 			var sublist = [node];
 
-			// "If the parent of node is an editable ol:"
-			if (isHtmlElement(node.parentNode, "OL")
-			&& isEditable(node.parentNode)) {
+			// "If original parent is an editable ol or ul:"
+			if (isHtmlElement(originalParent, ["OL", "UL"])
+			&& isEditable(originalParent)) {
 				// "While node list is not empty, and the first member of node
 				// list is the nextSibling of the last member of sublist, and
 				// the first member of node list is not an ol or ul, remove the
 				// first member from node list and append it to sublist."
 				while (nodeList.length
 				&& nodeList[0] == sublist[sublist.length - 1].nextSibling
-				&& !isHtmlElement(nodeList[0], "OL")
-				&& !isHtmlElement(nodeList[0], "UL")) {
-					sublist.push(nodeList.shift());
-				}
-
-				// "Split the parent of sublist, with new parent null."
-				splitParent(sublist);
-
-				// "Fix orphaned list items in sublist."
-				fixOrphanedListItems(sublist);
-
-				// "Continue from the beginning of this loop."
-				continue;
-			}
-
-			// "If the parent of node is an editable ul:"
-			if (isHtmlElement(node.parentNode, "UL")
-			&& isEditable(node.parentNode)) {
-				// "While node list is not empty, and the first member of node
-				// list is the nextSibling of the last member of sublist, and
-				// the first member of node list is not an ol or ul, remove the
-				// first member from node list and append it to sublist."
-				while (nodeList.length
-				&& nodeList[0] == sublist[sublist.length -1].nextSibling
-				&& !isHtmlElement(nodeList[0], "OL")
-				&& !isHtmlElement(nodeList[0], "UL")) {
+				&& !isHtmlElement(nodeList[0], ["OL", "UL"])) {
 					sublist.push(nodeList.shift());
 				}
 
 				// "Split the parent of sublist."
 				splitParent(sublist);
 
-				// "Wrap sublist, with sibling criteria matching any ol, and
-				// with new parent instructions returning the result of calling
-				// createElement("ol") on the context object."
-				wrap(sublist,
-					function(node) { return isHtmlElement(node, "OL") },
-					function() { return document.createElement("ol") });
+				// "If original parent is a ul, wrap sublist, with sibling
+				// criteria matching any ol, and with new parent instructions
+				// returning the result of calling createElement("ol") on the
+				// context object."
+				if (isHtmlElement(originalParent, "UL")) {
+					wrap(sublist,
+						function(node) { return isHtmlElement(node, "OL") },
+						function() { return document.createElement("ol") });
+				}
+
+				// "Fix orphaned list items in sublist."
+				fixOrphanedListItems(sublist);
 
 				// "Continue from the beginning of this loop."
 				continue;
@@ -2771,9 +2747,6 @@ function myExecCommand(command, showUI, value, range) {
 			wrap([li],
 				function(node) { return isHtmlElement(node, "OL") },
 				function() {
-					// "Let original parent be the parent of li."
-					var originalParent = li.parentNode;
-
 					// "If original parent is not an editable indentation
 					// element, or the previousSibling of original parent is
 					// not an editable ol, call createElement("ol") on the
@@ -2869,11 +2842,9 @@ function myExecCommand(command, showUI, value, range) {
 			// "If node has no editable descendants, or is an ol or ul, or is
 			// an li whose parent is an ol or ul, append it to node list."
 			if (!hasEditableDescendants(node)
-			|| isHtmlElement(node, "OL")
-			|| isHtmlElement(node, "UL")
+			|| isHtmlElement(node, ["OL", "UL"])
 			|| (isHtmlElement(node, "LI")
-			&& (isHtmlElement(node.parentNode, "OL")
-			|| isHtmlElement(node.parentNode, "UL")))) {
+			&& isHtmlElement(node.parentNode, ["OL", "UL"]))) {
 				nodeList.push(node);
 			}
 		}
@@ -2884,10 +2855,8 @@ function myExecCommand(command, showUI, value, range) {
 			// the child of an ol or ul, outdent it and remove it from node
 			// list."
 			while (nodeList.length
-			&& (isHtmlElement(nodeList[0], "OL")
-			|| isHtmlElement(nodeList[0], "UL")
-			|| (!isHtmlElement(nodeList[0].parentNode, "OL")
-			&& !isHtmlElement(nodeList[0].parentNode, "UL")))) {
+			&& (isHtmlElement(nodeList[0], ["OL", "UL"])
+			|| !isHtmlElement(nodeList[0].parentNode, ["OL", "UL"]))) {
 				outdentNode(nodeList.shift());
 			}
 
@@ -2908,8 +2877,7 @@ function myExecCommand(command, showUI, value, range) {
 			// to sublist."
 			while (nodeList.length
 			&& nodeList[0] == sublist[sublist.length - 1].nextSibling
-			&& !isHtmlElement(nodeList[0], "OL")
-			&& !isHtmlElement(nodeList[0], "UL")) {
+			&& !isHtmlElement(nodeList[0], ["OL", "UL"])) {
 				sublist.push(nodeList.shift());
 			}
 
@@ -3126,8 +3094,7 @@ function indentNodes(nodeList) {
 	var firstNode = nodeList[0];
 
 	// "If first node's parent is an ol or ul:"
-	if (isHtmlElement(firstNode.parentNode, "OL")
-	|| isHtmlElement(firstNode.parentNode, "UL")) {
+	if (isHtmlElement(firstNode.parentNode, ["OL", "UL"])) {
 		// "Let tag be the local name of the parent of first node."
 		var tag = firstNode.parentNode.tagName;
 
@@ -3246,8 +3213,7 @@ function outdentNode(node) {
 	// and node is an ol or ul:"
 	if ((!isEditable(currentAncestor)
 	|| !isPotentialIndentationElement(currentAncestor))
-	&& (isHtmlElement(node, "OL")
-	|| isHtmlElement(node, "UL"))) {
+	&& isHtmlElement(node, ["OL", "UL"])) {
 		// "Unset the reversed, start, and type attributes of node, if any are
 		// set."
 		node.removeAttribute("reversed");
@@ -3260,8 +3226,7 @@ function outdentNode(node) {
 		// "If node has attributes, and its parent or not an ol or ul, set the
 		// tag name of node to "div"."
 		if (node.attributes.length
-		&& !isHtmlElement(node.parentNode, "OL")
-		&& !isHtmlElement(node.parentNode, "UL")) {
+		&& !isHtmlElement(node.parentNode, ["OL", "UL"])) {
 			setTagName(node, "div");
 
 		// "Otherwise remove node, preserving its descendants."
@@ -3343,14 +3308,12 @@ function fixOrphanedListItems(nodeList) {
 		// "If item has no attributes and its parent is not an ol or ul, remove
 		// item, preserving its descendants."
 		if (!item.attributes.length
-		&& !isHtmlElement(item.parentNode, "OL")
-		&& !isHtmlElement(item.parentNode, "UL")) {
+		&& !isHtmlElement(item.parentNode, ["OL", "UL"])) {
 			removePreservingDescendants(item);
 
 		// "Otherwise, if item's parent is not an ol or ul, set the tag name of
 		// item to "div"."
-		} else if (!isHtmlElement(item.parentNode, "OL")
-		&& !isHtmlElement(item.parentNode, "UL")) {
+		} else if (!isHtmlElement(item.parentNode, ["OL", "UL"])) {
 			setTagName(item, "div");
 		}
 	}

@@ -2844,11 +2844,13 @@ Sheesh, lists are complicated.
     <li>If <var>node</var> is a [[ul]], <span>set the tag name</span> of
     <var>node</var> to "ol" and continue from the beginning of this loop.
 
+    <li>Let <var>original parent</var> be the [[parent]] of <var>node</var>.
+
     <li>Let <var>sublist</var> be a list of [[nodes]], initially consisting of
     <var>node</var>.
 
-    <li>If the [[parent]] of <var>node</var> is an <span>editable</span>
-    [[ol]]:
+    <li>If <var>original parent</var> is an <span>editable</span> [[ol]] or
+    [[ul]]:
     <!-- Outdent -->
 
     <ol>
@@ -2860,30 +2862,14 @@ Sheesh, lists are complicated.
 
       <li><span>Split the parent</span> of <var>sublist</var>.
 
-      <li><span>Fix orphaned list items</span> in <var>sublist</var>.
-
-      <li>Continue from the beginning of this loop.
-    </ol>
-
-    <li>If the [[parent]] of <var>node</var> is an <span>editable</span>
-    [[ul]]:
-    <!-- Split up the parent -->
-
-    <ol>
-      <li>While <var>node list</var> is not empty, and the first member of
-      <var>node list</var> is the [[nextsibling]] of the last member of
-      <var>sublist</var>, and the first member of <var>node list</var> is not
-      an [[ol]] or [[ul]], remove the first member from <var>node list</var>
-      and append it to <var>sublist</var>.
-
-      <li><span>Split the parent</span> of <var>sublist</var>.
-
-      <li><span>Wrap</span> <var>sublist</var>, with <span>sibling
-      criteria</span> matching any [[ol]], and with <span>new parent
-      instructions</span> returning the result of calling <code
-      data-anolis-spec=domcore
+      <li>If <var>original parent</var> is a [[ul]], <span>wrap</span>
+      <var>sublist</var>, with <span>sibling criteria</span> matching any
+      [[ol]], and with <span>new parent instructions</span> returning the
+      result of calling <code data-anolis-spec=domcore
       title=dom-Document-createElement>createElement("ol")</code> on the
       [[contextobject]].
+
+      <li><span>Fix orphaned list items</span> in <var>sublist</var>.
 
       <li>Continue from the beginning of this loop.
     </ol>
@@ -2922,8 +2908,6 @@ Sheesh, lists are complicated.
     <span>new parent instructions</span> being the following:
 
     <ol>
-      <li>Let <var>original parent</var> be the [[parent]] of <var>li</var>.
-
       <li>If <var>original parent</var> is not an <span>editable</span>
       <span>indentation element</span>, or the [[previoussibling]] of
       <var>original parent</var> is not an <span>editable</span> [[ol]], call

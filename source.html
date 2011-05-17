@@ -181,6 +181,17 @@ other than review and comment.
   <li>Tim Down <a href="http://lists.whatwg.org/pipermail/whatwg-whatwg.org/2011-May/031655.html">points
   out</a> that browsers have special behavior for formatting commands when the
   selection is collapsed.  Needs investigation.
+
+  <li>What should be used as a line separator?  See <a
+  href=http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html>lengthy
+  discussion</a>.  I see no strong arguments in favor of any of the three
+  existing behaviors, so I'm weakly in favor of following the plurality, namely
+  IE/Opera's behavior of using [[p]].  This affects not only what happens when
+  the user hits Enter, but also what happens when we need to separate lines for
+  other reasons (e.g., outdenting a list).  We likely want switches to allow
+  authors to control this behavior, like Gecko's insertBrOnReturn and Opera's
+  opera-defaultblock.  Currently the spec assumes [[br]] should separate lines,
+  which is like Gecko and sometimes WebKit.
 </ul>
 
 <p class=XXX>A variety of other issues are also noted in the text, formatted

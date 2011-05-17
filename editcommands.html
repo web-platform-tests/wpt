@@ -27,7 +27,7 @@
 <body class=draft>
 <div class=head id=head>
 <h1>HTML Editing Commands</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-16-may-2011>Work in Progress &mdash; Last Update 16 May 2011</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-17-may-2011>Work in Progress &mdash; Last Update 17 May 2011</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;ayg+spec@aryeh.name&gt;
@@ -195,6 +195,16 @@ other than review and comment.
   <li>Tim Down <a href=http://lists.whatwg.org/pipermail/whatwg-whatwg.org/2011-May/031655.html>points
   out</a> that browsers have special behavior for formatting commands when the
   selection is collapsed.  Needs investigation.
+
+  <li>What should be used as a line separator?  See <a href=http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html>lengthy
+  discussion</a>.  I see no strong arguments in favor of any of the three
+  existing behaviors, so I'm weakly in favor of following the plurality, namely
+  IE/Opera's behavior of using <code class=external data-anolis-spec=html title="the p element"><a href=http://www.whatwg.org/html/#the-p-element>p</a></code>.  This affects not only what happens when
+  the user hits Enter, but also what happens when we need to separate lines for
+  other reasons (e.g., outdenting a list).  We likely want switches to allow
+  authors to control this behavior, like Gecko's insertBrOnReturn and Opera's
+  opera-defaultblock.  Currently the spec assumes <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code> should separate lines,
+  which is like Gecko and sometimes WebKit.
 </ul>
 
 <p class=XXX>A variety of other issues are also noted in the text, formatted

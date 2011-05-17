@@ -78,7 +78,7 @@ blank in IE and Opera, which don't support styleWithCSS.)
 <!-- Note: this is completely not a hack at all. -->
 <style id=alerts>/* tr:not(.alert):not(:first-child) { display: none } */</style>
 
-<label><input id=alert-checkbox type=checkbox accesskey=a checked onclick='updateAlertRowStyle()'> Display non-alert rows</label>
+<label><input id=alert-checkbox type=checkbox accesskey=a checked onclick='updateAlertRowStyle()'> Display rows without spec alerts</label>
 
 <script>
 // Confusingly, we're storing a string here, not a boolean.
@@ -1600,13 +1600,13 @@ function doSpecCell(tr, test, command, styleWithCss) {
 					break;
 				}
 			}
-			var tr = alertDiv;
-			while (tr.tagName != "TR") {
-				tr = tr.parentNode;
+			var td = alertDiv;
+			while (td.tagName != "TD") {
+				td = td.parentNode;
 			}
 			alertDiv.parentNode.removeChild(alertDiv);
-			if (!tr.querySelector(".alert")) {
-				tr.classList.remove("alert");
+			if (!td.querySelector(".alert")) {
+				td.parentNode.classList.remove("alert");
 			}
 		} })(key, newValue, alertDiv);
 	}
@@ -1688,7 +1688,6 @@ function doBrowserCell(tr, test, command, styleWithCss) {
 			testDiv.contenteditable = "inherit";
 			testDiv.removeAttribute("spellcheck");
 		}
-		browserCell.parentNode.className = "alert";
 		browserCell.lastChild.className = "alert";
 		browserCell.lastChild.textContent = "Exception: " + e;
 		if (typeof e == "object" && "stack" in e) {

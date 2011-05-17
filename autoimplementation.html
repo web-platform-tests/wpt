@@ -1455,12 +1455,10 @@ function addTest(command) {
 
 	var test;
 	var inputs = document.getElementById(command).getElementsByTagName("input");
-	// Strip \u200B (zero-width space) so copy-pasting from the cells works
-	// non-confusingly
 	if (inputs.length == 1) {
-		test = inputs[0].value.replace(/\u200B/g, "");
+		test = inputs[0].value;
 	} else {
-		test = [inputs[1].value, inputs[0].value.replace(/\u200B/g, "")];
+		test = [inputs[1].value, inputs[0].value];
 	}
 
 	doInputCell(tr, test);
@@ -1754,13 +1752,15 @@ function doSameCell(tr) {
 	}
 	tr.appendChild(sameCell);
 
-	// Insert zero-width spaces so IE doesn't stretch the screen
+	// Insert <wbr> so IE doesn't stretch the screen
 	for (var i = 0; i <= 2; i++) {
 		try {
-			tr.childNodes[i].lastChild.firstChild.textContent =
+			tr.childNodes[i].lastChild.firstChild.innerHTML =
 				tr.childNodes[i].lastChild.firstChild.textContent
-				.replace(/</g, "\u200B<")
-				.replace(/>/g, ">\u200B");
+				.replace(/&/g, "&amp;")
+				.replace(/</g, "&lt;")
+				.replace(/>/g, "><wbr>")
+				.replace(/&lt;/g, "<wbr>&lt;");
 		} catch (e) {};
 	}
 }

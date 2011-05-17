@@ -365,38 +365,64 @@ instructions</dfn>:
 
 <ol>
   <li>If <var>node list</var> is empty, or the first member of <var>node
-  list</var> is not <span>editable</span>, abort these steps.
+  list</var> is not <span>editable</span>, return null and abort these steps.
+
+  <li>Let <var>original parent</var> be the [[parent]] of the first member of
+  <var>node list</var>.
 
   <li>If the [[previoussibling]] of the first member of <var>node list</var>
-  is <span>editable</span> and meets the <span>sibling criteria</span>, then
-  for each <var>node</var> in <var>node list</var>, append <var>node</var> as
-  the last [[child]] of its [[previoussibling]], <span>preserving
-  ranges</span>.  Then abort these steps.
+  is <span>editable</span> and meets the <span>sibling criteria</span>:
+
+  <ol>
+    <li>For each <var>node</var> in <var>node list</var>, append
+    <var>node</var> as the last [[child]] of its [[previoussibling]],
+    <span>preserving ranges</span>.
+
+    <li>If <var>original parent</var> is <span>editable</span> and has no
+    [[children]], remove it from its [[parent]].
+
+    <li>Return the [[parent]] of the first member of <var>node list</var> and
+    abort these steps.
+  </ol>
 
   <li>If the [[nextsibling]] of the last member of <var>node list</var> is
-  <span>editable</span> and meets the <span>sibling criteria</span>, then for
-  each <var>node</var> in <var>node list</var>, <em>in reverse order</em>,
-  insert <var>node</var> as the first [[child]] of its [[nextsibling]],
-  <span>preserving ranges</span>.  Then abort these steps.
+  <span>editable</span> and meets the <span>sibling criteria</span>:
+
+  <ol>
+    <li>For each <var>node</var> in <var>node list</var>, <em>in reverse
+    order</em>, insert <var>node</var> as the first [[child]] of its
+    [[nextsibling]], <span>preserving ranges</span>.
+
+    <li>If <var>original parent</var> is <span>editable</span> and has no
+    [[children]], remove it from its [[parent]].
+
+    <li>Return the [[parent]] of the first member of <var>node list</var> and
+    abort these steps.
+  </ol>
 
   <li>Run the <span>new parent instructions</span>, and let <var>new
   parent</var> be the result.
 
-  <li>If <var>new parent</var> cannot be the [[child]] of the [[parent]] of the
-  first member of <var>node list</var>, <span>split the parent</span> of
-  <var>node list</var>.
+  <li>If <var>new parent</var>'s [[parent]] is null, and <var>new parent</var>
+  cannot be the [[child]] of the [[parent]] of the first member of <var>node
+  list</var>, <span>split the parent</span> of <var>node list</var>.
 
   <p class=XXX>"Cannot be the child" needs to be defined.
 
-  <li>Insert <var>new parent</var> into the [[parent]] of the first member of
-  <var>node list</var> immediately before the first member of <var>node
-  list</var>.
+  <li>If <var>new parent</var>'s [[parent]] is null, insert <var>new
+  parent</var> into the [[parent]] of the first member of <var>node list</var>
+  immediately before the first member of <var>node list</var>.
 
   <li>For each <var>node</var> in <var>node list</var>, append <var>node</var>
   as the last [[child]] of <var>new parent</var>, <span>preserving
   ranges</span>.
 
+  <li>If <var>original parent</var> is <span>editable</span> and has no
+  [[children]], remove it from its [[parent]].
+
   <li><span>Remove extraneous line breaks</span> from <var>new parent</var>.
+
+  <li>Return <var>new parent</var>.
 </ol>
 
 <p>To <dfn>remove extraneous line breaks</dfn> from a [[node]] <var>node</var>:
@@ -2808,20 +2834,21 @@ Sheesh, lists are complicated.
   <li>While <var>node list</var> is not empty:
 
   <ol>
-    <li>Let <var>sublist</var> be an empty list of [[nodes]].
+    <li>Let <var>node</var> be the first member of <var>node list</var>.
 
-    <li>Remove the first member of <var>node list</var> and append it to
-    <var>sublist</var>.
+    <li>Remove <var>node</var> from <var>node list</var>.
 
-    <li>If the first member of <var>sublist</var> is an [[ol]],
-    <span>outdent</span> it.
+    <li>If <var>node</var> is an [[ol]], <span>outdent</span> it and continue
+    from the beginning of this loop.
 
-    <li>Otherwise, if the first member of <var>sublist</var> is a [[ul]],
-    <span>set the tag name</span> of the first member of <var>sublist</var> to
-    "ol".
+    <li>If <var>node</var> is a [[ul]], <span>set the tag name</span> of
+    <var>node</var> to "ol" and continue from the beginning of this loop.
 
-    <li>Otherwise, if the [[parent]] of the first member of <var>sublist</var>
-    is an <span>editable</span> [[ol]]:
+    <li>Let <var>sublist</var> be a list of [[nodes]], initially consisting of
+    <var>node</var>.
+
+    <li>If the [[parent]] of <var>node</var> is an <span>editable</span>
+    [[ol]]:
     <!-- Outdent -->
 
     <ol>
@@ -2834,10 +2861,12 @@ Sheesh, lists are complicated.
       <li><span>Split the parent</span> of <var>sublist</var>.
 
       <li><span>Fix orphaned list items</span> in <var>sublist</var>.
+
+      <li>Continue from the beginning of this loop.
     </ol>
 
-    <li>Otherwise, if the [[parent]] of the first member of <var>sublist</var>
-    is an <span>editable</span> [[ul]]:
+    <li>If the [[parent]] of <var>node</var> is an <span>editable</span>
+    [[ul]]:
     <!-- Split up the parent -->
 
     <ol>
@@ -2855,119 +2884,66 @@ Sheesh, lists are complicated.
       data-anolis-spec=domcore
       title=dom-Document-createElement>createElement("ol")</code> on the
       [[contextobject]].
+
+      <li>Continue from the beginning of this loop.
     </ol>
 
-    <li>Otherwise:
     <!-- General case.  Add an ol wrapper for each line.  <br> breaks apart
     <li>'s, and multiple consecutive <br>s or trailing <br>s become empty
     <li>s. -->
 
+    <li>If <var>node</var> is a [[p]] or [[li]] or [[div]], <span>set the tag
+    name</span> of <var>node</var> to "li", and let <var>li</var> be the
+    result.
+
+    <li>Otherwise:
+
     <ol>
-      <li>If the first member of <var>sublist</var> is a [[p]] or [[li]] or
-      [[div]], <span>set the tag name</span> of the first member of
-      <var>sublist</var> to "li", and let <var>li</var> be the result.  Remove
-      the first member of <var>sublist</var>, and append <var>li</var> to
+      <li>While <var>node list</var> is not empty, and the first member of
+      <var>node list</var> is the [[nextsibling]] of the last member of
+      <var>sublist</var>, and the last member of <var>sublist</var> and first
+      member of <var>node list</var> are both <span title="inline node">inline
+      nodes</span>, and the last member of <var>sublist</var> is not a [[br]],
+      remove the first member from <var>node list</var> and append it to
       <var>sublist</var>.
 
-      <li>Otherwise:
-
-      <ol>
-        <li>While <var>node list</var> is not empty, and the first member of
-        <var>node list</var> is the [[nextsibling]] of the last member of
-        <var>sublist</var>, and the last member of <var>sublist</var> and first
-        member of <var>node list</var> are both <span title="inline
-        node">inline nodes</span>, and the last member of <var>sublist</var> is
-        not a [[br]], remove the first member from <var>node list</var> and
-        append it to <var>sublist</var>.
-
-        <li>Let <var>li</var> be the result of calling <code
-        data-anolis-spec=domcore
-        title=dom-Document-createElement>createElement("li")</code> on the
-        [[ownerdocument]] of the first member of <var>sublist</var>.
-      </ol>
-
-      <li>If the [[nextsibling]] of the last member of <var>sublist</var> is an
-      [[ol]]:
-
-      <ol>
-        <li>Insert <var>li</var> as the first [[child]] of the [[nextsibling]]
-        of the last member of <var>sublist</var>, <span>preserving
-        ranges</span>.
-
-        <li>If the first member of <var>sublist</var> is an [[li]], remove it
-        from <var>sublist</var>.
-
-        <li>For each <var>node</var> in <var>sublist</var> <em>in reverse
-        order</em>, insert <var>node</var> as the first [[child]] of
-        <var>li</var>, <span>preserving ranges</span>.
-      </ol>
-
-      <li>Otherwise:
-
-      <ol>
-        <li>Let <var>ol</var> be the [[previoussibling]] of the first member of
-        <var>sublist</var>.
-
-        <li>Let <var>original parent</var> be the [[parent]] of the first
-        member of <var>sublist</var>.
-
-        <li>If <var>ol</var> is null, and <var>original parent</var> is an
-        <span>editable</span> <span>indentation element</span>, and the
-        [[previoussibling]] of <var>original parent</var> is an
-        <span>editable</span> [[ol]]:
-
-        <ol>
-          <li>Let <var>ol</var> be the [[previoussibling]] of <var>original
-          parent</var>.
-
-          <li><span>Normalize sublists</span> of <var>ol</var>'s last [[child]].
-
-          <li>If <var>ol</var>'s last [[child]] is not an <span>editable</span>
-          [[ol]], call <code data-anolis-spec=domcore
-          title=dom-Document-createElement>createElement("ol")</code> on the
-          [[ownerdocument]] of <var>ol</var>, and append the result as the last
-          [[child]] of <var>ol</var>.
-
-          <li>Set <var>ol</var> to its last [[child]].
-        </ol>
-
-        <li>If <var>ol</var> is not an <span>editable</span> [[ol]]:
-
-        <ol>
-          <li>If <var>original parent</var> is a [[p]], <span>split the
-          parent</span> of <var>sublist</var>, and then set <var>original
-          parent</var> to the [[parent]] of the first member of
-          <var>sublist</var>.
-
-          <li>Let <var>ol</var> be the result of calling <code
-          data-anolis-spec=domcore
-          title=dom-Document-createElement>createElement("ol")</code> on the
-          [[ownerdocument]] of the first member of <var>sublist</var>.
-
-          <li>Insert <var>ol</var> into <var>original parent</var> immediately
-          before the first member of <var>sublist</var>.
-        </ol>
-
-        <li>Append <var>li</var> as the last [[child]] of <var>ol</var>,
-        <span>preserving ranges</span>.
-
-        <li>If the first member of <var>sublist</var> is an [[li]], remove it
-        from <var>sublist</var>.
-
-        <li>For each <var>node</var> in <var>sublist</var>, append
-        <var>node</var> as the last [[child]] of <var>li</var>,
-        <span>preserving ranges</span>.
-
-        <li>If <var>original parent</var> has no [[children]], remove it from
-        its [[parent]].
-        <!-- This might happen if it's an indentation element whose previous
-        sibling is an ol, for instance. -->
-      </ol>
+      <li><span>Wrap</span> <var>sublist</var>, with <span>sibling
+      criteria</span> matching nothing and with <span>new parent
+      instructions</span> returning the result of calling <code
+      data-anolis-spec=domcore
+      title=dom-Document-createElement>createElement("li")</code> on the
+      [[contextobject]].  Let <var>li</var> be the result.
     </ol>
 
-    <li><span>Remove extraneous line breaks</span> from <var>ol</var>.
+    <li>If <var>li</var> is null, continue from the beginning of this loop.
 
-    <li><span>Remove extraneous line breaks</span> from <var>li</var>.
+    <li><span>Wrap</span> the one-[[node]] list consisting of <var>li</var>,
+    with the <span>sibling criteria</span> matching any [[ol]], and the
+    <span>new parent instructions</span> being the following:
+
+    <ol>
+      <li>Let <var>original parent</var> be the [[parent]] of <var>li</var>.
+
+      <li>If <var>original parent</var> is not an <span>editable</span>
+      <span>indentation element</span>, or the [[previoussibling]] of
+      <var>original parent</var> is not an <span>editable</span> [[ol]], call
+      <code data-anolis-spec=domcore
+      title=dom-Document-createElement>createElement("ol")</code> on the
+      [[contextobject]] and return the result.  Otherwise:
+
+      <li>Let <var>ol</var> be the [[previoussibling]] of <var>original
+      parent</var>.
+
+      <li><span>Normalize sublists</span> of <var>ol</var>'s last [[child]].
+
+      <li>If <var>ol</var>'s last [[child]] is not an <span>editable</span>
+      [[ol]], call <code data-anolis-spec=domcore
+      title=dom-Document-createElement>createElement("ol")</code> on the
+      [[contextobject]], and append the result as the last [[child]] of
+      <var>ol</var>.
+
+      <li>Return the last [[child]] of <var>ol</var>.
+    </ol>
   </ol>
 </ol>
 

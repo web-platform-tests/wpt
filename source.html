@@ -24,6 +24,7 @@
  }
  div.note > p:first-child::before { content: 'Note: '; }
  div + * > li { margin: 1em 0 }
+ .XXX > :last-child { margin-bottom: 0 }
 </style>
 <body class=draft>
 <div class=head id=head>
@@ -463,13 +464,6 @@ be used where only [[phrasingcontent]] is expected (not counting unknown or
 obsolete elements, which cannot be used at all); or any [[element]] whose
 display property computes to something other than "inline", "inline-block", or
 "inline-table"; or any [[node]] that is not <span>editable</span>.
-
-<p class=XXX>Currently when we hit an unwrappable element, we ignore it and
-alter its children.  Alternatively, if we would otherwise create a span with a
-style element on it, maybe we could put the style element directly on the
-unwrappable element.  This would produce shorter markup in many cases, but
-would also cause problems for things like background-color that do something
-different on block elements.
 
 <p>The <dfn>effective value</dfn> of a [[node]] <var>node</var> for a given
 <var>command</var> is returned by the following algorithm, which will return
@@ -1576,13 +1570,6 @@ as desired.
   <li>If <var>node</var> is a [[documentfragment]], let <var>children</var> be
   a list of its [[children]].  <span>Set the value</span> of each member of
   [[children]], then abort this algorithm.
-
-  <li>If <var>node</var>'s [[parent]] is null, or if <var>node</var> is a <code
-  data-anolis-spec=domcore>DocumentType</code>, abort this algorithm.
-
-  <p class=XXX>We could style detached elements, but maybe it's not worth the
-  effort.  Is execCommand() even supposed to work on things that don't descend
-  from a document?  Needs investigation.
 
   <li>If <var>node</var> is not <span>editable</span>:
   <!--

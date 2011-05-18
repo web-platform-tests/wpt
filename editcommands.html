@@ -23,6 +23,7 @@
  }
  div.note > p:first-child::before { content: 'Note: '; }
  div + * > li { margin: 1em 0 }
+ .XXX > :last-child { margin-bottom: 0 }
 </style>
 <body class=draft>
 <div class=head id=head>
@@ -468,13 +469,6 @@ be used where only <a class=external data-anolis-spec=html href=http://www.whatw
 obsolete elements, which cannot be used at all); or any <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> whose
 display property computes to something other than "inline", "inline-block", or
 "inline-table"; or any <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> that is not <a href=#editable>editable</a>.
-
-<p class=XXX>Currently when we hit an unwrappable element, we ignore it and
-alter its children.  Alternatively, if we would otherwise create a span with a
-style element on it, maybe we could put the style element directly on the
-unwrappable element.  This would produce shorter markup in many cases, but
-would also cause problems for things like background-color that do something
-different on block elements.
 
 <p>The <dfn id=effective-value>effective value</dfn> of a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> <var title="">node</var> for a given
 <var title="">command</var> is returned by the following algorithm, which will return
@@ -1554,12 +1548,6 @@ as desired.
   <li>If <var title="">node</var> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#documentfragment>DocumentFragment</a></code>, let <var title="">children</var> be
   a list of its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>.  <a href=#set-the-value>Set the value</a> of each member of
   <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, then abort this algorithm.
-
-  <li>If <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is null, or if <var title="">node</var> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#documenttype>DocumentType</a></code>, abort this algorithm.
-
-  <p class=XXX>We could style detached elements, but maybe it's not worth the
-  effort.  Is execCommand() even supposed to work on things that don't descend
-  from a document?  Needs investigation.
 
   <li>If <var title="">node</var> is not <a href=#editable>editable</a>:
   <!--

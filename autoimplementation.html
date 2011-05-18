@@ -528,7 +528,8 @@ var tests = {
 		'<div>foo<p>[bar]</p>baz</div><p>extra',
 
 		// These mimic existing indentation in various browsers, to see how
-		// they cope with indenting twice.  This is Gecko non-CSS and Opera:
+		// they cope with indenting twice.  This is spec, Gecko non-CSS, and
+		// Opera:
 		'<blockquote><p>foo[bar]</p><p>baz</p></blockquote><p>extra',
 		'<blockquote><p>foo[bar</p><p>b]az</p></blockquote><p>extra',
 		'<blockquote><p>foo[bar]</p></blockquote><p>baz</p><p>extra',
@@ -559,20 +560,6 @@ var tests = {
 		'<blockquote class="webkit-indent-blockquote" style="margin: 0 0 0 40px; border: none; padding: 0px"><p>foo[bar</p></blockquote><p>b]az</p><p>extra',
 		'<p>[foo]<blockquote class="webkit-indent-blockquote" style="margin: 0 0 0 40px; border: none; padding: 0px"><p>bar</blockquote><p>extra',
 		'<p>[foo<blockquote class="webkit-indent-blockquote" style="margin: 0 0 0 40px; border: none; padding: 0px"><p>b]ar</blockquote><p>extra',
-
-		// Spec:
-		'<blockquote style="margin: 0 40px"><p>foo[bar]</p><p>baz</p></blockquote><p>extra',
-		'<blockquote style="margin: 0 40px"><p>foo[bar</p><p>b]az</p></blockquote><p>extra',
-		'<blockquote style="margin: 0 40px"><p>foo[bar]</p></blockquote><p>baz</p><p>extra',
-		'<blockquote style="margin: 0 40px"><p>foo[bar</p></blockquote><p>b]az</p><p>extra',
-		'<p>[foo]<blockquote style="margin: 0 40px"><p>bar</blockquote><p>extra',
-		'<p>[foo<blockquote style="margin: 0 40px"><p>b]ar</blockquote><p>extra',
-		'<div style="margin: 0 40px"><p>foo[bar]</p><p>baz</p></div><p>extra',
-		'<div style="margin: 0 40px"><p>foo[bar</p><p>b]az</p></div><p>extra',
-		'<div style="margin: 0 40px"><p>foo[bar]</p></div><p>baz</p><p>extra',
-		'<p>[foo]<div style="margin: 0 40px"><p>bar</div><p>extra',
-		'<p>[foo<div style="margin: 0 40px"><p>b]ar</div><p>extra',
-		'<div style="margin: 0 40px"><p>foo[bar</p></div><p>b]az</p><p>extra',
 
 		// MDC says "In Firefox, if the selection spans multiple lines at
 		// different levels of indentation, only the least indented lines in
@@ -877,8 +864,8 @@ var tests = {
 	],
 	outdent: [
 		// These mimic existing indentation in various browsers, to see how
-		// they cope with outdenting various things.  This is Gecko non-CSS and
-		// Opera:
+		// they cope with outdenting various things.  This is spec, Gecko
+		// non-CSS, and Opera:
 		'<blockquote><p>foo[bar]</p><p>baz</p></blockquote><p>extra',
 		'<blockquote><p>foo[bar</p><p>b]az</p></blockquote><p>extra',
 		'<blockquote><p>foo[bar]</p></blockquote><p>baz</p><p>extra',
@@ -901,16 +888,6 @@ var tests = {
 		'<blockquote class="webkit-indent-blockquote" style="margin: 0 0 0 40px; border: none; padding: 0px;"><p>foo[bar</p><p>b]az</p></blockquote><p>extra',
 		'<blockquote class="webkit-indent-blockquote" style="margin: 0 0 0 40px; border: none; padding: 0px;"><p>foo[bar]</p></blockquote><p>baz</p><p>extra',
 		'<blockquote class="webkit-indent-blockquote" style="margin: 0 0 0 40px; border: none; padding: 0px;"><p>foo[bar</p></blockquote><p>b]az</p><p>extra',
-
-		// Spec:
-		'<blockquote style="margin: 0 40px"><p>foo[bar]</p><p>baz</p></blockquote><p>extra',
-		'<blockquote style="margin: 0 40px"><p>foo[bar</p><p>b]az</p></blockquote><p>extra',
-		'<blockquote style="margin: 0 40px"><p>foo[bar]</p></blockquote><p>baz</p><p>extra',
-		'<blockquote style="margin: 0 40px"><p>foo[bar</p></blockquote><p>b]az</p><p>extra',
-		'<div style="margin: 0 40px"><p>foo[bar]</p><p>baz</p></div><p>extra',
-		'<div style="margin: 0 40px"><p>foo[bar</p><p>b]az</p></div><p>extra',
-		'<div style="margin: 0 40px"><p>foo[bar]</p></div><p>baz</p><p>extra',
-		'<div style="margin: 0 40px"><p>foo[bar</p></div><p>b]az</p><p>extra',
 
 		// Now let's try nesting lots of stuff and see what happens.
 		'<blockquote><blockquote>foo[bar]baz</blockquote></blockquote>',
@@ -1387,7 +1364,6 @@ var doubleTestingCommands = [
 	"fontname",
 	"fontsize",
 	"forecolor",
-	"indent",
 	"italic",
 	"strikethrough",
 	"subscript",
@@ -1707,7 +1683,6 @@ function doSameCell(tr) {
 		// now this includes ignoring where the selection goes.
 		var normalizedSpecCell = tr.childNodes[1].lastChild.firstChild.textContent
 			.replace(/[[\]{}]/g, "")
-			.replace(/ style="margin: 0 40px"/g, "")
 			.replace(/ class="webkit-indent-blockquote" style="margin: 0 0 0 40px; border: none; padding: 0px;"/g, '')
 			.replace(/ style="margin-right: 0px;" dir="ltr"/g, '')
 			.replace(/ style="margin-left: 0px;" dir="rtl"/g, '')
@@ -1720,7 +1695,6 @@ function doSameCell(tr) {
 			.replace(/#[0-9a-fA-F]{6}/g, function(match) { return match.toUpperCase(); });
 		var normalizedBrowserCell = tr.childNodes[2].lastChild.firstChild.textContent
 			.replace(/[[\]{}]/g, "")
-			.replace(/ style="margin: 0 40px"/g, "")
 			.replace(/ class="webkit-indent-blockquote" style="margin: 0 0 0 40px; border: none; padding: 0px;"/g, '')
 			.replace(/ style="margin-right: 0px;" dir="ltr"/g, '')
 			.replace(/ style="margin-left: 0px;" dir="rtl"/g, '')

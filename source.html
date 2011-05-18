@@ -2332,25 +2332,29 @@ won't remember that we aren't supposed to indent "foo" a second time.
     <li>Abort these steps.
   </ol>
 
-  <li>Let <var>tag</var> be "div" if the <span>CSS styling flag</span> is
-  true, otherwise "blockquote".
-  <!-- Firefox 4.0 is the only tested browser that respects the CSS styling
-  flag for indent at all.  For indent, as for inline markup commands like
-  bold, it will modify the inline style of existing elements if available,
-  and only create spans/divs if there are no existing elements where it could
-  add the style instead.  For indent as for other commands, I follow WebKit
-  and always create an extra element, to ensure consistency between CSS and
-  non-CSS modes. -->
+  <!--
+  Firefox 4.0 respects the CSS styling flag for indent, but Chrome 12 dev does
+  not.  I always produce blockquotes, even if CSS styling is on, for two
+  reasons.  One, IE9 handles inline margin attributes badly: when outdenting,
+  it propagates the margin to the parent, which doesn't actually remove it.
+  Two, in CSS mode I'd want to use <div style="margin: 1em 40px"> to match
+  non-CSS mode, but authors are very likely to want to remove the top/bottom
+  margin, which they can't do if it's not a special tag.  Authors who really
+  want divs for indentation could always convert the blockquotes to divs
+  themselves.  But if people really want it, I could respect CSS styling mode
+  here too.
 
-  <li><span>Wrap</span> <var>node list</var>.  <span>Sibling criteria</span>
-  must match only an <span>indentation element</span> whose "display" property
-  computes to "block" and whose "margin-left" and "margin-right" properties
-  compute to "40px", and whose "margin-top" and "margin-bottom" properties
-  compute to "0".  The <span>new parent instructions</span> are to call <code
+  The top/bottom margins might be undesirable here, but no more so than for
+  <ol>/<ul>/<p>/etc.  Here as there, authors can remove them with CSS if they
+  want.
+  -->
+
+  <li><span>Wrap</span> <var>node list</var>, with <span>sibling
+  criteria</span> matching any <span>indentation element</span>, and <span>new
+  parent instructions</span> to return the result of calling <code
   data-anolis-spec=domcore
-  title=dom-Document-createElement>createElement(<var>tag</var>)</code> on the
-  [[ownerdocument]] of <var>first node</var>, then set the CSS property
-  "margin" of the returned node to "0 40px", then return the returned node.
+  title=dom-Document-createElement>createElement("blockquote")</code> on the
+  [[ownerdocument]] of <var>first node</var>.
 
   <p class=XXX>This indents on both sides, so we don't have to worry about
   directionality.  Preferably we should indent only on the start side, but
@@ -2358,16 +2362,8 @@ won't remember that we aren't supposed to indent "foo" a second time.
   browsers start to support margin-start and so on, we can't use them because
   a) we have to work okay in legacy browsers and b) it doesn't help if a
   descendant block has different direction (so should be indented the other
-  way).
-
-  <p class=XXX>IE9 doesn't handle an explicit margin attribute very well when
-  outdenting: it propagates it to the parent when removing the element, which
-  doesn't actually remove the indentation.  So indentation per spec (or
-  Gecko in CSS mode or WebKit) will not be removed correctly by IE.  I'm
-  leaving the style in because this short-term incompatibility is preferable
-  to the long-term incorrectness of adding top/bottom margins or adding
-  margins on both sides.  I can't think of any better way to do this at the
-  moment.
+  way).  It's not clear to me that we should worry about it: most browsers
+  don't, and the ones that do get it wrong.
 </ol>
 
 <dd><strong>State</strong>:
@@ -3016,16 +3012,15 @@ value</span> either "italic" or "oblique".  Otherwise false.
 <!--
 Things that are produced for indentation that we need to consider removing:
 
-* Plain <blockquote> (produced by Opera 11.00 and non-CSS Firefox 4.0)
+* Plain <blockquote> (produced by spec, Firefox 4.0 non-CSS, Opera 11.00)
 * <blockquote style="margin-right: 0" dir="ltr"> and <blockquote
   style="margin-left: 0" dir="rtl"> (IE9)
 * <blockquote class="webkit-indent-blockquote" style="margin: 0 0 0 40px;
   border: none; padding: 0px"> (Chrome 12 dev)
 * <div style="margin-left: 40px"> and <div style="margin-right: 40px">
-  (CSS Firefox 4.0 if no other element available)
-* <blockquote style="margin: 0 40px"> and <div style="margin: 0 40px"> (spec)
+  (Firefox 4.0 CSS if no other element available)
 * Other random things with display: block whose left or right margin was
-  increased by 40px (CSS Firefox 4.0)
+  increased by 40px (Firefox 4.0 CSS)
 
 For discussion on the list-related stuff, see the comment for
 insertOrderedList.

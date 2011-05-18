@@ -3092,34 +3092,12 @@ function indentNodes(nodeList) {
 		return;
 	}
 
-	// "Let tag be "div" if the CSS styling flag is true, otherwise
-	// "blockquote"."
-	var tag = cssStylingFlag ? "div" : "blockquote";
-
-	// "Wrap node list. Sibling criteria must match only an indentation element
-	// whose "display" property computes to "block" and whose "margin-left" and
-	// "margin-right" properties compute to "40px", and whose "margin-top" and
-	// "margin-bottom" properties compute to "0". The new parent instructions
-	// are to call createElement(tag) on the ownerDocument of first node, then
-	// set the CSS property "margin" of the returned node to "0 40px", then
-	// return the returned node."
+	// "Wrap node list, with sibling criteria matching any indentation element,
+	// and new parent instructions to return the result of calling
+	// createElement("blockquote") on the ownerDocument of first node."
 	wrap(nodeList,
-		function(node) {
-			if (!isIndentationElement(node)) {
-				return false;
-			}
-			var style = getComputedStyle(node);
-			return style.display == "block"
-				&& style.marginLeft == "40px"
-				&& style.marginRight == "40px"
-				&& style.marginTop == "0px"
-				&& style.marginBottom == "0px";
-		},
-		function() {
-			var ret = firstNode.ownerDocument.createElement(tag);
-			ret.setAttribute("style", "margin: 0 40px");
-			return ret;
-		});
+		function(node) { return isIndentationElement(node) },
+		function() { return firstNode.ownerDocument.createElement("blockquote") });
 }
 
 function outdentNode(node) {

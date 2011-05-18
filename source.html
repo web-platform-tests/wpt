@@ -236,40 +236,8 @@ like this.
 </ol>
 
 <p>To remove a [[node]] <var>node</var> while <dfn>preserving its
-descendants</dfn>:
-
-<ol>
-  <li>Let <var>children</var> be a list of <var>node</var>'s [[children]].
-
-  <li>If <var>node</var>'s [[parent]] is null, remove all of <var>node</var>'s
-  [[children]] from <var>node</var>, then return <var>children</var>.
-
-  <li><span>Remove extraneous line breaks</span> from <var>node</var>.
-
-  <li>If <var>node</var> is not an <span>inline node</span>, and its first
-  [[child]] and [[previoussibling]] are both <span title="inline node">inline
-  nodes</span>, and the first [[child]] of <var>node</var> is not a [[br]],
-  call <code data-anolis-spec=domcore
-  title=dom-Document-createElement>createElement("br")</code> on the
-  [[ownerdocument]] of <var>node</var>, and insert the result into
-  <var>node</var>'s [[parent]] immediately before <var>node</var>.
-
-  <li>While <var>node</var> has [[children]], insert the first [[child]] of
-  <var>node</var> into <var>node</var>'s [[parent]] immediately before
-  <var>node</var>, <span>preserving ranges</span>.
-
-  <li>If <var>node</var> is not an <span>inline node</span>, and its
-  [[previoussibling]] and [[nextsibling]] are both <span title="inline
-  node">inline nodes</span> but neither is a [[br]], call <code
-  data-anolis-spec=domcore
-  title=dom-Document-createElement>createElement("br")</code> on the
-  [[ownerdocument]] of <var>node</var>, and insert the result into
-  <var>node</var>'s [[parent]] immediately before <var>node</var>.
-
-  <li>Remove <var>node</var> from its [[parent]].
-
-  <li>Return <var>children</var>.
-</ol>
+descendants</dfn>, <span>split the parent</span> of <var>node</var>'s
+[[children]].
 
 <p>To <dfn>split the parent</dfn> of a list <var>node list</var> of consecutive
 [[sibling]] [[nodes]]:
@@ -281,9 +249,28 @@ descendants</dfn>:
   <li>If <var>original parent</var> is not <span>editable</span> or its
   [[parent]] is null, do nothing and abort these steps.
 
-  <li>If the [[previoussibling]] of the first member of <var>node list</var> is
-  not null, and the [[nextsibling]] of the last member of <var>node list</var>
-  is null:
+  <li>If the first [[child]] of <var>original parent</var> is in <var>node
+  list</var>, <span>remove extraneous line breaks before</span> <var>original
+  parent</var>.
+
+  <li>If the last [[child]] of <var>original parent</var> is in <var>node
+  list</var>:
+
+  <ol>
+    <li><span>Remove extraneous line breaks after</span> <var>original
+    parent</var>.
+
+    <li>If <var>original parent</var>'s last [[child]] and [[nextsibling]] are
+    both <span title="inline node">inline nodes</span>, call <code
+    data-anolis-spec=domcore
+    title=dom-Document-createElement>createElement("br")</code> on the
+    [[ownerdocument]] of <var>original parent</var>, then insert the result
+    into the [[parent]] of <var>original parent</var> immediately after
+    <var>original parent</var>.
+  </ol>
+
+  <li>If the first [[child]] of <var>original parent</var> is not in <var>node
+  list</var>, but its last [[child]] is:
 
   <div class=XXX>
   <p>We insert things after the parent.  This is bad, because it will cause
@@ -306,14 +293,6 @@ descendants</dfn>:
   </div>
 
   <ol>
-    <li>If the last member of <var>node list</var> and the [[nextsibling]] of
-    <var>original parent</var> are both <span title="inline node">inline
-    nodes</span>, call <code data-anolis-spec=domcore
-    title=dom-Document-createElement>createElement("br")</code> on the
-    [[ownerdocument]] of <var>original parent</var>, then insert the result
-    into the [[parent]] of <var>original parent</var> immediately after
-    <var>original parent</var>.
-
     <li>For each <var>node</var> in <var>node list</var>, <em>in reverse
     order</em>, insert <var>node</var> into the [[parent]] of <var>original
     parent</var> immediately after <var>original parent</var>, <span>preserving
@@ -322,8 +301,8 @@ descendants</dfn>:
     <li>Abort these steps.
   </ol>
 
-  <li>If the [[previoussibling]] of the first member of <var>node list</var> is
-  not null:
+  <li>If the first [[child]] of <var>original parent</var> is not in <var>node
+  list</var>:
 
   <ol>
     <li>Let <var>cloned parent</var> be the result of calling <code
@@ -357,6 +336,9 @@ descendants</dfn>:
   <li>For each <var>node</var> in <var>node list</var>, insert <var>node</var>
   into the [[parent]] of <var>original parent</var> immediately before
   <var>original parent</var>, <span>preserving ranges</span>.
+
+  <li>If <var>original parent</var> has no [[children]], remove it from its
+  [[parent]].
 </ol>
 
 <p>To <dfn>wrap</dfn> a list <var>node list</var> of consecutive [[sibling]]
@@ -367,65 +349,57 @@ instructions</dfn>:
   <li>If <var>node list</var> is empty, or the first member of <var>node
   list</var> is not <span>editable</span>, return null and abort these steps.
 
+  <li>If the [[previoussibling]] of the first member of <var>node list</var>
+  is <span>editable</span> and meets the <span>sibling criteria</span>, let
+  <var>new parent</var> be the [[previoussibling]] of the first member of
+  <var>node list</var>.
+
+  <li>Otherwise, if the [[nextsibling]] of the last member of <var>node
+  list</var> is <span>editable</span> and meets the <span>sibling
+  criteria</span>, let <var>new parent</var> be the [[nextsibling]] of the last
+  member of <var>node list</var>.
+
+  <li>Otherwise, run the <span>new parent instructions</span>, and let <var>new
+  parent</var> be the result.
+
+  <li>If <var>new parent</var>'s [[parent]] is null:
+
+  <ol>
+    <li>If <var>new parent</var> cannot be the [[child]] of the [[parent]] of
+    the first member of <var>node list</var>, <span>split the parent</span> of
+    <var>node list</var>.
+
+    <p class=XXX>"Cannot be the child" needs to be defined.
+
+    <li>Insert <var>new parent</var> into the [[parent]] of the first member of
+    <var>node list</var> immediately before the first member of <var>node
+    list</var>.
+  </ol>
+
   <li>Let <var>original parent</var> be the [[parent]] of the first member of
   <var>node list</var>.
 
-  <li>If the [[previoussibling]] of the first member of <var>node list</var>
-  is <span>editable</span> and meets the <span>sibling criteria</span>:
+  <li>If <var>new parent</var> is before the first member of <var>node
+  list</var> in [[treeorder]], then for each <var>node</var> in <var>node
+  list</var>, append <var>node</var> as the last [[child]] of <var>new
+  parent</var>, <span>preserving ranges</span>.
 
-  <ol>
-    <li>For each <var>node</var> in <var>node list</var>, append
-    <var>node</var> as the last [[child]] of its [[previoussibling]],
-    <span>preserving ranges</span>.
+  <li>Otherwise, for each <var>node</var> in <var>node list</var>, <em>in
+  reverse order</em>, insert <var>node</var> as the first [[child]] of <var>new
+  parent</var>, <span>preserving ranges</span>.
 
-    <li>If <var>original parent</var> is <span>editable</span> and has no
-    [[children]], remove it from its [[parent]].
-
-    <li>Return the [[parent]] of the first member of <var>node list</var> and
-    abort these steps.
-  </ol>
-
-  <li>If the [[nextsibling]] of the last member of <var>node list</var> is
-  <span>editable</span> and meets the <span>sibling criteria</span>:
-
-  <ol>
-    <li>For each <var>node</var> in <var>node list</var>, <em>in reverse
-    order</em>, insert <var>node</var> as the first [[child]] of its
-    [[nextsibling]], <span>preserving ranges</span>.
-
-    <li>If <var>original parent</var> is <span>editable</span> and has no
-    [[children]], remove it from its [[parent]].
-
-    <li>Return the [[parent]] of the first member of <var>node list</var> and
-    abort these steps.
-  </ol>
-
-  <li>Run the <span>new parent instructions</span>, and let <var>new
-  parent</var> be the result.
-
-  <li>If <var>new parent</var>'s [[parent]] is null, and <var>new parent</var>
-  cannot be the [[child]] of the [[parent]] of the first member of <var>node
-  list</var>, <span>split the parent</span> of <var>node list</var>.
-
-  <p class=XXX>"Cannot be the child" needs to be defined.
-
-  <li>If <var>new parent</var>'s [[parent]] is null, insert <var>new
-  parent</var> into the [[parent]] of the first member of <var>node list</var>
-  immediately before the first member of <var>node list</var>.
-
-  <li>For each <var>node</var> in <var>node list</var>, append <var>node</var>
-  as the last [[child]] of <var>new parent</var>, <span>preserving
-  ranges</span>.
+  <li><span>Remove extraneous line breaks from</span> <var>new parent</var>.
 
   <li>If <var>original parent</var> is <span>editable</span> and has no
   [[children]], remove it from its [[parent]].
-
-  <li><span>Remove extraneous line breaks</span> from <var>new parent</var>.
+  <!-- This could happen if the new parent instructions returned a node whose
+  parent wasn't null. -->
 
   <li>Return <var>new parent</var>.
 </ol>
 
-<p>To <dfn>remove extraneous line breaks</dfn> from a [[node]] <var>node</var>:
+<p>To <dfn>remove extraneous line breaks before</dfn> a [[node]]
+<var>node</var>:
 
 <ol>
   <li>If <var>node</var> is not an [[element]], or it is an <span>inline
@@ -435,12 +409,24 @@ instructions</dfn>:
   [[previoussibling]] of the [[previoussibling]] of <var>node</var> is an
   <span>inline node</span> that is not a [[br]], remove the [[previoussibling]]
   of <var>node</var> from its [[parent]].
+</ol>
+
+<p>To <dfn>remove extraneous line breaks after</dfn> a [[node]]
+<var>node</var>:
+
+<ol>
+  <li>If <var>node</var> is not an [[element]], or it is an <span>inline
+  node</span>, do nothing and abort these steps.
 
   <li>If <var>node</var> has at least two [[children]], and its last [[child]]
   is a [[br]], and its second-to-last [[child]] is an <span>inline node</span>
   that is not a [[br]], remove the last [[child]] of <var>node</var> from
   <var>node</var>.
 </ol>
+
+<p>To <dfn>remove extraneous line breaks from</dfn> a [[node]], first
+<span>remove extraneous line breaks before</span> it, then <span>remove
+extraneous line breaks after</span> it.
 
 <p>An <dfn>editing host</dfn> is a [[node]] that is either an [[element]] with
 a <code data-anolis-spec=html title=attr-contenteditable>contenteditable</code>

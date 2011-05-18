@@ -27,7 +27,7 @@
 <body class=draft>
 <div class=head id=head>
 <h1>HTML Editing Commands</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-17-may-2011>Work in Progress &mdash; Last Update 17 May 2011</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-18-may-2011>Work in Progress &mdash; Last Update 18 May 2011</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;ayg+spec@aryeh.name&gt;
@@ -247,37 +247,8 @@ like this.
 </ol>
 
 <p>To remove a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> <var title="">node</var> while <dfn id=preserving-its-descendants>preserving its
-descendants</dfn>:
-
-<ol>
-  <li>Let <var title="">children</var> be a list of <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>.
-
-  <li>If <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is null, remove all of <var title="">node</var>'s
-  <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a> from <var title="">node</var>, then return <var title="">children</var>.
-
-  <li><a href=#remove-extraneous-line-breaks>Remove extraneous line breaks</a> from <var title="">node</var>.
-
-  <li>If <var title="">node</var> is not an <a href=#inline-node>inline node</a>, and its first
-  <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> and <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code> are both <a href=#inline-node title="inline node">inline
-  nodes</a>, and the first <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">node</var> is not a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code>,
-  call <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("br")</a></code> on the
-  <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">node</var>, and insert the result into
-  <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> immediately before <var title="">node</var>.
-
-  <li>While <var title="">node</var> has <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, insert the first <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of
-  <var title="">node</var> into <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> immediately before
-  <var title="">node</var>, <a href=#preserving-ranges>preserving ranges</a>.
-
-  <li>If <var title="">node</var> is not an <a href=#inline-node>inline node</a>, and its
-  <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code> and <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code> are both <a href=#inline-node title="inline
-  node">inline nodes</a> but neither is a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code>, call <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("br")</a></code> on the
-  <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">node</var>, and insert the result into
-  <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> immediately before <var title="">node</var>.
-
-  <li>Remove <var title="">node</var> from its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
-
-  <li>Return <var title="">children</var>.
-</ol>
+descendants</dfn>, <a href=#split-the-parent>split the parent</a> of <var title="">node</var>'s
+<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>.
 
 <p>To <dfn id=split-the-parent>split the parent</dfn> of a list <var title="">node list</var> of consecutive
 <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-sibling title=concept-tree-sibling>sibling</a> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a>:
@@ -289,9 +260,26 @@ descendants</dfn>:
   <li>If <var title="">original parent</var> is not <a href=#editable>editable</a> or its
   <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is null, do nothing and abort these steps.
 
-  <li>If the <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code> of the first member of <var title="">node list</var> is
-  not null, and the <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code> of the last member of <var title="">node list</var>
-  is null:
+  <li>If the first <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">original parent</var> is in <var title="">node
+  list</var>, <a href=#remove-extraneous-line-breaks-before>remove extraneous line breaks before</a> <var title="">original
+  parent</var>.
+
+  <li>If the last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">original parent</var> is in <var title="">node
+  list</var>:
+
+  <ol>
+    <li><a href=#remove-extraneous-line-breaks-after>Remove extraneous line breaks after</a> <var title="">original
+    parent</var>.
+
+    <li>If <var title="">original parent</var>'s last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> and <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code> are
+    both <a href=#inline-node title="inline node">inline nodes</a>, call <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("br")</a></code> on the
+    <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">original parent</var>, then insert the result
+    into the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of <var title="">original parent</var> immediately after
+    <var title="">original parent</var>.
+  </ol>
+
+  <li>If the first <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">original parent</var> is not in <var title="">node
+  list</var>, but its last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> is:
 
   <div class=XXX>
   <p>We insert things after the parent.  This is bad, because it will cause
@@ -314,13 +302,6 @@ descendants</dfn>:
   </div>
 
   <ol>
-    <li>If the last member of <var title="">node list</var> and the <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code> of
-    <var title="">original parent</var> are both <a href=#inline-node title="inline node">inline
-    nodes</a>, call <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("br")</a></code> on the
-    <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">original parent</var>, then insert the result
-    into the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of <var title="">original parent</var> immediately after
-    <var title="">original parent</var>.
-
     <li>For each <var title="">node</var> in <var title="">node list</var>, <em>in reverse
     order</em>, insert <var title="">node</var> into the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of <var title="">original
     parent</var> immediately after <var title="">original parent</var>, <a href=#preserving-ranges>preserving
@@ -329,8 +310,8 @@ descendants</dfn>:
     <li>Abort these steps.
   </ol>
 
-  <li>If the <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code> of the first member of <var title="">node list</var> is
-  not null:
+  <li>If the first <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">original parent</var> is not in <var title="">node
+  list</var>:
 
   <ol>
     <li>Let <var title="">cloned parent</var> be the result of calling <code class=external data-anolis-spec=domcore title=dom-Node-cloneNode><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-clonenode>cloneNode(false)</a></code>
@@ -362,6 +343,9 @@ descendants</dfn>:
   <li>For each <var title="">node</var> in <var title="">node list</var>, insert <var title="">node</var>
   into the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of <var title="">original parent</var> immediately before
   <var title="">original parent</var>, <a href=#preserving-ranges>preserving ranges</a>.
+
+  <li>If <var title="">original parent</var> has no <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, remove it from its
+  <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
 </ol>
 
 <p>To <dfn id=wrap>wrap</dfn> a list <var title="">node list</var> of consecutive <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-sibling title=concept-tree-sibling>sibling</a>
@@ -372,65 +356,57 @@ instructions</dfn>:
   <li>If <var title="">node list</var> is empty, or the first member of <var title="">node
   list</var> is not <a href=#editable>editable</a>, return null and abort these steps.
 
+  <li>If the <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code> of the first member of <var title="">node list</var>
+  is <a href=#editable>editable</a> and meets the <a href=#sibling-criteria>sibling criteria</a>, let
+  <var title="">new parent</var> be the <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code> of the first member of
+  <var title="">node list</var>.
+
+  <li>Otherwise, if the <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code> of the last member of <var title="">node
+  list</var> is <a href=#editable>editable</a> and meets the <a href=#sibling-criteria>sibling
+  criteria</a>, let <var title="">new parent</var> be the <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code> of the last
+  member of <var title="">node list</var>.
+
+  <li>Otherwise, run the <a href=#new-parent-instructions>new parent instructions</a>, and let <var title="">new
+  parent</var> be the result.
+
+  <li>If <var title="">new parent</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is null:
+
+  <ol>
+    <li>If <var title="">new parent</var> cannot be the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of
+    the first member of <var title="">node list</var>, <a href=#split-the-parent>split the parent</a> of
+    <var title="">node list</var>.
+
+    <p class=XXX>"Cannot be the child" needs to be defined.
+
+    <li>Insert <var title="">new parent</var> into the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of the first member of
+    <var title="">node list</var> immediately before the first member of <var title="">node
+    list</var>.
+  </ol>
+
   <li>Let <var title="">original parent</var> be the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of the first member of
   <var title="">node list</var>.
 
-  <li>If the <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code> of the first member of <var title="">node list</var>
-  is <a href=#editable>editable</a> and meets the <a href=#sibling-criteria>sibling criteria</a>:
+  <li>If <var title="">new parent</var> is before the first member of <var title="">node
+  list</var> in <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#tree-order>tree order</a>, then for each <var title="">node</var> in <var title="">node
+  list</var>, append <var title="">node</var> as the last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">new
+  parent</var>, <a href=#preserving-ranges>preserving ranges</a>.
 
-  <ol>
-    <li>For each <var title="">node</var> in <var title="">node list</var>, append
-    <var title="">node</var> as the last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of its <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code>,
-    <a href=#preserving-ranges>preserving ranges</a>.
+  <li>Otherwise, for each <var title="">node</var> in <var title="">node list</var>, <em>in
+  reverse order</em>, insert <var title="">node</var> as the first <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">new
+  parent</var>, <a href=#preserving-ranges>preserving ranges</a>.
 
-    <li>If <var title="">original parent</var> is <a href=#editable>editable</a> and has no
-    <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, remove it from its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
-
-    <li>Return the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of the first member of <var title="">node list</var> and
-    abort these steps.
-  </ol>
-
-  <li>If the <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code> of the last member of <var title="">node list</var> is
-  <a href=#editable>editable</a> and meets the <a href=#sibling-criteria>sibling criteria</a>:
-
-  <ol>
-    <li>For each <var title="">node</var> in <var title="">node list</var>, <em>in reverse
-    order</em>, insert <var title="">node</var> as the first <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of its
-    <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code>, <a href=#preserving-ranges>preserving ranges</a>.
-
-    <li>If <var title="">original parent</var> is <a href=#editable>editable</a> and has no
-    <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, remove it from its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
-
-    <li>Return the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of the first member of <var title="">node list</var> and
-    abort these steps.
-  </ol>
-
-  <li>Run the <a href=#new-parent-instructions>new parent instructions</a>, and let <var title="">new
-  parent</var> be the result.
-
-  <li>If <var title="">new parent</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is null, and <var title="">new parent</var>
-  cannot be the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of the first member of <var title="">node
-  list</var>, <a href=#split-the-parent>split the parent</a> of <var title="">node list</var>.
-
-  <p class=XXX>"Cannot be the child" needs to be defined.
-
-  <li>If <var title="">new parent</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is null, insert <var title="">new
-  parent</var> into the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of the first member of <var title="">node list</var>
-  immediately before the first member of <var title="">node list</var>.
-
-  <li>For each <var title="">node</var> in <var title="">node list</var>, append <var title="">node</var>
-  as the last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">new parent</var>, <a href=#preserving-ranges>preserving
-  ranges</a>.
+  <li><a href=#remove-extraneous-line-breaks-from>Remove extraneous line breaks from</a> <var title="">new parent</var>.
 
   <li>If <var title="">original parent</var> is <a href=#editable>editable</a> and has no
   <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, remove it from its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
-
-  <li><a href=#remove-extraneous-line-breaks>Remove extraneous line breaks</a> from <var title="">new parent</var>.
+  <!-- This could happen if the new parent instructions returned a node whose
+  parent wasn't null. -->
 
   <li>Return <var title="">new parent</var>.
 </ol>
 
-<p>To <dfn id=remove-extraneous-line-breaks>remove extraneous line breaks</dfn> from a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> <var title="">node</var>:
+<p>To <dfn id=remove-extraneous-line-breaks-before>remove extraneous line breaks before</dfn> a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>
+<var title="">node</var>:
 
 <ol>
   <li>If <var title="">node</var> is not an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>, or it is an <a href=#inline-node>inline
@@ -440,12 +416,24 @@ instructions</dfn>:
   <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code> of the <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code> of <var title="">node</var> is an
   <a href=#inline-node>inline node</a> that is not a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code>, remove the <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code>
   of <var title="">node</var> from its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+</ol>
+
+<p>To <dfn id=remove-extraneous-line-breaks-after>remove extraneous line breaks after</dfn> a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>
+<var title="">node</var>:
+
+<ol>
+  <li>If <var title="">node</var> is not an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>, or it is an <a href=#inline-node>inline
+  node</a>, do nothing and abort these steps.
 
   <li>If <var title="">node</var> has at least two <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, and its last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>
   is a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code>, and its second-to-last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> is an <a href=#inline-node>inline node</a>
   that is not a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code>, remove the last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">node</var> from
   <var title="">node</var>.
 </ol>
+
+<p>To <dfn id=remove-extraneous-line-breaks-from>remove extraneous line breaks from</dfn> a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>, first
+<a href=#remove-extraneous-line-breaks-before>remove extraneous line breaks before</a> it, then <a href=#remove-extraneous-line-breaks-after>remove
+extraneous line breaks after</a> it.
 
 <p>An <dfn id=editing-host>editing host</dfn> is a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> that is either an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> with
 a <code class=external data-anolis-spec=html title=attr-contenteditable><a href=http://www.whatwg.org/html/#attr-contenteditable>contenteditable</a></code>

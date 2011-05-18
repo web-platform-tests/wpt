@@ -57,6 +57,20 @@ function isDescendant(descendant, ancestor) {
 	return isAncestor(ancestor, descendant);
 }
 
+/**
+ * Returns true if node1 is before node2 in tree order, false otherwise.
+ */
+function isBefore(node1, node2) {
+	return Boolean(node1.compareDocumentPosition(node2) & Node.DOCUMENT_POSITION_FOLLOWING);
+}
+
+/**
+ * Returns true if node1 is after node2 in tree order, false otherwise.
+ */
+function isAfter(node1, node2) {
+	return Boolean(node1.compareDocumentPosition(node2) & Node.DOCUMENT_POSITION_PRECEDING);
+}
+
 function convertProperty(property) {
 	// Special-case for now
 	var map = {
@@ -387,56 +401,10 @@ function setTagName(element, newName) {
 	return replacementElement;
 }
 
+// "To remove a node node while preserving its descendants, split the parent of
+// node's children."
 function removePreservingDescendants(node) {
-	// "Let children be a list of node's children."
-	var children = [].slice.call(node.childNodes);
-
-	// "If node's parent is null, remove all of node's children from node, then
-	// return children."
-	if (!node.parentNode) {
-		while (node.hasChildNodes()) {
-			node.removeChild(node.firstChild);
-		}
-		return children;
-	}
-
-	// "Remove extraneous line breaks from node."
-	removeExtraneousLineBreaks(node);
-
-	// "If node is not an inline node, and its first child and previousSibling
-	// are both inline nodes, and the first child of node is not a br, call
-	// createElement("br") on the ownerDocument of node, and insert the result
-	// into node's parent immediately before node."
-	if (!isInlineNode(node)
-	&& isInlineNode(node.firstChild)
-	&& isInlineNode(node.previousSibling)
-	&& !isHtmlElement(node.firstChild, "BR")) {
-		node.parentNode.insertBefore(node.ownerDocument.createElement("br"), node);
-	}
-
-	// "While node has children, insert the first child of node into node's
-	// parent immediately before node, preserving ranges."
-	while (node.hasChildNodes()) {
-		movePreservingRanges(node.firstChild, node.parentNode, getNodeIndex(node));
-	}
-
-	// "If node is not an inline node, and its previousSibling and nextSibling
-	// are both inline nodes but neither is a br, call createElement("br") on
-	// the ownerDocument of node, and insert the result into node's parent
-	// immediately before node."
-	if (!isInlineNode(node)
-	&& isInlineNode(node.previousSibling)
-	&& isInlineNode(node.nextSibling)
-	&& !isHtmlElement(node.previousSibling, "BR")
-	&& !isHtmlElement(node.nextSibling, "BR")) {
-		node.parentNode.insertBefore(node.ownerDocument.createElement("br"), node);
-	}
-
-	// "Remove node from its parent."
-	node.parentNode.removeChild(node);
-
-	// "Return children."
-	return children;
+	splitParent([].slice.call(node.childNodes));
 }
 
 function splitParent(nodeList) {
@@ -450,19 +418,31 @@ function splitParent(nodeList) {
 		return;
 	}
 
-	// "If the previousSibling of the first member of node list is not null,
-	// and the nextSibling of the last member of node list is null:"
-	if (nodeList[0].previousSibling
-	&& !nodeList[nodeList.length - 1].nextSibling) {
-		// "If the last member of node list and the nextSibling of original
-		// parent are both inline nodes, call createElement("br") on the
-		// ownerDocument of original parent, then insert the result into the
-		// parent of original parent immediately after original parent."
-		if (isInlineNode(nodeList[nodeList.length - 1])
+	// "If the first child of original parent is in node list, remove
+	// extraneous line breaks before original parent."
+	if (nodeList.indexOf(originalParent.firstChild) != -1) {
+		removeExtraneousLineBreaksBefore(originalParent);
+	}
+
+	// "If the last child of original parent is in node list:"
+	if (nodeList.indexOf(originalParent.lastChild) != -1) {
+		// "Remove extraneous line breaks after original parent."
+		removeExtraneousLineBreaksAfter(originalParent);
+
+		// "If original parent's last child and nextSibling are both inline
+		// nodes, call createElement("br") on the ownerDocument of original
+		// parent, then insert the result into the parent of original parent
+		// immediately after original parent."
+		if (isInlineNode(originalParent.lastChild)
 		&& isInlineNode(originalParent.nextSibling)) {
 			originalParent.parentNode.insertBefore(originalParent.ownerDocument.createElement("br"), originalParent.nextSibling);
 		}
+	}
 
+	// "If the first child of original parent is not in node list, but its last
+	// child is:"
+	if (nodeList.indexOf(originalParent.firstChild) == -1
+	&& nodeList.indexOf(originalParent.lastChild) != -1) {
 		// "For each node in node list, in reverse order, insert node into the
 		// parent of original parent immediately after original parent,
 		// preserving ranges."
@@ -474,8 +454,8 @@ function splitParent(nodeList) {
 		return;
 	}
 
-	// "If the previousSibling of the first member of node list is not null:"
-	if (nodeList[0].previousSibling) {
+	// "If the first child of original parent is not in node list:"
+	if (nodeList.indexOf(originalParent.firstChild) == -1) {
 		// "Let cloned parent be the result of calling cloneNode(false) on
 		// original parent."
 		var clonedParent = originalParent.cloneNode(false);
@@ -506,6 +486,11 @@ function splitParent(nodeList) {
 	for (var i = 0; i < nodeList.length; i++) {
 		movePreservingRanges(nodeList[i], originalParent.parentNode, getNodeIndex(originalParent));
 	}
+
+	// "If original parent has no children, remove it from its parent."
+	if (!originalParent.hasChildNodes()) {
+		originalParent.parentNode.removeChild(originalParent);
+	}
 }
 
 function wrap(nodeList, siblingCriteria, newParentInstructions) {
@@ -516,94 +501,75 @@ function wrap(nodeList, siblingCriteria, newParentInstructions) {
 		return null;
 	}
 
-	// "Let original parent be the parent of the first member of node list."
-	var originalParent = nodeList[0].parentNode;
-
 	// "If the previousSibling of the first member of node list is editable and
-	// meets the sibling criteria:"
+	// meets the sibling criteria, let new parent be the previousSibling of the
+	// first member of node list."
+	var newParent;
 	if (isEditable(nodeList[0].previousSibling)
 	&& siblingCriteria(nodeList[0].previousSibling)) {
-		// "For each node in node list, append node as the last child of its
-		// previousSibling, preserving ranges."
-		for (var i = 0; i < nodeList.length; i++) {
-			movePreservingRanges(nodeList[i], nodeList[i].previousSibling, -1);
-		}
+		newParent = nodeList[0].previousSibling;
 
-		// "If original parent is editable and has no children, remove it from
-		// its parent."
-		if (isEditable(originalParent)
-		&& !originalParent.hasChildNodes()) {
-			originalParent.parentNode.removeChild(originalParent);
-		}
-
-		// "Return the parent of the first member of node list and abort these
-		// steps."
-		return nodeList[0].parentNode;
-	}
-
-	// "If the nextSibling of the last member of node list is editable and
-	// meets the sibling criteria:"
-	if (isEditable(nodeList[nodeList.length - 1].nextSibling)
+	// "Otherwise, if the nextSibling of the last member of node list is
+	// editable and meets the sibling criteria, let new parent be the
+	// nextSibling of the last member of node list."
+	} else if (isEditable(nodeList[nodeList.length - 1].nextSibling)
 	&& siblingCriteria(nodeList[nodeList.length - 1].nextSibling)) {
-		// "For each node in node list, in reverse order, insert node as the
-		// first child of its nextSibling, preserving ranges."
-		for (var i = nodeList.length - 1; i >= 0; i--) {
-			movePreservingRanges(nodeList[i], nodeList[i].nextSibling, 0);
-		}
+		newParent = nodeList[nodeList.length - 1].nextSibling;
 
-		// "If original parent is editable and has no children, remove it from
-		// its parent."
-		if (isEditable(originalParent)
-		&& !originalParent.hasChildNodes()) {
-			originalParent.parentNode.removeChild(originalParent);
-		}
-
-		// "Return the parent of the first member of node list and abort these
-		// steps."
-		return nodeList[0].parentNode;
+	// "Otherwise, run the new parent instructions, and let new parent be the
+	// result."
+	} else {
+		newParent = newParentInstructions();
 	}
 
-	// "Run the new parent instructions, and let new parent be the result."
-	var newParent = newParentInstructions();
-
-	// "If new parent's parent is null, and new parent cannot be the child of
-	// the parent of the first member of node list, split the parent of node
-	// list."
-	//
-	// Hack for now, as usual.  Don't use this for inline elements!
-	if (!newParent.parentNode
-	&& isHtmlElement(nodeList[0].parentNode, "P")) {
-		splitParent(nodeList);
-	}
-
-	// "If new parent's parent is null, insert new parent into the parent of
-	// the first member of node list immediately before the first member of
-	// node list."
+	// "If new parent's parent is null:"
 	if (!newParent.parentNode) {
+		// "If new parent cannot be the child of the parent of the first member
+		// of node list, split the parent of node list."
+		//
+		// Hack for now, as usual.  Don't use this for inline elements!
+		if (isHtmlElement(nodeList[0].parentNode, "P")) {
+			splitParent(nodeList);
+		}
+
+		// "Insert new parent into the parent of the first member of node list
+		// immediately before the first member of node list."
 		nodeList[0].parentNode.insertBefore(newParent, nodeList[0]);
 	}
 
-	// "For each node in node list, append node as the last child of new
-	// parent, preserving ranges."
-	for (var i = 0; i < nodeList.length; i++) {
-		movePreservingRanges(nodeList[i], newParent, -1);
-	}
+	// "Let original parent be the parent of the first member of node list."
+	var originalParent = nodeList[0].parentNode;
 
-	// "If original parent is editable and has no children, remove it from its
-	// parent."
-	if (isEditable(originalParent)
-	&& !originalParent.hasChildNodes()) {
-		originalParent.parentNode.removeChild(originalParent);
+	// "If new parent is before the first member of node list in tree order,
+	// then for each node in node list, append node as the last child of new
+	// parent, preserving ranges."
+	if (isBefore(newParent, nodeList[0])) {
+		for (var i = 0; i < nodeList.length; i++) {
+			movePreservingRanges(nodeList[i], newParent, -1);
+		}
+
+	// "Otherwise, for each node in node list, in reverse order, insert node as
+	// the first child of new parent, preserving ranges."
+	} else {
+		for (var i = nodeList.length - 1; i >= 0; i--) {
+			movePreservingRanges(nodeList[i], newParent, 0);
+		}
 	}
 
 	// "Remove extraneous line breaks from new parent."
-	removeExtraneousLineBreaks(newParent);
+	removeExtraneousLineBreaksFrom(newParent);
+
+	// "If original parent is editable and has no children, remove it from its
+	// parent."
+	if (isEditable(originalParent) && !originalParent.hasChildNodes()) {
+		originalParent.parentNode.removeChild(originalParent);
+	}
 
 	// "Return new parent."
 	return newParent;
 }
 
-function removeExtraneousLineBreaks(node) {
+function removeExtraneousLineBreaksBefore(node) {
 	// "If node is not an Element, or it is an inline node, do nothing and
 	// abort these steps."
 	if (!node
@@ -620,6 +586,16 @@ function removeExtraneousLineBreaks(node) {
 	&& !isHtmlElement(node.previousSibling.previousSibling, "BR")) {
 		node.parentNode.removeChild(node.previousSibling);
 	}
+}
+
+function removeExtraneousLineBreaksAfter(node) {
+	// "If node is not an Element, or it is an inline node, do nothing and
+	// abort these steps."
+	if (!node
+	|| node.nodeType != Node.ELEMENT_NODE
+	|| isInlineNode(node)) {
+		return;
+	}
 
 	// "If node has at least two children, and its last child is a br, and its
 	// second-to-last child is an inline node that is not a br, remove the last
@@ -630,6 +606,13 @@ function removeExtraneousLineBreaks(node) {
 	&& !isHtmlElement(node.lastChild.previousSibling, "BR")) {
 		node.removeChild(node.lastChild);
 	}
+}
+
+// "To remove extraneous line breaks from a node, first remove extraneous line
+// breaks before it, then remove extraneous line breaks after it."
+function removeExtraneousLineBreaksFrom(node) {
+	removeExtraneousLineBreaksBefore(node);
+	removeExtraneousLineBreaksAfter(node);
 }
 
 // "An editing host is a node that is either an Element with a contenteditable

@@ -1727,17 +1727,24 @@ function doSameCell(tr) {
 	}
 	tr.appendChild(sameCell);
 
-	// Insert <wbr> so IE doesn't stretch the screen
+	// Insert <wbr> so IE doesn't stretch the screen.  This is considerably
+	// more complicated than it has to be, thanks to Firefox's lack of support
+	// for outerHTML.
 	for (var i = 0; i <= 2; i++) {
 		try {
-			var text = tr.childNodes[i].lastChild.firstChild.textContent;
-			tr.childNodes[i].lastChild.removeChild(tr.childNodes[i].lastChild.firstChild);
-			tr.childNodes[i].lastChild.innerHTML = text
+			var div = tr.childNodes[i].lastChild;
+			var text = div.firstChild.textContent;
+			div.removeChild(div.firstChild);
+			div.insertBefore(document.createElement("div"), div.firstChild);
+			div.firstChild.innerHTML = text
 				.replace(/&/g, "&amp;")
 				.replace(/</g, "&lt;")
 				.replace(/>/g, "><wbr>")
-				.replace(/&lt;/g, "<wbr>&lt;")
-				+ tr.childNodes[i].lastChild.innerHTML;
+				.replace(/&lt;/g, "<wbr>&lt;");
+			while (div.firstChild.hasChildNodes()) {
+				div.insertBefore(div.firstChild.lastChild, div.firstChild.nextSibling);
+			}
+			div.removeChild(div.firstChild);
 		} catch (e) {};
 	}
 }

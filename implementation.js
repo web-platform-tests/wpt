@@ -556,14 +556,28 @@ function wrap(nodeList, siblingCriteria, newParentInstructions) {
 		}
 	}
 
-	// "Remove extraneous line breaks from new parent."
-	removeExtraneousLineBreaksFrom(newParent);
-
 	// "If original parent is editable and has no children, remove it from its
 	// parent."
 	if (isEditable(originalParent) && !originalParent.hasChildNodes()) {
 		originalParent.parentNode.removeChild(originalParent);
 	}
+
+	// "If new parent's nextSibling is editable and meets the sibling
+	// criteria:"
+	if (isEditable(newParent.nextSibling)
+	&& siblingCriteria(newParent.nextSibling)) {
+		// "While new parent's nextSibling has children, append its first child
+		// as the last child of new parent, preserving ranges."
+		while (newParent.nextSibling.hasChildNodes()) {
+			movePreservingRanges(newParent.nextSibling.firstChild, newParent, -1);
+		}
+
+		// "Remove new parent's nextSibling from its parent."
+		newParent.parentNode.removeChild(newParent.nextSibling);
+	}
+
+	// "Remove extraneous line breaks from new parent."
+	removeExtraneousLineBreaksFrom(newParent);
 
 	// "Return new parent."
 	return newParent;
@@ -2642,10 +2656,22 @@ function myExecCommand(command, showUI, value, range) {
 				continue;
 			}
 
-			// "If node is a ul, set the tag name of node to "ol" and continue
-			// from the beginning of this loop."
+			// "If node is a ul:"
 			if (isHtmlElement(node, "UL")) {
-				setTagName(node, "ol");
+				// "Let children be the children of node."
+				var children = [].slice.call(node.childNodes);
+
+				// "Remove node, preserving its descendants."
+				removePreservingDescendants(node);
+
+				// "Wrap children, with sibling criteria matching any ol and
+				// new parent instructions returning the result of calling
+				// createElement("ol") on the context object."
+				wrap(children,
+					function(node) { return isHtmlElement(node, "OL") },
+					function() { return document.createElement("ol") });
+
+				// "Continue from the beginning of this loop."
 				continue;
 			}
 

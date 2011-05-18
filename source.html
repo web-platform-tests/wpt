@@ -389,12 +389,25 @@ instructions</dfn>:
   reverse order</em>, insert <var>node</var> as the first [[child]] of <var>new
   parent</var>, <span>preserving ranges</span>.
 
-  <li><span>Remove extraneous line breaks from</span> <var>new parent</var>.
-
   <li>If <var>original parent</var> is <span>editable</span> and has no
   [[children]], remove it from its [[parent]].
   <!-- This could happen if the new parent instructions returned a node whose
   parent wasn't null. -->
+
+  <li>If <var>new parent</var>'s [[nextsibling]] is <span>editable</span> and
+  meets the <span>sibling criteria</span>:
+  <!-- Probably because both the previous and next sibling met them.  We want
+  to merge them in this case. -->
+
+  <ol>
+    <li>While <var>new parent</var>'s [[nextsibling]] has [[children]], append
+    its first [[child]] as the last [[child]] of <var>new parent</var>,
+    <span>preserving ranges</span>.
+
+    <li>Remove <var>new parent</var>'s [[nextsibling]] from its [[parent]].
+  </ol>
+
+  <li><span>Remove extraneous line breaks from</span> <var>new parent</var>.
 
   <li>Return <var>new parent</var>.
 </ol>
@@ -2810,8 +2823,22 @@ Sheesh, lists are complicated.
     <li>If <var>node</var> is an [[ol]], <span>outdent</span> it and continue
     from the beginning of this loop.
 
-    <li>If <var>node</var> is a [[ul]], <span>set the tag name</span> of
-    <var>node</var> to "ol" and continue from the beginning of this loop.
+    <li>If <var>node</var> is a [[ul]]:
+
+    <ol>
+      <li>Let <var>children</var> be the [[children]] of <var>node</var>.
+
+      <li>Remove <var>node</var>, <span>preserving its descendants</span>.
+
+      <li><span>Wrap</span> <var>children</var>, with <span>sibling
+      criteria</span> matching any [[ol]] and <span>new parent
+      instructions</span> returning the result of calling <code
+      data-anolis-spec=domcore
+      title=dom-Document-createElement>createElement("ol")</code> on the
+      [[contextobject]].
+
+      <li>Continue from the beginning of this loop.
+    </ol>
 
     <li>Let <var>original parent</var> be the [[parent]] of <var>node</var>.
 

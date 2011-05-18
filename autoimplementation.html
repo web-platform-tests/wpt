@@ -536,6 +536,10 @@ var tests = {
 		'<blockquote><p>foo[bar</p></blockquote><p>b]az</p><p>extra',
 		'<p>[foo]<blockquote><p>bar</blockquote><p>extra',
 		'<p>[foo<blockquote><p>b]ar</blockquote><p>extra',
+		'<p>foo<blockquote><p>bar</blockquote><p>[baz]<p>extra',
+		'<p>foo<blockquote><p>[bar</blockquote><p>baz]<p>extra',
+		'<p>[foo<blockquote><p>bar</blockquote><p>baz]<p>extra',
+		'<blockquote><p>foo</blockquote><p>[bar]<blockquote><p>baz</blockquote><p>extra',
 
 		// IE:
 		'<blockquote style="margin-right: 0" dir="ltr"><p>foo[bar]</p><p>baz</p></blockquote><p>extra',
@@ -544,6 +548,10 @@ var tests = {
 		'<blockquote style="margin-right: 0" dir="ltr"><p>foo[bar</p></blockquote><p>b]az</p><p>extra',
 		'<p>[foo]<blockquote style="margin-right: 0" dir="ltr"><p>bar</blockquote><p>extra',
 		'<p>[foo<blockquote style="margin-right: 0" dir="ltr"><p>b]ar</blockquote><p>extra',
+		'<p>foo<blockquote style="margin-right: 0" dir="ltr"><p>bar</blockquote><p>[baz]<p>extra',
+		'<p>foo<blockquote style="margin-right: 0" dir="ltr"><p>[bar</blockquote><p>baz]<p>extra',
+		'<p>[foo<blockquote style="margin-right: 0" dir="ltr"><p>bar</blockquote><p>baz]<p>extra',
+		'<blockquote style="margin-right: 0" dir="ltr"><p>foo</blockquote><p>[bar]<blockquote style="margin-right: 0" dir="ltr"><p>baz</blockquote><p>extra',
 
 		// Firefox CSS mode:
 		'<p style="margin-left: 40px">foo[bar]</p><p style="margin-left: 40px">baz</p><p>extra',
@@ -552,6 +560,10 @@ var tests = {
 		'<p style="margin-left: 40px">foo[bar</p><p>b]az</p><p>extra',
 		'<p>[foo]<p style="margin-left: 40px">bar<p>extra',
 		'<p>[foo<p style="margin-left: 40px">b]ar<p>extra',
+		'<p>foo<p style="margin-left: 40px">bar<p>[baz]<p>extra',
+		'<p>foo<p style="margin-left: 40px">[bar<p>baz]<p>extra',
+		'<p>[foo<p style="margin-left: 40px">bar<p>baz]<p>extra',
+		'<p style="margin-left: 40px">foo<p>[bar]<p style="margin-left: 40px">baz<p>extra',
 
 		// WebKit:
 		'<blockquote class="webkit-indent-blockquote" style="margin: 0 0 0 40px; border: none; padding: 0px"><p>foo[bar]</p><p>baz</p></blockquote><p>extra',
@@ -560,6 +572,10 @@ var tests = {
 		'<blockquote class="webkit-indent-blockquote" style="margin: 0 0 0 40px; border: none; padding: 0px"><p>foo[bar</p></blockquote><p>b]az</p><p>extra',
 		'<p>[foo]<blockquote class="webkit-indent-blockquote" style="margin: 0 0 0 40px; border: none; padding: 0px"><p>bar</blockquote><p>extra',
 		'<p>[foo<blockquote class="webkit-indent-blockquote" style="margin: 0 0 0 40px; border: none; padding: 0px"><p>b]ar</blockquote><p>extra',
+		'<p>foo<blockquote class="webkit-indent-blockquote" style="margin: 0 0 0 40px; border: none; padding: 0px"><p>bar</blockquote><p>[baz]<p>extra',
+		'<p>foo<blockquote class="webkit-indent-blockquote" style="margin: 0 0 0 40px; border: none; padding: 0px"><p>[bar</blockquote><p>baz]<p>extra',
+		'<p>[foo<blockquote class="webkit-indent-blockquote" style="margin: 0 0 0 40px; border: none; padding: 0px"><p>bar</blockquote><p>baz]<p>extra',
+		'<blockquote class="webkit-indent-blockquote" style="margin: 0 0 0 40px; border: none; padding: 0px"><p>foo</blockquote><p>[bar]<blockquote class="webkit-indent-blockquote" style="margin: 0 0 0 40px; border: none; padding: 0px"><p>baz</blockquote><p>extra',
 
 		// MDC says "In Firefox, if the selection spans multiple lines at
 		// different levels of indentation, only the least indented lines in
@@ -668,6 +684,8 @@ var tests = {
 		'<ol><li>foo<li>[bar]<li>baz</ol>',
 		'<ol data-start=1 data-end=2><li>foo<li>bar<li>baz</ol>',
 		'<ol><li>foo</ol>[bar]',
+		'[foo]<ol><li>bar</ol>',
+		'<ol><li>foo</ol>[bar]<ol><li>baz</ol>',
 		'<ol><li>[foo]<br>bar<li>baz</ol>',
 		'<ol><li>foo<br>[bar]<li>baz</ol>',
 		'<ol><li><div>[foo]</div>bar<li>baz</ol>',
@@ -707,6 +725,8 @@ var tests = {
 		'<ul><li>foo<li>[bar]<li>baz</ul>',
 		'<ol data-start=1 data-end=2><li>foo<li>bar<li>baz</ul>',
 		'<ul><li>foo</ul>[bar]',
+		'[foo]<ul><li>bar</ul>',
+		'<ul><li>foo</ul>[bar]<ul><li>baz</ul>',
 		'<ul><li>[foo]<br>bar<li>baz</ul>',
 		'<ul><li>foo<br>[bar]<li>baz</ul>',
 		'<ul><li><div>[foo]</div>bar<li>baz</ul>',
@@ -726,6 +746,12 @@ var tests = {
 		'<ul><li>foo<li>[bar]</li><ul><li>baz</ul><li>quz</ul>',
 		'<ul><li>foo<ul><li>bar<li>baz</ul><li>[quz]</ul>',
 		'<ul><li>foo</li><ul><li>bar<li>baz</ul><li>[quz]</ul>',
+
+		// Mix of <ol> and <ul>
+		'foo<ol><li>bar</ol><ul><li>[baz]</ul>quz',
+		'foo<ol><li>bar</ol><ul><li>[baz</ul>quz]',
+		'foo<ul><li>[bar]</ul><ol><li>baz</ol>quz',
+		'[foo<ul><li>bar]</ul><ol><li>baz</ol>quz',
 
 		// Multiple items at once.
 		'<ul><li>foo<li>b[ar<li>baz]</ul>',

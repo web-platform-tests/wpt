@@ -396,12 +396,25 @@ instructions</dfn>:
   reverse order</em>, insert <var title="">node</var> as the first <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">new
   parent</var>, <a href=#preserving-ranges>preserving ranges</a>.
 
-  <li><a href=#remove-extraneous-line-breaks-from>Remove extraneous line breaks from</a> <var title="">new parent</var>.
-
   <li>If <var title="">original parent</var> is <a href=#editable>editable</a> and has no
   <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, remove it from its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
   <!-- This could happen if the new parent instructions returned a node whose
   parent wasn't null. -->
+
+  <li>If <var title="">new parent</var>'s <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code> is <a href=#editable>editable</a> and
+  meets the <a href=#sibling-criteria>sibling criteria</a>:
+  <!-- Probably because both the previous and next sibling met them.  We want
+  to merge them in this case. -->
+
+  <ol>
+    <li>While <var title="">new parent</var>'s <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code> has <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, append
+    its first <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> as the last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">new parent</var>,
+    <a href=#preserving-ranges>preserving ranges</a>.
+
+    <li>Remove <var title="">new parent</var>'s <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code> from its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+  </ol>
+
+  <li><a href=#remove-extraneous-line-breaks-from>Remove extraneous line breaks from</a> <var title="">new parent</var>.
 
   <li>Return <var title="">new parent</var>.
 </ol>
@@ -2771,8 +2784,20 @@ Sheesh, lists are complicated.
     <li>If <var title="">node</var> is an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code>, <a href=#outdent>outdent</a> it and continue
     from the beginning of this loop.
 
-    <li>If <var title="">node</var> is a <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code>, <a href=#set-the-tag-name>set the tag name</a> of
-    <var title="">node</var> to "ol" and continue from the beginning of this loop.
+    <li>If <var title="">node</var> is a <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code>:
+
+    <ol>
+      <li>Let <var title="">children</var> be the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a> of <var title="">node</var>.
+
+      <li>Remove <var title="">node</var>, <a href=#preserving-its-descendants>preserving its descendants</a>.
+
+      <li><a href=#wrap>Wrap</a> <var title="">children</var>, with <a href=#sibling-criteria>sibling
+      criteria</a> matching any <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code> and <a href=#new-parent-instructions>new parent
+      instructions</a> returning the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("ol")</a></code> on the
+      <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>.
+
+      <li>Continue from the beginning of this loop.
+    </ol>
 
     <li>Let <var title="">original parent</var> be the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of <var title="">node</var>.
 

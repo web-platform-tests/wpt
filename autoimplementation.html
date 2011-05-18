@@ -1730,12 +1730,14 @@ function doSameCell(tr) {
 	// Insert <wbr> so IE doesn't stretch the screen
 	for (var i = 0; i <= 2; i++) {
 		try {
-			tr.childNodes[i].lastChild.firstChild.innerHTML =
-				tr.childNodes[i].lastChild.firstChild.textContent
+			var text = tr.childNodes[i].lastChild.firstChild.textContent;
+			tr.childNodes[i].lastChild.removeChild(tr.childNodes[i].lastChild.firstChild);
+			tr.childNodes[i].lastChild.innerHTML = text
 				.replace(/&/g, "&amp;")
 				.replace(/</g, "&lt;")
 				.replace(/>/g, "><wbr>")
-				.replace(/&lt;/g, "<wbr>&lt;");
+				.replace(/&lt;/g, "<wbr>&lt;")
+				+ tr.childNodes[i].lastChild.innerHTML;
 		} catch (e) {};
 	}
 }

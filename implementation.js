@@ -2643,85 +2643,53 @@ function myExecCommand(command, showUI, value, range) {
 			}
 		}
 
-		// "While node list is not empty:"
-		while (nodeList.length) {
-			// "Let node be the first member of node list."
-			// "Remove node from node list."
-			var node = nodeList.shift();
+		// "If every member of node list is either an ol or the child of an ol,
+		// and no member of node list is a ul or the ancestor of a ul, then
+		// while node list is not empty:"
+		if (nodeList.every(function(node) { return isHtmlElement(node, "OL") || isHtmlElement(node.parentNode, "OL") })
+		&& !nodeList.some(function(node) { return isHtmlElement(node, "UL") || node.querySelector("ul") })) {
+			while (nodeList.length) {
+				// "Let sublist be an empty list of nodes."
+				var sublist = [];
 
-			// "If node is an ol, outdent it and continue from the beginning of
-			// this loop."
-			if (isHtmlElement(node, "OL")) {
-				outdentNode(node);
-				continue;
-			}
+				// "Remove the first member from node list and append it to
+				// sublist."
+				sublist.push(nodeList.shift());
 
-			// "If node is a ul:"
-			if (isHtmlElement(node, "UL")) {
-				// "Let children be the children of node."
-				var children = [].slice.call(node.childNodes);
+				// "If the first member of sublist is an ol, outdent it and
+				// continue this loop from the beginning."
+				if (isHtmlElement(sublist[0], "OL")) {
+					outdentNode(sublist[0]);
+					continue;
+				}
 
-				// "Remove node, preserving its descendants."
-				removePreservingDescendants(node);
-
-				// "Wrap children, with sibling criteria matching any ol and
-				// new parent instructions returning the result of calling
-				// createElement("ol") on the context object."
-				wrap(children,
-					function(node) { return isHtmlElement(node, "OL") },
-					function() { return document.createElement("ol") });
-
-				// "Continue from the beginning of this loop."
-				continue;
-			}
-
-			// "Let original parent be the parent of node."
-			var originalParent = node.parentNode;
-
-			// "Let sublist be a list of nodes, initially consisting of node."
-			var sublist = [node];
-
-			// "If original parent is an editable ol or ul:"
-			if (isHtmlElement(originalParent, ["OL", "UL"])
-			&& isEditable(originalParent)) {
 				// "While node list is not empty, and the first member of node
-				// list is the nextSibling of the last member of sublist, and
-				// the first member of node list is not an ol or ul, remove the
-				// first member from node list and append it to sublist."
+				// list is the nextSibling of the last member of sublist and is
+				// not an ol, remove the first member from node list and append
+				// it to sublist."
 				while (nodeList.length
 				&& nodeList[0] == sublist[sublist.length - 1].nextSibling
-				&& !isHtmlElement(nodeList[0], ["OL", "UL"])) {
+				&& !isHtmlElement(nodeList[0], "OL")) {
 					sublist.push(nodeList.shift());
 				}
 
 				// "Split the parent of sublist."
 				splitParent(sublist);
 
-				// "If original parent is a ul, wrap sublist, with sibling
-				// criteria matching any ol, and with new parent instructions
-				// returning the result of calling createElement("ol") on the
-				// context object."
-				if (isHtmlElement(originalParent, "UL")) {
-					wrap(sublist,
-						function(node) { return isHtmlElement(node, "OL") },
-						function() { return document.createElement("ol") });
-				}
-
 				// "Fix orphaned list items in sublist."
 				fixOrphanedListItems(sublist);
-
-				// "Continue from the beginning of this loop."
-				continue;
 			}
 
-			// "If node is a p or li or div, set the tag name of node to "li",
-			// and let li be the result."
-			var li;
-			if (isHtmlElement(node, ["P", "LI", "DIV"])) {
-				li = setTagName(node, "li");
+		// "Otherwise, while node list is not empty:"
+		} else {
+			while (nodeList.length) {
+				// "Let sublist be an empty list of nodes."
+				var sublist = [];
 
-			// "Otherwise:"
-			} else {
+				// "Remove the first member from node list and append it to
+				// sublist."
+				sublist.push(nodeList.shift());
+
 				// "While node list is not empty, and the first member of node
 				// list is the nextSibling of the last member of sublist, and
 				// the last member of sublist and first member of node list are
@@ -2736,54 +2704,131 @@ function myExecCommand(command, showUI, value, range) {
 					sublist.push(nodeList.shift());
 				}
 
-				// "Wrap sublist, with sibling criteria matching nothing and
-				// with new parent instructions returning the result of calling
-				// createElement("li") on the context object. Let li be the
+				// "If sublist contains more than one member, wrap it, with
+				// sibling criteria matching nothing and with new parent
+				// instructions returning the result of calling
+				// createElement("li") on the context object. Let node be the
 				// result."
-				li = wrap(sublist,
-					function(node) { return false },
-					function() { return document.createElement("li") });
+				var node;
+				if (sublist.length > 1) {
+					node = wrap(sublist,
+						function() { return false },
+						function() { return document.createElement("li") });
+
+				// "Otherwise, let node be the sole member of sublist."
+				} else {
+					node = sublist[0];
+				}
+
+				// "If node is a ul:"
+				if (isHtmlElement(node, "UL")) {
+					// "Let children be the children of node."
+					var children = [].slice.call(node.childNodes);
+
+					// "Remove node, preserving its descendants."
+					removePreservingDescendants(node);
+
+					// "Wrap children, with sibling criteria matching any ol
+					// and new parent instructions returning the result of
+					// calling createElement("ol") on the context object. Let
+					// node be the result."
+					node = wrap(children,
+						function(node) { return isHtmlElement(node, "OL") },
+						function() { return document.createElement("ol") });
+
+					// "Prepend the ul descendants of node (if any) to node
+					// list."
+					nodeList = [].slice.call(node.querySelectorAll("ul")).concat(nodeList);
+
+					// "Continue from the beginning of this loop."
+					continue;
+				}
+
+				// "If node is a p or div, set the tag name of node to "li",
+				// and let node be the result."
+				if (isHtmlElement(node, ["P", "DIV"])) {
+					node = setTagName(node, "li");
+				}
+
+				// "If node is the child of a ul:"
+				if (isHtmlElement(node.parentNode, "UL")) {
+					// "Split the parent of the one-node list consisting of
+					// node."
+					splitParent([node]);
+
+					// "Wrap the one-node list consisting of node, with sibling
+					// criteria matching any ol, and with new parent
+					// instructions returning the result of calling
+					// createElement("ol") on the context object."
+					wrap([node],
+						function(node) { return isHtmlElement(node, "OL") },
+						function() { return document.createElement("ol") });
+
+					// "Prepend the ul descendants of node (if any) to node
+					// list."
+					nodeList = [].slice.call(node.querySelectorAll("ul")).concat(nodeList);
+
+					// "Continue from the beginning of this loop."
+					continue;
+				}
+
+				// "If node is an ol or the child of an ol, prepend the
+				// ul descendants of node (if any) to node list and continue
+				// from the beginning of this loop."
+				if (isHtmlElement(node, "OL")
+				|| isHtmlElement(node.parentNode, "OL")) {
+					nodeList = [].slice.call(node.querySelectorAll("ul")).concat(nodeList);
+					continue;
+				}
+
+				// "If node is not an li, wrap the one-node list consisting of
+				// node, with the sibling criteria matching nothing, and the
+				// new parent instructions returning the result of calling
+				// createElement("li") on the context object. Let node be the
+				// result."
+				if (!isHtmlElement(node, "LI")) {
+					node = wrap([node],
+						function() { return false },
+						function() { return document.createElement("li") });
+				}
+
+				// "Wrap the one-node list consisting of node, with the sibling
+				// criteria matching any ol, and the new parent instructions
+				// being the following:"
+				wrap([node],
+					function(node) { return isHtmlElement(node, "OL") },
+					function() {
+						// "If the parent of node is not an editable
+						// indentation element, or the previousSibling of the
+						// parent of node is not an editable ol, call
+						// createElement("ol") on the context object and return
+						// the result. Otherwise:"
+						if (!isEditable(node.parentNode)
+						|| !isIndentationElement(node.parentNode)
+						|| !isEditable(node.parentNode.previousSibling)
+						|| !isHtmlElement(node.parentNode.previousSibling, "OL")) {
+							return document.createElement("ol");
+						}
+
+						// "Let ol be the previousSibling of the parent of
+						// node."
+						var ol = node.parentNode.previousSibling;
+
+						// "Normalize sublists of ol's last child."
+						normalizeSublists(ol.lastChild);
+
+						// "If ol's last child is not an editable ol, call
+						// createElement("ol") on the context object, and
+						// append the result as the last child of ol."
+						if (!isEditable(ol.lastChild)
+						|| !isHtmlElement(ol.lastChild, "OL")) {
+							ol.appendChild(document.createElement("ol"));
+						}
+
+						// "Return the last child of ol."
+						return ol.lastChild;
+					});
 			}
-
-			// "If li is null, continue from the beginning of this loop."
-			if (!li) {
-				continue;
-			}
-
-			// "Wrap the one-node list consisting of li, with the sibling
-			// criteria matching any ol, and the new parent instructions being
-			// the following:"
-			wrap([li],
-				function(node) { return isHtmlElement(node, "OL") },
-				function() {
-					// "If original parent is not an editable indentation
-					// element, or the previousSibling of original parent is
-					// not an editable ol, call createElement("ol") on the
-					// context object and return the result. Otherwise:"
-					if (!isEditable(originalParent)
-					|| !isIndentationElement(originalParent)
-					|| !isEditable(originalParent.previousSibling)
-					|| !isHtmlElement(originalParent.previousSibling, "OL")) {
-						return document.createElement("ol");
-					}
-
-					// "Let ol be the previousSibling of original parent."
-					var ol = originalParent.previousSibling;
-
-					// "Normalize sublists of ol's last child."
-					normalizeSublists(ol.lastChild);
-
-					// "If ol's last child is not an editable ol, call
-					// createElement("ol") on the context object, and append
-					// the result as the last child of ol."
-					if (!isEditable(ol.lastChild)
-					|| !isHtmlElement(ol.lastChild, "OL")) {
-						ol.appendChild(document.createElement("ol"));
-					}
-
-					// "Return the last child of ol."
-					return ol.lastChild;
-				});
 		}
 		break;
 

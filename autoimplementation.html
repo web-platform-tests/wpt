@@ -655,6 +655,10 @@ var tests = {
 		'<p>[foo]<br>bar</p>',
 		'[foo<ol><li>bar]</ol>baz',
 		'foo<ol><li>[bar</ol>baz]',
+		'[foo<ul><li>bar]</ul>baz',
+		'foo<ul><li>[bar</ul>baz]',
+		'foo<ul><li>[bar</ul><ol><li>baz]</ol>quz',
+		'foo<ol><li>[bar</ol><ul><li>baz]</ul>quz',
 
 		'<table><tbody><tr><td>foo<td>b[a]r<td>baz</table>',
 		'<table><tbody><tr data-start=1 data-end=2><td>foo<td>bar<td>baz</table>',
@@ -680,12 +684,14 @@ var tests = {
 
 		'<p>[foo<blockquote><p>bar]<p>baz</blockquote>',
 
+
 		// Various <ol> stuff
 		'<ol><li>foo<li>[bar]<li>baz</ol>',
 		'<ol data-start=1 data-end=2><li>foo<li>bar<li>baz</ol>',
 		'<ol><li>foo</ol>[bar]',
 		'[foo]<ol><li>bar</ol>',
 		'<ol><li>foo</ol>[bar]<ol><li>baz</ol>',
+		'<ol><ol><li>[foo]</ol></ol>',
 		'<ol><li>[foo]<br>bar<li>baz</ol>',
 		'<ol><li>foo<br>[bar]<li>baz</ol>',
 		'<ol><li><div>[foo]</div>bar<li>baz</ol>',
@@ -714,6 +720,7 @@ var tests = {
 		'<ol><li>foo</li><ol><li>b[ar</ol><li>b]az</ol>',
 		'<ol><li>[foo<ol><li>bar</ol><li>baz]</ol><p>extra',
 		'<ol><li>[foo</li><ol><li>bar</ol><li>baz]</ol><p>extra',
+		'<ol><li>foo<li>[bar</li><ol><li>baz</ol><li>quz]</ol>',
 
 		// We probably can't actually get this DOM . . .
 		'<ol><li>[foo]<ol><li>bar</ol>baz</ol>',
@@ -721,12 +728,14 @@ var tests = {
 		'<ol><li>foo<ol><li>bar</ol>[baz]</ol>',
 		'<ol><li>[foo<ol><li>bar]</ol>baz</ol>',
 
+
 		// Same stuff but with <ul>
 		'<ul><li>foo<li>[bar]<li>baz</ul>',
 		'<ol data-start=1 data-end=2><li>foo<li>bar<li>baz</ul>',
 		'<ul><li>foo</ul>[bar]',
 		'[foo]<ul><li>bar</ul>',
 		'<ul><li>foo</ul>[bar]<ul><li>baz</ul>',
+		'<ul><ul><li>[foo]</ul></ul>',
 		'<ul><li>[foo]<br>bar<li>baz</ul>',
 		'<ul><li>foo<br>[bar]<li>baz</ul>',
 		'<ul><li><div>[foo]</div>bar<li>baz</ul>',
@@ -747,12 +756,6 @@ var tests = {
 		'<ul><li>foo<ul><li>bar<li>baz</ul><li>[quz]</ul>',
 		'<ul><li>foo</li><ul><li>bar<li>baz</ul><li>[quz]</ul>',
 
-		// Mix of <ol> and <ul>
-		'foo<ol><li>bar</ol><ul><li>[baz]</ul>quz',
-		'foo<ol><li>bar</ol><ul><li>[baz</ul>quz]',
-		'foo<ul><li>[bar]</ul><ol><li>baz</ol>quz',
-		'[foo<ul><li>bar]</ul><ol><li>baz</ol>quz',
-
 		// Multiple items at once.
 		'<ul><li>foo<li>b[ar<li>baz]</ul>',
 		'<ul><li>[foo<ul><li>bar]</ul><li>baz</ul>',
@@ -761,12 +764,22 @@ var tests = {
 		'<ul><li>foo</li><ul><li>b[ar</ul><li>b]az</ul>',
 		'<ul><li>[foo<ul><li>bar</ul><li>baz]</ul><p>extra',
 		'<ul><li>[foo</li><ul><li>bar</ul><li>baz]</ul><p>extra',
+		'<ul><li>foo<li>[bar</li><ul><li>baz</ul><li>quz]</ul>',
 
 		// We probably can't actually get this DOM . . .
 		'<ul><li>[foo]<ul><li>bar</ul>baz</ul>',
 		'<ul><li>foo<ul><li>[bar]</ul>baz</ul>',
 		'<ul><li>foo<ul><li>bar</ul>[baz]</ul>',
 		'<ul><li>[foo<ul><li>bar]</ul>baz</ul>',
+
+
+		// Mix of <ol> and <ul>
+		'foo<ol><li>bar</ol><ul><li>[baz]</ul>quz',
+		'foo<ol><li>bar</ol><ul><li>[baz</ul>quz]',
+		'foo<ul><li>[bar]</ul><ol><li>baz</ol>quz',
+		'[foo<ul><li>bar]</ul><ol><li>baz</ol>quz',
+		'<ol><li>foo</li><ul><li>[bar]</ul><li>baz</ol>',
+		'<ul><li>foo</li><ol><li>[bar]</ol><li>baz</ul>',
 
 		// Interaction with indentation
 		'[foo]<blockquote>bar</blockquote>baz',
@@ -998,6 +1011,7 @@ var tests = {
 		// List inside indentation element
 		'<blockquote><ol><li>[foo]</ol></blockquote><p>extra',
 		'<blockquote>foo<ol><li>[bar]</ol>baz</blockquote><p>extra',
+		'<blockquote><ol><li>foo</li><ol><li>[bar]</ol><li>baz</ol></blockquote><p>extra',
 	],
 	removeformat: [
 		'foo[]bar',

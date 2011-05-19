@@ -24,11 +24,18 @@
  div.note > p:first-child::before { content: 'Note: '; }
  div + * > li { margin: 1em 0 }
  .XXX > :last-child { margin-bottom: 0 }
+ .XXX li {
+   margin-top: 0;
+   margin-bottom: 0;
+ }
+ dd .XXX p {
+   margin: 1em 0;
+ }
 </style>
 <body class=draft>
 <div class=head id=head>
 <h1>HTML Editing Commands</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-18-may-2011>Work in Progress &mdash; Last Update 18 May 2011</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-19-may-2011>Work in Progress &mdash; Last Update 19 May 2011</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;ayg+spec@aryeh.name&gt;
@@ -2837,6 +2844,33 @@ Sheesh, lists are complicated.
       <var title="">node list</var>.
 
       <li>Continue from the beginning of this loop.
+
+      <div class=XXX>
+      <p>This does the wrong thing for input like
+
+      <ul>
+        <li>foo</li>
+        <li>[bar</li>
+        <ul><li>baz</ul>
+        <li>quz]</li>
+      </ul>
+
+      <p>which becomes
+
+      <ul><li>foo</ul>
+      <ol><li>[bar</ol>
+      <ul><ol><li>baz</ol></ul>
+      <ol><li>quz]</ol>
+
+      <p>when we want
+
+      <ul><li>foo</ul>
+      <ol>
+        <li>[bar</li>
+        <ol><li>baz</ol>
+        <li>quz]</li>
+      </ol>
+      </div>
     </ol>
 
     <li>If <var title="">node</var> is a <code class=external data-anolis-spec=html title="the p element"><a href=http://www.whatwg.org/html/#the-p-element>p</a></code> or <code class=external data-anolis-spec=html title="the div element"><a href=http://www.whatwg.org/html/#the-div-element>div</a></code>, <a href=#set-the-tag-name>set the tag name</a>

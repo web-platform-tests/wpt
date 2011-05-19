@@ -25,6 +25,13 @@
  div.note > p:first-child::before { content: 'Note: '; }
  div + * > li { margin: 1em 0 }
  .XXX > :last-child { margin-bottom: 0 }
+ .XXX li {
+   margin-top: 0;
+   margin-bottom: 0;
+ }
+ dd .XXX p {
+   margin: 1em 0;
+ }
 </style>
 <body class=draft>
 <div class=head id=head>
@@ -2880,6 +2887,33 @@ Sheesh, lists are complicated.
       <var>node list</var>.
 
       <li>Continue from the beginning of this loop.
+
+      <div class=XXX>
+      <p>This does the wrong thing for input like
+
+      <ul>
+        <li>foo</li>
+        <li>[bar</li>
+        <ul><li>baz</li></ul>
+        <li>quz]</li>
+      </ul>
+
+      <p>which becomes
+
+      <ul><li>foo</li></ul>
+      <ol><li>[bar</li></ol>
+      <ul><ol><li>baz</li></ol></ul>
+      <ol><li>quz]</li></ol>
+
+      <p>when we want
+
+      <ul><li>foo</li></ul>
+      <ol>
+        <li>[bar</li>
+        <ol><li>baz</li></ol>
+        <li>quz]</li>
+      </ol>
+      </div>
     </ol>
 
     <li>If <var>node</var> is a [[p]] or [[div]], <span>set the tag name</span>

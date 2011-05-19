@@ -1,0 +1,40 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>CSS Test: Redirect content through two regions</title>
+    <link rel="author" title="Alan Stearns" href="mailto:stearns@adobe.com"/>
+    <link rel="help" href="http://dev.w3.org/csswg/css3-regions/#regions-properties"/>
+    <meta name="flags" content="" />
+    <meta name="assert" content="If multiple elements have their content property set to a named flow, the named flow content will be consumed by the chain of elements until exhausted."/>
+    <style type="text/css">
+      #source{
+       -webkit-flow: "main-thread";
+       color: green;
+      }
+      
+      .region{
+       content:from(main-thread);
+       height:2em;
+      }
+      
+      #error{
+       color: red;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="source">
+      <p>paragraph 1</p>
+      <p>paragraph 2</p>
+    </div>
+    <div id="region1" class="region">
+      <div id="error">FAIL if this text is displayed.</div>
+    </div>
+    <div>
+      The words "paragraph one" should appear above this div, and the words "paragraph two" should appear below this div.
+    </div>
+    <div id="region2" class="region">
+      <div id="error">FAIL if this text is displayed.</div>
+    </div>
+  </body>
+</html>

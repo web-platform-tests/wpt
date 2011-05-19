@@ -1,0 +1,35 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>CSS Test: Redirect content to a region</title>
+    <link rel="author" title="Alan Stearns" href="mailto:stearns@adobe.com"/>
+    <link rel="help" href="http://dev.w3.org/csswg/css3-regions/#regions-properties"/>
+    <meta name="flags" content="" />
+    <meta name="assert" content="Content placed into a named flow with the flow property should display in the element whose content property specifies that named flow."/>
+    <style type="text/css">
+      #source{
+       -webkit-flow: "main-thread";
+       color: green;
+      }
+      
+      .region{
+       content:from(main-thread);
+      }
+      
+      #error{
+       color: red;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="source">
+      flow content
+    </div>
+    <div>
+      The words "flow content" in green should display after this div
+    </div>
+    <div id="region1" class="region">
+      <div id="error">FAIL if this text is displayed.</div>
+    </div>
+  </body>
+</html>

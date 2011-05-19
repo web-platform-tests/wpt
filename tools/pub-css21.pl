@@ -24,7 +24,7 @@ rmtree('dist/css2.1');
 # submitted/css2.1/
 #  visudet/anonymous-block-not-containing-block-001.xhtml - pending spec changes
 
-push @dirs, 'contributors/bzbarsky/submitted/css2.1/visuren';
+#push @dirs, 'contributors/bzbarsky/submitted/css2.1/visuren';
 push @dirs, 'contributors/bzbarsky/submitted/css2.1/tables';
 push @dirs, 'contributors/bzbarsky/submitted/css2.1/box/reftest.list';
 #push @dirs, 'contributors/bzbarsky/submitted/css2.1/run-in/reftest.list';

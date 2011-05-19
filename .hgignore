@@ -1,0 +1,6 @@
+syntax: glob
+dist
+*.xcodeproj
+*.DS_Store
+*.pyc
+*.svn

@@ -9,10 +9,10 @@ import filecmp
 import shutil
 import re
 import html5lib # Warning: This uses a patched version of html5lib
-import pysvn
 from lxml import etree
 from lxml.etree import ParseError
 from Utils import getMimeFromExt, escapeToNamedASCII, basepath, isPathInsideBase, relativeURL
+from mercurial import ui, hg
 
 class SourceCache:
   """Cache for FileSource objects. Supports one FileSource object
@@ -171,7 +171,9 @@ class FileSource:
     """
     if relpath:
       path = os.path.join(os.path.dirname(path), relpath)
-    return pysvn.Client().status(path)[0].entry.commit_revision.number
+    repo = hg.repository(ui.ui(), '.')  # XXX should pass repo instead of recreating
+    fctx = repo.filectx(path, fileid=repo.file(path).tip())
+    return fctx.rev() + 1   # svn starts at 1, hg starts at 0 - XXX return revision number for now, eventually switch to changeset id
 
     
 class ConfigSource(FileSource):

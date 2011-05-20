@@ -4,7 +4,6 @@
   specroot    [uri string]
   formatdir   [dir name string]
   chapters    [list of struct]
-    .sortstr    [string, e.g. '060113']
     .numstr     [string, e.g. '6.1.13']
     .title      [string]
     .testcount  [number]
@@ -35,7 +34,7 @@
 
   <table>
 [% FOREACH chapter IN chapters %]
-    <tbody id="s[% chapter.sortstr %]">
+    <tbody id="s[% chapter.numstr %]">
       <tr><th><a href="chapter-[% chapter.numstr %][% indexext %]">
         [% (chapter.numstr.match('^\d')) ? 'Chapter' : 'Appendix' +%] [%+ chapter.numstr +%] - 
         [%+ chapter.title +%]</a></th>

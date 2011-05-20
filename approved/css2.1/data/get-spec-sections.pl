@@ -28,20 +28,17 @@ use utf8;
 use LWP::Simple;
 
 # read the page in from the web
-my $page = get('http://www.w3.org/TR/CSS21/');
+my $specURI = 'http://www.w3.org/TR/CSS21/';
+my $page = get($specURI);
 $page =~ s/\x{D}\x{A}|\x{A}\{D}|\x{D}|\x{A}/\n/gos; # normalize newlines
 
 $page =~ m/name="toc"/gos; # skip past the minitoc
 while ($page =~ m/<a href="([^"]+)" class="tocxref">(Appendix )?([A-Z]?[0-9.]+) (.+?)<\/a>/gos) {
-    my $uri = "http://www.w3.org/TR/CSS21/$1";
+    my $uri = "$specURI$1";
     my $section = $3;
     my $title = $4;
     $section =~ s/\.$//gos;
-    my $code = '';
-    foreach (split(/\./, $section)) {
-        $code .= length($_) < 2 ? "0$_" : "$_";
-    }
     $title =~ s/&nbsp;/ /gos;
     $title =~ s/<[^>]+>//gos;
-    print "$code $uri $section $title\n";
+    print "$uri\t$section\t$title\n";
 }

@@ -29,22 +29,22 @@ use utf8;
 use LWP::Simple;
 
 # read the page in from the web
-my $page = get('http://www.w3.org/TR/css3-color');
+my $specURI = 'http://www.w3.org/TR/css3-color/';
+my $page = get($specURI);
 $page =~ s/\x{D}\x{A}|\x{A}\{D}|\x{D}|\x{A}/\n/gos; # normalize newlines
 
 # remove everything except the toc
 $page =~ m/<!--begin-toc-->/gos;
 $page =~ s/<!--end-toc-->.*//os;
 
-while ($page =~ m/<a href="([^"]+)"><span class="secno">([A-Z]?[0-9.]+). <\/span>(.+?)<\/a>/gos) {
-    my $uri = "http://www.w3.org/TR/css3-color$1";
+while ($page =~ m/<a href="([^"]+)"><span class=[\'\"]?secno[\'\"]?>([A-Z]?[0-9.]+). <\/span>(.+?)<\/a>/gos) {
+    my $uri = "$specURI$1";
     my $section = $2;
     my $title = $3;
-    my $code = '';
-    foreach (split(/\./, $section)) {
-        $code .= length($_) < 2 ? "0$_" : "$_";
-    }
     $title =~ s/&nbsp;/ /gos;
     $title =~ s/<[^>]+>//gos;
-    print "$code $uri $section $title\n";
+    $title =~ s/\n/ /gos;
+    $title =~ s/ +/ /gos;
+    $title =~ s/&[lr]squo;/\'/gos;
+    print "$uri\t$section\t$title\n";
 }

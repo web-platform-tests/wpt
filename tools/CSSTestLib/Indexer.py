@@ -20,14 +20,24 @@ from OutputFormats import ExtensionMap
 import shutil
 
 class Section:
-  def __init__(self, uri, title, sortstr, numstr):
+  def __init__(self, uri, title, numstr):
     self.uri = uri
     self.title = title
-    self.sortstr = sortstr # sortable (zero-filled) section number
     self.numstr = numstr
     self.tests = []
   def __cmp__(self, other):
-    return cmp(self.sortstr, other.sortstr)
+    return cmp(self.natsortkey(), other.natsortkey())
+  def chapterNum(self):
+    return self.numstr.partition('.')[0]
+  def natsortkey(self):
+    chunks = self.numstr.split('.')
+    for index in range(len(chunks)):
+      if chunks[index].isdigit():
+        # wrap in tuple with '0' to explicitly specify numbers come first
+        chunks[index] = (0, int(chunks[index]))
+      else:
+        chunks[index] = (1, chunks[index])
+    return (chunks, self.numstr)
 
 class Indexer:
 
@@ -75,9 +85,9 @@ class Indexer:
     # Load toc data
     self.sections = {}
     for record in open(tocDataPath):
-      sortstr, uri, numstr, title = record.split('\t')
+      uri, numstr, title = record.split('\t')
       uri = intern(uri)
-      self.sections[uri] = Section(uri, title, sortstr, numstr)
+      self.sections[uri] = Section(uri, title, numstr)
 
     # Initialize storage
     self.errors = set()
@@ -187,8 +197,8 @@ class Indexer:
       lastChapNum = '$' # some nonmatching initial char
       chap = None
       for section in sectionlist:
-        if not section.sortstr.startswith(lastChapNum):
-          lastChapNum = section.sortstr[:self.splitlevel]
+        if section.chapterNum() != lastChapNum:
+          lastChapNum = section.chapterNum()
           chap = section
           chap.sections = []
           chap.testcount = 0

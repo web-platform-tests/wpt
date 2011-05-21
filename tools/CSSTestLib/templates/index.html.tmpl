@@ -1,10 +1,11 @@
+[% PROCESS "suitedata.tmpl" %]
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
 <html lang="en">
  <head>
 [% IF official %]
-  <title>CSS 2.1 Conformance Test Suite</title>
+  <title>[% suites.$suite.title %] Conformance Test Suite</title>
 [% ELSE %]
-  <title>CSS 2.1 Test Collection</title>
+  <title>[% suites.$suite.title %] Test Collection</title>
 [% END %]
   <style type="text/css">
     @import "http://www.w3.org/StyleSheets/TR/base.css";

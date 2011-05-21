@@ -27,7 +27,7 @@
 
   <p>[% IF suites.$suite.status != 'fin' && suites.$suite.status != 'rc' %]
   In time we hope to correct all errors and extend this test suite to
-  cover all of CSS2.1. Your help is welcome in this effort.
+  cover all of % suites.$suite.title %]. Your help is welcome in this effort.
   [% END %]
   The appropriate mailing list for submitting tests and bug reports is
   <a href="http://lists.w3.org/Archives/Public/public-css-testsuite/">public-css-testsuite@w3.org</a>.
@@ -63,7 +63,7 @@
   <p>Unless the test instructions explicitly indicate otherwise,
     any occurrence of red in a test indicates test failure.</p>
 
-[% IF $suite == 'css2.1' %]
+[% IF suite == 'css2.1' %]
   <p>Note that <em>many</em> of the tests require the
    <a href="http://www.w3.org/Style/CSS/Test/Fonts/Ahem/">Ahem font to be installed</a>.
    These tests are marked with the 'ahem' flag in their metadata.
@@ -145,7 +145,7 @@
   License</a>. You may modify and distribute them under those terms. Aside
   from their titles, documentation, and location they are identical to the
   official tests of the same date. However, only the
-  <a href="http://www.w3.org/Style/Test/CSS2.1/current/">official CSS2.1
+  <a href="http://www.w3.org/Style/Test/[% suite %]/current/">official % suites.$suite.title %]
   Conformance Test Suite</a> may be used as the basis for CSS conformance
   claims.</p>
 [% END %]
@@ -160,7 +160,7 @@
   [% END %]
 [%- END %]
   </ul>
-[% IF $suite == 'css2.1' %]
+[% IF suite == 'css2.1' %]
   <p>...and all the <a href="http://www.w3.org/Style/CSS/Test/CSS1/current/tsack.html">contributors
   to the CSS1 test suite</a>.</p>
 [% END %]

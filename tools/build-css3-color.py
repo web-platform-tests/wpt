@@ -25,7 +25,7 @@ unreviewed = sys.argv[1:]
 print "Requested unreviewed source directories."
 
 # Set up
-suite = CSSTestSuite('css3-color', 'CSS Color Level 3 Test Suite', 'http://www.w3.org/TR/css3-color/')
+suite = CSSTestSuite('css3-color', 'CSS Color Module Level 3 Test Suite', 'http://www.w3.org/TR/css3-color/')
 
 # Add approved tests
 root = join('approved', 'css3-color', 'src')
@@ -36,6 +36,9 @@ for dir in dirs:
   suite.addSelftestsByExt(testroot, '.xht')
   if exists(join(testroot, reftestPath)):
     suite.addReftests(testroot, reftestPath)
+suite.addSelftestsByExt(root, '.xht')
+if exists(join(root, reftestPath)):
+  suite.addReftests(root, reftestPath)
 for src, dst in rawDirs.items():
   if exists(join(root,src)):
     suite.addRaw(join(root,src), dst)
@@ -60,6 +63,6 @@ for path in unreviewed:
 
 # Build
 data = join('approved', 'css3-color', 'data')
-indexer = Indexer(suite, join(data, 'sections.dat'), 2, templatePathList=[data],
+indexer = Indexer(suite, join(data, 'sections.dat'), True, templatePathList=[data],
                   extraData={ 'devel' : False, 'official' : True })
 suite.buildInto(join('dist', 'css3-color'), indexer)

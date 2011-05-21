@@ -41,18 +41,15 @@ class Section:
 
 class Indexer:
 
-  def __init__(self, suite, tocDataPath, splitlevel=0, templatePathList=None,
+  def __init__(self, suite, tocDataPath, splitChapter=False, templatePathList=None,
                extraData=None, overviewTmplNames=None, overviewCopyExts=('.css', 'htaccess')):
     """Initialize indexer with CSSTestSuite `suite` toc data file
        `tocDataPath` and additional template paths in list `templatePathList`.
 
        The toc data file should be list of tab-separated records, one
-       per line, of each spec section's sort string, uri, number/letter,
-       and title.
-       `splitlevel` is the number of prefix characters common to each
-       chapter's sort string in the toc data file: set to zero for a
-       single-page index; set to two to create chapter indices when
-       using two-digit chapter numbers in the sort string.
+       per line, of each spec section's uri, number/letter, and title.
+       `splitChapter` selects a single page index if False, chapter 
+       indicies if True.
        `extraData` can be a dictionary whose data gets passed to the templates.
        `overviewCopyExts` lists file extensions that should be found
        and copied from the template path into the main build directory.
@@ -62,9 +59,9 @@ class Indexer:
        The '.tmpl' extension, if any, is stripped from the output filename.
        The default value is ['index.html.tmpl', 'index.xht.tmpl', 'testinfo.data.tmpl']
     """
-    self.suite      = suite
-    self.splitlevel = splitlevel
-    self.extraData  = extraData
+    self.suite        = suite
+    self.splitChapter = splitChapter
+    self.extraData    = extraData
     self.overviewCopyExtPat = re.compile('.*(%s)$' % '|'.join(overviewCopyExts))
     self.overviewTmplNames = overviewTmplNames if overviewTmplNames is not None \
       else ['index.html.tmpl', 'index.xht.tmpl', 'testinfo.data.tmpl',
@@ -191,7 +188,7 @@ class Indexer:
 
     # Table of Contents
     sectionlist = sorted(self.sections.values())
-    if self.splitlevel:
+    if self.splitChapter:
       # Split sectionlist into chapters
       chapters = []
       lastChapNum = '$' # some nonmatching initial char
@@ -222,7 +219,7 @@ class Indexer:
         self.__writeTemplate('test-toc.tmpl', data, format.dest('chapter-%s%s' \
                              % (chap.numstr, format.indexExt)))
 
-    else: # not splitlevel
+    else: # not splitChapter
       data['chapters'] = sectionlist
       self.__writeTemplate('test-toc.tmpl', data,
                            format.dest('toc%s' % format.indexExt))

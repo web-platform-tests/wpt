@@ -1536,8 +1536,8 @@ different value.
 
 
 <h3 id=setting-the-value-of-a-node><span class=secno>6.7 </span>Setting the value of a node</h3>
-<p>To <dfn id=set-the-value>set the value</dfn> of a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> <var title="">node</var> to <var title="">new
-value</var>:
+<p>To <dfn id=set-the-value>set the value</dfn> of a list <var title="">node list</var> of <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a> to
+<var title="">new value</var>:
 
 <div class=note>
 <p>The effect of this algorithm is to ensure that the node and all its
@@ -1608,14 +1608,8 @@ as desired.
 <ol>
   <li>Let <var title="">command</var> be the current <a href=#command>command</a>.
 
-  <li>If <var title="">node</var> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#document>Document</a></code>, <a href=#set-the-value>set the value</a> of its
-  <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> (if it has one) and abort this algorithm.
-
-  <li>If <var title="">node</var> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#documentfragment>DocumentFragment</a></code>, let <var title="">children</var> be
-  a list of its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>.  <a href=#set-the-value>Set the value</a> of each member of
-  <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, then abort this algorithm.
-
-  <li>If <var title="">node</var> is not <a href=#editable>editable</a>:
+  <li>While there is some member of <var title="">node list</var> that is not
+  <a href=#editable>editable</a>:
   <!--
   IE9: Allows everything to be modified by execCommand(), regardless of whether
     it's editable.
@@ -1651,36 +1645,51 @@ as desired.
   -->
 
   <ol>
-    <li>Let <var title="">children</var> be the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a> of <var title="">node</var>.
+    <li>Let <var title="">node</var> be the first non-<a href=#editable>editable</a> member of
+    <var title="">node list</var>.
 
-    <li><a href=#set-the-value>Set the value</a> of each member of <var title="">children</var>.
-
-    <li>Abort this algorithm.
+    <li>Remove <var title="">node</var> from <var title="">node list</var>, and insert its
+    <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a> in its former place.
   </ol>
 
-  <li>If <var title="">node</var> is an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>:
+  <li>Let <var title="">sublists</var> be the <a href=#adjacent-sibling-runs>adjacent sibling runs</a> of
+  <var title="">node list</var>.
+
+  <li>For each <var title="">sublist</var> in <var title="">sublists</var>:
 
   <ol>
-    <li><a href=#clear-the-value>Clear the value</a> of <var title="">node</var>, and let <var title="">new
-    nodes</var> be the result.
+    <li>For each <var title="">node</var> in <var title="">sublist</var>:
 
-    <li>For each <var title="">new node</var> in <var title="">new nodes</var>,
-    <a href=#set-the-value>set the value</a> of <var title="">new node</var>.
+    <ol>
+      <li>If <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is null, continue with the next
+      <var title="">node</var>.
+      <!-- Maybe it got eaten by a previous iteration. -->
 
-    <li>If <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is null, abort this algorithm.
+      <li>If <var title="">node</var> is an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>:
+
+      <ol>
+        <li><a href=#clear-the-value>Clear the value</a> of <var title="">node</var>, and let <var title="">new
+        nodes</var> be the result.
+
+        <li><a href=#set-the-value>Set the value</a> of <var title="">new nodes</var>.
+
+        <li>If <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is null, continue with the next
+        <var title="">node</var>.
+      </ol>
+
+      <li><a href=#push-down-values>Push down values</a> on <var title="">node</var>.
+
+      <li><a href=#force-the-value>Force the value</a> of <var title="">node</var>.
+
+      <li>Let <var title="">children</var> be the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a> of <var title="">node</var>.
+
+      <li><a href=#set-the-value>Set the value</a> of <var title="">children</var>.
+
+      <p class=note>Styling a node involves clearing its styles, which can
+      remove it from the tree.  Implementers should be careful to compute the
+      list of children in full before they begin styling.
+    </ol>
   </ol>
-
-  <li><a href=#push-down-values>Push down values</a> on <var title="">node</var>.
-
-  <li><a href=#force-the-value>Force the value</a> of <var title="">node</var>.
-
-  <li>Let <var title="">children</var> be the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a> of <var title="">node</var>.
-
-  <li><a href=#set-the-value>Set the value</a> of each member of <var title="">children</var>.
-
-  <p class=note>Styling a node involves clearing its styles, which can remove
-  it from the tree.  Implementers should be careful to compute the list of
-  children in full before they begin styling.
 </ol>
 
 
@@ -1735,8 +1744,8 @@ one else does it, so I don't do it.  It's a similar story for similar commands
 nothing if the selection is empty.  Why strikethrough?  I don't know. -->
 
 <p><a href=#action>Action</a>: <a href=#decompose>Decompose</a> the <a href=#active-range>active range</a>.
-If the <a href=#state>state</a> is then false, <a href=#set-the-value>set the value</a> of each
-returned <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> to "bold", otherwise <a href=#set-the-value>set the value</a> to "normal".
+If the <a href=#state>state</a> is then false, <a href=#set-the-value>set the value</a> of the
+result to "bold", otherwise <a href=#set-the-value>set the value</a> to "normal".
 
 <p><a href=#state>State</a>: True if every <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node that
 is <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active range</a> has
@@ -1819,7 +1828,7 @@ don't either. -->
 <h3 id=the-fontname-command><span class=secno>6.11 </span><dfn>The <code title="">fontName</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>: <a href=#decompose>Decompose</a> the <a href=#active-range>active range</a>,
-then <a href=#set-the-value>set the value</a> of each returned <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> to <var title="">value</var>.
+then <a href=#set-the-value>set the value</a> of the result to <var title="">value</var>.
 <!-- UAs differ a bit in the details here:
 
 IE 9 RC: Empty string sets <font face="">
@@ -1966,7 +1975,7 @@ respecifying non-interoperable behavior anyway.
   sizes, I don't think.
 
   <li><a href=#decompose>Decompose</a> the <a href=#active-range>active range</a>, then <a href=#set-the-value>set the
-  value</a> of each returned <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> to <var title="">value</var>.
+  value</a> of the result to <var title="">value</var>.
 </ol>
 
 <p><a href=#relevant-css-property>Relevant CSS property</a>: "font-size"
@@ -2041,7 +2050,7 @@ browsers, but it's unlikely to hurt and it makes sense.
   confuse the algorithm, and doesn't seem very useful anyway. -->
 
   <li><a href=#decompose>Decompose</a> the <a href=#active-range>active range</a>, then <a href=#set-the-value>set the
-  value</a> of each returned <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> to <var title="">value</var>.
+  value</a> of the result to <var title="">value</var>.
 </ol>
 
 <p><a href=#state>State</a>: Always false.
@@ -2088,7 +2097,7 @@ For color parsing, see the comment for foreColor. -->
   algorithm, so ban it for now anyway. -->
 
   <li><a href=#decompose>Decompose</a> the <a href=#active-range>active range</a>, then <a href=#set-the-value>set the
-  value</a> of each returned <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> to <var title="">value</var>.
+  value</a> of the result to <var title="">value</var>.
 </ol>
 
 <p><a href=#state>State</a>: Always false.
@@ -2172,9 +2181,8 @@ splitting up parents to ensure validity . . . -->
 <h3 id=the-italic-command><span class=secno>6.17 </span><dfn>The <code title="">italic</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>: <a href=#decompose>Decompose</a> the <a href=#active-range>active range</a>.
-If the <a href=#state>state</a> is then false, <a href=#set-the-value>set the value</a> of each
-returned <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> to "italic", otherwise <a href=#set-the-value>set the value</a> to
-"normal".
+If the <a href=#state>state</a> is then false, <a href=#set-the-value>set the value</a> of the
+result to "italic", otherwise <a href=#set-the-value>set the value</a> to "normal".
 
 <p><a href=#state>State</a>: True if every <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node that
 is <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active range</a> has
@@ -2281,7 +2289,7 @@ for elements like <code> or <tt> or <mark> that we don't normally create.
 
   <li>For each of the entries in the following table, in the given order:
   <a href=#decompose>decompose</a> the <a href=#active-range>active range</a> again; then <a href=#set-the-value>set
-  the value</a> of the resulting <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a>, with <var title="">command</var> and
+  the value</a> of the result, with <var title="">command</var> and
   <var title="">new value</var> as given.
 
   <p class=XXX>This has no relationship to what browsers actually do, although
@@ -2309,9 +2317,8 @@ for elements like <code> or <tt> or <mark> that we don't normally create.
 <h3 id=the-strikethrough-command><span class=secno>6.19 </span><dfn>The <code title="">strikethrough</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>: <a href=#decompose>Decompose</a> the <a href=#active-range>active range</a>.
-If the <a href=#state>state</a> is then false, <a href=#set-the-value>set the value</a> of each
-returned <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> to "line-through", otherwise <a href=#set-the-value>set the value</a> to
-null.
+If the <a href=#state>state</a> is then false, <a href=#set-the-value>set the value</a> of the
+result to "line-through", otherwise <a href=#set-the-value>set the value</a> to null.
 
 <p class=XXX>Has all the same problems as <a href=#the-underline-command>the <code title="">underline</code> command</a>.
 
@@ -2332,12 +2339,10 @@ is <a href=#effectively-contained>effectively contained</a> in the <a href=#acti
   
   <li>Let <var title="">state</var> be the <a href=#state>state</a>.
   
-  <li><a href=#set-the-value>Set the value</a> of each <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> in <var title="">node list</var> to
-  "baseline".
+  <li><a href=#set-the-value>Set the value</a> of <var title="">node list</var> to "baseline".
 
   <li>If <var title="">state</var> is false, <a href=#decompose>decompose</a> the <a href=#active-range>active
-  range</a> again and <a href=#set-the-value>set the value</a> of each returned <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>
-  to "sub".
+  range</a> again and <a href=#set-the-value>set the value</a> of the result to "sub".
 </ol>
 
 <p><a href=#state>State</a>: True if every <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node that
@@ -2357,12 +2362,10 @@ is <a href=#effectively-contained>effectively contained</a> in the <a href=#acti
   
   <li>Let <var title="">state</var> be the <a href=#state>state</a>.
   
-  <li><a href=#set-the-value>Set the value</a> of each <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> in <var title="">node list</var> to
-  "baseline".
+  <li><a href=#set-the-value>Set the value</a> of <var title="">node list</var> to "baseline".
 
   <li>If <var title="">state</var> is false, <a href=#decompose>decompose</a> the <a href=#active-range>active
-  range</a> again and <a href=#set-the-value>set the value</a> of each returned <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>
-  to "super".
+  range</a> again and <a href=#set-the-value>set the value</a> of the result to "super".
 </ol>
 
 <p><a href=#state>State</a>: True if every <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node that
@@ -2375,8 +2378,8 @@ is <a href=#effectively-contained>effectively contained</a> in the <a href=#acti
 <h3 id=the-underline-command><span class=secno>6.22 </span><dfn>The <code title="">underline</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>: <a href=#decompose>Decompose</a> the <a href=#active-range>active range</a>.
-If the <a href=#state>state</a> is then false, <a href=#set-the-value>set the value</a> of each
-returned <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> to "underline", otherwise <a href=#set-the-value>set the value</a> to null.
+If the <a href=#state>state</a> is then false, <a href=#set-the-value>set the value</a> of the
+result to "underline", otherwise <a href=#set-the-value>set the value</a> to null.
 
 <div class=XXX>
 <p>There are a lot of problems with underline color and thickness, because

@@ -2184,81 +2184,68 @@ function forceValue(node, command, newValue) {
 	}
 }
 
-function setNodeValue(node, command, newValue) {
-	// "If node is a Document, set the value of its Element child (if it has
-	// one) and abort this algorithm."
-	if (node.nodeType == Node.DOCUMENT_NODE) {
-		for (var i = 0; i < node.childNodes.length; i++) {
-			if (node.childNodes[i].nodeType == Node.ELEMENT_NODE) {
-				setNodeValue(node.childNodes[i], command, newValue);
+function setNodeValue(nodeList, command, newValue) {
+	// "While there is some member of node list that is not editable:"
+	while (true) {
+		// "Let node be the first non-editable member of node list."
+		for (var i = 0; i < nodeList.length; i++) {
+			if (!isEditable(nodeList[i])) {
 				break;
 			}
 		}
-		return;
-	}
-
-	// "If node is a DocumentFragment, let children be a list of its children.
-	// Set the value of each member of children, then abort this algorithm."
-	if (node.nodeType == Node.DOCUMENT_FRAGMENT_NODE) {
-		var children = [];
-		for (var i = 0; i < node.childNodes.length; i++) {
-			children.push(node.childNodes[i]);
-		}
-		for (var i = 0; i < children.length; i++) {
-			setNodeValue(children[i], command, newValue);
-		}
-		return;
-	}
-
-	// "If node's parent is null, or if node is a DocumentType, abort this
-	// algorithm."
-	if (!node.parentNode || node.nodeType == Node.DOCUMENT_TYPE_NODE) {
-		return;
-	}
-
-	// "If node is not editable:"
-	if (!isEditable(node)) {
-		// "Let children be the children of node."
-		var children = Array.prototype.slice.call(node.childNodes);
-
-		// "Set the value of each member of children."
-		for (var i = 0; i < children.length; i++) {
-			setNodeValue(children[i], command, newValue);
+		if (i == nodeList.length) {
+			break;
 		}
 
-		// "Abort this algorithm."
-		return;
+		// "Remove node from node list, and insert its children in its former
+		// place."
+		nodeList = nodeList.slice(0, i)
+			.concat([].slice.call(nodeList[i].childNodes))
+			.concat(nodeList.slice(i + 1));
 	}
 
-	// "If node is an Element:"
-	if (node.nodeType == Node.ELEMENT_NODE) {
-		// "Clear the value of node, and let new nodes be the result."
-		var newNodes = clearValue(node, command);
+	// "Let sublists be the adjacent sibling runs of node list."
+	var sublists = getAdjacentSiblingRuns(nodeList);
 
-		// "For each new node in new nodes, set the value of new node, with the
-		// same inputs as this invocation of the algorithm."
-		for (var i = 0; i < newNodes.length; i++) {
-			setNodeValue(newNodes[i], command, newValue);
+	// "For each sublist in sublists:"
+	for (var i = 0; i < sublists.length; i++) {
+		var sublist = sublists[i];
+
+		// "For each node in sublist:"
+		for (var j = 0; j < sublist.length; j++) {
+			var node = sublist[j];
+
+			// "If node's parent is null, continue with the next node."
+			if (!node.parentNode) {
+				continue;
+			}
+
+			// "If node is an Element:"
+			if (node.nodeType == Node.ELEMENT_NODE) {
+				// "Clear the value of node, and let new nodes be the result."
+				var newNodes = clearValue(node, command);
+
+				// "Set the value of new nodes."
+				setNodeValue(newNodes, command, newValue);
+
+				// "If node's parent is null, continue with the next node."
+				if (!node.parentNode) {
+					continue;
+				}
+			}
+
+			// "Push down values on node."
+			pushDownValues(node, command, newValue);
+
+			// "Force the value of node."
+			forceValue(node, command, newValue);
+
+			// "Let children be the children of node."
+			var children = [].slice.call(node.childNodes);
+
+			// "Set the value of children."
+			setNodeValue(children, command, newValue);
 		}
-
-		// "If node's parent is null, abort this algorithm."
-		if (!node.parentNode) {
-			return;
-		}
-	}
-
-	// "Push down values on node."
-	pushDownValues(node, command, newValue);
-
-	// "Force the value of node."
-	forceValue(node, command, newValue);
-
-	// "Let children be the children of node."
-	var children = Array.prototype.slice.call(node.childNodes);
-
-	// "Set the value of each member of children."
-	for (var i = 0; i < children.length; i++) {
-		setNodeValue(children[i], command, newValue);
 	}
 }
 
@@ -2305,9 +2292,7 @@ function myExecCommand(command, showUI, value, range) {
 		// "normal". Otherwise, set their value with new value "bold"."
 		var nodeList = decomposeRange(range);
 		var newValue = getState("bold", range) ? "normal" : "bold";
-		for (var i = 0; i < nodeList.length; i++) {
-			setNodeValue(nodeList[i], command, newValue);
-		}
+		setNodeValue(nodeList, command, newValue);
 		break;
 
 		case "createlink":
@@ -2334,18 +2319,15 @@ function myExecCommand(command, showUI, value, range) {
 		}
 
 		// "Set the value of each node in node list to value."
-		for (var i = 0; i < nodeList.length; i++) {
-			setNodeValue(nodeList[i], command, value);
-		}
+		setNodeValue(nodeList, command, value);
+
 		break;
 
 		case "fontname":
 		// "Decompose the range, then set the value of each returned node with
 		// new value equal to value."
 		var nodeList = decomposeRange(range);
-		for (var i = 0; i < nodeList.length; i++) {
-			setNodeValue(nodeList[i], command, value);
-		}
+		setNodeValue(nodeList, command, value);
 		break;
 
 		case "fontsize":
@@ -2433,9 +2415,7 @@ function myExecCommand(command, showUI, value, range) {
 		// "Decompose the range, then set the value of each returned node to
 		// value."
 		var nodeList = decomposeRange(range);
-		for (var i = 0; i < nodeList.length; i++) {
-			setNodeValue(nodeList[i], command, value);
-		}
+		setNodeValue(nodeList, command, value);
 		break;
 
 		case "forecolor":
@@ -2461,9 +2441,7 @@ function myExecCommand(command, showUI, value, range) {
 		// "Decompose the range, then set the value of each returned node to
 		// value."
 		var nodeList = decomposeRange(range);
-		for (var i = 0; i < nodeList.length; i++) {
-			setNodeValue(nodeList[i], command, value);
-		}
+		setNodeValue(nodeList, command, value);
 		break;
 
 		case "indent":
@@ -2855,9 +2833,7 @@ function myExecCommand(command, showUI, value, range) {
 		// "normal". Otherwise, set their value with new value "italic"."
 		var nodeList = decomposeRange(range);
 		var newValue = getState("italic", range) ? "normal" : "italic";
-		for (var i = 0; i < nodeList.length; i++) {
-			setNodeValue(nodeList[i], command, newValue);
-		}
+		setNodeValue(nodeList, command, newValue);
 		break;
 
 		case "outdent":
@@ -3028,9 +3004,7 @@ function myExecCommand(command, showUI, value, range) {
 		};
 		for (var command in table) {
 			var nodeList = decomposeRange(range);
-			for (var i = 0; i < nodeList.length; i++) {
-				setNodeValue(nodeList[i], command, table[command]);
-			}
+			setNodeValue(nodeList, command, table[command]);
 		}
 		break;
 
@@ -3040,9 +3014,7 @@ function myExecCommand(command, showUI, value, range) {
 		// set their value to "line-through"."
 		var nodeList = decomposeRange(range);
 		var newValue = getState(command, range) ? null : "line-through";
-		for (var i = 0; i < nodeList.length; i++) {
-			setNodeValue(nodeList[i], command, newValue);
-		}
+		setNodeValue(nodeList, command, newValue);
 		break;
 
 		case "stylewithcss":
@@ -3059,17 +3031,11 @@ function myExecCommand(command, showUI, value, range) {
 		// node with new value "sub"."
 		var nodeList = decomposeRange(range);
 		if (getState(command, range)) {
-			for (var i = 0; i < nodeList.length; i++) {
-				setNodeValue(nodeList[i], command, "baseline");
-			}
+			setNodeValue(nodeList, command, "baseline");
 		} else {
-			for (var i = 0; i < nodeList.length; i++) {
-				setNodeValue(nodeList[i], command, "baseline");
-			}
+			setNodeValue(nodeList, command, "baseline");
 			var nodeList = decomposeRange(range);
-			for (var i = 0; i < nodeList.length; i++) {
-				setNodeValue(nodeList[i], command, "sub");
-			}
+			setNodeValue(nodeList, command, "sub");
 		}
 		break;
 
@@ -3081,17 +3047,11 @@ function myExecCommand(command, showUI, value, range) {
 		// node with new value "super"."
 		var nodeList = decomposeRange(range);
 		if (getState(command, range)) {
-			for (var i = 0; i < nodeList.length; i++) {
-				setNodeValue(nodeList[i], command, "baseline");
-			}
+			setNodeValue(nodeList, command, "baseline");
 		} else {
-			for (var i = 0; i < nodeList.length; i++) {
-				setNodeValue(nodeList[i], command, "baseline");
-			}
+			setNodeValue(nodeList, command, "baseline");
 			var nodeList = decomposeRange(range);
-			for (var i = 0; i < nodeList.length; i++) {
-				setNodeValue(nodeList[i], command, "super");
-			}
+			setNodeValue(nodeList, command, "super");
 		}
 		break;
 
@@ -3101,9 +3061,7 @@ function myExecCommand(command, showUI, value, range) {
 		// set their value to "underline"."
 		var nodeList = decomposeRange(range);
 		var newValue = getState("underline", range) ? null : "underline";
-		for (var i = 0; i < nodeList.length; i++) {
-			setNodeValue(nodeList[i], command, newValue);
-		}
+		setNodeValue(nodeList, command, newValue);
 		break;
 
 		case "unlink":

@@ -532,6 +532,32 @@ instead follow these rules:
   [[bpoffset]].
 </ol>
 
+<p>The <dfn>adjacent sibling runs</dfn> of a list <var>node list</var> of
+[[nodes]] comprise the list of list of [[nodes]] returned by the following
+algorithm:
+
+<ol>
+  <li>Let <var>list to return</var> be the empty list.
+
+  <li>While <var>node list</var> is not empty:
+
+  <ol>
+    <li>Let <var>sublist</var> be the empty list.
+
+    <li>Remove the first member of <var>node list</var> and append it to
+    <var>sublist</var>.
+
+    <li>While <var>node list</var> is not empty, and the first member of
+    <var>node list</var> is the [[nextsibling]] of the last member of
+    <var>sublist</var>, remove the first member of <var>node list</var> and
+    append it to <var>sublist</var>.
+
+    <li>Append <var>sublist</var> to <var>list to return</var>.
+  </ol>
+
+  <li>Return <var>list to return</var>.
+</ol>
+
 
 <h2>Methods of the <code data-anolis-spec=html>HTMLDocument</code> interface</h2>
 
@@ -3010,20 +3036,10 @@ fragments, html/body, head or things in head . . .
   <!-- Otherwise the last child of the previous sibling might be a list, which
   the li wouldn't get appended to. -->
 
-  <li>While <var>node list</var> is not empty:
+  <li>Let <var>adjacent sibling runs</var> be the <span>adjacent sibling
+  runs</span> of <var>node list</var>.
 
-  <ol>
-    <li>Let <var>sublist</var> be a list of [[nodes]], initially empty.
-
-    <li>Remove the first member of <var>node list</var> and append it to
-    <var>sublist</var>.
-
-    <li>While the first member of <var>node list</var> is the [[nextsibling]]
-    of the last member of <var>sublist</var>, remove the first member of
-    <var>node list</var> and append it to <var>sublist</var>.
-
-    <li><span>Indent</span> <var>sublist</var>.
-  </ol>
+  <li><span>Indent</span> each member of <var>adjacent sibling runs</var>.
 </ol>
 
 

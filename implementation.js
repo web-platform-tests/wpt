@@ -1278,6 +1278,34 @@ function movePreservingRanges(node, newParent, newIndex) {
 	globalRange.setEnd(end[0], end[1]);
 }
 
+function getAdjacentSiblingRuns(nodeList) {
+	// "Let list to return be the empty list."
+	var listToReturn = [];
+
+	// "While node list is not empty:"
+	while (nodeList.length) {
+		// "Let sublist be the empty list."
+		var sublist = [];
+
+		// "Remove the first member of node list and append it to sublist."
+		sublist.push(nodeList.shift());
+
+		// "While node list is not empty, and the first member of node list is
+		// the nextSibling of the last member of sublist, remove the first
+		// member of node list and append it to sublist."
+		while (nodeList.length
+		&& nodeList[0] == sublist[sublist.length - 1].nextSibling) {
+			sublist.push(nodeList.shift());
+		}
+
+		// "Append sublist to list to return."
+		listToReturn.push(sublist);
+	}
+
+	// "Return list to return."
+	return listToReturn;
+}
+
 function decomposeRange(range) {
 	// "If range's start and end are the same, return an empty list."
 	if (range.startContainer == range.endContainer
@@ -2504,24 +2532,13 @@ function myExecCommand(command, showUI, value, range) {
 			normalizeSublists(nodeList[0].previousSibling);
 		}
 
-		// "While node list is not empty:"
-		while (nodeList.length) {
-			// "Let sublist be a list of nodes, initially empty."
-			var sublist = [];
+		// "Let adjacent sibling runs be the adjacent sibling runs of node
+		// list."
+		var adjacentSiblingRuns = getAdjacentSiblingRuns(nodeList);
 
-			// "Remove the first member of node list and append it to sublist."
-			sublist.push(nodeList.shift());
-
-			// "While the first member of node list is the nextSibling of the
-			// last member of sublist, remove the first member of node list and
-			// append it to sublist."
-			while (nodeList.length
-			&& nodeList[0] == sublist[sublist.length - 1].nextSibling) {
-				sublist.push(nodeList.shift());
-			}
-
-			// "Indent sublist."
-			indentNodes(sublist);
+		// "Indent each member of adjacent sibling runs."
+		for (var i = 0; i < adjacentSiblingRuns.length; i++) {
+			indentNodes(adjacentSiblingRuns[i]);
 		}
 		break;
 

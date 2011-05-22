@@ -568,6 +568,32 @@ instead follow these rules:
   <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a>.
 </ol>
 
+<p>The <dfn id=adjacent-sibling-runs>adjacent sibling runs</dfn> of a list <var title="">node list</var> of
+<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a> comprise the list of list of <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a> returned by the following
+algorithm:
+
+<ol>
+  <li>Let <var title="">list to return</var> be the empty list.
+
+  <li>While <var title="">node list</var> is not empty:
+
+  <ol>
+    <li>Let <var title="">sublist</var> be the empty list.
+
+    <li>Remove the first member of <var title="">node list</var> and append it to
+    <var title="">sublist</var>.
+
+    <li>While <var title="">node list</var> is not empty, and the first member of
+    <var title="">node list</var> is the <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code> of the last member of
+    <var title="">sublist</var>, remove the first member of <var title="">node list</var> and
+    append it to <var title="">sublist</var>.
+
+    <li>Append <var title="">sublist</var> to <var title="">list to return</var>.
+  </ol>
+
+  <li>Return <var title="">list to return</var>.
+</ol>
+
 
 <h2 id=methods-of-the-htmldocument-interface><span class=secno>5 </span>Methods of the <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/html/#htmldocument>HTMLDocument</a></code> interface</h2>
 
@@ -2991,20 +3017,10 @@ fragments, html/body, head or things in head . . .
   <!-- Otherwise the last child of the previous sibling might be a list, which
   the li wouldn't get appended to. -->
 
-  <li>While <var title="">node list</var> is not empty:
+  <li>Let <var title="">adjacent sibling runs</var> be the <a href=#adjacent-sibling-runs>adjacent sibling
+  runs</a> of <var title="">node list</var>.
 
-  <ol>
-    <li>Let <var title="">sublist</var> be a list of <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a>, initially empty.
-
-    <li>Remove the first member of <var title="">node list</var> and append it to
-    <var title="">sublist</var>.
-
-    <li>While the first member of <var title="">node list</var> is the <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code>
-    of the last member of <var title="">sublist</var>, remove the first member of
-    <var title="">node list</var> and append it to <var title="">sublist</var>.
-
-    <li><a href=#indent>Indent</a> <var title="">sublist</var>.
-  </ol>
+  <li><a href=#indent>Indent</a> each member of <var title="">adjacent sibling runs</var>.
 </ol>
 
 

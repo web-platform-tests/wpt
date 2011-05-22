@@ -37,7 +37,7 @@ $page =~ s/\x{D}\x{A}|\x{A}\{D}|\x{D}|\x{A}/\n/gos; # normalize newlines
 $page =~ m/<!--begin-toc-->/gos;
 $page =~ s/<!--end-toc-->.*//os;
 
-while ($page =~ m/<a href="([^"]+)"><span class=[\'\"]?secno[\'\"]?>([A-Z]?[0-9.]+)\.[\s]+<\/span>(.+?)<\/a>/gos) {
+while ($page =~ m/<a[\s]+href=[\'\"]?([^\"\']+)[\'\"]?><span[\s]+class=[\'\"]?secno[\'\"]?>([A-Z]?[0-9.]+)\.[\s]+<\/span>(.+?)<\/a>/gos) {
     my $uri = "$specURI$1";
     my $section = $2;
     my $title = $3;

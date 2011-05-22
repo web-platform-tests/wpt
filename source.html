@@ -532,32 +532,6 @@ instead follow these rules:
   [[bpoffset]].
 </ol>
 
-<p>The <dfn>adjacent sibling runs</dfn> of a list <var>node list</var> of
-[[nodes]] comprise the list of list of [[nodes]] returned by the following
-algorithm:
-
-<ol>
-  <li>Let <var>list to return</var> be the empty list.
-
-  <li>While <var>node list</var> is not empty:
-
-  <ol>
-    <li>Let <var>sublist</var> be the empty list.
-
-    <li>Remove the first member of <var>node list</var> and append it to
-    <var>sublist</var>.
-
-    <li>While <var>node list</var> is not empty, and the first member of
-    <var>node list</var> is the [[nextsibling]] of the last member of
-    <var>sublist</var>, remove the first member of <var>node list</var> and
-    append it to <var>sublist</var>.
-
-    <li>Append <var>sublist</var> to <var>list to return</var>.
-  </ol>
-
-  <li>Return <var>list to return</var>.
-</ol>
-
 
 <h2>Methods of the <code data-anolis-spec=html>HTMLDocument</code> interface</h2>
 
@@ -1526,8 +1500,8 @@ different value.
 
 
 <h3>Setting the value of a node</h3>
-<p>To <dfn>set the value</dfn> of a list <var>node list</var> of [[nodes]] to
-<var>new value</var>:
+<p>To <dfn>set the value</dfn> of a [[node]] <var>node</var> to <var>new
+value</var>:
 
 <div class=note>
 <p>The effect of this algorithm is to ensure that the node and all its
@@ -1599,8 +1573,14 @@ as desired.
 <ol>
   <li>Let <var>command</var> be the current <span>command</span>.
 
-  <li>While there is some member of <var>node list</var> that is not
-  <span>editable</span>:
+  <li>If <var>node</var> is a [[document]], <span>set the value</span> of its
+  [[element]] [[child]] (if it has one) and abort this algorithm.
+
+  <li>If <var>node</var> is a [[documentfragment]], let <var>children</var> be
+  a list of its [[children]].  <span>Set the value</span> of each member of
+  [[children]], then abort this algorithm.
+
+  <li>If <var>node</var> is not <span>editable</span>:
   <!--
   IE9: Allows everything to be modified by execCommand(), regardless of whether
     it's editable.
@@ -1636,51 +1616,36 @@ as desired.
   -->
 
   <ol>
-    <li>Let <var>node</var> be the first non-<span>editable</span> member of
-    <var>node list</var>.
+    <li>Let <var>children</var> be the [[children]] of <var>node</var>.
 
-    <li>Remove <var>node</var> from <var>node list</var>, and insert its
-    [[children]] in its former place.
+    <li><span>Set the value</span> of each member of <var>children</var>.
+
+    <li>Abort this algorithm.
   </ol>
 
-  <li>Let <var>sublists</var> be the <span>adjacent sibling runs</span> of
-  <var>node list</var>.
-
-  <li>For each <var>sublist</var> in <var>sublists</var>:
+  <li>If <var>node</var> is an [[element]]:
 
   <ol>
-    <li>For each <var>node</var> in <var>sublist</var>:
+    <li><span>Clear the value</span> of <var>node</var>, and let <var>new
+    nodes</var> be the result.
 
-    <ol>
-      <li>If <var>node</var>'s [[parent]] is null, continue with the next
-      <var>node</var>.
-      <!-- Maybe it got eaten by a previous iteration. -->
+    <li>For each <var>new node</var> in <var>new nodes</var>,
+    <span>set the value</span> of <var>new node</var>.
 
-      <li>If <var>node</var> is an [[element]]:
-
-      <ol>
-        <li><span>Clear the value</span> of <var>node</var>, and let <var>new
-        nodes</var> be the result.
-
-        <li><span>Set the value</span> of <var>new nodes</var>.
-
-        <li>If <var>node</var>'s [[parent]] is null, continue with the next
-        <var>node</var>.
-      </ol>
-
-      <li><span>Push down values</span> on <var>node</var>.
-
-      <li><span>Force the value</span> of <var>node</var>.
-
-      <li>Let <var>children</var> be the [[children]] of <var>node</var>.
-
-      <li><span>Set the value</span> of <var>children</var>.
-
-      <p class=note>Styling a node involves clearing its styles, which can
-      remove it from the tree.  Implementers should be careful to compute the
-      list of children in full before they begin styling.
-    </ol>
+    <li>If <var>node</var>'s [[parent]] is null, abort this algorithm.
   </ol>
+
+  <li><span>Push down values</span> on <var>node</var>.
+
+  <li><span>Force the value</span> of <var>node</var>.
+
+  <li>Let <var>children</var> be the [[children]] of <var>node</var>.
+
+  <li><span>Set the value</span> of each member of <var>children</var>.
+
+  <p class=note>Styling a node involves clearing its styles, which can remove
+  it from the tree.  Implementers should be careful to compute the list of
+  children in full before they begin styling.
 </ol>
 
 
@@ -1735,8 +1700,8 @@ one else does it, so I don't do it.  It's a similar story for similar commands
 nothing if the selection is empty.  Why strikethrough?  I don't know. -->
 
 <p><span>Action</span>: <span>Decompose</span> the <span>active range</span>.
-If the <span>state</span> is then false, <span>set the value</span> of the
-result to "bold", otherwise <span>set the value</span> to "normal".
+If the <span>state</span> is then false, <span>set the value</span> of each
+returned [[node]] to "bold", otherwise <span>set the value</span> to "normal".
 
 <p><span>State</span>: True if every <span>editable</span> [[text]] node that
 is <span>effectively contained</span> in the <span>active range</span> has
@@ -1819,7 +1784,7 @@ don't either. -->
 <h3><dfn>The <code title>fontName</code> command</dfn></h3>
 
 <p><span>Action</span>: <span>Decompose</span> the <span>active range</span>,
-then <span>set the value</span> of the result to <var>value</var>.
+then <span>set the value</span> of each returned [[node]] to <var>value</var>.
 <!-- UAs differ a bit in the details here:
 
 IE 9 RC: Empty string sets <font face="">
@@ -1966,7 +1931,7 @@ respecifying non-interoperable behavior anyway.
   sizes, I don't think.
 
   <li><span>Decompose</span> the <span>active range</span>, then <span>set the
-  value</span> of the result to <var>value</var>.
+  value</span> of each returned [[node]] to <var>value</var>.
 </ol>
 
 <p><span>Relevant CSS property</span>: "font-size"
@@ -2041,7 +2006,7 @@ browsers, but it's unlikely to hurt and it makes sense.
   confuse the algorithm, and doesn't seem very useful anyway. -->
 
   <li><span>Decompose</span> the <span>active range</span>, then <span>set the
-  value</span> of the result to <var>value</var>.
+  value</span> of each returned [[node]] to <var>value</var>.
 </ol>
 
 <p><span>State</span>: Always false.
@@ -2088,7 +2053,7 @@ For color parsing, see the comment for foreColor. -->
   algorithm, so ban it for now anyway. -->
 
   <li><span>Decompose</span> the <span>active range</span>, then <span>set the
-  value</span> of the result to <var>value</var>.
+  value</span> of each returned [[node]] to <var>value</var>.
 </ol>
 
 <p><span>State</span>: Always false.
@@ -2185,8 +2150,9 @@ splitting up parents to ensure validity . . . -->
 <h3><dfn>The <code title>italic</code> command</dfn></h3>
 
 <p><span>Action</span>: <span>Decompose</span> the <span>active range</span>.
-If the <span>state</span> is then false, <span>set the value</span> of the
-result to "italic", otherwise <span>set the value</span> to "normal".
+If the <span>state</span> is then false, <span>set the value</span> of each
+returned [[node]] to "italic", otherwise <span>set the value</span> to
+"normal".
 
 <p><span>State</span>: True if every <span>editable</span> [[text]] node that
 is <span>effectively contained</span> in the <span>active range</span> has
@@ -2293,7 +2259,7 @@ for elements like <code> or <tt> or <mark> that we don't normally create.
 
   <li>For each of the entries in the following table, in the given order:
   <span>decompose</span> the <span>active range</span> again; then <span>set
-  the value</span> of the result, with <var>command</var> and
+  the value</span> of the resulting [[nodes]], with <var>command</var> and
   <var>new value</var> as given.
 
   <p class=XXX>This has no relationship to what browsers actually do, although
@@ -2321,8 +2287,9 @@ for elements like <code> or <tt> or <mark> that we don't normally create.
 <h3><dfn>The <code title>strikethrough</code> command</dfn></h3>
 
 <p><span>Action</span>: <span>Decompose</span> the <span>active range</span>.
-If the <span>state</span> is then false, <span>set the value</span> of the
-result to "line-through", otherwise <span>set the value</span> to null.
+If the <span>state</span> is then false, <span>set the value</span> of each
+returned [[node]] to "line-through", otherwise <span>set the value</span> to
+null.
 
 <p class=XXX>Has all the same problems as <span>the <code
 title>underline</code> command</span>.
@@ -2344,10 +2311,12 @@ is <span>effectively contained</span> in the <span>active range</span> has
   
   <li>Let <var>state</var> be the <span>state</span>.
   
-  <li><span>Set the value</span> of <var>node list</var> to "baseline".
+  <li><span>Set the value</span> of each [[node]] in <var>node list</var> to
+  "baseline".
 
   <li>If <var>state</var> is false, <span>decompose</span> the <span>active
-  range</span> again and <span>set the value</span> of the result to "sub".
+  range</span> again and <span>set the value</span> of each returned [[node]]
+  to "sub".
 </ol>
 
 <p><span>State</span>: True if every <span>editable</span> [[text]] node that
@@ -2367,10 +2336,12 @@ is <span>effectively contained</span> in the <span>active range</span> has
   
   <li>Let <var>state</var> be the <span>state</span>.
   
-  <li><span>Set the value</span> of <var>node list</var> to "baseline".
+  <li><span>Set the value</span> of each [[node]] in <var>node list</var> to
+  "baseline".
 
   <li>If <var>state</var> is false, <span>decompose</span> the <span>active
-  range</span> again and <span>set the value</span> of the result to "super".
+  range</span> again and <span>set the value</span> of each returned [[node]]
+  to "super".
 </ol>
 
 <p><span>State</span>: True if every <span>editable</span> [[text]] node that
@@ -2383,8 +2354,8 @@ is <span>effectively contained</span> in the <span>active range</span> has
 <h3><dfn>The <code title>underline</code> command</dfn></h3>
 
 <p><span>Action</span>: <span>Decompose</span> the <span>active range</span>.
-If the <span>state</span> is then false, <span>set the value</span> of the
-result to "underline", otherwise <span>set the value</span> to null.
+If the <span>state</span> is then false, <span>set the value</span> of each
+returned [[node]] to "underline", otherwise <span>set the value</span> to null.
 
 <div class=XXX>
 <p>There are a lot of problems with underline color and thickness, because
@@ -3039,10 +3010,20 @@ fragments, html/body, head or things in head . . .
   <!-- Otherwise the last child of the previous sibling might be a list, which
   the li wouldn't get appended to. -->
 
-  <li>Let <var>adjacent sibling runs</var> be the <span>adjacent sibling
-  runs</span> of <var>node list</var>.
+  <li>While <var>node list</var> is not empty:
 
-  <li><span>Indent</span> each member of <var>adjacent sibling runs</var>.
+  <ol>
+    <li>Let <var>sublist</var> be a list of [[nodes]], initially empty.
+
+    <li>Remove the first member of <var>node list</var> and append it to
+    <var>sublist</var>.
+
+    <li>While the first member of <var>node list</var> is the [[nextsibling]]
+    of the last member of <var>sublist</var>, remove the first member of
+    <var>node list</var> and append it to <var>sublist</var>.
+
+    <li><span>Indent</span> <var>sublist</var>.
+  </ol>
 </ol>
 
 

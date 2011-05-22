@@ -3177,12 +3177,15 @@ insertOrderedList.
     <var>current ancestor</var> to its [[parent]].
   </ol>
 
-  <li>If <var>current ancestor</var> is not an <span>editable</span>
-  <span>potential indentation element</span>, and <var>node</var> is an [[ol]]
-  or [[ul]]:
-  <!-- This matches IE9 and Firefox 4.0.  When asked to outdent a list wrapped
-  in an indentation element, Chrome 12 dev removes the list instead of the
-  indentation element.  Opera 11.10 seems to remove both. -->
+  <li>If <var>node</var> is an [[ol]] or [[ul]], and either <var>current
+  ancestor</var> is not an <span>editable</span> <span>potential indentation
+  element</span> or <var>node</var>'s [[parent]] is an [[ol]] or [[ul]]:
+  <!--
+  When asked to outdent a list wrapped in an indentation element, Chrome 12 dev
+  removes the list instead of the indentation element.  Opera 11.10 seems to
+  remove both.  IE9 and Firefox 4.0 remove the indentation element, as does the
+  spec.
+  -->
 
   <div class=XXX>
   <p>We don't handle a case like
@@ -3201,6 +3204,10 @@ insertOrderedList.
   all the attributes are just removed.  Maybe we should try to copy WebKit
   here.
   -->
+
+  <p class=XXX>What about if node isn't a child of a list, but there's a list
+  ancestor below current ancestor?  Is that even possible given how the
+  block-extend algorithm works?
 
   <ol>
     <li>Unset the <code data-anolis-spec=html

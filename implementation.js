@@ -3241,11 +3241,12 @@ function outdentNode(node) {
 		}
 	}
 
-	// "If current ancestor is not an editable potential indentation element,
-	// and node is an ol or ul:"
-	if ((!isEditable(currentAncestor)
-	|| !isPotentialIndentationElement(currentAncestor))
-	&& isHtmlElement(node, ["OL", "UL"])) {
+	// "If node is an ol or ul, and either current ancestor is not an editable
+	// potential indentation element or node's parent is an ol or ul:"
+	if (isHtmlElement(node, ["OL", "UL"])
+	&& (!isEditable(currentAncestor)
+	|| !isPotentialIndentationElement(currentAncestor)
+	|| isHtmlElement(node.parentNode, ["OL", "UL"]))) {
 		// "Unset the reversed, start, and type attributes of node, if any are
 		// set."
 		node.removeAttribute("reversed");

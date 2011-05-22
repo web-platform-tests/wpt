@@ -140,10 +140,23 @@ included in HTML comments so as not to distract the reader.
 
 <h2>Issues</h2>
 
-<p>This specification is very preliminary, and should not be used for anything
-other than review and comment.
+<p>This specification is very preliminary and is undergoing constant change.
+It should not be used for anything other than review, comment, and experimental
+implementations that you don't intend to inflict on unwitting users without
+their informed consent.  It should definitely be used for review and comment,
+especially in the form of specific test-cases where the current spec produces
+bad results.  As noted, feedback should be sent to <a
+href=http://lists.whatwg.org/listinfo.cgi/whatwg-whatwg.org>the WHATWG
+list</a>.
 
 <ul>
+  <li>I need to restructure everything in some way that makes some minimal
+  amount of sense.  Currently algorithms are scattered helter-skelter all over
+  the place, with a few getting their own section, most relegated to the
+  Definitions section, and a few lurking under the definition for a specific
+  command (even if used by other commands too).  Probably I also want to break
+  the Commands section up into subsections instead of a giant definition list.
+
   <li>Need to make CSS terminology more precise, about setting/unsetting CSS
   properties.  The intent is to modify the style attribute, CSSOM-style.
   Likewise, CSS value comparisons need to be done after serializing both

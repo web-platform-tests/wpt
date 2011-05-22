@@ -13,11 +13,13 @@ http://www.w3.org/TR/css3-multicol/#crs	4.3	&lsquo;column-rule-style&rsquo;
 http://www.w3.org/TR/css3-multicol/#crw	4.4	&lsquo;column-rule-width&rsquo;
 http://www.w3.org/TR/css3-multicol/#column-rule	4.5	&lsquo;column-rule&rsquo;
 http://www.w3.org/TR/css3-multicol/#column-breaks	5	Column breaks
+http://www.w3.org/TR/css3-multicol/#break-before-break-after-break-inside	5.1	&lsquo;break-before&rsquo;, &lsquo;break-after&rsquo;, &lsquo;break-inside&rsquo;
 http://www.w3.org/TR/css3-multicol/#spanning-columns	6	Spanning columns
 http://www.w3.org/TR/css3-multicol/#column-span	6.1	&lsquo;column-span&rsquo;
 http://www.w3.org/TR/css3-multicol/#filling-columns	7	Filling columns
 http://www.w3.org/TR/css3-multicol/#cf	7.1	&lsquo;column-fill&rsquo;
 http://www.w3.org/TR/css3-multicol/#overflow	8	Overflow
 http://www.w3.org/TR/css3-multicol/#overflow-inside-multicol-elements	8.1	Overflow inside multicol elements
+http://www.w3.org/TR/css3-multicol/#pagination-and-overflow-outside-multicol	8.2	Pagination and overflow outside multicol elements
 http://www.w3.org/TR/css3-multicol/#conformance	9	Conformance
 http://www.w3.org/TR/css3-multicol/#cr-exit-criteria	9.1	CR exit criteria

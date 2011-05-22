@@ -2922,103 +2922,7 @@ insertOrderedList.
   <li>Return <var>new range</var>.
 </ol>
 
-
-<h3><dfn>The <code title>indent</code> command</dfn></h3>
-<!--
-IE9: Outputs <blockquote style="margin-right: 0px" dir="ltr">, or when
-  surrounding RTL blocks, <blockquote style="margin-left: 0px" dir="rtl">.  The
-  direction seems to go by the end of the selection.  The presence of the dir
-  attribute means that any contents that were inheriting a different dir from
-  an ancestor get their direction changed as a side effect, but if they
-  actually have the opposite dir specified, they won't appear to be indented.
-  It doesn't reset top or bottom margins on the blockquote, so it adds them.
-  If it's not wrapping a block element, like if it's only wrapping up until a
-  <br>, it adds a <p>.
-Firefox 4.0: In styleWithCSS mode, adds style="margin-left: 40px" to the
-  appropriate block container (or margin-right if it's RTL).  If there's no
-  appropriate block container, adds a div.  If multiple blocks are affected, it
-  goes by the direction of the block whose style it's changing, which winds up
-  being wrong for descendants with different direction.  In non-styleWithCSS
-  mode, uses <blockquote>, so it indents on both sides and also adds top/bottom
-  margins.
-Chrome 12 dev: Outputs <blockquote class="webkit-indent-blockquote"
-  style="margin: 0 0 0 40px; border: none; padding: 0px"> in both modes for
-  both LTR and RTL (which is broken for RTL, since it indents only on the
-  left).
-Opera 11.00: Outputs <blockquote>, so it indents on both sides and on the
-  top/bottom.
-
-For repeated indentation, everyone except Opera that outputs <blockquote>s just
-puts them at the outermost possible location, which works well.  Opera puts
-them in the innermost position, which is broken, because it will even put them
-inside <p> (which will not round-trip through text/html serialization).
-
-Gecko in CSS mode messes up by adding margins even to things like <blockquote>
-that already have margins from CSS rules, instead of nesting a div, so it
-doesn't actually increase the indentation.  However, if an element has an
-explicit left margin (assuming LTR), it will increase the margin to 80px, so it
-works with WebKit's blockquotes.
-
-
-We have two strategies for handling directionality: always indent on both sides
-(Firefox non-CSS, Opera) or try to figure out heuristically which side we want
-(IE, Firefox CSS).  The latter approach is only possible by adding extra markup
-and complexity, so for now we'll take the easy way out and go with just
-indenting on both sides.
-
-
-This reasoning doesn't discuss lists.  For research on lists, see the comment
-for insertOrderedList.  List handling is more complicated and I wound up
-differing from all browsers in lots of ways.
--->
-
-<p><span>Action</span>:
-
-<p class=XXX>Handle corner cases: endpoints are detached, documents, document
-fragments, html/body, head or things in head . . .
-
-<ol>
-  <li>Let <var>items</var> be a list of all [[li]]s that are
-  [[ancestorcontainers]] of the <span>active range</span>'s [[rangestart]]
-  and/or [[rangeend]] [[bpnode]].
-
-  <li>For each <var>item</var> in <var>items</var>, <span>normalize
-  sublists</span> of <var>item</var>.
-  <!-- This overnormalizes, but it seems like the simplest solution for now.
-  -->
-
-  <li><span>Block-extend</span> the <span>active range</span>, and let <var>new
-  range</var> be the result.
-
-  <li>Let <var>node list</var> be a list of [[nodes]], initially empty.
-
-  <li>For each [[node]] <var>node</var> [[contained]] in <var>new range</var>,
-  if <var>node</var> is <span>editable</span> and can be the [[child]] of a
-  [[div]] or [[ol]] or [[ul]] and if no [[ancestor]] of <var>node</var> is in
-  <var>node list</var>, append <var>node</var> to <var>node list</var>.
-
-  <li>If the first member of <var>node list</var> is an [[li]] whose [[parent]]
-  is an [[ol]] or [[ul]], and its [[previoussibling]] is an [[li]] as well,
-  <span>normalize sublists</span> of its [[previoussibling]].
-  <!-- Otherwise the last child of the previous sibling might be a list, which
-  the li wouldn't get appended to. -->
-
-  <li>While <var>node list</var> is not empty:
-
-  <ol>
-    <li>Let <var>sublist</var> be a list of [[nodes]], initially empty.
-
-    <li>Remove the first member of <var>node list</var> and append it to
-    <var>sublist</var>.
-
-    <li>While the first member of <var>node list</var> is the [[nextsibling]]
-    of the last member of <var>sublist</var>, remove the first member of
-    <var>node list</var> and append it to <var>sublist</var>.
-
-    <li><span>Indent</span> <var>sublist</var>.
-  </ol>
-</ol>
-
+<h3>Toggling lists</h3>
 
 <!--
 Research for insertOrderedList/insertUnorderedList: tested the following
@@ -3332,11 +3236,13 @@ What this means from an HTML perspective, roughly:
 
 Sheesh, lists are complicated.
 -->
-<h3><dfn>The <code title>insertOrderedList</code> command</dfn></h3>
-
-<p><span>Action</span>:
+<p>To <dfn>toggle lists</dfn>, given a string <var>tag name</var> (either "ol"
+or "ul"):
 
 <ol>
+  <li>Let <var>other tag name</var> be "ol" if <var>tag name</var> is "ul", and
+  "ul" if <var>tag name</var> is "ol".
+
   <li>Let <var>items</var> be a list of all [[li]]s that are
   [[ancestorcontainers]] of the <span>active range</span>'s [[rangestart]]
   and/or [[rangeend]] [[bpnode]].
@@ -3381,9 +3287,11 @@ Sheesh, lists are complicated.
   child" is not well-defined, and it's not clear what the right definition
   should be.
 
-  <li>If every member of <var>node list</var> is either an [[ol]] or the
-  [[child]] of an [[ol]], and no member of <var>node list</var> is a [[ul]] or
-  the [[ancestor]] of a [[ul]], then while <var>node list</var> is not empty:
+  <li>If every member of <var>node list</var> is equal to or the [[child]] of
+  an <span>HTML element</span> with [[localname]] <var>tag name</var>, and no
+  member of <var>node list</var> is equal to or the [[ancestor]] of an
+  <span>HTML element</span> with [[localname]] <var>other tag name</var>, then
+  while <var>node list</var> is not empty:
 
   <ol>
     <li>Let <var>sublist</var> be an empty list of [[nodes]].
@@ -3391,13 +3299,15 @@ Sheesh, lists are complicated.
     <li>Remove the first member from <var>node list</var> and append it to
     <var>sublist</var>.
 
-    <li>If the first member of <var>sublist</var> is an [[ol]],
-    <span>outdent</span> it and continue this loop from the beginning.
+    <li>If the first member of <var>sublist</var> is an <span>HTML
+    element</span> with [[localname]] <var>tag name</var>, <span>outdent</span>
+    it and continue this loop from the beginning.
 
     <li>While <var>node list</var> is not empty, and the first member of
     <var>node list</var> is the [[nextsibling]] of the last member of
-    <var>sublist</var> and is not an [[ol]], remove the first member from
-    <var>node list</var> and append it to <var>sublist</var>.
+    <var>sublist</var> and is not an <span>HTML element</span> with
+    [[localname]] <var>tag name</var>, remove the first member from <var>node
+    list</var> and append it to <var>sublist</var>.
 
     <li><span>Split the parent</span> of <var>sublist</var>.
 
@@ -3430,7 +3340,8 @@ Sheesh, lists are complicated.
     <li>Otherwise, let <var>node</var> be the sole member of
     <var>sublist</var>.
 
-    <li>If <var>node</var> is a [[ul]]:
+    <li>If <var>node</var> is an <span>HTML element</span> with [[localname]]
+    <var>other tag name</var>:
 
     <ol>
       <li>Let <var>children</var> be the [[children]] of <var>node</var>.
@@ -3438,14 +3349,17 @@ Sheesh, lists are complicated.
       <li>Remove <var>node</var>, <span>preserving its descendants</span>.
 
       <li><span>Wrap</span> <var>children</var>, with <span>sibling
-      criteria</span> matching any [[ol]] and <span>new parent
+      criteria</span> matching any <span>HTML element</span> with [[localname]]
+      <var>tag name</var> and <span>new parent
       instructions</span> returning the result of calling <code
       data-anolis-spec=domcore
-      title=dom-Document-createElement>createElement("ol")</code> on the
-      [[contextobject]].  Let <var>node</var> be the result.
+      title=dom-Document-createElement>createElement(<var>tag
+      name</var>)</code> on the [[contextobject]].  Let <var>node</var> be the
+      result.
 
-      <li>Prepend the [[ul]] [[descendants]] of <var>node</var> (if any) to
-      <var>node list</var>.
+      <li>Prepend the [[descendants]] of <var>node</var> that are <span
+      title="HTML element">HTML elements</span> with [[localname]] <var>other
+      tag name</var> (if any) to <var>node list</var>.
 
       <li>Continue from the beginning of this loop.
 
@@ -3480,28 +3394,33 @@ Sheesh, lists are complicated.
     <li>If <var>node</var> is a [[p]] or [[div]], <span>set the tag name</span>
     of <var>node</var> to "li", and let <var>node</var> be the result.
 
-    <li>If <var>node</var> is the [[child]] of a [[ul]]:
+    <li>If <var>node</var> is the [[child]] of an <span>HTML element</span>
+    with [[localname]] <var>other tag name</var>:
 
     <ol>
       <li><span>Split the parent</span> of the one-[[node]] list consisting of
       <var>node</var>.
 
       <li><span>Wrap</span> the one-[[node]] list consisting of
-      <var>node</var>, with <span>sibling criteria</span> matching any [[ol]],
+      <var>node</var>, with <span>sibling criteria</span> matching any
+      <span>HTML element</span> with [[localname]] <var>tag name</var>,
       and with <span>new parent instructions</span> returning the result of
       calling <code data-anolis-spec=domcore
-      title=dom-Document-createElement>createElement("ol")</code> on the
-      [[contextobject]].
+      title=dom-Document-createElement>createElement(<var>tag
+      name</var>)</code> on the [[contextobject]].
 
-      <li>Prepend the [[ul]] [[descendants]] of <var>node</var> (if any) to
-      <var>node list</var>.
+      <li>Prepend the [[descendants]] of <var>node</var> that are <span
+      title="HTML element">HTML elements</span> with [[localname]] <var>other
+      tag name</var> (if any) to <var>node list</var>.
 
       <li>Continue from the beginning of this loop.
     </ol>
 
-    <li>If <var>node</var> is an [[ol]] or the [[child]] of an [[ol]], prepend
-    the [[ul]] [[descendants]] of <var>node</var> (if any) to <var>node
-    list</var> and continue from the beginning of this loop.
+    <li>If <var>node</var> is equal to or the [[child]] of an <span>HTML
+    element</span> with [[localname]] <var>tag name</var>, prepend the
+    [[descendants]] of <var>node</var> that are <span title="HTML element">HTML
+    elements</span> with [[localname]] <var>other tag name</var> (if any) to
+    <var>node list</var> and continue from the beginning of this loop.
 
     <li>If <var>node</var> is not an [[li]], <span>wrap</span> the one-[[node]]
     list consisting of <var>node</var>, with the <span>sibling criteria</span>
@@ -3511,32 +3430,145 @@ Sheesh, lists are complicated.
     [[contextobject]].  Let <var>node</var> be the result.
 
     <li><span>Wrap</span> the one-[[node]] list consisting of <var>node</var>,
-    with the <span>sibling criteria</span> matching any [[ol]], and the
-    <span>new parent instructions</span> being the following:
+    with the <span>sibling criteria</span> matching any <span>HTML
+    element</span> with [[localname]] <var>tag name</var>, and the <span>new
+    parent instructions</span> being the following:
 
     <ol>
       <li>If the [[parent]] of <var>node</var> is not an <span>editable</span>
       <span>indentation element</span>, or the [[previoussibling]] of the
-      [[parent]] of <var>node</var> is not an <span>editable</span> [[ol]],
-      call <code data-anolis-spec=domcore
-      title=dom-Document-createElement>createElement("ol")</code> on the
-      [[contextobject]] and return the result.  Otherwise:
+      [[parent]] of <var>node</var> is not an <span>editable</span> <span>HTML
+      element</span> with [[localname]] <var>tag name</var>, call <code
+      data-anolis-spec=domcore
+      title=dom-Document-createElement>createElement(<var>tag
+      name</var>)</code> on the [[contextobject]] and return the result.
+      Otherwise:
 
-      <li>Let <var>ol</var> be the [[previoussibling]] of the [[parent]] of
+      <li>Let <var>list</var> be the [[previoussibling]] of the [[parent]] of
       <var>node</var>.
 
-      <li><span>Normalize sublists</span> of <var>ol</var>'s last [[child]].
+      <li><span>Normalize sublists</span> of <var>list</var>'s last [[child]].
 
-      <li>If <var>ol</var>'s last [[child]] is not an <span>editable</span>
-      [[ol]], call <code data-anolis-spec=domcore
-      title=dom-Document-createElement>createElement("ol")</code> on the
-      [[contextobject]], and append the result as the last [[child]] of
-      <var>ol</var>.
+      <li>If <var>list</var>'s last [[child]] is not an <span>editable</span>
+      <span>HTML element</span> with [[localname]] <var>tag name</var>, call
+      <code data-anolis-spec=domcore
+      title=dom-Document-createElement>createElement(<var>tag
+      name</var>)</code> on the [[contextobject]], and append the result as the
+      last [[child]] of <var>list</var>.
 
-      <li>Return the last [[child]] of <var>ol</var>.
+      <li>Return the last [[child]] of <var>list</var>.
     </ol>
   </ol>
 </ol>
+
+
+<h3><dfn>The <code title>indent</code> command</dfn></h3>
+<!--
+IE9: Outputs <blockquote style="margin-right: 0px" dir="ltr">, or when
+  surrounding RTL blocks, <blockquote style="margin-left: 0px" dir="rtl">.  The
+  direction seems to go by the end of the selection.  The presence of the dir
+  attribute means that any contents that were inheriting a different dir from
+  an ancestor get their direction changed as a side effect, but if they
+  actually have the opposite dir specified, they won't appear to be indented.
+  It doesn't reset top or bottom margins on the blockquote, so it adds them.
+  If it's not wrapping a block element, like if it's only wrapping up until a
+  <br>, it adds a <p>.
+Firefox 4.0: In styleWithCSS mode, adds style="margin-left: 40px" to the
+  appropriate block container (or margin-right if it's RTL).  If there's no
+  appropriate block container, adds a div.  If multiple blocks are affected, it
+  goes by the direction of the block whose style it's changing, which winds up
+  being wrong for descendants with different direction.  In non-styleWithCSS
+  mode, uses <blockquote>, so it indents on both sides and also adds top/bottom
+  margins.
+Chrome 12 dev: Outputs <blockquote class="webkit-indent-blockquote"
+  style="margin: 0 0 0 40px; border: none; padding: 0px"> in both modes for
+  both LTR and RTL (which is broken for RTL, since it indents only on the
+  left).
+Opera 11.00: Outputs <blockquote>, so it indents on both sides and on the
+  top/bottom.
+
+For repeated indentation, everyone except Opera that outputs <blockquote>s just
+puts them at the outermost possible location, which works well.  Opera puts
+them in the innermost position, which is broken, because it will even put them
+inside <p> (which will not round-trip through text/html serialization).
+
+Gecko in CSS mode messes up by adding margins even to things like <blockquote>
+that already have margins from CSS rules, instead of nesting a div, so it
+doesn't actually increase the indentation.  However, if an element has an
+explicit left margin (assuming LTR), it will increase the margin to 80px, so it
+works with WebKit's blockquotes.
+
+
+We have two strategies for handling directionality: always indent on both sides
+(Firefox non-CSS, Opera) or try to figure out heuristically which side we want
+(IE, Firefox CSS).  The latter approach is only possible by adding extra markup
+and complexity, so for now we'll take the easy way out and go with just
+indenting on both sides.
+
+
+This reasoning doesn't discuss lists.  For research on lists, see the comment
+for insertOrderedList.  List handling is more complicated and I wound up
+differing from all browsers in lots of ways.
+-->
+
+<p><span>Action</span>:
+
+<p class=XXX>Handle corner cases: endpoints are detached, documents, document
+fragments, html/body, head or things in head . . .
+
+<ol>
+  <li>Let <var>items</var> be a list of all [[li]]s that are
+  [[ancestorcontainers]] of the <span>active range</span>'s [[rangestart]]
+  and/or [[rangeend]] [[bpnode]].
+
+  <li>For each <var>item</var> in <var>items</var>, <span>normalize
+  sublists</span> of <var>item</var>.
+  <!-- This overnormalizes, but it seems like the simplest solution for now.
+  -->
+
+  <li><span>Block-extend</span> the <span>active range</span>, and let <var>new
+  range</var> be the result.
+
+  <li>Let <var>node list</var> be a list of [[nodes]], initially empty.
+
+  <li>For each [[node]] <var>node</var> [[contained]] in <var>new range</var>,
+  if <var>node</var> is <span>editable</span> and can be the [[child]] of a
+  [[div]] or [[ol]] or [[ul]] and if no [[ancestor]] of <var>node</var> is in
+  <var>node list</var>, append <var>node</var> to <var>node list</var>.
+
+  <li>If the first member of <var>node list</var> is an [[li]] whose [[parent]]
+  is an [[ol]] or [[ul]], and its [[previoussibling]] is an [[li]] as well,
+  <span>normalize sublists</span> of its [[previoussibling]].
+  <!-- Otherwise the last child of the previous sibling might be a list, which
+  the li wouldn't get appended to. -->
+
+  <li>While <var>node list</var> is not empty:
+
+  <ol>
+    <li>Let <var>sublist</var> be a list of [[nodes]], initially empty.
+
+    <li>Remove the first member of <var>node list</var> and append it to
+    <var>sublist</var>.
+
+    <li>While the first member of <var>node list</var> is the [[nextsibling]]
+    of the last member of <var>sublist</var>, remove the first member of
+    <var>node list</var> and append it to <var>sublist</var>.
+
+    <li><span>Indent</span> <var>sublist</var>.
+  </ol>
+</ol>
+
+
+<h3><dfn>The <code title>insertOrderedList</code> command</dfn></h3>
+
+<p><span>Action</span>: <span>Toggle lists</span> with <var>tag name</var>
+"ol".
+
+
+<h3><dfn>The <code title>insertUnorderedList</code> command</dfn></h3>
+
+<p><span>Action</span>: <span>Toggle lists</span> with <var>tag name</var>
+"ul".
 
 
 <h3><dfn>The <code title>outdent</code> command</dfn></h3>

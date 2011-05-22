@@ -2560,249 +2560,13 @@ function myExecCommand(command, showUI, value, range) {
 		break;
 
 		case "insertorderedlist":
-		// "Let items be a list of all lis that are ancestor containers of the
-		// range's start and/or end node."
-		//
-		// Has to be in tree order, remember!
-		var items = [];
-		for (var node = range.endContainer; node != range.commonAncestorContainer; node = node.parentNode) {
-			if (isHtmlElement(node, "LI")) {
-				items.unshift(node);
-			}
-		}
-		for (var node = range.startContainer; node != range.commonAncestorContainer; node = node.parentNode) {
-			if (isHtmlElement(node, "LI")) {
-				items.unshift(node);
-			}
-		}
-		for (var node = range.commonAncestorContainer; node; node = node.parentNode) {
-			if (isHtmlElement(node, "LI")) {
-				items.unshift(node);
-			}
-		}
+		// "Toggle lists with tag name "ol"."
+		toggleLists(range, "ol");
+		break;
 
-		// "For each item in items, normalize sublists of item."
-		for (var i = 0; i < items.length; i++) {
-			normalizeSublists(items[i]);
-		}
-
-		// "Block-extend the range, and let new range be the result."
-		var newRange = blockExtendRange(range);
-
-		// "Let node list be a list of nodes, initially empty."
-		var nodeList = [];
-
-		// "For each node node contained in new range, if node is editable; the
-		// last member of node list (if any) is not an ancestor of node; node
-		// is not a potential indentation element; and either node is an ol or
-		// ul, or its parent is an ol or ul, or it can be the child of an li;
-		// then append node to node list."
-		for (
-			var node = newRange.startContainer;
-			node != nextNodeDescendants(newRange.endContainer);
-			node = nextNode(node)
-		) {
-			if (isEditable(node)
-			&& isContained(node, newRange)
-			&& (!nodeList.length || !isAncestor(nodeList[nodeList.length - 1], node))
-			&& !isPotentialIndentationElement(node)
-			&& (isHtmlElement(node, ["OL", "UL"])
-			|| isHtmlElement(node.parentNode, ["OL", "UL"])
-			// As usual with content restrictions, we fake it for testing
-			// purposes.
-			|| !isHtmlElement(node)
-			|| ["THEAD", "TBODY", "TR", "TH", "TD", "DT", "DD"].indexOf(node.tagName) == -1)) {
-				nodeList.push(node);
-			}
-		}
-
-		// "If every member of node list is either an ol or the child of an ol,
-		// and no member of node list is a ul or the ancestor of a ul, then
-		// while node list is not empty:"
-		if (nodeList.every(function(node) { return isHtmlElement(node, "OL") || isHtmlElement(node.parentNode, "OL") })
-		&& !nodeList.some(function(node) { return isHtmlElement(node, "UL") || node.querySelector("ul") })) {
-			while (nodeList.length) {
-				// "Let sublist be an empty list of nodes."
-				var sublist = [];
-
-				// "Remove the first member from node list and append it to
-				// sublist."
-				sublist.push(nodeList.shift());
-
-				// "If the first member of sublist is an ol, outdent it and
-				// continue this loop from the beginning."
-				if (isHtmlElement(sublist[0], "OL")) {
-					outdentNode(sublist[0]);
-					continue;
-				}
-
-				// "While node list is not empty, and the first member of node
-				// list is the nextSibling of the last member of sublist and is
-				// not an ol, remove the first member from node list and append
-				// it to sublist."
-				while (nodeList.length
-				&& nodeList[0] == sublist[sublist.length - 1].nextSibling
-				&& !isHtmlElement(nodeList[0], "OL")) {
-					sublist.push(nodeList.shift());
-				}
-
-				// "Split the parent of sublist."
-				splitParent(sublist);
-
-				// "Fix orphaned list items in sublist."
-				fixOrphanedListItems(sublist);
-			}
-
-		// "Otherwise, while node list is not empty:"
-		} else {
-			while (nodeList.length) {
-				// "Let sublist be an empty list of nodes."
-				var sublist = [];
-
-				// "Remove the first member from node list and append it to
-				// sublist."
-				sublist.push(nodeList.shift());
-
-				// "While node list is not empty, and the first member of node
-				// list is the nextSibling of the last member of sublist, and
-				// the last member of sublist and first member of node list are
-				// both inline nodes, and the last member of sublist is not a
-				// br, remove the first member from node list and append it to
-				// sublist."
-				while (nodeList.length
-				&& nodeList[0] == sublist[sublist.length - 1].nextSibling
-				&& isInlineNode(sublist[sublist.length - 1])
-				&& isInlineNode(nodeList[0])
-				&& !isHtmlElement(sublist[sublist.length - 1], "BR")) {
-					sublist.push(nodeList.shift());
-				}
-
-				// "If sublist contains more than one member, wrap it, with
-				// sibling criteria matching nothing and with new parent
-				// instructions returning the result of calling
-				// createElement("li") on the context object. Let node be the
-				// result."
-				var node;
-				if (sublist.length > 1) {
-					node = wrap(sublist,
-						function() { return false },
-						function() { return document.createElement("li") });
-
-				// "Otherwise, let node be the sole member of sublist."
-				} else {
-					node = sublist[0];
-				}
-
-				// "If node is a ul:"
-				if (isHtmlElement(node, "UL")) {
-					// "Let children be the children of node."
-					var children = [].slice.call(node.childNodes);
-
-					// "Remove node, preserving its descendants."
-					removePreservingDescendants(node);
-
-					// "Wrap children, with sibling criteria matching any ol
-					// and new parent instructions returning the result of
-					// calling createElement("ol") on the context object. Let
-					// node be the result."
-					node = wrap(children,
-						function(node) { return isHtmlElement(node, "OL") },
-						function() { return document.createElement("ol") });
-
-					// "Prepend the ul descendants of node (if any) to node
-					// list."
-					nodeList = [].slice.call(node.querySelectorAll("ul")).concat(nodeList);
-
-					// "Continue from the beginning of this loop."
-					continue;
-				}
-
-				// "If node is a p or div, set the tag name of node to "li",
-				// and let node be the result."
-				if (isHtmlElement(node, ["P", "DIV"])) {
-					node = setTagName(node, "li");
-				}
-
-				// "If node is the child of a ul:"
-				if (isHtmlElement(node.parentNode, "UL")) {
-					// "Split the parent of the one-node list consisting of
-					// node."
-					splitParent([node]);
-
-					// "Wrap the one-node list consisting of node, with sibling
-					// criteria matching any ol, and with new parent
-					// instructions returning the result of calling
-					// createElement("ol") on the context object."
-					wrap([node],
-						function(node) { return isHtmlElement(node, "OL") },
-						function() { return document.createElement("ol") });
-
-					// "Prepend the ul descendants of node (if any) to node
-					// list."
-					nodeList = [].slice.call(node.querySelectorAll("ul")).concat(nodeList);
-
-					// "Continue from the beginning of this loop."
-					continue;
-				}
-
-				// "If node is an ol or the child of an ol, prepend the
-				// ul descendants of node (if any) to node list and continue
-				// from the beginning of this loop."
-				if (isHtmlElement(node, "OL")
-				|| isHtmlElement(node.parentNode, "OL")) {
-					nodeList = [].slice.call(node.querySelectorAll("ul")).concat(nodeList);
-					continue;
-				}
-
-				// "If node is not an li, wrap the one-node list consisting of
-				// node, with the sibling criteria matching nothing, and the
-				// new parent instructions returning the result of calling
-				// createElement("li") on the context object. Let node be the
-				// result."
-				if (!isHtmlElement(node, "LI")) {
-					node = wrap([node],
-						function() { return false },
-						function() { return document.createElement("li") });
-				}
-
-				// "Wrap the one-node list consisting of node, with the sibling
-				// criteria matching any ol, and the new parent instructions
-				// being the following:"
-				wrap([node],
-					function(node) { return isHtmlElement(node, "OL") },
-					function() {
-						// "If the parent of node is not an editable
-						// indentation element, or the previousSibling of the
-						// parent of node is not an editable ol, call
-						// createElement("ol") on the context object and return
-						// the result. Otherwise:"
-						if (!isEditable(node.parentNode)
-						|| !isIndentationElement(node.parentNode)
-						|| !isEditable(node.parentNode.previousSibling)
-						|| !isHtmlElement(node.parentNode.previousSibling, "OL")) {
-							return document.createElement("ol");
-						}
-
-						// "Let ol be the previousSibling of the parent of
-						// node."
-						var ol = node.parentNode.previousSibling;
-
-						// "Normalize sublists of ol's last child."
-						normalizeSublists(ol.lastChild);
-
-						// "If ol's last child is not an editable ol, call
-						// createElement("ol") on the context object, and
-						// append the result as the last child of ol."
-						if (!isEditable(ol.lastChild)
-						|| !isHtmlElement(ol.lastChild, "OL")) {
-							ol.appendChild(document.createElement("ol"));
-						}
-
-						// "Return the last child of ol."
-						return ol.lastChild;
-					});
-			}
-		}
+		case "insertunorderedlist":
+		// "Toggle lists with tag name "ul"."
+		toggleLists(range, "ul");
 		break;
 
 		case "italic":
@@ -3295,6 +3059,262 @@ function outdentNode(node) {
 
 	// "Outdent original ancestor."
 	outdentNode(originalAncestor);
+}
+
+function toggleLists(range, tagName) {
+	tagName = tagName.toUpperCase();
+
+	// "Let other tag name be "ol" if tag name is "ul", and "ul" if tag name is
+	// "ol"."
+	var otherTagName = tagName == "OL" ? "UL" : "OL";
+
+	// "Let items be a list of all lis that are ancestor containers of the
+	// range's start and/or end node."
+	//
+	// Has to be in tree order, remember!
+	var items = [];
+	for (var node = range.endContainer; node != range.commonAncestorContainer; node = node.parentNode) {
+		if (isHtmlElement(node, "LI")) {
+			items.unshift(node);
+		}
+	}
+	for (var node = range.startContainer; node != range.commonAncestorContainer; node = node.parentNode) {
+		if (isHtmlElement(node, "LI")) {
+			items.unshift(node);
+		}
+	}
+	for (var node = range.commonAncestorContainer; node; node = node.parentNode) {
+		if (isHtmlElement(node, "LI")) {
+			items.unshift(node);
+		}
+	}
+
+	// "For each item in items, normalize sublists of item."
+	for (var i = 0; i < items.length; i++) {
+		normalizeSublists(items[i]);
+	}
+
+	// "Block-extend the range, and let new range be the result."
+	var newRange = blockExtendRange(range);
+
+	// "Let node list be a list of nodes, initially empty."
+	var nodeList = [];
+
+	// "For each node node contained in new range, if node is editable; the
+	// last member of node list (if any) is not an ancestor of node; node
+	// is not a potential indentation element; and either node is an ol or
+	// ul, or its parent is an ol or ul, or it can be the child of an li;
+	// then append node to node list."
+	for (
+		var node = newRange.startContainer;
+		node != nextNodeDescendants(newRange.endContainer);
+		node = nextNode(node)
+	) {
+		if (isEditable(node)
+		&& isContained(node, newRange)
+		&& (!nodeList.length || !isAncestor(nodeList[nodeList.length - 1], node))
+		&& !isPotentialIndentationElement(node)
+		&& (isHtmlElement(node, ["OL", "UL"])
+		|| isHtmlElement(node.parentNode, ["OL", "UL"])
+		// As usual with content restrictions, we fake it for testing
+		// purposes.
+		|| !isHtmlElement(node)
+		|| ["THEAD", "TBODY", "TR", "TH", "TD", "DT", "DD"].indexOf(node.tagName) == -1)) {
+			nodeList.push(node);
+		}
+	}
+
+	// "If every member of node list is equal to or the child of an HTML
+	// element with local name tag name, and no member of node list is equal to
+	// or the ancestor of an HTML element with local name other tag name, then
+	// while node list is not empty:"
+	if (nodeList.every(function(node) { return isHtmlElement(node, tagName) || isHtmlElement(node.parentNode, tagName) })
+	&& !nodeList.some(function(node) { return isHtmlElement(node, otherTagName) || node.querySelector(otherTagName) })) {
+		while (nodeList.length) {
+			// "Let sublist be an empty list of nodes."
+			var sublist = [];
+
+			// "Remove the first member from node list and append it to
+			// sublist."
+			sublist.push(nodeList.shift());
+
+			// "If the first member of sublist is an HTML element with local
+			// name tag name, outdent it and continue this loop from the
+			// beginning."
+			if (isHtmlElement(sublist[0], tagName)) {
+				outdentNode(sublist[0]);
+				continue;
+			}
+
+			// "While node list is not empty, and the first member of node list
+			// is the nextSibling of the last member of sublist and is not an
+			// HTML element with local name tag name, remove the first member
+			// from node list and append it to sublist."
+			while (nodeList.length
+			&& nodeList[0] == sublist[sublist.length - 1].nextSibling
+			&& !isHtmlElement(nodeList[0], tagName)) {
+				sublist.push(nodeList.shift());
+			}
+
+			// "Split the parent of sublist."
+			splitParent(sublist);
+
+			// "Fix orphaned list items in sublist."
+			fixOrphanedListItems(sublist);
+		}
+
+	// "Otherwise, while node list is not empty:"
+	} else {
+		while (nodeList.length) {
+			// "Let sublist be an empty list of nodes."
+			var sublist = [];
+
+			// "Remove the first member from node list and append it to
+			// sublist."
+			sublist.push(nodeList.shift());
+
+			// "While node list is not empty, and the first member of node
+			// list is the nextSibling of the last member of sublist, and
+			// the last member of sublist and first member of node list are
+			// both inline nodes, and the last member of sublist is not a
+			// br, remove the first member from node list and append it to
+			// sublist."
+			while (nodeList.length
+			&& nodeList[0] == sublist[sublist.length - 1].nextSibling
+			&& isInlineNode(sublist[sublist.length - 1])
+			&& isInlineNode(nodeList[0])
+			&& !isHtmlElement(sublist[sublist.length - 1], "BR")) {
+				sublist.push(nodeList.shift());
+			}
+
+			// "If sublist contains more than one member, wrap it, with
+			// sibling criteria matching nothing and with new parent
+			// instructions returning the result of calling
+			// createElement("li") on the context object. Let node be the
+			// result."
+			var node;
+			if (sublist.length > 1) {
+				node = wrap(sublist,
+					function() { return false },
+					function() { return document.createElement("li") });
+
+			// "Otherwise, let node be the sole member of sublist."
+			} else {
+				node = sublist[0];
+			}
+
+			// "If node is an HTML element with local name other tag name:"
+			if (isHtmlElement(node, otherTagName)) {
+				// "Let children be the children of node."
+				var children = [].slice.call(node.childNodes);
+
+				// "Remove node, preserving its descendants."
+				removePreservingDescendants(node);
+
+				// "Wrap children, with sibling criteria matching any HTML
+				// element with local name tag name and new parent instructions
+				// returning the result of calling createElement(tag name) on
+				// the context object. Let node be the result."
+				node = wrap(children,
+					function(node) { return isHtmlElement(node, tagName) },
+					function() { return document.createElement(tagName) });
+
+				// "Prepend the descendants of node that are HTML elements with
+				// local name other tag name (if any) to node list."
+				nodeList = [].slice.call(node.querySelectorAll(otherTagName)).concat(nodeList);
+
+				// "Continue from the beginning of this loop."
+				continue;
+			}
+
+			// "If node is a p or div, set the tag name of node to "li",
+			// and let node be the result."
+			if (isHtmlElement(node, ["P", "DIV"])) {
+				node = setTagName(node, "li");
+			}
+
+			// "If node is the child of an HTML element with local name other
+			// tag name:"
+			if (isHtmlElement(node.parentNode, otherTagName)) {
+				// "Split the parent of the one-node list consisting of
+				// node."
+				splitParent([node]);
+
+				// "Wrap the one-node list consisting of node, with sibling
+				// criteria matching any HTML element with local name tag name,
+				// and with new parent instructions returning the result of
+				// calling createElement(tag name) on the context object."
+				wrap([node],
+					function(node) { return isHtmlElement(node, tagName) },
+					function() { return document.createElement(tagName) });
+
+				// "Prepend the descendants of node that are HTML elements with
+				// local name other tag name (if any) to node list."
+				nodeList = [].slice.call(node.querySelectorAll(otherTagName)).concat(nodeList);
+
+				// "Continue from the beginning of this loop."
+				continue;
+			}
+
+			// "If node is equal to or the child of an HTML element with local
+			// name tag name, prepend the descendants of node that are HTML
+			// elements with local name other tag name (if any) to node list
+			// and continue from the beginning of this loop."
+			if (isHtmlElement(node, tagName)
+			|| isHtmlElement(node.parentNode, tagName)) {
+				nodeList = [].slice.call(node.querySelectorAll(otherTagName)).concat(nodeList);
+				continue;
+			}
+
+			// "If node is not an li, wrap the one-node list consisting of
+			// node, with the sibling criteria matching nothing, and the
+			// new parent instructions returning the result of calling
+			// createElement("li") on the context object. Let node be the
+			// result."
+			if (!isHtmlElement(node, "LI")) {
+				node = wrap([node],
+					function() { return false },
+					function() { return document.createElement("li") });
+			}
+
+			// "Wrap the one-node list consisting of node, with the sibling
+			// criteria matching any HTML element with local name tag name, and
+			// the new parent instructions being the following:"
+			wrap([node],
+				function(node) { return isHtmlElement(node, tagName) },
+				function() {
+					// "If the parent of node is not an editable indentation
+					// element, or the previousSibling of the parent of node is
+					// not an editable HTML element with local name tag name,
+					// call createElement(tag name) on the context object and
+					// return the result. Otherwise:"
+					if (!isEditable(node.parentNode)
+					|| !isIndentationElement(node.parentNode)
+					|| !isEditable(node.parentNode.previousSibling)
+					|| !isHtmlElement(node.parentNode.previousSibling, tagName)) {
+						return document.createElement(tagName);
+					}
+
+					// "Let list be the previousSibling of the parent of node."
+					var list = node.parentNode.previousSibling;
+
+					// "Normalize sublists of list's last child."
+					normalizeSublists(list.lastChild);
+
+					// "If list's last child is not an editable HTML element
+					// with local name tag name, call createElement(tag name)
+					// on the context object, and append the result as the last
+					// child of list."
+					if (!isEditable(list.lastChild)
+					|| !isHtmlElement(list.lastChild, tagName)) {
+						list.appendChild(document.createElement(tagName));
+					}
+
+					// "Return the last child of list."
+					return list.lastChild;
+				});
+		}
+	}
 }
 
 function fixOrphanedListItems(nodeList) {

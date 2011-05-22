@@ -273,7 +273,8 @@ listing elements instead?  Needs testing.
 
 <p>An <dfn id=editing-host>editing host</dfn> is a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> that is either an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> with
 a <code class=external data-anolis-spec=html title=attr-contenteditable><a href=http://www.whatwg.org/html/#attr-contenteditable>contenteditable</a></code>
-attribute set to the true state, or a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#document>Document</a></code> whose <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/html/#designmode>designMode</a></code> is enabled.
+attribute set to the true state, or the <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> child of a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#document>Document</a></code>
+whose <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/html/#designmode>designMode</a></code> is enabled.
 
 <p>Something is <dfn id=editable>editable</dfn> if it is a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> which is not an
 <a href=#editing-host>editing host</a>, does not have a <code class=external data-anolis-spec=html title=attr-contenteditable><a href=http://www.whatwg.org/html/#attr-contenteditable>contenteditable</a></code> attribute set to the false
@@ -1581,13 +1582,6 @@ as desired.
 
 <ol>
   <li>Let <var title="">command</var> be the current <a href=#command>command</a>.
-
-  <li>If <var title="">node</var> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#document>Document</a></code>, <a href=#set-the-value>set the value</a> of its
-  <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> (if it has one) and abort this algorithm.
-
-  <li>If <var title="">node</var> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#documentfragment>DocumentFragment</a></code>, let <var title="">children</var> be
-  a list of its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>.  <a href=#set-the-value>Set the value</a> of each member of
-  <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, then abort this algorithm.
 
   <li>If <var title="">node</var> is not <a href=#editable>editable</a>:
   <!--

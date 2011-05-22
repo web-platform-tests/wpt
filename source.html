@@ -229,8 +229,8 @@ listing elements instead?  Needs testing.
 
 <p>An <dfn>editing host</dfn> is a [[node]] that is either an [[element]] with
 a <code data-anolis-spec=html title=attr-contenteditable>contenteditable</code>
-attribute set to the true state, or a [[document]] whose <code
-data-anolis-spec=html>designMode</code> is enabled.
+attribute set to the true state, or the [[element]] child of a [[document]]
+whose <code data-anolis-spec=html>designMode</code> is enabled.
 
 <p>Something is <dfn>editable</dfn> if it is a [[node]] which is not an
 <span>editing host</span>, does not have a <code data-anolis-spec=html
@@ -1572,13 +1572,6 @@ as desired.
 
 <ol>
   <li>Let <var>command</var> be the current <span>command</span>.
-
-  <li>If <var>node</var> is a [[document]], <span>set the value</span> of its
-  [[element]] [[child]] (if it has one) and abort this algorithm.
-
-  <li>If <var>node</var> is a [[documentfragment]], let <var>children</var> be
-  a list of its [[children]].  <span>Set the value</span> of each member of
-  [[children]], then abort this algorithm.
 
   <li>If <var>node</var> is not <span>editable</span>:
   <!--

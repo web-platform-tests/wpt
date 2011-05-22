@@ -630,11 +630,15 @@ function removeExtraneousLineBreaksFrom(node) {
 }
 
 // "An editing host is a node that is either an Element with a contenteditable
-// attribute set to the true state, or a Document whose designMode is enabled."
+// attribute set to the true state, or the Element child of a Document whose
+// designMode is enabled."
 function isEditingHost(node) {
 	return node
-		&& ((node.nodeType == Node.ELEMENT_NODE && node.contentEditable == "true")
-		|| (node.nodeType == Node.DOCUMENT_NODE && node.designMode == "on"));
+		&& node.nodeType == Node.ELEMENT_NODE
+		&& (node.contentEditable == "true"
+		|| (node.parentNode
+		&& node.parentNode.nodeType == Node.DOCUMENT_NODE
+		&& node.parentNodedesignMode == "on"));
 }
 
 // "Something is editable if it is a node which is not an editing host, does
@@ -2157,37 +2161,6 @@ function forceValue(node, command, newValue) {
 }
 
 function setNodeValue(node, command, newValue) {
-	// "If node is a Document, set the value of its Element child (if it has
-	// one) and abort this algorithm."
-	if (node.nodeType == Node.DOCUMENT_NODE) {
-		for (var i = 0; i < node.childNodes.length; i++) {
-			if (node.childNodes[i].nodeType == Node.ELEMENT_NODE) {
-				setNodeValue(node.childNodes[i], command, newValue);
-				break;
-			}
-		}
-		return;
-	}
-
-	// "If node is a DocumentFragment, let children be a list of its children.
-	// Set the value of each member of children, then abort this algorithm."
-	if (node.nodeType == Node.DOCUMENT_FRAGMENT_NODE) {
-		var children = [];
-		for (var i = 0; i < node.childNodes.length; i++) {
-			children.push(node.childNodes[i]);
-		}
-		for (var i = 0; i < children.length; i++) {
-			setNodeValue(children[i], command, newValue);
-		}
-		return;
-	}
-
-	// "If node's parent is null, or if node is a DocumentType, abort this
-	// algorithm."
-	if (!node.parentNode || node.nodeType == Node.DOCUMENT_TYPE_NODE) {
-		return;
-	}
-
 	// "If node is not editable:"
 	if (!isEditable(node)) {
 		// "Let children be the children of node."

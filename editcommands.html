@@ -1189,9 +1189,8 @@ different value.
 
   <li>If <var title="">new value</var> is null, abort this algorithm.
 
-  <li>If <var title="">node</var> is an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>, <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code>, <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#comment>Comment</a></code>, or
-  <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#processinginstruction>ProcessingInstruction</a></code> node, and is not an <a href=#unwrappable-node>unwrappable
-  node</a>:
+  <li>If <var title="">node</var> is an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>, <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code>, or <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#comment>Comment</a></code> node, and
+  is not an <a href=#unwrappable-node>unwrappable node</a>:
 
   <ol>
     <!-- Even if the value matches, we stick it in a preceding sibling if
@@ -1314,9 +1313,8 @@ different value.
   </ol>
 
   <!-- At this point we have to make a new element as a wrapper.  This isn't
-  worth the effort for comments or PIs, so abort in that case. -->
-  <li>If <var title="">node</var> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#comment>Comment</a></code> or <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#processinginstruction>ProcessingInstruction</a></code>, abort
-  this algorithm.
+  worth the effort for comments, so abort in that case. -->
+  <li>If <var title="">node</var> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#comment>Comment</a></code>, abort this algorithm.
 
   <li>If the <a href=#effective-value>effective value</a> of <var title="">command</var> is <var title="">new
   value</var> on <var title="">node</var>, abort this algorithm.

@@ -57,7 +57,6 @@ replace = {
     'precedingsibling': '<span data-anolis-spec=domcore title="concept-tree-preceding-sibling">preceding sibling</span>',
     'presentationalhint': '<span data-anolis-spec=html title="presentational hints">presentational hint</span>',
     'previoussibling': '<code data-anolis-spec=domcore title=dom-Node-previousSibling>previousSibling</code>',
-    'processinginstruction': '<code data-anolis-spec=domcore>ProcessingInstruction</code>',
     'range': '<span data-anolis-spec=domrange title=concept-range>range</span>',
     'rangeend': '<span data-anolis-spec=domrange title=concept-range-end>end</span>',
     'rangemutationrules': '<span data-anolis-spec=domrange>range mutation rules</span>',

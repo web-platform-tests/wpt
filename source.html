@@ -1162,9 +1162,8 @@ different value.
 
   <li>If <var>new value</var> is null, abort this algorithm.
 
-  <li>If <var>node</var> is an [[element]], [[text]], [[comment]], or
-  [[processinginstruction]] node, and is not an <span>unwrappable
-  node</span>:
+  <li>If <var>node</var> is an [[element]], [[text]], or [[comment]] node, and
+  is not an <span>unwrappable node</span>:
 
   <ol>
     <!-- Even if the value matches, we stick it in a preceding sibling if
@@ -1287,9 +1286,8 @@ different value.
   </ol>
 
   <!-- At this point we have to make a new element as a wrapper.  This isn't
-  worth the effort for comments or PIs, so abort in that case. -->
-  <li>If <var>node</var> is a [[comment]] or [[processinginstruction]], abort
-  this algorithm.
+  worth the effort for comments, so abort in that case. -->
+  <li>If <var>node</var> is a [[comment]], abort this algorithm.
 
   <li>If the <span>effective value</span> of <var>command</var> is <var>new
   value</var> on <var>node</var>, abort this algorithm.

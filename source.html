@@ -238,10 +238,32 @@ title=attr-contenteditable>contenteditable</code> attribute set to the false
 state, and whose [[parent]] is an <span>editing host</span> or
 <span>editable</span>.
 
+<p class=note>An <span>editable</span> node cannot be a [[document]] or
+[[documentfragment]], its [[parent]] cannot be null, and it must descend from
+either an [[element]] or a [[document]].
+
 <p class=note>The algorithms here will generally not remove or alter the
 attributes of any node that is not editable.  Note that an editing host is not
 editable, so authors are assured that editing commands will only modify the
 editing host's contents and not the editing host itself.
+
+<p>The <dfn>CSS styling flag</dfn> is a boolean flag, which must initially be
+false.
+
+<p class=XXX>Is the styling flag associated with the document, with the editing
+host, what?  Needs reverse-engineering.
+
+<p>When the user agent is instructed to run a particular method, it must follow
+the steps defined for that method in the appropriate specification, not act as
+though the method had actually been called from JavaScript.  In particular,
+if the author has overridden the method with a custom method, the standard
+method must be run rather than the custom one.
+
+<p>When a list or set of [[nodes]] is assigned to a variable without specifying
+the order, they must be initially in [[treeorder]], if they share a root.
+(If they don't share a root, the order will be specified.)  When the user agent
+is instructed to run particular steps for each member of a list, it must do so
+sequentially in the list's order.
 
 
 <h2>Common algorithms</h2>
@@ -509,24 +531,6 @@ instead follow these rules:
   [[bpoffset]] is greater than <var>old index</var> + 1, subtract one from its
   [[bpoffset]].
 </ol>
-
-<p>The <dfn>CSS styling flag</dfn> is a boolean flag, which must initially be
-false.
-
-<p class=XXX>Is the styling flag associated with the document, with the editing
-host, what?  Needs reverse-engineering.
-
-<p>When the user agent is instructed to run a particular method, it must follow
-the steps defined for that method in the appropriate specification, not act as
-though the method had actually been called from JavaScript.  In particular,
-if the author has overridden the method with a custom method, the standard
-method must be run rather than the custom one.
-
-<p>When a list or set of [[nodes]] is assigned to a variable without specifying
-the order, they must be initially in [[treeorder]], if they share a root.
-(If they don't share a root, the order will be specified.)  When the user agent
-is instructed to run particular steps for each member of a list, it must do so
-sequentially in the list's order.
 
 
 <h2>Methods of the <code data-anolis-spec=html>HTMLDocument</code> interface</h2>

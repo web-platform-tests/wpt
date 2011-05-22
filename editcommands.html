@@ -280,10 +280,32 @@ attribute set to the true state, or a <code class=external data-anolis-spec=domc
 state, and whose <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is an <a href=#editing-host>editing host</a> or
 <a href=#editable>editable</a>.
 
+<p class=note>An <a href=#editable>editable</a> node cannot be a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#document>Document</a></code> or
+<code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#documentfragment>DocumentFragment</a></code>, its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> cannot be null, and it must descend from
+either an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> or a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#document>Document</a></code>.
+
 <p class=note>The algorithms here will generally not remove or alter the
 attributes of any node that is not editable.  Note that an editing host is not
 editable, so authors are assured that editing commands will only modify the
 editing host's contents and not the editing host itself.
+
+<p>The <dfn id=css-styling-flag>CSS styling flag</dfn> is a boolean flag, which must initially be
+false.
+
+<p class=XXX>Is the styling flag associated with the document, with the editing
+host, what?  Needs reverse-engineering.
+
+<p>When the user agent is instructed to run a particular method, it must follow
+the steps defined for that method in the appropriate specification, not act as
+though the method had actually been called from JavaScript.  In particular,
+if the author has overridden the method with a custom method, the standard
+method must be run rather than the custom one.
+
+<p>When a list or set of <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a> is assigned to a variable without specifying
+the order, they must be initially in <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#tree-order>tree order</a>, if they share a root.
+(If they don't share a root, the order will be specified.)  When the user agent
+is instructed to run particular steps for each member of a list, it must do so
+sequentially in the list's order.
 
 
 <h2 id=common-algorithms><span class=secno>4 </span>Common algorithms</h2>
@@ -545,24 +567,6 @@ instead follow these rules:
   <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a> is greater than <var title="">old index</var> + 1, subtract one from its
   <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a>.
 </ol>
-
-<p>The <dfn id=css-styling-flag>CSS styling flag</dfn> is a boolean flag, which must initially be
-false.
-
-<p class=XXX>Is the styling flag associated with the document, with the editing
-host, what?  Needs reverse-engineering.
-
-<p>When the user agent is instructed to run a particular method, it must follow
-the steps defined for that method in the appropriate specification, not act as
-though the method had actually been called from JavaScript.  In particular,
-if the author has overridden the method with a custom method, the standard
-method must be run rather than the custom one.
-
-<p>When a list or set of <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a> is assigned to a variable without specifying
-the order, they must be initially in <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#tree-order>tree order</a>, if they share a root.
-(If they don't share a root, the order will be specified.)  When the user agent
-is instructed to run particular steps for each member of a list, it must do so
-sequentially in the list's order.
 
 
 <h2 id=methods-of-the-htmldocument-interface><span class=secno>5 </span>Methods of the <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/html/#htmldocument>HTMLDocument</a></code> interface</h2>

@@ -27,12 +27,12 @@
 
   <p>[% IF suites.$suite.status != 'fin' && suites.$suite.status != 'rc' %]
   In time we hope to correct all errors and extend this test suite to
-  cover all of % suites.$suite.title %]. Your help is welcome in this effort.
+  cover all of [% suites.$suite.title %]. Your help is welcome in this effort.
   [% END %]
   The appropriate mailing list for submitting tests and bug reports is
   <a href="http://lists.w3.org/Archives/Public/public-css-testsuite/">public-css-testsuite@w3.org</a>.
   More information on the contribution process and test guidelines is
-  available on the <a href="http://csswg.inkedblade.net/test">wiki
+  available on the <a href="http://wiki.csswg.org/test">wiki
   page</a>.</p>
 
  <p>Tests are currently available in three formats:</p>
@@ -50,6 +50,7 @@
        would otherwise pass in the above XHTML 1.1 format.</dd>
   </dl>
 
+[% IF suite == 'css2.1' %]
   <p>Additional tests, that do not fit in any of those formats,
     are located separately:</p>
 
@@ -59,6 +60,7 @@
         test a combination of CSS and a particular document language's
         features and/or error recovery.</dd>
   </dl>
+[% END %]
   
   <p>Unless the test instructions explicitly indicate otherwise,
     any occurrence of red in a test indicates test failure.</p>

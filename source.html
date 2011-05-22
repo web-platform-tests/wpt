@@ -3,35 +3,40 @@
 <title>HTML Editing Commands</title>
 <link rel=stylesheet href=http://www.whatwg.org/style/specification>
 <style>
- pre, code, xmp { font-family:monospace, sans-serif; }
- h2 code, h3 code, h4 code,
- h2 :link, h3 :link, h4 :link,
- h2 :visited, h3 :visited, h4 :visited
- { font:inherit; color:inherit; font-style:italic; }
- @media print {
-   :not([data-anolis-spec]) > [data-anolis-spec]::after {
-     content: "[" attr(data-anolis-spec) "]";
-     font-size: 0.6em;
-     vertical-align: super;
-     text-transform: uppercase;
-   }
- }
- xmp {
-   font-size: inherit;
-   font-variant: normal;
-   margin-left: 2em;
-   white-space: pre-wrap;
- }
- div.note > p:first-child::before { content: 'Note: '; }
- div + * > li { margin: 1em 0 }
- .XXX > :last-child { margin-bottom: 0 }
- .XXX li {
-   margin-top: 0;
-   margin-bottom: 0;
- }
- dd .XXX p {
-   margin: 1em 0;
- }
+  pre, code, xmp { font-family:monospace, sans-serif; }
+  h2 code, h3 code, h3 code,
+  h2 :link, h3 :link, h3 :link,
+  h2 :visited, h3 :visited, h3 :visited
+  { font:inherit; color:inherit; font-style:italic; }
+  @media print {
+    :not([data-anolis-spec]) > [data-anolis-spec]::after {
+      content: "[" attr(data-anolis-spec) "]";
+      font-size: 0.6em;
+      vertical-align: super;
+      text-transform: uppercase;
+    }
+  }
+  xmp {
+    font-size: inherit;
+    font-variant: normal;
+    margin-left: 2em;
+    white-space: pre-wrap;
+  }
+  div.note > p:first-child::before { content: 'Note: '; }
+  .XXX > :last-child { margin-bottom: 0 }
+  .XXX li {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+  dd .XXX p {
+    margin: 1em 0;
+  }
+  ol li {
+    margin: 1em 0;
+  }
+  li li {
+    margin: 0;
+  }
 </style>
 <body class=draft>
 <div class=head id=head>
@@ -117,8 +122,7 @@ included in HTML comments so as not to distract the reader.
   of our way to do that.  In some cases we do make the document less
   conforming, generally because there's some clear use-case that requires it or
   because it matches existing browsers behavior.  (For instance, see the
-  <code title=command-stylewithcss>styleWithCSS</code> = false mode, and the
-  fact that <code title=command-insertimage>insertImage</code> doesn't add an
+  styleWithCSS = false mode, and the fact that insertImage doesn't add an
   alt attribute, and how list-related commands can make list elements nested in
   one another directly without intervening &lt;li>, etc.)
 
@@ -150,13 +154,6 @@ href=http://lists.whatwg.org/listinfo.cgi/whatwg-whatwg.org>the WHATWG
 list</a>.
 
 <ul>
-  <li>I need to restructure everything in some way that makes some minimal
-  amount of sense.  Currently algorithms are scattered helter-skelter all over
-  the place, with a few getting their own section, most relegated to the
-  Definitions section, and a few lurking under the definition for a specific
-  command (even if used by other commands too).  Probably I also want to break
-  the Commands section up into subsections instead of a giant definition list.
-
   <li>Need to make CSS terminology more precise, about setting/unsetting CSS
   properties.  The intent is to modify the style attribute, CSSOM-style.
   Likewise, CSS value comparisons need to be done after serializing both
@@ -219,7 +216,7 @@ list</a>.
 like this.
 
 
-<h2>Definitions</h2>
+<h2>Common definitions</h2>
 
 <p>An <dfn>HTML element</dfn> is an [[element]] whose [[namespace]] is the
 [[htmlnamespace]].
@@ -227,8 +224,30 @@ like this.
 <p>An <dfn>inline node</dfn> is either a [[text]] node, or an [[element]] whose
 "display" property computes to "inline", "inline-block", or "inline-table".
 
+<p class=XXX>We might not want this to key off CSS; perhaps we should be
+listing elements instead?  Needs testing.
+
+<p>An <dfn>editing host</dfn> is a [[node]] that is either an [[element]] with
+a <code data-anolis-spec=html title=attr-contenteditable>contenteditable</code>
+attribute set to the true state, or a [[document]] whose <code
+data-anolis-spec=html>designMode</code> is enabled.
+
+<p>Something is <dfn>editable</dfn> if it is a [[node]] which is not an
+<span>editing host</span>, does not have a <code data-anolis-spec=html
+title=attr-contenteditable>contenteditable</code> attribute set to the false
+state, and whose [[parent]] is an <span>editing host</span> or
+<span>editable</span>.
+
+<p class=note>The algorithms here will generally not remove or alter the
+attributes of any node that is not editable.  Note that an editing host is not
+editable, so authors are assured that editing commands will only modify the
+editing host's contents and not the editing host itself.
+
+
+<h2>Common algorithms</h2>
+
 <p>To <dfn>set the tag name</dfn> of an [[element]] <var>element</var> to
-<var>new name</var>, the user agent must run the following steps:
+<var>new name</var>:
 
 <ol>
   <li>If <var>element</var> is an <span>HTML element</span> with [[localname]]
@@ -462,21 +481,159 @@ instructions</dfn>:
 <span>remove extraneous line breaks before</span> it, then <span>remove
 extraneous line breaks after</span> it.
 
-<p>An <dfn>editing host</dfn> is a [[node]] that is either an [[element]] with
-a <code data-anolis-spec=html title=attr-contenteditable>contenteditable</code>
-attribute set to the true state, or a [[document]] whose <code
-data-anolis-spec=html>designMode</code> is enabled.
+<p>To move a [[node]] to a new location, <dfn>preserving ranges</dfn>, remove
+the [[node]] from its original [[parent]] (if any), then insert it in the new
+location.  In doing so, however, ignore the regular [[rangemutationrules]], and
+instead follow these rules:
 
-<p>Something is <dfn>editable</dfn> if it is a [[node]] which is not an
-<span>editing host</span>, does not have a <code data-anolis-spec=html
-title=attr-contenteditable>contenteditable</code> attribute set to the false
-state, and whose [[parent]] is an <span>editing host</span> or
-<span>editable</span>.
+<ol>
+  <li>Let <var>node</var> be the moved [[node]], <var>old parent</var> and
+  <var>old index</var> be the old [[parent]] (which may be null) and [[index]],
+  and <var>new parent</var> and <var>new index</var> be the new [[parent]] and
+  [[index]].
 
-<p class=note>The algorithms here will generally not remove or alter the
-attributes of any node that is not editable.  Note that an editing host is not
-editable, so authors are assured that editing commands will only modify the
-editing host's contents and not the editing host itself.
+  <li>If a [[boundarypoint]]'s [[bpnode]] is the same as or a [[descendant]] of
+  <var>node</var>, leave it unchanged, so it moves to the new location.  <!--
+  This is actually implicit, but I state it anyway for completeness. -->
+
+  <li>If a [[boundarypoint]]'s [[bpnode]] is <var>new parent</var> and its
+  [[bpoffset]] is greater than <var>new index</var>, add one to its
+  [[bpoffset]].
+
+  <li>If a [[boundarypoint]]'s [[bpnode]] is <var>old parent</var> and its
+  [[bpoffset]] is <var>old index</var> or <var>old index</var> + 1, set its
+  [[bpnode]] to <var>new parent</var> and add <var>new index</var> &minus;
+  <var>old index</var> to its [[bpoffset]].
+
+  <li>If a [[boundarypoint]]'s [[bpnode]] is <var>old parent</var> and its
+  [[bpoffset]] is greater than <var>old index</var> + 1, subtract one from its
+  [[bpoffset]].
+</ol>
+
+<p>The <dfn>CSS styling flag</dfn> is a boolean flag, which must initially be
+false.
+
+<p class=XXX>Is the styling flag associated with the document, with the editing
+host, what?  Needs reverse-engineering.
+
+<p>When the user agent is instructed to run a particular method, it must follow
+the steps defined for that method in the appropriate specification, not act as
+though the method had actually been called from JavaScript.  In particular,
+if the author has overridden the method with a custom method, the standard
+method must be run rather than the custom one.
+
+<p>When a list or set of [[nodes]] is assigned to a variable without specifying
+the order, they must be initially in [[treeorder]], if they share a root.
+(If they don't share a root, the order will be specified.)  When the user agent
+is instructed to run particular steps for each member of a list, it must do so
+sequentially in the list's order.
+
+
+<h2>Methods of the <code data-anolis-spec=html>HTMLDocument</code> interface</h2>
+
+<p>The <dfn title=execCommand()><code>execCommand(<var>command</var>,
+<var>showUI</var>, <var>value</var>)</code></dfn> method on the
+<code data-anolis-spec=html>HTMLDocument</code> interface allows scripts to
+perform actions on the current selection or at the current caret position.
+Generally, these commands would be used to implement editor UI, for example
+having a "delete" button on a toolbar.  There are three variants to this
+method, with one, two, and three arguments respectively. The <var>showUI</var>
+and <var>value</var> parameters, even if specified, are ignored except where
+otherwise stated.
+
+<p>The <dfn
+title=queryCommandState()><code>queryCommandState(<var>command</var>)</code></dfn>
+method on the <code data-anolis-spec=html>HTMLDocument</code> interface allows
+scripts to ask true-or-false status questions about the current selection, such
+as whether it is bold or not.
+
+<p>The <dfn
+title=queryCommandValue()><code>queryCommandValue(<var>command</var>)</code></dfn>
+method on the <code data-anolis-spec=html>HTMLDocument</code> interface allows
+scripts to get the value of some property of the current selection in string
+form, such as what color it is.
+
+<p>All three of these methods operate using particular <dfn
+title=command>commands</dfn>, identified by a string <var>command</var> passed
+as the first argument.  The <var>command</var> argument of all three methods
+must be treated in an <span data-anolis-spec=domcore>ASCII
+case-insensitive</span> manner.  Each <span>command</span> is defined in its
+own section of this specification.
+
+<p><span title=command>Commands</span> may have an associated
+<dfn>action</dfn>, <dfn>state</dfn>, <dfn>value</dfn>, and/or <dfn>relevant
+CSS property</dfn>.  If not otherwise specified, the <span>action</span> for a
+command is to do nothing, the <span>state</span> is false, the
+<span>value</span> is the empty string, and the <span>relevant CSS
+property</span> is null.
+<!-- Requesting the state of an unknown command throws an exception in IE 9 RC
+and Firefox 4b11, and returns boolean false in Chrome 10 and Opera 11.
+
+Requesting the value of an unknown command throws an exception in IE 9 RC and
+in Firefox 4b11.  It returns boolean false in Chrome 10, and the empty string
+in Opera 11. -->
+
+<p>When <code>execCommand()</code> is invoked, the user agent must follow the
+<span>action</span> instructions given in this specification for
+<var>command</var>, with <var>showUI</var> and <var>value</var> passed to the
+instructions as arguments.  When <code>queryCommandState()</code> is invoked,
+the user agent must return the <span>state</span> for <var>command</var>.  When
+<code>queryCommandValue()</code> is invoked, the user agent must return the
+<span>value</span> for <var>command</var> 
+
+<p>Most <span title=command>commands</span> act on the <dfn>active range</dfn>.
+This is defined to be the first [[range]] in the [[selection]] given by calling
+[[getselection]] on the [[contextobject]], or null if there is no such
+[[range]].  If the <span>active range</span> is null, all <span
+title=command>commands</span> must behave as though they were not defined
+except <span>the <code title>styleWithCSS</code> command</span> and <span>the
+<code title>useCSS</code> command</span>.
+
+<p class=XXX>Querying the value or state of an unrecognized command throws an
+exception in IE and Firefox.  Need to consider changing to that behavior.
+
+<p class=XXX>I say "first range" because I think that's what Gecko actually
+does, and Gecko is the only one that allows multiple ranges in a selection.
+This is keeping in mind that it stores ranges sorted by start, not by the order
+the user added them, and silently removes or shortens existing ranges to avoid
+overlap.  It probably makes the most sense in the long term to have the command
+affect all ranges.  But I'll leave this for later.
+
+<!--
+Things that are only implemented by a couple of browsers and may or may not be
+useful to spec:
+
+* decreaseFontSize, increaseFontSize: Only implemented in Gecko and Opera.
+* contentReadOnly, enableInlineTableEditing, enableObjectResizing, heading,
+  insertBrOnReturn: MDC docs say not implemented in IE (didn't test).
+* readOnly: MDC docs say it's a deprecated equivalent of contentReadOnly, so
+  presumably like useCSS but less popular.
+* 2D-Position, absolutePosition, clearAuthenticationCache, createBookmark,
+  insertButton, insertFieldset, insertIframe, insertInput*, insertMarquee,
+  insertSelectDropdown, insertSelectListbox, insertTextarea, liveResize,
+  multipleSelection, overwrite, print, refresh, saveAs, unbookmark: Mentioned
+  in MSDN docs but not MDC, so presumably IE-only.  Some of these seem
+  inappropriate or useless, others will bear investigation.
+
+Things I haven't looked at:
+
+* copy, cut, paste: Needs attention to security.
+* delete, redo, undo: Needs review of the Google work on this; will probably be
+  quite complicated.
+* formatBlock, insertParagraph, justifyCenter, justifyFull, justifyLeft,
+  justifyRight: These look important and should be similar to indent, so
+  they're next on my list.
+* insertHTML: Not supported by IE, but important.  I've seen frameworks that
+  work around its absence in IE by using insertImage and then search and
+  replace.  Will probably need to be defined in terms of insertAdjacentHTML or
+  something.
+* selectAll, unselect: Should be easy, although they seem redundant to just
+  calling methods of the Selection.
+-->
+
+<h2>Inline formatting commands</h2>
+
+<h3>Inline formatting command definitions</h3>
 
 <p>A [[node]] is <dfn>effectively contained</dfn> in a [[range]] if either it
 is [[contained]] in the [[range]]; or it is the [[range]]'s [[rangestart]]
@@ -497,6 +654,61 @@ be used where only [[phrasingcontent]] is expected (not counting unknown or
 obsolete elements, which cannot be used at all); or any [[element]] whose
 display property computes to something other than "inline", "inline-block", or
 "inline-table"; or any [[node]] that is not <span>editable</span>.
+
+<p>A <dfn>modifiable element</dfn> is a [[b]], [[em]], [[i]], [[s]], [[span]],
+[[strike]], [[strong]], [[sub]], [[sup]], or [[u]] element with no attributes
+except possibly [[style]]; or a [[font]] element with no attributes except
+possibly [[style]], [[fontcolor]], [[fontface]], and/or [[fontsize]]; or an
+[[a]] element with no attributes except possibly [[style]] and/or [[href]].
+
+<p>A <dfn>simple modifiable element</dfn> is an <span>HTML element</span> for
+which at least one of the following holds:
+
+<ul>
+  <li>It is an [[a]], [[b]], [[em]], [[font]], [[i]], [[s]], [[span]],
+  [[strike]], [[strong]], [[sub]], [[sup]], or [[u]] element with no
+  attributes.
+
+  <li>It is an [[a]], [[b]], [[em]], [[font]], [[i]], [[s]], [[span]],
+  [[strike]], [[strong]], [[sub]], [[sup]], or [[u]] element with exactly one
+  attribute, which is [[style]], which sets no CSS properties (including
+  invalid or unrecognized properties).
+
+  <li>It is an [[a]] element with exactly one attribute, which is [[href]].
+
+  <li>It is a [[font]] element with exactly one attribute, which is either
+  [[fontcolor]], [[fontface]], or [[fontsize]].
+
+  <li>It is a [[b]] or [[strong]] element with exactly one attribute, which is
+  [[style]], and the [[style]] attribute sets exactly one CSS property
+  (including invalid or unrecognized properties), which is "font-weight".
+
+  <li>It is an [[i]] or [[em]] element with exactly one attribute, which is
+  [[style]], and the [[style]] attribute sets exactly one CSS property
+  (including invalid or unrecognized properties), which is "font-style".
+
+  <li>It is a [[sub]] or [[sup]] element with exactly one attribute, which is
+  [[style]], and the [[style]] attribute sets exactly one CSS property
+  (including invalid or unrecognized properties), which is "vertical-align".
+
+  <li>It is an [[a]], [[font]], or [[span]] element with exactly one attribute,
+  which is [[style]], and the [[style]] attribute sets exactly one CSS property
+  (including invalid or unrecognized properties), and that property is not
+  "text-decoration".
+
+  <li>It is an [[a]], [[font]], [[s]], [[span]], [[strike]], or [[u]] element
+  with exactly one attribute, which is [[style]], and the [[style]] attribute
+  sets exactly one CSS property (including invalid or unrecognized properties),
+  which is "text-decoration", which is set to "line-through" or "underline" or
+  "overline" or "none".
+</ul>
+
+<p class=note>Conceptually, a simple modifiable element is a modifiable element
+which <span title="specified value">specifies</span> a value for at most one
+command.
+
+
+<h3>Assorted inline formatting command algorithms</h3>
 
 <p>The <dfn>effective value</dfn> of a [[node]] <var>node</var> for a given
 <var>command</var> is returned by the following algorithm, which will return
@@ -674,109 +886,9 @@ different name.
   <li>Return null.
 </ol>
 
-<p>A <dfn>modifiable element</dfn> is a [[b]], [[em]], [[i]], [[s]], [[span]],
-[[strike]], [[strong]], [[sub]], [[sup]], or [[u]] element with no attributes
-except possibly [[style]]; or a [[font]] element with no attributes except
-possibly [[style]], [[fontcolor]], [[fontface]], and/or [[fontsize]]; or an
-[[a]] element with no attributes except possibly [[style]] and/or [[href]].
 
-<p>A <dfn>simple modifiable element</dfn> is an <span>HTML element</span> for
-which at least one of the following holds:
-
-<ul>
-  <li>It is an [[a]], [[b]], [[em]], [[font]], [[i]], [[s]], [[span]],
-  [[strike]], [[strong]], [[sub]], [[sup]], or [[u]] element with no
-  attributes.
-
-  <li>It is an [[a]], [[b]], [[em]], [[font]], [[i]], [[s]], [[span]],
-  [[strike]], [[strong]], [[sub]], [[sup]], or [[u]] element with exactly one
-  attribute, which is [[style]], which sets no CSS properties (including
-  invalid or unrecognized properties).
-
-  <li>It is an [[a]] element with exactly one attribute, which is [[href]].
-
-  <li>It is a [[font]] element with exactly one attribute, which is either
-  [[fontcolor]], [[fontface]], or [[fontsize]].
-
-  <li>It is a [[b]] or [[strong]] element with exactly one attribute, which is
-  [[style]], and the [[style]] attribute sets exactly one CSS property
-  (including invalid or unrecognized properties), which is "font-weight".
-
-  <li>It is an [[i]] or [[em]] element with exactly one attribute, which is
-  [[style]], and the [[style]] attribute sets exactly one CSS property
-  (including invalid or unrecognized properties), which is "font-style".
-
-  <li>It is a [[sub]] or [[sup]] element with exactly one attribute, which is
-  [[style]], and the [[style]] attribute sets exactly one CSS property
-  (including invalid or unrecognized properties), which is "vertical-align".
-
-  <li>It is an [[a]], [[font]], or [[span]] element with exactly one attribute,
-  which is [[style]], and the [[style]] attribute sets exactly one CSS property
-  (including invalid or unrecognized properties), and that property is not
-  "text-decoration".
-
-  <li>It is an [[a]], [[font]], [[s]], [[span]], [[strike]], or [[u]] element
-  with exactly one attribute, which is [[style]], and the [[style]] attribute
-  sets exactly one CSS property (including invalid or unrecognized properties),
-  which is "text-decoration", which is set to "line-through" or "underline" or
-  "overline" or "none".
-</ul>
-
-<p class=note>Conceptually, a simple modifiable element is a modifiable element
-which <span title="specified value">specifies</span> a value for at most one
-command.
-
-<p>When the user agent is to move a [[node]] to a new location, <dfn>preserving
-ranges</dfn>, it must remove the [[node]] from its original [[parent]] (if
-any), then insert it in the new location.  In doing so, however, it must ignore
-the regular [[rangemutationrules]], and instead follow these rules:
-
-<ol>
-  <li>Let <var>node</var> be the moved [[node]], <var>old parent</var> and
-  <var>old index</var> be the old [[parent]] (which may be null) and [[index]],
-  and <var>new parent</var> and <var>new index</var> be the new [[parent]] and
-  [[index]].
-
-  <li>If a [[boundarypoint]]'s [[bpnode]] is the same as or a [[descendant]] of
-  <var>node</var>, leave it unchanged, so it moves to the new location.  <!--
-  This is actually implicit, but I state it anyway for completeness. -->
-
-  <li>If a [[boundarypoint]]'s [[bpnode]] is <var>new parent</var> and its
-  [[bpoffset]] is greater than <var>new index</var>, add one to its
-  [[bpoffset]].
-
-  <li>If a [[boundarypoint]]'s [[bpnode]] is <var>old parent</var> and its
-  [[bpoffset]] is <var>old index</var> or <var>old index</var> + 1, set its
-  [[bpnode]] to <var>new parent</var> and add <var>new index</var> &minus;
-  <var>old index</var> to its [[bpoffset]].
-
-  <li>If a [[boundarypoint]]'s [[bpnode]] is <var>old parent</var> and its
-  [[bpoffset]] is greater than <var>old index</var> + 1, subtract one from its
-  [[bpoffset]].
-</ol>
-
-<p>The <dfn>CSS styling flag</dfn> is a boolean flag, which must initially be
-false.
-
-<p class=XXX>Is the styling flag associated with the document, with the editing
-host, what?  Needs reverse-engineering.
-
-<p>When the user agent is instructed to run a particular method, it must follow
-the steps defined for that method in the appropriate specification, not act as
-though the method had actually been called from JavaScript.  In particular,
-if the author has overridden the method with a custom method, the standard
-method must be run rather than the custom one.
-
-<p>When a list or set of [[nodes]] is assigned to a variable without specifying
-the order, they must be initially in [[treeorder]], if they share a root.
-(If they don't share a root, the order will be specified.)  When the user agent
-is instructed to run particular steps for each member of a list, it must do so
-sequentially in the list's order.
-
-
-<h2>Decomposing a range into nodes</h2>
-<p>When a user agent is to <dfn>decompose</dfn> a [[range]] <var>range</var>,
-it must run the following steps.
+<h3>Decomposing a range into nodes</h3>
+<p>To <dfn>decompose</dfn> a [[range]] <var>range</var>:
 
 <p class=note>For this algorithm to be correct, it is essential that user
 agents follow the [[rangemutationrules]], particularly those for <code
@@ -821,151 +933,8 @@ title>splitText()</code>.
 </ol>
 
 
-<h2>Normalizing sublists of a list item</h2>
-<p>When a user agent is to <dfn>normalize sublists</dfn> in a [[node]]
-<var>item</var>, it must run the following steps:
-<!--
-This algorithm implies that we don't support a sublist in the middle of an
-item, only at the end.  For instance,
-
-  <li>foo<ol>...</ol>bar</li>
-
-gets transformed to
-
-  <li>foo</li><ol>...</ol><li>bar</li>
-
-which in particular creates an extra list marker for "bar".  This is okay; we
-don't need to expose all of HTML's markup abilities through execCommand().
-Similarly, the superscript and subscript commands don't allow nesting.  I
-didn't see any way to get a sublist in the middle of an item in Word 2007 or in
-OpenOffice.org 3.2.1 Ubuntu package, nor in  any browser using just
-execCommand(), so it should be no big problem if we require that such nesting
-not occur.  (Existing browsers behave weirdly and inconsistently when
-confronted with this kind of nesting.)
--->
-
-<ol>
-  <li>If <var>item</var> is not an [[li]] or it is not <span>editable</span> or
-  its [[parent]] is not <span>editable</span>, abort these steps.
-
-  <li>Let <var>new item</var> be null.
-
-  <li>While <var>item</var> has an [[ol]] or [[ul]] [[child]]:
-
-  <ol>
-    <li>Let <var>child</var> be the last [[child]] of <var>item</var>.
-
-    <li>If <var>child</var> is an [[ol]] or [[ul]], or <var>new item</var> is
-    null and <var>child</var> is a [[text]] node whose <code
-    data-anolis-spec=domcore title=dom-CharacterData-data>data</code>
-    consists of zero of more <span data-anolis-spec=domcore title="space
-    character">space characters</span>:
-
-    <ol>
-      <li>Set <var>new item</var> to null.
-
-      <li>Insert <var>child</var> into the [[parent]] of <var>item</var>
-      immediately following <var>item</var>, <span>preserving ranges</span>.
-    </ol>
-
-    <li>Otherwise:
-
-    <ol>
-      <li>If <var>new item</var> is null, let <var>new item</var> be the
-      result of calling <code data-anolis-spec=domcore
-      title=dom-Document-createElement>createElement("li")</code> on the
-      [[ownerdocument]] of <var>item</var>, then insert <var>new item</var>
-      into the [[parent]] of <var>item</var> immediately after
-      <var>item</var>.
-
-      <li>Insert <var>child</var> into <var>new item</var> as its first
-      [[child]], <span>preserving ranges</span>.
-    </ol>
-  </ol>
-</ol>
-
-<h2>Block-extending a range</h2>
-<p>When a user agent is to <dfn>block-extend</dfn> a [[range]]
-<var>range</var>, it must run the following steps:
-
-<ol>
-  <li>Let <var>start node</var>, <var>start offset</var>, <var>end node</var>,
-  and <var>end offset</var> be the [[rangestart]] and [[rangeend]] [[bpnodes]]
-  and [[bpoffsets]] of <var>range</var>.
-
-  <li>If some [[ancestorcontainer]] of <var>start node</var> is an [[li]], set
-  <var>start offset</var> to the [[index]] of the last such [[li]] in
-  [[treeorder]], and set <var>start node</var> to that [[li]]'s [[parent]].
-
-  <li>Repeat the following steps:
-
-  <ol>
-    <li>If <var>start node</var> is a [[text]] or [[comment]] node or
-    <var>start offset</var> is 0, set <var>start offset</var> to the [[index]]
-    of <var>start node</var> and then set <var>start node</var> to its
-    [[parent]].
-
-    <li>Otherwise, if <var>start offset</var> is equal to the
-    [[nodelength]] of <var>start node</var>, set <var>start offset</var> to one
-    plus the [[index]] of <var>start node</var> and then set <var>start
-    node</var> to its [[parent]].
-
-    <li>Otherwise, if the [[child]] of <var>start node</var> with [[index]]
-    <var>start offset</var> and its [[previoussibling]] are both <span
-    title="inline node">inline nodes</span> and the [[previoussibling]] isn't a
-    [[br]], subtract one from <var>start offset</var>.
-    <!-- IE also includes <br> (at least for the purposes of the indent
-    command), but this is unlikely to match user expectations. -->
-
-    <p class=XXX>This is wrong in the presence of comments or display: none or
-    probably other things.  Do we care?
-
-    <li>Otherwise, break from this loop.
-  </ol>
-
-  <li>If some [[ancestorcontainer]] of <var>end node</var> is an [[li]], set
-  <var>end offset</var> to one plus the [[index]] of the last such [[li]] in
-  [[treeorder]], and set <var>end node</var> to that [[li]]'s [[parent]].
-
-  <li>Repeat the following steps:
-
-  <ol>
-    <li>If <var>end offset</var> is 0, set <var>end offset</var> to the
-    [[index]] of <var>end node</var> and then set <var>end node</var> to its
-    [[parent]].
-
-    <li>Otherwise, if <var>end node</var> is a [[text]] or [[comment]] node or
-    <var>end offset</var> is equal to the [[nodelength]] of <var>end
-    node</var>, set <var>end offset</var> to one plus the [[index]] of <var>end
-    node</var> and then set <var>end node</var> to its [[parent]].
-
-    <li>Otherwise, if the [[child]] of <var>end node</var> with [[index]]
-    <var>end offset</var> and its [[previoussibling]] are both <span
-    title="inline node">inline nodes</span>, and the [[child]] of <var>end
-    node</var> with [[index]] <var>end offset</var> isn't a [[br]], add one to
-    <var>end offset</var>.
-
-    <li>Otherwise, break from this loop.
-  </ol>
-
-  <li>If the [[child]] of <var>end node</var> with [[index]] <var>end
-  offset</var> is a [[br]], add one to <var>end offset</var>.
-
-  <li>While <var>end offset</var> is equal to the [[nodelength]] of <var>end
-  node</var>, set <var>end offset</var> to one plus the [[index]] of <var>end
-  node</var> and then set <var>end node</var> to its [[parent]].
-
-  <li>Let <var>new range</var> be a new [[range]] whose [[rangestart]] and
-  [[rangeend]] [[bpnodes]] and [[bpoffsets]] are <var>start node</var>,
-  <var>start offset</var>, <var>end node</var>, and <var>end offset</var>.
-
-  <li>Return <var>new range</var>.
-</ol>
-
-
-<h2>Clearing an element's value</h2>
-<p>When a user agent is to <dfn>clear the value</dfn> of an element
-<var>element</var>, it must run the following steps:
+<h3>Clearing an element's value</h3>
+<p>To <dfn>clear the value</dfn> of an [[element]] <var>element</var>:
 
 <p class=note>Clearing the value of an element can remove it from its parent
 and put other nodes in its place.  When implementations do something like clear
@@ -978,6 +947,8 @@ id=foo> into <span id=foo> instead of <font id=foo>, but probably not worth it.
 -->
 
 <ol>
+  <li>Let <var>command</var> be the current <span>command</span>.
+
   <li>If <var>element</var>'s <span>specified value</span> for
   <var>command</var> is null, return the empty list.  <!-- We want to abort
   early so that we don't try unsetting background-color on a non-inline
@@ -1053,10 +1024,9 @@ id=foo> into <span id=foo> instead of <font id=foo>, but probably not worth it.
 </ol>
 
 
-<h2>Pushing down values</h2>
-<p>When a user agent is to <dfn>push down values</dfn> to a [[node]]
-<var>node</var>, given a command <var>command</var> and a new value
-<var>new value</var>, it must run the following steps:
+<h3>Pushing down values</h3>
+<p>To <dfn>push down values</dfn> to a [[node]] <var>node</var>, given a new
+value <var>new value</var>:
 
 <div class=XXX>
 <p>This algorithm goes up to just below the nearest ancestor with the right
@@ -1091,6 +1061,8 @@ with a [[style]] attribute).
 </div>
 
 <ol>
+  <li>Let <var>command</var> be the current <span>command</span>.
+
   <li>If <var>node</var>'s [[parent]] is not an [[element]], abort this
   algorithm. <!-- E.g., a text node child of a document fragment. -->
 
@@ -1171,10 +1143,9 @@ with a [[style]] attribute).
 </ol>
 
 
-<h2>Forcing the value of a node</h2>
-<p>When a user agent is to <dfn>force the value</dfn> of a [[node]]
-<var>node</var>, given a command <var>command</var> and a new value
-<var>new value</var>, it must run the following steps.
+<h3>Forcing the value of a node</h3>
+<p>To <dfn>force the value</dfn> of a [[node]] <var>node</var> to <var>new
+value</var>:
 
 <p class=note>This algorithm checks if the node has the desired value, and if
 not, it wraps the node (or, if that's not possible, its descendants) in a
@@ -1185,6 +1156,8 @@ desired value.  After forcing the value, descendants might still have a
 different value.
 
 <ol>
+  <li>Let <var>command</var> be the current <span>command</span>.
+
   <li>If <var>node</var>'s [[parent]] is null, abort this algorithm.
 
   <li>If <var>new value</var> is null, abort this algorithm.
@@ -1524,10 +1497,9 @@ different value.
 </ol>
 
 
-<h2>Setting the value of a node</h2>
-<p>When a user agent is to <dfn>set the value</dfn> of a [[node]]
-<var>node</var>, it must run the following steps.  There are two inputs: a
-command <var>command</var> and a new value <var>new value</var>.
+<h3>Setting the value of a node</h3>
+<p>To <dfn>set the value</dfn> of a [[node]] <var>node</var> to <var>new
+value</var>:
 
 <div class=note>
 <p>The effect of this algorithm is to ensure that the node and all its
@@ -1597,6 +1569,8 @@ as desired.
 </div>
 
 <ol>
+  <li>Let <var>command</var> be the current <span>command</span>.
+
   <li>If <var>node</var> is a [[document]], <span>set the value</span> of its
   [[element]] [[child]] (if it has one) and abort this algorithm.
 
@@ -1673,103 +1647,9 @@ as desired.
 </ol>
 
 
-<h2>Commands</h2>
-<p>The <dfn title=execCommand()><code>execCommand(<var>commandId</var>,
-<var>showUI</var>, <var>value</var>)</code></dfn> method on the
-<code data-anolis-spec=html>HTMLDocument</code> interface allows scripts to
-perform actions on the current selection or at the current caret position.
-Generally, these commands would be used to implement editor UI, for example
-having a "delete" button on a toolbar.
+<h3><dfn>The <code title>backColor</code> command</dfn></h3>
 
-<p>There are three variants to this method, with one, two, and three arguments
-respectively. The <var>showUI</var> and <var>value</var>
-parameters, even if specified, are ignored except where otherwise stated.
-
-<p>When <code>execCommand()</code> is invoked, the user agent must take the
-action from the list below given by <var>commandId</var> on the first [[range]]
-of the [[selection]] given by invoking [[getselection]] on the
-[[contextobject]].  If no action is given in the list for <var>commandId</var>,
-or if there is no [[range]] in that [[selection]], do nothing.
-
-<p>The <dfn
-title=queryCommandState()><code>queryCommandState(<var>commandId</var>)</code></dfn>
-method on the <code data-anolis-spec=html>HTMLDocument</code> interface must
-return the state of <var>commandId</var> on the first [[range]] of the
-[[selection]] given by invoking [[getselection]] on the [[contextobject]], as
-given by the list below.  If no state is given in the list for
-<var>commandId</var>, or if there is no [[range]] in that [[selection]], return
-false.
-<!-- Gecko throws an exception if there are no ranges in the selection, but
-other engines seem to just return false, which seems like nicer behavior
-anyway.
-
-Requesting the state of an unknown command throws an exception in IE 9 RC
-and Firefox 4b11, and returns boolean false in Chrome 10 and Opera 11. -->
-
-<p>The <dfn
-title=queryCommandValue()><code>queryCommandValue(<var>commandId</var>)</code></dfn>
-method on the <code data-anolis-spec=html>HTMLDocument</code> interface must
-return the value of <var>commandId</var> on the first [[range]] of the
-[[selection]] given by invoking [[getselection]] on the [[contextobject]], as
-given by the list below.  If no value is given in the list for
-<var>commandId</var>, or there is no [[range]] in that [[selection]], return
-the empty string.
-<!-- Requesting the value of an unknown command throws an exception in
-IE 9 RC and in Firefox 4b11.  It returns boolean false in Chrome 10, and the
-empty string in Opera 11. -->
-
-<p class=XXX>Querying the value or state of an unrecognized command throws an
-exception in IE and Firefox.  Need to consider changing to that behavior.
-
-<p class=XXX>I say "first range" because I think that's what Gecko actually
-does, and Gecko is the only one that allows multiple ranges in a selection.
-This is keeping in mind that it stores ranges sorted by start, not by the order
-the user added them, and silently removes or shortens existing ranges to avoid
-overlap.  It probably makes the most sense in the long term to have the command
-affect all ranges.  But I'll leave this for later.
-
-<p>The possible values for <var>commandId</var>, and their corresponding
-meanings, are as follows.  These values must be compared to the argument in an
-<span data-anolis-spec=domcore>ASCII case-insensitive</span> manner.  The
-<dfn>relevant CSS property</dfn> of a command is defined here, and is null if
-omitted for a particular command.
-
-<!--
-Things that are only implemented by a couple of browsers and may or may not be
-useful to spec:
-
-* decreaseFontSize, increaseFontSize: Only implemented in Gecko and Opera.
-* contentReadOnly, enableInlineTableEditing, enableObjectResizing, heading,
-  insertBrOnReturn: MDC docs say not implemented in IE (didn't test).
-* readOnly: MDC docs say it's a deprecated equivalent of contentReadOnly, so
-  presumably like useCSS but less popular.
-* 2D-Position, absolutePosition, clearAuthenticationCache, createBookmark,
-  insertButton, insertFieldset, insertIframe, insertInput*, insertMarquee,
-  insertSelectDropdown, insertSelectListbox, insertTextarea, liveResize,
-  multipleSelection, overwrite, print, refresh, saveAs, unbookmark: Mentioned
-  in MSDN docs but not MDC, so presumably IE-only.  Some of these seem
-  inappropriate or useless, others will bear investigation.
-
-Things I haven't looked at:
-
-* copy, cut, paste: Needs attention to security.
-* delete, redo, undo: Needs review of the Google work on this; will probably be
-  quite complicated.
-* formatBlock, insertOrderedList, insertUnorderedList, insertParagraph,
-  justifyCenter, justifyFull, justifyLeft, justifyRight: These look important
-  and should be similar to indent, so they're next on my list.
-* insertHTML: Not supported by IE, but important.  I've seen frameworks that
-  work around its absence in IE by using insertImage and then search and
-  replace.  Will probably need to be defined in terms of insertAdjacentHTML or
-  something.
-* selectAll, unselect: Should be easy, although they seem redundant to just
-  calling methods of the Selection.
--->
-
-<dl>
-<dt><code title><dfn title=command-backcolor>backColor</dfn></code>
-
-<dd><strong>Action</strong>:
+<p><span>Action</span>:
 
 <div class=XXX>
 <p>We have three behaviors to choose from for this one:
@@ -1807,34 +1687,29 @@ instead, which is really confusing.
 same thing as hiliteColor, and make up new commands if we want to do things
 like set the document background color.  Feedback appreciated on this point.
 </div>
-
-<dd><strong>State</strong>:
-
-<dd><strong>Value</strong>:
+</dl>
 
 
-<dt><code title><dfn title=command-bold>bold</dfn></code>
+<h3><dfn>The <code title>bold</code> command</dfn></h3>
 <!-- If the selection is collapsed (but not if it contains nothing but is not
 collapsed), IE9 wraps the whole line in a <strong>.  This seems bizarre and no
 one else does it, so I don't do it.  It's a similar story for similar commands
 (fontName, italic, etc.).  Except not for strikethrough, where it just does
 nothing if the selection is empty.  Why strikethrough?  I don't know. -->
 
-<dd><strong>Action</strong>: <span>Decompose</span> the [[range]].  If the
-state of the [[range]] for this command is then true, <span>set the
-value</span> of each returned [[node]] with <var>new value</var> "normal".
-Otherwise, <span title="set the value">set their value</span> with <var>new
-value</var> "bold".
+<p><span>Action</span>: <span>Decompose</span> the <span>active range</span>.
+If the <span>state</span> is then false, <span>set the value</span> of each
+returned [[node]] to "bold", otherwise <span>set the value</span> to "normal".
 
-<dd><strong>State</strong>: True if every <span>editable</span> [[text]] node
-that is <span>effectively contained</span> in the [[range]] has <span>effective
-value</span> at least 700.  Otherwise false.
+<p><span>State</span>: True if every <span>editable</span> [[text]] node that
+is <span>effectively contained</span> in the <span>active range</span> has
+<span>effective value</span> at least 700.  Otherwise false.
 <!-- For bold and similar commands, IE 9 RC seems to consider the state true or
 false depending on the first element.  All other browsers follow the same
 general idea as the spec, considering a range bold only if all text in it is
 bold, and this seems to match at least OpenOffice.org's bold feature. -->
 
-<dd><strong>Value</strong>: Always the empty string.
+<p><span>Value</span>: Always the empty string.
 <!-- We have lots of options here (and presumably for all the others where
 value is meaningless).  IE 9 RC returns the boolean false, Firefox 4b11 and
 Opera 11 both return the empty string, Chrome 10 returns the string "false".
@@ -1843,17 +1718,17 @@ to always return a string, a majority of string-returners return the empty
 string, and three out of the four return something that evaluates to false as a
 boolean, so I'll go with Firefox and Opera. -->
 
-<dd><strong>Relevant CSS Property</strong>: "font-weight"
+<p><span>Relevant CSS property</span>: "font-weight"
 
 
-<dt><code title><dfn title=command-createlink>createLink</dfn></code>
+<h3><dfn>The <code title>createLink</code> command</dfn></h3>
 
-<dd><strong>Action</strong>: The user agent must run the following steps:
+<p><span>Action</span>:
+
 <!-- If the selection doesn't contain anything (meaning, e.g., deleteContents()
 doesn't change anything), then Chrome 12 dev inserts a link at the selection
 start, with the text equal to the link URL.  Other browsers don't do it, so I
 don't either. -->
-
 <ol>
   <li>If <var>value</var> is the empty string, abort these steps and do
   nothing.
@@ -1864,8 +1739,8 @@ don't either. -->
   specify "#" for the value, or the author can rewrite it, so it's not like
   this makes the API less useful. -->
 
-  <li><span>Decompose</span> the [[range]], and let <var>node list</var> be the
-  result.
+  <li><span>Decompose</span> the <span>active range</span>, and let <var>node
+  list</var> be the result.
 
   <li>For each [[a]] element that has an [[href]] attribute and is an
   [[ancestor]] of some [[node]] in <var>node list</var>, set that element's
@@ -1898,17 +1773,16 @@ don't either. -->
   <var>value</var>.
 </ol>
 
-<dd><strong>State</strong>: Always false.
+<p><span>State</span>: Always false.
 
-<dd><strong>Value</strong>: Always the empty string.
+<p><span>Value</span>: Always the empty string.
 <!-- I'd have expected the value to be the URL, but guess not. -->
 
 
-<dt><code title><dfn title=command-fontname>fontName</dfn></code>
+<h3><dfn>The <code title>fontName</code> command</dfn></h3>
 
-<dd><strong>Action</strong>: <span>Decompose</span> the [[range]], then
-<span>set the value</span> of each returned [[node]] with <var>new value</var>
-equal to <var>value</var>.
+<p><span>Action</span>: <span>Decompose</span> the <span>active range</span>,
+then <span>set the value</span> of each returned [[node]] to <var>value</var>.
 <!-- UAs differ a bit in the details here:
 
 IE 9 RC: Empty string sets <font face="">
@@ -1930,10 +1804,10 @@ likely that the font list will be fixed by the author (how many users will
 understand CSS font-family syntax?), so I don't think such usability concerns
 apply. -->
 
-<dd><strong>State</strong>: Always false.
+<p><span>State</span>: Always false.
 
-<dd><strong>Value</strong>: The computed value of the CSS property
-"font-family" for . . .
+<p><span>Value</span>: The computed value of the CSS property "font-family" for
+. . .
 <!-- Complicated.
 
 IE 9 RC: Always the empty string.  Not very useful.
@@ -1951,12 +1825,13 @@ I'm just going to punt on this and say it should be the computed value of
 font-family.  I'll leave CSSOM to decide what that means if there are no
 applicable style rules. -->
 
-<dd><strong>Relevant CSS Property</strong>: "font-family"
+<p><span>Relevant CSS property</span>: "font-family"
 
 
-<dt><code title><dfn title=command-fontsize>fontSize</dfn></code>
+<h3><dfn>The <code title>fontSize</code> command</dfn></h3>
 
-<dd><strong>Action</strong>:
+<p><span>Action</span>:
+
 <!--
 IE 9: Parses the value as a number (allowing floating-point), rounds to the
   nearest integer, then clamps to the range 1 to 7.  If the value is not a
@@ -2053,20 +1928,17 @@ respecifying non-interoperable behavior anyway.
   allow numeric values.  There's no harm in allowing "x-small" and absolute
   sizes, I don't think.
 
-  <li><span>Decompose</span> the [[range]], then <span>set the value</span> of
-  each returned [[node]] to <var>value</var>.
+  <li><span>Decompose</span> the <span>active range</span>, then <span>set the
+  value</span> of each returned [[node]] to <var>value</var>.
 </ol>
 
-<dd><strong>State</strong>:
-
-<dd><strong>Value</strong>:
-
-<dd><strong>Relevant CSS Property</strong>: "font-size"
+<p><span>Relevant CSS property</span>: "font-size"
 
 
-<dt><code title><dfn title=command-forecolor>foreColor</dfn></code>
+<h3><dfn>The <code title>foreColor</code> command</dfn></h3>
 
-<dd><strong>Action</strong>:
+<p><span>Action</span>:
+
 <!-- Color interpretations (wide screen recommended):
 
                         IE9           Firefox 4.0              Chrome 12 dev            Opera 11.00
@@ -2131,24 +2003,24 @@ browsers, but it's unlikely to hurt and it makes sense.
   <!-- currentColor is bad for the same reason as relative font sizes.  It will
   confuse the algorithm, and doesn't seem very useful anyway. -->
 
-  <li><span>Decompose</span> the [[range]], then <span>set the value</span> of
-  each returned [[node]] to <var>value</var>.
+  <li><span>Decompose</span> the <span>active range</span>, then <span>set the
+  value</span> of each returned [[node]] to <var>value</var>.
 </ol>
 
-<dd><strong>State</strong>: Always false.
+<p><span>State</span>: Always false.
 <!-- This matches IE 9 RC and Chrome 10.  Opera 11 seems to return true if
 there's some color style applied, false otherwise, which seems fairly useless;
 authors want to use value here, not state.  Firefox 4b11 throws an exception,
 which is an interesting approach, but I'll go with IE/WebKit, which makes at
 least as much sense. -->
 
-<dd><strong>Value</strong>:
+<p><span>Value</span>: ?
 <!-- IE 9 RC returns the number 0 always, which makes no sense at all. -->
 
-<dd><strong>Relevant CSS Property</strong>: "color"
+<p><span>Relevant CSS property</span>: "color"
 
 
-<dt><code title><dfn title=command-hiliteColor>hiliteColor</dfn></code>
+<h3><dfn>The <code title>hiliteColor</code> command</dfn></h3>
 <!-- IE 9 RC doesn't support this.  It uses backColor instead, but Gecko and
 Opera treat that differently, while all non-IE browsers treat hiliteColor the
 same, so I'm standardizing hiliteColor as the way to highlight text.
@@ -2166,7 +2038,7 @@ sense; see the comment for backColor.
 
 For color parsing, see the comment for foreColor. -->
 
-<dd><strong>Action</strong>:
+<p><span>Action</span>:
 
 <ol>
   <li>If <var>value</var> is not a valid CSS color, prepend "#" to it.
@@ -2178,113 +2050,423 @@ For color parsing, see the comment for foreColor. -->
   you could conceive of it being useful, but it will still confuse the
   algorithm, so ban it for now anyway. -->
 
-  <li><span>Decompose</span> the [[range]], then <span>set the value</span> of
-  each returned [[node]] to <var>value</var>.
+  <li><span>Decompose</span> the <span>active range</span>, then <span>set the
+  value</span> of each returned [[node]] to <var>value</var>.
 </ol>
 
-<dd><strong>State</strong>: Always false.
+<p><span>State</span>: Always false.
 
-<dd><strong>Value</strong>:
-
-<dd><strong>Relevant CSS Property</strong>: "background-color"
+<p><span>Relevant CSS property</span>: "background-color"
 
 
-<dt><code title><dfn title=command-indent>indent</dfn></code>
-<!--
-IE9: Outputs <blockquote style="margin-right: 0px" dir="ltr">, or when
-  surrounding RTL blocks, <blockquote style="margin-left: 0px" dir="rtl">.  The
-  direction seems to go by the end of the selection.  The presence of the dir
-  attribute means that any contents that were inheriting a different dir from
-  an ancestor get their direction changed as a side effect, but if they
-  actually have the opposite dir specified, they won't appear to be indented.
-  It doesn't reset top or bottom margins on the blockquote, so it adds them.
-  If it's not wrapping a block element, like if it's only wrapping up until a
-  <br>, it adds a <p>.
-Firefox 4.0: In styleWithCSS mode, adds style="margin-left: 40px" to the
-  appropriate block container (or margin-right if it's RTL).  If there's no
-  appropriate block container, adds a div.  If multiple blocks are affected, it
-  goes by the direction of the block whose style it's changing, which winds up
-  being wrong for descendants with different direction.  In non-styleWithCSS
-  mode, uses <blockquote>, so it indents on both sides and also adds top/bottom
-  margins.
-Chrome 12 dev: Outputs <blockquote class="webkit-indent-blockquote"
-  style="margin: 0 0 0 40px; border: none; padding: 0px"> in both modes for
-  both LTR and RTL (which is broken for RTL, since it indents only on the
-  left).
-Opera 11.00: Outputs <blockquote>, so it indents on both sides and on the
-  top/bottom.
+<h3><dfn>The <code title>insertHorizontalRule</code> command</dfn></h3>
 
-For repeated indentation, everyone except Opera that outputs <blockquote>s just
-puts them at the outermost possible location, which works well.  Opera puts
-them in the innermost position, which is broken, because it will even put them
-inside <p> (which will not round-trip through text/html serialization).
+<p><span>Action</span>:
 
-Gecko in CSS mode messes up by adding margins even to things like <blockquote>
-that already have margins from CSS rules, instead of nesting a div, so it
-doesn't actually increase the indentation.  However, if an element has an
-explicit left margin (assuming LTR), it will increase the margin to 80px, so it
-works with WebKit's blockquotes.
+<!-- You'd think interop here would be simple, right?  Nope: we have three
+different behaviors across four browsers.  Opera 11.00 is the only one that
+acts more or less like the spec.  IE9 and Chrome 12 dev treat the value as an
+id, which is weird and probably useless, so I don't do it.  Firefox 4.0
+produces <hr size=2 width=100%> instead of <hr>, which is also weird and almost
+definitely useless, so I don't do it.  Then you have the varying behavior in
+splitting up parents to ensure validity . . . -->
+<ol>
+  <li>Let <var>range</var> be the <span>active range</span>.
+
+  <li>Run <code data-anolis-spec=domrange
+  title=dom-Range-deleteContents>deleteContents()</code> on <var>range</var>.
+
+  <li>Let <var>hr</var> be the result of calling <code
+  data-anolis-spec=domcore
+  title=dom-Document-createElement>createElement("hr")</code> on the
+  [[contextobject]].
+
+  <li>Run <code data-anolis-spec=domrange
+  title=dom-Range-insertNode>insertNode(<var>hr</var>)</code> on
+  <var>range</var>.
+  <!-- This might put it in an inline element, where it's invalid.  This is
+  what IE9 and Chrome 12 dev appear to do.  Firefox 4.0 breaks up inline
+  ancestors, and Opera 11.10 seems to put it before the first inline ancestor
+  instead of where the cursor is.  Breaking up elements is kind of evil, so
+  I'll go with IE/WebKit.  Even though it produces invalid markup, it does
+  still work. -->
+
+  <li>Let <var>selection</var> be the result of running <code
+  data-anolis-spec=domrange
+  title=dom-Document-getSelection>getSelection()</code> on the
+  [[contextobject]].
+
+  <li>Run <code data-anolis-spec=domrange
+  title=dom-Selection-collapse>collapse()</code> on <var>selection</var>, with
+  first argument equal to the [[parent]] of <var>hr</var> and the second
+  argument equal to one plus the [[index]] of <var>hr</var>.
+</ol>
 
 
-We have two strategies for handling directionality: always indent on both sides
-(Firefox non-CSS, Opera) or try to figure out heuristically which side we want
-(IE, Firefox CSS).  The latter approach is only possible by adding extra markup
-and complexity, so for now we'll take the easy way out and go with just
-indenting on both sides.
+<h3><dfn>The <code title>insertImage</code> command</dfn></h3>
 
-
-This reasoning doesn't discuss lists.  For research on lists, see the comment
-for insertOrderedList.  List handling is more complicated and I wound up
-differing from all browsers in lots of ways.
--->
-
-<dd><strong>Action</strong>:
-
-<p class=XXX>Handle corner cases: endpoints are detached, documents, document
-fragments, html/body, head or things in head . . .
+<p><span>Action</span>:
 
 <ol>
-  <li>Let <var>items</var> be a list of all [[li]]s that are
-  [[ancestorcontainers]] of the [[range]]'s [[rangestart]] and/or [[rangeend]]
-  [[bpnode]].
+  <li>If <var>value</var> is the empty string, abort these steps and do
+  nothing.
+  <!-- Similar logic to createLink, except even more compelling, since an HTML
+  document linking to itself as an image is just silly.  In fact, the current
+  HTML spec instructs UAs to not even try displaying the image, and just fail
+  immediately if the URL is empty.  Firefox 4b11 bails out on an empty string,
+  but the other three browsers I tested stick in the <img> anyway. -->
 
-  <li>For each <var>item</var> in <var>items</var>, <span>normalize
-  sublists</span> of <var>item</var>.
-  <!-- This overnormalizes, but it seems like the simplest solution for now.
-  -->
+  <li>Let <var>range</var> be the <span>active range</span>.
 
-  <li><span>Block-extend</span> the [[range]], and let <var>new range</var> be
-  the result.
+  <li>Run <code data-anolis-spec=domrange
+  title=dom-Range-deleteContents>deleteContents()</code> on <var>range</var>.
 
-  <li>Let <var>node list</var> be a list of [[nodes]], initially empty.
+  <li>Let <var>img</var> be the result of calling <code
+  data-anolis-spec=domcore
+  title=dom-Document-createElement>createElement("img")</code> on the
+  [[contextobject]].
 
-  <li>For each [[node]] <var>node</var> [[contained]] in <var>new range</var>,
-  if <var>node</var> is <span>editable</span> and can be the [[child]] of a
-  [[div]] or [[ol]] or [[ul]] and if no [[ancestor]] of <var>node</var> is in
-  <var>node list</var>, append <var>node</var> to <var>node list</var>.
+  <li>Run <code data-anolis-spec=domcore
+  title=dom-Element-setAttribute>setAttribute("src", <var>value</var>)</code>
+  on <var>img</var>.
+  <!-- No alt text, so it's invalid.  This matches all browsers. -->
 
-  <li>If the first member of <var>node list</var> is an [[li]] whose [[parent]]
-  is an [[ol]] or [[ul]], and its [[previoussibling]] is an [[li]] as well,
-  <span>normalize sublists</span> of its [[previoussibling]].
-  <!-- Otherwise the last child of the previous sibling might be a list, which
-  the li wouldn't get appended to. -->
+  <li>Run <code data-anolis-spec=domrange
+  title=dom-Range-insertNode>insertNode(<var>img</var>)</code> on
+  <var>range</var>.
 
-  <li>While <var>node list</var> is not empty:
+  <li>Let <var>selection</var> be the result of calling [[getselection]] on the
+  [[contextobject]].
 
-  <ol>
-    <li>Let <var>sublist</var> be a list of [[nodes]], initially empty.
-
-    <li>Remove the first member of <var>node list</var> and append it to
-    <var>sublist</var>.
-
-    <li>While the first member of <var>node list</var> is the [[nextsibling]]
-    of the last member of <var>sublist</var>, remove the first member of
-    <var>node list</var> and append it to <var>sublist</var>.
-
-    <li><span>Indent</span> <var>sublist</var>.
-  </ol>
+  <li>Run <code data-anolis-spec=domrange
+  title=dom-Selection-collapse>collapse()</code> on <var>selection</var>, with
+  first argument equal to the [[parent]] of <var>img</var> and the second
+  argument equal to one plus the [[index]] of <var>img</var>.
 </ol>
 
+
+<h3><dfn>The <code title>italic</code> command</dfn></h3>
+
+<p><span>Action</span>: <span>Decompose</span> the <span>active range</span>.
+If the <span>state</span> is then false, <span>set the value</span> of each
+returned [[node]] to "italic", otherwise <span>set the value</span> to
+"normal".
+
+<p><span>State</span>: True if every <span>editable</span> [[text]] node that
+is <span>effectively contained</span> in the <span>active range</span> has
+<span>effective value</span> either "italic" or "oblique".  Otherwise false.
+
+<p><span>Value</span>: Always the empty string.
+
+<p><span>Relevant CSS property</span>: "font-style"
+
+
+<h3><dfn>The <code title>removeFormat</code> command</dfn></h3>
+<!--
+Tested in IE 9, Firefox 4.0, Chrome 12 dev, Opera 11.00.
+
+Tags stripped by everyone: b big cite code dfn em font i ins kbd samp s small
+  strike strong sub sup tt u var
+Tags left alone by everyone: br hr img
+
+Unrecognized elements: stripped by Firefox and Opera, left alone by IE and
+  Chrome.
+
+blink: stripped only by IE
+abbr: stripped only by Firefox
+a, wbr: stripped only by Opera
+
+nobr: left alone only by Firefox
+acronym, bdo, q: left alone only by Opera
+
+bdi, del, mark, span, svg: treated the same as unknown elements
+
+All elements whose default rendering is display: block are left untouched by
+all browsers (although IE seems to throw an exception on <marquee> for some
+reason).
+
+It's not clear to me why we should leave <a> alone, but everyone but Opera
+does.  In OpenOffice.org 3.2.1, doing "Default Formatting (Ctrl+M)" doesn't
+remove links.  In Microsoft Word 2007, doing "Clear Formatting" also doesn't
+remove links.  Verdict: don't remove links.  Apparently they don't logically
+qualify as "formatting".
+
+Conclusion: leave alone a, br, hr, img, wbr.  Strip everything else, including
+unrecognized elements, although of course not block elements.  Also we should
+probably treat all replaced elements the same as <img>, although I didn't test
+that (somehow I doubt it will come up much).  <video> behaves the same as
+<img>, although Firefox adds tabindex=0 (???), so I'm assuming the rest are
+similar.  Also, I'll keep all foreign elements and form elements.
+
+
+Browsers will split up all these inline elements if the selection is contained
+within them.  Opera does strip unrecognized elements with display: block if
+they're within the selection, but doesn't split them up if they contain the
+selection.
+
+Upon consideration, I've decided to go for something for now that's totally
+different from what any browser does: get rid of all elements actually
+contained in the selection (pretty much matching browsers), but for elements
+containing the selection, I'll just run all the other styling commands in a
+fashion that will reset the style in normal cases.  This avoids having to
+create a lot of new logic to decide exactly what we can split up or not, and
+should be able to correctly remove anything that can actually be created by
+these algorithms.
+
+This approach currently results in incorrect behavior in some cases for
+non-modifiable elements with default styling, like <code>.  The correct
+approach is probably to declare these elements modifiable; this would roughly
+match what browsers do.  I'm ignoring the issue for now, because such elements
+cannot actually be created by implementations of execCommand(), so they're not
+likely to be common.  Also, the way pushing down styles works right now is that
+the element is destroyed and the style is recreated, which isn't going to work
+for elements like <code> or <tt> or <mark> that we don't normally create.
+-->
+
+<p><span>Action</span>:
+
+<ol>
+  <li><span>Decompose</span> the <span>active range</span>, and let <var>node
+  list</var> be the result.
+
+  <li>For each <var>node</var> in <var>node list</var>, unset the [[style]]
+  attribute of <var>node</var> (if it's an [[element]]) and then all its
+  [[element]] [[descendants]].
+
+  <li>Let <var>elements to remove</var> be a list of all <span title="HTML
+  element">HTML elements</span> that are the same as or [[descendants]] of some
+  member of <var>node list</var> and have non-null [[parents]] and satisfy
+  (insert conditions here).
+
+  <p class=XXX>The conditions are not so simple to define, because we want to
+  include non-conforming elements, which HTML doesn't give content models.  If
+  everything had categories, we'd want something like "either it's
+  unrecognized, or it's phrasing content that's not also embedded or
+  interactive".  Except this has weird corner-cases like ins and del that are
+  sometimes phrasing and sometimes flow.
+
+  <li>For each <var>element</var> in <var>elements to remove</var>:
+
+  <ol>
+    <li>While <var>element</var> has [[children]], insert the first [[child]]
+    of <var>element</var> into the [[parent]] of <var>element</var> immediately
+    before <var>element</var>, <span>preserving ranges</span>.
+
+    <li>Remove <var>element</var> from its [[parent]].
+  </ol>
+
+  <li>For each of the entries in the following table, in the given order:
+  <span>decompose</span> the <span>active range</span> again; then <span>set
+  the value</span> of the resulting [[nodes]], with <var>command</var> and
+  <var>new value</var> as given.
+
+  <p class=XXX>This has no relationship to what browsers actually do, although
+  it mostly works okay.  If I don't throw it out and replace it with something
+  more like what browsers do, it still probably needs refinement to handle some
+  elements that it doesn't deal with yet.
+
+  <table>
+    <tr><th><var>command</var> <th><var>new value</var>
+    <tr><td>subscript <td>"baseline"
+    <!-- superscript not needed, subscript does the same thing.  We run this
+    first so <sub>/<sup> won't upset fontSize. -->
+    <tr><td>bold <td>"normal"
+    <tr><td>fontName <td>null
+    <tr><td>fontSize <td>null
+    <tr><td>foreColor <td>null
+    <tr><td>hiliteColor <td>null
+    <tr><td>italic <td>"normal"
+    <tr><td>strikethrough <td>null
+    <tr><td>underline <td>null
+  </table>
+</ol>
+
+
+<h3><dfn>The <code title>strikethrough</code> command</dfn></h3>
+
+<p><span>Action</span>: <span>Decompose</span> the <span>active range</span>.
+If the <span>state</span> is then false, <span>set the value</span> of each
+returned [[node]] to "line-through", otherwise <span>set the value</span> to
+null.
+
+<p class=XXX>Has all the same problems as <span>the <code
+title>underline</code> command</span>.
+
+<p><span>State</span>: True if every <span>editable</span> [[text]] node that
+is <span>effectively contained</span> in the <span>active range</span> has
+<span>effective value</span> "line-through".  Otherwise false.
+
+<p><span>Value</span>: Always the empty string.
+
+
+<h3><dfn>The <code title>subscript</code> command</dfn></h3>
+
+<p><span>Action</span>:
+
+<ol>
+  <li><span>Decompose</span> the <span>active range</span>, and let <var>node
+  list</var> be the result.
+  
+  <li>Let <var>state</var> be the <span>state</span>.
+  
+  <li><span>Set the value</span> of each [[node]] in <var>node list</var> to
+  "baseline".
+
+  <li>If <var>state</var> is false, <span>decompose</span> the <span>active
+  range</span> again and <span>set the value</span> of each returned [[node]]
+  to "sub".
+</ol>
+
+<p><span>State</span>: True if every <span>editable</span> [[text]] node that
+is <span>effectively contained</span> in the <span>active range</span> has
+<span>effective value</span> "sub".  Otherwise false.
+
+<p><span>Relevant CSS property</span>: "vertical-align"
+
+
+<h3><dfn>The <code title>superscript</code> command</dfn></h3>
+
+<p><span>Action</span>:
+
+<ol>
+  <li><span>Decompose</span> the <span>active range</span>, and let <var>node
+  list</var> be the result.
+  
+  <li>Let <var>state</var> be the <span>state</span>.
+  
+  <li><span>Set the value</span> of each [[node]] in <var>node list</var> to
+  "baseline".
+
+  <li>If <var>state</var> is false, <span>decompose</span> the <span>active
+  range</span> again and <span>set the value</span> of each returned [[node]]
+  to "super".
+</ol>
+
+<p><span>State</span>: True if every <span>editable</span> [[text]] node that
+is <span>effectively contained</span> in the <span>active range</span> has
+<span>effective value</span> "super".  Otherwise false.
+
+<p><span>Relevant CSS property</span>: "vertical-align"
+
+
+<h3><dfn>The <code title>underline</code> command</dfn></h3>
+
+<p><span>Action</span>: <span>Decompose</span> the <span>active range</span>.
+If the <span>state</span> is then false, <span>set the value</span> of each
+returned [[node]] to "underline", otherwise <span>set the value</span> to null.
+
+<div class=XXX>
+<p>There are a lot of problems with underline color and thickness, because
+text-decoration in CSS is horrible:
+
+<ul>
+  <li>Pushing down underlines can change their color, since the color of an
+  underline follows the color of the element where it's declared instead of the
+  text it's drawn under.  This could be fixed by adding a special case for this
+  condition and inserting extra color rules, such as by setting a color on the
+  underlining element and then having another element inside it that resets the
+  color.  Horrible, but that's text-decoration for you.  Alternatively, the new
+  text-decoration-color property in the CSS 3 Text draft could come in handy
+  here, in which case we'd degrade pretty gracefully in legacy UAs.
+
+  <li>Underline thickness depends on font-size in all rendering engines but
+  WebKit, so pushing them down creates thickness problems as well as color
+  problems.  Working around this is a similar story to the previous, except we
+  have no text-decoration-width property yet (see <a
+  href="http://lists.w3.org/Archives/Public/www-style/2011Mar/0593.html">feedback
+  to www-style</a>).
+
+  <li>The preceding two points can't be avoided, because the only way to remove
+  underlines in CSS is to push down styles (unlike most other things where you
+  could override it).  Recent (February 2011) CSS 3 Text drafts have added
+  support for a "text-decoration-line: cancel-underline" property, but we can
+  only use that if there's no other possibility, since it won't work in legacy
+  browsers.  (Although we should use it once there's no other possibility.)
+
+  <li>More generally, from a user's perspective, color and thickness of
+  underlines is going to be more or less random if they're applying them to
+  text with varying size or color.  If they underline a bunch of text all at
+  once, it will all get the same color/thickness, probably.  But if they
+  underline letter-by-letter, it probably will vary.  But sometimes when they
+  underline a bunch of text at once it will also vary, if the algorithm decides
+  to create multiple elements for whatever reason (like an intervening
+  unwrappable node).  This is unlikely to match user expectations.  There's
+  not much we can do about this without entirely revamping text-decoration, so
+  we'll have to live with it.
+
+  <li>Currently we don't treat non-underline text-decorations properly, because
+  we have no way to set (or cancel) underlines independently of other
+  text-decorations from within CSS.  I've sent <a
+  href="http://lists.w3.org/Archives/Public/www-style/2011Mar/0591.html">feedback
+  to www-style</a>.
+</ul>
+
+<p>I'll revisit some of these issues when I get feedback on www-style, either
+using the newly-specced features or working around their absence as the case
+may be.
+</div>
+
+<p><span>State</span>: True if every <span>editable</span> [[text]] node that
+is <span>effectively contained</span> in the <span>active range</span> has
+<span>effective value</span> "underline".  Otherwise false.
+
+<p><span>Value</span>: Always the empty string.
+
+
+<h3><dfn>The <code title>unlink</code> command</dfn></h3>
+
+<p><span>Action</span>:
+
+<!--
+IE 9 RC unlinks the whole link you're pointing at, while others only
+unlink the current text.  The latter behavior seems less expected, as with
+createLink, although I can't articulate precisely why.  Word 2007 and
+OpenOffice.org 3.2.1 (Ubuntu) seem to give an option to remove the whole link
+or none of it, which backs the spec's requirement.  See also #whatwg logs
+starting at 2011-05-13 at 16:53 EDT (UTC-0400).
+-->
+<ol>
+  <li>Let <var>hyperlinks</var> be a list of every [[a]] element that has an
+  [[href]] attribute and is [[contained]] in the <span>active range</span> or
+  is an [[ancestor]] of one of its [[boundarypoints]].
+
+  <li><span>Clear the value</span> of each member of <var>hyperlinks</var>.
+</ol>
+
+<p><span>State</span>: Always false.
+
+<p><span>Value</span>: Always the empty string.
+
+
+<h2>Block formatting commands</h2>
+
+<h3>Block formatting command definitions</h3>
+
+<p>A <dfn>potential indentation element</dfn> is either a [[blockquote]], or a
+[[div]] that has a [[style]] attribute that sets "margin" or some subproperty
+of it.
+
+<p class=XXX>Terminology is inconsistent with "modifiable" etc. used for inline
+styles.
+
+<p>An <dfn>indentation element</dfn> is an <span>potential indentation
+element</span> that has no attributes other than one or more of
+
+<ul>
+  <li>a [[style]] attribute that sets no properties other than "margin",
+  "border", "padding", or subproperties of those;
+
+  <li>a <code data-anolis-spec=html title=classes>class</code> attribute;
+
+  <li>a <code data-anolis-spec=html title="the dir attribute">dir</code>
+  attribute.
+</ul>
+
+
+<h3>Assorted block formatting command algorithms</h3>
+
+<p>To <dfn>indent</dfn> a list <var>node list</var> of consecutive [[sibling]]
+[[nodes]]:
 <!--
 We have to handle entire lists of siblings at once, or else we'd wind up doing
 something like
@@ -2307,8 +2489,6 @@ something like
 since by the time we got to doing the <ol> that originally contained "bar", we
 won't remember that we aren't supposed to indent "foo" a second time.
 -->
-<p>To <dfn>indent</dfn> a list <var>node list</var> of consecutive [[sibling]]
-[[nodes]]:
 
 <ol>
   <li>If <var>node list</var> is empty, do nothing and abort these steps.
@@ -2386,90 +2566,463 @@ won't remember that we aren't supposed to indent "foo" a second time.
   don't, and the ones that do get it wrong.
 </ol>
 
-<dd><strong>State</strong>:
-
-<dd><strong>Value</strong>:
-
-
-<dt><code title><dfn title=command-inserthorizontalrule>insertHorizontalRule</dfn></code>
-
-<dd><strong>Action</strong>:
-<!-- You'd think interop here would be simple, right?  Nope: we have three
-different behaviors across four browsers.  Opera 11.00 is the only one that
-acts more or less like the spec.  IE9 and Chrome 12 dev treat the value as an
-id, which is weird and probably useless, so I don't do it.  Firefox 4.0
-produces <hr size=2 width=100%> instead of <hr>, which is also weird and almost
-definitely useless, so I don't do it.  Then you have the varying behavior in
-splitting up parents to ensure validity . . . -->
+<p>To <dfn>fix orphaned list items</dfn> in a list of [[nodes]] <var>node
+list</var>:
 
 <ol>
-  <li>Run <code data-anolis-spec=domrange
-  title=dom-Range-deleteContents>deleteContents()</code> on the [[range]].
+  <li>For each [[li]] <var>item</var> in <var>node list</var>:
 
-  <li>Let <var>hr</var> be the result of calling <code
-  data-anolis-spec=domcore
-  title=dom-Document-createElement>createElement("hr")</code> on the
-  [[contextobject]].
+  <ol>
+      <li>If <var>item</var>'s [[parent]] is not an [[ol]], unset
+      <var>item</var>'s <code data-anolis-spec=html
+      title=attr-li-value>value</code> attribute, if set.
+      <!-- IE9, Firefox 4.0, and Opera 11.10 keep the value attribute even if
+      the parent is now a ul.  Chrome 12 dev strips it even if the parent is
+      now an ol.  The spec makes more sense. -->
 
-  <li>Run <code data-anolis-spec=domrange
-  title=dom-Range-insertNode>insertNode(<var>hr</var>)</code> on the [[range]].
-  <!-- This might put it in an inline element, where it's invalid.  This is
-  what IE9 and Chrome 12 dev appear to do.  Firefox 4.0 breaks up inline
-  ancestors, and Opera 11.10 seems to put it before the first inline ancestor
-  instead of where the cursor is.  Breaking up elements is kind of evil, so
-  I'll go with IE/WebKit.  Even though it produces invalid markup, it does
-  still work. -->
+      <li>If <var>item</var> has no attributes and its [[parent]] is not an
+      [[ol]] or [[ul]], remove <var>item</var>, <span>preserving its
+      descendants</span>.
 
-  <li>Run <code data-anolis-spec=domrange
-  title=dom-Selection-collapse>collapse()</code> on the [[selection]], with
-  first argument equal to the [[parent]] of <var>hr</var> and the second
-  argument equal to one plus the [[index]] of <var>hr</var>.
+      <li>Otherwise, if <var>item</var>'s [[parent]] is not an [[ol]] or
+      [[ul]], <span>set the tag name</span> of <var>item</var> to "div".
+  </ol>
 </ol>
 
-<dd><strong>State</strong>:
+<p>To <dfn>normalize sublists</dfn> in a [[node]] <var>item</var>:
+<!--
+This algorithm implies that we don't support a sublist in the middle of an
+item, only at the end.  For instance,
 
-<dd><strong>Value</strong>:
+  <li>foo<ol>...</ol>bar</li>
 
+gets transformed to
 
-<dt><code title><dfn title=command-insertimage>insertImage</dfn></code>
+  <li>foo</li><ol>...</ol><li>bar</li>
 
-<dd><strong>Action</strong>:
+which in particular creates an extra list marker for "bar".  This is okay; we
+don't need to expose all of HTML's markup abilities through execCommand().
+Similarly, the superscript and subscript commands don't allow nesting.  I
+didn't see any way to get a sublist in the middle of an item in Word 2007 or in
+OpenOffice.org 3.2.1 Ubuntu package, nor in  any browser using just
+execCommand(), so it should be no big problem if we require that such nesting
+not occur.  (Existing browsers behave weirdly and inconsistently when
+confronted with this kind of nesting.)
+-->
 
 <ol>
-  <li>If <var>value</var> is the empty string, abort these steps and do
-  nothing.
-  <!-- Similar logic to createLink, except even more compelling, since an HTML
-  document linking to itself as an image is just silly.  In fact, the current
-  HTML spec instructs UAs to not even try displaying the image, and just fail
-  immediately if the URL is empty.  Firefox 4b11 bails out on an empty string,
-  but the other three browsers I tested stick in the <img> anyway. -->
+  <li>If <var>item</var> is not an [[li]] or it is not <span>editable</span> or
+  its [[parent]] is not <span>editable</span>, abort these steps.
 
-  <li>Run <code data-anolis-spec=domrange
-  title=dom-Range-deleteContents>deleteContents()</code> on the [[range]].
+  <li>Let <var>new item</var> be null.
 
-  <li>Let <var>img</var> be the result of calling <code
-  data-anolis-spec=domcore
-  title=dom-Document-createElement>createElement("img")</code> on the
-  [[contextobject]].
+  <li>While <var>item</var> has an [[ol]] or [[ul]] [[child]]:
 
-  <li>Run <code data-anolis-spec=domcore
-  title=dom-Element-setAttribute>setAttribute("src", <var>value</var>)</code>
-  on <var>img</var>.
-  <!-- No alt text, so it's invalid.  This matches all browsers. -->
+  <ol>
+    <li>Let <var>child</var> be the last [[child]] of <var>item</var>.
 
-  <li>Run <code data-anolis-spec=domrange
-  title=dom-Range-insertNode>insertNode(<var>img</var>)</code> on the
-  [[range]].
+    <li>If <var>child</var> is an [[ol]] or [[ul]], or <var>new item</var> is
+    null and <var>child</var> is a [[text]] node whose <code
+    data-anolis-spec=domcore title=dom-CharacterData-data>data</code>
+    consists of zero of more <span data-anolis-spec=domcore title="space
+    character">space characters</span>:
 
-  <li>Run <code data-anolis-spec=domrange
-  title=dom-Selection-collapse>collapse()</code> on the [[selection]], with
-  first argument equal to the [[parent]] of <var>img</var> and the second
-  argument equal to one plus the [[index]] of <var>img</var>.
+    <ol>
+      <li>Set <var>new item</var> to null.
+
+      <li>Insert <var>child</var> into the [[parent]] of <var>item</var>
+      immediately following <var>item</var>, <span>preserving ranges</span>.
+    </ol>
+
+    <li>Otherwise:
+
+    <ol>
+      <li>If <var>new item</var> is null, let <var>new item</var> be the
+      result of calling <code data-anolis-spec=domcore
+      title=dom-Document-createElement>createElement("li")</code> on the
+      [[ownerdocument]] of <var>item</var>, then insert <var>new item</var>
+      into the [[parent]] of <var>item</var> immediately after
+      <var>item</var>.
+
+      <li>Insert <var>child</var> into <var>new item</var> as its first
+      [[child]], <span>preserving ranges</span>.
+    </ol>
+  </ol>
 </ol>
 
-<dd><strong>State</strong>:
 
-<dd><strong>Value</strong>:
+<h3>Outdenting a node</h3>
+
+<p>To <dfn>outdent</dfn> a [[node]] <var>node</var>:
+
+<!--
+Things that are produced for indentation that we need to consider removing:
+
+* Plain <blockquote> (produced by spec, Firefox 4.0 non-CSS, Opera 11.00)
+* <blockquote style="margin-right: 0" dir="ltr"> and <blockquote
+  style="margin-left: 0" dir="rtl"> (IE9)
+* <blockquote class="webkit-indent-blockquote" style="margin: 0 0 0 40px;
+  border: none; padding: 0px"> (Chrome 12 dev)
+* <div style="margin-left: 40px"> and <div style="margin-right: 40px">
+  (Firefox 4.0 CSS if no other element available)
+* Other random things with display: block whose left or right margin was
+  increased by 40px (Firefox 4.0 CSS)
+
+For discussion on the list-related stuff, see the comment for
+insertOrderedList.
+-->
+<ol>
+  <li>If <var>node</var> is not <span>editable</span>, abort these steps.
+
+  <!-- The easy case is when the whole element is indented.  In this case we
+  remove the whole thing indiscriminately.  In the case of blockquotes
+  created by IE, this might change the direction of some children, but then
+  their direction was probably changed incorrectly in the first place, so no
+  harm. -->
+  <li>If <var>node</var> is an <span>indentation element</span>, remove
+  <var>node</var>, <span>preserving its descendants</span>.  Then abort these
+  steps.
+
+  <!-- No browser handles the case of Firefox 4.0 in CSS mode, where it adds a
+  margin attribute to an existing element, including Firefox itself.  So let's
+  just skip it. -->
+
+  <li>If <var>node</var> is a <span>potential indentation element</span>:
+  <!-- This might be an indentation element that had style added to it by
+  Firefox in CSS mode, for instance (color, font-family, etc.). -->
+
+  <ol>
+    <li>Unset the <code data-anolis-spec=html title=classes>class</code> and
+    <code data-anolis-spec=html title="the dir attribute">dir</code>
+    attributes of <var>node</var>, if any.
+
+    <li>Unset the margin, padding, and border CSS properties of
+    <var>node</var>.
+
+    <li><span>Set the tag name</span> of <var>node</var> to "div".
+
+    <li>Abort these steps.
+  </ol>
+
+  <!-- Approximate algorithms when an ancestor is causing the indentation
+  appear to be:
+
+  IE9: Go to the innermost element causing indentation.  If the stuff to be
+    outdented includes all the contents of that element, get rid of it, but
+    if it has any attributes, change it to a <p> with those same attributes.
+    This is an excellent idea in general, but unfortunately it preserves
+    explicitly-specified margins in style attributes, which isn't great.  In
+    other cases, it moves the stuff to be outdented outside.  Not clear on
+    all the details, seems to be pretty confusing.  Also does a bunch of
+    seemingly arbitrary normalization like removing divs and some attributes
+    from some things . . .
+  Firefox 4.0: Go to the innermost element causing indentation.  If the stuff
+    to be outdented includes all the contents of that element, get rid of it,
+    even if it has arbitrary attributes.  Otherwise, move the stuff to be
+    outdented outside the indenting element.  If there are any intervening
+    elements that include stuff not to be outdented, wrap the outdented stuff
+    in copies (which can duplicate id's, etc.).
+  Chrome 12 dev: Go to the outermost element causing indentation (even if the
+    current element is itself causing indentation).  Move the text to be
+    outdented outside that outermost element, without regard to any
+    intervening elements.  Then recreate the original styles on the moved
+    text, in some fashion.  Something like that; it confuses me and doesn't
+    seem to be reasonable.
+  Opera 11.00: Like Firefox, except it goes to the outermost element, not the
+    innermost.  Also seems to special-case to avoid duplicate id's, and has a
+    few other quirks.
+
+  Overall, all flawed, so I'll make up my own, patterned after pushing down
+  styles.  First we search ancestors for an indentation element, which we stand
+  a chance of completely removing.  Failing that, we look for a potential
+  indentation element, which we cannot completely remove. -->
+  <li>Let <var>current ancestor</var> be <var>node</var>'s [[parent]].
+
+  <li>Let <var>ancestor list</var> be a list of [[nodes]], initially empty.
+
+  <li>While <var>current ancestor</var> is an <span>editable</span> [[element]]
+  that is not an <span>indentation element</span>, append <var>current
+  ancestor</var> to <var>ancestor list</var> and then set <var>current
+  ancestor</var> to its [[parent]].
+
+  <li>If <var>current ancestor</var> is not an <span>editable</span>
+  <span>indentation element</span>:
+
+  <ol>
+    <li>Let <var>current ancestor</var> be <var>node</var>'s [[parent]].
+
+    <li>Let <var>ancestor list</var> be the empty list.
+
+    <li>While <var>current ancestor</var> is an <span>editable</span>
+    [[element]] that is not a <span>potential indentation element</span>,
+    append <var>current ancestor</var> to <var>ancestor list</var> and then set
+    <var>current ancestor</var> to its [[parent]].
+  </ol>
+
+  <li>If <var>node</var> is an [[ol]] or [[ul]], and either <var>current
+  ancestor</var> is not an <span>editable</span> <span>potential indentation
+  element</span> or <var>node</var>'s [[parent]] is an [[ol]] or [[ul]]:
+  <!--
+  When asked to outdent a list wrapped in an indentation element, Chrome 12 dev
+  removes the list instead of the indentation element.  Opera 11.10 seems to
+  remove both.  IE9 and Firefox 4.0 remove the indentation element, as does the
+  spec.
+  -->
+
+  <div class=XXX>
+  <p>We don't handle a case like
+
+  <xmp><ol><ol style="color: red"><li>foo<li>bar</ol><li>baz</ol></xmp>
+
+  <p>If the inner [[ol]] is selected to be outdented, "foo" and "bar" will stop
+  being red.  It seems nontrivial to handle this case in general, since we
+  can't group [[li]]s.  If the list we're outdenting is a child of a non-list,
+  then we can just change it to a div.
+  </div>
+  <!--
+  Chrome 12 dev seems to special-case style attributes by converting them to
+  the corresponding inline markup elements (at least in easy cases like color).
+  For other attributes and non-WebKit browsers (IE9/FF4/O11.10), it looks like
+  all the attributes are just removed.  Maybe we should try to copy WebKit
+  here.
+  -->
+
+  <p class=XXX>What about if node isn't a child of a list, but there's a list
+  ancestor below current ancestor?  Is that even possible given how the
+  block-extend algorithm works?
+
+  <ol>
+    <li>Unset the <code data-anolis-spec=html
+    title=attr-ol-reversed>reversed</code>, <code data-anolis-spec=html
+    title=attr-ol-start>start</code>, and <code data-anolis-spec=html
+    title=attr-ol-type>type</code> attributes of <var>node</var>, if any are
+    set.
+
+    <li>Let <var>children</var> be the [[children]] of <var>node</var>.
+
+    <li>If <var>node</var> has attributes, and its [[parent]] or not an [[ol]]
+    or [[ul]], <span>set the tag name</span> of <var>node</var> to "div".
+
+    <li>Otherwise remove <var>node</var>, <span>preserving its descendants</span>.
+
+    <li><span>Fix orphaned list items</span> in <var>children</var>.
+
+    <li>Abort these steps.
+  </ol>
+
+  <li>If <var>current ancestor</var> is not an <span>editable</span>
+  <span>potential indentation element</span>, abort these steps.
+
+  <!-- At this point, we have an ancestor to split up. -->
+  <li>Append <var>current ancestor</var> to <var>ancestor list</var>.
+
+  <li>Let <var>original ancestor</var> be <var>current ancestor</var>.
+  <!-- We can't outdent it yet, because we need its children to remain intact
+  for the loop. -->
+
+  <li>While <var>ancestor list</var> is not empty:
+
+  <ol>
+    <li>Let <var>current ancestor</var> be the last member of <var>ancestor
+    list</var>.
+
+    <li>Remove the last member from <var>ancestor list</var>.
+
+    <li>Let <var>target</var> be the [[child]] of <var>current ancestor</var>
+    that is equal to either <var>node</var> or the last member of <var>ancestor
+    list</var>.
+
+    <li>If <var>target</var> is an <span>inline node</span> that is not a
+    [[br]], and its [[nextsibling]] is a [[br]], remove <var>target</var>'s
+    [[nextsibling]] from its [[parent]].
+
+    <li>Let <var>preceding siblings</var> be the [[precedingsiblings]] of
+    <var>target</var>, and let <var>following siblings</var> be the
+    [[followingsiblings]] of <var>target</var>.
+
+    <li><span>Indent</span> <var>preceding siblings</var>.
+
+    <li><span>Indent</span> <var>following siblings</var>.
+  </ol>
+
+  <li><span>Outdent</span> <var>original ancestor</var>.
+</ol>
+
+
+<h3>Block-extending a range</h3>
+<p>When a user agent is to <dfn>block-extend</dfn> a [[range]]
+<var>range</var>, it must run the following steps:
+
+<ol>
+  <li>Let <var>start node</var>, <var>start offset</var>, <var>end node</var>,
+  and <var>end offset</var> be the [[rangestart]] and [[rangeend]] [[bpnodes]]
+  and [[bpoffsets]] of <var>range</var>.
+
+  <li>If some [[ancestorcontainer]] of <var>start node</var> is an [[li]], set
+  <var>start offset</var> to the [[index]] of the last such [[li]] in
+  [[treeorder]], and set <var>start node</var> to that [[li]]'s [[parent]].
+
+  <li>Repeat the following steps:
+
+  <ol>
+    <li>If <var>start node</var> is a [[text]] or [[comment]] node or
+    <var>start offset</var> is 0, set <var>start offset</var> to the [[index]]
+    of <var>start node</var> and then set <var>start node</var> to its
+    [[parent]].
+
+    <li>Otherwise, if <var>start offset</var> is equal to the
+    [[nodelength]] of <var>start node</var>, set <var>start offset</var> to one
+    plus the [[index]] of <var>start node</var> and then set <var>start
+    node</var> to its [[parent]].
+
+    <li>Otherwise, if the [[child]] of <var>start node</var> with [[index]]
+    <var>start offset</var> and its [[previoussibling]] are both <span
+    title="inline node">inline nodes</span> and the [[previoussibling]] isn't a
+    [[br]], subtract one from <var>start offset</var>.
+    <!-- IE also includes <br> (at least for the purposes of the indent
+    command), but this is unlikely to match user expectations. -->
+
+    <p class=XXX>This is wrong in the presence of comments or display: none or
+    probably other things.  Do we care?
+
+    <li>Otherwise, break from this loop.
+  </ol>
+
+  <li>If some [[ancestorcontainer]] of <var>end node</var> is an [[li]], set
+  <var>end offset</var> to one plus the [[index]] of the last such [[li]] in
+  [[treeorder]], and set <var>end node</var> to that [[li]]'s [[parent]].
+
+  <li>Repeat the following steps:
+
+  <ol>
+    <li>If <var>end offset</var> is 0, set <var>end offset</var> to the
+    [[index]] of <var>end node</var> and then set <var>end node</var> to its
+    [[parent]].
+
+    <li>Otherwise, if <var>end node</var> is a [[text]] or [[comment]] node or
+    <var>end offset</var> is equal to the [[nodelength]] of <var>end
+    node</var>, set <var>end offset</var> to one plus the [[index]] of <var>end
+    node</var> and then set <var>end node</var> to its [[parent]].
+
+    <li>Otherwise, if the [[child]] of <var>end node</var> with [[index]]
+    <var>end offset</var> and its [[previoussibling]] are both <span
+    title="inline node">inline nodes</span>, and the [[child]] of <var>end
+    node</var> with [[index]] <var>end offset</var> isn't a [[br]], add one to
+    <var>end offset</var>.
+
+    <li>Otherwise, break from this loop.
+  </ol>
+
+  <li>If the [[child]] of <var>end node</var> with [[index]] <var>end
+  offset</var> is a [[br]], add one to <var>end offset</var>.
+
+  <li>While <var>end offset</var> is equal to the [[nodelength]] of <var>end
+  node</var>, set <var>end offset</var> to one plus the [[index]] of <var>end
+  node</var> and then set <var>end node</var> to its [[parent]].
+
+  <li>Let <var>new range</var> be a new [[range]] whose [[rangestart]] and
+  [[rangeend]] [[bpnodes]] and [[bpoffsets]] are <var>start node</var>,
+  <var>start offset</var>, <var>end node</var>, and <var>end offset</var>.
+
+  <li>Return <var>new range</var>.
+</ol>
+
+
+<h3><dfn>The <code title>indent</code> command</dfn></h3>
+<!--
+IE9: Outputs <blockquote style="margin-right: 0px" dir="ltr">, or when
+  surrounding RTL blocks, <blockquote style="margin-left: 0px" dir="rtl">.  The
+  direction seems to go by the end of the selection.  The presence of the dir
+  attribute means that any contents that were inheriting a different dir from
+  an ancestor get their direction changed as a side effect, but if they
+  actually have the opposite dir specified, they won't appear to be indented.
+  It doesn't reset top or bottom margins on the blockquote, so it adds them.
+  If it's not wrapping a block element, like if it's only wrapping up until a
+  <br>, it adds a <p>.
+Firefox 4.0: In styleWithCSS mode, adds style="margin-left: 40px" to the
+  appropriate block container (or margin-right if it's RTL).  If there's no
+  appropriate block container, adds a div.  If multiple blocks are affected, it
+  goes by the direction of the block whose style it's changing, which winds up
+  being wrong for descendants with different direction.  In non-styleWithCSS
+  mode, uses <blockquote>, so it indents on both sides and also adds top/bottom
+  margins.
+Chrome 12 dev: Outputs <blockquote class="webkit-indent-blockquote"
+  style="margin: 0 0 0 40px; border: none; padding: 0px"> in both modes for
+  both LTR and RTL (which is broken for RTL, since it indents only on the
+  left).
+Opera 11.00: Outputs <blockquote>, so it indents on both sides and on the
+  top/bottom.
+
+For repeated indentation, everyone except Opera that outputs <blockquote>s just
+puts them at the outermost possible location, which works well.  Opera puts
+them in the innermost position, which is broken, because it will even put them
+inside <p> (which will not round-trip through text/html serialization).
+
+Gecko in CSS mode messes up by adding margins even to things like <blockquote>
+that already have margins from CSS rules, instead of nesting a div, so it
+doesn't actually increase the indentation.  However, if an element has an
+explicit left margin (assuming LTR), it will increase the margin to 80px, so it
+works with WebKit's blockquotes.
+
+
+We have two strategies for handling directionality: always indent on both sides
+(Firefox non-CSS, Opera) or try to figure out heuristically which side we want
+(IE, Firefox CSS).  The latter approach is only possible by adding extra markup
+and complexity, so for now we'll take the easy way out and go with just
+indenting on both sides.
+
+
+This reasoning doesn't discuss lists.  For research on lists, see the comment
+for insertOrderedList.  List handling is more complicated and I wound up
+differing from all browsers in lots of ways.
+-->
+
+<p><span>Action</span>:
+
+<p class=XXX>Handle corner cases: endpoints are detached, documents, document
+fragments, html/body, head or things in head . . .
+
+<ol>
+  <li>Let <var>items</var> be a list of all [[li]]s that are
+  [[ancestorcontainers]] of the <span>active range</span>'s [[rangestart]]
+  and/or [[rangeend]] [[bpnode]].
+
+  <li>For each <var>item</var> in <var>items</var>, <span>normalize
+  sublists</span> of <var>item</var>.
+  <!-- This overnormalizes, but it seems like the simplest solution for now.
+  -->
+
+  <li><span>Block-extend</span> the <span>active range</span>, and let <var>new
+  range</var> be the result.
+
+  <li>Let <var>node list</var> be a list of [[nodes]], initially empty.
+
+  <li>For each [[node]] <var>node</var> [[contained]] in <var>new range</var>,
+  if <var>node</var> is <span>editable</span> and can be the [[child]] of a
+  [[div]] or [[ol]] or [[ul]] and if no [[ancestor]] of <var>node</var> is in
+  <var>node list</var>, append <var>node</var> to <var>node list</var>.
+
+  <li>If the first member of <var>node list</var> is an [[li]] whose [[parent]]
+  is an [[ol]] or [[ul]], and its [[previoussibling]] is an [[li]] as well,
+  <span>normalize sublists</span> of its [[previoussibling]].
+  <!-- Otherwise the last child of the previous sibling might be a list, which
+  the li wouldn't get appended to. -->
+
+  <li>While <var>node list</var> is not empty:
+
+  <ol>
+    <li>Let <var>sublist</var> be a list of [[nodes]], initially empty.
+
+    <li>Remove the first member of <var>node list</var> and append it to
+    <var>sublist</var>.
+
+    <li>While the first member of <var>node list</var> is the [[nextsibling]]
+    of the last member of <var>sublist</var>, remove the first member of
+    <var>node list</var> and append it to <var>sublist</var>.
+
+    <li><span>Indent</span> <var>sublist</var>.
+  </ol>
+</ol>
 
 
 <!--
@@ -2784,22 +3337,22 @@ What this means from an HTML perspective, roughly:
 
 Sheesh, lists are complicated.
 -->
-<dt><code title><dfn title=command-insertorderedlist>insertOrderedList</dfn></code>
+<h3><dfn>The <code title>insertOrderedList</code> command</dfn></h3>
 
-<dd><strong>Action</strong>:
+<p><span>Action</span>:
 
 <ol>
   <li>Let <var>items</var> be a list of all [[li]]s that are
-  [[ancestorcontainers]] of the [[range]]'s [[rangestart]] and/or [[rangeend]]
-  [[bpnode]].
+  [[ancestorcontainers]] of the <span>active range</span>'s [[rangestart]]
+  and/or [[rangeend]] [[bpnode]].
 
   <li>For each <var>item</var> in <var>items</var>, <span>normalize
   sublists</span> of <var>item</var>.
   <!-- This overnormalizes, but it seems like the simplest solution for now.
   -->
 
-  <li><span>Block-extend</span> the [[range]], and let <var>new range</var> be
-  the result.
+  <li><span>Block-extend</span> the <span>active range</span>, and let <var>new
+  range</var> be the result.
 
   <li>Let <var>node list</var> be a list of [[nodes]], initially empty.
 
@@ -2991,39 +3544,22 @@ Sheesh, lists are complicated.
 </ol>
 
 
-<dt><code title><dfn title=command-italic>italic</dfn></code>
+<h3><dfn>The <code title>outdent</code> command</dfn></h3>
 
-<dd><strong>Action</strong>: <span>Decompose</span> the [[range]].  If the
-state of the [[range]] for this command is then true, <span>set the
-value</span> of each returned [[node]] with <var>new value</var> "normal".
-Otherwise, <span title="set the value">set their value</span> with <var>new
-value</var> "italic".
-
-<dd><strong>State</strong>: True if every <span>editable</span> [[text]] node
-that is <span>effectively contained</span> in the [[range]] has <span>effective
-value</span> either "italic" or "oblique".  Otherwise false.
-
-<dd><strong>Value</strong>: Always the empty string.
-
-<dd><strong>Relevant CSS Property</strong>: "font-style"
-
-
-<dt><code title><dfn title=command-outdent>outdent</dfn></code>
-
-<dd><strong>Action</strong>:
+<p><span>Action</span>:
 
 <ol>
   <li>Let <var>items</var> be a list of all [[li]]s that are
-  [[ancestorcontainers]] of the [[range]]'s [[rangestart]] and/or [[rangeend]]
-  [[bpnode]].
+  [[ancestorcontainers]] of the <span>active range</span>'s [[rangestart]]
+  and/or [[rangeend]] [[bpnode]].
 
   <li>For each <var>item</var> in <var>items</var>, <span>normalize
   sublists</span> of <var>item</var>.
   <!-- This overnormalizes, but it seems like the simplest solution for now.
   -->
 
-  <li><span>Block-extend</span> the [[range]], and let <var>new range</var> be
-  the result.
+  <li><span>Block-extend</span> the <span>active range</span>, and let <var>new
+  range</var> be the result.
 
   <li>Let <var>node list</var> be a list of [[nodes]], initially empty.
 
@@ -3084,391 +3620,10 @@ value</span> either "italic" or "oblique".  Otherwise false.
   </ol>
 </ol>
 
-<p>To <dfn>outdent</dfn> a [[node]] <var>node</var>:
 
-<!--
-Things that are produced for indentation that we need to consider removing:
+<h2>Miscellaneous commands</h2>
 
-* Plain <blockquote> (produced by spec, Firefox 4.0 non-CSS, Opera 11.00)
-* <blockquote style="margin-right: 0" dir="ltr"> and <blockquote
-  style="margin-left: 0" dir="rtl"> (IE9)
-* <blockquote class="webkit-indent-blockquote" style="margin: 0 0 0 40px;
-  border: none; padding: 0px"> (Chrome 12 dev)
-* <div style="margin-left: 40px"> and <div style="margin-right: 40px">
-  (Firefox 4.0 CSS if no other element available)
-* Other random things with display: block whose left or right margin was
-  increased by 40px (Firefox 4.0 CSS)
-
-For discussion on the list-related stuff, see the comment for
-insertOrderedList.
--->
-<ol>
-  <li>If <var>node</var> is not <span>editable</span>, abort these steps.
-
-  <!-- The easy case is when the whole element is indented.  In this case we
-  remove the whole thing indiscriminately.  In the case of blockquotes
-  created by IE, this might change the direction of some children, but then
-  their direction was probably changed incorrectly in the first place, so no
-  harm. -->
-  <li>If <var>node</var> is an <span>indentation element</span>, remove
-  <var>node</var>, <span>preserving its descendants</span>.  Then abort these
-  steps.
-
-  <!-- No browser handles the case of Firefox 4.0 in CSS mode, where it adds a
-  margin attribute to an existing element, including Firefox itself.  So let's
-  just skip it. -->
-
-  <li>If <var>node</var> is a <span>potential indentation element</span>:
-  <!-- This might be an indentation element that had style added to it by
-  Firefox in CSS mode, for instance (color, font-family, etc.). -->
-
-  <ol>
-    <li>Unset the <code data-anolis-spec=html title=classes>class</code> and
-    <code data-anolis-spec=html title="the dir attribute">dir</code>
-    attributes of <var>node</var>, if any.
-
-    <li>Unset the margin, padding, and border CSS properties of
-    <var>node</var>.
-
-    <li><span>Set the tag name</span> of <var>node</var> to "div".
-
-    <li>Abort these steps.
-  </ol>
-
-  <!-- Approximate algorithms when an ancestor is causing the indentation
-  appear to be:
-
-  IE9: Go to the innermost element causing indentation.  If the stuff to be
-    outdented includes all the contents of that element, get rid of it, but
-    if it has any attributes, change it to a <p> with those same attributes.
-    This is an excellent idea in general, but unfortunately it preserves
-    explicitly-specified margins in style attributes, which isn't great.  In
-    other cases, it moves the stuff to be outdented outside.  Not clear on
-    all the details, seems to be pretty confusing.  Also does a bunch of
-    seemingly arbitrary normalization like removing divs and some attributes
-    from some things . . .
-  Firefox 4.0: Go to the innermost element causing indentation.  If the stuff
-    to be outdented includes all the contents of that element, get rid of it,
-    even if it has arbitrary attributes.  Otherwise, move the stuff to be
-    outdented outside the indenting element.  If there are any intervening
-    elements that include stuff not to be outdented, wrap the outdented stuff
-    in copies (which can duplicate id's, etc.).
-  Chrome 12 dev: Go to the outermost element causing indentation (even if the
-    current element is itself causing indentation).  Move the text to be
-    outdented outside that outermost element, without regard to any
-    intervening elements.  Then recreate the original styles on the moved
-    text, in some fashion.  Something like that; it confuses me and doesn't
-    seem to be reasonable.
-  Opera 11.00: Like Firefox, except it goes to the outermost element, not the
-    innermost.  Also seems to special-case to avoid duplicate id's, and has a
-    few other quirks.
-
-  Overall, all flawed, so I'll make up my own, patterned after pushing down
-  styles.  First we search ancestors for an indentation element, which we stand
-  a chance of completely removing.  Failing that, we look for a potential
-  indentation element, which we cannot completely remove. -->
-  <li>Let <var>current ancestor</var> be <var>node</var>'s [[parent]].
-
-  <li>Let <var>ancestor list</var> be a list of [[nodes]], initially empty.
-
-  <li>While <var>current ancestor</var> is an <span>editable</span> [[element]]
-  that is not an <span>indentation element</span>, append <var>current
-  ancestor</var> to <var>ancestor list</var> and then set <var>current
-  ancestor</var> to its [[parent]].
-
-  <li>If <var>current ancestor</var> is not an <span>editable</span>
-  <span>indentation element</span>:
-
-  <ol>
-    <li>Let <var>current ancestor</var> be <var>node</var>'s [[parent]].
-
-    <li>Let <var>ancestor list</var> be the empty list.
-
-    <li>While <var>current ancestor</var> is an <span>editable</span>
-    [[element]] that is not a <span>potential indentation element</span>,
-    append <var>current ancestor</var> to <var>ancestor list</var> and then set
-    <var>current ancestor</var> to its [[parent]].
-  </ol>
-
-  <li>If <var>node</var> is an [[ol]] or [[ul]], and either <var>current
-  ancestor</var> is not an <span>editable</span> <span>potential indentation
-  element</span> or <var>node</var>'s [[parent]] is an [[ol]] or [[ul]]:
-  <!--
-  When asked to outdent a list wrapped in an indentation element, Chrome 12 dev
-  removes the list instead of the indentation element.  Opera 11.10 seems to
-  remove both.  IE9 and Firefox 4.0 remove the indentation element, as does the
-  spec.
-  -->
-
-  <div class=XXX>
-  <p>We don't handle a case like
-
-  <xmp><ol><ol style="color: red"><li>foo<li>bar</ol><li>baz</ol></xmp>
-
-  <p>If the inner [[ol]] is selected to be outdented, "foo" and "bar" will stop
-  being red.  It seems nontrivial to handle this case in general, since we
-  can't group [[li]]s.  If the list we're outdenting is a child of a non-list,
-  then we can just change it to a div.
-  </div>
-  <!--
-  Chrome 12 dev seems to special-case style attributes by converting them to
-  the corresponding inline markup elements (at least in easy cases like color).
-  For other attributes and non-WebKit browsers (IE9/FF4/O11.10), it looks like
-  all the attributes are just removed.  Maybe we should try to copy WebKit
-  here.
-  -->
-
-  <p class=XXX>What about if node isn't a child of a list, but there's a list
-  ancestor below current ancestor?  Is that even possible given how the
-  block-extend algorithm works?
-
-  <ol>
-    <li>Unset the <code data-anolis-spec=html
-    title=attr-ol-reversed>reversed</code>, <code data-anolis-spec=html
-    title=attr-ol-start>start</code>, and <code data-anolis-spec=html
-    title=attr-ol-type>type</code> attributes of <var>node</var>, if any are
-    set.
-
-    <li>Let <var>children</var> be the [[children]] of <var>node</var>.
-
-    <li>If <var>node</var> has attributes, and its [[parent]] or not an [[ol]]
-    or [[ul]], <span>set the tag name</span> of <var>node</var> to "div".
-
-    <li>Otherwise remove <var>node</var>, <span>preserving its descendants</span>.
-
-    <li><span>Fix orphaned list items</span> in <var>children</var>.
-
-    <li>Abort these steps.
-  </ol>
-
-  <li>If <var>current ancestor</var> is not an <span>editable</span>
-  <span>potential indentation element</span>, abort these steps.
-
-  <!-- At this point, we have an ancestor to split up. -->
-  <li>Append <var>current ancestor</var> to <var>ancestor list</var>.
-
-  <li>Let <var>original ancestor</var> be <var>current ancestor</var>.
-  <!-- We can't outdent it yet, because we need its children to remain intact
-  for the loop. -->
-
-  <li>While <var>ancestor list</var> is not empty:
-
-  <ol>
-    <li>Let <var>current ancestor</var> be the last member of <var>ancestor
-    list</var>.
-
-    <li>Remove the last member from <var>ancestor list</var>.
-
-    <li>Let <var>target</var> be the [[child]] of <var>current ancestor</var>
-    that is equal to either <var>node</var> or the last member of <var>ancestor
-    list</var>.
-
-    <li>If <var>target</var> is an <span>inline node</span> that is not a
-    [[br]], and its [[nextsibling]] is a [[br]], remove <var>target</var>'s
-    [[nextsibling]] from its [[parent]].
-
-    <li>Let <var>preceding siblings</var> be the [[precedingsiblings]] of
-    <var>target</var>, and let <var>following siblings</var> be the
-    [[followingsiblings]] of <var>target</var>.
-
-    <li><span>Indent</span> <var>preceding siblings</var>.
-
-    <li><span>Indent</span> <var>following siblings</var>.
-  </ol>
-
-  <li><span>Outdent</span> <var>original ancestor</var>.
-</ol>
-
-<p>To <dfn>fix orphaned list items</dfn> in a list of [[nodes]] <var>node
-list</var>:
-
-<ol>
-  <li>For each [[li]] <var>item</var> in <var>node list</var>:
-
-  <ol>
-      <li>If <var>item</var>'s [[parent]] is not an [[ol]], unset
-      <var>item</var>'s <code data-anolis-spec=html
-      title=attr-li-value>value</code> attribute, if set.
-      <!-- IE9, Firefox 4.0, and Opera 11.10 keep the value attribute even if
-      the parent is now a ul.  Chrome 12 dev strips it even if the parent is
-      now an ol.  The spec makes more sense. -->
-
-      <li>If <var>item</var> has no attributes and its [[parent]] is not an
-      [[ol]] or [[ul]], remove <var>item</var>, <span>preserving its
-      descendants</span>.
-
-      <li>Otherwise, if <var>item</var>'s [[parent]] is not an [[ol]] or
-      [[ul]], <span>set the tag name</span> of <var>item</var> to "div".
-  </ol>
-</ol>
-
-<p>A <dfn>potential indentation element</dfn> is either a [[blockquote]], or a
-[[div]] that has a [[style]] attribute that sets "margin" or some subproperty
-of it.
-
-<p class=XXX>Terminology is inconsistent with "modifiable" etc. used for inline
-styles.
-
-<p>An <dfn>indentation element</dfn> is an <span>potential indentation
-element</span> that has no attributes other than one or more of
-
-<ul>
-  <li>a [[style]] attribute that sets no properties other than "margin",
-  "border", "padding", or subproperties of those;
-
-  <li>a <code data-anolis-spec=html title=classes>class</code> attribute;
-
-  <li>a <code data-anolis-spec=html title="the dir attribute">dir</code>
-  attribute.
-</ul>
-
-<dd><strong>State</strong>:
-
-<dd><strong>Value</strong>:
-
-
-<dt><code title><dfn title=command-removeformat>removeFormat</dfn></code>
-<!--
-Tested in IE 9, Firefox 4.0, Chrome 12 dev, Opera 11.00.
-
-Tags stripped by everyone: b big cite code dfn em font i ins kbd samp s small
-  strike strong sub sup tt u var
-Tags left alone by everyone: br hr img
-
-Unrecognized elements: stripped by Firefox and Opera, left alone by IE and
-  Chrome.
-
-blink: stripped only by IE
-abbr: stripped only by Firefox
-a, wbr: stripped only by Opera
-
-nobr: left alone only by Firefox
-acronym, bdo, q: left alone only by Opera
-
-bdi, del, mark, span, svg: treated the same as unknown elements
-
-All elements whose default rendering is display: block are left untouched by
-all browsers (although IE seems to throw an exception on <marquee> for some
-reason).
-
-It's not clear to me why we should leave <a> alone, but everyone but Opera
-does.  In OpenOffice.org 3.2.1, doing "Default Formatting (Ctrl+M)" doesn't
-remove links.  In Microsoft Word 2007, doing "Clear Formatting" also doesn't
-remove links.  Verdict: don't remove links.  Apparently they don't logically
-qualify as "formatting".
-
-Conclusion: leave alone a, br, hr, img, wbr.  Strip everything else, including
-unrecognized elements, although of course not block elements.  Also we should
-probably treat all replaced elements the same as <img>, although I didn't test
-that (somehow I doubt it will come up much).  <video> behaves the same as
-<img>, although Firefox adds tabindex=0 (???), so I'm assuming the rest are
-similar.  Also, I'll keep all foreign elements and form elements.
-
-
-Browsers will split up all these inline elements if the selection is contained
-within them.  Opera does strip unrecognized elements with display: block if
-they're within the selection, but doesn't split them up if they contain the
-selection.
-
-Upon consideration, I've decided to go for something for now that's totally
-different from what any browser does: get rid of all elements actually
-contained in the selection (pretty much matching browsers), but for elements
-containing the selection, I'll just run all the other styling commands in a
-fashion that will reset the style in normal cases.  This avoids having to
-create a lot of new logic to decide exactly what we can split up or not, and
-should be able to correctly remove anything that can actually be created by
-these algorithms.
-
-This approach currently results in incorrect behavior in some cases for
-non-modifiable elements with default styling, like <code>.  The correct
-approach is probably to declare these elements modifiable; this would roughly
-match what browsers do.  I'm ignoring the issue for now, because such elements
-cannot actually be created by implementations of execCommand(), so they're not
-likely to be common.  Also, the way pushing down styles works right now is that
-the element is destroyed and the style is recreated, which isn't going to work
-for elements like <code> or <tt> or <mark> that we don't normally create.
--->
-
-<dd><strong>Action</strong>:
-
-<ol>
-  <li><span>Decompose</span> the [[range]], and let <var>node list</var> be the
-  result.
-
-  <li>For each <var>node</var> in <var>node list</var>, unset the [[style]]
-  attribute of <var>node</var> (if it's an [[element]]) and then all its
-  [[element]] [[descendants]].
-
-  <li>Let <var>elements to remove</var> be a list of all <span title="HTML
-  element">HTML elements</span> that are the same as or [[descendants]] of some
-  member of <var>node list</var> and have non-null [[parents]] and satisfy
-  (insert conditions here).
-
-  <p class=XXX>The conditions are not so simple to define, because we want to
-  include non-conforming elements, which HTML doesn't give content models.  If
-  everything had categories, we'd want something like "either it's
-  unrecognized, or it's phrasing content that's not also embedded or
-  interactive".  Except this has weird corner-cases like ins and del that are
-  sometimes phrasing and sometimes flow.
-
-  <li>For each <var>element</var> in <var>elements to remove</var>:
-
-  <ol>
-    <li>While <var>element</var> has [[children]], insert the first [[child]]
-    of <var>element</var> into the [[parent]] of <var>element</var> immediately
-    before <var>element</var>, <span>preserving ranges</span>.
-
-    <li>Remove <var>element</var> from its [[parent]].
-  </ol>
-
-  <li>For each of the entries in the following table, in the given order:
-  <span>decompose</span> the [[range]] again; then <span>set the value</span>
-  of the resulting [[nodes]], with <var>command</var> and <var>new value</var>
-  as given.
-
-  <p class=XXX>This has no relationship to what browsers actually do, although
-  it mostly works okay.  If I don't throw it out and replace it with something
-  more like what browsers do, it still probably needs refinement to handle some
-  elements that it doesn't deal with yet.
-
-  <table>
-    <tr><th><var>command</var> <th><var>new value</var>
-    <tr><td>subscript <td>"baseline"
-    <!-- superscript not needed, subscript does the same thing.  We run this
-    first so <sub>/<sup> won't upset fontSize. -->
-    <tr><td>bold <td>"normal"
-    <tr><td>fontName <td>null
-    <tr><td>fontSize <td>null
-    <tr><td>foreColor <td>null
-    <tr><td>hiliteColor <td>null
-    <tr><td>italic <td>"normal"
-    <tr><td>strikethrough <td>null
-    <tr><td>underline <td>null
-  </table>
-</ol>
-
-<dd><strong>State</strong>:
-
-<dd><strong>Value</strong>:
-
-
-<dt><code title><dfn title=command-strikethrough>strikethrough</dfn></code>
-
-<dd><strong>Action</strong>: <span>Decompose</span> the [[range]].  If the
-state of the [[range]] for this command is then true, <span>set the
-value</span> of each returned [[node]] to null.  Otherwise, <span title="set
-the value">set their value</span> to "line-through".
-
-<p class=XXX>Has all the same problems as underline.
-
-<dd><strong>State</strong>: True if every <span>editable</span> [[text]] node
-that is <span>effectively contained</span> in the [[range]] has <span>effective
-value</span> "line-through".  Otherwise false.
-
-<dd><strong>Value</strong>: Always the empty string.
-
-
-<dt><code title><dfn title=command-stylewithcss>styleWithCSS</dfn></code>
+<h3><dfn>The <code title>styleWithCSS</code> command</dfn></h3>
 <!-- IE9 and Opera 11.00 don't support this command.  By and large, they act
 the way Gecko and WebKit do when styleWithCSS is off.  Gecko invented it, and
 WebKit also supports it:
@@ -3479,170 +3634,34 @@ The default in Firefox 4.0 is off, while all other browsers behave like the
 default is on (and IE/Opera give no way to turn it off), so I default it to on.
 -->
 
-<dd><strong>Action</strong>: Convert <var>value</var> to a boolean according
-to the algorithm in WebIDL, and set the <span>CSS styling flag</span> to the
-result.
+<p><span>Action</span>: Convert <var>value</var> to a boolean according to the
+algorithm in WebIDL, and set the <span>CSS styling flag</span> to the result.
 
 <p class=XXX>Properly cross-reference.
 
-<dd><strong>State</strong>: True if the <span>CSS styling flag</span> is
-true, otherwise false.
-
-<dd><strong>Value</strong>:
+<p><span>State</span>: True if the <span>CSS styling flag</span> is true,
+otherwise false.
 
 
-<dt><code title><dfn title=command-subscript>subscript</dfn></code>
-
-<dd><strong>Action</strong>: <span>Decompose</span> the [[range]].  If the
-state of the [[range]] for this command is then true, <span>set the
-value</span> of each returned [[node]] with <var>new value</var> "baseline".
-Otherwise, <span title="set the value">set their value</span> with <var>new
-value</var> "baseline", then <span>decompose</span> the [[range]] again and
-<span>set the value</span> of each returned [[node]] with <var>new value</var>
-"sub".
-
-<dd><strong>State</strong>: True if every <span>editable</span> [[text]] node
-that is <span>effectively contained</span> in the [[range]] has <span>effective
-value</span> "sub".  Otherwise false.
-
-<dd><strong>Value</strong>:
-
-<dd><strong>Relevant CSS Property</strong>: "vertical-align"
-
-
-<dt><code title><dfn title=command-superscript>superscript</dfn></code>
-
-<dd><strong>Action</strong>: <span>Decompose</span> the [[range]].  If the
-state of the [[range]] for this command is then true, <span>set the
-value</span> of each returned [[node]] with <var>new value</var> "baseline".
-Otherwise, <span title="set the value">set their value</span> with <var>new
-value</var> "baseline", then <span>decompose</span> the [[range]] again and
-<span>set the value</span> of each returned [[node]] with <var>new value</var>
-"super".
-
-<dd><strong>State</strong>: True if every <span>editable</span> [[text]] node
-that is <span>effectively contained</span> in the [[range]] has <span>effective
-value</span> "super".  Otherwise false.
-
-<dd><strong>Value</strong>:
-
-<dd><strong>Relevant CSS Property</strong>: "vertical-align"
-
-
-<dt><code title><dfn title=command-underline>underline</dfn></code>
-
-<dd><strong>Action</strong>: <span>Decompose</span> the [[range]].  If the
-state of the [[range]] for this command is then true, <span>set the
-value</span> of each returned [[node]] to null.  Otherwise, <span title="set
-the value">set their value</span> to "underline".
-
-<div class=XXX>
-<p>There are a lot of problems with underline color and thickness, because
-text-decoration in CSS is horrible:
-
-<ul>
-  <li>Pushing down underlines can change their color, since the color of an
-  underline follows the color of the element where it's declared instead of the
-  text it's drawn under.  This could be fixed by adding a special case for this
-  condition and inserting extra color rules, such as by setting a color on the
-  underlining element and then having another element inside it that resets the
-  color.  Horrible, but that's text-decoration for you.  Alternatively, the new
-  text-decoration-color property in the CSS 3 Text draft could come in handy
-  here, in which case we'd degrade pretty gracefully in legacy UAs.
-
-  <li>Underline thickness depends on font-size in all rendering engines but
-  WebKit, so pushing them down creates thickness problems as well as color
-  problems.  Working around this is a similar story to the previous, except we
-  have no text-decoration-width property yet (see <a
-  href="http://lists.w3.org/Archives/Public/www-style/2011Mar/0593.html">feedback
-  to www-style</a>).
-
-  <li>The preceding two points can't be avoided, because the only way to remove
-  underlines in CSS is to push down styles (unlike most other things where you
-  could override it).  Recent (February 2011) CSS 3 Text drafts have added
-  support for a "text-decoration-line: cancel-underline" property, but we can
-  only use that if there's no other possibility, since it won't work in legacy
-  browsers.  (Although we should use it once there's no other possibility.)
-
-  <li>More generally, from a user's perspective, color and thickness of
-  underlines is going to be more or less random if they're applying them to
-  text with varying size or color.  If they underline a bunch of text all at
-  once, it will all get the same color/thickness, probably.  But if they
-  underline letter-by-letter, it probably will vary.  But sometimes when they
-  underline a bunch of text at once it will also vary, if the algorithm decides
-  to create multiple elements for whatever reason (like an intervening
-  unwrappable node).  This is unlikely to match user expectations.  There's
-  not much we can do about this without entirely revamping text-decoration, so
-  we'll have to live with it.
-
-  <li>Currently we don't treat non-underline text-decorations properly, because
-  we have no way to set (or cancel) underlines independently of other
-  text-decorations from within CSS.  I've sent <a
-  href="http://lists.w3.org/Archives/Public/www-style/2011Mar/0591.html">feedback
-  to www-style</a>.
-</ul>
-
-<p>I'll revisit some of these issues when I get feedback on www-style, either
-using the newly-specced features or working around their absence as the case
-may be.
-</div>
-
-<dd><strong>State</strong>: True if every <span>editable</span> [[text]] node
-that is <span>effectively contained</span> in the [[range]] has <span>effective
-value</span> "underline".  Otherwise false.
-
-<dd><strong>Value</strong>: Always the empty string.
-
-
-<dt><code title><dfn title=command-unlink>unlink</dfn></code>
-
-<dd><strong>Action</strong>:
-<!--
-IE 9 RC unlinks the whole link you're pointing at, while others only
-unlink the current text.  The latter behavior seems less expected, as with
-createLink, although I can't articulate precisely why.  Word 2007 and
-OpenOffice.org 3.2.1 (Ubuntu) seem to give an option to remove the whole link
-or none of it, which backs the spec's requirement.  See also #whatwg logs
-starting at 2011-05-13 at 16:53 EDT (UTC-0400).
--->
-
-<ol>
-  <li>Let <var>hyperlinks</var> be a list of every [[a]] element that has an
-  [[href]] attribute and is [[contained]] in the [[range]] or is an
-  [[ancestor]] of one of its [[boundarypoints]].
-
-  <li><span>Clear the value</span> of each member of <var>hyperlinks</var>.
-</ol>
-
-<dd><strong>State</strong>: Always false.
-
-<dd><strong>Value</strong>: Always the empty string.
-
-
-<dt><code title><dfn title=command-usecss>useCSS</dfn></code>
+<h3><dfn>The <code title>useCSS</code> command</dfn></h3>
 <!-- Supported by Firefox 4.0, but not IE9 or Opera 11.00 (which don't support
 styleWithCSS either), nor by Chrome 12 dev (which does support styleWithCSS.
 useCSS was the original feature in Mozilla 1.3, but the meaning is backward, so
 Gecko added styleWithCSS as a replacement. -->
 
-<dd><strong>Action</strong>: Convert <var>value</var> to a boolean according
-to the algorithm in WebIDL, and set the <span>CSS styling flag</span> to the
-negation of the result.  Since the effect of this command is the opposite of
-what one would expect, user agents are encouraged to point authors to <code
-title=command-stylewithcss>styleWithCSS</code> when <code
-title=command-usecss>useCSS</code> is used, such as by logging a warning to an
-error console.
+<p><span>Action</span>: Convert <var>value</var> to a boolean according to the
+algorithm in WebIDL, and set the <span>CSS styling flag</span> to the negation
+of the result.  Since the effect of this command is the opposite of what one
+would expect, user agents are encouraged to point authors to <code title="the
+stylewithcss command">styleWithCSS</code> when <code title="the usecss
+command">useCSS</code> is used, such as by logging a warning to an error
+console.
 
 <p class=XXX>Properly cross-reference.
 
 <p class=XXX>The meaning of this command is backwards, and only Gecko supports
 it.  It would be great if Gecko would agree to drop support, so that we could
 get rid of it.
-
-<dd><strong>State</strong>:
-
-<dd><strong>Value</strong>:
-
 
 
 <h2 class=no-num id=references>References</h2><!--REFS-->

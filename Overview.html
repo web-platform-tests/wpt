@@ -1709,7 +1709,12 @@ method must run these steps:
  <code title="dom-Document-adoptNode"><a href="#dom-document-adoptnode">adoptNode</a></code> method with
  <var title="">newChild</var> as its argument.
 
- <li><p>Append <var title="">newChild</var> to the <a href="#context-object">context object</a>.
+ <li><p>If <var title="">newChild</var> is a <code><a href="#documentfragment">DocumentFragment</a></code> node,
+ append the children of <var title="">newChild</var> to the
+ <a href="#context-object">context object</a>, in <a href="#tree-order">tree order</a>.
+
+ <li><p>Otherwise, append <var title="">newChild</var> to the
+ <a href="#context-object">context object</a>.
 
  <li><p>Return <var title="">newChild</var>.
 </ol>
@@ -3886,6 +3891,7 @@ specification makes that an intrinsic part of the DOM.
 
 Adrian Bateman,
 Dethe Elza,
+David Flanagan,
 Glenn Maynard,
 Jacob Rossi,
 Jonas Sicking,

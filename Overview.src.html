@@ -1660,7 +1660,12 @@ method must run these steps:
  <code title=dom-Document-adoptNode>adoptNode</code> method with
  <var title>newChild</var> as its argument.
 
- <li><p>Append <var title>newChild</var> to the <span>context object</span>.
+ <li><p>If <var title>newChild</var> is a <code>DocumentFragment</code> node,
+ append the children of <var title>newChild</var> to the
+ <span>context object</span>, in <span>tree order</span>.
+
+ <li><p>Otherwise, append <var title>newChild</var> to the
+ <span>context object</span>.
 
  <li><p>Return <var title>newChild</var>.
 </ol>
@@ -3902,6 +3907,7 @@ specification makes that an intrinsic part of the DOM.
 
 Adrian Bateman,
 Dethe Elza,
+David Flanagan,
 Glenn Maynard,
 Jacob Rossi,
 Jonas Sicking,

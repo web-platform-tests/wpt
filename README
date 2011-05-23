@@ -1,6 +1,0 @@
-To generate Overview.html:
-
-Ensure you have anolis <https://bitbucket.org/ms2ger/anolis> installed.
-
-$ hg clone https://bitbucket.org/ms2ger/specification-data data
-$ make

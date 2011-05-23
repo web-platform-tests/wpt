@@ -9,7 +9,7 @@ use Template;
 
 $top = $ARGV[-1] || '.';
 
-@files = `find $top -type f ! -ipath '*svn*' ! -ipath '*build-test*' ! -ipath '*selectors3*'`;
+@files = `find $top -type f ! -ipath '*.hg*' ! -ipath '*build-test*' ! -ipath '*selectors3*'`;
 foreach (@files) {
   chomp;
   m!^(?:\./)?((?:[^/]+/)*)([^/]+?)(\.[a-z]+)?$!;

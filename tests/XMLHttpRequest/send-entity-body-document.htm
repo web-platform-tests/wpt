@@ -1,0 +1,27 @@
+<!doctype html>
+<html>
+  <head>
+    <title>XMLHttpRequest: send() - Document</title>
+    <script src="/resources/testharness.js"></script>
+  </head>
+  <body>
+    <div id="log"></div>
+    <script>
+      function request(input, isHTML) {
+        test(function() {
+          var client = new XMLHttpRequest()
+          client.open("POST", "resources/content.php", false)
+          client.send(input)
+          if(isHTML)
+            assert_equals(client.responseText, "<html><head><\/head><body>\uFFFD<\/body><\/html>")
+          else
+            assert_true(client.responseText.indexOf("<\uFFFD\/>") != -1)
+          assert_equals(client.responseXML, null)
+        })
+      }
+      function init(fr, isHTML) { request(fr.contentDocument, isHTML) }
+    </script>
+    <iframe src='data:text/xml;charset=windows-1252,<%FF/>' onload="init(this, false)"></iframe>
+    <iframe src='data:text/html;charset=windows-1252,%FF' onload="init(this, true)"></iframe>
+  </body>
+</html>

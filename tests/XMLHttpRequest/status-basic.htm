@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+  <head>
+    <title>XMLHttpRequest: status/statusText - various responses</title>
+    <script src="/resources/testharness.js"></script>
+  </head>
+  <body>
+    <div id="log"></div>
+    <script>
+      function status(code, text, content, type) {
+        test(function() {
+          var client = new XMLHttpRequest()
+          client.open("GET", "resources/status.php?code=" + code + "&text=" + text + "&content=" + content + "&type=" + type, false)
+          client.send(null)
+          assert_equals(client.status, code)
+          assert_equals(client.statusText, text)
+          if("type" == "text/xml") {
+            assert_equals(client.responseXML.documentElement.localName, "x")
+          }
+          assert_equals(client.responseText, content)
+        }, document.title + " (" + code + ")")
+      }
+      status(204, "UNICORNSWIN", "", "text/plain")
+      status(402, "FIVE BUCKS", "<x>402<\/x>", "text/xml")
+      status(503, "HOUSTON WE HAVE A", "503", "text/plain")
+      status(699, "WAY OUTTA RANGE", "699", "text/plain")
+    </script>
+  </body>
+</html>

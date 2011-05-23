@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>XMLHttpRequest: getResponseHeader() funny characters</title>
+    <script src="/resources/testharness.js"></script>
+  </head>
+  <body>
+    <div id="log"></div>
+    <script>
+      var test = async_test()
+      test.step(function() {
+        var client = new XMLHttpRequest()
+        client.onreadystatechange = function() {
+          test.step(function() {
+            if(client.readyState == 4) {
+              assert_equals(client.getResponseHeader("x-custom-header "), null)
+              assert_equals(client.getResponseHeader(" x-custom-header"), null)
+              assert_equals(client.getResponseHeader("x-custom-header-bytes"), "\xE2\x80\xA6")
+              assert_equals(client.getResponseHeader("x¾"), null)
+              assert_equals(client.getResponseHeader("x-custom-header\n"), null)
+              test.done()
+            }
+          })
+        }
+        client.open("GET", "resources/headers.php")
+        client.send(null)
+      })
+  </script>
+ </body>
+</html>

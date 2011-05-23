@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>XMLHttpRequest: getResponseHeader() case-insensitive matching</title>
+    <script src="/resources/testharness.js"></script>
+  </head>
+  <body>
+    <div id="log"></div>
+    <script>
+      var test = async_test()
+      test.step(function() {
+        var client = new XMLHttpRequest()
+        client.onreadystatechange = function() {
+          test.step(function() {
+            if(client.readyState == 4) {
+              assert_equals(client.getResponseHeader("x-custom-header"), "test")
+              assert_equals(client.getResponseHeader("X-Custom-Header"), "test")
+              assert_equals(client.getResponseHeader("X-CUSTOM-HEADER"), "test")
+              assert_equals(client.getResponseHeader("X-custom-HEADER"), "test")
+              assert_equals(client.getResponseHeader("X-CUSTOM-header-COMMA"), "1, 2")
+              assert_true(client.getResponseHeader("CONTENT-TYPE").indexOf("text/plain") != -1)
+              test.done()
+            }
+          })
+        }
+        client.open("GET", "resources/headers.php")
+        client.send(null)
+      })
+  </script>
+ </body>
+</html>

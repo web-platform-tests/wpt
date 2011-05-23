@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>XMLHttpRequest: send() - non same-origin</title>
+    <script src="/resources/testharness.js"></script>
+    <base href="http://test2.w3.org/">
+  </head>
+  <body>
+    <div id="log"></div>
+    <script>
+      function url(url) {
+        test(function() {
+          var client = new XMLHttpRequest()
+          client.open("GET", url, false)
+          assert_throws("NETWORK_ERR", function() { client.send() })
+        }, document.title + " (" + url + ")")
+      }
+      url("mailto:test@example.org")
+      url("tel:+31600000000")
+      url("about:blank")
+      url("data:text/html,<!doctype html><p>?")
+      url("http://test2.w3.org/")
+      url("folder.txt")
+    </script>
+  </body>
+</html>

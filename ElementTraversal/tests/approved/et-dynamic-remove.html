@@ -1,0 +1,32 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+	<title>Dynamic Removal of Elements</title>
+	<script type="text/javascript" charset="utf-8">	 
+    function initTest ()
+    {
+      var parentEl = document.getElementById("parentEl");
+      var lec = parentEl.lastElementChild;
+      parentEl.removeChild( lec );
+    
+      if ( parentEl.childElementCount && 1 == parentEl.childElementCount )
+      {
+        var fec = document.getElementById("first_element_child");
+        fec.firstChild.nodeValue = "pass!";
+      }
+    }
+	</script>
+	
+</head>
+
+<body onload="initTest()">
+
+  <h1>Test of Dynamic Removal of Elements</h1>
+  <p id="parentEl">The result of this test is a 
+  <span id="first_element_child" style="font-weight:bold;">fail.</span><span id="last_element_child"> </span></p>
+
+</body>
+</html>

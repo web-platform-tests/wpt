@@ -1,0 +1,24 @@
+<!doctype html>
+<html>
+  <head>
+    <title>XMLHttpRequest: abort() during UNSENT</title>
+    <script src="/resources/testharness.js"></script>
+  </head>
+  <body>
+    <div id="log"></div>
+    <script>
+      var test = async_test()
+      test.step(function() {
+        var client = new XMLHttpRequest()
+        client.onreadystatechange = function() {
+          test.step(function() {
+            assert_unreached()
+          })
+        }
+        client.abort()
+        assert_equals(client.readyState, 0)
+      })
+      test.done()
+    </script>
+  </body>
+</html>

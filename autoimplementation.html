@@ -1741,7 +1741,11 @@ function doSpecCell(tr, test, command, styleWithCss) {
 		compareDiv1.normalize();
 		var compareDiv2 = compareDiv1.cloneNode(false);
 		compareDiv2.innerHTML = compareDiv1.innerHTML;
-		if (compareDiv1.innerHTML != compareDiv2.innerHTML) {
+		// Oddly, IE9 sometimes produces two nodes that return true for
+		// isEqualNode but have different innerHTML (omitting closing tags vs.
+		// not).
+		if (!compareDiv1.isEqualNode(compareDiv2)
+		&& compareDiv1.innerHTML != compareDiv2.innerHTML) {
 			throw "DOM does not round-trip through serialization!  "
 				+ compareDiv1.innerHTML + " vs. " + compareDiv2.innerHTML;
 		}
@@ -1875,7 +1879,8 @@ function doBrowserCell(tr, test, command, styleWithCss) {
 		}
 		var compareDiv2 = compareDiv1.cloneNode(false);
 		compareDiv2.innerHTML = compareDiv1.innerHTML;
-		if (compareDiv1.innerHTML != compareDiv2.innerHTML) {
+		if (!compareDiv1.isEqualNode(compareDiv2)
+		&& compareDiv1.innerHTML != compareDiv2.innerHTML) {
 			throw "DOM does not round-trip through serialization!  "
 				+ compareDiv1.innerHTML + " vs. " + compareDiv2.innerHTML;
 		}

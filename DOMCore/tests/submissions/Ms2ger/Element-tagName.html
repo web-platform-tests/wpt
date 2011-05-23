@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<title>Element.tagName</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<script>
+test(function() {
+  var HTMLNS = "http://www.w3.org/1999/xhtml",
+      SVGNS = "http://www.w3.org/2000/svg"
+  assert_equals(document.createElementNS(HTMLNS, "I").tagName, "I")
+  assert_equals(document.createElementNS(HTMLNS, "i").tagName, "I")
+  assert_equals(document.createElementNS(SVGNS, "svg").tagName, "svg")
+  assert_equals(document.createElementNS(SVGNS, "SVG").tagName, "SVG")
+  assert_equals(document.createElementNS(HTMLNS, "x:b").tagName, "X:B")
+})
+</script>

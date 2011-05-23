@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<title>Document.createProcessingInstruction in HTML documents</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id=log></div>
+<script>
+// maybe put this somewhere else?
+test(function() {
+  assert_throws("NOT_SUPPORTED_ERR", function() { document.createProcessingInstruction("A", "B") })
+})
+</script>

@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<title>Node.parentNode</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<script>
+test(function() {
+  // need to test for more node types
+  var el = document.createElement("div")
+  el.setAttribute("foo", "bar")
+  var a = el.attributes[0]
+  assert_equals(a.firstChild.parentNode, a)
+})
+</script>

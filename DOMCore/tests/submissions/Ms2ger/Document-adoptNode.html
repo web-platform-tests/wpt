@@ -1,0 +1,31 @@
+<!doctype html>
+<html>
+<head>
+<title>Document.adoptNode</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<div id="log"></div>
+<!--creates an element with local name "x<": --><x<>x</x<>
+<script>
+test(function() {
+  var y = document.getElementsByTagName("x<")[0],
+      x = document.createElement(":good:times:")
+
+  // these should not throw
+  assert_equals(y.parentNode, document.body)
+  document.adoptNode(y)
+  assert_equals(y.parentNode, null)
+  document.adoptNode(x)
+  var doc = document.implementation.createDocument(null, null, null)
+  doc.adoptNode(y)
+  doc.adoptNode(x)
+
+  // these should
+  assert_throws("NOT_SUPPORTED_ERR", function() { document.adoptNode(doc) })
+  assert_throws("NOT_SUPPORTED_ERR", function() { document.adoptNode(document.doctype) })
+})
+</script>
+</body>
+</html>

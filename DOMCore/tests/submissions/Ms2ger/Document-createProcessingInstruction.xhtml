@@ -1,0 +1,39 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Document.createProcessingInstruction</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<div id="log"/>
+<script>
+test(function() {
+  var invalid = [
+        ["A", "?>"],
+        ["\u00B7A", "x"],
+        ["\u00D7A", "x"],
+        ["A\u00D7", "x"],
+        ["\\A", "x"],
+        ["\f", "x"],
+        [0, "x"],
+        ["0", "x"]
+      ],
+      valid = [
+        ["xml:fail", "x"],
+        ["A\u00B7A", "x"],
+        ["a0", "x"]
+      ]
+
+  for (var i = 0, il = invalid.length; i &lt; il; i++) {
+    assert_throws("INVALID_CHARACTER_ERR", function() { document.createProcessingInstruction(invalid[i][0], invalid[i][1]) })
+  }
+  for (var i = 0, il = valid.length; i &lt; il; ++i) {
+    var pi = document.createProcessingInstruction(valid[i][0], valid[i][1]);
+    assert_equals(pi.target, valid[i][0]);
+    assert_equals(pi.data, valid[i][1]);
+    assert_equals(pi.ownerDocument, document);
+  }
+})
+</script>
+</body>
+</html>

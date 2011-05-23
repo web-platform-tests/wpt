@@ -1,0 +1,26 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Node.isEqualNode</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<div id="log"/>
+<script>
+function isEqualNode(node) {
+  test(function() {
+    assert_false(node.isEqualNode(null))
+  })
+}
+isEqualNode(document.createElement("foo"))
+isEqualNode(document.createAttribute("foo"))
+isEqualNode(document.createTextNode("foo"))
+// XXX isEqualNode(document.createCDATASection("foo"))
+isEqualNode(document.createProcessingInstruction("foo", "bar"))
+isEqualNode(document.createComment("foo"))
+isEqualNode(document)
+isEqualNode(document.implementation.createDocumentType("html", "", ""))
+isEqualNode(document.createDocumentFragment())
+</script>
+</body>
+</html>

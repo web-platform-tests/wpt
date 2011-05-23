@@ -48,7 +48,7 @@
 <p><a href="http://www.w3.org/"><img alt="W3C" height="48" src="http://www.w3.org/Icons/w3c_home" width="72"></a></p>
 <!--end-logo-->
  <h1>DOM Core</h1>
- <h2 class="no-num no-toc" id="editor-s-draft-13-may-2011">Editor's Draft 13 May 2011</h2>
+ <h2 class="no-num no-toc" id="editor-s-draft-23-may-2011">Editor's Draft 23 May 2011</h2>
 
  <dl>
   <dt>This Version:
@@ -90,7 +90,7 @@ publications and the latest revision of this technical report can be found in
 the <a href="http://www.w3.org/TR/">W3C technical reports index</a> at
 http://www.w3.org/TR/.</i>
 
-<p>This is the 13 May 2011 Editor's Draft of DOM Core. Please send
+<p>This is the 23 May 2011 Editor's Draft of DOM Core. Please send
 comments to
 <a href="mailto:www-dom@w3.org?subject=%5BDOMCore%5D%20">www-dom@w3.org</a>
 (<a href="http://lists.w3.org/Archives/Public/www-dom/">archived</a>)
@@ -650,8 +650,8 @@ prefer.
 
 <pre class="idl">interface <dfn id="event">Event</dfn> {
   readonly attribute DOMString <a href="#dom-event-type" title="dom-Event-type">type</a>;
-  readonly attribute <a href="#eventtarget">EventTarget</a> <a href="#dom-event-target" title="dom-Event-target">target</a>;
-  readonly attribute <a href="#eventtarget">EventTarget</a> <a href="#dom-event-currenttarget" title="dom-Event-currentTarget">currentTarget</a>;
+  readonly attribute <a href="#eventtarget">EventTarget</a>? <a href="#dom-event-target" title="dom-Event-target">target</a>;
+  readonly attribute <a href="#eventtarget">EventTarget</a>? <a href="#dom-event-currenttarget" title="dom-Event-currentTarget">currentTarget</a>;
 
   const unsigned short <a href="#dom-event-capturing_phase" title="dom-Event-CAPTURING_PHASE">CAPTURING_PHASE</a> = 1;
   const unsigned short <a href="#dom-event-at_target" title="dom-Event-AT_TARGET">AT_TARGET</a> = 2;
@@ -775,7 +775,7 @@ method is invoked these steps must be run:</p>
 <h3 id="interface-customevent"><span class="secno">4.2 </span>Interface <code><a href="#customevent">CustomEvent</a></code></h3>
 
 <pre class="idl">interface <dfn id="customevent">CustomEvent</dfn> : <a href="#event">Event</a> {
-  readonly attribute object <a href="#dom-customevent-detail" title="dom-CustomEvent-detail">detail</a>;
+  readonly attribute object? <a href="#dom-customevent-detail" title="dom-CustomEvent-detail">detail</a>;
   void <a href="#dom-customevent-initcustomevent" title="dom-CustomEvent-initCustomEvent">initCustomEvent</a>(DOMString <var title="">type</var>, boolean <var title="">bubbles</var>, boolean <var title="">cancelable</var>, object <var title="">detail</var>);
 };</pre>
 
@@ -805,8 +805,8 @@ method is invoked these steps must be run:</p>
 <h3 id="interface-eventtarget"><span class="secno">4.3 </span>Interface <code><a href="#eventtarget">EventTarget</a></code></h3>
 
 <pre class="idl">interface <dfn id="eventtarget">EventTarget</dfn> {
-  void <a href="#dom-eventtarget-addeventlistener" title="dom-EventTarget-addEventListener">addEventListener</a>(DOMString <var title="">type</var>, <a href="#eventlistener">EventListener</a> <var title="">listener</var>, optional boolean <var title="">capture</var>);
-  void <a href="#dom-eventtarget-removeeventlistener" title="dom-EventTarget-removeEventListener">removeEventListener</a>(DOMString <var title="">type</var>, <a href="#eventlistener">EventListener</a> <var title="">listener</var>, optional boolean <var title="">capture</var>);
+  void <a href="#dom-eventtarget-addeventlistener" title="dom-EventTarget-addEventListener">addEventListener</a>(DOMString <var title="">type</var>, <a href="#eventlistener">EventListener</a>? <var title="">listener</var>, optional boolean <var title="">capture</var>);
+  void <a href="#dom-eventtarget-removeeventlistener" title="dom-EventTarget-removeEventListener">removeEventListener</a>(DOMString <var title="">type</var>, <a href="#eventlistener">EventListener</a>? <var title="">listener</var>, optional boolean <var title="">capture</var>);
   boolean <a href="#dom-eventtarget-dispatchevent" title="dom-EventTarget-dispatchEvent">dispatchEvent</a>(<a href="#event">Event</a> <var title="">event</var>);
 };
 
@@ -1182,15 +1182,15 @@ for all or some <a href="#concept-node" title="concept-node">nodes</a>.
   boolean <span title=dom-Node-hasAttributes>hasAttributes</span>();
   readonly attribute <span>NamedNodeMap</span> <span title=dom-Node-attributes>attributes</span>;
 
-  -->readonly attribute <a href="#document">Document</a> <a href="#dom-node-ownerdocument" title="dom-Node-ownerDocument">ownerDocument</a>;
-  readonly attribute <a href="#node">Node</a> <a href="#dom-node-parentnode" title="dom-Node-parentNode">parentNode</a>;
-  readonly attribute <a href="#element">Element</a> <a href="#dom-node-parentelement" title="dom-Node-parentElement">parentElement</a>;
+  -->readonly attribute <a href="#document">Document</a>? <a href="#dom-node-ownerdocument" title="dom-Node-ownerDocument">ownerDocument</a>;
+  readonly attribute <a href="#node">Node</a>? <a href="#dom-node-parentnode" title="dom-Node-parentNode">parentNode</a>;
+  readonly attribute <a href="#element">Element</a>? <a href="#dom-node-parentelement" title="dom-Node-parentElement">parentElement</a>;
   boolean <a href="#dom-node-haschildnodes" title="dom-Node-hasChildNodes">hasChildNodes</a>();
   readonly attribute <a href="#nodelist">NodeList</a> <a href="#dom-node-childnodes" title="dom-Node-childNodes">childNodes</a>;
-  readonly attribute <a href="#node">Node</a> <a href="#dom-node-firstchild" title="dom-Node-firstChild">firstChild</a>;
-  readonly attribute <a href="#node">Node</a> <a href="#dom-node-lastchild" title="dom-Node-lastChild">lastChild</a>;
-  readonly attribute <a href="#node">Node</a> <a href="#dom-node-previoussibling" title="dom-Node-previousSibling">previousSibling</a>;
-  readonly attribute <a href="#node">Node</a> <a href="#dom-node-nextsibling" title="dom-Node-nextSibling">nextSibling</a>;
+  readonly attribute <a href="#node">Node</a>? <a href="#dom-node-firstchild" title="dom-Node-firstChild">firstChild</a>;
+  readonly attribute <a href="#node">Node</a>? <a href="#dom-node-lastchild" title="dom-Node-lastChild">lastChild</a>;
+  readonly attribute <a href="#node">Node</a>? <a href="#dom-node-previoussibling" title="dom-Node-previousSibling">previousSibling</a>;
+  readonly attribute <a href="#node">Node</a>? <a href="#dom-node-nextsibling" title="dom-Node-nextSibling">nextSibling</a>;
 
   const unsigned short <a href="#dom-node-document_position_disconnected" title="dom-Node-DOCUMENT_POSITION_DISCONNECTED">DOCUMENT_POSITION_DISCONNECTED</a> = 0x01;
   const unsigned short <a href="#dom-node-document_position_preceding" title="dom-Node-DOCUMENT_POSITION_PRECEDING">DOCUMENT_POSITION_PRECEDING</a> = 0x02;
@@ -1200,17 +1200,17 @@ for all or some <a href="#concept-node" title="concept-node">nodes</a>.
   const unsigned short <a href="#dom-node-document_position_implementation_specific" title="dom-Node-DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC">DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC</a> = 0x20;
   unsigned short <a href="#dom-node-comparedocumentposition" title="dom-Node-compareDocumentPosition">compareDocumentPosition</a>(<a href="#node">Node</a> <var title="">other</var>);
 
-           attribute DOMString <a href="#dom-node-nodevalue" title="dom-Node-nodeValue">nodeValue</a>;
-           attribute DOMString <a href="#dom-node-textcontent" title="dom-Node-textContent">textContent</a>;
-  <a href="#node">Node</a> <a href="#dom-node-insertbefore" title="dom-Node-insertBefore">insertBefore</a>([NoNull] <a href="#node">Node</a> <var title="">newChild</var>, <a href="#node">Node</a> <var title="">refChild</var>);
-  <a href="#node">Node</a> <a href="#dom-node-replacechild" title="dom-Node-replaceChild">replaceChild</a>([NoNull] <a href="#node">Node</a> <var title="">newChild</var>, [NoNull] <a href="#node">Node</a> <var title="">oldChild</var>);
-  <a href="#node">Node</a> <a href="#dom-node-removechild" title="dom-Node-removeChild">removeChild</a>([NoNull] <a href="#node">Node</a> <var title="">oldChild</var>);
-  <a href="#node">Node</a> <a href="#dom-node-appendchild" title="dom-Node-appendChild">appendChild</a>([NoNull] <a href="#node">Node</a> <var title="">newChild</var>);<!--
+           attribute DOMString? <a href="#dom-node-nodevalue" title="dom-Node-nodeValue">nodeValue</a>;
+           attribute DOMString? <a href="#dom-node-textcontent" title="dom-Node-textContent">textContent</a>;
+  <a href="#node">Node</a> <a href="#dom-node-insertbefore" title="dom-Node-insertBefore">insertBefore</a>(<a href="#node">Node</a> <var title="">newChild</var>, <a href="#node">Node</a>? <var title="">refChild</var>);
+  <a href="#node">Node</a> <a href="#dom-node-replacechild" title="dom-Node-replaceChild">replaceChild</a>(<a href="#node">Node</a> <var title="">newChild</var>, <a href="#node">Node</a> <var title="">oldChild</var>);
+  <a href="#node">Node</a> <a href="#dom-node-removechild" title="dom-Node-removeChild">removeChild</a>(<a href="#node">Node</a> <var title="">oldChild</var>);
+  <a href="#node">Node</a> <a href="#dom-node-appendchild" title="dom-Node-appendChild">appendChild</a>(<a href="#node">Node</a> <var title="">newChild</var>);<!--
   void normalize();-->
 
   <a href="#node">Node</a> <a href="#dom-node-clonenode" title="dom-Node-cloneNode">cloneNode</a>(boolean <var title="">deep</var>);
-  boolean <a href="#dom-node-issamenode" title="dom-Node-isSameNode">isSameNode</a>(<a href="#node">Node</a> <var title="">node</var>);
-  boolean <a href="#dom-node-isequalnode" title="dom-Node-isEqualNode">isEqualNode</a>(<a href="#node">Node</a> <var title="">node</var>);
+  boolean <a href="#dom-node-issamenode" title="dom-Node-isSameNode">isSameNode</a>(<a href="#node">Node</a>? <var title="">node</var>);
+  boolean <a href="#dom-node-isequalnode" title="dom-Node-isEqualNode">isEqualNode</a>(<a href="#node">Node</a>? <var title="">node</var>);
 
   DOMString <a href="#dom-node-lookupprefix" title="dom-Node-lookupPrefix">lookupPrefix</a>([TreatNullAs=EmptyString] DOMString <var title="">namespace</var>);
   DOMString <a href="#dom-node-lookupnamespaceuri" title="dom-Node-lookupNamespaceURI">lookupNamespaceURI</a>(DOMString? <var title="">prefix</var>);
@@ -1949,12 +1949,12 @@ method must run these steps:
            attribute DOMString <a href="#dom-document-documenturi" title="dom-Document-documentURI">documentURI</a>;
   readonly attribute DOMString <a href="#dom-document-compatmode" title="dom-Document-compatMode">compatMode</a>;
 
-  readonly attribute <a href="#documenttype">DocumentType</a> <a href="#dom-document-doctype" title="dom-Document-doctype">doctype</a>;
-  readonly attribute <a href="#element">Element</a> <a href="#dom-document-documentelement" title="dom-Document-documentElement">documentElement</a>;
+  readonly attribute <a href="#documenttype">DocumentType</a>? <a href="#dom-document-doctype" title="dom-Document-doctype">doctype</a>;
+  readonly attribute <a href="#element">Element</a>? <a href="#dom-document-documentelement" title="dom-Document-documentElement">documentElement</a>;
   <a href="#nodelist">NodeList</a> <a href="#dom-document-getelementsbytagname" title="dom-Document-getElementsByTagName">getElementsByTagName</a>(DOMString <var title="">qualifiedName</var>);
   <a href="#nodelist">NodeList</a> <a href="#dom-document-getelementsbytagnamens" title="dom-Document-getElementsByTagNameNS">getElementsByTagNameNS</a>(DOMString <var title="">namespace</var>, DOMString <var title="">localName</var>);
   <a href="#nodelist">NodeList</a> <a href="#dom-document-getelementsbyclassname" title="dom-Document-getElementsByClassName">getElementsByClassName</a>(DOMString <var title="">classNames</var>);
-  <a href="#element">Element</a> <a href="#dom-document-getelementbyid" title="dom-Document-getElementById">getElementById</a>(DOMString <var title="">elementId</var>);
+  <a href="#element">Element</a>? <a href="#dom-document-getelementbyid" title="dom-Document-getElementById">getElementById</a>(DOMString <var title="">elementId</var>);
 
   <a href="#element">Element</a> <a href="#dom-document-createelement" title="dom-Document-createElement">createElement</a>([TreatNullAs=EmptyString] DOMString <var title="">localName</var>);
   <a href="#element">Element</a> <a href="#dom-document-createelementns" title="dom-Document-createElementNS">createElementNS</a>(DOMString <var title="">namespace</var>, DOMString <var title="">qualifiedName</var>);
@@ -2528,8 +2528,8 @@ otherwise [createAttribute]- ->.
 
 <h3 id="interface-element"><span class="secno">5.6 </span>Interface <code><a href="#element">Element</a></code></h3>
 <pre class="idl">interface <dfn id="element">Element</dfn> : <a href="#node">Node</a> {
-  readonly attribute DOMString <a href="#dom-element-namespaceuri" title="dom-Element-namespaceURI">namespaceURI</a>;
-  readonly attribute DOMString <a href="#dom-element-prefix" title="dom-Element-prefix">prefix</a>;
+  readonly attribute DOMString? <a href="#dom-element-namespaceuri" title="dom-Element-namespaceURI">namespaceURI</a>;
+  readonly attribute DOMString? <a href="#dom-element-prefix" title="dom-Element-prefix">prefix</a>;
   readonly attribute DOMString <a href="#dom-element-localname" title="dom-Element-localName">localName</a>;
   readonly attribute DOMString <a href="#dom-element-tagname" title="dom-Element-tagName">tagName</a>;
 
@@ -2553,10 +2553,10 @@ otherwise [createAttribute]- ->.
   <a href="#nodelist">NodeList</a> <a href="#dom-element-getelementsbyclassname" title="dom-Element-getElementsByClassName">getElementsByClassName</a>(DOMString <var title="">classNames</var>);
 
   readonly attribute <a href="#htmlcollection">HTMLCollection</a> <a href="#dom-element-children" title="dom-Element-children">children</a>;
-  readonly attribute <a href="#element">Element</a> <a href="#dom-element-firstelementchild" title="dom-Element-firstElementChild">firstElementChild</a>;
-  readonly attribute <a href="#element">Element</a> <a href="#dom-element-lastelementchild" title="dom-Element-lastElementChild">lastElementChild</a>;
-  readonly attribute <a href="#element">Element</a> <a href="#dom-element-previouselementsibling" title="dom-Element-previousElementSibling">previousElementSibling</a>;
-  readonly attribute <a href="#element">Element</a> <a href="#dom-element-nextelementsibling" title="dom-Element-nextElementSibling">nextElementSibling</a>;
+  readonly attribute <a href="#element">Element</a>? <a href="#dom-element-firstelementchild" title="dom-Element-firstElementChild">firstElementChild</a>;
+  readonly attribute <a href="#element">Element</a>? <a href="#dom-element-lastelementchild" title="dom-Element-lastElementChild">lastElementChild</a>;
+  readonly attribute <a href="#element">Element</a>? <a href="#dom-element-previouselementsibling" title="dom-Element-previousElementSibling">previousElementSibling</a>;
+  readonly attribute <a href="#element">Element</a>? <a href="#dom-element-nextelementsibling" title="dom-Element-nextElementSibling">nextElementSibling</a>;
   readonly attribute unsigned long <a href="#dom-element-childelementcount" title="dom-Element-childElementCount">childElementCount</a>;<!--
 
   readonly attribute TypeInfo schemaTypeInfo;
@@ -3099,7 +3099,7 @@ exceptions these methods might have thrown.
   <a href="#text">Text</a> <a href="#dom-text-splittext" title="dom-Text-splitText">splitText</a>(unsigned long <var title="">offset</var>);<!--
   readonly attribute boolean isElementContentWhitespace;-->
   readonly attribute DOMString <a href="#dom-text-wholetext" title="dom-Text-wholeText">wholeText</a>;
-  <a href="#text">Text</a> <a href="#dom-text-replacewholetext" title="dom-Text-replaceWholeText">replaceWholeText</a>(DOMString <var title="">data</var>);
+  <a href="#text">Text</a>? <a href="#dom-text-replacewholetext" title="dom-Text-replaceWholeText">replaceWholeText</a>(DOMString <var title="">data</var>);
 };</pre>
 
 <p>The
@@ -3219,7 +3219,7 @@ every time it is retrieved.
 <a href="#concept-collection" title="concept-collection">collection</a>.
 
 <pre class="idl">interface <dfn id="nodelist">NodeList</dfn> {
-  getter <a href="#node">Node</a> <a href="#dom-nodelist-item" title="dom-NodeList-item">item</a>(unsigned long index);
+  getter <a href="#node">Node</a>? <a href="#dom-nodelist-item" title="dom-NodeList-item">item</a>(unsigned long index);
   readonly attribute unsigned long <a href="#dom-nodelist-length" title="dom-NodeList-length">length</a>;
 };</pre>
 
@@ -3261,8 +3261,8 @@ it, which return other objects for historical reasons.
 
 <pre class="idl">interface <dfn id="htmlcollection">HTMLCollection</dfn> {
   readonly attribute unsigned long <a href="#dom-htmlcollection-length" title="dom-HTMLCollection-length">length</a>;
-  getter <a href="#element">Element</a> <a href="#dom-htmlcollection-item" title="dom-HTMLCollection-item">item</a>(unsigned long index);
-  getter object <a href="#dom-htmlcollection-nameditem" title="dom-HTMLCollection-namedItem">namedItem</a>(DOMString name); // only returns <code><a href="#element">Element</a></code>
+  getter <a href="#element">Element</a>? <a href="#dom-htmlcollection-item" title="dom-HTMLCollection-item">item</a>(unsigned long index);
+  getter object? <a href="#dom-htmlcollection-nameditem" title="dom-HTMLCollection-namedItem">namedItem</a>(DOMString name); // only returns <code><a href="#element">Element</a></code>
 };</pre>
 
 <dl class="domintro">
@@ -3382,7 +3382,7 @@ title=concept-collection>collection</span>, whose primary purpose is to expose
 
 <pre class="idl">interface <dfn id="domstringlist">DOMStringList</dfn> {
   readonly attribute unsigned long <a href="#dom-domstringlist-length" title="dom-DOMStringList-length">length</a>;
-  getter DOMString <a href="#dom-domstringlist-item" title="dom-DOMStringList-item">item</a>(unsigned long <var title="">index</var>);
+  getter DOMString? <a href="#dom-domstringlist-item" title="dom-DOMStringList-item">item</a>(unsigned long <var title="">index</var>);
   boolean <a href="#dom-domstringlist-contains" title="dom-DOMStringList-contains">contains</a>(DOMString <var title="">string</var>);
 };</pre>
 
@@ -3442,7 +3442,7 @@ ordinarily be treated in a case-insensitive manner.
 
 <pre class="idl">interface <dfn id="domtokenlist">DOMTokenList</dfn> {
   readonly attribute unsigned long <a href="#dom-domtokenlist-length" title="dom-DOMTokenList-length">length</a>;
-  getter DOMString <a href="#dom-domtokenlist-item" title="dom-DOMTokenList-item">item</a>(unsigned long index);
+  getter DOMString? <a href="#dom-domtokenlist-item" title="dom-DOMTokenList-item">item</a>(unsigned long index);
   boolean <a href="#dom-domtokenlist-contains" title="dom-DOMTokenList-contains">contains</a>(DOMString token);
   void <a href="#dom-domtokenlist-add" title="dom-DOMTokenList-add">add</a>(DOMString token);
   void <a href="#dom-domtokenlist-remove" title="dom-DOMTokenList-remove">remove</a>(DOMString token);

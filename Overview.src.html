@@ -597,8 +597,8 @@ prefer.
 
 <pre class="idl">interface <dfn>Event</dfn> {
   readonly attribute DOMString <span title=dom-Event-type>type</span>;
-  readonly attribute <span>EventTarget</span> <span title=dom-Event-target>target</span>;
-  readonly attribute <span>EventTarget</span> <span title=dom-Event-currentTarget>currentTarget</span>;
+  readonly attribute <span>EventTarget</span>? <span title=dom-Event-target>target</span>;
+  readonly attribute <span>EventTarget</span>? <span title=dom-Event-currentTarget>currentTarget</span>;
 
   const unsigned short <span title=dom-Event-CAPTURING_PHASE>CAPTURING_PHASE</span> = 1;
   const unsigned short <span title=dom-Event-AT_TARGET>AT_TARGET</span> = 2;
@@ -722,7 +722,7 @@ method is invoked these steps must be run:</p>
 <h3>Interface <code>CustomEvent</code></h3>
 
 <pre class=idl>interface <dfn>CustomEvent</dfn> : <span>Event</span> {
-  readonly attribute object <span title=dom-CustomEvent-detail>detail</span>;
+  readonly attribute object? <span title=dom-CustomEvent-detail>detail</span>;
   void <span title=dom-CustomEvent-initCustomEvent>initCustomEvent</span>(DOMString <var title>type</var>, boolean <var title>bubbles</var>, boolean <var title>cancelable</var>, object <var title>detail</var>);
 };</pre>
 
@@ -752,8 +752,8 @@ method is invoked these steps must be run:</p>
 <h3>Interface <code>EventTarget</code></h3>
 
 <pre class=idl>interface <dfn>EventTarget</dfn> {
-  void <span title=dom-EventTarget-addEventListener>addEventListener</span>(DOMString <var title>type</var>, <span>EventListener</span> <var title>listener</var>, optional boolean <var title>capture</var>);
-  void <span title=dom-EventTarget-removeEventListener>removeEventListener</span>(DOMString <var title>type</var>, <span>EventListener</span> <var title>listener</var>, optional boolean <var title>capture</var>);
+  void <span title=dom-EventTarget-addEventListener>addEventListener</span>(DOMString <var title>type</var>, <span>EventListener</span>? <var title>listener</var>, optional boolean <var title>capture</var>);
+  void <span title=dom-EventTarget-removeEventListener>removeEventListener</span>(DOMString <var title>type</var>, <span>EventListener</span>? <var title>listener</var>, optional boolean <var title>capture</var>);
   boolean <span title=dom-EventTarget-dispatchEvent>dispatchEvent</span>(<span>Event</span> <var title>event</var>);
 };
 
@@ -1129,15 +1129,15 @@ for all or some <span title=concept-node>nodes</span>.
   boolean <span title=dom-Node-hasAttributes>hasAttributes</span>();
   readonly attribute <span>NamedNodeMap</span> <span title=dom-Node-attributes>attributes</span>;
 
-  -->readonly attribute <span>Document</span> <span title=dom-Node-ownerDocument>ownerDocument</span>;
-  readonly attribute <span>Node</span> <span title=dom-Node-parentNode>parentNode</span>;
-  readonly attribute <span>Element</span> <span title=dom-Node-parentElement>parentElement</span>;
+  -->readonly attribute <span>Document</span>? <span title=dom-Node-ownerDocument>ownerDocument</span>;
+  readonly attribute <span>Node</span>? <span title=dom-Node-parentNode>parentNode</span>;
+  readonly attribute <span>Element</span>? <span title=dom-Node-parentElement>parentElement</span>;
   boolean <span title=dom-Node-hasChildNodes>hasChildNodes</span>();
   readonly attribute <span>NodeList</span> <span title=dom-Node-childNodes>childNodes</span>;
-  readonly attribute <span>Node</span> <span title=dom-Node-firstChild>firstChild</span>;
-  readonly attribute <span>Node</span> <span title=dom-Node-lastChild>lastChild</span>;
-  readonly attribute <span>Node</span> <span title=dom-Node-previousSibling>previousSibling</span>;
-  readonly attribute <span>Node</span> <span title=dom-Node-nextSibling>nextSibling</span>;
+  readonly attribute <span>Node</span>? <span title=dom-Node-firstChild>firstChild</span>;
+  readonly attribute <span>Node</span>? <span title=dom-Node-lastChild>lastChild</span>;
+  readonly attribute <span>Node</span>? <span title=dom-Node-previousSibling>previousSibling</span>;
+  readonly attribute <span>Node</span>? <span title=dom-Node-nextSibling>nextSibling</span>;
 
   const unsigned short <span title=dom-Node-DOCUMENT_POSITION_DISCONNECTED>DOCUMENT_POSITION_DISCONNECTED</span> = 0x01;
   const unsigned short <span title=dom-Node-DOCUMENT_POSITION_PRECEDING>DOCUMENT_POSITION_PRECEDING</span> = 0x02;
@@ -1147,17 +1147,17 @@ for all or some <span title=concept-node>nodes</span>.
   const unsigned short <span title=dom-Node-DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC>DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC</span> = 0x20;
   unsigned short <span title=dom-Node-compareDocumentPosition>compareDocumentPosition</span>(<span>Node</span> <var title>other</var>);
 
-           attribute DOMString <span title=dom-Node-nodeValue>nodeValue</span>;
-           attribute DOMString <span title=dom-Node-textContent>textContent</span>;
-  <span>Node</span> <span title=dom-Node-insertBefore>insertBefore</span>([NoNull] <span>Node</span> <var title>newChild</var>, <span>Node</span> <var title>refChild</var>);
-  <span>Node</span> <span title=dom-Node-replaceChild>replaceChild</span>([NoNull] <span>Node</span> <var title>newChild</var>, [NoNull] <span>Node</span> <var title>oldChild</var>);
-  <span>Node</span> <span title=dom-Node-removeChild>removeChild</span>([NoNull] <span>Node</span> <var title>oldChild</var>);
-  <span>Node</span> <span title=dom-Node-appendChild>appendChild</span>([NoNull] <span>Node</span> <var title>newChild</var>);<!--
+           attribute DOMString? <span title=dom-Node-nodeValue>nodeValue</span>;
+           attribute DOMString? <span title=dom-Node-textContent>textContent</span>;
+  <span>Node</span> <span title=dom-Node-insertBefore>insertBefore</span>(<span>Node</span> <var title>newChild</var>, <span>Node</span>? <var title>refChild</var>);
+  <span>Node</span> <span title=dom-Node-replaceChild>replaceChild</span>(<span>Node</span> <var title>newChild</var>, <span>Node</span> <var title>oldChild</var>);
+  <span>Node</span> <span title=dom-Node-removeChild>removeChild</span>(<span>Node</span> <var title>oldChild</var>);
+  <span>Node</span> <span title=dom-Node-appendChild>appendChild</span>(<span>Node</span> <var title>newChild</var>);<!--
   void normalize();-->
 
   <span>Node</span> <span title=dom-Node-cloneNode>cloneNode</span>(boolean <var title>deep</var>);
-  boolean <span title=dom-Node-isSameNode>isSameNode</span>(<span>Node</span> <var title>node</var>);
-  boolean <span title=dom-Node-isEqualNode>isEqualNode</span>(<span>Node</span> <var title>node</var>);
+  boolean <span title=dom-Node-isSameNode>isSameNode</span>(<span>Node</span>? <var title>node</var>);
+  boolean <span title=dom-Node-isEqualNode>isEqualNode</span>(<span>Node</span>? <var title>node</var>);
 
   DOMString <span title=dom-Node-lookupPrefix>lookupPrefix</span>([TreatNullAs=EmptyString] DOMString <var title>namespace</var>);
   DOMString <span title=dom-Node-lookupNamespaceURI>lookupNamespaceURI</span>(DOMString? <var title>prefix</var>);
@@ -1900,12 +1900,12 @@ method must run these steps:
            attribute DOMString <span title=dom-Document-documentURI>documentURI</span>;
   readonly attribute DOMString <span title=dom-Document-compatMode>compatMode</span>;
 
-  readonly attribute <span>DocumentType</span> <span title=dom-Document-doctype>doctype</span>;
-  readonly attribute <span>Element</span> <span title=dom-Document-documentElement>documentElement</span>;
+  readonly attribute <span>DocumentType</span>? <span title=dom-Document-doctype>doctype</span>;
+  readonly attribute <span>Element</span>? <span title=dom-Document-documentElement>documentElement</span>;
   <span>NodeList</span> <span title=dom-Document-getElementsByTagName>getElementsByTagName</span>(DOMString <var title>qualifiedName</var>);
   <span>NodeList</span> <span title=dom-Document-getElementsByTagNameNS>getElementsByTagNameNS</span>(DOMString <var title>namespace</var>, DOMString <var title>localName</var>);
   <span>NodeList</span> <span title=dom-Document-getElementsByClassName>getElementsByClassName</span>(DOMString <var title>classNames</var>);
-  <span>Element</span> <span title=dom-Document-getElementById>getElementById</span>(DOMString <var title>elementId</var>);
+  <span>Element</span>? <span title=dom-Document-getElementById>getElementById</span>(DOMString <var title>elementId</var>);
 
   <span>Element</span> <span title=dom-Document-createElement>createElement</span>([TreatNullAs=EmptyString] DOMString <var title>localName</var>);
   <span>Element</span> <span title=dom-Document-createElementNS>createElementNS</span>(DOMString <var title>namespace</var>, DOMString <var title>qualifiedName</var>);
@@ -2527,8 +2527,8 @@ otherwise [createAttribute]- ->.
 
 <h3>Interface <code>Element</code></h3>
 <pre class=idl>interface <dfn>Element</dfn> : <span>Node</span> {
-  readonly attribute DOMString <span title=dom-Element-namespaceURI>namespaceURI</span>;
-  readonly attribute DOMString <span title=dom-Element-prefix>prefix</span>;
+  readonly attribute DOMString? <span title=dom-Element-namespaceURI>namespaceURI</span>;
+  readonly attribute DOMString? <span title=dom-Element-prefix>prefix</span>;
   readonly attribute DOMString <span title=dom-Element-localName>localName</span>;
   readonly attribute DOMString <span title=dom-Element-tagName>tagName</span>;
 
@@ -2552,10 +2552,10 @@ otherwise [createAttribute]- ->.
   <span>NodeList</span> <span title=dom-Element-getElementsByClassName>getElementsByClassName</span>(DOMString <var title>classNames</var>);
 
   readonly attribute <span>HTMLCollection</span> <span title=dom-Element-children>children</span>;
-  readonly attribute <span>Element</span> <span title=dom-Element-firstElementChild>firstElementChild</span>;
-  readonly attribute <span>Element</span> <span title=dom-Element-lastElementChild>lastElementChild</span>;
-  readonly attribute <span>Element</span> <span title=dom-Element-previousElementSibling>previousElementSibling</span>;
-  readonly attribute <span>Element</span> <span title=dom-Element-nextElementSibling>nextElementSibling</span>;
+  readonly attribute <span>Element</span>? <span title=dom-Element-firstElementChild>firstElementChild</span>;
+  readonly attribute <span>Element</span>? <span title=dom-Element-lastElementChild>lastElementChild</span>;
+  readonly attribute <span>Element</span>? <span title=dom-Element-previousElementSibling>previousElementSibling</span>;
+  readonly attribute <span>Element</span>? <span title=dom-Element-nextElementSibling>nextElementSibling</span>;
   readonly attribute unsigned long <span title=dom-Element-childElementCount>childElementCount</span>;<!--
 
   readonly attribute TypeInfo schemaTypeInfo;
@@ -3108,7 +3108,7 @@ exceptions these methods might have thrown.
   <span>Text</span> <span title=dom-Text-splitText>splitText</span>(unsigned long <var title>offset</var>);<!--
   readonly attribute boolean isElementContentWhitespace;-->
   readonly attribute DOMString <span title=dom-Text-wholeText>wholeText</span>;
-  <span>Text</span> <span title=dom-Text-replaceWholeText>replaceWholeText</span>(DOMString <var title>data</var>);
+  <span>Text</span>? <span title=dom-Text-replaceWholeText>replaceWholeText</span>(DOMString <var title>data</var>);
 };</pre>
 
 <p>The
@@ -3229,7 +3229,7 @@ every time it is retrieved.
 <span title=concept-collection>collection</span>.
 
 <pre class=idl>interface <dfn>NodeList</dfn> {
-  getter <span>Node</span> <span title=dom-NodeList-item>item</span>(unsigned long index);
+  getter <span>Node</span>? <span title=dom-NodeList-item>item</span>(unsigned long index);
   readonly attribute unsigned long <span title=dom-NodeList-length>length</span>;
 };</pre>
 
@@ -3275,8 +3275,8 @@ it, which return other objects for historical reasons.
 
 <pre class=idl>interface <dfn>HTMLCollection</dfn> {
   readonly attribute unsigned long <span title=dom-HTMLCollection-length>length</span>;
-  getter <span>Element</span> <span title=dom-HTMLCollection-item>item</span>(unsigned long index);
-  getter object <span title=dom-HTMLCollection-namedItem>namedItem</span>(DOMString name); // only returns <code>Element</code>
+  getter <span>Element</span>? <span title=dom-HTMLCollection-item>item</span>(unsigned long index);
+  getter object? <span title=dom-HTMLCollection-namedItem>namedItem</span>(DOMString name); // only returns <code>Element</code>
 };</pre>
 
 <dl class=domintro>
@@ -3405,7 +3405,7 @@ title=concept-collection>collection</span>, whose primary purpose is to expose
 
 <pre class=idl>interface <dfn>DOMStringList</dfn> {
   readonly attribute unsigned long <span title=dom-DOMStringList-length>length</span>;
-  getter DOMString <span title=dom-DOMStringList-item>item</span>(unsigned long <var title>index</var>);
+  getter DOMString? <span title=dom-DOMStringList-item>item</span>(unsigned long <var title>index</var>);
   boolean <span title=dom-DOMStringList-contains>contains</span>(DOMString <var title>string</var>);
 };</pre>
 
@@ -3465,7 +3465,7 @@ ordinarily be treated in a case-insensitive manner.
 
 <pre class="idl">interface <dfn>DOMTokenList</dfn> {
   readonly attribute unsigned long <span title="dom-DOMTokenList-length">length</span>;
-  getter DOMString <span title="dom-DOMTokenList-item">item</span>(unsigned long index);
+  getter DOMString? <span title="dom-DOMTokenList-item">item</span>(unsigned long index);
   boolean <span title="dom-DOMTokenList-contains">contains</span>(DOMString token);
   void <span title="dom-DOMTokenList-add">add</span>(DOMString token);
   void <span title="dom-DOMTokenList-remove">remove</span>(DOMString token);

@@ -624,9 +624,9 @@ Things I haven't looked at:
 * copy, cut, paste: Needs attention to security.
 * delete, redo, undo: Needs review of the Google work on this; will probably be
   quite complicated.
-* formatBlock, insertParagraph, justifyCenter, justifyFull, justifyLeft,
-  justifyRight: These look important and should be similar to indent, so
-  they're next on my list.
+* insertParagraph, justifyCenter, justifyFull, justifyLeft, justifyRight: These
+  look important and should be similar to work I've already done, so they're
+  next on my list.
 * insertHTML: Not supported by IE, but important.  I've seen frameworks that
   work around its absence in IE by using insertImage and then search and
   replace.  Will probably need to be defined in terms of insertAdjacentHTML or
@@ -2457,6 +2457,10 @@ element</span> that has no attributes other than one or more of
   attribute.
 </ul>
 
+<p>A <dfn>single-line container</dfn> is an <span>HTML element</span> with
+[[localname]] "address", "div", "h1", "h2", "h3", "h4", "h5", "h6", "p", or
+"pre".
+
 
 <h3>Assorted block formatting command algorithms</h3>
 
@@ -3458,6 +3462,134 @@ or "ul"):
 
       <li>Return the last [[child]] of <var>list</var>.
     </ol>
+  </ol>
+</ol>
+
+
+<h3><dfn>The <code title>formatBlock</code> command</dfn></h3>
+<!--
+Tested browser versions: IE9, Firefox 4.0, Chrome 13 dev, Opera 11.10.
+
+Firefox and Chrome will replace a <blockquote> by a <p> or other given tag.  IE
+and Opera will nest the <p> inside instead.  The latter makes more sense, given
+that a) we don't support formatBlock with <blockquote> and b) <blockquote>s are
+logically different, since they can contain many lines.
+
+Firefox will not convert other tags like <p> to <div>, it will only wrap
+unwrapped lines in a <div>.  Firefox also won't replace <div> by things like
+<p>, it will nest the <p> inside.  The spec follows other browsers.
+
+If you try to convert a <dt> to a <div> or <p> or such, Firefox breaks out of
+the <dl> entirely, leaving ...<dt><br></dt></dl>.  Chrome will convert a <dt>
+or <dd> to the given element, leaving a <div> or <p> or such as the child of a
+<dl>.  I follow IE/Opera, which only affect the contents of <dt>/<dd> (Firefox
+behaves this way for <dd> as well, just not <dt>).  This means you can get
+invalid DOMs like <dt><p>foo<p></dt>, but they can be serialized as text/html,
+so I'm not too fussy.
+
+When it comes to <li>, IE/Opera behave like with <dt>/<dd>, which is how I
+behave too.  Firefox apparently refuses to do anything.  Chrome tries to wrap
+the parent list element, breaking it up if only some of the children are
+selected; this produces unserializable DOMs if you're wrapping with <p>.
+
+When you're converting multiple blocks at once, Chrome replaces them all by one
+block with <br> stuck in, like <p>foo</p><p>bar</p> -> <div>foo<br>bar</div>.
+It wipes out intervening block containers too in some cases.  This might make
+sense for <address>/<h*>/<pre>, but other browsers don't do it.
+-->
+
+<p><span>Action</span>:
+
+<ol>
+  <li>If <var>value</var> begins with a "&lt;" character and ends with a ">"
+  character, remove the first and last characters from it.
+  <!-- IE9 requires the brackets.  If they're not provided, it does nothing.
+  -->
+
+  <li>Let <var>value</var> be <span data-anolis-spec=domcore>converted to
+  lowercase</span>.
+
+  <li>If <var>value</var> is not "address", "div", "h1", "h2", "h3", "h4",
+  "h5", "h6", "p", or "pre", then do nothing and abort these steps.
+
+  <p class=XXX>Non-IE browsers support a lot more elements, but I have my
+  doubts about how much sense it makes to support things where you'd expect to
+  nest them.  Will send mail to the list.
+  <!--
+  Opera 11.10 throws NOT_SUPPORTED_ERR for bad elements, all other tested
+  browsers ignore the input.  Testing in IE9, Firefox 4.0, Chrome 13 dev, and
+  Opera 11.10, supported elements seem to be:
+
+  Everyone: address, div, h*, p, pre
+  Everyone but IE: blockquote
+  Everyone but Opera: dd, dt
+  IE only: ol, ul
+  Firefox and Chrome only: dl
+  Chrome only: article, aside, footer, header, hgroup, nav, section
+
+  HTML5 as of May 2011 supports: address, article, aside, blockquote, div,
+  footer, h*, header, hgroup, nav, p, pre, section, which exactly matches
+  Chrome except minus dd/dt/dl.
+  -->
+
+  <li><span>Block-extend</span> the <span>active range</span>, and let <var>new
+  range</var> be the result.
+
+  <li>Let <var>node list</var> be an empty list of [[nodes]].
+
+  <li>For each [[node]] <var>node</var> [[contained]] in <var>new range</var>,
+  append <var>node</var> to <var>node list</var> if it is
+  <span>editable</span>, the last member of <var>node list</var> (if any) is
+  not an [[ancestor]] of <var>node</var>, and <var>node</var> is not an
+  <span>HTML element</span> that has [[localname]] "article", "aside",
+  "blockquote", "caption", "col", "colgroup", "dd", "dl", "dt", "footer",
+  "header", "hgroup", "li", "nav", "ol", "section", "table", "tbody", "td",
+  "th", "thead", "tr", or "ul".
+
+  <li>While <var>node list</var> is not empty:
+
+  <ol>
+    <li>If the first member of <var>node list</var> is a <span>single-line
+    container</span>, <span>set the tag name</span> of the first member of
+    <var>node list</var> to <var>value</var>, then remove the first member from
+    <var>node list</var> and continue this loop from the beginning.
+
+    <div class=XXX>
+    <p>This implies that
+
+    <xmp><p>foo</p><p>bar</p></xmp>
+
+    <p>becomes (for instance)
+
+    <xmp><h1>foo</h1><h1>bar</h1></xmp>
+
+    <p>even though
+
+    <xmp><h1>foo<br>bar</h1></xmp>
+
+    <p>would probably make more sense.  WebKit has the latter behavior in all
+    cases.  Perhaps we should adopt WebKit's behavior for things where it
+    rarely makes sense to have two in a row, while keeping the current behavior
+    for divs and paragraphs?
+    </div>
+
+    <li>Let <var>sublist</var> be an empty list of [[nodes]].
+
+    <li>Remove the first member of <var>node list</var> and append it to
+    <var>sublist</var>.
+
+    <li>While <var>node list</var> is not empty, and the first member of
+    <var>node list</var> is the [[nextsibling]] of the last member of
+    <var>sublist</var>, and the first member of <var>node list</var> is not a
+    <span>single-line container</span>, and the last member of
+    <var>sublist</var> is not a [[br]], remove the first member of <var>node
+    list</var> and append it to <var>sublist</var>.
+
+    <li><span>Wrap</span> <var>sublist</var>, with <span>sibling
+    criteria</span> matching nothing and <span>new parent instructions</span>
+    returning the result of running <code data-anolis-spec=domcore
+    title=dom-Document-createElement>createElement(<var>value</var>)</code> on
+    the [[contextobject]].
   </ol>
 </ol>
 

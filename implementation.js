@@ -301,6 +301,48 @@ function isContained(node, range) {
 		&& pos2 == "before";
 }
 
+/**
+ * Return all editable nodes contained in range that the provided function
+ * returns true for, omitting any with an ancestor already being returned.
+ */
+function collectContainedNodes(range, condition) {
+	var node = range.startContainer;
+	if (node.hasChildNodes()
+	&& range.startOffset < node.childNodes.length) {
+		// A child is contained
+		node = node.childNodes[range.startOffset];
+	} else if (range.startOffset == getNodeLength(node)) {
+		// No descendant can be contained
+		node = nextNodeDescendants(node);
+	} else {
+		// No children; this node at least can't be contained
+		node = nextNode(node);
+	}
+
+	var stop = range.endContainer;
+	if (stop.hasChildNodes()
+	&& range.endOffset < node.childNodes.length) {
+		// The node after the last contained node is a child
+		stop = stop.childNodes[range.endOffset];
+	} else {
+		// This node and/or some of its children might be contained
+		stop = nextNodeDescendants(node);
+	}
+
+	var nodeList = [];
+	while (isBefore(node, stop)) {
+		if (isContained(node, range)
+		&& isEditable(node)
+		&& condition(node)) {
+			nodeList.push(node);
+			node = nextNodeDescendants(node);
+			continue;
+		}
+		node = nextNode(node);
+	}
+	return nodeList;
+}
+
 
 function parseSimpleColor(color) {
 	// This is stupid, but otherwise my automated tests will have places where
@@ -2384,6 +2426,7 @@ function myExecCommand(command, showUI, value, range) {
 		break;
 
 		case "forecolor":
+		// See later for formatblock
 		case "hilitecolor":
 		// "If value is not a valid CSS color, prepend "#" to it."
 		//
@@ -2408,6 +2451,84 @@ function myExecCommand(command, showUI, value, range) {
 		var nodeList = decomposeRange(range);
 		for (var i = 0; i < nodeList.length; i++) {
 			setNodeValue(nodeList[i], command, value);
+		}
+		break;
+
+		case "formatblock":
+		var singleLineContainerNames = ["ADDRESS", "DIV", "H1", "H2", "H3",
+			"H4", "H5", "H6", "P", "PRE"];
+
+		// "If value begins with a "<" character and ends with a ">" character,
+		// remove the first and last characters from it."
+		if (/^<.*>$/.test(value)) {
+			value = value.slice(1, -1);
+		}
+
+		// "Let value be converted to lowercase."
+		value = value.toLowerCase();
+
+		// "If value is not "address", "div", "h1", "h2", "h3", "h4", "h5",
+		// "h6", "p", or "pre", then do nothing and abort these steps."
+		if (singleLineContainerNames.indexOf(value.toUpperCase()) == -1) {
+			return;
+		}
+
+		// "Block-extend the active range, and let new range be the result."
+		var newRange = blockExtendRange(range);
+
+		// "Let node list be an empty list of nodes."
+		var nodeList = [];
+
+		// "For each node node contained in new range, append node to node list
+		// if it is editable, the last member of node list (if any) is not an
+		// ancestor of node, and node is not an HTML element that has local
+		// name "article", "aside", "blockquote", "caption", "col", "colgroup",
+		// "dd", "dl", "dt", "footer", "header", "hgroup", "li", "nav", "ol",
+		// "section", "table", "tbody", "td", "th", "thead", "tr", or "ul"."
+		nodeList = collectContainedNodes(newRange, function(node) {
+			return !isHtmlElement(node, ["ARTICLE", "ASIDE", "BLOCKQUOTE",
+				"CAPTION", "COL", "COLGROUP", "DD", "DL", "DT", "FOOTER",
+				"HEADER", "HGROUP", "LI", "NAV", "OL", "SECTION", "TABLE",
+				"TBODY", "TD", "TH", "THEAD", "TR", "UL"]);
+		});
+
+		// "While node list is not empty:"
+		while (nodeList.length) {
+			// "If the first member of node list is a single-line container,
+			// set the tag name of the first member of node list to value, then
+			// remove the first member from node list and continue this loop
+			// from the beginning."
+			if (isHtmlElement(nodeList[0], singleLineContainerNames)) {
+				setTagName(nodeList[0], value);
+				nodeList.shift();
+				continue;
+			}
+
+			// "Let sublist be an empty list of nodes."
+			var sublist = [];
+
+			// "Remove the first member of node list and append it to
+			// sublist."
+			sublist.push(nodeList.shift());
+
+			// "While node list is not empty, and the first member of node list
+			// is the nextSibling of the last member of sublist, and the first
+			// member of node list is not a single-line container, and the last
+			// member of sublist is not a br, remove the first member of node
+			// list and append it to sublist."
+			while (nodeList.length
+			&& nodeList[0] == sublist[sublist.length - 1].nextSibling
+			&& !isHtmlElement(nodeList[0], singleLineContainerNames)
+			&& !isHtmlElement(sublist[sublist.length - 1], "BR")) {
+				sublist.push(nodeList.shift());
+			}
+
+			// "Wrap sublist, with sibling criteria matching nothing and
+			// new parent instructions returning the result of running
+			// createElement(value) on the context object."
+			wrap(sublist,
+				function() { return false },
+				function() { return document.createElement(value) });
 		}
 		break;
 

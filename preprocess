@@ -28,6 +28,7 @@ replace = {
     'descendant': '<span data-anolis-spec=domcore title=concept-tree-descendant>descendant</span>',
     'directionality': '<span data-anolis-spec=html title="the directionality">directionality</span>',
     'div': '<code data-anolis-spec=html title="the div element">div</code>',
+    'dl': '<code data-anolis-spec=html title="the dl element">dl</code>',
     'document': '<code data-anolis-spec=domcore>Document</code>',
     'documentfragment': '<code data-anolis-spec=domcore>DocumentFragment</code>',
     'element': '<code data-anolis-spec=domcore>Element</code>',

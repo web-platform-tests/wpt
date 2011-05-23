@@ -40,7 +40,7 @@
 <body class=draft>
 <div class=head id=head>
 <h1>HTML Editing Commands</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-22-may-2011>Work in Progress &mdash; Last Update 22 May 2011</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-23-may-2011>Work in Progress &mdash; Last Update 23 May 2011</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;ayg+spec@aryeh.name&gt;
@@ -105,10 +105,11 @@ have experience using this feature.
    <li><a href=#outdenting-a-node><span class=secno>7.3 </span>Outdenting a node</a></li>
    <li><a href=#block-extending-a-range><span class=secno>7.4 </span>Block-extending a range</a></li>
    <li><a href=#toggling-lists><span class=secno>7.5 </span>Toggling lists</a></li>
-   <li><a href=#the-indent-command><span class=secno>7.6 </span>The <code title="">indent</code> command</a></li>
-   <li><a href=#the-insertorderedlist-command><span class=secno>7.7 </span>The <code title="">insertOrderedList</code> command</a></li>
-   <li><a href=#the-insertunorderedlist-command><span class=secno>7.8 </span>The <code title="">insertUnorderedList</code> command</a></li>
-   <li><a href=#the-outdent-command><span class=secno>7.9 </span>The <code title="">outdent</code> command</a></ol></li>
+   <li><a href=#the-formatblock-command><span class=secno>7.6 </span>The <code title="">formatBlock</code> command</a></li>
+   <li><a href=#the-indent-command><span class=secno>7.7 </span>The <code title="">indent</code> command</a></li>
+   <li><a href=#the-insertorderedlist-command><span class=secno>7.8 </span>The <code title="">insertOrderedList</code> command</a></li>
+   <li><a href=#the-insertunorderedlist-command><span class=secno>7.9 </span>The <code title="">insertUnorderedList</code> command</a></li>
+   <li><a href=#the-outdent-command><span class=secno>7.10 </span>The <code title="">outdent</code> command</a></ol></li>
  <li><a href=#miscellaneous-commands><span class=secno>8 </span>Miscellaneous commands</a>
   <ol>
    <li><a href=#the-stylewithcss-command><span class=secno>8.1 </span>The <code title="">styleWithCSS</code> command</a></li>
@@ -659,9 +660,9 @@ Things I haven't looked at:
 * copy, cut, paste: Needs attention to security.
 * delete, redo, undo: Needs review of the Google work on this; will probably be
   quite complicated.
-* formatBlock, insertParagraph, justifyCenter, justifyFull, justifyLeft,
-  justifyRight: These look important and should be similar to indent, so
-  they're next on my list.
+* insertParagraph, justifyCenter, justifyFull, justifyLeft, justifyRight: These
+  look important and should be similar to work I've already done, so they're
+  next on my list.
 * insertHTML: Not supported by IE, but important.  I've seen frameworks that
   work around its absence in IE by using insertImage and then search and
   replace.  Will probably need to be defined in terms of insertAdjacentHTML or
@@ -2453,6 +2454,10 @@ element</a> that has no attributes other than one or more of
   attribute.
 </ul>
 
+<p>A <dfn id=single-line-container>single-line container</dfn> is an <a href=#html-element>HTML element</a> with
+<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> "address", "div", "h1", "h2", "h3", "h4", "h5", "h6", "p", or
+"pre".
+
 
 <h3 id=assorted-block-formatting-command-algorithms><span class=secno>7.2 </span>Assorted block formatting command algorithms</h3>
 
@@ -3435,7 +3440,134 @@ or "ul"):
 </ol>
 
 
-<h3 id=the-indent-command><span class=secno>7.6 </span><dfn>The <code title="">indent</code> command</dfn></h3>
+<h3 id=the-formatblock-command><span class=secno>7.6 </span><dfn>The <code title="">formatBlock</code> command</dfn></h3>
+<!--
+Tested browser versions: IE9, Firefox 4.0, Chrome 13 dev, Opera 11.10.
+
+Firefox and Chrome will replace a <blockquote> by a <p> or other given tag.  IE
+and Opera will nest the <p> inside instead.  The latter makes more sense, given
+that a) we don't support formatBlock with <blockquote> and b) <blockquote>s are
+logically different, since they can contain many lines.
+
+Firefox will not convert other tags like <p> to <div>, it will only wrap
+unwrapped lines in a <div>.  Firefox also won't replace <div> by things like
+<p>, it will nest the <p> inside.  The spec follows other browsers.
+
+If you try to convert a <dt> to a <div> or <p> or such, Firefox breaks out of
+the <dl> entirely, leaving ...<dt><br></dt></dl>.  Chrome will convert a <dt>
+or <dd> to the given element, leaving a <div> or <p> or such as the child of a
+<dl>.  I follow IE/Opera, which only affect the contents of <dt>/<dd> (Firefox
+behaves this way for <dd> as well, just not <dt>).  This means you can get
+invalid DOMs like <dt><p>foo<p></dt>, but they can be serialized as text/html,
+so I'm not too fussy.
+
+When it comes to <li>, IE/Opera behave like with <dt>/<dd>, which is how I
+behave too.  Firefox apparently refuses to do anything.  Chrome tries to wrap
+the parent list element, breaking it up if only some of the children are
+selected; this produces unserializable DOMs if you're wrapping with <p>.
+
+When you're converting multiple blocks at once, Chrome replaces them all by one
+block with <br> stuck in, like <p>foo</p><p>bar</p> -> <div>foo<br>bar</div>.
+It wipes out intervening block containers too in some cases.  This might make
+sense for <address>/<h*>/<pre>, but other browsers don't do it.
+-->
+
+<p><a href=#action>Action</a>:
+
+<ol>
+  <li>If <var title="">value</var> begins with a "&lt;" character and ends with a "&gt;"
+  character, remove the first and last characters from it.
+  <!-- IE9 requires the brackets.  If they're not provided, it does nothing.
+  -->
+
+  <li>Let <var title="">value</var> be <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#converted-to-lowercase>converted to
+  lowercase</a>.
+
+  <li>If <var title="">value</var> is not "address", "div", "h1", "h2", "h3", "h4",
+  "h5", "h6", "p", or "pre", then do nothing and abort these steps.
+
+  <p class=XXX>Non-IE browsers support a lot more elements, but I have my
+  doubts about how much sense it makes to support things where you'd expect to
+  nest them.  Will send mail to the list.
+  <!--
+  Opera 11.10 throws NOT_SUPPORTED_ERR for bad elements, all other tested
+  browsers ignore the input.  Testing in IE9, Firefox 4.0, Chrome 13 dev, and
+  Opera 11.10, supported elements seem to be:
+
+  Everyone: address, div, h*, p, pre
+  Everyone but IE: blockquote
+  Everyone but Opera: dd, dt
+  IE only: ol, ul
+  Firefox and Chrome only: dl
+  Chrome only: article, aside, footer, header, hgroup, nav, section
+
+  HTML5 as of May 2011 supports: address, article, aside, blockquote, div,
+  footer, h*, header, hgroup, nav, p, pre, section, which exactly matches
+  Chrome except minus dd/dt/dl.
+  -->
+
+  <li><a href=#block-extend>Block-extend</a> the <a href=#active-range>active range</a>, and let <var title="">new
+  range</var> be the result.
+
+  <li>Let <var title="">node list</var> be an empty list of <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a>.
+
+  <li>For each <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> <var title="">node</var> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in <var title="">new range</var>,
+  append <var title="">node</var> to <var title="">node list</var> if it is
+  <a href=#editable>editable</a>, the last member of <var title="">node list</var> (if any) is
+  not an <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of <var title="">node</var>, and <var title="">node</var> is not an
+  <a href=#html-element>HTML element</a> that has <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> "article", "aside",
+  "blockquote", "caption", "col", "colgroup", "dd", "dl", "dt", "footer",
+  "header", "hgroup", "li", "nav", "ol", "section", "table", "tbody", "td",
+  "th", "thead", "tr", or "ul".
+
+  <li>While <var title="">node list</var> is not empty:
+
+  <ol>
+    <li>If the first member of <var title="">node list</var> is a <a href=#single-line-container>single-line
+    container</a>, <a href=#set-the-tag-name>set the tag name</a> of the first member of
+    <var title="">node list</var> to <var title="">value</var>, then remove the first member from
+    <var title="">node list</var> and continue this loop from the beginning.
+
+    <div class=XXX>
+    <p>This implies that
+
+    </p><xmp><p>foo</p><p>bar</p></xmp>
+
+    <p>becomes (for instance)
+
+    </p><xmp><h1>foo</h1><h1>bar</h1></xmp>
+
+    <p>even though
+
+    </p><xmp><h1>foo<br>bar</h1></xmp>
+
+    <p>would probably make more sense.  WebKit has the latter behavior in all
+    cases.  Perhaps we should adopt WebKit's behavior for things where it
+    rarely makes sense to have two in a row, while keeping the current behavior
+    for divs and paragraphs?
+    </div>
+
+    <li>Let <var title="">sublist</var> be an empty list of <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a>.
+
+    <li>Remove the first member of <var title="">node list</var> and append it to
+    <var title="">sublist</var>.
+
+    <li>While <var title="">node list</var> is not empty, and the first member of
+    <var title="">node list</var> is the <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code> of the last member of
+    <var title="">sublist</var>, and the first member of <var title="">node list</var> is not a
+    <a href=#single-line-container>single-line container</a>, and the last member of
+    <var title="">sublist</var> is not a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code>, remove the first member of <var title="">node
+    list</var> and append it to <var title="">sublist</var>.
+
+    <li><a href=#wrap>Wrap</a> <var title="">sublist</var>, with <a href=#sibling-criteria>sibling
+    criteria</a> matching nothing and <a href=#new-parent-instructions>new parent instructions</a>
+    returning the result of running <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement(<var title="">value</var>)</a></code> on
+    the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>.
+  </ol>
+</ol>
+
+
+<h3 id=the-indent-command><span class=secno>7.7 </span><dfn>The <code title="">indent</code> command</dfn></h3>
 <!--
 IE9: Outputs <blockquote style="margin-right: 0px" dir="ltr">, or when
   surrounding RTL blocks, <blockquote style="margin-left: 0px" dir="rtl">.  The
@@ -3532,19 +3664,19 @@ fragments, html/body, head or things in head . . .
 </ol>
 
 
-<h3 id=the-insertorderedlist-command><span class=secno>7.7 </span><dfn>The <code title="">insertOrderedList</code> command</dfn></h3>
+<h3 id=the-insertorderedlist-command><span class=secno>7.8 </span><dfn>The <code title="">insertOrderedList</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>: <a href=#toggle-lists>Toggle lists</a> with <var title="">tag name</var>
 "ol".
 
 
-<h3 id=the-insertunorderedlist-command><span class=secno>7.8 </span><dfn>The <code title="">insertUnorderedList</code> command</dfn></h3>
+<h3 id=the-insertunorderedlist-command><span class=secno>7.9 </span><dfn>The <code title="">insertUnorderedList</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>: <a href=#toggle-lists>Toggle lists</a> with <var title="">tag name</var>
 "ul".
 
 
-<h3 id=the-outdent-command><span class=secno>7.9 </span><dfn>The <code title="">outdent</code> command</dfn></h3>
+<h3 id=the-outdent-command><span class=secno>7.10 </span><dfn>The <code title="">outdent</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>:
 

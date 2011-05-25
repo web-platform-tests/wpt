@@ -411,6 +411,36 @@ sequentially in the list's order.
   <li>Return <var>replacement element</var>.
 </ol>
 
+<p>To <dfn>remove extraneous line breaks before</dfn> a [[node]]
+<var>node</var>:
+
+<ol>
+  <li>If <var>node</var> is not an [[element]], or it is an <span>inline
+  node</span>, do nothing and abort these steps.
+
+  <li>If the [[previoussibling]] of <var>node</var> is a [[br]], and the
+  [[previoussibling]] of the [[previoussibling]] of <var>node</var> is an
+  <span>inline node</span> that is not a [[br]], remove the [[previoussibling]]
+  of <var>node</var> from its [[parent]].
+</ol>
+
+<p>To <dfn>remove extraneous line breaks at the end of</dfn> a [[node]]
+<var>node</var>:
+
+<ol>
+  <li>If <var>node</var> is not an [[element]], or it is an <span>inline
+  node</span>, do nothing and abort these steps.
+
+  <li>If <var>node</var> has at least two [[children]], and its last [[child]]
+  is a [[br]], and its second-to-last [[child]] is an <span>inline node</span>
+  that is not a [[br]], remove the last [[child]] of <var>node</var> from
+  <var>node</var>.
+</ol>
+
+<p>To <dfn>remove extraneous line breaks from</dfn> a [[node]], first
+<span>remove extraneous line breaks before</span> it, then <span>remove
+extraneous line breaks at the end of</span> it.
+
 <p>To <dfn>split the parent</dfn> of a list <var>node list</var> of consecutive
 [[sibling]] [[nodes]]:
 
@@ -627,36 +657,6 @@ instructions</dfn>:
 
   <li>Return <var>new parent</var>.
 </ol>
-
-<p>To <dfn>remove extraneous line breaks before</dfn> a [[node]]
-<var>node</var>:
-
-<ol>
-  <li>If <var>node</var> is not an [[element]], or it is an <span>inline
-  node</span>, do nothing and abort these steps.
-
-  <li>If the [[previoussibling]] of <var>node</var> is a [[br]], and the
-  [[previoussibling]] of the [[previoussibling]] of <var>node</var> is an
-  <span>inline node</span> that is not a [[br]], remove the [[previoussibling]]
-  of <var>node</var> from its [[parent]].
-</ol>
-
-<p>To <dfn>remove extraneous line breaks at the end of</dfn> a [[node]]
-<var>node</var>:
-
-<ol>
-  <li>If <var>node</var> is not an [[element]], or it is an <span>inline
-  node</span>, do nothing and abort these steps.
-
-  <li>If <var>node</var> has at least two [[children]], and its last [[child]]
-  is a [[br]], and its second-to-last [[child]] is an <span>inline node</span>
-  that is not a [[br]], remove the last [[child]] of <var>node</var> from
-  <var>node</var>.
-</ol>
-
-<p>To <dfn>remove extraneous line breaks from</dfn> a [[node]], first
-<span>remove extraneous line breaks before</span> it, then <span>remove
-extraneous line breaks at the end of</span> it.
 
 <p>To move a [[node]] to a new location, <dfn>preserving ranges</dfn>, remove
 the [[node]] from its original [[parent]] (if any), then insert it in the new

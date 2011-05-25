@@ -247,6 +247,43 @@ attributes of any node that is not editable.  Note that an editing host is not
 editable, so authors are assured that editing commands will only modify the
 editing host's contents and not the editing host itself.
 
+<p>The <dfn>editing host of</dfn> <var>node</var> is null if <var>node</var> is
+neither <span>editable</span> nor an <span>editing host</span>; <var>node</var>
+itself, if <var>node</var> is an <span>editing host</span>; or the nearest
+[[ancestor]] of <var>node</var> that is an <span>editing host</span>, if
+<var>node</var> is <span>editable</span>.
+
+<p>Two [[nodes]] are <dfn>in the same editing host</dfn> if both are
+<span>editable</span> and the <span>editing host of</span> both is the same.
+
+<p>A [[node]] <var>child</var> is an <dfn>allowed child</dfn> of a [[node]]
+<var>parent</var> unless one of the following conditions is met:
+
+<p class=XXX>This is very ad hoc and might need to be rethought.  We can't use
+the HTML spec's definitions because those are too complicated, they don't take
+obsolete elements into account, and they're sometimes too restrictive.  (We
+don't like having to contort the DOM to ensure that it's valid, because it can
+have unwanted side effects, so we want to minimize the number of cases we
+disallow.)  Mostly this list covers only things that don't serialize as
+text/html.
+
+<ul>
+  <li><var>child</var> is an [[a]], and <var>parent</var> or some [[ancestor]]
+  of <var>parent</var> is an [[a]].  <!-- Cannot be serialized as text/html.
+  -->
+
+  <li><var>child</var> is an <span>HTML element</span> with [[localname]]
+  "address", "article", "aside", "blockquote", "center", "details", "dir",
+  "div", "dl", "fieldset", "figcaption", "figure", "footer", "h1", "h2", "h3",
+  "h4", "h5", "h6", "header", "hgroup", "hr", "listing", "menu", "nav", "ol",
+  "p", "plaintext", "pre", "section", "summary", "table", "ul", or "xmp"; and
+  <var>parent</var> or some [[ancestor]] of <var>parent</var> is an <span>HTML
+  element</span> with [[localname]] "h1", "h2", "h3", "h4", "h5", "h6", or "p".
+  <!-- This cannot be serialized as text/html if the parent is a p, or if the
+  parent and child are both h*.  Something like <h1>foo<p>bar</p></h1> will
+  actually work, but while we're here, we may as well disallow it. -->
+</ul>
+
 <p>The <dfn>CSS styling flag</dfn> is a boolean flag, which must initially be
 false.
 
@@ -297,12 +334,13 @@ sequentially in the list's order.
   <li>Return <var>replacement element</var>.
 </ol>
 
-<p>To remove a [[node]] <var>node</var> while <dfn>preserving its
-descendants</dfn>, <span>split the parent</span> of <var>node</var>'s
-[[children]].
-
 <p>To <dfn>split the parent</dfn> of a list <var>node list</var> of consecutive
 [[sibling]] [[nodes]]:
+
+<p class=XXX>Pretty much any time we call this algorithm, it can cause trouble
+if the parent had styles, classes, etc.  There's not going to be any general
+way to handle this, but we should at least try to handle the special case of
+inline styles, because Firefox does actually add them to arbitrary elements.
 
 <ol>
   <li>Let <var>original parent</var> be the [[parent]] of the first member of
@@ -316,20 +354,13 @@ descendants</dfn>, <span>split the parent</span> of <var>node</var>'s
   parent</var>.
 
   <li>If the last [[child]] of <var>original parent</var> is in <var>node
-  list</var>:
-
-  <ol>
-    <li><span>Remove extraneous line breaks after</span> <var>original
-    parent</var>.
-
-    <li>If <var>original parent</var>'s last [[child]] and [[nextsibling]] are
-    both <span title="inline node">inline nodes</span>, call <code
-    data-anolis-spec=domcore
-    title=dom-Document-createElement>createElement("br")</code> on the
-    [[ownerdocument]] of <var>original parent</var>, then insert the result
-    into the [[parent]] of <var>original parent</var> immediately after
-    <var>original parent</var>.
-  </ol>
+  list</var>, and <var>original parent</var>'s last [[child]] and
+  [[nextsibling]] are both <span title="inline node">inline nodes</span>, call
+  <code data-anolis-spec=domcore
+  title=dom-Document-createElement>createElement("br")</code> on the
+  [[ownerdocument]] of <var>original parent</var>, then insert the result into
+  the [[parent]] of <var>original parent</var> immediately after <var>original
+  parent</var>.
 
   <li>If the first [[child]] of <var>original parent</var> is not in <var>node
   list</var>, but its last [[child]] is:
@@ -359,6 +390,9 @@ descendants</dfn>, <span>split the parent</span> of <var>node</var>'s
     order</em>, insert <var>node</var> into the [[parent]] of <var>original
     parent</var> immediately after <var>original parent</var>, <span>preserving
     ranges</span>.
+
+    <li><span>Remove extraneous line breaks at the end of</span> <var>original
+    parent</var>.
 
     <li>Abort these steps.
   </ol>
@@ -399,9 +433,18 @@ descendants</dfn>, <span>split the parent</span> of <var>node</var>'s
   into the [[parent]] of <var>original parent</var> immediately before
   <var>original parent</var>, <span>preserving ranges</span>.
 
+  <li>If the last member of <var>node list</var> is an <span>inline node</span>
+  other than a [[br]], and the first [[child]] of <var>original parent</var> is
+  a [[br]], remove the first [[child]] of <var>original parent</var> from
+  <var>original parent</var>.
+
   <li>If <var>original parent</var> has no [[children]], remove it from its
   [[parent]].
 </ol>
+
+<p>To remove a [[node]] <var>node</var> while <dfn>preserving its
+descendants</dfn>, <span>split the parent</span> of <var>node</var>'s
+[[children]].
 
 <p>To <dfn>wrap</dfn> a list <var>node list</var> of consecutive [[sibling]]
 [[nodes]], given <dfn>sibling criteria</dfn> and <dfn>new parent
@@ -427,11 +470,9 @@ instructions</dfn>:
   <li>If <var>new parent</var>'s [[parent]] is null:
 
   <ol>
-    <li>If <var>new parent</var> cannot be the [[child]] of the [[parent]] of
-    the first member of <var>node list</var>, <span>split the parent</span> of
-    <var>node list</var>.
-
-    <p class=XXX>"Cannot be the child" needs to be defined.
+    <li>While <var>new parent</var> is not an <span>allowed child</span> of the
+    [[parent]] of the first member of <var>node list</var>, <span>split the
+    parent</span> of <var>node list</var>.
 
     <li>Insert <var>new parent</var> into the [[parent]] of the first member of
     <var>node list</var> immediately before the first member of <var>node
@@ -518,7 +559,7 @@ instructions</dfn>:
   of <var>node</var> from its [[parent]].
 </ol>
 
-<p>To <dfn>remove extraneous line breaks after</dfn> a [[node]]
+<p>To <dfn>remove extraneous line breaks at the end of</dfn> a [[node]]
 <var>node</var>:
 
 <ol>
@@ -533,7 +574,7 @@ instructions</dfn>:
 
 <p>To <dfn>remove extraneous line breaks from</dfn> a [[node]], first
 <span>remove extraneous line breaks before</span> it, then <span>remove
-extraneous line breaks after</span> it.
+extraneous line breaks at the end of</span> it.
 
 <p>To move a [[node]] to a new location, <dfn>preserving ranges</dfn>, remove
 the [[node]] from its original [[parent]] (if any), then insert it in the new
@@ -3578,6 +3619,26 @@ sense for <address>/<h*>/<pre>, but other browsers don't do it.
   "blockquote", "caption", "col", "colgroup", "dd", "dl", "dt", "footer",
   "header", "hgroup", "li", "nav", "ol", "section", "table", "tbody", "td",
   "th", "thead", "tr", or "ul".
+
+  <li>For each <var>node</var> in <var>node list</var>, while <var>node</var>
+  is a [[descendant]] of an <span>HTML element</span> <span>in the same editing
+  host</span> with [[localname]] "address", "h1", "h2", "h3", "h4", "h5", "h6",
+  "p", or "pre", <span>split the parent</span> of the one-[[node]] list
+  consistin of <var>node</var>.
+
+  <div class=XXX>
+  <p>This is needed so we don't get things like p nested inside address, and
+  instead convert part of the multi-line address into a p.  But div can contain
+  any of these things, so we don't break that apart ever, which is bad.  It
+  means if you have
+
+  <xmp><div>foo<br>bar</div></xmp>
+
+  <p>then formatBlocking "foo" then "bar" as p has different results from doing
+  both at once.  Maybe we should split divs as well, but only if they're the
+  parent of the node we're dealing with?  Or just split divs always, and hope
+  the "in the same editing host" thing handles it?
+  </div>
 
   <!--
   We have two different behaviors, one for div and p and one for everything

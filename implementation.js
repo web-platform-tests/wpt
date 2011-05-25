@@ -443,12 +443,6 @@ function setTagName(element, newName) {
 	return replacementElement;
 }
 
-// "To remove a node node while preserving its descendants, split the parent of
-// node's children."
-function removePreservingDescendants(node) {
-	splitParent([].slice.call(node.childNodes));
-}
-
 function splitParent(nodeList) {
 	// "Let original parent be the parent of the first member of node list."
 	var originalParent = nodeList[0].parentNode;
@@ -466,19 +460,15 @@ function splitParent(nodeList) {
 		removeExtraneousLineBreaksBefore(originalParent);
 	}
 
-	// "If the last child of original parent is in node list:"
-	if (nodeList.indexOf(originalParent.lastChild) != -1) {
-		// "Remove extraneous line breaks after original parent."
-		removeExtraneousLineBreaksAfter(originalParent);
-
-		// "If original parent's last child and nextSibling are both inline
-		// nodes, call createElement("br") on the ownerDocument of original
-		// parent, then insert the result into the parent of original parent
-		// immediately after original parent."
-		if (isInlineNode(originalParent.lastChild)
-		&& isInlineNode(originalParent.nextSibling)) {
-			originalParent.parentNode.insertBefore(originalParent.ownerDocument.createElement("br"), originalParent.nextSibling);
-		}
+	// "If the last child of original parent is in node list, and original
+	// parent's last child and nextSibling are both inline nodes, call
+	// createElement("br") on the ownerDocument of original parent, then insert
+	// the result into the parent of original parent immediately after original
+	// parent."
+	if (nodeList.indexOf(originalParent.lastChild) != -1
+	&& isInlineNode(originalParent.lastChild)
+	&& isInlineNode(originalParent.nextSibling)) {
+		originalParent.parentNode.insertBefore(originalParent.ownerDocument.createElement("br"), originalParent.nextSibling);
 	}
 
 	// "If the first child of original parent is not in node list, but its last
@@ -491,6 +481,9 @@ function splitParent(nodeList) {
 		for (var i = nodeList.length - 1; i >= 0; i--) {
 			movePreservingRanges(nodeList[i], originalParent.parentNode, 1 + getNodeIndex(originalParent));
 		}
+
+		// "Remove extraneous line breaks at the end of original parent."
+		removeExtraneousLineBreaksAtTheEndOf(originalParent);
 
 		// "Abort these steps."
 		return;
@@ -529,10 +522,25 @@ function splitParent(nodeList) {
 		movePreservingRanges(nodeList[i], originalParent.parentNode, getNodeIndex(originalParent));
 	}
 
+	// "If the last member of node list is an inline node other than a br, and
+	// the first child of original parent is a br, remove the first child of
+	// original parent from original parent."
+	if (isInlineNode(nodeList[nodeList.length - 1])
+	&& !isHtmlElement(nodeList[nodeList.length - 1])
+	&& isHtmlElement(originalParent.firstChild, "BR")) {
+		originalParent.removeChild(originalParent.firstChild);
+	}
+
 	// "If original parent has no children, remove it from its parent."
 	if (!originalParent.hasChildNodes()) {
 		originalParent.parentNode.removeChild(originalParent);
 	}
+}
+
+// "To remove a node node while preserving its descendants, split the parent of
+// node's children."
+function removePreservingDescendants(node) {
+	splitParent([].slice.call(node.childNodes));
 }
 
 function wrap(nodeList, siblingCriteria, newParentInstructions) {
@@ -566,11 +574,9 @@ function wrap(nodeList, siblingCriteria, newParentInstructions) {
 
 	// "If new parent's parent is null:"
 	if (!newParent.parentNode) {
-		// "If new parent cannot be the child of the parent of the first member
-		// of node list, split the parent of node list."
-		//
-		// Hack for now, as usual.  Don't use this for inline elements!
-		if (isHtmlElement(nodeList[0].parentNode, "P")) {
+		// "While new parent is not an allowed child of the parent of the first
+		// member of node list, split the parent of node list."
+		while (!isAllowedChild(newParent, nodeList[0].parentNode)) {
 			splitParent(nodeList);
 		}
 
@@ -675,7 +681,7 @@ function removeExtraneousLineBreaksBefore(node) {
 	}
 }
 
-function removeExtraneousLineBreaksAfter(node) {
+function removeExtraneousLineBreaksAtTheEndOf(node) {
 	// "If node is not an Element, or it is an inline node, do nothing and
 	// abort these steps."
 	if (!node
@@ -696,10 +702,10 @@ function removeExtraneousLineBreaksAfter(node) {
 }
 
 // "To remove extraneous line breaks from a node, first remove extraneous line
-// breaks before it, then remove extraneous line breaks after it."
+// breaks before it, then remove extraneous line breaks at the end of it."
 function removeExtraneousLineBreaksFrom(node) {
 	removeExtraneousLineBreaksBefore(node);
-	removeExtraneousLineBreaksAfter(node);
+	removeExtraneousLineBreaksAtTheEndOf(node);
 }
 
 // "An editing host is a node that is either an Element with a contenteditable
@@ -724,6 +730,70 @@ function isEditable(node) {
 		&& !isEditingHost(node)
 		&& (node.nodeType != Node.ELEMENT_NODE || node.contentEditable != "false")
 		&& (isEditingHost(node.parentNode) || isEditable(node.parentNode));
+}
+
+// "The editing host of node is null if node is neither editable nor an editing
+// host; node itself, if node is an editing host; or the nearest ancestor of
+// node that is an editing host, if node is editable."
+function getEditingHostOf(node) {
+	if (isEditingHost(node)) {
+		return node;
+	} else if (isEditable(node)) {
+		var ancestor = node.parentNode;
+		while (!isEditingHost(ancestor)) {
+			ancestor = ancestor.parentNode;
+		}
+		return ancestor;
+	} else {
+		return null;
+	}
+}
+
+// "Two nodes are in the same editing host if both are editable and the editing
+// host of both is the same."
+function inSameEditingHost(node1, node2) {
+	return isEditable(node1)
+		&& isEditable(node2)
+		&& getEditingHostOf(node1) == getEditingHostOf(node2);
+}
+
+// "A node child is an allowed child of a node parent unless one of the
+// following conditions is met:
+//
+//   * "child is an a, and parent or some ancestor of parent is an a.
+//   * "child is an HTML element with local name "address", "article", "aside",
+//     "blockquote", "center", "details", "dir", "div", "dl", "fieldset",
+//     "figcaption", "figure", "footer", "h1", "h2", "h3", "h4", "h5", "h6",
+//     "header", "hgroup", "hr", "listing", "menu", "nav", "ol", "p",
+//     "plaintext", "pre", "section", "summary", "table", "ul", or "xmp"; and
+//     parent or some ancestor of parent is an HTML element with local name
+//     "h1", "h2", "h3", "h4", "h5", "h6", or "p"."
+function isAllowedChild(child, parent_) {
+	if (isHtmlElement(child, "A")) {
+		var ancestor = parent_;
+		while (ancestor && !isHtmlElement(ancestor, "A")) {
+			ancestor = ancestor.parentNode;
+		}
+		if (isHtmlElement(ancestor, "A")) {
+			return false;
+		}
+	}
+
+	if (isHtmlElement(child, ["ADDRESS", "ARTICLE", "ASIDE", "BLOCKQUOTE",
+	"CENTER", "DETAILS", "DIR", "DIV", "DL", "FIELDSET", "FIGCAPTION",
+	"FIGURE", "FOOTER", "H1", "H2", "H3", "H4", "H5", "H6", "HEADER", "HGROUP",
+	"HR", "LISTING", "MENU", "NAV", "OL", "P", "PLAINTEXT", "PRE", "SECTION",
+	"SUMMARY", "TABLE", "UL", "XMP"])) {
+		var ancestor = parent_;
+		while (ancestor && !isHtmlElement(ancestor, ["H1", "H2", "H3", "H4", "H5", "H6", "P"])) {
+			ancestor = ancestor.parentNode;
+		}
+		if (isHtmlElement(ancestor, ["H1", "H2", "H3", "H4", "H5", "H6", "P"])) {
+			return false;
+		}
+	}
+
+	return true;
 }
 
 function hasEditableDescendants(node) {
@@ -2522,6 +2592,28 @@ function myExecCommand(command, showUI, value, range) {
 				"HEADER", "HGROUP", "LI", "NAV", "OL", "SECTION", "TABLE",
 				"TBODY", "TD", "TH", "THEAD", "TR", "UL"]);
 		});
+
+		// "For each node in node list, while node is a descendant of an HTML
+		// element in the same editing host with local name "address", "h1",
+		// "h2", "h3", "h4", "h5", "h6", "p", or "pre", split the parent of the
+		// one-node list consisting of node."
+		for (var i = 0; i < nodeList.length; i++) {
+			node = nodeList[i];
+
+			do {
+				var ancestor = node.parentNode;
+				while (ancestor
+				&& !isHtmlElement(ancestor, ["ADDRESS", "H1", "H2", "H3", "H4", "H5", "H6", "P", "PRE"])) {
+					ancestor = ancestor.parentNode;
+				}
+				if (ancestor
+				&& inSameEditingHost(node, ancestor)) {
+					splitParent([node]);
+				} else {
+					break;
+				}
+			} while (true);
+		}
 
 		// "If value is "div" or "p", then while node list is not empty:"
 		if (value == "div" || value == "p") {

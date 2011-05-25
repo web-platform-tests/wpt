@@ -27,15 +27,10 @@
     margin-top: 0;
     margin-bottom: 0;
   }
-  dd .XXX p {
-    margin: 1em 0;
-  }
-  ol li {
-    margin: 1em 0;
-  }
-  li li {
-    margin: 0;
-  }
+  dd .XXX p { margin: 1em 0 }
+  ol li { margin: 1em 0 }
+  li li { margin: 0 }
+  table { margin: 1em 0 }
 </style>
 <body class=draft>
 <div class=head id=head>
@@ -299,11 +294,20 @@ itself, if <var title="">node</var> is an <a href=#editing-host>editing host</a>
 <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of <var title="">node</var> that is an <a href=#editing-host>editing host</a>, if
 <var title="">node</var> is <a href=#editable>editable</a>.
 
-<p>Two <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a> are <dfn id=in-the-same-editing-host>in the same editing host</dfn> if both are
-<a href=#editable>editable</a> and the <a href=#editing-host-of>editing host of</a> both is the same.
+<p>Two <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a> are <dfn id=in-the-same-editing-host>in the same editing host</dfn> if the <a href=#editing-host-of>editing
+host of</a> the first is non-null and the same as the <a href=#editing-host-of>editing host
+of</a> the second.
 
-<p>A <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> <var title="">child</var> is an <dfn id=allowed-child>allowed child</dfn> of a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>
-<var title="">parent</var> unless one of the following conditions is met:
+<p>The <dfn id=prohibited-paragraph-children>prohibited paragraph children</dfn> are "address", "article",
+"aside", "blockquote", "center", "details", "dd", "dir", "div", "dl", "dt",
+"fieldset", "figcaption", "figure", "footer", "form", "h1", "h2", "h3", "h4",
+"h5", "h6", "header", "hgroup", "hr", "li", "listing", "menu", "nav", "ol",
+"p", "plaintext", "pre", "section", "summary", "table", "ul", and "xmp".
+<!-- These are all the things that will close a <p> if found as a child.  I
+think. -->
+
+<p>A <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> or string <var title="">child</var> is an <dfn id=allowed-child>allowed child</dfn> of a
+<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> or string <var title="">parent</var> if the following algorithm returns true:
 
 <p class=XXX>This is very ad hoc and might need to be rethought.  We can't use
 the HTML spec's definitions because those are too complicated, they don't take
@@ -311,24 +315,97 @@ obsolete elements into account, and they're sometimes too restrictive.  (We
 don't like having to contort the DOM to ensure that it's valid, because it can
 have unwanted side effects, so we want to minimize the number of cases we
 disallow.)  Mostly this list covers only things that don't serialize as
-text/html.
+text/html.  It's not intended to be complete, and in particular, it omits lots
+of cases that aren't likely to come up for us.
 
-<ul>
-  <li><var title="">child</var> is an <code class=external data-anolis-spec=html title="the a element"><a href=http://www.whatwg.org/html/#the-a-element>a</a></code>, and <var title="">parent</var> or some <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a>
-  of <var title="">parent</var> is an <code class=external data-anolis-spec=html title="the a element"><a href=http://www.whatwg.org/html/#the-a-element>a</a></code>.  <!-- Cannot be serialized as text/html.
-  -->
+<ol>
+  <li>If <var title="">parent</var> is "colgroup", "table", "tbody", "tfoot", "thead",
+  "tr", or an <a href=#html-element>HTML element</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> equal to one of
+  those, and <var title="">child</var> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node whose <code class=external data-anolis-spec=domcore title=dom-CharacterData-data><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-data>data</a></code> does not
+  consist solely of <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#space-character title="space character">space characters</a>, return false.
 
-  <li><var title="">child</var> is an <a href=#html-element>HTML element</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a>
-  "address", "article", "aside", "blockquote", "center", "details", "dir",
-  "div", "dl", "fieldset", "figcaption", "figure", "footer", "h1", "h2", "h3",
-  "h4", "h5", "h6", "header", "hgroup", "hr", "listing", "menu", "nav", "ol",
-  "p", "plaintext", "pre", "section", "summary", "table", "ul", or "xmp"; and
-  <var title="">parent</var> or some <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of <var title="">parent</var> is an <a href=#html-element>HTML
-  element</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> "h1", "h2", "h3", "h4", "h5", "h6", or "p".
-  <!-- This cannot be serialized as text/html if the parent is a p, or if the
-  parent and child are both h*.  Something like <h1>foo<p>bar</p></h1> will
-  actually work, but while we're here, we may as well disallow it. -->
-</ul>
+  <li>If <var title="">parent</var> is "script", "style", "plaintext", or "xmp", or an
+  <a href=#html-element>HTML element</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> equal to one of those, and
+  <var title="">child</var> is not a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node, return false.
+  <!-- Actually, no node can occur in the DOM after plaintext, generally.  But
+  let's not get too carried away. -->
+
+  <li>If <var title="">child</var> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#document>Document</a></code>, <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#documentfragment>DocumentFragment</a></code>, or
+  <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#documenttype>DocumentType</a></code>, return false.
+
+  <li>If <var title="">child</var> is an <a href=#html-element>HTML element</a>, set <var title="">child</var>
+  to the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> of <var title="">child</var>.
+
+  <li>If <var title="">child</var> is not a string, return true.
+
+  <li>If <var title="">parent</var> is an <a href=#html-element>HTML element</a>:
+
+  <ol>
+    <li>If <var title="">child</var> is "a", and <var title="">parent</var> or some <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a>
+    of <var title="">parent</var> is an <code class=external data-anolis-spec=html title="the a element"><a href=http://www.whatwg.org/html/#the-a-element>a</a></code>, return false.
+    <!-- Cannot be serialized as text/html.  In some cases it can, like
+    <a>foo<table><td><a>bar</a></td></table>baz</a>, but it's invalid in those
+    cases too, so no need for complication. -->
+
+    <li>If <var title="">child</var> is one of the <a href=#prohibited-paragraph-children>prohibited paragraph
+    children</a> and <var title="">parent</var> or some <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of
+    <var title="">parent</var> is an <a href=#html-element>HTML element</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> "h1",
+    "h2", "h3", "h4", "h5", "h6", or "p", return false.
+    <!-- This cannot be serialized as text/html if the parent is a p, or if the
+    parent and child are both h*.  Something like <h1>foo<p>bar</p></h1> will
+    actually work, but while we're here, we may as well disallow it. -->
+
+    <li>Let <var title="">parent</var> be the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> of <var title="">parent</var>.
+    <!-- Further requirements only care about the parent itself, not ancestors,
+    so we don't need to know the node itself. -->
+  </ol>
+
+  <li>If <var title="">parent</var> is an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> or <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#documentfragment>DocumentFragment</a></code>, return
+  true.
+
+  <li>If <var title="">parent</var> is not a string, return false.
+
+  <li>If <var title="">parent</var> is in the following table, then return true if
+  <var title="">child</var> is listed as an allowed child, and false otherwise.
+  <!-- We allow children even where some intervening nodes will be inserted,
+  like tr as a child of table. -->
+
+  <table>
+    <tr><th>Parent <th>Allowed children
+    <tr><td>colgroup <td>col
+    <tr><td>table <td>caption, col, colgroup, tbody, td, tfoot, th, thead, tr
+    <tr><td>tbody, tfoot, thead <td>td, th, tr
+    <tr><td>tr <td>td, th
+  </table>
+
+  <li>If <var title="">child</var> is "body", "caption", "col", "colgroup", "frame",
+  "frameset", "head", "html", "tbody", "td", "tfoot", "th", "thead", or "tr",
+  return false.
+
+  <!-- dd/dt/li will serialize fine as the child of random stuff, but it makes
+  no sense at all, so we want to avoid it anyway. -->
+  <li>If <var title="">child</var> is "dd" or "dt" and <var title="">parent</var> is not "dl",
+  return false.
+
+  <li>If <var title="">child</var> is "li" and <var title="">parent</var> is not "ol" or "ul",
+  return false.
+
+  <li>If <var title="">parent</var> is in the following table and <var title="">child</var> is
+  listed as a prohibited child, return false.
+
+  <table>
+    <tr><th>Parent <th>Prohibited children
+    <tr><td>a <td>a
+    <tr><td>dd, dt <td>dd, dt
+    <tr><td>li <td>li
+    <tr><td>nobr <td>nobr
+    <tr><td>td, th <td>caption, col, colgroup, tbody, td, tfoot, th, thead, tr
+    <tr><td>h1, h2, h3, h4, h5, h6, p <td>All <a href=#prohibited-paragraph-children>prohibited paragraph
+      children</a>
+  </table>
+
+  <li>Return true.
+</ol>
 
 <p>The <dfn id=css-styling-flag>CSS styling flag</dfn> is a boolean flag, which must initially be
 false.
@@ -511,9 +588,14 @@ instructions</dfn>:
   <li>If <var title="">new parent</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is null:
 
   <ol>
-    <li>While <var title="">new parent</var> is not an <a href=#allowed-child>allowed child</a> of the
-    <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of the first member of <var title="">node list</var>, <a href=#split-the-parent>split the
-    parent</a> of <var title="">node list</var>.
+    <li>If <var title="">new parent</var> is not an <a href=#allowed-child>allowed child</a> of the
+    <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of the first member of <var title="">node list</var>, but is an
+    <a href=#allowed-child>allowed child</a> of some <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of the first member of
+    <var title="">node list</var> that is <a href=#in-the-same-editing-host>in the same editing host</a> as the
+    first member of <var title="">node list</var>, then while <var title="">new parent</var> is
+    not an <a href=#allowed-child>allowed child</a> of the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of the first member of
+    <var title="">node list</var>, <a href=#split-the-parent>split the parent</a> of <var title="">node
+    list</var>.
 
     <li>Insert <var title="">new parent</var> into the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of the first member of
     <var title="">node list</var> immediately before the first member of <var title="">node
@@ -3322,7 +3404,7 @@ or "ul"):
   list</var> (if any) is not an <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of <var title="">node</var>;
   <var title="">node</var> is not a <a href=#potential-indentation-element>potential indentation element</a>; and
   either <var title="">node</var> is an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code> or <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code>, or its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code>
-  or <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code>, or it can be the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of an <code class=external data-anolis-spec=html title="the li element"><a href=http://www.whatwg.org/html/#the-li-element>li</a></code>; then append
+  or <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code>, or it is an <a href=#allowed-child>allowed child</a> of "li"; then append
   <var title="">node</var> to <var title="">node list</var>.
   <!--
   We exclude potential indentation elements so that selecting some random text
@@ -3338,14 +3420,10 @@ or "ul"):
   different from how it would work if you reversed the commands.
   OpenOffice.org 3.2.1 (Ubuntu) and Word 2007 both agree with the spec in this
   case.
-
-  We don't ask whether the node's parent can contain an <ol>.  The only place
-  where this is likely to cause serious problems is <p>, which we special-case.
   -->
 
-  <p class=XXX>Similar to a number of other places in the spec, "can be the
-  child" is not well-defined, and it's not clear what the right definition
-  should be.
+  <p class=XXX>Double-check what happens if the node's parent can't contain a
+  list.
 
   <li>If every member of <var title="">node list</var> is equal to or the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of
   an <a href=#html-element>HTML element</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> <var title="">tag name</var>, and no
@@ -3390,10 +3468,16 @@ or "ul"):
     remove the first member from <var title="">node list</var> and append it to
     <var title="">sublist</var>.
 
-    <li>If <var title="">sublist</var> contains more than one member, <a href=#wrap>wrap</a>
-    it, with <a href=#sibling-criteria>sibling criteria</a> matching nothing and with <a href=#new-parent-instructions>new
-    parent instructions</a> returning the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("li")</a></code> on the
-    <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>.  Let <var title="">node</var> be the result.
+    <li>If <var title="">sublist</var> contains more than one member, call <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("li")</a></code> on the
+    <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a> and let <var title="">node</var> be the result.  Insert
+    <var title="">node</var> into the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of the first member of
+    <var title="">sublist</var> immediately before the first member of
+    <var title="">sublist</var>.  Then <a href=#wrap>wrap</a> <var title="">sublist</var>, with
+    <a href=#sibling-criteria>sibling criteria</a> matching nothing and <a href=#new-parent-instructions>new parent
+    instructions</a> returning <var title="">node</var>.
+
+    <p class=XXX>This is a hack to avoid the wrap algorithm trying to reparent
+    the li.  Think of a better way to fix it.
 
     <li>Otherwise, let <var title="">node</var> be the sole member of
     <var title="">sublist</var>.
@@ -3475,11 +3559,16 @@ or "ul"):
     elements</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> <var title="">other tag name</var> (if any) to
     <var title="">node list</var> and continue from the beginning of this loop.
 
-    <li>If <var title="">node</var> is not an <code class=external data-anolis-spec=html title="the li element"><a href=http://www.whatwg.org/html/#the-li-element>li</a></code>, <a href=#wrap>wrap</a> the one-<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>
-    list consisting of <var title="">node</var>, with the <a href=#sibling-criteria>sibling criteria</a>
-    matching nothing, and the <a href=#new-parent-instructions>new parent instructions</a> returning
-    the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("li")</a></code> on the
-    <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>.  Let <var title="">node</var> be the result.
+    <li>If <var title="">node</var> is not an <code class=external data-anolis-spec=html title="the li element"><a href=http://www.whatwg.org/html/#the-li-element>li</a></code>, call <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("li")</a></code> on the
+    <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a> and let <var title="">new item</var> be the result.  Insert
+    <var title="">new item</var> into <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> immediately before
+    <var title="">node</var>.  Then <a href=#wrap>wrap</a> the one-<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> list consisting
+    of <var title="">node</var>, with <a href=#sibling-criteria>sibling criteria</a> matching nothing and
+    <a href=#new-parent-instructions>new parent instructions</a> returning <var title="">new item</var>.  Then
+    set <var title="">node</var> to <var title="">new item</var>.
+
+    <p class=XXX>This is a hack to avoid the wrap algorithm trying to reparent
+    the li.  Think of a better way to fix it.
 
     <li><a href=#wrap>Wrap</a> the one-<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> list consisting of <var title="">node</var>,
     with the <a href=#sibling-criteria>sibling criteria</a> matching any <a href=#html-element>HTML
@@ -3592,10 +3681,10 @@ sense for <address>/<h*>/<pre>, but other browsers don't do it.
   "th", "thead", "tr", or "ul".
 
   <li>For each <var title="">node</var> in <var title="">node list</var>, while <var title="">node</var>
-  is a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-descendant title=concept-tree-descendant>descendant</a> of an <a href=#html-element>HTML element</a> <a href=#in-the-same-editing-host>in the same editing
-  host</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> "address", "h1", "h2", "h3", "h4", "h5", "h6",
-  "p", or "pre", <a href=#split-the-parent>split the parent</a> of the one-<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> list
-  consistin of <var title="">node</var>.
+  is a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-descendant title=concept-tree-descendant>descendant</a> of an <a href=#editable>editable</a> <a href=#html-element>HTML element</a>
+  <a href=#in-the-same-editing-host>in the same editing host</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> "address", "h1",
+  "h2", "h3", "h4", "h5", "h6", "p", or "pre", <a href=#split-the-parent>split the parent</a> of
+  the one-<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> list consisting of <var title="">node</var>.
 
   <div class=XXX>
   <p>This is needed so we don't get things like p nested inside address, and

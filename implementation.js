@@ -390,6 +390,9 @@ function isHtmlElement(node, tags) {
 	if (typeof tags == "string") {
 		tags = [tags];
 	}
+	if (typeof tags == "object") {
+		tags = tags.map(function(tag) { return tag.toUpperCase() });
+	}
 	return node
 		&& node.nodeType == Node.ELEMENT_NODE
 		&& isHtmlNamespace(node.namespaceURI)
@@ -574,10 +577,25 @@ function wrap(nodeList, siblingCriteria, newParentInstructions) {
 
 	// "If new parent's parent is null:"
 	if (!newParent.parentNode) {
-		// "While new parent is not an allowed child of the parent of the first
-		// member of node list, split the parent of node list."
-		while (!isAllowedChild(newParent, nodeList[0].parentNode)) {
-			splitParent(nodeList);
+		// "If new parent is not an allowed child of the parent of the first
+		// member of node list, but is an allowed child of some ancestor of the
+		// first member of node list that is in the same editing host as the
+		// first member of node list, then while new parent is not an allowed
+		// child of the parent of the first member of node list, split the
+		// parent of node list."
+		var ancestor = nodeList[0].parentNode;
+		while (ancestor) {
+			if (isAllowedChild(newParent, ancestor)
+			&& inSameEditingHost(ancestor, nodeList[0])) {
+				while (!isAllowedChild(newParent, nodeList[0].parentNode)) {
+					splitParent(nodeList);
+				}
+				break;
+			}
+			ancestor = ancestor.parentNode;
+		}
+		if (!ancestor && !isAllowedChild(newParent, nodeList[0].parentNode)) {
+			throw "Is this an error?  Investigate.";
 		}
 
 		// "Insert new parent into the parent of the first member of node list
@@ -749,50 +767,163 @@ function getEditingHostOf(node) {
 	}
 }
 
-// "Two nodes are in the same editing host if both are editable and the editing
-// host of both is the same."
+// "Two nodes are in the same editing host if the editing host of the first is
+// non-null and the same as the editing host of the second."
 function inSameEditingHost(node1, node2) {
-	return isEditable(node1)
-		&& isEditable(node2)
+	return getEditingHostOf(node1)
 		&& getEditingHostOf(node1) == getEditingHostOf(node2);
 }
 
-// "A node child is an allowed child of a node parent unless one of the
-// following conditions is met:
-//
-//   * "child is an a, and parent or some ancestor of parent is an a.
-//   * "child is an HTML element with local name "address", "article", "aside",
-//     "blockquote", "center", "details", "dir", "div", "dl", "fieldset",
-//     "figcaption", "figure", "footer", "h1", "h2", "h3", "h4", "h5", "h6",
-//     "header", "hgroup", "hr", "listing", "menu", "nav", "ol", "p",
-//     "plaintext", "pre", "section", "summary", "table", "ul", or "xmp"; and
-//     parent or some ancestor of parent is an HTML element with local name
-//     "h1", "h2", "h3", "h4", "h5", "h6", or "p"."
+// "The prohibited paragraph children are "address", "article", "aside",
+// "blockquote", "center", "details", "dd", "dir", "div", "dl", "dt",
+// "fieldset", "figcaption", "figure", "footer", "form", "h1", "h2", "h3",
+// "h4", "h5", "h6", "header", "hgroup", "hr", "li", "listing", "menu", "nav",
+// "ol", "p", "plaintext", "pre", "section", "summary", "table", "ul", and
+// "xmp"."
+var prohibitedParagraphChildren = ["address", "article", "aside", "blockquote",
+	"center", "details", "dd", "dir", "div", "dl", "dt", "fieldset",
+	"figcaption", "figure", "footer", "form", "h1", "h2", "h3", "h4", "h5",
+	"h6", "header", "hgroup", "hr", "li", "listing", "menu", "nav", "ol", "p",
+	"plaintext", "pre", "section", "summary", "table", "ul", "xmp"];
+
 function isAllowedChild(child, parent_) {
-	if (isHtmlElement(child, "A")) {
-		var ancestor = parent_;
-		while (ancestor && !isHtmlElement(ancestor, "A")) {
-			ancestor = ancestor.parentNode;
+	// "If parent is "colgroup", "table", "tbody", "tfoot", "thead", "tr", or
+	// an HTML element with local name equal to one of those, and child is a
+	// Text node whose data does not consist solely of space characters, return
+	// false."
+	if ((["colgroup", "table", "tbody", "tfoot", "thead", "tr"].indexOf(parent_) != -1
+	|| isHtmlElement(parent_, ["colgroup", "table", "tbody", "tfoot", "thead", "tr"]))
+	&& typeof child == "object"
+	&& child.nodeType == Node.TEXT_NODE
+	&& !/^[ \t\n\f\r]*$/.test(child.data)) {
+		return false;
+	}
+
+	// "If parent is "script", "style", "plaintext", or "xmp", or an HTML
+	// element with local name equal to one of those, and child is not a Text
+	// node, return false."
+	if ((["script", "style", "plaintext", "xmp"].indexOf(parent_) != -1
+	|| isHtmlElement(parent, ["script", "style", "plaintext", "xmp"]))
+	&& (typeof child != "object" || child.nodeType != Node.TEXT_NODE)) {
+		return false;
+	}
+
+	// "If child is a Document, DocumentFragment, or DocumentType, return
+	// false."
+	if (typeof child == "object"
+	&& (child.nodeType == Node.DOCUMENT_NODE
+	|| child.nodeType == Node.DOCUMENT_FRAGMENT_NODE
+	|| child.nodeType == Node.DOCUMENT_TYPE_NODE)) {
+		return false;
+	}
+
+	// "If child is an HTML element, set child to the local name of child."
+	if (isHtmlElement(child)) {
+		child = child.tagName.toLowerCase();
+	}
+
+	// "If child is not a string, return true."
+	if (typeof child != "string") {
+		return true;
+	}
+
+	// "If parent is an HTML element:"
+	if (isHtmlElement(parent_)) {
+		// "If child is "a", and parent or some ancestor of parent is an a,
+		// return false."
+		if (child == "a") {
+			var ancestor = parent_;
+			while (ancestor) {
+				if (isHtmlElement(ancestor, "a")) {
+					return false;
+				}
+				ancestor = ancestor.parentNode;
+			}
 		}
-		if (isHtmlElement(ancestor, "A")) {
+
+		// "If child is one of the prohibited paragraph children and parent or
+		// some ancestor of parent is an HTML element with local name "h1",
+		// "h2", "h3", "h4", "h5", "h6", or "p", return false."
+		if (prohibitedParagraphChildren.indexOf(child) != -1) {
+			var ancestor = parent_;
+			while (ancestor) {
+				if (isHtmlElement(ancestor, ["h1", "h2", "h3", "h4", "h5", "h6", "p"])) {
+					return false;
+				}
+				ancestor = ancestor.parentNode;
+			}
+		}
+
+		// "Let parent be the local name of parent."
+		parent_ = parent_.tagName.toLowerCase();
+	}
+
+	// "If parent is an Element or DocumentFragment, return true."
+	if (typeof parent_ == "object"
+	&& (parent_.nodeType == Node.ELEMENT_NODE
+	|| parent_.nodeType == Node.DOCUMENT_FRAGMENT_NODE)) {
+		return true;
+	}
+
+	// "If parent is not a string, return false."
+	if (typeof parent_ != "string") {
+		return false;
+	}
+
+	// "If parent is in the following table, then return true if child is
+	// listed as an allowed child, and false otherwise."
+	switch (parent_) {
+		case "colgroup":
+			return child == "col";
+		case "table":
+			return ["caption", "col", "colgroup", "tbody", "td", "tfoot", "th", "thead", "tr"].indexOf(child) != -1;
+		case "tbody":
+		case "thead":
+		case "tfoot":
+			return ["td", "th", "tr"].indexOf(child) != -1;
+		case "tr":
+			return ["td", "th"].indexOf(child) != -1;
+	}
+
+	// "If child is "body", "caption", "col", "colgroup", "frame", "frameset",
+	// "head", "html", "tbody", "td", "tfoot", "th", "thead", or "tr", return
+	// false."
+	if (["body", "caption", "col", "colgroup", "frame", "frameset", "head",
+	"html", "tbody", "td", "tfoot", "th", "thead", "tr"].indexOf(child) != -1) {
+		return false;
+	}
+
+	// "If child is "dd" or "dt" and parent is not "dl", return false."
+	if (["dd", "dt"].indexOf(child) != -1
+	&& parent_ != "dl") {
+		return false;
+	}
+
+	// "If child is "li" and parent is not "ol" or "ul", return false."
+	if (child == "li"
+	&& parent_ != "ol"
+	&& parent_ != "ul") {
+		return false;
+	}
+
+	// "If parent is in the following table and child is listed as a prohibited
+	// child, return false."
+	var table = [
+		[["a"], ["a"]],
+		[["dd", "dt"], ["dd", "dt"]],
+		[["li"], ["li"]],
+		[["nobr"], ["nobr"]],
+		[["td", "th"], ["caption", "col", "colgroup", "tbody", "td", "tfoot", "th", "thead", "tr"]],
+		[["h1", "h2", "h3", "h4", "h5", "h6", "p"], prohibitedParagraphChildren],
+	];
+	for (var i = 0; i < table.length; i++) {
+		if (table[i][0].indexOf(parent_) != -1
+		&& table[i][1].indexOf(child) != -1) {
 			return false;
 		}
 	}
 
-	if (isHtmlElement(child, ["ADDRESS", "ARTICLE", "ASIDE", "BLOCKQUOTE",
-	"CENTER", "DETAILS", "DIR", "DIV", "DL", "FIELDSET", "FIGCAPTION",
-	"FIGURE", "FOOTER", "H1", "H2", "H3", "H4", "H5", "H6", "HEADER", "HGROUP",
-	"HR", "LISTING", "MENU", "NAV", "OL", "P", "PLAINTEXT", "PRE", "SECTION",
-	"SUMMARY", "TABLE", "UL", "XMP"])) {
-		var ancestor = parent_;
-		while (ancestor && !isHtmlElement(ancestor, ["H1", "H2", "H3", "H4", "H5", "H6", "P"])) {
-			ancestor = ancestor.parentNode;
-		}
-		if (isHtmlElement(ancestor, ["H1", "H2", "H3", "H4", "H5", "H6", "P"])) {
-			return false;
-		}
-	}
-
+	// "Return true."
 	return true;
 }
 
@@ -2593,10 +2724,10 @@ function myExecCommand(command, showUI, value, range) {
 				"TBODY", "TD", "TH", "THEAD", "TR", "UL"]);
 		});
 
-		// "For each node in node list, while node is a descendant of an HTML
-		// element in the same editing host with local name "address", "h1",
-		// "h2", "h3", "h4", "h5", "h6", "p", or "pre", split the parent of the
-		// one-node list consisting of node."
+		// "For each node in node list, while node is a descendant of an
+		// editable HTML element in the same editing host with local name
+		// "address", "h1", "h2", "h3", "h4", "h5", "h6", "p", or "pre", split
+		// the parent of the one-node list consisting of node."
 		for (var i = 0; i < nodeList.length; i++) {
 			node = nodeList[i];
 
@@ -2607,6 +2738,7 @@ function myExecCommand(command, showUI, value, range) {
 					ancestor = ancestor.parentNode;
 				}
 				if (ancestor
+				&& isEditable(ancestor)
 				&& inSameEditingHost(node, ancestor)) {
 					splitParent([node]);
 				} else {
@@ -3401,7 +3533,7 @@ function toggleLists(range, tagName) {
 	// "For each node node contained in new range, if node is editable; the
 	// last member of node list (if any) is not an ancestor of node; node
 	// is not a potential indentation element; and either node is an ol or
-	// ul, or its parent is an ol or ul, or it can be the child of an li;
+	// ul, or its parent is an ol or ul, or it is an allowed child of "li";
 	// then append node to node list."
 	for (
 		var node = newRange.startContainer;
@@ -3414,10 +3546,7 @@ function toggleLists(range, tagName) {
 		&& !isPotentialIndentationElement(node)
 		&& (isHtmlElement(node, ["OL", "UL"])
 		|| isHtmlElement(node.parentNode, ["OL", "UL"])
-		// As usual with content restrictions, we fake it for testing
-		// purposes.
-		|| !isHtmlElement(node)
-		|| ["THEAD", "TBODY", "TR", "TH", "TD", "DT", "DD"].indexOf(node.tagName) == -1)) {
+		|| isAllowedChild(node, "li"))) {
 			nodeList.push(node);
 		}
 	}
@@ -3485,16 +3614,19 @@ function toggleLists(range, tagName) {
 				sublist.push(nodeList.shift());
 			}
 
-			// "If sublist contains more than one member, wrap it, with
-			// sibling criteria matching nothing and with new parent
-			// instructions returning the result of calling
-			// createElement("li") on the context object. Let node be the
-			// result."
+			// "If sublist contains more than one member, call
+			// createElement("li") on the context object and let node be the
+			// result. Insert node into the parent of the first member of
+			// sublist immediately before the first member of sublist. Then
+			// wrap sublist, with sibling criteria matching nothing and new
+			// parent instructions returning node."
 			var node;
 			if (sublist.length > 1) {
+				node = document.createElement("li");
+				sublist[0].parentNode.insertBefore(node, sublist[0]);
 				node = wrap(sublist,
 					function() { return false },
-					function() { return document.createElement("li") });
+					function() { return node });
 
 			// "Otherwise, let node be the sole member of sublist."
 			} else {
@@ -3564,15 +3696,19 @@ function toggleLists(range, tagName) {
 				continue;
 			}
 
-			// "If node is not an li, wrap the one-node list consisting of
-			// node, with the sibling criteria matching nothing, and the
-			// new parent instructions returning the result of calling
-			// createElement("li") on the context object. Let node be the
-			// result."
+			// "If node is not an li, call createElement("li") on the context
+			// object and let new item be the result. Insert new item into
+			// node's parent immediately before node. Then wrap the one-node
+			// list consisting of node, with sibling criteria matching nothing
+			// and new parent instructions returning new item. Then set node to
+			// new item."
 			if (!isHtmlElement(node, "LI")) {
-				node = wrap([node],
+				var newItem = document.createElement("li");
+				node.parentNode.insertBefore(newItem, node);
+				wrap([node],
 					function() { return false },
-					function() { return document.createElement("li") });
+					function() { return newItem });
+				node = newItem;
 			}
 
 			// "Wrap the one-node list consisting of node, with the sibling

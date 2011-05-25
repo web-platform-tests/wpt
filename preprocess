@@ -31,6 +31,7 @@ replace = {
     'dl': '<code data-anolis-spec=html title="the dl element">dl</code>',
     'document': '<code data-anolis-spec=domcore>Document</code>',
     'documentfragment': '<code data-anolis-spec=domcore>DocumentFragment</code>',
+    'documenttype': '<code data-anolis-spec=domcore>DocumentType</code>',
     'element': '<code data-anolis-spec=domcore>Element</code>',
     'em': '<code data-anolis-spec=html title="the em element">em</code>',
     'followingsibling': '<span data-anolis-spec=domcore title="concept-tree-following-sibling">following sibling</span>',

@@ -575,31 +575,10 @@ function wrap(nodeList, siblingCriteria, newParentInstructions) {
 		newParent = newParentInstructions();
 	}
 
-	// "If new parent's parent is null:"
+	// "If new parent's parent is null, insert new parent into the parent of
+	// the first member of node list immediately before the first member of
+	// node list."
 	if (!newParent.parentNode) {
-		// "If new parent is not an allowed child of the parent of the first
-		// member of node list, but is an allowed child of some ancestor of the
-		// first member of node list that is in the same editing host as the
-		// first member of node list, then while new parent is not an allowed
-		// child of the parent of the first member of node list, split the
-		// parent of node list."
-		var ancestor = nodeList[0].parentNode;
-		while (ancestor) {
-			if (isAllowedChild(newParent, ancestor)
-			&& inSameEditingHost(ancestor, nodeList[0])) {
-				while (!isAllowedChild(newParent, nodeList[0].parentNode)) {
-					splitParent(nodeList);
-				}
-				break;
-			}
-			ancestor = ancestor.parentNode;
-		}
-		if (!ancestor && !isAllowedChild(newParent, nodeList[0].parentNode)) {
-			throw "Is this an error?  Investigate.";
-		}
-
-		// "Insert new parent into the parent of the first member of node list
-		// immediately before the first member of node list."
 		nodeList[0].parentNode.insertBefore(newParent, nodeList[0]);
 	}
 
@@ -3305,6 +3284,33 @@ function myExecCommand(command, showUI, value, range) {
 	}
 }
 
+function fixDisallowedAncestors(node) {
+	// "If node is an allowed child of its parent, or it is not an allowed
+	// child of any of its ancestors in the same editing host, abort these
+	// steps and do nothing."
+	if (isAllowedChild(node, node.parentNode)) {
+		return;
+	}
+	var ancestor = node.parentNode;
+	var hasAllowedAncestor = false;
+	while (inSameEditingHost(node, ancestor)) {
+		if (isAllowedChild(node, ancestor)) {
+			hasAllowedAncestor = true;
+			break;
+		}
+		ancestor = ancestor.parentNode;
+	}
+	if (!hasAllowedAncestor) {
+		return;
+	}
+
+	// "While node is not an allowed child of its parent, split the parent of
+	// the one-node list consisting of node."
+	while (!isAllowedChild(node, node.parentNode)) {
+		splitParent([node]);
+	}
+}
+
 function indentNodes(nodeList) {
 	// "If node list is empty, do nothing and abort these steps."
 	if (!nodeList.length) {
@@ -3332,10 +3338,14 @@ function indentNodes(nodeList) {
 
 	// "Wrap node list, with sibling criteria matching any indentation element,
 	// and new parent instructions to return the result of calling
-	// createElement("blockquote") on the ownerDocument of first node."
-	wrap(nodeList,
+	// createElement("blockquote") on the ownerDocument of first node. Let new
+	// parent be the result."
+	var newParent = wrap(nodeList,
 		function(node) { return isIndentationElement(node) },
 		function() { return firstNode.ownerDocument.createElement("blockquote") });
+
+	// "Fix disallowed ancestors of new parent."
+	fixDisallowedAncestors(newParent);
 }
 
 function outdentNode(node) {
@@ -3614,19 +3624,15 @@ function toggleLists(range, tagName) {
 				sublist.push(nodeList.shift());
 			}
 
-			// "If sublist contains more than one member, call
-			// createElement("li") on the context object and let node be the
-			// result. Insert node into the parent of the first member of
-			// sublist immediately before the first member of sublist. Then
-			// wrap sublist, with sibling criteria matching nothing and new
-			// parent instructions returning node."
+			// "If sublist contains more than one member, wrap sublist, with
+			// sibling criteria matching nothing and new parent instructions
+			// returning the result of calling createElement("li") on the
+			// context object. Let node be the result."
 			var node;
 			if (sublist.length > 1) {
-				node = document.createElement("li");
-				sublist[0].parentNode.insertBefore(node, sublist[0]);
 				node = wrap(sublist,
 					function() { return false },
-					function() { return node });
+					function() { return document.createElement("li") });
 
 			// "Otherwise, let node be the sole member of sublist."
 			} else {
@@ -3696,25 +3702,20 @@ function toggleLists(range, tagName) {
 				continue;
 			}
 
-			// "If node is not an li, call createElement("li") on the context
-			// object and let new item be the result. Insert new item into
-			// node's parent immediately before node. Then wrap the one-node
-			// list consisting of node, with sibling criteria matching nothing
-			// and new parent instructions returning new item. Then set node to
-			// new item."
+			// "If node is not an li, wrap the one-node list consisting of
+			// node, with sibling criteria matching nothing and new parent
+			// instructions returning the result of calling createElement("li")
+			// on the context object. Set node to the result."
 			if (!isHtmlElement(node, "LI")) {
-				var newItem = document.createElement("li");
-				node.parentNode.insertBefore(newItem, node);
-				wrap([node],
+				node = wrap([node],
 					function() { return false },
-					function() { return newItem });
-				node = newItem;
+					function() { return document.createElement("li") });
 			}
 
 			// "Wrap the one-node list consisting of node, with the sibling
 			// criteria matching any HTML element with local name tag name, and
 			// the new parent instructions being the following:"
-			wrap([node],
+			var newParent = wrap([node],
 				function(node) { return isHtmlElement(node, tagName) },
 				function() {
 					// "If the parent of node is not an editable indentation
@@ -3747,6 +3748,9 @@ function toggleLists(range, tagName) {
 					// "Return the last child of list."
 					return list.lastChild;
 				});
+
+			// "Fix disallowed ancestors of the previous step's result."
+			fixDisallowedAncestors(newParent);
 		}
 	}
 }

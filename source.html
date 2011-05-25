@@ -574,22 +574,9 @@ instructions</dfn>:
   <li>Otherwise, run the <span>new parent instructions</span>, and let <var>new
   parent</var> be the result.
 
-  <li>If <var>new parent</var>'s [[parent]] is null:
-
-  <ol>
-    <li>If <var>new parent</var> is not an <span>allowed child</span> of the
-    [[parent]] of the first member of <var>node list</var>, but is an
-    <span>allowed child</span> of some [[ancestor]] of the first member of
-    <var>node list</var> that is <span>in the same editing host</span> as the
-    first member of <var>node list</var>, then while <var>new parent</var> is
-    not an <span>allowed child</span> of the [[parent]] of the first member of
-    <var>node list</var>, <span>split the parent</span> of <var>node
-    list</var>.
-
-    <li>Insert <var>new parent</var> into the [[parent]] of the first member of
-    <var>node list</var> immediately before the first member of <var>node
-    list</var>.
-  </ol>
+  <li>If <var>new parent</var>'s [[parent]] is null, insert <var>new
+  parent</var> into the [[parent]] of the first member of <var>node list</var>
+  immediately before the first member of <var>node list</var>.
 
   <li>Let <var>original parent</var> be the [[parent]] of the first member of
   <var>node list</var>.
@@ -2575,6 +2562,22 @@ element</span> that has no attributes other than one or more of
 
 <h3>Assorted block formatting command algorithms</h3>
 
+<p>To <dfn>fix disallowed ancestors</dfn> of a [[node]] <var>node</var>:
+
+<p class=XXX>This works okay for stuff nested in paragraphs or such, but for
+fixing lis/table stuff/etc. we probably don't want to do this at all; we
+probably want to add ancestor wrappers or something.
+
+<ol>
+  <li>If <var>node</var> is an <span>allowed child</span> of its [[parent]], or
+  it is not an <span>allowed child</span> of any of its [[ancestors]] <span>in
+  the same editing host</span>, abort these steps and do nothing.
+
+  <li>While <var>node</var> is not an <span>allowed child</span> of its
+  [[parent]], <span>split the parent</span> of the one-[[node]] list consisting
+  of <var>node</var>.
+</ol>
+
 <p>To <dfn>indent</dfn> a list <var>node list</var> of consecutive [[sibling]]
 [[nodes]]:
 <!--
@@ -2664,7 +2667,8 @@ won't remember that we aren't supposed to indent "foo" a second time.
   parent instructions</span> to return the result of calling <code
   data-anolis-spec=domcore
   title=dom-Document-createElement>createElement("blockquote")</code> on the
-  [[ownerdocument]] of <var>first node</var>.
+  [[ownerdocument]] of <var>first node</var>.  Let <var>new parent</var> be the
+  result.
 
   <p class=XXX>This indents on both sides, so we don't have to worry about
   directionality.  Preferably we should indent only on the start side, but
@@ -2674,6 +2678,8 @@ won't remember that we aren't supposed to indent "foo" a second time.
   descendant block has different direction (so should be indented the other
   way).  It's not clear to me that we should worry about it: most browsers
   don't, and the ones that do get it wrong.
+
+  <li><span>Fix disallowed ancestors</span> of <var>new parent</var>.
 </ol>
 
 <p>To <dfn>fix orphaned list items</dfn> in a list of [[nodes]] <var>node
@@ -3442,18 +3448,12 @@ or "ul"):
     remove the first member from <var>node list</var> and append it to
     <var>sublist</var>.
 
-    <li>If <var>sublist</var> contains more than one member, call <code
+    <li>If <var>sublist</var> contains more than one member, <span>wrap</span>
+    <var>sublist</var>, with <span>sibling criteria</span> matching nothing and
+    <span>new parent instructions</span> returning the result of calling <code
     data-anolis-spec=domcore
     title=dom-Document-createElement>createElement("li")</code> on the
-    [[contextobject]] and let <var>node</var> be the result.  Insert
-    <var>node</var> into the [[parent]] of the first member of
-    <var>sublist</var> immediately before the first member of
-    <var>sublist</var>.  Then <span>wrap</span> <var>sublist</var>, with
-    <span>sibling criteria</span> matching nothing and <span>new parent
-    instructions</span> returning <var>node</var>.
-
-    <p class=XXX>This is a hack to avoid the wrap algorithm trying to reparent
-    the li.  Think of a better way to fix it.
+    [[contextobject]].  Let <var>node</var> be the result.
 
     <li>Otherwise, let <var>node</var> be the sole member of
     <var>sublist</var>.
@@ -3540,18 +3540,12 @@ or "ul"):
     elements</span> with [[localname]] <var>other tag name</var> (if any) to
     <var>node list</var> and continue from the beginning of this loop.
 
-    <li>If <var>node</var> is not an [[li]], call <code
-    data-anolis-spec=domcore
+    <li>If <var>node</var> is not an [[li]], <span>wrap</span> the one-[[node]]
+    list consisting of <var>node</var>, with <span>sibling criteria</span>
+    matching nothing and <span>new parent instructions</span> returning
+    the result of calling <code data-anolis-spec=domcore
     title=dom-Document-createElement>createElement("li")</code> on the
-    [[contextobject]] and let <var>new item</var> be the result.  Insert
-    <var>new item</var> into <var>node</var>'s [[parent]] immediately before
-    <var>node</var>.  Then <span>wrap</span> the one-[[node]] list consisting
-    of <var>node</var>, with <span>sibling criteria</span> matching nothing and
-    <span>new parent instructions</span> returning <var>new item</var>.  Then
-    set <var>node</var> to <var>new item</var>.
-
-    <p class=XXX>This is a hack to avoid the wrap algorithm trying to reparent
-    the li.  Think of a better way to fix it.
+    [[contextobject]].  Set <var>node</var> to the result.
 
     <li><span>Wrap</span> the one-[[node]] list consisting of <var>node</var>,
     with the <span>sibling criteria</span> matching any <span>HTML
@@ -3582,6 +3576,8 @@ or "ul"):
 
       <li>Return the last [[child]] of <var>list</var>.
     </ol>
+
+    <li><span>Fix disallowed ancestors</span> of the previous step's result.
   </ol>
 </ol>
 
@@ -3688,6 +3684,9 @@ sense for <address>/<h*>/<pre>, but other browsers don't do it.
   parent of the node we're dealing with?  Or just split divs always, and hope
   the "in the same editing host" thing handles it?
   </div>
+
+  <p class=XXX>Do we need to fix disallowed ancestors later, or is this step
+  enough that it's not an issue?
 
   <!--
   We have two different behaviors, one for div and p and one for everything

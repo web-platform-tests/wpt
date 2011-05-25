@@ -615,22 +615,9 @@ instructions</dfn>:
   <li>Otherwise, run the <a href=#new-parent-instructions>new parent instructions</a>, and let <var title="">new
   parent</var> be the result.
 
-  <li>If <var title="">new parent</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is null:
-
-  <ol>
-    <li>If <var title="">new parent</var> is not an <a href=#allowed-child>allowed child</a> of the
-    <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of the first member of <var title="">node list</var>, but is an
-    <a href=#allowed-child>allowed child</a> of some <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of the first member of
-    <var title="">node list</var> that is <a href=#in-the-same-editing-host>in the same editing host</a> as the
-    first member of <var title="">node list</var>, then while <var title="">new parent</var> is
-    not an <a href=#allowed-child>allowed child</a> of the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of the first member of
-    <var title="">node list</var>, <a href=#split-the-parent>split the parent</a> of <var title="">node
-    list</var>.
-
-    <li>Insert <var title="">new parent</var> into the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of the first member of
-    <var title="">node list</var> immediately before the first member of <var title="">node
-    list</var>.
-  </ol>
+  <li>If <var title="">new parent</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is null, insert <var title="">new
+  parent</var> into the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of the first member of <var title="">node list</var>
+  immediately before the first member of <var title="">node list</var>.
 
   <li>Let <var title="">original parent</var> be the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of the first member of
   <var title="">node list</var>.
@@ -2577,6 +2564,22 @@ element</a> that has no attributes other than one or more of
 
 <h3 id=assorted-block-formatting-command-algorithms><span class=secno>7.2 </span>Assorted block formatting command algorithms</h3>
 
+<p>To <dfn id=fix-disallowed-ancestors>fix disallowed ancestors</dfn> of a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> <var title="">node</var>:
+
+<p class=XXX>This works okay for stuff nested in paragraphs or such, but for
+fixing lis/table stuff/etc. we probably don't want to do this at all; we
+probably want to add ancestor wrappers or something.
+
+<ol>
+  <li>If <var title="">node</var> is an <a href=#allowed-child>allowed child</a> of its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>, or
+  it is not an <a href=#allowed-child>allowed child</a> of any of its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestors</a> <a href=#in-the-same-editing-host>in
+  the same editing host</a>, abort these steps and do nothing.
+
+  <li>While <var title="">node</var> is not an <a href=#allowed-child>allowed child</a> of its
+  <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>, <a href=#split-the-parent>split the parent</a> of the one-<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> list consisting
+  of <var title="">node</var>.
+</ol>
+
 <p>To <dfn id=indent>indent</dfn> a list <var title="">node list</var> of consecutive <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-sibling title=concept-tree-sibling>sibling</a>
 <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a>:
 <!--
@@ -2662,7 +2665,8 @@ won't remember that we aren't supposed to indent "foo" a second time.
   <li><a href=#wrap>Wrap</a> <var title="">node list</var>, with <a href=#sibling-criteria>sibling
   criteria</a> matching any <a href=#indentation-element>indentation element</a>, and <a href=#new-parent-instructions>new
   parent instructions</a> to return the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("blockquote")</a></code> on the
-  <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">first node</var>.
+  <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">first node</var>.  Let <var title="">new parent</var> be the
+  result.
 
   <p class=XXX>This indents on both sides, so we don't have to worry about
   directionality.  Preferably we should indent only on the start side, but
@@ -2672,6 +2676,8 @@ won't remember that we aren't supposed to indent "foo" a second time.
   descendant block has different direction (so should be indented the other
   way).  It's not clear to me that we should worry about it: most browsers
   don't, and the ones that do get it wrong.
+
+  <li><a href=#fix-disallowed-ancestors>Fix disallowed ancestors</a> of <var title="">new parent</var>.
 </ol>
 
 <p>To <dfn id=fix-orphaned-list-items>fix orphaned list items</dfn> in a list of <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a> <var title="">node
@@ -3432,16 +3438,10 @@ or "ul"):
     remove the first member from <var title="">node list</var> and append it to
     <var title="">sublist</var>.
 
-    <li>If <var title="">sublist</var> contains more than one member, call <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("li")</a></code> on the
-    <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a> and let <var title="">node</var> be the result.  Insert
-    <var title="">node</var> into the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of the first member of
-    <var title="">sublist</var> immediately before the first member of
-    <var title="">sublist</var>.  Then <a href=#wrap>wrap</a> <var title="">sublist</var>, with
-    <a href=#sibling-criteria>sibling criteria</a> matching nothing and <a href=#new-parent-instructions>new parent
-    instructions</a> returning <var title="">node</var>.
-
-    <p class=XXX>This is a hack to avoid the wrap algorithm trying to reparent
-    the li.  Think of a better way to fix it.
+    <li>If <var title="">sublist</var> contains more than one member, <a href=#wrap>wrap</a>
+    <var title="">sublist</var>, with <a href=#sibling-criteria>sibling criteria</a> matching nothing and
+    <a href=#new-parent-instructions>new parent instructions</a> returning the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("li")</a></code> on the
+    <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>.  Let <var title="">node</var> be the result.
 
     <li>Otherwise, let <var title="">node</var> be the sole member of
     <var title="">sublist</var>.
@@ -3523,16 +3523,11 @@ or "ul"):
     elements</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> <var title="">other tag name</var> (if any) to
     <var title="">node list</var> and continue from the beginning of this loop.
 
-    <li>If <var title="">node</var> is not an <code class=external data-anolis-spec=html title="the li element"><a href=http://www.whatwg.org/html/#the-li-element>li</a></code>, call <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("li")</a></code> on the
-    <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a> and let <var title="">new item</var> be the result.  Insert
-    <var title="">new item</var> into <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> immediately before
-    <var title="">node</var>.  Then <a href=#wrap>wrap</a> the one-<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> list consisting
-    of <var title="">node</var>, with <a href=#sibling-criteria>sibling criteria</a> matching nothing and
-    <a href=#new-parent-instructions>new parent instructions</a> returning <var title="">new item</var>.  Then
-    set <var title="">node</var> to <var title="">new item</var>.
-
-    <p class=XXX>This is a hack to avoid the wrap algorithm trying to reparent
-    the li.  Think of a better way to fix it.
+    <li>If <var title="">node</var> is not an <code class=external data-anolis-spec=html title="the li element"><a href=http://www.whatwg.org/html/#the-li-element>li</a></code>, <a href=#wrap>wrap</a> the one-<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>
+    list consisting of <var title="">node</var>, with <a href=#sibling-criteria>sibling criteria</a>
+    matching nothing and <a href=#new-parent-instructions>new parent instructions</a> returning
+    the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("li")</a></code> on the
+    <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>.  Set <var title="">node</var> to the result.
 
     <li><a href=#wrap>Wrap</a> the one-<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> list consisting of <var title="">node</var>,
     with the <a href=#sibling-criteria>sibling criteria</a> matching any <a href=#html-element>HTML
@@ -3560,6 +3555,8 @@ or "ul"):
 
       <li>Return the last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">list</var>.
     </ol>
+
+    <li><a href=#fix-disallowed-ancestors>Fix disallowed ancestors</a> of the previous step's result.
   </ol>
 </ol>
 
@@ -3665,6 +3662,9 @@ sense for <address>/<h*>/<pre>, but other browsers don't do it.
   parent of the node we're dealing with?  Or just split divs always, and hope
   the "in the same editing host" thing handles it?
   </div>
+
+  <p class=XXX>Do we need to fix disallowed ancestors later, or is this step
+  enough that it's not an issue?
 
   <!--
   We have two different behaviors, one for div and p and one for everything

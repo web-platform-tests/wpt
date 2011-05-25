@@ -2209,50 +2209,6 @@ For color parsing, see the comment for foreColor. -->
 <p><span>Relevant CSS property</span>: "background-color"
 
 
-<h3><dfn>The <code title>insertHorizontalRule</code> command</dfn></h3>
-
-<p><span>Action</span>:
-
-<!-- You'd think interop here would be simple, right?  Nope: we have three
-different behaviors across four browsers.  Opera 11.00 is the only one that
-acts more or less like the spec.  IE9 and Chrome 12 dev treat the value as an
-id, which is weird and probably useless, so I don't do it.  Firefox 4.0
-produces <hr size=2 width=100%> instead of <hr>, which is also weird and almost
-definitely useless, so I don't do it.  Then you have the varying behavior in
-splitting up parents to ensure validity . . . -->
-<ol>
-  <li>Let <var>range</var> be the <span>active range</span>.
-
-  <li>Run <code data-anolis-spec=domrange
-  title=dom-Range-deleteContents>deleteContents()</code> on <var>range</var>.
-
-  <li>Let <var>hr</var> be the result of calling <code
-  data-anolis-spec=domcore
-  title=dom-Document-createElement>createElement("hr")</code> on the
-  [[contextobject]].
-
-  <li>Run <code data-anolis-spec=domrange
-  title=dom-Range-insertNode>insertNode(<var>hr</var>)</code> on
-  <var>range</var>.
-  <!-- This might put it in an inline element, where it's invalid.  This is
-  what IE9 and Chrome 12 dev appear to do.  Firefox 4.0 breaks up inline
-  ancestors, and Opera 11.10 seems to put it before the first inline ancestor
-  instead of where the cursor is.  Breaking up elements is kind of evil, so
-  I'll go with IE/WebKit.  Even though it produces invalid markup, it does
-  still work. -->
-
-  <li>Let <var>selection</var> be the result of running <code
-  data-anolis-spec=domrange
-  title=dom-Document-getSelection>getSelection()</code> on the
-  [[contextobject]].
-
-  <li>Run <code data-anolis-spec=domrange
-  title=dom-Selection-collapse>collapse()</code> on <var>selection</var>, with
-  first argument equal to the [[parent]] of <var>hr</var> and the second
-  argument equal to one plus the [[index]] of <var>hr</var>.
-</ol>
-
-
 <h3><dfn>The <code title>insertImage</code> command</dfn></h3>
 
 <p><span>Action</span>:
@@ -2805,6 +2761,85 @@ confronted with this kind of nesting.)
 </ol>
 
 
+<h3>Block-extending a range</h3>
+<p>When a user agent is to <dfn>block-extend</dfn> a [[range]]
+<var>range</var>, it must run the following steps:
+
+<ol>
+  <li>Let <var>start node</var>, <var>start offset</var>, <var>end node</var>,
+  and <var>end offset</var> be the [[rangestart]] and [[rangeend]] [[bpnodes]]
+  and [[bpoffsets]] of <var>range</var>.
+
+  <li>If some [[ancestorcontainer]] of <var>start node</var> is an [[li]], set
+  <var>start offset</var> to the [[index]] of the last such [[li]] in
+  [[treeorder]], and set <var>start node</var> to that [[li]]'s [[parent]].
+
+  <li>Repeat the following steps:
+
+  <ol>
+    <li>If <var>start node</var> is a [[text]] or [[comment]] node or
+    <var>start offset</var> is 0, set <var>start offset</var> to the [[index]]
+    of <var>start node</var> and then set <var>start node</var> to its
+    [[parent]].
+
+    <li>Otherwise, if <var>start offset</var> is equal to the
+    [[nodelength]] of <var>start node</var>, set <var>start offset</var> to one
+    plus the [[index]] of <var>start node</var> and then set <var>start
+    node</var> to its [[parent]].
+
+    <li>Otherwise, if the [[child]] of <var>start node</var> with [[index]]
+    <var>start offset</var> and its [[previoussibling]] are both <span
+    title="inline node">inline nodes</span> and the [[previoussibling]] isn't a
+    [[br]], subtract one from <var>start offset</var>.
+    <!-- IE also includes <br> (at least for the purposes of the indent
+    command), but this is unlikely to match user expectations. -->
+
+    <p class=XXX>This is wrong in the presence of comments or display: none or
+    probably other things.  Do we care?
+
+    <li>Otherwise, break from this loop.
+  </ol>
+
+  <li>If some [[ancestorcontainer]] of <var>end node</var> is an [[li]], set
+  <var>end offset</var> to one plus the [[index]] of the last such [[li]] in
+  [[treeorder]], and set <var>end node</var> to that [[li]]'s [[parent]].
+
+  <li>Repeat the following steps:
+
+  <ol>
+    <li>If <var>end offset</var> is 0, set <var>end offset</var> to the
+    [[index]] of <var>end node</var> and then set <var>end node</var> to its
+    [[parent]].
+
+    <li>Otherwise, if <var>end node</var> is a [[text]] or [[comment]] node or
+    <var>end offset</var> is equal to the [[nodelength]] of <var>end
+    node</var>, set <var>end offset</var> to one plus the [[index]] of <var>end
+    node</var> and then set <var>end node</var> to its [[parent]].
+
+    <li>Otherwise, if the [[child]] of <var>end node</var> with [[index]]
+    <var>end offset</var> and its [[previoussibling]] are both <span
+    title="inline node">inline nodes</span>, and the [[child]] of <var>end
+    node</var> with [[index]] <var>end offset</var> isn't a [[br]], add one to
+    <var>end offset</var>.
+
+    <li>Otherwise, break from this loop.
+  </ol>
+
+  <li>If the [[child]] of <var>end node</var> with [[index]] <var>end
+  offset</var> is a [[br]], add one to <var>end offset</var>.
+
+  <li>While <var>end offset</var> is equal to the [[nodelength]] of <var>end
+  node</var>, set <var>end offset</var> to one plus the [[index]] of <var>end
+  node</var> and then set <var>end node</var> to its [[parent]].
+
+  <li>Let <var>new range</var> be a new [[range]] whose [[rangestart]] and
+  [[rangeend]] [[bpnodes]] and [[bpoffsets]] are <var>start node</var>,
+  <var>start offset</var>, <var>end node</var>, and <var>end offset</var>.
+
+  <li>Return <var>new range</var>.
+</ol>
+
+
 <h3>Outdenting a node</h3>
 
 <p>To <dfn>outdent</dfn> a [[node]] <var>node</var>:
@@ -3002,84 +3037,6 @@ insertOrderedList.
   <li><span>Outdent</span> <var>original ancestor</var>.
 </ol>
 
-
-<h3>Block-extending a range</h3>
-<p>When a user agent is to <dfn>block-extend</dfn> a [[range]]
-<var>range</var>, it must run the following steps:
-
-<ol>
-  <li>Let <var>start node</var>, <var>start offset</var>, <var>end node</var>,
-  and <var>end offset</var> be the [[rangestart]] and [[rangeend]] [[bpnodes]]
-  and [[bpoffsets]] of <var>range</var>.
-
-  <li>If some [[ancestorcontainer]] of <var>start node</var> is an [[li]], set
-  <var>start offset</var> to the [[index]] of the last such [[li]] in
-  [[treeorder]], and set <var>start node</var> to that [[li]]'s [[parent]].
-
-  <li>Repeat the following steps:
-
-  <ol>
-    <li>If <var>start node</var> is a [[text]] or [[comment]] node or
-    <var>start offset</var> is 0, set <var>start offset</var> to the [[index]]
-    of <var>start node</var> and then set <var>start node</var> to its
-    [[parent]].
-
-    <li>Otherwise, if <var>start offset</var> is equal to the
-    [[nodelength]] of <var>start node</var>, set <var>start offset</var> to one
-    plus the [[index]] of <var>start node</var> and then set <var>start
-    node</var> to its [[parent]].
-
-    <li>Otherwise, if the [[child]] of <var>start node</var> with [[index]]
-    <var>start offset</var> and its [[previoussibling]] are both <span
-    title="inline node">inline nodes</span> and the [[previoussibling]] isn't a
-    [[br]], subtract one from <var>start offset</var>.
-    <!-- IE also includes <br> (at least for the purposes of the indent
-    command), but this is unlikely to match user expectations. -->
-
-    <p class=XXX>This is wrong in the presence of comments or display: none or
-    probably other things.  Do we care?
-
-    <li>Otherwise, break from this loop.
-  </ol>
-
-  <li>If some [[ancestorcontainer]] of <var>end node</var> is an [[li]], set
-  <var>end offset</var> to one plus the [[index]] of the last such [[li]] in
-  [[treeorder]], and set <var>end node</var> to that [[li]]'s [[parent]].
-
-  <li>Repeat the following steps:
-
-  <ol>
-    <li>If <var>end offset</var> is 0, set <var>end offset</var> to the
-    [[index]] of <var>end node</var> and then set <var>end node</var> to its
-    [[parent]].
-
-    <li>Otherwise, if <var>end node</var> is a [[text]] or [[comment]] node or
-    <var>end offset</var> is equal to the [[nodelength]] of <var>end
-    node</var>, set <var>end offset</var> to one plus the [[index]] of <var>end
-    node</var> and then set <var>end node</var> to its [[parent]].
-
-    <li>Otherwise, if the [[child]] of <var>end node</var> with [[index]]
-    <var>end offset</var> and its [[previoussibling]] are both <span
-    title="inline node">inline nodes</span>, and the [[child]] of <var>end
-    node</var> with [[index]] <var>end offset</var> isn't a [[br]], add one to
-    <var>end offset</var>.
-
-    <li>Otherwise, break from this loop.
-  </ol>
-
-  <li>If the [[child]] of <var>end node</var> with [[index]] <var>end
-  offset</var> is a [[br]], add one to <var>end offset</var>.
-
-  <li>While <var>end offset</var> is equal to the [[nodelength]] of <var>end
-  node</var>, set <var>end offset</var> to one plus the [[index]] of <var>end
-  node</var> and then set <var>end node</var> to its [[parent]].
-
-  <li>Let <var>new range</var> be a new [[range]] whose [[rangestart]] and
-  [[rangeend]] [[bpnodes]] and [[bpoffsets]] are <var>start node</var>,
-  <var>start offset</var>, <var>end node</var>, and <var>end offset</var>.
-
-  <li>Return <var>new range</var>.
-</ol>
 
 <h3>Toggling lists</h3>
 
@@ -3930,6 +3887,50 @@ fragments, html/body, head or things in head . . .
 
     <li><span>Indent</span> <var>sublist</var>.
   </ol>
+</ol>
+
+
+<h3><dfn>The <code title>insertHorizontalRule</code> command</dfn></h3>
+
+<p><span>Action</span>:
+
+<!-- You'd think interop here would be simple, right?  Nope: we have three
+different behaviors across four browsers.  Opera 11.00 is the only one that
+acts more or less like the spec.  IE9 and Chrome 12 dev treat the value as an
+id, which is weird and probably useless, so I don't do it.  Firefox 4.0
+produces <hr size=2 width=100%> instead of <hr>, which is also weird and almost
+definitely useless, so I don't do it.  Then you have the varying behavior in
+splitting up parents to ensure validity . . . -->
+<ol>
+  <li>Let <var>range</var> be the <span>active range</span>.
+
+  <li>Run <code data-anolis-spec=domrange
+  title=dom-Range-deleteContents>deleteContents()</code> on <var>range</var>.
+
+  <li>Let <var>hr</var> be the result of calling <code
+  data-anolis-spec=domcore
+  title=dom-Document-createElement>createElement("hr")</code> on the
+  [[contextobject]].
+
+  <li>Run <code data-anolis-spec=domrange
+  title=dom-Range-insertNode>insertNode(<var>hr</var>)</code> on
+  <var>range</var>.
+  <!-- This might put it in an inline element, where it's invalid.  This is
+  what IE9 and Chrome 12 dev appear to do.  Firefox 4.0 breaks up inline
+  ancestors, and Opera 11.10 seems to put it before the first inline ancestor
+  instead of where the cursor is.  Breaking up elements is kind of evil, so
+  I'll go with IE/WebKit.  Even though it produces invalid markup, it does
+  still work. -->
+
+  <li>Let <var>selection</var> be the result of running <code
+  data-anolis-spec=domrange
+  title=dom-Document-getSelection>getSelection()</code> on the
+  [[contextobject]].
+
+  <li>Run <code data-anolis-spec=domrange
+  title=dom-Selection-collapse>collapse()</code> on <var>selection</var>, with
+  first argument equal to the [[parent]] of <var>hr</var> and the second
+  argument equal to one plus the [[index]] of <var>hr</var>.
 </ol>
 
 

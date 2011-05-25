@@ -640,6 +640,13 @@ var tests = {
 		['p', '<div>[foobar]</div>'],
 
 		'<ol><li>[foo]<li>bar</ol>',
+
+		['<p>', '<h1>[foo]<br>bar</h1>'],
+		['<p>', '<h1>foo<br>[bar]</h1>'],
+		['<p>', '<h1>[foo<br>bar]</h1>'],
+		['<h1>', '<p>[foo]<br>bar</p>'],
+		['<h1>', '<p>foo<br>[bar]</p>'],
+		['<h1>', '<p>[foo<br>bar]</p>'],
 	],
 	hilitecolor: [
 		'foo[]bar',

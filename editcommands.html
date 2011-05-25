@@ -40,7 +40,7 @@
 <body class=draft>
 <div class=head id=head>
 <h1>HTML Editing Commands</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-23-may-2011>Work in Progress &mdash; Last Update 23 May 2011</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-25-may-2011>Work in Progress &mdash; Last Update 25 May 2011</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;ayg+spec@aryeh.name&gt;
@@ -482,13 +482,35 @@ instructions</dfn>:
   <var title="">node list</var>.
 
   <li>If <var title="">new parent</var> is before the first member of <var title="">node
-  list</var> in <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#tree-order>tree order</a>, then for each <var title="">node</var> in <var title="">node
-  list</var>, append <var title="">node</var> as the last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">new
-  parent</var>, <a href=#preserving-ranges>preserving ranges</a>.
+  list</var> in <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#tree-order>tree order</a>:
 
-  <li>Otherwise, for each <var title="">node</var> in <var title="">node list</var>, <em>in
-  reverse order</em>, insert <var title="">node</var> as the first <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">new
-  parent</var>, <a href=#preserving-ranges>preserving ranges</a>.
+  <ol>
+    <li>If the last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">new parent</var> and the first member of
+    <var title="">node list</var> are both <a href=#inline-node title="inline node">inline
+    nodes</a>, and the last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">new parent</var> is not a
+    <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code>, call <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("br")</a></code> on the
+    <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">new parent</var> and append the result as the
+    last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">new parent</var>.
+
+    <li>For each <var title="">node</var> in <var title="">node list</var>, append
+    <var title="">node</var> as the last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">new parent</var>,
+    <a href=#preserving-ranges>preserving ranges</a>.
+  </ol>
+
+  <li>Otherwise:
+
+  <ol>
+    <li>If the first <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">new parent</var> and the last member of
+    <var title="">node list</var> are both <a href=#inline-node title="inline node">inline
+    nodes</a>, and the last member of <var title="">node list</var> is not a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code>,
+    call <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("br")</a></code> on the
+    <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">new parent</var> and insert the result as the
+    first <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">new parent</var>.
+
+    <li>For each <var title="">node</var> in <var title="">node list</var>, <em>in reverse
+    order</em>, insert <var title="">node</var> as the first <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">new
+    parent</var>, <a href=#preserving-ranges>preserving ranges</a>.
+  </ol>
 
   <li>If <var title="">original parent</var> is <a href=#editable>editable</a> and has no
   <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, remove it from its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
@@ -501,6 +523,13 @@ instructions</dfn>:
   to merge them in this case. -->
 
   <ol>
+    <li>If <var title="">new parent</var>'s last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> and <var title="">new parent</var>'s
+    <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code>'s first <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> are both <a href=#inline-node title="inline node">inline
+    nodes</a>, and <var title="">new parent</var>'s last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> is not a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code>,
+    call <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("br")</a></code> on the
+    <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">new parent</var> and append the result as the
+    last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">new parent</var>.
+
     <li>While <var title="">new parent</var>'s <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code> has <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, append
     its first <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> as the last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">new parent</var>,
     <a href=#preserving-ranges>preserving ranges</a>.
@@ -620,7 +649,7 @@ in Opera 11. -->
 instructions as arguments.  When <code><a href=#querycommandstate()>queryCommandState()</a></code> is invoked,
 the user agent must return the <a href=#state>state</a> for <var title="">command</var>.  When
 <code><a href=#querycommandvalue()>queryCommandValue()</a></code> is invoked, the user agent must return the
-<a href=#value>value</a> for <var title="">command</var> 
+<a href=#value>value</a> for <var title="">command</var>.
 
 <p>Most <a href=#command title=command>commands</a> act on the <dfn id=active-range>active range</dfn>.
 This is defined to be the first <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> in the <code class=external data-anolis-spec=domrange><a href=http://html5.org/specs/dom-range.html#selection>Selection</a></code> given by calling
@@ -2300,9 +2329,9 @@ is <a href=#effectively-contained>effectively contained</a> in the <a href=#acti
 <ol>
   <li><a href=#decompose>Decompose</a> the <a href=#active-range>active range</a>, and let <var title="">node
   list</var> be the result.
-  
+
   <li>Let <var title="">state</var> be the <a href=#state>state</a>.
-  
+
   <li><a href=#set-the-value>Set the value</a> of each <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> in <var title="">node list</var> to
   "baseline".
 
@@ -2325,9 +2354,9 @@ is <a href=#effectively-contained>effectively contained</a> in the <a href=#acti
 <ol>
   <li><a href=#decompose>Decompose</a> the <a href=#active-range>active range</a>, and let <var title="">node
   list</var> be the result.
-  
+
   <li>Let <var title="">state</var> be the <a href=#state>state</a>.
-  
+
   <li><a href=#set-the-value>Set the value</a> of each <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> in <var title="">node list</var> to
   "baseline".
 
@@ -3520,32 +3549,49 @@ sense for <address>/<h*>/<pre>, but other browsers don't do it.
   "header", "hgroup", "li", "nav", "ol", "section", "table", "tbody", "td",
   "th", "thead", "tr", or "ul".
 
-  <li>While <var title="">node list</var> is not empty:
+  <!--
+  We have two different behaviors, one for div and p and one for everything
+  else.  The basic difference is that for div and p, we assume that it should
+  be one line per element, while for other elements, we put in multiple lines
+  separated by <br>.  So if you do formatBlock to p on
+
+    <div>foo</div><div>bar</div> or
+    foo<br>bar
+
+  you get
+
+    <p>foo</p><p>bar</p>
+
+  but formatBlock to h1 will get you
+
+    <h1>foo<br>bar</h1>.
+
+  IE9 will just change the elements as they are, so it gives
+  <p>foo</p><p>bar</p> and <h1>foo</h1><h1>bar</h1> for
+  <div>foo</div><div>bar</div>, but <p>foo<br>bar</p> and <h1>foo<br>bar</h1>
+  for foo<br>bar.  This is unreasonable, but the two possible inputs here look
+  identical to the user and might have been produced by identical user input.
+
+  Firefox 5.0a2 will give results like <p>foo</p><p>bar</p> or
+  <h1>foo</h1><h1>bar</h1> no matter what (modulo oddities in its handling of
+  divs).  Opera 11.10 is similar, except it leaves a trailing <br> in the first
+  element.
+
+  Chrome 13 dev will give results like <p>foo<br>bar</p> or <h1>foo<br>bar</h1>
+  no matter what.
+
+  The specced behavior is a compromise between the existing behaviors,
+  predicated on the fact that <h1>foo</h1><h1>bar</h1> almost never makes
+  sense, and <p>foo<br>bar</p> isn't usually what's wanted either.
+  -->
+  <li>If <var title="">value</var> is "div" or "p", then while <var title="">node list</var> is
+  not empty:
 
   <ol>
     <li>If the first member of <var title="">node list</var> is a <a href=#single-line-container>single-line
     container</a>, <a href=#set-the-tag-name>set the tag name</a> of the first member of
     <var title="">node list</var> to <var title="">value</var>, then remove the first member from
     <var title="">node list</var> and continue this loop from the beginning.
-
-    <div class=XXX>
-    <p>This implies that
-
-    </p><xmp><p>foo</p><p>bar</p></xmp>
-
-    <p>becomes (for instance)
-
-    </p><xmp><h1>foo</h1><h1>bar</h1></xmp>
-
-    <p>even though
-
-    </p><xmp><h1>foo<br>bar</h1></xmp>
-
-    <p>would probably make more sense.  WebKit has the latter behavior in all
-    cases.  Perhaps we should adopt WebKit's behavior for things where it
-    rarely makes sense to have two in a row, while keeping the current behavior
-    for divs and paragraphs?
-    </div>
 
     <li>Let <var title="">sublist</var> be an empty list of <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a>.
 
@@ -3562,6 +3608,45 @@ sense for <address>/<h*>/<pre>, but other browsers don't do it.
     <li><a href=#wrap>Wrap</a> <var title="">sublist</var>, with <a href=#sibling-criteria>sibling
     criteria</a> matching nothing and <a href=#new-parent-instructions>new parent instructions</a>
     returning the result of running <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement(<var title="">value</var>)</a></code> on
+    the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>.
+  </ol>
+
+  <li>Otherwise, while <var title="">node list</var> is not empty:
+
+  <ol>
+    <li>If the first member of <var title="">node list</var> is a <a href=#single-line-container>single-line
+    container</a>:
+
+    <ol>
+      <li>Let <var title="">sublist</var> be the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a> of the first member of
+      <var title="">node list</var>.
+
+      <li>Remove the first member of <var title="">node list</var> from its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>,
+      <a href=#preserving-its-descendants>preserving its descendants</a>.
+
+      <li>Remove the first member from <var title="">node list</var>.
+    </ol>
+
+    <li>Otherwise:
+
+    <ol>
+      <li>Let <var title="">sublist</var> be an empty list of <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a>.
+
+      <li>Remove the first member of <var title="">node list</var> and append it to
+      <var title="">sublist</var>.
+
+      <li>While <var title="">node list</var> is not empty, and the first member of
+      <var title="">node list</var> is the <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code> of the last member of
+      <var title="">sublist</var>, and the first member of <var title="">node list</var> is not a
+      <a href=#single-line-container>single-line container</a>, and the last member of
+      <var title="">sublist</var> is not a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code>, remove the first member of <var title="">node
+      list</var> and append it to <var title="">sublist</var>.
+    </ol>
+
+    <li><a href=#wrap>Wrap</a> <var title="">sublist</var>, with <a href=#sibling-criteria>sibling
+    criteria</a> matching any <a href=#html-element>HTML element</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a>
+    <var title="">value</var> and no attributes, and <a href=#new-parent-instructions>new parent
+    instructions</a> returning the result of running <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement(<var title="">value</var>)</a></code> on
     the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>.
   </ol>
 </ol>

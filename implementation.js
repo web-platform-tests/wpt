@@ -582,17 +582,38 @@ function wrap(nodeList, siblingCriteria, newParentInstructions) {
 	// "Let original parent be the parent of the first member of node list."
 	var originalParent = nodeList[0].parentNode;
 
-	// "If new parent is before the first member of node list in tree order,
-	// then for each node in node list, append node as the last child of new
-	// parent, preserving ranges."
+	// "If new parent is before the first member of node list in tree order:"
 	if (isBefore(newParent, nodeList[0])) {
+		// "If the last child of new parent and the first member of node list
+		// are both inline nodes, and the last child of new parent is not a br,
+		// call createElement("br") on the ownerDocument of new parent and
+		// append the result as the last child of new parent."
+		if (isInlineNode(newParent.lastChild)
+		&& isInlineNode(nodeList[0])
+		&& !isHtmlElement(newParent.lastChild, "BR")) {
+			newParent.appendChild(newParent.ownerDocument.createElement("br"));
+		}
+
+		// "For each node in node list, append node as the last child of new
+		// parent, preserving ranges."
 		for (var i = 0; i < nodeList.length; i++) {
 			movePreservingRanges(nodeList[i], newParent, -1);
 		}
 
-	// "Otherwise, for each node in node list, in reverse order, insert node as
-	// the first child of new parent, preserving ranges."
+	// "Otherwise:"
 	} else {
+		// "If the first child of new parent and the last member of node list
+		// are both inline nodes, and the last member of node list is not a br,
+		// call createElement("br") on the ownerDocument of new parent and
+		// insert the result as the first child of new parent."
+		if (isInlineNode(newParent.firstChild)
+		&& isInlineNode(nodeList[nodeList.length - 1])
+		&& !isHtmlElement(nodeList[nodeList.length - 1], "BR")) {
+			newParent.insertBefore(newParent.ownerDocument.createElement("br"), newParent.firstChild);
+		}
+
+		// "For each node in node list, in reverse order, insert node as the
+		// first child of new parent, preserving ranges."
 		for (var i = nodeList.length - 1; i >= 0; i--) {
 			movePreservingRanges(nodeList[i], newParent, 0);
 		}
@@ -608,6 +629,16 @@ function wrap(nodeList, siblingCriteria, newParentInstructions) {
 	// criteria:"
 	if (isEditable(newParent.nextSibling)
 	&& siblingCriteria(newParent.nextSibling)) {
+		// "If new parent's last child and new parent's nextSibling's first
+		// child are both inline nodes, and new parent's last child is not a
+		// br, call createElement("br") on the ownerDocument of new parent and
+		// append the result as the last child of new parent."
+		if (isInlineNode(newParent.lastChild)
+		&& isInlineNode(newParent.nextSibling.firstChild)
+		&& !isHtmlElement(newParent.lastChild, "BR")) {
+			newParent.appendChild(newParent.ownerDocument.createElement("br"));
+		}
+
 		// "While new parent's nextSibling has children, append its first child
 		// as the last child of new parent, preserving ranges."
 		while (newParent.nextSibling.hasChildNodes()) {
@@ -2492,43 +2523,97 @@ function myExecCommand(command, showUI, value, range) {
 				"TBODY", "TD", "TH", "THEAD", "TR", "UL"]);
 		});
 
-		// "While node list is not empty:"
-		while (nodeList.length) {
-			// "If the first member of node list is a single-line container,
-			// set the tag name of the first member of node list to value, then
-			// remove the first member from node list and continue this loop
-			// from the beginning."
-			if (isHtmlElement(nodeList[0], singleLineContainerNames)) {
-				setTagName(nodeList[0], value);
-				nodeList.shift();
-				continue;
-			}
+		// "If value is "div" or "p", then while node list is not empty:"
+		if (value == "div" || value == "p") {
+			while (nodeList.length) {
+				// "If the first member of node list is a single-line
+				// container, set the tag name of the first member of node list
+				// to value, then remove the first member from node list and
+				// continue this loop from the beginning."
+				if (isHtmlElement(nodeList[0], singleLineContainerNames)) {
+					setTagName(nodeList[0], value);
+					nodeList.shift();
+					continue;
+				}
 
-			// "Let sublist be an empty list of nodes."
-			var sublist = [];
+				// "Let sublist be an empty list of nodes."
+				var sublist = [];
 
-			// "Remove the first member of node list and append it to
-			// sublist."
-			sublist.push(nodeList.shift());
-
-			// "While node list is not empty, and the first member of node list
-			// is the nextSibling of the last member of sublist, and the first
-			// member of node list is not a single-line container, and the last
-			// member of sublist is not a br, remove the first member of node
-			// list and append it to sublist."
-			while (nodeList.length
-			&& nodeList[0] == sublist[sublist.length - 1].nextSibling
-			&& !isHtmlElement(nodeList[0], singleLineContainerNames)
-			&& !isHtmlElement(sublist[sublist.length - 1], "BR")) {
+				// "Remove the first member of node list and append it to
+				// sublist."
 				sublist.push(nodeList.shift());
+
+				// "While node list is not empty, and the first member of node
+				// list is the nextSibling of the last member of sublist, and
+				// the first member of node list is not a single-line
+				// container, and the last member of sublist is not a br,
+				// remove the first member of node list and append it to
+				// sublist."
+				while (nodeList.length
+				&& nodeList[0] == sublist[sublist.length - 1].nextSibling
+				&& !isHtmlElement(nodeList[0], singleLineContainerNames)
+				&& !isHtmlElement(sublist[sublist.length - 1], "BR")) {
+					sublist.push(nodeList.shift());
+				}
+
+				// "Wrap sublist, with sibling criteria matching nothing and
+				// new parent instructions returning the result of running
+				// createElement(value) on the context object."
+				wrap(sublist,
+					function() { return false },
+					function() { return document.createElement(value) });
 			}
 
-			// "Wrap sublist, with sibling criteria matching nothing and
-			// new parent instructions returning the result of running
-			// createElement(value) on the context object."
-			wrap(sublist,
-				function() { return false },
-				function() { return document.createElement(value) });
+		// "Otherwise, while node list is not empty:"
+		} else {
+			while (nodeList.length) {
+				var sublist;
+
+				// "If the first member of node list is a single-line
+				// container:"
+				if (isHtmlElement(nodeList[0], singleLineContainerNames)) {
+					// "Let sublist be the children of the first member of node
+					// list."
+					sublist = [].slice.call(nodeList[0].childNodes);
+
+					// "Remove the first member of node list from its parent,
+					// preserving its descendants."
+					removePreservingDescendants(nodeList[0]);
+
+					// "Remove the first member from node list."
+					nodeList.shift();
+
+				// "Otherwise:"
+				} else {
+					// "Let sublist be an empty list of nodes."
+					sublist = [];
+
+					// "Remove the first member of node list and append it to
+					// sublist."
+					sublist.push(nodeList.shift());
+
+					// "While node list is not empty, and the first member of
+					// node list is the nextSibling of the last member of
+					// sublist, and the first member of node list is not a
+					// single-line container, and the last member of sublist is
+					// not a br, remove the first member of node list and
+					// append it to sublist."
+					while (nodeList.length
+					&& nodeList[0] == sublist[sublist.length - 1].nextSibling
+					&& !isHtmlElement(nodeList[0], singleLineContainerNames)
+					&& !isHtmlElement(sublist[sublist.length - 1], "BR")) {
+						sublist.push(nodeList.shift());
+					}
+				}
+
+				// "Wrap sublist, with sibling criteria matching any HTML
+				// element with local name value and no attributes, and new
+				// parent instructions returning the result of running
+				// createElement(value) on the context object."
+				wrap(sublist,
+					function(node) { return isHtmlElement(node, value.toUpperCase()) && !node.attributes.length },
+					function() { return document.createElement(value) });
+			}
 		}
 		break;
 

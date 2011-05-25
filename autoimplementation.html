@@ -716,6 +716,16 @@ var tests = {
 		'<p>[foo<blockquote><p>bar</blockquote><p>baz]<p>extra',
 		'<blockquote><p>foo</blockquote><p>[bar]<blockquote><p>baz</blockquote><p>extra',
 
+		'<blockquote>foo[bar]<br>baz</blockquote><p>extra',
+		'<blockquote>foo[bar<br>b]az</blockquote><p>extra',
+		'<blockquote>foo[bar]</blockquote>baz<p>extra',
+		'<blockquote>foo[bar</blockquote>b]az<p>extra',
+		'[foo]<blockquote>bar</blockquote><p>extra',
+		'[foo<blockquote>b]ar</blockquote><p>extra',
+		'foo<blockquote>bar</blockquote>[baz]<p>extra',
+		'[foo<blockquote>bar</blockquote>baz]<p>extra',
+		'<blockquote>foo</blockquote>[bar]<blockquote>baz</blockquote><p>extra',
+
 		// IE:
 		'<blockquote style="margin-right: 0" dir="ltr"><p>foo[bar]</p><p>baz</p></blockquote><p>extra',
 		'<blockquote style="margin-right: 0" dir="ltr"><p>foo[bar</p><p>b]az</p></blockquote><p>extra',

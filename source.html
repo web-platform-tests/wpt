@@ -442,13 +442,37 @@ instructions</dfn>:
   <var>node list</var>.
 
   <li>If <var>new parent</var> is before the first member of <var>node
-  list</var> in [[treeorder]], then for each <var>node</var> in <var>node
-  list</var>, append <var>node</var> as the last [[child]] of <var>new
-  parent</var>, <span>preserving ranges</span>.
+  list</var> in [[treeorder]]:
 
-  <li>Otherwise, for each <var>node</var> in <var>node list</var>, <em>in
-  reverse order</em>, insert <var>node</var> as the first [[child]] of <var>new
-  parent</var>, <span>preserving ranges</span>.
+  <ol>
+    <li>If the last [[child]] of <var>new parent</var> and the first member of
+    <var>node list</var> are both <span title="inline node">inline
+    nodes</span>, and the last [[child]] of <var>new parent</var> is not a
+    [[br]], call <code data-anolis-spec=domcore
+    title=dom-Document-createElement>createElement("br")</code> on the
+    [[ownerdocument]] of <var>new parent</var> and append the result as the
+    last [[child]] of <var>new parent</var>.
+
+    <li>For each <var>node</var> in <var>node list</var>, append
+    <var>node</var> as the last [[child]] of <var>new parent</var>,
+    <span>preserving ranges</span>.
+  </ol>
+
+  <li>Otherwise:
+
+  <ol>
+    <li>If the first [[child]] of <var>new parent</var> and the last member of
+    <var>node list</var> are both <span title="inline node">inline
+    nodes</span>, and the last member of <var>node list</var> is not a [[br]],
+    call <code data-anolis-spec=domcore
+    title=dom-Document-createElement>createElement("br")</code> on the
+    [[ownerdocument]] of <var>new parent</var> and insert the result as the
+    first [[child]] of <var>new parent</var>.
+
+    <li>For each <var>node</var> in <var>node list</var>, <em>in reverse
+    order</em>, insert <var>node</var> as the first [[child]] of <var>new
+    parent</var>, <span>preserving ranges</span>.
+  </ol>
 
   <li>If <var>original parent</var> is <span>editable</span> and has no
   [[children]], remove it from its [[parent]].
@@ -461,6 +485,14 @@ instructions</dfn>:
   to merge them in this case. -->
 
   <ol>
+    <li>If <var>new parent</var>'s last [[child]] and <var>new parent</var>'s
+    [[nextsibling]]'s first [[child]] are both <span title="inline node">inline
+    nodes</span>, and <var>new parent</var>'s last [[child]] is not a [[br]],
+    call <code data-anolis-spec=domcore
+    title=dom-Document-createElement>createElement("br")</code> on the
+    [[ownerdocument]] of <var>new parent</var> and append the result as the
+    last [[child]] of <var>new parent</var>.
+
     <li>While <var>new parent</var>'s [[nextsibling]] has [[children]], append
     its first [[child]] as the last [[child]] of <var>new parent</var>,
     <span>preserving ranges</span>.
@@ -583,7 +615,7 @@ in Opera 11. -->
 instructions as arguments.  When <code>queryCommandState()</code> is invoked,
 the user agent must return the <span>state</span> for <var>command</var>.  When
 <code>queryCommandValue()</code> is invoked, the user agent must return the
-<span>value</span> for <var>command</var> 
+<span>value</span> for <var>command</var>.
 
 <p>Most <span title=command>commands</span> act on the <dfn>active range</dfn>.
 This is defined to be the first [[range]] in the [[selection]] given by calling
@@ -2301,9 +2333,9 @@ is <span>effectively contained</span> in the <span>active range</span> has
 <ol>
   <li><span>Decompose</span> the <span>active range</span>, and let <var>node
   list</var> be the result.
-  
+
   <li>Let <var>state</var> be the <span>state</span>.
-  
+
   <li><span>Set the value</span> of each [[node]] in <var>node list</var> to
   "baseline".
 
@@ -2326,9 +2358,9 @@ is <span>effectively contained</span> in the <span>active range</span> has
 <ol>
   <li><span>Decompose</span> the <span>active range</span>, and let <var>node
   list</var> be the result.
-  
+
   <li>Let <var>state</var> be the <span>state</span>.
-  
+
   <li><span>Set the value</span> of each [[node]] in <var>node list</var> to
   "baseline".
 
@@ -3547,32 +3579,49 @@ sense for <address>/<h*>/<pre>, but other browsers don't do it.
   "header", "hgroup", "li", "nav", "ol", "section", "table", "tbody", "td",
   "th", "thead", "tr", or "ul".
 
-  <li>While <var>node list</var> is not empty:
+  <!--
+  We have two different behaviors, one for div and p and one for everything
+  else.  The basic difference is that for div and p, we assume that it should
+  be one line per element, while for other elements, we put in multiple lines
+  separated by <br>.  So if you do formatBlock to p on
+
+    <div>foo</div><div>bar</div> or
+    foo<br>bar
+
+  you get
+
+    <p>foo</p><p>bar</p>
+
+  but formatBlock to h1 will get you
+
+    <h1>foo<br>bar</h1>.
+
+  IE9 will just change the elements as they are, so it gives
+  <p>foo</p><p>bar</p> and <h1>foo</h1><h1>bar</h1> for
+  <div>foo</div><div>bar</div>, but <p>foo<br>bar</p> and <h1>foo<br>bar</h1>
+  for foo<br>bar.  This is unreasonable, but the two possible inputs here look
+  identical to the user and might have been produced by identical user input.
+
+  Firefox 5.0a2 will give results like <p>foo</p><p>bar</p> or
+  <h1>foo</h1><h1>bar</h1> no matter what (modulo oddities in its handling of
+  divs).  Opera 11.10 is similar, except it leaves a trailing <br> in the first
+  element.
+
+  Chrome 13 dev will give results like <p>foo<br>bar</p> or <h1>foo<br>bar</h1>
+  no matter what.
+
+  The specced behavior is a compromise between the existing behaviors,
+  predicated on the fact that <h1>foo</h1><h1>bar</h1> almost never makes
+  sense, and <p>foo<br>bar</p> isn't usually what's wanted either.
+  -->
+  <li>If <var>value</var> is "div" or "p", then while <var>node list</var> is
+  not empty:
 
   <ol>
     <li>If the first member of <var>node list</var> is a <span>single-line
     container</span>, <span>set the tag name</span> of the first member of
     <var>node list</var> to <var>value</var>, then remove the first member from
     <var>node list</var> and continue this loop from the beginning.
-
-    <div class=XXX>
-    <p>This implies that
-
-    <xmp><p>foo</p><p>bar</p></xmp>
-
-    <p>becomes (for instance)
-
-    <xmp><h1>foo</h1><h1>bar</h1></xmp>
-
-    <p>even though
-
-    <xmp><h1>foo<br>bar</h1></xmp>
-
-    <p>would probably make more sense.  WebKit has the latter behavior in all
-    cases.  Perhaps we should adopt WebKit's behavior for things where it
-    rarely makes sense to have two in a row, while keeping the current behavior
-    for divs and paragraphs?
-    </div>
 
     <li>Let <var>sublist</var> be an empty list of [[nodes]].
 
@@ -3589,6 +3638,47 @@ sense for <address>/<h*>/<pre>, but other browsers don't do it.
     <li><span>Wrap</span> <var>sublist</var>, with <span>sibling
     criteria</span> matching nothing and <span>new parent instructions</span>
     returning the result of running <code data-anolis-spec=domcore
+    title=dom-Document-createElement>createElement(<var>value</var>)</code> on
+    the [[contextobject]].
+  </ol>
+
+  <li>Otherwise, while <var>node list</var> is not empty:
+
+  <ol>
+    <li>If the first member of <var>node list</var> is a <span>single-line
+    container</span>:
+
+    <ol>
+      <li>Let <var>sublist</var> be the [[children]] of the first member of
+      <var>node list</var>.
+
+      <li>Remove the first member of <var>node list</var> from its [[parent]],
+      <span>preserving its descendants</span>.
+
+      <li>Remove the first member from <var>node list</var>.
+    </ol>
+
+    <li>Otherwise:
+
+    <ol>
+      <li>Let <var>sublist</var> be an empty list of [[nodes]].
+
+      <li>Remove the first member of <var>node list</var> and append it to
+      <var>sublist</var>.
+
+      <li>While <var>node list</var> is not empty, and the first member of
+      <var>node list</var> is the [[nextsibling]] of the last member of
+      <var>sublist</var>, and the first member of <var>node list</var> is not a
+      <span>single-line container</span>, and the last member of
+      <var>sublist</var> is not a [[br]], remove the first member of <var>node
+      list</var> and append it to <var>sublist</var>.
+    </ol>
+
+    <li><span>Wrap</span> <var>sublist</var>, with <span>sibling
+    criteria</span> matching any <span>HTML element</span> with [[localname]]
+    <var>value</var> and no attributes, and <span>new parent
+    instructions</span> returning the result of running <code
+    data-anolis-spec=domcore
     title=dom-Document-createElement>createElement(<var>value</var>)</code> on
     the [[contextobject]].
   </ol>

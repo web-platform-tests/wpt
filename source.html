@@ -3916,12 +3916,18 @@ splitting up parents to ensure validity . . . -->
   <li>Run <code data-anolis-spec=domrange
   title=dom-Range-insertNode>insertNode(<var>hr</var>)</code> on
   <var>range</var>.
-  <!-- This might put it in an inline element, where it's invalid.  This is
-  what IE9 and Chrome 12 dev appear to do.  Firefox 4.0 breaks up inline
-  ancestors, and Opera 11.10 seems to put it before the first inline ancestor
-  instead of where the cursor is.  Breaking up elements is kind of evil, so
-  I'll go with IE/WebKit.  Even though it produces invalid markup, it does
-  still work. -->
+
+  <li><span>Fix disallowed ancestors</span> of <var>hr</var>.
+  <!--
+  IE9 seems to be acting flaky and I can't get it to work here, so I didn't try
+  testing it here.  Firefox 5.0a2 breaks up any ancestors that can contain only
+  phrasing content, like <b> and so on.  Chrome 13 dev doesn't bother fixing
+  ancestors at all, which can lead to unserializable DOMs like <hr> inside <p>.
+  Opera 11.10 acts very weirdly, sometimes mysteriously sticking the <hr>
+  before some ancestor, sometimes breaking up ancestors like <div> totally
+  unnecessarily.  None of these match the "fix disallowed ancestors" rules at
+  the time of this writing.
+  -->
 
   <li>Let <var>selection</var> be the result of running <code
   data-anolis-spec=domrange

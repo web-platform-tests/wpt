@@ -2918,6 +2918,9 @@ function myExecCommand(command, showUI, value, range) {
 		// "Run insertNode(hr) on the range."
 		range.insertNode(hr);
 
+		// "Fix disallowed ancestors of hr."
+		fixDisallowedAncestors(hr);
+
 		// "Run collapse() on the Selection, with first argument equal to the
 		// parent of hr and the second argument equal to one plus the index of
 		// hr."

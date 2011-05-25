@@ -853,6 +853,7 @@ var tests = {
 		'foo[]bar',
 		'<span>foo</span>{}<span>bar</span>',
 		'<span>foo[</span><span>]bar</span>',
+		'<p>foo[bar<p>baz]quz',
 		'<div><b>foo</b>{}<b>bar</b></div>',
 		'<div><b>foo[</b><b>]bar</b></div>',
 		'<div><b>foo</b>{<b>bar</b>}<b>baz</b></div>',
@@ -862,7 +863,9 @@ var tests = {
 		'foo[bar]baz',
 		'foo<b>{bar}</b>baz',
 		'<p>foo[bar]baz</p>',
-		'<p>foo[bar<p>baz]quz',
+		'<p id=abc>foo[bar]baz</p>',
+		'<h1>foo[bar]baz</h1>',
+		'<p>foo<b>b[a]r</b>baz</p>',
 	],
 	insertimage: [
 		'foo[]bar',

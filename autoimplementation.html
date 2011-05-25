@@ -861,6 +861,8 @@ var tests = {
 		["abc", 'foo[bar]baz'],
 		'foo[bar]baz',
 		'foo<b>{bar}</b>baz',
+		'<p>foo[bar]baz</p>',
+		'<p>foo[bar<p>baz]quz',
 	],
 	insertimage: [
 		'foo[]bar',
@@ -869,6 +871,7 @@ var tests = {
 		["", 'foo[bar]baz'],
 		'foo[bar]baz',
 		'foo<b>{bar}</b>baz',
+		'<p>foo[bar<p>baz]quz',
 	],
 	insertorderedlist: [
 		'foo[]bar',

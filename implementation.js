@@ -810,27 +810,28 @@ function isAllowedChild(child, parent_) {
 	if (isHtmlElement(parent_)) {
 		// "If child is "a", and parent or some ancestor of parent is an a,
 		// return false."
-		if (child == "a") {
-			var ancestor = parent_;
-			while (ancestor) {
-				if (isHtmlElement(ancestor, "a")) {
-					return false;
-				}
-				ancestor = ancestor.parentNode;
-			}
-		}
-
+		//
 		// "If child is one of the prohibited paragraph children and parent or
+		// some ancestor of parent is a p, return false."
+		//
+		// "If child is "h1", "h2", "h3", "h4", "h5", or "h6", and parent or
 		// some ancestor of parent is an HTML element with local name "h1",
-		// "h2", "h3", "h4", "h5", "h6", or "p", return false."
-		if (prohibitedParagraphChildren.indexOf(child) != -1) {
-			var ancestor = parent_;
-			while (ancestor) {
-				if (isHtmlElement(ancestor, ["h1", "h2", "h3", "h4", "h5", "h6", "p"])) {
-					return false;
-				}
-				ancestor = ancestor.parentNode;
+		// "h2", "h3", "h4", "h5", or "h6", return false."
+		var ancestor = parent_;
+		while (ancestor) {
+			if (child == "a" && isHtmlElement(ancestor, "a")) {
+				return false;
 			}
+			if (prohibitedParagraphChildren.indexOf(child) != -1
+			&& isHtmlElement(ancestor, "p")) {
+				return false;
+			}
+			if (/^h[1-6]$/.test(child)
+			&& isHtmlElement(ancestor)
+			&& /^H[1-6]$/.test(ancestor.tagName)) {
+				return false;
+			}
+			ancestor = ancestor.parentNode;
 		}
 
 		// "Let parent be the local name of parent."
@@ -890,10 +891,11 @@ function isAllowedChild(child, parent_) {
 	var table = [
 		[["a"], ["a"]],
 		[["dd", "dt"], ["dd", "dt"]],
+		[["h1", "h2", "h3", "h4", "h5", "h6"], ["h1", "h2", "h3", "h4", "h5", "h6"]],
 		[["li"], ["li"]],
 		[["nobr"], ["nobr"]],
+		[["p"], prohibitedParagraphChildren],
 		[["td", "th"], ["caption", "col", "colgroup", "tbody", "td", "tfoot", "th", "thead", "tr"]],
-		[["h1", "h2", "h3", "h4", "h5", "h6", "p"], prohibitedParagraphChildren],
 	];
 	for (var i = 0; i < table.length; i++) {
 		if (table[i][0].indexOf(parent_) != -1

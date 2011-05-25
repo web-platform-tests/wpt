@@ -263,14 +263,33 @@ think. -->
 <p>A [[node]] or string <var>child</var> is an <dfn>allowed child</dfn> of a
 [[node]] or string <var>parent</var> if the following algorithm returns true:
 
-<p class=XXX>This is very ad hoc and might need to be rethought.  We can't use
-the HTML spec's definitions because those are too complicated, they don't take
-obsolete elements into account, and they're sometimes too restrictive.  (We
-don't like having to contort the DOM to ensure that it's valid, because it can
-have unwanted side effects, so we want to minimize the number of cases we
-disallow.)  Mostly this list covers only things that don't serialize as
-text/html.  It's not intended to be complete, and in particular, it omits lots
-of cases that aren't likely to come up for us.
+<div class=XXX>
+<p>For the most part, right now we only disallow children when they wouldn't
+serialize to text/html, or in a couple of other cases where they'd behave very
+strangely (like a list item that's not the child of a list).  It could well
+make sense to disallow children when they would be invalid per HTML5, but this
+has a few problems:
+
+<ol>
+  <li>We need to handle invalid elements like center, which have no conformance
+  requirements but can interfere with serialization (center cannot descend from
+  p).
+
+  <li>HTML5 validity requirements are not especially stable, so it would be
+  harder to stay up-to-date, while the parsing algorithm is quite stable.
+
+  <li>Sometimes users give instructions that have to produce invalid DOMs to
+  get the expected effect, like indenting the first item of a list.
+
+  <li>Making more children disallowed means we have to split parents more
+  often, and splitting parents can inevitably have side-effects, so we'd really
+  prefer to minimize it.
+</ol>
+
+<p>I didn't try to cover all serialization problems for now, particularly where
+they seemed implausible.  Whatever happens, I'm pretty sure I'll revise this
+substantially sometime in the future, but I'm not sure exactly what to aim for.
+</div>
 
 <ol>
   <li>If <var>parent</var> is "colgroup", "table", "tbody", "tfoot", "thead",
@@ -303,11 +322,14 @@ of cases that aren't likely to come up for us.
 
     <li>If <var>child</var> is one of the <span>prohibited paragraph
     children</span> and <var>parent</var> or some [[ancestor]] of
-    <var>parent</var> is an <span>HTML element</span> with [[localname]] "h1",
-    "h2", "h3", "h4", "h5", "h6", or "p", return false.
-    <!-- This cannot be serialized as text/html if the parent is a p, or if the
-    parent and child are both h*.  Something like <h1>foo<p>bar</p></h1> will
-    actually work, but while we're here, we may as well disallow it. -->
+    <var>parent</var> is a [[p]], return false.
+    <!-- This generally cannot be serialized either. -->
+
+    <li>If <var>child</var> is "h1", "h2", "h3", "h4", "h5", or "h6", and
+    <var>parent</var> or some [[ancestor]] of <var>parent</var> is an
+    <span>HTML element</span> with [[localname]] "h1", "h2", "h3", "h4", "h5",
+    or "h6", return false.
+    <!-- Nor this. -->
 
     <li>Let <var>parent</var> be the [[localname]] of <var>parent</var>.
     <!-- Further requirements only care about the parent itself, not ancestors,
@@ -351,11 +373,11 @@ of cases that aren't likely to come up for us.
     <tr><th>Parent <th>Prohibited children
     <tr><td>a <td>a
     <tr><td>dd, dt <td>dd, dt
+    <tr><td>h1, h2, h3, h4, h5, h6 <td>h1, h2, h3, h4, h5, h6
     <tr><td>li <td>li
     <tr><td>nobr <td>nobr
+    <tr><td>p <td>All <span>prohibited paragraph children</span>
     <tr><td>td, th <td>caption, col, colgroup, tbody, td, tfoot, th, thead, tr
-    <tr><td>h1, h2, h3, h4, h5, h6, p <td>All <span>prohibited paragraph
-      children</span>
   </table>
 
   <li>Return true.

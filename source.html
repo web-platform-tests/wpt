@@ -667,6 +667,144 @@ instructions</dfn>:
   <li>Return <var>new parent</var>.
 </ol>
 
+<p>To <dfn>delete the selection</dfn>:
+
+<ol>
+  <li>Let <var>range</var> be the <span>active range</span>.
+
+  <li>If <var>range</var> is null, abort these steps and do nothing.
+
+  <li>If no [[node]] is [[contained]] in <var>range</var>, and
+  either <var>range</var>'s [[startnode]] is not a [[text]] or [[comment]] node
+  or <var>range</var>'s [[startoffset]] is its [[startnode]]'s [[nodelength]],
+  and either <var>range</var>'s [[endnode]] is not a [[text]] or [[comment]]
+  node or <var>range</var>'s [[endoffset]] is 0, call <code
+  data-anolis-spec=domrange
+  title=dom-Range-deleteContents>deleteContents()</code> on <var>range</var>
+  and abort these steps.
+  <!-- This is precisely the case where deleteContents() will not alter the
+  DOM, just collapse the selection.  I think. -->
+
+  <p class=XXX>Is it possible for subsequent steps to make the range's start go
+  past its end or vice versa, or does this step successfully prevent that case?
+
+  <!-- Drill the range down to the lowest possible level, so we don't delete
+  more elements than necessary. -->
+  <li>While the [[startnode]] of <var>range</var> has at least one [[child]]:
+  <!--
+  We don't want to keep going when we hit an element with no children, because
+  then we'd do something like
+
+    foo{<br />bar]
+    -> foo<br>{</br>bar]
+    -> foo<br />{bar]
+    -> foo<br />[bar]
+
+  and we deselected the <br>.
+  -->
+
+  <ol>
+    <li>If <var>range</var>'s [[startoffset]] is its [[startnode]]'s
+    [[nodelength]], and its [[startnode]]'s [[parent]] is not null, set
+    <var>range</var>'s [[rangestart]] to ([[parent]] of [[startnode]], 1 +
+    [[index]] of [[startnode]]) and continue this loop from the beginning.
+    <!--
+    For instance:
+
+      <b>foo[</b><i>bar]</i>
+      -> <b>foo</b>{<i>bar]</i>
+
+    Then the next step will make it <b>foo</b><i>[bar]</i>.
+    -->
+
+    <li>If <var>range</var>'s [[startoffset]] is its [[startnode]]'s
+    [[nodelength]], break from this loop.
+    <!-- This happens if the first step brought us all the way up to the root.
+    The step immediately after this loop will bring us back down again.  -->
+
+    <li>Let <var>reference node</var> be the [[child]] of <var>range</var>'s
+    [[startnode]] with [[index]] equal to its [[startoffset]].
+
+    <li>If <var>reference node</var> is an [[element]] with no [[children]],
+    break from this loop.
+    <!-- Don't descend into it, since then it won't get deleted even if it's
+    selected. -->
+
+    <li>Set <var>range</var>'s [[rangestart]] to (<var>reference node</var>,
+    0).
+  </ol>
+
+  <!-- Corner case: maybe we went all the way up to the end of the root. -->
+  <li>If <var>range</var>'s [[startoffset]] is the [[nodelength]] of its
+  [[startnode]], then while <var>range</var>'s [[startnode]] has [[children]]
+  and its last [[child]] is not an [[element]] with no [[children]], set
+  <var>range</var>'s [[rangestart]] to (last [[child]] of [[startnode]],
+  [[nodelength]] of last [[child]] of [[startnode]]).
+
+  <li>While the [[endnode]] of <var>range</var> has at least one [[child]]:
+
+  <ol>
+    <li>If <var>range</var>'s [[endoffset]] is 0, and its [[endnode]]'s
+    [[parent]] is not null, set <var>range</var>'s [[rangeend]] to ([[parent]]
+    of [[endnode]], [[index]] of [[endnode]]) and continue this loop from the
+    beginning.
+
+    <li>If <var>range</var>'s [[endoffset]] is 0, break from this loop.
+
+    <li>Let <var>reference node</var> be the [[child]] of <var>range</var>'s
+    [[endnode]] with [[index]] equal to its [[endoffset]] minus one.
+
+    <li>If <var>reference node</var> is an [[element]] with no [[children]],
+    break from this loop.
+
+    <li>Set <var>range</var>'s [[rangeend]] to (<var>reference node</var>,
+    [[nodelength]] of <var>reference node</var>).
+  </ol>
+
+  <li>If <var>range</var>'s [[endoffset]] is 0, then while <var>range</var>'s
+  [[endnode]] has [[children]] and its first [[child]] is not an [[element]]
+  with no [[children]], set <var>range</var>'s [[rangeend]] to (first [[child]]
+  of [[endnode]], 0).
+
+  <li>Let <var>start block</var> be the [[rangestart]] [[bpnode]] of
+  <var>range</var>.
+
+  <li>While <var>start block</var> is not an <span>HTML element</span> or its
+  [[localname]] is not a <span title="prohibited paragraph children">prohibited
+  paragraph child</span>, set <var>start block</var> to its [[parent]].
+
+  <p class=XXX>I'm uncertain about the use of prohibited paragraph children
+  here.  I'm using it mostly because it's convenient and seems relatively
+  sensible.  If we really want to use it, we probably want to change its name.
+
+  <li>Let <var>end block</var> be the [[rangeend]] [[bpnode]] of
+  <var>range</var>.
+
+  <li>While <var>end block</var> is not an <span>HTML element</span> or its
+  [[localname]] is not a <span title="prohibited paragraph children">prohibited
+  paragraph child</span>, set <var>end block</var> to its [[parent]].
+
+  <li>Call <code data-anolis-spec=domrange
+  title=dom-Range-deleteContents>deleteContents()</code> on <var>range</var>.
+
+  <p class=XXX>This might blow up non-editable stuff.
+
+  <li>If <var>start block</var> or its [[parent]] is null, or <var>end
+  block</var> or its [[parent]] is null, or <var>start block</var> is an
+  [[ancestor]] or [[descendant]] of <var>end block</var>, abort these steps.
+
+  <li>Set the [[rangestart]] and [[rangeend]] of <var>range</var> to
+  (<var>start block</var>, [[nodelength]] of <var>start block</var>).
+
+  <li>While <var>end block</var> has [[children]], append the first [[child]]
+  of <var>end block</var> to <var>start block</var>, <span>preserving
+  ranges</span>.
+
+  <li>While <var>end block</var> has no [[children]], let <var>parent</var> be
+  the [[parent]] of <var>end block</var>, then remove <var>end block</var> from
+  <var>parent</var>, then set <var>end block</var> to <var>parent</var>.
+</ol>
+
 <p>To move a [[node]] to a new location, <dfn>preserving ranges</dfn>, remove
 the [[node]] from its original [[parent]] (if any), then insert it in the new
 location.  In doing so, however, ignore the regular [[rangemutationrules]], and
@@ -1091,7 +1229,7 @@ title>splitText()</code>.
 
   <li>While the [[rangeend]] [[bpoffset]] of <var>cloned range</var> equals the
   [[nodelength]] of its [[rangeend]] [[bpnode]], and the [[parent]] of
-  <var>clone range</var>'s [[rangeend]] [[bpnode]] is not null, set the
+  <var>cloned range</var>'s [[rangeend]] [[bpnode]] is not null, set the
   [[rangeend]] of <var>cloned range</var> to ([[parent]] of [[rangeend]]
   [[bpnode]], 1 + [[index]] of [[rangeend]] [[bpnode]]).
 
@@ -2233,8 +2371,7 @@ For color parsing, see the comment for foreColor. -->
 
   <li>Let <var>range</var> be the <span>active range</span>.
 
-  <li>Run <code data-anolis-spec=domrange
-  title=dom-Range-deleteContents>deleteContents()</code> on <var>range</var>.
+  <li><span>Delete the selection</span>.
 
   <li>Let <var>img</var> be the result of calling <code
   data-anolis-spec=domcore

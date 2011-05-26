@@ -873,8 +873,31 @@ var tests = {
 		'<span>foo[</span><span>]bar</span>',
 		["", 'foo[bar]baz'],
 		'foo[bar]baz',
+
+		'foo<b>[bar]</b>baz',
 		'foo<b>{bar}</b>baz',
+		'foo{<b>bar</b>}baz',
+		'foo<span>[bar]</span>baz',
+		'foo<span>{bar}</span>baz',
+		'foo{<span>bar</span>}baz',
+		'<b>foo[bar</b><i>baz]quz</i>',
+		'<p>foo</p><p>[bar]</p><p>baz</p>',
+		'<p>foo</p><p>{bar}</p><p>baz</p>',
+		'<p>foo</p>{<p>bar</p>}<p>baz</p>',
+
 		'<p>foo[bar<p>baz]quz',
+		'<p>foo[bar<div>baz]quz</div>',
+		'<p>foo[bar<h1>baz]quz</h1>',
+		'<div>foo[bar</div><p>baz]quz',
+		'<blockquote>foo[bar</blockquote><pre>baz]quz</pre>',
+
+		'<p><b>foo[bar</b><p>baz]quz',
+		'<div><p>foo[bar</div><p>baz]quz',
+		'<p>foo[bar<blockquote><p>baz]quz<p>qoz</blockquote',
+		'<p>foo[bar<p style=color:red>baz]quz',
+		'<p>foo[bar<p><b>baz]quz</b>',
+
+		'<div><p>foo<p>[bar<p>baz]</div>',
 	],
 	insertorderedlist: [
 		'foo[]bar',

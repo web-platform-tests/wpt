@@ -302,8 +302,8 @@ function isContained(node, range) {
 }
 
 /**
- * Return all editable nodes contained in range that the provided function
- * returns true for, omitting any with an ancestor already being returned.
+ * Return all nodes contained in range that the provided function returns true
+ * for, omitting any with an ancestor already being returned.
  */
 function collectContainedNodes(range, condition) {
 	var node = range.startContainer;
@@ -332,7 +332,6 @@ function collectContainedNodes(range, condition) {
 	var nodeList = [];
 	while (isBefore(node, stop)) {
 		if (isContained(node, range)
-		&& isEditable(node)
 		&& condition(node)) {
 			nodeList.push(node);
 			node = nextNodeDescendants(node);
@@ -657,6 +656,180 @@ function wrap(nodeList, siblingCriteria, newParentInstructions) {
 
 	// "Return new parent."
 	return newParent;
+}
+
+// "This is defined to be the first range in the Selection given by calling
+// getSelection() on the context object, or null if there is no such range."
+function getActiveRange() {
+	if (getSelection().rangeCount) {
+		return getSelection().getRangeAt(0);
+	}
+	return null;
+}
+
+function deleteSelection() {
+	// "Let range be the active range."
+	var range = globalRange;
+
+	// "If range is null, abort these steps and do nothing."
+	if (!range) {
+		return;
+	}
+
+	// "If no node is contained in range, and either range's start node is not
+	// a Text or Comment node or range's start offset is its start node's
+	// length, and either range's end node is not a Text or Comment node or
+	// range's end offset is 0, call deleteContents() on range and abort these
+	// steps."
+	if (!collectContainedNodes(range, function() { return true }).length
+	&& ((range.startContainer.nodeType != Node.TEXT_NODE
+	&& range.startContainer.nodeType != Node.COMMENT_NODE)
+	|| range.startOffset == getNodeLength(range.startContainer))
+	&& ((range.endContainer.nodeType != Node.TEXT_NODE
+	&& range.endContainer.nodeType != Node.COMMENT_NODE)
+	|| range.endOffset == 0)) {
+		range.deleteContents();
+		return;
+	}
+
+	// "While the start node of range has at least one child:"
+	while (range.startContainer.hasChildNodes()) {
+		// "If range's start offset is its start node's length, and its start
+		// node's parent is not null, set range's start to (parent of start
+		// node, 1 + index of start node) and continue this loop from the
+		// beginning."
+		if (range.startOffset == getNodeLength(range.startContainer)
+		&& range.startContainer.parentNode) {
+			range.setStart(range.startContainer.parentNode, 1 + getNodeIndex(range.startContainer));
+			continue;
+		}
+
+		// "If range's start offset is its start node's length, break from this
+		// loop."
+		if (range.startOffset == getNodeLength(range.startContainer)) {
+			break;
+		}
+
+		// "Let reference node be the child of range's start node with index
+		// equal to its start offset."
+		var referenceNode = range.startContainer.childNodes[range.startOffset];
+
+		// "If reference node is an Element with no children, break from this
+		// loop."
+		if (referenceNode.nodeType == Node.ELEMENT_NODE
+		&& !referenceNode.hasChildNodes()) {
+			break;
+		}
+
+		// "Set range's start to (reference node, 0)."
+		range.setStart(referenceNode, 0);
+	}
+
+	// "If range's start offset is the length of its start node, then while
+	// range's start node has children and its last child is not an Element
+	// with no children, set range's start to (last child of start node, length
+	// of last child of start node)."
+	if (range.startOffset == getNodeLength(range.startContainer)) {
+		while (range.startContainer.hasChildNodes()
+		&& (range.lastChild.nodeType != Node.ELEMENT_NODE
+		|| range.lastChild.hasChildNodes())) {
+			range.setStart(range.startContainer.lastChild, getNodeLength(range.startContainer.lastChild));
+		}
+	}
+
+	// "While the end node of range has at least one child:"
+	while (range.endContainer.hasChildNodes()) {
+		// "If range's end offset is 0, and its end node's parent is not null,
+		// set range's end to (parent of end node, index of end node) and
+		// continue this loop from the beginning."
+		if (range.endOffset == 0
+		&& range.endContainer.parentNode) {
+			range.setEnd(range.endContainer.parentNode, getNodeIndex(range.endContainer));
+			continue;
+		}
+
+		// "If range's end offset is 0, break from this loop."
+		if (range.endOffset == 0) {
+			break;
+		}
+
+		// "Let reference node be the child of range's end node with index
+		// equal to its end offset minus one."
+		var referenceNode = range.endContainer.childNodes[range.endOffset - 1];
+
+		// "If reference node is an Element with no children, break from this
+		// loop."
+		if (referenceNode.nodeType == Node.ELEMENT_NODE
+		&& !referenceNode.hasChildNodes()) {
+			break;
+		}
+
+		// "Set range's end to (reference node, length of reference node)."
+		range.setEnd(referenceNode, getNodeLength(referenceNode));
+	}
+
+	// "If range's end offset is 0, then while range's end node has children
+	// and its first child is not an Element with no children, set range's end
+	// to (first child of end node, 0)."
+	if (range.endOffset == 0) {
+		while (range.endContainer.hasChildNodes()
+		&& (range.lastChild.nodeType != Node.ELEMENT_NODE
+		|| range.lastChild.hasChildNodes())) {
+			range.setEnd(range.endContainer.firstChild, 0);
+		}
+	}
+
+	// "Let start block be the start node of range."
+	var startBlock = range.startContainer;
+
+	// "While start block is not an HTML element or its local name is not a
+	// prohibited paragraph child, set start block to its parent."
+	while (!isHtmlElement(startBlock, prohibitedParagraphChildren)) {
+		startBlock = startBlock.parentNode;
+	}
+
+	// "Let end block be the end node of range."
+	var endBlock = range.endContainer;
+
+	// "While end block is not an HTML element or its local name is not a
+	// prohibited paragraph child, set end block to its parent."
+	while (!isHtmlElement(endBlock, prohibitedParagraphChildren)) {
+		endBlock = endBlock.parentNode;
+	}
+
+	// "Call deleteContents() on range."
+	range.deleteContents();
+
+	// "If start block or its parent is null, or end block or its parent is
+	// null, or start block is an ancestor or descendant of end block, abort
+	// these steps."
+	if (!startBlock
+	|| !startBlock.parentNode
+	|| !endBlock
+	|| !endBlock.parentNode
+	|| isAncestor(startBlock, endBlock)
+	|| isDescendant(startBlock, endBlock)) {
+		return;
+	}
+
+	// "Set the start and end of range to (start block, length of start
+	// block)."
+	range.setStart(startBlock, getNodeLength(startBlock));
+	range.setEnd(startBlock, getNodeLength(startBlock));
+
+	// "While end block has children, append the first child of end block to
+	// start block, preserving ranges."
+	while (endBlock.hasChildNodes()) {
+		movePreservingRanges(endBlock.firstChild, startBlock, -1);
+	}
+
+	// "While end block has no children, let parent be the parent of end block,
+	// then remove end block from parent, then set end block to parent."
+	while (!endBlock.hasChildNodes()) {
+		var parent_ = endBlock.parentNode;
+		parent_.removeChild(endBlock);
+		endBlock = parent_;
+	}
 }
 
 function removeExtraneousLineBreaksBefore(node) {
@@ -2699,7 +2872,8 @@ function myExecCommand(command, showUI, value, range) {
 		// "dd", "dl", "dt", "footer", "header", "hgroup", "li", "nav", "ol",
 		// "section", "table", "tbody", "td", "th", "thead", "tr", or "ul"."
 		nodeList = collectContainedNodes(newRange, function(node) {
-			return !isHtmlElement(node, ["ARTICLE", "ASIDE", "BLOCKQUOTE",
+			return isEditable(node)
+				&& !isHtmlElement(node, ["ARTICLE", "ASIDE", "BLOCKQUOTE",
 				"CAPTION", "COL", "COLGROUP", "DD", "DL", "DT", "FOOTER",
 				"HEADER", "HGROUP", "LI", "NAV", "OL", "SECTION", "TABLE",
 				"TBODY", "TD", "TH", "THEAD", "TR", "UL"]);
@@ -2942,8 +3116,8 @@ function myExecCommand(command, showUI, value, range) {
 			return;
 		}
 
-		// "Run deleteContents() on the range."
-		range.deleteContents();
+		// "Delete the selection."
+		deleteSelection();
 
 		// "Let img be the result of calling createElement("img") on the
 		// context object."

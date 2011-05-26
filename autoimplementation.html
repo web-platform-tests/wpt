@@ -5,7 +5,8 @@
 body { font-family: serif }
 .yes { color: green }
 .no { color: red }
-.yes, .no {
+.maybe { color: orange }
+.yes, .no, .maybe {
 	text-align: center;
 	vertical-align: middle;
 	font-size: 3em;
@@ -56,6 +57,15 @@ body > div > table > tbody > tr > td:last-child,
 body > div > table > tbody > tr > th:last-child {
 	width: 10%;
 }
+#toolbar {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 1.5em;
+	background: white;
+	border-bottom: 2px solid gray;
+}
 /* For testing */
 ol ol { list-style-type: lower-alpha }
 ol ol ol { list-style-type: lower-roman }
@@ -74,15 +84,19 @@ displayed as forwards or such.
 styleWithCSS false and the second is with it true.  (The second table is left
 blank in IE and Opera, which don't support styleWithCSS.)
 
-<p>
+<div id=toolbar>
 <!-- Note: this is completely not a hack at all. -->
 <style id=alerts>/* tr:not(.alert):not(:first-child) { display: none } */</style>
 
-<label><input id=alert-checkbox type=checkbox accesskey=a checked onclick='updateAlertRowStyle()'> Display rows without spec alerts</label>
+<label><input id=alert-checkbox type=checkbox accesskey=a checked onclick='updateAlertRowStyle()'> Display rows without spec <u>a</u>lerts</label>
+
+<label><input id=browser-checkbox type=checkbox accesskey=b checked> Run <u>b</u>rowser tests as well as spec tests</label>
 
 <script>
 // Confusingly, we're storing a string here, not a boolean.
 document.querySelector("#alert-checkbox").checked = localStorage["display-alerts"] != "false";
+document.querySelector("#browser-checkbox").checked = localStorage["display-browser-tests"] != "false";
+
 function updateAlertRowStyle() {
 	var checked = document.querySelector("#alert-checkbox").checked;
 	var style = document.querySelector("#alerts");
@@ -95,6 +109,7 @@ function updateAlertRowStyle() {
 }
 updateAlertRowStyle();
 </script>
+</div>
 
 <h1>Table of Contents</h1>
 <ul>
@@ -2102,6 +2117,11 @@ function doBrowserCell(tr, test, command, styleWithCss) {
 
 	var browserCell = document.createElement("td");
 	tr.appendChild(browserCell);
+	if (!document.querySelector("#browser-checkbox").checked) {
+		browserCell.textContent = "(skipped)";
+		return;
+	}
+
 	try {
 		var points = setupCell(browserCell, test);
 
@@ -2213,7 +2233,10 @@ function doSameCell(tr) {
 	} catch (e) {
 		exception = true;
 	}
-	if (!exception && normalizedSpecCell == normalizedBrowserCell) {
+	if (!document.querySelector("#browser-checkbox").checked) {
+		sameCell.className = "maybe";
+		sameCell.textContent = "?";
+	} else if (!exception && normalizedSpecCell == normalizedBrowserCell) {
 		sameCell.className = "yes";
 		sameCell.textContent = "\u2713";
 	} else {

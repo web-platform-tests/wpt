@@ -3084,6 +3084,22 @@ function myExecCommand(command, showUI, value, range) {
 		break;
 
 		case "inserthorizontalrule":
+		// "While range's start offset is 0 and its start node's parent is not
+		// null, set range's start to (parent of start node, index of start
+		// node)."
+		while (range.startOffset == 0
+		&& range.startContainer.parentNode) {
+			range.setStart(range.startContainer.parentNode, getNodeIndex(range.startContainer));
+		}
+
+		// "While range's end offset is the length of its end node, and its end
+		// node's parent is not null, set range's end to (parent of end node, 1
+		// + index of start node)."
+		while (range.endOffset == getNodeLength(range.endContainer)
+		&& range.endContainer.parentNode) {
+			range.setEnd(range.endContainer.parentNode, 1 + getNodeIndex(range.endContainer));
+		}
+
 		// "Run deleteContents() on the range."
 		range.deleteContents();
 

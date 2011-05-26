@@ -4064,8 +4064,19 @@ splitting up parents to ensure validity . . . -->
 <ol>
   <li>Let <var>range</var> be the <span>active range</span>.
 
+  <li>While <var>range</var>'s [[startoffset]] is 0 and its [[startnode]]'s
+  [[parent]] is not null, set <var>range</var>'s [[rangestart]] to ([[parent]]
+  of [[startnode]], [[index]] of [[startnode]]).
+
+  <li>While <var>range</var>'s [[endoffset]] is the [[nodelength]] of its
+  [[endnode]], and its [[endnode]]'s [[parent]] is not null, set
+  <var>range</var>'s [[rangeend]] to ([[parent]] of [[endnode]], 1 + [[index]]
+  of [[startnode]]).
+
   <li>Run <code data-anolis-spec=domrange
   title=dom-Range-deleteContents>deleteContents()</code> on <var>range</var>.
+
+  <p class=XXX>This might blow up non-contenteditable stuff.
 
   <li>Let <var>hr</var> be the result of calling <code
   data-anolis-spec=domcore

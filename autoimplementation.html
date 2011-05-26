@@ -861,7 +861,14 @@ var tests = {
 		'<b id=abc>foo[]bar</b>',
 		["abc", 'foo[bar]baz'],
 		'foo[bar]baz',
+
+		'foo<b>[bar]</b>baz',
 		'foo<b>{bar}</b>baz',
+		'foo{<b>bar</b>}baz',
+		'<p>foo<p>[bar]<p>baz',
+		'<p>foo<p>{bar}<p>baz',
+		'<p>foo{<p>bar</p>}<p>baz',
+
 		'<p>foo[bar]baz</p>',
 		'<p id=abc>foo[bar]baz</p>',
 		'<h1>foo[bar]baz</h1>',

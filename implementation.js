@@ -574,6 +574,11 @@ function wrap(nodeList, siblingCriteria, newParentInstructions) {
 		newParent = newParentInstructions();
 	}
 
+	// "If new parent is null, abort these steps and return null."
+	if (!newParent) {
+		return null;
+	}
+
 	// "If new parent's parent is null, insert new parent into the parent of
 	// the first member of node list immediately before the first member of
 	// node list."
@@ -586,11 +591,13 @@ function wrap(nodeList, siblingCriteria, newParentInstructions) {
 
 	// "If new parent is before the first member of node list in tree order:"
 	if (isBefore(newParent, nodeList[0])) {
-		// "If the last child of new parent and the first member of node list
-		// are both inline nodes, and the last child of new parent is not a br,
-		// call createElement("br") on the ownerDocument of new parent and
-		// append the result as the last child of new parent."
-		if (isInlineNode(newParent.lastChild)
+		// "If new parent is not an inline node, but the last child of new
+		// parent and the first member of node list are both inline nodes, and
+		// the last child of new parent is not a br, call createElement("br")
+		// on the ownerDocument of new parent and append the result as the last
+		// child of new parent."
+		if (!isInlineNode(newParent)
+		&& isInlineNode(newParent.lastChild)
 		&& isInlineNode(nodeList[0])
 		&& !isHtmlElement(newParent.lastChild, "BR")) {
 			newParent.appendChild(newParent.ownerDocument.createElement("br"));
@@ -604,11 +611,13 @@ function wrap(nodeList, siblingCriteria, newParentInstructions) {
 
 	// "Otherwise:"
 	} else {
-		// "If the first child of new parent and the last member of node list
-		// are both inline nodes, and the last member of node list is not a br,
-		// call createElement("br") on the ownerDocument of new parent and
-		// insert the result as the first child of new parent."
-		if (isInlineNode(newParent.firstChild)
+		// "If new parent is not an inline node, but the first child of new
+		// parent and the last member of node list are both inline nodes, and
+		// the last member of node list is not a br, call createElement("br")
+		// on the ownerDocument of new parent and insert the result as the
+		// first child of new parent."
+		if (!isInlineNode(newParent)
+		&& isInlineNode(newParent.firstChild)
 		&& isInlineNode(nodeList[nodeList.length - 1])
 		&& !isHtmlElement(nodeList[nodeList.length - 1], "BR")) {
 			newParent.insertBefore(newParent.ownerDocument.createElement("br"), newParent.firstChild);
@@ -631,11 +640,13 @@ function wrap(nodeList, siblingCriteria, newParentInstructions) {
 	// criteria:"
 	if (isEditable(newParent.nextSibling)
 	&& siblingCriteria(newParent.nextSibling)) {
-		// "If new parent's last child and new parent's nextSibling's first
-		// child are both inline nodes, and new parent's last child is not a
-		// br, call createElement("br") on the ownerDocument of new parent and
-		// append the result as the last child of new parent."
-		if (isInlineNode(newParent.lastChild)
+		// "If new parent is not an inline node, but new parent's last child
+		// and new parent's nextSibling's first child are both inline nodes,
+		// and new parent's last child is not a br, call createElement("br") on
+		// the ownerDocument of new parent and append the result as the last
+		// child of new parent."
+		if (!isInlineNode(newParent)
+		&& isInlineNode(newParent.lastChild)
 		&& isInlineNode(newParent.nextSibling.firstChild)
 		&& !isHtmlElement(newParent.lastChild, "BR")) {
 			newParent.appendChild(newParent.ownerDocument.createElement("br"));
@@ -1473,6 +1484,44 @@ function getSpecifiedValue(element, command) {
 	return null;
 }
 
+function reorderModifiableDescendants(node, command, newValue) {
+	// "Let candidate equal node."
+	var candidate = node;
+
+	// "While candidate is a modifiable element, and candidate has exactly one
+	// child, and that child is also a modifiable element, and candidate is not
+	// a simple modifiable element or candidate's specified value for command
+	// is not new value, set candidate to its child."
+	while (isModifiableElement(candidate)
+	&& candidate.childNodes.length == 1
+	&& (!isSimpleModifiableElement(candidate)
+	|| !valuesEqual(command, getSpecifiedValue(candidate, command), newValue))) {
+		candidate = candidate.firstChild;
+	}
+
+	// "If candidate is node, or is not a simple modifiable element, or its
+	// specified value and effective value for command are not both new value,
+	// abort these steps."
+	if (candidate == node
+	|| !isSimpleModifiableElement(candidate)
+	|| !valuesEqual(command, getSpecifiedValue(candidate, command), newValue)
+	|| !valuesEqual(command, getEffectiveValue(candidate, command), newValue)) {
+		return;
+	}
+
+	// "While candidate has children, insert the first child of candidate into
+	// candidate's parent immediately before candidate, preserving ranges."
+	while (candidate.hasChildNodes()) {
+		movePreservingRanges(candidate.firstChild, candidate.parentNode, getNodeIndex(candidate));
+	}
+
+	// "Insert candidate into node's parent immediately after node."
+	node.parentNode.insertBefore(candidate, node.nextSibling);
+
+	// "Append the node as the last child of candidate, preserving ranges."
+	movePreservingRanges(node, candidate, -1);
+}
+
 // "A modifiable element is a b, em, i, s, span, strong, sub, sup, or u element
 // with no attributes except possibly style; or a font element with no
 // attributes except possibly style, color, face, and/or size; or an a element
@@ -2192,114 +2241,24 @@ function forceValue(node, command, newValue) {
 	|| node.nodeType == Node.COMMENT_NODE
 	|| node.nodeType == Node.PROCESSING_INSTRUCTION_NODE)
 	&& !isUnwrappableNode(node)) {
-		// "Let candidate be node's previousSibling."
-		var candidate = node.previousSibling;
+		// "Reorder modifiable descendants of node's previousSibling."
+		reorderModifiableDescendants(node.previousSibling, command, newValue);
 
-		// "While candidate is a modifiable element, and candidate has exactly one
-		// child, and that child is also a modifiable element, and candidate is
-		// not a simple modifiable element or candidate's specified value for
-		// command is not new value, set candidate to its child."
-		while (isModifiableElement(candidate)
-		&& candidate.childNodes.length == 1
-		&& isModifiableElement(candidate.firstChild)
-		&& (!isSimpleModifiableElement(candidate)
-		|| !valuesEqual(command, getSpecifiedValue(candidate, command), newValue))) {
-			candidate = candidate.firstChild;
-		}
+		// "Reorder modifiable descendants of node's nextSibling."
+		reorderModifiableDescendants(node.nextSibling, command, newValue);
 
-		// "If candidate is a simple modifiable element whose specified value and
-		// effective value for command are both new value, and candidate is
-		// not the previousSibling of node:"
-		if (isSimpleModifiableElement(candidate)
-		&& valuesEqual(command, getSpecifiedValue(candidate, command), newValue)
-		&& valuesEqual(command, getEffectiveValue(candidate, command), newValue)
-		&& candidate != node.previousSibling) {
-			// "While candidate has children, insert the first child of
-			// candidate into candidate's parent immediately before candidate,
-			// preserving ranges."
-			while (candidate.childNodes.length > 0) {
-				movePreservingRanges(candidate.firstChild, candidate.parentNode, getNodeIndex(candidate));
-			}
-
-			// "Insert candidate into node's parent before node's
-			// previousSibling."
-			node.parentNode.insertBefore(candidate, node.previousSibling);
-
-			// "Append the nextSibling of candidate as the last child of
-			// candidate, preserving ranges."
-			movePreservingRanges(candidate.nextSibling, candidate, candidate.childNodes.length);
-		}
-
-		// "Let candidate be node's nextSibling."
-		var candidate = node.nextSibling;
-
-		// "While candidate is a modifiable element, and candidate has exactly one
-		// child, and that child is also a modifiable element, and candidate is
-		// not a simple modifiable element or candidate's specified value for
-		// command is not new value, set candidate to its child."
-		while (isModifiableElement(candidate)
-		&& candidate.childNodes.length == 1
-		&& isModifiableElement(candidate.firstChild)
-		&& (!isSimpleModifiableElement(candidate)
-		|| !valuesEqual(command, getSpecifiedValue(candidate, command), newValue))) {
-			candidate = candidate.firstChild;
-		}
-
-		// "If candidate is a simple modifiable element whose specified value and
-		// effective value for command are both new value, and candidate is
-		// not the nextSibling of node:"
-		if (isSimpleModifiableElement(candidate)
-		&& valuesEqual(command, getSpecifiedValue(candidate, command), newValue)
-		&& valuesEqual(command, getEffectiveValue(candidate, command), newValue)
-		&& candidate != node.nextSibling) {
-			// "While candidate has children, insert the first child of
-			// candidate into candidate's parent immediately before candidate,
-			// preserving ranges."
-			while (candidate.childNodes.length > 0) {
-				movePreservingRanges(candidate.firstChild, candidate.parentNode, getNodeIndex(candidate));
-			}
-
-			// "Insert candidate into node's parent after node."
-			node.parentNode.insertBefore(candidate, node.nextSibling);
-
-			// "Append the nextSibling of candidate as the last child of
-			// candidate, preserving ranges."
-			movePreservingRanges(candidate.nextSibling, candidate, candidate.childNodes.length);
-		}
-
-		// "Let previous sibling and next sibling be node's previousSibling and
-		// nextSibling."
-		var previousSibling = node.previousSibling;
-		var nextSibling = node.nextSibling;
-
-		// "If previous sibling is a simple modifiable element whose specified
-		// value and effective value for command are both new value, append
-		// node as the last child of previous sibling, preserving ranges."
-		if (isSimpleModifiableElement(previousSibling)
-		&& valuesEqual(command, getSpecifiedValue(previousSibling, command), newValue)
-		&& valuesEqual(command, getEffectiveValue(previousSibling, command), newValue)) {
-			movePreservingRanges(node, previousSibling, previousSibling.childNodes.length);
-		}
-
-		// "If next sibling is a simple modifiable element whose specified value
-		// and effective value for command are both new value:"
-		if (isSimpleModifiableElement(nextSibling)
-		&& valuesEqual(command, getSpecifiedValue(nextSibling, command), newValue)
-		&& valuesEqual(command, getEffectiveValue(nextSibling, command), newValue)) {
-			// "If node is not a child of previous sibling, insert node as the
-			// first child of next sibling, preserving ranges."
-			if (node.parentNode != previousSibling) {
-				movePreservingRanges(node, nextSibling, 0);
-			// "Otherwise, while next sibling has children, append the first
-			// child of next sibling as the last child of previous sibling,
-			// preserving ranges.  Then remove next sibling from its parent."
-			} else {
-				while (nextSibling.childNodes.length) {
-					movePreservingRanges(nextSibling.firstChild, previousSibling, previousSibling.childNodes.length);
-				}
-				nextSibling.parentNode.removeChild(nextSibling);
-			}
-		}
+		// "Wrap the one-node list consisting of node, with sibling criteria
+		// matching a simple modifiable element whose specified value and
+		// effective value for command are both new value, and with new parent
+		// instructions returning null."
+		wrap([node],
+			function(node) {
+				return isSimpleModifiableElement(node)
+					&& valuesEqual(command, getSpecifiedValue(node, command), newValue)
+					&& valuesEqual(command, getEffectiveValue(node, command), newValue);
+			},
+			function() { return null }
+		);
 	}
 
 	// "If the effective value of command is new value on node, abort this

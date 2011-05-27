@@ -1,0 +1,44 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <title id='desc'> Click event on an element not in the document </title> 
+        <script type="text/javascript">
+            var PassTest = function()
+            {
+                document.getElementById("testresult").firstChild.data = "PASS";
+            }
+            
+            var FailTest = function()
+            {
+                document.getElementById("testresult").firstChild.data = "FAIL";
+            }
+            
+            var EVENT = "click";
+            var TARGET = document.createElement("somerandomelement");
+            
+            window.onload = function(e)
+            {
+                  FailTest();
+                  TARGET.addEventListener(EVENT, TestEvent, true);
+                  var e = document.createEvent("Event");
+                  e.initEvent(EVENT, true, true);
+                  TARGET.dispatchEvent(e);
+            }
+            
+            function TestEvent(evt) 
+            {                                     
+
+                PassTest();
+            }
+        </script>            
+    </head>
+    <body>      
+        <h4>
+            Test Description: Click event can be dispatched to an element that is not in the document.
+        </h4>
+        
+        <p>Test passes if the word "PASS" appears below</p>
+       	<div>Test result: </div>
+        <div id='testresult'>FAIL</div> 
+    </body>
+</html>

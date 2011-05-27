@@ -15,7 +15,7 @@ test(function() {
   el.appendChild(document.createElement("xmp"))
     .appendChild(document.createElement("span"))
     .appendChild(document.createTextNode("<"));
-  assert_equals(el.innerHTML, "<xmp><span>&lt;<\/span><\/xmp>");
+  assert_equals(el.innerHTML, "<xmp xmlns=\"http://www.w3.org/1999/xhtml\"><span>&lt;<\/span><\/xmp>");
 })
 test(function() {
   var el = document.createElement("xmp");
@@ -31,7 +31,7 @@ test(function() {
 test(function() {
   var el = document.createElement("div");
   el.appendChild(document.createElement("br"));
-  assert_equals(el.innerHTML, "<br/>");
+  assert_equals(el.innerHTML, "<br xmlns=\"http://www.w3.org/1999/xhtml\" />");
 })
 ]]></script>
 </body>

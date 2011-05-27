@@ -4,34 +4,35 @@
 <link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com"/>
 <link rel="help" href="http://www.whatwg.org/html5/#dom-innerhtml"/>
 <link rel="help" href="http://www.whatwg.org/html5/#xml-fragment-serialization-algorithm"/>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
 </head>
 <body>
-<script src="../support/test.js"></script>
+<div id="log"></div>
 <script><![CDATA[
-try {
-  var div = document.createElement("div");
+test(function() {
   var el = document.createElement("div");
   el.appendChild(document.createElement("xmp"))
     .appendChild(document.createElement("span"))
     .appendChild(document.createTextNode("<"));
-  div.innerHTML = el.innerHTML;
-
-  el = document.createElement("xmp");
+  assert_equals(el.innerHTML, "<xmp><span>&lt;<\/span><\/xmp>");
+})
+test(function() {
+  var el = document.createElement("xmp");
   el.appendChild(document.createElement("span"))
     .appendChild(document.createTextNode("<"));
-  div.innerHTML = el.innerHTML;
-
-  el = document.createElement("xmp");
+  assert_equals(el.innerHTML, "<span>&lt;<\/span>");
+})
+test(function() {
+  var el = document.createElement("xmp");
   el.appendChild(document.createTextNode("<"));
-  div.innerHTML = el.innerHTML;
-
-  el = document.createElement("div");
+  assert_equals(el.innerHTML, "&lt;");
+})
+test(function() {
+  var el = document.createElement("div");
   el.appendChild(document.createElement("br"));
-  div.innerHTML = el.innerHTML;
-} catch (e) {
-  Test.fail("Exception was thrown.");
-}
-Test.finish();
+  assert_equals(el.innerHTML, "<br/>");
+})
 ]]></script>
 </body>
 </html>

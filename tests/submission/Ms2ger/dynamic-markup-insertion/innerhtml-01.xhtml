@@ -5,31 +5,24 @@
 <link rel="help" href="http://www.whatwg.org/html5/#dom-innerhtml"/>
 <link rel="help" href="http://www.whatwg.org/html5/#xml-fragment-serialization-algorithm"/>
 <link rel="help" href="http://www.whatwg.org/html5/#document.title"/>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
 </head>
 <body>
-<script src="../support/test.js"></script>
+<div id="log"></div>
 <script>
-try {
-  try {
-    document.documentElement.appendChild(document.createElement("test:test"));
-    var text = document.documentElement.innerHTML;
-    Test.fail("Should have failed on getting");
-  } catch (e) {
-    Test.is(e.code, DOMException.INVALID_STATE_ERR);
-  }
-
-  Test.separate();
+test(function() {
+  document.documentElement.appendChild(document.createElement("test:test"));
+  assert_throws("INVALID_STATE_ERR", function() {
+    document.documentElement.innerHTML;
+  }, "getting element with \":\" in its local name");
+});
+test(function() {
   document.title = "\f";
-  try {
+  assert_throws("INVALID_STATE_ERR", function() {
     document.getElementsByTagName("title")[0].innerHTML;
-    Test.fail("No exception was thrown");
-  } catch (e) {
-    Test.is(e.code, DOMException.INVALID_STATE_ERR);
-  }
-} catch (e) {
-  Test.fail("Exception was thrown.");
-}
-Test.finish();
+  }, "Getting a Text node whose data contains characters that are not matched by the XML Char production");
+});
 </script>
 </body>
 </html>

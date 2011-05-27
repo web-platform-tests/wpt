@@ -3,22 +3,17 @@
 <title>document.write in XHTML</title>
 <link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com"/>
 <link rel="help" href="http://www.whatwg.org/html5/#document.write%28%29"/>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
 </head>
 <body>
-<script src="../support/test.js"></script>
+<div id="log"></div>
 <script>
-try {
-  try {
-    document.write("FAIL: document.write actually worked");
-    Test.fail("document.write in XHTML should throw an INVALID_ACCESS_ERR " +
-      "exception, but failed silently.");
-  } catch (e) {
-    Test.is(e.code, DOMException.INVALID_STATE_ERR);
-  }
-} catch (e) {
-  Test.fail("Exception was thrown.");
-}
-Test.finish();
+test(function() {
+  assert_throws("INVALID_STATE_ERR", function() {
+    document.write("Failure: document.write actually worked");
+  }, "document.write in XHTML should throw an INVALID_STATE_ERR ");
+}, "document.write in XHTML");
 </script>
 </body>
 </html>

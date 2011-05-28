@@ -2,17 +2,15 @@
 <title>HTMLUnknownElement</title>
 <link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
 <link rel="help" href="http://www.whatwg.org/html5/#htmlunknownelement">
-<body>
-<script src="../support/test.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
 <script>
-try {
+test(function() {
   var elt = document.createElement("xxx");
-  Test.ok(HTMLUnknownElement && elt instanceof HTMLUnknownElement,
-    "not an instance of HTMLUnknownElement");
-  Test.ok(!(elt instanceof HTMLSpanElement),
-    "an instance of HTMLSpanElement");
-} catch (e) {
-  Test.fail("Exception was thrown.");
-}
-Test.finish();
+  assert_true(window.HTMLUnknownElement && elt instanceof HTMLUnknownElement,
+              "not an instance of HTMLUnknownElement");
+  assert_true(window.HTMLSpanElement && !(elt instanceof HTMLSpanElement),
+              "an instance of HTMLSpanElement");
+});
 </script>

@@ -575,6 +575,10 @@ inline styles, because Firefox does actually add them to arbitrary elements.
 
   <li>If <var>original parent</var> has no [[children]], remove it from its
   [[parent]].
+
+  <li>If <var>node list</var>'s last member's [[nextsibling]] is null,
+  <span>remove extraneous line breaks at the end of</span> <var>node
+  list</var>'s last member's [[parent]].
 </ol>
 
 <p>To remove a [[node]] <var>node</var> while <dfn>preserving its
@@ -4264,6 +4268,22 @@ http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
     <var>range</var>.
     <!-- Necessary because adding a br to the end of a block element does
     nothing. -->
+
+    <p class=XXX>Need to handle the case where there are two consecutive br's
+    at the end of the block.
+
+    <li>Abort these steps.
+  </ol>
+
+  <li>If <var>container</var> is an [[li]], and either it has no [[children]]
+  or it has a single [[child]] and that [[child]] is a [[br]]:
+
+  <ol>
+    <li><span>Split the parent</span> of the one-[[node]] list consisting of
+    <var>container</var>.
+
+    <li><span>Fix orphaned list items</span> in the one-[[node]] list
+    consisting of <var>container</var>.
 
     <li>Abort these steps.
   </ol>

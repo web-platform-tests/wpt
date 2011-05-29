@@ -617,6 +617,10 @@ inline styles, because Firefox does actually add them to arbitrary elements.
 
   <li>If <var title="">original parent</var> has no <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, remove it from its
   <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+
+  <li>If <var title="">node list</var>'s last member's <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code> is null,
+  <a href=#remove-extraneous-line-breaks-at-the-end-of>remove extraneous line breaks at the end of</a> <var title="">node
+  list</var>'s last member's <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
 </ol>
 
 <p>To remove a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> <var title="">node</var> while <dfn id=preserving-its-descendants>preserving its
@@ -4229,6 +4233,22 @@ http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
     <var title="">range</var>.
     <!-- Necessary because adding a br to the end of a block element does
     nothing. -->
+
+    <p class=XXX>Need to handle the case where there are two consecutive br's
+    at the end of the block.
+
+    <li>Abort these steps.
+  </ol>
+
+  <li>If <var title="">container</var> is an <code class=external data-anolis-spec=html title="the li element"><a href=http://www.whatwg.org/html/#the-li-element>li</a></code>, and either it has no <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>
+  or it has a single <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> and that <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> is a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code>:
+
+  <ol>
+    <li><a href=#split-the-parent>Split the parent</a> of the one-<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> list consisting of
+    <var title="">container</var>.
+
+    <li><a href=#fix-orphaned-list-items>Fix orphaned list items</a> in the one-<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> list
+    consisting of <var title="">container</var>.
 
     <li>Abort these steps.
   </ol>

@@ -541,6 +541,12 @@ function splitParent(nodeList) {
 	if (!originalParent.hasChildNodes()) {
 		originalParent.parentNode.removeChild(originalParent);
 	}
+
+	// "If node list's last member's nextSibling is null, remove extraneous
+	// line breaks at the end of node list's last member's parent."
+	if (!nodeList[nodeList.length - 1].nextSibling) {
+		removeExtraneousLineBreaksAtTheEndOf(nodeList[nodeList.length - 1].parentNode);
+	}
 }
 
 // "To remove a node node while preserving its descendants, split the parent of
@@ -3279,6 +3285,23 @@ function myExecCommand(command, showUI, value, range) {
 				range.insertNode(document.createElement("br"));
 				range.setEnd(range.startContainer, range.startOffset);
 			}
+
+			// "Abort these steps."
+			return;
+		}
+
+		// "If container is an li, and either it has no children or it has a
+		// single child and that child is a br:"
+		if (isHtmlElement(container, "li")
+		&& (!container.hasChildNodes()
+		|| (container.childNodes.length == 1
+		&& isHtmlElement(container.firstChild, "br")))) {
+			// "Split the parent of the one-node list consisting of container."
+			splitParent([container]);
+
+			// "Fix orphaned list items in the one-node list consisting of
+			// container."
+			fixOrphanedListItems([container]);
 
 			// "Abort these steps."
 			return;

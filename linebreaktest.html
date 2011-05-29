@@ -136,7 +136,16 @@ var tests = [
 	'<pre>foo[]<br></pre>',
 	'<pre>foo[]bar</pre>',
 
+	'<ol><li>{}<br></li></ol>',
+	'foo<ol><li>{}<br></li></ol>',
+	'<ol><li>{}<br></li></ol>foo',
 	'<ol><li>foo<li>{}<br></ol>',
+	'<ol><li>{}<br><li>bar</ol>',
+	'<ol><li>foo</li><ul><li>{}<br></ul></ol>',
+
+	'<dl><dt>{}<br></dt></dl>',
+	'<dl><dt>foo<dd>{}<br></dl>',
+	'<dl><dt>{}<br><dd>bar</dl>',
 
 	'<h1>foo[bar</h1><p>baz]quz</p>',
 	'<p>foo[bar</p><h1>baz]quz</h1>',

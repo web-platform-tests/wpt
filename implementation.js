@@ -563,6 +563,14 @@ function wrap(nodeList, siblingCriteria, newParentInstructions) {
 		return null;
 	}
 
+	// "If node list's last member is an inline node that's not a br, and node
+	// list's last member's nextSibling is a br, append that br to node list."
+	if (isInlineNode(nodeList[nodeList.length - 1])
+	&& !isHtmlElement(nodeList[nodeList.length - 1], "br")
+	&& isHtmlElement(nodeList[nodeList.length - 1].nextSibling, "br")) {
+		nodeList.push(nodeList[nodeList.length - 1].nextSibling);
+	}
+
 	// "If the previousSibling of the first member of node list is editable and
 	// meets the sibling criteria, let new parent be the previousSibling of the
 	// first member of node list."

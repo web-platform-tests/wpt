@@ -647,6 +647,13 @@ instructions</dfn>:
   <li>If <var>node list</var> is empty, or the first member of <var>node
   list</var> is not <span>editable</span>, return null and abort these steps.
 
+  <li>If <var>node list</var>'s last member is an <span>inline node</span>
+  that's not a [[br]], and <var>node list</var>'s last member's [[nextsibling]]
+  is a [[br]], append that [[br]] to <var>node list</var>.
+  <!-- Trailing br's like this always need to go along with their line.
+  Otherwise they'll create an extra line if we wrap in a block element, instead
+  of vanishing as they should. -->
+
   <li>If the [[previoussibling]] of the first member of <var>node list</var>
   is <span>editable</span> and meets the <span>sibling criteria</span>, let
   <var>new parent</var> be the [[previoussibling]] of the first member of

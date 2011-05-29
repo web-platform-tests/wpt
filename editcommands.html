@@ -689,6 +689,13 @@ instructions</dfn>:
   <li>If <var title="">node list</var> is empty, or the first member of <var title="">node
   list</var> is not <a href=#editable>editable</a>, return null and abort these steps.
 
+  <li>If <var title="">node list</var>'s last member is an <a href=#inline-node>inline node</a>
+  that's not a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code>, and <var title="">node list</var>'s last member's <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code>
+  is a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code>, append that <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code> to <var title="">node list</var>.
+  <!-- Trailing br's like this always need to go along with their line.
+  Otherwise they'll create an extra line if we wrap in a block element, instead
+  of vanishing as they should. -->
+
   <li>If the <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code> of the first member of <var title="">node list</var>
   is <a href=#editable>editable</a> and meets the <a href=#sibling-criteria>sibling criteria</a>, let
   <var title="">new parent</var> be the <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code> of the first member of

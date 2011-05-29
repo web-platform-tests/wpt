@@ -2,17 +2,23 @@
 <title>Script @type: unknown parameters</title>
 <link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
 <link rel="help" href="http://www.whatwg.org/html5/#scriptingLanguages">
-<body>
-<script src="../../../support/test.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
 <div id="test">
 <script type="text/javascript;charset=UTF-8">
-Test.fail("'charset' should have prevented this script from executing.");
+test(function() {
+  assert_unreached("'charset' should have prevented this script from executing.");
+})
 </script>
 <script type="text/javascript;x-test=abc">
-Test.fail("'x-test' should have prevented this script from executing.");
+test(function() {
+  assert_unreached("'x-test' should have prevented this script from executing.");
+})
 </script>
 </div>
 <script>
-Test.pass();
-Test.finish();
+test(function() {
+  assert_true(true)
+})
 </script>

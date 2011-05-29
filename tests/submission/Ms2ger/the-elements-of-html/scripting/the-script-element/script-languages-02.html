@@ -2,8 +2,9 @@
 <title>Script @type: JavaScript types</title>
 <link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
 <link rel="help" href="http://www.whatwg.org/html5/#scriptingLanguages">
-<body>
-<script src="../../../support/test.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
 <div id="test">
 <script>
 var i = 0;
@@ -58,10 +59,7 @@ var i = 0;
 </script>
 </div>
 <script>
-try {
-  Test.is(i, 16, "Didn't support all type values");
-} catch (e) {
-  Test.fail("Exception was thrown.");
-}
-Test.finish();
+test(function() {
+  assert_equals(i, 16, "Didn't support all type values")
+})
 </script>

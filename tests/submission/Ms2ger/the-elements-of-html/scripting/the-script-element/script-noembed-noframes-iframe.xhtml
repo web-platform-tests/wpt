@@ -2,9 +2,11 @@
 <head>
 <title>Script inside noembed, noframes and iframe</title>
 <link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com"/>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
 </head>
 <body>
-<script src="../../../support/test.js"></script>
+<div id="log"></div>
 <script>
 var run = [];
 </script>
@@ -26,9 +28,9 @@ run.push("iframe");
 </iframe>
 </div>
 <script>
-Test.run([function() {
-  Test.isList(run, ["noembed", "noframes", "iframe"], "Haven't run.");
-}]);
+test(function() {
+  assert_array_equals(run, ["noembed", "noframes", "iframe"], "Haven't run.");
+});
 </script>
 </body>
 </html>

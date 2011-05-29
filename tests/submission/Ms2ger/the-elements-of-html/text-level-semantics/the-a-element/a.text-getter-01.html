@@ -2,8 +2,9 @@
 <title>HTMLAnchorElement.text getting</title>
 <link rel="author" title="Ms2ger" href="mailto:ms2ger@gmail.com">
 <link rel="help" href="http://www.whatwg.org/html5/#dom-a-text">
-<body>
-<script src="../../../support/test.js"></script>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<div id=log></div>
 <div id="test">
 <a href="a">a b c </a>
 <a href="b">a <!--b-->b c </a>
@@ -19,12 +20,14 @@ e.appendChild(document.createTextNode("c "));
 </script>
 </div>
 <script>
-Test.run([function() {
+test(function() {
   var list = document.getElementById("test")
                      .getElementsByTagName("a");
   for (var i = 0, il = list.length; i < il; ++i) {
-    Test.is(list[i].text, list[i].textContent);
-    Test.is(list[i].text, "a b c ");
+    test(function() {
+      assert_equals(list[i].text, list[i].textContent);
+      assert_equals(list[i].text, "a b c ");
+    }, "Test for anchor " + i);
   }
-}]);
+});
 </script>

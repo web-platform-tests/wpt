@@ -536,10 +536,12 @@ inline styles, because Firefox does actually add them to arbitrary elements.
   list</var>, <span>remove extraneous line breaks before</span> <var>original
   parent</var>.
 
-  <li>If the last [[child]] of <var>original parent</var> is in <var>node
-  list</var>, and <var>original parent</var>'s last [[child]] and
-  [[nextsibling]] are both <span title="inline node">inline nodes</span>, call
-  <code data-anolis-spec=domcore
+  <li>If <var>original parent</var> is not an <span>inline node</span>, and the
+  last [[child]] of <var>original parent</var> is in <var>node list</var>, and
+  <var>original parent</var>'s last [[child]] and [[nextsibling]] are both
+  <span title="inline node">inline nodes</span>, and <var>original
+  parent</var>'s last [[child]] is not a [[br]], call <code
+  data-anolis-spec=domcore
   title=dom-Document-createElement>createElement("br")</code> on the
   [[ownerdocument]] of <var>original parent</var>, then insert the result into
   the [[parent]] of <var>original parent</var> immediately after <var>original

@@ -466,14 +466,17 @@ function splitParent(nodeList) {
 		removeExtraneousLineBreaksBefore(originalParent);
 	}
 
-	// "If the last child of original parent is in node list, and original
-	// parent's last child and nextSibling are both inline nodes, call
-	// createElement("br") on the ownerDocument of original parent, then insert
-	// the result into the parent of original parent immediately after original
-	// parent."
-	if (nodeList.indexOf(originalParent.lastChild) != -1
+	// "If original parent is not an inline node, and the last child of
+	// original parent is in node list, and original parent's last child and
+	// nextSibling are both inline nodes, and original parent's last child is
+	// not a br, call createElement("br") on the ownerDocument of original
+	// parent, then insert the result into the parent of original parent
+	// immediately after original parent."
+	if (!isInlineNode(originalParent)
+	&& nodeList.indexOf(originalParent.lastChild) != -1
 	&& isInlineNode(originalParent.lastChild)
-	&& isInlineNode(originalParent.nextSibling)) {
+	&& isInlineNode(originalParent.nextSibling)
+	&& !isHtmlElement(originalParent.lastChild, "br")) {
 		originalParent.parentNode.insertBefore(originalParent.ownerDocument.createElement("br"), originalParent.nextSibling);
 	}
 

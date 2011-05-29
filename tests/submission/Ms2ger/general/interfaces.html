@@ -50,7 +50,10 @@ try {
      .appendChild(document.createTextNode(e===i))
      .parentNode.parentNode
      .appendChild(document.createElement("td"))
-     .appendChild(document.createTextNode(!!(window[e] && document.createElement(s) instanceof window[e])))
+     .appendChild(document.createTextNode(!!(window[e] &&
+                                             document.createElement(s) instanceof window[e] &&
+                                             document.createElement(s) instanceof HTMLElement &&
+                                             document.createElement(s) instanceof Element)))
      .parentNode.parentNode.className = e===i&&(window[e] && document.createElement(s) instanceof window[e]);
   }
   for (var i = 0, il = elements.length; i < il; ++i) {

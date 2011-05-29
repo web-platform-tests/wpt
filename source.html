@@ -2700,9 +2700,16 @@ element</span> that has no attributes other than one or more of
   attribute.
 </ul>
 
-<p>A <dfn>single-line container</dfn> is an <span>HTML element</span> with
-[[localname]] "address", "div", "h1", "h2", "h3", "h4", "h5", "h6", "p", or
-"pre".
+<p>A <dfn>non-list single-line container</dfn> is an <span>HTML element</span>
+with [[localname]] "address", "div", "h1", "h2", "h3", "h4", "h5", "h6", "p",
+or "pre".
+
+<p>A <dfn>single-line container</dfn> is either a <span>non-list single-line
+container</span>, or an <span>HTML element</span> with [[localname]] "li",
+"dt", or "dd".
+
+<p>The <dfn>default single-line container name</dfn> is "p".
+<!-- Possibly to be made configurable later. -->
 
 
 <h3>Assorted block formatting command algorithms</h3>
@@ -2933,15 +2940,18 @@ confronted with this kind of nesting.)
     of <var>start node</var> and then set <var>start node</var> to its
     [[parent]].
 
-    <li>Otherwise, if <var>start offset</var> is equal to the
-    [[nodelength]] of <var>start node</var>, set <var>start offset</var> to one
-    plus the [[index]] of <var>start node</var> and then set <var>start
-    node</var> to its [[parent]].
+    <li>Otherwise, if <var>start offset</var> is <var>start node</var>'s
+    [[nodelength]] and <var>start node</var>'s last [[child]] is an
+    <span>inline node</span> that's not a [[br]], subtract one from <var>start
+    offset</var>.
+    <!-- So if you have a collapsed selection at the end of a block, for
+    instance, it will extend backwards into a block. -->
 
-    <li>Otherwise, if the [[child]] of <var>start node</var> with [[index]]
-    <var>start offset</var> and its [[previoussibling]] are both <span
-    title="inline node">inline nodes</span> and the [[previoussibling]] isn't a
-    [[br]], subtract one from <var>start offset</var>.
+    <li>Otherwise, if <var>start node</var> has a [[child]] with [[index]]
+    <var>start offset</var>, and that [[child]] and its [[previoussibling]] are
+    both <span title="inline node">inline nodes</span> and the
+    [[previoussibling]] isn't a [[br]], subtract one from <var>start
+    offset</var>.
     <!-- IE also includes <br> (at least for the purposes of the indent
     command), but this is unlikely to match user expectations. -->
 
@@ -2958,20 +2968,20 @@ confronted with this kind of nesting.)
   <li>Repeat the following steps:
 
   <ol>
-    <li>If <var>end offset</var> is 0, set <var>end offset</var> to the
-    [[index]] of <var>end node</var> and then set <var>end node</var> to its
-    [[parent]].
+    <li>If <var>end node</var> is a [[text]] or [[comment]] node or <var>end
+    offset</var> is equal to the [[nodelength]] of <var>end node</var>, set
+    <var>end offset</var> to one plus the [[index]] of <var>end node</var> and
+    then set <var>end node</var> to its [[parent]].
 
-    <li>Otherwise, if <var>end node</var> is a [[text]] or [[comment]] node or
-    <var>end offset</var> is equal to the [[nodelength]] of <var>end
-    node</var>, set <var>end offset</var> to one plus the [[index]] of <var>end
-    node</var> and then set <var>end node</var> to its [[parent]].
+    <li>Otherwise, if <var>end offset</var> is 0 and <var>end node</var>'s
+    first [[child]] is an <span>inline node</span> that's not a [[br]], add one
+    to <var>end offset</var>.
 
-    <li>Otherwise, if the [[child]] of <var>end node</var> with [[index]]
-    <var>end offset</var> and its [[previoussibling]] are both <span
-    title="inline node">inline nodes</span>, and the [[child]] of <var>end
-    node</var> with [[index]] <var>end offset</var> isn't a [[br]], add one to
-    <var>end offset</var>.
+    <li>Otherwise, if <var>end node</var> has a [[child]] with [[index]]
+    <var>end offset</var>, and that [[child]] and its [[previoussibling]] are
+    both <span title="inline node">inline nodes</span>, and the [[child]] of
+    <var>end node</var> with [[index]] <var>end offset</var> isn't a [[br]],
+    add one to <var>end offset</var>.
 
     <li>Otherwise, break from this loop.
   </ol>
@@ -3872,10 +3882,10 @@ sense for <address>/<h*>/<pre>, but other browsers don't do it.
   not empty:
 
   <ol>
-    <li>If the first member of <var>node list</var> is a <span>single-line
-    container</span>, <span>set the tag name</span> of the first member of
-    <var>node list</var> to <var>value</var>, then remove the first member from
-    <var>node list</var> and continue this loop from the beginning.
+    <li>If the first member of <var>node list</var> is a <span>non-list
+    single-line container</span>, <span>set the tag name</span> of the first
+    member of <var>node list</var> to <var>value</var>, then remove the first
+    member from <var>node list</var> and continue this loop from the beginning.
 
     <li>Let <var>sublist</var> be an empty list of [[nodes]].
 
@@ -3885,7 +3895,7 @@ sense for <address>/<h*>/<pre>, but other browsers don't do it.
     <li>While <var>node list</var> is not empty, and the first member of
     <var>node list</var> is the [[nextsibling]] of the last member of
     <var>sublist</var>, and the first member of <var>node list</var> is not a
-    <span>single-line container</span>, and the last member of
+    <span>non-list single-line container</span>, and the last member of
     <var>sublist</var> is not a [[br]], remove the first member of <var>node
     list</var> and append it to <var>sublist</var>.
 
@@ -3899,8 +3909,8 @@ sense for <address>/<h*>/<pre>, but other browsers don't do it.
   <li>Otherwise, while <var>node list</var> is not empty:
 
   <ol>
-    <li>If the first member of <var>node list</var> is a <span>single-line
-    container</span>:
+    <li>If the first member of <var>node list</var> is a <span>non-list
+    single-line container</span>:
 
     <ol>
       <li>Let <var>sublist</var> be the [[children]] of the first member of
@@ -3923,7 +3933,7 @@ sense for <address>/<h*>/<pre>, but other browsers don't do it.
       <li>While <var>node list</var> is not empty, and the first member of
       <var>node list</var> is the [[nextsibling]] of the last member of
       <var>sublist</var>, and the first member of <var>node list</var> is not a
-      <span>single-line container</span>, and the last member of
+      <span>non-list single-line container</span>, and the last member of
       <var>sublist</var> is not a [[br]], remove the first member of <var>node
       list</var> and append it to <var>sublist</var>.
     </ol>
@@ -3993,6 +4003,13 @@ differing from all browsers in lots of ways.
 <p class=XXX>Handle corner cases: endpoints are detached, documents, document
 fragments, html/body, head or things in head . . .
 
+<p class=XXX>Does not handle cases where block-extending the selection leaves
+it collapsed, like <code title>&lt;p>foo&lt;/p>{}&lt;p>bar&lt;/p></code>.
+
+<p class=XXX>The algorithm for preserving ranges doesn't work well here at all
+if the selection is collapsed.  The cursor can end up in the wrong place
+entirely.  Probably due to the wrap algorithm; that needs to be reexamined.
+
 <ol>
   <li>Let <var>items</var> be a list of all [[li]]s that are
   [[ancestorcontainers]] of the <span>active range</span>'s [[rangestart]]
@@ -4012,6 +4029,8 @@ fragments, html/body, head or things in head . . .
   if <var>node</var> is <span>editable</span> and can be the [[child]] of a
   [[div]] or [[ol]] or [[ul]] and if no [[ancestor]] of <var>node</var> is in
   <var>node list</var>, append <var>node</var> to <var>node list</var>.
+
+  <p class=XXX>Use "allowed child" definition here.
 
   <li>If the first member of <var>node list</var> is an [[li]] whose [[parent]]
   is an [[ol]] or [[ul]], and its [[previoussibling]] is an [[li]] as well,
@@ -4101,6 +4120,193 @@ splitting up parents to ensure validity . . . -->
 
 <p><span>Action</span>: <span>Toggle lists</span> with <var>tag name</var>
 "ol".
+
+
+<h3><dfn>The <code title>insertParagraph</code> command</dfn></h3>
+<!--
+There are three major behaviors here.  Firefox 5.0a2 behaves identically to
+execCommand("formatBlock", false, "p"), which is not really useful.  IE9
+actually just overwrites the selection with an empty paragraph element, which
+seems not very useful either.  Chrome 13 dev and Opera 11.10 behave basically
+the same as if the user hit the Return key.  This later behavior seems much
+more useful, even though it's horribly misnamed, so it's what I'll spec.
+
+Then, of course, we have several flavors of line-breaking behavior to choose
+from.  Firefox prefers <br>s, unless it's in the middle of a <p> or something.
+Opera and IE like <p>.  Chrome prefers <div>.  And there are lots of subtleties
+besides.  I go with IE/Opera-style behavior, as discussed in this thread:
+
+http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
+-->
+
+<p><span>Action</span>:
+
+<p class=XXX>Under construction, probably makes no sense.
+
+<ol>
+  <li><span>Delete the selection</span>.
+
+  <li>Let <var>range</var> be the <span>active range</span>.
+
+  <li>Let <var>node</var> and <var>offset</var> be <var>range</var>'s
+  [[rangestart]] [[bpnode]] and [[bpoffset]].
+
+  <li>If <var>node</var> is a [[text]] node, and <var>offset</var> is neither 0
+  nor the [[nodelength]] of <var>node</var>, call <code
+  data-anolis-spec=domcore
+  title=dom-Text-splitText>splitText(<var>offset</var>)</code> on
+  <var>node</var>.
+
+  <li>If <var>node</var> is a [[text]] node and <var>offset</var> is its
+  [[nodelength]], set <var>offset</var> to one plus the [[index]] of
+  <var>node</var>, then set <var>node</var> to its [[parent]].
+
+  <li>If <var>node</var> is a [[text]] or [[comment]] node, set
+  <var>offset</var> to the [[index]] of <var>node</var>, then set
+  <var>node</var> to its [[parent]].
+
+  <li>Set <var>range</var>'s [[rangestart]] and [[rangeend]] to
+  (<var>node</var>, <var>offset</var>).
+
+  <li>If <var>node</var> has an [[element]] [[child]] of [[index]]
+  <var>offset</var>, let <var>container</var> equal that [[child]].
+
+  <li>Otherwise, if <var>node</var> has an [[element]] [[child]] of [[index]]
+  <var>offset</var> minus one, let <var>container</var> equal that [[child]].
+
+  <li>Otherwise, let <var>container</var> equal <var>node</var>.
+
+  <li>While <var>container</var> is not a <span>single-line container</span>,
+  and <var>container</var>'s [[parent]] is <span>editable</span> and <span>in
+  the same editing host</span> as <var>node</var>, set <var>container</var> to
+  its [[parent]].
+
+  <li>If <var>container</var> is not <span>editable</span> or not <span>in the
+  same editing host</span> as <var>node</var> or is not a <span>single-line
+  container</span>:
+  <!-- Add the default wrapper. -->
+
+  <ol>
+    <li><span>Block-extend</span> <var>range</var>, and let <var>new
+    range</var> be the result.
+
+    <li>Let <var>node list</var> be a list of all [[children]] of
+    <var>node</var> that are  [[contained]] in <var>new range</var>.
+
+    <li>Let <var>tag</var> be the <span>default single-line container
+    name</span>.
+
+    <li>If <var>node list</var> is empty:
+
+    <ol>
+      <li>Set <var>container</var> to the result of calling
+      [[createelement|<var>tag</var>]] on the [[contextobject]].
+
+      <li>Call [[insertnode|<var>container</var>]] on <var>range</var>.
+
+      <li>Call [[createelement|"br"]] on the [[contextobject]], and append the
+      result as the last [[child]] of <var>container</var>.
+
+      <li>Set <var>range</var>'s [[rangestart]] and [[rangeend]] to
+      (<var>container</var>, 0).
+
+      <li>Abort these steps.
+    </ol>
+
+    <li><span>Wrap</span> <var>node list</var>, with <span>sibling
+    criteria</span> matching nothing and <span>new parent instructions</span>
+    returning the result of calling [[createelement|<var>tag</var>]] on the
+    [[contextobject]].  Set <var>container</var> to the result.
+
+    <li>If <var>range</var>'s [[startnode]] is not <var>container</var>, set
+    <var>range</var>'s [[rangestart]] and [[rangeend]] to
+    (<var>container</var>, 0).
+
+    <p class=XXX>This is a hack to work around range mutation rules not working
+    the way I'd like them to.  Should be fixed more sensibly.
+  </ol>
+
+  <li>If <var>container</var>'s [[localname]] is "address" or "pre":
+  <!--
+  IE9 and Chrome 13 dev just break <pre> up into multiple <pre>s.  Firefox
+  5.0a2 and Opera 11.10 insert a <br> instead, treating it differently from
+  <p>.  The latter makes more sense.  What might make the most sense is to just
+  insert an actual newline character, though, since this is a pre after all
+  . . .
+
+  IE9 and Chrome 13 dev also break <address> up into multiple <address>es.
+  Firefox 5.0a2 inserts <br> instead.  Opera 11.10 nests <p>s inside.  I don't
+  like Opera's behavior, because it means we nest formatBlock candidates inside
+  one another, so I'll go with Firefox.
+  -->
+
+  <p class=XXX>Why don't we just insert a newline character if it's a pre?  We
+  don't really need to use br in that case.  Need to test: what do browsers do
+  if a pre element has newlines in it, do they convert to line breaks when you
+  make it no longer a pre?
+
+  <ol>
+    <li>Let <var>br</var> be the result of calling [[createelement|"br"]] on
+    the [[contextobject]].
+
+    <li>Call [[insertnode|<var>br</var>]] on <var>range</var>.
+
+    <li>Increment <var>range</var>'s [[rangestart]] and [[rangeend]]
+    [[bpoffsets]].
+
+    <li>If <var>br</var> is the last [[descendant]] of <var>container</var>,
+    let <var>br</var> be the result of calling [[createelement|"br"]] on the
+    [[contextobject]], then call [[insertnode|<var>br</var>]] on
+    <var>range</var>.
+    <!-- Necessary because adding a br to the end of a block element does
+    nothing. -->
+
+    <li>Abort these steps.
+  </ol>
+
+  <li>Let <var>new container</var> be the result of calling <code
+  data-anolis-spec=domcore title=dom-Node-cloneNode>cloneNode(false)</code> on
+  <var>container</var>.
+
+  <p class=XXX>Copies id's.
+
+  <li>Insert <var>new container</var> into the [[parent]] of
+  <var>container</var> immediately after <var>container</var>.
+
+  <li>Let <var>new line range</var> be a new [[range]] whose [[rangestart]] is
+  the same as <var>range</var>'s, and whose [[rangeend]] is
+  (<var>container</var>, [[nodelength]] of <var>container</var>).
+
+  <li>Let <var>frag</var> be the result of calling <code
+  data-anolis-spec=domrange
+  title=dom-Range-extractContents>extractContents()</code> on <var>new line
+  range</var>.
+
+  <p class=XXX>This blows up any ranges (other than the selection, which we
+  reset), duplicates id's, and other bad stuff.  May or may not be the best
+  solution.  The intermediate fragment is also probably black-box detectable by
+  DOM mutation events, but I like to pretend those don't exist.
+
+  <li>Call <code data-anolis-spec=domcore
+  title=dom-Node-appendChild>appendChild(<var>frag</var>)</code> on <var>new
+  container</var>.
+
+  <li>If <var>container</var> has no [[children]], call [[createelement|"br"]]
+  on the [[contextobject]], and append the result as the last [[child]] of
+  <var>container</var>.
+
+  <li>If <var>new container</var> has no [[children]], call
+  [[createelement|"br"]] on the [[contextobject]], and append the result as the
+  last [[child]] of <var>new container</var>.
+
+  <p class=XXX>Needs to also happen if there are only comments/whitespace/etc.
+  Also, this can leave stray useless br's lying around.  Probably when the user
+  starts typing, we want to remove the br.  On the flip side, if the user
+  deletes all the contents of a paragraph, we likely need to add a br.
+
+  <li>Set the [[rangestart]] of <var>range</var> to (<var>new container</var>,
+  0).
+</ol>
 
 
 <h3><dfn>The <code title>insertUnorderedList</code> command</dfn></h3>

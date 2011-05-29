@@ -1,0 +1,520 @@
+<!doctype html>
+<!-- This is going to be merged into autoimplementation.html at some point. -->
+<meta charset=utf-8>
+<title>Line-breaking tests</title>
+<style>
+body { font-family: serif }
+.yes { color: green }
+.no { color: red }
+.maybe { color: orange }
+.yes, .no, .maybe {
+	text-align: center;
+	vertical-align: middle;
+	font-size: 3em;
+	/* Somehow Opera doesn't render the X's if the font is serif, on my
+	 * machine. */
+	font-family: sans-serif;
+	border-color: black;
+}
+div.alert {
+	color: red;
+	font-weight: bold;
+}
+/* http://www.w3.org/Bugs/Public/show_bug.cgi?id=12154
+ * https://bugzilla.mozilla.org/show_bug.cgi?id=589124
+ * https://bugs.webkit.org/show_bug.cgi?id=56400 */
+b, strong { font-weight: bold }
+.bold { font-weight: bold }
+.notbold { font-weight: normal }
+.underline { text-decoration: underline }
+.line-through { text-decoration: line-through }
+.underline-and-line-through { text-decoration: underline line-through }
+#purple { color: purple }
+body > div > table > tbody > tr > td > div:first-child {
+	padding-bottom: 0.2em;
+}
+body > div > table > tbody > tr > td > div:last-child {
+	padding-top: 0.2em;
+	border-top: 1px solid black;
+}
+/* https://bugs.webkit.org/show_bug.cgi?id=56670 */
+dfn { font-style: italic }
+/* Opera has weird default blockquote style */
+blockquote { margin: 1em 40px }
+/* Let the rendered HTML line up so it's easier to compare whitespace */
+body > div > table > tbody > tr > td { vertical-align: top }
+/* We don't want test cells to not wrap */
+listing, plaintext, pre, xmp { white-space: pre-wrap }
+img, video { width: 50px }
+body > div > table {
+	width: 100%;
+	table-layout: fixed;
+}
+body > div > table > tbody > tr > td,
+body > div > table > tbody > tr > th {
+	width: 50%;
+}
+/* For testing */
+ol ol { list-style-type: lower-alpha }
+ol ol ol { list-style-type: lower-roman }
+#overlay {
+	display: none;
+	position: fixed;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	color: red;
+	background: yellow;
+	font-size: 4em;
+	font-weight: bold;
+	text-align: center;
+	padding: 2em;
+}
+</style>
+<p>Legend: {[ are the selection anchor, }] are the selection focus, {}
+represent an element boundary point, [] represent a text node boundary point.
+Syntax and some of the tests taken from <a
+href=http://www.browserscope.org/richtext2/test>Browserscope</a>.  data-start
+and data-end attributes also represent element boundary points, with the node
+being the element with the attribute and the offset given as the attribute
+value, for cases where HTML parsing doesn't allow text nodes.  Currently we
+don't really pay attention to reversed selections at all, so they might get
+displayed as forwards or such.
+
+<p><input type=button value="Clear cached results" onclick="clearCachedResults()">
+
+<div id=tests>
+	<input type=button value="Run tests" onclick="runTests()">
+	<table border=1><tr><th>Input<th>Output</table>
+	<p><label>New test input: <input></label> <input type=button value="Add test" onclick="addTest()">
+</div>
+
+<div id=overlay>Tap enter repeatedly until this annoying message
+disappears!  (But not too quickly.  And don't hit any other keys or click with
+the mouse anywhere, it will mess it up.)</div>
+
+<script src=implementation.js></script>
+<script>
+var tests = [
+	'foo[bar]baz',
+
+	'[]foo',
+	'foo[]',
+	'foo[]bar',
+	'<address>[]foo</address>',
+	'<address>foo[]</address>',
+	'<address>foo[]bar</address>',
+	'<div>[]foo</div>',
+	'<div>foo[]</div>',
+	'<div>foo[]bar</div>',
+	'<dl><dt>[]foo<dd>bar</dl>',
+	'<dl><dt>foo[]<dd>bar</dl>',
+	'<dl><dt>foo[]bar<dd>baz</dl>',
+	'<dl><dt>foo<dd>[]bar</dl>',
+	'<dl><dt>foo<dd>bar[]</dl>',
+	'<dl><dt>foo<dd>bar[]baz</dl>',
+	'<h1>[]foo</h1>',
+	'<h1>foo[]</h1>',
+	'<h1>foo[]bar</h1>',
+	'<ol><li>[]foo</ol>',
+	'<ol><li>foo[]</ol>',
+	'<ol><li>foo[]bar</ol>',
+	'<p>[]foo</p>',
+	'<p>foo[]</p>',
+	'<p>foo[]bar</p>',
+	'<pre>[]foo</pre>',
+	'<pre>foo[]</pre>',
+	'<pre>foo[]bar</pre>',
+
+	'<ol><li>foo<li>{}<br></ol>',
+
+	'<h1>foo[bar</h1><p>baz]quz</p>',
+	'<p>foo[bar</p><h1>baz]quz</h1>',
+	'<p>foo</p>{}',
+	'{}<p>foo</p>',
+	'<p>foo</p>{}<h1>bar</h1>',
+	'<h1>foo</h1>{}<p>bar</p>',
+	'<p>foo</p><h1>[bar]</h1><p>baz</p>',
+	'<p>foo</p>{<h1>bar</h1>}<p>baz</p>',
+
+	'foo<br>bar[]',
+	'foo[]<br>bar',
+	'foo<br>[]bar',
+];
+
+var testsRunning = false;
+
+function clearCachedResults() {
+	for (var key in localStorage) {
+		if (/^linebreaktest-/.test(key)) {
+			localStorage.removeItem(key);
+		}
+	}
+}
+
+function runTests() {
+	testsRunning = true;
+	var runTestsButton = document.querySelector("#tests input[type=button]");
+	runTestsButton.parentNode.removeChild(runTestsButton);
+
+	var addTestButton = document.querySelector("#tests input[type=button]");
+	var input = document.querySelector("#tests label input");
+	// This code actually focuses and clicks everything because for some
+	// reason, anything else doesn't work in IE9 . . .
+	input.value = tests[0];
+	input.focus();
+	addTestButton.click();
+}
+
+function addTest() {
+	var tr = doSetup();
+	var input = document.querySelector("#tests label input");
+	var test = input.value;
+	doInputCell(tr, test);
+	if (localStorage.getItem("linebreaktest-" + test) !== null) {
+		// Yay, I get to cheat
+		var browserCell = document.createElement("td");
+		tr.appendChild(browserCell);
+		browserCell.innerHTML = localStorage["linebreaktest-" + test];
+		runNextTest(test);
+	} else {
+		doBrowserCell(tr, test, function() {
+			runNextTest(test);
+		});
+	}
+}
+
+function runNextTest(test) {
+	doTearDown();
+	var input = document.querySelector("#tests label input");
+	if (!testsRunning) {
+		document.getElementById("overlay").style.display = "none";
+		return;
+	}
+	var idx = tests.indexOf(test);
+	if (idx != tests.lastIndexOf(test)) {
+		// Cheap and effective error reporting
+		document.body.textContent = "Duplicate test: " + test;
+	}
+	if (idx + 1 >= tests.length) {
+		document.getElementById("overlay").style.display = "none";
+		testsRunning = false;
+		input.value = "";
+		return;
+	}
+	input.value = tests[idx + 1];
+	input.focus();
+	addTest();
+}
+
+function doSetup() {
+	var table = document.querySelector("#tests table");
+
+	var tr = document.createElement("tr");
+	table.firstChild.appendChild(tr);
+
+	return tr;
+}
+
+function doInputCell(tr, test) {
+	var inputCell = document.createElement("td");
+	inputCell.innerHTML = "<div></div><div></div>";
+	inputCell.firstChild.innerHTML = test;
+	inputCell.lastChild.textContent = inputCell.firstChild.innerHTML;
+	tr.appendChild(inputCell);
+}
+
+function doBrowserCell(tr, test, callback) {
+	var browserCell = document.createElement("td");
+	tr.appendChild(browserCell);
+
+	try {
+		var points = setupCell(browserCell, test);
+
+		var testDiv = browserCell.firstChild;
+		// Work around weird Firefox bug:
+		// https://bugzilla.mozilla.org/show_bug.cgi?id=649138
+		document.body.appendChild(testDiv);
+		testDiv.onkeyup = function() {
+			continueBrowserCell(test, testDiv, browserCell);
+			callback();
+		};
+		testDiv.contentEditable = "true";
+		testDiv.spellcheck = false;
+		document.getElementById("overlay").style.display = "block";
+		testDiv.focus();
+		setSelection(points[0], points[1], points[2], points[3]);
+	} catch (e) {
+		browserCellException(e, testDiv, browserCell);
+		callback();
+	}
+}
+
+function continueBrowserCell(test, testDiv, browserCell) {
+	try {
+		testDiv.contentEditable = "inherit";
+		testDiv.removeAttribute("spellcheck");
+		var compareDiv1 = testDiv.cloneNode(true);
+
+		if (getSelection().rangeCount) {
+			addBrackets(getSelection().getRangeAt(0));
+		}
+		browserCell.insertBefore(testDiv, browserCell.firstChild);
+
+		if (!browserCell.childNodes.length == 2) {
+			throw "The cell didn't have two children.  Did something spill outside the test div?";
+		}
+
+		compareDiv1.normalize();
+		// Sigh, Gecko is crazy
+		var treeWalker = document.createTreeWalker(compareDiv1, NodeFilter.SHOW_ELEMENT, null, null);
+		while (treeWalker.nextNode()) {
+			var remove = [].filter.call(treeWalker.currentNode.attributes, function(attrib) {
+				return /^_moz_/.test(attrib.name) || attrib.value == "_moz";
+			});
+			for (var i = 0; i < remove.length; i++) {
+				treeWalker.currentNode.removeAttribute(remove[i].name);
+			}
+		}
+		var compareDiv2 = compareDiv1.cloneNode(false);
+		compareDiv2.innerHTML = compareDiv1.innerHTML;
+		if (!compareDiv1.isEqualNode(compareDiv2)
+		&& compareDiv1.innerHTML != compareDiv2.innerHTML) {
+			throw "DOM does not round-trip through serialization!  "
+				+ compareDiv1.innerHTML + " vs. " + compareDiv2.innerHTML;
+		}
+		if (!compareDiv1.isEqualNode(compareDiv2)) {
+			throw "DOM does not round-trip through serialization (although innerHTML is the same)!  "
+				+ testDiv.innerHTML;
+		}
+
+		browserCell.lastChild.textContent = browserCell.firstChild.innerHTML;
+	} catch (e) {
+		browserCellException(e, testDiv, browserCell);
+	}
+
+	localStorage["linebreaktest-" + test] = browserCell.innerHTML;
+}
+
+function browserCellException(e, testDiv, browserCell) {
+	if (testDiv) {
+		testDiv.contenteditable = "inherit";
+		testDiv.removeAttribute("spellcheck");
+	}
+	browserCell.lastChild.className = "alert";
+	browserCell.lastChild.textContent = "Exception: " + e;
+	if (typeof e == "object" && "stack" in e) {
+		specCell.lastChild.textContent += " (stack: " + e.stack + ")";
+	}
+	if (testDiv && testDiv.parentNode != browserCell) {
+		browserCell.insertBefore(testDiv, browserCell.firstChild);
+	}
+}
+
+function doTearDown(command) {
+	getSelection().removeAllRanges();
+}
+
+function setupCell(cell, test) {
+	cell.innerHTML = "<div></div><div></div>";
+
+	// A variety of checks to avoid simple errors.  Not foolproof, of course.
+	var re = /\{|\[|data-start/g;
+	var markers = [];
+	var marker;
+	while (marker = re.exec(test)) {
+		markers.push(marker);
+	}
+	if (markers.length != 1) {
+		throw "Need exactly one start marker ([ or { or data-start), found " + markers.length;
+	}
+
+	var re = /\}|\]|data-end/g;
+	var markers = [];
+	var marker;
+	while (marker = re.exec(test)) {
+		markers.push(marker);
+	}
+	if (markers.length != 1) {
+		throw "Need exactly one end marker (] or } or data-end), found " + markers.length;
+	}
+
+	var node = cell.firstChild;
+	node.innerHTML = test;
+
+	var startNode, startOffset, endNode, endOffset;
+
+	// For braces that don't lie inside text nodes, we can't just set
+	// innerHTML, because that might disturb the DOM.  For instance, if the
+	// brace is right before a <tr>, it could get moved outside the table
+	// entirely, which messes everything up pretty badly.  So we instead
+	// allow using data attributes: data-start and data-end on the start and
+	// end nodes, with a numeric value indicating the offset.  This format
+	// doesn't allow the parent div to be a start or end node, but in that case
+	// you can always use the curly braces.
+	if (node.querySelector("[data-start]")) {
+		startNode = node.querySelector("[data-start]");
+		startOffset = startNode.getAttribute("data-start");
+		startNode.removeAttribute("data-start");
+	}
+	if (node.querySelector("[data-end]")) {
+		endNode = node.querySelector("[data-end]");
+		endOffset = endNode.getAttribute("data-end");
+		endNode.removeAttribute("data-end");
+	}
+
+	var cur = node;
+	while (true) {
+		if (!cur || (cur != node && !(cur.compareDocumentPosition(node) & Node.DOCUMENT_POSITION_CONTAINS))) {
+			break;
+		}
+
+		if (cur.nodeType != Node.TEXT_NODE) {
+			cur = nextNode(cur);
+			continue;
+		}
+
+		var data = cur.data.replace(/\]/g, "");
+		var startIdx = data.indexOf("[");
+
+		data = cur.data.replace(/\[/g, "");
+		var endIdx = data.indexOf("]");
+
+		cur.data = cur.data.replace(/[\[\]]/g, "");
+
+		if (startIdx != -1) {
+			startNode = cur;
+			startOffset = startIdx;
+		}
+
+		if (endIdx != -1) {
+			endNode = cur;
+			endOffset = endIdx;
+		}
+
+		// These are only legal as the first or last
+		data = cur.data.replace(/\}/g, "");
+		var elStartIdx = data.indexOf("{");
+
+		data = cur.data.replace(/\{/g, "");
+		var elEndIdx = data.indexOf("}");
+
+		if (elStartIdx == 0) {
+			startNode = cur.parentNode;
+			startOffset = getNodeIndex(cur);
+		} else if (elStartIdx != -1) {
+			startNode = cur.parentNode;
+			startOffset = getNodeIndex(cur) + 1;
+		}
+		if (elEndIdx == 0) {
+			endNode = cur.parentNode;
+			endOffset = getNodeIndex(cur);
+		} else if (elEndIdx != -1) {
+			endNode = cur.parentNode;
+			endOffset = getNodeIndex(cur) + 1;
+		}
+
+		cur.data = cur.data.replace(/[{}]/g, "");
+		if (!cur.data.length) {
+			if (cur == startNode || cur == endNode) {
+				throw "You put a square bracket where there was no text node . . .";
+			}
+			var oldCur = cur;
+			cur = nextNode(cur);
+			oldCur.parentNode.removeChild(oldCur);
+		} else {
+			cur = nextNode(cur);
+		}
+	}
+
+	return [startNode, startOffset, endNode, endOffset];
+}
+
+function setSelection(startNode, startOffset, endNode, endOffset) {
+	if (navigator.userAgent.indexOf("Opera") != -1) {
+		var range = document.createRange();
+		range.setStart(startNode, startOffset);
+		range.setEnd(endNode, endOffset);
+		if (range.collapsed) {
+			range.setEnd(startNode, startOffset);
+		}
+		getSelection().removeAllRanges();
+		getSelection().addRange(range);
+	} else if ("extend" in getSelection()) {
+		// WebKit behaves unreasonably for collapse(), so do that manually.
+		/*
+		var range = document.createRange();
+		range.setStart(startNode, startOffset);
+		getSelection().removeAllRanges();
+		getSelection().addRange(range);
+		*/
+		getSelection().collapse(startNode, startOffset);
+		getSelection().extend(endNode, endOffset);
+	} else {
+		// IE9.  Selections have no direction, so we just make the selection
+		// always forwards.
+		var range;
+		if (getSelection().rangeCount) {
+			range = getSelection().getRangeAt(0);
+		} else {
+			range = document.createRange();
+		}
+		range.setStart(startNode, startOffset);
+		range.setEnd(endNode, endOffset);
+		if (range.collapsed) {
+			// Phooey, we got them backwards.
+			range.setEnd(startNode, startOffset);
+		}
+		if (!getSelection().rangeCount) {
+			getSelection().addRange(range);
+		}
+	}
+}
+
+/**
+ * Add brackets at the start and end points of the given range, so that they're
+ * visible.
+ */
+function addBrackets(range) {
+	// Do the end first, so that if the range is collapsed, the start point
+	// will be inserted before the end point.
+	if (range.endContainer.nodeType == Node.TEXT_NODE) {
+		range.endContainer.insertData(range.endOffset, "]");
+	} else {
+		// As everyone knows, the only node types are Text and Element.
+		if (range.endOffset != range.endContainer.childNodes.length
+		&& range.endContainer.childNodes[range.endOffset].nodeType == Node.TEXT_NODE) {
+			range.endContainer.childNodes[range.endOffset].insertData(0, "}");
+		} else if (range.endOffset != 0
+		&& range.endContainer.childNodes[range.endOffset - 1].nodeType == Node.TEXT_NODE) {
+			range.endContainer.childNodes[range.endOffset - 1].appendData("}");
+		} else {
+			// Seems to serialize as I'd want even for tables . . . IE doesn't
+			// allow undefined to be passed as the second argument (it throws
+			// an exception), so we have to explicitly check the number of
+			// children and pass null.
+			range.endContainer.insertBefore(document.createTextNode("}"),
+				range.endContainer.childNodes.length == range.endOffset
+				? null
+				: range.endContainer.childNodes[range.endOffset]);
+		}
+	}
+	if (range.startContainer.nodeType == Node.TEXT_NODE) {
+		range.startContainer.insertData(range.startOffset, "[");
+	} else {
+		if (range.startOffset != range.startContainer.childNodes.length
+		&& range.startContainer.childNodes[range.startOffset].nodeType == Node.TEXT_NODE) {
+			range.startContainer.childNodes[range.startOffset].insertData(0, "{");
+		} else if (range.startOffset != 0
+		&& range.startContainer.childNodes[range.startOffset - 1].nodeType == Node.TEXT_NODE) {
+			range.startContainer.childNodes[range.startOffset - 1].appendData("{");
+		} else {
+		range.startContainer.insertBefore(document.createTextNode("{"),
+			range.startContainer.childNodes.length == range.startOffset
+			? null
+			: range.startContainer.childNodes[range.startOffset]);
+		}
+	}
+}
+</script>

@@ -4,6 +4,7 @@
 # <span data-anolis-spec=domcore title=concept-element-namespace>namespace</span>.
 # <var title> is also really pointless, although I should really get that fixed
 # in Anolis proper.
+import re
 
 replace = {
     'a': '<code data-anolis-spec=html title="the a element">a</code>',
@@ -89,11 +90,20 @@ for key in replace:
     s = s.replace("[[" + key + "]]", replace[key])
     # Plurals
     s = s.replace("[[" + key + "s]]", replace[key].replace("</", "s</"))
+    s = s.replace("[[" + key + "es]]", replace[key].replace("</", "es</"))
     # Capitals
     capreplace = replace[key].split(">")
     capreplace[1] = capreplace[1].capitalize()
     capreplace = ">".join(capreplace)
     s = s.replace("[[" + key.capitalize() + "]]", capreplace)
+
+fnreplace = {
+    'createelement': '<code data-anolis-spec=domcore title=dom-Document-createElement>createElement(\\1)</code>',
+    'insertnode': '<code data-anolis-spec=domrange title=dom-Range-insertNode>insertNode(\\1)</code>',
+}
+
+for key in fnreplace:
+    s = re.sub(r"\[\[" + key + "\|([^]]*)\]\]", fnreplace[key], s)
 
 if "[[" in s:
     raise Exception("Something mistyped?  " + s[s.find("[["):s.rfind("]]") + 2])

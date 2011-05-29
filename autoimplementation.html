@@ -698,6 +698,9 @@ var tests = {
 		['<h1>', '<pre>[foo]<br>bar</pre>'],
 		['<h1>', '<pre>foo<br>[bar]</pre>'],
 		['<h1>', '<pre>[foo<br>bar]</pre>'],
+
+		// Spec bug, to address later
+		['<h1>', '<p>[foo</p>bar]'],
 	],
 	hilitecolor: [
 		'foo[]bar',
@@ -743,6 +746,15 @@ var tests = {
 		'foo]bar[baz<p>extra',
 		'{<p><p> <p>foo</p>}<p>extra',
 		'foo[bar<i>baz]qoz</i>quz<p>extra',
+		'[]foo<p>extra',
+		'foo[]<p>extra',
+		'<p>[]foo<p>extra',
+		'<p>foo[]<p>extra',
+		'<p>{}<br>foo</p><p>extra',
+		'<p>foo<br>{}</p><p>extra',
+		'<span>{}<br>foo</span>bar<p>extra',
+		'<span>foo<br>{}</span>bar<p>extra',
+		'<p>foo</p>{}<p>bar</p>',
 
 		'<table><tbody><tr><td>foo<td>b[a]r<td>baz</table><p>extra',
 		'<table><tbody><tr data-start=1 data-end=2><td>foo<td>bar<td>baz</table><p>extra',
@@ -1107,6 +1119,48 @@ var tests = {
 		'<ul id=abc><li>foo<li>bar<li>[baz]</ul>',
 		'<ul style=color:red><li>foo<li>bar<li>[baz]</ul>',
 		'<ul style=text-indent:1em><li>foo<li>bar<li>[baz]</ul>',
+	],
+	insertparagraph: [
+		'foo[bar]baz',
+
+		'[]foo',
+		'foo[]',
+		'foo[]bar',
+		'<address>[]foo</address>',
+		'<address>foo[]</address>',
+		'<address>foo[]bar</address>',
+		'<div>[]foo</div>',
+		'<div>foo[]</div>',
+		'<div>foo[]bar</div>',
+		'<dl><dt>[]foo<dd>bar</dl>',
+		'<dl><dt>foo[]<dd>bar</dl>',
+		'<dl><dt>foo[]bar<dd>baz</dl>',
+		'<dl><dt>foo<dd>[]bar</dl>',
+		'<dl><dt>foo<dd>bar[]</dl>',
+		'<dl><dt>foo<dd>bar[]baz</dl>',
+		'<h1>[]foo</h1>',
+		'<h1>foo[]</h1>',
+		'<h1>foo[]bar</h1>',
+		'<ol><li>[]foo</ol>',
+		'<ol><li>foo[]</ol>',
+		'<ol><li>foo[]bar</ol>',
+		'<p>[]foo</p>',
+		'<p>foo[]</p>',
+		'<p>foo[]bar</p>',
+		'<pre>[]foo</pre>',
+		'<pre>foo[]</pre>',
+		'<pre>foo[]bar</pre>',
+
+		'<ol><li>foo<li>{}<br></ol>',
+
+		'<h1>foo[bar</h1><p>baz]quz</p>',
+		'<p>foo[bar</p><h1>baz]quz</h1>',
+		'<p>foo</p>{}',
+		'{}<p>foo</p>',
+		'<p>foo</p>{}<h1>bar</h1>',
+		'<h1>foo</h1>{}<p>bar</p>',
+		'<p>foo</p><h1>[bar]</h1><p>baz</p>',
+		'<p>foo</p>{<h1>bar</h1>}<p>baz</p>',
 	],
 	insertunorderedlist: [
 		'foo[]bar',
@@ -2434,12 +2488,40 @@ function setSelection(startNode, startOffset, endNode, endOffset) {
  * visible.
  */
 function addBrackets(range) {
-	// Do the end first, so that if the range is collapsed, the start point
-	// will be inserted before the end point.
+	// Handle the collapsed case specially, to avoid confusingly getting the
+	// markers backwards in some cases
+	if (range.startContainer.nodeType == Node.TEXT_NODE) {
+		if (range.collapsed) {
+			range.startContainer.insertData(range.startOffset, "[]");
+		} else {
+			range.startContainer.insertData(range.startOffset, "[");
+		}
+	} else {
+		// As everyone knows, the only node types are Text and Element.
+		var marker = range.collapsed ? "{}" : "{";
+		if (range.startOffset != range.startContainer.childNodes.length
+		&& range.startContainer.childNodes[range.startOffset].nodeType == Node.TEXT_NODE) {
+			range.startContainer.childNodes[range.startOffset].insertData(0, marker);
+		} else if (range.startOffset != 0
+		&& range.startContainer.childNodes[range.startOffset - 1].nodeType == Node.TEXT_NODE) {
+			range.startContainer.childNodes[range.startOffset - 1].appendData(marker);
+		} else {
+			// Seems to serialize as I'd want even for tables . . . IE doesn't
+			// allow undefined to be passed as the second argument (it throws
+			// an exception), so we have to explicitly check the number of
+			// children and pass null.
+			range.startContainer.insertBefore(document.createTextNode(marker),
+				range.startContainer.childNodes.length == range.startOffset
+				? null
+				: range.startContainer.childNodes[range.startOffset]);
+		}
+	}
+	if (range.collapsed) {
+		return;
+	}
 	if (range.endContainer.nodeType == Node.TEXT_NODE) {
 		range.endContainer.insertData(range.endOffset, "]");
 	} else {
-		// As everyone knows, the only node types are Text and Element.
 		if (range.endOffset != range.endContainer.childNodes.length
 		&& range.endContainer.childNodes[range.endOffset].nodeType == Node.TEXT_NODE) {
 			range.endContainer.childNodes[range.endOffset].insertData(0, "}");
@@ -2447,30 +2529,10 @@ function addBrackets(range) {
 		&& range.endContainer.childNodes[range.endOffset - 1].nodeType == Node.TEXT_NODE) {
 			range.endContainer.childNodes[range.endOffset - 1].appendData("}");
 		} else {
-			// Seems to serialize as I'd want even for tables . . . IE doesn't
-			// allow undefined to be passed as the second argument (it throws
-			// an exception), so we have to explicitly check the number of
-			// children and pass null.
 			range.endContainer.insertBefore(document.createTextNode("}"),
 				range.endContainer.childNodes.length == range.endOffset
 				? null
 				: range.endContainer.childNodes[range.endOffset]);
-		}
-	}
-	if (range.startContainer.nodeType == Node.TEXT_NODE) {
-		range.startContainer.insertData(range.startOffset, "[");
-	} else {
-		if (range.startOffset != range.startContainer.childNodes.length
-		&& range.startContainer.childNodes[range.startOffset].nodeType == Node.TEXT_NODE) {
-			range.startContainer.childNodes[range.startOffset].insertData(0, "{");
-		} else if (range.startOffset != 0
-		&& range.startContainer.childNodes[range.startOffset - 1].nodeType == Node.TEXT_NODE) {
-			range.startContainer.childNodes[range.startOffset - 1].appendData("{");
-		} else {
-		range.startContainer.insertBefore(document.createTextNode("{"),
-			range.startContainer.childNodes.length == range.startOffset
-			? null
-			: range.startContainer.childNodes[range.startOffset]);
 		}
 	}
 }

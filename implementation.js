@@ -3,6 +3,7 @@
 var htmlNamespace = "http://www.w3.org/1999/xhtml";
 
 var cssStylingFlag = false;
+var defaultSingleLineContainerName = "p";
 
 // Utility functions
 function nextNode(node) {
@@ -1910,17 +1911,19 @@ function blockExtendRange(range) {
 			startOffset = getNodeIndex(startNode);
 			startNode = startNode.parentNode;
 
-		// "Otherwise, if start offset is equal to the length of start
-		// node, set start offset to one plus the index of start node and
-		// then set start node to its parent."
-		} else if (startOffset == getNodeLength(startNode)) {
-			startOffset = 1 + getNodeIndex(startNode);
-			startNode = startNode.parentNode;
+		// "Otherwise, if start offset is start node's length and start node's
+		// last child is an inline node that's not a br, subtract one from
+		// start offset."
+		} else if (startOffset == getNodeLength(startNode)
+		&& isInlineNode(startNode.lastChild)
+		&& !isHtmlElement(startNode.lastChild, "br")) {
+			startOffset--;
 
-		// "Otherwise, if the child of start node with index start offset and
-		// its previousSibling are both inline nodes and the previousSibling
-		// isn't a br, subtract one from start offset."
-		} else if (isInlineNode(startNode.childNodes[startOffset])
+		// "Otherwise, if start node has a child with index start offset, and
+		// that child and its previousSibling are both inline nodes and the
+		// previousSibling isn't a br, subtract one from start offset."
+		} else if (startOffset < startNode.childNodes.length
+		&& isInlineNode(startNode.childNodes[startOffset])
 		&& isInlineNode(startNode.childNodes[startOffset].previousSibling)
 		&& !isHtmlElement(startNode.childNodes[startOffset].previousSibling, "BR")) {
 			startOffset--;
@@ -1948,25 +1951,27 @@ function blockExtendRange(range) {
 
 	// "Repeat the following steps:"
 	while (true) {
-		// "If end offset is 0, set end offset to the index of end node and
-		// then set end node to its parent."
-		if (endOffset == 0) {
-			endOffset = getNodeIndex(endNode);
-			endNode = endNode.parentNode;
-
-		// "Otherwise, if end node is a Text or Comment node or end offset
-		// is equal to the length of end node, set end offset to one plus
-		// the index of end node and then set end node to its parent."
-		} else if (endNode.nodeType == Node.TEXT_NODE
+		// "If end node is a Text or Comment node or end offset is equal to the
+		// length of end node, set end offset to one plus the index of end node
+		// and then set end node to its parent."
+		if (endNode.nodeType == Node.TEXT_NODE
 		|| endNode.nodeType == Node.COMMENT_NODE
 		|| endOffset == getNodeLength(endNode)) {
 			endOffset = 1 + getNodeIndex(endNode);
 			endNode = endNode.parentNode;
 
-		// "Otherwise, if the child of end node with index end offset and its
-		// previousSibling are both inline nodes, and the child of end node
-		// with index end offset isn't a br, add one to end offset."
-		} else if (isInlineNode(endNode.childNodes[endOffset])
+		// "Otherwise, if end offset is 0 and end node's first child is an
+		// inline node that's not a br, add one to end offset."
+		} else if (endOffset == 0
+		&& isInlineNode(endNode.firstChild)
+		&& !isHtmlElement(endNode.firstChild, "br")) {
+			endOffset++;
+
+		// "Otherwise, if end node has a child with index end offset, and that
+		// child and its previousSibling are both inline nodes, and the
+		// previousSibling isn't a br, add one to end offset."
+		} else if (endOffset < endNode.childNodes.length
+		&& isInlineNode(endNode.childNodes[endOffset])
 		&& isInlineNode(endNode.childNodes[endOffset].previousSibling)
 		&& !isHtmlElement(endNode.childNodes[endOffset], "BR")) {
 			endOffset++;
@@ -2800,9 +2805,6 @@ function myExecCommand(command, showUI, value, range) {
 		break;
 
 		case "formatblock":
-		var singleLineContainerNames = ["ADDRESS", "DIV", "H1", "H2", "H3",
-			"H4", "H5", "H6", "P", "PRE"];
-
 		// "If value begins with a "<" character and ends with a ">" character,
 		// remove the first and last characters from it."
 		if (/^<.*>$/.test(value)) {
@@ -2814,7 +2816,8 @@ function myExecCommand(command, showUI, value, range) {
 
 		// "If value is not "address", "div", "h1", "h2", "h3", "h4", "h5",
 		// "h6", "p", or "pre", then do nothing and abort these steps."
-		if (singleLineContainerNames.indexOf(value.toUpperCase()) == -1) {
+		if (["ADDRESS", "DIV", "H1", "H2", "H3", "H4", "H5", "H6", "P",
+		"PRE"].indexOf(value.toUpperCase()) == -1) {
 			return;
 		}
 
@@ -2864,11 +2867,11 @@ function myExecCommand(command, showUI, value, range) {
 		// "If value is "div" or "p", then while node list is not empty:"
 		if (value == "div" || value == "p") {
 			while (nodeList.length) {
-				// "If the first member of node list is a single-line
+				// "If the first member of node list is a non-list single-line
 				// container, set the tag name of the first member of node list
 				// to value, then remove the first member from node list and
 				// continue this loop from the beginning."
-				if (isHtmlElement(nodeList[0], singleLineContainerNames)) {
+				if (isNonListSingleLineContainer(nodeList[0])) {
 					setTagName(nodeList[0], value);
 					nodeList.shift();
 					continue;
@@ -2883,13 +2886,13 @@ function myExecCommand(command, showUI, value, range) {
 
 				// "While node list is not empty, and the first member of node
 				// list is the nextSibling of the last member of sublist, and
-				// the first member of node list is not a single-line
+				// the first member of node list is not a non-list single-line
 				// container, and the last member of sublist is not a br,
 				// remove the first member of node list and append it to
 				// sublist."
 				while (nodeList.length
 				&& nodeList[0] == sublist[sublist.length - 1].nextSibling
-				&& !isHtmlElement(nodeList[0], singleLineContainerNames)
+				&& !isNonListSingleLineContainer(nodeList[0])
 				&& !isHtmlElement(sublist[sublist.length - 1], "BR")) {
 					sublist.push(nodeList.shift());
 				}
@@ -2907,9 +2910,9 @@ function myExecCommand(command, showUI, value, range) {
 			while (nodeList.length) {
 				var sublist;
 
-				// "If the first member of node list is a single-line
+				// "If the first member of node list is a non-list single-line
 				// container:"
-				if (isHtmlElement(nodeList[0], singleLineContainerNames)) {
+				if (isNonListSingleLineContainer(nodeList[0])) {
 					// "Let sublist be the children of the first member of node
 					// list."
 					sublist = [].slice.call(nodeList[0].childNodes);
@@ -2933,12 +2936,12 @@ function myExecCommand(command, showUI, value, range) {
 					// "While node list is not empty, and the first member of
 					// node list is the nextSibling of the last member of
 					// sublist, and the first member of node list is not a
-					// single-line container, and the last member of sublist is
-					// not a br, remove the first member of node list and
-					// append it to sublist."
+					// non-list single-line container, and the last member of
+					// sublist is not a br, remove the first member of node
+					// list and append it to sublist."
 					while (nodeList.length
 					&& nodeList[0] == sublist[sublist.length - 1].nextSibling
-					&& !isHtmlElement(nodeList[0], singleLineContainerNames)
+					&& !isNonListSingleLineContainer(nodeList[0])
 					&& !isHtmlElement(sublist[sublist.length - 1], "BR")) {
 						sublist.push(nodeList.shift());
 					}
@@ -3125,6 +3128,196 @@ function myExecCommand(command, showUI, value, range) {
 		case "insertorderedlist":
 		// "Toggle lists with tag name "ol"."
 		toggleLists(range, "ol");
+		break;
+
+		case "insertparagraph":
+		// "Delete the selection."
+		deleteSelection();
+
+		// "Let node and offset be range's start node and offset."
+		var node = range.startContainer;
+		var offset = range.startOffset;
+
+		// "If node is a Text node, and offset is neither 0 nor the length of
+		// node, call splitText(offset) on node."
+		if (node.nodeType == Node.TEXT_NODE
+		&& offset != 0
+		&& offset != getNodeLength(node)) {
+			node.splitText(offset);
+		}
+
+		// "If node is a Text node and offset is its length, set offset to one
+		// plus the index of node, then set node to its parent."
+		if (node.nodeType == Node.TEXT_NODE
+		&& offset == getNodeLength(node)) {
+			offset = 1 + getNodeIndex(node);
+			node = node.parentNode;
+		}
+
+		// "If node is a Text or Comment node, set offset to the index of node,
+		// then set node to its parent."
+		if (node.nodeType == Node.TEXT_NODE
+		|| node.nodeType == Node.COMMENT_NODE) {
+			offset = getNodeIndex(node);
+			node = node.parentNode;
+		}
+
+		// "Set range's start and end to (node, offset)."
+		range.setStart(node, offset);
+		range.setEnd(node, offset);
+
+		// "If node has an Element child of index offset, let container equal
+		// that child."
+		var container;
+		if (offset < node.childNodes.length
+		&& node.childNodes[offset].nodeType == Node.ELEMENT_NODE) {
+			container = node.childNodes[offset];
+
+		// "Otherwise, if node has an Element child of index offset minus one,
+		// let container equal that child."
+		} else if (offset > 0
+		&& offset - 1 < node.childNodes.length
+		&& node.childNodes[offset - 1].nodeType == Node.ELEMENT_NODE) {
+			container = node.childNodes[offset - 1];
+
+		// "Otherwise, let container equal node."
+		} else {
+			container = node;
+		}
+
+		// "While container is not a single-line container, and container's
+		// parent is editable and in the same editing host as node, set
+		// container to its parent."
+		while (!isSingleLineContainer(container)
+		&& isEditable(container.parentNode)
+		&& inSameEditingHost(node, container.parentNode)) {
+			container = container.parentNode;
+		}
+
+		// "If container is not editable or not in the same editing host as
+		// node or is not a single-line container:"
+		if (!isEditable(container)
+		|| !inSameEditingHost(container, node)
+		|| !isSingleLineContainer(container)) {
+			// "Block-extend range, and let new range be the result."
+			var newRange = blockExtendRange(range);
+
+			// "Let node list be a list of all children of node that are
+			// contained in new range."
+			var nodeList = [].filter.call(node.childNodes, function(child) { return isContained(child, newRange) });
+
+			// "Let tag be the default single-line container name."
+			var tag = defaultSingleLineContainerName;
+
+			// "If node list is empty:"
+			if (!nodeList.length) {
+				// "Set container to the result of calling createElement(tag)
+				// on the context object."
+				container = document.createElement(tag);
+
+				// "Call insertNode(container) on range."
+				range.insertNode(container);
+
+				// "Call createElement("br") on the context object, and append
+				// the result as the last child of container."
+				container.appendChild(document.createElement("br"));
+
+				// "Set range's start and end to (container, 0)."
+				range.setStart(container, 0);
+				range.setEnd(container, 0);
+
+				// "Abort these steps."
+				return;
+			}
+
+			// "Wrap node list, with sibling criteria matching nothing and new
+			// parent instructions returning the result of calling
+			// createElement(tag) on the context object.  Set container to the
+			// result."
+			container = wrap(nodeList,
+				function() { return false },
+				function() { return document.createElement(tag) }
+			);
+
+			// "If range's start node is not container, set range's start and
+			// end to (container, 0)."
+			if (range.startContainer != container) {
+				range.setStart(container, 0);
+				range.setEnd(container, 0);
+			}
+		}
+
+		// "If container's local name is "address" or "pre":"
+		if (container.tagName == "ADDRESS"
+		|| container.tagName == "PRE") {
+			// "Let br be the result of calling createElement("br") on the
+			// context object."
+			var br = document.createElement("br");
+
+			// "Call insertNode(br) on range."
+			//
+			// Work around browser bugs: some browsers select the inserted
+			// node, not per spec.
+			range.insertNode(br);
+			range.setEnd(range.startContainer, range.startOffset);
+
+			// "Increment range's start and end offsets."
+			//
+			// Incrementing the start will increment the end as well, because
+			// the range is collapsed.
+			range.setStart(range.startContainer, range.startOffset + 1);
+
+			// "If br is the last descendant of container, let br be the result
+			// of calling createElement("br") on the context object, then call
+			// insertNode(br) on range."
+			//
+			// Work around browser bugs again.
+			if (!isDescendant(nextNode(br), container)) {
+				range.insertNode(document.createElement("br"));
+				range.setEnd(range.startContainer, range.startOffset);
+			}
+
+			// "Abort these steps."
+			return;
+		}
+
+		// "Let new container be the result of calling cloneNode(false) on
+		// container."
+		var newContainer = container.cloneNode(false);
+
+		// "Insert new container into the parent of container immediately after
+		// container."
+		container.parentNode.insertBefore(newContainer, container.nextSibling);
+
+		// "Let new line range be a new range whose start is the same as
+		// range's, and whose end is (container, length of container)."
+		var newLineRange = document.createRange();
+		newLineRange.setStart(range.startContainer, range.startOffset);
+		newLineRange.setEnd(container, getNodeLength(container));
+
+		// "Let frag be the result of calling extractContents() on new line
+		// range."
+		var frag = newLineRange.extractContents();
+
+		// "Call appendChild(frag) on new container."
+		newContainer.appendChild(frag);
+
+		// "If container has no children, call createElement("br") on the
+		// context object, and append the result as the last child of
+		// container."
+		if (!container.hasChildNodes()) {
+			container.appendChild(document.createElement("br"));
+		}
+
+		// "If new container has no children, call createElement("br") on the
+		// context object, and append the result as the last child of new
+		// container."
+		if (!newContainer.hasChildNodes()) {
+			newContainer.appendChild(document.createElement("br"));
+		}
+
+		// "Set the start of range to (new container, 0)."
+		range.setStart(newContainer, 0);
 		break;
 
 		case "insertunorderedlist":
@@ -3993,6 +4186,20 @@ function isIndentationElement(node) {
 	}
 
 	return true;
+}
+
+// "A non-list single-line container is an HTML element with local name
+// "address", "div", "h1", "h2", "h3", "h4", "h5", "h6", "p", or "pre"."
+function isNonListSingleLineContainer(node) {
+	return isHtmlElement(node, ["address", "div", "h1", "h2", "h3", "h4", "h5",
+		"h6", "p", "pre"]);
+}
+
+// "A single-line container is either a non-list single-line container, or an
+// HTML element with local name "li", "dt", or "dd"."
+function isSingleLineContainer(node) {
+	return isNonListSingleLineContainer(node)
+		|| isHtmlElement(node, ["li", "dt", "dd"]);
 }
 
 function myQueryCommandState(command) {

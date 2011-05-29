@@ -750,6 +750,10 @@ instructions</dfn>:
 
 <p>To <dfn>delete the selection</dfn>:
 
+<p class=XXX>This might blow up non-editable stuff.  It also might leave a
+block element empty, when we really need to add a [[br]] [[child]] no matter
+what so it doesn't collapse.
+
 <ol>
   <li>Let <var>range</var> be the <span>active range</span>.
 
@@ -867,8 +871,6 @@ instructions</dfn>:
 
   <li>Call <code data-anolis-spec=domrange
   title=dom-Range-deleteContents>deleteContents()</code> on <var>range</var>.
-
-  <p class=XXX>This might blow up non-editable stuff.
 
   <li>If <var>start block</var> or its [[parent]] is null, or <var>end
   block</var> or its [[parent]] is null, or <var>start block</var> is an
@@ -4205,8 +4207,6 @@ http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
 
 <p><span>Action</span>:
 
-<p class=XXX>Under construction, probably makes no sense.
-
 <ol>
   <li><span>Delete the selection</span>.
 
@@ -4234,6 +4234,8 @@ http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
 
   <li>If <var>node</var> has an [[element]] [[child]] of [[index]]
   <var>offset</var>, let <var>container</var> equal that [[child]].
+
+  <p class=XXX>This doesn't seem to make sense.  Investigate.
 
   <li>Otherwise, if <var>node</var> has an [[element]] [[child]] of [[index]]
   <var>offset</var> minus one, let <var>container</var> equal that [[child]].

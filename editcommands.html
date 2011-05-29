@@ -786,6 +786,10 @@ instructions</dfn>:
 
 <p>To <dfn id=delete-the-selection>delete the selection</dfn>:
 
+<p class=XXX>This might blow up non-editable stuff.  It also might leave a
+block element empty, when we really need to add a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> no matter
+what so it doesn't collapse.
+
 <ol>
   <li>Let <var title="">range</var> be the <a href=#active-range>active range</a>.
 
@@ -900,8 +904,6 @@ instructions</dfn>:
   paragraph child</a>, set <var title="">end block</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
 
   <li>Call <code class=external data-anolis-spec=domrange title=dom-Range-deleteContents><a href=http://html5.org/specs/dom-range.html#dom-range-deletecontents>deleteContents()</a></code> on <var title="">range</var>.
-
-  <p class=XXX>This might blow up non-editable stuff.
 
   <li>If <var title="">start block</var> or its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is null, or <var title="">end
   block</var> or its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is null, or <var title="">start block</var> is an
@@ -4172,8 +4174,6 @@ http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
 
 <p><a href=#action>Action</a>:
 
-<p class=XXX>Under construction, probably makes no sense.
-
 <ol>
   <li><a href=#delete-the-selection>Delete the selection</a>.
 
@@ -4199,6 +4199,8 @@ http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
 
   <li>If <var title="">node</var> has an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a>
   <var title="">offset</var>, let <var title="">container</var> equal that <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>.
+
+  <p class=XXX>This doesn't seem to make sense.  Investigate.
 
   <li>Otherwise, if <var title="">node</var> has an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a>
   <var title="">offset</var> minus one, let <var title="">container</var> equal that <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>.

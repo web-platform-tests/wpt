@@ -4245,6 +4245,10 @@ http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
   if a pre element has newlines in it, do they convert to line breaks when you
   make it no longer a pre?
 
+  <p class=XXX>In cases where hitting enter in a header doesn't break out of
+  the header, we should probably follow this code path too, instead of creating
+  an adjoining header.  No browser does this, though.
+
   <ol>
     <li>Let <var>br</var> be the result of calling [[createelement|"br"]] on
     the [[contextobject]].
@@ -4264,18 +4268,31 @@ http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
     <li>Abort these steps.
   </ol>
 
-  <li>Let <var>new container</var> be the result of calling <code
-  data-anolis-spec=domcore title=dom-Node-cloneNode>cloneNode(false)</code> on
+  <li>Let <var>new line range</var> be a new [[range]] whose [[rangestart]] is
+  the same as <var>range</var>'s, and whose [[rangeend]] is
+  (<var>container</var>, [[nodelength]] of <var>container</var>).
+
+  <li>If the [[localname]] of <var>container</var> is "h1", "h2", "h3", "h4",
+  "h5", or "h6", and <var>new line range</var> <span data-anolis-spec=domrange
+  title=contained>contains</span> either nothing or a single [[br]], let
+  <var>new container name</var> be the <span>default single-line container
+  name</span>.
+  <!-- IE9 makes a new header if there's a trailing <br>.  Firefox 5.0a2,
+  Chrome 13 dev, and Opera 11.10 do not, and I follow them, since it makes more
+  sense (such a <br> is invisible). -->
+
+  <li>Otherwise, let <var>new container name</var> be the [[localname]] of
   <var>container</var>.
+
+  <li>Let <var>new container</var> be the result of calling
+  [[createelement|<var>new container name</var>]] on the [[contextobject]].
+
+  <li>Copy all attributes of <var>container</var> to <var>new container</var>.
 
   <p class=XXX>Copies id's.
 
   <li>Insert <var>new container</var> into the [[parent]] of
   <var>container</var> immediately after <var>container</var>.
-
-  <li>Let <var>new line range</var> be a new [[range]] whose [[rangestart]] is
-  the same as <var>range</var>'s, and whose [[rangeend]] is
-  (<var>container</var>, [[nodelength]] of <var>container</var>).
 
   <li>Let <var>frag</var> be the result of calling <code
   data-anolis-spec=domrange

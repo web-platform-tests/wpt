@@ -4210,6 +4210,10 @@ http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
   if a pre element has newlines in it, do they convert to line breaks when you
   make it no longer a pre?
 
+  <p class=XXX>In cases where hitting enter in a header doesn't break out of
+  the header, we should probably follow this code path too, instead of creating
+  an adjoining header.  No browser does this, though.
+
   <ol>
     <li>Let <var title="">br</var> be the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("br")</a></code> on
     the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>.
@@ -4229,17 +4233,30 @@ http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
     <li>Abort these steps.
   </ol>
 
-  <li>Let <var title="">new container</var> be the result of calling <code class=external data-anolis-spec=domcore title=dom-Node-cloneNode><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-clonenode>cloneNode(false)</a></code> on
+  <li>Let <var title="">new line range</var> be a new <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> whose <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> is
+  the same as <var title="">range</var>'s, and whose <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> is
+  (<var title="">container</var>, <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> of <var title="">container</var>).
+
+  <li>If the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> of <var title="">container</var> is "h1", "h2", "h3", "h4",
+  "h5", or "h6", and <var title="">new line range</var> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained title=contained>contains</a> either nothing or a single <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code>, let
+  <var title="">new container name</var> be the <a href=#default-single-line-container-name>default single-line container
+  name</a>.
+  <!-- IE9 makes a new header if there's a trailing <br>.  Firefox 5.0a2,
+  Chrome 13 dev, and Opera 11.10 do not, and I follow them, since it makes more
+  sense (such a <br> is invisible). -->
+
+  <li>Otherwise, let <var title="">new container name</var> be the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> of
   <var title="">container</var>.
+
+  <li>Let <var title="">new container</var> be the result of calling
+  <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement(<var title="">new container name</var>)</a></code> on the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>.
+
+  <li>Copy all attributes of <var title="">container</var> to <var title="">new container</var>.
 
   <p class=XXX>Copies id's.
 
   <li>Insert <var title="">new container</var> into the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of
   <var title="">container</var> immediately after <var title="">container</var>.
-
-  <li>Let <var title="">new line range</var> be a new <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> whose <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> is
-  the same as <var title="">range</var>'s, and whose <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> is
-  (<var title="">container</var>, <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> of <var title="">container</var>).
 
   <li>Let <var title="">frag</var> be the result of calling <code class=external data-anolis-spec=domrange title=dom-Range-extractContents><a href=http://html5.org/specs/dom-range.html#dom-range-extractcontents>extractContents()</a></code> on <var title="">new line
   range</var>.

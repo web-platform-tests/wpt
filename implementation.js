@@ -307,6 +307,9 @@ function isContained(node, range) {
  * for, omitting any with an ancestor already being returned.
  */
 function collectContainedNodes(range, condition) {
+	if (typeof condition == "undefined") {
+		condition = function() { return true };
+	}
 	var node = range.startContainer;
 	if (node.hasChildNodes()
 	&& range.startOffset < node.childNodes.length) {
@@ -693,7 +696,7 @@ function deleteSelection() {
 	// length, and either range's end node is not a Text or Comment node or
 	// range's end offset is 0, call deleteContents() on range and abort these
 	// steps."
-	if (!collectContainedNodes(range, function() { return true }).length
+	if (!collectContainedNodes(range).length
 	&& ((range.startContainer.nodeType != Node.TEXT_NODE
 	&& range.startContainer.nodeType != Node.COMMENT_NODE)
 	|| range.startOffset == getNodeLength(range.startContainer))
@@ -3281,19 +3284,42 @@ function myExecCommand(command, showUI, value, range) {
 			return;
 		}
 
-		// "Let new container be the result of calling cloneNode(false) on
-		// container."
-		var newContainer = container.cloneNode(false);
-
-		// "Insert new container into the parent of container immediately after
-		// container."
-		container.parentNode.insertBefore(newContainer, container.nextSibling);
-
 		// "Let new line range be a new range whose start is the same as
 		// range's, and whose end is (container, length of container)."
 		var newLineRange = document.createRange();
 		newLineRange.setStart(range.startContainer, range.startOffset);
 		newLineRange.setEnd(container, getNodeLength(container));
+
+		// "If the local name of container is "h1", "h2", "h3", "h4", "h5", or
+		// "h6", and new line range contains either nothing or a single br, let
+		// new container name be the default single-line container name."
+		var newContainerName;
+		var containedInNewLineRange = collectContainedNodes(newLineRange);
+		if (/^H[1-6]$/.test(container.tagName)
+		&& (!containedInNewLineRange.length
+			|| (containedInNewLineRange.length == 1
+				&& isHtmlElement(containedInNewLineRange[0], "br")
+			)
+		)) {
+			newContainerName = defaultSingleLineContainerName;
+
+		// "Otherwise, let new container name be the local name of container."
+		} else {
+			newContainerName = container.tagName.toLowerCase();
+		}
+
+		// "Let new container be the result of calling createElement(new
+		// container name) on the context object."
+		var newContainer = document.createElement(newContainerName);
+
+		// "Copy all attributes of container to new container."
+		for (var i = 0; i < container.attributes.length; i++) {
+			newContainer.setAttributeNS(container.attributes[i].namespaceURI, container.attributes[i].name, container.attributes[i].value);
+		}
+
+		// "Insert new container into the parent of container immediately after
+		// container."
+		container.parentNode.insertBefore(newContainer, container.nextSibling);
 
 		// "Let frag be the result of calling extractContents() on new line
 		// range."

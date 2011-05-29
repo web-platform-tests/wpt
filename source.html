@@ -2720,11 +2720,26 @@ container</span>, or an <span>HTML element</span> with [[localname]] "li",
 
 <p>To <dfn>fix disallowed ancestors</dfn> of a [[node]] <var>node</var>:
 
-<p class=XXX>This works okay for stuff nested in paragraphs or such, but for
-fixing lis/table stuff/etc. we probably don't want to do this at all; we
-probably want to add ancestor wrappers or something.
-
 <ol>
+  <li>If <var>node</var> is an [[li]] and its [[parent]] is not an [[ol]],
+  unset its <code data-anolis-spec=html title=attr-li-value>value</code>
+  attribute, if set.
+  <!-- IE9, Firefox 4.0, and Opera 11.10 keep the value attribute even if the
+  parent is now a ul.  Chrome 12 dev strips it even if the parent is now an ol.
+  The spec makes more sense. -->
+
+  <li>If <var>node</var> is an [[li]] with no attributes and its [[parent]] is
+  not an [[ol]] or [[ul]], or is a [[dt]] or [[dd]] with no attributes and its
+  [[parent]] is not a [[dl]], remove <var>node</var>, <span>preserving its
+  descendants</span>.  Then abort these steps.
+
+  <li>If <var>node</var> is an [[li]] and its [[parent]] is not an [[ol]] or
+  [[ul]], or is a [[dt]] or [[dd]] and its [[parent]] is not a [[dl]],
+  <span>set the tag name</span> of <var>node</var> to "div".  Then abort these
+  steps.
+
+  <p class=XXX>Should convert it to the default single-line container type.
+
   <li>If <var>node</var> is an <span>allowed child</span> of its [[parent]], or
   it is not an <span>allowed child</span> of any of its [[ancestors]] <span>in
   the same editing host</span>, abort these steps and do nothing.
@@ -2836,29 +2851,6 @@ won't remember that we aren't supposed to indent "foo" a second time.
   don't, and the ones that do get it wrong.
 
   <li><span>Fix disallowed ancestors</span> of <var>new parent</var>.
-</ol>
-
-<p>To <dfn>fix orphaned list items</dfn> in a list of [[nodes]] <var>node
-list</var>:
-
-<ol>
-  <li>For each [[li]] <var>item</var> in <var>node list</var>:
-
-  <ol>
-      <li>If <var>item</var>'s [[parent]] is not an [[ol]], unset
-      <var>item</var>'s <code data-anolis-spec=html
-      title=attr-li-value>value</code> attribute, if set.
-      <!-- IE9, Firefox 4.0, and Opera 11.10 keep the value attribute even if
-      the parent is now a ul.  Chrome 12 dev strips it even if the parent is
-      now an ol.  The spec makes more sense. -->
-
-      <li>If <var>item</var> has no attributes and its [[parent]] is not an
-      [[ol]] or [[ul]], remove <var>item</var>, <span>preserving its
-      descendants</span>.
-
-      <li>Otherwise, if <var>item</var>'s [[parent]] is not an [[ol]] or
-      [[ul]], <span>set the tag name</span> of <var>item</var> to "div".
-  </ol>
 </ol>
 
 <p>To <dfn>normalize sublists</dfn> in a [[node]] <var>item</var>:
@@ -3159,7 +3151,8 @@ insertOrderedList.
 
     <li>Otherwise remove <var>node</var>, <span>preserving its descendants</span>.
 
-    <li><span>Fix orphaned list items</span> in <var>children</var>.
+    <li><span>Fix disallowed ancestors</span> of each member of
+    <var>children</var>.
 
     <li>Abort these steps.
   </ol>
@@ -3588,7 +3581,8 @@ or "ul"):
 
     <li><span>Split the parent</span> of <var>sublist</var>.
 
-    <li><span>Fix orphaned list items</span> in <var>sublist</var>.
+    <li><span>Fix disallowed ancestors</span> of each member of
+    <var>sublist</var>.
   </ol>
 
   <li>Otherwise, while <var>node list</var> is not empty:
@@ -4275,15 +4269,17 @@ http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
     <li>Abort these steps.
   </ol>
 
-  <li>If <var>container</var> is an [[li]], and either it has no [[children]]
-  or it has a single [[child]] and that [[child]] is a [[br]]:
+  <li>If <var>container</var>'s [[localname]] is "li", "dt", or "dd"; and
+  either it has no [[children]] or it has a single [[child]] and that [[child]]
+  is a [[br]]:
+  <!-- Including dt/dd here follows Firefox 5.0b2, as with the special dt/dd
+  handling below. -->
 
   <ol>
     <li><span>Split the parent</span> of the one-[[node]] list consisting of
     <var>container</var>.
 
-    <li><span>Fix orphaned list items</span> in the one-[[node]] list
-    consisting of <var>container</var>.
+    <li><span>Fix disallowed ancestors</span> of <var>container</var>.
 
     <li>Abort these steps.
   </ol>
@@ -4436,7 +4432,8 @@ http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
 
     <li><span>Split the parent</span> of <var>sublist</var>.
 
-    <li><span>Fix orphaned list items</span> in <var>sublist</var>.
+    <li><span>Fix disallowed ancestors</span> of each member of
+    <var>sublist</var>.
   </ol>
 </ol>
 

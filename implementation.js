@@ -3290,18 +3290,17 @@ function myExecCommand(command, showUI, value, range) {
 			return;
 		}
 
-		// "If container is an li, and either it has no children or it has a
-		// single child and that child is a br:"
-		if (isHtmlElement(container, "li")
+		// "If container's local name is "li", "dt", or "dd"; and either it has
+		// no children or it has a single child and that child is a br:"
+		if (["LI", "DT", "DD"].indexOf(container.tagName) != -1
 		&& (!container.hasChildNodes()
 		|| (container.childNodes.length == 1
 		&& isHtmlElement(container.firstChild, "br")))) {
 			// "Split the parent of the one-node list consisting of container."
 			splitParent([container]);
 
-			// "Fix orphaned list items in the one-node list consisting of
-			// container."
-			fixOrphanedListItems([container]);
+			// "Fix disallowed ancestors of container."
+			fixDisallowedAncestors(container);
 
 			// "Abort these steps."
 			return;
@@ -3494,8 +3493,10 @@ function myExecCommand(command, showUI, value, range) {
 			// "Split the parent of sublist, with new parent null."
 			splitParent(sublist);
 
-			// "Fix orphaned list items in sublist."
-			fixOrphanedListItems(sublist);
+			// "Fix disallowed ancestors of each member of sublist."
+			for (var i = 0; i < sublist.length; i++) {
+				fixDisallowedAncestor(sublist[i]);
+			}
 		}
 		break;
 
@@ -3695,6 +3696,36 @@ function myExecCommand(command, showUI, value, range) {
 }
 
 function fixDisallowedAncestors(node) {
+	// "If node is an li and its parent is not an ol, unset its value
+	// attribute, if set."
+	if (isHtmlElement(node, "li")
+	&& !isHtmlElement(node, "ol")) {
+		node.removeAttribute("value");
+	}
+
+	// "If node is an li with no attributes and its parent is not an ol or ul,
+	// or is a dt or dd with no attributes and its parent is not a dl, remove
+	// node, preserving its descendants. Then abort these steps."
+	if ((isHtmlElement(node, "li")
+	&& !node.attributes.length
+	&& !isHtmlElement(node.parentNode, ["ol", "ul"]))
+	|| (isHtmlElement(node, ["dt", "dd"])
+	&& !node.attributes.length
+	&& !isHtmlElement(node.parentNode, "dl"))) {
+		removePreservingDescendants(node);
+	}
+
+	// "If node is an li and its parent is not an ol or ul, or is a dt or dd
+	// and its parent is not a dl, set the tag name of node to "div". Then
+	// abort these steps."
+	if ((isHtmlElement(node, "li")
+	&& !isHtmlElement(node.parentNode, ["ol", "ul"]))
+	|| (isHtmlElement(node, ["dt", "dd"])
+	&& !isHtmlElement(node.parentNode, "dl"))) {
+		setTagName(node, "div");
+		return;
+	}
+
 	// "If node is an allowed child of its parent, or it is not an allowed
 	// child of any of its ancestors in the same editing host, abort these
 	// steps and do nothing."
@@ -3854,8 +3885,10 @@ function outdentNode(node) {
 			removePreservingDescendants(node);
 		}
 
-		// "Fix orphaned list items in children."
-		fixOrphanedListItems(children);
+		// "Fix disallowed ancestors of each member of children."
+		for (var i = 0; i < children.length; i++) {
+			fixDisallowedAncestors(children[i]);
+		}
 
 		// "Abort these steps."
 		return;
@@ -4006,8 +4039,10 @@ function toggleLists(range, tagName) {
 			// "Split the parent of sublist."
 			splitParent(sublist);
 
-			// "Fix orphaned list items in sublist."
-			fixOrphanedListItems(sublist);
+			// "Fix disallowed ancestors of each member of sublist."
+			for (var i = 0; i < sublist.length; i++) {
+				fixDisallowedAncestors(sublist[i]);
+			}
 		}
 
 	// "Otherwise, while node list is not empty:"
@@ -4161,34 +4196,6 @@ function toggleLists(range, tagName) {
 
 			// "Fix disallowed ancestors of the previous step's result."
 			fixDisallowedAncestors(newParent);
-		}
-	}
-}
-
-function fixOrphanedListItems(nodeList) {
-	// "For each li item in node list:"
-	for (var i = 0; i < nodeList.length; i++) {
-		var item = nodeList[i];
-		if (!isHtmlElement(item, "LI")) {
-			continue;
-		}
-
-		// "If item's parent is not an ol, unset item's value attribute, if
-		// set."
-		if (!isHtmlElement(item.parentNode, "OL")) {
-			item.removeAttribute("value");
-		}
-
-		// "If item has no attributes and its parent is not an ol or ul, remove
-		// item, preserving its descendants."
-		if (!item.attributes.length
-		&& !isHtmlElement(item.parentNode, ["OL", "UL"])) {
-			removePreservingDescendants(item);
-
-		// "Otherwise, if item's parent is not an ol or ul, set the tag name of
-		// item to "div"."
-		} else if (!isHtmlElement(item.parentNode, ["OL", "UL"])) {
-			setTagName(item, "div");
 		}
 	}
 }

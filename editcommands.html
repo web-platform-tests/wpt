@@ -430,6 +430,57 @@ substantially sometime in the future, but I'm not sure exactly what to aim for.
   <li>Return true.
 </ol>
 
+<!-- I don't remember why I wrote this.  Keeping it around just in case it
+turns out to be useful.
+
+<p><var title>node</var> is an <dfn>extraneous line break</dfn> if the following
+algorithm returns true:
+
+<p class=XXX>This is positively horrible.  It attempts to move complicated CSS
+logic into DOM methods, and does so badly.  Can we somehow make this less evil,
+preferably much less evil?
+
+<ol>
+  <li>If <var title>node</var> is not a <code data-anolis-spec=html title="the br element">br</code>, return false.
+
+  <li>Let <var title>ancestor block</var> be <var title>node</var>.
+
+  <li>While <var title>ancestor block</var> is an <span>inline node</span>, set
+  <var title>ancestor block</var> to its <span data-anolis-spec=domcore title=concept-tree-parent>parent</span>.
+
+  <li>Let <var title>previous box</var> be <var title>node</var>.
+
+  <li>While <var title>previous box</var> is equal to or an <span data-anolis-spec=domcore title=concept-tree-ancestor>ancestor</span> of
+  <var title>node</var>, set <var title>previous box</var> to the <span data-anolis-spec=domcore title=concept-node>node</span> immediately
+  before it in <span data-anolis-spec=domcore>tree order</span>, or null if there is no such <span data-anolis-spec=domcore title=concept-node>node</span>.
+
+  <li>Let <var title>next box</var> be the <span data-anolis-spec=domcore title=concept-node>node</span> immediately after <var title>node</var>
+  in <span data-anolis-spec=domcore>tree order</span>, or null if there is such <span data-anolis-spec=domcore title=concept-node>node</span>.
+
+  <li>If <var title>previous box</var> is null, or is not a <span data-anolis-spec=domcore title=concept-tree-descendant>descendant</span> of
+  <var title>ancestor block</var>, or is not an <span>inline node</span>, or is a
+  <code data-anolis-spec=html title="the br element">br</code>, return false.
+  <!- -
+  This means br either is the first thing in its block container that generates
+  an inline box, or it's the first thing after another block container, or the
+  first thing after a br.  In any case, the line break will be visible.
+
+  Otherwise, it will be invisible as long as it immediately precedes a block
+  box boundary.
+  - ->
+
+  <li>If <var title>ancestor block</var> is not null and <var title>node</var> is the last
+  <span data-anolis-spec=domcore title=concept-tree-descendant>descendant</span> of <var title>ancestor block</var>, return true.
+  <!- - Precedes the end of ancestor block's box. - ->
+
+  <li>If <var title>next box</var> is not null and not an <span>inline node</span>,
+  return true.
+  <!- - Precedes the start of next box's box. - ->
+
+  <li>Return false.
+</ol>
+-->
+
 <p>The <dfn id=css-styling-flag>CSS styling flag</dfn> is a boolean flag, which must initially be
 false.
 

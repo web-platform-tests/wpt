@@ -383,6 +383,57 @@ substantially sometime in the future, but I'm not sure exactly what to aim for.
   <li>Return true.
 </ol>
 
+<!-- I don't remember why I wrote this.  Keeping it around just in case it
+turns out to be useful.
+
+<p><var>node</var> is an <dfn>extraneous line break</dfn> if the following
+algorithm returns true:
+
+<p class=XXX>This is positively horrible.  It attempts to move complicated CSS
+logic into DOM methods, and does so badly.  Can we somehow make this less evil,
+preferably much less evil?
+
+<ol>
+  <li>If <var>node</var> is not a [[br]], return false.
+
+  <li>Let <var>ancestor block</var> be <var>node</var>.
+
+  <li>While <var>ancestor block</var> is an <span>inline node</span>, set
+  <var>ancestor block</var> to its [[parent]].
+
+  <li>Let <var>previous box</var> be <var>node</var>.
+
+  <li>While <var>previous box</var> is equal to or an [[ancestor]] of
+  <var>node</var>, set <var>previous box</var> to the [[node]] immediately
+  before it in [[treeorder]], or null if there is no such [[node]].
+
+  <li>Let <var>next box</var> be the [[node]] immediately after <var>node</var>
+  in [[treeorder]], or null if there is such [[node]].
+
+  <li>If <var>previous box</var> is null, or is not a [[descendant]] of
+  <var>ancestor block</var>, or is not an <span>inline node</span>, or is a
+  [[br]], return false.
+  <!- -
+  This means br either is the first thing in its block container that generates
+  an inline box, or it's the first thing after another block container, or the
+  first thing after a br.  In any case, the line break will be visible.
+
+  Otherwise, it will be invisible as long as it immediately precedes a block
+  box boundary.
+  - ->
+
+  <li>If <var>ancestor block</var> is not null and <var>node</var> is the last
+  [[descendant]] of <var>ancestor block</var>, return true.
+  <!- - Precedes the end of ancestor block's box. - ->
+
+  <li>If <var>next box</var> is not null and not an <span>inline node</span>,
+  return true.
+  <!- - Precedes the start of next box's box. - ->
+
+  <li>Return false.
+</ol>
+-->
+
 <p>The <dfn>CSS styling flag</dfn> is a boolean flag, which must initially be
 false.
 

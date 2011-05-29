@@ -4237,13 +4237,25 @@ http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
   the same as <var title="">range</var>'s, and whose <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> is
   (<var title="">container</var>, <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> of <var title="">container</var>).
 
+  <li>Let <var title="">end of line</var> be true if <var title="">new line range</var> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained title=contained>contains</a> either nothing or a
+  single <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code>, and false otherwise.
+
   <li>If the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> of <var title="">container</var> is "h1", "h2", "h3", "h4",
-  "h5", or "h6", and <var title="">new line range</var> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained title=contained>contains</a> either nothing or a single <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code>, let
-  <var title="">new container name</var> be the <a href=#default-single-line-container-name>default single-line container
-  name</a>.
+  "h5", or "h6", and <var title="">end of line</var> is true, let <var title="">new container
+  name</var> be the <a href=#default-single-line-container-name>default single-line container name</a>.
   <!-- IE9 makes a new header if there's a trailing <br>.  Firefox 5.0a2,
   Chrome 13 dev, and Opera 11.10 do not, and I follow them, since it makes more
   sense (such a <br> is invisible). -->
+
+  <li>Otherwise, if the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> of <var title="">container</var> is "dt" and
+  <var title="">end of line</var> is true, let <var title="">new container name</var> be "dd".
+
+  <li>Otherwise, if the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> of <var title="">container</var> is "dd" and
+  <var title="">end of line</var> is true, let <var title="">new container name</var> be "dt".
+  <!-- These two follow Firefox 5.0a2.  IE9 and Chrome 13 dev act as though
+  these two lines were not present (they clone the existing element).  Opera
+  11.10 nests a <p> inside.  Firefox is the most useful, assuming a definition
+  list somehow winds up inside the content. -->
 
   <li>Otherwise, let <var title="">new container name</var> be the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> of
   <var title="">container</var>.

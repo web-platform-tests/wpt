@@ -3290,18 +3290,32 @@ function myExecCommand(command, showUI, value, range) {
 		newLineRange.setStart(range.startContainer, range.startOffset);
 		newLineRange.setEnd(container, getNodeLength(container));
 
-		// "If the local name of container is "h1", "h2", "h3", "h4", "h5", or
-		// "h6", and new line range contains either nothing or a single br, let
-		// new container name be the default single-line container name."
-		var newContainerName;
+		// "Let end of line be true if new line range contains either nothing
+		// or a single br, and false otherwise."
 		var containedInNewLineRange = collectContainedNodes(newLineRange);
-		if (/^H[1-6]$/.test(container.tagName)
-		&& (!containedInNewLineRange.length
+		var endOfLine = !containedInNewLineRange.length
 			|| (containedInNewLineRange.length == 1
-				&& isHtmlElement(containedInNewLineRange[0], "br")
-			)
-		)) {
+			&& isHtmlElement(containedInNewLineRange[0], "br"));
+
+		// "If the local name of container is "h1", "h2", "h3", "h4", "h5", or
+		// "h6", and end of line is true, let new container name be the default
+		// single-line container name."
+		var newContainerName;
+		if (/^H[1-6]$/.test(container.tagName)
+		&& endOfLine) {
 			newContainerName = defaultSingleLineContainerName;
+
+		// "Otherwise, if the local name of container is "dt" and end of line
+		// is true, let new container name be "dd"."
+		} else if (container.tagName == "DT"
+		&& endOfLine) {
+			newContainerName = "dd";
+
+		// "Otherwise, if the local name of container is "dd" and end of line
+		// is true, let new container name be "dt"."
+		} else if (container.tagName == "DD"
+		&& endOfLine) {
+			newContainerName = "dt";
 
 		// "Otherwise, let new container name be the local name of container."
 		} else {

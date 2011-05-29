@@ -3495,7 +3495,7 @@ function myExecCommand(command, showUI, value, range) {
 
 			// "Fix disallowed ancestors of each member of sublist."
 			for (var i = 0; i < sublist.length; i++) {
-				fixDisallowedAncestor(sublist[i]);
+				fixDisallowedAncestors(sublist[i]);
 			}
 		}
 		break;
@@ -3699,7 +3699,7 @@ function fixDisallowedAncestors(node) {
 	// "If node is an li and its parent is not an ol, unset its value
 	// attribute, if set."
 	if (isHtmlElement(node, "li")
-	&& !isHtmlElement(node, "ol")) {
+	&& !isHtmlElement(node.parentNode, "ol")) {
 		node.removeAttribute("value");
 	}
 

@@ -1,4 +1,3 @@
-hidden-01.html
 ref hidden-1a.html == hidden-1-ref.html
 ref hidden-1b.html == hidden-1-ref.html
 ref hidden-1c.html == hidden-1-ref.html

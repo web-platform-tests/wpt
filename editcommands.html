@@ -4105,10 +4105,6 @@ fragments, html/body, head or things in head . . .
 <p class=XXX>Does not handle cases where block-extending the selection leaves
 it collapsed, like <code title="">&lt;p&gt;foo&lt;/p&gt;{}&lt;p&gt;bar&lt;/p&gt;</code>.
 
-<p class=XXX>The algorithm for preserving ranges doesn't work well here at all
-if the selection is collapsed.  The cursor can end up in the wrong place
-entirely.  Probably due to the wrap algorithm; that needs to be reexamined.
-
 <ol>
   <li>Let <var title="">items</var> be a list of all <code class=external data-anolis-spec=html title="the li element"><a href=http://www.whatwg.org/html/#the-li-element>li</a></code>s that are
   <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#ancestor-container title="ancestor container">ancestor containers</a> of the <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a>

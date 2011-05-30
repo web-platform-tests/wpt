@@ -4131,10 +4131,6 @@ fragments, html/body, head or things in head . . .
 <p class=XXX>Does not handle cases where block-extending the selection leaves
 it collapsed, like <code title>&lt;p>foo&lt;/p>{}&lt;p>bar&lt;/p></code>.
 
-<p class=XXX>The algorithm for preserving ranges doesn't work well here at all
-if the selection is collapsed.  The cursor can end up in the wrong place
-entirely.  Probably due to the wrap algorithm; that needs to be reexamined.
-
 <ol>
   <li>Let <var>items</var> be a list of all [[li]]s that are
   [[ancestorcontainers]] of the <span>active range</span>'s [[rangestart]]

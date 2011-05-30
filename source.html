@@ -1062,14 +1062,18 @@ useful to spec:
   multipleSelection, overwrite, print, refresh, saveAs, unbookmark: Mentioned
   in MSDN docs but not MDC, so presumably IE-only.  Some of these seem
   inappropriate or useless, others will bear investigation.
+* findString, fontSizeDelta, forwardDelete, insertLineBreak,
+  insertNewlineInQuotedContent, insertText, justifyNone, print, transpose:
+  There's code for these in WebKit, Source/WebCore/editing/EditorCommand.cpp,
+  but I didn't see them mentioned elsewhere.  Some might be worth adding.
 
 Things I haven't looked at:
 
 * copy, cut, paste: Needs attention to security.
 * delete, redo, undo: Needs review of the Google work on this; will probably be
   quite complicated.
-* insertParagraph, justifyCenter, justifyFull, justifyLeft, justifyRight: These
-  look important and should be similar to work I've already done, so they're
+* justifyCenter, justifyFull, justifyLeft, justifyRight: These look important
+  and should be similar to work I've already done, so they're
   next on my list.
 * insertHTML: Not supported by IE, but important.  I've seen frameworks that
   work around its absence in IE by using insertImage and then search and

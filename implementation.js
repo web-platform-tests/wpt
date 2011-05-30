@@ -600,11 +600,25 @@ function wrap(nodeList, siblingCriteria, newParentInstructions) {
 		return null;
 	}
 
-	// "If new parent's parent is null, insert new parent into the parent of
-	// the first member of node list immediately before the first member of
-	// node list."
+	// "If new parent's parent is null:"
 	if (!newParent.parentNode) {
+		// "Insert new parent into the parent of the first member of node list
+		// immediately before the first member of node list."
 		nodeList[0].parentNode.insertBefore(newParent, nodeList[0]);
+
+		// "If any range has a boundary point with node equal to the parent of
+		// new parent and offset equal to the index of new parent, add one to
+		// that boundary point's offset."
+		//
+		// Only try to fix the global range.
+		if (globalRange.startContainer == newParent.parentNode
+		&& globalRange.startOffset == getNodeIndex(newParent)) {
+			globalRange.setStart(globalRange.startContainer, globalRange.startOffset + 1);
+		}
+		if (globalRange.endContainer == newParent.parentNode
+		&& globalRange.endOffset == getNodeIndex(newParent)) {
+			globalRange.setEnd(globalRange.endContainer, globalRange.endOffset + 1);
+		}
 	}
 
 	// "Let original parent be the parent of the first member of node list."
@@ -3242,13 +3256,6 @@ function myExecCommand(command, showUI, value, range) {
 				function() { return false },
 				function() { return document.createElement(tag) }
 			);
-
-			// "If range's start node is not container, set range's start and
-			// end to (container, 0)."
-			if (range.startContainer != container) {
-				range.setStart(container, 0);
-				range.setEnd(container, 0);
-			}
 		}
 
 		// "If container's local name is "address" or "pre":"

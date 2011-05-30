@@ -715,9 +715,67 @@ instructions</dfn>:
   return null.  This can be used to only merge with adjacent siblings, in case
   you don't want to create a new parent if that fails. -->
 
-  <li>If <var title="">new parent</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is null, insert <var title="">new
-  parent</var> into the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of the first member of <var title="">node list</var>
-  immediately before the first member of <var title="">node list</var>.
+  <li>If <var title="">new parent</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is null:
+
+  <ol>
+    <li>Insert <var title="">new parent</var> into the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of the first member of
+    <var title="">node list</var> immediately before the first member of <var title="">node
+    list</var>.
+
+    <li>If any <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> has a <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point title=concept-boundary-point>boundary point</a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> equal to the
+    <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of <var title="">new parent</var> and <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a> equal to the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a>
+    of <var title="">new parent</var>, add one to that <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point title=concept-boundary-point>boundary point</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a>.
+    <!--
+    Basically, we want any boundary points around the wrapped nodes to go
+    inside the wrapper.  Without this step, wrapping "{}<br>" in a blockquote
+    would go like
+
+      {}<br>
+      -> {}<blockquote></blockquote><br>
+      -> {}<blockquote></blockquote><br>.
+
+    The second line is due to range mutation rules: a boundary point with an
+    offset equal to the index of a newly-inserted node stays put, so it remains
+    before it.  With this step, it goes like
+
+      {}<br>
+      -> {}<blockquote></blockquote><br>
+      -> <blockquote></blockquote>{}<br>
+      -> <blockquote>{}<br></blockquote>.
+
+    The difference in the final step is because we move the <br> "preserving
+    ranges".  This means that adjacent boundary points get swept along with it.
+    Previously, the <blockquote> intervened, so a boundary point after it would
+    get taken along but one before it would not.
+
+    Another solution that one might be tempted to consider would be to just put
+    the wrapper after the wrapped elements.  Then the boundary points would
+    stay put, before the wrapper, so they'd still be adjacent to the nodes to
+    be wrapped, like:
+
+      {<p>foo</p>}
+      -> {<p>foo</p>}<blockquote></blockquote>
+      -> <blockquote>{<p>foo</p>}</blockquote>.
+
+    The problem is that this completely breaks if you're wrapping multiple
+    things and not all are selected.  It would go like this:
+
+      <p>foo</p>{<p>bar</p>}
+      -> <p>foo</p>{<p>bar</p>}<blockquote></blockquote>
+      -> <p>foo</p><blockquote>{<p>bar</p>}</blockquote>
+      -> <blockquote>{<p>foo</p><p>bar</p>}</blockquote>.
+
+    The last step is again because of the range mutation rules: the boundary
+    point stays put when a new node is inserted.  They're fundamentally
+    asymmetric.
+
+    An alternative solution would be to define the concept of moving a list of
+    adjacent sibling nodes while preserving ranges, and handle this explicitly
+    at a more abstract level.
+    -->
+
+    <p class=XXX>Not clear this is the best solution.  See comment.
+  </ol>
 
   <li>Let <var title="">original parent</var> be the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of the first member of
   <var title="">node list</var>.
@@ -4240,13 +4298,6 @@ http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
     criteria</a> matching nothing and <a href=#new-parent-instructions>new parent instructions</a>
     returning the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement(<var title="">tag</var>)</a></code> on the
     <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>.  Set <var title="">container</var> to the result.
-
-    <li>If <var title="">range</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> is not <var title="">container</var>, set
-    <var title="">range</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> and <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> to
-    (<var title="">container</var>, 0).
-
-    <p class=XXX>This is a hack to work around range mutation rules not working
-    the way I'd like them to.  Should be fixed more sensibly.
   </ol>
 
   <li>If <var title="">container</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> is "address" or "pre":

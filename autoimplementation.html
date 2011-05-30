@@ -1160,6 +1160,12 @@ var tests = {
 		'<pre>foo[]<br></pre>',
 		'<pre>foo[]bar</pre>',
 
+		'<pre>foo[]<br><br></pre>',
+		'<pre>foo<br>{}<br></pre>',
+		'<pre>foo&#10;[]</pre>',
+		'<pre>foo[]&#10;</pre>',
+		'<pre>foo&#10;[]&#10;</pre>',
+
 		'<ol><li>{}<br></li></ol>',
 		'foo<ol><li>{}<br></li></ol>',
 		'<ol><li>{}<br></li></ol>foo',

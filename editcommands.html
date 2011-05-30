@@ -4337,10 +4337,8 @@ http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
     <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>, then call <code class=external data-anolis-spec=domrange title=dom-Range-insertNode><a href=http://html5.org/specs/dom-range.html#dom-range-insertnode>insertNode(<var title="">br</var>)</a></code> on
     <var title="">range</var>.
     <!-- Necessary because adding a br to the end of a block element does
-    nothing. -->
-
-    <p class=XXX>Need to handle the case where there are two consecutive br's
-    at the end of the block.
+    nothing if there wasn't one there already.  A single newline immediately
+    preceding a block boundary does nothing. -->
 
     <li>Abort these steps.
   </ol>
@@ -4348,7 +4346,7 @@ http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
   <li>If <var title="">container</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> is "li", "dt", or "dd"; and
   either it has no <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a> or it has a single <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> and that <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>
   is a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code>:
-  <!-- Including dt/dd here follows Firefox 5.0b2, as with the special dt/dd
+  <!-- Including dt/dd here follows Firefox 5.0a2, as with the special dt/dd
   handling below. -->
 
   <ol>

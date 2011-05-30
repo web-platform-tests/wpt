@@ -4372,10 +4372,8 @@ http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
     [[contextobject]], then call [[insertnode|<var>br</var>]] on
     <var>range</var>.
     <!-- Necessary because adding a br to the end of a block element does
-    nothing. -->
-
-    <p class=XXX>Need to handle the case where there are two consecutive br's
-    at the end of the block.
+    nothing if there wasn't one there already.  A single newline immediately
+    preceding a block boundary does nothing. -->
 
     <li>Abort these steps.
   </ol>
@@ -4383,7 +4381,7 @@ http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
   <li>If <var>container</var>'s [[localname]] is "li", "dt", or "dd"; and
   either it has no [[children]] or it has a single [[child]] and that [[child]]
   is a [[br]]:
-  <!-- Including dt/dd here follows Firefox 5.0b2, as with the special dt/dd
+  <!-- Including dt/dd here follows Firefox 5.0a2, as with the special dt/dd
   handling below. -->
 
   <ol>

@@ -2863,16 +2863,12 @@ function myExecCommand(command, showUI, value, range) {
 
 		// "For each node node contained in new range, append node to node list
 		// if it is editable, the last member of node list (if any) is not an
-		// ancestor of node, and node is not an HTML element that has local
-		// name "article", "aside", "blockquote", "caption", "col", "colgroup",
-		// "dd", "dl", "dt", "footer", "header", "hgroup", "li", "nav", "ol",
-		// "section", "table", "tbody", "td", "th", "thead", "tr", or "ul"."
+		// ancestor of node, and node is either a non-list single-line
+		// container or an allowed child of "p"."
 		nodeList = collectContainedNodes(newRange, function(node) {
 			return isEditable(node)
-				&& !isHtmlElement(node, ["ARTICLE", "ASIDE", "BLOCKQUOTE",
-				"CAPTION", "COL", "COLGROUP", "DD", "DL", "DT", "FOOTER",
-				"HEADER", "HGROUP", "LI", "NAV", "OL", "SECTION", "TABLE",
-				"TBODY", "TD", "TH", "THEAD", "TR", "UL"]);
+				&& (isNonListSingleLineContainer(node)
+				|| isAllowedChild(node, "p"));
 		});
 
 		// "For each node in node list, while node is a descendant of an

@@ -3944,13 +3944,9 @@ sense for <address>/<h*>/<pre>, but other browsers don't do it.
   <li>For each [[node]] <var>node</var> [[contained]] in <var>new range</var>,
   append <var>node</var> to <var>node list</var> if it is
   <span>editable</span>, the last member of <var>node list</var> (if any) is
-  not an [[ancestor]] of <var>node</var>, and <var>node</var> is not an
-  <span>HTML element</span> that has [[localname]] "article", "aside",
-  "blockquote", "caption", "col", "colgroup", "dd", "dl", "dt", "footer",
-  "header", "hgroup", "li", "nav", "ol", "section", "table", "tbody", "td",
-  "th", "thead", "tr", or "ul".
-
-  <p class=XXX>This list is random.  Make it reasonable.
+  not an [[ancestor]] of <var>node</var>, and <var>node</var> is either a
+  <span>non-list single-line container</span> or an <span>allowed child</span>
+  of "p".
 
   <li>For each <var>node</var> in <var>node list</var>, while <var>node</var>
   is a [[descendant]] of an <span>editable</span> <span>HTML element</span>

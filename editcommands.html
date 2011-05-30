@@ -4526,13 +4526,22 @@ The default in Firefox 4.0 is off, while all other browsers behave like the
 default is on (and IE/Opera give no way to turn it off), so I default it to on.
 -->
 
-<p><a href=#action>Action</a>: Convert <var title="">value</var> to a boolean according to the
-algorithm in WebIDL, and set the <a href=#css-styling-flag>CSS styling flag</a> to the result.
-
-<p class=XXX>Properly cross-reference.
+<p><a href=#action>Action</a>: If <var title="">value</var> is an <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#ascii-case-insensitive>ASCII case-insensitive</a> match for the string
+"false", set the <a href=#css-styling-flag>CSS styling flag</a> to false.  Otherwise, set the
+<a href=#css-styling-flag>CSS styling flag</a> to true.
+<!-- This matches Firefox 5.0a2.  Chrome 13 dev treats the case-sensitive
+string "true" as true, the case-sensitive string "false" as false, and does
+nothing for any other string.  I went with Gecko because this way there are
+only two possible effects, not three, which makes it easier to reason about and
+debug.  Also, Gecko made up the command and has larger market share, so this is
+probably more web-compatible.  Cursory searches of Google Code and GitHub
+suggest that authors almost always pass a boolean as the third argument when
+using styleWithCSS, in which case the two behaviors work the same. -->
 
 <p><a href=#state>State</a>: True if the <a href=#css-styling-flag>CSS styling flag</a> is true,
 otherwise false.
+<!-- This follows Chrome 13 dev.  Firefox 5.0a2 doesn't support
+queryCommandState() for styleWithCSS. -->
 
 
 <h3 id=the-usecss-command><span class=secno>8.2 </span><dfn>The <code title="">useCSS</code> command</dfn></h3>
@@ -4541,15 +4550,15 @@ styleWithCSS either), nor by Chrome 12 dev (which does support styleWithCSS.
 useCSS was the original feature in Mozilla 1.3, but the meaning is backward, so
 Gecko added styleWithCSS as a replacement. -->
 
-<p><a href=#action>Action</a>: Convert <var title="">value</var> to a boolean according to the
-algorithm in WebIDL, and set the <a href=#css-styling-flag>CSS styling flag</a> to the negation
-of the result.  Since the effect of this command is the opposite of what one
-would expect, user agents are encouraged to point authors to <code title="the
-stylewithcss command"><a href=#the-stylewithcss-command>styleWithCSS</a></code> when <code title="the usecss
+<p><a href=#action>Action</a>: If <var title="">value</var> is an <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#ascii-case-insensitive>ASCII case-insensitive</a> match for the string
+"false", set the <a href=#css-styling-flag>CSS styling flag</a> to true.  Otherwise, set the
+<a href=#css-styling-flag>CSS styling flag</a> to false.
+
+<p>Since the effect of this command is the opposite of what one would expect,
+user agents are encouraged to point authors to <code title="the stylewithcss
+command"><a href=#the-stylewithcss-command>styleWithCSS</a></code> when <code title="the usecss
 command"><a href=#the-usecss-command>useCSS</a></code> is used, such as by logging a warning to an error
 console.
-
-<p class=XXX>Properly cross-reference.
 
 <p class=XXX>The meaning of this command is backwards, and only Gecko supports
 it.  It would be great if Gecko would agree to drop support, so that we could

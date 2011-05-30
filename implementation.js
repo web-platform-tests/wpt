@@ -325,7 +325,7 @@ function collectContainedNodes(range, condition) {
 
 	var stop = range.endContainer;
 	if (stop.hasChildNodes()
-	&& range.endOffset < node.childNodes.length) {
+	&& range.endOffset < stop.childNodes.length) {
 		// The node after the last contained node is a child
 		stop = stop.childNodes[range.endOffset];
 	} else {

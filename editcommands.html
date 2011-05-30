@@ -110,6 +110,7 @@ have experience using this feature.
   <ol>
    <li><a href=#the-stylewithcss-command><span class=secno>8.1 </span>The <code title="">styleWithCSS</code> command</a></li>
    <li><a href=#the-usecss-command><span class=secno>8.2 </span>The <code title="">useCSS</code> command</a></ol></li>
+ <li><a href=#additional-requirements><span class=secno>9 </span>Additional requirements</a></li>
  <li><a class=no-num href=#acknowledgements>Acknowledgements</a></ol>
 <!--end-toc-->
 
@@ -4560,6 +4561,15 @@ console.
 <p class=XXX>The meaning of this command is backwards, and only Gecko supports
 it.  It would be great if Gecko would agree to drop support, so that we could
 get rid of it.
+
+
+<h2 id=additional-requirements><span class=secno>9 </span>Additional requirements</h2>
+
+<p>When the user instructs the user agent to insert a line break inside an
+<a href=#editing-host>editing host</a>, such as by pressing the Return key while the cursor
+is in an <a href=#editable>editable</a> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>, the user agent must take the
+<a href=#action>action</a> for <a href=#the-insertparagraph-command>the <code title="">insertParagraph</code>
+command</a>.
 
 
 <h2 class=no-num id=acknowledgements>Acknowledgements</h2>

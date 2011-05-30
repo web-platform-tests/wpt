@@ -214,6 +214,77 @@ list</a>.
 like this.
 
 
+<h2>Methods of the <code data-anolis-spec=html>HTMLDocument</code> interface</h2>
+
+<p>The <dfn title=execCommand()><code>execCommand(<var>command</var>,
+<var>showUI</var>, <var>value</var>)</code></dfn> method on the
+<code data-anolis-spec=html>HTMLDocument</code> interface allows scripts to
+perform actions on the current selection or at the current caret position.
+Generally, these commands would be used to implement editor UI, for example
+having a "delete" button on a toolbar.  There are three variants to this
+method, with one, two, and three arguments respectively. The <var>showUI</var>
+and <var>value</var> parameters, even if specified, are ignored except where
+otherwise stated.
+
+<p>The <dfn
+title=queryCommandState()><code>queryCommandState(<var>command</var>)</code></dfn>
+method on the <code data-anolis-spec=html>HTMLDocument</code> interface allows
+scripts to ask true-or-false status questions about the current selection, such
+as whether it is bold or not.
+
+<p>The <dfn
+title=queryCommandValue()><code>queryCommandValue(<var>command</var>)</code></dfn>
+method on the <code data-anolis-spec=html>HTMLDocument</code> interface allows
+scripts to get the value of some property of the current selection in string
+form, such as what color it is.
+
+<p>All three of these methods operate using particular <dfn
+title=command>commands</dfn>, identified by a string <var>command</var> passed
+as the first argument.  The <var>command</var> argument of all three methods
+must be treated in an <span data-anolis-spec=domcore>ASCII
+case-insensitive</span> manner.  Each <span>command</span> is defined in its
+own section of this specification.
+
+<p><span title=command>Commands</span> may have an associated
+<dfn>action</dfn>, <dfn>state</dfn>, <dfn>value</dfn>, and/or <dfn>relevant
+CSS property</dfn>.  If not otherwise specified, the <span>action</span> for a
+command is to do nothing, the <span>state</span> is false, the
+<span>value</span> is the empty string, and the <span>relevant CSS
+property</span> is null.
+<!-- Requesting the state of an unknown command throws an exception in IE 9 RC
+and Firefox 4b11, and returns boolean false in Chrome 10 and Opera 11.
+
+Requesting the value of an unknown command throws an exception in IE 9 RC and
+in Firefox 4b11.  It returns boolean false in Chrome 10, and the empty string
+in Opera 11. -->
+
+<p>When <code>execCommand()</code> is invoked, the user agent must follow the
+<span>action</span> instructions given in this specification for
+<var>command</var>, with <var>showUI</var> and <var>value</var> passed to the
+instructions as arguments.  When <code>queryCommandState()</code> is invoked,
+the user agent must return the <span>state</span> for <var>command</var>.  When
+<code>queryCommandValue()</code> is invoked, the user agent must return the
+<span>value</span> for <var>command</var>.
+
+<p>Most <span title=command>commands</span> act on the <dfn>active range</dfn>.
+This is defined to be the first [[range]] in the [[selection]] given by calling
+[[getselection]] on the [[contextobject]], or null if there is no such
+[[range]].  If the <span>active range</span> is null, all <span
+title=command>commands</span> must behave as though they were not defined
+except <span>the <code title>styleWithCSS</code> command</span> and <span>the
+<code title>useCSS</code> command</span>.
+
+<p class=XXX>Querying the value or state of an unrecognized command throws an
+exception in IE and Firefox.  Need to consider changing to that behavior.
+
+<p class=XXX>I say "first range" because I think that's what Gecko actually
+does, and Gecko is the only one that allows multiple ranges in a selection.
+This is keeping in mind that it stores ranges sorted by start, not by the order
+the user added them, and silently removes or shortens existing ranges to avoid
+overlap.  It probably makes the most sense in the long term to have the command
+affect all ranges.  But I'll leave this for later.
+
+
 <h2>Common definitions</h2>
 
 <p>An <dfn>HTML element</dfn> is an [[element]] whose [[namespace]] is the
@@ -975,76 +1046,6 @@ instead follow these rules:
   [[bpoffset]].
 </ol>
 
-
-<h2>Methods of the <code data-anolis-spec=html>HTMLDocument</code> interface</h2>
-
-<p>The <dfn title=execCommand()><code>execCommand(<var>command</var>,
-<var>showUI</var>, <var>value</var>)</code></dfn> method on the
-<code data-anolis-spec=html>HTMLDocument</code> interface allows scripts to
-perform actions on the current selection or at the current caret position.
-Generally, these commands would be used to implement editor UI, for example
-having a "delete" button on a toolbar.  There are three variants to this
-method, with one, two, and three arguments respectively. The <var>showUI</var>
-and <var>value</var> parameters, even if specified, are ignored except where
-otherwise stated.
-
-<p>The <dfn
-title=queryCommandState()><code>queryCommandState(<var>command</var>)</code></dfn>
-method on the <code data-anolis-spec=html>HTMLDocument</code> interface allows
-scripts to ask true-or-false status questions about the current selection, such
-as whether it is bold or not.
-
-<p>The <dfn
-title=queryCommandValue()><code>queryCommandValue(<var>command</var>)</code></dfn>
-method on the <code data-anolis-spec=html>HTMLDocument</code> interface allows
-scripts to get the value of some property of the current selection in string
-form, such as what color it is.
-
-<p>All three of these methods operate using particular <dfn
-title=command>commands</dfn>, identified by a string <var>command</var> passed
-as the first argument.  The <var>command</var> argument of all three methods
-must be treated in an <span data-anolis-spec=domcore>ASCII
-case-insensitive</span> manner.  Each <span>command</span> is defined in its
-own section of this specification.
-
-<p><span title=command>Commands</span> may have an associated
-<dfn>action</dfn>, <dfn>state</dfn>, <dfn>value</dfn>, and/or <dfn>relevant
-CSS property</dfn>.  If not otherwise specified, the <span>action</span> for a
-command is to do nothing, the <span>state</span> is false, the
-<span>value</span> is the empty string, and the <span>relevant CSS
-property</span> is null.
-<!-- Requesting the state of an unknown command throws an exception in IE 9 RC
-and Firefox 4b11, and returns boolean false in Chrome 10 and Opera 11.
-
-Requesting the value of an unknown command throws an exception in IE 9 RC and
-in Firefox 4b11.  It returns boolean false in Chrome 10, and the empty string
-in Opera 11. -->
-
-<p>When <code>execCommand()</code> is invoked, the user agent must follow the
-<span>action</span> instructions given in this specification for
-<var>command</var>, with <var>showUI</var> and <var>value</var> passed to the
-instructions as arguments.  When <code>queryCommandState()</code> is invoked,
-the user agent must return the <span>state</span> for <var>command</var>.  When
-<code>queryCommandValue()</code> is invoked, the user agent must return the
-<span>value</span> for <var>command</var>.
-
-<p>Most <span title=command>commands</span> act on the <dfn>active range</dfn>.
-This is defined to be the first [[range]] in the [[selection]] given by calling
-[[getselection]] on the [[contextobject]], or null if there is no such
-[[range]].  If the <span>active range</span> is null, all <span
-title=command>commands</span> must behave as though they were not defined
-except <span>the <code title>styleWithCSS</code> command</span> and <span>the
-<code title>useCSS</code> command</span>.
-
-<p class=XXX>Querying the value or state of an unrecognized command throws an
-exception in IE and Firefox.  Need to consider changing to that behavior.
-
-<p class=XXX>I say "first range" because I think that's what Gecko actually
-does, and Gecko is the only one that allows multiple ranges in a selection.
-This is keeping in mind that it stores ranges sorted by start, not by the order
-the user added them, and silently removes or shortens existing ranges to avoid
-overlap.  It probably makes the most sense in the long term to have the command
-affect all ranges.  But I'll leave this for later.
 
 <!--
 Things that are only implemented by a couple of browsers and may or may not be

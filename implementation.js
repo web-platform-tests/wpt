@@ -3186,24 +3186,8 @@ function myExecCommand(command, showUI, value, range) {
 		range.setStart(node, offset);
 		range.setEnd(node, offset);
 
-		// "If node has an Element child of index offset, let container equal
-		// that child."
-		var container;
-		if (offset < node.childNodes.length
-		&& node.childNodes[offset].nodeType == Node.ELEMENT_NODE) {
-			container = node.childNodes[offset];
-
-		// "Otherwise, if node has an Element child of index offset minus one,
-		// let container equal that child."
-		} else if (offset > 0
-		&& offset - 1 < node.childNodes.length
-		&& node.childNodes[offset - 1].nodeType == Node.ELEMENT_NODE) {
-			container = node.childNodes[offset - 1];
-
-		// "Otherwise, let container equal node."
-		} else {
-			container = node;
-		}
+		// "Let container equal node."
+		var container = node;
 
 		// "While container is not a single-line container, and container's
 		// parent is editable and in the same editing host as node, set

@@ -35,7 +35,7 @@
 <body class=draft>
 <div class=head id=head>
 <h1>HTML Editing Commands</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-29-may-2011>Work in Progress &mdash; Last Update 29 May 2011</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-30-may-2011>Work in Progress &mdash; Last Update 30 May 2011</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;ayg+spec@aryeh.name&gt;
@@ -4197,15 +4197,7 @@ http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
   <li>Set <var title="">range</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> and <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> to
   (<var title="">node</var>, <var title="">offset</var>).
 
-  <li>If <var title="">node</var> has an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a>
-  <var title="">offset</var>, let <var title="">container</var> equal that <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>.
-
-  <p class=XXX>This doesn't seem to make sense.  Investigate.
-
-  <li>Otherwise, if <var title="">node</var> has an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a>
-  <var title="">offset</var> minus one, let <var title="">container</var> equal that <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>.
-
-  <li>Otherwise, let <var title="">container</var> equal <var title="">node</var>.
+  <li>Let <var title="">container</var> equal <var title="">node</var>.
 
   <li>While <var title="">container</var> is not a <a href=#single-line-container>single-line container</a>,
   and <var title="">container</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is <a href=#editable>editable</a> and <a href=#in-the-same-editing-host>in

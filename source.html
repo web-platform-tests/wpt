@@ -4232,15 +4232,7 @@ http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
   <li>Set <var>range</var>'s [[rangestart]] and [[rangeend]] to
   (<var>node</var>, <var>offset</var>).
 
-  <li>If <var>node</var> has an [[element]] [[child]] of [[index]]
-  <var>offset</var>, let <var>container</var> equal that [[child]].
-
-  <p class=XXX>This doesn't seem to make sense.  Investigate.
-
-  <li>Otherwise, if <var>node</var> has an [[element]] [[child]] of [[index]]
-  <var>offset</var> minus one, let <var>container</var> equal that [[child]].
-
-  <li>Otherwise, let <var>container</var> equal <var>node</var>.
+  <li>Let <var>container</var> equal <var>node</var>.
 
   <li>While <var>container</var> is not a <span>single-line container</span>,
   and <var>container</var>'s [[parent]] is <span>editable</span> and <span>in

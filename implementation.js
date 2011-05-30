@@ -3022,27 +3022,13 @@ function myExecCommand(command, showUI, value, range) {
 		var nodeList = [];
 
 		// "For each node node contained in new range, if node is editable and
-		// can be the child of a div or ol or ul and if no ancestor of node is
-		// in node list, append node to node list."
-		for (var node = newRange.startContainer; node != nextNodeDescendants(newRange.endContainer); node = nextNode(node)) {
-			if (!isContained(node, newRange) || !isEditable(node)) {
-				continue;
-			}
-
-			if (node.nodeType == Node.ELEMENT_NODE
-			&& ["TBODY", "THEAD", "TR", "TH", "TD"].indexOf(node.tagName) != -1) {
-				continue;
-			}
-
-			// We only need to check that the last member isn't an ancestor,
-			// because no ancestor of a member can be in the list.
-			if (nodeList.length
-			&& isAncestor(nodeList[nodeList.length - 1], node)) {
-				continue;
-			}
-
-			nodeList.push(node);
-		}
+		// is an allowed child of "div" or "ol" and if the last member of node
+		// list (if any) is not an ancestor of node, append node to node list."
+		nodeList = collectContainedNodes(newRange, function(node) {
+			return isEditable(node)
+				&& (isAllowedChild(node, "div")
+				|| isAllowedChild(node, "ol"));
+		});
 
 		// "If the first member of node list is an li whose parent is an ol or
 		// ul, and its previousSibling is an li as well, normalize sublists of

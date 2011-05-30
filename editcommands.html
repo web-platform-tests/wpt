@@ -557,11 +557,10 @@ preferably much less evil?
 </ol>
 -->
 
-<p>The <dfn id=css-styling-flag>CSS styling flag</dfn> is a boolean flag, which must initially be
-false.
-
-<p class=XXX>Is the styling flag associated with the document, with the editing
-host, what?  Needs reverse-engineering.
+<p>Each <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/html/#htmldocument>HTMLDocument</a></code> has a boolean <dfn id=css-styling-flag>CSS styling flag</dfn> associated
+with it, which must initially be false.  (<a href=#the-stylewithcss-command>The <code title="">styleWithCSS</code> command</a> can be used to modify or query it, by
+means of the <code><a href=#execcommand()>execCommand()</a></code> and <code><a href=#querycommandstate()>queryCommandState()</a></code>
+methods.)
 
 <p>When the user agent is instructed to run a particular method, it must follow
 the steps defined for that method in the appropriate specification, not act as

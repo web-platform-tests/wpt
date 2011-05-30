@@ -45,6 +45,7 @@ replace = {
     'fontface': '<code data-anolis-spec=html title=dom-font-face>face</code>',
     'fontsize': '<code data-anolis-spec=html title=dom-font-size>size</code>',
     'getselection': '<code data-anolis-spec=domrange title=dom-Document-getSelection>getSelection()</code>',
+    'htmldocument': '<code data-anolis-spec=html>HTMLDocument</code>',
     'htmlnamespace': '<span data-anolis-spec=domcore>HTML namespace</span>',
     'href': '<code data-anolis-spec=html title=attr-hyperlink-href>href</code>',
     'i': '<code data-anolis-spec=html title="the i element">i</code>',

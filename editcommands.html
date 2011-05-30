@@ -354,11 +354,6 @@ state, and whose <a class=external data-anolis-spec=domcore href=http://dvcs.w3.
 <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#documentfragment>DocumentFragment</a></code>, its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> cannot be null, and it must descend from
 either an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> or a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#document>Document</a></code>.
 
-<p class=note>The algorithms here will generally not remove or alter the
-attributes of any node that is not editable.  Note that an editing host is not
-editable, so authors are assured that editing commands will only modify the
-editing host's contents and not the editing host itself.
-
 <p>The <dfn id=editing-host-of>editing host of</dfn> <var title="">node</var> is null if <var title="">node</var> is
 neither <a href=#editable>editable</a> nor an <a href=#editing-host>editing host</a>; <var title="">node</var>
 itself, if <var title="">node</var> is an <a href=#editing-host>editing host</a>; or the nearest
@@ -368,6 +363,14 @@ itself, if <var title="">node</var> is an <a href=#editing-host>editing host</a>
 <p>Two <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a> are <dfn id=in-the-same-editing-host>in the same editing host</dfn> if the <a href=#editing-host-of>editing
 host of</a> the first is non-null and the same as the <a href=#editing-host-of>editing host
 of</a> the second.
+
+<p class=note>Barring bugs, the algorithms here will not alter the attributes
+of a non-editable element; will not remove a non-editable node from its parent
+(except to immediately give it a new parent in the same editing host); and will
+not add, remove, or reorder children of a node unless it is either editable or
+an editing host.  An editing host is never editable, so authors are assured
+that editing commands will only modify the editing host's contents and not the
+editing host itself.
 
 <p>The <dfn id=prohibited-paragraph-children>prohibited paragraph children</dfn> are "address", "article",
 "aside", "blockquote", "center", "details", "dd", "dir", "div", "dl", "dt",

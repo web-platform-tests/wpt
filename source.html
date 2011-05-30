@@ -311,11 +311,6 @@ state, and whose [[parent]] is an <span>editing host</span> or
 [[documentfragment]], its [[parent]] cannot be null, and it must descend from
 either an [[element]] or a [[document]].
 
-<p class=note>The algorithms here will generally not remove or alter the
-attributes of any node that is not editable.  Note that an editing host is not
-editable, so authors are assured that editing commands will only modify the
-editing host's contents and not the editing host itself.
-
 <p>The <dfn>editing host of</dfn> <var>node</var> is null if <var>node</var> is
 neither <span>editable</span> nor an <span>editing host</span>; <var>node</var>
 itself, if <var>node</var> is an <span>editing host</span>; or the nearest
@@ -325,6 +320,14 @@ itself, if <var>node</var> is an <span>editing host</span>; or the nearest
 <p>Two [[nodes]] are <dfn>in the same editing host</dfn> if the <span>editing
 host of</span> the first is non-null and the same as the <span>editing host
 of</span> the second.
+
+<p class=note>Barring bugs, the algorithms here will not alter the attributes
+of a non-editable element; will not remove a non-editable node from its parent
+(except to immediately give it a new parent in the same editing host); and will
+not add, remove, or reorder children of a node unless it is either editable or
+an editing host.  An editing host is never editable, so authors are assured
+that editing commands will only modify the editing host's contents and not the
+editing host itself.
 
 <p>The <dfn>prohibited paragraph children</dfn> are "address", "article",
 "aside", "blockquote", "center", "details", "dd", "dir", "div", "dl", "dt",

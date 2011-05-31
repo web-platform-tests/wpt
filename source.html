@@ -4093,10 +4093,8 @@ sense for <address>/<h*>/<pre>, but other browsers don't do it.
   <li>If <var>value</var> is not "address", "div", "h1", "h2", "h3", "h4",
   "h5", "h6", "p", or "pre", then do nothing and abort these steps.
 
-  <p class=XXX>Non-IE browsers support a lot more elements, but I have my
-  doubts about how much sense it makes to support things where you'd expect to
-  nest them.  See <a
-  href=http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031765.html>mail</a>.
+  <p class=XXX>We should support dt and dd here, since they make sense here and
+  there's no other way to create them.
   <!--
   Opera 11.10 throws NOT_SUPPORTED_ERR for bad elements, all other tested
   browsers ignore the input.  Testing in IE9, Firefox 4.0, Chrome 13 dev, and
@@ -4112,6 +4110,9 @@ sense for <address>/<h*>/<pre>, but other browsers don't do it.
   HTML5 as of May 2011 supports: address, article, aside, blockquote, div,
   footer, h*, header, hgroup, nav, p, pre, section, which exactly matches
   Chrome except minus dd/dt/dl.
+
+  See mailing list discussion on the subject:
+  http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031765.html
   -->
 
   <li><span>Block-extend</span> the <span>active range</span>, and let <var>new

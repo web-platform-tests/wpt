@@ -828,18 +828,18 @@ function deleteSelection() {
 	// "Let start block be the start node of range."
 	var startBlock = range.startContainer;
 
-	// "While start block is not an HTML element or its local name is not a
-	// prohibited paragraph child, set start block to its parent."
-	while (!isHtmlElement(startBlock, prohibitedParagraphChildren)) {
+	// "While start block is not a prohibited paragraph child, set start block
+	// to its parent."
+	while (!isProhibitedParagraphChild(startBlock)) {
 		startBlock = startBlock.parentNode;
 	}
 
 	// "Let end block be the end node of range."
 	var endBlock = range.endContainer;
 
-	// "While end block is not an HTML element or its local name is not a
-	// prohibited paragraph child, set end block to its parent."
-	while (!isHtmlElement(endBlock, prohibitedParagraphChildren)) {
+	// "While end block is not a prohibited paragraph child, set end block to
+	// its parent."
+	while (!isProhibitedParagraphChild(endBlock)) {
 		endBlock = endBlock.parentNode;
 	}
 
@@ -972,17 +972,23 @@ function inSameEditingHost(node1, node2) {
 		&& getEditingHostOf(node1) == getEditingHostOf(node2);
 }
 
-// "The prohibited paragraph children are "address", "article", "aside",
+// "A prohibited paragraph child name is "address", "article", "aside",
 // "blockquote", "center", "details", "dd", "dir", "div", "dl", "dt",
 // "fieldset", "figcaption", "figure", "footer", "form", "h1", "h2", "h3",
 // "h4", "h5", "h6", "header", "hgroup", "hr", "li", "listing", "menu", "nav",
-// "ol", "p", "plaintext", "pre", "section", "summary", "table", "ul", and
+// "ol", "p", "plaintext", "pre", "section", "summary", "table", "ul", or
 // "xmp"."
-var prohibitedParagraphChildren = ["address", "article", "aside", "blockquote",
-	"center", "details", "dd", "dir", "div", "dl", "dt", "fieldset",
-	"figcaption", "figure", "footer", "form", "h1", "h2", "h3", "h4", "h5",
-	"h6", "header", "hgroup", "hr", "li", "listing", "menu", "nav", "ol", "p",
-	"plaintext", "pre", "section", "summary", "table", "ul", "xmp"];
+var prohibitedParagraphChildNames = ["address", "article", "aside",
+	"blockquote", "center", "details", "dd", "dir", "div", "dl", "dt",
+	"fieldset", "figcaption", "figure", "footer", "form", "h1", "h2", "h3",
+	"h4", "h5", "h6", "header", "hgroup", "hr", "li", "listing", "menu", "nav",
+	"ol", "p", "plaintext", "pre", "section", "summary", "table", "ul", "xmp"];
+
+// "A prohibited paragraph child is an HTML element whose local name is a
+// prohibited paragraph child name."
+function isProhibitedParagraphChild(node) {
+	return isHtmlElement(node, prohibitedParagraphChildNames);
+}
 
 function isAllowedChild(child, parent_) {
 	// "If parent is "colgroup", "table", "tbody", "tfoot", "thead", "tr", or
@@ -1030,8 +1036,8 @@ function isAllowedChild(child, parent_) {
 		// "If child is "a", and parent or some ancestor of parent is an a,
 		// return false."
 		//
-		// "If child is one of the prohibited paragraph children and parent or
-		// some ancestor of parent is a p, return false."
+		// "If child is a prohibited paragraph child name and parent or some
+		// ancestor of parent is a p, return false."
 		//
 		// "If child is "h1", "h2", "h3", "h4", "h5", or "h6", and parent or
 		// some ancestor of parent is an HTML element with local name "h1",
@@ -1041,7 +1047,7 @@ function isAllowedChild(child, parent_) {
 			if (child == "a" && isHtmlElement(ancestor, "a")) {
 				return false;
 			}
-			if (prohibitedParagraphChildren.indexOf(child) != -1
+			if (prohibitedParagraphChildNames.indexOf(child) != -1
 			&& isHtmlElement(ancestor, "p")) {
 				return false;
 			}
@@ -1113,7 +1119,7 @@ function isAllowedChild(child, parent_) {
 		[["h1", "h2", "h3", "h4", "h5", "h6"], ["h1", "h2", "h3", "h4", "h5", "h6"]],
 		[["li"], ["li"]],
 		[["nobr"], ["nobr"]],
-		[["p"], prohibitedParagraphChildren],
+		[["p"], prohibitedParagraphChildNames],
 		[["td", "th"], ["caption", "col", "colgroup", "tbody", "td", "tfoot", "th", "thead", "tr"]],
 	];
 	for (var i = 0; i < table.length; i++) {

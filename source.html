@@ -332,13 +332,16 @@ an editing host.  An editing host is never editable, so authors are assured
 that editing commands will only modify the editing host's contents and not the
 editing host itself.
 
-<p>The <dfn>prohibited paragraph children</dfn> are "address", "article",
+<p>A <dfn>prohibited paragraph child name</dfn> is "address", "article",
 "aside", "blockquote", "center", "details", "dd", "dir", "div", "dl", "dt",
 "fieldset", "figcaption", "figure", "footer", "form", "h1", "h2", "h3", "h4",
 "h5", "h6", "header", "hgroup", "hr", "li", "listing", "menu", "nav", "ol",
-"p", "plaintext", "pre", "section", "summary", "table", "ul", and "xmp".
-<!-- These are all the things that will close a <p> if found as a child.  I
-think. -->
+"p", "plaintext", "pre", "section", "summary", "table", "ul", or "xmp".
+
+<p>A <dfn>prohibited paragraph child</dfn> is an <span>HTML element</span>
+whose [[localname]] is a <span>prohibited paragraph child name</span>.
+<!-- These are all the things that will close a <p> if found as a descendant.
+I think. -->
 
 <p>A [[node]] or string <var>child</var> is an <dfn>allowed child</dfn> of a
 [[node]] or string <var>parent</var> if the following algorithm returns true:
@@ -400,9 +403,9 @@ substantially sometime in the future, but I'm not sure exactly what to aim for.
     <a>foo<table><td><a>bar</a></td></table>baz</a>, but it's invalid in those
     cases too, so no need for complication. -->
 
-    <li>If <var>child</var> is one of the <span>prohibited paragraph
-    children</span> and <var>parent</var> or some [[ancestor]] of
-    <var>parent</var> is a [[p]], return false.
+    <li>If <var>child</var> is a <span>prohibited paragraph child name</span>
+    and <var>parent</var> or some [[ancestor]] of <var>parent</var> is a [[p]],
+    return false.
     <!-- This generally cannot be serialized either. -->
 
     <li>If <var>child</var> is "h1", "h2", "h3", "h4", "h5", or "h6", and
@@ -456,7 +459,7 @@ substantially sometime in the future, but I'm not sure exactly what to aim for.
     <tr><td>h1, h2, h3, h4, h5, h6 <td>h1, h2, h3, h4, h5, h6
     <tr><td>li <td>li
     <tr><td>nobr <td>nobr
-    <tr><td>p <td>All <span>prohibited paragraph children</span>
+    <tr><td>p <td>All <span title="prohibited paragraph child name">prohibited paragraph child names</span>
     <tr><td>td, th <td>caption, col, colgroup, tbody, td, tfoot, th, thead, tr
   </table>
 
@@ -989,9 +992,8 @@ what so it doesn't collapse.
   <li>Let <var>start block</var> be the [[rangestart]] [[bpnode]] of
   <var>range</var>.
 
-  <li>While <var>start block</var> is not an <span>HTML element</span> or its
-  [[localname]] is not a <span title="prohibited paragraph children">prohibited
-  paragraph child</span>, set <var>start block</var> to its [[parent]].
+  <li>While <var>start block</var> is not a <span>prohibited paragraph
+  child</span>, set <var>start block</var> to its [[parent]].
 
   <p class=XXX>I'm uncertain about the use of prohibited paragraph children
   here.  I'm using it mostly because it's convenient and seems relatively
@@ -1000,9 +1002,8 @@ what so it doesn't collapse.
   <li>Let <var>end block</var> be the [[rangeend]] [[bpnode]] of
   <var>range</var>.
 
-  <li>While <var>end block</var> is not an <span>HTML element</span> or its
-  [[localname]] is not a <span title="prohibited paragraph children">prohibited
-  paragraph child</span>, set <var>end block</var> to its [[parent]].
+  <li>While <var>end block</var> is not a <span>prohibited paragraph
+  child</span>, set <var>end block</var> to its [[parent]].
 
   <li>Call <code data-anolis-spec=domrange
   title=dom-Range-deleteContents>deleteContents()</code> on <var>range</var>.

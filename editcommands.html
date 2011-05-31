@@ -38,7 +38,7 @@
 <body class=draft>
 <div class=head id=head>
 <h1>HTML Editing Commands</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-30-may-2011>Work in Progress &mdash; Last Update 30 May 2011</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-31-may-2011>Work in Progress &mdash; Last Update 31 May 2011</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;ayg+spec@aryeh.name&gt;
@@ -376,13 +376,16 @@ an editing host.  An editing host is never editable, so authors are assured
 that editing commands will only modify the editing host's contents and not the
 editing host itself.
 
-<p>The <dfn id=prohibited-paragraph-children>prohibited paragraph children</dfn> are "address", "article",
+<p>A <dfn id=prohibited-paragraph-child-name>prohibited paragraph child name</dfn> is "address", "article",
 "aside", "blockquote", "center", "details", "dd", "dir", "div", "dl", "dt",
 "fieldset", "figcaption", "figure", "footer", "form", "h1", "h2", "h3", "h4",
 "h5", "h6", "header", "hgroup", "hr", "li", "listing", "menu", "nav", "ol",
-"p", "plaintext", "pre", "section", "summary", "table", "ul", and "xmp".
-<!-- These are all the things that will close a <p> if found as a child.  I
-think. -->
+"p", "plaintext", "pre", "section", "summary", "table", "ul", or "xmp".
+
+<p>A <dfn id=prohibited-paragraph-child>prohibited paragraph child</dfn> is an <a href=#html-element>HTML element</a>
+whose <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> is a <a href=#prohibited-paragraph-child-name>prohibited paragraph child name</a>.
+<!-- These are all the things that will close a <p> if found as a descendant.
+I think. -->
 
 <p>A <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> or string <var title="">child</var> is an <dfn id=allowed-child>allowed child</dfn> of a
 <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> or string <var title="">parent</var> if the following algorithm returns true:
@@ -444,9 +447,9 @@ substantially sometime in the future, but I'm not sure exactly what to aim for.
     <a>foo<table><td><a>bar</a></td></table>baz</a>, but it's invalid in those
     cases too, so no need for complication. -->
 
-    <li>If <var title="">child</var> is one of the <a href=#prohibited-paragraph-children>prohibited paragraph
-    children</a> and <var title="">parent</var> or some <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of
-    <var title="">parent</var> is a <code class=external data-anolis-spec=html title="the p element"><a href=http://www.whatwg.org/html/#the-p-element>p</a></code>, return false.
+    <li>If <var title="">child</var> is a <a href=#prohibited-paragraph-child-name>prohibited paragraph child name</a>
+    and <var title="">parent</var> or some <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of <var title="">parent</var> is a <code class=external data-anolis-spec=html title="the p element"><a href=http://www.whatwg.org/html/#the-p-element>p</a></code>,
+    return false.
     <!-- This generally cannot be serialized either. -->
 
     <li>If <var title="">child</var> is "h1", "h2", "h3", "h4", "h5", or "h6", and
@@ -500,7 +503,7 @@ substantially sometime in the future, but I'm not sure exactly what to aim for.
     <tr><td>h1, h2, h3, h4, h5, h6 <td>h1, h2, h3, h4, h5, h6
     <tr><td>li <td>li
     <tr><td>nobr <td>nobr
-    <tr><td>p <td>All <a href=#prohibited-paragraph-children>prohibited paragraph children</a>
+    <tr><td>p <td>All <a href=#prohibited-paragraph-child-name title="prohibited paragraph child name">prohibited paragraph child names</a>
     <tr><td>td, th <td>caption, col, colgroup, tbody, td, tfoot, th, thead, tr
   </table>
 
@@ -1019,9 +1022,8 @@ what so it doesn't collapse.
   <li>Let <var title="">start block</var> be the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> of
   <var title="">range</var>.
 
-  <li>While <var title="">start block</var> is not an <a href=#html-element>HTML element</a> or its
-  <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> is not a <a href=#prohibited-paragraph-children title="prohibited paragraph children">prohibited
-  paragraph child</a>, set <var title="">start block</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+  <li>While <var title="">start block</var> is not a <a href=#prohibited-paragraph-child>prohibited paragraph
+  child</a>, set <var title="">start block</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
 
   <p class=XXX>I'm uncertain about the use of prohibited paragraph children
   here.  I'm using it mostly because it's convenient and seems relatively
@@ -1030,9 +1032,8 @@ what so it doesn't collapse.
   <li>Let <var title="">end block</var> be the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> of
   <var title="">range</var>.
 
-  <li>While <var title="">end block</var> is not an <a href=#html-element>HTML element</a> or its
-  <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> is not a <a href=#prohibited-paragraph-children title="prohibited paragraph children">prohibited
-  paragraph child</a>, set <var title="">end block</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+  <li>While <var title="">end block</var> is not a <a href=#prohibited-paragraph-child>prohibited paragraph
+  child</a>, set <var title="">end block</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
 
   <li>Call <code class=external data-anolis-spec=domrange title=dom-Range-deleteContents><a href=http://html5.org/specs/dom-range.html#dom-range-deletecontents>deleteContents()</a></code> on <var title="">range</var>.
 

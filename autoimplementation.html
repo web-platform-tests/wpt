@@ -1978,6 +1978,11 @@ for (var command in tests) {
 
 function runTests(command) {
 	var runTestsButton = document.querySelector("#" + command + " button");
+
+	if (runTestsButton.textContent != "Run tests") {
+		return;
+	}
+
 	runTestsButton.parentNode.removeChild(runTestsButton);
 
 	var addTestButton = document.querySelector("#" + command + " button");

@@ -2046,14 +2046,21 @@ function blockExtendRange(range) {
 }
 
 function blockFormat(inputNodes, value) {
-	// "For each node in input nodes, while node is a descendant of an editable
-	// HTML element in the same editing host with local name "address", "h1",
-	// "h2", "h3", "h4", "h5", "h6", "p", or "pre", split the parent of the
-	// one-node list consisting of node."
+	// "For each node in input nodes, while either node is a descendant of an
+	// editable HTML element in the same editing host with local name
+	// "address", "h1", "h2", "h3", "h4", "h5", "h6", "p", or "pre"; or node's
+	// parent is not null, and "p" is not an allowed child of node's parent:
+	// split the parent of the one-node list consisting of node."
 	for (var i = 0; i < inputNodes.length; i++) {
 		var node = inputNodes[i];
 
-		do {
+		while (true) {
+			if (node.parentNode
+			&& !isAllowedChild("p", node.parentNode)) {
+				splitParent([node]);
+				continue;
+			}
+
 			var ancestor = node.parentNode;
 			while (ancestor
 			&& !isHtmlElement(ancestor, ["ADDRESS", "H1", "H2", "H3", "H4", "H5", "H6", "P", "PRE"])) {
@@ -2066,7 +2073,7 @@ function blockFormat(inputNodes, value) {
 			} else {
 				break;
 			}
-		} while (true);
+		}
 	}
 
 	// "Let node list be a list of nodes, initially empty."
@@ -3713,12 +3720,12 @@ function fixDisallowedAncestors(node) {
 	&& !isHtmlElement(node.parentNode, ["ol", "ul"]))
 	|| (isHtmlElement(node, ["dt", "dd"])
 	&& !isHtmlElement(node.parentNode, "dl"))) {
-		// "Set the tag name of node to "div", and let node be the result."
-		node = setTagName(node, "div");
+		// "Set the tag name of node to the default single-line container name,
+		// and let node be the result."
+		node = setTagName(node, defaultSingleLineContainerName);
 
-		// "Block-format the one-node list consisting of node, with value equal
-		// to the default single-line container name."
-		blockFormat([node], defaultSingleLineContainerName);
+		// "Fix prohibited paragraph descendants of node."
+		fixProhibitedParagraphDescendants(node);
 
 		// "Abort these steps."
 		return;

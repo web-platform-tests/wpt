@@ -701,6 +701,8 @@ var tests = {
 
 		['<h1>', '<p>[foo</p>bar]'],
 		['<p>', '<div>[foo<p>bar]</p></div>'],
+		['<p>', '<xmp>[foo]</xmp>'],
+		['<div>', '<xmp>[foo]</xmp>'],
 	],
 	hilitecolor: [
 		'foo[]bar',
@@ -1555,6 +1557,9 @@ var tests = {
 		'<blockquote><ol><li>[foo]</ol></blockquote><p>extra',
 		'<blockquote>foo<ol><li>[bar]</ol>baz</blockquote><p>extra',
 		'<blockquote><ol><li>foo</li><ol><li>[bar]</ol><li>baz</ol></blockquote><p>extra',
+
+		'<ol><li><h1>[foo]</h1></ol>',
+		'<ol><li><xmp>[foo]</xmp></li></ol>',
 	],
 	removeformat: [
 		'foo[]bar',

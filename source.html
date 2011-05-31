@@ -2868,12 +2868,10 @@ container</span>, or an <span>HTML element</span> with [[localname]] "li",
   [[dl]]:
 
   <ol>
-    <li><span>Set the tag name</span> of <var>node</var> to "div", and let
-    <var>node</var> be the result.
+    <li><span>Set the tag name</span> of <var>node</var> to the <span>default
+    single-line container name</span>, and let <var>node</var> be the result.
 
-    <li><span>Block-format</span> the one-[[node]] list consisting of
-    <var>node</var>, with <var>value</var> equal to the <span>default
-    single-line container name</span>.
+    <li><span>Fix prohibited paragraph descendants</span> of <var>node</var>.
 
     <li>Abort these steps.
   </ol>
@@ -3183,11 +3181,13 @@ confronted with this kind of nesting.)
 string <var>value</var>:
 
 <ol>
-  <li>For each <var>node</var> in <var>input nodes</var>, while <var>node</var>
-  is a [[descendant]] of an <span>editable</span> <span>HTML element</span>
-  <span>in the same editing host</span> with [[localname]] "address", "h1",
-  "h2", "h3", "h4", "h5", "h6", "p", or "pre", <span>split the parent</span> of
-  the one-[[node]] list consisting of <var>node</var>.
+  <li>For each <var>node</var> in <var>input nodes</var>, while either
+  <var>node</var> is a [[descendant]] of an <span>editable</span> <span>HTML
+  element</span> <span>in the same editing host</span> with [[localname]]
+  "address", "h1", "h2", "h3", "h4", "h5", "h6", "p", or "pre"; or
+  <var>node</var>'s [[parent]] is not null, and "p" is not an <span>allowed
+  child</span> of <var>node</var>'s [[parent]]: <span>split the parent</span>
+  of the one-[[node]] list consisting of <var>node</var>.
 
   <div class=XXX>
   <p>This is needed so we don't get things like p nested inside address, and

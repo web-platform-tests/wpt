@@ -2866,12 +2866,10 @@ container</a>, or an <a href=#html-element>HTML element</a> with <a class=extern
   <code class=external data-anolis-spec=html title="the dl element"><a href=http://www.whatwg.org/html/#the-dl-element>dl</a></code>:
 
   <ol>
-    <li><a href=#set-the-tag-name>Set the tag name</a> of <var title="">node</var> to "div", and let
-    <var title="">node</var> be the result.
+    <li><a href=#set-the-tag-name>Set the tag name</a> of <var title="">node</var> to the <a href=#default-single-line-container-name>default
+    single-line container name</a>, and let <var title="">node</var> be the result.
 
-    <li><a href=#block-format>Block-format</a> the one-<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> list consisting of
-    <var title="">node</var>, with <var title="">value</var> equal to the <a href=#default-single-line-container-name>default
-    single-line container name</a>.
+    <li><a href=#fix-prohibited-paragraph-descendants>Fix prohibited paragraph descendants</a> of <var title="">node</var>.
 
     <li>Abort these steps.
   </ol>
@@ -3175,11 +3173,13 @@ confronted with this kind of nesting.)
 string <var title="">value</var>:
 
 <ol>
-  <li>For each <var title="">node</var> in <var title="">input nodes</var>, while <var title="">node</var>
-  is a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-descendant title=concept-tree-descendant>descendant</a> of an <a href=#editable>editable</a> <a href=#html-element>HTML element</a>
-  <a href=#in-the-same-editing-host>in the same editing host</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> "address", "h1",
-  "h2", "h3", "h4", "h5", "h6", "p", or "pre", <a href=#split-the-parent>split the parent</a> of
-  the one-<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> list consisting of <var title="">node</var>.
+  <li>For each <var title="">node</var> in <var title="">input nodes</var>, while either
+  <var title="">node</var> is a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-descendant title=concept-tree-descendant>descendant</a> of an <a href=#editable>editable</a> <a href=#html-element>HTML
+  element</a> <a href=#in-the-same-editing-host>in the same editing host</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a>
+  "address", "h1", "h2", "h3", "h4", "h5", "h6", "p", or "pre"; or
+  <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is not null, and "p" is not an <a href=#allowed-child>allowed
+  child</a> of <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>: <a href=#split-the-parent>split the parent</a>
+  of the one-<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> list consisting of <var title="">node</var>.
 
   <div class=XXX>
   <p>This is needed so we don't get things like p nested inside address, and

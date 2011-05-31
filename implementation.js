@@ -1007,7 +1007,7 @@ function isAllowedChild(child, parent_) {
 	// element with local name equal to one of those, and child is not a Text
 	// node, return false."
 	if ((["script", "style", "plaintext", "xmp"].indexOf(parent_) != -1
-	|| isHtmlElement(parent, ["script", "style", "plaintext", "xmp"]))
+	|| isHtmlElement(parent_, ["script", "style", "plaintext", "xmp"]))
 	&& (typeof child != "object" || child.nodeType != Node.TEXT_NODE)) {
 		return false;
 	}

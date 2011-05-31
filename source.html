@@ -2868,12 +2868,12 @@ container</span>, or an <span>HTML element</span> with [[localname]] "li",
   [[dl]]:
 
   <ol>
-    <li>Let <var>children</var> be the [[children]] of <var>node</var>.
+    <li><span>Set the tag name</span> of <var>node</var> to "div", and let
+    <var>node</var> be the result.
 
-    <li>Remove <var>node</var>, <span>preserving its descendants</span>.
-
-    <li><span>Block-format</span> <var>children</var>, with <var>value</var>
-    equal to the <span>default single-line container name</span>.
+    <li><span>Block-format</span> the one-[[node]] list consisting of
+    <var>node</var>, with <var>value</var> equal to the <span>default
+    single-line container name</span>.
 
     <li>Abort these steps.
   </ol>
@@ -2885,6 +2885,48 @@ container</span>, or an <span>HTML element</span> with [[localname]] "li",
   <li>While <var>node</var> is not an <span>allowed child</span> of its
   [[parent]], <span>split the parent</span> of the one-[[node]] list consisting
   of <var>node</var>.
+</ol>
+
+<p>To <dfn>fix prohibited paragraph descendants</dfn> of a [[node]]
+<var>node</var>:
+
+<ol>
+  <li>If <var>node</var> has no [[children]], return the one-[[node]] list
+  consisting of <var>node</var>.
+
+  <li>Let <var>children</var> be the [[children]] of <var>node</var>.
+
+  <li><span>Fix prohibited paragraph descendants</span> of each member of
+  <var>children</var>.
+
+  <!-- When we split the parent of a node, three things can happen.  Either the
+  node gets stuck before its parent, or after its parent, or the parent gets
+  copied and the copy gets stuck before it.  So the nodes we want to return are
+  consecutive siblings; the first is either the original first child of node or
+  its parent, and the last is either the last child of node or node itself. -->
+  <li>Let <var>children</var> be the [[children]] of <var>node</var>.
+
+  <li>For each <var>child</var> in <var>children</var>, if <var>child</var> is
+  a <span>prohibited paragraph child</span>, <span>split the parent</span> of
+  the one-[[node]] list consisting of <var>child</var>.
+
+  <li>If <var>node</var>'s [[parent]] is null, let <var>node</var> equal the
+  last member of <var>children</var>.
+
+  <li>Let <var>node list</var> be a list of [[nodes]], initially empty.
+
+  <li>Repeat these steps:
+
+  <ol>
+    <li>Prepend <var>node</var> to <var>node list</var>.
+
+    <li>If <var>node</var> is <var>children</var>'s first member, or
+    <var>children</var>'s first member's [[parent]], break from this loop.
+
+    <li>Set <var>node</var> to its [[previoussibling]].
+  </ol>
+
+  <li>Return <var>node list</var>.
 </ol>
 
 <p>To <dfn>indent</dfn> a list <var>node list</var> of consecutive [[sibling]]
@@ -3137,11 +3179,11 @@ confronted with this kind of nesting.)
 
 <h3>Block-formatting a node list</h3>
 
-<p>To <dfn>block-format</dfn> a list of [[nodes]] <var>node list</var> to a
+<p>To <dfn>block-format</dfn> a list of [[nodes]] <var>input nodes</var> to a
 string <var>value</var>:
 
 <ol>
-  <li>For each <var>node</var> in <var>node list</var>, while <var>node</var>
+  <li>For each <var>node</var> in <var>input nodes</var>, while <var>node</var>
   is a [[descendant]] of an <span>editable</span> <span>HTML element</span>
   <span>in the same editing host</span> with [[localname]] "address", "h1",
   "h2", "h3", "h4", "h5", "h6", "p", or "pre", <span>split the parent</span> of
@@ -3163,6 +3205,12 @@ string <var>value</var>:
 
   <p class=XXX>Do we need to fix disallowed ancestors later, or is this step
   enough that it's not an issue?
+
+  <li>Let <var>node list</var> be a list of [[nodes]], initially empty.
+
+  <li>For each <var>node</var> in <var>input nodes</var>, <span>fix prohibited
+  paragraph descendants</span> of <var>node</var>, and append the resulting
+  [[nodes]] to <var>node list</var>.
 
   <!--
   We have two different behaviors, one for div and p and one for everything

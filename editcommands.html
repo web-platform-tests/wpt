@@ -2866,12 +2866,12 @@ container</a>, or an <a href=#html-element>HTML element</a> with <a class=extern
   <code class=external data-anolis-spec=html title="the dl element"><a href=http://www.whatwg.org/html/#the-dl-element>dl</a></code>:
 
   <ol>
-    <li>Let <var title="">children</var> be the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a> of <var title="">node</var>.
+    <li><a href=#set-the-tag-name>Set the tag name</a> of <var title="">node</var> to "div", and let
+    <var title="">node</var> be the result.
 
-    <li>Remove <var title="">node</var>, <a href=#preserving-its-descendants>preserving its descendants</a>.
-
-    <li><a href=#block-format>Block-format</a> <var title="">children</var>, with <var title="">value</var>
-    equal to the <a href=#default-single-line-container-name>default single-line container name</a>.
+    <li><a href=#block-format>Block-format</a> the one-<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> list consisting of
+    <var title="">node</var>, with <var title="">value</var> equal to the <a href=#default-single-line-container-name>default
+    single-line container name</a>.
 
     <li>Abort these steps.
   </ol>
@@ -2883,6 +2883,48 @@ container</a>, or an <a href=#html-element>HTML element</a> with <a class=extern
   <li>While <var title="">node</var> is not an <a href=#allowed-child>allowed child</a> of its
   <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>, <a href=#split-the-parent>split the parent</a> of the one-<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> list consisting
   of <var title="">node</var>.
+</ol>
+
+<p>To <dfn id=fix-prohibited-paragraph-descendants>fix prohibited paragraph descendants</dfn> of a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>
+<var title="">node</var>:
+
+<ol>
+  <li>If <var title="">node</var> has no <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, return the one-<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> list
+  consisting of <var title="">node</var>.
+
+  <li>Let <var title="">children</var> be the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a> of <var title="">node</var>.
+
+  <li><a href=#fix-prohibited-paragraph-descendants>Fix prohibited paragraph descendants</a> of each member of
+  <var title="">children</var>.
+
+  <!-- When we split the parent of a node, three things can happen.  Either the
+  node gets stuck before its parent, or after its parent, or the parent gets
+  copied and the copy gets stuck before it.  So the nodes we want to return are
+  consecutive siblings; the first is either the original first child of node or
+  its parent, and the last is either the last child of node or node itself. -->
+  <li>Let <var title="">children</var> be the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a> of <var title="">node</var>.
+
+  <li>For each <var title="">child</var> in <var title="">children</var>, if <var title="">child</var> is
+  a <a href=#prohibited-paragraph-child>prohibited paragraph child</a>, <a href=#split-the-parent>split the parent</a> of
+  the one-<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> list consisting of <var title="">child</var>.
+
+  <li>If <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is null, let <var title="">node</var> equal the
+  last member of <var title="">children</var>.
+
+  <li>Let <var title="">node list</var> be a list of <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a>, initially empty.
+
+  <li>Repeat these steps:
+
+  <ol>
+    <li>Prepend <var title="">node</var> to <var title="">node list</var>.
+
+    <li>If <var title="">node</var> is <var title="">children</var>'s first member, or
+    <var title="">children</var>'s first member's <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>, break from this loop.
+
+    <li>Set <var title="">node</var> to its <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code>.
+  </ol>
+
+  <li>Return <var title="">node list</var>.
 </ol>
 
 <p>To <dfn id=indent>indent</dfn> a list <var title="">node list</var> of consecutive <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-sibling title=concept-tree-sibling>sibling</a>
@@ -3129,11 +3171,11 @@ confronted with this kind of nesting.)
 
 <h3 id=block-formatting-a-node-list><span class=secno>7.4 </span>Block-formatting a node list</h3>
 
-<p>To <dfn id=block-format>block-format</dfn> a list of <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a> <var title="">node list</var> to a
+<p>To <dfn id=block-format>block-format</dfn> a list of <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a> <var title="">input nodes</var> to a
 string <var title="">value</var>:
 
 <ol>
-  <li>For each <var title="">node</var> in <var title="">node list</var>, while <var title="">node</var>
+  <li>For each <var title="">node</var> in <var title="">input nodes</var>, while <var title="">node</var>
   is a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-descendant title=concept-tree-descendant>descendant</a> of an <a href=#editable>editable</a> <a href=#html-element>HTML element</a>
   <a href=#in-the-same-editing-host>in the same editing host</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> "address", "h1",
   "h2", "h3", "h4", "h5", "h6", "p", or "pre", <a href=#split-the-parent>split the parent</a> of
@@ -3155,6 +3197,12 @@ string <var title="">value</var>:
 
   <p class=XXX>Do we need to fix disallowed ancestors later, or is this step
   enough that it's not an issue?
+
+  <li>Let <var title="">node list</var> be a list of <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a>, initially empty.
+
+  <li>For each <var title="">node</var> in <var title="">input nodes</var>, <a href=#fix-prohibited-paragraph-descendants>fix prohibited
+  paragraph descendants</a> of <var title="">node</var>, and append the resulting
+  <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a> to <var title="">node list</var>.
 
   <!--
   We have two different behaviors, one for div and p and one for everything

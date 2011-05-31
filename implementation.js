@@ -2045,13 +2045,13 @@ function blockExtendRange(range) {
 	return newRange;
 }
 
-function blockFormat(nodeList, value) {
-	// "For each node in node list, while node is a descendant of an
-	// editable HTML element in the same editing host with local name
-	// "address", "h1", "h2", "h3", "h4", "h5", "h6", "p", or "pre", split
-	// the parent of the one-node list consisting of node."
-	for (var i = 0; i < nodeList.length; i++) {
-		var node = nodeList[i];
+function blockFormat(inputNodes, value) {
+	// "For each node in input nodes, while node is a descendant of an editable
+	// HTML element in the same editing host with local name "address", "h1",
+	// "h2", "h3", "h4", "h5", "h6", "p", or "pre", split the parent of the
+	// one-node list consisting of node."
+	for (var i = 0; i < inputNodes.length; i++) {
+		var node = inputNodes[i];
 
 		do {
 			var ancestor = node.parentNode;
@@ -2067,6 +2067,15 @@ function blockFormat(nodeList, value) {
 				break;
 			}
 		} while (true);
+	}
+
+	// "Let node list be a list of nodes, initially empty."
+	var nodeList = [];
+
+	// "For each node in input nodes, fix prohibited paragraph descendants of
+	// node, and append the resulting nodes to node list."
+	for (var i = 0; i < inputNodes.length; i++) {
+		nodeList = nodeList.concat(fixProhibitedParagraphDescendants(inputNodes[i]));
 	}
 
 	// "If value is "div" or "p", then while node list is not empty:"
@@ -3704,15 +3713,12 @@ function fixDisallowedAncestors(node) {
 	&& !isHtmlElement(node.parentNode, ["ol", "ul"]))
 	|| (isHtmlElement(node, ["dt", "dd"])
 	&& !isHtmlElement(node.parentNode, "dl"))) {
-		// "Let children be the children of node."
-		var children = [].slice.call(node.childNodes);
+		// "Set the tag name of node to "div", and let node be the result."
+		node = setTagName(node, "div");
 
-		// "Remove node, preserving its descendants."
-		removePreservingDescendants(node);
-
-		// "Block-format children, with value equal to the default single-line
-		// container name."
-		blockFormat(children, defaultSingleLineContainerName);
+		// "Block-format the one-node list consisting of node, with value equal
+		// to the default single-line container name."
+		blockFormat([node], defaultSingleLineContainerName);
 
 		// "Abort these steps."
 		return;
@@ -3742,6 +3748,59 @@ function fixDisallowedAncestors(node) {
 	while (!isAllowedChild(node, node.parentNode)) {
 		splitParent([node]);
 	}
+}
+
+function fixProhibitedParagraphDescendants(node) {
+	// "If node has no children, return the one-node list consisting of node."
+	if (!node.hasChildNodes()) {
+		return [node];
+	}
+
+	// "Let children be the children of node."
+	var children = [].slice.call(node.childNodes);
+
+	// "Fix prohibited paragraph descendants of each member of children."
+	for (var i = 0; i < children.length; i++) {
+		fixProhibitedParagraphDescendants(children[i]);
+	}
+
+	// "Let children be the children of node."
+	children = [].slice.call(node.childNodes);
+
+	// "For each child in children, if child is a prohibited paragraph child,
+	// split the parent of the one-node list consisting of child."
+	for (var i = 0; i < children.length; i++) {
+		if (isProhibitedParagraphChild(children[i])) {
+			splitParent([children[i]]);
+		}
+	}
+
+	// "If node's parent is null, let node equal the last member of children."
+	if (!node.parentNode) {
+		node = children[children.length - 1];
+	}
+
+	// "Let node list be a list of nodes, initially empty."
+	var nodeList = [];
+
+	// "Repeat these steps:"
+	while (true) {
+		// "Prepend node to node list."
+		nodeList.unshift(node);
+
+		// "If node is children's first member, or children's first member's
+		// parent, break from this loop."
+		if (node == children[0]
+		|| node == children[0].parentNode) {
+			break;
+		}
+
+		// "Set node to its previousSibling."
+		node = node.previousSibling;
+	}
+
+	// "Return node list."
+	return nodeList;
 }
 
 function indentNodes(nodeList) {

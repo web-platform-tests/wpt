@@ -2143,6 +2143,8 @@ function doSpecCell(tr, test, command, styleWithCss) {
 		alertDiv.className = "alert";
 		if (oldValue === null) {
 			alertDiv.textContent = "Newly added test result";
+		} else if (oldValue.replace(/[\[\]{}]/g, "") == newValue.replace(/[\[\]{}]/g, "")) {
+			alertDiv.textContent = "Last run produced a different selection: " + oldValue;
 		} else {
 			alertDiv.textContent = "Last run produced different markup: " + oldValue;
 		}

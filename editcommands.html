@@ -87,14 +87,15 @@ have experience using this feature.
    <li><a href=#the-fontsize-command><span class=secno>6.12 </span>The <code title="">fontSize</code> command</a></li>
    <li><a href=#the-forecolor-command><span class=secno>6.13 </span>The <code title="">foreColor</code> command</a></li>
    <li><a href=#the-hilitecolor-command><span class=secno>6.14 </span>The <code title="">hiliteColor</code> command</a></li>
-   <li><a href=#the-insertimage-command><span class=secno>6.15 </span>The <code title="">insertImage</code> command</a></li>
-   <li><a href=#the-italic-command><span class=secno>6.16 </span>The <code title="">italic</code> command</a></li>
-   <li><a href=#the-removeformat-command><span class=secno>6.17 </span>The <code title="">removeFormat</code> command</a></li>
-   <li><a href=#the-strikethrough-command><span class=secno>6.18 </span>The <code title="">strikethrough</code> command</a></li>
-   <li><a href=#the-subscript-command><span class=secno>6.19 </span>The <code title="">subscript</code> command</a></li>
-   <li><a href=#the-superscript-command><span class=secno>6.20 </span>The <code title="">superscript</code> command</a></li>
-   <li><a href=#the-underline-command><span class=secno>6.21 </span>The <code title="">underline</code> command</a></li>
-   <li><a href=#the-unlink-command><span class=secno>6.22 </span>The <code title="">unlink</code> command</a></ol></li>
+   <li><a href=#the-inserthtml-command><span class=secno>6.15 </span>The <code title="">insertHTML</code> command</a></li>
+   <li><a href=#the-insertimage-command><span class=secno>6.16 </span>The <code title="">insertImage</code> command</a></li>
+   <li><a href=#the-italic-command><span class=secno>6.17 </span>The <code title="">italic</code> command</a></li>
+   <li><a href=#the-removeformat-command><span class=secno>6.18 </span>The <code title="">removeFormat</code> command</a></li>
+   <li><a href=#the-strikethrough-command><span class=secno>6.19 </span>The <code title="">strikethrough</code> command</a></li>
+   <li><a href=#the-subscript-command><span class=secno>6.20 </span>The <code title="">subscript</code> command</a></li>
+   <li><a href=#the-superscript-command><span class=secno>6.21 </span>The <code title="">superscript</code> command</a></li>
+   <li><a href=#the-underline-command><span class=secno>6.22 </span>The <code title="">underline</code> command</a></li>
+   <li><a href=#the-unlink-command><span class=secno>6.23 </span>The <code title="">unlink</code> command</a></ol></li>
  <li><a href=#block-formatting-commands><span class=secno>7 </span>Block formatting commands</a>
   <ol>
    <li><a href=#block-formatting-command-definitions><span class=secno>7.1 </span>Block formatting command definitions</a></li>
@@ -377,15 +378,17 @@ that editing commands will only modify the editing host's contents and not the
 editing host itself.
 
 <p>A <dfn id=prohibited-paragraph-child-name>prohibited paragraph child name</dfn> is "address", "article",
-"aside", "blockquote", "center", "details", "dd", "dir", "div", "dl", "dt",
-"fieldset", "figcaption", "figure", "footer", "form", "h1", "h2", "h3", "h4",
-"h5", "h6", "header", "hgroup", "hr", "li", "listing", "menu", "nav", "ol",
-"p", "plaintext", "pre", "section", "summary", "table", "ul", or "xmp".
+"aside", "blockquote", "caption", "center", "col", "colgroup", "details", "dd",
+"dir", "div", "dl", "dt", "fieldset", "figcaption", "figure", "footer", "form",
+"h1", "h2", "h3", "h4", "h5", "h6", "header", "hgroup", "hr", "li", "listing",
+"menu", "nav", "ol", "p", "plaintext", "pre", "section", "summary", "table",
+"tbody", "td", "tfoot", "th", "thead", "tr", "ul", or "xmp".
 
 <p>A <dfn id=prohibited-paragraph-child>prohibited paragraph child</dfn> is an <a href=#html-element>HTML element</a>
 whose <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> is a <a href=#prohibited-paragraph-child-name>prohibited paragraph child name</a>.
 <!-- These are all the things that will close a <p> if found as a descendant.
-I think. -->
+I think.  Plus table stuff, since that can't be a descendant of a p either,
+although it won't auto-close it. -->
 
 <p>A <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> or string <var title="">child</var> is an <dfn id=allowed-child>allowed child</dfn> of a
 <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> or string <var title="">parent</var> if the following algorithm returns true:
@@ -1111,10 +1114,6 @@ Things I haven't looked at:
 * justifyCenter, justifyFull, justifyLeft, justifyRight: These look important
   and should be similar to work I've already done, so they're
   next on my list.
-* insertHTML: Not supported by IE, but important.  I've seen frameworks that
-  work around its absence in IE by using insertImage and then search and
-  replace.  Will probably need to be defined in terms of insertAdjacentHTML or
-  something.
 * selectAll, unselect: Should be easy, although they seem redundant to just
   calling methods of the Selection.
 -->
@@ -2487,7 +2486,35 @@ For color parsing, see the comment for foreColor. -->
 <p><a href=#relevant-css-property>Relevant CSS property</a>: "background-color"
 
 
-<h3 id=the-insertimage-command><span class=secno>6.15 </span><dfn>The <code title="">insertImage</code> command</dfn></h3>
+<h3 id=the-inserthtml-command><span class=secno>6.15 </span><dfn>The <code title="">insertHTML</code> command</dfn></h3>
+<!-- Not supported by IE9. -->
+
+<p><a href=#action>Action</a>:
+
+<ol>
+  <li><a href=#delete-the-selection>Delete the selection</a>.
+
+  <li>Let <var title="">frag</var> be the result of calling <code class=external data-anolis-spec=domps title=dom-Range-createContextualFragment><a href=http://html5.org/specs/dom-parsing.html#dom-range-createcontextualfragment>createContextualFragment(<var title="">value</var>)</a></code>
+  on the <a href=#active-range>active range</a>.
+
+  <li>Let <var title="">descendants</var> be all <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-descendant title=concept-tree-descendant>descendants</a> of <var title="">frag</var>.
+
+  <li>Let <var title="">last child</var> be the <code class=external data-anolis-spec=domcore title=dom-Node-lastChild><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-lastchild>lastChild</a></code> of <var title="">frag</var>.
+
+  <li>Call <code class=external data-anolis-spec=domrange title=dom-Range-insertNode><a href=http://html5.org/specs/dom-range.html#dom-range-insertnode>insertNode(<var title="">frag</var>)</a></code> on the <a href=#active-range>active range</a>.
+
+  <li>If <var title="">last child</var> is not null, set the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> and
+  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> of the <a href=#active-range>active range</a> to (<var title="">last child</var>,
+  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> of <var title="">last child</var>).
+  <!-- Need to do this before fixing disallowed ancestors, since otherwise the
+  last child might have been removed (e.g., it's an li). -->
+
+  <li><a href=#fix-disallowed-ancestors>Fix disallowed ancestors</a> of each member of
+  <var title="">descendants</var>.
+</ol>
+
+
+<h3 id=the-insertimage-command><span class=secno>6.16 </span><dfn>The <code title="">insertImage</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>:
 
@@ -2523,7 +2550,7 @@ For color parsing, see the comment for foreColor. -->
 </ol>
 
 
-<h3 id=the-italic-command><span class=secno>6.16 </span><dfn>The <code title="">italic</code> command</dfn></h3>
+<h3 id=the-italic-command><span class=secno>6.17 </span><dfn>The <code title="">italic</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>: <a href=#decompose>Decompose</a> the <a href=#active-range>active range</a>.
 If the <a href=#state>state</a> is then false, <a href=#set-the-value>set the value</a> of each
@@ -2539,7 +2566,7 @@ is <a href=#effectively-contained>effectively contained</a> in the <a href=#acti
 <p><a href=#relevant-css-property>Relevant CSS property</a>: "font-style"
 
 
-<h3 id=the-removeformat-command><span class=secno>6.17 </span><dfn>The <code title="">removeFormat</code> command</dfn></h3>
+<h3 id=the-removeformat-command><span class=secno>6.18 </span><dfn>The <code title="">removeFormat</code> command</dfn></h3>
 <!--
 Tested in IE 9, Firefox 4.0, Chrome 12 dev, Opera 11.00.
 
@@ -2660,7 +2687,7 @@ for elements like <code> or <tt> or <mark> that we don't normally create.
 </ol>
 
 
-<h3 id=the-strikethrough-command><span class=secno>6.18 </span><dfn>The <code title="">strikethrough</code> command</dfn></h3>
+<h3 id=the-strikethrough-command><span class=secno>6.19 </span><dfn>The <code title="">strikethrough</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>: <a href=#decompose>Decompose</a> the <a href=#active-range>active range</a>.
 If the <a href=#state>state</a> is then false, <a href=#set-the-value>set the value</a> of each
@@ -2676,7 +2703,7 @@ is <a href=#effectively-contained>effectively contained</a> in the <a href=#acti
 <p><a href=#value>Value</a>: Always the empty string.
 
 
-<h3 id=the-subscript-command><span class=secno>6.19 </span><dfn>The <code title="">subscript</code> command</dfn></h3>
+<h3 id=the-subscript-command><span class=secno>6.20 </span><dfn>The <code title="">subscript</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>:
 
@@ -2701,7 +2728,7 @@ is <a href=#effectively-contained>effectively contained</a> in the <a href=#acti
 <p><a href=#relevant-css-property>Relevant CSS property</a>: "vertical-align"
 
 
-<h3 id=the-superscript-command><span class=secno>6.20 </span><dfn>The <code title="">superscript</code> command</dfn></h3>
+<h3 id=the-superscript-command><span class=secno>6.21 </span><dfn>The <code title="">superscript</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>:
 
@@ -2726,7 +2753,7 @@ is <a href=#effectively-contained>effectively contained</a> in the <a href=#acti
 <p><a href=#relevant-css-property>Relevant CSS property</a>: "vertical-align"
 
 
-<h3 id=the-underline-command><span class=secno>6.21 </span><dfn>The <code title="">underline</code> command</dfn></h3>
+<h3 id=the-underline-command><span class=secno>6.22 </span><dfn>The <code title="">underline</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>: <a href=#decompose>Decompose</a> the <a href=#active-range>active range</a>.
 If the <a href=#state>state</a> is then false, <a href=#set-the-value>set the value</a> of each
@@ -2788,7 +2815,7 @@ is <a href=#effectively-contained>effectively contained</a> in the <a href=#acti
 <p><a href=#value>Value</a>: Always the empty string.
 
 
-<h3 id=the-unlink-command><span class=secno>6.22 </span><dfn>The <code title="">unlink</code> command</dfn></h3>
+<h3 id=the-unlink-command><span class=secno>6.23 </span><dfn>The <code title="">unlink</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>:
 
@@ -2868,6 +2895,10 @@ container</a>, or an <a href=#html-element>HTML element</a> with <a class=extern
   <ol>
     <li><a href=#set-the-tag-name>Set the tag name</a> of <var title="">node</var> to the <a href=#default-single-line-container-name>default
     single-line container name</a>, and let <var title="">node</var> be the result.
+
+    <li><a href=#fix-disallowed-ancestors>Fix disallowed ancestors</a> of <var title="">node</var>.
+    <!-- Because maybe it somehow wound up as the child of a p, like via
+    insertHTML. -->
 
     <li><a href=#fix-prohibited-paragraph-descendants>Fix prohibited paragraph descendants</a> of <var title="">node</var>.
 

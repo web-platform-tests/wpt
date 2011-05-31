@@ -903,6 +903,15 @@ var tests = {
 		'<h1>foo[bar]baz</h1>',
 		'<p>foo<b>b[a]r</b>baz</p>',
 	],
+	inserthtml: [
+		'foo[]bar',
+		'foo[bar]baz',
+		['<b>', 'foo[bar]baz'],
+		['<b>abc', 'foo[bar]baz'],
+		['<p>abc', '<p>foo[bar]baz'],
+		['<li>abc', '<p>foo[bar]baz'],
+		['<p>abc', '<ol>{<li>foo</li>}<li>bar</ol>'],
+	],
 	insertimage: [
 		'foo[]bar',
 		'<span>foo</span>{}<span>bar</span>',
@@ -1938,6 +1947,7 @@ var defaultValues = {
 	formatblock: "<div>",
 	hilitecolor: "#FF8888",
 	inserthorizontalrule: "",
+	inserthtml: "ab<b>c</b>d",
 	insertimage: "/img/lion.svg",
 };
 

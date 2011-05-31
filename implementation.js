@@ -72,6 +72,15 @@ function isAfter(node1, node2) {
 	return Boolean(node1.compareDocumentPosition(node2) & Node.DOCUMENT_POSITION_PRECEDING);
 }
 
+function getDescendants(node) {
+	var descendants = [];
+	for (var i = 0; i < node.childNodes.length; i++) {
+		descendants.push(node.childNodes[i]);
+		descendants = descendants.concat(getDescendants(node.childNodes[i]));
+	}
+	return descendants;
+}
+
 function convertProperty(property) {
 	// Special-case for now
 	var map = {
@@ -973,16 +982,19 @@ function inSameEditingHost(node1, node2) {
 }
 
 // "A prohibited paragraph child name is "address", "article", "aside",
-// "blockquote", "center", "details", "dd", "dir", "div", "dl", "dt",
-// "fieldset", "figcaption", "figure", "footer", "form", "h1", "h2", "h3",
-// "h4", "h5", "h6", "header", "hgroup", "hr", "li", "listing", "menu", "nav",
-// "ol", "p", "plaintext", "pre", "section", "summary", "table", "ul", or
+// "blockquote", "caption", "center", "col", "colgroup", "details", "dd",
+// "dir", "div", "dl", "dt", "fieldset", "figcaption", "figure", "footer",
+// "form", "h1", "h2", "h3", "h4", "h5", "h6", "header", "hgroup", "hr", "li",
+// "listing", "menu", "nav", "ol", "p", "plaintext", "pre", "section",
+// "summary", "table", "tbody", "td", "tfoot", "th", "thead", "tr", "ul", or
 // "xmp"."
 var prohibitedParagraphChildNames = ["address", "article", "aside",
-	"blockquote", "center", "details", "dd", "dir", "div", "dl", "dt",
-	"fieldset", "figcaption", "figure", "footer", "form", "h1", "h2", "h3",
-	"h4", "h5", "h6", "header", "hgroup", "hr", "li", "listing", "menu", "nav",
-	"ol", "p", "plaintext", "pre", "section", "summary", "table", "ul", "xmp"];
+	"blockquote", "caption", "center", "col", "colgroup", "details", "dd",
+	"dir", "div", "dl", "dt", "fieldset", "figcaption", "figure", "footer",
+	"form", "h1", "h2", "h3", "h4", "h5", "h6", "header", "hgroup", "hr", "li",
+	"listing", "menu", "nav", "ol", "p", "plaintext", "pre", "section",
+	"summary", "table", "tbody", "td", "tfoot", "th", "thead", "tr", "ul",
+	"xmp"];
 
 // "A prohibited paragraph child is an HTML element whose local name is a
 // prohibited paragraph child name."
@@ -3131,6 +3143,36 @@ function myExecCommand(command, showUI, value, range) {
 		getSelection().addRange(range);
 		break;
 
+		case "inserthtml":
+		// "Delete the selection."
+		deleteSelection();
+
+		// "Let frag be the result of calling createContextualFragment(value)
+		// on the active range."
+		var frag = range.createContextualFragment(value);
+
+		// "Let descendants be all descendants of frag."
+		var descendants = getDescendants(frag);
+
+		// "Let last child be the lastChild of frag."
+		var lastChild = frag.lastChild;
+
+		// "Call insertNode(frag) on the active range."
+		range.insertNode(frag);
+
+		// "If last child is not null, set the start and end of the active
+		// range to (last child, length of last child)."
+		if (lastChild) {
+			range.setStart(lastChild, getNodeLength(lastChild));
+			range.setEnd(lastChild, getNodeLength(lastChild));
+		}
+
+		// "Fix disallowed ancestors of each member of descendants."
+		for (var i = 0; i < descendants.length; i++) {
+			fixDisallowedAncestors(descendants[i]);
+		}
+		break;
+
 		case "insertimage":
 		// "If value is the empty string, abort these steps and do nothing."
 		if (value === "") {
@@ -3723,6 +3765,9 @@ function fixDisallowedAncestors(node) {
 		// "Set the tag name of node to the default single-line container name,
 		// and let node be the result."
 		node = setTagName(node, defaultSingleLineContainerName);
+
+		// "Fix disallowed ancestors of node."
+		fixDisallowedAncestors(node);
 
 		// "Fix prohibited paragraph descendants of node."
 		fixProhibitedParagraphDescendants(node);

@@ -333,15 +333,17 @@ that editing commands will only modify the editing host's contents and not the
 editing host itself.
 
 <p>A <dfn>prohibited paragraph child name</dfn> is "address", "article",
-"aside", "blockquote", "center", "details", "dd", "dir", "div", "dl", "dt",
-"fieldset", "figcaption", "figure", "footer", "form", "h1", "h2", "h3", "h4",
-"h5", "h6", "header", "hgroup", "hr", "li", "listing", "menu", "nav", "ol",
-"p", "plaintext", "pre", "section", "summary", "table", "ul", or "xmp".
+"aside", "blockquote", "caption", "center", "col", "colgroup", "details", "dd",
+"dir", "div", "dl", "dt", "fieldset", "figcaption", "figure", "footer", "form",
+"h1", "h2", "h3", "h4", "h5", "h6", "header", "hgroup", "hr", "li", "listing",
+"menu", "nav", "ol", "p", "plaintext", "pre", "section", "summary", "table",
+"tbody", "td", "tfoot", "th", "thead", "tr", "ul", or "xmp".
 
 <p>A <dfn>prohibited paragraph child</dfn> is an <span>HTML element</span>
 whose [[localname]] is a <span>prohibited paragraph child name</span>.
 <!-- These are all the things that will close a <p> if found as a descendant.
-I think. -->
+I think.  Plus table stuff, since that can't be a descendant of a p either,
+although it won't auto-close it. -->
 
 <p>A [[node]] or string <var>child</var> is an <dfn>allowed child</dfn> of a
 [[node]] or string <var>parent</var> if the following algorithm returns true:
@@ -1082,10 +1084,6 @@ Things I haven't looked at:
 * justifyCenter, justifyFull, justifyLeft, justifyRight: These look important
   and should be similar to work I've already done, so they're
   next on my list.
-* insertHTML: Not supported by IE, but important.  I've seen frameworks that
-  work around its absence in IE by using insertImage and then search and
-  replace.  Will probably need to be defined in terms of insertAdjacentHTML or
-  something.
 * selectAll, unselect: Should be easy, although they seem redundant to just
   calling methods of the Selection.
 -->
@@ -2481,6 +2479,35 @@ For color parsing, see the comment for foreColor. -->
 <p><span>Relevant CSS property</span>: "background-color"
 
 
+<h3><dfn>The <code title>insertHTML</code> command</dfn></h3>
+<!-- Not supported by IE9. -->
+
+<p><span>Action</span>:
+
+<ol>
+  <li><span>Delete the selection</span>.
+
+  <li>Let <var>frag</var> be the result of calling <code data-anolis-spec=domps
+  title=dom-Range-createContextualFragment>createContextualFragment(<var>value</var>)</code>
+  on the <span>active range</span>.
+
+  <li>Let <var>descendants</var> be all [[descendants]] of <var>frag</var>.
+
+  <li>Let <var>last child</var> be the [[lastchild]] of <var>frag</var>.
+
+  <li>Call [[insertnode|<var>frag</var>]] on the <span>active range</span>.
+
+  <li>If <var>last child</var> is not null, set the [[rangestart]] and
+  [[rangeend]] of the <span>active range</span> to (<var>last child</var>,
+  [[nodelength]] of <var>last child</var>).
+  <!-- Need to do this before fixing disallowed ancestors, since otherwise the
+  last child might have been removed (e.g., it's an li). -->
+
+  <li><span>Fix disallowed ancestors</span> of each member of
+  <var>descendants</var>.
+</ol>
+
+
 <h3><dfn>The <code title>insertImage</code> command</dfn></h3>
 
 <p><span>Action</span>:
@@ -2870,6 +2897,10 @@ container</span>, or an <span>HTML element</span> with [[localname]] "li",
   <ol>
     <li><span>Set the tag name</span> of <var>node</var> to the <span>default
     single-line container name</span>, and let <var>node</var> be the result.
+
+    <li><span>Fix disallowed ancestors</span> of <var>node</var>.
+    <!-- Because maybe it somehow wound up as the child of a p, like via
+    insertHTML. -->
 
     <li><span>Fix prohibited paragraph descendants</span> of <var>node</var>.
 

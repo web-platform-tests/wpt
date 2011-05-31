@@ -2170,7 +2170,9 @@ function doSpecCell(tr, test, command, styleWithCss) {
 			}
 			alertDiv.parentNode.removeChild(alertDiv);
 			if (!td.querySelector(".alert")) {
-				td.parentNode.classList.remove("alert");
+				td.parentNode.className = (" " + td.parentNode.className + " ")
+					.replace(/ alert /g, "")
+					.replace(/^ | $/g, "");
 			}
 		} })(key, newValue, alertDiv);
 	}

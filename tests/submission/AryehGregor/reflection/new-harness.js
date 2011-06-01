@@ -2,15 +2,17 @@
 // original-harness.js.  Polymorphism, kind of.
 ReflectionHarness.catchUnexpectedExceptions = false;
 
-ReflectionHarness.testWrapper = function(fn) {
-	test(fn, this.getTypeDescription());
-}
-
 ReflectionHarness.test = function(expected, actual, description) {
-	assert_equals(expected, actual, description);
+	test(function() {
+		assert_equals(expected, actual);
+	}, this.getTypeDescription() + ": " + description);
+	// This is the test suite that will rate conformance, so we don't want to
+	// bail out early if a test fails -- we want all tests to always run.
 	return true;
 }
 
 ReflectionHarness.testException = function(exceptionName, fn, description) {
-	assert_throws(exceptionName, fn, description);
+	test(function() {
+		assert_throws(exceptionName, fn);
+	}, this.getTypeDescription() + ": " + description);
 }

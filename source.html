@@ -274,8 +274,8 @@ This is defined to be the first [[range]] in the [[selection]] given by calling
 [[getselection]] on the [[contextobject]], or null if there is no such
 [[range]].  If the <span>active range</span> is null, all <span
 title=command>commands</span> must behave as though they were not defined
-except <span>the <code title>styleWithCSS</code> command</span> and <span>the
-<code title>useCSS</code> command</span>.
+except those in the <a href=#miscellaneous-commands>miscellaneous commands</a>
+section.
 
 <p class=XXX>Querying the value or state of an unrecognized command throws an
 exception in IE and Firefox.  Need to consider changing to that behavior.
@@ -1075,14 +1075,16 @@ useful to spec:
   insertNewlineInQuotedContent, insertText, justifyNone, print, transpose:
   There's code for these in WebKit, Source/WebCore/editing/EditorCommand.cpp,
   but I didn't see them mentioned elsewhere.  Some might be worth adding.
+* unselect: Seems to not be implemented by Gecko or Opera, and IE behaves
+  oddly: it seems to collapse the selection instead of removing it.  Will only
+  implement if there seems to be demand; it's redundant to
+  Selection.removeAllRanges() anyway.
 
 Things I haven't looked at that multiple browsers implement:
 
 * copy, cut, paste: Needs attention to security.
 * delete, redo, undo: Needs review of the Google work on this; will probably be
   quite complicated.
-* selectAll, unselect: Should be easy, although they seem redundant to just
-  calling methods of the Selection.
 -->
 
 <h2>Inline formatting commands</h2>
@@ -4781,7 +4783,61 @@ http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
 </ol>
 
 
-<h2>Miscellaneous commands</h2>
+<h2 id=miscellaneous-commands>Miscellaneous commands</h2>
+
+<h3><dfn>The <code title>selectAll</code> command</dfn></h3>
+<!--
+Tested using roughly this:
+
+http://software.hixie.ch/utilities/js/live-dom-viewer/saved/1018
+
+IE9: A bit confusing.  The gist seems to be that it does selectAllChildren() on
+the body, except sometimes it doesn't.
+
+Firefox 5.0a2: Throws an exception if nothing in the document is editable,
+which apparently it always does for execCommand().  If there's a body, it does
+selectAllChildren() on that, and otherwise it does selectAllChildren() on the
+root element.  If there's no root element, throws an exception.
+
+Chrome 13 dev: If there's no root element, removes the selection.  If there's
+a root element but no body, collapses the selection at (document, 0).  If
+there's a body, it selects all the contents of the body, although that doesn't
+mean the resulting anchor or focus actually are the body node (they're usually
+text nodes).  But it seems to *avoid* selecting contenteditable stuff: if all
+the visible things in the body are contenteditable, it removes all ranges from
+the selection, and if some are, it freaks out and behaves oddly.  But
+designMode doesn't trouble it.
+
+Opera 11.11: Was characteristically uncooperative in my tests, and I didn't try
+to investigate further.
+
+The behavior here is relatively simple and largely matches implementations.
+-->
+
+<p><span>Action</span>:
+
+<ol>
+  <li>Let <var>target</var> be <span data-anolis-spec=html
+  title=the-body-element-0>the body element</span> of the [[contextobject]].
+
+  <p class=XXX>Is this right even for framesets?
+
+  <li>If <var>target</var> is null, let <var>target</var> be the
+  [[contextobject]]'s <code data-anolis-spec=domcore
+  title=dom-Document-documentElement>documentElement</code>.
+
+  <p class=XXX>Is this right even for documents whose root element is not an
+  HTML element?
+
+  <li>If <var>target</var> is null, let <var>target</var> be the
+  [[contextobject]].
+
+  <li>Call [[getselection]] on the [[contextobject]], and call <code
+  data-anolis-spec=domrange
+  title=dom-Selection-selectAllChildren>selectAllChildren(<var>target</var>)</code>
+  on the result.
+</ol>
+
 
 <h3><dfn>The <code title>styleWithCSS</code> command</dfn></h3>
 <!-- IE9 and Opera 11.00 don't support this command.  By and large, they act

@@ -118,8 +118,9 @@ have experience using this feature.
    <li><a href=#the-outdent-command><span class=secno>7.18 </span>The <code title="">outdent</code> command</a></ol></li>
  <li><a href=#miscellaneous-commands><span class=secno>8 </span>Miscellaneous commands</a>
   <ol>
-   <li><a href=#the-stylewithcss-command><span class=secno>8.1 </span>The <code title="">styleWithCSS</code> command</a></li>
-   <li><a href=#the-usecss-command><span class=secno>8.2 </span>The <code title="">useCSS</code> command</a></ol></li>
+   <li><a href=#the-selectall-command><span class=secno>8.1 </span>The <code title="">selectAll</code> command</a></li>
+   <li><a href=#the-stylewithcss-command><span class=secno>8.2 </span>The <code title="">styleWithCSS</code> command</a></li>
+   <li><a href=#the-usecss-command><span class=secno>8.3 </span>The <code title="">useCSS</code> command</a></ol></li>
  <li><a href=#additional-requirements><span class=secno>9 </span>Additional requirements</a></li>
  <li><a class=no-num href=#acknowledgements>Acknowledgements</a></ol>
 <!--end-toc-->
@@ -325,8 +326,8 @@ the user agent must return the <a href=#state>state</a> for <var title="">comman
 This is defined to be the first <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> in the <code class=external data-anolis-spec=domrange><a href=http://html5.org/specs/dom-range.html#selection>Selection</a></code> given by calling
 <code class=external data-anolis-spec=domrange title=dom-Document-getSelection><a href=http://html5.org/specs/dom-range.html#dom-document-getselection>getSelection()</a></code> on the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>, or null if there is no such
 <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>.  If the <a href=#active-range>active range</a> is null, all <a href=#command title=command>commands</a> must behave as though they were not defined
-except <a href=#the-stylewithcss-command>the <code title="">styleWithCSS</code> command</a> and <a href=#the-usecss-command>the
-<code title="">useCSS</code> command</a>.
+except those in the <a href=#miscellaneous-commands>miscellaneous commands</a>
+section.
 
 <p class=XXX>Querying the value or state of an unrecognized command throws an
 exception in IE and Firefox.  Need to consider changing to that behavior.
@@ -1110,14 +1111,16 @@ useful to spec:
   insertNewlineInQuotedContent, insertText, justifyNone, print, transpose:
   There's code for these in WebKit, Source/WebCore/editing/EditorCommand.cpp,
   but I didn't see them mentioned elsewhere.  Some might be worth adding.
+* unselect: Seems to not be implemented by Gecko or Opera, and IE behaves
+  oddly: it seems to collapse the selection instead of removing it.  Will only
+  implement if there seems to be demand; it's redundant to
+  Selection.removeAllRanges() anyway.
 
 Things I haven't looked at that multiple browsers implement:
 
 * copy, cut, paste: Needs attention to security.
 * delete, redo, undo: Needs review of the Google work on this; will probably be
   quite complicated.
-* selectAll, unselect: Should be easy, although they seem redundant to just
-  calling methods of the Selection.
 -->
 
 <h2 id=inline-formatting-commands><span class=secno>6 </span>Inline formatting commands</h2>
@@ -4751,7 +4754,57 @@ http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
 
 <h2 id=miscellaneous-commands><span class=secno>8 </span>Miscellaneous commands</h2>
 
-<h3 id=the-stylewithcss-command><span class=secno>8.1 </span><dfn>The <code title="">styleWithCSS</code> command</dfn></h3>
+<h3 id=the-selectall-command><span class=secno>8.1 </span><dfn>The <code title="">selectAll</code> command</dfn></h3>
+<!--
+Tested using roughly this:
+
+http://software.hixie.ch/utilities/js/live-dom-viewer/saved/1018
+
+IE9: A bit confusing.  The gist seems to be that it does selectAllChildren() on
+the body, except sometimes it doesn't.
+
+Firefox 5.0a2: Throws an exception if nothing in the document is editable,
+which apparently it always does for execCommand().  If there's a body, it does
+selectAllChildren() on that, and otherwise it does selectAllChildren() on the
+root element.  If there's no root element, throws an exception.
+
+Chrome 13 dev: If there's no root element, removes the selection.  If there's
+a root element but no body, collapses the selection at (document, 0).  If
+there's a body, it selects all the contents of the body, although that doesn't
+mean the resulting anchor or focus actually are the body node (they're usually
+text nodes).  But it seems to *avoid* selecting contenteditable stuff: if all
+the visible things in the body are contenteditable, it removes all ranges from
+the selection, and if some are, it freaks out and behaves oddly.  But
+designMode doesn't trouble it.
+
+Opera 11.11: Was characteristically uncooperative in my tests, and I didn't try
+to investigate further.
+
+The behavior here is relatively simple and largely matches implementations.
+-->
+
+<p><a href=#action>Action</a>:
+
+<ol>
+  <li>Let <var title="">target</var> be <a class=external data-anolis-spec=html href=http://www.whatwg.org/html/#the-body-element-0 title=the-body-element-0>the body element</a> of the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>.
+
+  <p class=XXX>Is this right even for framesets?
+
+  <li>If <var title="">target</var> is null, let <var title="">target</var> be the
+  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>'s <code class=external data-anolis-spec=domcore title=dom-Document-documentElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-documentelement>documentElement</a></code>.
+
+  <p class=XXX>Is this right even for documents whose root element is not an
+  HTML element?
+
+  <li>If <var title="">target</var> is null, let <var title="">target</var> be the
+  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>.
+
+  <li>Call <code class=external data-anolis-spec=domrange title=dom-Document-getSelection><a href=http://html5.org/specs/dom-range.html#dom-document-getselection>getSelection()</a></code> on the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>, and call <code class=external data-anolis-spec=domrange title=dom-Selection-selectAllChildren><a href=http://html5.org/specs/dom-range.html#dom-selection-selectallchildren>selectAllChildren(<var title="">target</var>)</a></code>
+  on the result.
+</ol>
+
+
+<h3 id=the-stylewithcss-command><span class=secno>8.2 </span><dfn>The <code title="">styleWithCSS</code> command</dfn></h3>
 <!-- IE9 and Opera 11.00 don't support this command.  By and large, they act
 the way Gecko and WebKit do when styleWithCSS is off.  Gecko invented it, and
 WebKit also supports it:
@@ -4780,7 +4833,7 @@ otherwise false.
 queryCommandState() for styleWithCSS. -->
 
 
-<h3 id=the-usecss-command><span class=secno>8.2 </span><dfn>The <code title="">useCSS</code> command</dfn></h3>
+<h3 id=the-usecss-command><span class=secno>8.3 </span><dfn>The <code title="">useCSS</code> command</dfn></h3>
 <!-- Supported by Firefox 4.0, but not IE9 or Opera 11.00 (which don't support
 styleWithCSS either), nor by Chrome 12 dev (which does support styleWithCSS.
 useCSS was the original feature in Mozilla 1.3, but the meaning is backward, so

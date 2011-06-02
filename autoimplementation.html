@@ -2132,6 +2132,11 @@ function doSpecCell(tr, test, command, styleWithCss) {
 			throw "DOM does not round-trip through serialization!";
 		}
 
+		if (specCell.firstChild.attributes.length) {
+			throw "Wrapper div has attributes!  " +
+				specCell.innerHTML.replace(/<div><\/div>$/, "");
+		}
+
 		specCell.lastChild.textContent = specCell.firstChild.innerHTML;
 	} catch (e) {
 		specCell.firstChild.contentEditable = "inherit";
@@ -2274,6 +2279,11 @@ function doBrowserCell(tr, test, command, styleWithCss) {
 		}
 		if (!compareDiv1.isEqualNode(compareDiv2)) {
 			throw "DOM does not round-trip through serialization!";
+		}
+
+		if (browserCell.firstChild.attributes.length) {
+			throw "Wrapper div has attributes!  " +
+				browserCell.innerHTML.replace(/<div><\/div>$/, "");
 		}
 
 		browserCell.lastChild.textContent = browserCell.firstChild.innerHTML;

@@ -1,1 +1,1 @@
-fail("this script should never load");
+fail("this script should never load - (w3c-test.org)");

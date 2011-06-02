@@ -355,6 +355,47 @@ function collectContainedNodes(range, condition) {
 	return nodeList;
 }
 
+/**
+ * As above, but includes nodes with an ancestor that's already been returned.
+ */
+function collectAllContainedNodes(range, condition) {
+	if (typeof condition == "undefined") {
+		condition = function() { return true };
+	}
+	var node = range.startContainer;
+	if (node.hasChildNodes()
+	&& range.startOffset < node.childNodes.length) {
+		// A child is contained
+		node = node.childNodes[range.startOffset];
+	} else if (range.startOffset == getNodeLength(node)) {
+		// No descendant can be contained
+		node = nextNodeDescendants(node);
+	} else {
+		// No children; this node at least can't be contained
+		node = nextNode(node);
+	}
+
+	var stop = range.endContainer;
+	if (stop.hasChildNodes()
+	&& range.endOffset < stop.childNodes.length) {
+		// The node after the last contained node is a child
+		stop = stop.childNodes[range.endOffset];
+	} else {
+		// This node and/or some of its children might be contained
+		stop = nextNodeDescendants(node);
+	}
+
+	var nodeList = [];
+	while (isBefore(node, stop)) {
+		if (isContained(node, range)
+		&& condition(node)) {
+			nodeList.push(node);
+		}
+		node = nextNode(node);
+	}
+	return nodeList;
+}
+
 
 function parseSimpleColor(color) {
 	// This is stupid, but otherwise my automated tests will have places where
@@ -3451,6 +3492,22 @@ function myExecCommand(command, showUI, value, range) {
 		}
 		break;
 
+		case "justifycenter":
+		justifySelection("center");
+		break;
+
+		case "justifyfull":
+		justifySelection("justify");
+		break;
+
+		case "justifyleft":
+		justifySelection("left");
+		break;
+
+		case "justifyright":
+		justifySelection("right");
+		break;
+
 		case "outdent":
 		// "Let items be a list of all lis that are ancestor containers of the
 		// range's start and/or end node."
@@ -4300,6 +4357,141 @@ function toggleLists(range, tagName) {
 			// "Fix disallowed ancestors of the previous step's result."
 			fixDisallowedAncestors(newParent);
 		}
+	}
+}
+
+function justifySelection(alignment) {
+	// "Block-extend the active range, and let new range be the result."
+	var newRange = blockExtendRange(globalRange);
+
+	// "Let element list be a list of all editable Elements contained in new
+	// range that either has an attribute in the HTML namespace whose local
+	// name is "align", or has a style attribute that sets "text-align", or is
+	// a center."
+	var elementList = collectAllContainedNodes(newRange, function(node) {
+		return node.nodeType == Node.ELEMENT_NODE
+			&& isEditable(node)
+			// Ignoring namespaces here
+			&& (
+				node.hasAttribute("align")
+				|| node.style.textAlign != ""
+				|| isHtmlElement(node, "center")
+			);
+	});
+
+	// "For each element in element list:"
+	for (var i = 0; i < elementList.length; i++) {
+		var element = elementList[i];
+
+		// "If element has an attribute in the HTML namespace whose local name
+		// is "align", remove that attribute."
+		element.removeAttribute("align");
+
+		// "Unset the CSS property "text-align" on element, if it's set by a
+		// style attribute."
+		element.style.textAlign = "";
+		if (element.getAttribute("style") == "") {
+			element.removeAttribute("style");
+		}
+
+		// "If element is a div or center with no attributes, remove it,
+		// preserving its descendants."
+		if (isHtmlElement(element, ["div", "center"])
+		&& !element.attributes.length) {
+			removePreservingDescendants(element);
+		}
+
+		// "If element is a center with one or more attributes, set the tag
+		// name of element to "div"."
+		if (isHtmlElement(element, "center")
+		&& element.attributes.length) {
+			setTagName(element, "div");
+		}
+	}
+
+	// "Block-extend the active range, and let new range be the result."
+	newRange = blockExtendRange(globalRange);
+
+	// "Let node list be a list of nodes, initially empty."
+	var nodeList = [];
+
+	// "For each node node contained in new range, append node to node list if
+	// the last member of node list (if any) is not an ancestor of node; node
+	// is editable; and either node is an Element and the CSS property
+	// "text-align" does not compute to alignment on it, or it is not an
+	// Element, but its parent is an Element, and the CSS property "text-align"
+	// does not compute to alignment on its parent."
+	nodeList = collectContainedNodes(newRange, function(node) {
+		if (!isEditable(node)) {
+			return false;
+		}
+		// Gecko and WebKit have lots of fun here confusing us with
+		// vendor-specific values, and in Gecko's case "start".
+		var element = node.nodeType == Node.ELEMENT_NODE
+			? node
+			: node.parentNode;
+		if (!element || element.nodeType != Node.ELEMENT_NODE) {
+			return false;
+		}
+		var computedAlign = getComputedStyle(element).textAlign
+			.replace(/^-(moz|webkit)-/, "");
+		if (computedAlign == "auto" || computedAlign == "start") {
+			// Depends on directionality.  Note: this is a serious hack.
+			do {
+				var dir = element.dir.toLowerCase();
+				element = element.parentNode;
+			} while (element && element.nodeType == Node.ELEMENT_NODE && dir != "ltr" && dir != "rtl");
+			if (dir == "rtl") {
+				computedAlign = "right";
+			} else {
+				computedAlign = "left";
+			}
+		}
+		return computedAlign != alignment;
+	});
+
+	// "While node list is not empty:"
+	while (nodeList.length) {
+		// "Let sublist be a list of nodes, initially empty."
+		var sublist = [];
+
+		// "Remove the first member of node list and append it to sublist."
+		sublist.push(nodeList.shift());
+
+		// "While node list is not empty, and the first member of node list is
+		// the nextSibling of the last member of sublist, remove the first
+		// member of node list and append it to sublist."
+		while (nodeList.length
+		&& nodeList[0] == sublist[sublist.length - 1].nextSibling) {
+			sublist.push(nodeList.shift());
+		}
+
+		// "Wrap sublist. Sibling criteria match any div that has one or both
+		// of the following two attributes, and no other attributes:
+		//
+		//   * "An align attribute whose value is an ASCII case-insensitive
+		//     match for alignment.
+		//   * "A style attribute which sets exactly one CSS property
+		//     (including unrecognized or invalid attributes), which is
+		//     "text-align", which is set to alignment.
+		//
+		// "New parent instructions are to call createElement("div") on the
+		// context object, then set its CSS property "text-align" to alignment,
+		// and return the result."
+		wrap(sublist,
+			function(node) {
+				return isHtmlElement(node, "div")
+					&& div.attributes.every(function(attr) {
+						return (attr.name == "align" && attr.value.toLowerCase() == alignment)
+							|| (attr.name == "style" && node.style.length == 1 && node.style.textAlign == alignment);
+					});
+			},
+			function() {
+				var newParent = document.createElement("div");
+				newParent.setAttribute("style", "text-align: " + alignment);
+				return newParent;
+			}
+		);
 	}
 }
 

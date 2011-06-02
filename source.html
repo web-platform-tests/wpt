@@ -1076,14 +1076,11 @@ useful to spec:
   There's code for these in WebKit, Source/WebCore/editing/EditorCommand.cpp,
   but I didn't see them mentioned elsewhere.  Some might be worth adding.
 
-Things I haven't looked at:
+Things I haven't looked at that multiple browsers implement:
 
 * copy, cut, paste: Needs attention to security.
 * delete, redo, undo: Needs review of the Google work on this; will probably be
   quite complicated.
-* justifyCenter, justifyFull, justifyLeft, justifyRight: These look important
-  and should be similar to work I've already done, so they're
-  next on my list.
 * selectAll, unselect: Should be easy, although they seem redundant to just
   calling methods of the Selection.
 -->
@@ -4080,6 +4077,124 @@ or "ul"):
 </ol>
 
 
+<h3>Justifying the selection</h3>
+<!--
+There are two basic ways it works: using the align attribute, and using CSS
+text-align.  IE9 and Opera 11.11 use only the align attribute, Chrome 13 dev
+uses only text-align, and Firefox 5.0a2 varies based on styleWithCSS.  The two
+ways produce entirely different results, which is a real problem, so I don't
+think Firefox's approach is tenable.  text-align is more valid, and for typical
+contenteditable cases it works the same.  But for cases where you have
+fixed-width blocks, like tables or just divs with a width set, it behaves
+differently, and in those cases the align attribute is more useful.
+-->
+
+<p>To <dfn>justify the selection</dfn> to a string <var>alignment</var> (either
+"center", "justify", "left", or "right"):
+
+<p class=XXX>text-align doesn't behave as expected if there are descendant
+blocks with non-100% width, like tables.  The align attribute behaves a lot
+more nicely in such cases, but it's not valid.  Not clear what to do.  For now
+I've stuck with text-align, just because the cases where it misbehaves can't be
+created by any sequence of stock execCommand()s that I know of, but this needs
+more careful consideration.  Gecko in CSS mode seems to special-case tables,
+adding auto margins to the table element to get it to align correctly.
+
+<p class=XXX>Need to do something along the lines of pushing down values here
+(although no browser does).  In fact, it's very likely this can be rewritten in
+terms of the inline formatting command primitives, but it's not clear if it
+would be worth the added complexity.
+
+<ol>
+  <li><span>Block-extend</span> the <span>active range</span>, and let <var>new
+  range</var> be the result.
+
+  <li>Let <var>element list</var> be a list of all <span>editable</span>
+  [[element]]s [[contained]] in <var>new range</var> that either has an
+  attribute in the [[htmlnamespace]] whose [[attrlocalname]] is "align", or has
+  a [[style]] attribute that sets "text-align", or is a <code
+  data-anolis-spec=html>center</code>.
+  <!-- No browser actually removes center, but it makes sense to do so. -->
+
+  <li>For each <var>element</var> in <var>element list</var>:
+
+  <ol>
+    <li>If <var>element</var> has an attribute in the [[htmlnamespace]] whose
+    [[attrlocalname]] is "align", remove that attribute.
+
+    <li>Unset the CSS property "text-align" on <var>element</var>, if it's set
+    by a [[style]] attribute.
+
+    <li>If <var>element</var> is a [[div]] or <code
+    data-anolis-spec=html>center</code> with no attributes, remove it,
+    <span>preserving its descendants</span>.
+
+    <li>If <var>element</var> is a <code data-anolis-spec=html>center</code>
+    with one or more attributes, <span>set the tag name</span> of
+    <var>element</var> to "div".
+  </ol>
+
+  <li><span>Block-extend</span> the <span>active range</span>, and let <var>new
+  range</var> be the result.
+  <!-- This could theoretically be necessary, like if it converted "<div
+  align=right>foo</div>bar" to "foo<br>bar".  Now we need to select "foo<br>",
+  nor just "foo". -->
+
+  <li>Let <var>node list</var> be a list of [[nodes]], initially empty.
+
+  <li>For each [[node]] <var>node</var> [[contained]] in <var>new range</var>,
+  append <var>node</var> to <var>node list</var> if the last member of
+  <var>node list</var> (if any) is not an [[ancestor]] of <var>node</var>;
+  <var>node</var> is <span>editable</span>; and either <var>node</var> is an
+  [[element]] and the CSS property "text-align" does not compute to
+  <var>alignment</var> on it, or it is not an [[element]], but its [[parent]]
+  is an [[element]], and the CSS property "text-align" does not compute to
+  <var>alignment</var> on its [[parent]].
+  <!-- Of tested browsers, only Chrome 13 dev seems to not apply the alignment
+  to nodes that are already aligned.  Even then, it does apply it if the
+  alignment is just inherited from the root. -->
+
+  <p class=XXX>What does this imply when text-align is "start" or "end"?  As
+  with lots of CSS stuff in this spec, needs to be clarified.
+
+  <li>While <var>node list</var> is not empty:
+
+  <ol>
+    <li>Let <var>sublist</var> be a list of [[nodes]], initially empty.
+
+    <li>Remove the first member of <var>node list</var> and append it to
+    <var>sublist</var>.
+
+    <li>While <var>node list</var> is not empty, and the first member of
+    <var>node list</var> is the [[nextsibling]] of the last member of
+    <var>sublist</var>, remove the first member of <var>node list</var> and
+    append it to <var>sublist</var>.
+
+    <li><span>Wrap</span> <var>sublist</var>.  <span>Sibling criteria</span>
+    match any [[div]] that has one or both of the following two attributes, and
+    no other attributes:
+
+    <ul>
+      <li>An <code data-anolis-spec=html title=attr-div-align>align</code>
+      attribute whose [[attrvalue]] is an <span data-anolis-spec=domcore>ASCII
+      case-insensitive</span> match for <var>alignment</var>.
+
+      <li>A [[style]] attribute which sets exactly one CSS property (including
+      unrecognized or invalid attributes), which is "text-align", which is set
+      to <var>alignment</var>.
+    </ul>
+
+    <span>New parent instructions</span> are to call [[createelement|"div"]] on
+    the [[contextobject]], then set its CSS property "text-align" to
+    <var>alignment</var>, and return the result.
+    <!-- As for inline formatting, I only ever create new elements, and don't
+    ever modify existing ones.  This doesn't match how any browser behaves
+    in this case, but for inline formatting it matches everyone but Gecko's CSS
+    mode. -->
+  </ol>
+</ol>
+
+
 <h3><dfn>The <code title>formatBlock</code> command</dfn></h3>
 <!--
 Tested browser versions: IE9, Firefox 4.0, Chrome 13 dev, Opera 11.10.
@@ -4562,6 +4677,30 @@ http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
 
 <p><span>Action</span>: <span>Toggle lists</span> with <var>tag name</var>
 "ul".
+
+
+<h3><dfn>The <code title>justifyCenter</code> command</dfn></h3>
+
+<p><span>Action</span>: <span>Justify the selection</span> with
+<var>alignment</var> "center".
+
+
+<h3><dfn>The <code title>justifyFull</code> command</dfn></h3>
+
+<p><span>Action</span>: <span>Justify the selection</span> with
+<var>alignment</var> "justify".
+
+
+<h3><dfn>The <code title>justifyLeft</code> command</dfn></h3>
+
+<p><span>Action</span>: <span>Justify the selection</span> with
+<var>alignment</var> "left".
+
+
+<h3><dfn>The <code title>justifyRight</code> command</dfn></h3>
+
+<p><span>Action</span>: <span>Justify the selection</span> with
+<var>alignment</var> "right".
 
 
 <h3><dfn>The <code title>outdent</code> command</dfn></h3>

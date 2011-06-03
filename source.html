@@ -714,6 +714,9 @@ inline styles, because Firefox does actually add them to arbitrary elements.
   <li>If <var>original parent</var> has no [[children]], remove it from its
   [[parent]].
 
+  <li>Otherwise, <span>remove extraneous line breaks before</span>
+  <var>original parent</var>.
+
   <li>If <var>node list</var>'s last member's [[nextsibling]] is null,
   <span>remove extraneous line breaks at the end of</span> <var>node
   list</var>'s last member's [[parent]].
@@ -894,28 +897,22 @@ instructions</dfn>:
 block element empty, when we really need to add a [[br]] [[child]] no matter
 what so it doesn't collapse.
 
+<p class=XXX>I'm uncertain about the use of prohibited paragraph children here.
+I'm using it mostly because it's convenient and seems relatively sensible.  If
+we really want to use it, we probably want to change its name.
+
 <ol>
   <li>Let <var>range</var> be the <span>active range</span>.
 
   <li>If <var>range</var> is null, abort these steps and do nothing.
 
-  <li>If no [[node]] is [[contained]] in <var>range</var>, and
-  either <var>range</var>'s [[startnode]] is not a [[text]] or [[comment]] node
-  or <var>range</var>'s [[startoffset]] is its [[startnode]]'s [[nodelength]],
-  and either <var>range</var>'s [[endnode]] is not a [[text]] or [[comment]]
-  node or <var>range</var>'s [[endoffset]] is 0, call <code
-  data-anolis-spec=domrange
-  title=dom-Range-deleteContents>deleteContents()</code> on <var>range</var>
-  and abort these steps.
-  <!-- This is precisely the case where deleteContents() will not alter the
-  DOM, just collapse the selection.  I think. -->
-
-  <p class=XXX>Is it possible for subsequent steps to make the range's start go
-  past its end or vice versa, or does this step successfully prevent that case?
+  <li>Let <var>start node</var>, <var>start offset</var>, <var>end node</var>,
+  and <var>end offset</var> be <var>range</var>'s [[rangestart]] and
+  [[rangeend]] [[bpnodes]] and [[bpoffsets]].
 
   <!-- Drill the range down to the lowest possible level, so we don't delete
   more elements than necessary. -->
-  <li>While the [[startnode]] of <var>range</var> has at least one [[child]]:
+  <li>While <var>start node</var> has at least one [[child]]:
   <!--
   We don't want to keep going when we hit an element with no children, because
   then we'd do something like
@@ -929,94 +926,184 @@ what so it doesn't collapse.
   -->
 
   <ol>
-    <li>If <var>range</var>'s [[startoffset]] is its [[startnode]]'s
-    [[nodelength]], and its [[startnode]]'s [[parent]] is not null, set
-    <var>range</var>'s [[rangestart]] to ([[parent]] of [[startnode]], 1 +
-    [[index]] of [[startnode]]) and continue this loop from the beginning.
+    <li>If <var>start offset</var> is <var>start node</var>'s
+    [[nodelength]], and <var>start node</var>'s [[parent]] is <span>in the same
+    editing host</span>, and <var>start node</var> is not a <span>prohibited
+    paragraph child</span>, set <var>start offset</var> to one plus the
+    [[index]] of <var>start node</var>, then set <var>start node</var> to its
+    [[parent]] and continue this loop from the beginning.
     <!--
     For instance:
 
       <b>foo[</b><i>bar]</i>
+      -> <b>foo{</b><i>bar]</i>
       -> <b>foo</b>{<i>bar]</i>
 
     Then the next step will make it <b>foo</b><i>[bar]</i>.
+
+    We don't want to do this for prohibited paragraph children, because that
+    would lead to something like
+
+      <p>foo[</p><p>]bar<p>
+
+    ultimately collapsing, which is wrong.  Once we do the deletion, it needs
+    to wind up <p>foo[]bar</p>, whereas an actually collapsed selection should
+    do nothing.
     -->
 
-    <li>If <var>range</var>'s [[startoffset]] is its [[startnode]]'s
-    [[nodelength]], break from this loop.
+    <li>If <var>start offset</var> is <var>start node</var>'s [[nodelength]],
+    break from this loop.
     <!-- This happens if the first step brought us all the way up to the root.
     The step immediately after this loop will bring us back down again.  -->
 
-    <li>Let <var>reference node</var> be the [[child]] of <var>range</var>'s
-    [[startnode]] with [[index]] equal to its [[startoffset]].
+    <li>Let <var>reference node</var> be the [[child]] of <var>start node</var>
+    with [[index]] equal to <var>start offset</var>.
 
     <li>If <var>reference node</var> is an [[element]] with no [[children]],
     break from this loop.
     <!-- Don't descend into it, since then it won't get deleted even if it's
     selected. -->
 
-    <li>Set <var>range</var>'s [[rangestart]] to (<var>reference node</var>,
-    0).
+    <li>Set <var>start node</var> to <var>reference node</var> and <var>start
+    offset</var> to 0.
   </ol>
 
-  <!-- Corner case: maybe we went all the way up to the end of the root. -->
-  <li>If <var>range</var>'s [[startoffset]] is the [[nodelength]] of its
-  [[startnode]], then while <var>range</var>'s [[startnode]] has [[children]]
-  and its last [[child]] is not an [[element]] with no [[children]], set
-  <var>range</var>'s [[rangestart]] to (last [[child]] of [[startnode]],
-  [[nodelength]] of last [[child]] of [[startnode]]).
-
-  <li>While the [[endnode]] of <var>range</var> has at least one [[child]]:
+  <li>While <var>end node</var> has at least one [[child]]:
 
   <ol>
-    <li>If <var>range</var>'s [[endoffset]] is 0, and its [[endnode]]'s
-    [[parent]] is not null, set <var>range</var>'s [[rangeend]] to ([[parent]]
-    of [[endnode]], [[index]] of [[endnode]]) and continue this loop from the
-    beginning.
+    <li>If <var>end offset</var> is 0, and <var>end node</var>'s
+    [[parent]] is <span>in the same editing host</span>, and <var>end
+    node</var> is not a <span>prohibited paragraph child</span>, set <var>end
+    offset</var> to the [[index]] of <var>end node</var>, then set <var>end
+    node</var> to its [[parent]] and continue this loop from the beginning.
 
-    <li>If <var>range</var>'s [[endoffset]] is 0, break from this loop.
+    <li>If <var>end offset</var> is 0, break from this loop.
 
-    <li>Let <var>reference node</var> be the [[child]] of <var>range</var>'s
-    [[endnode]] with [[index]] equal to its [[endoffset]] minus one.
+    <li>Let <var>reference node</var> be the [[child]] of <var>end node</var>
+    with [[index]] equal to <var>end offset</var> minus one.
 
     <li>If <var>reference node</var> is an [[element]] with no [[children]],
     break from this loop.
 
-    <li>Set <var>range</var>'s [[rangeend]] to (<var>reference node</var>,
-    [[nodelength]] of <var>reference node</var>).
+    <li>Set <var>end node</var> to <var>reference node</var> and <var>end
+    offset</var> to the [[nodelength]] of <var>reference node</var>.
   </ol>
 
-  <li>If <var>range</var>'s [[endoffset]] is 0, then while <var>range</var>'s
-  [[endnode]] has [[children]] and its first [[child]] is not an [[element]]
-  with no [[children]], set <var>range</var>'s [[rangeend]] to (first [[child]]
-  of [[endnode]], 0).
+  <li>If (<var>end node</var>, <var>end offset</var>) is <span
+  data-anolis-spec=domrange title=concept-bp-before>before</span> (<var>start
+  node</var>, <var>start offset</var>), call <code data-anolis-spec=domrange
+  title=dom-Range-deleteContents>deleteContents()</code> on <var>range</var>
+  and abort these steps.
+
+  <li>Set <var>range</var>'s [[rangestart]] to (<var>start node</var>,
+  <var>start offset</var>) and its [[rangeend]] to (<var>end node</var>,
+  <var>end offset</var>).
 
   <li>Let <var>start block</var> be the [[rangestart]] [[bpnode]] of
   <var>range</var>.
 
   <li>While <var>start block</var> is not a <span>prohibited paragraph
-  child</span>, set <var>start block</var> to its [[parent]].
-
-  <p class=XXX>I'm uncertain about the use of prohibited paragraph children
-  here.  I'm using it mostly because it's convenient and seems relatively
-  sensible.  If we really want to use it, we probably want to change its name.
+  child</span> and its [[parent]] is <span>in the same editing host</span>, set
+  <var>start block</var> to its [[parent]].
 
   <li>Let <var>end block</var> be the [[rangeend]] [[bpnode]] of
   <var>range</var>.
 
   <li>While <var>end block</var> is not a <span>prohibited paragraph
-  child</span>, set <var>end block</var> to its [[parent]].
+  child</span> and its [[parent]] is <span>in the same editing host</span>, set
+  <var>end block</var> to its [[parent]].
 
   <li>Call <code data-anolis-spec=domrange
   title=dom-Range-deleteContents>deleteContents()</code> on <var>range</var>.
+  <!--
+  Now we need to merge blocks.  The simplest case is something like
 
-  <li>If <var>start block</var> or its [[parent]] is null, or <var>end
-  block</var> or its [[parent]] is null, or <var>start block</var> is an
-  [[ancestor]] or [[descendant]] of <var>end block</var>, abort these steps.
+    <p>fo[o</p><p>bar</p><p>b]az</p>
+    -> <p>fo</p>{}<p>az</p>
+    -> <p>fo{}az</p>
+
+  where neither block descends from the other.  More complicated is something
+  like
+
+    foo[<p>]bar</p>
+    -> foo[]bar
+
+  or
+
+    <p>foo[</p>]bar
+    -> <p>foo[]bar</p>
+
+  where one descends from the other.
+  -->
+
+  <li>If <var>start block</var> is not <span>in the same editing host</span> as
+  <var>end block</var>, or <var>start block</var> is neither an <span>editing
+  host</span> nor a <span>prohibited paragraph child</span>, or <var>end
+  block</var> is neither an <span>editing host</span> nor a <span>prohibited
+  paragraph child</span>, or <var>start block</var> and <var>end block</var>
+  are the same, abort these steps.
+
+  <li>If <var>start block</var> is an [[ancestor]] of <var>end block</var>:
+  <!-- Just repeatedly blow up the end block. -->
+
+  <ol>
+    <li>Let <var>reference node</var> be <var>end block</var>.
+
+    <li>While <var>reference node</var> is not a [[child]] of <var>start
+    block</var>, set <var>reference node</var> to its [[parent]].
+
+    <li>Set the [[rangestart]] and [[rangeend]] of <var>range</var> to
+    (<var>start block</var>, [[index]] of <var>reference node</var>).
+
+    <li>If <var>end block</var>'s [[firstchild]] is not an <span>inline
+    node</span>, abort these steps.
+
+    <li>Let <var>children</var> be an array of [[nodes]], initially empty.
+
+    <li>Append the first [[child]] of <var>end block</var> to
+    <var>children</var>.
+
+    <li>While <var>children</var>'s last member is not a [[br]], and
+    <var>children</var>'s last member's [[nextsibling]] is an <span>inline
+    node</span>, append <var>children</var>'s last member's [[nextsibling]] to
+    <var>children</var>.
+
+    <li>While <var>children</var>'s first member's [[parent]] is not <var>start
+    block</var>, <span>split the parent</span> of <var>children</var>.
+
+    <li>If the [[child]] of <var>range</var>'s [[startnode]] with [[index]]
+    equal to its [[startoffset]] is a [[br]] and is not the first member of
+    <var>children</var>, remove that [[br]] from its [[parent]].
+
+    <li>Abort these steps.
+  </ol>
 
   <li>Set the [[rangestart]] and [[rangeend]] of <var>range</var> to
   (<var>start block</var>, [[nodelength]] of <var>start block</var>).
 
+  <li>If <var>start block</var> is a [[descendant]] of <var>end block</var>:
+  <!-- Pull in everything that comes after <var>start block</var>, until we hit
+  a br or prohibited paragraph child. -->
+
+  <ol>
+    <li>Let <var>reference node</var> be <var>start block</var>.
+
+    <li>While <var>reference node</var> is not a [[child]] of <var>end
+    block</var>, set <var>reference node</var> to its [[parent]].
+
+    <li>While the [[nextsibling]] of <var>reference node</var> is neither null
+    nor a [[br]] nor a <span>prohibited paragraph child</span>, append the
+    [[nextsibling]] of <var>reference node</var> as the last [[child]] of
+    <var>start block</var>, <span>preserving ranges</span>.
+
+    <li>If the [[nextsibling]] of <var>reference node</var> is a [[br]], remove
+    it from its [[parent]].
+
+    <li>Abort these steps.
+  </ol>
+
+  <!-- In the last case, just move all the children of the end block to the
+  start block, and then get rid of any elements we emptied that way. -->
   <li>While <var>end block</var> has [[children]], append the first [[child]]
   of <var>end block</var> to <var>start block</var>, <span>preserving
   ranges</span>.

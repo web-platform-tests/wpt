@@ -943,6 +943,22 @@ var tests = {
 		'<p>foo[bar<p><b>baz]quz</b>',
 
 		'<div><p>foo<p>[bar<p>baz]</div>',
+
+		'foo[<br>]bar',
+		'<p>foo[</p><p>]bar</p>',
+		'<p>foo[</p><p>]bar<br>baz</p>',
+		'foo[<p>]bar</p>',
+		'foo[<p>]bar<br>baz</p>',
+		'foo[<p>]bar</p>baz',
+		'<p>foo[</p>]bar',
+		'<p>foo[</p>]bar<br>baz',
+		'<p>foo[</p>]bar<p>baz</p>',
+		'foo[<div><p>]bar</div>',
+		'<div><p>foo[</p></div>]bar',
+		'foo[<div><p>]bar</p>baz</div>',
+		'foo[<div>]bar<p>baz</p></div>',
+		'<div><p>foo</p>bar[</div>]baz',
+		'<div>foo<p>bar[</p></div>]baz',
 	],
 	insertorderedlist: [
 		'foo[]bar',

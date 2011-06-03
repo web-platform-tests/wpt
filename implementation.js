@@ -593,6 +593,10 @@ function splitParent(nodeList) {
 	// "If original parent has no children, remove it from its parent."
 	if (!originalParent.hasChildNodes()) {
 		originalParent.parentNode.removeChild(originalParent);
+
+	// "Otherwise, remove extraneous line breaks before original parent."
+	} else {
+		removeExtraneousLineBreaksBefore(originalParent);
 	}
 
 	// "If node list's last member's nextSibling is null, remove extraneous
@@ -772,139 +776,186 @@ function deleteSelection() {
 		return;
 	}
 
-	// "If no node is contained in range, and either range's start node is not
-	// a Text or Comment node or range's start offset is its start node's
-	// length, and either range's end node is not a Text or Comment node or
-	// range's end offset is 0, call deleteContents() on range and abort these
-	// steps."
-	if (!collectContainedNodes(range).length
-	&& ((range.startContainer.nodeType != Node.TEXT_NODE
-	&& range.startContainer.nodeType != Node.COMMENT_NODE)
-	|| range.startOffset == getNodeLength(range.startContainer))
-	&& ((range.endContainer.nodeType != Node.TEXT_NODE
-	&& range.endContainer.nodeType != Node.COMMENT_NODE)
-	|| range.endOffset == 0)) {
+	// "Let start node, start offset, end node, and end offset be range's start
+	// and end nodes and offsets."
+	var startNode = range.startContainer;
+	var startOffset = range.startOffset;
+	var endNode = range.endContainer;
+	var endOffset = range.endOffset;
+
+	// "While start node has at least one child:"
+	while (startNode.hasChildNodes()) {
+		// "If start offset is start node's length, and start node's parent is
+		// in the same editing host, and start node is not a prohibited
+		// paragraph child, set start offset to one plus the index of start
+		// node, then set start node to its parent and continue this loop from
+		// the beginning."
+		if (startOffset == getNodeLength(startNode)
+		&& inSameEditingHost(startNode, startNode.parentNode)
+		&& !isProhibitedParagraphChild(startNode)) {
+			startOffset = 1 + getNodeIndex(startNode);
+			startNode = startNode.parentNode;
+			continue;
+		}
+
+		// "If start offset is start node's length, break from this loop."
+		if (startOffset == getNodeLength(startNode)) {
+			break;
+		}
+
+		// "Let reference node be the child of start node with index equal to
+		// start offset."
+		var referenceNode = startNode.childNodes[startOffset];
+
+		// "If reference node is an Element with no children, break from this
+		// loop."
+		if (referenceNode.nodeType == Node.ELEMENT_NODE
+		&& !referenceNode.hasChildNodes()) {
+			break;
+		}
+
+		// "Set start node to reference node and start offset to 0."
+		startNode = referenceNode;
+		startOffset = 0;
+	}
+
+	// "While end node has at least one child:"
+	while (endNode.hasChildNodes()) {
+		// "If end offset is 0, and end node's parent is in the same editing
+		// host, and end node is not a prohibited paragraph child, set end
+		// offset to the index of end node, then set end node to its parent and
+		// continue this loop from the beginning."
+		if (endOffset == 0
+		&& inSameEditingHost(endNode, endNode.parentNode)
+		&& !isProhibitedParagraphChild(endNode)) {
+			endOffset = getNodeIndex(endNode);
+			endNode = endNode.parentNode;
+			continue;
+		}
+
+		// "If end offset is 0, break from this loop."
+		if (endOffset == 0) {
+			break;
+		}
+
+		// "Let reference node be the child of end node with index equal to end
+		// offset minus one."
+		var referenceNode = endNode.childNodes[endOffset - 1];
+
+		// "If reference node is an Element with no children, break from this
+		// loop."
+		if (referenceNode.nodeType == Node.ELEMENT_NODE
+		&& !referenceNode.hasChildNodes()) {
+			break;
+		}
+
+		// "Set end node to reference node and end offset to the length of
+		// reference node."
+		endNode = referenceNode;
+		endOffset = getNodeLength(referenceNode);
+	}
+
+	// "If (end node, end offset) is before (start node, start offset), call
+	// deleteContents() on range and abort these steps."
+	var startPoint = document.createRange();
+	startPoint.setStart(startNode, startOffset);
+	var endPoint = document.createRange();
+	endPoint.setStart(endNode, endOffset);
+	if (startPoint.compareBoundaryPoints(Range.START_TO_START, endPoint) == 1) {
 		range.deleteContents();
 		return;
 	}
 
-	// "While the start node of range has at least one child:"
-	while (range.startContainer.hasChildNodes()) {
-		// "If range's start offset is its start node's length, and its start
-		// node's parent is not null, set range's start to (parent of start
-		// node, 1 + index of start node) and continue this loop from the
-		// beginning."
-		if (range.startOffset == getNodeLength(range.startContainer)
-		&& range.startContainer.parentNode) {
-			range.setStart(range.startContainer.parentNode, 1 + getNodeIndex(range.startContainer));
-			continue;
-		}
-
-		// "If range's start offset is its start node's length, break from this
-		// loop."
-		if (range.startOffset == getNodeLength(range.startContainer)) {
-			break;
-		}
-
-		// "Let reference node be the child of range's start node with index
-		// equal to its start offset."
-		var referenceNode = range.startContainer.childNodes[range.startOffset];
-
-		// "If reference node is an Element with no children, break from this
-		// loop."
-		if (referenceNode.nodeType == Node.ELEMENT_NODE
-		&& !referenceNode.hasChildNodes()) {
-			break;
-		}
-
-		// "Set range's start to (reference node, 0)."
-		range.setStart(referenceNode, 0);
-	}
-
-	// "If range's start offset is the length of its start node, then while
-	// range's start node has children and its last child is not an Element
-	// with no children, set range's start to (last child of start node, length
-	// of last child of start node)."
-	if (range.startOffset == getNodeLength(range.startContainer)) {
-		while (range.startContainer.hasChildNodes()
-		&& (range.lastChild.nodeType != Node.ELEMENT_NODE
-		|| range.lastChild.hasChildNodes())) {
-			range.setStart(range.startContainer.lastChild, getNodeLength(range.startContainer.lastChild));
-		}
-	}
-
-	// "While the end node of range has at least one child:"
-	while (range.endContainer.hasChildNodes()) {
-		// "If range's end offset is 0, and its end node's parent is not null,
-		// set range's end to (parent of end node, index of end node) and
-		// continue this loop from the beginning."
-		if (range.endOffset == 0
-		&& range.endContainer.parentNode) {
-			range.setEnd(range.endContainer.parentNode, getNodeIndex(range.endContainer));
-			continue;
-		}
-
-		// "If range's end offset is 0, break from this loop."
-		if (range.endOffset == 0) {
-			break;
-		}
-
-		// "Let reference node be the child of range's end node with index
-		// equal to its end offset minus one."
-		var referenceNode = range.endContainer.childNodes[range.endOffset - 1];
-
-		// "If reference node is an Element with no children, break from this
-		// loop."
-		if (referenceNode.nodeType == Node.ELEMENT_NODE
-		&& !referenceNode.hasChildNodes()) {
-			break;
-		}
-
-		// "Set range's end to (reference node, length of reference node)."
-		range.setEnd(referenceNode, getNodeLength(referenceNode));
-	}
-
-	// "If range's end offset is 0, then while range's end node has children
-	// and its first child is not an Element with no children, set range's end
-	// to (first child of end node, 0)."
-	if (range.endOffset == 0) {
-		while (range.endContainer.hasChildNodes()
-		&& (range.lastChild.nodeType != Node.ELEMENT_NODE
-		|| range.lastChild.hasChildNodes())) {
-			range.setEnd(range.endContainer.firstChild, 0);
-		}
-	}
+	// "Set range's start to (start node, start offset) and its end to (end
+	// node, end offset)."
+	range.setStart(startNode, startOffset);
+	range.setEnd(endNode, endOffset);
 
 	// "Let start block be the start node of range."
 	var startBlock = range.startContainer;
 
-	// "While start block is not a prohibited paragraph child, set start block
-	// to its parent."
-	while (!isProhibitedParagraphChild(startBlock)) {
+	// "While start block is not a prohibited paragraph child and its parent is
+	// in the same editing host, set start block to its parent."
+	while (!isProhibitedParagraphChild(startBlock)
+	&& inSameEditingHost(startBlock, startBlock.parentNode)) {
 		startBlock = startBlock.parentNode;
 	}
 
 	// "Let end block be the end node of range."
 	var endBlock = range.endContainer;
 
-	// "While end block is not a prohibited paragraph child, set end block to
-	// its parent."
-	while (!isProhibitedParagraphChild(endBlock)) {
+	// "While end block is not a prohibited paragraph child and its parent is
+	// in the same editing host, set end block to its parent."
+	while (!isProhibitedParagraphChild(endBlock)
+	&& inSameEditingHost(endBlock, endBlock.parentNode)) {
 		endBlock = endBlock.parentNode;
 	}
 
 	// "Call deleteContents() on range."
 	range.deleteContents();
 
-	// "If start block or its parent is null, or end block or its parent is
-	// null, or start block is an ancestor or descendant of end block, abort
-	// these steps."
-	if (!startBlock
-	|| !startBlock.parentNode
-	|| !endBlock
-	|| !endBlock.parentNode
-	|| isAncestor(startBlock, endBlock)
-	|| isDescendant(startBlock, endBlock)) {
+	// "If start block is not in the same editing host as end block, or start
+	// block is neither an editing host nor a prohibited paragraph child, or
+	// end block is neither an editing host nor a prohibited paragraph child,
+	// or start block and end block are the same, abort these steps."
+	if (!inSameEditingHost(startBlock, endBlock)
+	|| (!isEditingHost(startBlock) && !isProhibitedParagraphChild(startBlock))
+	|| (!isEditingHost(endBlock) && !isProhibitedParagraphChild(endBlock))
+	|| startBlock == endBlock) {
+		return;
+	}
+
+	// "If start block is an ancestor of end block:"
+	if (isAncestor(startBlock, endBlock)) {
+		// "Let reference node be end block."
+		var referenceNode = endBlock;
+
+		// "While reference node is not a child of start block, set reference
+		// node to its parent."
+		while (referenceNode.parentNode != startBlock) {
+			referenceNode = referenceNode.parentNode;
+		}
+
+		// "Set the start and end of range to (start block, index of reference
+		// node)."
+		range.setStart(startBlock, getNodeIndex(referenceNode));
+		range.setEnd(startBlock, getNodeIndex(referenceNode));
+
+		// "If end block's firstChild is not an inline node, abort these
+		// steps."
+		if (!isInlineNode(endBlock.firstChild)) {
+			return;
+		}
+
+		// "Let children be an array of nodes, initially empty."
+		var children = [];
+
+		// "Append the first child of end block to children."
+		children.push(endBlock.firstChild);
+
+		// "While children's last member is not a br, and children's last
+		// member's nextSibling is an inline node, append children's last
+		// member's nextSibling to children."
+		while (!isHtmlElement(children[children.length - 1], "br")
+		&& isInlineNode(children[children.length - 1].nextSibling)) {
+			children.push(children[children.length - 1].nextSibling);
+		}
+
+		// "While children's first member's parent is not start block, split
+		// the parent of children."
+		while (children[0].parentNode != startBlock) {
+			splitParent(children);
+		}
+
+		// "If the child of range's start node with index equal to its start
+		// offset is a br and is not the first member of children, remove that
+		// br from its parent."
+		if (isHtmlElement(range.startContainer.childNodes[range.startOffset], "br")
+		&& range.startContainer.childNodes[range.startOffset] != children[0]) {
+			range.startContainer.removeChild(range.startContainer.childNodes[range.startOffset]);
+		}
+
+		// "Abort these steps."
 		return;
 	}
 
@@ -912,6 +963,36 @@ function deleteSelection() {
 	// block)."
 	range.setStart(startBlock, getNodeLength(startBlock));
 	range.setEnd(startBlock, getNodeLength(startBlock));
+
+	// "If start block is a descendant of end block:"
+	if (isDescendant(startBlock, endBlock)) {
+		// "Let reference node be start block."
+		var referenceNode = startBlock;
+
+		// "While reference node is not a child of end block, set reference
+		// node to its parent."
+		while (referenceNode.parentNode != endBlock) {
+			referenceNode = referenceNode.parentNode;
+		}
+
+		// "While the nextSibling of reference node is neither null nor a br
+		// nor a prohibited paragraph child, append the nextSibling of
+		// reference node as the last child of start block, preserving ranges."
+		while (referenceNode.nextSibling
+		&& !isHtmlElement(referenceNode.nextSibling, "br")
+		&& !isProhibitedParagraphChild(referenceNode.nextSibling)) {
+			movePreservingRanges(referenceNode.nextSibling, startBlock, -1);
+		}
+
+		// "If the nextSibling of reference node is a br, remove it from its
+		// parent."
+		if (isHtmlElement(referenceNode.nextSibling, "br")) {
+			referenceNode.parentNode.removeChild(referenceNode.nextSibling);
+		}
+
+		// "Abort these steps."
+		return;
+	}
 
 	// "While end block has children, append the first child of end block to
 	// start block, preserving ranges."

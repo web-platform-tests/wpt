@@ -994,6 +994,9 @@ we really want to use it, we probably want to change its name.
   node</var>, <var>start offset</var>), call <code data-anolis-spec=domrange
   title=dom-Range-deleteContents>deleteContents()</code> on <var>range</var>
   and abort these steps.
+  <!-- This actually will have no effect other than collapsing the selection to
+  whatever point deleteContents() likes to collapse it to.  It might make more
+  sense to collapse to the start or end, though. -->
 
   <li>Set <var>range</var>'s [[rangestart]] to (<var>start node</var>,
   <var>start offset</var>) and its [[rangeend]] to (<var>end node</var>,
@@ -1015,6 +1018,7 @@ we really want to use it, we probably want to change its name.
 
   <li>Call <code data-anolis-spec=domrange
   title=dom-Range-deleteContents>deleteContents()</code> on <var>range</var>.
+
   <!--
   Now we need to merge blocks.  The simplest case is something like
 
@@ -1036,12 +1040,43 @@ we really want to use it, we probably want to change its name.
   where one descends from the other.
   -->
 
+  <!-- The deletions might have left some empty elements.  We want to remove
+  empty inline nodes, and add a <br> child to empty blocks.  We remove the
+  empty inline nodes first, and only add the <br>s later, because we don't want
+  to add the brs to blocks that we're about to merge. -->
+  <li>While <var>start node</var> is an <span>editable</span> <span>inline
+  node</span> with [[nodelength]] 0, let <var>parent</var> be its [[parent]],
+  then remove <var>start node</var> from <var>parent</var>, then set <var>start
+  node</var> to <var>parent</var>.
+
+  <li>While <var>end node</var> is an <span>editable</span> <span>inline
+  node</span> with [[nodelength]] 0, let <var>parent</var> be its [[parent]],
+  then remove <var>end node</var> from <var>parent</var>, then set <var>end
+  node</var> to <var>parent</var>.
+
   <li>If <var>start block</var> is not <span>in the same editing host</span> as
   <var>end block</var>, or <var>start block</var> is neither an <span>editing
   host</span> nor a <span>prohibited paragraph child</span>, or <var>end
   block</var> is neither an <span>editing host</span> nor a <span>prohibited
   paragraph child</span>, or <var>start block</var> and <var>end block</var>
-  are the same, abort these steps.
+  are the same:
+  <!-- Then we don't try to merge anything. -->
+
+  <ol>
+    <li>If <var>start node</var> is an [[element]] with no [[children]], is
+    either <span>editable</span> or an <span>editing host</span>, and is not an
+    <span>inline node</span>, call [[createelement|"br"]] on the
+    [[contextobject]] and append the result as the last [[child]] of <var>start
+    node</var>.
+
+    <li>If <var>end node</var> is an [[element]] with no [[children]], is
+    either <span>editable</span> or an <span>editing host</span>, and is not an
+    <span>inline node</span>, call [[createelement|"br"]] on the
+    [[contextobject]] and append the result as the last [[child]] of <var>end
+    node</var>.
+
+    <li>Abort these steps.
+  </ol>
 
   <li>If <var>start block</var> is an [[ancestor]] of <var>end block</var>:
   <!-- Just repeatedly blow up the end block. -->
@@ -1074,18 +1109,17 @@ we really want to use it, we probably want to change its name.
     <li>If the [[child]] of <var>range</var>'s [[startnode]] with [[index]]
     equal to its [[startoffset]] is a [[br]] and is not the first member of
     <var>children</var>, remove that [[br]] from its [[parent]].
-
-    <li>Abort these steps.
   </ol>
 
-  <li>Set the [[rangestart]] and [[rangeend]] of <var>range</var> to
-  (<var>start block</var>, [[nodelength]] of <var>start block</var>).
-
-  <li>If <var>start block</var> is a [[descendant]] of <var>end block</var>:
+  <li>Otherwise, if <var>start block</var> is a [[descendant]] of <var>end
+  block</var>:
   <!-- Pull in everything that comes after <var>start block</var>, until we hit
   a br or prohibited paragraph child. -->
 
   <ol>
+    <li>Set the [[rangestart]] and [[rangeend]] of <var>range</var> to
+    (<var>start block</var>, [[nodelength]] of <var>start block</var>).
+
     <li>Let <var>reference node</var> be <var>start block</var>.
 
     <li>While <var>reference node</var> is not a [[child]] of <var>end
@@ -1098,19 +1132,28 @@ we really want to use it, we probably want to change its name.
 
     <li>If the [[nextsibling]] of <var>reference node</var> is a [[br]], remove
     it from its [[parent]].
-
-    <li>Abort these steps.
   </ol>
 
+  <li>Otherwise:
   <!-- In the last case, just move all the children of the end block to the
   start block, and then get rid of any elements we emptied that way. -->
-  <li>While <var>end block</var> has [[children]], append the first [[child]]
-  of <var>end block</var> to <var>start block</var>, <span>preserving
-  ranges</span>.
 
-  <li>While <var>end block</var> has no [[children]], let <var>parent</var> be
-  the [[parent]] of <var>end block</var>, then remove <var>end block</var> from
-  <var>parent</var>, then set <var>end block</var> to <var>parent</var>.
+  <ol>
+    <li>Set the [[rangestart]] and [[rangeend]] of <var>range</var> to
+    (<var>start block</var>, [[nodelength]] of <var>start block</var>).
+
+    <li>While <var>end block</var> has [[children]], append the first [[child]]
+    of <var>end block</var> to <var>start block</var>, <span>preserving
+    ranges</span>.
+
+    <li>While <var>end block</var> has no [[children]], let <var>parent</var> be
+    the [[parent]] of <var>end block</var>, then remove <var>end block</var> from
+    <var>parent</var>, then set <var>end block</var> to <var>parent</var>.
+  </ol>
+
+  <li>If <var>start block</var> has no [[children]], call
+  [[createelement|"br"]] on the [[contextobject]] and append the result as the
+  last [[child]] of <var>start block</var>.
 </ol>
 
 <p>To move a [[node]] to a new location, <dfn>preserving ranges</dfn>, remove
@@ -2283,6 +2326,25 @@ don't either. -->
 
 <p><span>Value</span>: Always the empty string.
 <!-- I'd have expected the value to be the URL, but guess not. -->
+
+
+<h3><dfn>The <code title>delete</code> command</dfn></h3>
+<!-- Not really specifically "inline", but I didn't want to create a new
+section just for it. -->
+
+<p><span>Action</span>:
+
+<ol>
+  <li>If the <span>active range</span> is not <code data-anolis-spec=domrange
+  title=dom-Range-collapsed>collapsed</code>, <span>delete the selection</span>
+  and abort these steps.
+
+  <p class=XXX>Maybe we sometimes want to do the following even if it isn't
+  collapsed?  WebKit seems to do some normalization on the range before
+  deciding whether it's collapsed, and that sounds like a good idea.
+
+  <li class=XXX>The stuff where we delete the previous character goes here.
+</ol>
 
 
 <h3><dfn>The <code title>fontName</code> command</dfn></h3>
@@ -4980,10 +5042,23 @@ get rid of it.
 
 <h2>Additional requirements</h2>
 
+<p class=XXX>It has been <a
+href=http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2009-December/024628.html>suggested</a>
+that some things here need to be platform-dependent, not fully standardized.
+For now I'm standardizing them anyway, because the large majority of behavior
+should be platform-agnostic.  If anyone has suggestions as to particular things
+that should be left up to platform behavior, please say so.
+
 <p>When the user instructs the user agent to insert a line break inside an
 <span>editing host</span>, such as by pressing the Return key while the cursor
 is in an <span>editable</span> [[node]], the user agent must take the
 <span>action</span> for <span>the <code title>insertParagraph</code>
+command</span>.
+
+<p>When the user instructs the user agent to delete the previous character
+inside an <span>editing host</span>, such as by pressing the Backspace key
+while the cursor is in an <span>editable</span> [[node]], the user agent must
+take the <span>action</span> for <span>the <code title>delete</code>
 command</span>.
 
 

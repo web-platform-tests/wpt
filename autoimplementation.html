@@ -298,6 +298,56 @@ var tests = {
 		'<a name=abc>foo[bar]baz</a>',
 		'<a name=abc><b>foo[bar]baz</b></a>',
 	],
+	// Opera requires this to be quoted, contrary to ES5 11.1.5 which allows
+	// PropertyName to be any IdentifierName, and see 7.6 which defines
+	// IdentifierName to include ReservedWord; Identifier excludes it.
+	"delete": [
+		'foo[]bar',
+		'<span>foo</span>{}<span>bar</span>',
+		'<span>foo[</span><span>]bar</span>',
+		'foo[bar]baz',
+
+		'foo<b>[bar]</b>baz',
+		'foo<b>{bar}</b>baz',
+		'foo{<b>bar</b>}baz',
+		'foo<span>[bar]</span>baz',
+		'foo<span>{bar}</span>baz',
+		'foo{<span>bar</span>}baz',
+		'<b>foo[bar</b><i>baz]quz</i>',
+		'<p>foo</p><p>[bar]</p><p>baz</p>',
+		'<p>foo</p><p>{bar}</p><p>baz</p>',
+		'<p>foo</p>{<p>bar</p>}<p>baz</p>',
+
+		'<p>foo[bar<p>baz]quz',
+		'<p>foo[bar<div>baz]quz</div>',
+		'<p>foo[bar<h1>baz]quz</h1>',
+		'<div>foo[bar</div><p>baz]quz',
+		'<blockquote>foo[bar</blockquote><pre>baz]quz</pre>',
+
+		'<p><b>foo[bar</b><p>baz]quz',
+		'<div><p>foo[bar</div><p>baz]quz',
+		'<p>foo[bar<blockquote><p>baz]quz<p>qoz</blockquote',
+		'<p>foo[bar<p style=color:red>baz]quz',
+		'<p>foo[bar<p><b>baz]quz</b>',
+
+		'<div><p>foo<p>[bar<p>baz]</div>',
+
+		'foo[<br>]bar',
+		'<p>foo[</p><p>]bar</p>',
+		'<p>foo[</p><p>]bar<br>baz</p>',
+		'foo[<p>]bar</p>',
+		'foo[<p>]bar<br>baz</p>',
+		'foo[<p>]bar</p>baz',
+		'<p>foo[</p>]bar',
+		'<p>foo[</p>]bar<br>baz',
+		'<p>foo[</p>]bar<p>baz</p>',
+		'foo[<div><p>]bar</div>',
+		'<div><p>foo[</p></div>]bar',
+		'foo[<div><p>]bar</p>baz</div>',
+		'foo[<div>]bar<p>baz</p></div>',
+		'<div><p>foo</p>bar[</div>]baz',
+		'<div>foo<p>bar[</p></div>]baz',
+	],
 	fontname: [
 		'foo[]bar',
 		'<span>foo</span>{}<span>bar</span>',

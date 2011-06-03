@@ -894,14 +894,59 @@ function deleteSelection() {
 	// "Call deleteContents() on range."
 	range.deleteContents();
 
+	// "While start node is an editable inline node with length 0, let parent
+	// be its parent, then remove start node from parent, then set start node
+	// to parent."
+	while (isEditable(startNode)
+	&& isInlineNode(startNode)
+	&& getNodeLength(startNode) == 0) {
+		var parent_ = startNode.parentNode;
+		parent_.removeChild(startNode);
+		startNode = parent_;
+	}
+
+	// "While end node is an editable inline node with length 0, let parent be
+	// its parent, then remove end node from parent, then set end node to
+	// parent."
+	while (isEditable(endNode)
+	&& isInlineNode(endNode)
+	&& getNodeLength(endNode) == 0) {
+		var parent_ = endNode.parentNode;
+		parent_.removeChild(endNode);
+		endNode = parent_;
+	}
+
 	// "If start block is not in the same editing host as end block, or start
 	// block is neither an editing host nor a prohibited paragraph child, or
 	// end block is neither an editing host nor a prohibited paragraph child,
-	// or start block and end block are the same, abort these steps."
+	// or start block and end block are the same:"
 	if (!inSameEditingHost(startBlock, endBlock)
 	|| (!isEditingHost(startBlock) && !isProhibitedParagraphChild(startBlock))
 	|| (!isEditingHost(endBlock) && !isProhibitedParagraphChild(endBlock))
 	|| startBlock == endBlock) {
+		// "If start node is an Element with no children, is either editable or
+		// an editing host, and is not an inline node, call createElement("br")
+		// on the context object and append the result as the last child of
+		// start node."
+		if ((isEditable(startNode) || isEditingHost(startNode))
+		&& startNode.nodeType == Node.ELEMENT_NODE
+		&& !startNode.hasChildNodes()
+		&& !isInlineNode(startNode)) {
+			startNode.appendChild(document.createElement("br"));
+		}
+
+		// "If end node is an Element with no children, is either editable or
+		// an editing host, and is not an inline node, call createElement("br")
+		// on the context object and append the result as the last child of end
+		// node."
+		if ((isEditable(endNode) || isEditingHost(endNode))
+		&& endNode.nodeType == Node.ELEMENT_NODE
+		&& !endNode.hasChildNodes()
+		&& !isInlineNode(endNode)) {
+			endNode.appendChild(document.createElement("br"));
+		}
+
+		// "Abort these steps."
 		return;
 	}
 
@@ -955,17 +1000,13 @@ function deleteSelection() {
 			range.startContainer.removeChild(range.startContainer.childNodes[range.startOffset]);
 		}
 
-		// "Abort these steps."
-		return;
-	}
+	// "Otherwise, if start block is a descendant of end block:"
+	} else if (isDescendant(startBlock, endBlock)) {
+		// "Set the start and end of range to (start block, length of start
+		// block)."
+		range.setStart(startBlock, getNodeLength(startBlock));
+		range.setEnd(startBlock, getNodeLength(startBlock));
 
-	// "Set the start and end of range to (start block, length of start
-	// block)."
-	range.setStart(startBlock, getNodeLength(startBlock));
-	range.setEnd(startBlock, getNodeLength(startBlock));
-
-	// "If start block is a descendant of end block:"
-	if (isDescendant(startBlock, endBlock)) {
 		// "Let reference node be start block."
 		var referenceNode = startBlock;
 
@@ -990,22 +1031,33 @@ function deleteSelection() {
 			referenceNode.parentNode.removeChild(referenceNode.nextSibling);
 		}
 
-		// "Abort these steps."
-		return;
+	// "Otherwise:"
+	} else {
+		// "Set the start and end of range to (start block, length of start
+		// block)."
+		range.setStart(startBlock, getNodeLength(startBlock));
+		range.setEnd(startBlock, getNodeLength(startBlock));
+
+		// "While end block has children, append the first child of end block
+		// to start block, preserving ranges."
+		while (endBlock.hasChildNodes()) {
+			movePreservingRanges(endBlock.firstChild, startBlock, -1);
+		}
+
+		// "While end block has no children, let parent be the parent of end
+		// block, then remove end block from parent, then set end block to
+		// parent."
+		while (!endBlock.hasChildNodes()) {
+			var parent_ = endBlock.parentNode;
+			parent_.removeChild(endBlock);
+			endBlock = parent_;
+		}
 	}
 
-	// "While end block has children, append the first child of end block to
-	// start block, preserving ranges."
-	while (endBlock.hasChildNodes()) {
-		movePreservingRanges(endBlock.firstChild, startBlock, -1);
-	}
-
-	// "While end block has no children, let parent be the parent of end block,
-	// then remove end block from parent, then set end block to parent."
-	while (!endBlock.hasChildNodes()) {
-		var parent_ = endBlock.parentNode;
-		parent_.removeChild(endBlock);
-		endBlock = parent_;
+	// "If start block has no children, call createElement("br") on the context
+	// object and append the result as the last child of start block."
+	if (!startBlock.hasChildNodes()) {
+		startBlock.appendChild(document.createElement("br"));
 	}
 }
 
@@ -2981,6 +3033,15 @@ function myExecCommand(command, showUI, value, range) {
 		// "Set the value of each node in node list to value."
 		for (var i = 0; i < nodeList.length; i++) {
 			setNodeValue(nodeList[i], command, value);
+		}
+		break;
+
+		case "delete":
+		// "If the active range is not collapsed, delete the selection and
+		// abort these steps."
+		if (!range.collapsed) {
+			deleteSelection();
+			return;
 		}
 		break;
 

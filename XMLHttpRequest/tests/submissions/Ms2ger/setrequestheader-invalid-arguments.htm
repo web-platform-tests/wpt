@@ -3,6 +3,7 @@
   <head>
     <title>XMLHttpRequest: setRequestHeader() with invalid arguments</title>
     <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
   </head>
   <body>
     <div id="log"></div>
@@ -32,7 +33,8 @@
             var client = new XMLHttpRequest()
             client.open("GET", "../resources/delay.php?ms=0")
             client.setRequestHeader(invalid_headers[i], "test")
-          }, "setRequestHeader should throw with header \"" + invalid_headers[i] +"\".")
+          }, "setRequestHeader should throw with header " +
+             format_value(invalid_headers[i]) +".")
         })
       }
     </script>

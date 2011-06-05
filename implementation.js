@@ -4623,7 +4623,7 @@ function justifySelection(alignment) {
 		wrap(sublist,
 			function(node) {
 				return isHtmlElement(node, "div")
-					&& div.attributes.every(function(attr) {
+					&& [].every.call(node.attributes, function(attr) {
 						return (attr.name == "align" && attr.value.toLowerCase() == alignment)
 							|| (attr.name == "style" && node.style.length == 1 && node.style.textAlign == alignment);
 					});

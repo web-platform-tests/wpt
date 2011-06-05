@@ -9,8 +9,8 @@
 <script>
 test(function() {
   assert_throws(new TypeError(), function() { document.body = "text" })
-}, "Should've thrown a TypeError.");
+}, "Should throw a TypeError.");
 test(function() {
   assert_throws("HIERARCHY_REQUEST_ERR", function() { document.body = document.createElement("div") })
-}, "Should've thrown a HIERARCHY_REQUEST_ERR.");
+}, "Should throw a HIERARCHY_REQUEST_ERR.");
 </script>

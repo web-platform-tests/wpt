@@ -1079,8 +1079,10 @@ the table itself.
   If span isn't an allowed child, it's probably something unpleasant like a
   table row or a list or such.  We don't want to merge to or from something
   like that, because we'd most likely wind up with the wrong type of child
-  somewhere.  Although we probably want to allow merging different lists or
-  such this way . . .
+  somewhere.  It should be pretty hard for this to happen given the
+  normalization we do on the selection; I'm not actually sure how it could
+  happen at all, actually, unless you start out with a DOM that has non-allowed
+  children someplace.  So it's basically a sanity check.
 
   We don't let either start block or end block be a td or th.  This means we'll
   never merge to or from a td or th.  This matches Firefox 5.0a2, and

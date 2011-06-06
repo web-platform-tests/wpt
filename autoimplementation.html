@@ -86,7 +86,7 @@ blank in IE and Opera, which don't support styleWithCSS.)
 
 <div id=toolbar>
 <!-- Note: this is completely not a hack at all. -->
-<style id=alerts>/* tr:not(.alert):not(:first-child) { display: none } */</style>
+<style id=alerts>/* body > div > table > tbody > tr:not(.alert):not(:first-child) { display: none } */</style>
 
 <label><input id=alert-checkbox type=checkbox accesskey=a checked onclick='updateAlertRowStyle()'> Display rows without spec <u>a</u>lerts</label>
 

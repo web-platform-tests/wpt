@@ -540,6 +540,8 @@ sequentially in the list's order.
 
 <h2>Common algorithms</h2>
 
+<h3>Assorted common algorithms</h3>
+
 <p>To <dfn>set the tag name</dfn> of an [[element]] <var>element</var> to
 <var>new name</var>:
 
@@ -726,6 +728,38 @@ inline styles, because Firefox does actually add them to arbitrary elements.
 descendants</dfn>, <span>split the parent</span> of <var>node</var>'s
 [[children]].
 
+<p>To move a [[node]] to a new location, <dfn>preserving ranges</dfn>, remove
+the [[node]] from its original [[parent]] (if any), then insert it in the new
+location.  In doing so, however, ignore the regular [[rangemutationrules]], and
+instead follow these rules:
+
+<ol>
+  <li>Let <var>node</var> be the moved [[node]], <var>old parent</var> and
+  <var>old index</var> be the old [[parent]] (which may be null) and [[index]],
+  and <var>new parent</var> and <var>new index</var> be the new [[parent]] and
+  [[index]].
+
+  <li>If a [[boundarypoint]]'s [[bpnode]] is the same as or a [[descendant]] of
+  <var>node</var>, leave it unchanged, so it moves to the new location.  <!--
+  This is actually implicit, but I state it anyway for completeness. -->
+
+  <li>If a [[boundarypoint]]'s [[bpnode]] is <var>new parent</var> and its
+  [[bpoffset]] is greater than <var>new index</var>, add one to its
+  [[bpoffset]].
+
+  <li>If a [[boundarypoint]]'s [[bpnode]] is <var>old parent</var> and its
+  [[bpoffset]] is <var>old index</var> or <var>old index</var> + 1, set its
+  [[bpnode]] to <var>new parent</var> and add <var>new index</var> &minus;
+  <var>old index</var> to its [[bpoffset]].
+
+  <li>If a [[boundarypoint]]'s [[bpnode]] is <var>old parent</var> and its
+  [[bpoffset]] is greater than <var>old index</var> + 1, subtract one from its
+  [[bpoffset]].
+</ol>
+
+
+<h3>Wrapping a list of nodes</h3>
+
 <p>To <dfn>wrap</dfn> a list <var>node list</var> of consecutive [[sibling]]
 [[nodes]], given <dfn>sibling criteria</dfn> and <dfn>new parent
 instructions</dfn>:
@@ -890,6 +924,9 @@ instructions</dfn>:
 
   <li>Return <var>new parent</var>.
 </ol>
+
+
+<h3>Deleting the contents of a range</h3>
 
 <p>To <dfn>delete the contents</dfn> of a [[range]] <var>range</var>:
 
@@ -1232,35 +1269,6 @@ the table itself.
   <li>If <var>start block</var> has no [[children]], call
   [[createelement|"br"]] on the [[contextobject]] and append the result as the
   last [[child]] of <var>start block</var>.
-</ol>
-
-<p>To move a [[node]] to a new location, <dfn>preserving ranges</dfn>, remove
-the [[node]] from its original [[parent]] (if any), then insert it in the new
-location.  In doing so, however, ignore the regular [[rangemutationrules]], and
-instead follow these rules:
-
-<ol>
-  <li>Let <var>node</var> be the moved [[node]], <var>old parent</var> and
-  <var>old index</var> be the old [[parent]] (which may be null) and [[index]],
-  and <var>new parent</var> and <var>new index</var> be the new [[parent]] and
-  [[index]].
-
-  <li>If a [[boundarypoint]]'s [[bpnode]] is the same as or a [[descendant]] of
-  <var>node</var>, leave it unchanged, so it moves to the new location.  <!--
-  This is actually implicit, but I state it anyway for completeness. -->
-
-  <li>If a [[boundarypoint]]'s [[bpnode]] is <var>new parent</var> and its
-  [[bpoffset]] is greater than <var>new index</var>, add one to its
-  [[bpoffset]].
-
-  <li>If a [[boundarypoint]]'s [[bpnode]] is <var>old parent</var> and its
-  [[bpoffset]] is <var>old index</var> or <var>old index</var> + 1, set its
-  [[bpnode]] to <var>new parent</var> and add <var>new index</var> &minus;
-  <var>old index</var> to its [[bpoffset]].
-
-  <li>If a [[boundarypoint]]'s [[bpnode]] is <var>old parent</var> and its
-  [[bpoffset]] is greater than <var>old index</var> + 1, subtract one from its
-  [[bpoffset]].
 </ol>
 
 

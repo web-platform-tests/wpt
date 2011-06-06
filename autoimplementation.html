@@ -305,6 +305,14 @@ var tests = {
 		'foo[]bar',
 		'<span>foo</span>{}<span>bar</span>',
 		'<span>foo[</span><span>]bar</span>',
+		'foo<span style=display:none>bar</span>[]baz',
+		'fo&ouml;[]bar',
+		'foo&#x308;[]bar',
+		'<p>foo<p>[]bar',
+		'<div>foo</div><div>[]bar</div>',
+		'<pre>foo</pre>[]bar',
+		'foo<br>[]bar',
+
 		'foo[bar]baz',
 
 		'foo<b>[bar]</b>baz',
@@ -347,6 +355,18 @@ var tests = {
 		'foo[<div>]bar<p>baz</p></div>',
 		'<div><p>foo</p>bar[</div>]baz',
 		'<div>foo<p>bar[</p></div>]baz',
+
+		'<table><tbody><tr><th>foo<th>[bar]<th>baz<tr><td>quz<td>qoz<td>qiz</table>',
+		'<table><tbody><tr><th>foo<th>ba[r<th>b]az<tr><td>quz<td>qoz<td>qiz</table>',
+		'<table><tbody><tr><th>fo[o<th>bar<th>b]az<tr><td>quz<td>qoz<td>qiz</table>',
+		'<table><tbody><tr><th>foo<th>bar<th>ba[z<tr><td>q]uz<td>qoz<td>qiz</table>',
+		'<table><tbody><tr><th>[foo<th>bar<th>baz]<tr><td>quz<td>qoz<td>qiz</table>',
+		'<table><tbody><tr><th>[foo<th>bar<th>baz<tr><td>quz<td>qoz<td>qiz]</table>',
+		'{<table><tbody><tr><th>foo<th>bar<th>baz<tr><td>quz<td>qoz<td>qiz</table>}',
+		'<table><tbody><tr><td>foo<td>ba[r<tr><td>baz<td>quz<tr><td>q]oz<td>qiz</table>',
+		'<p>fo[o<table><tr><td>b]ar</table><p>baz',
+		'<p>foo<table><tr><td>ba[r</table><p>b]az',
+		'<p>fo[o<table><tr><td>bar</table><p>b]az',
 	],
 	fontname: [
 		'foo[]bar',

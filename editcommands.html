@@ -38,7 +38,7 @@
 <body class=draft>
 <div class=head id=head>
 <h1>HTML Editing Commands</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-3-june-2011>Work in Progress &mdash; Last Update 3 June 2011</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-6-june-2011>Work in Progress &mdash; Last Update 6 June 2011</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;ayg+spec@aryeh.name&gt;
@@ -933,13 +933,15 @@ instructions</dfn>:
 
 <p>To <dfn id=delete-the-selection>delete the selection</dfn>:
 
-<p class=XXX>This might blow up non-editable stuff.  It also might leave a
-block element empty, when we really need to add a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> no matter
-what so it doesn't collapse.
-
 <p class=XXX>I'm uncertain about the use of prohibited paragraph children here.
 I'm using it mostly because it's convenient and seems relatively sensible.  If
 we really want to use it, we probably want to change its name.
+
+<p class=XXX>This treats selections in elements the same as selections in
+nearby text nodes, if there are any.  This might not be desired in all cases.
+Needs research into what sorts of selections the user can create.  E.g.,
+Gecko treats it differently if you select all the text in a table vs. selecting
+the table itself.
 
 <ol>
   <li>Let <var title="">range</var> be the <a href=#active-range>active range</a>.
@@ -1030,11 +1032,17 @@ we really want to use it, we probably want to change its name.
   </ol>
 
   <li>If (<var title="">end node</var>, <var title="">end offset</var>) is <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-bp-before title=concept-bp-before>before</a> (<var title="">start
-  node</var>, <var title="">start offset</var>), call <code class=external data-anolis-spec=domrange title=dom-Range-deleteContents><a href=http://html5.org/specs/dom-range.html#dom-range-deletecontents>deleteContents()</a></code> on <var title="">range</var>
-  and abort these steps.
-  <!-- This actually will have no effect other than collapsing the selection to
-  whatever point deleteContents() likes to collapse it to.  It might make more
-  sense to collapse to the start or end, though. -->
+  node</var>, <var title="">start offset</var>), set <var title="">range</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> to
+  its <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> and abort these steps.
+
+  <li>If <var title="">start node</var> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> or <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#comment>Comment</a></code> node and <var title="">start
+  offset</var> is 0, set <var title="">start offset</var> to the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> of <var title="">start
+  node</var>, then set <var title="">start node</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+
+  <li>If <var title="">end node</var> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> or <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#comment>Comment</a></code> node and <var title="">end
+  offset</var> is its <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a>, set <var title="">end offset</var> to one plus the
+  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> of <var title="">end node</var>, then set <var title="">end node</var> to its
+  <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
 
   <li>Set <var title="">range</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> to (<var title="">start node</var>,
   <var title="">start offset</var>) and its <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> to (<var title="">end node</var>,
@@ -1043,18 +1051,80 @@ we really want to use it, we probably want to change its name.
   <li>Let <var title="">start block</var> be the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> of
   <var title="">range</var>.
 
-  <li>While <var title="">start block</var> is not a <a href=#prohibited-paragraph-child>prohibited paragraph
-  child</a> and its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is <a href=#in-the-same-editing-host>in the same editing host</a>, set
-  <var title="">start block</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+  <li>While <var title="">start block</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is <a href=#in-the-same-editing-host>in the same editing
+  host</a>, and <var title="">start block</var> is not a <a href=#prohibited-paragraph-child>prohibited paragraph
+  child</a> or "span" is not an <a href=#allowed-child>allowed child</a> of <var title="">start
+  block</var>, set <var title="">start block</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
 
   <li>Let <var title="">end block</var> be the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> of
   <var title="">range</var>.
 
-  <li>While <var title="">end block</var> is not a <a href=#prohibited-paragraph-child>prohibited paragraph
-  child</a> and its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is <a href=#in-the-same-editing-host>in the same editing host</a>, set
-  <var title="">end block</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+  <li>While <var title="">end block</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is <a href=#in-the-same-editing-host>in the same editing
+  host</a>, and <var title="">end block</var> is not a <a href=#prohibited-paragraph-child>prohibited paragraph
+  child</a> or "span" is not an <a href=#allowed-child>allowed child</a> of <var title="">end
+  block</var> or <var title="">end block</var> is a <code class=external data-anolis-spec=html title="the td element"><a href=http://www.whatwg.org/html/#the-td-element>td</a></code> or <code class=external data-anolis-spec=html title="the th element"><a href=http://www.whatwg.org/html/#the-th-element>th</a></code>, set <var title="">end
+  block</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+  <!--
+  We're willing to let start block be a td or th, but not end block.  This
+  means if the selection starts in a table cell and ends in some other block,
+  we'll merge the contents of the latter block into the cell, but not vice
+  versa.  This matches Chrome 13 dev and Opera 11.11.  Firefox 5.0a2 doesn't
+  allow merging either way, and in IE9 the delete key just does nothing.
+  -->
 
-  <li>Call <code class=external data-anolis-spec=domrange title=dom-Range-deleteContents><a href=http://html5.org/specs/dom-range.html#dom-range-deletecontents>deleteContents()</a></code> on <var title="">range</var>.
+  <!-- This is based on deleteData() in DOM Range. -->
+  <li>If <var title="">start node</var> and <var title="">end node</var> are the same, and
+  <var title="">start node</var> is an <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> or <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#comment>Comment</a></code>
+  node, call <code class=external data-anolis-spec=domcore title=dom-CharacterData-deleteData><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-deletedata>deleteData(<var title="">start offset</var>, <var title="">end offset</var>
+  &minus; <var title="">start offset</var>)</a></code> on <var title="">start node</var>.
+
+  <li>Otherwise:
+
+  <ol>
+    <li>If <var title="">start node</var> is an <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> or
+    <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#comment>Comment</a></code> node, call <code class=external data-anolis-spec=domcore title=dom-CharacterData-deleteData><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-deletedata>deleteData()</a></code> on it, with <var title="">start offset</var>
+    as the first argument and (<a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> of <var title="">start node</var> &minus;
+    <var title="">start offset</var>) as the second argument.
+
+    <li>Let <var title="">node list</var> be a list of <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a>, initially empty.
+
+    <li>For each <var title="">node</var> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in <var title="">range</var>, append
+    <var title="">node</var> to <var title="">node list</var> if the last member of <var title="">node
+    list</var> (if any) is not an <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of <var title="">node</var>;
+    <var title="">node</var> is <a href=#editable>editable</a>; and <var title="">node</var> is not a
+    <code class=external data-anolis-spec=html title="the thead element"><a href=http://www.whatwg.org/html/#the-thead-element>thead</a></code>, <code class=external data-anolis-spec=html title="the tbody element"><a href=http://www.whatwg.org/html/#the-tbody-element>tbody</a></code>, <code class=external data-anolis-spec=html title="the tfoot element"><a href=http://www.whatwg.org/html/#the-tfoot-element>tfoot</a></code>, <code class=external data-anolis-spec=html title="the tr element"><a href=http://www.whatwg.org/html/#the-tr-element>tr</a></code>, <code class=external data-anolis-spec=html title="the th element"><a href=http://www.whatwg.org/html/#the-th-element>th</a></code>, or <code class=external data-anolis-spec=html title="the td element"><a href=http://www.whatwg.org/html/#the-td-element>td</a></code>.
+    <!--
+    IE9 doesn't seem to let you do any intercell deletions: the delete key does
+    nothing if you select across multiple cells.  Firefox 5.0a2 and Opera 11.11
+    behave as the spec says, not removing any table things.  Chrome 13 dev will
+    remove entire rows if selected.  Note that IE, Firefox, Word 2007, and
+    OpenOffice.org 3.2.1 Ubuntu all switch to a magic cell-selection mode when
+    you try to select between cells, at least in some cases, instead of
+    selecting letter-by-letter.
+    -->
+
+    <li>For each <var title="">node</var> in <var title="">node list</var>:
+
+    <ol>
+      <li>Let <var title="">parent</var> be the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of <var title="">node</var>.
+
+      <li>Remove <var title="">node</var> from <var title="">parent</var>.
+
+      <li>While <var title="">parent</var> is an <a href=#editable>editable</a> <a href=#inline-node>inline
+      node</a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> 0, let <var title="">grandparent</var> be the
+      <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of <var title="">parent</var>, then remove <var title="">parent</var> from
+      <var title="">grandparent</var>, then set <var title="">parent</var> to
+      <var title="">grandparent</var>.
+
+      <li>If <var title="">parent</var> is <a href=#editable>editable</a> or an <a href=#editing-host>editing
+      host</a>, is not an <a href=#inline-node>inline node</a>, and has no <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>,
+      call <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("br")</a></code> on the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a> and append the
+      result as the last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">parent</var>.
+    </ol>
+
+    <li>If <var title="">end node</var> is an <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> or
+    <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#comment>Comment</a></code> node, call <code class=external data-anolis-spec=domcore title=dom-CharacterData-deleteData><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-deletedata>deleteData(0, <var title="">end offset</var>)</a></code> on it.
+  </ol>
 
   <!--
   Now we need to merge blocks.  The simplest case is something like
@@ -1077,43 +1147,29 @@ we really want to use it, we probably want to change its name.
   where one descends from the other.
   -->
 
-  <!-- The deletions might have left some empty elements.  We want to remove
-  empty inline nodes, and add a <br> child to empty blocks.  We remove the
-  empty inline nodes first, and only add the <br>s later, because we don't want
-  to add the brs to blocks that we're about to merge. -->
-  <li>While <var title="">start node</var> is an <a href=#editable>editable</a> <a href=#inline-node>inline
-  node</a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> 0, let <var title="">parent</var> be its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>,
-  then remove <var title="">start node</var> from <var title="">parent</var>, then set <var title="">start
-  node</var> to <var title="">parent</var>.
-
-  <li>While <var title="">end node</var> is an <a href=#editable>editable</a> <a href=#inline-node>inline
-  node</a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> 0, let <var title="">parent</var> be its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>,
-  then remove <var title="">end node</var> from <var title="">parent</var>, then set <var title="">end
-  node</var> to <var title="">parent</var>.
-
   <li>If <var title="">start block</var> is not <a href=#in-the-same-editing-host>in the same editing host</a> as
   <var title="">end block</var>, or <var title="">start block</var> is neither an <a href=#editing-host>editing
   host</a> nor a <a href=#prohibited-paragraph-child>prohibited paragraph child</a>, or <var title="">end
   block</var> is neither an <a href=#editing-host>editing host</a> nor a <a href=#prohibited-paragraph-child>prohibited
-  paragraph child</a>, or <var title="">start block</var> and <var title="">end block</var>
-  are the same:
-  <!-- Then we don't try to merge anything. -->
+  paragraph child</a>, or "span" is not an <a href=#allowed-child>allowed child</a> of
+  <var title="">start block</var>, or "span" is not an <a href=#allowed-child>allowed child</a> of
+  <var title="">end block</var>, or <var title="">end block</var> is a <code class=external data-anolis-spec=html title="the td element"><a href=http://www.whatwg.org/html/#the-td-element>td</a></code> or <code class=external data-anolis-spec=html title="the th element"><a href=http://www.whatwg.org/html/#the-th-element>th</a></code>, or
+  <var title="">start block</var> and <var title="">end block</var> are the same, set
+  <var title="">range</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> to its <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> and then abort these
+  steps.
 
-  <ol>
-    <li>If <var title="">start node</var> is an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> with no <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, is
-    either <a href=#editable>editable</a> or an <a href=#editing-host>editing host</a>, and is not an
-    <a href=#inline-node>inline node</a>, call <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("br")</a></code> on the
-    <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a> and append the result as the last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">start
-    node</var>.
+  <!--
+  We might have added a br to the start/end block in an earlier step.  Now
+  we're about to merge the blocks, and we don't want the br's to get in the
+  way.  The end block is being destroyed no matter what.  If the start block
+  winds up empty after merging, we'll add a new br child at the end so it
+  doesn't collapse.
+  -->
+  <li>If <var title="">start block</var> has one <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>, which is a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code>, remove
+  its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> from it.
 
-    <li>If <var title="">end node</var> is an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> with no <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, is
-    either <a href=#editable>editable</a> or an <a href=#editing-host>editing host</a>, and is not an
-    <a href=#inline-node>inline node</a>, call <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("br")</a></code> on the
-    <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a> and append the result as the last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">end
-    node</var>.
-
-    <li>Abort these steps.
-  </ol>
+  <li>If <var title="">end block</var> has one <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>, which is a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code>, remove its
+  <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> from it.
 
   <li>If <var title="">start block</var> is an <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of <var title="">end block</var>:
   <!-- Just repeatedly blow up the end block. -->

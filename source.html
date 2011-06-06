@@ -893,13 +893,15 @@ instructions</dfn>:
 
 <p>To <dfn>delete the selection</dfn>:
 
-<p class=XXX>This might blow up non-editable stuff.  It also might leave a
-block element empty, when we really need to add a [[br]] [[child]] no matter
-what so it doesn't collapse.
-
 <p class=XXX>I'm uncertain about the use of prohibited paragraph children here.
 I'm using it mostly because it's convenient and seems relatively sensible.  If
 we really want to use it, we probably want to change its name.
+
+<p class=XXX>This treats selections in elements the same as selections in
+nearby text nodes, if there are any.  This might not be desired in all cases.
+Needs research into what sorts of selections the user can create.  E.g.,
+Gecko treats it differently if you select all the text in a table vs. selecting
+the table itself.
 
 <ol>
   <li>Let <var>range</var> be the <span>active range</span>.
@@ -991,12 +993,17 @@ we really want to use it, we probably want to change its name.
 
   <li>If (<var>end node</var>, <var>end offset</var>) is <span
   data-anolis-spec=domrange title=concept-bp-before>before</span> (<var>start
-  node</var>, <var>start offset</var>), call <code data-anolis-spec=domrange
-  title=dom-Range-deleteContents>deleteContents()</code> on <var>range</var>
-  and abort these steps.
-  <!-- This actually will have no effect other than collapsing the selection to
-  whatever point deleteContents() likes to collapse it to.  It might make more
-  sense to collapse to the start or end, though. -->
+  node</var>, <var>start offset</var>), set <var>range</var>'s [[rangeend]] to
+  its [[rangestart]] and abort these steps.
+
+  <li>If <var>start node</var> is a [[text]] or [[comment]] node and <var>start
+  offset</var> is 0, set <var>start offset</var> to the [[index]] of <var>start
+  node</var>, then set <var>start node</var> to its [[parent]].
+
+  <li>If <var>end node</var> is a [[text]] or [[comment]] node and <var>end
+  offset</var> is its [[nodelength]], set <var>end offset</var> to one plus the
+  [[index]] of <var>end node</var>, then set <var>end node</var> to its
+  [[parent]].
 
   <li>Set <var>range</var>'s [[rangestart]] to (<var>start node</var>,
   <var>start offset</var>) and its [[rangeend]] to (<var>end node</var>,
@@ -1005,19 +1012,80 @@ we really want to use it, we probably want to change its name.
   <li>Let <var>start block</var> be the [[rangestart]] [[bpnode]] of
   <var>range</var>.
 
-  <li>While <var>start block</var> is not a <span>prohibited paragraph
-  child</span> and its [[parent]] is <span>in the same editing host</span>, set
-  <var>start block</var> to its [[parent]].
+  <li>While <var>start block</var>'s [[parent]] is <span>in the same editing
+  host</span>, and <var>start block</var> is not a <span>prohibited paragraph
+  child</span> or "span" is not an <span>allowed child</span> of <var>start
+  block</var>, set <var>start block</var> to its [[parent]].
 
   <li>Let <var>end block</var> be the [[rangeend]] [[bpnode]] of
   <var>range</var>.
 
-  <li>While <var>end block</var> is not a <span>prohibited paragraph
-  child</span> and its [[parent]] is <span>in the same editing host</span>, set
-  <var>end block</var> to its [[parent]].
+  <li>While <var>end block</var>'s [[parent]] is <span>in the same editing
+  host</span>, and <var>end block</var> is not a <span>prohibited paragraph
+  child</span> or "span" is not an <span>allowed child</span> of <var>end
+  block</var> or <var>end block</var> is a [[td]] or [[th]], set <var>end
+  block</var> to its [[parent]].
+  <!--
+  We're willing to let start block be a td or th, but not end block.  This
+  means if the selection starts in a table cell and ends in some other block,
+  we'll merge the contents of the latter block into the cell, but not vice
+  versa.  This matches Chrome 13 dev and Opera 11.11.  Firefox 5.0a2 doesn't
+  allow merging either way, and in IE9 the delete key just does nothing.
+  -->
 
-  <li>Call <code data-anolis-spec=domrange
-  title=dom-Range-deleteContents>deleteContents()</code> on <var>range</var>.
+  <!-- This is based on deleteData() in DOM Range. -->
+  <li>If <var>start node</var> and <var>end node</var> are the same, and
+  <var>start node</var> is an <span>editable</span> [[text]] or [[comment]]
+  node, call [[deletedata|<var>start offset</var>, <var>end offset</var>
+  &minus; <var>start offset</var>]] on <var>start node</var>.
+
+  <li>Otherwise:
+
+  <ol>
+    <li>If <var>start node</var> is an <span>editable</span> [[text]] or
+    [[comment]] node, call [[deletedata|]] on it, with <var>start offset</var>
+    as the first argument and ([[nodelength]] of <var>start node</var> &minus;
+    <var>start offset</var>) as the second argument.
+
+    <li>Let <var>node list</var> be a list of [[nodes]], initially empty.
+
+    <li>For each <var>node</var> [[contained]] in <var>range</var>, append
+    <var>node</var> to <var>node list</var> if the last member of <var>node
+    list</var> (if any) is not an [[ancestor]] of <var>node</var>;
+    <var>node</var> is <span>editable</span>; and <var>node</var> is not a
+    [[thead]], [[tbody]], [[tfoot]], [[tr]], [[th]], or [[td]].
+    <!--
+    IE9 doesn't seem to let you do any intercell deletions: the delete key does
+    nothing if you select across multiple cells.  Firefox 5.0a2 and Opera 11.11
+    behave as the spec says, not removing any table things.  Chrome 13 dev will
+    remove entire rows if selected.  Note that IE, Firefox, Word 2007, and
+    OpenOffice.org 3.2.1 Ubuntu all switch to a magic cell-selection mode when
+    you try to select between cells, at least in some cases, instead of
+    selecting letter-by-letter.
+    -->
+
+    <li>For each <var>node</var> in <var>node list</var>:
+
+    <ol>
+      <li>Let <var>parent</var> be the [[parent]] of <var>node</var>.
+
+      <li>Remove <var>node</var> from <var>parent</var>.
+
+      <li>While <var>parent</var> is an <span>editable</span> <span>inline
+      node</span> with [[nodelength]] 0, let <var>grandparent</var> be the
+      [[parent]] of <var>parent</var>, then remove <var>parent</var> from
+      <var>grandparent</var>, then set <var>parent</var> to
+      <var>grandparent</var>.
+
+      <li>If <var>parent</var> is <span>editable</span> or an <span>editing
+      host</span>, is not an <span>inline node</span>, and has no [[children]],
+      call [[createelement|"br"]] on the [[contextobject]] and append the
+      result as the last [[child]] of <var>parent</var>.
+    </ol>
+
+    <li>If <var>end node</var> is an <span>editable</span> [[text]] or
+    [[comment]] node, call [[deletedata|0, <var>end offset</var>]] on it.
+  </ol>
 
   <!--
   Now we need to merge blocks.  The simplest case is something like
@@ -1040,43 +1108,29 @@ we really want to use it, we probably want to change its name.
   where one descends from the other.
   -->
 
-  <!-- The deletions might have left some empty elements.  We want to remove
-  empty inline nodes, and add a <br> child to empty blocks.  We remove the
-  empty inline nodes first, and only add the <br>s later, because we don't want
-  to add the brs to blocks that we're about to merge. -->
-  <li>While <var>start node</var> is an <span>editable</span> <span>inline
-  node</span> with [[nodelength]] 0, let <var>parent</var> be its [[parent]],
-  then remove <var>start node</var> from <var>parent</var>, then set <var>start
-  node</var> to <var>parent</var>.
-
-  <li>While <var>end node</var> is an <span>editable</span> <span>inline
-  node</span> with [[nodelength]] 0, let <var>parent</var> be its [[parent]],
-  then remove <var>end node</var> from <var>parent</var>, then set <var>end
-  node</var> to <var>parent</var>.
-
   <li>If <var>start block</var> is not <span>in the same editing host</span> as
   <var>end block</var>, or <var>start block</var> is neither an <span>editing
   host</span> nor a <span>prohibited paragraph child</span>, or <var>end
   block</var> is neither an <span>editing host</span> nor a <span>prohibited
-  paragraph child</span>, or <var>start block</var> and <var>end block</var>
-  are the same:
-  <!-- Then we don't try to merge anything. -->
+  paragraph child</span>, or "span" is not an <span>allowed child</span> of
+  <var>start block</var>, or "span" is not an <span>allowed child</span> of
+  <var>end block</var>, or <var>end block</var> is a [[td]] or [[th]], or
+  <var>start block</var> and <var>end block</var> are the same, set
+  <var>range</var>'s [[rangeend]] to its [[rangestart]] and then abort these
+  steps.
 
-  <ol>
-    <li>If <var>start node</var> is an [[element]] with no [[children]], is
-    either <span>editable</span> or an <span>editing host</span>, and is not an
-    <span>inline node</span>, call [[createelement|"br"]] on the
-    [[contextobject]] and append the result as the last [[child]] of <var>start
-    node</var>.
+  <!--
+  We might have added a br to the start/end block in an earlier step.  Now
+  we're about to merge the blocks, and we don't want the br's to get in the
+  way.  The end block is being destroyed no matter what.  If the start block
+  winds up empty after merging, we'll add a new br child at the end so it
+  doesn't collapse.
+  -->
+  <li>If <var>start block</var> has one [[child]], which is a [[br]], remove
+  its [[child]] from it.
 
-    <li>If <var>end node</var> is an [[element]] with no [[children]], is
-    either <span>editable</span> or an <span>editing host</span>, and is not an
-    <span>inline node</span>, call [[createelement|"br"]] on the
-    [[contextobject]] and append the result as the last [[child]] of <var>end
-    node</var>.
-
-    <li>Abort these steps.
-  </ol>
+  <li>If <var>end block</var> has one [[child]], which is a [[br]], remove its
+  [[child]] from it.
 
   <li>If <var>start block</var> is an [[ancestor]] of <var>end block</var>:
   <!-- Just repeatedly blow up the end block. -->

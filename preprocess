@@ -84,6 +84,12 @@ replace = {
     'style': '<code data-anolis-spec=html title="the style attribute">style</code>',
     'sub': '<code data-anolis-spec=html title="the sub and sup elements">sub</code>',
     'sup': '<code data-anolis-spec=html title="the sub and sup elements">sup</code>',
+    'tbody': '<code data-anolis-spec=html title="the tbody element">tbody</code>',
+    'td': '<code data-anolis-spec=html title="the td element">td</code>',
+    'tfoot': '<code data-anolis-spec=html title="the tfoot element">tfoot</code>',
+    'th': '<code data-anolis-spec=html title="the th element">th</code>',
+    'thead': '<code data-anolis-spec=html title="the thead element">thead</code>',
+    'tr': '<code data-anolis-spec=html title="the tr element">tr</code>',
     'text': '<code data-anolis-spec=domcore>Text</code>',
     'treeorder': '<span data-anolis-spec=domcore>tree order</span>',
     'u': '<code data-anolis-spec=html title="the u element">u</code>',
@@ -104,6 +110,7 @@ for key in replace:
 
 fnreplace = {
     'createelement': '<code data-anolis-spec=domcore title=dom-Document-createElement>createElement(\\1)</code>',
+    'deletedata': '<code data-anolis-spec=domcore title=dom-CharacterData-deleteData>deleteData(\\1)</code>',
     'insertnode': '<code data-anolis-spec=domrange title=dom-Range-insertNode>insertNode(\\1)</code>',
 }
 

@@ -931,7 +931,7 @@ instructions</dfn>:
   <li>Return <var title="">new parent</var>.
 </ol>
 
-<p>To <dfn id=delete-the-selection>delete the selection</dfn>:
+<p>To <dfn id=delete-the-contents>delete the contents</dfn> of a <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> <var title="">range</var>:
 
 <p class=XXX>I'm uncertain about the use of prohibited paragraph children here.
 I'm using it mostly because it's convenient and seems relatively sensible.  If
@@ -944,8 +944,6 @@ Gecko treats it differently if you select all the text in a table vs. selecting
 the table itself.
 
 <ol>
-  <li>Let <var title="">range</var> be the <a href=#active-range>active range</a>.
-
   <li>If <var title="">range</var> is null, abort these steps and do nothing.
 
   <li>Let <var title="">start node</var>, <var title="">start offset</var>, <var title="">end node</var>,
@@ -2431,8 +2429,8 @@ section just for it. -->
 <p><a href=#action>Action</a>:
 
 <ol>
-  <li>If the <a href=#active-range>active range</a> is not <code class=external data-anolis-spec=domrange title=dom-Range-collapsed><a href=http://html5.org/specs/dom-range.html#dom-range-collapsed>collapsed</a></code>, <a href=#delete-the-selection>delete the selection</a>
-  and abort these steps.
+  <li>If the <a href=#active-range>active range</a> is not <code class=external data-anolis-spec=domrange title=dom-Range-collapsed><a href=http://html5.org/specs/dom-range.html#dom-range-collapsed>collapsed</a></code>, <a href=#delete-the-contents>delete the contents</a>
+  of the <a href=#active-range>active range</a> and abort these steps.
 
   <p class=XXX>Maybe we sometimes want to do the following even if it isn't
   collapsed?  WebKit seems to do some normalization on the range before
@@ -2728,7 +2726,7 @@ For color parsing, see the comment for foreColor. -->
 <p><a href=#action>Action</a>:
 
 <ol>
-  <li><a href=#delete-the-selection>Delete the selection</a>.
+  <li><a href=#delete-the-contents>Delete the contents</a> of the <a href=#active-range>active range</a>.
 
   <li>Let <var title="">frag</var> be the result of calling <code class=external data-anolis-spec=domps title=dom-Range-createContextualFragment><a href=http://html5.org/specs/dom-parsing.html#dom-range-createcontextualfragment>createContextualFragment(<var title="">value</var>)</a></code>
   on the <a href=#active-range>active range</a>.
@@ -2767,7 +2765,7 @@ For color parsing, see the comment for foreColor. -->
 
   <li>Let <var title="">range</var> be the <a href=#active-range>active range</a>.
 
-  <li><a href=#delete-the-selection>Delete the selection</a>.
+  <li><a href=#delete-the-contents>Delete the contents</a> of the <a href=#active-range>active range</a>.
 
   <li>Let <var title="">img</var> be the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("img")</a></code> on the
   <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>.
@@ -4680,7 +4678,7 @@ http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
 <p><a href=#action>Action</a>:
 
 <ol>
-  <li><a href=#delete-the-selection>Delete the selection</a>.
+  <li><a href=#delete-the-contents>Delete the contents</a> of the <a href=#active-range>active range</a>.
 
   <li>Let <var title="">range</var> be the <a href=#active-range>active range</a>.
 

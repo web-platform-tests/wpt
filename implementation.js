@@ -767,10 +767,7 @@ function getActiveRange() {
 	return null;
 }
 
-function deleteSelection() {
-	// "Let range be the active range."
-	var range = globalRange;
-
+function deleteContents(range) {
 	// "If range is null, abort these steps and do nothing."
 	if (!range) {
 		return;
@@ -3111,10 +3108,10 @@ function myExecCommand(command, showUI, value, range) {
 		break;
 
 		case "delete":
-		// "If the active range is not collapsed, delete the selection and
-		// abort these steps."
+		// "If the active range is not collapsed, delete the contents of the
+		// active range and abort these steps."
 		if (!range.collapsed) {
-			deleteSelection();
+			deleteContents(range);
 			return;
 		}
 		break;
@@ -3401,8 +3398,8 @@ function myExecCommand(command, showUI, value, range) {
 		break;
 
 		case "inserthtml":
-		// "Delete the selection."
-		deleteSelection();
+		// "Delete the contents of the active range."
+		deleteContents(range);
 
 		// "Let frag be the result of calling createContextualFragment(value)
 		// on the active range."
@@ -3436,8 +3433,8 @@ function myExecCommand(command, showUI, value, range) {
 			return;
 		}
 
-		// "Delete the selection."
-		deleteSelection();
+		// "Delete the contents of the active range."
+		deleteContents(activeRange);
 
 		// "Let img be the result of calling createElement("img") on the
 		// context object."
@@ -3473,8 +3470,8 @@ function myExecCommand(command, showUI, value, range) {
 		break;
 
 		case "insertparagraph":
-		// "Delete the selection."
-		deleteSelection();
+		// "Delete the contents of the active range."
+		deleteContents(activeRange);
 
 		// "Let node and offset be range's start node and offset."
 		var node = range.startContainer;

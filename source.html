@@ -891,7 +891,7 @@ instructions</dfn>:
   <li>Return <var>new parent</var>.
 </ol>
 
-<p>To <dfn>delete the selection</dfn>:
+<p>To <dfn>delete the contents</dfn> of a [[range]] <var>range</var>:
 
 <p class=XXX>I'm uncertain about the use of prohibited paragraph children here.
 I'm using it mostly because it's convenient and seems relatively sensible.  If
@@ -904,8 +904,6 @@ Gecko treats it differently if you select all the text in a table vs. selecting
 the table itself.
 
 <ol>
-  <li>Let <var>range</var> be the <span>active range</span>.
-
   <li>If <var>range</var> is null, abort these steps and do nothing.
 
   <li>Let <var>start node</var>, <var>start offset</var>, <var>end node</var>,
@@ -2416,8 +2414,8 @@ section just for it. -->
 
 <ol>
   <li>If the <span>active range</span> is not <code data-anolis-spec=domrange
-  title=dom-Range-collapsed>collapsed</code>, <span>delete the selection</span>
-  and abort these steps.
+  title=dom-Range-collapsed>collapsed</code>, <span>delete the contents</span>
+  of the <span>active range</span> and abort these steps.
 
   <p class=XXX>Maybe we sometimes want to do the following even if it isn't
   collapsed?  WebKit seems to do some normalization on the range before
@@ -2713,7 +2711,7 @@ For color parsing, see the comment for foreColor. -->
 <p><span>Action</span>:
 
 <ol>
-  <li><span>Delete the selection</span>.
+  <li><span>Delete the contents</span> of the <span>active range</span>.
 
   <li>Let <var>frag</var> be the result of calling <code data-anolis-spec=domps
   title=dom-Range-createContextualFragment>createContextualFragment(<var>value</var>)</code>
@@ -2753,7 +2751,7 @@ For color parsing, see the comment for foreColor. -->
 
   <li>Let <var>range</var> be the <span>active range</span>.
 
-  <li><span>Delete the selection</span>.
+  <li><span>Delete the contents</span> of the <span>active range</span>.
 
   <li>Let <var>img</var> be the result of calling <code
   data-anolis-spec=domcore
@@ -4703,7 +4701,7 @@ http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
 <p><span>Action</span>:
 
 <ol>
-  <li><span>Delete the selection</span>.
+  <li><span>Delete the contents</span> of the <span>active range</span>.
 
   <li>Let <var>range</var> be the <span>active range</span>.
 

@@ -367,6 +367,13 @@ var tests = {
 		'<p>fo[o<table><tr><td>b]ar</table><p>baz',
 		'<p>foo<table><tr><td>ba[r</table><p>b]az',
 		'<p>fo[o<table><tr><td>bar</table><p>b]az',
+
+		'<p>foo<ol><li>ba[r<li>b]az</ol><p>quz',
+		'<p>foo<ol><li>bar<li>[baz]</ol><p>quz',
+		'<p>fo[o<ol><li>b]ar<li>baz</ol><p>quz',
+		'<p>foo<ol><li>bar<li>ba[z</ol><p>q]uz',
+		'<p>fo[o<ol><li>bar<li>b]az</ol><p>quz',
+		'<p>fo[o<ol><li>bar<li>baz</ol><p>q]uz',
 	],
 	fontname: [
 		'foo[]bar',

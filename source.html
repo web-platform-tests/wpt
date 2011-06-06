@@ -1009,29 +1009,58 @@ the table itself.
   <var>start offset</var>) and its [[rangeend]] to (<var>end node</var>,
   <var>end offset</var>).
 
+  <!--
+  When we delete a selection that spans multiple blocks, we merge the end
+  block's contents into the start block, like
+
+    <p>fo[o</p><pre>b]ar</pre>
+    -> <p>fo[]ar</p>.
+
+  Figure out what the start and end blocks are before we start deleting
+  anything.
+  -->
   <li>Let <var>start block</var> be the [[rangestart]] [[bpnode]] of
   <var>range</var>.
 
   <li>While <var>start block</var>'s [[parent]] is <span>in the same editing
-  host</span>, and <var>start block</var> is not a <span>prohibited paragraph
-  child</span> or "span" is not an <span>allowed child</span> of <var>start
-  block</var>, set <var>start block</var> to its [[parent]].
+  host</span> and <var>start block</var> is not a <span>prohibited paragraph
+  child</span>, set <var>start block</var> to its [[parent]].
+
+  <li>If <var>start block</var> is neither a <span>prohibited paragraph
+  child</span> nor an <span>editing host</span>, or "span" is not an
+  <span>allowed child</span> of <var>start block</var>, or <var>start
+  block</var> is a [[td]] or [[th]], set <var>start block</var> to null.
+  <!--
+  We only merge to or from prohibited paragraph children or editing hosts.
+  (This is just in case someone makes a span into an editing host and sticks
+  paragraphs inside it or something . . . we could probably drop that proviso.)
+  Anything else is presumed to be an inline element, basically.  This might not
+  be ideal.
+
+  If span isn't an allowed child, it's probably something unpleasant like a
+  table row or a list or such.  We don't want to merge to or from something
+  like that, because we'd most likely wind up with the wrong type of child
+  somewhere.  Although we probably want to allow merging different lists or
+  such this way . . .
+
+  We don't let either start block or end block be a td or th.  This means we'll
+  never merge to or from a td or th.  This matches Firefox 5.0a2, and
+  reportedly Word as well.  Chrome 13 dev and Opera 11.11 allow merging from a
+  non-table cell end block to a table cell start block, but not vice versa.  In
+  IE9 the delete key just does nothing.
+  -->
 
   <li>Let <var>end block</var> be the [[rangeend]] [[bpnode]] of
   <var>range</var>.
 
   <li>While <var>end block</var>'s [[parent]] is <span>in the same editing
-  host</span>, and <var>end block</var> is not a <span>prohibited paragraph
-  child</span> or "span" is not an <span>allowed child</span> of <var>end
-  block</var> or <var>end block</var> is a [[td]] or [[th]], set <var>end
-  block</var> to its [[parent]].
-  <!--
-  We're willing to let start block be a td or th, but not end block.  This
-  means if the selection starts in a table cell and ends in some other block,
-  we'll merge the contents of the latter block into the cell, but not vice
-  versa.  This matches Chrome 13 dev and Opera 11.11.  Firefox 5.0a2 doesn't
-  allow merging either way, and in IE9 the delete key just does nothing.
-  -->
+  host</span> and <var>end block</var> is not a <span>prohibited paragraph
+  child</span>, set <var>end block</var> to its [[parent]].
+
+  <li>If <var>end block</var> is neither a <span>prohibited paragraph
+  child</span> nor an <span>editing host</span>, or "span" is not an
+  <span>allowed child</span> of <var>end block</var>, or <var>end block</var>
+  is a [[td]] or [[th]], set <var>end block</var> to null.
 
   <!-- This is based on deleteData() in DOM Range. -->
   <li>If <var>start node</var> and <var>end node</var> are the same, and
@@ -1108,16 +1137,11 @@ the table itself.
   where one descends from the other.
   -->
 
-  <li>If <var>start block</var> is not <span>in the same editing host</span> as
-  <var>end block</var>, or <var>start block</var> is neither an <span>editing
-  host</span> nor a <span>prohibited paragraph child</span>, or <var>end
-  block</var> is neither an <span>editing host</span> nor a <span>prohibited
-  paragraph child</span>, or "span" is not an <span>allowed child</span> of
-  <var>start block</var>, or "span" is not an <span>allowed child</span> of
-  <var>end block</var>, or <var>end block</var> is a [[td]] or [[th]], or
-  <var>start block</var> and <var>end block</var> are the same, set
-  <var>range</var>'s [[rangeend]] to its [[rangestart]] and then abort these
-  steps.
+  <li>If <var>start block</var> or <var>end block</var> is null, or <var>start
+  block</var> is not <span>in the same editing host</span> as <var>end
+  block</var>, or <var>start block</var> and <var>end block</var> are the same,
+  set <var>range</var>'s [[rangeend]] to its [[rangestart]] and then abort
+  these steps.
 
   <!--
   We might have added a br to the start/end block in an earlier step.  Now

@@ -894,26 +894,39 @@ function deleteSelection() {
 	// "Let start block be the start node of range."
 	var startBlock = range.startContainer;
 
-	// "While start block's parent is in the same editing host, and start block
-	// is not a prohibited paragraph child or "span" is not an allowed child of
-	// start block, set start block to its parent."
+	// "While start block's parent is in the same editing host and start block
+	// is not a prohibited paragraph child, set start block to its parent."
 	while (inSameEditingHost(startBlock, startBlock.parentNode)
-	&& (!isProhibitedParagraphChild(startBlock)
-	|| !isAllowedChild("span", startBlock))) {
+	&& !isProhibitedParagraphChild(startBlock)) {
 		startBlock = startBlock.parentNode;
+	}
+
+	// "If start block is neither a prohibited paragraph child nor an editing
+	// host, or "span" is not an allowed child of start block, or start block
+	// is a td or th, set start block to null."
+	if ((!isProhibitedParagraphChild(startBlock) && !isEditingHost(startBlock))
+	|| !isAllowedChild("span", startBlock)
+	|| isHtmlElement(startBlock, ["td", "th"])) {
+		startBlock = null;
 	}
 
 	// "Let end block be the end node of range."
 	var endBlock = range.endContainer;
 
-	// "While end block's parent is in the same editing host, and end block is
-	// not a prohibited paragraph child or "span" is not an allowed child of
-	// end block or end block is a td or th, set end block to its parent."
+	// "While end block's parent is in the same editing host and end block is
+	// not a prohibited paragraph child, set end block to its parent."
 	while (inSameEditingHost(endBlock, endBlock.parentNode)
-	&& (!isProhibitedParagraphChild(endBlock)
-	|| !isAllowedChild("span", endBlock)
-	|| isHtmlElement(endBlock, ["td", "th"]))) {
+	&& !isProhibitedParagraphChild(endBlock)) {
 		endBlock = endBlock.parentNode;
+	}
+
+	// "If end block is neither a prohibited paragraph child nor an editing
+	// host, or "span" is not an allowed child of end block, or end block is a
+	// td or th, set end block to null."
+	if ((!isProhibitedParagraphChild(endBlock) && !isEditingHost(endBlock))
+	|| !isAllowedChild("span", endBlock)
+	|| isHtmlElement(endBlock, ["td", "th"])) {
+		endBlock = null;
 	}
 
 	// "If start node and end node are the same, and start node is an editable
@@ -988,19 +1001,12 @@ function deleteSelection() {
 		}
 	}
 
-	// "If start block is not in the same editing host as end block, or start
-	// block is neither an editing host nor a prohibited paragraph child, or
-	// end block is neither an editing host nor a prohibited paragraph child,
-	// or "span" is not an allowed child of start block, or "span" is not an
-	// allowed child of end block, or end block is a td or th, or start block
-	// and end block are the same, set range's end to its start and then abort
-	// these steps."
-	if (!inSameEditingHost(startBlock, endBlock)
-	|| (!isEditingHost(startBlock) && !isProhibitedParagraphChild(startBlock))
-	|| (!isEditingHost(endBlock) && !isProhibitedParagraphChild(endBlock))
-	|| !isAllowedChild("span", startBlock)
-	|| !isAllowedChild("span", endBlock)
-	|| isHtmlElement(endBlock, ["td", "th"])
+	// "If start block or end block is null, or start block is not in the same
+	// editing host as end block, or start block and end block are the same,
+	// set range's end to its start and then abort these steps."
+	if (!startBlock
+	|| !endBlock
+	|| !inSameEditingHost(startBlock, endBlock)
 	|| startBlock == endBlock) {
 		range.setEnd(range.startContainer, range.startOffset);
 		return;

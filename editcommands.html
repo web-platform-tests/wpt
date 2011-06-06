@@ -1048,29 +1048,58 @@ the table itself.
   <var title="">start offset</var>) and its <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> to (<var title="">end node</var>,
   <var title="">end offset</var>).
 
+  <!--
+  When we delete a selection that spans multiple blocks, we merge the end
+  block's contents into the start block, like
+
+    <p>fo[o</p><pre>b]ar</pre>
+    -> <p>fo[]ar</p>.
+
+  Figure out what the start and end blocks are before we start deleting
+  anything.
+  -->
   <li>Let <var title="">start block</var> be the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> of
   <var title="">range</var>.
 
   <li>While <var title="">start block</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is <a href=#in-the-same-editing-host>in the same editing
-  host</a>, and <var title="">start block</var> is not a <a href=#prohibited-paragraph-child>prohibited paragraph
-  child</a> or "span" is not an <a href=#allowed-child>allowed child</a> of <var title="">start
-  block</var>, set <var title="">start block</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+  host</a> and <var title="">start block</var> is not a <a href=#prohibited-paragraph-child>prohibited paragraph
+  child</a>, set <var title="">start block</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+
+  <li>If <var title="">start block</var> is neither a <a href=#prohibited-paragraph-child>prohibited paragraph
+  child</a> nor an <a href=#editing-host>editing host</a>, or "span" is not an
+  <a href=#allowed-child>allowed child</a> of <var title="">start block</var>, or <var title="">start
+  block</var> is a <code class=external data-anolis-spec=html title="the td element"><a href=http://www.whatwg.org/html/#the-td-element>td</a></code> or <code class=external data-anolis-spec=html title="the th element"><a href=http://www.whatwg.org/html/#the-th-element>th</a></code>, set <var title="">start block</var> to null.
+  <!--
+  We only merge to or from prohibited paragraph children or editing hosts.
+  (This is just in case someone makes a span into an editing host and sticks
+  paragraphs inside it or something . . . we could probably drop that proviso.)
+  Anything else is presumed to be an inline element, basically.  This might not
+  be ideal.
+
+  If span isn't an allowed child, it's probably something unpleasant like a
+  table row or a list or such.  We don't want to merge to or from something
+  like that, because we'd most likely wind up with the wrong type of child
+  somewhere.  Although we probably want to allow merging different lists or
+  such this way . . .
+
+  We don't let either start block or end block be a td or th.  This means we'll
+  never merge to or from a td or th.  This matches Firefox 5.0a2, and
+  reportedly Word as well.  Chrome 13 dev and Opera 11.11 allow merging from a
+  non-table cell end block to a table cell start block, but not vice versa.  In
+  IE9 the delete key just does nothing.
+  -->
 
   <li>Let <var title="">end block</var> be the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> of
   <var title="">range</var>.
 
   <li>While <var title="">end block</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is <a href=#in-the-same-editing-host>in the same editing
-  host</a>, and <var title="">end block</var> is not a <a href=#prohibited-paragraph-child>prohibited paragraph
-  child</a> or "span" is not an <a href=#allowed-child>allowed child</a> of <var title="">end
-  block</var> or <var title="">end block</var> is a <code class=external data-anolis-spec=html title="the td element"><a href=http://www.whatwg.org/html/#the-td-element>td</a></code> or <code class=external data-anolis-spec=html title="the th element"><a href=http://www.whatwg.org/html/#the-th-element>th</a></code>, set <var title="">end
-  block</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
-  <!--
-  We're willing to let start block be a td or th, but not end block.  This
-  means if the selection starts in a table cell and ends in some other block,
-  we'll merge the contents of the latter block into the cell, but not vice
-  versa.  This matches Chrome 13 dev and Opera 11.11.  Firefox 5.0a2 doesn't
-  allow merging either way, and in IE9 the delete key just does nothing.
-  -->
+  host</a> and <var title="">end block</var> is not a <a href=#prohibited-paragraph-child>prohibited paragraph
+  child</a>, set <var title="">end block</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+
+  <li>If <var title="">end block</var> is neither a <a href=#prohibited-paragraph-child>prohibited paragraph
+  child</a> nor an <a href=#editing-host>editing host</a>, or "span" is not an
+  <a href=#allowed-child>allowed child</a> of <var title="">end block</var>, or <var title="">end block</var>
+  is a <code class=external data-anolis-spec=html title="the td element"><a href=http://www.whatwg.org/html/#the-td-element>td</a></code> or <code class=external data-anolis-spec=html title="the th element"><a href=http://www.whatwg.org/html/#the-th-element>th</a></code>, set <var title="">end block</var> to null.
 
   <!-- This is based on deleteData() in DOM Range. -->
   <li>If <var title="">start node</var> and <var title="">end node</var> are the same, and
@@ -1147,16 +1176,11 @@ the table itself.
   where one descends from the other.
   -->
 
-  <li>If <var title="">start block</var> is not <a href=#in-the-same-editing-host>in the same editing host</a> as
-  <var title="">end block</var>, or <var title="">start block</var> is neither an <a href=#editing-host>editing
-  host</a> nor a <a href=#prohibited-paragraph-child>prohibited paragraph child</a>, or <var title="">end
-  block</var> is neither an <a href=#editing-host>editing host</a> nor a <a href=#prohibited-paragraph-child>prohibited
-  paragraph child</a>, or "span" is not an <a href=#allowed-child>allowed child</a> of
-  <var title="">start block</var>, or "span" is not an <a href=#allowed-child>allowed child</a> of
-  <var title="">end block</var>, or <var title="">end block</var> is a <code class=external data-anolis-spec=html title="the td element"><a href=http://www.whatwg.org/html/#the-td-element>td</a></code> or <code class=external data-anolis-spec=html title="the th element"><a href=http://www.whatwg.org/html/#the-th-element>th</a></code>, or
-  <var title="">start block</var> and <var title="">end block</var> are the same, set
-  <var title="">range</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> to its <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> and then abort these
-  steps.
+  <li>If <var title="">start block</var> or <var title="">end block</var> is null, or <var title="">start
+  block</var> is not <a href=#in-the-same-editing-host>in the same editing host</a> as <var title="">end
+  block</var>, or <var title="">start block</var> and <var title="">end block</var> are the same,
+  set <var title="">range</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> to its <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> and then abort
+  these steps.
 
   <!--
   We might have added a br to the start/end block in an earlier step.  Now

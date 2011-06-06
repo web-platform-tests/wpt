@@ -339,7 +339,7 @@ function collectContainedNodes(range, condition) {
 		stop = stop.childNodes[range.endOffset];
 	} else {
 		// This node and/or some of its children might be contained
-		stop = nextNodeDescendants(node);
+		stop = nextNodeDescendants(stop);
 	}
 
 	var nodeList = [];
@@ -382,7 +382,7 @@ function collectAllContainedNodes(range, condition) {
 		stop = stop.childNodes[range.endOffset];
 	} else {
 		// This node and/or some of its children might be contained
-		stop = nextNodeDescendants(node);
+		stop = nextNodeDescendants(stop);
 	}
 
 	var nodeList = [];

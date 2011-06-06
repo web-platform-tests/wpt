@@ -48,6 +48,7 @@ replace = {
     'getselection': '<code data-anolis-spec=domrange title=dom-Document-getSelection>getSelection()</code>',
     'htmldocument': '<code data-anolis-spec=html>HTMLDocument</code>',
     'htmlnamespace': '<span data-anolis-spec=domcore>HTML namespace</span>',
+    'hr': '<code data-anolis-spec=html title="the hr element">hr</code>',
     'href': '<code data-anolis-spec=html title=attr-hyperlink-href>href</code>',
     'i': '<code data-anolis-spec=html title="the i element">i</code>',
     'index': '<span data-anolis-spec=domrange title=concept-indexof>index</span>',
@@ -112,6 +113,7 @@ fnreplace = {
     'createelement': '<code data-anolis-spec=domcore title=dom-Document-createElement>createElement(\\1)</code>',
     'deletedata': '<code data-anolis-spec=domcore title=dom-CharacterData-deleteData>deleteData(\\1)</code>',
     'insertnode': '<code data-anolis-spec=domrange title=dom-Range-insertNode>insertNode(\\1)</code>',
+    'selcollapse': '<code data-anolis-spec=domrange title=dom-Selection-collapse>collapse(\\1)</code>',
 }
 
 for key in fnreplace:

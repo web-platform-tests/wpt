@@ -767,7 +767,19 @@ function getActiveRange() {
 	return null;
 }
 
-function deleteContents(range) {
+function deleteContents(node1, offset1, node2, offset2) {
+	var range;
+
+	// We allow passing four arguments instead of one, in which case they're
+	// the start and end points of the range.
+	if (typeof offset1 == "undefined") {
+		range = node1;
+	} else {
+		range = document.createRange();
+		range.setStart(arguments[0], arguments[1]);
+		range.setEnd(arguments[2], arguments[3]);
+	}
+
 	// "If range is null, abort these steps and do nothing."
 	if (!range) {
 		return;
@@ -3112,6 +3124,59 @@ function myExecCommand(command, showUI, value, range) {
 		// active range and abort these steps."
 		if (!range.collapsed) {
 			deleteContents(range);
+			return;
+		}
+
+		// "Let node and offset be the active range's start node and offset."
+		var node = range.startContainer;
+		var offset = range.startOffset;
+
+		// "While offset is zero and node is not a prohibited paragraph child,
+		// set offset to the index of node, then set node to its parent."
+		while (offset == 0
+		&& !isProhibitedParagraphChild(node)) {
+			offset = getNodeIndex(node);
+			node = node.parentNode;
+		}
+
+		// "While node has a child with index offset − 1 and that child is not
+		// a prohibited paragraph child, set node to that child, then set
+		// offset to the length of node."
+		while (0 <= offset - 1
+		&& offset - 1 < node.childNodes.length
+		&& !isProhibitedParagraphChild(node.childNodes[offset - 1])) {
+			node = node.childNodes[offset - 1];
+			offset = getNodeLength(node);
+		}
+
+		// "If node is a Text node and offset is not zero, call collapse(node,
+		// offset) on the Selection. Then delete the contents of the range with
+		// start (node, offset − 1) and end (node, offset) and abort these
+		// steps."
+		if (node.nodeType == Node.TEXT_NODE
+		&& offset != 0) {
+			range.setStart(node, offset);
+			range.setEnd(node, offset);
+			deleteContents(node, offset - 1, node, offset);
+			return;
+		}
+
+		// "If node has a child with index offset − 1 and that child is an hr,
+		// set node to that child."
+		if (0 <= offset -1
+		&& offset - 1 < node.childNodes.length
+		&& isHtmlElement(node.childNodes[offset - 1], "hr")) {
+			node = node.childNodes[offset - 1];
+		}
+
+		// "If node is a br or hr, call collapse(node, 0) on the Selection.
+		// Then delete the contents of the range with start (parent of node,
+		// index of node) and end (parent of node, 1 + index of node) and abort
+		// these steps."
+		if (isHtmlElement(node, ["br", "hr"])) {
+			range.setStart(node, 0);
+			range.setEnd(node, 0);
+			deleteContents(node.parentNode, getNodeIndex(node), node.parentNode, 1 + getNodeIndex(node));
 			return;
 		}
 		break;

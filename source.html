@@ -2429,7 +2429,38 @@ section just for it. -->
   collapsed?  WebKit seems to do some normalization on the range before
   deciding whether it's collapsed, and that sounds like a good idea.
 
-  <li class=XXX>The stuff where we delete the previous character goes here.
+  <li>Let <var>node</var> and <var>offset</var> be the <span>active
+  range</span>'s [[rangestart]] [[bpnode]] and [[bpoffset]].
+
+  <!-- First go up as high as possible within the current block, then drill
+  down to the lowest possible level, in the hopes that we'll wind up at the end
+  of a text node, or maybe in a br or hr. -->
+  <li>While <var>offset</var> is zero and <var>node</var> is not a
+  <span>prohibited paragraph child</span>, set <var>offset</var> to the
+  [[index]] of <var>node</var>, then set <var>node</var> to its [[parent]].
+
+  <li>While <var>node</var> has a [[child]] with [[index]] <var>offset</var>
+  &minus; 1 and that [[child]] is not a <span>prohibited paragraph
+  child</span>, set <var>node</var> to that [[child]], then set
+  <var>offset</var> to the [[nodelength]] of <var>node</var>.
+
+  <li>If <var>node</var> is a [[text]] node and <var>offset</var> is not zero,
+  call [[selcollapse|<var>node</var>, <var>offset</var>]] on the [[selection]].
+  Then <span>delete the contents</span> of the [[range]] with [[rangestart]]
+  (<var>node</var>, <var>offset</var> &minus; 1) and [[rangeend]]
+  (<var>node</var>, <var>offset</var>) and abort these steps.
+
+  <li>If <var>node</var> has a [[child]] with [[index]] <var>offset</var>
+  &minus; 1 and that [[child]] is an [[hr]], set <var>node</var> to that
+  [[child]].
+
+  <li>If <var>node</var> is a [[br]] or [[hr]], call
+  [[selcollapse|<var>node</var>, 0]] on the [[selection]].  Then <span>delete
+  the contents</span> of the [[range]] with [[rangestart]] ([[parent]] of
+  <var>node</var>, [[index]] of <var>node</var>) and [[rangeend]] ([[parent]]
+  of <var>node</var>, 1 + [[index]] of <var>node</var>) and abort these steps.
+
+  <li class=XXX>Lots more cases to handle.
 </ol>
 
 

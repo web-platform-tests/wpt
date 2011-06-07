@@ -24,6 +24,24 @@ function updateAlertRowStyle() {
 }
 updateAlertRowStyle();
 
+// Feature-test whether the browser wraps at <wbr> or not, and set word-wrap:
+// break-word where necessary if not.  (IE and Opera don't wrap, Gecko and
+// WebKit do.)  word-wrap: break-word will break anywhere at all, so it looks
+// significantly uglier.
+(function() {
+	var wordWrapTestDiv = document.createElement("div");
+	wordWrapTestDiv.style.width = "5em";
+	document.body.appendChild(wordWrapTestDiv);
+	wordWrapTestDiv.innerHTML = "abc";
+	var height1 = getComputedStyle(wordWrapTestDiv).height;
+	wordWrapTestDiv.innerHTML = "abc<wbr>abc<wbr>abc<wbr>abc<wbr>abc<wbr>abc";
+	var height2 = getComputedStyle(wordWrapTestDiv).height;
+	document.body.removeChild(wordWrapTestDiv);
+	if (height1 == height2) {
+		document.body.className += " wbr-workaround";
+	}
+})();
+
 // Now for the meat of the file.
 var tests = {
 	backcolor: [

@@ -32,6 +32,11 @@ body > div > table > tbody > tr > td > div:last-child {
 	padding-top: 0.2em;
 	border-top: 1px solid black;
 }
+/* Workaround for browsers that don't treat <wbr> as a line-break opportunity
+ * (activated via JS feature-detection) */
+body.wbr-workaround > div > table > tbody > tr > td > div:last-child {
+	word-wrap: break-word;
+}
 /* https://bugs.webkit.org/show_bug.cgi?id=56670 */
 dfn { font-style: italic }
 /* Opera has weird default blockquote style */

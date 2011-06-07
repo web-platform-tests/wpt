@@ -1274,6 +1274,10 @@ we really want to use it, we probably want to change its name.
     <li>While <var>reference node</var> is not a [[child]] of <var>end
     block</var>, set <var>reference node</var> to its [[parent]].
 
+    <li>If <var>reference node</var>'s [[nextsibling]] is an <span>inline
+    node</span> and <var>start block</var>'s [[lastchild]] is a [[br]], remove
+    <var>start block</var>'s [[lastchild]] from it.
+
     <li>While the [[nextsibling]] of <var>reference node</var> is neither null
     nor a [[br]] nor a <span>prohibited paragraph child</span>, append the
     [[nextsibling]] of <var>reference node</var> as the last [[child]] of
@@ -1290,6 +1294,10 @@ we really want to use it, we probably want to change its name.
   <ol>
     <li>Set the [[rangestart]] and [[rangeend]] of <var>range</var> to
     (<var>start block</var>, [[nodelength]] of <var>start block</var>).
+
+    <li>If <var>end block</var>'s [[firstchild]] is an <span>inline node</span>
+    and <var>start block</var>'s [[lastchild]] is a [[br]], remove <var>start
+    block</var>'s [[lastchild]] from it.
 
     <li>While <var>end block</var> has [[children]], append the first [[child]]
     of <var>end block</var> to <var>start block</var>, <span>preserving
@@ -2588,21 +2596,6 @@ section just for it. -->
     then set <var>start offset</var> to the [[nodelength]] of <var>start
     node</var>.
 
-    <li>If <var>start node</var> is a <span>prohibited paragraph child</span>
-    whose last [[child]] is a [[br]], and <var>start offset</var> is the
-    [[nodelength]] of <var>start node</var>, subtract one from <var>start
-    offset</var>.
-    <!--
-    It wouldn't be enough to just remove extraneous line breaks at the end of
-    start node, because we want to remove the line break even if it's not
-    actually extraneous.  For instance,
-
-      <p>foo<br><br></p><p>[]bar</p>
-      -> <p>foo<br>bar</p>
-      not
-      -> <p>foo<br><br>bar</p>.
-    -->
-
     <li><span>Delete the contents</span> of the [[range]] with [[rangestart]]
     (<var>start node</var>, <var>start offset</var>) and [[rangeend]]
     (<var>node</var>, <var>offset</var>).
@@ -2622,9 +2615,6 @@ section just for it. -->
 
     <li>Let <var>start offset</var> be the [[nodelength]] of <var>start
     node</var>.
-
-    <li>If <var>start node</var>'s last [[child]] is a [[br]], subtract one
-    from <var>start offset</var>.
 
     <li><span>Delete the contents</span> of the [[range]] with [[rangestart]]
     (<var>start node</var>, <var>start offset</var>) and [[rangeend]]

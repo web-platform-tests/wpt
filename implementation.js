@@ -1135,6 +1135,13 @@ function deleteContents(node1, offset1, node2, offset2) {
 			referenceNode = referenceNode.parentNode;
 		}
 
+		// "If reference node's nextSibling is an inline node and start block's
+		// lastChild is a br, remove start block's lastChild from it."
+		if (isInlineNode(referenceNode.nextSibling)
+		&& isHtmlElement(startBlock.lastChild, "br")) {
+			startBlock.removeChild(startBlock.lastChild);
+		}
+
 		// "While the nextSibling of reference node is neither null nor a br
 		// nor a prohibited paragraph child, append the nextSibling of
 		// reference node as the last child of start block, preserving ranges."
@@ -1156,6 +1163,13 @@ function deleteContents(node1, offset1, node2, offset2) {
 		// block)."
 		range.setStart(startBlock, getNodeLength(startBlock));
 		range.setEnd(startBlock, getNodeLength(startBlock));
+
+		// "If end block's firstChild is an inline node and start block's
+		// lastChild is a br, remove start block's lastChild from it."
+		if (isInlineNode(endBlock.firstChild)
+		&& isHtmlElement(startBlock.lastChild, "br")) {
+			startBlock.removeChild(startBlock.lastChild);
+		}
 
 		// "While end block has children, append the first child of end block
 		// to start block, preserving ranges."
@@ -3315,15 +3329,6 @@ function myExecCommand(command, showUI, value, range) {
 				startOffset = getNodeLength(startNode);
 			}
 
-			// "If start node is a prohibited paragraph child whose last child
-			// is a br, and start offset is the length of start node, subtract
-			// one from start offset."
-			if (isProhibitedParagraphChild(startNode)
-			&& isHtmlElement(startNode.lastChild, "br")
-			&& startOffset == getNodeLength(startNode)) {
-				startOffset--;
-			}
-
 			// "Delete the contents of the range with start (start node, start
 			// offset) and end (node, offset)."
 			deleteContents(startNode, startOffset, node, offset);
@@ -3348,12 +3353,6 @@ function myExecCommand(command, showUI, value, range) {
 
 			// "Let start offset be the length of start node."
 			var startOffset = getNodeLength(startNode);
-
-			// "If start node's last child is a br, subtract one from start
-			// offset."
-			if (isHtmlElement(startNode.lastChild, "br")) {
-				startOffset--;
-			}
 
 			// "Delete the contents of the range with start (start node, start
 			// offset) and end (node, offset)."

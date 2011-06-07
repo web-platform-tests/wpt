@@ -343,6 +343,13 @@ var tests = {
 		'<div><p>foo</p>bar[</div>]baz',
 		'<div>foo<p>bar[</p></div>]baz',
 
+		'<p>foo<br>{</p>]bar',
+		'<p>foo<br><br>{</p>]bar',
+		'foo<br>{<p>]bar</p>',
+		'foo<br><br>{<p>]bar</p>',
+		'<p>foo<br>{</p><p>}bar</p>',
+		'<p>foo<br><br>{</p><p>}bar</p>',
+
 		'<table><tbody><tr><th>foo<th>[bar]<th>baz<tr><td>quz<td>qoz<td>qiz</table>',
 		'<table><tbody><tr><th>foo<th>ba[r<th>b]az<tr><td>quz<td>qoz<td>qiz</table>',
 		'<table><tbody><tr><th>fo[o<th>bar<th>b]az<tr><td>quz<td>qoz<td>qiz</table>',

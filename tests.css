@@ -62,6 +62,21 @@ body > div > table > tbody > tr > th:last-child {
 	background: white;
 	border-bottom: 2px solid gray;
 }
-/* For testing */
+/* For easy visibility of nesting */
 ol ol { list-style-type: lower-alpha }
 ol ol ol { list-style-type: lower-roman }
+/* For manual tests */
+#overlay {
+	display: none;
+	position: fixed;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	color: red;
+	background: yellow;
+	font-size: 4em;
+	font-weight: bold;
+	text-align: center;
+	padding: 2em;
+}

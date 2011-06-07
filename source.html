@@ -2551,12 +2551,6 @@ section just for it. -->
     [[index]] of <var>start node</var> and then set <var>start node</var> to
     its [[parent]].
 
-    <li><span>Remove extraneous line breaks before</span> <var>start
-    node</var>.
-
-    <p class=XXX>This removes the line break even if nothing winds up getting
-    merged (e.g., cursor at the start of a table).
-
     <li>Set <var>start offset</var> to the [[index]] of <var>start node</var>.
 
     <li>Set <var>start node</var> to its [[parent]].
@@ -2576,9 +2570,11 @@ section just for it. -->
     at all.
     -->
     <li>If the [[child]] of <var>start node</var> with [[index]] <var>start
-    offset</var> minus one is a [[br]] or [[hr]], set <var>node</var> to
-    <var>start node</var> and <var>offset</var> to <var>start offset</var>,
-    then subtract one from <var>start offset</var>.
+    offset</var> minus one is an [[hr]], or the [[child]] is a [[br]] and the
+    [[br]]'s [[previoussibling]] is either a [[br]] or not an <span>inline
+    node</span>, set <var>node</var> to <var>start node</var> and
+    <var>offset</var> to <var>start offset</var>, then subtract one from
+    <var>start offset</var>.
 
     <!--
     Another special case:

@@ -3294,9 +3294,6 @@ function myExecCommand(command, showUI, value, range) {
 				startNode = startNode.parentNode;
 			}
 
-			// "Remove extraneous line breaks before start node."
-			removeExtraneousLineBreaksBefore(startNode);
-
 			// "Set start offset to the index of start node."
 			startOffset = getNodeIndex(startNode);
 
@@ -3304,9 +3301,17 @@ function myExecCommand(command, showUI, value, range) {
 			startNode = startNode.parentNode;
 
 			// "If the child of start node with index start offset minus one is
-			// a br or hr, set node to start node and offset to start offset,
-			// then subtract one from start offset."
-			if (isHtmlElement(startNode.childNodes[startOffset - 1], ["br", "hr"])) {
+			// an hr, or the child is a br and the br's previousSibling is
+			// either a br or not an inline node, set node to start node and
+			// offset to start offset, then subtract one from start offset."
+			if (isHtmlElement(startNode.childNodes[startOffset - 1], "hr")
+			|| (
+				isHtmlElement(startNode.childNodes[startOffset - 1], "br")
+				&& (
+					isHtmlElement(startNode.childNodes[startOffset - 1].previousSibling, "br")
+					|| !isInlineNode(startNode.childNodes[startOffset - 1].previousSibling)
+				)
+			)) {
 				node = startNode;
 				offset = startOffset;
 				startOffset--;

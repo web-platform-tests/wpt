@@ -2454,11 +2454,46 @@ section just for it. -->
   &minus; 1 and that [[child]] is an [[hr]], set <var>node</var> to that
   [[child]].
 
-  <li>If <var>node</var> is a [[br]] or [[hr]], call
+  <li>If <var>node</var> is a [[br]] or [[hr]] or [[img]], call
   [[selcollapse|<var>node</var>, 0]] on the [[selection]].  Then <span>delete
   the contents</span> of the [[range]] with [[rangestart]] ([[parent]] of
   <var>node</var>, [[index]] of <var>node</var>) and [[rangeend]] ([[parent]]
   of <var>node</var>, 1 + [[index]] of <var>node</var>) and abort these steps.
+
+  <li>If <var>node</var> is a <span>prohibited paragraph child</span> and
+  <var>offset</var> is zero:
+
+  <ol>
+    <li>Call [[selcollapse|<var>node</var>, <var>offset</var>]] on the
+    [[selection]].
+
+    <li>Let <var>start node</var> equal <var>node</var> and let <var>start
+    offset</var> equal <var>offset</var>.
+
+    <li>While <var>start offset</var> is zero, set <var>start offset</var> to
+    the [[index]] of <var>start node</var> and then set <var>start node</var>
+    to its [[parent]].
+
+    <li>If the [[child]] of <var>start node</var> with [[index]] <var>start
+    offset</var> minus one is a [[br]] or [[hr]] or [[img]], set
+    <var>node</var> to <var>start node</var> and <var>offset</var> to
+    <var>start offset</var>, then subtract one from <var>start offset</var>.
+
+    <li>Otherwise, set <var>start node</var> to its [[child]] with [[index]]
+    <var>start offset</var> minus one, then set <var>start offset</var> to the
+    [[nodelength]] of <var>start node</var>.
+
+    <li>If <var>start node</var> is a <span>prohibited paragraph child</span>
+    whose last [[child]] is a [[br]], and <var>start offset</var> is the
+    [[nodelength]] of <var>start node</var>, subtract one from <var>start
+    offset</var>.
+
+    <li><span>Delete the contents</span> of the [[range]] with [[rangestart]]
+    (<var>start node</var>, <var>start offset</var>) and [[rangeend]]
+    (<var>node</var>, <var>offset</var>).
+
+    <li>Abort these steps.
+  </ol>
 
   <li class=XXX>Lots more cases to handle.
 </ol>

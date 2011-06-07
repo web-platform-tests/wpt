@@ -51,6 +51,7 @@ replace = {
     'hr': '<code data-anolis-spec=html title="the hr element">hr</code>',
     'href': '<code data-anolis-spec=html title=attr-hyperlink-href>href</code>',
     'i': '<code data-anolis-spec=html title="the i element">i</code>',
+    'img': '<code data-anolis-spec=html title="the img element">img</code>',
     'index': '<span data-anolis-spec=domrange title=concept-indexof>index</span>',
     'lastchild': '<code data-anolis-spec=domcore title=dom-Node-lastChild>lastChild</code>',
     'li': '<code data-anolis-spec=html title="the li element">li</code>',

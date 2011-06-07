@@ -3169,14 +3169,64 @@ function myExecCommand(command, showUI, value, range) {
 			node = node.childNodes[offset - 1];
 		}
 
-		// "If node is a br or hr, call collapse(node, 0) on the Selection.
-		// Then delete the contents of the range with start (parent of node,
-		// index of node) and end (parent of node, 1 + index of node) and abort
-		// these steps."
-		if (isHtmlElement(node, ["br", "hr"])) {
+		// "If node is a br or hr or img, call collapse(node, 0) on the
+		// Selection.  Then delete the contents of the range with start (parent
+		// of node, index of node) and end (parent of node, 1 + index of node)
+		// and abort these steps."
+		if (isHtmlElement(node, ["br", "hr", "img"])) {
 			range.setStart(node, 0);
 			range.setEnd(node, 0);
 			deleteContents(node.parentNode, getNodeIndex(node), node.parentNode, 1 + getNodeIndex(node));
+			return;
+		}
+
+		// "If node is a prohibited paragraph child and offset is zero:"
+		if (isProhibitedParagraphChild(node)
+		&& offset == 0) {
+			// "Call collapse(node, offset) on the Selection."
+			range.setStart(node, offset);
+			range.setEnd(node, offset);
+
+			// "Let start node equal node and let start offset equal offset."
+			var startNode = node;
+			var startOffset = offset;
+
+			// "While start offset is zero, set start offset to the index of
+			// start node and then set start node to its parent."
+			while (startOffset == 0) {
+				startOffset = getNodeIndex(startNode);
+				startNode = startNode.parentNode;
+			}
+
+			// "If the child of start node with index start offset minus one is
+			// a br or hr or img, set node to start node and offset to start
+			// offset, then subtract one from start offset."
+			if (isHtmlElement(startNode.childNodes[startOffset - 1], ["br", "hr", "img"])) {
+				node = startNode;
+				offset = startOffset;
+				startOffset--;
+
+			// "Otherwise, set start node to its child with index start offset
+			// minus one, then set start offset to the length of start node."
+			} else {
+				startNode = startNode.childNodes[startOffset - 1];
+				startOffset = getNodeLength(startNode);
+			}
+
+			// "If start node is a prohibited paragraph child whose last child
+			// is a br, and start offset is the length of start node, subtract
+			// one from start offset."
+			if (isProhibitedParagraphChild(startNode)
+			&& isHtmlElement(startNode.lastChild, "br")
+			&& startOffset == getNodeLength(startNode)) {
+				startOffset--;
+			}
+
+			// "Delete the contents of the range with start (start node, start
+			// offset) and end (node, offset)."
+			deleteContents(startNode, startOffset, node, offset);
+
+			// "Abort these steps."
 			return;
 		}
 		break;

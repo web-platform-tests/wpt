@@ -4,10 +4,6 @@
 <title>Line-breaking tests</title>
 <link rel=stylesheet href=tests.css>
 <style>
-body > div > table > tbody > tr > td,
-body > div > table > tbody > tr > th {
-	width: 50% !important;
-}
 #overlay {
 	display: none;
 	position: fixed;
@@ -37,7 +33,7 @@ displayed as forwards or such.
 
 <div id=tests>
 	<input type=button value="Run tests" onclick="runTests()">
-	<table border=1><tr><th>Input<th>Output</table>
+	<table border=1><tr><th>Input<th>Spec<th>Browser<th>Same</table>
 	<p><label>New test input: <input></label> <input type=button value="Add test" onclick="addTest()">
 </div>
 
@@ -79,14 +75,17 @@ function addTest() {
 	var input = document.querySelector("#tests label input");
 	var test = input.value;
 	doInputCell(tr, test);
+	doSpecCell(tr, test, "insertparagraph", false);
 	if (localStorage.getItem("linebreaktest-" + test) !== null) {
 		// Yay, I get to cheat
 		var browserCell = document.createElement("td");
 		tr.appendChild(browserCell);
 		browserCell.innerHTML = localStorage["linebreaktest-" + test];
+		doSameCell(tr);
 		runNextTest(test);
 	} else {
 		doBrowserCell(tr, test, function() {
+			doSameCell(tr);
 			runNextTest(test);
 		});
 	}

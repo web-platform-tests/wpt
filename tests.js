@@ -1,3 +1,30 @@
+// Insert the toolbar thingie as soon as the script file is loaded
+var toolbarDiv = document.createElement("div");
+toolbarDiv.id = "toolbar";
+// Note: this is completely not a hack at all.
+toolbarDiv.innerHTML = "<style id=alerts>/* body > div > table > tbody > tr:not(.alert):not(:first-child) { display: none } */</style>"
+	+ "<label><input id=alert-checkbox type=checkbox accesskey=a checked onclick='updateAlertRowStyle()'> Display rows without spec <u>a</u>lerts</label>"
+	+ "<label><input id=browser-checkbox type=checkbox accesskey=b checked onclick='localStorage[\"display-browser-tests\"] = event.target.checked'> Run <u>b</u>rowser tests as well as spec tests</label>";
+
+document.body.appendChild(toolbarDiv);
+
+// Confusingly, we're storing a string here, not a boolean.
+document.querySelector("#alert-checkbox").checked = localStorage["display-alerts"] != "false";
+document.querySelector("#browser-checkbox").checked = localStorage["display-browser-tests"] != "false";
+
+function updateAlertRowStyle() {
+	var checked = document.querySelector("#alert-checkbox").checked;
+	var style = document.querySelector("#alerts");
+	if (checked && !/^\/\*/.test(style.textContent)) {
+		style.textContent = "/* " + style.textContent + " */";
+	} else if (!checked) {
+		style.textContent = style.textContent.replace(/(\/\* | \*\/)/g, "");
+	}
+	localStorage["display-alerts"] = checked;
+}
+updateAlertRowStyle();
+
+// Now for the meat of the file.
 var tests = {
 	backcolor: [
 		'foo[]bar',

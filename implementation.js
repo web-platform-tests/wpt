@@ -3277,18 +3277,26 @@ function myExecCommand(command, showUI, value, range) {
 			return;
 		}
 
-		// "If node has a child with index offset − 1:"
+		// "If node has a child with index offset − 1, and that child is a
+		// prohibited paragraph child:"
 		if (0 <= offset -1
-		&& offset - 1 < node.childNodes.length) {
+		&& offset - 1 < node.childNodes.length
+		&& isProhibitedParagraphChild(node.childNodes[offset - 1])) {
 			// "Let start node be the child of node with index offset − 1."
 			var startNode = node.childNodes[offset - 1];
 
-			// "Remove extraneous line breaks at the end of start node."
-			removeExtraneousLineBreaksAtTheEndOf(startNode);
+			// "Let start offset be the length of start node."
+			var startOffset = getNodeLength(startNode);
 
-			// "Delete the contents of the range with start (start node, length
-			// of start node) and end (node, offset)."
-			deleteContents(startNode, getNodeLength(startNode), node, offset);
+			// "If start node's last child is a br, subtract one from start
+			// offset."
+			if (isHtmlElement(startNode.lastChild, "br")) {
+				startOffset--;
+			}
+
+			// "Delete the contents of the range with start (start node, start
+			// offset) and end (node, offset)."
+			deleteContents(startNode, startOffset, node, offset);
 
 			// "Abort these steps."
 			return;

@@ -2573,18 +2573,21 @@ section just for it. -->
   </ol>
 
   <li>If <var>node</var> has a [[child]] with [[index]] <var>offset</var>
-  &minus; 1:
+  &minus; 1, and that [[child]] is a <span>prohibited paragraph child</span>:
 
   <ol>
     <li>Let <var>start node</var> be the [[child]] of <var>node</var> with
     [[index]] <var>offset</var> &minus; 1.
 
-    <li><span>Remove extraneous line breaks at the end of</span> <var>start
+    <li>Let <var>start offset</var> be the [[nodelength]] of <var>start
     node</var>.
 
+    <li>If <var>start node</var>'s last [[child]] is a [[br]], subtract one
+    from <var>start offset</var>.
+
     <li><span>Delete the contents</span> of the [[range]] with [[rangestart]]
-    (<var>start node</var>, [[nodelength]] of <var>start node</var>) and
-    [[rangeend]] (<var>node</var>, <var>offset</var>).
+    (<var>start node</var>, <var>start offset</var>) and [[rangeend]]
+    (<var>node</var>, <var>offset</var>).
 
     <li>Abort these steps.
   </ol>

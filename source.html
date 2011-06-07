@@ -934,12 +934,6 @@ instructions</dfn>:
 I'm using it mostly because it's convenient and seems relatively sensible.  If
 we really want to use it, we probably want to change its name.
 
-<p class=XXX>This treats selections in elements the same as selections in
-nearby text nodes, if there are any.  This might not be desired in all cases.
-Needs research into what sorts of selections the user can create.  E.g.,
-Gecko treats it differently if you select all the text in a table vs. selecting
-the table itself.
-
 <ol>
   <li>If <var>range</var> is null, abort these steps and do nothing.
 
@@ -996,10 +990,19 @@ the table itself.
     <li>Let <var>reference node</var> be the [[child]] of <var>start node</var>
     with [[index]] equal to <var>start offset</var>.
 
-    <li>If <var>reference node</var> is an [[element]] with no [[children]],
-    break from this loop.
-    <!-- Don't descend into it, since then it won't get deleted even if it's
-    selected. -->
+    <li>If <var>reference node</var> is a <span>prohibited paragraph
+    child</span> or an [[element]] with no [[children]], break from this loop.
+    <!--
+    Don't descend into an element with no children, since then it won't get
+    deleted even if it's selected.  Don't descend into a prohibited paragraph
+    child, because then we might wind up not mergings blocks when we should,
+    e.g.
+
+      foo{<p>}bar</p>
+      -> foo<p>{}bar</p>
+
+    and nothing gets changed.
+    -->
 
     <li>Set <var>start node</var> to <var>reference node</var> and <var>start
     offset</var> to 0.
@@ -1019,8 +1022,8 @@ the table itself.
     <li>Let <var>reference node</var> be the [[child]] of <var>end node</var>
     with [[index]] equal to <var>end offset</var> minus one.
 
-    <li>If <var>reference node</var> is an [[element]] with no [[children]],
-    break from this loop.
+    <li>If <var>reference node</var> is a <span>prohibited paragraph
+    child</span> or an [[element]] with no [[children]], break from this loop.
 
     <li>Set <var>end node</var> to <var>reference node</var> and <var>end
     offset</var> to the [[nodelength]] of <var>reference node</var>.
@@ -2544,6 +2547,23 @@ section just for it. -->
     <li><span>Delete the contents</span> of the [[range]] with [[rangestart]]
     (<var>start node</var>, <var>start offset</var>) and [[rangeend]]
     (<var>node</var>, <var>offset</var>).
+
+    <li>Abort these steps.
+  </ol>
+
+  <li>If <var>node</var> has a [[child]] with [[index]] <var>offset</var>
+  &minus; 1:
+
+  <ol>
+    <li>Let <var>start node</var> be the [[child]] of <var>node</var> with
+    [[index]] <var>offset</var> &minus; 1.
+
+    <li><span>Remove extraneous line breaks at the end of</span> <var>start
+    node</var>.
+
+    <li><span>Delete the contents</span> of the [[range]] with [[rangestart]]
+    (<var>start node</var>, [[nodelength]] of <var>start node</var>) and
+    [[rangeend]] (<var>node</var>, <var>offset</var>).
 
     <li>Abort these steps.
   </ol>

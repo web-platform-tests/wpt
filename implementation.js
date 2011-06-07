@@ -776,8 +776,8 @@ function deleteContents(node1, offset1, node2, offset2) {
 		range = node1;
 	} else {
 		range = document.createRange();
-		range.setStart(arguments[0], arguments[1]);
-		range.setEnd(arguments[2], arguments[3]);
+		range.setStart(node1, offset1);
+		range.setEnd(node2, offset2);
 	}
 
 	// "If range is null, abort these steps and do nothing."
@@ -816,10 +816,11 @@ function deleteContents(node1, offset1, node2, offset2) {
 		// start offset."
 		var referenceNode = startNode.childNodes[startOffset];
 
-		// "If reference node is an Element with no children, break from this
-		// loop."
-		if (referenceNode.nodeType == Node.ELEMENT_NODE
-		&& !referenceNode.hasChildNodes()) {
+		// "If reference node is a prohibited paragraph child or an Element
+		// with no children, break from this loop."
+		if (isProhibitedParagraphChild(referenceNode)
+		|| (referenceNode.nodeType == Node.ELEMENT_NODE
+		&& !referenceNode.hasChildNodes())) {
 			break;
 		}
 
@@ -851,10 +852,11 @@ function deleteContents(node1, offset1, node2, offset2) {
 		// offset minus one."
 		var referenceNode = endNode.childNodes[endOffset - 1];
 
-		// "If reference node is an Element with no children, break from this
-		// loop."
-		if (referenceNode.nodeType == Node.ELEMENT_NODE
-		&& !referenceNode.hasChildNodes()) {
+		// "If reference node is a prohibited paragraph child or an Element
+		// with no children, break from this loop."
+		if (isProhibitedParagraphChild(referenceNode)
+		|| (referenceNode.nodeType == Node.ELEMENT_NODE
+		&& !referenceNode.hasChildNodes())) {
 			break;
 		}
 
@@ -3236,6 +3238,23 @@ function myExecCommand(command, showUI, value, range) {
 			// "Delete the contents of the range with start (start node, start
 			// offset) and end (node, offset)."
 			deleteContents(startNode, startOffset, node, offset);
+
+			// "Abort these steps."
+			return;
+		}
+
+		// "If node has a child with index offset − 1:"
+		if (0 <= offset -1
+		&& offset - 1 < node.childNodes.length) {
+			// "Let start node be the child of node with index offset − 1."
+			var startNode = node.childNodes[offset - 1];
+
+			// "Remove extraneous line breaks at the end of start node."
+			removeExtraneousLineBreaksAtTheEndOf(startNode);
+
+			// "Delete the contents of the range with start (start node, length
+			// of start node) and end (node, offset)."
+			deleteContents(startNode, getNodeLength(startNode), node, offset);
 
 			// "Abort these steps."
 			return;

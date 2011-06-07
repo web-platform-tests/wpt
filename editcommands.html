@@ -978,12 +978,6 @@ instructions</dfn>:
 I'm using it mostly because it's convenient and seems relatively sensible.  If
 we really want to use it, we probably want to change its name.
 
-<p class=XXX>This treats selections in elements the same as selections in
-nearby text nodes, if there are any.  This might not be desired in all cases.
-Needs research into what sorts of selections the user can create.  E.g.,
-Gecko treats it differently if you select all the text in a table vs. selecting
-the table itself.
-
 <ol>
   <li>If <var title="">range</var> is null, abort these steps and do nothing.
 
@@ -1040,10 +1034,19 @@ the table itself.
     <li>Let <var title="">reference node</var> be the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">start node</var>
     with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> equal to <var title="">start offset</var>.
 
-    <li>If <var title="">reference node</var> is an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> with no <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>,
-    break from this loop.
-    <!-- Don't descend into it, since then it won't get deleted even if it's
-    selected. -->
+    <li>If <var title="">reference node</var> is a <a href=#prohibited-paragraph-child>prohibited paragraph
+    child</a> or an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> with no <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, break from this loop.
+    <!--
+    Don't descend into an element with no children, since then it won't get
+    deleted even if it's selected.  Don't descend into a prohibited paragraph
+    child, because then we might wind up not mergings blocks when we should,
+    e.g.
+
+      foo{<p>}bar</p>
+      -> foo<p>{}bar</p>
+
+    and nothing gets changed.
+    -->
 
     <li>Set <var title="">start node</var> to <var title="">reference node</var> and <var title="">start
     offset</var> to 0.
@@ -1063,8 +1066,8 @@ the table itself.
     <li>Let <var title="">reference node</var> be the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">end node</var>
     with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> equal to <var title="">end offset</var> minus one.
 
-    <li>If <var title="">reference node</var> is an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> with no <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>,
-    break from this loop.
+    <li>If <var title="">reference node</var> is a <a href=#prohibited-paragraph-child>prohibited paragraph
+    child</a> or an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> with no <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, break from this loop.
 
     <li>Set <var title="">end node</var> to <var title="">reference node</var> and <var title="">end
     offset</var> to the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> of <var title="">reference node</var>.
@@ -2563,6 +2566,23 @@ section just for it. -->
     <li><a href=#delete-the-contents>Delete the contents</a> of the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a>
     (<var title="">start node</var>, <var title="">start offset</var>) and <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a>
     (<var title="">node</var>, <var title="">offset</var>).
+
+    <li>Abort these steps.
+  </ol>
+
+  <li>If <var title="">node</var> has a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> <var title="">offset</var>
+  &minus; 1:
+
+  <ol>
+    <li>Let <var title="">start node</var> be the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">node</var> with
+    <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> <var title="">offset</var> &minus; 1.
+
+    <li><a href=#remove-extraneous-line-breaks-at-the-end-of>Remove extraneous line breaks at the end of</a> <var title="">start
+    node</var>.
+
+    <li><a href=#delete-the-contents>Delete the contents</a> of the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a>
+    (<var title="">start node</var>, <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> of <var title="">start node</var>) and
+    <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> (<var title="">node</var>, <var title="">offset</var>).
 
     <li>Abort these steps.
   </ol>

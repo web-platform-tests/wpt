@@ -1051,6 +1051,40 @@ function deleteContents(node1, offset1, node2, offset2) {
 		range.setStart(startBlock, getNodeIndex(referenceNode));
 		range.setEnd(startBlock, getNodeIndex(referenceNode));
 
+		// "If end block has no children:"
+		if (!endBlock.hasChildNodes()) {
+			// "While end block is editable and is the only child of its parent
+			// and is not a child of start block, let parent equal end block,
+			// then remove end block from parent, then set end block to
+			// parent."
+			while (isEditable(endBlock)
+			&& endBlock.parentNode.childNodes.length == 1
+			&& endBlock.parentNode != startBlock) {
+				var parent_ = endBlock;
+				parent_.removeChild(endBlock);
+				endBlock = parent_;
+			}
+
+			// "If end block is editable and is not an inline node, and its
+			// previousSibling and nextSibling are both inline nodes, call
+			// createElement("br") on the context object and insert it into end
+			// block's parent immediately after end block."
+			if (isEditable(endBlock)
+			&& !isInlineNode(endBlock)
+			&& isInlineNode(endBlock.previousSibling)
+			&& isInlineNode(endBlock.nextSibling)) {
+				endBlock.parentNode.insertBefore(document.createElement("br"), endBlock.nextSibling);
+			}
+
+			// "If end block is editable, remove it from its parent."
+			if (isEditable(endBlock)) {
+				endBlock.parentNode.removeChild(endBlock);
+			}
+
+			// "Abort these steps."
+			return;
+		}
+
 		// "If end block's firstChild is not an inline node, abort these
 		// steps."
 		if (!isInlineNode(endBlock.firstChild)) {

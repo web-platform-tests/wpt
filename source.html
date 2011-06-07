@@ -1208,6 +1208,27 @@ we really want to use it, we probably want to change its name.
     <li>Set the [[rangestart]] and [[rangeend]] of <var>range</var> to
     (<var>start block</var>, [[index]] of <var>reference node</var>).
 
+    <li>If <var>end block</var> has no [[children]]:
+
+    <ol>
+      <li>While <var>end block</var> is <span>editable</span> and is the only
+      [[child]] of its [[parent]] and is not a [[child]] of <var>start
+      block</var>, let <var>parent</var> equal <var>end block</var>, then
+      remove <var>end block</var> from <var>parent</var>, then set <var>end
+      block</var> to <var>parent</var>.
+
+      <li>If <var>end block</var> is <span>editable</span> and is not an
+      <span>inline node</span>, and its [[previoussibling]] and [[nextsibling]]
+      are both <span title="inline node">inline nodes</span>, call
+      [[createelement|"br"]] on the [[contextobject]] and insert it into
+      <var>end block</var>'s [[parent]] immediately after <var>end block</var>.
+
+      <li>If <var>end block</var> is <span>editable</span>, remove it from its
+      [[parent]].
+
+      <li>Abort these steps.
+    </ol>
+
     <li>If <var>end block</var>'s [[firstchild]] is not an <span>inline
     node</span>, abort these steps.
 

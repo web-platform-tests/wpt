@@ -1295,6 +1295,31 @@ function isProhibitedParagraphChild(node) {
 	return isHtmlElement(node, prohibitedParagraphChildNames);
 }
 
+// "A visible node is a node that either is a prohibited paragraph child, or a
+// Text node whose data is not empty, or a br or img, or any node with a
+// descendant that is a visible node."
+function isVisibleNode(node) {
+	if (!node) {
+		return false;
+	}
+	if (isProhibitedParagraphChild(node)
+	|| (node.nodeType == Node.TEXT_NODE && node.length)
+	|| isHtmlElement(node, ["br", "img"])) {
+		return true;
+	}
+	for (var i = 0; i < node.childNodes.length; i++) {
+		if (isVisibleNode(node.childNodes[i])) {
+			return true;
+		}
+	}
+	return false;
+}
+
+// "An invisible node is a node that is not a visible node."
+function isInvisibleNode(node) {
+	return node && !isVisibleNode(node);
+}
+
 function isAllowedChild(child, parent_) {
 	// "If parent is "colgroup", "table", "tbody", "tfoot", "thead", "tr", or
 	// an HTML element with local name equal to one of those, and child is a
@@ -3167,22 +3192,47 @@ function myExecCommand(command, showUI, value, range) {
 		var node = range.startContainer;
 		var offset = range.startOffset;
 
-		// "While offset is zero and node is not a prohibited paragraph child,
-		// set offset to the index of node, then set node to its parent."
-		while (offset == 0
-		&& !isProhibitedParagraphChild(node)) {
-			offset = getNodeIndex(node);
-			node = node.parentNode;
-		}
+		// "Repeat the following steps:"
+		while (true) {
+			// "If offset is zero and node's previousSibling is an editable
+			// invisible node, remove node's previousSibling from its parent."
+			if (offset == 0
+			&& isEditable(node.previousSibling)
+			&& isInvisibleNode(node.previousSibling)) {
+				node.parentNode.removeChild(node.previousSibling);
 
-		// "While node has a child with index offset − 1 and that child is not
-		// a prohibited paragraph child, set node to that child, then set
-		// offset to the length of node."
-		while (0 <= offset - 1
-		&& offset - 1 < node.childNodes.length
-		&& !isProhibitedParagraphChild(node.childNodes[offset - 1])) {
-			node = node.childNodes[offset - 1];
-			offset = getNodeLength(node);
+			// "Otherwise, if node has a child with index offset − 1 and that
+			// child is an editable invisible node, remove that child from
+			// node, then subtract one from offset."
+			} else if (0 <= offset - 1
+			&& offset - 1 < node.childNodes.length
+			&& isEditable(node.childNodes[offset - 1])
+			&& isInvisibleNode(node.childNodes[offset - 1])) {
+				node.removeChild(node.childNodes[offset - 1]);
+				offset--;
+
+			// "Otherwise, if offset is zero and node is not a prohibited
+			// paragraph child, set offset to the index of node, then set node
+			// to its parent."
+			} else if (offset == 0
+			&& !isProhibitedParagraphChild(node)) {
+				offset = getNodeIndex(node);
+				node = node.parentNode;
+
+			// "Otherwise, if node has a child with index offset − 1 and that
+			// child is not a prohibited paragraph child or a br or an img, set
+			// node to that child, then set offset to the length of node."
+			} else if (0 <= offset - 1
+			&& offset - 1 < node.childNodes.length
+			&& !isProhibitedParagraphChild(node.childNodes[offset - 1])
+			&& !isHtmlElement(node.childNodes[offset - 1], ["br", "img"])) {
+				node = node.childNodes[offset - 1];
+				offset = getNodeLength(node);
+
+			// "Otherwise, break from this loop."
+			} else {
+				break;
+			}
 		}
 
 		// "If node is a Text node and offset is not zero, call collapse(node,
@@ -3197,22 +3247,16 @@ function myExecCommand(command, showUI, value, range) {
 			return;
 		}
 
-		// "If node has a child with index offset − 1 and that child is an hr,
-		// set node to that child."
-		if (0 <= offset -1
+		// "If node has a child with index offset − 1 and that child is a br or
+		// hr or img, call collapse(node, offset) on the Selection. Then delete
+		// the contents of the range with start (node, offset − 1) and end
+		// (node, offset) and abort these steps."
+		if (0 <= offset - 1
 		&& offset - 1 < node.childNodes.length
-		&& isHtmlElement(node.childNodes[offset - 1], "hr")) {
-			node = node.childNodes[offset - 1];
-		}
-
-		// "If node is a br or hr or img, call collapse(node, 0) on the
-		// Selection.  Then delete the contents of the range with start (parent
-		// of node, index of node) and end (parent of node, 1 + index of node)
-		// and abort these steps."
-		if (isHtmlElement(node, ["br", "hr", "img"])) {
-			range.setStart(node, 0);
-			range.setEnd(node, 0);
-			deleteContents(node.parentNode, getNodeIndex(node), node.parentNode, 1 + getNodeIndex(node));
+		&& isHtmlElement(node.childNodes[offset - 1], ["br", "hr", "img"])) {
+			range.setStart(node, offset);
+			range.setEnd(node, offset);
+			deleteContents(node, offset - 1, node, offset);
 			return;
 		}
 

@@ -345,6 +345,16 @@ whose [[localname]] is a <span>prohibited paragraph child name</span>.
 I think.  Plus table stuff, since that can't be a descendant of a p either,
 although it won't auto-close it. -->
 
+<p>A <dfn>visible node</dfn> is a [[node]] that either is a <span>prohibited
+paragraph child</span>, or a [[text]] node whose [[cddata]] is not empty, or a
+[[br]] or [[img]], or any [[node]] with a [[descendant]] that is a
+<span>visible node</span>.  An <dfn>invisible node</dfn> is a [[node]] that is
+not a <span>visible node</span>.
+
+<p class=XXX>I don't know if this definition is really the way we want to do
+things.  If it is, it needs some adjustment, like to handle collapsed
+whitespace nodes and collapsed br's.
+
 <p>A [[node]] or string <var>child</var> is an <dfn>allowed child</dfn> of a
 [[node]] or string <var>parent</var> if the following algorithm returns true:
 
@@ -2459,14 +2469,38 @@ section just for it. -->
   <!-- First go up as high as possible within the current block, then drill
   down to the lowest possible level, in the hopes that we'll wind up at the end
   of a text node, or maybe in a br or hr. -->
-  <li>While <var>offset</var> is zero and <var>node</var> is not a
-  <span>prohibited paragraph child</span>, set <var>offset</var> to the
-  [[index]] of <var>node</var>, then set <var>node</var> to its [[parent]].
+  <li>Repeat the following steps:
 
-  <li>While <var>node</var> has a [[child]] with [[index]] <var>offset</var>
-  &minus; 1 and that [[child]] is not a <span>prohibited paragraph
-  child</span>, set <var>node</var> to that [[child]], then set
-  <var>offset</var> to the [[nodelength]] of <var>node</var>.
+  <ol>
+    <!--
+    If there's an invisible node somewhere, Firefox 5.0a2 removes that node and
+    then stops, so each backspace removes one invisible node.  All others
+    remove the invisible node and then continue on looking for something
+    visible to remove.  The spec follows the latter behavior, since it makes
+    more sense to the user.  Of course, the definition of "invisible node" is
+    not necessarily anything like the spec's.
+    -->
+    <li>If <var>offset</var> is zero and <var>node</var>'s [[previoussibling]]
+    is an <span>editable</span> <span>invisible node</span>, remove
+    <var>node</var>'s [[previoussibling]] from its [[parent]].
+
+    <li>Otherwise, if <var>node</var> has a [[child]] with [[index]]
+    <var>offset</var> &minus; 1 and that [[child]] is an <span>editable</span>
+    <span>invisible node</span>, remove that [[child]] from <var>node</var>,
+    then subtract one from <var>offset</var>.
+
+    <li>Otherwise, if <var>offset</var> is zero and <var>node</var> is not a
+    <span>prohibited paragraph child</span>, set <var>offset</var> to the
+    [[index]] of <var>node</var>, then set <var>node</var> to its [[parent]].
+
+    <li>Otherwise, if <var>node</var> has a [[child]] with [[index]]
+    <var>offset</var> &minus; 1 and that [[child]] is not a <span>prohibited
+    paragraph child</span> or a [[br]] or an [[img]], set <var>node</var> to
+    that [[child]], then set <var>offset</var> to the [[nodelength]] of
+    <var>node</var>.
+
+    <li>Otherwise, break from this loop.
+  </ol>
 
   <li>If <var>node</var> is a [[text]] node and <var>offset</var> is not zero,
   call [[selcollapse|<var>node</var>, <var>offset</var>]] on the [[selection]].
@@ -2475,14 +2509,11 @@ section just for it. -->
   (<var>node</var>, <var>offset</var>) and abort these steps.
 
   <li>If <var>node</var> has a [[child]] with [[index]] <var>offset</var>
-  &minus; 1 and that [[child]] is an [[hr]], set <var>node</var> to that
-  [[child]].
-
-  <li>If <var>node</var> is a [[br]] or [[hr]] or [[img]], call
-  [[selcollapse|<var>node</var>, 0]] on the [[selection]].  Then <span>delete
-  the contents</span> of the [[range]] with [[rangestart]] ([[parent]] of
-  <var>node</var>, [[index]] of <var>node</var>) and [[rangeend]] ([[parent]]
-  of <var>node</var>, 1 + [[index]] of <var>node</var>) and abort these steps.
+  &minus; 1 and that [[child]] is a [[br]] or [[hr]] or [[img]], call
+  [[selcollapse|<var>node</var>, <var>offset</var>]] on the [[selection]].
+  Then <span>delete the contents</span> of the [[range]] with [[rangestart]]
+  (<var>node</var>, <var>offset</var> &minus; 1) and [[rangeend]]
+  (<var>node</var>, <var>offset</var>) and abort these steps.
 
   <li>If <var>node</var> is a <span>prohibited paragraph child</span> and
   <var>offset</var> is zero:

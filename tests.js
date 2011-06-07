@@ -250,9 +250,14 @@ var tests = {
 		'<p>foo</p><br><br><p>[]bar</p>',
 		'<p>foo</p><img src=/img/lion.svg><p>[]bar',
 		'foo<img src=/img/lion.svg>[]bar',
+
+		// Invisible stuff
 		'foo<span></span>[]bar',
 		'foo<span><span></span></span>[]bar',
 		'foo<quasit></quasit>[]bar',
+		'foo<br><span></span>[]bar',
+		'<span>foo<span></span></span>[]bar',
+		'foo<span></span><span>[]bar</span>',
 
 		'foo[bar]baz',
 

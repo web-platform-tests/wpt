@@ -225,12 +225,14 @@ var tests = {
 	// PropertyName to be any IdentifierName, and see 7.6 which defines
 	// IdentifierName to include ReservedWord; Identifier excludes it.
 	"delete": [
+		// Collapsed selection
 		'foo[]bar',
 		'<span>foo</span>{}<span>bar</span>',
 		'<span>foo[</span><span>]bar</span>',
 		'foo<span style=display:none>bar</span>[]baz',
 		'fo&ouml;[]bar',
 		'foo&#x308;[]bar',
+
 		'<p>foo</p><p>[]bar</p>',
 		'<p>foo</p>[]bar',
 		'foo<p>[]bar</p>',
@@ -240,8 +242,16 @@ var tests = {
 		'<p>foo<br><br></p><p>[]bar</p>',
 		'<p>foo<br><br></p>[]bar',
 		'foo<br><br><p>[]bar</p>',
+
+		'<div><p>foo</p></div><p>[]bar</p>',
+		'<p>foo</p><div><p>[]bar</p></div>',
+		'<div><p>foo</p></div><div><p>[]bar</p></div>',
+		'<div><p>foo</p></div>[]bar',
+		'foo<div><p>[]bar</p></div>',
+
 		'<div>foo</div><div>[]bar</div>',
 		'<pre>foo</pre>[]bar',
+
 		'foo<br>[]bar',
 		'foo<br><b>[]bar</b>',
 		'foo<hr>[]bar',
@@ -250,6 +260,29 @@ var tests = {
 		'<p>foo</p><br><br><p>[]bar</p>',
 		'<p>foo</p><img src=/img/lion.svg><p>[]bar',
 		'foo<img src=/img/lion.svg>[]bar',
+		'<a href=/>foo</a>[]bar',
+		'foo<a href=/>[]bar</a>',
+
+		'foo<table><tr><td>[]bar</table>baz',
+		'foo<table><tr><td>bar</table>[]baz',
+		'<p>foo<table><tr><td>[]bar</table><p>baz',
+		'<p>foo<table><tr><td>bar</table><p>[]baz',
+		'<table><tr><td>foo<td>[]bar</table>',
+		'<table><tr><td>foo<tr><td>[]bar</table>',
+
+		'foo<br><table><tr><td>[]bar</table>baz',
+		'foo<table><tr><td>bar<br></table>[]baz',
+		'<p>foo<br><table><tr><td>[]bar</table><p>baz',
+		'<p>foo<table><tr><td>bar<br></table><p>[]baz',
+		'<table><tr><td>foo<br><td>[]bar</table>',
+		'<table><tr><td>foo<br><tr><td>[]bar</table>',
+
+		'foo<br><br><table><tr><td>[]bar</table>baz',
+		'foo<table><tr><td>bar<br><br></table>[]baz',
+		'<p>foo<br><br><table><tr><td>[]bar</table><p>baz',
+		'<p>foo<table><tr><td>bar<br><br></table><p>[]baz',
+		'<table><tr><td>foo<br><br><td>[]bar</table>',
+		'<table><tr><td>foo<br><br><tr><td>[]bar</table>',
 
 		// Invisible stuff
 		'foo<span></span>[]bar',
@@ -259,6 +292,7 @@ var tests = {
 		'<span>foo<span></span></span>[]bar',
 		'foo<span></span><span>[]bar</span>',
 
+		// Uncollapsed selection
 		'foo[bar]baz',
 
 		'foo<b>[bar]</b>baz',

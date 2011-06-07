@@ -3304,6 +3304,17 @@ function myExecCommand(command, showUI, value, range) {
 				startOffset = getNodeLength(startNode);
 			}
 
+			// "While start node is a prohibited paragraph child whose
+			// lastChild is a prohibited paragraph child, and start offset is
+			// the length of start node, set start node to its lastChild and
+			// then set start offset to the length of start node."
+			while (isProhibitedParagraphChild(startNode)
+			&& isProhibitedParagraphChild(startNode.lastChild)
+			&& startOffset == getNodeLength(startNode)) {
+				startNode = startNode.lastChild;
+				startOffset = getNodeLength(startNode);
+			}
+
 			// "If start node is a prohibited paragraph child whose last child
 			// is a br, and start offset is the length of start node, subtract
 			// one from start offset."
@@ -3328,6 +3339,12 @@ function myExecCommand(command, showUI, value, range) {
 		&& isProhibitedParagraphChild(node.childNodes[offset - 1])) {
 			// "Let start node be the child of node with index offset − 1."
 			var startNode = node.childNodes[offset - 1];
+
+			// "While start node's lastChild is a prohibited paragraph child,
+			// set start node to its lastChild."
+			while (isProhibitedParagraphChild(startNode.lastChild)) {
+				startNode = startNode.lastChild;
+			}
 
 			// "Let start offset be the length of start node."
 			var startOffset = getNodeLength(startNode);

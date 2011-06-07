@@ -2600,6 +2600,13 @@ section just for it. -->
     <var title="">start offset</var> minus one, then set <var title="">start offset</var> to the
     <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> of <var title="">start node</var>.
 
+    <li>While <var title="">start node</var> is a <a href=#prohibited-paragraph-child>prohibited paragraph
+    child</a> whose <code class=external data-anolis-spec=domcore title=dom-Node-lastChild><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-lastchild>lastChild</a></code> is a <a href=#prohibited-paragraph-child>prohibited paragraph
+    child</a>, and <var title="">start offset</var> is the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> of
+    <var title="">start node</var>, set <var title="">start node</var> to its <code class=external data-anolis-spec=domcore title=dom-Node-lastChild><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-lastchild>lastChild</a></code> and
+    then set <var title="">start offset</var> to the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> of <var title="">start
+    node</var>.
+
     <li>If <var title="">start node</var> is a <a href=#prohibited-paragraph-child>prohibited paragraph child</a>
     whose last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> is a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code>, and <var title="">start offset</var> is the
     <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> of <var title="">start node</var>, subtract one from <var title="">start
@@ -2628,6 +2635,9 @@ section just for it. -->
   <ol>
     <li>Let <var title="">start node</var> be the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">node</var> with
     <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> <var title="">offset</var> &minus; 1.
+
+    <li>While <var title="">start node</var>'s <code class=external data-anolis-spec=domcore title=dom-Node-lastChild><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-lastchild>lastChild</a></code> is a <a href=#prohibited-paragraph-child>prohibited
+    paragraph child</a>, set <var title="">start node</var> to its <code class=external data-anolis-spec=domcore title=dom-Node-lastChild><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-lastchild>lastChild</a></code>.
 
     <li>Let <var title="">start offset</var> be the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> of <var title="">start
     node</var>.

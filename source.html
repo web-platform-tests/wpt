@@ -2581,6 +2581,13 @@ section just for it. -->
     <var>start offset</var> minus one, then set <var>start offset</var> to the
     [[nodelength]] of <var>start node</var>.
 
+    <li>While <var>start node</var> is a <span>prohibited paragraph
+    child</span> whose [[lastchild]] is a <span>prohibited paragraph
+    child</span>, and <var>start offset</var> is the [[nodelength]] of
+    <var>start node</var>, set <var>start node</var> to its [[lastchild]] and
+    then set <var>start offset</var> to the [[nodelength]] of <var>start
+    node</var>.
+
     <li>If <var>start node</var> is a <span>prohibited paragraph child</span>
     whose last [[child]] is a [[br]], and <var>start offset</var> is the
     [[nodelength]] of <var>start node</var>, subtract one from <var>start
@@ -2609,6 +2616,9 @@ section just for it. -->
   <ol>
     <li>Let <var>start node</var> be the [[child]] of <var>node</var> with
     [[index]] <var>offset</var> &minus; 1.
+
+    <li>While <var>start node</var>'s [[lastchild]] is a <span>prohibited
+    paragraph child</span>, set <var>start node</var> to its [[lastchild]].
 
     <li>Let <var>start offset</var> be the [[nodelength]] of <var>start
     node</var>.

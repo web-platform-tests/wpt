@@ -2481,6 +2481,7 @@ section just for it. -->
 
   <li>If <var title="">node</var> is a <a href=#prohibited-paragraph-child>prohibited paragraph child</a> and
   <var title="">offset</var> is zero:
+  <!-- Then we'll typically want to merge backward into the previous block. -->
 
   <ol>
     <li>Call <code class=external data-anolis-spec=domrange title=dom-Selection-collapse><a href=http://html5.org/specs/dom-range.html#dom-selection-collapse>collapse(<var title="">node</var>, <var title="">offset</var>)</a></code> on the
@@ -2489,15 +2490,57 @@ section just for it. -->
     <li>Let <var title="">start node</var> equal <var title="">node</var> and let <var title="">start
     offset</var> equal <var title="">offset</var>.
 
-    <li>While <var title="">start offset</var> is zero, set <var title="">start offset</var> to
-    the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> of <var title="">start node</var> and then set <var title="">start node</var>
-    to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+    <!--
+    Go up until we're no longer at the beginning of an element.  As a special
+    case, we make sure to remove a preceding extraneous line break in cases
+    like
 
+      foo<br><p>[]bar</p>
+      -> foo<p>[]bar</p>
+      -> foo[]bar.
+
+    We have to take care that we remove the line break before we go all the way
+    up to the node that contains the line break.  Otherwise the offset will no
+    longer be correct: it will be one too high.  (Try removing "and start node
+    is the first child of its parent" from the next line, and the two lines
+    after the extraneous line break removal, and see what happens.)
+    -->
+    <li>While <var title="">start offset</var> is zero and <var title="">start node</var> is the
+    first <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>, set <var title="">start offset</var> to the
+    <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> of <var title="">start node</var> and then set <var title="">start node</var> to
+    its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+
+    <li><a href=#remove-extraneous-line-breaks-before>Remove extraneous line breaks before</a> <var title="">start
+    node</var>.
+
+    <li>Set <var title="">start offset</var> to the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> of <var title="">start node</var>.
+
+    <li>Set <var title="">start node</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+
+    <!--
+    Special case:
+
+      <p>foo</p><br><p>[]bar</p>
+      -> <p>foo</p><p>[]bar</p>
+
+    and likewise for <hr>.  But with <img> we merge like in other cases:
+
+      <p>foo</p><img><p>[]bar</p>
+      -> <p>foo</p><img>[]bar.
+
+    Browsers don't do this consistently.  Firefox 5.0a2 doesn't seem to do it
+    at all.
+    -->
     <li>If the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">start node</var> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> <var title="">start
-    offset</var> minus one is a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code> or <code class=external data-anolis-spec=html title="the hr element"><a href=http://www.whatwg.org/html/#the-hr-element>hr</a></code> or <code class=external data-anolis-spec=html title="the img element"><a href=http://www.whatwg.org/html/#the-img-element>img</a></code>, set
-    <var title="">node</var> to <var title="">start node</var> and <var title="">offset</var> to
-    <var title="">start offset</var>, then subtract one from <var title="">start offset</var>.
+    offset</var> minus one is a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code> or <code class=external data-anolis-spec=html title="the hr element"><a href=http://www.whatwg.org/html/#the-hr-element>hr</a></code>, set <var title="">node</var> to
+    <var title="">start node</var> and <var title="">offset</var> to <var title="">start offset</var>,
+    then subtract one from <var title="">start offset</var>.
 
+    <!--
+    Regular case: for <p>foo</p><p>[]bar</p>, we delete <p>foo{</p><p>}bar</p>.
+    This will also happen if the preceding element is a span or something, but
+    that doesn't hurt.
+    -->
     <li>Otherwise, set <var title="">start node</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a>
     <var title="">start offset</var> minus one, then set <var title="">start offset</var> to the
     <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> of <var title="">start node</var>.
@@ -2506,6 +2549,16 @@ section just for it. -->
     whose last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> is a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code>, and <var title="">start offset</var> is the
     <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> of <var title="">start node</var>, subtract one from <var title="">start
     offset</var>.
+    <!--
+    It wouldn't be enough to just remove extraneous line breaks at the end of
+    start node, because we want to remove the line break even if it's not
+    actually extraneous.  For instance,
+
+      <p>foo<br><br></p><p>[]bar</p>
+      -> <p>foo<br>bar</p>
+      not
+      -> <p>foo<br><br>bar</p>.
+    -->
 
     <li><a href=#delete-the-contents>Delete the contents</a> of the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a>
     (<var title="">start node</var>, <var title="">start offset</var>) and <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a>

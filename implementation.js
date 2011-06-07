@@ -3191,17 +3191,28 @@ function myExecCommand(command, showUI, value, range) {
 			var startNode = node;
 			var startOffset = offset;
 
-			// "While start offset is zero, set start offset to the index of
-			// start node and then set start node to its parent."
-			while (startOffset == 0) {
+			// "While start offset is zero and start node is the first child of
+			// its parent, set start offset to the index of start node and then
+			// set start node to its parent."
+			while (startOffset == 0
+			&& startNode == startNode.parentNode.firstChild) {
 				startOffset = getNodeIndex(startNode);
 				startNode = startNode.parentNode;
 			}
 
+			// "Remove extraneous line breaks before start node."
+			removeExtraneousLineBreaksBefore(startNode);
+
+			// "Set start offset to the index of start node."
+			startOffset = getNodeIndex(startNode);
+
+			// "Set start node to its parent."
+			startNode = startNode.parentNode;
+
 			// "If the child of start node with index start offset minus one is
-			// a br or hr or img, set node to start node and offset to start
-			// offset, then subtract one from start offset."
-			if (isHtmlElement(startNode.childNodes[startOffset - 1], ["br", "hr", "img"])) {
+			// a br or hr, set node to start node and offset to start offset,
+			// then subtract one from start offset."
+			if (isHtmlElement(startNode.childNodes[startOffset - 1], ["br", "hr"])) {
 				node = startNode;
 				offset = startOffset;
 				startOffset--;

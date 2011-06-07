@@ -2462,6 +2462,7 @@ section just for it. -->
 
   <li>If <var>node</var> is a <span>prohibited paragraph child</span> and
   <var>offset</var> is zero:
+  <!-- Then we'll typically want to merge backward into the previous block. -->
 
   <ol>
     <li>Call [[selcollapse|<var>node</var>, <var>offset</var>]] on the
@@ -2470,15 +2471,57 @@ section just for it. -->
     <li>Let <var>start node</var> equal <var>node</var> and let <var>start
     offset</var> equal <var>offset</var>.
 
-    <li>While <var>start offset</var> is zero, set <var>start offset</var> to
-    the [[index]] of <var>start node</var> and then set <var>start node</var>
-    to its [[parent]].
+    <!--
+    Go up until we're no longer at the beginning of an element.  As a special
+    case, we make sure to remove a preceding extraneous line break in cases
+    like
 
+      foo<br><p>[]bar</p>
+      -> foo<p>[]bar</p>
+      -> foo[]bar.
+
+    We have to take care that we remove the line break before we go all the way
+    up to the node that contains the line break.  Otherwise the offset will no
+    longer be correct: it will be one too high.  (Try removing "and start node
+    is the first child of its parent" from the next line, and the two lines
+    after the extraneous line break removal, and see what happens.)
+    -->
+    <li>While <var>start offset</var> is zero and <var>start node</var> is the
+    first [[child]] of its [[parent]], set <var>start offset</var> to the
+    [[index]] of <var>start node</var> and then set <var>start node</var> to
+    its [[parent]].
+
+    <li><span>Remove extraneous line breaks before</span> <var>start
+    node</var>.
+
+    <li>Set <var>start offset</var> to the [[index]] of <var>start node</var>.
+
+    <li>Set <var>start node</var> to its [[parent]].
+
+    <!--
+    Special case:
+
+      <p>foo</p><br><p>[]bar</p>
+      -> <p>foo</p><p>[]bar</p>
+
+    and likewise for <hr>.  But with <img> we merge like in other cases:
+
+      <p>foo</p><img><p>[]bar</p>
+      -> <p>foo</p><img>[]bar.
+
+    Browsers don't do this consistently.  Firefox 5.0a2 doesn't seem to do it
+    at all.
+    -->
     <li>If the [[child]] of <var>start node</var> with [[index]] <var>start
-    offset</var> minus one is a [[br]] or [[hr]] or [[img]], set
-    <var>node</var> to <var>start node</var> and <var>offset</var> to
-    <var>start offset</var>, then subtract one from <var>start offset</var>.
+    offset</var> minus one is a [[br]] or [[hr]], set <var>node</var> to
+    <var>start node</var> and <var>offset</var> to <var>start offset</var>,
+    then subtract one from <var>start offset</var>.
 
+    <!--
+    Regular case: for <p>foo</p><p>[]bar</p>, we delete <p>foo{</p><p>}bar</p>.
+    This will also happen if the preceding element is a span or something, but
+    that doesn't hurt.
+    -->
     <li>Otherwise, set <var>start node</var> to its [[child]] with [[index]]
     <var>start offset</var> minus one, then set <var>start offset</var> to the
     [[nodelength]] of <var>start node</var>.
@@ -2487,6 +2530,16 @@ section just for it. -->
     whose last [[child]] is a [[br]], and <var>start offset</var> is the
     [[nodelength]] of <var>start node</var>, subtract one from <var>start
     offset</var>.
+    <!--
+    It wouldn't be enough to just remove extraneous line breaks at the end of
+    start node, because we want to remove the line break even if it's not
+    actually extraneous.  For instance,
+
+      <p>foo<br><br></p><p>[]bar</p>
+      -> <p>foo<br>bar</p>
+      not
+      -> <p>foo<br><br>bar</p>.
+    -->
 
     <li><span>Delete the contents</span> of the [[range]] with [[rangestart]]
     (<var>start node</var>, <var>start offset</var>) and [[rangeend]]

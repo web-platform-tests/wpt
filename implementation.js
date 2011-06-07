@@ -3613,7 +3613,7 @@ function myExecCommand(command, showUI, value, range) {
 		}
 
 		// "Delete the contents of the active range."
-		deleteContents(activeRange);
+		deleteContents(range);
 
 		// "Let img be the result of calling createElement("img") on the
 		// context object."
@@ -3650,7 +3650,7 @@ function myExecCommand(command, showUI, value, range) {
 
 		case "insertparagraph":
 		// "Delete the contents of the active range."
-		deleteContents(activeRange);
+		deleteContents(range);
 
 		// "Let node and offset be range's start node and offset."
 		var node = range.startContainer;

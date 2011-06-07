@@ -566,13 +566,14 @@ function splitParent(nodeList) {
 		}
 	}
 
-	// "If the first member of node list and the previousSibling of original
-	// parent are both inline nodes, call createElement("br") on the
-	// ownerDocument of original parent, then insert the result into the parent
-	// of original parent immediately before original parent."
+	// "If the first member of node list is an inline node, and original
+	// parent's previousSibling is an inline node other than a br, call
+	// createElement("br") on the context object, then insert the result into
+	// the parent of original parent immediately before original parent."
 	if (isInlineNode(nodeList[0])
-	&& isInlineNode(originalParent.previousSibling)) {
-		originalParent.parentNode.insertBefore(originalParent.ownerDocument.createElement("br"), originalParent);
+	&& isInlineNode(originalParent.previousSibling)
+	&& !isHtmlElement(originalParent.previousSibling, "br")) {
+		originalParent.parentNode.insertBefore(document.createElement("br"), originalParent);
 	}
 
 	// "For each node in node list, insert node into the parent of original
@@ -1111,12 +1112,11 @@ function deleteContents(node1, offset1, node2, offset2) {
 			splitParent(children);
 		}
 
-		// "If the child of range's start node with index equal to its start
-		// offset is a br and is not the first member of children, remove that
-		// br from its parent."
-		if (isHtmlElement(range.startContainer.childNodes[range.startOffset], "br")
-		&& range.startContainer.childNodes[range.startOffset] != children[0]) {
-			range.startContainer.removeChild(range.startContainer.childNodes[range.startOffset]);
+		// "If children's first member's previousSibling is an editable br,
+		// remove that br from its parent."
+		if (isEditable(children[0].previousSibling)
+		&& isHtmlElement(children[0].previousSibling, "br")) {
+			children[0].parentNode.removeChild(children[0].previousSibling);
 		}
 
 	// "Otherwise, if start block is a descendant of end block:"

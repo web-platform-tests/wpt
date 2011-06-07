@@ -700,13 +700,11 @@ inline styles, because Firefox does actually add them to arbitrary elements.
     <span>preserving ranges</span>.
   </ol>
 
-  <li>If the first member of <var>node list</var> and the [[previoussibling]]
-  of <var>original parent</var> are both <span title="inline node">inline
-  nodes</span>, call <code data-anolis-spec=domcore
-  title=dom-Document-createElement>createElement("br")</code> on the
-  [[ownerdocument]] of <var>original parent</var>, then insert the result into
-  the [[parent]] of <var>original parent</var> immediately before <var>original
-  parent</var>.
+  <li>If the first member of <var>node list</var> is an <span>inline
+  node</span>, and <var>original parent</var>'s [[previoussibling]] is an
+  <span>inline node</span> other than a [[br]], call [[createelement|"br"]] on
+  the [[contextobject]], then insert the result into the [[parent]] of
+  <var>original parent</var> immediately before <var>original parent</var>.
 
   <li>For each <var>node</var> in <var>node list</var>, insert <var>node</var>
   into the [[parent]] of <var>original parent</var> immediately before
@@ -1255,9 +1253,8 @@ we really want to use it, we probably want to change its name.
     <li>While <var>children</var>'s first member's [[parent]] is not <var>start
     block</var>, <span>split the parent</span> of <var>children</var>.
 
-    <li>If the [[child]] of <var>range</var>'s [[startnode]] with [[index]]
-    equal to its [[startoffset]] is a [[br]] and is not the first member of
-    <var>children</var>, remove that [[br]] from its [[parent]].
+    <li>If <var>children</var>'s first member's [[previoussibling]] is an
+    <span>editable</span> [[br]], remove that [[br]] from its [[parent]].
   </ol>
 
   <li>Otherwise, if <var>start block</var> is a [[descendant]] of <var>end

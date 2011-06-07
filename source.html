@@ -2557,6 +2557,9 @@ section just for it. -->
     <li><span>Remove extraneous line breaks before</span> <var>start
     node</var>.
 
+    <p class=XXX>This removes the line break even if nothing winds up getting
+    merged (e.g., cursor at the start of a table).
+
     <li>Set <var>start offset</var> to the [[index]] of <var>start node</var>.
 
     <li>Set <var>start node</var> to its [[parent]].
@@ -2581,6 +2584,21 @@ section just for it. -->
     then subtract one from <var>start offset</var>.
 
     <!--
+    Another special case:
+
+      <table>...</table><p>[]foo</p>
+      -> {<table>...</table>}<p>foo</p>
+
+    same as happens with <table>...</table>[]foo (see below).
+    -->
+    <li>Otherwise, if the [[child]] of <var>start node</var> with [[index]]
+    <var>start offset</var> minus one is a [[table]], call
+    [[selcollapse|<var>start node</var>, <var>start offset</var> &minus; 1]] on
+    the [[contextobject]]'s [[selection]], then call [[extend|<var>start
+    node</var>, <var>start offset</var>]] on the [[contextobject]]'s
+    [[selection]], then abort these steps.
+
+    <!--
     Regular case: for <p>foo</p><p>[]bar</p>, we delete <p>foo{</p><p>}bar</p>.
     This will also happen if the preceding element is a span or something, but
     that doesn't hurt.
@@ -2599,6 +2617,23 @@ section just for it. -->
     <li><span>Delete the contents</span> of the [[range]] with [[rangestart]]
     (<var>start node</var>, <var>start offset</var>) and [[rangeend]]
     (<var>node</var>, <var>offset</var>).
+
+    <li>Abort these steps.
+  </ol>
+
+  <li>If <var>node</var> has a [[child]] with [[index]] <var>offset</var>
+  &minus; 1, and that [[child]] is a [[table]]:
+  <!-- If you try backspacing into a table, select it.  This doesn't match any
+  browser; it matches the recommendation of the "behavior when typing in
+  contentEditable elements" document.  The idea is that then you can delete it
+  with a second backspace. -->
+
+  <ol>
+    <li>Call [[selcollapse|<var>node</var>, <var>offset</var> &minus; 1]] on
+    the [[contextobject]]'s [[selection]].
+
+    <li>Call [[extend|<var>node</var>, <var>offset</var>]] on the
+    [[contextobject]]'s [[selection]].
 
     <li>Abort these steps.
   </ol>

@@ -3311,6 +3311,16 @@ function myExecCommand(command, showUI, value, range) {
 				offset = startOffset;
 				startOffset--;
 
+			// "Otherwise, if the child of start node with index start offset
+			// minus one is a table, call collapse(start node, start offset −
+			// 1) on the context object's Selection, then call extend(start
+			// node, start offset) on the context object's Selection, then
+			// abort these steps."
+			} else if (isHtmlElement(startNode.childNodes[startOffset - 1], "table")) {
+				range.setStart(startNode, startOffset - 1);
+				range.setEnd(startNode, startOffset);
+				return;
+
 			// "Otherwise, set start node to its child with index start offset
 			// minus one, then set start offset to the length of start node."
 			} else {
@@ -3338,8 +3348,24 @@ function myExecCommand(command, showUI, value, range) {
 		}
 
 		// "If node has a child with index offset − 1, and that child is a
+		// table:"
+		if (0 <= offset - 1
+		&& offset - 1 < node.childNodes.length
+		&& isHtmlElement(node.childNodes[offset - 1], "table")) {
+			// "Call collapse(node, offset − 1) on the context object's
+			// Selection."
+			range.setStart(node, offset - 1);
+
+			// "Call extend(node, offset) on the context object's Selection."
+			range.setEnd(node, offset);
+
+			// "Abort these steps."
+			return;
+		}
+
+		// "If node has a child with index offset − 1, and that child is a
 		// prohibited paragraph child:"
-		if (0 <= offset -1
+		if (0 <= offset - 1
 		&& offset - 1 < node.childNodes.length
 		&& isProhibitedParagraphChild(node.childNodes[offset - 1])) {
 			// "Let start node be the child of node with index offset − 1."

@@ -8,7 +8,9 @@
     <meta name="assert" content="If multiple elements have their content property set to a named flow, the named flow content will be consumed by the chain of elements until exhausted."/>
     <style type="text/css">
       #source{
-       -webkit-flow: "main-thread";
+       -webkit-flow: "main-thread"; /* TEMP */
+       -ms-flow: "main-thread"; /* TEMP */
+       flow: "main-thread";
        color: green;
       }
       

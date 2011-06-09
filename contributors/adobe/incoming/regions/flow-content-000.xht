@@ -8,7 +8,9 @@
     <meta name="assert" content="Content placed into a named flow with the flow property should display in the element whose content property specifies that named flow."/>
     <style type="text/css">
       #source{
-       -webkit-flow: "main-thread";
+       -webkit-flow: "main-thread"; /* TEMP */
+       -ms-flow: "main-thread"; /* TEMP */
+       flow: "main-thread";
        color: green;
       }
       

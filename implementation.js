@@ -3319,6 +3319,47 @@ function myExecCommand(command, showUI, value, range) {
 			startNode = startNode.parentNode;
 		}
 
+		// "If offset is zero, and node has an ancestor container that is both
+		// a potential indentation element and a descendant of start node:"
+		var outdentableAncestor = false;
+		for (
+			var ancestor = node;
+			isDescendant(ancestor, startNode);
+			ancestor = ancestor.parentNode
+		) {
+			if (isPotentialIndentationElement(ancestor)) {
+				outdentableAncestor = true;
+				break;
+			}
+		}
+		if (offset == 0
+		&& outdentableAncestor) {
+			// "Block-extend the range whose start and end are both (node, 0),
+			// and let new range be the result."
+			var newRange = document.createRange();
+			newRange.setStart(node, 0);
+			newRange = blockExtendRange(newRange);
+
+			// "Let node list be a list of nodes, initially empty."
+			//
+			// "For each node current node contained in new range, append
+			// current node to node list if the last member of node list (if
+			// any) is not an ancestor of current node, and current node is
+			// editable but has no editable descendants."
+			var nodeList = collectContainedNodes(newRange, function(currentNode) {
+				return isEditable(currentNode)
+					&& !hasEditableDescendants(currentNode);
+			});
+
+			// "Outdent each node in node list."
+			for (var i = 0; i < nodeList.length; i++) {
+				outdentNode(nodeList[i]);
+			}
+
+			// "Abort these steps."
+			return;
+		}
+
 		// "If the child of start node with index start offset is a table,
 		// abort these steps."
 		if (isHtmlElement(startNode.childNodes[startOffset], "table")) {

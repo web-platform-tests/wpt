@@ -321,6 +321,24 @@ var tests = {
 		'<dl><dt>foo<dt>[]bar<dd>baz</dl>',
 		'<dl><dt>foo<dd>bar<dd>[]baz</dl>',
 
+		// Indented stuff with collapsed selection
+		'foo<blockquote>[]bar</blockquote>',
+		'foo<blockquote><blockquote>[]bar</blockquote></blockquote>',
+		'foo<blockquote><div>[]bar</div></blockquote>',
+		'foo<blockquote style="color: red">[]bar</blockquote>',
+
+		'foo<blockquote><blockquote><p>[]bar<p>baz</blockquote></blockquote>',
+		'foo<blockquote><div><p>[]bar<p>baz</div></blockquote>',
+		'foo<blockquote style="color: red"><p>[]bar<p>baz</blockquote>',
+
+		'foo<blockquote><p><b>[]bar</b><p>baz</blockquote>',
+		'foo<blockquote><p><strong>[]bar</strong><p>baz</blockquote>',
+		'foo<blockquote><p><span>[]bar</span><p>baz</blockquote>',
+
+		'foo<blockquote><ol><li>[]bar</ol></blockquote><p>extra',
+		'foo<blockquote>bar<ol><li>[]baz</ol>quz</blockquote><p>extra',
+		'foo<blockquote><ol><li>bar</li><ol><li>[]baz</ol><li>quz</ol></blockquote><p>extra',
+
 		// Invisible stuff with collapsed selection
 		'foo<span></span>[]bar',
 		'foo<span><span></span></span>[]bar',

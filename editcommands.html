@@ -2587,8 +2587,6 @@ section just for it. -->
     <li>Abort these steps.
   </ol>
 
-  <p class=XXX>blockquote?
-
   <!-- By this point, we're almost certainly going to merge something, and the
   only question is what. -->
   <li>Let <var title="">start node</var> equal <var title="">node</var> and let <var title="">start
@@ -2600,6 +2598,34 @@ section just for it. -->
 
   <p class=XXX>The node at index start offset &minus; 1 might be an invisible
   node.
+
+  <!--
+  At the beginning of an indented block, outdent it, similar to a list item.
+  -->
+  <li>If <var title="">offset</var> is zero, and <var title="">node</var> has an
+  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#ancestor-container title="ancestor container">ancestor container</a> that is both a <a href=#potential-indentation-element>potential indentation
+  element</a> and a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-descendant title=concept-tree-descendant>descendant</a> of <var title="">start node</var>:
+
+  <p class=XXX>This copy-pastes from the outdent command action.  I'm also not
+  totally sure it's correct.
+
+  <ol>
+    <li><a href=#block-extend>Block-extend</a> the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> whose <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> and
+    <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> are both (<var title="">node</var>, 0), and let <var title="">new range</var> be
+    the result.
+
+    <li>Let <var title="">node list</var> be a list of <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a>, initially empty.
+
+    <li>For each <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> <var title="">current node</var> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in <var title="">new
+    range</var>, append <var title="">current node</var> to <var title="">node list</var> if the
+    last member of <var title="">node list</var> (if any) is not an <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of
+    <var title="">current node</var>, and <var title="">current node</var> is
+    <a href=#editable>editable</a> but has no <a href=#editable>editable</a> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-descendant title=concept-tree-descendant>descendants</a>.
+
+    <li><a href=#outdent>Outdent</a> each <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> in <var title="">node list</var>.
+
+    <li>Abort these steps.
+  </ol>
 
   <!--
   This is to avoid stripping a line break from

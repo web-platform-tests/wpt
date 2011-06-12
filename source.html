@@ -2567,8 +2567,6 @@ section just for it. -->
     <li>Abort these steps.
   </ol>
 
-  <p class=XXX>blockquote?
-
   <!-- By this point, we're almost certainly going to merge something, and the
   only question is what. -->
   <li>Let <var>start node</var> equal <var>node</var> and let <var>start
@@ -2580,6 +2578,34 @@ section just for it. -->
 
   <p class=XXX>The node at index start offset &minus; 1 might be an invisible
   node.
+
+  <!--
+  At the beginning of an indented block, outdent it, similar to a list item.
+  -->
+  <li>If <var>offset</var> is zero, and <var>node</var> has an
+  [[ancestorcontainer]] that is both a <span>potential indentation
+  element</span> and a [[descendant]] of <var>start node</var>:
+
+  <p class=XXX>This copy-pastes from the outdent command action.  I'm also not
+  totally sure it's correct.
+
+  <ol>
+    <li><span>Block-extend</span> the [[range]] whose [[rangestart]] and
+    [[rangeend]] are both (<var>node</var>, 0), and let <var>new range</var> be
+    the result.
+
+    <li>Let <var>node list</var> be a list of [[nodes]], initially empty.
+
+    <li>For each [[node]] <var>current node</var> [[contained]] in <var>new
+    range</var>, append <var>current node</var> to <var>node list</var> if the
+    last member of <var>node list</var> (if any) is not an [[ancestor]] of
+    <var>current node</var>, and <var>current node</var> is
+    <span>editable</span> but has no <span>editable</span> [[descendants]].
+
+    <li><span>Outdent</span> each [[node]] in <var>node list</var>.
+
+    <li>Abort these steps.
+  </ol>
 
   <!--
   This is to avoid stripping a line break from

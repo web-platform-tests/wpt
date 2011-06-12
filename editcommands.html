@@ -2562,6 +2562,33 @@ section just for it. -->
   (<var title="">node</var>, <var title="">offset</var> &minus; 1) and <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a>
   (<var title="">node</var>, <var title="">offset</var>) and abort these steps.
 
+  <!--
+  If we're at the beginning of a list, we want to outdent the first list item.
+  This doesn't actually match anyone or anything.  Word 2007 and OpenOffice.org
+  3.2.1 Ubuntu just remove the list marker, which is weird and doesn't map well
+  to HTML.  Browsers tend to just merge with the preceding block, which isn't
+  expected.
+  -->
+  <li>If <var title="">node</var> is an <code class=external data-anolis-spec=html title="the li element"><a href=http://www.whatwg.org/html/#the-li-element>li</a></code> or <code class=external data-anolis-spec=html title="the dt element"><a href=http://www.whatwg.org/html/#the-dt-element>dt</a></code> or <code class=external data-anolis-spec=html title="the dd element"><a href=http://www.whatwg.org/html/#the-dd-element>dd</a></code> and is the first
+  <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>:
+
+  <ol>
+    <li>Let <var title="">items</var> be a list of all <code class=external data-anolis-spec=html title="the li element"><a href=http://www.whatwg.org/html/#the-li-element>li</a></code>s that are
+    <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestors</a> of <var title="">node</var>.
+
+    <li><a href=#normalize-sublists>Normalize sublists</a> of each <var title="">item</var> in
+    <var title="">items</var>.
+
+    <li><a href=#split-the-parent>Split the parent</a> of the one-<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> list consisting of
+    <var title="">node</var>.
+
+    <li><a href=#fix-disallowed-ancestors>Fix disallowed ancestors</a> of <var title="">node</var>.
+
+    <li>Abort these steps.
+  </ol>
+
+  <p class=XXX>blockquote?
+
   <!-- By this point, we're almost certainly going to merge something, and the
   only question is what. -->
   <li>Let <var title="">start node</var> equal <var title="">node</var> and let <var title="">start

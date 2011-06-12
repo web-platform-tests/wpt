@@ -3280,6 +3280,34 @@ function myExecCommand(command, showUI, value, range) {
 			return;
 		}
 
+		// "If node is an li or dt or dd and is the first child of its parent:"
+		if (isHtmlElement(node, ["li", "dt", "dd"])
+		&& node == node.parentNode.firstChild) {
+			// "Let items be a list of all lis that are ancestors of node."
+			//
+			// Remember, must be in tree order.
+			var items = [];
+			for (var ancestor = node.parentNode; ancestor; ancestor = ancestor.parentNode) {
+				if (isHtmlElement(ancestor, "li")) {
+					items.unshift(ancestor);
+				}
+			}
+
+			// "Normalize sublists of each item in items."
+			for (var i = 0; i < items.length; i++) {
+				normalizeSublists(items[i]);
+			}
+
+			// "Split the parent of the one-node list consisting of node."
+			splitParent([node]);
+
+			// "Fix disallowed ancestors of node."
+			fixDisallowedAncestors(node);
+
+			// "Abort these steps."
+			return;
+		}
+
 		// "Let start node equal node and let start offset equal offset."
 		var startNode = node;
 		var startOffset = offset;

@@ -2542,6 +2542,33 @@ section just for it. -->
   (<var>node</var>, <var>offset</var> &minus; 1) and [[rangeend]]
   (<var>node</var>, <var>offset</var>) and abort these steps.
 
+  <!--
+  If we're at the beginning of a list, we want to outdent the first list item.
+  This doesn't actually match anyone or anything.  Word 2007 and OpenOffice.org
+  3.2.1 Ubuntu just remove the list marker, which is weird and doesn't map well
+  to HTML.  Browsers tend to just merge with the preceding block, which isn't
+  expected.
+  -->
+  <li>If <var>node</var> is an [[li]] or [[dt]] or [[dd]] and is the first
+  [[child]] of its [[parent]]:
+
+  <ol>
+    <li>Let <var>items</var> be a list of all [[li]]s that are
+    [[ancestors]] of <var>node</var>.
+
+    <li><span>Normalize sublists</span> of each <var>item</var> in
+    <var>items</var>.
+
+    <li><span>Split the parent</span> of the one-[[node]] list consisting of
+    <var>node</var>.
+
+    <li><span>Fix disallowed ancestors</span> of <var>node</var>.
+
+    <li>Abort these steps.
+  </ol>
+
+  <p class=XXX>blockquote?
+
   <!-- By this point, we're almost certainly going to merge something, and the
   only question is what. -->
   <li>Let <var>start node</var> equal <var>node</var> and let <var>start

@@ -300,6 +300,7 @@ var tests = {
 		// Lists with collapsed selection
 		'foo<ol><li>[]bar<li>baz</ol>',
 		'foo<br><ol><li>[]bar<li>baz</ol>',
+		'foo<br><br><ol><li>[]bar<li>baz</ol>',
 		'<ol><li>foo<li>[]bar</ol>',
 		'<ol><li>foo<br><li>[]bar</ol>',
 		'<ol><li>foo<br><br><li>[]bar</ol>',
@@ -309,6 +310,10 @@ var tests = {
 		'<ol><li><p>foo<li>[]bar</ol>',
 		'<ol><li>foo<li><p>[]bar</ol>',
 		'<ol><li><p>foo<li><p>[]bar</ol>',
+
+		'<ol><li>foo<ul><li>[]bar</ul></ol>',
+		'foo<ol><ol><li>[]bar</ol></ol>',
+		'foo<div><ol><li>[]bar</ol></div>',
 
 		'foo<dl><dt>[]bar<dd>baz</dl>',
 		'foo<dl><dd>[]bar</dl>',

@@ -226,9 +226,13 @@ var tests = {
 	// IdentifierName to include ReservedWord; Identifier excludes it.
 	"delete": [
 		// Collapsed selection
-		'[]foo',
-		'<span>[]foo</span>',
-		'<p>[]foo</p>',
+		//
+		// These three commented-out test call Firefox 5.0a2 to blow up, not
+		// just throwing exceptions on the tests themselves but on many
+		// subsequent tests too.
+		//'[]foo',
+		//'<span>[]foo</span>',
+		//'<p>[]foo</p>',
 		'foo[]bar',
 		'<span>foo</span>{}<span>bar</span>',
 		'<span>foo[</span><span>]bar</span>',
@@ -266,7 +270,7 @@ var tests = {
 		'<a href=/>foo</a>[]bar',
 		'foo<a href=/>[]bar</a>',
 
-		// Tables
+		// Tables with collapsed selection
 		'foo<table><tr><td>[]bar</table>baz',
 		'foo<table><tr><td>bar</table>[]baz',
 		'<p>foo<table><tr><td>[]bar</table><p>baz',
@@ -293,7 +297,7 @@ var tests = {
 		'<table><tr><td>foo<hr><td>[]bar</table>',
 		'<table><tr><td>foo<hr><tr><td>[]bar</table>',
 
-		// Lists
+		// Lists with collapsed selection
 		'foo<ol><li>[]bar<li>baz</ol>',
 		'foo<br><ol><li>[]bar<li>baz</ol>',
 		'<ol><li>foo<li>[]bar</ol>',
@@ -312,7 +316,7 @@ var tests = {
 		'<dl><dt>foo<dt>[]bar<dd>baz</dl>',
 		'<dl><dt>foo<dd>bar<dd>[]baz</dl>',
 
-		// Invisible stuff
+		// Invisible stuff with collapsed selection
 		'foo<span></span>[]bar',
 		'foo<span><span></span></span>[]bar',
 		'foo<quasit></quasit>[]bar',

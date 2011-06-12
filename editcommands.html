@@ -2556,6 +2556,16 @@ section just for it. -->
     to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
 
     <!--
+    This is to avoid stripping a line break
+
+      foo<br><br><table><tr><td>[]bar</table>
+
+    and similarly for <hr>.  We should just do nothing here.
+    -->
+    <li>If the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">start node</var> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> <var title="">start
+    offset</var> is a <code class=external data-anolis-spec=html title="the table element"><a href=http://www.whatwg.org/html/#the-table-element>table</a></code>, abort these steps.
+
+    <!--
     Special case:
 
       <p>foo</p><br><p>[]bar</p>

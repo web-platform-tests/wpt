@@ -284,6 +284,11 @@ var tests = {
 		'<table><tr><td>foo<br><br><td>[]bar</table>',
 		'<table><tr><td>foo<br><br><tr><td>[]bar</table>',
 
+		'foo<hr><table><tr><td>[]bar</table>baz',
+		'foo<table><tr><td>bar<hr></table>[]baz',
+		'<table><tr><td>foo<hr><td>[]bar</table>',
+		'<table><tr><td>foo<hr><tr><td>[]bar</table>',
+
 		// Invisible stuff
 		'foo<span></span>[]bar',
 		'foo<span><span></span></span>[]bar',

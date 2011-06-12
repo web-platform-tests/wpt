@@ -2536,6 +2536,16 @@ section just for it. -->
     to its [[parent]].
 
     <!--
+    This is to avoid stripping a line break
+
+      foo<br><br><table><tr><td>[]bar</table>
+
+    and similarly for <hr>.  We should just do nothing here.
+    -->
+    <li>If the [[child]] of <var>start node</var> with [[index]] <var>start
+    offset</var> is a [[table]], abort these steps.
+
+    <!--
     Special case:
 
       <p>foo</p><br><p>[]bar</p>

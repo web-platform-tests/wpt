@@ -3292,6 +3292,12 @@ function myExecCommand(command, showUI, value, range) {
 				startNode = startNode.parentNode;
 			}
 
+			// "If the child of start node with index start offset is a table,
+			// abort these steps."
+			if (isHtmlElement(startNode.childNodes[startOffset], "table")) {
+				return;
+			}
+
 			// "If the child of start node with index start offset minus one is
 			// an hr, or the child is a br and the br's previousSibling is
 			// either a br or not an inline node, set node to start node and

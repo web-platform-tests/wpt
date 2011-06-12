@@ -321,6 +321,13 @@ var tests = {
 		'<dl><dt>foo<dt>[]bar<dd>baz</dl>',
 		'<dl><dt>foo<dd>bar<dd>[]baz</dl>',
 
+		'<ol><li>foo</ol>[]bar',
+		'<ol><li>foo<br></ol>[]bar',
+		'<ol><li>foo<br><br></ol>[]bar',
+
+		'<ol><li><br></ol>[]bar',
+		'<ol><li>foo<li><br></ol>[]bar',
+
 		// Indented stuff with collapsed selection
 		'foo<blockquote>[]bar</blockquote>',
 		'foo<blockquote><blockquote>[]bar</blockquote></blockquote>',

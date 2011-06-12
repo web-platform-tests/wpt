@@ -2601,6 +2601,7 @@ section just for it. -->
 
   <!--
   At the beginning of an indented block, outdent it, similar to a list item.
+  Browsers don't do this, word processors do.
   -->
   <li>If <var title="">offset</var> is zero, and <var title="">node</var> has an
   <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#ancestor-container title="ancestor container">ancestor container</a> that is both a <a href=#potential-indentation-element>potential indentation
@@ -2696,6 +2697,11 @@ section just for it. -->
   Note that this behavior is quite different from what happens if you actually
   select the linebreak in between the two lines.  In that case, the blocks are
   merged as normal.
+
+  Also note that hitting backspace twice will merge with the previous item.
+  This matches OO.org, but Word will outdent the item on subsequent backspaces.
+  Word's behavior doesn't fit well with the way lists work in HTML, and we
+  probably don't want it.
   -->
   <li>If the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">start node</var> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> <var title="">start
   offset</var> is an <code class=external data-anolis-spec=html title="the li element"><a href=http://www.whatwg.org/html/#the-li-element>li</a></code> or <code class=external data-anolis-spec=html title="the dt element"><a href=http://www.whatwg.org/html/#the-dt-element>dt</a></code> or <code class=external data-anolis-spec=html title="the dd element"><a href=http://www.whatwg.org/html/#the-dd-element>dd</a></code>, and that <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>'s
@@ -2740,8 +2746,6 @@ section just for it. -->
   <li><a href=#delete-the-contents>Delete the contents</a> of the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a>
   (<var title="">start node</var>, <var title="">start offset</var>) and <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a>
   (<var title="">node</var>, <var title="">offset</var>).
-
-  <li class=XXX>Still more cases to handle.
 </ol>
 
 

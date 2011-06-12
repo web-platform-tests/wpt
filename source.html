@@ -2581,6 +2581,7 @@ section just for it. -->
 
   <!--
   At the beginning of an indented block, outdent it, similar to a list item.
+  Browsers don't do this, word processors do.
   -->
   <li>If <var>offset</var> is zero, and <var>node</var> has an
   [[ancestorcontainer]] that is both a <span>potential indentation
@@ -2676,6 +2677,11 @@ section just for it. -->
   Note that this behavior is quite different from what happens if you actually
   select the linebreak in between the two lines.  In that case, the blocks are
   merged as normal.
+
+  Also note that hitting backspace twice will merge with the previous item.
+  This matches OO.org, but Word will outdent the item on subsequent backspaces.
+  Word's behavior doesn't fit well with the way lists work in HTML, and we
+  probably don't want it.
   -->
   <li>If the [[child]] of <var>start node</var> with [[index]] <var>start
   offset</var> is an [[li]] or [[dt]] or [[dd]], and that [[child]]'s
@@ -2720,8 +2726,6 @@ section just for it. -->
   <li><span>Delete the contents</span> of the [[range]] with [[rangestart]]
   (<var>start node</var>, <var>start offset</var>) and [[rangeend]]
   (<var>node</var>, <var>offset</var>).
-
-  <li class=XXX>Still more cases to handle.
 </ol>
 
 

@@ -67,6 +67,10 @@ body > div > table > tbody > tr > th:last-child {
 	background: white;
 	border-bottom: 2px solid gray;
 }
+body {
+	/* So the toolbar doesn't block it */
+	margin-top: 2em;
+}
 /* For easy visibility of nesting */
 ol ol { list-style-type: lower-alpha }
 ol ol ol { list-style-type: lower-roman }

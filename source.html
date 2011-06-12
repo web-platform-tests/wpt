@@ -2495,8 +2495,9 @@ section just for it. -->
     then subtract one from <var>offset</var>.
 
     <li>Otherwise, if <var>offset</var> is zero and <var>node</var> is not a
-    <span>prohibited paragraph child</span>, set <var>offset</var> to the
-    [[index]] of <var>node</var>, then set <var>node</var> to its [[parent]].
+    <span>prohibited paragraph child</span>, or if <var>node</var> is an
+    <span>invisible node</span>, set <var>offset</var> to the [[index]] of
+    <var>node</var>, then set <var>node</var> to its [[parent]].
 
     <li>Otherwise, if <var>node</var> has a [[child]] with [[index]]
     <var>offset</var> &minus; 1 and that [[child]] is not a <span>prohibited
@@ -2507,11 +2508,32 @@ section just for it. -->
     <li>Otherwise, break from this loop.
   </ol>
 
+  <!--
+  At this point, node cannot be an invisible node.  There are three cases:
+
+  1) offset is zero and node is a prohibited paragraph child.  Then we'll
+  usually merge with the previous block if one exists.
+
+  2) offset is not zero, node is not a prohibited paragraph child, and node
+  does not have a child with index offset - 1.  The only way this is possible
+  is if node has a length greater than zero but no children, which implies it's
+  a text or comment or PI.  Comments and PIs are invisible nodes, so it must be
+  a text node.  We delete the previous character.
+
+  3) offset is not zero, and the child of node with index offset - 1 is a
+  prohibited paragraph child or a br or an img.  Then we'll usually merge the
+  offsetth child of node with the last descendant of the offset - 1st.
+  -->
+
   <li>If <var>node</var> is a [[text]] node and <var>offset</var> is not zero,
   call [[selcollapse|<var>node</var>, <var>offset</var>]] on the [[selection]].
   Then <span>delete the contents</span> of the [[range]] with [[rangestart]]
   (<var>node</var>, <var>offset</var> &minus; 1) and [[rangeend]]
   (<var>node</var>, <var>offset</var>) and abort these steps.
+
+  <li>If <var>node</var> is not a <span>prohibited paragraph child</span>,
+  abort these steps.
+  <!-- At the time of this writing, this should be impossible. -->
 
   <li>If <var>node</var> has a [[child]] with [[index]] <var>offset</var>
   &minus; 1 and that [[child]] is a [[br]] or [[hr]] or [[img]], call
@@ -2520,126 +2542,80 @@ section just for it. -->
   (<var>node</var>, <var>offset</var> &minus; 1) and [[rangeend]]
   (<var>node</var>, <var>offset</var>) and abort these steps.
 
-  <li>If <var>node</var> is a <span>prohibited paragraph child</span> and
-  <var>offset</var> is zero:
-  <!-- Then we'll typically want to merge backward into the previous block. -->
+  <!-- By this point, we're almost certainly going to merge something, and the
+  only question is what. -->
+  <li>Let <var>start node</var> equal <var>node</var> and let <var>start
+  offset</var> equal <var>offset</var>.
 
-  <ol>
-    <li>Call [[selcollapse|<var>node</var>, <var>offset</var>]] on the
-    [[selection]].
+  <li>While <var>start offset</var> is zero, set <var>start offset</var> to the
+  [[index]] of <var>start node</var> and then set <var>start node</var> to its
+  [[parent]].
 
-    <li>Let <var>start node</var> equal <var>node</var> and let <var>start
-    offset</var> equal <var>offset</var>.
+  <!--
+  This is to avoid stripping a line break from
 
-    <li>While <var>start offset</var> is zero, set <var>start offset</var> to
-    the [[index]] of <var>start node</var> and then set <var>start node</var>
-    to its [[parent]].
+    foo<br><br><table><tr><td>[]bar</table>
 
-    <!--
-    This is to avoid stripping a line break
+  and similarly for <hr>.  We should just do nothing here.
+  -->
+  <li>If the [[child]] of <var>start node</var> with [[index]] <var>start
+  offset</var> is a [[table]], abort these steps.
 
-      foo<br><br><table><tr><td>[]bar</table>
-
-    and similarly for <hr>.  We should just do nothing here.
-    -->
-    <li>If the [[child]] of <var>start node</var> with [[index]] <var>start
-    offset</var> is a [[table]], abort these steps.
-
-    <!--
-    Special case:
-
-      <p>foo</p><br><p>[]bar</p>
-      -> <p>foo</p><p>[]bar</p>
-
-    and likewise for <hr>.  But with <img> we merge like in other cases:
-
-      <p>foo</p><img><p>[]bar</p>
-      -> <p>foo</p><img>[]bar.
-
-    Browsers don't do this consistently.  Firefox 5.0a2 doesn't seem to do it
-    at all.
-    -->
-    <li>If the [[child]] of <var>start node</var> with [[index]] <var>start
-    offset</var> minus one is an [[hr]], or the [[child]] is a [[br]] and the
-    [[br]]'s [[previoussibling]] is either a [[br]] or not an <span>inline
-    node</span>, set <var>node</var> to <var>start node</var> and
-    <var>offset</var> to <var>start offset</var>, then subtract one from
-    <var>start offset</var>.
-
-    <!--
-    Another special case:
-
-      <table>...</table><p>[]foo</p>
-      -> {<table>...</table>}<p>foo</p>
-
-    same as happens with <table>...</table>[]foo (see below).
-    -->
-    <li>Otherwise, if the [[child]] of <var>start node</var> with [[index]]
-    <var>start offset</var> minus one is a [[table]], call
-    [[selcollapse|<var>start node</var>, <var>start offset</var> &minus; 1]] on
-    the [[contextobject]]'s [[selection]], then call [[extend|<var>start
-    node</var>, <var>start offset</var>]] on the [[contextobject]]'s
-    [[selection]], then abort these steps.
-
-    <!--
-    Regular case: for <p>foo</p><p>[]bar</p>, we delete <p>foo{</p><p>}bar</p>.
-    This will also happen if the preceding element is a span or something, but
-    that doesn't hurt.
-    -->
-    <li>Otherwise, set <var>start node</var> to its [[child]] with [[index]]
-    <var>start offset</var> minus one, then set <var>start offset</var> to the
-    [[nodelength]] of <var>start node</var>.
-
-    <li>While <var>start node</var> is a <span>prohibited paragraph
-    child</span> whose [[lastchild]] is a <span>prohibited paragraph
-    child</span>, and <var>start offset</var> is the [[nodelength]] of
-    <var>start node</var>, set <var>start node</var> to its [[lastchild]] and
-    then set <var>start offset</var> to the [[nodelength]] of <var>start
-    node</var>.
-
-    <li><span>Delete the contents</span> of the [[range]] with [[rangestart]]
-    (<var>start node</var>, <var>start offset</var>) and [[rangeend]]
-    (<var>node</var>, <var>offset</var>).
-
-    <li>Abort these steps.
-  </ol>
-
-  <li>If <var>node</var> has a [[child]] with [[index]] <var>offset</var>
-  &minus; 1, and that [[child]] is a [[table]]:
+  <li>If <var>start node</var> has a [[child]] with [[index]] <var>start
+  offset</var> &minus; 1, and that [[child]] is a [[table]]:
   <!-- If you try backspacing into a table, select it.  This doesn't match any
   browser; it matches the recommendation of the "behavior when typing in
   contentEditable elements" document.  The idea is that then you can delete it
   with a second backspace. -->
 
   <ol>
-    <li>Call [[selcollapse|<var>node</var>, <var>offset</var> &minus; 1]] on
-    the [[contextobject]]'s [[selection]].
+    <li>Call [[selcollapse|<var>start node</var>, <var>start offset</var>
+    &minus; 1]] on the [[contextobject]]'s [[selection]].
 
-    <li>Call [[extend|<var>node</var>, <var>offset</var>]] on the
+    <li>Call [[extend|<var>start node</var>, <var>start offset</var>]] on the
     [[contextobject]]'s [[selection]].
 
     <li>Abort these steps.
   </ol>
 
-  <li>If <var>node</var> has a [[child]] with [[index]] <var>offset</var>
-  &minus; 1, and that [[child]] is a <span>prohibited paragraph child</span>:
+  <li>If <var>offset</var> is zero; and either the [[child]] of <var>start
+  node</var> with [[index]] <var>start offset</var> minus one is an [[hr]], or
+  the [[child]] is a [[br]] whose [[previoussibling]] is either a [[br]] or not
+  an <span>inline node</span>:
 
+  <!--
+  Special case:
+
+    <p>foo</p><br><p>[]bar</p>
+    -> <p>foo</p><p>[]bar</p>
+
+  and likewise for <hr>.  But with <img> we merge like in other cases:
+
+    <p>foo</p><img><p>[]bar</p>
+    -> <p>foo</p><img>[]bar.
+
+  Browsers don't do this consistently.  Firefox 5.0a2 doesn't seem to do it at
+  all.
+  -->
   <ol>
-    <li>Let <var>start node</var> be the [[child]] of <var>node</var> with
-    [[index]] <var>offset</var> &minus; 1.
-
-    <li>While <var>start node</var>'s [[lastchild]] is a <span>prohibited
-    paragraph child</span>, set <var>start node</var> to its [[lastchild]].
-
-    <li>Let <var>start offset</var> be the [[nodelength]] of <var>start
-    node</var>.
+    <li>Call [[selcollapse|<var>node</var>, <var>offset</var>]] on the
+    [[selection]].
 
     <li><span>Delete the contents</span> of the [[range]] with [[rangestart]]
-    (<var>start node</var>, <var>start offset</var>) and [[rangeend]]
-    (<var>node</var>, <var>offset</var>).
+    (<var>start node</var>, <var>start offset</var> &minus; 1) and [[rangeend]]
+    (<var>start node</var>, <var>start offset</var>).
 
     <li>Abort these steps.
   </ol>
+
+  <!-- General block-merging case. -->
+  <li>While <var>start node</var> has a [[child]] with [[index]] <var>start
+  offset</var> minus one, set <var>start node</var> to that [[child]], then set
+  <var>start offset</var> to the [[nodelength]] of <var>start node</var>.
+
+  <li><span>Delete the contents</span> of the [[range]] with [[rangestart]]
+  (<var>start node</var>, <var>start offset</var>) and [[rangeend]]
+  (<var>node</var>, <var>offset</var>).
 
   <li class=XXX>Lots more cases to handle.
 </ol>

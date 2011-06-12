@@ -3226,10 +3226,11 @@ function myExecCommand(command, showUI, value, range) {
 				offset--;
 
 			// "Otherwise, if offset is zero and node is not a prohibited
-			// paragraph child, set offset to the index of node, then set node
-			// to its parent."
-			} else if (offset == 0
-			&& !isProhibitedParagraphChild(node)) {
+			// paragraph child, or if node is an invisible node, set offset to
+			// the index of node, then set node to its parent."
+			} else if ((offset == 0
+			&& !isProhibitedParagraphChild(node))
+			|| isInvisibleNode(node)) {
 				offset = getNodeIndex(node);
 				node = node.parentNode;
 
@@ -3261,6 +3262,11 @@ function myExecCommand(command, showUI, value, range) {
 			return;
 		}
 
+		// "If node is not a prohibited paragraph child, abort these steps."
+		if (!isProhibitedParagraphChild(node)) {
+			return;
+		}
+
 		// "If node has a child with index offset − 1 and that child is a br or
 		// hr or img, call collapse(node, offset) on the Selection. Then delete
 		// the contents of the range with start (node, offset − 1) and end
@@ -3274,122 +3280,77 @@ function myExecCommand(command, showUI, value, range) {
 			return;
 		}
 
-		// "If node is a prohibited paragraph child and offset is zero:"
-		if (isProhibitedParagraphChild(node)
-		&& offset == 0) {
-			// "Call collapse(node, offset) on the Selection."
-			range.setStart(node, offset);
-			range.setEnd(node, offset);
+		// "Let start node equal node and let start offset equal offset."
+		var startNode = node;
+		var startOffset = offset;
 
-			// "Let start node equal node and let start offset equal offset."
-			var startNode = node;
-			var startOffset = offset;
+		// "While start offset is zero, set start offset to the index of start
+		// node and then set start node to its parent."
+		while (startOffset == 0) {
+			startOffset = getNodeIndex(startNode);
+			startNode = startNode.parentNode;
+		}
 
-			// "While start offset is zero, set start offset to the index of
-			// start node and then set start node to its parent."
-			while (startOffset == 0) {
-				startOffset = getNodeIndex(startNode);
-				startNode = startNode.parentNode;
-			}
+		// "If the child of start node with index start offset is a table,
+		// abort these steps."
+		if (isHtmlElement(startNode.childNodes[startOffset], "table")) {
+			return;
+		}
 
-			// "If the child of start node with index start offset is a table,
-			// abort these steps."
-			if (isHtmlElement(startNode.childNodes[startOffset], "table")) {
-				return;
-			}
+		// "If start node has a child with index start offset − 1, and that
+		// child is a table:"
+		if (0 <= startOffset - 1
+		&& startOffset - 1 < startNode.childNodes.length
+		&& isHtmlElement(startNode.childNodes[startOffset - 1], "table")) {
+			// "Call collapse(start node, start offset − 1) on the context
+			// object's Selection."
+			range.setStart(startNode, startOffset - 1);
 
-			// "If the child of start node with index start offset minus one is
-			// an hr, or the child is a br and the br's previousSibling is
-			// either a br or not an inline node, set node to start node and
-			// offset to start offset, then subtract one from start offset."
-			if (isHtmlElement(startNode.childNodes[startOffset - 1], "hr")
+			// "Call extend(start node, start offset) on the context object's
+			// Selection."
+			range.setEnd(startNode, startOffset);
+
+			// "Abort these steps."
+			return;
+		}
+
+		// "If offset is zero; and either the child of start node with index
+		// start offset minus one is an hr, or the child is a br whose
+		// previousSibling is either a br or not an inline node:"
+		if (offset == 0
+		&& (isHtmlElement(startNode.childNodes[startOffset - 1], "hr")
 			|| (
 				isHtmlElement(startNode.childNodes[startOffset - 1], "br")
 				&& (
 					isHtmlElement(startNode.childNodes[startOffset - 1].previousSibling, "br")
 					|| !isInlineNode(startNode.childNodes[startOffset - 1].previousSibling)
 				)
-			)) {
-				node = startNode;
-				offset = startOffset;
-				startOffset--;
-
-			// "Otherwise, if the child of start node with index start offset
-			// minus one is a table, call collapse(start node, start offset −
-			// 1) on the context object's Selection, then call extend(start
-			// node, start offset) on the context object's Selection, then
-			// abort these steps."
-			} else if (isHtmlElement(startNode.childNodes[startOffset - 1], "table")) {
-				range.setStart(startNode, startOffset - 1);
-				range.setEnd(startNode, startOffset);
-				return;
-
-			// "Otherwise, set start node to its child with index start offset
-			// minus one, then set start offset to the length of start node."
-			} else {
-				startNode = startNode.childNodes[startOffset - 1];
-				startOffset = getNodeLength(startNode);
-			}
-
-			// "While start node is a prohibited paragraph child whose
-			// lastChild is a prohibited paragraph child, and start offset is
-			// the length of start node, set start node to its lastChild and
-			// then set start offset to the length of start node."
-			while (isProhibitedParagraphChild(startNode)
-			&& isProhibitedParagraphChild(startNode.lastChild)
-			&& startOffset == getNodeLength(startNode)) {
-				startNode = startNode.lastChild;
-				startOffset = getNodeLength(startNode);
-			}
-
-			// "Delete the contents of the range with start (start node, start
-			// offset) and end (node, offset)."
-			deleteContents(startNode, startOffset, node, offset);
-
-			// "Abort these steps."
-			return;
-		}
-
-		// "If node has a child with index offset − 1, and that child is a
-		// table:"
-		if (0 <= offset - 1
-		&& offset - 1 < node.childNodes.length
-		&& isHtmlElement(node.childNodes[offset - 1], "table")) {
-			// "Call collapse(node, offset − 1) on the context object's
-			// Selection."
-			range.setStart(node, offset - 1);
-
-			// "Call extend(node, offset) on the context object's Selection."
+			)
+		)) {
+			// "Call collapse(node, offset) on the Selection."
+			range.setStart(node, offset);
 			range.setEnd(node, offset);
 
-			// "Abort these steps."
-			return;
-		}
-
-		// "If node has a child with index offset − 1, and that child is a
-		// prohibited paragraph child:"
-		if (0 <= offset - 1
-		&& offset - 1 < node.childNodes.length
-		&& isProhibitedParagraphChild(node.childNodes[offset - 1])) {
-			// "Let start node be the child of node with index offset − 1."
-			var startNode = node.childNodes[offset - 1];
-
-			// "While start node's lastChild is a prohibited paragraph child,
-			// set start node to its lastChild."
-			while (isProhibitedParagraphChild(startNode.lastChild)) {
-				startNode = startNode.lastChild;
-			}
-
-			// "Let start offset be the length of start node."
-			var startOffset = getNodeLength(startNode);
-
 			// "Delete the contents of the range with start (start node, start
-			// offset) and end (node, offset)."
-			deleteContents(startNode, startOffset, node, offset);
+			// offset − 1) and end (start node, start offset)."
+			deleteContents(startNode, startOffset - 1, startNode, startOffset);
 
 			// "Abort these steps."
 			return;
 		}
+
+		// "While start node has a child with index start offset minus one, set
+		// start node to that child, then set start offset to the length of
+		// start node."
+		while (0 <= startOffset - 1
+		&& startOffset - 1 < startNode.childNodes.length) {
+			startNode = startNode.childNodes[startOffset - 1];
+			startOffset = getNodeLength(startNode);
+		}
+
+		// "Delete the contents of the range with start (start node, start
+		// offset) and end (node, offset)."
+		deleteContents(startNode, startOffset, node, offset);
 		break;
 
 		case "fontname":

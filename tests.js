@@ -226,6 +226,9 @@ var tests = {
 	// IdentifierName to include ReservedWord; Identifier excludes it.
 	"delete": [
 		// Collapsed selection
+		'[]foo',
+		'<span>[]foo</span>',
+		'<p>[]foo</p>',
 		'foo[]bar',
 		'<span>foo</span>{}<span>bar</span>',
 		'<span>foo[</span><span>]bar</span>',
@@ -263,6 +266,7 @@ var tests = {
 		'<a href=/>foo</a>[]bar',
 		'foo<a href=/>[]bar</a>',
 
+		// Tables
 		'foo<table><tr><td>[]bar</table>baz',
 		'foo<table><tr><td>bar</table>[]baz',
 		'<p>foo<table><tr><td>[]bar</table><p>baz',
@@ -288,6 +292,25 @@ var tests = {
 		'foo<table><tr><td>bar<hr></table>[]baz',
 		'<table><tr><td>foo<hr><td>[]bar</table>',
 		'<table><tr><td>foo<hr><tr><td>[]bar</table>',
+
+		// Lists
+		'foo<ol><li>[]bar<li>baz</ol>',
+		'foo<br><ol><li>[]bar<li>baz</ol>',
+		'<ol><li>foo<li>[]bar</ol>',
+		'<ol><li>foo<br><li>[]bar</ol>',
+		'<ol><li>foo<br><br><li>[]bar</ol>',
+		'<ol><li>foo<li>[]bar<br>baz</ol>',
+		'<ol><li>foo<br>bar<li>[]baz</ol>',
+
+		'<ol><li><p>foo<li>[]bar</ol>',
+		'<ol><li>foo<li><p>[]bar</ol>',
+		'<ol><li><p>foo<li><p>[]bar</ol>',
+
+		'foo<dl><dt>[]bar<dd>baz</dl>',
+		'foo<dl><dd>[]bar</dl>',
+		'<dl><dt>foo<dd>[]bar</dl>',
+		'<dl><dt>foo<dt>[]bar<dd>baz</dl>',
+		'<dl><dt>foo<dd>bar<dd>[]baz</dl>',
 
 		// Invisible stuff
 		'foo<span></span>[]bar',
@@ -376,6 +399,14 @@ var tests = {
 
 		'<ol><li>fo[o</ol><ol><li>b]ar</ol>',
 		'<ol><li>fo[o</ol><ul><li>b]ar</ul>',
+
+		'foo[<ol><li>]bar</ol>',
+		'<ol><li>foo[<li>]bar</ol>',
+		'foo[<dl><dt>]bar<dd>baz</dl>',
+		'foo[<dl><dd>]bar</dl>',
+		'<dl><dt>foo[<dd>]bar</dl>',
+		'<dl><dt>foo[<dt>]bar<dd>baz</dl>',
+		'<dl><dt>foo<dd>bar[<dd>]baz</dl>',
 	],
 	fontname: [
 		'foo[]bar',

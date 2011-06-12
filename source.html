@@ -2531,9 +2531,9 @@ section just for it. -->
   (<var>node</var>, <var>offset</var> &minus; 1) and [[rangeend]]
   (<var>node</var>, <var>offset</var>) and abort these steps.
 
+  <!-- At the time of this writing, this should be impossible. -->
   <li>If <var>node</var> is not a <span>prohibited paragraph child</span>,
   abort these steps.
-  <!-- At the time of this writing, this should be impossible. -->
 
   <li>If <var>node</var> has a [[child]] with [[index]] <var>offset</var>
   &minus; 1 and that [[child]] is a [[br]] or [[hr]] or [[img]], call
@@ -2551,6 +2551,9 @@ section just for it. -->
   [[index]] of <var>start node</var> and then set <var>start node</var> to its
   [[parent]].
 
+  <p class=XXX>The node at index start offset &minus; 1 might be an invisible
+  node.
+
   <!--
   This is to avoid stripping a line break from
 
@@ -2561,12 +2564,14 @@ section just for it. -->
   <li>If the [[child]] of <var>start node</var> with [[index]] <var>start
   offset</var> is a [[table]], abort these steps.
 
-  <li>If <var>start node</var> has a [[child]] with [[index]] <var>start
-  offset</var> &minus; 1, and that [[child]] is a [[table]]:
-  <!-- If you try backspacing into a table, select it.  This doesn't match any
+  <!--
+  If you try backspacing into a table, select it.  This doesn't match any
   browser; it matches the recommendation of the "behavior when typing in
   contentEditable elements" document.  The idea is that then you can delete it
-  with a second backspace. -->
+  with a second backspace.
+  -->
+  <li>If <var>start node</var> has a [[child]] with [[index]] <var>start
+  offset</var> &minus; 1, and that [[child]] is a [[table]]:
 
   <ol>
     <li>Call [[selcollapse|<var>start node</var>, <var>start offset</var>
@@ -2577,11 +2582,6 @@ section just for it. -->
 
     <li>Abort these steps.
   </ol>
-
-  <li>If <var>offset</var> is zero; and either the [[child]] of <var>start
-  node</var> with [[index]] <var>start offset</var> minus one is an [[hr]], or
-  the [[child]] is a [[br]] whose [[previoussibling]] is either a [[br]] or not
-  an <span>inline node</span>:
 
   <!--
   Special case:
@@ -2597,6 +2597,11 @@ section just for it. -->
   Browsers don't do this consistently.  Firefox 5.0a2 doesn't seem to do it at
   all.
   -->
+  <li>If <var>offset</var> is zero; and either the [[child]] of <var>start
+  node</var> with [[index]] <var>start offset</var> minus one is an [[hr]], or
+  the [[child]] is a [[br]] whose [[previoussibling]] is either a [[br]] or not
+  an <span>inline node</span>:
+
   <ol>
     <li>Call [[selcollapse|<var>node</var>, <var>offset</var>]] on the
     [[selection]].
@@ -2608,16 +2613,62 @@ section just for it. -->
     <li>Abort these steps.
   </ol>
 
+  <!--
+  If you try backspacing out of a list item, merge it with the previous item,
+  but add a line break.  Then you have to backspace again if you really want
+  them to be on the same line.  This matches Word 2007 and OpenOffice.org 3.2.1
+  Ubuntu, and also matches "behavior when typing in contentEditable elements",
+  but does not match any browser.
+
+  Note that this behavior is quite different from what happens if you actually
+  select the linebreak in between the two lines.  In that case, the blocks are
+  merged as normal.
+  -->
+  <li>If the [[child]] of <var>start node</var> with [[index]] <var>start
+  offset</var> is an [[li]] or [[dt]] or [[dd]], and that [[child]]'s
+  [[firstchild]] is an <span>inline node</span>, and <var>start offset</var> is
+  not zero:
+
+  <ol>
+    <li>Let <var>previous item</var> be the [[child]] of <var>start node</var>
+    with [[index]] <var>start offset</var> minus one.
+
+    <!-- If the last child is already a br, we only need to append one extra
+    br.  Otherwise we need to append two, since the first will do nothing. -->
+    <li>If <var>previous item</var>'s [[lastchild]] is an <span>inline
+    node</span> other than a [[br]], call [[createelement|"br"]] on the
+    [[contextobject]] and append the result as the last [[child]] of
+    <var>previous item</var>.
+
+    <li>If <var>previous item</var>'s [[lastchild]] is an <span>inline
+    node</span>, call [[createelement|"br"]] on the [[contextobject]] and
+    append the result as the last [[child]] of <var>previous item</var>.
+  </ol>
+
+  <!--
+  When merging adjacent list items, make sure we only merge the items
+  themselves, not any block children.  We want <li><p>foo<li><p>bar to become
+  <li><p>foo<p>bar, not <li><p>foo<br>bar or <li><p>foobar.
+  -->
+  <li>If the [[child]] of <var>start node</var> with [[index]] <var>start
+  offset</var> is an [[li]] or [[dt]] or [[dd]], and its [[previoussibling]] is
+  also an [[li]] or [[dt]] or [[dd]], set <var>start node</var> to its
+  [[child]] with [[index]] <var>start offset</var> &minus; 1, then set
+  <var>start offset</var> to <var>start node</var>'s [[nodelength]], then set
+  <var>node</var> to <var>start node</var>'s [[nextsibling]], then set
+  <var>offset</var> to 0.
+
   <!-- General block-merging case. -->
-  <li>While <var>start node</var> has a [[child]] with [[index]] <var>start
-  offset</var> minus one, set <var>start node</var> to that [[child]], then set
-  <var>start offset</var> to the [[nodelength]] of <var>start node</var>.
+  <li>Otherwise, while <var>start node</var> has a [[child]] with [[index]]
+  <var>start offset</var> minus one, set <var>start node</var> to that
+  [[child]], then set <var>start offset</var> to the [[nodelength]] of
+  <var>start node</var>.
 
   <li><span>Delete the contents</span> of the [[range]] with [[rangestart]]
   (<var>start node</var>, <var>start offset</var>) and [[rangeend]]
   (<var>node</var>, <var>offset</var>).
 
-  <li class=XXX>Lots more cases to handle.
+  <li class=XXX>Still more cases to handle.
 </ol>
 
 

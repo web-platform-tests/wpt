@@ -3339,13 +3339,53 @@ function myExecCommand(command, showUI, value, range) {
 			return;
 		}
 
-		// "While start node has a child with index start offset minus one, set
-		// start node to that child, then set start offset to the length of
-		// start node."
-		while (0 <= startOffset - 1
-		&& startOffset - 1 < startNode.childNodes.length) {
+		// "If the child of start node with index start offset is an li or dt
+		// or dd, and that child's firstChild is an inline node, and start
+		// offset is not zero:"
+		if (isHtmlElement(startNode.childNodes[startOffset], ["li", "dt", "dd"])
+		&& isInlineNode(startNode.childNodes[startOffset].firstChild)
+		&& startOffset != 0) {
+			// "Let previous item be the child of start node with index start
+			// offset minus one."
+			var previousItem = startNode.childNodes[startOffset - 1];
+
+			// "If previous item's lastChild is an inline node other than a br,
+			// call createElement("br") on the context object and append the
+			// result as the last child of previous item."
+			if (isInlineNode(previousItem.lastChild)
+			&& !isHtmlElement(previousItem.lastChild, "br")) {
+				previousItem.appendChild(document.createElement("br"));
+			}
+
+			// "If previous item's lastChild is an inline node, call
+			// createElement("br") on the context object and append the result
+			// as the last child of previous item."
+			if (isInlineNode(previousItem.lastChild)) {
+				previousItem.appendChild(document.createElement("br"));
+			}
+		}
+
+		// "If the child of start node with index start offset is an li or dt
+		// or dd, and its previousSibling is also an li or dt or dd, set start
+		// node to its child with index start offset − 1, then set start offset
+		// to start node's length, then set node to start node's nextSibling,
+		// then set offset to 0."
+		if (isHtmlElement(startNode.childNodes[startOffset], ["li", "dt", "dd"])
+		&& isHtmlElement(startNode.childNodes[startOffset - 1], ["li", "dt", "dd"])) {
 			startNode = startNode.childNodes[startOffset - 1];
 			startOffset = getNodeLength(startNode);
+			node = startNode.nextSibling;
+			offset = 0;
+
+		// "Otherwise, while start node has a child with index start offset
+		// minus one, set start node to that child, then set start offset to
+		// the length of start node."
+		} else {
+			while (0 <= startOffset - 1
+			&& startOffset - 1 < startNode.childNodes.length) {
+				startNode = startNode.childNodes[startOffset - 1];
+				startOffset = getNodeLength(startNode);
+			}
 		}
 
 		// "Delete the contents of the range with start (start node, start

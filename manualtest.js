@@ -10,7 +10,17 @@ function clearCachedResults() {
 	}
 }
 
+var numManualTests = 0;
+
 function runTests() {
+	// We don't ask the user to hit a key on all tests, so make sure not to
+	// claim more tests are going to be run than actually are.
+	for (var i = 0; i < tests.length; i++) {
+		if (localStorage.getItem(keyname + "test-" + tests[i]) === null) {
+			numManualTests++;
+		}
+	}
+
 	testsRunning = true;
 	var runTestsButton = document.querySelector("#tests input[type=button]");
 	runTestsButton.parentNode.removeChild(runTestsButton);
@@ -31,10 +41,12 @@ function addTest() {
 	doInputCell(tr, test);
 	doSpecCell(tr, test, command, false);
 	if (localStorage.getItem(keyname + "test-" + test) !== null) {
-		// Yay, I get to cheat
+		// Yay, I get to cheat.  Remove the overlay div so the user doesn't
+		// keep hitting the key, in case it takes a while.
 		var browserCell = document.createElement("td");
 		tr.appendChild(browserCell);
 		browserCell.innerHTML = localStorage[keyname + "test-" + test];
+		document.getElementById("overlay").style.display = "";
 		doSameCell(tr);
 		runNextTest(test);
 	} else {
@@ -49,7 +61,7 @@ function runNextTest(test) {
 	doTearDown();
 	var input = document.querySelector("#tests label input");
 	if (!testsRunning) {
-		document.getElementById("overlay").style.display = "none";
+		document.getElementById("overlay").style.display = "";
 		return;
 	}
 	var idx = tests.indexOf(test);
@@ -58,7 +70,7 @@ function runNextTest(test) {
 		document.body.textContent = "Duplicate test: " + test;
 	}
 	if (idx + 1 >= tests.length) {
-		document.getElementById("overlay").style.display = "none";
+		document.getElementById("overlay").style.display = "";
 		testsRunning = false;
 		input.value = "";
 		return;
@@ -90,7 +102,8 @@ function doBrowserCell(tr, test, callback) {
 			document.getElementById("testcount").style.display = "none";
 		} else {
 			document.getElementById("testcount").style.display = "";
-			document.querySelector("#testcount > span").textContent = tests.length - idx;
+			document.querySelector("#testcount > span").textContent = numManualTests;
+			numManualTests--;
 		}
 		document.getElementById("overlay").style.display = "block";
 		testDiv.focus();

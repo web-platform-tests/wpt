@@ -3285,20 +3285,12 @@ function myExecCommand(command, showUI, value, range) {
 			var startNode = node;
 			var startOffset = offset;
 
-			// "While start offset is zero and start node is the first child of
-			// its parent, set start offset to the index of start node and then
-			// set start node to its parent."
-			while (startOffset == 0
-			&& startNode == startNode.parentNode.firstChild) {
+			// "While start offset is zero, set start offset to the index of
+			// start node and then set start node to its parent."
+			while (startOffset == 0) {
 				startOffset = getNodeIndex(startNode);
 				startNode = startNode.parentNode;
 			}
-
-			// "Set start offset to the index of start node."
-			startOffset = getNodeIndex(startNode);
-
-			// "Set start node to its parent."
-			startNode = startNode.parentNode;
 
 			// "If the child of start node with index start offset minus one is
 			// an hr, or the child is a br and the br's previousSibling is

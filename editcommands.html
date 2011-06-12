@@ -38,7 +38,7 @@
 <body class=draft>
 <div class=head id=head>
 <h1>HTML Editing Commands</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-7-june-2011>Work in Progress &mdash; Last Update 7 June 2011</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-12-june-2011>Work in Progress &mdash; Last Update 12 June 2011</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;ayg+spec@aryeh.name&gt;
@@ -2551,29 +2551,9 @@ section just for it. -->
     <li>Let <var title="">start node</var> equal <var title="">node</var> and let <var title="">start
     offset</var> equal <var title="">offset</var>.
 
-    <!--
-    Go up until we're no longer at the beginning of an element.  As a special
-    case, we make sure to remove a preceding extraneous line break in cases
-    like
-
-      foo<br><p>[]bar</p>
-      -> foo<p>[]bar</p>
-      -> foo[]bar.
-
-    We have to take care that we remove the line break before we go all the way
-    up to the node that contains the line break.  Otherwise the offset will no
-    longer be correct: it will be one too high.  (Try removing "and start node
-    is the first child of its parent" from the next line, and the two lines
-    after the extraneous line break removal, and see what happens.)
-    -->
-    <li>While <var title="">start offset</var> is zero and <var title="">start node</var> is the
-    first <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>, set <var title="">start offset</var> to the
-    <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> of <var title="">start node</var> and then set <var title="">start node</var> to
-    its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
-
-    <li>Set <var title="">start offset</var> to the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> of <var title="">start node</var>.
-
-    <li>Set <var title="">start node</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+    <li>While <var title="">start offset</var> is zero, set <var title="">start offset</var> to
+    the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> of <var title="">start node</var> and then set <var title="">start node</var>
+    to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
 
     <!--
     Special case:

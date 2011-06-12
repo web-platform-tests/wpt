@@ -2531,29 +2531,9 @@ section just for it. -->
     <li>Let <var>start node</var> equal <var>node</var> and let <var>start
     offset</var> equal <var>offset</var>.
 
-    <!--
-    Go up until we're no longer at the beginning of an element.  As a special
-    case, we make sure to remove a preceding extraneous line break in cases
-    like
-
-      foo<br><p>[]bar</p>
-      -> foo<p>[]bar</p>
-      -> foo[]bar.
-
-    We have to take care that we remove the line break before we go all the way
-    up to the node that contains the line break.  Otherwise the offset will no
-    longer be correct: it will be one too high.  (Try removing "and start node
-    is the first child of its parent" from the next line, and the two lines
-    after the extraneous line break removal, and see what happens.)
-    -->
-    <li>While <var>start offset</var> is zero and <var>start node</var> is the
-    first [[child]] of its [[parent]], set <var>start offset</var> to the
-    [[index]] of <var>start node</var> and then set <var>start node</var> to
-    its [[parent]].
-
-    <li>Set <var>start offset</var> to the [[index]] of <var>start node</var>.
-
-    <li>Set <var>start node</var> to its [[parent]].
+    <li>While <var>start offset</var> is zero, set <var>start offset</var> to
+    the [[index]] of <var>start node</var> and then set <var>start node</var>
+    to its [[parent]].
 
     <!--
     Special case:

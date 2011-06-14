@@ -131,6 +131,37 @@ have experience using this feature.
  <li><a class=no-num href=#acknowledgements>Acknowledgements</a></ol>
 <!--end-toc-->
 
+<!--
+Things that are only implemented by a couple of browsers and may or may not be
+useful to spec:
+
+* decreaseFontSize, increaseFontSize: Only implemented in Gecko and Opera.
+* contentReadOnly, enableInlineTableEditing, enableObjectResizing, heading,
+  insertBrOnReturn: MDC docs say not implemented in IE (didn't test).
+* readOnly: MDC docs say it's a deprecated equivalent of contentReadOnly, so
+  presumably like useCSS but less popular.
+* 2D-Position, absolutePosition, clearAuthenticationCache, createBookmark,
+  insertButton, insertFieldset, insertIframe, insertInput*, insertMarquee,
+  insertSelectDropdown, insertSelectListbox, insertTextarea, liveResize,
+  multipleSelection, overwrite, print, refresh, saveAs, unbookmark: Mentioned
+  in MSDN docs but not MDC, so presumably IE-only.  Some of these seem
+  inappropriate or useless, others will bear investigation.
+* findString, fontSizeDelta, forwardDelete, insertLineBreak,
+  insertNewlineInQuotedContent, insertText, justifyNone, print, transpose:
+  There's code for these in WebKit, Source/WebCore/editing/EditorCommand.cpp,
+  but I didn't see them mentioned elsewhere.  Some might be worth adding.
+* unselect: Seems to not be implemented by Gecko or Opera, and IE behaves
+  oddly: it seems to collapse the selection instead of removing it.  Will only
+  implement if there seems to be demand; it's redundant to
+  Selection.removeAllRanges() anyway.
+
+Things I haven't looked at that multiple browsers implement:
+
+* copy, cut, paste: Needs attention to security.
+* redo, undo: Needs review of the Google work on this; will probably be
+  quite complicated.
+-->
+
 <h2 id=introduction><span class=secno>1 </span>Introduction</h2>
 
 <p>This specification defines commands to edit HTML documents programmatically.
@@ -1355,37 +1386,6 @@ we really want to use it, we probably want to change its name.
   last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">start block</var>.
 </ol>
 
-
-<!--
-Things that are only implemented by a couple of browsers and may or may not be
-useful to spec:
-
-* decreaseFontSize, increaseFontSize: Only implemented in Gecko and Opera.
-* contentReadOnly, enableInlineTableEditing, enableObjectResizing, heading,
-  insertBrOnReturn: MDC docs say not implemented in IE (didn't test).
-* readOnly: MDC docs say it's a deprecated equivalent of contentReadOnly, so
-  presumably like useCSS but less popular.
-* 2D-Position, absolutePosition, clearAuthenticationCache, createBookmark,
-  insertButton, insertFieldset, insertIframe, insertInput*, insertMarquee,
-  insertSelectDropdown, insertSelectListbox, insertTextarea, liveResize,
-  multipleSelection, overwrite, print, refresh, saveAs, unbookmark: Mentioned
-  in MSDN docs but not MDC, so presumably IE-only.  Some of these seem
-  inappropriate or useless, others will bear investigation.
-* findString, fontSizeDelta, forwardDelete, insertLineBreak,
-  insertNewlineInQuotedContent, insertText, justifyNone, print, transpose:
-  There's code for these in WebKit, Source/WebCore/editing/EditorCommand.cpp,
-  but I didn't see them mentioned elsewhere.  Some might be worth adding.
-* unselect: Seems to not be implemented by Gecko or Opera, and IE behaves
-  oddly: it seems to collapse the selection instead of removing it.  Will only
-  implement if there seems to be demand; it's redundant to
-  Selection.removeAllRanges() anyway.
-
-Things I haven't looked at that multiple browsers implement:
-
-* copy, cut, paste: Needs attention to security.
-* redo, undo: Needs review of the Google work on this; will probably be
-  quite complicated.
--->
 
 <h2 id=inline-formatting-commands><span class=secno>6 </span>Inline formatting commands</h2>
 

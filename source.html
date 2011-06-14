@@ -5057,6 +5057,14 @@ http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
     <li>If <var>node list</var> is empty:
 
     <ol>
+      <!-- Ideally, we should normalize things so that the cursor is never in a
+      weird place after deletion, but let's be safe and bail out if we do hit
+      this scenario.  It's not clear if we need this line in the long term, but
+      at the time of this writing there's at least one corner case where
+      deleting can leave the cursor inside a <tr>. -->
+      <li>If <var>tag</var> is not an <span>allowed child</span> of
+      <var>range</var>'s [[startnode]], abort these steps.
+
       <li>Set <var>container</var> to the result of calling
       [[createelement|<var>tag</var>]] on the [[contextobject]].
 

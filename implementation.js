@@ -3883,6 +3883,12 @@ function myExecCommand(command, showUI, value, range) {
 
 			// "If node list is empty:"
 			if (!nodeList.length) {
+				// "If tag is not an allowed child of range's start node, abort
+				// these steps."
+				if (!isAllowedChild(tag, range.startContainer)) {
+					return;
+				}
+
 				// "Set container to the result of calling createElement(tag)
 				// on the context object."
 				container = document.createElement(tag);

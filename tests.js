@@ -1293,6 +1293,15 @@ var tests = {
 	],
 	insertparagraph: [
 		'foo[bar]baz',
+		'fo[o<table><tr><td>b]ar</table>',
+		'<table><tr><td>[foo<td>bar]<tr><td>baz<td>quz</table>',
+		'<table><tbody data-start=0 data-end=1><tr><td>foo<td>bar<tr><td>baz<td>quz</table>',
+		'<table><tr><td>fo[o</table>b]ar',
+		'<table><tr><td>fo[o<td>b]ar<td>baz</table>',
+		'{<table><tr><td>foo</table>}',
+		'<table><tr><td>[foo]</table>',
+		'<ol><li>[foo]<li>bar</ol>',
+		'<ol><li>f[o]o<li>bar</ol>',
 
 		'[]foo',
 		'foo[]',
@@ -1361,6 +1370,16 @@ var tests = {
 		'<table><tr><td>foo[]bar</table>',
 		'<table><tr><td><p>foo[]bar</table>',
 
+		'<blockquote>[]foo</blockquote>',
+		'<blockquote>foo[]</blockquote>',
+		'<blockquote>foo[]<br></blockquote>',
+		'<blockquote>foo[]bar</blockquote>',
+		'<blockquote><p>[]foo</blockquote>',
+		'<blockquote><p>foo[]</blockquote>',
+		'<blockquote><p>foo[]bar</blockquote>',
+		'<blockquote><p>foo[]<p>bar</blockquote>',
+		'<blockquote><p>foo[]bar<p>baz</blockquote>',
+
 		'<span>foo[]bar</span>',
 		'<span>foo[]bar</span>baz',
 		'<b>foo[]bar</b>',
@@ -1374,7 +1393,12 @@ var tests = {
 		'<p><b>foo[]bar</b></p>',
 		'<p><b>[]foo</b></p>',
 		'<p><b id=x class=y>foo[]bar</b></p>',
-		'<div><b>foo[]bar</b></div>'
+		'<div><b>foo[]bar</b></div>',
+
+		'<a href=foo>foo[]bar</a>',
+		'<a href=foo>foo[]bar</a>baz',
+		'<a href=foo>foo[]</a>bar',
+		'foo<a href=foo>[]bar</a>',
 	],
 	insertunorderedlist: [
 		'foo[]bar',

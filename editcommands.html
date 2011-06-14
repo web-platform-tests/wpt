@@ -5037,6 +5037,14 @@ http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
     <li>If <var title="">node list</var> is empty:
 
     <ol>
+      <!-- Ideally, we should normalize things so that the cursor is never in a
+      weird place after deletion, but let's be safe and bail out if we do hit
+      this scenario.  It's not clear if we need this line in the long term, but
+      at the time of this writing there's at least one corner case where
+      deleting can leave the cursor inside a <tr>. -->
+      <li>If <var title="">tag</var> is not an <a href=#allowed-child>allowed child</a> of
+      <var title="">range</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>, abort these steps.
+
       <li>Set <var title="">container</var> to the result of calling
       <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement(<var title="">tag</var>)</a></code> on the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>.
 

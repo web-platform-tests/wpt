@@ -1,4 +1,5 @@
 <!doctype html>
+<!-- @{ -->
 <meta charset=utf-8>
 <title>HTML Editing Commands</title>
 <link rel=stylesheet href=http://www.whatwg.org/style/specification>
@@ -48,9 +49,10 @@
  <dd><a href=http://aryeh.name/gitweb.cgi?p=editcommands>http://aryeh.name/gitweb.cgi?p=editcommands</a>
 </dl>
 </div>
-
+<!-- @} -->
 
 <h2 class=no-num>Status of this Document</h2>
+<!-- @{ -->
 <p>This document is an early draft of a specification for HTML editing APIs,
 defining <code>execCommand()</code> and related functions.  It will eventually
 be merged into the main <a href=http://www.whatwg.org/html>HTML</a>
@@ -61,13 +63,13 @@ be changed heavily before it's finished, feedback to <a
 href=http://lists.whatwg.org/listinfo.cgi/whatwg-whatwg.org>the WHATWG list</a>
 is encouraged, particularly from implementers and particularly from authors who
 have experience using this feature.
-
+<!-- @} -->
 
 <h2 class=no-num>Table of contents</h2>
 <!--toc-->
 
-
 <h2>Introduction</h2>
+<!-- @{ -->
 <p>This specification defines commands to edit HTML documents programmatically.
 The APIs specified here were originally introduced in Microsoft's Internet
 Explorer, but have subsequently been copied by other browsers in a haphazard
@@ -138,10 +140,10 @@ included in HTML comments so as not to distract the reader.
   occur much for our purposes, but I try a little harder to make them behave
   not too unreasonably.
 </ul>
-
+<!-- @} -->
 
 <h2>Issues</h2>
-
+<!-- @{ -->
 <p>This specification is very preliminary and is undergoing constant change.
 It should not be used for anything other than review, comment, and experimental
 implementations that you don't intend to inflict on unwitting users without
@@ -215,10 +217,10 @@ list</a>.
 
 <p class=XXX>A variety of other issues are also noted in the text, formatted
 like this.
-
+<!-- @} -->
 
 <h2>Methods of the <code data-anolis-spec=html>HTMLDocument</code> interface</h2>
-
+<!-- @{ -->
 <p>The <dfn title=execCommand()><code>execCommand(<var>command</var>,
 <var>showUI</var>, <var>value</var>)</code></dfn> method on the
 <code data-anolis-spec=html>HTMLDocument</code> interface allows scripts to
@@ -286,10 +288,10 @@ This is keeping in mind that it stores ranges sorted by start, not by the order
 the user added them, and silently removes or shortens existing ranges to avoid
 overlap.  It probably makes the most sense in the long term to have the command
 affect all ranges.  But I'll leave this for later.
-
+<!-- @} -->
 
 <h2>Common definitions</h2>
-
+<!-- @{ -->
 <p>An <dfn>HTML element</dfn> is an [[element]] whose [[namespace]] is the
 [[htmlnamespace]].
 
@@ -423,12 +425,12 @@ the order, they must be initially in [[treeorder]], if they share a root.
 (If they don't share a root, the order will be specified.)  When the user agent
 is instructed to run particular steps for each member of a list, it must do so
 sequentially in the list's order.
-
+<!-- @} -->
 
 <h2>Common algorithms</h2>
 
 <h3>Assorted common algorithms</h3>
-
+<!-- @{ -->
 <p>A [[node]] or string <var>child</var> is an <dfn>allowed child</dfn> of a
 [[node]] or string <var>parent</var> if the following algorithm returns true:
 
@@ -764,10 +766,10 @@ inline styles, because Firefox does actually add them to arbitrary elements.
 <p>To remove a [[node]] <var>node</var> while <dfn>preserving its
 descendants</dfn>, <span>split the parent</span> of <var>node</var>'s
 [[children]].
-
+<!-- @} -->
 
 <h3>Wrapping a list of nodes</h3>
-
+<!-- @{ -->
 <p>To <dfn>wrap</dfn> a list <var>node list</var> of consecutive [[sibling]]
 [[nodes]], given <dfn>sibling criteria</dfn> and <dfn>new parent
 instructions</dfn>:
@@ -932,10 +934,10 @@ instructions</dfn>:
 
   <li>Return <var>new parent</var>.
 </ol>
-
+<!-- @} -->
 
 <h3>Deleting the contents of a range</h3>
-
+<!-- @{ -->
 <p>To <dfn>delete the contents</dfn> of a [[range]] <var>range</var>:
 
 <p class=XXX>I'm uncertain about the use of prohibited paragraph children here.
@@ -1309,7 +1311,7 @@ we really want to use it, we probably want to change its name.
   [[createelement|"br"]] on the [[contextobject]] and append the result as the
   last [[child]] of <var>start block</var>.
 </ol>
-
+<!-- @} -->
 
 <!--
 Things that are only implemented by a couple of browsers and may or may not be
@@ -1345,7 +1347,7 @@ Things I haven't looked at that multiple browsers implement:
 <h2>Inline formatting commands</h2>
 
 <h3>Inline formatting command definitions</h3>
-
+<!-- @{ -->
 <p>A [[node]] is <dfn>effectively contained</dfn> in a [[range]] if either it
 is [[contained]] in the [[range]]; or it is the [[range]]'s [[rangestart]]
 [[bpnode]], it is a [[text]] node, and its [[nodelength]] is different from the
@@ -1420,10 +1422,10 @@ which at least one of the following holds:
 <p class=note>Conceptually, a simple modifiable element is a modifiable element
 which <span title="specified value">specifies</span> a value for at most one
 command.
-
+<!-- @} -->
 
 <h3>Assorted inline formatting command algorithms</h3>
-
+<!-- @{ -->
 <p>The <dfn>effective value</dfn> of a [[node]] <var>node</var> for a given
 <var>command</var> is returned by the following algorithm, which will return
 either a string or null:
@@ -1651,9 +1653,10 @@ value</var>:
   <li>Append the <var>node</var> as the last [[child]] of <var>candidate</var>,
   <span>preserving ranges</span>.
 </ol>
-
+<!-- @} -->
 
 <h3>Decomposing a range into nodes</h3>
+<!-- @{ -->
 <p>To <dfn>decompose</dfn> a [[range]] <var>range</var>:
 
 <p class=note>For this algorithm to be correct, it is essential that user
@@ -1697,9 +1700,10 @@ title>splitText()</code>.
   range</var> in [[treeorder]], omitting any whose [[parent]] is also
   [[contained]] in <var>cloned range</var>.
 </ol>
-
+<!-- @} -->
 
 <h3>Clearing an element's value</h3>
+<!-- @{ -->
 <p>To <dfn>clear the value</dfn> of an [[element]] <var>element</var>:
 
 <p class=note>Clearing the value of an element can remove it from its parent
@@ -1780,9 +1784,10 @@ id=foo> into <span id=foo> instead of <font id=foo>, but probably not worth it.
 
   <li>Return the one-[[node]] list consisting of <var>new element</var>.
 </ol>
-
+<!-- @} -->
 
 <h3>Pushing down values</h3>
+<!-- @{ -->
 <p>To <dfn>push down values</dfn> to a [[node]] <var>node</var>, given a new
 value <var>new value</var>:
 
@@ -1899,9 +1904,10 @@ with a [[style]] attribute).
     </ol>
   </ol>
 </ol>
-
+<!-- @} -->
 
 <h3>Forcing the value of a node</h3>
+<!-- @{ -->
 <p>To <dfn>force the value</dfn> of a [[node]] <var>node</var> to <var>new
 value</var>:
 
@@ -2179,9 +2185,10 @@ different value.
     </ol>
   </ol>
 </ol>
-
+<!-- @} -->
 
 <h3>Setting the value of a node</h3>
+<!-- @{ -->
 <p>To <dfn>set the value</dfn> of a [[node]] <var>node</var> to <var>new
 value</var>:
 
@@ -2322,10 +2329,10 @@ as desired.
   it from the tree.  Implementers should be careful to compute the list of
   children in full before they begin styling.
 </ol>
-
+<!-- @} -->
 
 <h3><dfn>The <code title>backColor</code> command</dfn></h3>
-
+<!-- @{ -->
 <p><span>Action</span>:
 
 <div class=XXX>
@@ -2365,9 +2372,10 @@ same thing as hiliteColor, and make up new commands if we want to do things
 like set the document background color.  Feedback appreciated on this point.
 </div>
 </dl>
-
+<!-- @} -->
 
 <h3><dfn>The <code title>bold</code> command</dfn></h3>
+<!-- @{ -->
 <!-- If the selection is collapsed (but not if it contains nothing but is not
 collapsed), IE9 wraps the whole line in a <strong>.  This seems bizarre and no
 one else does it, so I don't do it.  It's a similar story for similar commands
@@ -2396,10 +2404,10 @@ string, and three out of the four return something that evaluates to false as a
 boolean, so I'll go with Firefox and Opera. -->
 
 <p><span>Relevant CSS property</span>: "font-weight"
-
+<!-- @} -->
 
 <h3><dfn>The <code title>createLink</code> command</dfn></h3>
-
+<!-- @{ -->
 <p><span>Action</span>:
 
 <!-- If the selection doesn't contain anything (meaning, e.g., deleteContents()
@@ -2454,10 +2462,10 @@ don't either. -->
 
 <p><span>Value</span>: Always the empty string.
 <!-- I'd have expected the value to be the URL, but guess not. -->
-
+<!-- @} -->
 
 <h3><dfn>The <code title>fontName</code> command</dfn></h3>
-
+<!-- @{ -->
 <p><span>Action</span>: <span>Decompose</span> the <span>active range</span>,
 then <span>set the value</span> of each returned [[node]] to <var>value</var>.
 <!-- UAs differ a bit in the details here:
@@ -2503,10 +2511,10 @@ font-family.  I'll leave CSSOM to decide what that means if there are no
 applicable style rules. -->
 
 <p><span>Relevant CSS property</span>: "font-family"
-
+<!-- @} -->
 
 <h3><dfn>The <code title>fontSize</code> command</dfn></h3>
-
+<!-- @{ -->
 <p><span>Action</span>:
 
 <!--
@@ -2610,10 +2618,10 @@ respecifying non-interoperable behavior anyway.
 </ol>
 
 <p><span>Relevant CSS property</span>: "font-size"
-
+<!-- @} -->
 
 <h3><dfn>The <code title>foreColor</code> command</dfn></h3>
-
+<!-- @{ -->
 <p><span>Action</span>:
 
 <!-- Color interpretations (wide screen recommended):
@@ -2695,9 +2703,10 @@ least as much sense. -->
 <!-- IE 9 RC returns the number 0 always, which makes no sense at all. -->
 
 <p><span>Relevant CSS property</span>: "color"
-
+<!-- @} -->
 
 <h3><dfn>The <code title>hiliteColor</code> command</dfn></h3>
+<!-- @{ -->
 <!-- IE 9 RC doesn't support this.  It uses backColor instead, but Gecko and
 Opera treat that differently, while all non-IE browsers treat hiliteColor the
 same, so I'm standardizing hiliteColor as the way to highlight text.
@@ -2734,9 +2743,10 @@ For color parsing, see the comment for foreColor. -->
 <p><span>State</span>: Always false.
 
 <p><span>Relevant CSS property</span>: "background-color"
-
+<!-- @} -->
 
 <h3><dfn>The <code title>insertHTML</code> command</dfn></h3>
+<!-- @{ -->
 <!-- Not supported by IE9. -->
 
 <p><span>Action</span>:
@@ -2765,10 +2775,10 @@ For color parsing, see the comment for foreColor. -->
   <!-- We want to fix all descendants, not just children.  Consider
   <div><li>foo</li></div>, for example. -->
 </ol>
-
+<!-- @} -->
 
 <h3><dfn>The <code title>insertImage</code> command</dfn></h3>
-
+<!-- @{ -->
 <p><span>Action</span>:
 
 <ol>
@@ -2806,10 +2816,10 @@ For color parsing, see the comment for foreColor. -->
   first argument equal to the [[parent]] of <var>img</var> and the second
   argument equal to one plus the [[index]] of <var>img</var>.
 </ol>
-
+<!-- @} -->
 
 <h3><dfn>The <code title>italic</code> command</dfn></h3>
-
+<!-- @{ -->
 <p><span>Action</span>: <span>Decompose</span> the <span>active range</span>.
 If the <span>state</span> is then false, <span>set the value</span> of each
 returned [[node]] to "italic", otherwise <span>set the value</span> to
@@ -2822,9 +2832,10 @@ is <span>effectively contained</span> in the <span>active range</span> has
 <p><span>Value</span>: Always the empty string.
 
 <p><span>Relevant CSS property</span>: "font-style"
-
+<!-- @} -->
 
 <h3><dfn>The <code title>removeFormat</code> command</dfn></h3>
+<!-- @{ -->
 <!--
 Tested in IE 9, Firefox 4.0, Chrome 12 dev, Opera 11.00.
 
@@ -2943,10 +2954,10 @@ for elements like <code> or <tt> or <mark> that we don't normally create.
     <tr><td>underline <td>null
   </table>
 </ol>
-
+<!-- @} -->
 
 <h3><dfn>The <code title>strikethrough</code> command</dfn></h3>
-
+<!-- @{ -->
 <p><span>Action</span>: <span>Decompose</span> the <span>active range</span>.
 If the <span>state</span> is then false, <span>set the value</span> of each
 returned [[node]] to "line-through", otherwise <span>set the value</span> to
@@ -2960,10 +2971,10 @@ is <span>effectively contained</span> in the <span>active range</span> has
 <span>effective value</span> "line-through".  Otherwise false.
 
 <p><span>Value</span>: Always the empty string.
-
+<!-- @} -->
 
 <h3><dfn>The <code title>subscript</code> command</dfn></h3>
-
+<!-- @{ -->
 <p><span>Action</span>:
 
 <ol>
@@ -2985,10 +2996,10 @@ is <span>effectively contained</span> in the <span>active range</span> has
 <span>effective value</span> "sub".  Otherwise false.
 
 <p><span>Relevant CSS property</span>: "vertical-align"
-
+<!-- @} -->
 
 <h3><dfn>The <code title>superscript</code> command</dfn></h3>
-
+<!-- @{ -->
 <p><span>Action</span>:
 
 <ol>
@@ -3010,10 +3021,10 @@ is <span>effectively contained</span> in the <span>active range</span> has
 <span>effective value</span> "super".  Otherwise false.
 
 <p><span>Relevant CSS property</span>: "vertical-align"
-
+<!-- @} -->
 
 <h3><dfn>The <code title>underline</code> command</dfn></h3>
-
+<!-- @{ -->
 <p><span>Action</span>: <span>Decompose</span> the <span>active range</span>.
 If the <span>state</span> is then false, <span>set the value</span> of each
 returned [[node]] to "underline", otherwise <span>set the value</span> to null.
@@ -3074,10 +3085,10 @@ is <span>effectively contained</span> in the <span>active range</span> has
 <span>effective value</span> "underline".  Otherwise false.
 
 <p><span>Value</span>: Always the empty string.
-
+<!-- @} -->
 
 <h3><dfn>The <code title>unlink</code> command</dfn></h3>
-
+<!-- @{ -->
 <p><span>Action</span>:
 
 <!--
@@ -3099,12 +3110,12 @@ starting at 2011-05-13 at 16:53 EDT (UTC-0400).
 <p><span>State</span>: Always false.
 
 <p><span>Value</span>: Always the empty string.
-
+<!-- @} -->
 
 <h2>Block formatting commands</h2>
 
 <h3>Block formatting command definitions</h3>
-
+<!-- @{ -->
 <p>A <dfn>potential indentation element</dfn> is either a [[blockquote]], or a
 [[div]] that has a [[style]] attribute that sets "margin" or some subproperty
 of it.
@@ -3135,10 +3146,10 @@ container</span>, or an <span>HTML element</span> with [[localname]] "li",
 
 <p>The <dfn>default single-line container name</dfn> is "p".
 <!-- Possibly to be made configurable later. -->
-
+<!-- @} -->
 
 <h3>Assorted block formatting command algorithms</h3>
-
+<!-- @{ -->
 <p>To <dfn>fix disallowed ancestors</dfn> of a [[node]] <var>node</var>:
 
 <ol>
@@ -3381,9 +3392,10 @@ confronted with this kind of nesting.)
     </ol>
   </ol>
 </ol>
-
+<!-- @} -->
 
 <h3>Block-extending a range</h3>
+<!-- @{ -->
 <p>When a user agent is to <dfn>block-extend</dfn> a [[range]]
 <var>range</var>, it must run the following steps:
 
@@ -3463,10 +3475,10 @@ confronted with this kind of nesting.)
 
   <li>Return <var>new range</var>.
 </ol>
-
+<!-- @} -->
 
 <h3>Block-formatting a node list</h3>
-
+<!-- @{ -->
 <p class=XXX>Why is this a separate section?  There's only one caller.
 Probably want to merge it back.
 
@@ -3603,10 +3615,10 @@ string <var>value</var>:
     [[createelement|<var>value</var>]] on the [[contextobject]].
   </ol>
 </ol>
-
+<!-- @} -->
 
 <h3>Outdenting a node</h3>
-
+<!-- @{ -->
 <p>To <dfn>outdent</dfn> a [[node]] <var>node</var>:
 
 <!--
@@ -3802,10 +3814,10 @@ insertOrderedList.
 
   <li><span>Outdent</span> <var>original ancestor</var>.
 </ol>
-
+<!-- @} -->
 
 <h3>Toggling lists</h3>
-
+<!-- @{ -->
 <!--
 Research for insertOrderedList/insertUnorderedList: tested the following
 command sequences in IE9, Firefox 4.0, Chrome 12 dev, Opera 11.10,
@@ -4338,9 +4350,10 @@ or "ul"):
     <li><span>Fix disallowed ancestors</span> of the previous step's result.
   </ol>
 </ol>
-
+<!-- @} -->
 
 <h3>Justifying the selection</h3>
+<!-- @{ -->
 <!--
 There are two basic ways it works: using the align attribute, and using CSS
 text-align.  IE9 and Opera 11.11 use only the align attribute, Chrome 13 dev
@@ -4456,10 +4469,10 @@ would be worth the added complexity.
     mode. -->
   </ol>
 </ol>
-
+<!-- @} -->
 
 <h3><dfn>The <code title>delete</code> command</dfn></h3>
-
+<!-- @{ -->
 <p><span>Action</span>:
 
 <ol>
@@ -4730,9 +4743,10 @@ would be worth the added complexity.
   (<var>start node</var>, <var>start offset</var>) and [[rangeend]]
   (<var>node</var>, <var>offset</var>).
 </ol>
-
+<!-- @} -->
 
 <h3><dfn>The <code title>formatBlock</code> command</dfn></h3>
+<!-- @{ -->
 <!--
 Tested browser versions: IE9, Firefox 4.0, Chrome 13 dev, Opera 11.10.
 
@@ -4814,9 +4828,10 @@ sense for <address>/<h*>/<pre>, but other browsers don't do it.
 
   <li><span>Block-format</span> <var>node list</var>.
 </ol>
-
+<!-- @} -->
 
 <h3><dfn>The <code title>indent</code> command</dfn></h3>
+<!-- @{ -->
 <!--
 IE9: Outputs <blockquote style="margin-right: 0px" dir="ltr">, or when
   surrounding RTL blocks, <blockquote style="margin-left: 0px" dir="rtl">.  The
@@ -4917,10 +4932,10 @@ browsers don't normally let you put the cursor in weird places like that.
     <li><span>Indent</span> <var>sublist</var>.
   </ol>
 </ol>
-
+<!-- @} -->
 
 <h3><dfn>The <code title>insertHorizontalRule</code> command</dfn></h3>
-
+<!-- @{ -->
 <p><span>Action</span>:
 
 <!-- You'd think interop here would be simple, right?  Nope: we have three
@@ -4978,15 +4993,16 @@ splitting up parents to ensure validity . . . -->
   first argument equal to the [[parent]] of <var>hr</var> and the second
   argument equal to one plus the [[index]] of <var>hr</var>.
 </ol>
-
+<!-- @} -->
 
 <h3><dfn>The <code title>insertOrderedList</code> command</dfn></h3>
-
+<!-- @{ -->
 <p><span>Action</span>: <span>Toggle lists</span> with <var>tag name</var>
 "ol".
-
+<!-- @} -->
 
 <h3><dfn>The <code title>insertParagraph</code> command</dfn></h3>
+<!-- @{ -->
 <!--
 There are three major behaviors here.  Firefox 5.0a2 behaves identically to
 execCommand("formatBlock", false, "p"), which is not really useful.  IE9
@@ -5240,10 +5256,9 @@ http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
   <li>Set the [[rangestart]] of <var>range</var> to (<var>new container</var>,
   0).
 </ol>
-
+<!-- @} -->
 
 <h3><dfn>The <code title>insertUnorderedList</code> command</dfn></h3>
-
 <p><span>Action</span>: <span>Toggle lists</span> with <var>tag name</var>
 "ul".
 
@@ -5273,7 +5288,7 @@ http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
 
 
 <h3><dfn>The <code title>outdent</code> command</dfn></h3>
-
+<!-- @{ -->
 <p><span>Action</span>:
 
 <ol>
@@ -5348,11 +5363,12 @@ http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
     <var>sublist</var>.
   </ol>
 </ol>
-
+<!-- @} -->
 
 <h2 id=miscellaneous-commands>Miscellaneous commands</h2>
 
 <h3><dfn>The <code title>selectAll</code> command</dfn></h3>
+<!-- @{ -->
 <!--
 Tested using roughly this:
 
@@ -5404,9 +5420,10 @@ The behavior here is relatively simple and largely matches implementations.
   title=dom-Selection-selectAllChildren>selectAllChildren(<var>target</var>)</code>
   on the result.
 </ol>
-
+<!-- @} -->
 
 <h3><dfn>The <code title>styleWithCSS</code> command</dfn></h3>
+<!-- @{ -->
 <!-- IE9 and Opera 11.00 don't support this command.  By and large, they act
 the way Gecko and WebKit do when styleWithCSS is off.  Gecko invented it, and
 WebKit also supports it:
@@ -5434,9 +5451,10 @@ using styleWithCSS, in which case the two behaviors work the same. -->
 otherwise false.
 <!-- This follows Chrome 13 dev.  Firefox 5.0a2 doesn't support
 queryCommandState() for styleWithCSS. -->
-
+<!-- @} -->
 
 <h3><dfn>The <code title>useCSS</code> command</dfn></h3>
+<!-- @{ -->
 <!-- Supported by Firefox 4.0, but not IE9 or Opera 11.00 (which don't support
 styleWithCSS either), nor by Chrome 12 dev (which does support styleWithCSS.
 useCSS was the original feature in Mozilla 1.3, but the meaning is backward, so
@@ -5456,10 +5474,10 @@ console.
 <p class=XXX>The meaning of this command is backwards, and only Gecko supports
 it.  It would be great if Gecko would agree to drop support, so that we could
 get rid of it.
-
+<!-- @} -->
 
 <h2>Additional requirements</h2>
-
+<!-- @{ -->
 <p class=XXX>It has been <a
 href=http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2009-December/024628.html>suggested</a>
 that some things here need to be platform-dependent, not fully standardized.
@@ -5478,7 +5496,7 @@ inside an <span>editing host</span>, such as by pressing the Backspace key
 while the cursor is in an <span>editable</span> [[node]], the user agent must
 take the <span>action</span> for <span>the <code title>delete</code>
 command</span>.
-
+<!-- @} -->
 
 <h2 class=no-num>Acknowledgements</h2>
 <p>Thanks to:
@@ -5498,4 +5516,4 @@ command</span>.
 </ul>
 
 <script src=http://www.whatwg.org/specs/web-apps/current-work/dfn.js></script>
-<!-- vim: set expandtab shiftwidth=2 tabstop=2: -->
+<!-- vim: set expandtab shiftwidth=2 tabstop=2 foldmarker=@{,@} foldmethod=marker: -->

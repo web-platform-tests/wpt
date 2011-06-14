@@ -50,6 +50,7 @@
 
 
 <h2 class=no-num id=status-of-this-document>Status of this Document</h2>
+
 <p>This document is an early draft of a specification for HTML editing APIs,
 defining <code><a href=#execcommand()>execCommand()</a></code> and related functions.  It will eventually
 be merged into the main <a href=http://www.whatwg.org/html>HTML</a>
@@ -130,8 +131,8 @@ have experience using this feature.
  <li><a class=no-num href=#acknowledgements>Acknowledgements</a></ol>
 <!--end-toc-->
 
-
 <h2 id=introduction><span class=secno>1 </span>Introduction</h2>
+
 <p>This specification defines commands to edit HTML documents programmatically.
 The APIs specified here were originally introduced in Microsoft's Internet
 Explorer, but have subsequently been copied by other browsers in a haphazard
@@ -1698,6 +1699,7 @@ value</var>:
 
 
 <h3 id=decomposing-a-range-into-nodes><span class=secno>6.3 </span>Decomposing a range into nodes</h3>
+
 <p>To <dfn id=decompose>decompose</dfn> a <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> <var title="">range</var>:
 
 <p class=note>For this algorithm to be correct, it is essential that user
@@ -1740,6 +1742,7 @@ agents follow the <a class=external data-anolis-spec=domrange href=http://html5.
 
 
 <h3 id="clearing-an-element's-value"><span class=secno>6.4 </span>Clearing an element's value</h3>
+
 <p>To <dfn id=clear-the-value>clear the value</dfn> of an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> <var title="">element</var>:
 
 <p class=note>Clearing the value of an element can remove it from its parent
@@ -1823,6 +1826,7 @@ id=foo> into <span id=foo> instead of <font id=foo>, but probably not worth it.
 
 
 <h3 id=pushing-down-values><span class=secno>6.5 </span>Pushing down values</h3>
+
 <p>To <dfn id=push-down-values>push down values</dfn> to a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> <var title="">node</var>, given a new
 value <var title="">new value</var>:
 
@@ -1942,6 +1946,7 @@ with a <code class=external data-anolis-spec=html title="the style attribute"><a
 
 
 <h3 id=forcing-the-value-of-a-node><span class=secno>6.6 </span>Forcing the value of a node</h3>
+
 <p>To <dfn id=force-the-value>force the value</dfn> of a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> <var title="">node</var> to <var title="">new
 value</var>:
 
@@ -2204,6 +2209,7 @@ different value.
 
 
 <h3 id=setting-the-value-of-a-node><span class=secno>6.7 </span>Setting the value of a node</h3>
+
 <p>To <dfn id=set-the-value>set the value</dfn> of a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> <var title="">node</var> to <var title="">new
 value</var>:
 
@@ -2389,6 +2395,7 @@ like set the document background color.  Feedback appreciated on this point.
 
 
 <h3 id=the-bold-command><span class=secno>6.9 </span><dfn>The <code title="">bold</code> command</dfn></h3>
+
 <!-- If the selection is collapsed (but not if it contains nothing but is not
 collapsed), IE9 wraps the whole line in a <strong>.  This seems bizarre and no
 one else does it, so I don't do it.  It's a similar story for similar commands
@@ -2719,6 +2726,7 @@ least as much sense. -->
 
 
 <h3 id=the-hilitecolor-command><span class=secno>6.14 </span><dfn>The <code title="">hiliteColor</code> command</dfn></h3>
+
 <!-- IE 9 RC doesn't support this.  It uses backColor instead, but Gecko and
 Opera treat that differently, while all non-IE browsers treat hiliteColor the
 same, so I'm standardizing hiliteColor as the way to highlight text.
@@ -2758,6 +2766,7 @@ For color parsing, see the comment for foreColor. -->
 
 
 <h3 id=the-inserthtml-command><span class=secno>6.15 </span><dfn>The <code title="">insertHTML</code> command</dfn></h3>
+
 <!-- Not supported by IE9. -->
 
 <p><a href=#action>Action</a>:
@@ -2840,6 +2849,7 @@ is <a href=#effectively-contained>effectively contained</a> in the <a href=#acti
 
 
 <h3 id=the-removeformat-command><span class=secno>6.18 </span><dfn>The <code title="">removeFormat</code> command</dfn></h3>
+
 <!--
 Tested in IE 9, Firefox 4.0, Chrome 12 dev, Opera 11.00.
 
@@ -3390,6 +3400,7 @@ confronted with this kind of nesting.)
 
 
 <h3 id=block-extending-a-range><span class=secno>7.3 </span>Block-extending a range</h3>
+
 <p>When a user agent is to <dfn id=block-extend>block-extend</dfn> a <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>
 <var title="">range</var>, it must run the following steps:
 
@@ -4333,6 +4344,7 @@ or "ul"):
 
 
 <h3 id=justifying-the-selection><span class=secno>7.7 </span>Justifying the selection</h3>
+
 <!--
 There are two basic ways it works: using the align attribute, and using CSS
 text-align.  IE9 and Opera 11.11 use only the align attribute, Chrome 13 dev
@@ -4722,6 +4734,7 @@ would be worth the added complexity.
 
 
 <h3 id=the-formatblock-command><span class=secno>7.9 </span><dfn>The <code title="">formatBlock</code> command</dfn></h3>
+
 <!--
 Tested browser versions: IE9, Firefox 4.0, Chrome 13 dev, Opera 11.10.
 
@@ -4806,6 +4819,7 @@ sense for <address>/<h*>/<pre>, but other browsers don't do it.
 
 
 <h3 id=the-indent-command><span class=secno>7.10 </span><dfn>The <code title="">indent</code> command</dfn></h3>
+
 <!--
 IE9: Outputs <blockquote style="margin-right: 0px" dir="ltr">, or when
   surrounding RTL blocks, <blockquote style="margin-left: 0px" dir="rtl">.  The
@@ -4969,6 +4983,7 @@ splitting up parents to ensure validity . . . -->
 
 
 <h3 id=the-insertparagraph-command><span class=secno>7.13 </span><dfn>The <code title="">insertParagraph</code> command</dfn></h3>
+
 <!--
 There are three major behaviors here.  Firefox 5.0a2 behaves identically to
 execCommand("formatBlock", false, "p"), which is not really useful.  IE9
@@ -5219,7 +5234,6 @@ http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
 
 
 <h3 id=the-insertunorderedlist-command><span class=secno>7.14 </span><dfn>The <code title="">insertUnorderedList</code> command</dfn></h3>
-
 <p><a href=#action>Action</a>: <a href=#toggle-lists>Toggle lists</a> with <var title="">tag name</var>
 "ul".
 
@@ -5329,6 +5343,7 @@ http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
 <h2 id=miscellaneous-commands><span class=secno>8 </span>Miscellaneous commands</h2>
 
 <h3 id=the-selectall-command><span class=secno>8.1 </span><dfn>The <code title="">selectAll</code> command</dfn></h3>
+
 <!--
 Tested using roughly this:
 
@@ -5379,6 +5394,7 @@ The behavior here is relatively simple and largely matches implementations.
 
 
 <h3 id=the-stylewithcss-command><span class=secno>8.2 </span><dfn>The <code title="">styleWithCSS</code> command</dfn></h3>
+
 <!-- IE9 and Opera 11.00 don't support this command.  By and large, they act
 the way Gecko and WebKit do when styleWithCSS is off.  Gecko invented it, and
 WebKit also supports it:
@@ -5408,6 +5424,7 @@ queryCommandState() for styleWithCSS. -->
 
 
 <h3 id=the-usecss-command><span class=secno>8.3 </span><dfn>The <code title="">useCSS</code> command</dfn></h3>
+
 <!-- Supported by Firefox 4.0, but not IE9 or Opera 11.00 (which don't support
 styleWithCSS either), nor by Chrome 12 dev (which does support styleWithCSS.
 useCSS was the original feature in Mozilla 1.3, but the meaning is backward, so
@@ -5466,4 +5483,4 @@ command</a>.
 </ul>
 
 <script src=http://www.whatwg.org/specs/web-apps/current-work/dfn.js></script>
-<!-- vim: set expandtab shiftwidth=2 tabstop=2: -->
+<!-- vim: set expandtab shiftwidth=2 tabstop=2 foldmarker=@{,@} foldmethod=marker: -->

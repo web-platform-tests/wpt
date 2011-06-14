@@ -127,6 +127,9 @@ if "[[" in s:
 
 s = s.replace("<var>", "<var title>")
 
+s = s.replace("<!-- @{ -->", "")
+s = s.replace("<!-- @} -->", "")
+
 f = open("intermediate.html", "w")
 f.write(s)
 f.close()

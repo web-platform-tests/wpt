@@ -3975,6 +3975,22 @@ function myExecCommand(command, showUI, value, range) {
 		newLineRange.setStart(range.startContainer, range.startOffset);
 		newLineRange.setEnd(container, getNodeLength(container));
 
+		// "While new line range's start offset is zero and its start node is
+		// not container, set its start to (parent of start node, index of
+		// start node)."
+		while (newLineRange.startOffset == 0
+		&& newLineRange.startContainer != container) {
+			newLineRange.setStart(newLineRange.startContainer.parentNode, getNodeIndex(newLineRange.startContainer));
+		}
+
+		// "While new line range's start offset is the length of its start node
+		// and its start node is not container, set its start to (parent of
+		// start node, 1 + index of start node)."
+		while (newLineRange.startOffset == getNodeLength(newLineRange.startContainer)
+		&& newLineRange.startContainer != container) {
+			newLineRange.setStart(newLineRange.startContainer.parentNode, 1 + getNodeIndex(newLineRange.startContainer));
+		}
+
 		// "Let end of line be true if new line range contains either nothing
 		// or a single br, and false otherwise."
 		var containedInNewLineRange = collectContainedNodes(newLineRange);

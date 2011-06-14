@@ -5147,6 +5147,19 @@ http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
   the same as <var>range</var>'s, and whose [[rangeend]] is
   (<var>container</var>, [[nodelength]] of <var>container</var>).
 
+  <!-- We don't want the start to be just inside a node, because if it is,
+  we'll leave behind an empty element either in the new or old container.
+  Clearly we don't want the start point to get any higher than the container
+  itself, though. -->
+  <li>While <var>new line range</var>'s [[startoffset]] is zero and its
+  [[startnode]] is not <var>container</var>, set its [[rangestart]] to
+  ([[parent]] of [[startnode]], [[index]] of [[startnode]]).
+
+  <li>While <var>new line range</var>'s [[startoffset]] is the [[nodelength]]
+  of its [[startnode]] and its [[startnode]] is not <var>container</var>, set
+  its [[rangestart]] to ([[parent]] of [[startnode]], 1 + [[index]] of
+  [[startnode]]).
+
   <li>Let <var>end of line</var> be true if <var>new line range</var> <span
   data-anolis-spec=domrange title=contained>contains</span> either nothing or a
   single [[br]], and false otherwise.

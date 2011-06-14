@@ -1366,11 +1366,13 @@ var tests = {
 		'<b>foo[]bar</b>',
 		'<b>foo[]bar</b>baz',
 		'<b>foo[]</b>bar',
+		'foo<b>[]bar</b>',
 		'<b>foo[]</b><i>bar</i>',
 		'<b id=x class=y>foo[]bar</b>',
 		'<i><b>foo[]bar</b>baz</i>',
 
 		'<p><b>foo[]bar</b></p>',
+		'<p><b>[]foo</b></p>',
 		'<p><b id=x class=y>foo[]bar</b></p>',
 		'<div><b>foo[]bar</b></div>'
 	],

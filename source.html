@@ -355,6 +355,80 @@ not a <span>visible node</span>.
 things.  If it is, it needs some adjustment, like to handle collapsed
 whitespace nodes and collapsed br's.
 
+<!-- I don't remember why I wrote this.  Keeping it around just in case it
+turns out to be useful.
+
+<p><var>node</var> is an <dfn>extraneous line break</dfn> if the following
+algorithm returns true:
+
+<p class=XXX>This is positively horrible.  It attempts to move complicated CSS
+logic into DOM methods, and does so badly.  Can we somehow make this less evil,
+preferably much less evil?
+
+<ol>
+  <li>If <var>node</var> is not a [[br]], return false.
+
+  <li>Let <var>ancestor block</var> be <var>node</var>.
+
+  <li>While <var>ancestor block</var> is an <span>inline node</span>, set
+  <var>ancestor block</var> to its [[parent]].
+
+  <li>Let <var>previous box</var> be <var>node</var>.
+
+  <li>While <var>previous box</var> is equal to or an [[ancestor]] of
+  <var>node</var>, set <var>previous box</var> to the [[node]] immediately
+  before it in [[treeorder]], or null if there is no such [[node]].
+
+  <li>Let <var>next box</var> be the [[node]] immediately after <var>node</var>
+  in [[treeorder]], or null if there is such [[node]].
+
+  <li>If <var>previous box</var> is null, or is not a [[descendant]] of
+  <var>ancestor block</var>, or is not an <span>inline node</span>, or is a
+  [[br]], return false.
+  <!- -
+  This means br either is the first thing in its block container that generates
+  an inline box, or it's the first thing after another block container, or the
+  first thing after a br.  In any case, the line break will be visible.
+
+  Otherwise, it will be invisible as long as it immediately precedes a block
+  box boundary.
+  - ->
+
+  <li>If <var>ancestor block</var> is not null and <var>node</var> is the last
+  [[descendant]] of <var>ancestor block</var>, return true.
+  <!- - Precedes the end of ancestor block's box. - ->
+
+  <li>If <var>next box</var> is not null and not an <span>inline node</span>,
+  return true.
+  <!- - Precedes the start of next box's box. - ->
+
+  <li>Return false.
+</ol>
+-->
+
+<p>Each [[htmldocument]] has a boolean <dfn>CSS styling flag</dfn> associated
+with it, which must initially be false.  (<span>The <code
+title>styleWithCSS</code> command</span> can be used to modify or query it, by
+means of the <code>execCommand()</code> and <code>queryCommandState()</code>
+methods.)
+
+<p>When the user agent is instructed to run a particular method, it must follow
+the steps defined for that method in the appropriate specification, not act as
+though the method had actually been called from JavaScript.  In particular,
+if the author has overridden the method with a custom method, the standard
+method must be run rather than the custom one.
+
+<p>When a list or set of [[nodes]] is assigned to a variable without specifying
+the order, they must be initially in [[treeorder]], if they share a root.
+(If they don't share a root, the order will be specified.)  When the user agent
+is instructed to run particular steps for each member of a list, it must do so
+sequentially in the list's order.
+
+
+<h2>Common algorithms</h2>
+
+<h3>Assorted common algorithms</h3>
+
 <p>A [[node]] or string <var>child</var> is an <dfn>allowed child</dfn> of a
 [[node]] or string <var>parent</var> if the following algorithm returns true:
 
@@ -478,79 +552,34 @@ substantially sometime in the future, but I'm not sure exactly what to aim for.
   <li>Return true.
 </ol>
 
-<!-- I don't remember why I wrote this.  Keeping it around just in case it
-turns out to be useful.
-
-<p><var>node</var> is an <dfn>extraneous line break</dfn> if the following
-algorithm returns true:
-
-<p class=XXX>This is positively horrible.  It attempts to move complicated CSS
-logic into DOM methods, and does so badly.  Can we somehow make this less evil,
-preferably much less evil?
+<p>To move a [[node]] to a new location, <dfn>preserving ranges</dfn>, remove
+the [[node]] from its original [[parent]] (if any), then insert it in the new
+location.  In doing so, however, ignore the regular [[rangemutationrules]], and
+instead follow these rules:
 
 <ol>
-  <li>If <var>node</var> is not a [[br]], return false.
+  <li>Let <var>node</var> be the moved [[node]], <var>old parent</var> and
+  <var>old index</var> be the old [[parent]] (which may be null) and [[index]],
+  and <var>new parent</var> and <var>new index</var> be the new [[parent]] and
+  [[index]].
 
-  <li>Let <var>ancestor block</var> be <var>node</var>.
+  <li>If a [[boundarypoint]]'s [[bpnode]] is the same as or a [[descendant]] of
+  <var>node</var>, leave it unchanged, so it moves to the new location.  <!--
+  This is actually implicit, but I state it anyway for completeness. -->
 
-  <li>While <var>ancestor block</var> is an <span>inline node</span>, set
-  <var>ancestor block</var> to its [[parent]].
+  <li>If a [[boundarypoint]]'s [[bpnode]] is <var>new parent</var> and its
+  [[bpoffset]] is greater than <var>new index</var>, add one to its
+  [[bpoffset]].
 
-  <li>Let <var>previous box</var> be <var>node</var>.
+  <li>If a [[boundarypoint]]'s [[bpnode]] is <var>old parent</var> and its
+  [[bpoffset]] is <var>old index</var> or <var>old index</var> + 1, set its
+  [[bpnode]] to <var>new parent</var> and add <var>new index</var> &minus;
+  <var>old index</var> to its [[bpoffset]].
 
-  <li>While <var>previous box</var> is equal to or an [[ancestor]] of
-  <var>node</var>, set <var>previous box</var> to the [[node]] immediately
-  before it in [[treeorder]], or null if there is no such [[node]].
-
-  <li>Let <var>next box</var> be the [[node]] immediately after <var>node</var>
-  in [[treeorder]], or null if there is such [[node]].
-
-  <li>If <var>previous box</var> is null, or is not a [[descendant]] of
-  <var>ancestor block</var>, or is not an <span>inline node</span>, or is a
-  [[br]], return false.
-  <!- -
-  This means br either is the first thing in its block container that generates
-  an inline box, or it's the first thing after another block container, or the
-  first thing after a br.  In any case, the line break will be visible.
-
-  Otherwise, it will be invisible as long as it immediately precedes a block
-  box boundary.
-  - ->
-
-  <li>If <var>ancestor block</var> is not null and <var>node</var> is the last
-  [[descendant]] of <var>ancestor block</var>, return true.
-  <!- - Precedes the end of ancestor block's box. - ->
-
-  <li>If <var>next box</var> is not null and not an <span>inline node</span>,
-  return true.
-  <!- - Precedes the start of next box's box. - ->
-
-  <li>Return false.
+  <li>If a [[boundarypoint]]'s [[bpnode]] is <var>old parent</var> and its
+  [[bpoffset]] is greater than <var>old index</var> + 1, subtract one from its
+  [[bpoffset]].
 </ol>
--->
-
-<p>Each [[htmldocument]] has a boolean <dfn>CSS styling flag</dfn> associated
-with it, which must initially be false.  (<span>The <code
-title>styleWithCSS</code> command</span> can be used to modify or query it, by
-means of the <code>execCommand()</code> and <code>queryCommandState()</code>
-methods.)
-
-<p>When the user agent is instructed to run a particular method, it must follow
-the steps defined for that method in the appropriate specification, not act as
-though the method had actually been called from JavaScript.  In particular,
-if the author has overridden the method with a custom method, the standard
-method must be run rather than the custom one.
-
-<p>When a list or set of [[nodes]] is assigned to a variable without specifying
-the order, they must be initially in [[treeorder]], if they share a root.
-(If they don't share a root, the order will be specified.)  When the user agent
-is instructed to run particular steps for each member of a list, it must do so
-sequentially in the list's order.
-
-
-<h2>Common algorithms</h2>
-
-<h3>Assorted common algorithms</h3>
 
 <p>To <dfn>set the tag name</dfn> of an [[element]] <var>element</var> to
 <var>new name</var>:
@@ -735,35 +764,6 @@ inline styles, because Firefox does actually add them to arbitrary elements.
 <p>To remove a [[node]] <var>node</var> while <dfn>preserving its
 descendants</dfn>, <span>split the parent</span> of <var>node</var>'s
 [[children]].
-
-<p>To move a [[node]] to a new location, <dfn>preserving ranges</dfn>, remove
-the [[node]] from its original [[parent]] (if any), then insert it in the new
-location.  In doing so, however, ignore the regular [[rangemutationrules]], and
-instead follow these rules:
-
-<ol>
-  <li>Let <var>node</var> be the moved [[node]], <var>old parent</var> and
-  <var>old index</var> be the old [[parent]] (which may be null) and [[index]],
-  and <var>new parent</var> and <var>new index</var> be the new [[parent]] and
-  [[index]].
-
-  <li>If a [[boundarypoint]]'s [[bpnode]] is the same as or a [[descendant]] of
-  <var>node</var>, leave it unchanged, so it moves to the new location.  <!--
-  This is actually implicit, but I state it anyway for completeness. -->
-
-  <li>If a [[boundarypoint]]'s [[bpnode]] is <var>new parent</var> and its
-  [[bpoffset]] is greater than <var>new index</var>, add one to its
-  [[bpoffset]].
-
-  <li>If a [[boundarypoint]]'s [[bpnode]] is <var>old parent</var> and its
-  [[bpoffset]] is <var>old index</var> or <var>old index</var> + 1, set its
-  [[bpnode]] to <var>new parent</var> and add <var>new index</var> &minus;
-  <var>old index</var> to its [[bpoffset]].
-
-  <li>If a [[boundarypoint]]'s [[bpnode]] is <var>old parent</var> and its
-  [[bpoffset]] is greater than <var>old index</var> + 1, subtract one from its
-  [[bpoffset]].
-</ol>
 
 
 <h3>Wrapping a list of nodes</h3>
@@ -1365,6 +1365,9 @@ be used where only [[phrasingcontent]] is expected (not counting unknown or
 obsolete elements, which cannot be used at all); or any [[element]] whose
 display property computes to something other than "inline", "inline-block", or
 "inline-table"; or any [[node]] that is not <span>editable</span>.
+
+<p class=XXX>Probably want to redefine unwrappable node in terms of allowed
+children or something.
 
 <p>A <dfn>modifiable element</dfn> is a [[b]], [[em]], [[i]], [[s]], [[span]],
 [[strike]], [[strong]], [[sub]], [[sup]], or [[u]] element with no attributes
@@ -2453,282 +2456,6 @@ don't either. -->
 <!-- I'd have expected the value to be the URL, but guess not. -->
 
 
-<h3><dfn>The <code title>delete</code> command</dfn></h3>
-<!-- Not really specifically "inline", but I didn't want to create a new
-section just for it. -->
-
-<p><span>Action</span>:
-
-<ol>
-  <li>If the <span>active range</span> is not <code data-anolis-spec=domrange
-  title=dom-Range-collapsed>collapsed</code>, <span>delete the contents</span>
-  of the <span>active range</span> and abort these steps.
-
-  <p class=XXX>Maybe we sometimes want to do the following even if it isn't
-  collapsed?  WebKit seems to do some normalization on the range before
-  deciding whether it's collapsed, and that sounds like a good idea.
-
-  <li>Let <var>node</var> and <var>offset</var> be the <span>active
-  range</span>'s [[rangestart]] [[bpnode]] and [[bpoffset]].
-
-  <!-- First go up as high as possible within the current block, then drill
-  down to the lowest possible level, in the hopes that we'll wind up at the end
-  of a text node, or maybe in a br or hr. -->
-  <li>Repeat the following steps:
-
-  <ol>
-    <!--
-    If there's an invisible node somewhere, Firefox 5.0a2 removes that node and
-    then stops, so each backspace removes one invisible node.  All others
-    remove the invisible node and then continue on looking for something
-    visible to remove.  The spec follows the latter behavior, since it makes
-    more sense to the user.  Of course, the definition of "invisible node" is
-    not necessarily anything like the spec's.
-    -->
-    <li>If <var>offset</var> is zero and <var>node</var>'s [[previoussibling]]
-    is an <span>editable</span> <span>invisible node</span>, remove
-    <var>node</var>'s [[previoussibling]] from its [[parent]].
-
-    <li>Otherwise, if <var>node</var> has a [[child]] with [[index]]
-    <var>offset</var> &minus; 1 and that [[child]] is an <span>editable</span>
-    <span>invisible node</span>, remove that [[child]] from <var>node</var>,
-    then subtract one from <var>offset</var>.
-
-    <li>Otherwise, if <var>offset</var> is zero and <var>node</var> is not a
-    <span>prohibited paragraph child</span>, or if <var>node</var> is an
-    <span>invisible node</span>, set <var>offset</var> to the [[index]] of
-    <var>node</var>, then set <var>node</var> to its [[parent]].
-
-    <li>Otherwise, if <var>node</var> has a [[child]] with [[index]]
-    <var>offset</var> &minus; 1 and that [[child]] is not a <span>prohibited
-    paragraph child</span> or a [[br]] or an [[img]], set <var>node</var> to
-    that [[child]], then set <var>offset</var> to the [[nodelength]] of
-    <var>node</var>.
-
-    <li>Otherwise, break from this loop.
-  </ol>
-
-  <!--
-  At this point, node cannot be an invisible node.  There are three cases:
-
-  1) offset is zero and node is a prohibited paragraph child.  Then we'll
-  usually merge with the previous block if one exists.
-
-  2) offset is not zero, node is not a prohibited paragraph child, and node
-  does not have a child with index offset - 1.  The only way this is possible
-  is if node has a length greater than zero but no children, which implies it's
-  a text or comment or PI.  Comments and PIs are invisible nodes, so it must be
-  a text node.  We delete the previous character.
-
-  3) offset is not zero, and the child of node with index offset - 1 is a
-  prohibited paragraph child or a br or an img.  Then we'll usually merge the
-  offsetth child of node with the last descendant of the offset - 1st.
-  -->
-
-  <li>If <var>node</var> is a [[text]] node and <var>offset</var> is not zero,
-  call [[selcollapse|<var>node</var>, <var>offset</var>]] on the [[selection]].
-  Then <span>delete the contents</span> of the [[range]] with [[rangestart]]
-  (<var>node</var>, <var>offset</var> &minus; 1) and [[rangeend]]
-  (<var>node</var>, <var>offset</var>) and abort these steps.
-
-  <!-- At the time of this writing, this should be impossible. -->
-  <li>If <var>node</var> is not a <span>prohibited paragraph child</span>,
-  abort these steps.
-
-  <li>If <var>node</var> has a [[child]] with [[index]] <var>offset</var>
-  &minus; 1 and that [[child]] is a [[br]] or [[hr]] or [[img]], call
-  [[selcollapse|<var>node</var>, <var>offset</var>]] on the [[selection]].
-  Then <span>delete the contents</span> of the [[range]] with [[rangestart]]
-  (<var>node</var>, <var>offset</var> &minus; 1) and [[rangeend]]
-  (<var>node</var>, <var>offset</var>) and abort these steps.
-
-  <!--
-  If we're at the beginning of a list, we want to outdent the first list item.
-  This doesn't actually match anyone or anything.  Word 2007 and OpenOffice.org
-  3.2.1 Ubuntu just remove the list marker, which is weird and doesn't map well
-  to HTML.  Browsers tend to just merge with the preceding block, which isn't
-  expected.
-  -->
-  <li>If <var>node</var> is an [[li]] or [[dt]] or [[dd]] and is the first
-  [[child]] of its [[parent]]:
-
-  <ol>
-    <li>Let <var>items</var> be a list of all [[li]]s that are
-    [[ancestors]] of <var>node</var>.
-
-    <li><span>Normalize sublists</span> of each <var>item</var> in
-    <var>items</var>.
-
-    <li><span>Split the parent</span> of the one-[[node]] list consisting of
-    <var>node</var>.
-
-    <li><span>Fix disallowed ancestors</span> of <var>node</var>.
-
-    <li>Abort these steps.
-  </ol>
-
-  <!-- By this point, we're almost certainly going to merge something, and the
-  only question is what. -->
-  <li>Let <var>start node</var> equal <var>node</var> and let <var>start
-  offset</var> equal <var>offset</var>.
-
-  <li>While <var>start offset</var> is zero, set <var>start offset</var> to the
-  [[index]] of <var>start node</var> and then set <var>start node</var> to its
-  [[parent]].
-
-  <p class=XXX>The node at index start offset &minus; 1 might be an invisible
-  node.
-
-  <!--
-  At the beginning of an indented block, outdent it, similar to a list item.
-  Browsers don't do this, word processors do.
-  -->
-  <li>If <var>offset</var> is zero, and <var>node</var> has an
-  [[ancestorcontainer]] that is both a <span>potential indentation
-  element</span> and a [[descendant]] of <var>start node</var>:
-
-  <p class=XXX>This copy-pastes from the outdent command action.  I'm also not
-  totally sure it's correct.
-
-  <ol>
-    <li><span>Block-extend</span> the [[range]] whose [[rangestart]] and
-    [[rangeend]] are both (<var>node</var>, 0), and let <var>new range</var> be
-    the result.
-
-    <li>Let <var>node list</var> be a list of [[nodes]], initially empty.
-
-    <li>For each [[node]] <var>current node</var> [[contained]] in <var>new
-    range</var>, append <var>current node</var> to <var>node list</var> if the
-    last member of <var>node list</var> (if any) is not an [[ancestor]] of
-    <var>current node</var>, and <var>current node</var> is
-    <span>editable</span> but has no <span>editable</span> [[descendants]].
-
-    <li><span>Outdent</span> each [[node]] in <var>node list</var>.
-
-    <li>Abort these steps.
-  </ol>
-
-  <!--
-  This is to avoid stripping a line break from
-
-    foo<br><br><table><tr><td>[]bar</table>
-
-  and similarly for <hr>.  We should just do nothing here.
-  -->
-  <li>If the [[child]] of <var>start node</var> with [[index]] <var>start
-  offset</var> is a [[table]], abort these steps.
-
-  <!--
-  If you try backspacing into a table, select it.  This doesn't match any
-  browser; it matches the recommendation of the "behavior when typing in
-  contentEditable elements" document.  The idea is that then you can delete it
-  with a second backspace.
-  -->
-  <li>If <var>start node</var> has a [[child]] with [[index]] <var>start
-  offset</var> &minus; 1, and that [[child]] is a [[table]]:
-
-  <ol>
-    <li>Call [[selcollapse|<var>start node</var>, <var>start offset</var>
-    &minus; 1]] on the [[contextobject]]'s [[selection]].
-
-    <li>Call [[extend|<var>start node</var>, <var>start offset</var>]] on the
-    [[contextobject]]'s [[selection]].
-
-    <li>Abort these steps.
-  </ol>
-
-  <!--
-  Special case:
-
-    <p>foo</p><br><p>[]bar</p>
-    -> <p>foo</p><p>[]bar</p>
-
-  and likewise for <hr>.  But with <img> we merge like in other cases:
-
-    <p>foo</p><img><p>[]bar</p>
-    -> <p>foo</p><img>[]bar.
-
-  Browsers don't do this consistently.  Firefox 5.0a2 doesn't seem to do it at
-  all.
-  -->
-  <li>If <var>offset</var> is zero; and either the [[child]] of <var>start
-  node</var> with [[index]] <var>start offset</var> minus one is an [[hr]], or
-  the [[child]] is a [[br]] whose [[previoussibling]] is either a [[br]] or not
-  an <span>inline node</span>:
-
-  <ol>
-    <li>Call [[selcollapse|<var>node</var>, <var>offset</var>]] on the
-    [[selection]].
-
-    <li><span>Delete the contents</span> of the [[range]] with [[rangestart]]
-    (<var>start node</var>, <var>start offset</var> &minus; 1) and [[rangeend]]
-    (<var>start node</var>, <var>start offset</var>).
-
-    <li>Abort these steps.
-  </ol>
-
-  <!--
-  If you try backspacing out of a list item, merge it with the previous item,
-  but add a line break.  Then you have to backspace again if you really want
-  them to be on the same line.  This matches Word 2007 and OpenOffice.org 3.2.1
-  Ubuntu, and also matches "behavior when typing in contentEditable elements",
-  but does not match any browser.
-
-  Note that this behavior is quite different from what happens if you actually
-  select the linebreak in between the two lines.  In that case, the blocks are
-  merged as normal.
-
-  Also note that hitting backspace twice will merge with the previous item.
-  This matches OO.org, but Word will outdent the item on subsequent backspaces.
-  Word's behavior doesn't fit well with the way lists work in HTML, and we
-  probably don't want it.
-  -->
-  <li>If the [[child]] of <var>start node</var> with [[index]] <var>start
-  offset</var> is an [[li]] or [[dt]] or [[dd]], and that [[child]]'s
-  [[firstchild]] is an <span>inline node</span>, and <var>start offset</var> is
-  not zero:
-
-  <ol>
-    <li>Let <var>previous item</var> be the [[child]] of <var>start node</var>
-    with [[index]] <var>start offset</var> minus one.
-
-    <!-- If the last child is already a br, we only need to append one extra
-    br.  Otherwise we need to append two, since the first will do nothing. -->
-    <li>If <var>previous item</var>'s [[lastchild]] is an <span>inline
-    node</span> other than a [[br]], call [[createelement|"br"]] on the
-    [[contextobject]] and append the result as the last [[child]] of
-    <var>previous item</var>.
-
-    <li>If <var>previous item</var>'s [[lastchild]] is an <span>inline
-    node</span>, call [[createelement|"br"]] on the [[contextobject]] and
-    append the result as the last [[child]] of <var>previous item</var>.
-  </ol>
-
-  <!--
-  When merging adjacent list items, make sure we only merge the items
-  themselves, not any block children.  We want <li><p>foo<li><p>bar to become
-  <li><p>foo<p>bar, not <li><p>foo<br>bar or <li><p>foobar.
-  -->
-  <li>If the [[child]] of <var>start node</var> with [[index]] <var>start
-  offset</var> is an [[li]] or [[dt]] or [[dd]], and its [[previoussibling]] is
-  also an [[li]] or [[dt]] or [[dd]], set <var>start node</var> to its
-  [[child]] with [[index]] <var>start offset</var> &minus; 1, then set
-  <var>start offset</var> to <var>start node</var>'s [[nodelength]], then set
-  <var>node</var> to <var>start node</var>'s [[nextsibling]], then set
-  <var>offset</var> to 0.
-
-  <!-- General block-merging case. -->
-  <li>Otherwise, while <var>start node</var> has a [[child]] with [[index]]
-  <var>start offset</var> minus one, set <var>start node</var> to that
-  [[child]], then set <var>start offset</var> to the [[nodelength]] of
-  <var>start node</var>.
-
-  <li><span>Delete the contents</span> of the [[range]] with [[rangestart]]
-  (<var>start node</var>, <var>start offset</var>) and [[rangeend]]
-  (<var>node</var>, <var>offset</var>).
-</ol>
-
-
 <h3><dfn>The <code title>fontName</code> command</dfn></h3>
 
 <p><span>Action</span>: <span>Decompose</span> the <span>active range</span>,
@@ -3740,6 +3467,9 @@ confronted with this kind of nesting.)
 
 <h3>Block-formatting a node list</h3>
 
+<p class=XXX>Why is this a separate section?  There's only one caller.
+Probably want to merge it back.
+
 <p>To <dfn>block-format</dfn> a list of [[nodes]] <var>input nodes</var> to a
 string <var>value</var>:
 
@@ -4725,6 +4455,280 @@ would be worth the added complexity.
     in this case, but for inline formatting it matches everyone but Gecko's CSS
     mode. -->
   </ol>
+</ol>
+
+
+<h3><dfn>The <code title>delete</code> command</dfn></h3>
+
+<p><span>Action</span>:
+
+<ol>
+  <li>If the <span>active range</span> is not <code data-anolis-spec=domrange
+  title=dom-Range-collapsed>collapsed</code>, <span>delete the contents</span>
+  of the <span>active range</span> and abort these steps.
+
+  <p class=XXX>Maybe we sometimes want to do the following even if it isn't
+  collapsed?  WebKit seems to do some normalization on the range before
+  deciding whether it's collapsed, and that sounds like a good idea.
+
+  <li>Let <var>node</var> and <var>offset</var> be the <span>active
+  range</span>'s [[rangestart]] [[bpnode]] and [[bpoffset]].
+
+  <!-- First go up as high as possible within the current block, then drill
+  down to the lowest possible level, in the hopes that we'll wind up at the end
+  of a text node, or maybe in a br or hr. -->
+  <li>Repeat the following steps:
+
+  <ol>
+    <!--
+    If there's an invisible node somewhere, Firefox 5.0a2 removes that node and
+    then stops, so each backspace removes one invisible node.  All others
+    remove the invisible node and then continue on looking for something
+    visible to remove.  The spec follows the latter behavior, since it makes
+    more sense to the user.  Of course, the definition of "invisible node" is
+    not necessarily anything like the spec's.
+    -->
+    <li>If <var>offset</var> is zero and <var>node</var>'s [[previoussibling]]
+    is an <span>editable</span> <span>invisible node</span>, remove
+    <var>node</var>'s [[previoussibling]] from its [[parent]].
+
+    <li>Otherwise, if <var>node</var> has a [[child]] with [[index]]
+    <var>offset</var> &minus; 1 and that [[child]] is an <span>editable</span>
+    <span>invisible node</span>, remove that [[child]] from <var>node</var>,
+    then subtract one from <var>offset</var>.
+
+    <li>Otherwise, if <var>offset</var> is zero and <var>node</var> is not a
+    <span>prohibited paragraph child</span>, or if <var>node</var> is an
+    <span>invisible node</span>, set <var>offset</var> to the [[index]] of
+    <var>node</var>, then set <var>node</var> to its [[parent]].
+
+    <li>Otherwise, if <var>node</var> has a [[child]] with [[index]]
+    <var>offset</var> &minus; 1 and that [[child]] is not a <span>prohibited
+    paragraph child</span> or a [[br]] or an [[img]], set <var>node</var> to
+    that [[child]], then set <var>offset</var> to the [[nodelength]] of
+    <var>node</var>.
+
+    <li>Otherwise, break from this loop.
+  </ol>
+
+  <!--
+  At this point, node cannot be an invisible node.  There are three cases:
+
+  1) offset is zero and node is a prohibited paragraph child.  Then we'll
+  usually merge with the previous block if one exists.
+
+  2) offset is not zero, node is not a prohibited paragraph child, and node
+  does not have a child with index offset - 1.  The only way this is possible
+  is if node has a length greater than zero but no children, which implies it's
+  a text or comment or PI.  Comments and PIs are invisible nodes, so it must be
+  a text node.  We delete the previous character.
+
+  3) offset is not zero, and the child of node with index offset - 1 is a
+  prohibited paragraph child or a br or an img.  Then we'll usually merge the
+  offsetth child of node with the last descendant of the offset - 1st.
+  -->
+
+  <li>If <var>node</var> is a [[text]] node and <var>offset</var> is not zero,
+  call [[selcollapse|<var>node</var>, <var>offset</var>]] on the [[selection]].
+  Then <span>delete the contents</span> of the [[range]] with [[rangestart]]
+  (<var>node</var>, <var>offset</var> &minus; 1) and [[rangeend]]
+  (<var>node</var>, <var>offset</var>) and abort these steps.
+
+  <!-- At the time of this writing, this should be impossible. -->
+  <li>If <var>node</var> is not a <span>prohibited paragraph child</span>,
+  abort these steps.
+
+  <li>If <var>node</var> has a [[child]] with [[index]] <var>offset</var>
+  &minus; 1 and that [[child]] is a [[br]] or [[hr]] or [[img]], call
+  [[selcollapse|<var>node</var>, <var>offset</var>]] on the [[selection]].
+  Then <span>delete the contents</span> of the [[range]] with [[rangestart]]
+  (<var>node</var>, <var>offset</var> &minus; 1) and [[rangeend]]
+  (<var>node</var>, <var>offset</var>) and abort these steps.
+
+  <!--
+  If we're at the beginning of a list, we want to outdent the first list item.
+  This doesn't actually match anyone or anything.  Word 2007 and OpenOffice.org
+  3.2.1 Ubuntu just remove the list marker, which is weird and doesn't map well
+  to HTML.  Browsers tend to just merge with the preceding block, which isn't
+  expected.
+  -->
+  <li>If <var>node</var> is an [[li]] or [[dt]] or [[dd]] and is the first
+  [[child]] of its [[parent]]:
+
+  <ol>
+    <li>Let <var>items</var> be a list of all [[li]]s that are
+    [[ancestors]] of <var>node</var>.
+
+    <li><span>Normalize sublists</span> of each <var>item</var> in
+    <var>items</var>.
+
+    <li><span>Split the parent</span> of the one-[[node]] list consisting of
+    <var>node</var>.
+
+    <li><span>Fix disallowed ancestors</span> of <var>node</var>.
+
+    <li>Abort these steps.
+  </ol>
+
+  <!-- By this point, we're almost certainly going to merge something, and the
+  only question is what. -->
+  <li>Let <var>start node</var> equal <var>node</var> and let <var>start
+  offset</var> equal <var>offset</var>.
+
+  <li>While <var>start offset</var> is zero, set <var>start offset</var> to the
+  [[index]] of <var>start node</var> and then set <var>start node</var> to its
+  [[parent]].
+
+  <p class=XXX>The node at index start offset &minus; 1 might be an invisible
+  node.
+
+  <!--
+  At the beginning of an indented block, outdent it, similar to a list item.
+  Browsers don't do this, word processors do.
+  -->
+  <li>If <var>offset</var> is zero, and <var>node</var> has an
+  [[ancestorcontainer]] that is both a <span>potential indentation
+  element</span> and a [[descendant]] of <var>start node</var>:
+
+  <p class=XXX>This copy-pastes from the outdent command action.  I'm also not
+  totally sure it's correct.
+
+  <ol>
+    <li><span>Block-extend</span> the [[range]] whose [[rangestart]] and
+    [[rangeend]] are both (<var>node</var>, 0), and let <var>new range</var> be
+    the result.
+
+    <li>Let <var>node list</var> be a list of [[nodes]], initially empty.
+
+    <li>For each [[node]] <var>current node</var> [[contained]] in <var>new
+    range</var>, append <var>current node</var> to <var>node list</var> if the
+    last member of <var>node list</var> (if any) is not an [[ancestor]] of
+    <var>current node</var>, and <var>current node</var> is
+    <span>editable</span> but has no <span>editable</span> [[descendants]].
+
+    <li><span>Outdent</span> each [[node]] in <var>node list</var>.
+
+    <li>Abort these steps.
+  </ol>
+
+  <!--
+  This is to avoid stripping a line break from
+
+    foo<br><br><table><tr><td>[]bar</table>
+
+  and similarly for <hr>.  We should just do nothing here.
+  -->
+  <li>If the [[child]] of <var>start node</var> with [[index]] <var>start
+  offset</var> is a [[table]], abort these steps.
+
+  <!--
+  If you try backspacing into a table, select it.  This doesn't match any
+  browser; it matches the recommendation of the "behavior when typing in
+  contentEditable elements" document.  The idea is that then you can delete it
+  with a second backspace.
+  -->
+  <li>If <var>start node</var> has a [[child]] with [[index]] <var>start
+  offset</var> &minus; 1, and that [[child]] is a [[table]]:
+
+  <ol>
+    <li>Call [[selcollapse|<var>start node</var>, <var>start offset</var>
+    &minus; 1]] on the [[contextobject]]'s [[selection]].
+
+    <li>Call [[extend|<var>start node</var>, <var>start offset</var>]] on the
+    [[contextobject]]'s [[selection]].
+
+    <li>Abort these steps.
+  </ol>
+
+  <!--
+  Special case:
+
+    <p>foo</p><br><p>[]bar</p>
+    -> <p>foo</p><p>[]bar</p>
+
+  and likewise for <hr>.  But with <img> we merge like in other cases:
+
+    <p>foo</p><img><p>[]bar</p>
+    -> <p>foo</p><img>[]bar.
+
+  Browsers don't do this consistently.  Firefox 5.0a2 doesn't seem to do it at
+  all.
+  -->
+  <li>If <var>offset</var> is zero; and either the [[child]] of <var>start
+  node</var> with [[index]] <var>start offset</var> minus one is an [[hr]], or
+  the [[child]] is a [[br]] whose [[previoussibling]] is either a [[br]] or not
+  an <span>inline node</span>:
+
+  <ol>
+    <li>Call [[selcollapse|<var>node</var>, <var>offset</var>]] on the
+    [[selection]].
+
+    <li><span>Delete the contents</span> of the [[range]] with [[rangestart]]
+    (<var>start node</var>, <var>start offset</var> &minus; 1) and [[rangeend]]
+    (<var>start node</var>, <var>start offset</var>).
+
+    <li>Abort these steps.
+  </ol>
+
+  <!--
+  If you try backspacing out of a list item, merge it with the previous item,
+  but add a line break.  Then you have to backspace again if you really want
+  them to be on the same line.  This matches Word 2007 and OpenOffice.org 3.2.1
+  Ubuntu, and also matches "behavior when typing in contentEditable elements",
+  but does not match any browser.
+
+  Note that this behavior is quite different from what happens if you actually
+  select the linebreak in between the two lines.  In that case, the blocks are
+  merged as normal.
+
+  Also note that hitting backspace twice will merge with the previous item.
+  This matches OO.org, but Word will outdent the item on subsequent backspaces.
+  Word's behavior doesn't fit well with the way lists work in HTML, and we
+  probably don't want it.
+  -->
+  <li>If the [[child]] of <var>start node</var> with [[index]] <var>start
+  offset</var> is an [[li]] or [[dt]] or [[dd]], and that [[child]]'s
+  [[firstchild]] is an <span>inline node</span>, and <var>start offset</var> is
+  not zero:
+
+  <ol>
+    <li>Let <var>previous item</var> be the [[child]] of <var>start node</var>
+    with [[index]] <var>start offset</var> minus one.
+
+    <!-- If the last child is already a br, we only need to append one extra
+    br.  Otherwise we need to append two, since the first will do nothing. -->
+    <li>If <var>previous item</var>'s [[lastchild]] is an <span>inline
+    node</span> other than a [[br]], call [[createelement|"br"]] on the
+    [[contextobject]] and append the result as the last [[child]] of
+    <var>previous item</var>.
+
+    <li>If <var>previous item</var>'s [[lastchild]] is an <span>inline
+    node</span>, call [[createelement|"br"]] on the [[contextobject]] and
+    append the result as the last [[child]] of <var>previous item</var>.
+  </ol>
+
+  <!--
+  When merging adjacent list items, make sure we only merge the items
+  themselves, not any block children.  We want <li><p>foo<li><p>bar to become
+  <li><p>foo<p>bar, not <li><p>foo<br>bar or <li><p>foobar.
+  -->
+  <li>If the [[child]] of <var>start node</var> with [[index]] <var>start
+  offset</var> is an [[li]] or [[dt]] or [[dd]], and its [[previoussibling]] is
+  also an [[li]] or [[dt]] or [[dd]], set <var>start node</var> to its
+  [[child]] with [[index]] <var>start offset</var> &minus; 1, then set
+  <var>start offset</var> to <var>start node</var>'s [[nodelength]], then set
+  <var>node</var> to <var>start node</var>'s [[nextsibling]], then set
+  <var>offset</var> to 0.
+
+  <!-- General block-merging case. -->
+  <li>Otherwise, while <var>start node</var> has a [[child]] with [[index]]
+  <var>start offset</var> minus one, set <var>start node</var> to that
+  [[child]], then set <var>start offset</var> to the [[nodelength]] of
+  <var>start node</var>.
+
+  <li><span>Delete the contents</span> of the [[range]] with [[rangestart]]
+  (<var>start node</var>, <var>start offset</var>) and [[rangeend]]
+  (<var>node</var>, <var>offset</var>).
 </ol>
 
 

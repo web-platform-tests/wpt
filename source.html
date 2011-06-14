@@ -5042,14 +5042,17 @@ http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
   <!-- Add the default wrapper. -->
 
   <ol>
+    <li>Let <var>tag</var> be the <span>default single-line container
+    name</span>.
+
     <li><span>Block-extend</span> <var>range</var>, and let <var>new
     range</var> be the result.
 
-    <li>Let <var>node list</var> be a list of all [[children]] of
-    <var>node</var> that are  [[contained]] in <var>new range</var>.
+    <li>Let <var>node list</var> be a list of [[nodes]], initially empty.
 
-    <li>Let <var>tag</var> be the <span>default single-line container
-    name</span>.
+    <li>Append to <var>node list</var> the first [[node]] in [[treeorder]] that
+    is [[contained]] in <var>new range</var> and is an <span>allowed
+    child</span> of "p", if any.
 
     <li>If <var>node list</var> is empty:
 
@@ -5067,6 +5070,14 @@ http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
 
       <li>Abort these steps.
     </ol>
+
+    <li>While the [[nextsibling]] of the last member of <var>node list</var> is
+    not null and is an <span>allowed child</span> of "p", append it to
+    <var>node list</var>.
+
+    <p class=XXX>It is not at all obvious that this is the correct list of
+    nodes in all cases.  It should probably work because of how the
+    block-extend algorithm works, but further thought would be good.
 
     <li><span>Wrap</span> <var>node list</var>, with <span>sibling
     criteria</span> matching nothing and <span>new parent instructions</span>

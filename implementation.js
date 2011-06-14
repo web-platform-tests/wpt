@@ -3868,15 +3868,18 @@ function myExecCommand(command, showUI, value, range) {
 		if (!isEditable(container)
 		|| !inSameEditingHost(container, node)
 		|| !isSingleLineContainer(container)) {
+			// "Let tag be the default single-line container name."
+			var tag = defaultSingleLineContainerName;
+
 			// "Block-extend range, and let new range be the result."
 			var newRange = blockExtendRange(range);
 
-			// "Let node list be a list of all children of node that are
-			// contained in new range."
-			var nodeList = [].filter.call(node.childNodes, function(child) { return isContained(child, newRange) });
-
-			// "Let tag be the default single-line container name."
-			var tag = defaultSingleLineContainerName;
+			// "Let node list be a list of nodes, initially empty."
+			//
+			// "Append to node list the first node in tree order that is
+			// contained in new range and is an allowed child of "p", if any."
+			var nodeList = collectContainedNodes(newRange, function(node) { return isAllowedChild(node, "p") })
+				.slice(0, 1);
 
 			// "If node list is empty:"
 			if (!nodeList.length) {
@@ -3897,6 +3900,13 @@ function myExecCommand(command, showUI, value, range) {
 
 				// "Abort these steps."
 				return;
+			}
+
+			// "While the nextSibling of the last member of node list is not
+			// null and is an allowed child of "p", append it to node list."
+			while (nodeList[nodeList.length - 1].nextSibling
+			&& isAllowedChild(nodeList[nodeList.length - 1].nextSibling, "p")) {
+				nodeList.push(nodeList[nodeList.length - 1].nextSibling);
 			}
 
 			// "Wrap node list, with sibling criteria matching nothing and new

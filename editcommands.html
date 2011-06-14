@@ -38,7 +38,7 @@
 <body class=draft>
 <div class=head id=head>
 <h1>HTML Editing Commands</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-12-june-2011>Work in Progress &mdash; Last Update 12 June 2011</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-14-june-2011>Work in Progress &mdash; Last Update 14 June 2011</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;ayg+spec@aryeh.name&gt;
@@ -5022,14 +5022,17 @@ http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
   <!-- Add the default wrapper. -->
 
   <ol>
+    <li>Let <var title="">tag</var> be the <a href=#default-single-line-container-name>default single-line container
+    name</a>.
+
     <li><a href=#block-extend>Block-extend</a> <var title="">range</var>, and let <var title="">new
     range</var> be the result.
 
-    <li>Let <var title="">node list</var> be a list of all <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a> of
-    <var title="">node</var> that are  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in <var title="">new range</var>.
+    <li>Let <var title="">node list</var> be a list of <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a>, initially empty.
 
-    <li>Let <var title="">tag</var> be the <a href=#default-single-line-container-name>default single-line container
-    name</a>.
+    <li>Append to <var title="">node list</var> the first <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> in <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#tree-order>tree order</a> that
+    is <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in <var title="">new range</var> and is an <a href=#allowed-child>allowed
+    child</a> of "p", if any.
 
     <li>If <var title="">node list</var> is empty:
 
@@ -5047,6 +5050,14 @@ http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
 
       <li>Abort these steps.
     </ol>
+
+    <li>While the <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code> of the last member of <var title="">node list</var> is
+    not null and is an <a href=#allowed-child>allowed child</a> of "p", append it to
+    <var title="">node list</var>.
+
+    <p class=XXX>It is not at all obvious that this is the correct list of
+    nodes in all cases.  It should probably work because of how the
+    block-extend algorithm works, but further thought would be good.
 
     <li><a href=#wrap>Wrap</a> <var title="">node list</var>, with <a href=#sibling-criteria>sibling
     criteria</a> matching nothing and <a href=#new-parent-instructions>new parent instructions</a>

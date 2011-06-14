@@ -1357,6 +1357,22 @@ var tests = {
 		'<h1>foo</h1>{}<br><h2>bar</h2>',
 		'<p>foo</p><h1>[bar]</h1><p>baz</p>',
 		'<p>foo</p>{<h1>bar</h1>}<p>baz</p>',
+
+		'<table><tr><td>foo[]bar</table>',
+		'<table><tr><td><p>foo[]bar</table>',
+
+		'<span>foo[]bar</span>',
+		'<span>foo[]bar</span>baz',
+		'<b>foo[]bar</b>',
+		'<b>foo[]bar</b>baz',
+		'<b>foo[]</b>bar',
+		'<b>foo[]</b><i>bar</i>',
+		'<b id=x class=y>foo[]bar</b>',
+		'<i><b>foo[]bar</b>baz</i>',
+
+		'<p><b>foo[]bar</b></p>',
+		'<p><b id=x class=y>foo[]bar</b></p>',
+		'<div><b>foo[]bar</b></div>'
 	],
 	insertunorderedlist: [
 		'foo[]bar',

@@ -1,3 +1,23 @@
+// Alert the reader of egregious Opera bug that will make the specced
+// implementation horribly buggy
+(function() {
+	var div = document.createElement("div");
+	div.appendChild(document.createElement("br"));
+	document.body.insertBefore(div, document.body.firstChild);
+	var range = document.createRange();
+	range.setStart(div, 1);
+	div.insertBefore(document.createElement("p"), div.firstChild);
+	if (range.startOffset > range.startContainer.childNodes.length) {
+		var warningDiv = document.createElement("p");
+		document.body.insertBefore(warningDiv, document.body.firstChild);
+		warningDiv.style.fontWeight = "bold";
+		warningDiv.style.fontSize = "2em";
+		warningDiv.style.color = "red";
+		warningDiv.innerHTML = 'Your browser suffers from an <a href="http://software.hixie.ch/utilities/js/live-dom-viewer/saved/1028">egregious bug</a> in range mutation that will give incorrect results for the spec columns in many cases.  To ensure that the spec column contains the output actually required by the spec, use a different browser.';
+	}
+	div.parentNode.removeChild(div);
+})();
+
 // Insert the toolbar thingie as soon as the script file is loaded
 (function() {
 	var toolbarDiv = document.createElement("div");

@@ -917,7 +917,6 @@ var tests = {
 		'foo[]<table><tr><td>bar</table>baz',
 		'foo<table><tr><td>bar[]</table>baz',
 		'<p>foo[]<table><tr><td>bar</table><p>baz',
-		'<p>foo[]<table><tr><td>bar</table><p>baz',
 		'<table><tr><td>foo[]<td>bar</table>',
 		'<table><tr><td>foo[]<tr><td>bar</table>',
 

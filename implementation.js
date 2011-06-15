@@ -5155,25 +5155,11 @@ commands["forwarddelete"] = {
 			return;
 		}
 
-		// "If the child of end node with index end offset is an li or dt or
-		// dd, and its previousSibling is also an li or dt or dd, set end node
-		// to its child with index end offset, then set end offset to zero,
-		// then set node to end node's previousSibling, then set offset to
-		// node's length."
-		if (isHtmlElement(endNode.childNodes[endOffset], ["li", "dt", "dd"])
-		&& isHtmlElement(endNode.childNodes[endOffset - 1], ["li", "dt", "dd"])) {
+		// "While end node has a child with index end offset, set end node to
+		// that child and set end offset to zero."
+		while (endOffset < endNode.childNodes.length) {
 			endNode = endNode.childNodes[endOffset];
 			endOffset = 0;
-			node = endNode.previousSibling;
-			offset = getNodeLength(node);
-
-		// "Otherwise, while end node has a child with index end offset, set
-		// end node to that child and set end offset to zero."
-		} else {
-			while (endOffset < endNode.childNodes.length) {
-				endNode = endNode.childNodes[endOffset];
-				endOffset = 0;
-			}
 		}
 
 		// "Delete the contents of the range with start (node, offset) and end

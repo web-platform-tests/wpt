@@ -4960,17 +4960,9 @@ sense for <address>/<h*>/<pre>, but other browsers don't do it.
 
   <!-- No special list-item behavior for forwardDelete. -->
 
-  <li>If the [[child]] of <var>end node</var> with [[index]] <var>end
-  offset</var> is an [[li]] or [[dt]] or [[dd]], and its [[previoussibling]] is
-  also an [[li]] or [[dt]] or [[dd]], set <var>end node</var> to its [[child]]
-  with [[index]] <var>end offset</var>, then set <var>end offset</var> to zero,
-  then set <var>node</var> to <var>end node</var>'s [[previoussibling]], then
-  set <var>offset</var> to <var>node</var>'s [[length]].
-
-  <!-- General block-merging case. -->
-  <li>Otherwise, while <var>end node</var> has a [[child]] with [[index]]
-  <var>end offset</var>, set <var>end node</var> to that [[child]] and set
-  <var>end offset</var> to zero.
+  <li>While <var>end node</var> has a [[child]] with [[index]] <var>end
+  offset</var>, set <var>end node</var> to that [[child]] and set <var>end
+  offset</var> to zero.
 
   <li><span>Delete the contents</span> of the [[range]] with [[rangestart]]
   (<var>node</var>, <var>offset</var>) and [[rangeend]] (<var>end node</var>,

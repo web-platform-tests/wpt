@@ -872,10 +872,6 @@ var tests = {
 	],
 	forwarddelete: [
 		// Collapsed selection
-		//
-		// These three commented-out test call Firefox 5.0a2 to blow up, not
-		// just throwing exceptions on the tests themselves but on many
-		// subsequent tests too.
 		'foo[]',
 		'<span>foo[]</span>',
 		'<p>foo[]</p>',

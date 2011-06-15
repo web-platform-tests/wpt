@@ -4902,6 +4902,10 @@ sense for <address>/<h*>/<pre>, but other browsers don't do it.
   <var>offset</var>) and [[rangeend]] (<var>node</var>, <var>offset</var> + 1)
   and abort these steps.
 
+  <p class=XXX>This is wrong for combining diacritics.  It can result in a
+  diacritic on the next letter being added to the previous one when the letter
+  is deleted.  Worse, it places the cursor between a letter and its diacritic.
+
   <li>If <var>node</var> is not a <span>prohibited paragraph child</span>,
   abort these steps.
 

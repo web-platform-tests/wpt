@@ -4895,6 +4895,10 @@ sense for <address>/<h*>/<pre>, but other browsers don't do it.
   <var title="">offset</var>) and <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> (<var title="">node</var>, <var title="">offset</var> + 1)
   and abort these steps.
 
+  <p class=XXX>This is wrong for combining diacritics.  It can result in a
+  diacritic on the next letter being added to the previous one when the letter
+  is deleted.  Worse, it places the cursor between a letter and its diacritic.
+
   <li>If <var title="">node</var> is not a <a href=#prohibited-paragraph-child>prohibited paragraph child</a>,
   abort these steps.
 

@@ -2801,27 +2801,31 @@ For color parsing, see the comment for foreColor. -->
 
   <li><span>Delete the contents</span> of <var>range</var>.
 
-  <li>Let <var>img</var> be the result of calling <code
-  data-anolis-spec=domcore
-  title=dom-Document-createElement>createElement("img")</code> on the
-  [[contextobject]].
+  <li>If <var>range</var>'s [[startnode]] is a <span>prohibited paragraph
+  child</span> whose sole [[child]] is a [[br]], and its [[startoffset]] is 0,
+  remove its [[startnode]]'s [[child]] from it.
+  <!-- Same logic as with insertHTML. -->
 
-  <li>Run <code data-anolis-spec=domcore
-  title=dom-Element-setAttribute>setAttribute("src", <var>value</var>)</code>
-  on <var>img</var>.
-  <!-- No alt text, so it's invalid.  This matches all browsers. -->
+  <li>Let <var>img</var> be the result of calling [[createelement|"img"]] on
+  the [[contextobject]].
 
-  <li>Run <code data-anolis-spec=domrange
-  title=dom-Range-insertNode>insertNode(<var>img</var>)</code> on
-  <var>range</var>.
+  <li>Run [[setattribute|"src", <var>value</var>]] on <var>img</var>.
+  <!-- No alt text, so it's probably invalid.  This matches all browsers. -->
+
+  <li>Run [[insertnode|<var>img</var>]] on <var>range</var>.
+  <!--
+  This winds up putting it at the original start point of the active range, as
+  currently specced.  This matches IE9 and Firefox 5.0a2.  Chrome 13 dev puts
+  it at the end point, and Opera 11.11 puts it in between (where the range
+  would collapse if you called deleteContents()).
+  -->
 
   <li>Let <var>selection</var> be the result of calling [[getselection]] on the
   [[contextobject]].
 
-  <li>Run <code data-anolis-spec=domrange
-  title=dom-Selection-collapse>collapse()</code> on <var>selection</var>, with
-  first argument equal to the [[parent]] of <var>img</var> and the second
-  argument equal to one plus the [[index]] of <var>img</var>.
+  <li>Run [[selcollapse|]] on <var>selection</var>, with first argument equal
+  to the [[parent]] of <var>img</var> and the second argument equal to one plus
+  the [[index]] of <var>img</var>.
 </ol>
 <!-- @} -->
 

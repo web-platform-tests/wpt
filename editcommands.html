@@ -2820,22 +2820,31 @@ For color parsing, see the comment for foreColor. -->
 
   <li><a href=#delete-the-contents>Delete the contents</a> of <var title="">range</var>.
 
-  <li>Let <var title="">img</var> be the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("img")</a></code> on the
-  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>.
+  <li>If <var title="">range</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> is a <a href=#prohibited-paragraph-child>prohibited paragraph
+  child</a> whose sole <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> is a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code>, and its <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a> is 0,
+  remove its <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> from it.
+  <!-- Same logic as with insertHTML. -->
 
-  <li>Run <code class=external data-anolis-spec=domcore title=dom-Element-setAttribute><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-element-setattribute>setAttribute("src", <var title="">value</var>)</a></code>
-  on <var title="">img</var>.
-  <!-- No alt text, so it's invalid.  This matches all browsers. -->
+  <li>Let <var title="">img</var> be the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("img")</a></code> on
+  the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>.
 
-  <li>Run <code class=external data-anolis-spec=domrange title=dom-Range-insertNode><a href=http://html5.org/specs/dom-range.html#dom-range-insertnode>insertNode(<var title="">img</var>)</a></code> on
-  <var title="">range</var>.
+  <li>Run <code class=external data-anolis-spec=domcore title=dom-Element-setAttribute><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-element-setattribute>setAttribute("src", <var title="">value</var>)</a></code> on <var title="">img</var>.
+  <!-- No alt text, so it's probably invalid.  This matches all browsers. -->
+
+  <li>Run <code class=external data-anolis-spec=domrange title=dom-Range-insertNode><a href=http://html5.org/specs/dom-range.html#dom-range-insertnode>insertNode(<var title="">img</var>)</a></code> on <var title="">range</var>.
+  <!--
+  This winds up putting it at the original start point of the active range, as
+  currently specced.  This matches IE9 and Firefox 5.0a2.  Chrome 13 dev puts
+  it at the end point, and Opera 11.11 puts it in between (where the range
+  would collapse if you called deleteContents()).
+  -->
 
   <li>Let <var title="">selection</var> be the result of calling <code class=external data-anolis-spec=domrange title=dom-Document-getSelection><a href=http://html5.org/specs/dom-range.html#dom-document-getselection>getSelection()</a></code> on the
   <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>.
 
-  <li>Run <code class=external data-anolis-spec=domrange title=dom-Selection-collapse><a href=http://html5.org/specs/dom-range.html#dom-selection-collapse>collapse()</a></code> on <var title="">selection</var>, with
-  first argument equal to the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of <var title="">img</var> and the second
-  argument equal to one plus the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> of <var title="">img</var>.
+  <li>Run <code class=external data-anolis-spec=domrange title=dom-Selection-collapse><a href=http://html5.org/specs/dom-range.html#dom-selection-collapse>collapse()</a></code> on <var title="">selection</var>, with first argument equal
+  to the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of <var title="">img</var> and the second argument equal to one plus
+  the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> of <var title="">img</var>.
 </ol>
 
 

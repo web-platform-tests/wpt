@@ -3290,6 +3290,16 @@ commands.insertimage = {
 		// "Delete the contents of range."
 		deleteContents(range);
 
+		// "If range's start node is a prohibited paragraph child whose sole
+		// child is a br, and its start offset is 0, remove its start node's
+		// child from it."
+		if (isProhibitedParagraphChild(range.startContainer)
+		&& range.startContainer.childNodes.length == 1
+		&& isHtmlElement(range.startContainer.firstChild, "br")
+		&& range.startOffset == 0) {
+			range.startContainer.removeChild(range.startContainer.firstChild);
+		}
+
 		// "Let img be the result of calling createElement("img") on the
 		// context object."
 		var img = document.createElement("img");

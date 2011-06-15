@@ -117,6 +117,7 @@ fnreplace = {
     'extend': '<code data-anolis-spec=domrange title=dom-Selection-extend>extend(\\1)</code>',
     'insertnode': '<code data-anolis-spec=domrange title=dom-Range-insertNode>insertNode(\\1)</code>',
     'selcollapse': '<code data-anolis-spec=domrange title=dom-Selection-collapse>collapse(\\1)</code>',
+    'setattribute': '<code data-anolis-spec=domcore title=dom-Element-setAttribute>setAttribute(\\1)</code>',
 }
 
 for key in fnreplace:

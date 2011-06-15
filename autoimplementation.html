@@ -28,24 +28,26 @@ blank in IE and Opera, which don't support styleWithCSS.)
 "use strict";
 // Set up all the HTML automatically so I can add new commands to test without
 // copy-pasting in five places
-var toc = document.querySelector("ul");
-for (var command in tests) {
-	var li = document.createElement("li");
-	li.innerHTML = "<a href=#" + command + ">" + command + "</a>";
-	toc.appendChild(li);
+(function() {
+	var toc = document.querySelector("ul");
+	for (var command in tests) {
+		var li = document.createElement("li");
+		li.innerHTML = "<a href=#" + command + ">" + command + "</a>";
+		toc.appendChild(li);
 
-	var div = document.createElement("div");
-	div.id = command;
-	div.innerHTML = "<h1>" + command + "</h1>"
-		+ "<button onclick=\"runTests('" + command + "')\">Run tests</button>"
-		+ (command in notes ? "<p>" + notes[command] : "")
-		+ "<table border=1><tr><th>Input <th>Spec <th>Browser <th>Same?</table>"
-		+ (doubleTestingCommands.indexOf(command) != -1 ? "<table border=1><tr><th>Input <th>Spec <th>Browser <th>Same?</table>" : "")
-		+ "<p><label>New test input: <input></label>"
-		+ (command in defaultValues ? "<label>New test value: <input></label>" : "")
-		+ "<button onclick=\"addTest('" + command + "')\">Add test</button>";
-	document.body.appendChild(div);
-}
+		var div = document.createElement("div");
+		div.id = command;
+		div.innerHTML = "<h1>" + command + "</h1>"
+			+ "<button onclick=\"runTests('" + command + "')\">Run tests</button>"
+			+ (command in notes ? "<p>" + notes[command] : "")
+			+ "<table border=1><tr><th>Input <th>Spec <th>Browser <th>Same?</table>"
+			+ (doubleTestingCommands.indexOf(command) != -1 ? "<table border=1><tr><th>Input <th>Spec <th>Browser <th>Same?</table>" : "")
+			+ "<p><label>New test input: <input></label>"
+			+ (command in defaultValues ? "<label>New test value: <input></label>" : "")
+			+ "<button onclick=\"addTest('" + command + "')\">Add test</button>";
+		document.body.appendChild(div);
+	}
+})();
 
 function runTests(command) {
 	var runTestsButton = document.querySelector("#" + command + " button");

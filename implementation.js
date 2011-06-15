@@ -15,7 +15,6 @@ var commands = {};
 ///////////////////////////////////////////////////////////////////////////////
 //@{
 
-
 function nextNode(node) {
 	if (node.hasChildNodes()) {
 		return node.firstChild;
@@ -141,7 +140,7 @@ function valuesEqual(command, val1, val2) {
 			|| (val1.toLowerCase() == "normal" && val2 == "400")
 			|| (val2.toLowerCase() == "normal" && val1 == "400");
 	}
-	var property = getRelevantCssProperty(command);
+	var property = commands[command].relevantCssProperty;
 	var test1 = document.createElement("span");
 	test1.style[property] = val1;
 	var test2 = document.createElement("span");
@@ -202,6 +201,35 @@ function isHtmlNamespace(ns) {
 	return ns === null
 		|| ns === htmlNamespace;
 }
+
+// For computing states of the form "True if every editable Text node that is
+// effectively contained in the active range (has property X).  Otherwise
+// false."
+function stateHelper(callback) {
+	var range = getActiveRange();
+	// XXX: This algorithm for getting all effectively contained nodes might be
+	// wrong . . .
+	var node = range.startContainer;
+	while (node.parentNode && node.parentNode.firstChild == node) {
+		node = node.parentNode;
+	}
+	var stop = nextNodeDescendants(range.endContainer);
+
+	for (; node && node != stop; node = nextNode(node)) {
+		if (!isEffectivelyContained(node, range)
+		|| node.nodeType != Node.TEXT_NODE
+		|| !isEditable(node)) {
+			continue;
+		}
+
+		if (!callback(node)) {
+			return false;
+		}
+	}
+
+	return true;
+}
+
 //@}
 
 
@@ -450,6 +478,84 @@ function parseSimpleColor(color) {
 //////////////////////////////////////////////////////////////////////////////
 /////////////////////////// Edit command functions ///////////////////////////
 //////////////////////////////////////////////////////////////////////////////
+
+/////////////////////////////////////////////////
+///// Methods of the HTMLDocument interface /////
+/////////////////////////////////////////////////
+//@{
+function myExecCommand(command, showUI, value, range) {
+	command = command.toLowerCase();
+
+	if (typeof range != "undefined") {
+		globalRange = range;
+	} else {
+		globalRange = getActiveRange();
+	}
+
+	// "If the active range is null, all commands must behave as though they
+	// were not defined except those in the miscellaneous commands section."
+	if (!globalRange && command != "selectall" && command != "stylewithcss" && command != "usecss") {
+		return;
+	}
+
+	commands[command].action(value);
+
+	globalRange = null;
+}
+
+function myQueryCommandState(command) {
+	command = command.toLowerCase();
+
+	if (typeof range != "undefined") {
+		globalRange = range;
+	} else {
+		globalRange = getActiveRange();
+	}
+
+	if (!globalRange && command != "selectall" && command != "stylewithcss" && command != "usecss") {
+		return;
+	}
+
+	return commands[command].state();
+
+	globalRange = null;
+}
+
+function myQueryCommandValue(command) {
+	command = command.toLowerCase();
+
+	if (typeof range != "undefined") {
+		globalRange = range;
+	} else {
+		globalRange = getActiveRange();
+	}
+
+	if (!globalRange && command != "selectall" && command != "stylewithcss" && command != "usecss") {
+		return;
+	}
+
+	return commands[command].value();
+
+	globalRange = null;
+}
+
+/**
+ * "Most commands act on the active range. This is defined to be the first
+ * range in the Selection given by calling getSelection() on the context
+ * object, or null if there is no such range."
+ *
+ * We cheat and return globalRange if that's defined.
+ */
+function getActiveRange() {
+	if (globalRange) {
+		return globalRange;
+	}
+	if (getSelection().rangeCount) {
+		return getSelection().getRangeAt(0);
+	}
+	return null;
+}
+//@}
 
 //////////////////////////////
 ///// Common definitions /////
@@ -1840,7 +1946,7 @@ function isSimpleModifiableElement(node) {
 
 //@}
 
-///// Assorted inline formatting command definitions /////
+///// Assorted inline formatting command algorithms /////
 //@{
 
 function getEffectiveValue(node, command) {
@@ -1984,7 +2090,7 @@ function getEffectiveValue(node, command) {
 
 	// "Return the computed style for node of the relevant CSS property for
 	// command."
-	return getComputedStyle(node)[getRelevantCssProperty(command)];
+	return getComputedStyle(node)[commands[command].relevantCssProperty];
 }
 
 function getSpecifiedValue(element, command) {
@@ -2085,7 +2191,7 @@ function getSpecifiedValue(element, command) {
 	}
 
 	// "Let property be the relevant CSS property for command."
-	var property = getRelevantCssProperty(command);
+	var property = commands[command].relevantCssProperty;
 
 	// "If property is null, return null."
 	if (property === null) {
@@ -2325,8 +2431,8 @@ function clearValue(element, command) {
 
 	// "If the relevant CSS property for command is not null, unset the CSS
 	// property property of element."
-	if (getRelevantCssProperty(command) !== null) {
-		element.style[getRelevantCssProperty(command)] = '';
+	if (commands[command].relevantCssProperty !== null) {
+		element.style[commands[command].relevantCssProperty] = '';
 		if (element.getAttribute("style") == "") {
 			element.removeAttribute("style");
 		}
@@ -2719,7 +2825,7 @@ function forceValue(node, command, newValue) {
 	// "If the effective value of command for new parent is not new value, and
 	// the relevant CSS property for command is not null, set that CSS property
 	// of new parent to new value (if the new value would be valid)."
-	var property = getRelevantCssProperty(command);
+	var property = commands[command].relevantCssProperty;
 	if (property !== null
 	&& !valuesEqual(command, getEffectiveValue(newParent, command), newValue)) {
 		newParent.style[property] = newValue;
@@ -2877,6 +2983,573 @@ function setNodeValue(node, command, newValue) {
 	}
 }
 
+//@}
+
+///// The backColor command /////
+// Unimplemented
+commands.backcolor = {};
+
+///// The bold command /////
+//@{
+commands.bold = {
+	action: function() {
+		// "Decompose the active range. If the state is then false, set the
+		// value of each returned node to "bold", otherwise set the value to
+		// "normal"."
+		var nodeList = decomposeRange(getActiveRange());
+		var newValue = commands.bold.state() ? "normal" : "bold";
+		for (var i = 0; i < nodeList.length; i++) {
+			setNodeValue(nodeList[i], "bold", newValue);
+		}
+	}, state: function() { return stateHelper(function(node) {
+		// "True if every editable Text node that is effectively contained in
+		// the active range has effective value at least 700. Otherwise false."
+		var fontWeight = getEffectiveValue(node, "bold");
+		return fontWeight === "bold"
+			|| fontWeight === "700"
+			|| fontWeight === "800"
+			|| fontWeight === "900";
+	})}, relevantCssProperty: "fontWeight"
+};
+//@}
+
+///// The createLink command /////
+//@{
+commands.createlink = {
+	action: function(value) {
+		// "If value is the empty string, abort these steps and do nothing."
+		if (value === "") {
+			return;
+		}
+
+		// "Decompose the active range, and let node list be the result."
+		var nodeList = decomposeRange(getActiveRange());
+
+		// "For each a element that has an href attribute and is an ancestor of
+		// some node in node list, set that element's href attribute to value."
+		for (var i = 0; i < nodeList.length; i++) {
+			var candidate = nodeList[i].parentNode;
+			while (candidate) {
+				if (isHtmlElement(candidate, "A")
+				&& candidate.hasAttribute("href")) {
+					candidate.setAttribute("href", value);
+				}
+
+				candidate = candidate.parentNode;
+			}
+		}
+
+		// "Set the value of each node in node list to value."
+		for (var i = 0; i < nodeList.length; i++) {
+			setNodeValue(nodeList[i], "createlink", value);
+		}
+	}
+};
+//@}
+
+///// The fontName command /////
+//@{
+commands.fontname = {
+	action: function(value) {
+		// "Decompose the active range, then set the value of each returned
+		// node to value."
+		var nodeList = decomposeRange(getActiveRange());
+		for (var i = 0; i < nodeList.length; i++) {
+			setNodeValue(nodeList[i], "fontname", value);
+		}
+	}, relevantCssProperty: "fontFamily"
+};
+//@}
+
+///// The fontSize command /////
+//@{
+commands.fontsize = {
+	action: function(value) {
+		// "If value is the empty string, do nothing and abort these steps."
+		if (value === "") {
+			return;
+		}
+
+		// "Strip leading and trailing whitespace from value."
+		//
+		// Cheap hack, not following the actual algorithm.
+		value = value.trim();
+
+		// "If value is a valid floating point number, or would be a valid
+		// floating point number if a single leading "+" character were
+		// stripped:"
+		if (/^[-+]?[0-9]+(\.[0-9]+)?([eE][-+]?[0-9]+)?$/.test(value)) {
+			var mode;
+
+			// "If the first character of value is "+", delete the character
+			// and let mode be "relative-plus"."
+			if (value[0] == "+") {
+				value = value.slice(1);
+				mode = "relative-plus";
+			// "Otherwise, if the first character of value is "-", delete the
+			// character and let mode be "relative-minus"."
+			} else if (value[0] == "-") {
+				value = value.slice(1);
+				mode = "relative-minus";
+			// "Otherwise, let mode be "absolute"."
+			} else {
+				mode = "absolute";
+			}
+
+			// "Apply the rules for parsing non-negative integers to value, and
+			// let number be the result."
+			//
+			// Another cheap hack.
+			var num = parseInt(value);
+
+			// "If mode is "relative-plus", add three to number."
+			if (mode == "relative-plus") {
+				num += 3;
+			}
+
+			// "If mode is "relative-minus", negate number, then add three to
+			// it."
+			if (mode == "relative-minus") {
+				num = 3 - num;
+			}
+
+			// "If number is less than one, let number equal 1."
+			if (num < 1) {
+				num = 1;
+			}
+
+			// "If number is greater than seven, let number equal 7."
+			if (num > 7) {
+				num = 7;
+			}
+
+			// "Set value to the string here corresponding to number:" [table
+			// omitted]
+			value = {
+				1: "xx-small",
+				2: "small",
+				3: "medium",
+				4: "large",
+				5: "x-large",
+				6: "xx-large",
+				7: "xxx-large"
+			}[num];
+		}
+
+		// "If value is not one of the strings "xx-small", "x-small", "small",
+		// "medium", "large", "x-large", "xx-large", "xxx-large", and is not a
+		// valid CSS absolute length, then do nothing and abort these steps."
+		//
+		// More cheap hacks to skip valid CSS absolute length checks.
+		if (["xx-small", "x-small", "small", "medium", "large", "x-large", "xx-large", "xxx-large"].indexOf(value) == -1
+		&& !/^[0-9]+(\.[0-9]+)?(cm|mm|in|pt|pc)$/.test(value)) {
+			return;
+		}
+
+		// "Decompose the active range, then set the value of each returned
+		// node to value."
+		var nodeList = decomposeRange(getActiveRange());
+		for (var i = 0; i < nodeList.length; i++) {
+			setNodeValue(nodeList[i], "fontsize", value);
+		}
+	}, relevantCssProperty: "fontSize"
+};
+//@}
+
+///// The foreColor command /////
+//@{
+commands.forecolor = {
+	action: function(value) {
+		// Copy-pasted, same as hiliteColor
+
+		// "If value is not a valid CSS color, prepend "#" to it."
+		//
+		// "If value is still not a valid CSS color, or if it is currentColor,
+		// do nothing and abort these steps."
+		//
+		// Cheap hack for testing, no attempt to be comprehensive.
+		if (/^([0-9a-fA-F]{3}){1,2}$/.test(value)) {
+			value = "#" + value;
+		}
+		if (!/^#([0-9a-fA-F]{3}){1,2}$/.test(value)
+		&& !/^(rgba?|hsla?)\(.*\)$/.test(value)
+		// Not gonna list all the keywords, only the ones I use.
+		&& value != "red"
+		&& value != "cornsilk"
+		&& value != "transparent") {
+			return;
+		}
+
+		// "Decompose the active range, then set the value of each returned
+		// node to value."
+		var nodeList = decomposeRange(getActiveRange());
+		for (var i = 0; i < nodeList.length; i++) {
+			setNodeValue(nodeList[i], "forecolor", value);
+		}
+	}, relevantCssProperty: "color"
+};
+//@}
+
+///// The hiliteColor command /////
+//@{
+commands.hilitecolor = {
+	action: function(value) {
+		// Copy-pasted, same as foreColor
+
+		// "If value is not a valid CSS color, prepend "#" to it."
+		//
+		// "If value is still not a valid CSS color, or if it is currentColor,
+		// do nothing and abort these steps."
+		//
+		// Cheap hack for testing, no attempt to be comprehensive.
+		if (/^([0-9a-fA-F]{3}){1,2}$/.test(value)) {
+			value = "#" + value;
+		}
+		if (!/^#([0-9a-fA-F]{3}){1,2}$/.test(value)
+		&& !/^(rgba?|hsla?)\(.*\)$/.test(value)
+		// Not gonna list all the keywords, only the ones I use.
+		&& value != "red"
+		&& value != "cornsilk"
+		&& value != "transparent") {
+			return;
+		}
+
+		// "Decompose the active range, then set the value of each returned
+		// node to value."
+		var nodeList = decomposeRange(getActiveRange());
+		for (var i = 0; i < nodeList.length; i++) {
+			setNodeValue(nodeList[i], "hilitecolor", value);
+		}
+	}, relevantCssProperty: "backgroundColor"
+};
+//@}
+
+///// The insertHTML command /////
+//@{
+commands.inserthtml = {
+	action: function(value) {
+		// "Delete the contents of the active range."
+		deleteContents(getActiveRange());
+
+		// "Let frag be the result of calling createContextualFragment(value)
+		// on the active range."
+		var frag = getActiveRange().createContextualFragment(value);
+
+		// "Let descendants be all descendants of frag."
+		var descendants = getDescendants(frag);
+
+		// "Let last child be the lastChild of frag."
+		var lastChild = frag.lastChild;
+
+		// "Call insertNode(frag) on the active range."
+		getActiveRange().insertNode(frag);
+
+		// "If last child is not null, set the start and end of the active
+		// range to (last child, length of last child)."
+		if (lastChild) {
+			getActiveRange().setStart(lastChild, getNodeLength(lastChild));
+			getActiveRange().setEnd(lastChild, getNodeLength(lastChild));
+		}
+
+		// "Fix disallowed ancestors of each member of descendants."
+		for (var i = 0; i < descendants.length; i++) {
+			fixDisallowedAncestors(descendants[i]);
+		}
+	}
+};
+//@}
+
+///// The insertImage command /////
+//@{
+commands.insertimage = {
+	action: function(value) {
+		// "If value is the empty string, abort these steps and do nothing."
+		if (value === "") {
+			return;
+		}
+
+		// "Let range be the active range."
+		var range = getActiveRange();
+
+		// "Delete the contents of range."
+		deleteContents(range);
+
+		// "Let img be the result of calling createElement("img") on the
+		// context object."
+		var img = document.createElement("img");
+
+		// "Run setAttribute("src", value) on img."
+		img.setAttribute("src", value);
+
+		// "Run insertNode(img) on the range."
+		range.insertNode(img);
+
+		// "Run collapse() on the Selection, with first argument equal to the
+		// parent of img and the second argument equal to one plus the index of
+		// img."
+		//
+		// Not everyone actually supports collapse(), so we do it manually
+		// instead.  Also, we need to modify the actual range we're given as
+		// well, for the sake of autoimplementation.html's range-filling-in.
+		range.setStart(img.parentNode, 1 + getNodeIndex(img));
+		range.setEnd(img.parentNode, 1 + getNodeIndex(img));
+		getSelection().removeAllRanges();
+		getSelection().addRange(range);
+
+		// IE adds width and height attributes for some reason, so remove those
+		// to actually do what the spec says.
+		img.removeAttribute("width");
+		img.removeAttribute("height");
+	}
+};
+//@}
+
+///// The italic command /////
+//@{
+commands.italic = {
+	action: function() {
+		// "Decompose the active range. If the state is then false, set the
+		// value of each returned node to "italic", otherwise set the value to
+		// "normal"."
+		var nodeList = decomposeRange(getActiveRange());
+		var newValue = commands.italic.state() ? "normal" : "italic";
+		for (var i = 0; i < nodeList.length; i++) {
+			setNodeValue(nodeList[i], "italic", newValue);
+		}
+	}, state: function() { return stateHelper(function(node) {
+		// "True if every editable Text node that is effectively contained in
+		// the active range has effective value either "italic" or "oblique".
+		// Otherwise false."
+		var value = getEffectiveValue(node, "italic");
+		return value == "italic" || value == "oblique";
+	})}, relevantCssProperty: "fontStyle"
+};
+//@}
+
+///// The removeFormat command /////
+//@{
+commands.removeformat = {
+	action: function() {
+		// "Decompose the active range, and let node list be the result."
+		var nodeList = decomposeRange(getActiveRange());
+
+		// "For each node in node list, unset the style attribute of node (if
+		// it's an Element) and then all its Element descendants."
+		for (var i = 0; i < nodeList.length; i++) {
+			for (
+				var node = nodeList[i];
+				node != nextNodeDescendants(nodeList[i]);
+				node = nextNode(node)
+			) {
+				if (node.nodeType == Node.ELEMENT_NODE) {
+					node.removeAttribute("style");
+				}
+			}
+		}
+
+		// "Let elements to remove be a list of all HTML elements that are the
+		// same as or descendants of some member of node list and have non-null
+		// parents and satisfy (insert conditions here)."
+		var elementsToRemove = [];
+		for (var i = 0; i < nodeList.length; i++) {
+			for (
+				var node = nodeList[i];
+				node == nodeList[i] || isDescendant(node, nodeList[i]);
+				node = nextNode(node)
+			) {
+				if (isHtmlElement(node)
+				&& node.parentNode
+				// FIXME: Extremely partial list for testing
+				&& ["A", "AUDIO", "BR", "DIV", "HR", "IMG", "P", "TD", "VIDEO", "WBR"].indexOf(node.tagName) == -1) {
+					elementsToRemove.push(node);
+				}
+			}
+		}
+
+		// "For each element in elements to remove:"
+		for (var i = 0; i < elementsToRemove.length; i++) {
+			var element = elementsToRemove[i];
+
+			// "While element has children, insert the first child of element
+			// into the parent of element immediately before element,
+			// preserving ranges."
+			while (element.childNodes.length) {
+				movePreservingRanges(element.firstChild, element.parentNode, getNodeIndex(element));
+			}
+
+			// "Remove element from its parent."
+			element.parentNode.removeChild(element);
+		}
+
+		// "For each of the entries in the following table, in the given order:
+		// decompose the active range again; then set the value of the
+		// resulting nodes, with command and new value as given."
+		var table = {
+			"subscript": "baseline",
+			"bold": "normal",
+			"fontname": null,
+			"fontsize": null,
+			"forecolor": null,
+			"hilitecolor": null,
+			"italic": "normal",
+			"strikethrough": null,
+			"underline": null,
+		};
+		for (var command in table) {
+			var nodeList = decomposeRange(getActiveRange());
+			for (var i = 0; i < nodeList.length; i++) {
+				setNodeValue(nodeList[i], command, table[command]);
+			}
+		}
+	}
+};
+//@}
+
+///// The strikethrough command /////
+//@{
+commands.strikethrough = {
+	action: function() {
+		// "Decompose the active range. If the state is then false, set the
+		// value of each returned node to "line-through", otherwise set the
+		// value to null."
+		var nodeList = decomposeRange(getActiveRange());
+		var newValue = commands.strikethrough.state() ? null : "line-through";
+		for (var i = 0; i < nodeList.length; i++) {
+			setNodeValue(nodeList[i], "strikethrough", newValue);
+		}
+	}, state: function() { return stateHelper(function(node) {
+		// "True if every editable Text node that is effectively contained in
+		// the active range has effective value "line-through". Otherwise
+		// false."
+		return getEffectiveValue(node, "strikethrough") == "line-through";
+	})}
+};
+//@}
+
+///// The subscript command /////
+//@{
+commands.subscript = {
+	action: function() {
+		// "Decompose the active range, and let node list be the result."
+		var nodeList = decomposeRange(getActiveRange());
+
+		// "Let state be the state."
+		var state = commands.subscript.state();
+
+		// "Set the value of each node in node list to "baseline"."
+		for (var i = 0; i < nodeList.length; i++) {
+			setNodeValue(nodeList[i], "subscript", "baseline");
+		}
+
+		// "If state is false, decompose the active range again and set the
+		// value of each returned node to "sub"."
+		if (!state) {
+			nodeList = decomposeRange(getActiveRange());
+			for (var i = 0; i < nodeList.length; i++) {
+				setNodeValue(nodeList[i], "subscript", "sub");
+			}
+		}
+	}, state: function() { return stateHelper(function(node) {
+		// "True if every editable Text node that is effectively contained in
+		// the active range has effective value "sub". Otherwise false."
+		return getEffectiveValue(node, "subscript") == "sub";
+	})}, relevantCssProperty: "verticalAlign"
+};
+//@}
+
+///// The superscript command /////
+//@{
+commands.superscript = {
+	action: function() {
+		// "Decompose the active range, and let node list be the result."
+		var nodeList = decomposeRange(getActiveRange());
+
+		// "Let state be the state."
+		var state = commands.superscript.state();
+
+		// "Set the value of each node in node list to "baseline"."
+		for (var i = 0; i < nodeList.length; i++) {
+			setNodeValue(nodeList[i], "superscript", "baseline");
+		}
+
+		// "If state is false, decompose the active range again and set the
+		// value of each returned node to "super"."
+		if (!state) {
+			nodeList = decomposeRange(getActiveRange());
+			for (var i = 0; i < nodeList.length; i++) {
+				setNodeValue(nodeList[i], "superscript", "super");
+			}
+		}
+	}, state: function() { return stateHelper(function(node) {
+		// "True if every editable Text node that is effectively contained in
+		// the active range has effective value "super". Otherwise false."
+		return getEffectiveValue(node, "superscript") == "super";
+	})}, relevantCssProperty: "verticalAlign"
+};
+//@}
+
+///// The underline command /////
+//@{
+commands.underline = {
+	action: function() {
+		// "Decompose the active range. If the state is then false, set the
+		// value of each returned node to "underline", otherwise set the value
+		// to null."
+		var nodeList = decomposeRange(getActiveRange());
+		var newValue = commands.underline.state() ? null : "underline";
+		for (var i = 0; i < nodeList.length; i++) {
+			setNodeValue(nodeList[i], "underline", newValue);
+		}
+	}, state: function() { return stateHelper(function(node) {
+		// "True if every editable Text node that is effectively contained in
+		// the active range has effective value "underline". Otherwise false."
+		return getEffectiveValue(node, "underline") === "underline";
+	})}
+};
+//@}
+
+///// The unlink command /////
+//@{
+commands.unlink = {
+	action: function() {
+		// "Let hyperlinks be a list of every a element that has an href
+		// attribute and is contained in the active range or is an ancestor of
+		// one of its boundary points."
+		//
+		// As usual, take care to ensure it's tree order.  The correctness of
+		// the following is left as an exercise for the reader.
+		var range = getActiveRange();
+		var hyperlinks = [];
+		for (
+			var node = range.startContainer;
+			node;
+			node = node.parentNode
+		) {
+			if (isHtmlElement(node, "A")
+			&& node.hasAttribute("href")) {
+				hyperlinks.unshift(node);
+			}
+		}
+		for (
+			var node = range.startContainer;
+			node != nextNodeDescendants(range.endContainer);
+			node = nextNode(node)
+		) {
+			if (isHtmlElement(node, "A")
+			&& node.hasAttribute("href")
+			&& (isContained(node, range)
+			|| isAncestor(node, range.endContainer)
+			|| node == range.endContainer)) {
+				hyperlinks.push(node);
+			}
+		}
+
+		// "Clear the value of each member of hyperlinks."
+		for (var i = 0; i < hyperlinks.length; i++) {
+			clearValue(hyperlinks[i], "unlink");
+		}
+	}
+};
 //@}
 
 
@@ -3593,7 +4266,8 @@ function outdentNode(node) {
 ///// Toggling lists /////
 //@{
 
-function toggleLists(range, tagName) {
+function toggleLists(tagName) {
+	var range = getActiveRange();
 	tagName = tagName.toUpperCase();
 
 	// "Let other tag name be "ol" if tag name is "ul", and "ul" if tag name is
@@ -3991,91 +4665,20 @@ function justifySelection(alignment) {
 
 //@}
 
-function getRelevantCssProperty(command) {
-	var prop = {
-		bold: "fontWeight",
-		fontname: "fontFamily",
-		fontsize: "fontSize",
-		forecolor: "color",
-		hilitecolor: "backgroundColor",
-		italic: "fontStyle",
-		subscript: "verticalAlign",
-		superscript: "verticalAlign",
-	}[command];
-
-	if (typeof prop == "undefined") {
-		return null;
-	}
-	return prop;
-}
-
-function myExecCommand(command, showUI, value, range) {
-	command = command.toLowerCase();
-
-	if (command != "stylewithcss" && command != "usecss") {
-		if (typeof range == "undefined" && getSelection().rangeCount) {
-			range = getSelection().getRangeAt(0);
-		}
-
-		if (!range) {
-			return;
-		}
-	}
-
-	globalRange = range;
-
-	switch (command) {
-		case "bold":
-		// "Decompose the range. If the state of the range for this command is
-		// then true, set the value of each returned node with new value
-		// "normal". Otherwise, set their value with new value "bold"."
-		var nodeList = decomposeRange(range);
-		var newValue = getState("bold", range) ? "normal" : "bold";
-		for (var i = 0; i < nodeList.length; i++) {
-			setNodeValue(nodeList[i], command, newValue);
-		}
-		break;
-
-		case "createlink":
-		// "If value is the empty string, abort these steps and do nothing."
-		if (value === "") {
-			break;
-		}
-
-		// "Decompose the range, and let node list be the result."
-		var nodeList = decomposeRange(range);
-
-		// "For each a element that has an href attribute and is an ancestor of
-		// some node in node list, set that element's href attribute to value."
-		for (var i = 0; i < nodeList.length; i++) {
-			var candidate = nodeList[i].parentNode;
-			while (candidate) {
-				if (isHtmlElement(candidate, "A")
-				&& candidate.hasAttribute("href")) {
-					candidate.setAttribute("href", value);
-				}
-
-				candidate = candidate.parentNode;
-			}
-		}
-
-		// "Set the value of each node in node list to value."
-		for (var i = 0; i < nodeList.length; i++) {
-			setNodeValue(nodeList[i], command, value);
-		}
-		break;
-
-		case "delete":
+///// The delete command /////
+//@{
+commands["delete"] = {
+	action: function() {
 		// "If the active range is not collapsed, delete the contents of the
 		// active range and abort these steps."
-		if (!range.collapsed) {
-			deleteContents(range);
+		if (!getActiveRange().collapsed) {
+			deleteContents(getActiveRange());
 			return;
 		}
 
 		// "Let node and offset be the active range's start node and offset."
-		var node = range.startContainer;
-		var offset = range.startOffset;
+		var node = getActiveRange().startContainer;
+		var offset = getActiveRange().startOffset;
 
 		// "Repeat the following steps:"
 		while (true) {
@@ -4127,8 +4730,8 @@ function myExecCommand(command, showUI, value, range) {
 		// steps."
 		if (node.nodeType == Node.TEXT_NODE
 		&& offset != 0) {
-			range.setStart(node, offset);
-			range.setEnd(node, offset);
+			getActiveRange().setStart(node, offset);
+			getActiveRange().setEnd(node, offset);
 			deleteContents(node, offset - 1, node, offset);
 			return;
 		}
@@ -4145,8 +4748,8 @@ function myExecCommand(command, showUI, value, range) {
 		if (0 <= offset - 1
 		&& offset - 1 < node.childNodes.length
 		&& isHtmlElement(node.childNodes[offset - 1], ["br", "hr", "img"])) {
-			range.setStart(node, offset);
-			range.setEnd(node, offset);
+			getActiveRange().setStart(node, offset);
+			getActiveRange().setEnd(node, offset);
 			deleteContents(node, offset - 1, node, offset);
 			return;
 		}
@@ -4244,11 +4847,11 @@ function myExecCommand(command, showUI, value, range) {
 		&& isHtmlElement(startNode.childNodes[startOffset - 1], "table")) {
 			// "Call collapse(start node, start offset − 1) on the context
 			// object's Selection."
-			range.setStart(startNode, startOffset - 1);
+			getActiveRange().setStart(startNode, startOffset - 1);
 
 			// "Call extend(start node, start offset) on the context object's
 			// Selection."
-			range.setEnd(startNode, startOffset);
+			getActiveRange().setEnd(startNode, startOffset);
 
 			// "Abort these steps."
 			return;
@@ -4268,8 +4871,8 @@ function myExecCommand(command, showUI, value, range) {
 			)
 		)) {
 			// "Call collapse(node, offset) on the Selection."
-			range.setStart(node, offset);
-			range.setEnd(node, offset);
+			getActiveRange().setStart(node, offset);
+			getActiveRange().setEnd(node, offset);
 
 			// "Delete the contents of the range with start (start node, start
 			// offset − 1) and end (start node, start offset)."
@@ -4331,137 +4934,14 @@ function myExecCommand(command, showUI, value, range) {
 		// "Delete the contents of the range with start (start node, start
 		// offset) and end (node, offset)."
 		deleteContents(startNode, startOffset, node, offset);
-		break;
+	}
+};
+//@}
 
-		case "fontname":
-		// "Decompose the range, then set the value of each returned node with
-		// new value equal to value."
-		var nodeList = decomposeRange(range);
-		for (var i = 0; i < nodeList.length; i++) {
-			setNodeValue(nodeList[i], command, value);
-		}
-		break;
-
-		case "fontsize":
-		// "If value is the empty string, do nothing and abort these steps."
-		if (value === "") {
-			return;
-		}
-
-		// "Strip leading and trailing whitespace from value."
-		//
-		// Cheap hack, not following the actual algorithm.
-		value = value.trim();
-
-		// "If value is a valid floating point number, or would be a valid
-		// floating point number if a single leading "+" character were
-		// stripped:"
-		if (/^[-+]?[0-9]+(\.[0-9]+)?([eE][-+]?[0-9]+)?$/.test(value)) {
-			var mode;
-
-			// "If the first character of value is "+", delete the character
-			// and let mode be "relative-plus"."
-			if (value[0] == "+") {
-				value = value.slice(1);
-				mode = "relative-plus";
-			// "Otherwise, if the first character of value is "-", delete the
-			// character and let mode be "relative-minus"."
-			} else if (value[0] == "-") {
-				value = value.slice(1);
-				mode = "relative-minus";
-			// "Otherwise, let mode be "absolute"."
-			} else {
-				mode = "absolute";
-			}
-
-			// "Apply the rules for parsing non-negative integers to value, and
-			// let number be the result."
-			//
-			// Another cheap hack.
-			var num = parseInt(value);
-
-			// "If mode is "relative-plus", add three to number."
-			if (mode == "relative-plus") {
-				num += 3;
-			}
-
-			// "If mode is "relative-minus", negate number, then add three to
-			// it."
-			if (mode == "relative-minus") {
-				num = 3 - num;
-			}
-
-			// "If number is less than one, let number equal 1."
-			if (num < 1) {
-				num = 1;
-			}
-
-			// "If number is greater than seven, let number equal 7."
-			if (num > 7) {
-				num = 7;
-			}
-
-			// "Set value to the string here corresponding to number:" [table
-			// omitted]
-			value = {
-				1: "xx-small",
-				2: "small",
-				3: "medium",
-				4: "large",
-				5: "x-large",
-				6: "xx-large",
-				7: "xxx-large"
-			}[num];
-		}
-
-		// "If value is not one of the strings "xx-small", "x-small", "small",
-		// "medium", "large", "x-large", "xx-large", "xxx-large", and is not a
-		// valid CSS absolute length, then do nothing and abort these steps."
-		//
-		// More cheap hacks to skip valid CSS absolute length checks.
-		if (["xx-small", "x-small", "small", "medium", "large", "x-large", "xx-large", "xxx-large"].indexOf(value) == -1
-		&& !/^[0-9]+(\.[0-9]+)?(cm|mm|in|pt|pc)$/.test(value)) {
-			return;
-		}
-
-		// "Decompose the range, then set the value of each returned node to
-		// value."
-		var nodeList = decomposeRange(range);
-		for (var i = 0; i < nodeList.length; i++) {
-			setNodeValue(nodeList[i], command, value);
-		}
-		break;
-
-		case "forecolor":
-		// See later for formatblock
-		case "hilitecolor":
-		// "If value is not a valid CSS color, prepend "#" to it."
-		//
-		// "If value is still not a valid CSS color, or if it is currentColor,
-		// do nothing and abort these steps."
-		//
-		// Cheap hack for testing, no attempt to be comprehensive.
-		if (/^([0-9a-fA-F]{3}){1,2}$/.test(value)) {
-			value = "#" + value;
-		}
-		if (!/^#([0-9a-fA-F]{3}){1,2}$/.test(value)
-		&& !/^(rgba?|hsla?)\(.*\)$/.test(value)
-		// Not gonna list all the keywords, only the ones I use.
-		&& value != "red"
-		&& value != "cornsilk"
-		&& value != "transparent") {
-			return;
-		}
-
-		// "Decompose the range, then set the value of each returned node to
-		// value."
-		var nodeList = decomposeRange(range);
-		for (var i = 0; i < nodeList.length; i++) {
-			setNodeValue(nodeList[i], command, value);
-		}
-		break;
-
-		case "formatblock":
+///// The formatBlock command /////
+//@{
+commands.formatblock = {
+	action: function(value) {
 		// "If value begins with a "<" character and ends with a ">" character,
 		// remove the first and last characters from it."
 		if (/^<.*>$/.test(value)) {
@@ -4479,7 +4959,7 @@ function myExecCommand(command, showUI, value, range) {
 		}
 
 		// "Block-extend the active range, and let new range be the result."
-		var newRange = blockExtendRange(range);
+		var newRange = blockExtendRange(getActiveRange());
 
 		// "Let node list be an empty list of nodes."
 		var nodeList = [];
@@ -4496,25 +4976,30 @@ function myExecCommand(command, showUI, value, range) {
 
 		// "Block-format node list."
 		blockFormat(nodeList, value);
-		break;
+	}
+};
+//@}
 
-		case "indent":
+///// The indent command /////
+//@{
+commands.indent = {
+	action: function() {
 		// "Let items be a list of all lis that are ancestor containers of the
-		// range's start and/or end node."
+		// active range's start and/or end node."
 		//
 		// Has to be in tree order, remember!
 		var items = [];
-		for (var node = range.endContainer; node != range.commonAncestorContainer; node = node.parentNode) {
+		for (var node = getActiveRange().endContainer; node != getActiveRange().commonAncestorContainer; node = node.parentNode) {
 			if (isHtmlElement(node, "LI")) {
 				items.unshift(node);
 			}
 		}
-		for (var node = range.startContainer; node != range.commonAncestorContainer; node = node.parentNode) {
+		for (var node = getActiveRange().startContainer; node != getActiveRange().commonAncestorContainer; node = node.parentNode) {
 			if (isHtmlElement(node, "LI")) {
 				items.unshift(node);
 			}
 		}
-		for (var node = range.commonAncestorContainer; node; node = node.parentNode) {
+		for (var node = getActiveRange().commonAncestorContainer; node; node = node.parentNode) {
 			if (isHtmlElement(node, "LI")) {
 				items.unshift(node);
 			}
@@ -4525,8 +5010,8 @@ function myExecCommand(command, showUI, value, range) {
 			normalizeSublists(items[i]);
 		}
 
-		// "Block-extend the range, and let new range be the result."
-		var newRange = blockExtendRange(range);
+		// "Block-extend the active range, and let new range be the result."
+		var newRange = blockExtendRange(getActiveRange());
 
 		// "Let node list be a list of nodes, initially empty."
 		var nodeList = [];
@@ -4569,9 +5054,17 @@ function myExecCommand(command, showUI, value, range) {
 			// "Indent sublist."
 			indentNodes(sublist);
 		}
-		break;
+	}
+};
+//@}
 
-		case "inserthorizontalrule":
+///// The insertHorizontalRule command /////
+//@{
+commands.inserthorizontalrule = {
+	action: function() {
+		// "Let range be the active range."
+		var range = getActiveRange();
+
 		// "While range's start offset is 0 and its start node's parent is not
 		// null, set range's start to (parent of start node, index of start
 		// node)."
@@ -4612,83 +5105,25 @@ function myExecCommand(command, showUI, value, range) {
 		range.setEnd(hr.parentNode, 1 + getNodeIndex(hr));
 		getSelection().removeAllRanges();
 		getSelection().addRange(range);
-		break;
+	}
+};
+//@}
 
-		case "inserthtml":
+///// The insertOrderedList command /////
+commands.insertorderedlist = {
+	// "Toggle lists with tag name "ol"."
+	action: function() { toggleLists("ol") }
+};
+
+///// The insertParagraph command /////
+//@{
+commands.insertparagraph = {
+	action: function() {
 		// "Delete the contents of the active range."
-		deleteContents(range);
+		deleteContents(getActiveRange());
 
-		// "Let frag be the result of calling createContextualFragment(value)
-		// on the active range."
-		var frag = range.createContextualFragment(value);
-
-		// "Let descendants be all descendants of frag."
-		var descendants = getDescendants(frag);
-
-		// "Let last child be the lastChild of frag."
-		var lastChild = frag.lastChild;
-
-		// "Call insertNode(frag) on the active range."
-		range.insertNode(frag);
-
-		// "If last child is not null, set the start and end of the active
-		// range to (last child, length of last child)."
-		if (lastChild) {
-			range.setStart(lastChild, getNodeLength(lastChild));
-			range.setEnd(lastChild, getNodeLength(lastChild));
-		}
-
-		// "Fix disallowed ancestors of each member of descendants."
-		for (var i = 0; i < descendants.length; i++) {
-			fixDisallowedAncestors(descendants[i]);
-		}
-		break;
-
-		case "insertimage":
-		// "If value is the empty string, abort these steps and do nothing."
-		if (value === "") {
-			return;
-		}
-
-		// "Delete the contents of the active range."
-		deleteContents(range);
-
-		// "Let img be the result of calling createElement("img") on the
-		// context object."
-		var img = document.createElement("img");
-
-		// "Run setAttribute("src", value) on img."
-		img.setAttribute("src", value);
-
-		// "Run insertNode(img) on the range."
-		range.insertNode(img);
-
-		// "Run collapse() on the Selection, with first argument equal to the
-		// parent of img and the second argument equal to one plus the index of
-		// img."
-		//
-		// Not everyone actually supports collapse(), so we do it manually
-		// instead.  Also, we need to modify the actual range we're given as
-		// well, for the sake of autoimplementation.html's range-filling-in.
-		range.setStart(img.parentNode, 1 + getNodeIndex(img));
-		range.setEnd(img.parentNode, 1 + getNodeIndex(img));
-		getSelection().removeAllRanges();
-		getSelection().addRange(range);
-
-		// IE adds width and height attributes for some reason, so remove those
-		// to actually do what the spec says.
-		img.removeAttribute("width");
-		img.removeAttribute("height");
-		break;
-
-		case "insertorderedlist":
-		// "Toggle lists with tag name "ol"."
-		toggleLists(range, "ol");
-		break;
-
-		case "insertparagraph":
-		// "Delete the contents of the active range."
-		deleteContents(range);
+		// "Let range be the active range."
+		var range = getActiveRange();
 
 		// "Let node and offset be range's start node and offset."
 		var node = range.startContainer;
@@ -4936,57 +5371,60 @@ function myExecCommand(command, showUI, value, range) {
 
 		// "Set the start of range to (new container, 0)."
 		range.setStart(newContainer, 0);
-		break;
+	}
+};
+//@}
 
-		case "insertunorderedlist":
-		// "Toggle lists with tag name "ul"."
-		toggleLists(range, "ul");
-		break;
+///// The insertUnorderedList command /////
+commands.insertunorderedlist = {
+	// "Toggle lists with tag name "ul"."
+	action: function() { toggleLists("ul") }
+};
 
-		case "italic":
-		// "Decompose the range. If the state of the range for this command is
-		// then true, set the value of each returned node with new value
-		// "normal". Otherwise, set their value with new value "italic"."
-		var nodeList = decomposeRange(range);
-		var newValue = getState("italic", range) ? "normal" : "italic";
-		for (var i = 0; i < nodeList.length; i++) {
-			setNodeValue(nodeList[i], command, newValue);
-		}
-		break;
+///// The justifyCenter command /////
+commands.justifycenter = {
+	// "Justify the selection with alignment "center"."
+	action: function() { justifySelection("center") }
+};
 
-		case "justifycenter":
-		justifySelection("center");
-		break;
+///// The justifyFull command /////
+commands.justifyfull = {
+	// "Justify the selection with alignment "justify"."
+	action: function() { justifySelection("justify") }
+};
 
-		case "justifyfull":
-		justifySelection("justify");
-		break;
+///// The justifyLeft command /////
+commands.justifyleft = {
+	// "Justify the selection with alignment "left"."
+	action: function() { justifySelection("left") }
+};
 
-		case "justifyleft":
-		justifySelection("left");
-		break;
+///// The justifyRight command /////
+commands.justifyright = {
+	// "Justify the selection with alignment "right"."
+	action: function() { justifySelection("right") }
+};
 
-		case "justifyright":
-		justifySelection("right");
-		break;
-
-		case "outdent":
+///// The outdent command /////
+//@{
+commands.outdent = {
+	action: function() {
 		// "Let items be a list of all lis that are ancestor containers of the
-		// range's start and/or end node."
+		// active range's start and/or end node."
 		//
 		// Has to be in tree order, remember!
 		var items = [];
-		for (var node = range.endContainer; node != range.commonAncestorContainer; node = node.parentNode) {
+		for (var node = getActiveRange().endContainer; node != getActiveRange().commonAncestorContainer; node = node.parentNode) {
 			if (isHtmlElement(node, "LI")) {
 				items.unshift(node);
 			}
 		}
-		for (var node = range.startContainer; node != range.commonAncestorContainer; node = node.parentNode) {
+		for (var node = getActiveRange().startContainer; node != getActiveRange().commonAncestorContainer; node = node.parentNode) {
 			if (isHtmlElement(node, "LI")) {
 				items.unshift(node);
 			}
 		}
-		for (var node = range.commonAncestorContainer; node; node = node.parentNode) {
+		for (var node = getActiveRange().commonAncestorContainer; node; node = node.parentNode) {
 			if (isHtmlElement(node, "LI")) {
 				items.unshift(node);
 			}
@@ -4997,8 +5435,8 @@ function myExecCommand(command, showUI, value, range) {
 			normalizeSublists(items[i]);
 		}
 
-		// "Block-extend the range, and let new range be the result."
-		var newRange = blockExtendRange(range);
+		// "Block-extend the active range, and let new range be the result."
+		var newRange = blockExtendRange(getActiveRange());
 
 		// "Let node list be a list of nodes, initially empty."
 		var nodeList = [];
@@ -5070,314 +5508,91 @@ function myExecCommand(command, showUI, value, range) {
 				fixDisallowedAncestors(sublist[i]);
 			}
 		}
-		break;
-
-		case "removeformat":
-		// "Decompose the range, and let node list be the result."
-		var nodeList = decomposeRange(range);
-
-		// "For each node in node list, unset the style attribute of node (if
-		// it's an Element) and then all its Element descendants."
-		for (var i = 0; i < nodeList.length; i++) {
-			for (
-				var node = nodeList[i];
-				node != nextNodeDescendants(nodeList[i]);
-				node = nextNode(node)
-			) {
-				if (node.nodeType == Node.ELEMENT_NODE) {
-					node.removeAttribute("style");
-				}
-			}
-		}
-
-		// "Let elements to remove be a list of all HTML elements that are the
-		// same as or descendants of some member of node list and have non-null
-		// parents and satisfy (insert conditions here)."
-		var elementsToRemove = [];
-		for (var i = 0; i < nodeList.length; i++) {
-			for (
-				var node = nodeList[i];
-				node == nodeList[i] || isDescendant(node, nodeList[i]);
-				node = nextNode(node)
-			) {
-				if (isHtmlElement(node)
-				&& node.parentNode
-				// FIXME: Extremely partial list for testing
-				&& ["A", "AUDIO", "BR", "DIV", "HR", "IMG", "P", "TD", "VIDEO", "WBR"].indexOf(node.tagName) == -1) {
-					elementsToRemove.push(node);
-				}
-			}
-		}
-
-		// "For each element in elements to remove:"
-		for (var i = 0; i < elementsToRemove.length; i++) {
-			var element = elementsToRemove[i];
-
-			// "While element has children, insert the first child of element
-			// into the parent of element immediately before element,
-			// preserving ranges."
-			while (element.childNodes.length) {
-				movePreservingRanges(element.firstChild, element.parentNode, getNodeIndex(element));
-			}
-
-			// "Remove element from its parent."
-			element.parentNode.removeChild(element);
-		}
-
-		// "For each of the entries in the following table, in the given order:
-		// decompose the range again; then set the value of the resulting
-		// nodes, with command and new value as given."
-		var table = {
-			"subscript": "baseline",
-			"bold": "normal",
-			"fontname": null,
-			"fontsize": null,
-			"forecolor": null,
-			"hilitecolor": null,
-			"italic": "normal",
-			"strikethrough": null,
-			"underline": null,
-		};
-		for (var command in table) {
-			var nodeList = decomposeRange(range);
-			for (var i = 0; i < nodeList.length; i++) {
-				setNodeValue(nodeList[i], command, table[command]);
-			}
-		}
-		break;
-
-		case "strikethrough":
-		// "Decompose the range. If the state of the range for this command is
-		// then true, set the value of each returned node to null. Otherwise,
-		// set their value to "line-through"."
-		var nodeList = decomposeRange(range);
-		var newValue = getState(command, range) ? null : "line-through";
-		for (var i = 0; i < nodeList.length; i++) {
-			setNodeValue(nodeList[i], command, newValue);
-		}
-		break;
-
-		case "stylewithcss":
-		// "Convert value to a boolean according to the algorithm in WebIDL,
-		// and set the CSS styling flag to the result."
-		cssStylingFlag = Boolean(value);
-		break;
-
-		case "subscript":
-		// "Decompose the range. If the state of the range for this command is
-		// then true, set the value of each returned node with new value
-		// "baseline". Otherwise, set their value with new value "baseline",
-		// then decompose the range again and set the value of each returned
-		// node with new value "sub"."
-		var nodeList = decomposeRange(range);
-		if (getState(command, range)) {
-			for (var i = 0; i < nodeList.length; i++) {
-				setNodeValue(nodeList[i], command, "baseline");
-			}
-		} else {
-			for (var i = 0; i < nodeList.length; i++) {
-				setNodeValue(nodeList[i], command, "baseline");
-			}
-			var nodeList = decomposeRange(range);
-			for (var i = 0; i < nodeList.length; i++) {
-				setNodeValue(nodeList[i], command, "sub");
-			}
-		}
-		break;
-
-		case "superscript":
-		// "Decompose the range. If the state of the range for this command is
-		// then true, set the value of each returned node with new value
-		// "baseline". Otherwise, set their value with new value "baseline",
-		// then decompose the range again and set the value of each returned
-		// node with new value "super"."
-		var nodeList = decomposeRange(range);
-		if (getState(command, range)) {
-			for (var i = 0; i < nodeList.length; i++) {
-				setNodeValue(nodeList[i], command, "baseline");
-			}
-		} else {
-			for (var i = 0; i < nodeList.length; i++) {
-				setNodeValue(nodeList[i], command, "baseline");
-			}
-			var nodeList = decomposeRange(range);
-			for (var i = 0; i < nodeList.length; i++) {
-				setNodeValue(nodeList[i], command, "super");
-			}
-		}
-		break;
-
-		case "underline":
-		// "Decompose the range. If the state of the range for this command is
-		// then true, set the value of each returned node to null. Otherwise,
-		// set their value to "underline"."
-		var nodeList = decomposeRange(range);
-		var newValue = getState("underline", range) ? null : "underline";
-		for (var i = 0; i < nodeList.length; i++) {
-			setNodeValue(nodeList[i], command, newValue);
-		}
-		break;
-
-		case "unlink":
-		// "Let hyperlinks be a list of every a element that has an href
-		// attribute and is contained in the range or is an ancestor of one of
-		// its boundary points."
-		//
-		// As usual, take care to ensure it's tree order.  The correctness of
-		// the following is left as an exercise for the reader.
-		var hyperlinks = [];
-		for (
-			var node = range.startContainer;
-			node;
-			node = node.parentNode
-		) {
-			if (isHtmlElement(node, "A")
-			&& node.hasAttribute("href")) {
-				hyperlinks.unshift(node);
-			}
-		}
-		for (
-			var node = range.startContainer;
-			node != nextNodeDescendants(range.endContainer);
-			node = nextNode(node)
-		) {
-			if (isHtmlElement(node, "A")
-			&& node.hasAttribute("href")
-			&& (isContained(node, range)
-			|| isAncestor(node, range.endContainer)
-			|| node == range.endContainer)) {
-				hyperlinks.push(node);
-			}
-		}
-
-		// "Clear the value of each member of hyperlinks."
-		for (var i = 0; i < hyperlinks.length; i++) {
-			clearValue(hyperlinks[i], command);
-		}
-		break;
-
-		case "usecss":
-		// "Convert value to a boolean according to the algorithm in WebIDL,
-		// and set the CSS styling flag to the negation of the result."
-		cssStylingFlag = !value;
-		break;
-
-		default:
-		break;
 	}
-}
+};
+//@}
 
-function myQueryCommandState(command) {
-	command = command.toLowerCase();
 
-	if (!getSelection().rangeCount) {
-		return false;
-	}
+//////////////////////////////////
+///// Miscellaneous commands /////
+//////////////////////////////////
 
-	var range = getSelection().getRangeAt(0);
+///// The selectAll command /////
+//@{
+commands.selectall = {
+	// Note, this ignores the whole globalRange/getActiveRange() thing and
+	// works with actual selections.  Not suitable for autoimplementation.html.
+	action: function() {
+		// "Let target be the body element of the context object."
+		var target = document.body;
 
-	return getState(command, range);
-}
-
-function getState(command, range) {
-	if (command == "stylewithcss") {
-		return cssStylingFlag;
-	}
-
-	if (command != "bold"
-	&& command != "italic"
-	&& command != "strikethrough"
-	&& command != "underline"
-	&& command != "subscript"
-	&& command != "superscript") {
-		return false;
-	}
-
-	// XXX: This algorithm for getting all effectively contained nodes might be
-	// wrong . . .
-	var node = range.startContainer;
-	while (node.parentNode && node.parentNode.firstChild == node) {
-		node = node.parentNode;
-	}
-	var stop = nextNodeDescendants(range.endContainer);
-
-	for (; node && node != stop; node = nextNode(node)) {
-		if (!isEffectivelyContained(node, range)) {
-			continue;
+		// "If target is null, let target be the context object's
+		// documentElement."
+		if (!target) {
+			target = document.documentElement;
 		}
 
-		if (node.nodeType != Node.TEXT_NODE) {
-			continue;
+		// "If target is null, let target be the context object."
+		if (!target) {
+			target = document;
 		}
 
-		if (!isEditable(node)) {
-			continue;
-		}
+		// "Call getSelection() on the context object, and call
+		// selectAllChildren(target) on the result."
+		getSelection().selectAllChildren(target);
+	}
+};
+//@}
 
-		if (command == "bold") {
-			// "True if every editable Text node that is effectively contained
-			// in the range has effective value at least 700. Otherwise false."
-			var fontWeight = getEffectiveValue(node, command);
-			if (fontWeight !== "bold"
-			&& fontWeight !== "700"
-			&& fontWeight !== "800"
-			&& fontWeight !== "900") {
-				return false;
-			}
-		} else if (command == "italic") {
-			// "True if every editable Text node that is effectively contained
-			// in the range has effective value either "italic" or "oblique".
-			// Otherwise false."
-			var fontStyle = getEffectiveValue(node, command);
-			if (fontStyle !== "italic"
-			&& fontStyle !== "oblique") {
-				return false;
-			}
-		} else if (command == "strikethrough") {
-			// "True if every editable Text node that is effectively contained
-			// in the range has effective value "line-through". Otherwise
-			// false."
-			var textDecoration = getEffectiveValue(node, command);
-			if (textDecoration !== "line-through") {
-				return false;
-			}
-		} else if (command == "underline") {
-			// "True if every editable Text node that is effectively contained
-			// in the range has effective value "underline". Otherwise false."
-			var textDecoration = getEffectiveValue(node, command);
-			if (textDecoration !== "underline") {
-				return false;
-			}
-		} else if (command == "subscript") {
-			// "True if every editable Text node that is effectively contained
-			// in the range has effective value "sub". Otherwise false."
-			var verticalAlign = getEffectiveValue(node, command);
-			if (verticalAlign !== "sub") {
-				return false;
-			}
-		} else if (command == "superscript") {
-			// "True if every editable Text node that is effectively contained
-			// in the range has effective value "super". Otherwise false."
-			var verticalAlign = getEffectiveValue(node, command);
-			if (verticalAlign !== "super") {
-				return false;
-			}
+///// The styleWithCSS command /////
+//@{
+commands.stylewithcss = {
+	action: function(value) {
+		// "If value is an ASCII case-insensitive match for the string
+		// "false", set the CSS styling flag to false. Otherwise, set the
+		// CSS styling flag to true."
+		cssStylingFlag = String(value).toLowerCase() != "false";
+	}, state: function() { return cssStylingFlag }
+};
+//@}
+
+///// The useCSS command /////
+//@{
+commands.usecss = {
+	action: function(value) {
+		// "If value is an ASCII case-insensitive match for the string "false",
+		// set the CSS styling flag to true. Otherwise, set the CSS styling
+		// flag to false."
+		cssStylingFlag = String(value).toLowerCase() == "false";
+	}
+};
+//@}
+
+
+// Done with command setup
+
+// "Commands may have an associated action, state, value, and/or relevant CSS
+// property. If not otherwise specified, the action for a command is to do
+// nothing, the state is false, the value is the empty string, and the relevant
+// CSS property is null."
+//
+// Don't dump the "command" variable into the global scope, it can cause bugs
+// because we have lots of local "command"s.
+(function() {
+	for (var command in commands) {
+		if (!("action" in commands[command])) {
+			commands[command].action = function() {};
+		}
+		if (!("state" in commands[command])) {
+			commands[command].state = function() { return false };
+		}
+		if (!("value" in commands[command])) {
+			commands[command].value = function() { return "" };
+		}
+		if (!("relevantCssProperty" in commands[command])) {
+			commands[command].relevantCssProperty = null;
 		}
 	}
-
-	return true;
-}
-
-function myQueryCommandValue(command) {
-	command = command.toLowerCase();
-
-	if (!getSelection().rangeCount) {
-		return "";
-	}
-
-	var range = getSelection().getRangeAt(0);
-
-	return "";
-}
+})();
 
 // vim: foldmarker=@{,@} foldmethod=marker

@@ -351,6 +351,14 @@ Requesting the value of an unknown command throws an exception in IE 9 RC and
 in Firefox 4b11.  It returns boolean false in Chrome 10, and the empty string
 in Opera 11. -->
 
+<!-- We have lots of options for the default value of commands.  Using bold as
+an example, IE 9 RC returns the boolean false, Firefox 4b11 and Opera 11 both
+return the empty string, Chrome 10 returns the string "false".  The HTML5 spec
+as of February 2011 mandates WebKit's behavior.  It makes sense to always
+return a string, a majority of string-returners return the empty string, and
+three out of the four return something that evaluates to false as a boolean, so
+I'll go with Firefox and Opera. -->
+
 <p>When <code><a href=#execcommand()>execCommand()</a></code> is invoked, the user agent must follow the
 <a href=#action>action</a> instructions given in this specification for
 <var title="">command</var>, with <var title="">showUI</var> and <var title="">value</var> passed to the
@@ -2414,15 +2422,6 @@ false depending on the first element.  All other browsers follow the same
 general idea as the spec, considering a range bold only if all text in it is
 bold, and this seems to match at least OpenOffice.org's bold feature. -->
 
-<p><a href=#value>Value</a>: Always the empty string.
-<!-- We have lots of options here (and presumably for all the others where
-value is meaningless).  IE 9 RC returns the boolean false, Firefox 4b11 and
-Opera 11 both return the empty string, Chrome 10 returns the string "false".
-The HTML5 spec as of February 2011 mandates WebKit's behavior.  It makes sense
-to always return a string, a majority of string-returners return the empty
-string, and three out of the four return something that evaluates to false as a
-boolean, so I'll go with Firefox and Opera. -->
-
 <p><a href=#relevant-css-property>Relevant CSS property</a>: "font-weight"
 
 
@@ -2478,10 +2477,8 @@ don't either. -->
   <var title="">value</var>.
 </ol>
 
-<p><a href=#state>State</a>: Always false.
-
-<p><a href=#value>Value</a>: Always the empty string.
-<!-- I'd have expected the value to be the URL, but guess not. -->
+<!-- I'd have expected the value to be the URL, but guess not: it's always
+false. -->
 
 
 <h3 id=the-fontname-command><span class=secno>6.11 </span><dfn>The <code title="">fontName</code> command</dfn></h3>
@@ -2508,8 +2505,6 @@ to special-case clicking OK without entering anything.  But here it's very
 likely that the font list will be fixed by the author (how many users will
 understand CSS font-family syntax?), so I don't think such usability concerns
 apply. -->
-
-<p><a href=#state>State</a>: Always false.
 
 <p><a href=#value>Value</a>: The computed value of the CSS property "font-family" for
 . . .
@@ -2712,12 +2707,11 @@ browsers, but it's unlikely to hurt and it makes sense.
   value</a> of each returned <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> to <var title="">value</var>.
 </ol>
 
-<p><a href=#state>State</a>: Always false.
-<!-- This matches IE 9 RC and Chrome 10.  Opera 11 seems to return true if
-there's some color style applied, false otherwise, which seems fairly useless;
-authors want to use value here, not state.  Firefox 4b11 throws an exception,
-which is an interesting approach, but I'll go with IE/WebKit, which makes at
-least as much sense. -->
+<!-- The state is undefined, thus always false.  This matches IE 9 RC and
+Chrome 10.  Opera 11 seems to return true if there's some color style applied,
+false otherwise, which seems fairly useless; authors want to use value here,
+not state.  Firefox 4b11 throws an exception, which is an interesting approach,
+but I'll go with IE/WebKit, which makes at least as much sense. -->
 
 <p><a href=#value>Value</a>: ?
 <!-- IE 9 RC returns the number 0 always, which makes no sense at all. -->
@@ -2759,8 +2753,6 @@ For color parsing, see the comment for foreColor. -->
   <li><a href=#decompose>Decompose</a> the <a href=#active-range>active range</a>, then <a href=#set-the-value>set the
   value</a> of each returned <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> to <var title="">value</var>.
 </ol>
-
-<p><a href=#state>State</a>: Always false.
 
 <p><a href=#relevant-css-property>Relevant CSS property</a>: "background-color"
 
@@ -2811,7 +2803,7 @@ For color parsing, see the comment for foreColor. -->
 
   <li>Let <var title="">range</var> be the <a href=#active-range>active range</a>.
 
-  <li><a href=#delete-the-contents>Delete the contents</a> of the <a href=#active-range>active range</a>.
+  <li><a href=#delete-the-contents>Delete the contents</a> of <var title="">range</var>.
 
   <li>Let <var title="">img</var> be the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("img")</a></code> on the
   <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>.
@@ -2842,8 +2834,6 @@ returned <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/d
 <p><a href=#state>State</a>: True if every <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node that
 is <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active range</a> has
 <a href=#effective-value>effective value</a> either "italic" or "oblique".  Otherwise false.
-
-<p><a href=#value>Value</a>: Always the empty string.
 
 <p><a href=#relevant-css-property>Relevant CSS property</a>: "font-style"
 
@@ -2983,8 +2973,6 @@ null.
 is <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active range</a> has
 <a href=#effective-value>effective value</a> "line-through".  Otherwise false.
 
-<p><a href=#value>Value</a>: Always the empty string.
-
 
 <h3 id=the-subscript-command><span class=secno>6.20 </span><dfn>The <code title="">subscript</code> command</dfn></h3>
 
@@ -3095,8 +3083,6 @@ may be.
 is <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active range</a> has
 <a href=#effective-value>effective value</a> "underline".  Otherwise false.
 
-<p><a href=#value>Value</a>: Always the empty string.
-
 
 <h3 id=the-unlink-command><span class=secno>6.23 </span><dfn>The <code title="">unlink</code> command</dfn></h3>
 
@@ -3117,10 +3103,6 @@ starting at 2011-05-13 at 16:53 EDT (UTC-0400).
 
   <li><a href=#clear-the-value>Clear the value</a> of each member of <var title="">hyperlinks</var>.
 </ol>
-
-<p><a href=#state>State</a>: Always false.
-
-<p><a href=#value>Value</a>: Always the empty string.
 
 
 <h2 id=block-formatting-commands><span class=secno>7 </span>Block formatting commands</h2>

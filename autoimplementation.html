@@ -78,6 +78,8 @@ function runTests(command) {
 	for (var i = 0; i < inputs.length; i++) {
 		inputs[i].value = "";
 	}
+
+	document.querySelector("#" + command).scrollIntoView();
 }
 
 function addTest(command) {

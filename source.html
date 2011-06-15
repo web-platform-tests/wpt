@@ -562,6 +562,7 @@ substantially sometime in the future, but I'm not sure exactly what to aim for.
     <tr><td>table <td>caption, col, colgroup, tbody, td, tfoot, th, thead, tr
     <tr><td>tbody, tfoot, thead <td>td, th, tr
     <tr><td>tr <td>td, th
+    <tr><td>ol, ul <td>li, ol, ul
   </table>
 
   <li>If <var>child</var> is "body", "caption", "col", "colgroup", "frame",
@@ -2750,15 +2751,29 @@ For color parsing, see the comment for foreColor. -->
   title=dom-Range-createContextualFragment>createContextualFragment(<var>value</var>)</code>
   on the <span>active range</span>.
 
+  <li>Let <var>last child</var> be the [[lastchild]] of <var>frag</var>.
+
+  <li>If <var>last child</var> is null, abort these steps.
+  <!-- Firefox 5.0a2 also seems to not add empty elements like <b></b>, but
+  Chrome 13 dev and Opera 11.11 do. -->
+
   <li>Let <var>descendants</var> be all [[descendants]] of <var>frag</var>.
 
-  <li>Let <var>last child</var> be the [[lastchild]] of <var>frag</var>.
+  <li>If the <span>active range</span>'s [[startnode]] is a <span>prohibited
+  paragraph child</span> whose sole [[child]] is a [[br]], and its
+  [[startoffset]] is 0, remove its [[startnode]]'s [[child]] from it.
+  <!--
+  This is so we don't get something like
+    <div>[foo]</div>
+    -> <div>{}<br></div>
+    -> <div><p>Some HTML{}</p><br></div>
+  with an extra bogus line break at the end.
+  -->
 
   <li>Call [[insertnode|<var>frag</var>]] on the <span>active range</span>.
 
-  <li>If <var>last child</var> is not null, set the [[rangestart]] and
-  [[rangeend]] of the <span>active range</span> to (<var>last child</var>,
-  [[nodelength]] of <var>last child</var>).
+  <li>Set the <span>active range</span>'s [[rangestart]] and [[rangeend]] to
+  (<var>last child</var>, [[nodelength]] of <var>last child</var>).
   <!-- Need to do this before fixing disallowed ancestors, since otherwise the
   last child might have been removed (e.g., it's an li). -->
 
@@ -5498,4 +5513,4 @@ command</span>.
 </ul>
 
 <script src=http://www.whatwg.org/specs/web-apps/current-work/dfn.js></script>
-<!-- vim: set expandtab shiftwidth=2 tabstop=2 foldmarker=@{,@} foldmethod=marker: -->
+<!-- vim: set expandtab shiftwidth=2 tabstop=2 foldmarker=@{,@} foldmethod=marker indentexpr=: -->

@@ -1057,6 +1057,8 @@ var tests = {
 		['<p>abc', '<p>foo[bar]baz'],
 		['<li>abc', '<p>foo[bar]baz'],
 		['<p>abc', '<ol>{<li>foo</li>}<li>bar</ol>'],
+		['<p>abc', '<ol><li>foo</li>{<li>bar</li>}<li>baz</ol>'],
+		['<p>abc', '<ol><li>[foo]</li><li>bar</ol>'],
 	],
 	insertimage: [
 		'foo[]bar',

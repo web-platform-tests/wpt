@@ -801,6 +801,9 @@ function isAllowedChild(child, parent_) {
 			return ["td", "th", "tr"].indexOf(child) != -1;
 		case "tr":
 			return ["td", "th"].indexOf(child) != -1;
+		case "ol":
+		case "ul":
+			return ["li", "ol", "ul"].indexOf(child) != -1;
 	}
 
 	// "If child is "body", "caption", "col", "colgroup", "frame", "frameset",
@@ -3235,21 +3238,34 @@ commands.inserthtml = {
 		// on the active range."
 		var frag = getActiveRange().createContextualFragment(value);
 
+		// "Let last child be the lastChild of frag."
+		var lastChild = frag.lastChild;
+
+		// "If last child is null, abort these steps."
+		if (!lastChild) {
+			return;
+		}
+
 		// "Let descendants be all descendants of frag."
 		var descendants = getDescendants(frag);
 
-		// "Let last child be the lastChild of frag."
-		var lastChild = frag.lastChild;
+		// "If the active range's start node is a prohibited paragraph child
+		// whose sole child is a br, and its start offset is 0, remove its
+		// start node's child from it."
+		if (isProhibitedParagraphChild(getActiveRange().startContainer)
+		&& getActiveRange().startContainer.childNodes.length == 1
+		&& isHtmlElement(getActiveRange().startContainer.firstChild, "br")
+		&& getActiveRange().startOffset == 0) {
+			getActiveRange().startContainer.removeChild(getActiveRange().startContainer.firstChild);
+		}
 
 		// "Call insertNode(frag) on the active range."
 		getActiveRange().insertNode(frag);
 
-		// "If last child is not null, set the start and end of the active
-		// range to (last child, length of last child)."
-		if (lastChild) {
-			getActiveRange().setStart(lastChild, getNodeLength(lastChild));
-			getActiveRange().setEnd(lastChild, getNodeLength(lastChild));
-		}
+		// "Set the active range's start and end to (last child, length of last
+		// child)."
+		getActiveRange().setStart(lastChild, getNodeLength(lastChild));
+		getActiveRange().setEnd(lastChild, getNodeLength(lastChild));
 
 		// "Fix disallowed ancestors of each member of descendants."
 		for (var i = 0; i < descendants.length; i++) {

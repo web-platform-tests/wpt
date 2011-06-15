@@ -38,7 +38,7 @@
 <body class=draft>
 <div class=head id=head>
 <h1>HTML Editing Commands</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-14-june-2011>Work in Progress &mdash; Last Update 14 June 2011</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-15-june-2011>Work in Progress &mdash; Last Update 15 June 2011</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;ayg+spec@aryeh.name&gt;
@@ -616,6 +616,7 @@ substantially sometime in the future, but I'm not sure exactly what to aim for.
     <tr><td>table <td>caption, col, colgroup, tbody, td, tfoot, th, thead, tr
     <tr><td>tbody, tfoot, thead <td>td, th, tr
     <tr><td>tr <td>td, th
+    <tr><td>ol, ul <td>li, ol, ul
   </table>
 
   <li>If <var title="">child</var> is "body", "caption", "col", "colgroup", "frame",
@@ -2769,15 +2770,29 @@ For color parsing, see the comment for foreColor. -->
   <li>Let <var title="">frag</var> be the result of calling <code class=external data-anolis-spec=domps title=dom-Range-createContextualFragment><a href=http://html5.org/specs/dom-parsing.html#dom-range-createcontextualfragment>createContextualFragment(<var title="">value</var>)</a></code>
   on the <a href=#active-range>active range</a>.
 
+  <li>Let <var title="">last child</var> be the <code class=external data-anolis-spec=domcore title=dom-Node-lastChild><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-lastchild>lastChild</a></code> of <var title="">frag</var>.
+
+  <li>If <var title="">last child</var> is null, abort these steps.
+  <!-- Firefox 5.0a2 also seems to not add empty elements like <b></b>, but
+  Chrome 13 dev and Opera 11.11 do. -->
+
   <li>Let <var title="">descendants</var> be all <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-descendant title=concept-tree-descendant>descendants</a> of <var title="">frag</var>.
 
-  <li>Let <var title="">last child</var> be the <code class=external data-anolis-spec=domcore title=dom-Node-lastChild><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-lastchild>lastChild</a></code> of <var title="">frag</var>.
+  <li>If the <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> is a <a href=#prohibited-paragraph-child>prohibited
+  paragraph child</a> whose sole <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> is a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code>, and its
+  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a> is 0, remove its <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> from it.
+  <!--
+  This is so we don't get something like
+    <div>[foo]</div>
+    -> <div>{}<br></div>
+    -> <div><p>Some HTML{}</p><br></div>
+  with an extra bogus line break at the end.
+  -->
 
   <li>Call <code class=external data-anolis-spec=domrange title=dom-Range-insertNode><a href=http://html5.org/specs/dom-range.html#dom-range-insertnode>insertNode(<var title="">frag</var>)</a></code> on the <a href=#active-range>active range</a>.
 
-  <li>If <var title="">last child</var> is not null, set the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> and
-  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> of the <a href=#active-range>active range</a> to (<var title="">last child</var>,
-  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> of <var title="">last child</var>).
+  <li>Set the <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> and <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> to
+  (<var title="">last child</var>, <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> of <var title="">last child</var>).
   <!-- Need to do this before fixing disallowed ancestors, since otherwise the
   last child might have been removed (e.g., it's an li). -->
 
@@ -5465,4 +5480,4 @@ command</a>.
 </ul>
 
 <script src=http://www.whatwg.org/specs/web-apps/current-work/dfn.js></script>
-<!-- vim: set expandtab shiftwidth=2 tabstop=2 foldmarker=@{,@} foldmethod=marker: -->
+<!-- vim: set expandtab shiftwidth=2 tabstop=2 foldmarker=@{,@} foldmethod=marker indentexpr=: -->

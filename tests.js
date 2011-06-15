@@ -870,6 +870,210 @@ var tests = {
 		['<p>', '<xmp>[foo]</xmp>'],
 		['<div>', '<xmp>[foo]</xmp>'],
 	],
+	forwarddelete: [
+		// Collapsed selection
+		//
+		// These three commented-out test call Firefox 5.0a2 to blow up, not
+		// just throwing exceptions on the tests themselves but on many
+		// subsequent tests too.
+		'foo[]',
+		'<span>foo[]</span>',
+		'<p>foo[]</p>',
+		'foo[]bar',
+		'<span>foo</span>{}<span>bar</span>',
+		'<span>foo[</span><span>]bar</span>',
+		'foo[]<span style=display:none>bar</span>baz',
+		'fo[]&ouml;bar',
+		'fo[]o&#x308;bar',
+
+		'<p>foo[]</p><p>bar</p>',
+		'<p>foo[]</p>bar',
+		'foo[]<p>bar</p>',
+		'<p>foo[]<br></p><p>bar</p>',
+		'<p>foo[]<br></p>bar',
+		'foo[]<br><p>bar</p>',
+
+		'<div><p>foo[]</p></div><p>bar</p>',
+		'<p>foo[]</p><div><p>bar</p></div>',
+		'<div><p>foo[]</p></div><div><p>bar</p></div>',
+		'<div><p>foo[]</p></div>bar',
+		'foo[]<div><p>bar</p></div>',
+
+		'<div>foo[]</div><div>bar</div>',
+		'<pre>foo[]</pre>bar',
+
+		'foo[]<br>bar',
+		'<b>foo[]</b><br>bar',
+		'foo[]<hr>bar',
+		'<p>foo[]<hr><p>bar',
+		'<p>foo[]</p><br><p>bar</p>',
+		'<p>foo[]</p><br><br><p>bar</p>',
+		'<p>foo[]</p><img src=/img/lion.svg><p>bar',
+		'foo[]<img src=/img/lion.svg>bar',
+		'<a href=/>foo[]</a>bar',
+		'foo[]<a href=/>bar</a>',
+
+		// Tables with collapsed selection
+		'foo[]<table><tr><td>bar</table>baz',
+		'foo<table><tr><td>bar[]</table>baz',
+		'<p>foo[]<table><tr><td>bar</table><p>baz',
+		'<p>foo[]<table><tr><td>bar</table><p>baz',
+		'<table><tr><td>foo[]<td>bar</table>',
+		'<table><tr><td>foo[]<tr><td>bar</table>',
+
+		'foo[]<br><table><tr><td>bar</table>baz',
+		'foo<table><tr><td>bar[]<br></table>baz',
+		'<p>foo[]<br><table><tr><td>bar</table><p>baz',
+		'<p>foo<table><tr><td>bar[]<br></table><p>baz',
+		'<table><tr><td>foo[]<br><td>bar</table>',
+		'<table><tr><td>foo[]<br><tr><td>bar</table>',
+
+		'foo<table><tr><td>bar[]</table><br>baz',
+		'foo[]<table><tr><td><hr>bar</table>baz',
+		'<table><tr><td>foo[]<td><hr>bar</table>',
+		'<table><tr><td>foo[]<tr><td><hr>bar</table>',
+
+		// Lists with collapsed selection
+		'foo[]<ol><li>bar<li>baz</ol>',
+		'foo[]<br><ol><li>bar<li>baz</ol>',
+		'<ol><li>foo[]<li>bar</ol>',
+		'<ol><li>foo[]<br><li>bar</ol>',
+		'<ol><li>foo[]<li>bar<br>baz</ol>',
+
+		'<ol><li><p>foo[]<li>bar</ol>',
+		'<ol><li>foo[]<li><p>bar</ol>',
+		'<ol><li><p>foo[]<li><p>bar</ol>',
+
+		'<ol><li>foo[]<ul><li>bar</ul></ol>',
+		'foo[]<ol><ol><li>bar</ol></ol>',
+		'foo[]<div><ol><li>bar</ol></div>',
+
+		'foo[]<dl><dt>bar<dd>baz</dl>',
+		'foo[]<dl><dd>bar</dl>',
+		'<dl><dt>foo[]<dd>bar</dl>',
+		'<dl><dt>foo[]<dt>bar<dd>baz</dl>',
+		'<dl><dt>foo<dd>bar[]<dd>baz</dl>',
+
+		'<ol><li>foo[]</ol>bar',
+		'<ol><li>foo[]<br></ol>bar',
+
+		'<ol><li>{}<br></ol>bar',
+		'<ol><li>foo<li>{}<br></ol>bar',
+
+		// Indented stuff with collapsed selection
+		'foo[]<blockquote>bar</blockquote>',
+		'foo[]<blockquote><blockquote>bar</blockquote></blockquote>',
+		'foo[]<blockquote><div>bar</div></blockquote>',
+		'foo[]<blockquote style="color: red">bar</blockquote>',
+
+		'foo[]<blockquote><blockquote><p>bar<p>baz</blockquote></blockquote>',
+		'foo[]<blockquote><div><p>bar<p>baz</div></blockquote>',
+		'foo[]<blockquote style="color: red"><p>bar<p>baz</blockquote>',
+
+		'foo[]<blockquote><p><b>bar</b><p>baz</blockquote>',
+		'foo[]<blockquote><p><strong>bar</strong><p>baz</blockquote>',
+		'foo[]<blockquote><p><span>bar</span><p>baz</blockquote>',
+
+		'foo[]<blockquote><ol><li>bar</ol></blockquote><p>extra',
+		'foo[]<blockquote>bar<ol><li>baz</ol>quz</blockquote><p>extra',
+		'foo<blockquote><ol><li>bar[]</li><ol><li>baz</ol><li>quz</ol></blockquote><p>extra',
+
+		// Invisible stuff with collapsed selection
+		'foo[]<span></span>bar',
+		'foo[]<span><span></span></span>bar',
+		'foo[]<quasit></quasit>bar',
+		'foo[]<span></span><br>bar',
+		'<span>foo[]<span></span></span>bar',
+		'foo[]<span></span><span>bar</span>',
+
+		// Uncollapsed selection (should be same as delete command)
+		'foo[bar]baz',
+
+		'foo<b>[bar]</b>baz',
+		'foo<b>{bar}</b>baz',
+		'foo{<b>bar</b>}baz',
+		'foo<span>[bar]</span>baz',
+		'foo<span>{bar}</span>baz',
+		'foo{<span>bar</span>}baz',
+		'<b>foo[bar</b><i>baz]quz</i>',
+		'<p>foo</p><p>[bar]</p><p>baz</p>',
+		'<p>foo</p><p>{bar}</p><p>baz</p>',
+		'<p>foo</p><p>{bar</p>}<p>baz</p>',
+		'<p>foo</p>{<p>bar}</p><p>baz</p>',
+		'<p>foo</p>{<p>bar</p>}<p>baz</p>',
+
+		'<p>foo[bar<p>baz]quz',
+		'<p>foo[bar<div>baz]quz</div>',
+		'<p>foo[bar<h1>baz]quz</h1>',
+		'<div>foo[bar</div><p>baz]quz',
+		'<blockquote>foo[bar</blockquote><pre>baz]quz</pre>',
+
+		'<p><b>foo[bar</b><p>baz]quz',
+		'<div><p>foo[bar</div><p>baz]quz',
+		'<p>foo[bar<blockquote><p>baz]quz<p>qoz</blockquote',
+		'<p>foo[bar<p style=color:red>baz]quz',
+		'<p>foo[bar<p><b>baz]quz</b>',
+
+		'<div><p>foo<p>[bar<p>baz]</div>',
+
+		'foo[<br>]bar',
+		'<p>foo[</p><p>]bar</p>',
+		'<p>foo[</p><p>]bar<br>baz</p>',
+		'foo[<p>]bar</p>',
+		'foo{<p>}bar</p>',
+		'foo[<p>]bar<br>baz</p>',
+		'foo[<p>]bar</p>baz',
+		'foo{<p>bar</p>}baz',
+		'foo<p>{bar</p>}baz',
+		'foo{<p>bar}</p>baz',
+		'<p>foo[</p>]bar',
+		'<p>foo{</p>}bar',
+		'<p>foo[</p>]bar<br>baz',
+		'<p>foo[</p>]bar<p>baz</p>',
+		'foo[<div><p>]bar</div>',
+		'<div><p>foo[</p></div>]bar',
+		'foo[<div><p>]bar</p>baz</div>',
+		'foo[<div>]bar<p>baz</p></div>',
+		'<div><p>foo</p>bar[</div>]baz',
+		'<div>foo<p>bar[</p></div>]baz',
+
+		'<p>foo<br>{</p>]bar',
+		'<p>foo<br><br>{</p>]bar',
+		'foo<br>{<p>]bar</p>',
+		'foo<br><br>{<p>]bar</p>',
+		'<p>foo<br>{</p><p>}bar</p>',
+		'<p>foo<br><br>{</p><p>}bar</p>',
+
+		'<table><tbody><tr><th>foo<th>[bar]<th>baz<tr><td>quz<td>qoz<td>qiz</table>',
+		'<table><tbody><tr><th>foo<th>ba[r<th>b]az<tr><td>quz<td>qoz<td>qiz</table>',
+		'<table><tbody><tr><th>fo[o<th>bar<th>b]az<tr><td>quz<td>qoz<td>qiz</table>',
+		'<table><tbody><tr><th>foo<th>bar<th>ba[z<tr><td>q]uz<td>qoz<td>qiz</table>',
+		'<table><tbody><tr><th>[foo<th>bar<th>baz]<tr><td>quz<td>qoz<td>qiz</table>',
+		'<table><tbody><tr><th>[foo<th>bar<th>baz<tr><td>quz<td>qoz<td>qiz]</table>',
+		'{<table><tbody><tr><th>foo<th>bar<th>baz<tr><td>quz<td>qoz<td>qiz</table>}',
+		'<table><tbody><tr><td>foo<td>ba[r<tr><td>baz<td>quz<tr><td>q]oz<td>qiz</table>',
+		'<p>fo[o<table><tr><td>b]ar</table><p>baz',
+		'<p>foo<table><tr><td>ba[r</table><p>b]az',
+		'<p>fo[o<table><tr><td>bar</table><p>b]az',
+
+		'<p>foo<ol><li>ba[r<li>b]az</ol><p>quz',
+		'<p>foo<ol><li>bar<li>[baz]</ol><p>quz',
+		'<p>fo[o<ol><li>b]ar<li>baz</ol><p>quz',
+		'<p>foo<ol><li>bar<li>ba[z</ol><p>q]uz',
+		'<p>fo[o<ol><li>bar<li>b]az</ol><p>quz',
+		'<p>fo[o<ol><li>bar<li>baz</ol><p>q]uz',
+
+		'<ol><li>fo[o</ol><ol><li>b]ar</ol>',
+		'<ol><li>fo[o</ol><ul><li>b]ar</ul>',
+
+		'foo[<ol><li>]bar</ol>',
+		'<ol><li>foo[<li>]bar</ol>',
+		'foo[<dl><dt>]bar<dd>baz</dl>',
+		'foo[<dl><dd>]bar</dl>',
+		'<dl><dt>foo[<dd>]bar</dl>',
+		'<dl><dt>foo[<dt>]bar<dd>baz</dl>',
+		'<dl><dt>foo<dd>bar[<dd>]baz</dl>',
+	],
 	hilitecolor: [
 		'foo[]bar',
 		'<span>foo</span>{}<span>bar</span>',

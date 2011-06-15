@@ -112,16 +112,17 @@ have experience using this feature.
    <li><a href=#justifying-the-selection><span class=secno>7.7 </span>Justifying the selection</a></li>
    <li><a href=#the-delete-command><span class=secno>7.8 </span>The <code title="">delete</code> command</a></li>
    <li><a href=#the-formatblock-command><span class=secno>7.9 </span>The <code title="">formatBlock</code> command</a></li>
-   <li><a href=#the-indent-command><span class=secno>7.10 </span>The <code title="">indent</code> command</a></li>
-   <li><a href=#the-inserthorizontalrule-command><span class=secno>7.11 </span>The <code title="">insertHorizontalRule</code> command</a></li>
-   <li><a href=#the-insertorderedlist-command><span class=secno>7.12 </span>The <code title="">insertOrderedList</code> command</a></li>
-   <li><a href=#the-insertparagraph-command><span class=secno>7.13 </span>The <code title="">insertParagraph</code> command</a></li>
-   <li><a href=#the-insertunorderedlist-command><span class=secno>7.14 </span>The <code title="">insertUnorderedList</code> command</a></li>
-   <li><a href=#the-justifycenter-command><span class=secno>7.15 </span>The <code title="">justifyCenter</code> command</a></li>
-   <li><a href=#the-justifyfull-command><span class=secno>7.16 </span>The <code title="">justifyFull</code> command</a></li>
-   <li><a href=#the-justifyleft-command><span class=secno>7.17 </span>The <code title="">justifyLeft</code> command</a></li>
-   <li><a href=#the-justifyright-command><span class=secno>7.18 </span>The <code title="">justifyRight</code> command</a></li>
-   <li><a href=#the-outdent-command><span class=secno>7.19 </span>The <code title="">outdent</code> command</a></ol></li>
+   <li><a href=#the-forwarddelete-command><span class=secno>7.10 </span>The <code title="">forwardDelete</code> command</a></li>
+   <li><a href=#the-indent-command><span class=secno>7.11 </span>The <code title="">indent</code> command</a></li>
+   <li><a href=#the-inserthorizontalrule-command><span class=secno>7.12 </span>The <code title="">insertHorizontalRule</code> command</a></li>
+   <li><a href=#the-insertorderedlist-command><span class=secno>7.13 </span>The <code title="">insertOrderedList</code> command</a></li>
+   <li><a href=#the-insertparagraph-command><span class=secno>7.14 </span>The <code title="">insertParagraph</code> command</a></li>
+   <li><a href=#the-insertunorderedlist-command><span class=secno>7.15 </span>The <code title="">insertUnorderedList</code> command</a></li>
+   <li><a href=#the-justifycenter-command><span class=secno>7.16 </span>The <code title="">justifyCenter</code> command</a></li>
+   <li><a href=#the-justifyfull-command><span class=secno>7.17 </span>The <code title="">justifyFull</code> command</a></li>
+   <li><a href=#the-justifyleft-command><span class=secno>7.18 </span>The <code title="">justifyLeft</code> command</a></li>
+   <li><a href=#the-justifyright-command><span class=secno>7.19 </span>The <code title="">justifyRight</code> command</a></li>
+   <li><a href=#the-outdent-command><span class=secno>7.20 </span>The <code title="">outdent</code> command</a></ol></li>
  <li><a href=#miscellaneous-commands><span class=secno>8 </span>Miscellaneous commands</a>
   <ol>
    <li><a href=#the-selectall-command><span class=secno>8.1 </span>The <code title="">selectAll</code> command</a></li>
@@ -4824,7 +4825,153 @@ sense for <address>/<h*>/<pre>, but other browsers don't do it.
 </ol>
 
 
-<h3 id=the-indent-command><span class=secno>7.10 </span><dfn>The <code title="">indent</code> command</dfn></h3>
+<h3 id=the-forwarddelete-command><span class=secno>7.10 </span><dfn>The <code title="">forwardDelete</code> command</dfn></h3>
+
+<p><a href=#action>Action</a>:
+<!-- Copy-pasted from delete, see there for comments. -->
+
+<ol>
+  <li>If the <a href=#active-range>active range</a> is not <code class=external data-anolis-spec=domrange title=dom-Range-collapsed><a href=http://html5.org/specs/dom-range.html#dom-range-collapsed>collapsed</a></code>, <a href=#delete-the-contents>delete the contents</a>
+  of the <a href=#active-range>active range</a> and abort these steps.
+
+  <p class=XXX>Maybe we sometimes want to do the following even if it isn't
+  collapsed?  WebKit seems to do some normalization on the range before
+  deciding whether it's collapsed, and that sounds like a good idea.
+
+  <li>Let <var title="">node</var> and <var title="">offset</var> be the <a href=#active-range>active
+  range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> and <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a>.
+
+  <li>Repeat the following steps:
+
+  <ol>
+    <li>If <var title="">offset</var> is the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> of <var title="">node</var> and
+    <var title="">node</var>'s <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code> is an <a href=#editable>editable</a>
+    <a href=#invisible-node>invisible node</a>, remove <var title="">node</var>'s <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code> from
+    its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+
+    <li>Otherwise, if <var title="">node</var> has a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a>
+    <var title="">offset</var> and that <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> is an <a href=#editable>editable</a>
+    <a href=#invisible-node>invisible node</a>, remove that <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> from <var title="">node</var>.
+
+    <!-- We need these extra two steps in forwardDelete, relative to delete, to
+    skip over line breaks at the end of blocks. -->
+    <li>Otherwise, if <var title="">offset</var> is one less than <var title="">node</var>'s
+    <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a>, and <var title="">node</var> is a <a href=#prohibited-paragraph-child>prohibited paragraph
+    child</a> whose last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> is a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code>, add one to
+    <var title="">offset</var>.
+
+    <li>Otherwise, if <var title="">node</var> has a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a>
+    <var title="">offset</var> + 1, and its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> <var title="">offset</var> is
+    a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code>, and its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> <var title="">offset</var> + 1 is a
+    <a href=#prohibited-paragraph-child>prohibited paragraph child</a>, add one to <var title="">offset</var>.
+
+    <div class=XXX>
+    <p>These two steps don't correctly handle things like
+
+    </p><xmp><p>foo<span><br></span></p></xmp>
+
+    <p>For that matter, nor do most cases where we deal with line breaks like
+    this.  Should add a bunch of tests for this and change stuff so we pass.
+    </div>
+
+    <li>Otherwise, if <var title="">offset</var> is the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> of
+    <var title="">node</var> and <var title="">node</var> is not a <a href=#prohibited-paragraph-child>prohibited paragraph
+    child</a>, or if <var title="">node</var> is an <a href=#invisible-node>invisible node</a>, set
+    <var title="">offset</var> to one plus the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> of <var title="">node</var>, then set
+    <var title="">node</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+
+    <li>Otherwise, if <var title="">node</var> has a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a>
+    <var title="">offset</var> and that <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> is not a <a href=#prohibited-paragraph-child>prohibited paragraph
+    child</a> or a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code> or an <code class=external data-anolis-spec=html title="the img element"><a href=http://www.whatwg.org/html/#the-img-element>img</a></code>, set <var title="">node</var> to that
+    <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>, then set <var title="">offset</var> to zero.
+
+    <li>Otherwise, break from this loop.
+  </ol>
+
+  <li>If <var title="">node</var> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node and <var title="">offset</var> is not
+  <var title="">node</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a>, call <code class=external data-anolis-spec=domrange title=dom-Selection-collapse><a href=http://html5.org/specs/dom-range.html#dom-selection-collapse>collapse(<var title="">node</var>,
+  <var title="">offset</var>)</a></code> on the <code class=external data-anolis-spec=domrange><a href=http://html5.org/specs/dom-range.html#selection>Selection</a></code>.  Then <a href=#delete-the-contents>delete the
+  contents</a> of the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> (<var title="">node</var>,
+  <var title="">offset</var>) and <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> (<var title="">node</var>, <var title="">offset</var> + 1)
+  and abort these steps.
+
+  <li>If <var title="">node</var> is not a <a href=#prohibited-paragraph-child>prohibited paragraph child</a>,
+  abort these steps.
+
+  <li>If <var title="">node</var> has a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> <var title="">offset</var> and
+  that <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> is a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code> or <code class=external data-anolis-spec=html title="the hr element"><a href=http://www.whatwg.org/html/#the-hr-element>hr</a></code> or <code class=external data-anolis-spec=html title="the img element"><a href=http://www.whatwg.org/html/#the-img-element>img</a></code>, call
+  <code class=external data-anolis-spec=domrange title=dom-Selection-collapse><a href=http://html5.org/specs/dom-range.html#dom-selection-collapse>collapse(<var title="">node</var>, <var title="">offset</var>)</a></code> on the <code class=external data-anolis-spec=domrange><a href=http://html5.org/specs/dom-range.html#selection>Selection</a></code>.
+  Then <a href=#delete-the-contents>delete the contents</a> of the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a>
+  (<var title="">node</var>, <var title="">offset</var>) and <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> (<var title="">node</var>,
+  <var title="">offset</var> + 1) and abort these steps.
+
+  <!-- No special list-item behavior for forwardDelete. -->
+
+  <li>Let <var title="">end node</var> equal <var title="">node</var> and let <var title="">end
+  offset</var> equal <var title="">offset</var>.
+
+  <li>While <var title="">end offset</var> is the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> of <var title="">end node</var>, set
+  <var title="">end offset</var> to one plus the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> of <var title="">end node</var> and
+  then set <var title="">end node</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+
+  <p class=XXX>The node at index end offset might be an invisible node.
+
+  <!-- No special indentation element behavior for forwardDelete. -->
+
+  <li>If the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">end node</var> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> <var title="">end
+  offset</var> minus one is a <code class=external data-anolis-spec=html title="the table element"><a href=http://www.whatwg.org/html/#the-table-element>table</a></code>, abort these steps.
+
+  <li>If the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">end node</var> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> <var title="">end
+  offset</var> is a <code class=external data-anolis-spec=html title="the table element"><a href=http://www.whatwg.org/html/#the-table-element>table</a></code>:
+
+  <ol>
+    <li>Call <code class=external data-anolis-spec=domrange title=dom-Selection-collapse><a href=http://html5.org/specs/dom-range.html#dom-selection-collapse>collapse(<var title="">end node</var>, <var title="">end offset</var>)</a></code> on the
+    <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>'s <code class=external data-anolis-spec=domrange><a href=http://html5.org/specs/dom-range.html#selection>Selection</a></code>.
+
+    <li>Call <code class=external data-anolis-spec=domrange title=dom-Selection-extend><a href=http://html5.org/specs/dom-range.html#dom-selection-extend>extend(<var title="">end node</var>, <var title="">end offset</var> + 1)</a></code> on the
+    <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>'s <code class=external data-anolis-spec=domrange><a href=http://html5.org/specs/dom-range.html#selection>Selection</a></code>.
+
+    <li>Abort these steps.
+  </ol>
+
+  <li>If <var title="">offset</var> is the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> of <var title="">node</var>, and the
+  <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">end node</var> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> <var title="">end offset</var> is an
+  <code class=external data-anolis-spec=html title="the hr element"><a href=http://www.whatwg.org/html/#the-hr-element>hr</a></code> or <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code>:
+  <!-- Note, any br will do here: a br immediately after a block is always
+  significant. -->
+
+  <ol>
+    <li>Call <code class=external data-anolis-spec=domrange title=dom-Selection-collapse><a href=http://html5.org/specs/dom-range.html#dom-selection-collapse>collapse(<var title="">node</var>, <var title="">offset</var>)</a></code> on the
+    <code class=external data-anolis-spec=domrange><a href=http://html5.org/specs/dom-range.html#selection>Selection</a></code>.
+
+    <li><a href=#delete-the-contents>Delete the contents</a> of the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a>
+    (<var title="">end node</var>, <var title="">end offset</var>) and <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> (<var title="">end
+    node</var>, <var title="">end offset</var> + 1).
+
+    <li>Abort these steps.
+  </ol>
+
+  <!-- No special list-item behavior for forwardDelete. -->
+
+  <li>If the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">end node</var> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> <var title="">end
+  offset</var> is an <code class=external data-anolis-spec=html title="the li element"><a href=http://www.whatwg.org/html/#the-li-element>li</a></code> or <code class=external data-anolis-spec=html title="the dt element"><a href=http://www.whatwg.org/html/#the-dt-element>dt</a></code> or <code class=external data-anolis-spec=html title="the dd element"><a href=http://www.whatwg.org/html/#the-dd-element>dd</a></code>, and its <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code> is
+  also an <code class=external data-anolis-spec=html title="the li element"><a href=http://www.whatwg.org/html/#the-li-element>li</a></code> or <code class=external data-anolis-spec=html title="the dt element"><a href=http://www.whatwg.org/html/#the-dt-element>dt</a></code> or <code class=external data-anolis-spec=html title="the dd element"><a href=http://www.whatwg.org/html/#the-dd-element>dd</a></code>, set <var title="">end node</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>
+  with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> <var title="">end offset</var>, then set <var title="">end offset</var> to zero,
+  then set <var title="">node</var> to <var title="">end node</var>'s <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code>, then
+  set <var title="">offset</var> to <var title="">node</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a>.
+
+  <!-- General block-merging case. -->
+  <li>Otherwise, while <var title="">end node</var> has a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a>
+  <var title="">end offset</var>, set <var title="">end node</var> to that <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> and set
+  <var title="">end offset</var> to zero.
+
+  <li><a href=#delete-the-contents>Delete the contents</a> of the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a>
+  (<var title="">node</var>, <var title="">offset</var>) and <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> (<var title="">end node</var>,
+  <var title="">end offset</var>).
+</ol>
+
+
+<h3 id=the-indent-command><span class=secno>7.11 </span><dfn>The <code title="">indent</code> command</dfn></h3>
 
 <!--
 IE9: Outputs <blockquote style="margin-right: 0px" dir="ltr">, or when
@@ -4928,7 +5075,7 @@ browsers don't normally let you put the cursor in weird places like that.
 </ol>
 
 
-<h3 id=the-inserthorizontalrule-command><span class=secno>7.11 </span><dfn>The <code title="">insertHorizontalRule</code> command</dfn></h3>
+<h3 id=the-inserthorizontalrule-command><span class=secno>7.12 </span><dfn>The <code title="">insertHorizontalRule</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>:
 
@@ -4982,13 +5129,13 @@ splitting up parents to ensure validity . . . -->
 </ol>
 
 
-<h3 id=the-insertorderedlist-command><span class=secno>7.12 </span><dfn>The <code title="">insertOrderedList</code> command</dfn></h3>
+<h3 id=the-insertorderedlist-command><span class=secno>7.13 </span><dfn>The <code title="">insertOrderedList</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>: <a href=#toggle-lists>Toggle lists</a> with <var title="">tag name</var>
 "ol".
 
 
-<h3 id=the-insertparagraph-command><span class=secno>7.13 </span><dfn>The <code title="">insertParagraph</code> command</dfn></h3>
+<h3 id=the-insertparagraph-command><span class=secno>7.14 </span><dfn>The <code title="">insertParagraph</code> command</dfn></h3>
 
 <!--
 There are three major behaviors here.  Firefox 5.0a2 behaves identically to
@@ -5239,36 +5386,36 @@ http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
 </ol>
 
 
-<h3 id=the-insertunorderedlist-command><span class=secno>7.14 </span><dfn>The <code title="">insertUnorderedList</code> command</dfn></h3>
+<h3 id=the-insertunorderedlist-command><span class=secno>7.15 </span><dfn>The <code title="">insertUnorderedList</code> command</dfn></h3>
 <p><a href=#action>Action</a>: <a href=#toggle-lists>Toggle lists</a> with <var title="">tag name</var>
 "ul".
 
 
-<h3 id=the-justifycenter-command><span class=secno>7.15 </span><dfn>The <code title="">justifyCenter</code> command</dfn></h3>
+<h3 id=the-justifycenter-command><span class=secno>7.16 </span><dfn>The <code title="">justifyCenter</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>: <a href=#justify-the-selection>Justify the selection</a> with
 <var title="">alignment</var> "center".
 
 
-<h3 id=the-justifyfull-command><span class=secno>7.16 </span><dfn>The <code title="">justifyFull</code> command</dfn></h3>
+<h3 id=the-justifyfull-command><span class=secno>7.17 </span><dfn>The <code title="">justifyFull</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>: <a href=#justify-the-selection>Justify the selection</a> with
 <var title="">alignment</var> "justify".
 
 
-<h3 id=the-justifyleft-command><span class=secno>7.17 </span><dfn>The <code title="">justifyLeft</code> command</dfn></h3>
+<h3 id=the-justifyleft-command><span class=secno>7.18 </span><dfn>The <code title="">justifyLeft</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>: <a href=#justify-the-selection>Justify the selection</a> with
 <var title="">alignment</var> "left".
 
 
-<h3 id=the-justifyright-command><span class=secno>7.18 </span><dfn>The <code title="">justifyRight</code> command</dfn></h3>
+<h3 id=the-justifyright-command><span class=secno>7.19 </span><dfn>The <code title="">justifyRight</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>: <a href=#justify-the-selection>Justify the selection</a> with
 <var title="">alignment</var> "right".
 
 
-<h3 id=the-outdent-command><span class=secno>7.19 </span><dfn>The <code title="">outdent</code> command</dfn></h3>
+<h3 id=the-outdent-command><span class=secno>7.20 </span><dfn>The <code title="">outdent</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>:
 

@@ -54,6 +54,7 @@ replace = {
     'img': '<code data-anolis-spec=html title="the img element">img</code>',
     'index': '<span data-anolis-spec=domrange title=concept-indexof>index</span>',
     'lastchild': '<code data-anolis-spec=domcore title=dom-Node-lastChild>lastChild</code>',
+    'length': '<span data-anolis-spec=domrange title=concept-node-length>length</span>',
     'li': '<code data-anolis-spec=html title="the li element">li</code>',
     'localname': '<span data-anolis-spec=domcore title=concept-element-local-name>local name</span>',
     'namespace': '<span data-anolis-spec=domcore title=concept-element-namespace>namespace</span>',

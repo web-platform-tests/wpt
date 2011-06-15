@@ -5006,6 +5006,183 @@ commands.formatblock = {
 };
 //@}
 
+///// The forwardDelete command /////
+//@{
+commands["forwarddelete"] = {
+	action: function() {
+		// "If the active range is not collapsed, delete the contents of the
+		// active range and abort these steps."
+		if (!getActiveRange().collapsed) {
+			deleteContents(getActiveRange());
+			return;
+		}
+
+		// "Let node and offset be the active range's start node and offset."
+		var node = getActiveRange().startContainer;
+		var offset = getActiveRange().startOffset;
+
+		// "Repeat the following steps:"
+		while (true) {
+			// "If offset is the length of node and node's nextSibling is an
+			// editable invisible node, remove node's nextSibling from its
+			// parent."
+			if (offset == getNodeLength(node)
+			&& isEditable(node.nextSibling)
+			&& isInvisibleNode(node.nextSibling)) {
+				node.parentNode.removeChild(node.nextSibling);
+
+			// "Otherwise, if node has a child with index offset and that child
+			// is an editable invisible node, remove that child from node."
+			} else if (offset < node.childNodes.length
+			&& isEditable(node.childNodes[offset])
+			&& isInvisibleNode(node.childNodes[offset])) {
+				node.removeChild(node.childNodes[offset]);
+
+			// "Otherwise, if offset is one less than node's length, and node
+			// is a prohibited paragraph child whose last child is a br, add
+			// one to offset."
+			} else if (offset == getNodeLength(node) - 1
+			&& isProhibitedParagraphChild(node)
+			&& isHtmlElement(node.lastChild, "br")) {
+				offset++;
+
+			// "Otherwise, if node has a child with index offset + 1, and its
+			// child of index offset is a br, and its child of index offset + 1
+			// is a prohibited paragraph child, add one to offset."
+			} else if (offset + 1 < node.childNodes.length
+			&& isHtmlElement(node.childNodes[offset], "br")
+			&& isProhibitedParagraphChild(node.childNodes[offset + 1])) {
+				offset++;
+
+			// "Otherwise, if offset is the length of node and node is not a
+			// prohibited paragraph child, or if node is an invisible node, set
+			// offset to one plus the index of node, then set node to its
+			// parent."
+			} else if ((offset == getNodeLength(node)
+			&& !isProhibitedParagraphChild(node))
+			|| isInvisibleNode(node)) {
+				offset = 1 + getNodeIndex(node);
+				node = node.parentNode;
+
+			// "Otherwise, if node has a child with index offset and that child
+			// is not a prohibited paragraph child or a br or an img, set node
+			// to that child, then set offset to zero."
+			} else if (offset < node.childNodes.length
+			&& !isProhibitedParagraphChild(node.childNodes[offset])
+			&& !isHtmlElement(node.childNodes[offset], ["br", "img"])) {
+				node = node.childNodes[offset];
+				offset = 0;
+
+			// "Otherwise, break from this loop."
+			} else {
+				break;
+			}
+		}
+
+		// "If node is a Text node and offset is not node's length, call
+		// collapse(node, offset) on the Selection. Then delete the contents of
+		// the range with start (node, offset) and end (node, offset + 1) and
+		// abort these steps."
+		if (node.nodeType == Node.TEXT_NODE
+		&& offset != getNodeLength(node)) {
+			getActiveRange().setStart(node, offset);
+			getActiveRange().setEnd(node, offset);
+			deleteContents(node, offset, node, offset + 1);
+			return;
+		}
+
+		// "If node is not a prohibited paragraph child, abort these steps."
+		if (!isProhibitedParagraphChild(node)) {
+			return;
+		}
+
+		// "If node has a child with index offset and that child is a br or hr
+		// or img, call collapse(node, offset) on the Selection. Then delete
+		// the contents of the range with start (node, offset) and end (node,
+		// offset + 1) and abort these steps."
+		if (offset < node.childNodes.length
+		&& isHtmlElement(node.childNodes[offset], ["br", "hr", "img"])) {
+			getActiveRange().setStart(node, offset);
+			getActiveRange().setEnd(node, offset);
+			deleteContents(node, offset, node, offset + 1);
+			return;
+		}
+
+		// "Let end node equal node and let end offset equal offset."
+		var endNode = node;
+		var endOffset = offset;
+
+		// "While end offset is the length of end node, set end offset to one
+		// plus the index of end node and then set end node to its parent."
+		while (endOffset == getNodeLength(endNode)) {
+			endOffset = 1 + getNodeIndex(endNode);
+			endNode = endNode.parentNode;
+		}
+
+		// "If the child of end node with index end offset minus one is a
+		// table, abort these steps."
+		if (isHtmlElement(endNode.childNodes[endOffset - 1], "table")) {
+			return;
+		}
+
+		// "If the child of end node with index end offset is a table:"
+		if (isHtmlElement(endNode.childNodes[endOffset], "table")) {
+			// "Call collapse(end node, end offset) on the context object's
+			// Selection."
+			getActiveRange().setStart(endNode, endOffset);
+
+			// "Call extend(end node, end offset + 1) on the context object's
+			// Selection."
+			getActiveRange().setEnd(endNode, endOffset + 1);
+
+			// "Abort these steps."
+			return;
+		}
+
+		// "If offset is the length of node, and the child of end node with
+		// index end offset is an hr or br:"
+		if (offset == getNodeLength(node)
+		&& isHtmlElement(endNode.childNodes[endOffset], ["br", "hr"])) {
+			// "Call collapse(node, offset) on the Selection."
+			getActiveRange().setStart(node, offset);
+			getActiveRange().setEnd(node, offset);
+
+			// "Delete the contents of the range with end (end node, end
+			// offset) and end (end node, end offset + 1)."
+			deleteContents(endNode, endOffset, endNode, endOffset + 1);
+
+			// "Abort these steps."
+			return;
+		}
+
+		// "If the child of end node with index end offset is an li or dt or
+		// dd, and its previousSibling is also an li or dt or dd, set end node
+		// to its child with index end offset, then set end offset to zero,
+		// then set node to end node's previousSibling, then set offset to
+		// node's length."
+		if (isHtmlElement(endNode.childNodes[endOffset], ["li", "dt", "dd"])
+		&& isHtmlElement(endNode.childNodes[endOffset - 1], ["li", "dt", "dd"])) {
+			endNode = endNode.childNodes[endOffset];
+			endOffset = 0;
+			node = endNode.previousSibling;
+			offset = getNodeLength(node);
+
+		// "Otherwise, while end node has a child with index end offset, set
+		// end node to that child and set end offset to zero."
+		} else {
+			while (endOffset < endNode.childNodes.length) {
+				endNode = endNode.childNodes[endOffset];
+				endOffset = 0;
+			}
+		}
+
+		// "Delete the contents of the range with start (node, offset) and end
+		// (end node, end offset)."
+		deleteContents(node, offset, endNode, endOffset);
+	}
+};
+//@}
+
 ///// The indent command /////
 //@{
 commands.indent = {

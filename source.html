@@ -4831,6 +4831,153 @@ sense for <address>/<h*>/<pre>, but other browsers don't do it.
 </ol>
 <!-- @} -->
 
+<h3><dfn>The <code title>forwardDelete</code> command</dfn></h3>
+<!-- @{ -->
+<p><span>Action</span>:
+<!-- Copy-pasted from delete, see there for comments. -->
+
+<ol>
+  <li>If the <span>active range</span> is not <code data-anolis-spec=domrange
+  title=dom-Range-collapsed>collapsed</code>, <span>delete the contents</span>
+  of the <span>active range</span> and abort these steps.
+
+  <p class=XXX>Maybe we sometimes want to do the following even if it isn't
+  collapsed?  WebKit seems to do some normalization on the range before
+  deciding whether it's collapsed, and that sounds like a good idea.
+
+  <li>Let <var>node</var> and <var>offset</var> be the <span>active
+  range</span>'s [[rangestart]] [[bpnode]] and [[bpoffset]].
+
+  <li>Repeat the following steps:
+
+  <ol>
+    <li>If <var>offset</var> is the [[nodelength]] of <var>node</var> and
+    <var>node</var>'s [[nextsibling]] is an <span>editable</span>
+    <span>invisible node</span>, remove <var>node</var>'s [[nextsibling]] from
+    its [[parent]].
+
+    <li>Otherwise, if <var>node</var> has a [[child]] with [[index]]
+    <var>offset</var> and that [[child]] is an <span>editable</span>
+    <span>invisible node</span>, remove that [[child]] from <var>node</var>.
+
+    <!-- We need these extra two steps in forwardDelete, relative to delete, to
+    skip over line breaks at the end of blocks. -->
+    <li>Otherwise, if <var>offset</var> is one less than <var>node</var>'s
+    [[length]], and <var>node</var> is a <span>prohibited paragraph
+    child</span> whose last [[child]] is a [[br]], add one to
+    <var>offset</var>.
+
+    <li>Otherwise, if <var>node</var> has a [[child]] with [[index]]
+    <var>offset</var> + 1, and its [[child]] of [[index]] <var>offset</var> is
+    a [[br]], and its [[child]] of [[index]] <var>offset</var> + 1 is a
+    <span>prohibited paragraph child</span>, add one to <var>offset</var>.
+
+    <div class=XXX>
+    <p>These two steps don't correctly handle things like
+
+    <xmp><p>foo<span><br></span></p></xmp>
+
+    <p>For that matter, nor do most cases where we deal with line breaks like
+    this.  Should add a bunch of tests for this and change stuff so we pass.
+    </div>
+
+    <li>Otherwise, if <var>offset</var> is the [[nodelength]] of
+    <var>node</var> and <var>node</var> is not a <span>prohibited paragraph
+    child</span>, or if <var>node</var> is an <span>invisible node</span>, set
+    <var>offset</var> to one plus the [[index]] of <var>node</var>, then set
+    <var>node</var> to its [[parent]].
+
+    <li>Otherwise, if <var>node</var> has a [[child]] with [[index]]
+    <var>offset</var> and that [[child]] is not a <span>prohibited paragraph
+    child</span> or a [[br]] or an [[img]], set <var>node</var> to that
+    [[child]], then set <var>offset</var> to zero.
+
+    <li>Otherwise, break from this loop.
+  </ol>
+
+  <li>If <var>node</var> is a [[text]] node and <var>offset</var> is not
+  <var>node</var>'s [[nodelength]], call [[selcollapse|<var>node</var>,
+  <var>offset</var>]] on the [[selection]].  Then <span>delete the
+  contents</span> of the [[range]] with [[rangestart]] (<var>node</var>,
+  <var>offset</var>) and [[rangeend]] (<var>node</var>, <var>offset</var> + 1)
+  and abort these steps.
+
+  <li>If <var>node</var> is not a <span>prohibited paragraph child</span>,
+  abort these steps.
+
+  <li>If <var>node</var> has a [[child]] with [[index]] <var>offset</var> and
+  that [[child]] is a [[br]] or [[hr]] or [[img]], call
+  [[selcollapse|<var>node</var>, <var>offset</var>]] on the [[selection]].
+  Then <span>delete the contents</span> of the [[range]] with [[rangestart]]
+  (<var>node</var>, <var>offset</var>) and [[rangeend]] (<var>node</var>,
+  <var>offset</var> + 1) and abort these steps.
+
+  <!-- No special list-item behavior for forwardDelete. -->
+
+  <li>Let <var>end node</var> equal <var>node</var> and let <var>end
+  offset</var> equal <var>offset</var>.
+
+  <li>While <var>end offset</var> is the [[length]] of <var>end node</var>, set
+  <var>end offset</var> to one plus the [[index]] of <var>end node</var> and
+  then set <var>end node</var> to its [[parent]].
+
+  <p class=XXX>The node at index end offset might be an invisible node.
+
+  <!-- No special indentation element behavior for forwardDelete. -->
+
+  <li>If the [[child]] of <var>end node</var> with [[index]] <var>end
+  offset</var> minus one is a [[table]], abort these steps.
+
+  <li>If the [[child]] of <var>end node</var> with [[index]] <var>end
+  offset</var> is a [[table]]:
+
+  <ol>
+    <li>Call [[selcollapse|<var>end node</var>, <var>end offset</var>]] on the
+    [[contextobject]]'s [[selection]].
+
+    <li>Call [[extend|<var>end node</var>, <var>end offset</var> + 1]] on the
+    [[contextobject]]'s [[selection]].
+
+    <li>Abort these steps.
+  </ol>
+
+  <li>If <var>offset</var> is the [[length]] of <var>node</var>, and the
+  [[child]] of <var>end node</var> with [[index]] <var>end offset</var> is an
+  [[hr]] or [[br]]:
+  <!-- Note, any br will do here: a br immediately after a block is always
+  significant. -->
+
+  <ol>
+    <li>Call [[selcollapse|<var>node</var>, <var>offset</var>]] on the
+    [[selection]].
+
+    <li><span>Delete the contents</span> of the [[range]] with [[rangeend]]
+    (<var>end node</var>, <var>end offset</var>) and [[rangeend]] (<var>end
+    node</var>, <var>end offset</var> + 1).
+
+    <li>Abort these steps.
+  </ol>
+
+  <!-- No special list-item behavior for forwardDelete. -->
+
+  <li>If the [[child]] of <var>end node</var> with [[index]] <var>end
+  offset</var> is an [[li]] or [[dt]] or [[dd]], and its [[previoussibling]] is
+  also an [[li]] or [[dt]] or [[dd]], set <var>end node</var> to its [[child]]
+  with [[index]] <var>end offset</var>, then set <var>end offset</var> to zero,
+  then set <var>node</var> to <var>end node</var>'s [[previoussibling]], then
+  set <var>offset</var> to <var>node</var>'s [[length]].
+
+  <!-- General block-merging case. -->
+  <li>Otherwise, while <var>end node</var> has a [[child]] with [[index]]
+  <var>end offset</var>, set <var>end node</var> to that [[child]] and set
+  <var>end offset</var> to zero.
+
+  <li><span>Delete the contents</span> of the [[range]] with [[rangestart]]
+  (<var>node</var>, <var>offset</var>) and [[rangeend]] (<var>end node</var>,
+  <var>end offset</var>).
+</ol>
+<!-- @} -->
+
 <h3><dfn>The <code title>indent</code> command</dfn></h3>
 <!-- @{ -->
 <!--

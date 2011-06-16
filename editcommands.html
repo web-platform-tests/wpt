@@ -38,7 +38,7 @@
 <body class=draft>
 <div class=head id=head>
 <h1>HTML Editing Commands</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-15-june-2011>Work in Progress &mdash; Last Update 15 June 2011</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-16-june-2011>Work in Progress &mdash; Last Update 16 June 2011</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;ayg+spec@aryeh.name&gt;
@@ -442,6 +442,29 @@ whose <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domc
 I think.  Plus table stuff, since that can't be a descendant of a p either,
 although it won't auto-close it. -->
 
+<p>A <dfn id=name-of-an-element-with-inline-contents>name of an element with inline contents</dfn> is "a", "abbr", "b",
+"bdi", "bdo", "cite", "code", "dfn", "em", "h1", "h2", "h3", "h4", "h5", "h6",
+"i", "kbd", "mark", "pre", "q", "rp", "rt", "ruby", "s", "samp", "small",
+"span", "strong", "sub", "sup", "u", "var", "acronym", "listing", "strike",
+"xmp", "big", "blink", "font", "marquee", "nobr", or "tt".
+
+<p class=XXX>This deliberately omits "dt", because I don't like the fact that
+including it will cause various commands to break apart lists rather than put
+bad things inside dt.
+
+<p>An <dfn id=element-with-inline-contents>element with inline contents</dfn> is an <a href=#html-element>HTML element</a>
+whose <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> is a <a href=#name-of-an-element-with-inline-contents>name of an element with inline contents</a>.
+<!-- List is mostly based on current HTML5, together with obsolete elements.  I
+mostly got the obsolete element list by testing what Firefox 5.0a2 splits when
+you do insertHorizontalRule. -->
+
+<p class=XXX>The definitions of prohibited paragraph children and elements with
+inline contents should be in the HTML spec (possibly under a different name) so
+they don't fall out of sync.  They'll do for now.  Also, I might want to rename
+"prohibited paragraph child" given how I'm using it; I have to decide whether I
+want to key off CSS (like "inline node" does) or HTML (like "prohibited
+paragraph child") when deciding what to treat as a block and what not.
+
 <p>A <dfn id=visible-node>visible node</dfn> is a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> that either is a <a href=#prohibited-paragraph-child>prohibited
 paragraph child</a>, or a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node whose <code class=external data-anolis-spec=domcore title=dom-CharacterData-data><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-data>data</a></code> is not empty, or a
 <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code> or <code class=external data-anolis-spec=html title="the img element"><a href=http://www.whatwg.org/html/#the-img-element>img</a></code>, or any <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> with a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-descendant title=concept-tree-descendant>descendant</a> that is a
@@ -529,31 +552,22 @@ sequentially in the list's order.
 <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> or string <var title="">parent</var> if the following algorithm returns true:
 
 <div class=XXX>
-<p>For the most part, right now we only disallow children when they wouldn't
-serialize to text/html, or in a couple of other cases where they'd behave very
-strangely (like a list item that's not the child of a list).  It could well
-make sense to disallow children when they would be invalid per HTML5, but this
-has a few problems:
+<p>This list doesn't currently match HTML's validity requirements for a few
+reasons:
 
 <ol>
-  <li>We need to handle invalid elements like center, which have no conformance
-  requirements but can interfere with serialization (center cannot descend from
-  p).
-
-  <li>HTML5 validity requirements are not especially stable, so it would be
-  harder to stay up-to-date, while the parsing algorithm is quite stable.
+  <li>We need to handle invalid elements, which have no conformance
+  requirements but should be treated properly.  In particular, they can
+  interfere with serialization (e.g., center cannot descend from p).
 
   <li>Sometimes users give instructions that have to produce invalid DOMs to
   get the expected effect, like indenting the first item of a list.
 
-  <li>Making more children disallowed means we have to split parents more
-  often, and splitting parents can inevitably have side-effects, so we'd really
-  prefer to minimize it.
-</ol>
+  <li>The HTML validity requirements are sometimes quite complicated.
 
-<p>I didn't try to cover all serialization problems for now, particularly where
-they seemed implausible.  Whatever happens, I'm pretty sure I'll revise this
-substantially sometime in the future, but I'm not sure exactly what to aim for.
+  <li>I just haven't had bothered to be systematic about it yet&nbsp;&ndash;
+  I've only covered what's come up in my tests.
+</ol>
 </div>
 
 <ol>
@@ -586,9 +600,12 @@ substantially sometime in the future, but I'm not sure exactly what to aim for.
     cases too, so no need for complication. -->
 
     <li>If <var title="">child</var> is a <a href=#prohibited-paragraph-child-name>prohibited paragraph child name</a>
-    and <var title="">parent</var> or some <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of <var title="">parent</var> is a <code class=external data-anolis-spec=html title="the p element"><a href=http://www.whatwg.org/html/#the-p-element>p</a></code>,
-    return false.
-    <!-- This generally cannot be serialized either. -->
+    and <var title="">parent</var> or some <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of <var title="">parent</var> is a <code class=external data-anolis-spec=html title="the p element"><a href=http://www.whatwg.org/html/#the-p-element>p</a></code>
+    or <a href=#element-with-inline-contents>element with inline contents</a>, return false.
+    <!-- This generally cannot be serialized either, for p.  For elements with
+    inline contents, this serves to prevent things like
+    <span><p>foo</p></span>, which will parse fine but aren't supposed to
+    happen anyway. -->
 
     <li>If <var title="">child</var> is "h1", "h2", "h3", "h4", "h5", or "h6", and
     <var title="">parent</var> or some <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of <var title="">parent</var> is an
@@ -617,7 +634,9 @@ substantially sometime in the future, but I'm not sure exactly what to aim for.
     <tr><td>table <td>caption, col, colgroup, tbody, td, tfoot, th, thead, tr
     <tr><td>tbody, tfoot, thead <td>td, th, tr
     <tr><td>tr <td>td, th
-    <tr><td>ol, ul <td>li, ol, ul
+    <tr><td>dl <td>dt, dd
+    <tr><td>dir, ol, ul <td>li, ol, ul
+    <tr><td>hgroup <td>h1, h2, h3, h4, h5, h6
   </table>
 
   <li>If <var title="">child</var> is "body", "caption", "col", "colgroup", "frame",
@@ -642,7 +661,10 @@ substantially sometime in the future, but I'm not sure exactly what to aim for.
     <tr><td>h1, h2, h3, h4, h5, h6 <td>h1, h2, h3, h4, h5, h6
     <tr><td>li <td>li
     <tr><td>nobr <td>nobr
-    <tr><td>p <td>All <a href=#prohibited-paragraph-child-name title="prohibited paragraph child name">prohibited paragraph child names</a>
+    <tr><td>p, all <a href=#name-of-an-element-with-inline-contents title="name of an element with inline contents">names
+          of an element with inline contents</a>
+        <td>All <a href=#prohibited-paragraph-child-name title="prohibited paragraph child name">prohibited
+          paragraph child names</a>
     <tr><td>td, th <td>caption, col, colgroup, tbody, td, tfoot, th, thead, tr
   </table>
 
@@ -5106,14 +5128,13 @@ splitting up parents to ensure validity . . . -->
 
   <li><a href=#fix-disallowed-ancestors>Fix disallowed ancestors</a> of <var title="">hr</var>.
   <!--
-  IE9 seems to be acting flaky and I can't get it to work here, so I didn't try
-  testing it here.  Firefox 5.0a2 breaks up any ancestors that can contain only
-  phrasing content, like <b> and so on.  Chrome 13 dev doesn't bother fixing
-  ancestors at all, which can lead to unserializable DOMs like <hr> inside <p>.
-  Opera 11.10 acts very weirdly, sometimes mysteriously sticking the <hr>
-  before some ancestor, sometimes breaking up ancestors like <div> totally
-  unnecessarily.  None of these match the "fix disallowed ancestors" rules at
-  the time of this writing.
+  IE9 and Chrome 13 dev seem to never break up any ancestors, which can lead to
+  unserializable DOMs like <hr> inside <p>.  Opera 11.11 seems to always break
+  up parents going all the way up to the contenteditable root, even ones like
+  <div> that can contain <hr>.  Firefox 5.0a2 acts the most sensibly: it only
+  breaks up things like <p> or <b> that shouldn't contain <hr>.  The spec goes
+  with Firefox here (although the list of what to break up isn't precisely
+  identical).
   -->
 
   <li>Let <var title="">selection</var> be the result of running <code class=external data-anolis-spec=domrange title=dom-Document-getSelection><a href=http://html5.org/specs/dom-range.html#dom-document-getselection>getSelection()</a></code> on the

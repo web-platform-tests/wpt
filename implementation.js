@@ -669,6 +669,23 @@ function isProhibitedParagraphChild(node) {
 	return isHtmlElement(node, prohibitedParagraphChildNames);
 }
 
+// "A name of an element with inline contents is "a", "abbr", "b", "bdi",
+// "bdo", "cite", "code", "dfn", "em", "h1", "h2", "h3", "h4", "h5", "h6", "i",
+// "kbd", "mark", "pre", "q", "rp", "rt", "ruby", "s", "samp", "small", "span",
+// "strong", "sub", "sup", "u", "var", "acronym", "listing", "strike", "xmp",
+// "big", "blink", "font", "marquee", "nobr", or "tt"."
+var namesOfElementsWithInlineContents = ["a", "abbr", "b", "bdi", "bdo",
+	"cite", "code", "dfn", "em", "h1", "h2", "h3", "h4", "h5", "h6", "i",
+	"kbd", "mark", "pre", "q", "rp", "rt", "ruby", "s", "samp", "small",
+	"span", "strong", "sub", "sup", "u", "var", "acronym", "listing", "strike",
+	"xmp", "big", "blink", "font", "marquee", "nobr", "tt"];
+
+// "An element with inline contents is an HTML element whose local name is a
+// name of an element with inline contents."
+function isElementWithInlineContents(node) {
+	return isHtmlElement(node, namesOfElementsWithInlineContents);
+}
+
 // "A visible node is a node that either is a prohibited paragraph child, or a
 // Text node whose data is not empty, or a br or img, or any node with a
 // descendant that is a visible node."
@@ -750,7 +767,8 @@ function isAllowedChild(child, parent_) {
 		// return false."
 		//
 		// "If child is a prohibited paragraph child name and parent or some
-		// ancestor of parent is a p, return false."
+		// ancestor of parent is a p or element with inline contents, return
+		// false."
 		//
 		// "If child is "h1", "h2", "h3", "h4", "h5", or "h6", and parent or
 		// some ancestor of parent is an HTML element with local name "h1",
@@ -761,7 +779,8 @@ function isAllowedChild(child, parent_) {
 				return false;
 			}
 			if (prohibitedParagraphChildNames.indexOf(child) != -1
-			&& isHtmlElement(ancestor, "p")) {
+			&& (isHtmlElement(ancestor, "p")
+			|| isElementWithInlineContents(ancestor))) {
 				return false;
 			}
 			if (/^h[1-6]$/.test(child)
@@ -801,9 +820,14 @@ function isAllowedChild(child, parent_) {
 			return ["td", "th", "tr"].indexOf(child) != -1;
 		case "tr":
 			return ["td", "th"].indexOf(child) != -1;
+		case "dl":
+			return ["dt", "dd"].indexOf(child) != -1;
+		case "dir":
 		case "ol":
 		case "ul":
 			return ["li", "ol", "ul"].indexOf(child) != -1;
+		case "hgroup":
+			return /^h[1-6]$/.test(child);
 	}
 
 	// "If child is "body", "caption", "col", "colgroup", "frame", "frameset",
@@ -835,7 +859,7 @@ function isAllowedChild(child, parent_) {
 		[["h1", "h2", "h3", "h4", "h5", "h6"], ["h1", "h2", "h3", "h4", "h5", "h6"]],
 		[["li"], ["li"]],
 		[["nobr"], ["nobr"]],
-		[["p"], prohibitedParagraphChildNames],
+		[["p"].concat(namesOfElementsWithInlineContents), prohibitedParagraphChildNames],
 		[["td", "th"], ["caption", "col", "colgroup", "tbody", "td", "tfoot", "th", "thead", "tr"]],
 	];
 	for (var i = 0; i < table.length; i++) {

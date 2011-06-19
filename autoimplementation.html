@@ -63,14 +63,22 @@ function runTests(command) {
 	for (var i = 0; i < tests[command].length; i++) {
 		// This code actually focuses and clicks everything because for some
 		// reason, anything else doesn't work in IE9 . . .
+		//
+		// In case the input contains something unpleasant like newlines, we
+		// smuggle in the string as a data attribute, not just the value.  This
+		// is probably unnecessarily magic.
 		if (typeof tests[command][i] == "string") {
 			inputs[0].value = tests[command][i];
+			inputs[0].setAttribute("data-input", tests[command][i]);
 			if (inputs.length == 2) {
 				inputs[1].value = defaultValues[command];
+				inputs[1].setAttribute("data-input", defaultValues[command]);
 			}
 		} else {
 			inputs[0].value = tests[command][i][1];
+			inputs[0].setAttribute("data-input", tests[command][i][1]);
 			inputs[1].value = tests[command][i][0];
+			inputs[1].setAttribute("data-input", tests[command][i][0]);
 		}
 		inputs[0].focus();
 		addTestButton.click();
@@ -97,11 +105,22 @@ function addTest(command) {
 
 	var test;
 	var inputs = document.getElementById(command).getElementsByTagName("input");
+
 	if (inputs.length == 1) {
-		test = inputs[0].value;
+		if (inputs[0].hasAttribute("data-input")) {
+			test = inputs[0].getAttribute("data-input");
+		} else {
+			test = inputs[0].value;
+		}
 	} else {
-		test = [inputs[1].value, inputs[0].value];
+		if (inputs[0].hasAttribute("data-input")) {
+			test = [inputs[1].getAttribute("data-input"), inputs[0].getAttribute("data-input")];
+			inputs[1].removeAttribute("data-input");
+		} else {
+			test = [inputs[1].value, inputs[0].value];
+		}
 	}
+	inputs[0].removeAttribute("data-input");
 
 	doInputCell(tr, test);
 	doSpecCell(tr, test, command, false);

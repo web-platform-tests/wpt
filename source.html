@@ -5048,10 +5048,17 @@ parser.
 
 <ol>
   <li><span>Delete the contents</span> of the <span>active range</span>.
+  <!-- Firefox 5.0a2 seems to not do this if value is empty; Chrome 14 dev and
+  Opera 11.11 do. -->
 
   <li>Let <var>frag</var> be the result of calling <code data-anolis-spec=domps
   title=dom-Range-createContextualFragment>createContextualFragment(<var>value</var>)</code>
   on the <span>active range</span>.
+
+  <p class=XXX>This has some interesting consequences.  For instance, table
+  cells and similar will just vanish if they're not in an appropriate place;
+  and inside a script or style or xmp or such, the argument will effectively be
+  HTML-escaped before use.  Some of these consequences might be undesirable.
 
   <li>Let <var>last child</var> be the [[lastchild]] of <var>frag</var>.
 
@@ -5471,16 +5478,54 @@ theory, but normalize the selection first, so they don't match it in practice.
 
   <li>If <var>value</var> is the empty string, abort these steps.
 
+  <p class=XXX>WebKit does magic for tabs, and actually handles newlines as
+  newlines.
+
+  <p class=XXX>This doesn't work well if the input contains things that aren't
+  supposed to appear in HTML, like carriage returns or nulls.  Nor is it going
+  to work well if the current cursor position is in between two halves of a
+  non-BMP character.  This will result in unserializability.  The current spec
+  disregards this, as Chrome 14 dev does.
+
+  <li>Let <var>node</var> and <var>offset</var> be the <span>active
+  range</span>'s [[startnode]] and [[bpoffset]].
+
+  <!--
+  Just to be tidy, add to an existing text node if there is one.  Firefox 5.0a2
+  only adds to an existing one if the range is in a text node.  IE9, Chrome 14
+  dev, and Opera 11.11 also add to an existing text node if the range is in an
+  element adjacent to a text node.  If there are two text nodes and it's in
+  between, like foo{}bar, IE and Opera add to the first, Chrome adds to the
+  second, although it probably doesn't matter in practice exactly which we
+  choose.
+  -->
+  <li>If <var>node</var> has a [[child]] whose [[index]] is <var>offset</var>
+  &minus; 1, and that [[child]] is a [[text]] node, set <var>node</var> to that
+  [[child]], then set <var>offset</var> to <var>node</var>'s [[length]].
+
+  <li>If <var>node</var> has a [[child]] whose [[index]] is <var>offset</var>,
+  and that [[child]] is a [[text]] node, set <var>node</var> to that [[child]],
+  then set <var>offset</var> to zero.
+
+  <li>If <var>node</var> is a [[text]] node:
+
+  <ol>
+    <li>Call [[insertdata|<var>offset</var>, <var>value</var>]] on
+    <var>node</var>.
+
+    <li>Add the <a href=http://es5.github.com/#x15.5.5.1>length</a> of
+    <var>value</var> to <var>offset</var>.
+
+    <li>Call [[selcollapse|<var>node</var>, <var>offset</var>]] on the
+    [[contextobject]]'s [[selection]].
+
+    <li>Abort these steps.
+  </ol>
+
   <li>Let <var>text</var> be the result of calling <code
   data-anolis-spec=domcore
   title=dom-Document-createTextNode>createTextNode(<var>value</var>)</code> on
   the [[contextobject]].
-
-  <p class=XXX>We should actually add to existing text nodes if present, just
-  to be tidy.
-
-  <p class=XXX>WebKit seems to strip newlines from programmatic input, and does
-  magic for tabs.
 
   <li>Call [[insertnode|<var>text</var>]] on the <span>active range</span>.
 

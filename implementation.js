@@ -5600,6 +5600,45 @@ commands.inserttext = {
 			return;
 		}
 
+		// "Let node and offset be the active range's start node and offset."
+		var node = getActiveRange().startContainer;
+		var offset = getActiveRange().startOffset;
+
+		// "If node has a child whose index is offset − 1, and that child is a
+		// Text node, set node to that child, then set offset to node's
+		// length."
+		if (0 <= offset - 1
+		&& offset - 1 < node.childNodes.length
+		&& node.childNodes[offset - 1].nodeType == Node.TEXT_NODE) {
+			node = node.childNodes[offset - 1];
+			offset = getNodeLength(node);
+		}
+
+		// "If node has a child whose index is offset, and that child is a Text
+		// node, set node to that child, then set offset to zero."
+		if (0 <= offset
+		&& offset < node.childNodes.length
+		&& node.childNodes[offset].nodeType == Node.TEXT_NODE) {
+			node = node.childNodes[offset];
+			offset = 0;
+		}
+
+		// "If node is a Text node:"
+		if (node.nodeType == Node.TEXT_NODE) {
+			// "Call insertData(offset, value) on node."
+			node.insertData(offset, value);
+
+			// "Add the length of value to offset."
+			offset += value.length;
+
+			// "Call collapse(node, offset) on the context object's Selection."
+			getActiveRange().setStart(node, offset);
+			getActiveRange().setEnd(node, offset);
+
+			// "Abort these steps."
+			return;
+		}
+
 		// "Let text be the result of calling createTextNode(value) on the
 		// context object."
 		var text = document.createTextNode(value);

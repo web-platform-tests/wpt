@@ -825,7 +825,7 @@ function isAllowedChild(child, parent_) {
 		case "dir":
 		case "ol":
 		case "ul":
-			return ["li", "ol", "ul"].indexOf(child) != -1;
+			return ["dir", "li", "ol", "ul"].indexOf(child) != -1;
 		case "hgroup":
 			return /^h[1-6]$/.test(child);
 	}
@@ -1100,12 +1100,14 @@ function splitParent(nodeList) {
 	}
 
 	// "If the first member of node list is an inline node, and original
-	// parent's previousSibling is an inline node other than a br, call
-	// createElement("br") on the context object, then insert the result into
-	// the parent of original parent immediately before original parent."
+	// parent's previousSibling is an inline node other than a br, and original
+	// parent is not an inline node, call createElement("br") on the context
+	// object, then insert the result into the parent of original parent
+	// immediately before original parent."
 	if (isInlineNode(nodeList[0])
 	&& isInlineNode(originalParent.previousSibling)
-	&& !isHtmlElement(originalParent.previousSibling, "br")) {
+	&& !isHtmlElement(originalParent.previousSibling, "br")
+	&& !isInlineNode(originalParent)) {
 		originalParent.parentNode.insertBefore(document.createElement("br"), originalParent);
 	}
 
@@ -1116,11 +1118,13 @@ function splitParent(nodeList) {
 	}
 
 	// "If the last member of node list is an inline node other than a br, and
-	// the first child of original parent is a br, remove the first child of
-	// original parent from original parent."
+	// the first child of original parent is a br, and original parent is not
+	// an inline node, remove the first child of original parent from original
+	// parent."
 	if (isInlineNode(nodeList[nodeList.length - 1])
-	&& !isHtmlElement(nodeList[nodeList.length - 1])
-	&& isHtmlElement(originalParent.firstChild, "BR")) {
+	&& !isHtmlElement(nodeList[nodeList.length - 1], "br")
+	&& isHtmlElement(originalParent.firstChild, "br")
+	&& !isInlineNode(originalParent)) {
 		originalParent.removeChild(originalParent.firstChild);
 	}
 
@@ -3691,19 +3695,21 @@ var defaultSingleLineContainerName = "p";
 //@{
 
 function fixDisallowedAncestors(node) {
-	// "If node is an li and its parent is not an ol, unset its value
-	// attribute, if set."
-	if (isHtmlElement(node, "li")
-	&& !isHtmlElement(node.parentNode, "ol")) {
-		node.removeAttribute("value");
+	// "If node is not an allowed child of any of its ancestors in the same
+	// editing host:"
+	var hasAllowedAncestor = false;
+	for (var ancestor = node.parentNode; inSameEditingHost(node, ancestor); ancestor = ancestor.parentNode) {
+		if (isAllowedChild(node, ancestor)) {
+			hasAllowedAncestor = true;
+			break;
+		}
 	}
+	if (!hasAllowedAncestor) {
+		// "If node is not a prohibited paragraph child, abort these steps."
+		if (!isProhibitedParagraphChild(node)) {
+			return;
+		}
 
-	// "If node is an li and its parent is not an ol or ul, or node is a dt or
-	// dd and its parent is not a dl:"
-	if ((isHtmlElement(node, "li")
-	&& !isHtmlElement(node.parentNode, ["ol", "ul"]))
-	|| (isHtmlElement(node, ["dt", "dd"])
-	&& !isHtmlElement(node.parentNode, "dl"))) {
 		// "Set the tag name of node to the default single-line container name,
 		// and let node be the result."
 		node = setTagName(node, defaultSingleLineContainerName);
@@ -3711,29 +3717,15 @@ function fixDisallowedAncestors(node) {
 		// "Fix disallowed ancestors of node."
 		fixDisallowedAncestors(node);
 
-		// "Fix prohibited paragraph descendants of node."
-		fixProhibitedParagraphDescendants(node);
+		// "Let descendants be all descendants of node."
+		var descendants = getDescendants(node);
+
+		// "Fix disallowed ancestors of each member of descendants."
+		for (var i = 0; i < descendants.length; i++) {
+			fixDisallowedAncestors(descendants[i]);
+		}
 
 		// "Abort these steps."
-		return;
-	}
-
-	// "If node is an allowed child of its parent, or it is not an allowed
-	// child of any of its ancestors in the same editing host, abort these
-	// steps and do nothing."
-	if (isAllowedChild(node, node.parentNode)) {
-		return;
-	}
-	var ancestor = node.parentNode;
-	var hasAllowedAncestor = false;
-	while (inSameEditingHost(node, ancestor)) {
-		if (isAllowedChild(node, ancestor)) {
-			hasAllowedAncestor = true;
-			break;
-		}
-		ancestor = ancestor.parentNode;
-	}
-	if (!hasAllowedAncestor) {
 		return;
 	}
 

@@ -193,7 +193,8 @@ function doBrowserCell(tr, test, command, styleWithCss) {
 				+ compareDiv1.innerHTML + " vs. " + compareDiv2.innerHTML;
 		}
 		if (!compareDiv1.isEqualNode(compareDiv2)) {
-			throw "DOM does not round-trip through serialization!";
+			throw "DOM does not round-trip through serialization (although innerHTML is the same)!  "
+				+ compareDiv1.innerHTML;
 		}
 
 		if (browserCell.firstChild.attributes.length) {

@@ -38,7 +38,7 @@
 <body class=draft>
 <div class=head id=head>
 <h1>HTML Editing Commands</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-16-june-2011>Work in Progress &mdash; Last Update 16 June 2011</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-19-june-2011>Work in Progress &mdash; Last Update 19 June 2011</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;ayg+spec@aryeh.name&gt;
@@ -635,7 +635,7 @@ reasons:
     <tr><td>tbody, tfoot, thead <td>td, th, tr
     <tr><td>tr <td>td, th
     <tr><td>dl <td>dt, dd
-    <tr><td>dir, ol, ul <td>li, ol, ul
+    <tr><td>dir, ol, ul <td>dir, li, ol, ul
     <tr><td>hgroup <td>h1, h2, h3, h4, h5, h6
   </table>
 
@@ -703,6 +703,9 @@ instead follow these rules:
 <p>To <dfn id=set-the-tag-name>set the tag name</dfn> of an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> <var title="">element</var> to
 <var title="">new name</var>:
 
+<p class=XXX>Do we want to get rid of attributes that are no longer allowed
+here?
+
 <ol>
   <li>If <var title="">element</var> is an <a href=#html-element>HTML element</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a>
   equal to <var title="">new name</var>, return <var title="">element</var>.
@@ -764,6 +767,8 @@ extraneous line breaks at the end of</a> it.
 if the parent had styles, classes, etc.  There's not going to be any general
 way to handle this, but we should at least try to handle the special case of
 inline styles, because Firefox does actually add them to arbitrary elements.
+Also, when splitting out of an inline parent, it might be good to wrap all the
+inline descendants in a clone of the former parent.
 
 <ol>
   <li>Let <var title="">original parent</var> be the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of the first member of
@@ -845,8 +850,9 @@ inline styles, because Firefox does actually add them to arbitrary elements.
 
   <li>If the first member of <var title="">node list</var> is an <a href=#inline-node>inline
   node</a>, and <var title="">original parent</var>'s <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code> is an
-  <a href=#inline-node>inline node</a> other than a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code>, call <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("br")</a></code> on
-  the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>, then insert the result into the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of
+  <a href=#inline-node>inline node</a> other than a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code>, and <var title="">original parent</var>
+  is not an <a href=#inline-node>inline node</a>, call <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("br")</a></code> on the
+  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>, then insert the result into the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of
   <var title="">original parent</var> immediately before <var title="">original parent</var>.
 
   <li>For each <var title="">node</var> in <var title="">node list</var>, insert <var title="">node</var>
@@ -861,8 +867,9 @@ inline styles, because Firefox does actually add them to arbitrary elements.
 
   <li>If the last member of <var title="">node list</var> is an <a href=#inline-node>inline node</a>
   other than a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code>, and the first <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">original parent</var> is
-  a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code>, remove the first <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">original parent</var> from
-  <var title="">original parent</var>.
+  a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code>, and <var title="">original parent</var> is not an <a href=#inline-node>inline node</a>,
+  remove the first <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">original parent</var> from <var title="">original
+  parent</var>.
 
   <li>If <var title="">original parent</var> has no <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, remove it from its
   <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
@@ -2783,7 +2790,32 @@ For color parsing, see the comment for foreColor. -->
 
 <h3 id=the-inserthtml-command><span class=secno>6.15 </span><dfn>The <code title="">insertHTML</code> command</dfn></h3>
 
-<!-- Not supported by IE9. -->
+<!--
+Not supported by IE9.  Handling of disallowed children is interesting:
+
+Firefox 5.0a2: Will allow <dt> inside <dt> (doesn't serialize).  If you try
+inserting dir/ol/ul inside an existing dir/ol/ul, it will strip the list
+element and leave only the li's, so inserting <ul><li>abc</ul> into
+<ol><li>f[o]o</ol> creates <ol><li>f<li>abc<li>o</ol>.  <dt>/<dd>/<li> that
+don't descend from a list will be left alone, not converted to <p>.  Empty
+elements seem not to be inserted.  <li> will get put inside <p>, which breaks
+serialization.  Nothing is allowed inside <xmp>, not even text.
+
+Chrome 13 dev: Inserting a <p> into a <p> or <li> or such will remove the child
+<p>, adding its contents to the parent instead.  Adding an <li> or <hr> as the
+child of a <p> works, as does an <a> inside an <a>, <h2> inside <h1>, <li>
+inside <li>, <nobr> inside <nobr>, <b> inside <xmp>, etc. (all unserializable).
+But <dt> and <dd> seem to get converted to their contents like <p>.
+<ol><li>abc</ol> inside <ol><li>f[o]o</ol> becomes
+<ol><li>f<li>abc<li><li>o</ol>, interestingly (note the empty <li>).  I don't
+understand how it works, but it doesn't seem to make much sense.
+
+Opera 11.11: Seems to do almost no validity or serialization checks, except
+that it prevents <a> inside <a>, <nobr> inside <nobr>, and block elements
+inside inline elements.  Interestingly, most of the places where it's
+non-serializable per HTML parsing are actually serializable in Opera's own
+parser.
+-->
 
 <p><a href=#action>Action</a>:
 
@@ -3192,19 +3224,17 @@ container</a>, or an <a href=#html-element>HTML element</a> with <a class=extern
 
 <p>To <dfn id=fix-disallowed-ancestors>fix disallowed ancestors</dfn> of a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> <var title="">node</var>:
 
-<ol>
-  <li>If <var title="">node</var> is an <code class=external data-anolis-spec=html title="the li element"><a href=http://www.whatwg.org/html/#the-li-element>li</a></code> and its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is not an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code>,
-  unset its <code class=external data-anolis-spec=html title=attr-li-value><a href=http://www.whatwg.org/html/#attr-li-value>value</a></code>
-  attribute, if set.
-  <!-- IE9, Firefox 4.0, and Opera 11.10 keep the value attribute even if the
-  parent is now a ul.  Chrome 12 dev strips it even if the parent is now an ol.
-  The spec makes more sense. -->
+<p class=XXX>Do we want to get rid of attributes that are no longer allowed
+here?
 
-  <li>If <var title="">node</var> is an <code class=external data-anolis-spec=html title="the li element"><a href=http://www.whatwg.org/html/#the-li-element>li</a></code> and its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is not an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code> or
-  <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code>, or <var title="">node</var> is a <code class=external data-anolis-spec=html title="the dt element"><a href=http://www.whatwg.org/html/#the-dt-element>dt</a></code> or <code class=external data-anolis-spec=html title="the dd element"><a href=http://www.whatwg.org/html/#the-dd-element>dd</a></code> and its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is not a
-  <code class=external data-anolis-spec=html title="the dl element"><a href=http://www.whatwg.org/html/#the-dl-element>dl</a></code>:
+<ol>
+  <li>If <var title="">node</var> is not an <a href=#allowed-child>allowed child</a> of any of its
+  <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestors</a> <a href=#in-the-same-editing-host>in the same editing host</a>:
 
   <ol>
+    <li>If <var title="">node</var> is not a <a href=#prohibited-paragraph-child>prohibited paragraph child</a>,
+    abort these steps.
+
     <li><a href=#set-the-tag-name>Set the tag name</a> of <var title="">node</var> to the <a href=#default-single-line-container-name>default
     single-line container name</a>, and let <var title="">node</var> be the result.
 
@@ -3212,14 +3242,13 @@ container</a>, or an <a href=#html-element>HTML element</a> with <a class=extern
     <!-- Because maybe it somehow wound up as the child of a p, like via
     insertHTML. -->
 
-    <li><a href=#fix-prohibited-paragraph-descendants>Fix prohibited paragraph descendants</a> of <var title="">node</var>.
+    <li>Let <var title="">descendants</var> be all <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-descendant title=concept-tree-descendant>descendants</a> of <var title="">node</var>.
+
+    <li><a href=#fix-disallowed-ancestors>Fix disallowed ancestors</a> of each member of
+    <var title="">descendants</var>.
 
     <li>Abort these steps.
   </ol>
-
-  <li>If <var title="">node</var> is not an <a href=#allowed-child>allowed child</a> of any of its
-  <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestors</a> <a href=#in-the-same-editing-host>in the same editing host</a>, abort these steps and do
-  nothing.
 
   <li>While <var title="">node</var> is not an <a href=#allowed-child>allowed child</a> of its
   <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>, <a href=#split-the-parent>split the parent</a> of the one-<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> list consisting

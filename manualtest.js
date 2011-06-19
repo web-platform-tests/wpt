@@ -149,7 +149,7 @@ function continueBrowserCell(test, testDiv, browserCell) {
 		}
 		if (!compareDiv1.isEqualNode(compareDiv2)) {
 			throw "DOM does not round-trip through serialization (although innerHTML is the same)!  "
-				+ testDiv.innerHTML;
+				+ compareDiv1.innerHTML;
 		}
 
 		browserCell.lastChild.textContent = browserCell.firstChild.innerHTML;

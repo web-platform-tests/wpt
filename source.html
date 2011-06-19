@@ -580,7 +580,7 @@ reasons:
     <tr><td>tbody, tfoot, thead <td>td, th, tr
     <tr><td>tr <td>td, th
     <tr><td>dl <td>dt, dd
-    <tr><td>dir, ol, ul <td>li, ol, ul
+    <tr><td>dir, ol, ul <td>dir, li, ol, ul
     <tr><td>hgroup <td>h1, h2, h3, h4, h5, h6
   </table>
 
@@ -648,6 +648,9 @@ instead follow these rules:
 <p>To <dfn>set the tag name</dfn> of an [[element]] <var>element</var> to
 <var>new name</var>:
 
+<p class=XXX>Do we want to get rid of attributes that are no longer allowed
+here?
+
 <ol>
   <li>If <var>element</var> is an <span>HTML element</span> with [[localname]]
   equal to <var>new name</var>, return <var>element</var>.
@@ -711,6 +714,8 @@ extraneous line breaks at the end of</span> it.
 if the parent had styles, classes, etc.  There's not going to be any general
 way to handle this, but we should at least try to handle the special case of
 inline styles, because Firefox does actually add them to arbitrary elements.
+Also, when splitting out of an inline parent, it might be good to wrap all the
+inline descendants in a clone of the former parent.
 
 <ol>
   <li>Let <var>original parent</var> be the [[parent]] of the first member of
@@ -795,8 +800,9 @@ inline styles, because Firefox does actually add them to arbitrary elements.
 
   <li>If the first member of <var>node list</var> is an <span>inline
   node</span>, and <var>original parent</var>'s [[previoussibling]] is an
-  <span>inline node</span> other than a [[br]], call [[createelement|"br"]] on
-  the [[contextobject]], then insert the result into the [[parent]] of
+  <span>inline node</span> other than a [[br]], and <var>original parent</var>
+  is not an <span>inline node</span>, call [[createelement|"br"]] on the
+  [[contextobject]], then insert the result into the [[parent]] of
   <var>original parent</var> immediately before <var>original parent</var>.
 
   <li>For each <var>node</var> in <var>node list</var>, insert <var>node</var>
@@ -811,8 +817,9 @@ inline styles, because Firefox does actually add them to arbitrary elements.
 
   <li>If the last member of <var>node list</var> is an <span>inline node</span>
   other than a [[br]], and the first [[child]] of <var>original parent</var> is
-  a [[br]], remove the first [[child]] of <var>original parent</var> from
-  <var>original parent</var>.
+  a [[br]], and <var>original parent</var> is not an <span>inline node</span>,
+  remove the first [[child]] of <var>original parent</var> from <var>original
+  parent</var>.
 
   <li>If <var>original parent</var> has no [[children]], remove it from its
   [[parent]].
@@ -2762,7 +2769,32 @@ For color parsing, see the comment for foreColor. -->
 
 <h3><dfn>The <code title>insertHTML</code> command</dfn></h3>
 <!-- @{ -->
-<!-- Not supported by IE9. -->
+<!--
+Not supported by IE9.  Handling of disallowed children is interesting:
+
+Firefox 5.0a2: Will allow <dt> inside <dt> (doesn't serialize).  If you try
+inserting dir/ol/ul inside an existing dir/ol/ul, it will strip the list
+element and leave only the li's, so inserting <ul><li>abc</ul> into
+<ol><li>f[o]o</ol> creates <ol><li>f<li>abc<li>o</ol>.  <dt>/<dd>/<li> that
+don't descend from a list will be left alone, not converted to <p>.  Empty
+elements seem not to be inserted.  <li> will get put inside <p>, which breaks
+serialization.  Nothing is allowed inside <xmp>, not even text.
+
+Chrome 13 dev: Inserting a <p> into a <p> or <li> or such will remove the child
+<p>, adding its contents to the parent instead.  Adding an <li> or <hr> as the
+child of a <p> works, as does an <a> inside an <a>, <h2> inside <h1>, <li>
+inside <li>, <nobr> inside <nobr>, <b> inside <xmp>, etc. (all unserializable).
+But <dt> and <dd> seem to get converted to their contents like <p>.
+<ol><li>abc</ol> inside <ol><li>f[o]o</ol> becomes
+<ol><li>f<li>abc<li><li>o</ol>, interestingly (note the empty <li>).  I don't
+understand how it works, but it doesn't seem to make much sense.
+
+Opera 11.11: Seems to do almost no validity or serialization checks, except
+that it prevents <a> inside <a>, <nobr> inside <nobr>, and block elements
+inside inline elements.  Interestingly, most of the places where it's
+non-serializable per HTML parsing are actually serializable in Opera's own
+parser.
+-->
 
 <p><span>Action</span>:
 
@@ -3175,19 +3207,17 @@ container</span>, or an <span>HTML element</span> with [[localname]] "li",
 <!-- @{ -->
 <p>To <dfn>fix disallowed ancestors</dfn> of a [[node]] <var>node</var>:
 
-<ol>
-  <li>If <var>node</var> is an [[li]] and its [[parent]] is not an [[ol]],
-  unset its <code data-anolis-spec=html title=attr-li-value>value</code>
-  attribute, if set.
-  <!-- IE9, Firefox 4.0, and Opera 11.10 keep the value attribute even if the
-  parent is now a ul.  Chrome 12 dev strips it even if the parent is now an ol.
-  The spec makes more sense. -->
+<p class=XXX>Do we want to get rid of attributes that are no longer allowed
+here?
 
-  <li>If <var>node</var> is an [[li]] and its [[parent]] is not an [[ol]] or
-  [[ul]], or <var>node</var> is a [[dt]] or [[dd]] and its [[parent]] is not a
-  [[dl]]:
+<ol>
+  <li>If <var>node</var> is not an <span>allowed child</span> of any of its
+  [[ancestors]] <span>in the same editing host</span>:
 
   <ol>
+    <li>If <var>node</var> is not a <span>prohibited paragraph child</span>,
+    abort these steps.
+
     <li><span>Set the tag name</span> of <var>node</var> to the <span>default
     single-line container name</span>, and let <var>node</var> be the result.
 
@@ -3195,14 +3225,13 @@ container</span>, or an <span>HTML element</span> with [[localname]] "li",
     <!-- Because maybe it somehow wound up as the child of a p, like via
     insertHTML. -->
 
-    <li><span>Fix prohibited paragraph descendants</span> of <var>node</var>.
+    <li>Let <var>descendants</var> be all [[descendants]] of <var>node</var>.
+
+    <li><span>Fix disallowed ancestors</span> of each member of
+    <var>descendants</var>.
 
     <li>Abort these steps.
   </ol>
-
-  <li>If <var>node</var> is not an <span>allowed child</span> of any of its
-  [[ancestors]] <span>in the same editing host</span>, abort these steps and do
-  nothing.
 
   <li>While <var>node</var> is not an <span>allowed child</span> of its
   [[parent]], <span>split the parent</span> of the one-[[node]] list consisting

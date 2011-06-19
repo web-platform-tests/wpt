@@ -1352,6 +1352,42 @@ var tests = {
 		['<p>abc', '<ol>{<li>foo</li>}<li>bar</ol>'],
 		['<p>abc', '<ol><li>foo</li>{<li>bar</li>}<li>baz</ol>'],
 		['<p>abc', '<ol><li>[foo]</li><li>bar</ol>'],
+
+		['abc', '<xmp>f[o]o</xmp>'],
+		['<b>abc</b>', '<xmp>f[o]o</xmp>'],
+		['<a>abc</a>', '<a>f[o]o</a>'],
+		['<a href=/>abc</a>', '<a href=.>f[o]o</a>'],
+		['<hr>', '<p>f[o]o'],
+		['<hr>', '<b>f[o]o</b>'],
+		['<h2>abc</h2>', '<h1>f[o]o</h1>'],
+		['<td>abc</td>', '<table><tr><td>f[o]o</table>'],
+		['<td>abc</td>', 'f[o]o'],
+
+		['<dt>abc</dt>', '<dl><dt>f[o]o<dd>bar</dl>'],
+		['<dt>abc</dt>', '<dl><dt>foo<dd>b[a]r</dl>'],
+		['<dd>abc</dd>', '<dl><dt>f[o]o<dd>bar</dl>'],
+		['<dd>abc</dd>', '<dl><dt>foo<dd>b[a]r</dl>'],
+		['<dt>abc</dt>', 'f[o]o'],
+		['<dt>abc</dt>', '<ol><li>f[o]o</ol>'],
+		['<dd>abc</dd>', 'f[o]o'],
+		['<dd>abc</dd>', '<ol><li>f[o]o</ol>'],
+
+		['<li>abc</li>', '<dir><li>f[o]o</dir>'],
+		['<li>abc</li>', '<ol><li>f[o]o</ol>'],
+		['<li>abc</li>', '<ul><li>f[o]o</ul>'],
+		['<dir><li>abc</dir>', '<dir><li>f[o]o</dir>'],
+		['<dir><li>abc</dir>', '<ol><li>f[o]o</ol>'],
+		['<dir><li>abc</dir>', '<ul><li>f[o]o</ul>'],
+		['<ol><li>abc</ol>', '<dir><li>f[o]o</dir>'],
+		['<ol><li>abc</ol>', '<ol><li>f[o]o</ol>'],
+		['<ol><li>abc</ol>', '<ul><li>f[o]o</ul>'],
+		['<ul><li>abc</ul>', '<dir><li>f[o]o</dir>'],
+		['<ul><li>abc</ul>', '<ol><li>f[o]o</ol>'],
+		['<ul><li>abc</ul>', '<ul><li>f[o]o</ul>'],
+		['<li>abc</li>', 'f[o]o'],
+
+		['<nobr>abc</nobr>', '<nobr>f[o]o</nobr>'],
+		['<nobr>abc</nobr>', 'f[o]o'],
 	],
 	insertimage: [
 		'foo[]bar',
@@ -2765,7 +2801,8 @@ function doSpecCell(tr, test, command, styleWithCss) {
 				+ compareDiv1.innerHTML + " vs. " + compareDiv2.innerHTML;
 		}
 		if (!compareDiv1.isEqualNode(compareDiv2)) {
-			throw "DOM does not round-trip through serialization!";
+			throw "DOM does not round-trip through serialization (although innerHTML is the same)!  "
+				+ compareDiv1.innerHTML;
 		}
 
 		if (specCell.firstChild.attributes.length) {

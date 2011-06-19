@@ -1805,7 +1805,15 @@ var tests = {
 		['\ud800', 'foo[]bar'],
 		['\x07', 'foo[]bar'],
 
+		[' ', '[]foo'],
+		[' ', 'foo[]'],
+		[' ', 'foo&nbsp;[]'],
+		[' ', 'foo&nbsp;&nbsp;[]'],
+		['   ', 'foo[]'],
+
 		'foo[]bar',
+		'foo&nbsp;[]',
+		'foo\xa0[]',
 		'<p>foo[]',
 		'<p>foo</p>{}',
 		'<p>[]foo',
@@ -1822,6 +1830,7 @@ var tests = {
 		'<p>fo[o<p>b]ar',
 		'<p>fo[o<p>bar<p>b]az',
 		'<p>{}<br>',
+		'<p><span>{}<br></span>',
 	],
 	//@}
 	insertunorderedlist: [

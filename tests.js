@@ -1,5 +1,6 @@
 // Alert the reader of egregious Opera bug that will make the specced
 // implementation horribly buggy
+//@{
 (function() {
 	var div = document.createElement("div");
 	div.appendChild(document.createElement("br"));
@@ -17,8 +18,10 @@
 	}
 	div.parentNode.removeChild(div);
 })();
+//@}
 
 // Insert the toolbar thingie as soon as the script file is loaded
+//@{
 (function() {
 	var toolbarDiv = document.createElement("div");
 	toolbarDiv.id = "toolbar";
@@ -29,12 +32,14 @@
 
 	document.body.appendChild(toolbarDiv);
 })();
+//@}
 
 // Confusingly, we're storing a string here, not a boolean.
 document.querySelector("#alert-checkbox").checked = localStorage["display-alerts"] != "false";
 document.querySelector("#browser-checkbox").checked = localStorage["display-browser-tests"] != "false";
 
 function updateAlertRowStyle() {
+//@{
 	var checked = document.querySelector("#alert-checkbox").checked;
 	var style = document.querySelector("#alerts");
 	if (checked && !/^\/\*/.test(style.textContent)) {
@@ -44,12 +49,14 @@ function updateAlertRowStyle() {
 	}
 	localStorage["display-alerts"] = checked;
 }
+//@}
 updateAlertRowStyle();
 
 // Feature-test whether the browser wraps at <wbr> or not, and set word-wrap:
 // break-word where necessary if not.  (IE and Opera don't wrap, Gecko and
 // WebKit do.)  word-wrap: break-word will break anywhere at all, so it looks
 // significantly uglier.
+//@{
 (function() {
 	var wordWrapTestDiv = document.createElement("div");
 	wordWrapTestDiv.style.width = "5em";
@@ -63,10 +70,12 @@ updateAlertRowStyle();
 		document.body.className += " wbr-workaround";
 	}
 })();
+//@}
 
 // Now for the meat of the file.
 var tests = {
 	backcolor: [
+	//@{
 		'foo[]bar',
 		'<span>foo</span>{}<span>bar</span>',
 		'<span>foo[</span><span>]bar</span>',
@@ -86,7 +95,9 @@ var tests = {
 		'<p>[foo</p><p>bar]</p>',
 		'<p>foo[bar<i>baz]qoz</i>quz',
 	],
+	//@}
 	bold: [
+	//@{
 		'foo[]bar',
 		'<span>foo</span>{}<span>bar</span>',
 		'<span>foo[</span><span>]bar</span>',
@@ -194,7 +205,9 @@ var tests = {
 
 		'<p style="font-weight: bold">foo[bar]baz</p>',
 	],
+	//@}
 	createlink: [
+	//@{
 		'foo[]bar',
 		'<span>foo</span>{}<span>bar</span>',
 		'<span>foo[</span><span>]bar</span>',
@@ -243,10 +256,12 @@ var tests = {
 		'<a name=abc>foo[bar]baz</a>',
 		'<a name=abc><b>foo[bar]baz</b></a>',
 	],
+	//@}
 	// Opera requires this to be quoted, contrary to ES5 11.1.5 which allows
 	// PropertyName to be any IdentifierName, and see 7.6 which defines
 	// IdentifierName to include ReservedWord; Identifier excludes it.
 	"delete": [
+	//@{
 		// Collapsed selection
 		//
 		// These three commented-out test call Firefox 5.0a2 to blow up, not
@@ -464,7 +479,9 @@ var tests = {
 		'<dl><dt>foo[<dt>]bar<dd>baz</dl>',
 		'<dl><dt>foo<dd>bar[<dd>]baz</dl>',
 	],
+	//@}
 	fontname: [
+	//@{
 		'foo[]bar',
 		'<span>foo</span>{}<span>bar</span>',
 		'<span>foo[</span><span>]bar</span>',
@@ -519,7 +536,9 @@ var tests = {
 		'foo<span style="font-family: monospace">[bar]</span>baz',
 		'foo<span style="font-family: monospace">b[a]r</span>baz',
 	],
+	//@}
 	fontsize: [
+	//@{
 		'foo[]bar',
 		'<span>foo</span>{}<span>bar</span>',
 		'<span>foo[</span><span>]bar</span>',
@@ -597,7 +616,9 @@ var tests = {
 		["3", 'foo<small>[bar]</small>baz'],
 		["3", 'foo<small>b[a]r</small>baz'],
 	],
+	//@}
 	forecolor: [
+	//@{
 		'foo[]bar',
 		'<span>foo</span>{}<span>bar</span>',
 		'<span>foo[</span><span>]bar</span>',
@@ -647,7 +668,9 @@ var tests = {
 		'foo<span id=purple>ba[r</span>ba]z',
 		'<span style="color: rgb(255, 0, 0)">foo<span id=purple>b[a]r</span>baz</span>',
 	],
+	//@}
 	formatblock: [
+	//@{
 		'foo[]bar<p>extra',
 		'<span>foo</span>{}<span>bar</span><p>extra',
 		'<span>foo[</span><span>]bar</span><p>extra',
@@ -870,7 +893,9 @@ var tests = {
 		['<p>', '<xmp>[foo]</xmp>'],
 		['<div>', '<xmp>[foo]</xmp>'],
 	],
+	//@}
 	forwarddelete: [
+	//@{
 		// Collapsed selection
 		'foo[]',
 		'<span>foo[]</span>',
@@ -1069,7 +1094,9 @@ var tests = {
 		'<dl><dt>foo[<dt>]bar<dd>baz</dl>',
 		'<dl><dt>foo<dd>bar[<dd>]baz</dl>',
 	],
+	//@}
 	hilitecolor: [
+	//@{
 		'foo[]bar',
 		'<span>foo</span>{}<span>bar</span>',
 		'<span>foo[</span><span>]bar</span>',
@@ -1097,7 +1124,9 @@ var tests = {
 		'<div style="background-color: #ff8888"><p style="background-color: aqua">b[ar]</p></div>',
 		'<span style="display: block; background-color: #ff8888"><span style="display: block; background-color: aqua">b[ar]</span></span>',
 	],
+	//@}
 	indent: [
+	//@{
 		// All these have a trailing unselected paragraph, because otherwise
 		// Gecko is unhappy: it throws exceptions in non-CSS mode, and in CSS
 		// mode it adds the indentation invisibly to the wrapper div in many
@@ -1243,7 +1272,9 @@ var tests = {
 		'<ol><li>foo<ol><li>bar</ol>[baz]</ol>',
 		'<ol><li>[foo<ol><li>bar]</ol>baz</ol>',
 	],
+	//@}
 	inserthorizontalrule: [
+	//@{
 		'foo[]bar',
 		'<span>foo</span>{}<span>bar</span>',
 		'<span>foo[</span><span>]bar</span>',
@@ -1342,7 +1373,9 @@ var tests = {
 
 		'<quasit>foo[bar]baz</quasit>',
 	],
+	//@}
 	inserthtml: [
+	//@{
 		'foo[]bar',
 		'foo[bar]baz',
 		['<b>', 'foo[bar]baz'],
@@ -1389,7 +1422,9 @@ var tests = {
 		['<nobr>abc</nobr>', '<nobr>f[o]o</nobr>'],
 		['<nobr>abc</nobr>', 'f[o]o'],
 	],
+	//@}
 	insertimage: [
+	//@{
 		'foo[]bar',
 		'<span>foo</span>{}<span>bar</span>',
 		'<span>foo[</span><span>]bar</span>',
@@ -1437,7 +1472,9 @@ var tests = {
 		'<div><p>foo</p>bar[</div>]baz',
 		'<div>foo<p>bar[</p></div>]baz',
 	],
+	//@}
 	insertorderedlist: [
+	//@{
 		'foo[]bar',
 		'<span>foo</span>{}<span>bar</span>',
 		'<span>foo[</span><span>]bar</span>',
@@ -1624,7 +1661,9 @@ var tests = {
 		'<ul style=color:red><li>foo<li>bar<li>[baz]</ul>',
 		'<ul style=text-indent:1em><li>foo<li>bar<li>[baz]</ul>',
 	],
+	//@}
 	insertparagraph: [
+	//@{
 		'foo[bar]baz',
 		'fo[o<table><tr><td>b]ar</table>',
 		'<table><tr><td>[foo<td>bar]<tr><td>baz<td>quz</table>',
@@ -1733,7 +1772,9 @@ var tests = {
 		'<a href=foo>foo[]</a>bar',
 		'foo<a href=foo>[]bar</a>',
 	],
+	//@}
 	insertunorderedlist: [
+	//@{
 		'foo[]bar',
 		'<span>foo</span>{}<span>bar</span>',
 		'<span>foo[</span><span>]bar</span>',
@@ -1920,7 +1961,9 @@ var tests = {
 		'<ul style=color:red><li>foo<li>bar<li>[baz]</ul>',
 		'<ul style=text-indent:1em><li>foo<li>bar<li>[baz]</ul>',
 	],
+	//@}
 	italic: [
+	//@{
 		'foo[]bar',
 		'<span>foo</span>{}<span>bar</span>',
 		'<span>foo[</span><span>]bar</span>',
@@ -1990,7 +2033,9 @@ var tests = {
 		'foo [bar <i>baz] qoz</i> quz sic',
 		'foo bar <i>baz [qoz</i> quz] sic',
 	],
+	//@}
 	justifycenter: [
+	//@{
 		'foo[]bar<p>extra',
 		'<span>foo</span>{}<span>bar</span><p>extra',
 		'<span>foo[</span><span>]bar</span><p>extra',
@@ -2048,7 +2093,9 @@ var tests = {
 		'<div style=text-align:inherit><p>[foo]</div><p>extra',
 		'<quasit align=right><p>[foo]</p></quasit><p>extra',
 	],
+	//@}
 	justifyfull: [
+	//@{
 		'foo[]bar<p>extra',
 		'<span>foo</span>{}<span>bar</span><p>extra',
 		'<span>foo[</span><span>]bar</span><p>extra',
@@ -2103,7 +2150,9 @@ var tests = {
 		'<div style=text-align:inherit><p>[foo]</div><p>extra',
 		'<quasit align=center><p>[foo]</p></quasit><p>extra',
 	],
+	//@}
 	justifyleft: [
+	//@{
 		'foo[]bar<p>extra',
 		'<span>foo</span>{}<span>bar</span><p>extra',
 		'<span>foo[</span><span>]bar</span><p>extra',
@@ -2158,7 +2207,9 @@ var tests = {
 		'<div style=text-align:inherit><p>[foo]</div><p>extra',
 		'<quasit align=center><p>[foo]</p></quasit><p>extra',
 	],
+	//@}
 	justifyright: [
+	//@{
 		'foo[]bar<p>extra',
 		'<span>foo</span>{}<span>bar</span><p>extra',
 		'<span>foo[</span><span>]bar</span><p>extra',
@@ -2213,7 +2264,9 @@ var tests = {
 		'<div style=text-align:inherit><p>[foo]</div><p>extra',
 		'<quasit align=center><p>[foo]</p></quasit><p>extra',
 	],
+	//@}
 	outdent: [
+	//@{
 		// These mimic existing indentation in various browsers, to see how
 		// they cope with outdenting various things.  This is spec, Gecko
 		// non-CSS, and Opera:
@@ -2328,7 +2381,9 @@ var tests = {
 		'<ol><li><h1>[foo]</h1></ol>',
 		'<ol><li><xmp>[foo]</xmp></li></ol>',
 	],
+	//@}
 	removeformat: [
+	//@{
 		'foo[]bar',
 		'<span>foo</span>{}<span>bar</span>',
 		'<span>foo[</span><span>]bar</span>',
@@ -2443,7 +2498,9 @@ var tests = {
 		'<p style="text-indent: 2em">foo[bar]baz</p>',
 		'{<p style="text-indent: 2em">foobarbaz</p>}',
 	],
+	//@}
 	strikethrough: [
+	//@{
 		'foo[]bar',
 		'<span>foo</span>{}<span>bar</span>',
 		'<span>foo[</span><span>]bar</span>',
@@ -2519,7 +2576,9 @@ var tests = {
 		'foo<span class="underline-and-line-through">[bar]</span>baz',
 		'foo<span class="underline-and-line-through">b[a]r</span>baz',
 	],
+	//@}
 	subscript: [
+	//@{
 		'foo[]bar',
 		'<span>foo</span>{}<span>bar</span>',
 		'<span>foo[</span><span>]bar</span>',
@@ -2553,7 +2612,9 @@ var tests = {
 		'foo<sup><sub>b[a]r</sub></sup>baz',
 		'foo<sup>b<sub>[a]</sub>r</sup>baz',
 	],
+	//@}
 	superscript: [
+	//@{
 		'foo[]bar',
 		'<span>foo</span>{}<span>bar</span>',
 		'<span>foo[</span><span>]bar</span>',
@@ -2587,7 +2648,9 @@ var tests = {
 		'foo<sup><sub>b[a]r</sub></sup>baz',
 		'foo<sup>b<sub>[a]</sub>r</sup>baz',
 	],
+	//@}
 	underline: [
+	//@{
 		'foo[]bar',
 		'<span>foo</span>{}<span>bar</span>',
 		'<span>foo[</span><span>]bar</span>',
@@ -2663,7 +2726,9 @@ var tests = {
 		'foo<span class="underline-and-line-through">[bar]</span>baz',
 		'foo<span class="underline-and-line-through">b[a]r</span>baz',
 	],
+	//@}
 	unlink: [
+	//@{
 		'foo[]bar',
 		'<span>foo</span>{}<span>bar</span>',
 		'<span>foo[</span><span>]bar</span>',
@@ -2693,6 +2758,7 @@ var tests = {
 		'foo<a name=foo>[bar]</a>baz',
 		'foo[<a name=foo>bar</a>]baz',
 		'[foo<a name=foo>bar</a>baz]',
+	//@}
 	],
 };
 
@@ -2733,6 +2799,7 @@ var doubleTestingCommands = [
 ];
 
 function doSetup(selector, idx) {
+//@{
 	var table = document.querySelectorAll(selector)[idx];
 
 	var tr = document.createElement("tr");
@@ -2740,8 +2807,10 @@ function doSetup(selector, idx) {
 
 	return tr;
 }
+//@}
 
 function doInputCell(tr, test) {
+//@{
 	var value = null;
 	if (typeof test != "string") {
 		value = test[0];
@@ -2756,8 +2825,10 @@ function doInputCell(tr, test) {
 	}
 	tr.appendChild(inputCell);
 }
+//@}
 
 function doSpecCell(tr, test, command, styleWithCss) {
+//@{
 	var value;
 
 	if (typeof test != "string") {
@@ -2877,8 +2948,10 @@ function doSpecCell(tr, test, command, styleWithCss) {
 		} })(key, newValue, alertDiv);
 	}
 }
+//@}
 
 function browserCellException(e, testDiv, browserCell) {
+//@{
 	if (testDiv) {
 		testDiv.contenteditable = "inherit";
 		testDiv.removeAttribute("spellcheck");
@@ -2892,8 +2965,10 @@ function browserCellException(e, testDiv, browserCell) {
 		browserCell.insertBefore(testDiv, browserCell.firstChild);
 	}
 }
+//@}
 
 function doSameCell(tr) {
+//@{
 	var sameCell = document.createElement("td");
 	var exception = false;
 	try {
@@ -2969,12 +3044,14 @@ function doSameCell(tr) {
 		} catch (e) {};
 	}
 }
+//@}
 
 function doTearDown(command) {
 	getSelection().removeAllRanges();
 }
 
 function setupCell(cell, test) {
+//@{
 	cell.innerHTML = "<div></div><div></div>";
 
 	// A variety of checks to avoid simple errors.  Not foolproof, of course.
@@ -3088,8 +3165,10 @@ function setupCell(cell, test) {
 
 	return [startNode, startOffset, endNode, endOffset];
 }
+//@}
 
 function setSelection(startNode, startOffset, endNode, endOffset) {
+//@{
 	if (navigator.userAgent.indexOf("Opera") != -1) {
 		// Yes, browser sniffing is evil, but I can't be bothered to debug
 		// Opera.
@@ -3131,12 +3210,14 @@ function setSelection(startNode, startOffset, endNode, endOffset) {
 		}
 	}
 }
+//@}
 
 /**
  * Add brackets at the start and end points of the given range, so that they're
  * visible.
  */
 function addBrackets(range) {
+//@{
 	// Handle the collapsed case specially, to avoid confusingly getting the
 	// markers backwards in some cases
 	if (range.startContainer.nodeType == Node.TEXT_NODE) {
@@ -3185,3 +3266,5 @@ function addBrackets(range) {
 		}
 	}
 }
+//@}
+// vim: foldmarker=@{,@} foldmethod=marker

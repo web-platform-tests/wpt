@@ -1,4 +1,6 @@
-var tests = tests[command];
+// We don't support non-default values for manual tests, so only strings need
+// apply.
+var tests = tests[command].filter(function(test) { return typeof test == "string"});
 
 var testsRunning = false;
 
@@ -38,8 +40,16 @@ function addTest() {
 	var tr = doSetup("#tests table", 0);
 	var input = document.querySelector("#tests label input");
 	var test = input.value;
+	if (command == "inserttext") {
+		// Yay hack
+		test = ["a", test];
+	}
 	doInputCell(tr, test);
 	doSpecCell(tr, test, command, false);
+	if (typeof test != "string") {
+		// Yay hack
+		test = test[1];
+	}
 	if (localStorage.getItem(keyname + "test-" + test) !== null) {
 		// Yay, I get to cheat.  Remove the overlay div so the user doesn't
 		// keep hitting the key, in case it takes a while.

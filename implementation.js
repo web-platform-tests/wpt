@@ -5588,6 +5588,33 @@ commands.insertparagraph = {
 };
 //@}
 
+///// The insertText command /////
+//@{
+commands.inserttext = {
+	action: function(value) {
+		// "Delete the contents of the active range."
+		deleteContents(getActiveRange());
+
+		// "If value is the empty string, abort these steps."
+		if (value == "") {
+			return;
+		}
+
+		// "Let text be the result of calling createTextNode(value) on the
+		// context object."
+		var text = document.createTextNode(value);
+
+		// "Call insertNode(text) on the active range."
+		getActiveRange().insertNode(text);
+
+		// "Call collapse(text, length) on the context object's Selection,
+		// where length is the length of text."
+		getActiveRange().setStart(text, text.length);
+		getActiveRange().setEnd(text, text.length);
+	}
+};
+//@}
+
 ///// The insertUnorderedList command /////
 commands.insertunorderedlist = {
 	// "Toggle lists with tag name "ul"."

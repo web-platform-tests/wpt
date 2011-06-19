@@ -117,12 +117,13 @@ have experience using this feature.
    <li><a href=#the-inserthorizontalrule-command><span class=secno>7.15 </span>The <code title="">insertHorizontalRule</code> command</a></li>
    <li><a href=#the-insertorderedlist-command><span class=secno>7.16 </span>The <code title="">insertOrderedList</code> command</a></li>
    <li><a href=#the-insertparagraph-command><span class=secno>7.17 </span>The <code title="">insertParagraph</code> command</a></li>
-   <li><a href=#the-insertunorderedlist-command><span class=secno>7.18 </span>The <code title="">insertUnorderedList</code> command</a></li>
-   <li><a href=#the-justifycenter-command><span class=secno>7.19 </span>The <code title="">justifyCenter</code> command</a></li>
-   <li><a href=#the-justifyfull-command><span class=secno>7.20 </span>The <code title="">justifyFull</code> command</a></li>
-   <li><a href=#the-justifyleft-command><span class=secno>7.21 </span>The <code title="">justifyLeft</code> command</a></li>
-   <li><a href=#the-justifyright-command><span class=secno>7.22 </span>The <code title="">justifyRight</code> command</a></li>
-   <li><a href=#the-outdent-command><span class=secno>7.23 </span>The <code title="">outdent</code> command</a></ol></li>
+   <li><a href=#the-inserttext-command><span class=secno>7.18 </span>The <code title="">insertText</code> command</a></li>
+   <li><a href=#the-insertunorderedlist-command><span class=secno>7.19 </span>The <code title="">insertUnorderedList</code> command</a></li>
+   <li><a href=#the-justifycenter-command><span class=secno>7.20 </span>The <code title="">justifyCenter</code> command</a></li>
+   <li><a href=#the-justifyfull-command><span class=secno>7.21 </span>The <code title="">justifyFull</code> command</a></li>
+   <li><a href=#the-justifyleft-command><span class=secno>7.22 </span>The <code title="">justifyLeft</code> command</a></li>
+   <li><a href=#the-justifyright-command><span class=secno>7.23 </span>The <code title="">justifyRight</code> command</a></li>
+   <li><a href=#the-outdent-command><span class=secno>7.24 </span>The <code title="">outdent</code> command</a></ol></li>
  <li><a href=#miscellaneous-commands><span class=secno>8 </span>Miscellaneous commands</a>
   <ol>
    <li><a href=#the-selectall-command><span class=secno>8.1 </span>The <code title="">selectAll</code> command</a></li>
@@ -5434,36 +5435,70 @@ http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
 </ol>
 
 
-<h3 id=the-insertunorderedlist-command><span class=secno>7.18 </span><dfn>The <code title="">insertUnorderedList</code> command</dfn></h3>
+<h3 id=the-inserttext-command><span class=secno>7.18 </span><dfn>The <code title="">insertText</code> command</dfn></h3>
+
+<!--
+Supported only by WebKit.  Tests in other browsers were manual.  In the manual
+tests, where the value was always "a", IE9 and Firefox 5.0a2 match the spec
+exactly as far as I can tell; Chrome 14 dev and Opera 11.11 might match it in
+theory, but normalize the selection first, so they don't match it in practice.
+-->
+
+<p><a href=#action>Action</a>:
+
+<ol>
+  <li><a href=#delete-the-contents>Delete the contents</a> of the <a href=#active-range>active range</a>.
+  <!-- Chrome 14 dev does this even if passed the empty string. -->
+
+  <li>If <var title="">value</var> is the empty string, abort these steps.
+
+  <li>Let <var title="">text</var> be the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createTextNode><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createtextnode>createTextNode(<var title="">value</var>)</a></code> on
+  the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>.
+
+  <p class=XXX>We should actually add to existing text nodes if present, just
+  to be tidy.
+
+  <p class=XXX>WebKit seems to strip newlines from programmatic input, and does
+  magic for tabs.
+
+  <li>Call <code class=external data-anolis-spec=domrange title=dom-Range-insertNode><a href=http://html5.org/specs/dom-range.html#dom-range-insertnode>insertNode(<var title="">text</var>)</a></code> on the <a href=#active-range>active range</a>.
+
+  <li>Call <code class=external data-anolis-spec=domrange title=dom-Selection-collapse><a href=http://html5.org/specs/dom-range.html#dom-selection-collapse>collapse(<var title="">text</var>, <var title="">length</var>)</a></code> on the
+  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>'s <code class=external data-anolis-spec=domrange><a href=http://html5.org/specs/dom-range.html#selection>Selection</a></code>, where <var title="">length</var> is the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a>
+  of <var title="">text</var>.
+</ol>
+
+
+<h3 id=the-insertunorderedlist-command><span class=secno>7.19 </span><dfn>The <code title="">insertUnorderedList</code> command</dfn></h3>
 <p><a href=#action>Action</a>: <a href=#toggle-lists>Toggle lists</a> with <var title="">tag name</var>
 "ul".
 
 
-<h3 id=the-justifycenter-command><span class=secno>7.19 </span><dfn>The <code title="">justifyCenter</code> command</dfn></h3>
+<h3 id=the-justifycenter-command><span class=secno>7.20 </span><dfn>The <code title="">justifyCenter</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>: <a href=#justify-the-selection>Justify the selection</a> with
 <var title="">alignment</var> "center".
 
 
-<h3 id=the-justifyfull-command><span class=secno>7.20 </span><dfn>The <code title="">justifyFull</code> command</dfn></h3>
+<h3 id=the-justifyfull-command><span class=secno>7.21 </span><dfn>The <code title="">justifyFull</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>: <a href=#justify-the-selection>Justify the selection</a> with
 <var title="">alignment</var> "justify".
 
 
-<h3 id=the-justifyleft-command><span class=secno>7.21 </span><dfn>The <code title="">justifyLeft</code> command</dfn></h3>
+<h3 id=the-justifyleft-command><span class=secno>7.22 </span><dfn>The <code title="">justifyLeft</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>: <a href=#justify-the-selection>Justify the selection</a> with
 <var title="">alignment</var> "left".
 
 
-<h3 id=the-justifyright-command><span class=secno>7.22 </span><dfn>The <code title="">justifyRight</code> command</dfn></h3>
+<h3 id=the-justifyright-command><span class=secno>7.23 </span><dfn>The <code title="">justifyRight</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>: <a href=#justify-the-selection>Justify the selection</a> with
 <var title="">alignment</var> "right".
 
 
-<h3 id=the-outdent-command><span class=secno>7.23 </span><dfn>The <code title="">outdent</code> command</dfn></h3>
+<h3 id=the-outdent-command><span class=secno>7.24 </span><dfn>The <code title="">outdent</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>:
 
@@ -5665,6 +5700,23 @@ inside an <a href=#editing-host>editing host</a>, such as by pressing the Backsp
 while the cursor is in an <a href=#editable>editable</a> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>, the user agent must
 take the <a href=#action>action</a> for <a href=#the-delete-command>the <code title="">delete</code>
 command</a>.
+
+<p>When the user instructs the user agent to delete the next character inside
+an <a href=#editing-host>editing host</a>, such as by pressing the Delete key while the
+cursor is in an <a href=#editable>editable</a> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>, the user agent must take the
+<a href=#action>action</a> for <a href=#the-forwarddelete-command>the <code title="">forwardDelete</code>
+command</a>.
+
+<p>When the user instructs the user agent to insert text inside an
+<a href=#editing-host>editing host</a>, such as by typing on the keyboard while the cursor
+is in an <a href=#editable>editable</a> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>, the user agent must take the
+<a href=#action>action</a> for <a href=#the-inserttext-command>the <code title="">insertText</code> command</a>,
+with <var title="">value</var> equal to the text the user provided.  If the user inserts
+multiple characters at once or in quick succession, this specification does not
+define whether it is treated as one insertion or several consecutive
+insertions.  If the inserted text includes line breaks, the user agent must not
+process those as part of this paragraph, but instead according to the
+instructions above for processing line breaks.
 
 
 <h2 class=no-num id=acknowledgements>Acknowledgements</h2>

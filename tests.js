@@ -1773,6 +1773,33 @@ var tests = {
 		'foo<a href=foo>[]bar</a>',
 	],
 	//@}
+	inserttext: [
+	//@{
+		'foo[bar]baz',
+		['', 'foo[bar]baz'],
+		['\t', 'foo[]bar'],
+		[' ', 'foo[]bar'],
+		['\n', 'foo[]bar'],
+		['\r', 'foo[]bar'],
+		['\r\n', 'foo[]bar'],
+		'foo[]bar',
+		'<p>foo[]',
+		'<p>foo</p>{}',
+		'<p>[]foo',
+		'<p>{}foo',
+		'{}<p>foo',
+		'<p>foo</p>{}<p>bar</p>',
+		'<b>foo[]</b>bar',
+		'<b>foo</b>[]bar',
+		'foo<b>{}</b>bar',
+		'<a>foo[]</a>bar',
+		'<a>foo</a>[]bar',
+		'<a href=/>foo[]</a>bar',
+		'<a href=/>foo</a>[]bar',
+		'<p>fo[o<p>b]ar',
+		'<p>fo[o<p>bar<p>b]az',
+	],
+	//@}
 	insertunorderedlist: [
 	//@{
 		'foo[]bar',
@@ -2773,6 +2800,7 @@ var defaultValues = {
 	inserthorizontalrule: "",
 	inserthtml: "ab<b>c</b>d",
 	insertimage: "/img/lion.svg",
+	inserttext: "a",
 };
 
 var notes = {

@@ -5454,6 +5454,42 @@ http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
 </ol>
 <!-- @} -->
 
+<h3><dfn>The <code title>insertText</code> command</dfn></h3>
+<!-- @{ -->
+<!--
+Supported only by WebKit.  Tests in other browsers were manual.  In the manual
+tests, where the value was always "a", IE9 and Firefox 5.0a2 match the spec
+exactly as far as I can tell; Chrome 14 dev and Opera 11.11 might match it in
+theory, but normalize the selection first, so they don't match it in practice.
+-->
+
+<p><span>Action</span>:
+
+<ol>
+  <li><span>Delete the contents</span> of the <span>active range</span>.
+  <!-- Chrome 14 dev does this even if passed the empty string. -->
+
+  <li>If <var>value</var> is the empty string, abort these steps.
+
+  <li>Let <var>text</var> be the result of calling <code
+  data-anolis-spec=domcore
+  title=dom-Document-createTextNode>createTextNode(<var>value</var>)</code> on
+  the [[contextobject]].
+
+  <p class=XXX>We should actually add to existing text nodes if present, just
+  to be tidy.
+
+  <p class=XXX>WebKit seems to strip newlines from programmatic input, and does
+  magic for tabs.
+
+  <li>Call [[insertnode|<var>text</var>]] on the <span>active range</span>.
+
+  <li>Call [[selcollapse|<var>text</var>, <var>length</var>]] on the
+  [[contextobject]]'s [[selection]], where <var>length</var> is the [[length]]
+  of <var>text</var>.
+</ol>
+<!-- @} -->
+
 <h3><dfn>The <code title>insertUnorderedList</code> command</dfn></h3>
 <p><span>Action</span>: <span>Toggle lists</span> with <var>tag name</var>
 "ul".
@@ -5692,6 +5728,23 @@ inside an <span>editing host</span>, such as by pressing the Backspace key
 while the cursor is in an <span>editable</span> [[node]], the user agent must
 take the <span>action</span> for <span>the <code title>delete</code>
 command</span>.
+
+<p>When the user instructs the user agent to delete the next character inside
+an <span>editing host</span>, such as by pressing the Delete key while the
+cursor is in an <span>editable</span> [[node]], the user agent must take the
+<span>action</span> for <span>the <code title>forwardDelete</code>
+command</span>.
+
+<p>When the user instructs the user agent to insert text inside an
+<span>editing host</span>, such as by typing on the keyboard while the cursor
+is in an <span>editable</span> [[node]], the user agent must take the
+<span>action</span> for <span>the <code title>insertText</code> command</span>,
+with <var>value</var> equal to the text the user provided.  If the user inserts
+multiple characters at once or in quick succession, this specification does not
+define whether it is treated as one insertion or several consecutive
+insertions.  If the inserted text includes line breaks, the user agent must not
+process those as part of this paragraph, but instead according to the
+instructions above for processing line breaks.
 <!-- @} -->
 
 <h2 class=no-num>Acknowledgements</h2>

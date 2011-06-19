@@ -5679,34 +5679,44 @@ commands.inserttext = {
 //@}
 
 ///// The insertUnorderedList command /////
+//@{
 commands.insertunorderedlist = {
 	// "Toggle lists with tag name "ul"."
 	action: function() { toggleLists("ul") }
 };
+//@}
 
 ///// The justifyCenter command /////
+//@{
 commands.justifycenter = {
 	// "Justify the selection with alignment "center"."
 	action: function() { justifySelection("center") }
 };
+//@}
 
 ///// The justifyFull command /////
+//@{
 commands.justifyfull = {
 	// "Justify the selection with alignment "justify"."
 	action: function() { justifySelection("justify") }
 };
+//@}
 
 ///// The justifyLeft command /////
+//@{
 commands.justifyleft = {
 	// "Justify the selection with alignment "left"."
 	action: function() { justifySelection("left") }
 };
+//@}
 
 ///// The justifyRight command /////
+//@{
 commands.justifyright = {
 	// "Justify the selection with alignment "right"."
 	action: function() { justifySelection("right") }
 };
+//@}
 
 ///// The outdent command /////
 //@{

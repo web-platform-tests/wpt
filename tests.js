@@ -2800,8 +2800,8 @@ var tests = {
 		'foo<a name=foo>[bar]</a>baz',
 		'foo[<a name=foo>bar</a>]baz',
 		'[foo<a name=foo>bar</a>baz]',
-	//@}
 	],
+	//@}
 };
 
 var defaultValues = {
@@ -2821,10 +2821,12 @@ var defaultValues = {
 //@}
 
 var notes = {
+//@{
 	backcolor: '<strong>Note:</strong> No spec has yet been written, so the spec column does nothing.',
 	fontname: 'Note that the body\'s font-family is "serif".',
 	hilitecolor: 'In IE we run backColor instead of hiliteColor.',
 };
+//@}
 
 var doubleTestingCommands = [
 //@{
@@ -3140,8 +3142,10 @@ function doSameCell(tr) {
 //@}
 
 function doTearDown(command) {
+//@{
 	getSelection().removeAllRanges();
 }
+//@}
 
 function setupCell(cell, test) {
 //@{

@@ -4006,145 +4006,6 @@ function blockExtendRange(range) {
 
 //@}
 
-///// Block-formatting a node list /////
-//@{
-
-function blockFormat(inputNodes, value) {
-	// "For each node in input nodes, while either node is a descendant of an
-	// editable HTML element in the same editing host with local name
-	// "address", "h1", "h2", "h3", "h4", "h5", "h6", "p", or "pre"; or node's
-	// parent is not null, and "p" is not an allowed child of node's parent:
-	// split the parent of the one-node list consisting of node."
-	for (var i = 0; i < inputNodes.length; i++) {
-		var node = inputNodes[i];
-
-		while (true) {
-			if (node.parentNode
-			&& !isAllowedChild("p", node.parentNode)) {
-				splitParent([node]);
-				continue;
-			}
-
-			var ancestor = node.parentNode;
-			while (ancestor
-			&& !isHtmlElement(ancestor, ["ADDRESS", "H1", "H2", "H3", "H4", "H5", "H6", "P", "PRE"])) {
-				ancestor = ancestor.parentNode;
-			}
-			if (ancestor
-			&& isEditable(ancestor)
-			&& inSameEditingHost(node, ancestor)) {
-				splitParent([node]);
-			} else {
-				break;
-			}
-		}
-	}
-
-	// "Let node list be a list of nodes, initially empty."
-	var nodeList = [];
-
-	// "For each node in input nodes, fix prohibited paragraph descendants of
-	// node, and append the resulting nodes to node list."
-	for (var i = 0; i < inputNodes.length; i++) {
-		nodeList = nodeList.concat(fixProhibitedParagraphDescendants(inputNodes[i]));
-	}
-
-	// "If value is "div" or "p", then while node list is not empty:"
-	if (value == "div" || value == "p") {
-		while (nodeList.length) {
-			// "If the first member of node list is a non-list single-line
-			// container, set the tag name of the first member of node list
-			// to value, then remove the first member from node list and
-			// continue this loop from the beginning."
-			if (isNonListSingleLineContainer(nodeList[0])) {
-				setTagName(nodeList[0], value);
-				nodeList.shift();
-				continue;
-			}
-
-			// "Let sublist be an empty list of nodes."
-			var sublist = [];
-
-			// "Remove the first member of node list and append it to
-			// sublist."
-			sublist.push(nodeList.shift());
-
-			// "While node list is not empty, and the first member of node
-			// list is the nextSibling of the last member of sublist, and
-			// the first member of node list is not a non-list single-line
-			// container, and the last member of sublist is not a br,
-			// remove the first member of node list and append it to
-			// sublist."
-			while (nodeList.length
-			&& nodeList[0] == sublist[sublist.length - 1].nextSibling
-			&& !isNonListSingleLineContainer(nodeList[0])
-			&& !isHtmlElement(sublist[sublist.length - 1], "BR")) {
-				sublist.push(nodeList.shift());
-			}
-
-			// "Wrap sublist, with sibling criteria matching nothing and
-			// new parent instructions returning the result of running
-			// createElement(value) on the context object."
-			wrap(sublist,
-				function() { return false },
-				function() { return document.createElement(value) });
-		}
-
-	// "Otherwise, while node list is not empty:"
-	} else {
-		while (nodeList.length) {
-			var sublist;
-
-			// "If the first member of node list is a non-list single-line
-			// container:"
-			if (isNonListSingleLineContainer(nodeList[0])) {
-				// "Let sublist be the children of the first member of node
-				// list."
-				sublist = [].slice.call(nodeList[0].childNodes);
-
-				// "Remove the first member of node list from its parent,
-				// preserving its descendants."
-				removePreservingDescendants(nodeList[0]);
-
-				// "Remove the first member from node list."
-				nodeList.shift();
-
-			// "Otherwise:"
-			} else {
-				// "Let sublist be an empty list of nodes."
-				sublist = [];
-
-				// "Remove the first member of node list and append it to
-				// sublist."
-				sublist.push(nodeList.shift());
-
-				// "While node list is not empty, and the first member of
-				// node list is the nextSibling of the last member of
-				// sublist, and the first member of node list is not a
-				// non-list single-line container, and the last member of
-				// sublist is not a br, remove the first member of node
-				// list and append it to sublist."
-				while (nodeList.length
-				&& nodeList[0] == sublist[sublist.length - 1].nextSibling
-				&& !isNonListSingleLineContainer(nodeList[0])
-				&& !isHtmlElement(sublist[sublist.length - 1], "BR")) {
-					sublist.push(nodeList.shift());
-				}
-			}
-
-			// "Wrap sublist, with sibling criteria matching any HTML
-			// element with local name value and no attributes, and new
-			// parent instructions returning the result of running
-			// createElement(value) on the context object."
-			wrap(sublist,
-				function(node) { return isHtmlElement(node, value.toUpperCase()) && !node.attributes.length },
-				function() { return document.createElement(value) });
-		}
-	}
-}
-
-//@}
-
 ///// Outdenting a node /////
 //@{
 
@@ -5003,21 +4864,151 @@ commands.formatblock = {
 		// "Block-extend the active range, and let new range be the result."
 		var newRange = blockExtendRange(getActiveRange());
 
-		// "Let node list be an empty list of nodes."
-		var nodeList = [];
+		// "Let original node list be an empty list of nodes."
+		var originalNodeList = [];
 
-		// "For each node node contained in new range, append node to node list
-		// if it is editable, the last member of node list (if any) is not an
-		// ancestor of node, and node is either a non-list single-line
-		// container or an allowed child of "p"."
-		nodeList = collectContainedNodes(newRange, function(node) {
+		// "For each node node contained in new range, append node to original
+		// node list if it is editable, the last member of original node list
+		// (if any) is not an ancestor of node, and node is either a non-list
+		// single-line container or an allowed child of "p"."
+		originalNodeList = collectContainedNodes(newRange, function(node) {
 			return isEditable(node)
 				&& (isNonListSingleLineContainer(node)
 				|| isAllowedChild(node, "p"));
 		});
 
-		// "Block-format node list."
-		blockFormat(nodeList, value);
+		// "For each node in original node list, while either node is a
+		// descendant of an editable HTML element in the same editing host with
+		// local name "address", "h1", "h2", "h3", "h4", "h5", "h6", "p", or
+		// "pre"; or node's parent is not null, and "p" is not an allowed child
+		// of node's parent: split the parent of the one-node list consisting
+		// of node."
+		for (var i = 0; i < originalNodeList.length; i++) {
+			var node = originalNodeList[i];
+
+			while (true) {
+				if (node.parentNode
+				&& !isAllowedChild("p", node.parentNode)) {
+					splitParent([node]);
+					continue;
+				}
+
+				var ancestor = node.parentNode;
+				while (ancestor
+				&& !isHtmlElement(ancestor, ["ADDRESS", "H1", "H2", "H3", "H4", "H5", "H6", "P", "PRE"])) {
+					ancestor = ancestor.parentNode;
+				}
+				if (ancestor
+				&& isEditable(ancestor)
+				&& inSameEditingHost(node, ancestor)) {
+					splitParent([node]);
+				} else {
+					break;
+				}
+			}
+		}
+
+		// "Let node list be a list of nodes, initially empty."
+		var nodeList = [];
+
+		// "For each node in original node list, fix prohibited paragraph
+		// descendants of node, and append the resulting nodes to node list."
+		for (var i = 0; i < originalNodeList.length; i++) {
+			nodeList = nodeList.concat(fixProhibitedParagraphDescendants(originalNodeList[i]));
+		}
+
+		// "If value is "div" or "p", then while node list is not empty:"
+		if (value == "div" || value == "p") {
+			while (nodeList.length) {
+				// "If the first member of node list is a non-list single-line
+				// container, set the tag name of the first member of node list
+				// to value, then remove the first member from node list and
+				// continue this loop from the beginning."
+				if (isNonListSingleLineContainer(nodeList[0])) {
+					setTagName(nodeList[0], value);
+					nodeList.shift();
+					continue;
+				}
+
+				// "Let sublist be an empty list of nodes."
+				var sublist = [];
+
+				// "Remove the first member of node list and append it to
+				// sublist."
+				sublist.push(nodeList.shift());
+
+				// "While node list is not empty, and the first member of node
+				// list is the nextSibling of the last member of sublist, and
+				// the first member of node list is not a non-list single-line
+				// container, and the last member of sublist is not a br,
+				// remove the first member of node list and append it to
+				// sublist."
+				while (nodeList.length
+				&& nodeList[0] == sublist[sublist.length - 1].nextSibling
+				&& !isNonListSingleLineContainer(nodeList[0])
+				&& !isHtmlElement(sublist[sublist.length - 1], "BR")) {
+					sublist.push(nodeList.shift());
+				}
+
+				// "Wrap sublist, with sibling criteria matching nothing and
+				// new parent instructions returning the result of running
+				// createElement(value) on the context object."
+				wrap(sublist,
+					function() { return false },
+					function() { return document.createElement(value) });
+			}
+
+		// "Otherwise, while node list is not empty:"
+		} else {
+			while (nodeList.length) {
+				var sublist;
+
+				// "If the first member of node list is a non-list single-line
+				// container:"
+				if (isNonListSingleLineContainer(nodeList[0])) {
+					// "Let sublist be the children of the first member of node
+					// list."
+					sublist = [].slice.call(nodeList[0].childNodes);
+
+					// "Remove the first member of node list from its parent,
+					// preserving its descendants."
+					removePreservingDescendants(nodeList[0]);
+
+					// "Remove the first member from node list."
+					nodeList.shift();
+
+				// "Otherwise:"
+				} else {
+					// "Let sublist be an empty list of nodes."
+					sublist = [];
+
+					// "Remove the first member of node list and append it to
+					// sublist."
+					sublist.push(nodeList.shift());
+
+					// "While node list is not empty, and the first member of
+					// node list is the nextSibling of the last member of
+					// sublist, and the first member of node list is not a
+					// non-list single-line container, and the last member of
+					// sublist is not a br, remove the first member of node
+					// list and append it to sublist."
+					while (nodeList.length
+					&& nodeList[0] == sublist[sublist.length - 1].nextSibling
+					&& !isNonListSingleLineContainer(nodeList[0])
+					&& !isHtmlElement(sublist[sublist.length - 1], "BR")) {
+						sublist.push(nodeList.shift());
+					}
+				}
+
+				// "Wrap sublist, with sibling criteria matching any HTML
+				// element with local name value and no attributes, and new
+				// parent instructions returning the result of running
+				// createElement(value) on the context object."
+				wrap(sublist,
+					function(node) { return isHtmlElement(node, value.toUpperCase()) && !node.attributes.length },
+					function() { return document.createElement(value) });
+			}
+		}
 	}
 };
 //@}

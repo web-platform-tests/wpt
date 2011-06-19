@@ -1,6 +1,6 @@
 <!doctype html>
 <meta charset=utf-8>
-<title>Delete tests</title>
+<title>Manual delete (backspace) tests</title>
 <link rel=stylesheet href=tests.css>
 <p>Legend: {[ are the selection anchor, }] are the selection focus, {}
 represent an element boundary point, [] represent a text node boundary point.
@@ -20,7 +20,7 @@ displayed as forwards or such.
 	<p><label>New test input: <input></label> <input type=button value="Add test" onclick="addTest()">
 </div>
 
-<div id=overlay>Tap delete repeatedly until this annoying message
+<div id=overlay>Tap backspace repeatedly until this annoying message
 disappears!  (But not too quickly.  And don't hit any other keys or click with
 the mouse anywhere, it will mess it up.<span id=testcount>  <span></span>
 manual test(s) remain.</span>)</div>
@@ -28,7 +28,7 @@ manual test(s) remain.</span>)</div>
 <script src=implementation.js></script>
 <script src=tests.js></script>
 <script>
-var command = "forwarddelete";
-var keyname = "delete";
+var command = "delete";
+var keyname = "backspace";
 </script>
 <script src=manualtest.js></script>

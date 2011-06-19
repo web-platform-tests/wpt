@@ -2646,6 +2646,16 @@ here?
 <p>To <dfn id=fix-prohibited-paragraph-descendants>fix prohibited paragraph descendants</dfn> of a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>
 <var title="">node</var>:
 
+<p class=note>This will fix any case where a descendant of node is a prohibited
+paragraph child.  The function returns a list consisting of <var title="">node</var> and
+any new siblings this algorithm might give it, if some of its children are
+split out of it.
+
+<p class=XXX>Possibly can be converted to just fix disallowed ancestors of all
+descendant nodes.  The only reason this is nontrivial is because the caller
+needs the list of returned nodes.  (It's only used by formatBlock, but it
+currently has to be a separate function because it's recursive.)
+
 <ol>
   <li>If <var title="">node</var> has no <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, return the one-<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> list
   consisting of <var title="">node</var>.

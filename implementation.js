@@ -667,11 +667,17 @@ function isCollapsedLineBreak(br) {
 		return false;
 	}
 
-	// Add a zwsp after it and see if that changes the height.
+	// Add a zwsp after it and see if that changes the height of the nearest
+	// non-inline parent.  Note: this is not actually reliable, because the
+	// parent might have a fixed height or something.
+	var ref = br.parentNode;
+	while (getComputedStyle(ref).display == "inline") {
+		ref = ref.parentNode;
+	}
 	var space = document.createTextNode("\u200b");
-	var origHeight = br.parentNode.offsetHeight;
+	var origHeight = ref.offsetHeight;
 	br.parentNode.insertBefore(space, br.nextSibling);
-	var finalHeight = br.parentNode.offsetHeight;
+	var finalHeight = ref.offsetHeight;
 	space.parentNode.removeChild(space);
 
 	return origHeight != finalHeight;

@@ -441,9 +441,10 @@ has nothing else in it, and therefore has zero height.
 <p class=XXX>Is this a good definition at all?  I mean things like
 &lt;p&gt;foo&lt;br&gt;&lt;/p&gt;, or the second one in &lt;p&gt;foo&lt;br&gt;&lt;br&gt;&lt;/p&gt;.
 The way I test it is by adding a text node after it containing a zwsp; if that
-changes the offsetHeight, I deem it collapsed.  But what if it happens to be
-display: none right now, for instance?  Would it be better to use some
-DOM-based definition?
+changes the offsetHeight of its nearest non-inline ancestor, I deem it
+collapsed.  But what if it happens to be display: none right now, for instance?
+Or its ancestor has a fixed height?  Would it be better to use some DOM-based
+definition?
 
 <p>Each <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/html/#htmldocument>HTMLDocument</a></code> has a boolean <dfn id=css-styling-flag>CSS styling flag</dfn> associated
 with it, which must initially be false.  (<a href=#the-stylewithcss-command>The <code title="">styleWithCSS</code> command</a> can be used to modify or query it, by

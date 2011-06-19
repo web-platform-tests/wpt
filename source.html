@@ -373,52 +373,6 @@ an editing host.  An editing host is never editable, so authors are assured
 that editing commands will only modify the editing host's contents and not the
 editing host itself.
 
-<p>A <dfn>prohibited paragraph child name</dfn> is "address", "article",
-"aside", "blockquote", "caption", "center", "col", "colgroup", "details", "dd",
-"dir", "div", "dl", "dt", "fieldset", "figcaption", "figure", "footer", "form",
-"h1", "h2", "h3", "h4", "h5", "h6", "header", "hgroup", "hr", "li", "listing",
-"menu", "nav", "ol", "p", "plaintext", "pre", "section", "summary", "table",
-"tbody", "td", "tfoot", "th", "thead", "tr", "ul", or "xmp".
-
-<p>A <dfn>prohibited paragraph child</dfn> is an <span>HTML element</span>
-whose [[localname]] is a <span>prohibited paragraph child name</span>.
-<!-- These are all the things that will close a <p> if found as a descendant.
-I think.  Plus table stuff, since that can't be a descendant of a p either,
-although it won't auto-close it. -->
-
-<p>A <dfn>name of an element with inline contents</dfn> is "a", "abbr", "b",
-"bdi", "bdo", "cite", "code", "dfn", "em", "h1", "h2", "h3", "h4", "h5", "h6",
-"i", "kbd", "mark", "pre", "q", "rp", "rt", "ruby", "s", "samp", "small",
-"span", "strong", "sub", "sup", "u", "var", "acronym", "listing", "strike",
-"xmp", "big", "blink", "font", "marquee", "nobr", or "tt".
-
-<p class=XXX>This deliberately omits "dt", because I don't like the fact that
-including it will cause various commands to break apart lists rather than put
-bad things inside dt.
-
-<p>An <dfn>element with inline contents</dfn> is an <span>HTML element</span>
-whose [[localname]] is a <span>name of an element with inline contents</span>.
-<!-- List is mostly based on current HTML5, together with obsolete elements.  I
-mostly got the obsolete element list by testing what Firefox 5.0a2 splits when
-you do insertHorizontalRule. -->
-
-<p class=XXX>The definitions of prohibited paragraph children and elements with
-inline contents should be in the HTML spec (possibly under a different name) so
-they don't fall out of sync.  They'll do for now.  Also, I might want to rename
-"prohibited paragraph child" given how I'm using it; I have to decide whether I
-want to key off CSS (like "inline node" does) or HTML (like "prohibited
-paragraph child") when deciding what to treat as a block and what not.
-
-<p>A <dfn>visible node</dfn> is a [[node]] that either is a <span>prohibited
-paragraph child</span>, or a [[text]] node whose [[cddata]] is not empty, or a
-[[br]] or [[img]], or any [[node]] with a [[descendant]] that is a
-<span>visible node</span>.  An <dfn>invisible node</dfn> is a [[node]] that is
-not a <span>visible node</span>.
-
-<p class=XXX>I don't know if this definition is really the way we want to do
-things.  If it is, it needs some adjustment, like to handle collapsed
-whitespace nodes and collapsed br's.
-
 <!-- I don't remember why I wrote this.  Keeping it around just in case it
 turns out to be useful.
 
@@ -493,129 +447,6 @@ sequentially in the list's order.
 
 <h3>Assorted common algorithms</h3>
 <!-- @{ -->
-<p>A [[node]] or string <var>child</var> is an <dfn>allowed child</dfn> of a
-[[node]] or string <var>parent</var> if the following algorithm returns true:
-
-<div class=XXX>
-<p>This list doesn't currently match HTML's validity requirements for a few
-reasons:
-
-<ol>
-  <li>We need to handle invalid elements, which have no conformance
-  requirements but should be treated properly.  In particular, they can
-  interfere with serialization (e.g., center cannot descend from p).
-
-  <li>Sometimes users give instructions that have to produce invalid DOMs to
-  get the expected effect, like indenting the first item of a list.
-
-  <li>The HTML validity requirements are sometimes quite complicated.
-
-  <li>I just haven't had bothered to be systematic about it yet&nbsp;&ndash;
-  I've only covered what's come up in my tests.
-</ol>
-</div>
-
-<ol>
-  <li>If <var>parent</var> is "colgroup", "table", "tbody", "tfoot", "thead",
-  "tr", or an <span>HTML element</span> with [[localname]] equal to one of
-  those, and <var>child</var> is a [[text]] node whose [[cddata]] does not
-  consist solely of [[spacecharacters]], return false.
-
-  <li>If <var>parent</var> is "script", "style", "plaintext", or "xmp", or an
-  <span>HTML element</span> with [[localname]] equal to one of those, and
-  <var>child</var> is not a [[text]] node, return false.
-  <!-- Actually, no node can occur in the DOM after plaintext, generally.  But
-  let's not get too carried away. -->
-
-  <li>If <var>child</var> is a [[document]], [[documentfragment]], or
-  [[documenttype]], return false.
-
-  <li>If <var>child</var> is an <span>HTML element</span>, set <var>child</var>
-  to the [[localname]] of <var>child</var>.
-
-  <li>If <var>child</var> is not a string, return true.
-
-  <li>If <var>parent</var> is an <span>HTML element</span>:
-
-  <ol>
-    <li>If <var>child</var> is "a", and <var>parent</var> or some [[ancestor]]
-    of <var>parent</var> is an [[a]], return false.
-    <!-- Cannot be serialized as text/html.  In some cases it can, like
-    <a>foo<table><td><a>bar</a></td></table>baz</a>, but it's invalid in those
-    cases too, so no need for complication. -->
-
-    <li>If <var>child</var> is a <span>prohibited paragraph child name</span>
-    and <var>parent</var> or some [[ancestor]] of <var>parent</var> is a [[p]]
-    or <span>element with inline contents</span>, return false.
-    <!-- This generally cannot be serialized either, for p.  For elements with
-    inline contents, this serves to prevent things like
-    <span><p>foo</p></span>, which will parse fine but aren't supposed to
-    happen anyway. -->
-
-    <li>If <var>child</var> is "h1", "h2", "h3", "h4", "h5", or "h6", and
-    <var>parent</var> or some [[ancestor]] of <var>parent</var> is an
-    <span>HTML element</span> with [[localname]] "h1", "h2", "h3", "h4", "h5",
-    or "h6", return false.
-    <!-- Nor this. -->
-
-    <li>Let <var>parent</var> be the [[localname]] of <var>parent</var>.
-    <!-- Further requirements only care about the parent itself, not ancestors,
-    so we don't need to know the node itself. -->
-  </ol>
-
-  <li>If <var>parent</var> is an [[element]] or [[documentfragment]], return
-  true.
-
-  <li>If <var>parent</var> is not a string, return false.
-
-  <li>If <var>parent</var> is in the following table, then return true if
-  <var>child</var> is listed as an allowed child, and false otherwise.
-  <!-- We allow children even where some intervening nodes will be inserted,
-  like tr as a child of table. -->
-
-  <table>
-    <tr><th>Parent <th>Allowed children
-    <tr><td>colgroup <td>col
-    <tr><td>table <td>caption, col, colgroup, tbody, td, tfoot, th, thead, tr
-    <tr><td>tbody, tfoot, thead <td>td, th, tr
-    <tr><td>tr <td>td, th
-    <tr><td>dl <td>dt, dd
-    <tr><td>dir, ol, ul <td>dir, li, ol, ul
-    <tr><td>hgroup <td>h1, h2, h3, h4, h5, h6
-  </table>
-
-  <li>If <var>child</var> is "body", "caption", "col", "colgroup", "frame",
-  "frameset", "head", "html", "tbody", "td", "tfoot", "th", "thead", or "tr",
-  return false.
-
-  <!-- dd/dt/li will serialize fine as the child of random stuff, but it makes
-  no sense at all, so we want to avoid it anyway. -->
-  <li>If <var>child</var> is "dd" or "dt" and <var>parent</var> is not "dl",
-  return false.
-
-  <li>If <var>child</var> is "li" and <var>parent</var> is not "ol" or "ul",
-  return false.
-
-  <li>If <var>parent</var> is in the following table and <var>child</var> is
-  listed as a prohibited child, return false.
-
-  <table>
-    <tr><th>Parent <th>Prohibited children
-    <tr><td>a <td>a
-    <tr><td>dd, dt <td>dd, dt
-    <tr><td>h1, h2, h3, h4, h5, h6 <td>h1, h2, h3, h4, h5, h6
-    <tr><td>li <td>li
-    <tr><td>nobr <td>nobr
-    <tr><td>p, all <span title="name of an element with inline contents">names
-          of an element with inline contents</span>
-        <td>All <span title="prohibited paragraph child name">prohibited
-          paragraph child names</span>
-    <tr><td>td, th <td>caption, col, colgroup, tbody, td, tfoot, th, thead, tr
-  </table>
-
-  <li>Return true.
-</ol>
-
 <p>To move a [[node]] to a new location, <dfn>preserving ranges</dfn>, remove
 the [[node]] from its original [[parent]] (if any), then insert it in the new
 location.  In doing so, however, ignore the regular [[rangemutationrules]], and
@@ -1002,383 +833,6 @@ instructions</dfn>:
   <li><span>Remove extraneous line breaks from</span> <var>new parent</var>.
 
   <li>Return <var>new parent</var>.
-</ol>
-<!-- @} -->
-
-<h3>Deleting the contents of a range</h3>
-<!-- @{ -->
-<p>To <dfn>delete the contents</dfn> of a [[range]] <var>range</var>:
-
-<p class=XXX>I'm uncertain about the use of prohibited paragraph children here.
-I'm using it mostly because it's convenient and seems relatively sensible.  If
-we really want to use it, we probably want to change its name.
-
-<ol>
-  <li>If <var>range</var> is null, abort these steps and do nothing.
-
-  <li>Let <var>start node</var>, <var>start offset</var>, <var>end node</var>,
-  and <var>end offset</var> be <var>range</var>'s [[rangestart]] and
-  [[rangeend]] [[bpnodes]] and [[bpoffsets]].
-
-  <!-- Drill the range down to the lowest possible level, so we don't delete
-  more elements than necessary. -->
-  <li>While <var>start node</var> has at least one [[child]]:
-  <!--
-  We don't want to keep going when we hit an element with no children, because
-  then we'd do something like
-
-    foo{<br />bar]
-    -> foo<br>{</br>bar]
-    -> foo<br />{bar]
-    -> foo<br />[bar]
-
-  and we deselected the <br>.
-  -->
-
-  <ol>
-    <li>If <var>start offset</var> is <var>start node</var>'s
-    [[nodelength]], and <var>start node</var>'s [[parent]] is <span>in the same
-    editing host</span>, and <var>start node</var> is not a <span>prohibited
-    paragraph child</span>, set <var>start offset</var> to one plus the
-    [[index]] of <var>start node</var>, then set <var>start node</var> to its
-    [[parent]] and continue this loop from the beginning.
-    <!--
-    For instance:
-
-      <b>foo[</b><i>bar]</i>
-      -> <b>foo{</b><i>bar]</i>
-      -> <b>foo</b>{<i>bar]</i>
-
-    Then the next step will make it <b>foo</b><i>[bar]</i>.
-
-    We don't want to do this for prohibited paragraph children, because that
-    would lead to something like
-
-      <p>foo[</p><p>]bar<p>
-
-    ultimately collapsing, which is wrong.  Once we do the deletion, it needs
-    to wind up <p>foo[]bar</p>, whereas an actually collapsed selection should
-    do nothing.
-    -->
-
-    <li>If <var>start offset</var> is <var>start node</var>'s [[nodelength]],
-    break from this loop.
-    <!-- This happens if the first step brought us all the way up to the root.
-    The step immediately after this loop will bring us back down again.  -->
-
-    <li>Let <var>reference node</var> be the [[child]] of <var>start node</var>
-    with [[index]] equal to <var>start offset</var>.
-
-    <li>If <var>reference node</var> is a <span>prohibited paragraph
-    child</span> or an [[element]] with no [[children]], break from this loop.
-    <!--
-    Don't descend into an element with no children, since then it won't get
-    deleted even if it's selected.  Don't descend into a prohibited paragraph
-    child, because then we might wind up not mergings blocks when we should,
-    e.g.
-
-      foo{<p>}bar</p>
-      -> foo<p>{}bar</p>
-
-    and nothing gets changed.
-    -->
-
-    <li>Set <var>start node</var> to <var>reference node</var> and <var>start
-    offset</var> to 0.
-  </ol>
-
-  <li>While <var>end node</var> has at least one [[child]]:
-
-  <ol>
-    <li>If <var>end offset</var> is 0, and <var>end node</var>'s
-    [[parent]] is <span>in the same editing host</span>, and <var>end
-    node</var> is not a <span>prohibited paragraph child</span>, set <var>end
-    offset</var> to the [[index]] of <var>end node</var>, then set <var>end
-    node</var> to its [[parent]] and continue this loop from the beginning.
-
-    <li>If <var>end offset</var> is 0, break from this loop.
-
-    <li>Let <var>reference node</var> be the [[child]] of <var>end node</var>
-    with [[index]] equal to <var>end offset</var> minus one.
-
-    <li>If <var>reference node</var> is a <span>prohibited paragraph
-    child</span> or an [[element]] with no [[children]], break from this loop.
-
-    <li>Set <var>end node</var> to <var>reference node</var> and <var>end
-    offset</var> to the [[nodelength]] of <var>reference node</var>.
-  </ol>
-
-  <li>If (<var>end node</var>, <var>end offset</var>) is <span
-  data-anolis-spec=domrange title=concept-bp-before>before</span> (<var>start
-  node</var>, <var>start offset</var>), set <var>range</var>'s [[rangeend]] to
-  its [[rangestart]] and abort these steps.
-
-  <li>If <var>start node</var> is a [[text]] or [[comment]] node and <var>start
-  offset</var> is 0, set <var>start offset</var> to the [[index]] of <var>start
-  node</var>, then set <var>start node</var> to its [[parent]].
-
-  <li>If <var>end node</var> is a [[text]] or [[comment]] node and <var>end
-  offset</var> is its [[nodelength]], set <var>end offset</var> to one plus the
-  [[index]] of <var>end node</var>, then set <var>end node</var> to its
-  [[parent]].
-
-  <li>Set <var>range</var>'s [[rangestart]] to (<var>start node</var>,
-  <var>start offset</var>) and its [[rangeend]] to (<var>end node</var>,
-  <var>end offset</var>).
-
-  <!--
-  When we delete a selection that spans multiple blocks, we merge the end
-  block's contents into the start block, like
-
-    <p>fo[o</p><pre>b]ar</pre>
-    -> <p>fo[]ar</p>.
-
-  Figure out what the start and end blocks are before we start deleting
-  anything.
-  -->
-  <li>Let <var>start block</var> be the [[rangestart]] [[bpnode]] of
-  <var>range</var>.
-
-  <li>While <var>start block</var>'s [[parent]] is <span>in the same editing
-  host</span> and <var>start block</var> is not a <span>prohibited paragraph
-  child</span>, set <var>start block</var> to its [[parent]].
-
-  <li>If <var>start block</var> is neither a <span>prohibited paragraph
-  child</span> nor an <span>editing host</span>, or "span" is not an
-  <span>allowed child</span> of <var>start block</var>, or <var>start
-  block</var> is a [[td]] or [[th]], set <var>start block</var> to null.
-  <!--
-  We only merge to or from prohibited paragraph children or editing hosts.
-  (This is just in case someone makes a span into an editing host and sticks
-  paragraphs inside it or something . . . we could probably drop that proviso.)
-  Anything else is presumed to be an inline element, basically.  This might not
-  be ideal.
-
-  If span isn't an allowed child, it's probably something unpleasant like a
-  table row or a list or such.  We don't want to merge to or from something
-  like that, because we'd most likely wind up with the wrong type of child
-  somewhere.  It should be pretty hard for this to happen given the
-  normalization we do on the selection; I'm not actually sure how it could
-  happen at all, actually, unless you start out with a DOM that has non-allowed
-  children someplace.  So it's basically a sanity check.
-
-  We don't let either start block or end block be a td or th.  This means we'll
-  never merge to or from a td or th.  This matches Firefox 5.0a2, and
-  reportedly Word as well.  Chrome 13 dev and Opera 11.11 allow merging from a
-  non-table cell end block to a table cell start block, but not vice versa.  In
-  IE9 the delete key just does nothing.
-  -->
-
-  <li>Let <var>end block</var> be the [[rangeend]] [[bpnode]] of
-  <var>range</var>.
-
-  <li>While <var>end block</var>'s [[parent]] is <span>in the same editing
-  host</span> and <var>end block</var> is not a <span>prohibited paragraph
-  child</span>, set <var>end block</var> to its [[parent]].
-
-  <li>If <var>end block</var> is neither a <span>prohibited paragraph
-  child</span> nor an <span>editing host</span>, or "span" is not an
-  <span>allowed child</span> of <var>end block</var>, or <var>end block</var>
-  is a [[td]] or [[th]], set <var>end block</var> to null.
-
-  <!-- This is based on deleteData() in DOM Range. -->
-  <li>If <var>start node</var> and <var>end node</var> are the same, and
-  <var>start node</var> is an <span>editable</span> [[text]] or [[comment]]
-  node, call [[deletedata|<var>start offset</var>, <var>end offset</var>
-  &minus; <var>start offset</var>]] on <var>start node</var>.
-
-  <li>Otherwise:
-
-  <ol>
-    <li>If <var>start node</var> is an <span>editable</span> [[text]] or
-    [[comment]] node, call [[deletedata|]] on it, with <var>start offset</var>
-    as the first argument and ([[nodelength]] of <var>start node</var> &minus;
-    <var>start offset</var>) as the second argument.
-
-    <li>Let <var>node list</var> be a list of [[nodes]], initially empty.
-
-    <li>For each <var>node</var> [[contained]] in <var>range</var>, append
-    <var>node</var> to <var>node list</var> if the last member of <var>node
-    list</var> (if any) is not an [[ancestor]] of <var>node</var>;
-    <var>node</var> is <span>editable</span>; and <var>node</var> is not a
-    [[thead]], [[tbody]], [[tfoot]], [[tr]], [[th]], or [[td]].
-    <!--
-    IE9 doesn't seem to let you do any intercell deletions: the delete key does
-    nothing if you select across multiple cells.  Firefox 5.0a2 and Opera 11.11
-    behave as the spec says, not removing any table things.  Chrome 13 dev will
-    remove entire rows if selected.  Note that IE, Firefox, Word 2007, and
-    OpenOffice.org 3.2.1 Ubuntu all switch to a magic cell-selection mode when
-    you try to select between cells, at least in some cases, instead of
-    selecting letter-by-letter.
-    -->
-
-    <li>For each <var>node</var> in <var>node list</var>:
-
-    <ol>
-      <li>Let <var>parent</var> be the [[parent]] of <var>node</var>.
-
-      <li>Remove <var>node</var> from <var>parent</var>.
-
-      <li>While <var>parent</var> is an <span>editable</span> <span>inline
-      node</span> with [[nodelength]] 0, let <var>grandparent</var> be the
-      [[parent]] of <var>parent</var>, then remove <var>parent</var> from
-      <var>grandparent</var>, then set <var>parent</var> to
-      <var>grandparent</var>.
-
-      <li>If <var>parent</var> is <span>editable</span> or an <span>editing
-      host</span>, is not an <span>inline node</span>, and has no [[children]],
-      call [[createelement|"br"]] on the [[contextobject]] and append the
-      result as the last [[child]] of <var>parent</var>.
-    </ol>
-
-    <li>If <var>end node</var> is an <span>editable</span> [[text]] or
-    [[comment]] node, call [[deletedata|0, <var>end offset</var>]] on it.
-  </ol>
-
-  <!--
-  Now we need to merge blocks.  The simplest case is something like
-
-    <p>fo[o</p><p>bar</p><p>b]az</p>
-    -> <p>fo</p>{}<p>az</p>
-    -> <p>fo{}az</p>
-
-  where neither block descends from the other.  More complicated is something
-  like
-
-    foo[<p>]bar</p>
-    -> foo[]bar
-
-  or
-
-    <p>foo[</p>]bar
-    -> <p>foo[]bar</p>
-
-  where one descends from the other.
-  -->
-
-  <li>If <var>start block</var> or <var>end block</var> is null, or <var>start
-  block</var> is not <span>in the same editing host</span> as <var>end
-  block</var>, or <var>start block</var> and <var>end block</var> are the same,
-  set <var>range</var>'s [[rangeend]] to its [[rangestart]] and then abort
-  these steps.
-
-  <!--
-  We might have added a br to the start/end block in an earlier step.  Now
-  we're about to merge the blocks, and we don't want the br's to get in the
-  way.  The end block is being destroyed no matter what.  If the start block
-  winds up empty after merging, we'll add a new br child at the end so it
-  doesn't collapse.
-  -->
-  <li>If <var>start block</var> has one [[child]], which is a [[br]], remove
-  its [[child]] from it.
-
-  <li>If <var>end block</var> has one [[child]], which is a [[br]], remove its
-  [[child]] from it.
-
-  <li>If <var>start block</var> is an [[ancestor]] of <var>end block</var>:
-  <!-- Just repeatedly blow up the end block. -->
-
-  <ol>
-    <li>Let <var>reference node</var> be <var>end block</var>.
-
-    <li>While <var>reference node</var> is not a [[child]] of <var>start
-    block</var>, set <var>reference node</var> to its [[parent]].
-
-    <li>Set the [[rangestart]] and [[rangeend]] of <var>range</var> to
-    (<var>start block</var>, [[index]] of <var>reference node</var>).
-
-    <li>If <var>end block</var> has no [[children]]:
-
-    <ol>
-      <li>While <var>end block</var> is <span>editable</span> and is the only
-      [[child]] of its [[parent]] and is not a [[child]] of <var>start
-      block</var>, let <var>parent</var> equal <var>end block</var>, then
-      remove <var>end block</var> from <var>parent</var>, then set <var>end
-      block</var> to <var>parent</var>.
-
-      <li>If <var>end block</var> is <span>editable</span> and is not an
-      <span>inline node</span>, and its [[previoussibling]] and [[nextsibling]]
-      are both <span title="inline node">inline nodes</span>, call
-      [[createelement|"br"]] on the [[contextobject]] and insert it into
-      <var>end block</var>'s [[parent]] immediately after <var>end block</var>.
-
-      <li>If <var>end block</var> is <span>editable</span>, remove it from its
-      [[parent]].
-
-      <li>Abort these steps.
-    </ol>
-
-    <li>If <var>end block</var>'s [[firstchild]] is not an <span>inline
-    node</span>, abort these steps.
-
-    <li>Let <var>children</var> be an array of [[nodes]], initially empty.
-
-    <li>Append the first [[child]] of <var>end block</var> to
-    <var>children</var>.
-
-    <li>While <var>children</var>'s last member is not a [[br]], and
-    <var>children</var>'s last member's [[nextsibling]] is an <span>inline
-    node</span>, append <var>children</var>'s last member's [[nextsibling]] to
-    <var>children</var>.
-
-    <li>While <var>children</var>'s first member's [[parent]] is not <var>start
-    block</var>, <span>split the parent</span> of <var>children</var>.
-
-    <li>If <var>children</var>'s first member's [[previoussibling]] is an
-    <span>editable</span> [[br]], remove that [[br]] from its [[parent]].
-  </ol>
-
-  <li>Otherwise, if <var>start block</var> is a [[descendant]] of <var>end
-  block</var>:
-  <!-- Pull in everything that comes after <var>start block</var>, until we hit
-  a br or prohibited paragraph child. -->
-
-  <ol>
-    <li>Set the [[rangestart]] and [[rangeend]] of <var>range</var> to
-    (<var>start block</var>, [[nodelength]] of <var>start block</var>).
-
-    <li>Let <var>reference node</var> be <var>start block</var>.
-
-    <li>While <var>reference node</var> is not a [[child]] of <var>end
-    block</var>, set <var>reference node</var> to its [[parent]].
-
-    <li>If <var>reference node</var>'s [[nextsibling]] is an <span>inline
-    node</span> and <var>start block</var>'s [[lastchild]] is a [[br]], remove
-    <var>start block</var>'s [[lastchild]] from it.
-
-    <li>While the [[nextsibling]] of <var>reference node</var> is neither null
-    nor a [[br]] nor a <span>prohibited paragraph child</span>, append the
-    [[nextsibling]] of <var>reference node</var> as the last [[child]] of
-    <var>start block</var>, <span>preserving ranges</span>.
-
-    <li>If the [[nextsibling]] of <var>reference node</var> is a [[br]], remove
-    it from its [[parent]].
-  </ol>
-
-  <li>Otherwise:
-  <!-- In the last case, just move all the children of the end block to the
-  start block, and then get rid of any elements we emptied that way. -->
-
-  <ol>
-    <li>Set the [[rangestart]] and [[rangeend]] of <var>range</var> to
-    (<var>start block</var>, [[nodelength]] of <var>start block</var>).
-
-    <li>If <var>end block</var>'s [[firstchild]] is an <span>inline node</span>
-    and <var>start block</var>'s [[lastchild]] is a [[br]], remove <var>start
-    block</var>'s [[lastchild]] from it.
-
-    <li>While <var>end block</var> has [[children]], append the first [[child]]
-    of <var>end block</var> to <var>start block</var>, <span>preserving
-    ranges</span>.
-
-    <li>While <var>end block</var> has no [[children]], let <var>parent</var> be
-    the [[parent]] of <var>end block</var>, then remove <var>end block</var> from
-    <var>parent</var>, then set <var>end block</var> to <var>parent</var>.
-  </ol>
-
-  <li>If <var>start block</var> has no [[children]], call
-  [[createelement|"br"]] on the [[contextobject]] and append the result as the
-  last [[child]] of <var>start block</var>.
 </ol>
 <!-- @} -->
 
@@ -2767,122 +2221,6 @@ For color parsing, see the comment for foreColor. -->
 <p><span>Relevant CSS property</span>: "background-color"
 <!-- @} -->
 
-<h3><dfn>The <code title>insertHTML</code> command</dfn></h3>
-<!-- @{ -->
-<!--
-Not supported by IE9.  Handling of disallowed children is interesting:
-
-Firefox 5.0a2: Will allow <dt> inside <dt> (doesn't serialize).  If you try
-inserting dir/ol/ul inside an existing dir/ol/ul, it will strip the list
-element and leave only the li's, so inserting <ul><li>abc</ul> into
-<ol><li>f[o]o</ol> creates <ol><li>f<li>abc<li>o</ol>.  <dt>/<dd>/<li> that
-don't descend from a list will be left alone, not converted to <p>.  Empty
-elements seem not to be inserted.  <li> will get put inside <p>, which breaks
-serialization.  Nothing is allowed inside <xmp>, not even text.
-
-Chrome 13 dev: Inserting a <p> into a <p> or <li> or such will remove the child
-<p>, adding its contents to the parent instead.  Adding an <li> or <hr> as the
-child of a <p> works, as does an <a> inside an <a>, <h2> inside <h1>, <li>
-inside <li>, <nobr> inside <nobr>, <b> inside <xmp>, etc. (all unserializable).
-But <dt> and <dd> seem to get converted to their contents like <p>.
-<ol><li>abc</ol> inside <ol><li>f[o]o</ol> becomes
-<ol><li>f<li>abc<li><li>o</ol>, interestingly (note the empty <li>).  I don't
-understand how it works, but it doesn't seem to make much sense.
-
-Opera 11.11: Seems to do almost no validity or serialization checks, except
-that it prevents <a> inside <a>, <nobr> inside <nobr>, and block elements
-inside inline elements.  Interestingly, most of the places where it's
-non-serializable per HTML parsing are actually serializable in Opera's own
-parser.
--->
-
-<p><span>Action</span>:
-
-<ol>
-  <li><span>Delete the contents</span> of the <span>active range</span>.
-
-  <li>Let <var>frag</var> be the result of calling <code data-anolis-spec=domps
-  title=dom-Range-createContextualFragment>createContextualFragment(<var>value</var>)</code>
-  on the <span>active range</span>.
-
-  <li>Let <var>last child</var> be the [[lastchild]] of <var>frag</var>.
-
-  <li>If <var>last child</var> is null, abort these steps.
-  <!-- Firefox 5.0a2 also seems to not add empty elements like <b></b>, but
-  Chrome 13 dev and Opera 11.11 do. -->
-
-  <li>Let <var>descendants</var> be all [[descendants]] of <var>frag</var>.
-
-  <li>If the <span>active range</span>'s [[startnode]] is a <span>prohibited
-  paragraph child</span> whose sole [[child]] is a [[br]], and its
-  [[startoffset]] is 0, remove its [[startnode]]'s [[child]] from it.
-  <!--
-  This is so we don't get something like
-    <div>[foo]</div>
-    -> <div>{}<br></div>
-    -> <div><p>Some HTML{}</p><br></div>
-  with an extra bogus line break at the end.
-  -->
-
-  <li>Call [[insertnode|<var>frag</var>]] on the <span>active range</span>.
-
-  <li>Set the <span>active range</span>'s [[rangestart]] and [[rangeend]] to
-  (<var>last child</var>, [[nodelength]] of <var>last child</var>).
-  <!-- Need to do this before fixing disallowed ancestors, since otherwise the
-  last child might have been removed (e.g., it's an li). -->
-
-  <li><span>Fix disallowed ancestors</span> of each member of
-  <var>descendants</var>.
-  <!-- We want to fix all descendants, not just children.  Consider
-  <div><li>foo</li></div>, for example. -->
-</ol>
-<!-- @} -->
-
-<h3><dfn>The <code title>insertImage</code> command</dfn></h3>
-<!-- @{ -->
-<p><span>Action</span>:
-
-<ol>
-  <li>If <var>value</var> is the empty string, abort these steps and do
-  nothing.
-  <!-- Similar logic to createLink, except even more compelling, since an HTML
-  document linking to itself as an image is just silly.  In fact, the current
-  HTML spec instructs UAs to not even try displaying the image, and just fail
-  immediately if the URL is empty.  Firefox 4b11 bails out on an empty string,
-  but the other three browsers I tested stick in the <img> anyway. -->
-
-  <li>Let <var>range</var> be the <span>active range</span>.
-
-  <li><span>Delete the contents</span> of <var>range</var>.
-
-  <li>If <var>range</var>'s [[startnode]] is a <span>prohibited paragraph
-  child</span> whose sole [[child]] is a [[br]], and its [[startoffset]] is 0,
-  remove its [[startnode]]'s [[child]] from it.
-  <!-- Same logic as with insertHTML. -->
-
-  <li>Let <var>img</var> be the result of calling [[createelement|"img"]] on
-  the [[contextobject]].
-
-  <li>Run [[setattribute|"src", <var>value</var>]] on <var>img</var>.
-  <!-- No alt text, so it's probably invalid.  This matches all browsers. -->
-
-  <li>Run [[insertnode|<var>img</var>]] on <var>range</var>.
-  <!--
-  This winds up putting it at the original start point of the active range, as
-  currently specced.  This matches IE9 and Firefox 5.0a2.  Chrome 13 dev puts
-  it at the end point, and Opera 11.11 puts it in between (where the range
-  would collapse if you called deleteContents()).
-  -->
-
-  <li>Let <var>selection</var> be the result of calling [[getselection]] on the
-  [[contextobject]].
-
-  <li>Run [[selcollapse|]] on <var>selection</var>, with first argument equal
-  to the [[parent]] of <var>img</var> and the second argument equal to one plus
-  the [[index]] of <var>img</var>.
-</ol>
-<!-- @} -->
-
 <h3><dfn>The <code title>italic</code> command</dfn></h3>
 <!-- @{ -->
 <p><span>Action</span>: <span>Decompose</span> the <span>active range</span>.
@@ -3171,6 +2509,42 @@ starting at 2011-05-13 at 16:53 EDT (UTC-0400).
 
 <h3>Block formatting command definitions</h3>
 <!-- @{ -->
+<p>A <dfn>prohibited paragraph child name</dfn> is "address", "article",
+"aside", "blockquote", "caption", "center", "col", "colgroup", "details", "dd",
+"dir", "div", "dl", "dt", "fieldset", "figcaption", "figure", "footer", "form",
+"h1", "h2", "h3", "h4", "h5", "h6", "header", "hgroup", "hr", "li", "listing",
+"menu", "nav", "ol", "p", "plaintext", "pre", "section", "summary", "table",
+"tbody", "td", "tfoot", "th", "thead", "tr", "ul", or "xmp".
+
+<p>A <dfn>prohibited paragraph child</dfn> is an <span>HTML element</span>
+whose [[localname]] is a <span>prohibited paragraph child name</span>.
+<!-- These are all the things that will close a <p> if found as a descendant.
+I think.  Plus table stuff, since that can't be a descendant of a p either,
+although it won't auto-close it. -->
+
+<p>A <dfn>name of an element with inline contents</dfn> is "a", "abbr", "b",
+"bdi", "bdo", "cite", "code", "dfn", "em", "h1", "h2", "h3", "h4", "h5", "h6",
+"i", "kbd", "mark", "pre", "q", "rp", "rt", "ruby", "s", "samp", "small",
+"span", "strong", "sub", "sup", "u", "var", "acronym", "listing", "strike",
+"xmp", "big", "blink", "font", "marquee", "nobr", or "tt".
+
+<p class=XXX>This deliberately omits "dt", because I don't like the fact that
+including it will cause various commands to break apart lists rather than put
+bad things inside dt.
+
+<p>An <dfn>element with inline contents</dfn> is an <span>HTML element</span>
+whose [[localname]] is a <span>name of an element with inline contents</span>.
+<!-- List is mostly based on current HTML5, together with obsolete elements.  I
+mostly got the obsolete element list by testing what Firefox 5.0a2 splits when
+you do insertHorizontalRule. -->
+
+<p class=XXX>The definitions of prohibited paragraph children and elements with
+inline contents should be in the HTML spec (possibly under a different name) so
+they don't fall out of sync.  They'll do for now.  Also, I might want to rename
+"prohibited paragraph child" given how I'm using it; I have to decide whether I
+want to key off CSS (like "inline node" does) or HTML (like "prohibited
+paragraph child") when deciding what to treat as a block and what not.
+
 <p>A <dfn>potential indentation element</dfn> is either a [[blockquote]], or a
 [[div]] that has a [[style]] attribute that sets "margin" or some subproperty
 of it.
@@ -3201,6 +2575,18 @@ container</span>, or an <span>HTML element</span> with [[localname]] "li",
 
 <p>The <dfn>default single-line container name</dfn> is "p".
 <!-- Possibly to be made configurable later. -->
+
+<p>A <dfn>visible node</dfn> is a [[node]] that either is a <span>prohibited
+paragraph child</span>, or a [[text]] node whose [[cddata]] is not empty, or a
+[[br]] or [[img]], or any [[node]] with a [[descendant]] that is a
+<span>visible node</span>.
+
+<p>An <dfn>invisible node</dfn> is a [[node]] that is not a <span>visible
+node</span>.
+
+<p class=XXX>I don't know if the visible/invisible node definitions are really
+the way we want to do things.  If they are, they need some adjustment, like to
+handle collapsed whitespace nodes and collapsed br's.
 <!-- @} -->
 
 <h3>Assorted block formatting command algorithms</h3>
@@ -3446,6 +2832,132 @@ confronted with this kind of nesting.)
 </ol>
 <!-- @} -->
 
+<h3>Allowed children</h3>
+<!--@{-->
+<p>A [[node]] or string <var>child</var> is an <dfn>allowed child</dfn> of a
+[[node]] or string <var>parent</var> if the following algorithm returns true:
+
+<div class=XXX>
+<p>This list doesn't currently match HTML's validity requirements for a few
+reasons:
+
+<ol>
+  <li>We need to handle invalid elements, which have no conformance
+  requirements but should be treated properly.  In particular, they can
+  interfere with serialization (e.g., center cannot descend from p).
+
+  <li>Sometimes users give instructions that have to produce invalid DOMs to
+  get the expected effect, like indenting the first item of a list.
+
+  <li>The HTML validity requirements are sometimes quite complicated.
+
+  <li>I just haven't had bothered to be systematic about it yet&nbsp;&ndash;
+  I've only covered what's come up in my tests.
+</ol>
+</div>
+
+<ol>
+  <li>If <var>parent</var> is "colgroup", "table", "tbody", "tfoot", "thead",
+  "tr", or an <span>HTML element</span> with [[localname]] equal to one of
+  those, and <var>child</var> is a [[text]] node whose [[cddata]] does not
+  consist solely of [[spacecharacters]], return false.
+
+  <li>If <var>parent</var> is "script", "style", "plaintext", or "xmp", or an
+  <span>HTML element</span> with [[localname]] equal to one of those, and
+  <var>child</var> is not a [[text]] node, return false.
+  <!-- Actually, no node can occur in the DOM after plaintext, generally.  But
+  let's not get too carried away. -->
+
+  <li>If <var>child</var> is a [[document]], [[documentfragment]], or
+  [[documenttype]], return false.
+
+  <li>If <var>child</var> is an <span>HTML element</span>, set <var>child</var>
+  to the [[localname]] of <var>child</var>.
+
+  <li>If <var>child</var> is not a string, return true.
+
+  <li>If <var>parent</var> is an <span>HTML element</span>:
+
+  <ol>
+    <li>If <var>child</var> is "a", and <var>parent</var> or some [[ancestor]]
+    of <var>parent</var> is an [[a]], return false.
+    <!-- Cannot be serialized as text/html.  In some cases it can, like
+    <a>foo<table><td><a>bar</a></td></table>baz</a>, but it's invalid in those
+    cases too, so no need for complication. -->
+
+    <li>If <var>child</var> is a <span>prohibited paragraph child name</span>
+    and <var>parent</var> or some [[ancestor]] of <var>parent</var> is a [[p]]
+    or <span>element with inline contents</span>, return false.
+    <!-- This generally cannot be serialized either, for p.  For elements with
+    inline contents, this serves to prevent things like
+    <span><p>foo</p></span>, which will parse fine but aren't supposed to
+    happen anyway. -->
+
+    <li>If <var>child</var> is "h1", "h2", "h3", "h4", "h5", or "h6", and
+    <var>parent</var> or some [[ancestor]] of <var>parent</var> is an
+    <span>HTML element</span> with [[localname]] "h1", "h2", "h3", "h4", "h5",
+    or "h6", return false.
+    <!-- Nor this. -->
+
+    <li>Let <var>parent</var> be the [[localname]] of <var>parent</var>.
+    <!-- Further requirements only care about the parent itself, not ancestors,
+    so we don't need to know the node itself. -->
+  </ol>
+
+  <li>If <var>parent</var> is an [[element]] or [[documentfragment]], return
+  true.
+
+  <li>If <var>parent</var> is not a string, return false.
+
+  <li>If <var>parent</var> is in the following table, then return true if
+  <var>child</var> is listed as an allowed child, and false otherwise.
+  <!-- We allow children even where some intervening nodes will be inserted,
+  like tr as a child of table. -->
+
+  <table>
+    <tr><th>Parent <th>Allowed children
+    <tr><td>colgroup <td>col
+    <tr><td>table <td>caption, col, colgroup, tbody, td, tfoot, th, thead, tr
+    <tr><td>tbody, tfoot, thead <td>td, th, tr
+    <tr><td>tr <td>td, th
+    <tr><td>dl <td>dt, dd
+    <tr><td>dir, ol, ul <td>dir, li, ol, ul
+    <tr><td>hgroup <td>h1, h2, h3, h4, h5, h6
+  </table>
+
+  <li>If <var>child</var> is "body", "caption", "col", "colgroup", "frame",
+  "frameset", "head", "html", "tbody", "td", "tfoot", "th", "thead", or "tr",
+  return false.
+
+  <!-- dd/dt/li will serialize fine as the child of random stuff, but it makes
+  no sense at all, so we want to avoid it anyway. -->
+  <li>If <var>child</var> is "dd" or "dt" and <var>parent</var> is not "dl",
+  return false.
+
+  <li>If <var>child</var> is "li" and <var>parent</var> is not "ol" or "ul",
+  return false.
+
+  <li>If <var>parent</var> is in the following table and <var>child</var> is
+  listed as a prohibited child, return false.
+
+  <table>
+    <tr><th>Parent <th>Prohibited children
+    <tr><td>a <td>a
+    <tr><td>dd, dt <td>dd, dt
+    <tr><td>h1, h2, h3, h4, h5, h6 <td>h1, h2, h3, h4, h5, h6
+    <tr><td>li <td>li
+    <tr><td>nobr <td>nobr
+    <tr><td>p, all <span title="name of an element with inline contents">names
+          of an element with inline contents</span>
+        <td>All <span title="prohibited paragraph child name">prohibited
+          paragraph child names</span>
+    <tr><td>td, th <td>caption, col, colgroup, tbody, td, tfoot, th, thead, tr
+  </table>
+
+  <li>Return true.
+</ol>
+<!--@}-->
+
 <h3>Block-extending a range</h3>
 <!-- @{ -->
 <p>When a user agent is to <dfn>block-extend</dfn> a [[range]]
@@ -3666,6 +3178,383 @@ string <var>value</var>:
     instructions</span> returning the result of running
     [[createelement|<var>value</var>]] on the [[contextobject]].
   </ol>
+</ol>
+<!-- @} -->
+
+<h3>Deleting the contents of a range</h3>
+<!-- @{ -->
+<p>To <dfn>delete the contents</dfn> of a [[range]] <var>range</var>:
+
+<p class=XXX>I'm uncertain about the use of prohibited paragraph children here.
+I'm using it mostly because it's convenient and seems relatively sensible.  If
+we really want to use it, we probably want to change its name.
+
+<ol>
+  <li>If <var>range</var> is null, abort these steps and do nothing.
+
+  <li>Let <var>start node</var>, <var>start offset</var>, <var>end node</var>,
+  and <var>end offset</var> be <var>range</var>'s [[rangestart]] and
+  [[rangeend]] [[bpnodes]] and [[bpoffsets]].
+
+  <!-- Drill the range down to the lowest possible level, so we don't delete
+  more elements than necessary. -->
+  <li>While <var>start node</var> has at least one [[child]]:
+  <!--
+  We don't want to keep going when we hit an element with no children, because
+  then we'd do something like
+
+    foo{<br />bar]
+    -> foo<br>{</br>bar]
+    -> foo<br />{bar]
+    -> foo<br />[bar]
+
+  and we deselected the <br>.
+  -->
+
+  <ol>
+    <li>If <var>start offset</var> is <var>start node</var>'s
+    [[nodelength]], and <var>start node</var>'s [[parent]] is <span>in the same
+    editing host</span>, and <var>start node</var> is not a <span>prohibited
+    paragraph child</span>, set <var>start offset</var> to one plus the
+    [[index]] of <var>start node</var>, then set <var>start node</var> to its
+    [[parent]] and continue this loop from the beginning.
+    <!--
+    For instance:
+
+      <b>foo[</b><i>bar]</i>
+      -> <b>foo{</b><i>bar]</i>
+      -> <b>foo</b>{<i>bar]</i>
+
+    Then the next step will make it <b>foo</b><i>[bar]</i>.
+
+    We don't want to do this for prohibited paragraph children, because that
+    would lead to something like
+
+      <p>foo[</p><p>]bar<p>
+
+    ultimately collapsing, which is wrong.  Once we do the deletion, it needs
+    to wind up <p>foo[]bar</p>, whereas an actually collapsed selection should
+    do nothing.
+    -->
+
+    <li>If <var>start offset</var> is <var>start node</var>'s [[nodelength]],
+    break from this loop.
+    <!-- This happens if the first step brought us all the way up to the root.
+    The step immediately after this loop will bring us back down again.  -->
+
+    <li>Let <var>reference node</var> be the [[child]] of <var>start node</var>
+    with [[index]] equal to <var>start offset</var>.
+
+    <li>If <var>reference node</var> is a <span>prohibited paragraph
+    child</span> or an [[element]] with no [[children]], break from this loop.
+    <!--
+    Don't descend into an element with no children, since then it won't get
+    deleted even if it's selected.  Don't descend into a prohibited paragraph
+    child, because then we might wind up not mergings blocks when we should,
+    e.g.
+
+      foo{<p>}bar</p>
+      -> foo<p>{}bar</p>
+
+    and nothing gets changed.
+    -->
+
+    <li>Set <var>start node</var> to <var>reference node</var> and <var>start
+    offset</var> to 0.
+  </ol>
+
+  <li>While <var>end node</var> has at least one [[child]]:
+
+  <ol>
+    <li>If <var>end offset</var> is 0, and <var>end node</var>'s
+    [[parent]] is <span>in the same editing host</span>, and <var>end
+    node</var> is not a <span>prohibited paragraph child</span>, set <var>end
+    offset</var> to the [[index]] of <var>end node</var>, then set <var>end
+    node</var> to its [[parent]] and continue this loop from the beginning.
+
+    <li>If <var>end offset</var> is 0, break from this loop.
+
+    <li>Let <var>reference node</var> be the [[child]] of <var>end node</var>
+    with [[index]] equal to <var>end offset</var> minus one.
+
+    <li>If <var>reference node</var> is a <span>prohibited paragraph
+    child</span> or an [[element]] with no [[children]], break from this loop.
+
+    <li>Set <var>end node</var> to <var>reference node</var> and <var>end
+    offset</var> to the [[nodelength]] of <var>reference node</var>.
+  </ol>
+
+  <li>If (<var>end node</var>, <var>end offset</var>) is <span
+  data-anolis-spec=domrange title=concept-bp-before>before</span> (<var>start
+  node</var>, <var>start offset</var>), set <var>range</var>'s [[rangeend]] to
+  its [[rangestart]] and abort these steps.
+
+  <li>If <var>start node</var> is a [[text]] or [[comment]] node and <var>start
+  offset</var> is 0, set <var>start offset</var> to the [[index]] of <var>start
+  node</var>, then set <var>start node</var> to its [[parent]].
+
+  <li>If <var>end node</var> is a [[text]] or [[comment]] node and <var>end
+  offset</var> is its [[nodelength]], set <var>end offset</var> to one plus the
+  [[index]] of <var>end node</var>, then set <var>end node</var> to its
+  [[parent]].
+
+  <li>Set <var>range</var>'s [[rangestart]] to (<var>start node</var>,
+  <var>start offset</var>) and its [[rangeend]] to (<var>end node</var>,
+  <var>end offset</var>).
+
+  <!--
+  When we delete a selection that spans multiple blocks, we merge the end
+  block's contents into the start block, like
+
+    <p>fo[o</p><pre>b]ar</pre>
+    -> <p>fo[]ar</p>.
+
+  Figure out what the start and end blocks are before we start deleting
+  anything.
+  -->
+  <li>Let <var>start block</var> be the [[rangestart]] [[bpnode]] of
+  <var>range</var>.
+
+  <li>While <var>start block</var>'s [[parent]] is <span>in the same editing
+  host</span> and <var>start block</var> is not a <span>prohibited paragraph
+  child</span>, set <var>start block</var> to its [[parent]].
+
+  <li>If <var>start block</var> is neither a <span>prohibited paragraph
+  child</span> nor an <span>editing host</span>, or "span" is not an
+  <span>allowed child</span> of <var>start block</var>, or <var>start
+  block</var> is a [[td]] or [[th]], set <var>start block</var> to null.
+  <!--
+  We only merge to or from prohibited paragraph children or editing hosts.
+  (This is just in case someone makes a span into an editing host and sticks
+  paragraphs inside it or something . . . we could probably drop that proviso.)
+  Anything else is presumed to be an inline element, basically.  This might not
+  be ideal.
+
+  If span isn't an allowed child, it's probably something unpleasant like a
+  table row or a list or such.  We don't want to merge to or from something
+  like that, because we'd most likely wind up with the wrong type of child
+  somewhere.  It should be pretty hard for this to happen given the
+  normalization we do on the selection; I'm not actually sure how it could
+  happen at all, actually, unless you start out with a DOM that has non-allowed
+  children someplace.  So it's basically a sanity check.
+
+  We don't let either start block or end block be a td or th.  This means we'll
+  never merge to or from a td or th.  This matches Firefox 5.0a2, and
+  reportedly Word as well.  Chrome 13 dev and Opera 11.11 allow merging from a
+  non-table cell end block to a table cell start block, but not vice versa.  In
+  IE9 the delete key just does nothing.
+  -->
+
+  <li>Let <var>end block</var> be the [[rangeend]] [[bpnode]] of
+  <var>range</var>.
+
+  <li>While <var>end block</var>'s [[parent]] is <span>in the same editing
+  host</span> and <var>end block</var> is not a <span>prohibited paragraph
+  child</span>, set <var>end block</var> to its [[parent]].
+
+  <li>If <var>end block</var> is neither a <span>prohibited paragraph
+  child</span> nor an <span>editing host</span>, or "span" is not an
+  <span>allowed child</span> of <var>end block</var>, or <var>end block</var>
+  is a [[td]] or [[th]], set <var>end block</var> to null.
+
+  <!-- This is based on deleteData() in DOM Range. -->
+  <li>If <var>start node</var> and <var>end node</var> are the same, and
+  <var>start node</var> is an <span>editable</span> [[text]] or [[comment]]
+  node, call [[deletedata|<var>start offset</var>, <var>end offset</var>
+  &minus; <var>start offset</var>]] on <var>start node</var>.
+
+  <li>Otherwise:
+
+  <ol>
+    <li>If <var>start node</var> is an <span>editable</span> [[text]] or
+    [[comment]] node, call [[deletedata|]] on it, with <var>start offset</var>
+    as the first argument and ([[nodelength]] of <var>start node</var> &minus;
+    <var>start offset</var>) as the second argument.
+
+    <li>Let <var>node list</var> be a list of [[nodes]], initially empty.
+
+    <li>For each <var>node</var> [[contained]] in <var>range</var>, append
+    <var>node</var> to <var>node list</var> if the last member of <var>node
+    list</var> (if any) is not an [[ancestor]] of <var>node</var>;
+    <var>node</var> is <span>editable</span>; and <var>node</var> is not a
+    [[thead]], [[tbody]], [[tfoot]], [[tr]], [[th]], or [[td]].
+    <!--
+    IE9 doesn't seem to let you do any intercell deletions: the delete key does
+    nothing if you select across multiple cells.  Firefox 5.0a2 and Opera 11.11
+    behave as the spec says, not removing any table things.  Chrome 13 dev will
+    remove entire rows if selected.  Note that IE, Firefox, Word 2007, and
+    OpenOffice.org 3.2.1 Ubuntu all switch to a magic cell-selection mode when
+    you try to select between cells, at least in some cases, instead of
+    selecting letter-by-letter.
+    -->
+
+    <li>For each <var>node</var> in <var>node list</var>:
+
+    <ol>
+      <li>Let <var>parent</var> be the [[parent]] of <var>node</var>.
+
+      <li>Remove <var>node</var> from <var>parent</var>.
+
+      <li>While <var>parent</var> is an <span>editable</span> <span>inline
+      node</span> with [[nodelength]] 0, let <var>grandparent</var> be the
+      [[parent]] of <var>parent</var>, then remove <var>parent</var> from
+      <var>grandparent</var>, then set <var>parent</var> to
+      <var>grandparent</var>.
+
+      <li>If <var>parent</var> is <span>editable</span> or an <span>editing
+      host</span>, is not an <span>inline node</span>, and has no [[children]],
+      call [[createelement|"br"]] on the [[contextobject]] and append the
+      result as the last [[child]] of <var>parent</var>.
+    </ol>
+
+    <li>If <var>end node</var> is an <span>editable</span> [[text]] or
+    [[comment]] node, call [[deletedata|0, <var>end offset</var>]] on it.
+  </ol>
+
+  <!--
+  Now we need to merge blocks.  The simplest case is something like
+
+    <p>fo[o</p><p>bar</p><p>b]az</p>
+    -> <p>fo</p>{}<p>az</p>
+    -> <p>fo{}az</p>
+
+  where neither block descends from the other.  More complicated is something
+  like
+
+    foo[<p>]bar</p>
+    -> foo[]bar
+
+  or
+
+    <p>foo[</p>]bar
+    -> <p>foo[]bar</p>
+
+  where one descends from the other.
+  -->
+
+  <li>If <var>start block</var> or <var>end block</var> is null, or <var>start
+  block</var> is not <span>in the same editing host</span> as <var>end
+  block</var>, or <var>start block</var> and <var>end block</var> are the same,
+  set <var>range</var>'s [[rangeend]] to its [[rangestart]] and then abort
+  these steps.
+
+  <!--
+  We might have added a br to the start/end block in an earlier step.  Now
+  we're about to merge the blocks, and we don't want the br's to get in the
+  way.  The end block is being destroyed no matter what.  If the start block
+  winds up empty after merging, we'll add a new br child at the end so it
+  doesn't collapse.
+  -->
+  <li>If <var>start block</var> has one [[child]], which is a [[br]], remove
+  its [[child]] from it.
+
+  <li>If <var>end block</var> has one [[child]], which is a [[br]], remove its
+  [[child]] from it.
+
+  <li>If <var>start block</var> is an [[ancestor]] of <var>end block</var>:
+  <!-- Just repeatedly blow up the end block. -->
+
+  <ol>
+    <li>Let <var>reference node</var> be <var>end block</var>.
+
+    <li>While <var>reference node</var> is not a [[child]] of <var>start
+    block</var>, set <var>reference node</var> to its [[parent]].
+
+    <li>Set the [[rangestart]] and [[rangeend]] of <var>range</var> to
+    (<var>start block</var>, [[index]] of <var>reference node</var>).
+
+    <li>If <var>end block</var> has no [[children]]:
+
+    <ol>
+      <li>While <var>end block</var> is <span>editable</span> and is the only
+      [[child]] of its [[parent]] and is not a [[child]] of <var>start
+      block</var>, let <var>parent</var> equal <var>end block</var>, then
+      remove <var>end block</var> from <var>parent</var>, then set <var>end
+      block</var> to <var>parent</var>.
+
+      <li>If <var>end block</var> is <span>editable</span> and is not an
+      <span>inline node</span>, and its [[previoussibling]] and [[nextsibling]]
+      are both <span title="inline node">inline nodes</span>, call
+      [[createelement|"br"]] on the [[contextobject]] and insert it into
+      <var>end block</var>'s [[parent]] immediately after <var>end block</var>.
+
+      <li>If <var>end block</var> is <span>editable</span>, remove it from its
+      [[parent]].
+
+      <li>Abort these steps.
+    </ol>
+
+    <li>If <var>end block</var>'s [[firstchild]] is not an <span>inline
+    node</span>, abort these steps.
+
+    <li>Let <var>children</var> be an array of [[nodes]], initially empty.
+
+    <li>Append the first [[child]] of <var>end block</var> to
+    <var>children</var>.
+
+    <li>While <var>children</var>'s last member is not a [[br]], and
+    <var>children</var>'s last member's [[nextsibling]] is an <span>inline
+    node</span>, append <var>children</var>'s last member's [[nextsibling]] to
+    <var>children</var>.
+
+    <li>While <var>children</var>'s first member's [[parent]] is not <var>start
+    block</var>, <span>split the parent</span> of <var>children</var>.
+
+    <li>If <var>children</var>'s first member's [[previoussibling]] is an
+    <span>editable</span> [[br]], remove that [[br]] from its [[parent]].
+  </ol>
+
+  <li>Otherwise, if <var>start block</var> is a [[descendant]] of <var>end
+  block</var>:
+  <!-- Pull in everything that comes after <var>start block</var>, until we hit
+  a br or prohibited paragraph child. -->
+
+  <ol>
+    <li>Set the [[rangestart]] and [[rangeend]] of <var>range</var> to
+    (<var>start block</var>, [[nodelength]] of <var>start block</var>).
+
+    <li>Let <var>reference node</var> be <var>start block</var>.
+
+    <li>While <var>reference node</var> is not a [[child]] of <var>end
+    block</var>, set <var>reference node</var> to its [[parent]].
+
+    <li>If <var>reference node</var>'s [[nextsibling]] is an <span>inline
+    node</span> and <var>start block</var>'s [[lastchild]] is a [[br]], remove
+    <var>start block</var>'s [[lastchild]] from it.
+
+    <li>While the [[nextsibling]] of <var>reference node</var> is neither null
+    nor a [[br]] nor a <span>prohibited paragraph child</span>, append the
+    [[nextsibling]] of <var>reference node</var> as the last [[child]] of
+    <var>start block</var>, <span>preserving ranges</span>.
+
+    <li>If the [[nextsibling]] of <var>reference node</var> is a [[br]], remove
+    it from its [[parent]].
+  </ol>
+
+  <li>Otherwise:
+  <!-- In the last case, just move all the children of the end block to the
+  start block, and then get rid of any elements we emptied that way. -->
+
+  <ol>
+    <li>Set the [[rangestart]] and [[rangeend]] of <var>range</var> to
+    (<var>start block</var>, [[nodelength]] of <var>start block</var>).
+
+    <li>If <var>end block</var>'s [[firstchild]] is an <span>inline node</span>
+    and <var>start block</var>'s [[lastchild]] is a [[br]], remove <var>start
+    block</var>'s [[lastchild]] from it.
+
+    <li>While <var>end block</var> has [[children]], append the first [[child]]
+    of <var>end block</var> to <var>start block</var>, <span>preserving
+    ranges</span>.
+
+    <li>While <var>end block</var> has no [[children]], let <var>parent</var> be
+    the [[parent]] of <var>end block</var>, then remove <var>end block</var> from
+    <var>parent</var>, then set <var>end block</var> to <var>parent</var>.
+  </ol>
+
+  <li>If <var>start block</var> has no [[children]], call
+  [[createelement|"br"]] on the [[contextobject]] and append the result as the
+  last [[child]] of <var>start block</var>.
 </ol>
 <!-- @} -->
 
@@ -5126,6 +5015,122 @@ browsers don't normally let you put the cursor in weird places like that.
 
     <li><span>Indent</span> <var>sublist</var>.
   </ol>
+</ol>
+<!-- @} -->
+
+<h3><dfn>The <code title>insertHTML</code> command</dfn></h3>
+<!-- @{ -->
+<!--
+Not supported by IE9.  Handling of disallowed children is interesting:
+
+Firefox 5.0a2: Will allow <dt> inside <dt> (doesn't serialize).  If you try
+inserting dir/ol/ul inside an existing dir/ol/ul, it will strip the list
+element and leave only the li's, so inserting <ul><li>abc</ul> into
+<ol><li>f[o]o</ol> creates <ol><li>f<li>abc<li>o</ol>.  <dt>/<dd>/<li> that
+don't descend from a list will be left alone, not converted to <p>.  Empty
+elements seem not to be inserted.  <li> will get put inside <p>, which breaks
+serialization.  Nothing is allowed inside <xmp>, not even text.
+
+Chrome 13 dev: Inserting a <p> into a <p> or <li> or such will remove the child
+<p>, adding its contents to the parent instead.  Adding an <li> or <hr> as the
+child of a <p> works, as does an <a> inside an <a>, <h2> inside <h1>, <li>
+inside <li>, <nobr> inside <nobr>, <b> inside <xmp>, etc. (all unserializable).
+But <dt> and <dd> seem to get converted to their contents like <p>.
+<ol><li>abc</ol> inside <ol><li>f[o]o</ol> becomes
+<ol><li>f<li>abc<li><li>o</ol>, interestingly (note the empty <li>).  I don't
+understand how it works, but it doesn't seem to make much sense.
+
+Opera 11.11: Seems to do almost no validity or serialization checks, except
+that it prevents <a> inside <a>, <nobr> inside <nobr>, and block elements
+inside inline elements.  Interestingly, most of the places where it's
+non-serializable per HTML parsing are actually serializable in Opera's own
+parser.
+-->
+
+<p><span>Action</span>:
+
+<ol>
+  <li><span>Delete the contents</span> of the <span>active range</span>.
+
+  <li>Let <var>frag</var> be the result of calling <code data-anolis-spec=domps
+  title=dom-Range-createContextualFragment>createContextualFragment(<var>value</var>)</code>
+  on the <span>active range</span>.
+
+  <li>Let <var>last child</var> be the [[lastchild]] of <var>frag</var>.
+
+  <li>If <var>last child</var> is null, abort these steps.
+  <!-- Firefox 5.0a2 also seems to not add empty elements like <b></b>, but
+  Chrome 13 dev and Opera 11.11 do. -->
+
+  <li>Let <var>descendants</var> be all [[descendants]] of <var>frag</var>.
+
+  <li>If the <span>active range</span>'s [[startnode]] is a <span>prohibited
+  paragraph child</span> whose sole [[child]] is a [[br]], and its
+  [[startoffset]] is 0, remove its [[startnode]]'s [[child]] from it.
+  <!--
+  This is so we don't get something like
+    <div>[foo]</div>
+    -> <div>{}<br></div>
+    -> <div><p>Some HTML{}</p><br></div>
+  with an extra bogus line break at the end.
+  -->
+
+  <li>Call [[insertnode|<var>frag</var>]] on the <span>active range</span>.
+
+  <li>Set the <span>active range</span>'s [[rangestart]] and [[rangeend]] to
+  (<var>last child</var>, [[nodelength]] of <var>last child</var>).
+  <!-- Need to do this before fixing disallowed ancestors, since otherwise the
+  last child might have been removed (e.g., it's an li). -->
+
+  <li><span>Fix disallowed ancestors</span> of each member of
+  <var>descendants</var>.
+  <!-- We want to fix all descendants, not just children.  Consider
+  <div><li>foo</li></div>, for example. -->
+</ol>
+<!-- @} -->
+
+<h3><dfn>The <code title>insertImage</code> command</dfn></h3>
+<!-- @{ -->
+<p><span>Action</span>:
+
+<ol>
+  <li>If <var>value</var> is the empty string, abort these steps and do
+  nothing.
+  <!-- Similar logic to createLink, except even more compelling, since an HTML
+  document linking to itself as an image is just silly.  In fact, the current
+  HTML spec instructs UAs to not even try displaying the image, and just fail
+  immediately if the URL is empty.  Firefox 4b11 bails out on an empty string,
+  but the other three browsers I tested stick in the <img> anyway. -->
+
+  <li>Let <var>range</var> be the <span>active range</span>.
+
+  <li><span>Delete the contents</span> of <var>range</var>.
+
+  <li>If <var>range</var>'s [[startnode]] is a <span>prohibited paragraph
+  child</span> whose sole [[child]] is a [[br]], and its [[startoffset]] is 0,
+  remove its [[startnode]]'s [[child]] from it.
+  <!-- Same logic as with insertHTML. -->
+
+  <li>Let <var>img</var> be the result of calling [[createelement|"img"]] on
+  the [[contextobject]].
+
+  <li>Run [[setattribute|"src", <var>value</var>]] on <var>img</var>.
+  <!-- No alt text, so it's probably invalid.  This matches all browsers. -->
+
+  <li>Run [[insertnode|<var>img</var>]] on <var>range</var>.
+  <!--
+  This winds up putting it at the original start point of the active range, as
+  currently specced.  This matches IE9 and Firefox 5.0a2.  Chrome 13 dev puts
+  it at the end point, and Opera 11.11 puts it in between (where the range
+  would collapse if you called deleteContents()).
+  -->
+
+  <li>Let <var>selection</var> be the result of calling [[getselection]] on the
+  [[contextobject]].
+
+  <li>Run [[selcollapse|]] on <var>selection</var>, with first argument equal
+  to the [[parent]] of <var>img</var> and the second argument equal to one plus
+  the [[index]] of <var>img</var>.
 </ol>
 <!-- @} -->
 

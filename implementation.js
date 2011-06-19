@@ -660,69 +660,6 @@ function inSameEditingHost(node1, node2) {
 		&& getEditingHostOf(node1) == getEditingHostOf(node2);
 }
 
-// "A prohibited paragraph child name is "address", "article", "aside",
-// "blockquote", "caption", "center", "col", "colgroup", "details", "dd",
-// "dir", "div", "dl", "dt", "fieldset", "figcaption", "figure", "footer",
-// "form", "h1", "h2", "h3", "h4", "h5", "h6", "header", "hgroup", "hr", "li",
-// "listing", "menu", "nav", "ol", "p", "plaintext", "pre", "section",
-// "summary", "table", "tbody", "td", "tfoot", "th", "thead", "tr", "ul", or
-// "xmp"."
-var prohibitedParagraphChildNames = ["address", "article", "aside",
-	"blockquote", "caption", "center", "col", "colgroup", "details", "dd",
-	"dir", "div", "dl", "dt", "fieldset", "figcaption", "figure", "footer",
-	"form", "h1", "h2", "h3", "h4", "h5", "h6", "header", "hgroup", "hr", "li",
-	"listing", "menu", "nav", "ol", "p", "plaintext", "pre", "section",
-	"summary", "table", "tbody", "td", "tfoot", "th", "thead", "tr", "ul",
-	"xmp"];
-
-// "A prohibited paragraph child is an HTML element whose local name is a
-// prohibited paragraph child name."
-function isProhibitedParagraphChild(node) {
-	return isHtmlElement(node, prohibitedParagraphChildNames);
-}
-
-// "A name of an element with inline contents is "a", "abbr", "b", "bdi",
-// "bdo", "cite", "code", "dfn", "em", "h1", "h2", "h3", "h4", "h5", "h6", "i",
-// "kbd", "mark", "pre", "q", "rp", "rt", "ruby", "s", "samp", "small", "span",
-// "strong", "sub", "sup", "u", "var", "acronym", "listing", "strike", "xmp",
-// "big", "blink", "font", "marquee", "nobr", or "tt"."
-var namesOfElementsWithInlineContents = ["a", "abbr", "b", "bdi", "bdo",
-	"cite", "code", "dfn", "em", "h1", "h2", "h3", "h4", "h5", "h6", "i",
-	"kbd", "mark", "pre", "q", "rp", "rt", "ruby", "s", "samp", "small",
-	"span", "strong", "sub", "sup", "u", "var", "acronym", "listing", "strike",
-	"xmp", "big", "blink", "font", "marquee", "nobr", "tt"];
-
-// "An element with inline contents is an HTML element whose local name is a
-// name of an element with inline contents."
-function isElementWithInlineContents(node) {
-	return isHtmlElement(node, namesOfElementsWithInlineContents);
-}
-
-// "A visible node is a node that either is a prohibited paragraph child, or a
-// Text node whose data is not empty, or a br or img, or any node with a
-// descendant that is a visible node."
-function isVisibleNode(node) {
-	if (!node) {
-		return false;
-	}
-	if (isProhibitedParagraphChild(node)
-	|| (node.nodeType == Node.TEXT_NODE && node.length)
-	|| isHtmlElement(node, ["br", "img"])) {
-		return true;
-	}
-	for (var i = 0; i < node.childNodes.length; i++) {
-		if (isVisibleNode(node.childNodes[i])) {
-			return true;
-		}
-	}
-	return false;
-}
-
-// "An invisible node is a node that is not a visible node."
-function isInvisibleNode(node) {
-	return node && !isVisibleNode(node);
-}
-
 //@}
 
 /////////////////////////////
@@ -731,159 +668,6 @@ function isInvisibleNode(node) {
 
 ///// Assorted common algorithms /////
 //@{
-
-function isAllowedChild(child, parent_) {
-	// "If parent is "colgroup", "table", "tbody", "tfoot", "thead", "tr", or
-	// an HTML element with local name equal to one of those, and child is a
-	// Text node whose data does not consist solely of space characters, return
-	// false."
-	if ((["colgroup", "table", "tbody", "tfoot", "thead", "tr"].indexOf(parent_) != -1
-	|| isHtmlElement(parent_, ["colgroup", "table", "tbody", "tfoot", "thead", "tr"]))
-	&& typeof child == "object"
-	&& child.nodeType == Node.TEXT_NODE
-	&& !/^[ \t\n\f\r]*$/.test(child.data)) {
-		return false;
-	}
-
-	// "If parent is "script", "style", "plaintext", or "xmp", or an HTML
-	// element with local name equal to one of those, and child is not a Text
-	// node, return false."
-	if ((["script", "style", "plaintext", "xmp"].indexOf(parent_) != -1
-	|| isHtmlElement(parent_, ["script", "style", "plaintext", "xmp"]))
-	&& (typeof child != "object" || child.nodeType != Node.TEXT_NODE)) {
-		return false;
-	}
-
-	// "If child is a Document, DocumentFragment, or DocumentType, return
-	// false."
-	if (typeof child == "object"
-	&& (child.nodeType == Node.DOCUMENT_NODE
-	|| child.nodeType == Node.DOCUMENT_FRAGMENT_NODE
-	|| child.nodeType == Node.DOCUMENT_TYPE_NODE)) {
-		return false;
-	}
-
-	// "If child is an HTML element, set child to the local name of child."
-	if (isHtmlElement(child)) {
-		child = child.tagName.toLowerCase();
-	}
-
-	// "If child is not a string, return true."
-	if (typeof child != "string") {
-		return true;
-	}
-
-	// "If parent is an HTML element:"
-	if (isHtmlElement(parent_)) {
-		// "If child is "a", and parent or some ancestor of parent is an a,
-		// return false."
-		//
-		// "If child is a prohibited paragraph child name and parent or some
-		// ancestor of parent is a p or element with inline contents, return
-		// false."
-		//
-		// "If child is "h1", "h2", "h3", "h4", "h5", or "h6", and parent or
-		// some ancestor of parent is an HTML element with local name "h1",
-		// "h2", "h3", "h4", "h5", or "h6", return false."
-		var ancestor = parent_;
-		while (ancestor) {
-			if (child == "a" && isHtmlElement(ancestor, "a")) {
-				return false;
-			}
-			if (prohibitedParagraphChildNames.indexOf(child) != -1
-			&& (isHtmlElement(ancestor, "p")
-			|| isElementWithInlineContents(ancestor))) {
-				return false;
-			}
-			if (/^h[1-6]$/.test(child)
-			&& isHtmlElement(ancestor)
-			&& /^H[1-6]$/.test(ancestor.tagName)) {
-				return false;
-			}
-			ancestor = ancestor.parentNode;
-		}
-
-		// "Let parent be the local name of parent."
-		parent_ = parent_.tagName.toLowerCase();
-	}
-
-	// "If parent is an Element or DocumentFragment, return true."
-	if (typeof parent_ == "object"
-	&& (parent_.nodeType == Node.ELEMENT_NODE
-	|| parent_.nodeType == Node.DOCUMENT_FRAGMENT_NODE)) {
-		return true;
-	}
-
-	// "If parent is not a string, return false."
-	if (typeof parent_ != "string") {
-		return false;
-	}
-
-	// "If parent is in the following table, then return true if child is
-	// listed as an allowed child, and false otherwise."
-	switch (parent_) {
-		case "colgroup":
-			return child == "col";
-		case "table":
-			return ["caption", "col", "colgroup", "tbody", "td", "tfoot", "th", "thead", "tr"].indexOf(child) != -1;
-		case "tbody":
-		case "thead":
-		case "tfoot":
-			return ["td", "th", "tr"].indexOf(child) != -1;
-		case "tr":
-			return ["td", "th"].indexOf(child) != -1;
-		case "dl":
-			return ["dt", "dd"].indexOf(child) != -1;
-		case "dir":
-		case "ol":
-		case "ul":
-			return ["dir", "li", "ol", "ul"].indexOf(child) != -1;
-		case "hgroup":
-			return /^h[1-6]$/.test(child);
-	}
-
-	// "If child is "body", "caption", "col", "colgroup", "frame", "frameset",
-	// "head", "html", "tbody", "td", "tfoot", "th", "thead", or "tr", return
-	// false."
-	if (["body", "caption", "col", "colgroup", "frame", "frameset", "head",
-	"html", "tbody", "td", "tfoot", "th", "thead", "tr"].indexOf(child) != -1) {
-		return false;
-	}
-
-	// "If child is "dd" or "dt" and parent is not "dl", return false."
-	if (["dd", "dt"].indexOf(child) != -1
-	&& parent_ != "dl") {
-		return false;
-	}
-
-	// "If child is "li" and parent is not "ol" or "ul", return false."
-	if (child == "li"
-	&& parent_ != "ol"
-	&& parent_ != "ul") {
-		return false;
-	}
-
-	// "If parent is in the following table and child is listed as a prohibited
-	// child, return false."
-	var table = [
-		[["a"], ["a"]],
-		[["dd", "dt"], ["dd", "dt"]],
-		[["h1", "h2", "h3", "h4", "h5", "h6"], ["h1", "h2", "h3", "h4", "h5", "h6"]],
-		[["li"], ["li"]],
-		[["nobr"], ["nobr"]],
-		[["p"].concat(namesOfElementsWithInlineContents), prohibitedParagraphChildNames],
-		[["td", "th"], ["caption", "col", "colgroup", "tbody", "td", "tfoot", "th", "thead", "tr"]],
-	];
-	for (var i = 0; i < table.length; i++) {
-		if (table[i][0].indexOf(parent_) != -1
-		&& table[i][1].indexOf(child) != -1) {
-			return false;
-		}
-	}
-
-	// "Return true."
-	return true;
-}
 
 function movePreservingRanges(node, newParent, newIndex) {
 	// For convenience, I allow newIndex to be -1 to mean "insert at the end".
@@ -1311,437 +1095,6 @@ function wrap(nodeList, siblingCriteria, newParentInstructions) {
 
 	// "Return new parent."
 	return newParent;
-}
-
-//@}
-
-///// Deleting the contents of a range /////
-//@{
-
-function deleteContents(node1, offset1, node2, offset2) {
-	var range;
-
-	// We allow passing four arguments instead of one, in which case they're
-	// the start and end points of the range.
-	if (typeof offset1 == "undefined") {
-		range = node1;
-	} else {
-		range = document.createRange();
-		range.setStart(node1, offset1);
-		range.setEnd(node2, offset2);
-	}
-
-	// "If range is null, abort these steps and do nothing."
-	if (!range) {
-		return;
-	}
-
-	// "Let start node, start offset, end node, and end offset be range's start
-	// and end nodes and offsets."
-	var startNode = range.startContainer;
-	var startOffset = range.startOffset;
-	var endNode = range.endContainer;
-	var endOffset = range.endOffset;
-
-	// "While start node has at least one child:"
-	while (startNode.hasChildNodes()) {
-		// "If start offset is start node's length, and start node's parent is
-		// in the same editing host, and start node is not a prohibited
-		// paragraph child, set start offset to one plus the index of start
-		// node, then set start node to its parent and continue this loop from
-		// the beginning."
-		if (startOffset == getNodeLength(startNode)
-		&& inSameEditingHost(startNode, startNode.parentNode)
-		&& !isProhibitedParagraphChild(startNode)) {
-			startOffset = 1 + getNodeIndex(startNode);
-			startNode = startNode.parentNode;
-			continue;
-		}
-
-		// "If start offset is start node's length, break from this loop."
-		if (startOffset == getNodeLength(startNode)) {
-			break;
-		}
-
-		// "Let reference node be the child of start node with index equal to
-		// start offset."
-		var referenceNode = startNode.childNodes[startOffset];
-
-		// "If reference node is a prohibited paragraph child or an Element
-		// with no children, break from this loop."
-		if (isProhibitedParagraphChild(referenceNode)
-		|| (referenceNode.nodeType == Node.ELEMENT_NODE
-		&& !referenceNode.hasChildNodes())) {
-			break;
-		}
-
-		// "Set start node to reference node and start offset to 0."
-		startNode = referenceNode;
-		startOffset = 0;
-	}
-
-	// "While end node has at least one child:"
-	while (endNode.hasChildNodes()) {
-		// "If end offset is 0, and end node's parent is in the same editing
-		// host, and end node is not a prohibited paragraph child, set end
-		// offset to the index of end node, then set end node to its parent and
-		// continue this loop from the beginning."
-		if (endOffset == 0
-		&& inSameEditingHost(endNode, endNode.parentNode)
-		&& !isProhibitedParagraphChild(endNode)) {
-			endOffset = getNodeIndex(endNode);
-			endNode = endNode.parentNode;
-			continue;
-		}
-
-		// "If end offset is 0, break from this loop."
-		if (endOffset == 0) {
-			break;
-		}
-
-		// "Let reference node be the child of end node with index equal to end
-		// offset minus one."
-		var referenceNode = endNode.childNodes[endOffset - 1];
-
-		// "If reference node is a prohibited paragraph child or an Element
-		// with no children, break from this loop."
-		if (isProhibitedParagraphChild(referenceNode)
-		|| (referenceNode.nodeType == Node.ELEMENT_NODE
-		&& !referenceNode.hasChildNodes())) {
-			break;
-		}
-
-		// "Set end node to reference node and end offset to the length of
-		// reference node."
-		endNode = referenceNode;
-		endOffset = getNodeLength(referenceNode);
-	}
-
-	// "If (end node, end offset) is before (start node, start offset), set
-	// range's end to its start and abort these steps."
-	var startPoint = document.createRange();
-	startPoint.setStart(startNode, startOffset);
-	var endPoint = document.createRange();
-	endPoint.setStart(endNode, endOffset);
-	if (startPoint.compareBoundaryPoints(Range.START_TO_START, endPoint) == 1) {
-		range.setEnd(range.startContainer, range.startOffset);
-		return;
-	}
-
-	// "If start node is a Text or Comment node and start offset is 0, set
-	// start offset to the index of start node, then set start node to its
-	// parent."
-	if ((startNode.nodeType == Node.TEXT_NODE
-	|| startNode.nodeType == Node.COMMENT_NODE)
-	&& startOffset == 0) {
-		startOffset = getNodeIndex(startNode);
-		startNode = startNode.parentNode;
-	}
-
-	// "If end node is a Text or Comment node and end offset is its length, set
-	// end offset to one plus the index of end node, then set end node to its
-	// parent."
-	if ((endNode.nodeType == Node.TEXT_NODE
-	|| endNode.nodeType == Node.COMMENT_NODE)
-	&& endOffset == getNodeLength(endNode)) {
-		endOffset = 1 + getNodeIndex(endNode);
-		endNode = endNode.parentNode;
-	}
-
-	// "Set range's start to (start node, start offset) and its end to (end
-	// node, end offset)."
-	range.setStart(startNode, startOffset);
-	range.setEnd(endNode, endOffset);
-
-	// "Let start block be the start node of range."
-	var startBlock = range.startContainer;
-
-	// "While start block's parent is in the same editing host and start block
-	// is not a prohibited paragraph child, set start block to its parent."
-	while (inSameEditingHost(startBlock, startBlock.parentNode)
-	&& !isProhibitedParagraphChild(startBlock)) {
-		startBlock = startBlock.parentNode;
-	}
-
-	// "If start block is neither a prohibited paragraph child nor an editing
-	// host, or "span" is not an allowed child of start block, or start block
-	// is a td or th, set start block to null."
-	if ((!isProhibitedParagraphChild(startBlock) && !isEditingHost(startBlock))
-	|| !isAllowedChild("span", startBlock)
-	|| isHtmlElement(startBlock, ["td", "th"])) {
-		startBlock = null;
-	}
-
-	// "Let end block be the end node of range."
-	var endBlock = range.endContainer;
-
-	// "While end block's parent is in the same editing host and end block is
-	// not a prohibited paragraph child, set end block to its parent."
-	while (inSameEditingHost(endBlock, endBlock.parentNode)
-	&& !isProhibitedParagraphChild(endBlock)) {
-		endBlock = endBlock.parentNode;
-	}
-
-	// "If end block is neither a prohibited paragraph child nor an editing
-	// host, or "span" is not an allowed child of end block, or end block is a
-	// td or th, set end block to null."
-	if ((!isProhibitedParagraphChild(endBlock) && !isEditingHost(endBlock))
-	|| !isAllowedChild("span", endBlock)
-	|| isHtmlElement(endBlock, ["td", "th"])) {
-		endBlock = null;
-	}
-
-	// "If start node and end node are the same, and start node is an editable
-	// Text or Comment node, call deleteData(start offset, end offset − start
-	// offset) on start node."
-	if (startNode == endNode
-	&& isEditable(startNode)
-	&& (startNode.nodeType == Node.TEXT_NODE || startNode.nodeType == Node.COMMENT_NODE)) {
-		startNode.deleteData(startOffset, endOffset - startOffset);
-
-	// "Otherwise:"
-	} else {
-		// "If start node is an editable Text or Comment node, call
-		// deleteData() on it, with start offset as the first argument and
-		// (length of start node − start offset) as the second argument."
-		if (isEditable(startNode)
-		&& (startNode.nodeType == Node.TEXT_NODE
-		|| startNode.nodeType == Node.COMMENT_NODE)) {
-			startNode.deleteData(startOffset, getNodeLength(startNode) - startOffset);
-		}
-
-		// "Let node list be a list of nodes, initially empty."
-		//
-		// "For each node contained in range, append node to node list if the
-		// last member of node list (if any) is not an ancestor of node; node
-		// is editable; and node is not a thead, tbody, tfoot, tr, th, or td."
-		var nodeList = collectContainedNodes(range,
-			function(node) {
-				return isEditable(node)
-					&& !isHtmlElement(node, ["thead", "tbody", "tfoot", "tr", "th", "td"]);
-			}
-		);
-
-		// "For each node in node list:"
-		for (var i = 0; i < nodeList.length; i++) {
-			var node = nodeList[i];
-
-			// "Let parent be the parent of node."
-			var parent_ = node.parentNode;
-
-			// "Remove node from parent."
-			parent_.removeChild(node);
-
-			// "While parent is an editable inline node with length 0, let
-			// grandparent be the parent of parent, then remove parent from
-			// grandparent, then set parent to grandparent."
-			while (isEditable(parent_)
-			&& isInlineNode(parent_)
-			&& getNodeLength(parent_) == 0) {
-				var grandparent = parent_.parentNode;
-				grandparent.removeChild(parent_);
-				parent_ = grandparent;
-			}
-
-			// "If parent is editable or an editing host, is not an inline
-			// node, and has no children, call createElement("br") on the
-			// context object and append the result as the last child of
-			// parent."
-			if ((isEditable(parent_) || isEditingHost(parent_))
-			&& !isInlineNode(parent_)
-			&& !parent_.hasChildNodes()) {
-				parent_.appendChild(document.createElement("br"));
-			}
-		}
-
-		// "If end node is an editable Text or Comment node, call deleteData(0,
-		// end offset) on it."
-		if (isEditable(endNode)
-		&& (endNode.nodeType == Node.TEXT_NODE
-		|| endNode.nodeType == Node.COMMENT_NODE)) {
-			endNode.deleteData(0, endOffset);
-		}
-	}
-
-	// "If start block or end block is null, or start block is not in the same
-	// editing host as end block, or start block and end block are the same,
-	// set range's end to its start and then abort these steps."
-	if (!startBlock
-	|| !endBlock
-	|| !inSameEditingHost(startBlock, endBlock)
-	|| startBlock == endBlock) {
-		range.setEnd(range.startContainer, range.startOffset);
-		return;
-	}
-
-	// "If start block has one child, which is a br, remove its child from it."
-	if (startBlock.children.length == 1
-	&& isHtmlElement(startBlock.firstChild, "br")) {
-		startBlock.removeChild(startBlock.firstChild);
-	}
-
-	// "If end block has one child, which is a br, remove its child from it."
-	if (endBlock.children.length == 1
-	&& isHtmlElement(endBlock.firstChild, "br")) {
-		endBlock.removeChild(endBlock.firstChild);
-	}
-
-	// "If start block is an ancestor of end block:"
-	if (isAncestor(startBlock, endBlock)) {
-		// "Let reference node be end block."
-		var referenceNode = endBlock;
-
-		// "While reference node is not a child of start block, set reference
-		// node to its parent."
-		while (referenceNode.parentNode != startBlock) {
-			referenceNode = referenceNode.parentNode;
-		}
-
-		// "Set the start and end of range to (start block, index of reference
-		// node)."
-		range.setStart(startBlock, getNodeIndex(referenceNode));
-		range.setEnd(startBlock, getNodeIndex(referenceNode));
-
-		// "If end block has no children:"
-		if (!endBlock.hasChildNodes()) {
-			// "While end block is editable and is the only child of its parent
-			// and is not a child of start block, let parent equal end block,
-			// then remove end block from parent, then set end block to
-			// parent."
-			while (isEditable(endBlock)
-			&& endBlock.parentNode.childNodes.length == 1
-			&& endBlock.parentNode != startBlock) {
-				var parent_ = endBlock;
-				parent_.removeChild(endBlock);
-				endBlock = parent_;
-			}
-
-			// "If end block is editable and is not an inline node, and its
-			// previousSibling and nextSibling are both inline nodes, call
-			// createElement("br") on the context object and insert it into end
-			// block's parent immediately after end block."
-			if (isEditable(endBlock)
-			&& !isInlineNode(endBlock)
-			&& isInlineNode(endBlock.previousSibling)
-			&& isInlineNode(endBlock.nextSibling)) {
-				endBlock.parentNode.insertBefore(document.createElement("br"), endBlock.nextSibling);
-			}
-
-			// "If end block is editable, remove it from its parent."
-			if (isEditable(endBlock)) {
-				endBlock.parentNode.removeChild(endBlock);
-			}
-
-			// "Abort these steps."
-			return;
-		}
-
-		// "If end block's firstChild is not an inline node, abort these
-		// steps."
-		if (!isInlineNode(endBlock.firstChild)) {
-			return;
-		}
-
-		// "Let children be an array of nodes, initially empty."
-		var children = [];
-
-		// "Append the first child of end block to children."
-		children.push(endBlock.firstChild);
-
-		// "While children's last member is not a br, and children's last
-		// member's nextSibling is an inline node, append children's last
-		// member's nextSibling to children."
-		while (!isHtmlElement(children[children.length - 1], "br")
-		&& isInlineNode(children[children.length - 1].nextSibling)) {
-			children.push(children[children.length - 1].nextSibling);
-		}
-
-		// "While children's first member's parent is not start block, split
-		// the parent of children."
-		while (children[0].parentNode != startBlock) {
-			splitParent(children);
-		}
-
-		// "If children's first member's previousSibling is an editable br,
-		// remove that br from its parent."
-		if (isEditable(children[0].previousSibling)
-		&& isHtmlElement(children[0].previousSibling, "br")) {
-			children[0].parentNode.removeChild(children[0].previousSibling);
-		}
-
-	// "Otherwise, if start block is a descendant of end block:"
-	} else if (isDescendant(startBlock, endBlock)) {
-		// "Set the start and end of range to (start block, length of start
-		// block)."
-		range.setStart(startBlock, getNodeLength(startBlock));
-		range.setEnd(startBlock, getNodeLength(startBlock));
-
-		// "Let reference node be start block."
-		var referenceNode = startBlock;
-
-		// "While reference node is not a child of end block, set reference
-		// node to its parent."
-		while (referenceNode.parentNode != endBlock) {
-			referenceNode = referenceNode.parentNode;
-		}
-
-		// "If reference node's nextSibling is an inline node and start block's
-		// lastChild is a br, remove start block's lastChild from it."
-		if (isInlineNode(referenceNode.nextSibling)
-		&& isHtmlElement(startBlock.lastChild, "br")) {
-			startBlock.removeChild(startBlock.lastChild);
-		}
-
-		// "While the nextSibling of reference node is neither null nor a br
-		// nor a prohibited paragraph child, append the nextSibling of
-		// reference node as the last child of start block, preserving ranges."
-		while (referenceNode.nextSibling
-		&& !isHtmlElement(referenceNode.nextSibling, "br")
-		&& !isProhibitedParagraphChild(referenceNode.nextSibling)) {
-			movePreservingRanges(referenceNode.nextSibling, startBlock, -1);
-		}
-
-		// "If the nextSibling of reference node is a br, remove it from its
-		// parent."
-		if (isHtmlElement(referenceNode.nextSibling, "br")) {
-			referenceNode.parentNode.removeChild(referenceNode.nextSibling);
-		}
-
-	// "Otherwise:"
-	} else {
-		// "Set the start and end of range to (start block, length of start
-		// block)."
-		range.setStart(startBlock, getNodeLength(startBlock));
-		range.setEnd(startBlock, getNodeLength(startBlock));
-
-		// "If end block's firstChild is an inline node and start block's
-		// lastChild is a br, remove start block's lastChild from it."
-		if (isInlineNode(endBlock.firstChild)
-		&& isHtmlElement(startBlock.lastChild, "br")) {
-			startBlock.removeChild(startBlock.lastChild);
-		}
-
-		// "While end block has children, append the first child of end block
-		// to start block, preserving ranges."
-		while (endBlock.hasChildNodes()) {
-			movePreservingRanges(endBlock.firstChild, startBlock, -1);
-		}
-
-		// "While end block has no children, let parent be the parent of end
-		// block, then remove end block from parent, then set end block to
-		// parent."
-		while (!endBlock.hasChildNodes()) {
-			var parent_ = endBlock.parentNode;
-			parent_.removeChild(endBlock);
-			endBlock = parent_;
-		}
-	}
-
-	// "If start block has no children, call createElement("br") on the context
-	// object and append the result as the last child of start block."
-	if (!startBlock.hasChildNodes()) {
-		startBlock.appendChild(document.createElement("br"));
-	}
 }
 
 //@}
@@ -3267,109 +2620,6 @@ commands.hilitecolor = {
 };
 //@}
 
-///// The insertHTML command /////
-//@{
-commands.inserthtml = {
-	action: function(value) {
-		// "Delete the contents of the active range."
-		deleteContents(getActiveRange());
-
-		// "Let frag be the result of calling createContextualFragment(value)
-		// on the active range."
-		var frag = getActiveRange().createContextualFragment(value);
-
-		// "Let last child be the lastChild of frag."
-		var lastChild = frag.lastChild;
-
-		// "If last child is null, abort these steps."
-		if (!lastChild) {
-			return;
-		}
-
-		// "Let descendants be all descendants of frag."
-		var descendants = getDescendants(frag);
-
-		// "If the active range's start node is a prohibited paragraph child
-		// whose sole child is a br, and its start offset is 0, remove its
-		// start node's child from it."
-		if (isProhibitedParagraphChild(getActiveRange().startContainer)
-		&& getActiveRange().startContainer.childNodes.length == 1
-		&& isHtmlElement(getActiveRange().startContainer.firstChild, "br")
-		&& getActiveRange().startOffset == 0) {
-			getActiveRange().startContainer.removeChild(getActiveRange().startContainer.firstChild);
-		}
-
-		// "Call insertNode(frag) on the active range."
-		getActiveRange().insertNode(frag);
-
-		// "Set the active range's start and end to (last child, length of last
-		// child)."
-		getActiveRange().setStart(lastChild, getNodeLength(lastChild));
-		getActiveRange().setEnd(lastChild, getNodeLength(lastChild));
-
-		// "Fix disallowed ancestors of each member of descendants."
-		for (var i = 0; i < descendants.length; i++) {
-			fixDisallowedAncestors(descendants[i]);
-		}
-	}
-};
-//@}
-
-///// The insertImage command /////
-//@{
-commands.insertimage = {
-	action: function(value) {
-		// "If value is the empty string, abort these steps and do nothing."
-		if (value === "") {
-			return;
-		}
-
-		// "Let range be the active range."
-		var range = getActiveRange();
-
-		// "Delete the contents of range."
-		deleteContents(range);
-
-		// "If range's start node is a prohibited paragraph child whose sole
-		// child is a br, and its start offset is 0, remove its start node's
-		// child from it."
-		if (isProhibitedParagraphChild(range.startContainer)
-		&& range.startContainer.childNodes.length == 1
-		&& isHtmlElement(range.startContainer.firstChild, "br")
-		&& range.startOffset == 0) {
-			range.startContainer.removeChild(range.startContainer.firstChild);
-		}
-
-		// "Let img be the result of calling createElement("img") on the
-		// context object."
-		var img = document.createElement("img");
-
-		// "Run setAttribute("src", value) on img."
-		img.setAttribute("src", value);
-
-		// "Run insertNode(img) on the range."
-		range.insertNode(img);
-
-		// "Run collapse() on the Selection, with first argument equal to the
-		// parent of img and the second argument equal to one plus the index of
-		// img."
-		//
-		// Not everyone actually supports collapse(), so we do it manually
-		// instead.  Also, we need to modify the actual range we're given as
-		// well, for the sake of autoimplementation.html's range-filling-in.
-		range.setStart(img.parentNode, 1 + getNodeIndex(img));
-		range.setEnd(img.parentNode, 1 + getNodeIndex(img));
-		getSelection().removeAllRanges();
-		getSelection().addRange(range);
-
-		// IE adds width and height attributes for some reason, so remove those
-		// to actually do what the spec says.
-		img.removeAttribute("width");
-		img.removeAttribute("height");
-	}
-};
-//@}
-
 ///// The italic command /////
 //@{
 commands.italic = {
@@ -3626,6 +2876,44 @@ commands.unlink = {
 ///// Block formatting command definitions /////
 //@{
 
+// "A prohibited paragraph child name is "address", "article", "aside",
+// "blockquote", "caption", "center", "col", "colgroup", "details", "dd",
+// "dir", "div", "dl", "dt", "fieldset", "figcaption", "figure", "footer",
+// "form", "h1", "h2", "h3", "h4", "h5", "h6", "header", "hgroup", "hr", "li",
+// "listing", "menu", "nav", "ol", "p", "plaintext", "pre", "section",
+// "summary", "table", "tbody", "td", "tfoot", "th", "thead", "tr", "ul", or
+// "xmp"."
+var prohibitedParagraphChildNames = ["address", "article", "aside",
+	"blockquote", "caption", "center", "col", "colgroup", "details", "dd",
+	"dir", "div", "dl", "dt", "fieldset", "figcaption", "figure", "footer",
+	"form", "h1", "h2", "h3", "h4", "h5", "h6", "header", "hgroup", "hr", "li",
+	"listing", "menu", "nav", "ol", "p", "plaintext", "pre", "section",
+	"summary", "table", "tbody", "td", "tfoot", "th", "thead", "tr", "ul",
+	"xmp"];
+
+// "A prohibited paragraph child is an HTML element whose local name is a
+// prohibited paragraph child name."
+function isProhibitedParagraphChild(node) {
+	return isHtmlElement(node, prohibitedParagraphChildNames);
+}
+
+// "A name of an element with inline contents is "a", "abbr", "b", "bdi",
+// "bdo", "cite", "code", "dfn", "em", "h1", "h2", "h3", "h4", "h5", "h6", "i",
+// "kbd", "mark", "pre", "q", "rp", "rt", "ruby", "s", "samp", "small", "span",
+// "strong", "sub", "sup", "u", "var", "acronym", "listing", "strike", "xmp",
+// "big", "blink", "font", "marquee", "nobr", or "tt"."
+var namesOfElementsWithInlineContents = ["a", "abbr", "b", "bdi", "bdo",
+	"cite", "code", "dfn", "em", "h1", "h2", "h3", "h4", "h5", "h6", "i",
+	"kbd", "mark", "pre", "q", "rp", "rt", "ruby", "s", "samp", "small",
+	"span", "strong", "sub", "sup", "u", "var", "acronym", "listing", "strike",
+	"xmp", "big", "blink", "font", "marquee", "nobr", "tt"];
+
+// "An element with inline contents is an HTML element whose local name is a
+// name of an element with inline contents."
+function isElementWithInlineContents(node) {
+	return isHtmlElement(node, namesOfElementsWithInlineContents);
+}
+
 // "A potential indentation element is either a blockquote, or a div that has a
 // style attribute that sets "margin" or some subproperty of it."
 function isPotentialIndentationElement(node) {
@@ -3700,6 +2988,31 @@ function isSingleLineContainer(node) {
 
 // "The default single-line container name is "p"."
 var defaultSingleLineContainerName = "p";
+
+// "A visible node is a node that either is a prohibited paragraph child, or a
+// Text node whose data is not empty, or a br or img, or any node with a
+// descendant that is a visible node."
+function isVisibleNode(node) {
+	if (!node) {
+		return false;
+	}
+	if (isProhibitedParagraphChild(node)
+	|| (node.nodeType == Node.TEXT_NODE && node.length)
+	|| isHtmlElement(node, ["br", "img"])) {
+		return true;
+	}
+	for (var i = 0; i < node.childNodes.length; i++) {
+		if (isVisibleNode(node.childNodes[i])) {
+			return true;
+		}
+	}
+	return false;
+}
+
+// "An invisible node is a node that is not a visible node."
+function isInvisibleNode(node) {
+	return node && !isVisibleNode(node);
+}
 
 //@}
 
@@ -3885,6 +3198,164 @@ function normalizeSublists(item) {
 
 //@}
 
+///// Allowed children /////
+//@{
+
+function isAllowedChild(child, parent_) {
+	// "If parent is "colgroup", "table", "tbody", "tfoot", "thead", "tr", or
+	// an HTML element with local name equal to one of those, and child is a
+	// Text node whose data does not consist solely of space characters, return
+	// false."
+	if ((["colgroup", "table", "tbody", "tfoot", "thead", "tr"].indexOf(parent_) != -1
+	|| isHtmlElement(parent_, ["colgroup", "table", "tbody", "tfoot", "thead", "tr"]))
+	&& typeof child == "object"
+	&& child.nodeType == Node.TEXT_NODE
+	&& !/^[ \t\n\f\r]*$/.test(child.data)) {
+		return false;
+	}
+
+	// "If parent is "script", "style", "plaintext", or "xmp", or an HTML
+	// element with local name equal to one of those, and child is not a Text
+	// node, return false."
+	if ((["script", "style", "plaintext", "xmp"].indexOf(parent_) != -1
+	|| isHtmlElement(parent_, ["script", "style", "plaintext", "xmp"]))
+	&& (typeof child != "object" || child.nodeType != Node.TEXT_NODE)) {
+		return false;
+	}
+
+	// "If child is a Document, DocumentFragment, or DocumentType, return
+	// false."
+	if (typeof child == "object"
+	&& (child.nodeType == Node.DOCUMENT_NODE
+	|| child.nodeType == Node.DOCUMENT_FRAGMENT_NODE
+	|| child.nodeType == Node.DOCUMENT_TYPE_NODE)) {
+		return false;
+	}
+
+	// "If child is an HTML element, set child to the local name of child."
+	if (isHtmlElement(child)) {
+		child = child.tagName.toLowerCase();
+	}
+
+	// "If child is not a string, return true."
+	if (typeof child != "string") {
+		return true;
+	}
+
+	// "If parent is an HTML element:"
+	if (isHtmlElement(parent_)) {
+		// "If child is "a", and parent or some ancestor of parent is an a,
+		// return false."
+		//
+		// "If child is a prohibited paragraph child name and parent or some
+		// ancestor of parent is a p or element with inline contents, return
+		// false."
+		//
+		// "If child is "h1", "h2", "h3", "h4", "h5", or "h6", and parent or
+		// some ancestor of parent is an HTML element with local name "h1",
+		// "h2", "h3", "h4", "h5", or "h6", return false."
+		var ancestor = parent_;
+		while (ancestor) {
+			if (child == "a" && isHtmlElement(ancestor, "a")) {
+				return false;
+			}
+			if (prohibitedParagraphChildNames.indexOf(child) != -1
+			&& (isHtmlElement(ancestor, "p")
+			|| isElementWithInlineContents(ancestor))) {
+				return false;
+			}
+			if (/^h[1-6]$/.test(child)
+			&& isHtmlElement(ancestor)
+			&& /^H[1-6]$/.test(ancestor.tagName)) {
+				return false;
+			}
+			ancestor = ancestor.parentNode;
+		}
+
+		// "Let parent be the local name of parent."
+		parent_ = parent_.tagName.toLowerCase();
+	}
+
+	// "If parent is an Element or DocumentFragment, return true."
+	if (typeof parent_ == "object"
+	&& (parent_.nodeType == Node.ELEMENT_NODE
+	|| parent_.nodeType == Node.DOCUMENT_FRAGMENT_NODE)) {
+		return true;
+	}
+
+	// "If parent is not a string, return false."
+	if (typeof parent_ != "string") {
+		return false;
+	}
+
+	// "If parent is in the following table, then return true if child is
+	// listed as an allowed child, and false otherwise."
+	switch (parent_) {
+		case "colgroup":
+			return child == "col";
+		case "table":
+			return ["caption", "col", "colgroup", "tbody", "td", "tfoot", "th", "thead", "tr"].indexOf(child) != -1;
+		case "tbody":
+		case "thead":
+		case "tfoot":
+			return ["td", "th", "tr"].indexOf(child) != -1;
+		case "tr":
+			return ["td", "th"].indexOf(child) != -1;
+		case "dl":
+			return ["dt", "dd"].indexOf(child) != -1;
+		case "dir":
+		case "ol":
+		case "ul":
+			return ["dir", "li", "ol", "ul"].indexOf(child) != -1;
+		case "hgroup":
+			return /^h[1-6]$/.test(child);
+	}
+
+	// "If child is "body", "caption", "col", "colgroup", "frame", "frameset",
+	// "head", "html", "tbody", "td", "tfoot", "th", "thead", or "tr", return
+	// false."
+	if (["body", "caption", "col", "colgroup", "frame", "frameset", "head",
+	"html", "tbody", "td", "tfoot", "th", "thead", "tr"].indexOf(child) != -1) {
+		return false;
+	}
+
+	// "If child is "dd" or "dt" and parent is not "dl", return false."
+	if (["dd", "dt"].indexOf(child) != -1
+	&& parent_ != "dl") {
+		return false;
+	}
+
+	// "If child is "li" and parent is not "ol" or "ul", return false."
+	if (child == "li"
+	&& parent_ != "ol"
+	&& parent_ != "ul") {
+		return false;
+	}
+
+	// "If parent is in the following table and child is listed as a prohibited
+	// child, return false."
+	var table = [
+		[["a"], ["a"]],
+		[["dd", "dt"], ["dd", "dt"]],
+		[["h1", "h2", "h3", "h4", "h5", "h6"], ["h1", "h2", "h3", "h4", "h5", "h6"]],
+		[["li"], ["li"]],
+		[["nobr"], ["nobr"]],
+		[["p"].concat(namesOfElementsWithInlineContents), prohibitedParagraphChildNames],
+		[["td", "th"], ["caption", "col", "colgroup", "tbody", "td", "tfoot", "th", "thead", "tr"]],
+	];
+	for (var i = 0; i < table.length; i++) {
+		if (table[i][0].indexOf(parent_) != -1
+		&& table[i][1].indexOf(child) != -1) {
+			return false;
+		}
+	}
+
+	// "Return true."
+	return true;
+}
+
+//@}
+
 ///// Block-extending a range /////
 //@{
 
@@ -4014,6 +3485,437 @@ function blockExtendRange(range) {
 
 	// "Return new range."
 	return newRange;
+}
+
+//@}
+
+///// Deleting the contents of a range /////
+//@{
+
+function deleteContents(node1, offset1, node2, offset2) {
+	var range;
+
+	// We allow passing four arguments instead of one, in which case they're
+	// the start and end points of the range.
+	if (typeof offset1 == "undefined") {
+		range = node1;
+	} else {
+		range = document.createRange();
+		range.setStart(node1, offset1);
+		range.setEnd(node2, offset2);
+	}
+
+	// "If range is null, abort these steps and do nothing."
+	if (!range) {
+		return;
+	}
+
+	// "Let start node, start offset, end node, and end offset be range's start
+	// and end nodes and offsets."
+	var startNode = range.startContainer;
+	var startOffset = range.startOffset;
+	var endNode = range.endContainer;
+	var endOffset = range.endOffset;
+
+	// "While start node has at least one child:"
+	while (startNode.hasChildNodes()) {
+		// "If start offset is start node's length, and start node's parent is
+		// in the same editing host, and start node is not a prohibited
+		// paragraph child, set start offset to one plus the index of start
+		// node, then set start node to its parent and continue this loop from
+		// the beginning."
+		if (startOffset == getNodeLength(startNode)
+		&& inSameEditingHost(startNode, startNode.parentNode)
+		&& !isProhibitedParagraphChild(startNode)) {
+			startOffset = 1 + getNodeIndex(startNode);
+			startNode = startNode.parentNode;
+			continue;
+		}
+
+		// "If start offset is start node's length, break from this loop."
+		if (startOffset == getNodeLength(startNode)) {
+			break;
+		}
+
+		// "Let reference node be the child of start node with index equal to
+		// start offset."
+		var referenceNode = startNode.childNodes[startOffset];
+
+		// "If reference node is a prohibited paragraph child or an Element
+		// with no children, break from this loop."
+		if (isProhibitedParagraphChild(referenceNode)
+		|| (referenceNode.nodeType == Node.ELEMENT_NODE
+		&& !referenceNode.hasChildNodes())) {
+			break;
+		}
+
+		// "Set start node to reference node and start offset to 0."
+		startNode = referenceNode;
+		startOffset = 0;
+	}
+
+	// "While end node has at least one child:"
+	while (endNode.hasChildNodes()) {
+		// "If end offset is 0, and end node's parent is in the same editing
+		// host, and end node is not a prohibited paragraph child, set end
+		// offset to the index of end node, then set end node to its parent and
+		// continue this loop from the beginning."
+		if (endOffset == 0
+		&& inSameEditingHost(endNode, endNode.parentNode)
+		&& !isProhibitedParagraphChild(endNode)) {
+			endOffset = getNodeIndex(endNode);
+			endNode = endNode.parentNode;
+			continue;
+		}
+
+		// "If end offset is 0, break from this loop."
+		if (endOffset == 0) {
+			break;
+		}
+
+		// "Let reference node be the child of end node with index equal to end
+		// offset minus one."
+		var referenceNode = endNode.childNodes[endOffset - 1];
+
+		// "If reference node is a prohibited paragraph child or an Element
+		// with no children, break from this loop."
+		if (isProhibitedParagraphChild(referenceNode)
+		|| (referenceNode.nodeType == Node.ELEMENT_NODE
+		&& !referenceNode.hasChildNodes())) {
+			break;
+		}
+
+		// "Set end node to reference node and end offset to the length of
+		// reference node."
+		endNode = referenceNode;
+		endOffset = getNodeLength(referenceNode);
+	}
+
+	// "If (end node, end offset) is before (start node, start offset), set
+	// range's end to its start and abort these steps."
+	var startPoint = document.createRange();
+	startPoint.setStart(startNode, startOffset);
+	var endPoint = document.createRange();
+	endPoint.setStart(endNode, endOffset);
+	if (startPoint.compareBoundaryPoints(Range.START_TO_START, endPoint) == 1) {
+		range.setEnd(range.startContainer, range.startOffset);
+		return;
+	}
+
+	// "If start node is a Text or Comment node and start offset is 0, set
+	// start offset to the index of start node, then set start node to its
+	// parent."
+	if ((startNode.nodeType == Node.TEXT_NODE
+	|| startNode.nodeType == Node.COMMENT_NODE)
+	&& startOffset == 0) {
+		startOffset = getNodeIndex(startNode);
+		startNode = startNode.parentNode;
+	}
+
+	// "If end node is a Text or Comment node and end offset is its length, set
+	// end offset to one plus the index of end node, then set end node to its
+	// parent."
+	if ((endNode.nodeType == Node.TEXT_NODE
+	|| endNode.nodeType == Node.COMMENT_NODE)
+	&& endOffset == getNodeLength(endNode)) {
+		endOffset = 1 + getNodeIndex(endNode);
+		endNode = endNode.parentNode;
+	}
+
+	// "Set range's start to (start node, start offset) and its end to (end
+	// node, end offset)."
+	range.setStart(startNode, startOffset);
+	range.setEnd(endNode, endOffset);
+
+	// "Let start block be the start node of range."
+	var startBlock = range.startContainer;
+
+	// "While start block's parent is in the same editing host and start block
+	// is not a prohibited paragraph child, set start block to its parent."
+	while (inSameEditingHost(startBlock, startBlock.parentNode)
+	&& !isProhibitedParagraphChild(startBlock)) {
+		startBlock = startBlock.parentNode;
+	}
+
+	// "If start block is neither a prohibited paragraph child nor an editing
+	// host, or "span" is not an allowed child of start block, or start block
+	// is a td or th, set start block to null."
+	if ((!isProhibitedParagraphChild(startBlock) && !isEditingHost(startBlock))
+	|| !isAllowedChild("span", startBlock)
+	|| isHtmlElement(startBlock, ["td", "th"])) {
+		startBlock = null;
+	}
+
+	// "Let end block be the end node of range."
+	var endBlock = range.endContainer;
+
+	// "While end block's parent is in the same editing host and end block is
+	// not a prohibited paragraph child, set end block to its parent."
+	while (inSameEditingHost(endBlock, endBlock.parentNode)
+	&& !isProhibitedParagraphChild(endBlock)) {
+		endBlock = endBlock.parentNode;
+	}
+
+	// "If end block is neither a prohibited paragraph child nor an editing
+	// host, or "span" is not an allowed child of end block, or end block is a
+	// td or th, set end block to null."
+	if ((!isProhibitedParagraphChild(endBlock) && !isEditingHost(endBlock))
+	|| !isAllowedChild("span", endBlock)
+	|| isHtmlElement(endBlock, ["td", "th"])) {
+		endBlock = null;
+	}
+
+	// "If start node and end node are the same, and start node is an editable
+	// Text or Comment node, call deleteData(start offset, end offset − start
+	// offset) on start node."
+	if (startNode == endNode
+	&& isEditable(startNode)
+	&& (startNode.nodeType == Node.TEXT_NODE || startNode.nodeType == Node.COMMENT_NODE)) {
+		startNode.deleteData(startOffset, endOffset - startOffset);
+
+	// "Otherwise:"
+	} else {
+		// "If start node is an editable Text or Comment node, call
+		// deleteData() on it, with start offset as the first argument and
+		// (length of start node − start offset) as the second argument."
+		if (isEditable(startNode)
+		&& (startNode.nodeType == Node.TEXT_NODE
+		|| startNode.nodeType == Node.COMMENT_NODE)) {
+			startNode.deleteData(startOffset, getNodeLength(startNode) - startOffset);
+		}
+
+		// "Let node list be a list of nodes, initially empty."
+		//
+		// "For each node contained in range, append node to node list if the
+		// last member of node list (if any) is not an ancestor of node; node
+		// is editable; and node is not a thead, tbody, tfoot, tr, th, or td."
+		var nodeList = collectContainedNodes(range,
+			function(node) {
+				return isEditable(node)
+					&& !isHtmlElement(node, ["thead", "tbody", "tfoot", "tr", "th", "td"]);
+			}
+		);
+
+		// "For each node in node list:"
+		for (var i = 0; i < nodeList.length; i++) {
+			var node = nodeList[i];
+
+			// "Let parent be the parent of node."
+			var parent_ = node.parentNode;
+
+			// "Remove node from parent."
+			parent_.removeChild(node);
+
+			// "While parent is an editable inline node with length 0, let
+			// grandparent be the parent of parent, then remove parent from
+			// grandparent, then set parent to grandparent."
+			while (isEditable(parent_)
+			&& isInlineNode(parent_)
+			&& getNodeLength(parent_) == 0) {
+				var grandparent = parent_.parentNode;
+				grandparent.removeChild(parent_);
+				parent_ = grandparent;
+			}
+
+			// "If parent is editable or an editing host, is not an inline
+			// node, and has no children, call createElement("br") on the
+			// context object and append the result as the last child of
+			// parent."
+			if ((isEditable(parent_) || isEditingHost(parent_))
+			&& !isInlineNode(parent_)
+			&& !parent_.hasChildNodes()) {
+				parent_.appendChild(document.createElement("br"));
+			}
+		}
+
+		// "If end node is an editable Text or Comment node, call deleteData(0,
+		// end offset) on it."
+		if (isEditable(endNode)
+		&& (endNode.nodeType == Node.TEXT_NODE
+		|| endNode.nodeType == Node.COMMENT_NODE)) {
+			endNode.deleteData(0, endOffset);
+		}
+	}
+
+	// "If start block or end block is null, or start block is not in the same
+	// editing host as end block, or start block and end block are the same,
+	// set range's end to its start and then abort these steps."
+	if (!startBlock
+	|| !endBlock
+	|| !inSameEditingHost(startBlock, endBlock)
+	|| startBlock == endBlock) {
+		range.setEnd(range.startContainer, range.startOffset);
+		return;
+	}
+
+	// "If start block has one child, which is a br, remove its child from it."
+	if (startBlock.children.length == 1
+	&& isHtmlElement(startBlock.firstChild, "br")) {
+		startBlock.removeChild(startBlock.firstChild);
+	}
+
+	// "If end block has one child, which is a br, remove its child from it."
+	if (endBlock.children.length == 1
+	&& isHtmlElement(endBlock.firstChild, "br")) {
+		endBlock.removeChild(endBlock.firstChild);
+	}
+
+	// "If start block is an ancestor of end block:"
+	if (isAncestor(startBlock, endBlock)) {
+		// "Let reference node be end block."
+		var referenceNode = endBlock;
+
+		// "While reference node is not a child of start block, set reference
+		// node to its parent."
+		while (referenceNode.parentNode != startBlock) {
+			referenceNode = referenceNode.parentNode;
+		}
+
+		// "Set the start and end of range to (start block, index of reference
+		// node)."
+		range.setStart(startBlock, getNodeIndex(referenceNode));
+		range.setEnd(startBlock, getNodeIndex(referenceNode));
+
+		// "If end block has no children:"
+		if (!endBlock.hasChildNodes()) {
+			// "While end block is editable and is the only child of its parent
+			// and is not a child of start block, let parent equal end block,
+			// then remove end block from parent, then set end block to
+			// parent."
+			while (isEditable(endBlock)
+			&& endBlock.parentNode.childNodes.length == 1
+			&& endBlock.parentNode != startBlock) {
+				var parent_ = endBlock;
+				parent_.removeChild(endBlock);
+				endBlock = parent_;
+			}
+
+			// "If end block is editable and is not an inline node, and its
+			// previousSibling and nextSibling are both inline nodes, call
+			// createElement("br") on the context object and insert it into end
+			// block's parent immediately after end block."
+			if (isEditable(endBlock)
+			&& !isInlineNode(endBlock)
+			&& isInlineNode(endBlock.previousSibling)
+			&& isInlineNode(endBlock.nextSibling)) {
+				endBlock.parentNode.insertBefore(document.createElement("br"), endBlock.nextSibling);
+			}
+
+			// "If end block is editable, remove it from its parent."
+			if (isEditable(endBlock)) {
+				endBlock.parentNode.removeChild(endBlock);
+			}
+
+			// "Abort these steps."
+			return;
+		}
+
+		// "If end block's firstChild is not an inline node, abort these
+		// steps."
+		if (!isInlineNode(endBlock.firstChild)) {
+			return;
+		}
+
+		// "Let children be an array of nodes, initially empty."
+		var children = [];
+
+		// "Append the first child of end block to children."
+		children.push(endBlock.firstChild);
+
+		// "While children's last member is not a br, and children's last
+		// member's nextSibling is an inline node, append children's last
+		// member's nextSibling to children."
+		while (!isHtmlElement(children[children.length - 1], "br")
+		&& isInlineNode(children[children.length - 1].nextSibling)) {
+			children.push(children[children.length - 1].nextSibling);
+		}
+
+		// "While children's first member's parent is not start block, split
+		// the parent of children."
+		while (children[0].parentNode != startBlock) {
+			splitParent(children);
+		}
+
+		// "If children's first member's previousSibling is an editable br,
+		// remove that br from its parent."
+		if (isEditable(children[0].previousSibling)
+		&& isHtmlElement(children[0].previousSibling, "br")) {
+			children[0].parentNode.removeChild(children[0].previousSibling);
+		}
+
+	// "Otherwise, if start block is a descendant of end block:"
+	} else if (isDescendant(startBlock, endBlock)) {
+		// "Set the start and end of range to (start block, length of start
+		// block)."
+		range.setStart(startBlock, getNodeLength(startBlock));
+		range.setEnd(startBlock, getNodeLength(startBlock));
+
+		// "Let reference node be start block."
+		var referenceNode = startBlock;
+
+		// "While reference node is not a child of end block, set reference
+		// node to its parent."
+		while (referenceNode.parentNode != endBlock) {
+			referenceNode = referenceNode.parentNode;
+		}
+
+		// "If reference node's nextSibling is an inline node and start block's
+		// lastChild is a br, remove start block's lastChild from it."
+		if (isInlineNode(referenceNode.nextSibling)
+		&& isHtmlElement(startBlock.lastChild, "br")) {
+			startBlock.removeChild(startBlock.lastChild);
+		}
+
+		// "While the nextSibling of reference node is neither null nor a br
+		// nor a prohibited paragraph child, append the nextSibling of
+		// reference node as the last child of start block, preserving ranges."
+		while (referenceNode.nextSibling
+		&& !isHtmlElement(referenceNode.nextSibling, "br")
+		&& !isProhibitedParagraphChild(referenceNode.nextSibling)) {
+			movePreservingRanges(referenceNode.nextSibling, startBlock, -1);
+		}
+
+		// "If the nextSibling of reference node is a br, remove it from its
+		// parent."
+		if (isHtmlElement(referenceNode.nextSibling, "br")) {
+			referenceNode.parentNode.removeChild(referenceNode.nextSibling);
+		}
+
+	// "Otherwise:"
+	} else {
+		// "Set the start and end of range to (start block, length of start
+		// block)."
+		range.setStart(startBlock, getNodeLength(startBlock));
+		range.setEnd(startBlock, getNodeLength(startBlock));
+
+		// "If end block's firstChild is an inline node and start block's
+		// lastChild is a br, remove start block's lastChild from it."
+		if (isInlineNode(endBlock.firstChild)
+		&& isHtmlElement(startBlock.lastChild, "br")) {
+			startBlock.removeChild(startBlock.lastChild);
+		}
+
+		// "While end block has children, append the first child of end block
+		// to start block, preserving ranges."
+		while (endBlock.hasChildNodes()) {
+			movePreservingRanges(endBlock.firstChild, startBlock, -1);
+		}
+
+		// "While end block has no children, let parent be the parent of end
+		// block, then remove end block from parent, then set end block to
+		// parent."
+		while (!endBlock.hasChildNodes()) {
+			var parent_ = endBlock.parentNode;
+			parent_.removeChild(endBlock);
+			endBlock = parent_;
+		}
+	}
+
+	// "If start block has no children, call createElement("br") on the context
+	// object and append the result as the last child of start block."
+	if (!startBlock.hasChildNodes()) {
+		startBlock.appendChild(document.createElement("br"));
+	}
 }
 
 //@}
@@ -5313,6 +5215,109 @@ commands.inserthorizontalrule = {
 		range.setEnd(hr.parentNode, 1 + getNodeIndex(hr));
 		getSelection().removeAllRanges();
 		getSelection().addRange(range);
+	}
+};
+//@}
+
+///// The insertHTML command /////
+//@{
+commands.inserthtml = {
+	action: function(value) {
+		// "Delete the contents of the active range."
+		deleteContents(getActiveRange());
+
+		// "Let frag be the result of calling createContextualFragment(value)
+		// on the active range."
+		var frag = getActiveRange().createContextualFragment(value);
+
+		// "Let last child be the lastChild of frag."
+		var lastChild = frag.lastChild;
+
+		// "If last child is null, abort these steps."
+		if (!lastChild) {
+			return;
+		}
+
+		// "Let descendants be all descendants of frag."
+		var descendants = getDescendants(frag);
+
+		// "If the active range's start node is a prohibited paragraph child
+		// whose sole child is a br, and its start offset is 0, remove its
+		// start node's child from it."
+		if (isProhibitedParagraphChild(getActiveRange().startContainer)
+		&& getActiveRange().startContainer.childNodes.length == 1
+		&& isHtmlElement(getActiveRange().startContainer.firstChild, "br")
+		&& getActiveRange().startOffset == 0) {
+			getActiveRange().startContainer.removeChild(getActiveRange().startContainer.firstChild);
+		}
+
+		// "Call insertNode(frag) on the active range."
+		getActiveRange().insertNode(frag);
+
+		// "Set the active range's start and end to (last child, length of last
+		// child)."
+		getActiveRange().setStart(lastChild, getNodeLength(lastChild));
+		getActiveRange().setEnd(lastChild, getNodeLength(lastChild));
+
+		// "Fix disallowed ancestors of each member of descendants."
+		for (var i = 0; i < descendants.length; i++) {
+			fixDisallowedAncestors(descendants[i]);
+		}
+	}
+};
+//@}
+
+///// The insertImage command /////
+//@{
+commands.insertimage = {
+	action: function(value) {
+		// "If value is the empty string, abort these steps and do nothing."
+		if (value === "") {
+			return;
+		}
+
+		// "Let range be the active range."
+		var range = getActiveRange();
+
+		// "Delete the contents of range."
+		deleteContents(range);
+
+		// "If range's start node is a prohibited paragraph child whose sole
+		// child is a br, and its start offset is 0, remove its start node's
+		// child from it."
+		if (isProhibitedParagraphChild(range.startContainer)
+		&& range.startContainer.childNodes.length == 1
+		&& isHtmlElement(range.startContainer.firstChild, "br")
+		&& range.startOffset == 0) {
+			range.startContainer.removeChild(range.startContainer.firstChild);
+		}
+
+		// "Let img be the result of calling createElement("img") on the
+		// context object."
+		var img = document.createElement("img");
+
+		// "Run setAttribute("src", value) on img."
+		img.setAttribute("src", value);
+
+		// "Run insertNode(img) on the range."
+		range.insertNode(img);
+
+		// "Run collapse() on the Selection, with first argument equal to the
+		// parent of img and the second argument equal to one plus the index of
+		// img."
+		//
+		// Not everyone actually supports collapse(), so we do it manually
+		// instead.  Also, we need to modify the actual range we're given as
+		// well, for the sake of autoimplementation.html's range-filling-in.
+		range.setStart(img.parentNode, 1 + getNodeIndex(img));
+		range.setEnd(img.parentNode, 1 + getNodeIndex(img));
+		getSelection().removeAllRanges();
+		getSelection().addRange(range);
+
+		// IE adds width and height attributes for some reason, so remove those
+		// to actually do what the spec says.
+		img.removeAttribute("width");
+		img.removeAttribute("height");
 	}
 };
 //@}

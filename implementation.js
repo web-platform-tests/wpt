@@ -498,6 +498,10 @@ function myExecCommand(command, showUI, value, range) {
 		return;
 	}
 
+	if (!(command in commands)) {
+		return;
+	}
+
 	commands[command].action(value);
 
 	globalRange = null;
@@ -516,6 +520,10 @@ function myQueryCommandState(command) {
 		return;
 	}
 
+	if (!(command in commands)) {
+		return;
+	}
+
 	return commands[command].state();
 
 	globalRange = null;
@@ -531,6 +539,10 @@ function myQueryCommandValue(command) {
 	}
 
 	if (!globalRange && command != "selectall" && command != "stylewithcss" && command != "usecss") {
+		return;
+	}
+
+	if (!(command in commands)) {
 		return;
 	}
 

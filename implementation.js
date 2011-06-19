@@ -660,6 +660,23 @@ function inSameEditingHost(node1, node2) {
 		&& getEditingHostOf(node1) == getEditingHostOf(node2);
 }
 
+// "A collapsed line break is a br that begins a line box which has nothing
+// else in it, and therefore has zero height."
+function isCollapsedLineBreak(br) {
+	if (!isHtmlElement(br, "br")) {
+		return false;
+	}
+
+	// Add a zwsp after it and see if that changes the height.
+	var space = document.createTextNode("\u200b");
+	var origHeight = br.parentNode.offsetHeight;
+	br.parentNode.insertBefore(space, br.nextSibling);
+	var finalHeight = br.parentNode.offsetHeight;
+	space.parentNode.removeChild(space);
+
+	return origHeight != finalHeight;
+}
+
 //@}
 
 /////////////////////////////
@@ -5375,12 +5392,10 @@ commands.insertlinebreak = {
 		getActiveRange().setStart(br.parentNode, 1 + getNodeIndex(br));
 		getActiveRange().setEnd(br.parentNode, 1 + getNodeIndex(br));
 
-		// "If br's nextSibling is null and br's parent is not an inline node,
-		// or if br's nextSibling is not null and not an inline node, call
-		// createElement("br") on the context object and let extra br be the
-		// result, then call insertNode(extra br) on the active range."
-		if ((!br.nextSibling && !isInlineNode(br.parentNode))
-		|| (br.nextSibling && !isInlineNode(br.nextSibling))) {
+		// "If br is a collapsed line break, call createElement("br") on the
+		// context object and let extra br be the result, then call
+		// insertNode(extra br) on the active range."
+		if (isCollapsedLineBreak(br)) {
 			getActiveRange().insertNode(document.createElement("br"));
 
 			// Compensate for nonstandard implementations of insertNode

@@ -83,8 +83,8 @@ useful to spec:
   multipleSelection, overwrite, print, refresh, saveAs, unbookmark: Mentioned
   in MSDN docs but not MDC, so presumably IE-only.  Some of these seem
   inappropriate or useless, others will bear investigation.
-* findString, fontSizeDelta, insertLineBreak, insertNewlineInQuotedContent,
-  justifyNone, print, transpose: There's code for these in WebKit,
+* findString, fontSizeDelta, insertNewlineInQuotedContent, justifyNone, print,
+  transpose: There's code for these in WebKit,
   Source/WebCore/editing/EditorCommand.cpp, but I didn't see them mentioned
   elsewhere.  Some might be worth adding.
 * unselect: Seems to not be implemented by Gecko or Opera, and IE behaves
@@ -5202,6 +5202,66 @@ splitting up parents to ensure validity . . . -->
   title=dom-Selection-collapse>collapse()</code> on <var>selection</var>, with
   first argument equal to the [[parent]] of <var>hr</var> and the second
   argument equal to one plus the [[index]] of <var>hr</var>.
+</ol>
+<!-- @} -->
+
+<h3><dfn>The <code title>insertLineBreak</code> command</dfn></h3>
+<!-- @{ -->
+<p><span>Action</span>:
+
+<!--
+Only implemented in WebKit (Chrome 14 dev).  Other tests are entirely manual.
+There's a surprisingly large amount of interop.
+
+IE9 is tripped up by <xmp>, and also often doesn't add an extra <br> when the
+one it just inserted is extraneous.
+
+Firefox 6.0a2 doesn't notice if you're trying to put the <br> in a bad place,
+which can result in unserializable DOMs.
+
+Chrome 14 dev inserts a literal linebreak for pre and xmp and maybe other
+similar elements.  This doesn't seem very useful, so I don't bother.
+
+Opera 11.11 isn't heedful of <xmp>, and treats <pre> somewhat oddly.
+-->
+
+<ol>
+  <li><span>Delete the contents</span> of the <span>active range</span>.
+
+  <li>If the <span>active range</span>'s [[startnode]] is an [[element]], and
+  "br" is not an <span>allowed child</span> of it, abort these steps.
+  <!-- script, xmp, table, . . . -->
+
+  <li>If the <span>active range</span>'s [[startnode]] is not an [[element]],
+  and "br" is not an <span>allowed child</span> of the <span>active
+  range</span>'s [[startnode]]'s [[parent]], abort these steps.
+
+  <!-- We don't want to call insertNode at the start or end of a text node,
+  because that will leave an empty text node. -->
+  <li>If the <span>active range</span>'s [[startnode]] is a [[text]] node and
+  its [[startoffset]] is zero, set the <span>active range</span>'s
+  [[rangestart]] and [[rangeend]] to ([[parent]] of [[startnode]], [[index]] of
+  [[startnode]]).
+
+  <li>If the <span>active range</span>'s [[startnode]] is a [[text]] node and
+  its [[startoffset]] is the [[length]] of its [[startnode]], set the
+  <span>active range</span>'s [[rangestart]] and [[rangeend]] to ([[parent]] of
+  [[startnode]], 1 + [[index]] of [[startnode]]).
+
+  <li>Let <var>br</var> be the result of calling [[createelement|"br"]] on the
+  [[contextobject]].
+
+  <li>Call [[insertnode|<var>br</var>]] on the <span>active range</span>.
+
+  <li>Call [[selcollapse|]] on the [[contextobject]]'s [[selection]], with
+  <var>br</var>'s [[parent]] as the first argument and one plus <var>br</var>'s
+  [[index]] as the second argument.
+
+  <li>If <var>br</var>'s [[nextsibling]] is null and <var>br</var>'s [[parent]]
+  is not an <span>inline node</span>, or if <var>br</var>'s [[nextsibling]] is
+  not null and not an <span>inline node</span>, call [[createelement|"br"]] on
+  the [[contextobject]] and let <var>extra br</var> be the result, then call
+  [[insertnode|<var>extra br</var>]] on the <span>active range</span>.
 </ol>
 <!-- @} -->
 

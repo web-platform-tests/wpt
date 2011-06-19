@@ -1481,6 +1481,10 @@ var tests = {
 		'<div>foo<p>bar[</p></div>]baz',
 	],
 	//@}
+	insertlinebreak: [
+	//@{ Just the same as insertparagraph (set below).
+	],
+	//@}
 	insertorderedlist: [
 	//@{
 		'foo[]bar',
@@ -1726,6 +1730,9 @@ var tests = {
 		'<pre>foo[]&#10;</pre>',
 		'<pre>foo&#10;[]&#10;</pre>',
 
+		'<xmp>foo[]bar</xmp>',
+		'<script>foo[]bar</script>baz',
+
 		'<ol><li>{}<br></li></ol>',
 		'foo<ol><li>{}<br></li></ol>',
 		'<ol><li>{}<br></li></ol>foo',
@@ -1813,6 +1820,7 @@ var tests = {
 		'<a href=/>foo</a>[]bar',
 		'<p>fo[o<p>b]ar',
 		'<p>fo[o<p>bar<p>b]az',
+		'<p>{}<br>',
 	],
 	//@}
 	insertunorderedlist: [
@@ -2803,6 +2811,7 @@ var tests = {
 	],
 	//@}
 };
+tests.insertlinebreak = tests.insertparagraph;
 
 var defaultValues = {
 //@{

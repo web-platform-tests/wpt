@@ -5322,11 +5322,82 @@ commands.insertimage = {
 };
 //@}
 
+///// The insertLineBreak command /////
+//@{
+commands.insertlinebreak = {
+	action: function(value) {
+		// "Delete the contents of the active range."
+		deleteContents(getActiveRange());
+
+		// "If the active range's start node is an Element, and "br" is not an
+		// allowed child of it, abort these steps."
+		if (getActiveRange().startContainer.nodeType == Node.ELEMENT_NODE
+		&& !isAllowedChild("br", getActiveRange().startContainer)) {
+			return;
+		}
+
+		// "If the active range's start node is not an Element, and "br" is not
+		// an allowed child of the active range's start node's parent, abort
+		// these steps."
+		if (getActiveRange().startContainer.nodeType != Node.ELEMENT_NODE
+		&& !isAllowedChild("br", getActiveRange().startContainer.parentNode)) {
+			return;
+		}
+
+		// "If the active range's start node is a Text node and its start
+		// offset is zero, set the active range's start and end to (parent of
+		// start node, index of start node)."
+		if (getActiveRange().startContainer.nodeType == Node.TEXT_NODE
+		&& getActiveRange().startOffset == 0) {
+			getActiveRange().setStart(getActiveRange().startContainer.parentNode, getNodeIndex(getActiveRange().startContainer));
+			getActiveRange().setEnd(getActiveRange().startContainer.parentNode, getNodeIndex(getActiveRange().startContainer));
+		}
+
+		// "If the active range's start node is a Text node and its start
+		// offset is the length of its start node, set the active range's start
+		// and end to (parent of start node, 1 + index of start node)."
+		if (getActiveRange().startContainer.nodeType == Node.TEXT_NODE
+		&& getActiveRange().startOffset == getNodeLength(getActiveRange().startContainer)) {
+			getActiveRange().setStart(getActiveRange().startContainer.parentNode, 1 + getNodeIndex(getActiveRange().startContainer));
+			getActiveRange().setEnd(getActiveRange().startContainer.parentNode, 1 + getNodeIndex(getActiveRange().startContainer));
+		}
+
+		// "Let br be the result of calling createElement("br") on the context
+		// object."
+		var br = document.createElement("br");
+
+		// "Call insertNode(br) on the active range."
+		getActiveRange().insertNode(br);
+
+		// "Call collapse() on the context object's Selection, with br's parent
+		// as the first argument and one plus br's index as the second
+		// argument."
+		getActiveRange().setStart(br.parentNode, 1 + getNodeIndex(br));
+		getActiveRange().setEnd(br.parentNode, 1 + getNodeIndex(br));
+
+		// "If br's nextSibling is null and br's parent is not an inline node,
+		// or if br's nextSibling is not null and not an inline node, call
+		// createElement("br") on the context object and let extra br be the
+		// result, then call insertNode(extra br) on the active range."
+		if ((!br.nextSibling && !isInlineNode(br.parentNode))
+		|| (br.nextSibling && !isInlineNode(br.nextSibling))) {
+			getActiveRange().insertNode(document.createElement("br"));
+
+			// Compensate for nonstandard implementations of insertNode
+			getActiveRange().setStart(br.parentNode, 1 + getNodeIndex(br));
+			getActiveRange().setEnd(br.parentNode, 1 + getNodeIndex(br));
+		}
+	}
+};
+//@}
+
 ///// The insertOrderedList command /////
+//@{
 commands.insertorderedlist = {
 	// "Toggle lists with tag name "ol"."
 	action: function() { toggleLists("ol") }
 };
+//@}
 
 ///// The insertParagraph command /////
 //@{

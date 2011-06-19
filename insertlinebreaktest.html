@@ -1,0 +1,34 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>Manual insertLineBreak (Shift-Enter) tests</title>
+<link rel=stylesheet href=tests.css>
+<p>Legend: {[ are the selection anchor, }] are the selection focus, {}
+represent an element boundary point, [] represent a text node boundary point.
+Syntax and some of the tests taken from <a
+href=http://www.browserscope.org/richtext2/test>Browserscope</a>.  data-start
+and data-end attributes also represent element boundary points, with the node
+being the element with the attribute and the offset given as the attribute
+value, for cases where HTML parsing doesn't allow text nodes.  Currently we
+don't really pay attention to reversed selections at all, so they might get
+displayed as forwards or such.
+
+<p><input type=button value="Clear cached results" onclick="clearCachedResults()">
+
+<div id=tests>
+	<input type=button value="Run tests" onclick="runTests()">
+	<table border=1><tr><th>Input<th>Spec<th>Browser<th>Same</table>
+	<p><label>New test input: <input></label> <input type=button value="Add test" onclick="addTest()">
+</div>
+
+<div id=overlay>Tap Shift-Enter (or Mac equivalent) repeatedly until this
+annoying message disappears!  (But not too quickly.  And don't hit any other
+keys or click with the mouse anywhere, it will mess it up.<span id=testcount>
+<span></span> manual test(s) remain.</span>)</div>
+
+<script src=implementation.js></script>
+<script src=tests.js></script>
+<script>
+var command = "insertlinebreak";
+var keyname = "insertlinebreak";
+</script>
+<script src=manualtest.js></script>

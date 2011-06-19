@@ -83,10 +83,10 @@ useful to spec:
   multipleSelection, overwrite, print, refresh, saveAs, unbookmark: Mentioned
   in MSDN docs but not MDC, so presumably IE-only.  Some of these seem
   inappropriate or useless, others will bear investigation.
-* findString, fontSizeDelta, forwardDelete, insertLineBreak,
-  insertNewlineInQuotedContent, insertText, justifyNone, print, transpose:
-  There's code for these in WebKit, Source/WebCore/editing/EditorCommand.cpp,
-  but I didn't see them mentioned elsewhere.  Some might be worth adding.
+* findString, fontSizeDelta, insertLineBreak, insertNewlineInQuotedContent,
+  justifyNone, print, transpose: There's code for these in WebKit,
+  Source/WebCore/editing/EditorCommand.cpp, but I didn't see them mentioned
+  elsewhere.  Some might be worth adding.
 * unselect: Seems to not be implemented by Gecko or Opera, and IE behaves
   oddly: it seems to collapse the selection instead of removing it.  Will only
   implement if there seems to be demand; it's redundant to
@@ -244,6 +244,10 @@ list</a>.
   are totally wrong, mostly to account for the fact that sometimes [[br]]s do
   nothing and we need to treat that case magically.  I don't know what a good
   way is to fix this.
+
+  <li>What happens if you do something like delete a selection or insert text
+  or whatnot in the middle of a surrogate pair?  This could make the content
+  not serialize through a character encoding change.
 </ul>
 
 <p class=XXX>A variety of other issues are also noted in the text, formatted
@@ -5044,12 +5048,15 @@ non-serializable per HTML parsing are actually serializable in Opera's own
 parser.
 -->
 
+<p class=XXX>What happens to unpaired surrogates in the value?  They could make
+round-tripping through a character encoding change impossible.
+
 <p><span>Action</span>:
 
 <ol>
   <li><span>Delete the contents</span> of the <span>active range</span>.
-  <!-- Firefox 5.0a2 seems to not do this if value is empty; Chrome 14 dev and
-  Opera 11.11 do. -->
+  <!-- Chrome 14 dev and Opera 11.11 do this even if the value is empty.
+  Firefox 5.0a2 throws an exception. -->
 
   <li>Let <var>frag</var> be the result of calling <code data-anolis-spec=domps
   title=dom-Range-createContextualFragment>createContextualFragment(<var>value</var>)</code>

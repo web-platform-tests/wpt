@@ -5457,10 +5457,27 @@ theory, but normalize the selection first, so they don't match it in practice.
   <li><a href=#delete-the-contents>Delete the contents</a> of the <a href=#active-range>active range</a>.
   <!-- Chrome 14 dev does this even if passed the empty string. -->
 
+  <li>While <var title="">value</var> contains a newline (U+0010):
+
+  <ol>
+    <li>Let <var title="">subvalue</var> be the empty string.
+
+    <li>While the first 16-bit element of <var title="">value</var> is not a newline
+    (0x0010), remove the first 16-bit element from <var title="">value</var> and append
+    it to <var title="">subvalue</var>.
+
+    <li>Take the <a href=#action>action</a> for <a href=#the-inserttext-command>the <code title="">insertText</code> command</a>, with <var title="">value</var> set to
+    <var title="">subvalue</var>.
+
+    <li>Remove the first 16-bit element from <var title="">value</var>.
+
+    <li>Take the <a href=#action>action</a> for <a href=#the-insertparagraph-command>the <code title="">insertParagraph</code> command</a>.
+  </ol>
+
   <li>If <var title="">value</var> is the empty string, abort these steps.
 
-  <p class=XXX>WebKit does magic for tabs, and actually handles newlines as
-  newlines.
+  <p class=XXX>WebKit does magic for tabs, wrapping them in a
+  whitespace-preserving span.
 
   <p class=XXX>This doesn't work well if the input contains things that aren't
   supposed to appear in HTML, like carriage returns or nulls.  Nor is it going
@@ -5759,9 +5776,7 @@ is in an <a href=#editable>editable</a> <a class=external data-anolis-spec=domco
 with <var title="">value</var> equal to the text the user provided.  If the user inserts
 multiple characters at once or in quick succession, this specification does not
 define whether it is treated as one insertion or several consecutive
-insertions.  If the inserted text includes line breaks, the user agent must not
-process those as part of this paragraph, but instead according to the
-instructions above for processing line breaks.
+insertions.
 
 
 <h2 class=no-num id=acknowledgements>Acknowledgements</h2>

@@ -5595,6 +5595,30 @@ commands.inserttext = {
 		// "Delete the contents of the active range."
 		deleteContents(getActiveRange());
 
+		// "While value contains a newline (U+0010):"
+		while (value.indexOf("\n") != -1) {
+			// "Let subvalue be the empty string."
+			var subvalue = "";
+
+			// "While the first 16-bit element of value is not a newline
+			// (0x0010), remove the first 16-bit element from value and append
+			// it to subvalue."
+			while (value[0] != "\n") {
+				subvalue += value[0];
+				value = value.slice(1);
+			}
+
+			// "Take the action for the insertText command, with value set to
+			// subvalue."
+			commands.inserttext.action(subvalue);
+
+			// "Remove the first 16-bit element from value."
+			value = value.slice(1);
+
+			// "Take the action for the insertParagraph command."
+			commands.insertparagraph.action();
+		}
+
 		// "If value is the empty string, abort these steps."
 		if (value == "") {
 			return;

@@ -5498,39 +5498,81 @@ theory, but normalize the selection first, so they don't match it in practice.
 
 <p><span>Action</span>:
 
+<!--
+Non-breaking space fun!  The issue: if the user hits space twice, they expect
+it to create two spaces, not collapse.  Also, if they're at the beginning or
+end of a line and hit space, again, they expect it not to collapse.  Since we
+don't want to require that all contenteditable element contents always be used
+only with white-space: pre-wrap, we need to convert to and from non-breaking
+spaces.
+
+But there's a catch: you can't just make spaces non-breaking willy-nilly,
+because that doesn't just stop the space from collapsing, it also prevents
+breaking.  (Chrome 14 dev actually cheats here: in contenteditable, it doesn't
+collapse nbsp, but breaks after it like a regular space.)  The upshot of this
+is that any nbsp needs to be followed by a space, or else it might end up at
+the beginning of a line and be visible there; and it needs to be preceded by a
+space, or else it might break a line prematurely.  How to achieve both of these
+goals when there are an even number of spaces to display is left as an exercise
+for the reader.
+
+Browsers vary greatly in how they handle all this, of course!
+
+The basic philosophy of IE9 is that if you're inserting a space, and one or
+both of the neighboring characters is a space, change the neighboring
+characters to non-breaking spaces.  This breaks if one of the neighboring
+characters is part of a run of collapsed whitespace: "foo  []bar" becomes "foo
+&nbsp; []bar", which converts one visible space to three.
+
+Firefox 6.0a2 will sometimes convert the space you're inserting to an nbsp,
+sometimes convert neighboring spaces to nbsps, and sometimes convert
+neighboring nbsps to spaces.  I cannot discern any clear reason to when it
+chooses what, except that it seems to prefer runs of nbsp's followed by a
+single space (although not always).  I didn't find any outright bugs, except
+the inevitable ones like nbsp's sometimes being right after letters.
+
+Chrome 14 dev tries to normalize everything to look like " &nbsp; &nbsp; ...",
+alternating with space then nbsp.  Unfortunately, it does so buggily, because
+it converts collapsed spaces to nbsp's, so inserting a space before " " makes
+it into " &nbsp; &nbsp;", which changes one visible space to four (or
+arbitrarily many).
+
+Opera 11.11 has varying behavior, like Firefox and Chrome.  Like Firefox, I
+didn't discern an obvious pattern.
+-->
+
+<p class=XXX>We need to handle spaces/nbsps specially here.  See comment and <a
+href=http://lists.whatwg.org/pipermail/whatwg-whatwg.org/2011-June/032187.html>WHATWG
+discussion</a>.
+
 <ol>
   <li><span>Delete the contents</span> of the <span>active range</span>.
   <!-- Chrome 14 dev does this even if passed the empty string. -->
-
-  <li>While <var>value</var> contains a newline (U+0010):
-
-  <ol>
-    <li>Let <var>subvalue</var> be the empty string.
-
-    <li>While the first 16-bit element of <var>value</var> is not a newline
-    (0x0010), remove the first 16-bit element from <var>value</var> and append
-    it to <var>subvalue</var>.
-
-    <li>Take the <span>action</span> for <span>the <code
-    title>insertText</code> command</span>, with <var>value</var> set to
-    <var>subvalue</var>.
-
-    <li>Remove the first 16-bit element from <var>value</var>.
-
-    <li>Take the <span>action</span> for <span>the <code
-    title>insertParagraph</code> command</span>.
-  </ol>
-
-  <li>If <var>value</var> is the empty string, abort these steps.
-
-  <p class=XXX>WebKit does magic for tabs, wrapping them in a
-  whitespace-preserving span.
 
   <p class=XXX>This doesn't work well if the input contains things that aren't
   supposed to appear in HTML, like carriage returns or nulls.  Nor is it going
   to work well if the current cursor position is in between two halves of a
   non-BMP character.  This will result in unserializability.  The current spec
   disregards this, as Chrome 14 dev does.
+
+  <li>If <var>value</var>'s [[strlen]] is greater than one:
+
+  <ol>
+    <li>For each [[strel]] <var>el</var> in <var>value</var>, take the
+    <span>action</span> for <span>the <code title>insertText</code>
+    command</span>, with <var>value</var> equal to <var>el</var>.
+
+    <li>Abort these steps.
+  </ol>
+
+  <li>If <var>value</var> is the empty string, abort these steps.
+
+  <li>If <var>value</var> is a newline (U+00A0), take the <span>action</span>
+  for <span>the <code title>insertParagraph</code> command</span> and abort
+  these steps.
+
+  <p class=XXX>WebKit also does magic for tabs, wrapping them in a
+  whitespace-preserving span.
 
   <li>Let <var>node</var> and <var>offset</var> be the <span>active
   range</span>'s [[startnode]] and [[bpoffset]].
@@ -5558,8 +5600,7 @@ theory, but normalize the selection first, so they don't match it in practice.
     <li>Call [[insertdata|<var>offset</var>, <var>value</var>]] on
     <var>node</var>.
 
-    <li>Add the <a href=http://es5.github.com/#x15.5.5.1>length</a> of
-    <var>value</var> to <var>offset</var>.
+    <li>Add <var>value</var>'s [[strlen]] to <var>offset</var>.
 
     <li>Call [[selcollapse|<var>node</var>, <var>offset</var>]] on the
     [[contextobject]]'s [[selection]].

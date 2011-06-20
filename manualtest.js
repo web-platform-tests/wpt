@@ -1,6 +1,13 @@
-// We don't support non-default values for manual tests, so only strings need
-// apply.
-var tests = tests[command].filter(function(test) { return typeof test == "string"});
+// If globalValue isn't set, we don't support non-default values for manual
+// tests, so only strings need apply.
+if ("globalValue" in window) {
+	tests = tests[command].filter(function(test) {
+		return typeof test == "object"
+			&& test[0] == globalValue;
+	}).map(function(test) { return test[1] });
+} else {
+	tests = tests[command].filter(function(test) { return typeof test == "string"});
+}
 
 var testsRunning = false;
 
@@ -40,9 +47,8 @@ function addTest() {
 	var tr = doSetup("#tests table", 0);
 	var input = document.querySelector("#tests label input");
 	var test = input.value;
-	if (command == "inserttext") {
-		// Yay hack
-		test = ["a", test];
+	if (command in defaultValues) {
+		test = ["globalValue" in window ? globalValue : defaultValues[command], test];
 	}
 	doInputCell(tr, test);
 	doSpecCell(tr, test, command, false);

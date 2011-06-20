@@ -37,6 +37,9 @@ body > div > table > tbody > tr > td > div:last-child {
 body.wbr-workaround > div > table > tbody > tr > td > div:last-child {
 	word-wrap: break-word;
 }
+body > div > table > tbody > tr > td > div:last-child {
+	white-space: pre-wrap;
+}
 /* https://bugs.webkit.org/show_bug.cgi?id=56670 */
 dfn { font-style: italic }
 /* Opera has weird default blockquote style */

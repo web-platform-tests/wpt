@@ -5750,6 +5750,13 @@ commands.inserttext = {
 			return;
 		}
 
+		// "If node has only one child, which is a collapsed line break, remove
+		// its child from it."
+		if (node.childNodes.length == 1
+		&& isCollapsedLineBreak(node.firstChild)) {
+			node.removeChild(node.firstChild);
+		}
+
 		// "Let text be the result of calling createTextNode(value) on the
 		// context object."
 		var text = document.createTextNode(value);

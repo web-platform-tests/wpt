@@ -5589,6 +5589,11 @@ discussion</a>.
     <li>Abort these steps.
   </ol>
 
+  <!-- If some text is inserted into <p><br></p> or similar, we no longer need
+  the <br>. -->
+  <li>If <var title="">node</var> has only one <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>, which is a <a href=#collapsed-line-break>collapsed
+  line break</a>, remove its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> from it.
+
   <li>Let <var title="">text</var> be the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createTextNode><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createtextnode>createTextNode(<var title="">value</var>)</a></code> on
   the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>.
 

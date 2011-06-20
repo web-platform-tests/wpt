@@ -5608,6 +5608,11 @@ discussion</a>.
     <li>Abort these steps.
   </ol>
 
+  <!-- If some text is inserted into <p><br></p> or similar, we no longer need
+  the <br>. -->
+  <li>If <var>node</var> has only one [[child]], which is a <span>collapsed
+  line break</span>, remove its [[child]] from it.
+
   <li>Let <var>text</var> be the result of calling <code
   data-anolis-spec=domcore
   title=dom-Document-createTextNode>createTextNode(<var>value</var>)</code> on

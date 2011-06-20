@@ -1841,6 +1841,9 @@ var tests = {
 		[' ', '<span style=white-space:pre-wrap>[]foo</span>'],
 		[' ', '<span style=white-space:pre-wrap>foo []bar</span>'],
 
+		[' ', '{}<br>'],
+		[' ', '<p>{}<br>'],
+
 		['   ', 'foo[]'],
 
 		'foo[]bar',
@@ -1861,6 +1864,7 @@ var tests = {
 		'<a href=/>foo</a>[]bar',
 		'<p>fo[o<p>b]ar',
 		'<p>fo[o<p>bar<p>b]az',
+		'{}<br>',
 		'<p>{}<br>',
 		'<p><span>{}<br></span>',
 	],

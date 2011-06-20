@@ -67,7 +67,7 @@ updateAlertRowStyle();
 	var height2 = getComputedStyle(wordWrapTestDiv).height;
 	document.body.removeChild(wordWrapTestDiv);
 	if (height1 == height2) {
-		document.body.className += " wbr-workaround";
+		document.body.className = (document.body.className + " wbr-workaround").trim();
 	}
 })();
 //@}

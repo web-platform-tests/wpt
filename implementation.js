@@ -5752,6 +5752,8 @@ commands.inserttext = {
 
 		// "If node has only one child, which is a collapsed line break, remove
 		// its child from it."
+		//
+		// FIXME: IE incorrectly returns false here instead of true sometimes?
 		if (node.childNodes.length == 1
 		&& isCollapsedLineBreak(node.firstChild)) {
 			node.removeChild(node.firstChild);

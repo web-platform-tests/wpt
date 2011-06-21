@@ -3080,6 +3080,8 @@ reasons:
 I'm using it mostly because it's convenient and seems relatively sensible.  If
 we really want to use it, we probably want to change its name.
 
+<p class=XXX>Needs nbsp magic.
+
 <ol>
   <li>If <var>range</var> is null, abort these steps and do nothing.
 
@@ -3137,7 +3139,8 @@ we really want to use it, we probably want to change its name.
     with [[index]] equal to <var>start offset</var>.
 
     <li>If <var>reference node</var> is a <span>prohibited paragraph
-    child</span> or an [[element]] with no [[children]], break from this loop.
+    child</span> or an [[element]] with no [[children]], or is neither an
+    [[element]] nor a [[text]] node, break from this loop.
     <!--
     Don't descend into an element with no children, since then it won't get
     deleted even if it's selected.  Don't descend into a prohibited paragraph
@@ -3169,7 +3172,8 @@ we really want to use it, we probably want to change its name.
     with [[index]] equal to <var>end offset</var> minus one.
 
     <li>If <var>reference node</var> is a <span>prohibited paragraph
-    child</span> or an [[element]] with no [[children]], break from this loop.
+    child</span> or an [[element]] with no [[children]], or is neither an
+    [[element]] nor a [[text]] node, break from this loop.
 
     <li>Set <var>end node</var> to <var>reference node</var> and <var>end
     offset</var> to the [[nodelength]] of <var>reference node</var>.
@@ -3180,14 +3184,13 @@ we really want to use it, we probably want to change its name.
   node</var>, <var>start offset</var>), set <var>range</var>'s [[rangeend]] to
   its [[rangestart]] and abort these steps.
 
-  <li>If <var>start node</var> is a [[text]] or [[comment]] node and <var>start
-  offset</var> is 0, set <var>start offset</var> to the [[index]] of <var>start
-  node</var>, then set <var>start node</var> to its [[parent]].
+  <li>If <var>start node</var> is a [[text]] node and <var>start offset</var>
+  is 0, set <var>start offset</var> to the [[index]] of <var>start node</var>,
+  then set <var>start node</var> to its [[parent]].
 
-  <li>If <var>end node</var> is a [[text]] or [[comment]] node and <var>end
-  offset</var> is its [[nodelength]], set <var>end offset</var> to one plus the
-  [[index]] of <var>end node</var>, then set <var>end node</var> to its
-  [[parent]].
+  <li>If <var>end node</var> is a [[text]] node and <var>end offset</var> is
+  its [[nodelength]], set <var>end offset</var> to one plus the [[index]] of
+  <var>end node</var>, then set <var>end node</var> to its [[parent]].
 
   <li>Set <var>range</var>'s [[rangestart]] to (<var>start node</var>,
   <var>start offset</var>) and its [[rangeend]] to (<var>end node</var>,
@@ -3248,19 +3251,19 @@ we really want to use it, we probably want to change its name.
   <span>allowed child</span> of <var>end block</var>, or <var>end block</var>
   is a [[td]] or [[th]], set <var>end block</var> to null.
 
-  <!-- This is based on deleteData() in DOM Range. -->
+  <!-- This is based on deleteContents() in DOM Range. -->
   <li>If <var>start node</var> and <var>end node</var> are the same, and
-  <var>start node</var> is an <span>editable</span> [[text]] or [[comment]]
-  node, call [[deletedata|<var>start offset</var>, <var>end offset</var>
-  &minus; <var>start offset</var>]] on <var>start node</var>.
+  <var>start node</var> is an <span>editable</span> [[text]] node, call
+  [[deletedata|<var>start offset</var>, <var>end offset</var> &minus;
+  <var>start offset</var>]] on <var>start node</var>.
 
   <li>Otherwise:
 
   <ol>
-    <li>If <var>start node</var> is an <span>editable</span> [[text]] or
-    [[comment]] node, call [[deletedata|]] on it, with <var>start offset</var>
-    as the first argument and ([[nodelength]] of <var>start node</var> &minus;
-    <var>start offset</var>) as the second argument.
+    <li>If <var>start node</var> is an <span>editable</span> [[text]] node,
+    call [[deletedata|]] on it, with <var>start offset</var> as the first
+    argument and ([[nodelength]] of <var>start node</var> &minus; <var>start
+    offset</var>) as the second argument.
 
     <li>Let <var>node list</var> be a list of [[nodes]], initially empty.
 
@@ -3298,8 +3301,8 @@ we really want to use it, we probably want to change its name.
       result as the last [[child]] of <var>parent</var>.
     </ol>
 
-    <li>If <var>end node</var> is an <span>editable</span> [[text]] or
-    [[comment]] node, call [[deletedata|0, <var>end offset</var>]] on it.
+    <li>If <var>end node</var> is an <span>editable</span> [[text]] node, call
+    [[deletedata|0, <var>end offset</var>]] on it.
   </ol>
 
   <!--
@@ -4305,8 +4308,6 @@ would be worth the added complexity.
 
 <h3><dfn>The <code title>delete</code> command</dfn></h3>
 <!-- @{ -->
-<p class=XXX>Needs nbsp magic.
-
 <p><span>Action</span>:
 
 <ol>
@@ -4793,8 +4794,6 @@ sense for <address>/<h*>/<pre>, but other browsers don't do it.
 
 <h3><dfn>The <code title>forwardDelete</code> command</dfn></h3>
 <!-- @{ -->
-<p class=XXX>Needs nbsp magic.
-
 <p><span>Action</span>:
 <!-- Copy-pasted from delete, see there for comments. -->
 

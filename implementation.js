@@ -3626,10 +3626,13 @@ function deleteContents(node1, offset1, node2, offset2) {
 		var referenceNode = startNode.childNodes[startOffset];
 
 		// "If reference node is a prohibited paragraph child or an Element
-		// with no children, break from this loop."
+		// with no children, or is neither an Element nor a Text node, break
+		// from this loop."
 		if (isProhibitedParagraphChild(referenceNode)
 		|| (referenceNode.nodeType == Node.ELEMENT_NODE
-		&& !referenceNode.hasChildNodes())) {
+		&& !referenceNode.hasChildNodes())
+		|| (referenceNode.nodeType != Node.ELEMENT_NODE
+		&& referenceNode.nodeType != Node.TEXT_NODE)) {
 			break;
 		}
 
@@ -3662,10 +3665,13 @@ function deleteContents(node1, offset1, node2, offset2) {
 		var referenceNode = endNode.childNodes[endOffset - 1];
 
 		// "If reference node is a prohibited paragraph child or an Element
-		// with no children, break from this loop."
+		// with no children, or is neither an Element nor a Text node, break
+		// from this loop."
 		if (isProhibitedParagraphChild(referenceNode)
 		|| (referenceNode.nodeType == Node.ELEMENT_NODE
-		&& !referenceNode.hasChildNodes())) {
+		&& !referenceNode.hasChildNodes())
+		|| (referenceNode.nodeType != Node.ELEMENT_NODE
+		&& referenceNode.nodeType != Node.TEXT_NODE)) {
 			break;
 		}
 
@@ -3686,21 +3692,17 @@ function deleteContents(node1, offset1, node2, offset2) {
 		return;
 	}
 
-	// "If start node is a Text or Comment node and start offset is 0, set
-	// start offset to the index of start node, then set start node to its
-	// parent."
-	if ((startNode.nodeType == Node.TEXT_NODE
-	|| startNode.nodeType == Node.COMMENT_NODE)
+	// "If start node is a Text node and start offset is 0, set start offset to
+	// the index of start node, then set start node to its parent."
+	if (startNode.nodeType == Node.TEXT_NODE
 	&& startOffset == 0) {
 		startOffset = getNodeIndex(startNode);
 		startNode = startNode.parentNode;
 	}
 
-	// "If end node is a Text or Comment node and end offset is its length, set
-	// end offset to one plus the index of end node, then set end node to its
-	// parent."
-	if ((endNode.nodeType == Node.TEXT_NODE
-	|| endNode.nodeType == Node.COMMENT_NODE)
+	// "If end node is a Text node and end offset is its length, set end offset
+	// to one plus the index of end node, then set end node to its parent."
+	if (endNode.nodeType == Node.TEXT_NODE
 	&& endOffset == getNodeLength(endNode)) {
 		endOffset = 1 + getNodeIndex(endNode);
 		endNode = endNode.parentNode;
@@ -3750,21 +3752,20 @@ function deleteContents(node1, offset1, node2, offset2) {
 	}
 
 	// "If start node and end node are the same, and start node is an editable
-	// Text or Comment node, call deleteData(start offset, end offset − start
-	// offset) on start node."
+	// Text node, call deleteData(start offset, end offset − start offset) on
+	// start node."
 	if (startNode == endNode
 	&& isEditable(startNode)
-	&& (startNode.nodeType == Node.TEXT_NODE || startNode.nodeType == Node.COMMENT_NODE)) {
+	&& startNode.nodeType == Node.TEXT_NODE) {
 		startNode.deleteData(startOffset, endOffset - startOffset);
 
 	// "Otherwise:"
 	} else {
-		// "If start node is an editable Text or Comment node, call
-		// deleteData() on it, with start offset as the first argument and
-		// (length of start node − start offset) as the second argument."
+		// "If start node is an editable Text node, call deleteData() on it,
+		// with start offset as the first argument and (length of start node −
+		// start offset) as the second argument."
 		if (isEditable(startNode)
-		&& (startNode.nodeType == Node.TEXT_NODE
-		|| startNode.nodeType == Node.COMMENT_NODE)) {
+		&& startNode.nodeType == Node.TEXT_NODE) {
 			startNode.deleteData(startOffset, getNodeLength(startNode) - startOffset);
 		}
 
@@ -3812,11 +3813,10 @@ function deleteContents(node1, offset1, node2, offset2) {
 			}
 		}
 
-		// "If end node is an editable Text or Comment node, call deleteData(0,
-		// end offset) on it."
+		// "If end node is an editable Text node, call deleteData(0, end
+		// offset) on it."
 		if (isEditable(endNode)
-		&& (endNode.nodeType == Node.TEXT_NODE
-		|| endNode.nodeType == Node.COMMENT_NODE)) {
+		&& endNode.nodeType == Node.TEXT_NODE) {
 			endNode.deleteData(0, endOffset);
 		}
 	}

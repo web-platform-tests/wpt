@@ -388,6 +388,19 @@ collapsed.  But what if it happens to be display: none right now, for instance?
 Or its ancestor has a fixed height?  Would it be better to use some DOM-based
 definition?
 
+<p>An <dfn>extraneous line break</dfn> is a [[br]] that has no visual effect,
+in that removing it from the DOM would not change layout, except that a [[br]]
+that is the sole child of an [[li]] is not extraneous.
+
+<p class=XXX>Also possibly a bad definition.  Again, I test by just removing it
+and seeing what happens.  (Actually, setting display: none, so that it doesn't
+mess up ranges.)
+
+<p class=XXX>The thing about li is a not very nice hack.  The issue is that an
+li won't collapse even if it has no children at all, but that's not true in all
+browsers (at least not in Opera 11.11), and also it breaks assumptions
+elsewhere.  E.g., if it gets turned into a p.
+
 <p>Each [[htmldocument]] has a boolean <dfn>CSS styling flag</dfn> associated
 with it, which must initially be false.  (<span>The <code
 title>styleWithCSS</code> command</span> can be used to modify or query it, by
@@ -476,26 +489,38 @@ here?
 <var>node</var>:
 
 <ol>
-  <li>If <var>node</var> is not an [[element]], or it is an <span>inline
-  node</span>, do nothing and abort these steps.
+  <li>Let <var>ref</var> be the [[previoussibling]] of <var>node</var>.
 
-  <li>If the [[previoussibling]] of <var>node</var> is a [[br]], and the
-  [[previoussibling]] of the [[previoussibling]] of <var>node</var> is an
-  <span>inline node</span> that is not a [[br]], remove the [[previoussibling]]
-  of <var>node</var> from its [[parent]].
+  <li>If <var>ref</var> is null, abort these steps.
+
+  <li>While <var>ref</var> has [[children]], set <var>ref</var> to its
+  [[lastchild]].
+
+  <li>While <var>ref</var> is an <span>invisible node</span> but not an
+  <span>extraneous line break</span>, and <var>ref</var> does not equal
+  <var>node</var>'s [[parent]], set <var>ref</var> to the [[node]] before it in
+  [[treeorder]].
+
+  <li>If <var>ref</var> is an <span>editable</span> <span>extraneous line
+  break</span>, remove it from its [[parent]].
 </ol>
 
 <p>To <dfn>remove extraneous line breaks at the end of</dfn> a [[node]]
 <var>node</var>:
 
 <ol>
-  <li>If <var>node</var> is not an [[element]], or it is an <span>inline
-  node</span>, do nothing and abort these steps.
+  <li>Let <var>ref</var> be <var>node</var>.
 
-  <li>If <var>node</var> has at least two [[children]], and its last [[child]]
-  is a [[br]], and its second-to-last [[child]] is an <span>inline node</span>
-  that is not a [[br]], remove the last [[child]] of <var>node</var> from
-  <var>node</var>.
+  <li>While <var>ref</var> has [[children]], set <var>ref</var> to its
+  [[lastchild]].
+
+  <li>While <var>ref</var> is an <span>invisible node</span> but not an
+  <span>extraneous line break</span>, and <var>ref</var> does not equal
+  <var>node</var>, set <var>ref</var> to the [[node]] before it in
+  [[treeorder]].
+
+  <li>If <var>ref</var> is an <span>editable</span> <span>extraneous line
+  break</span>, remove it from its [[parent]].
 </ol>
 
 <p>To <dfn>remove extraneous line breaks from</dfn> a [[node]], first
@@ -623,8 +648,10 @@ inline descendants in a clone of the former parent.
   <var>original parent</var>.
 
   <li>If <var>node list</var>'s last member's [[nextsibling]] is null,
-  <span>remove extraneous line breaks at the end of</span> <var>node
-  list</var>'s last member's [[parent]].
+  but its [[parent]] is not null, <span>remove extraneous line breaks at the
+  end of</span> <var>node list</var>'s last member's [[parent]].
+  <!-- The parent might be null if it's a br that we removed in the last step,
+  in which case this step isn't necessary. -->
 </ol>
 
 <p>To remove a [[node]] <var>node</var> while <dfn>preserving its
@@ -2541,9 +2568,9 @@ container</span>, or an <span>HTML element</span> with [[localname]] "li",
 <!-- Possibly to be made configurable later. -->
 
 <p>A <dfn>visible node</dfn> is a [[node]] that either is a <span>prohibited
-paragraph child</span>, or a [[text]] node whose [[cddata]] is not empty, or a
-[[br]] or [[img]], or any [[node]] with a [[descendant]] that is a
-<span>visible node</span>.
+paragraph child</span>, or a [[text]] node whose [[cddata]] is not empty, or
+an [[img]], or a [[br]] that is not an <span>extraneous line break</span>, or
+any [[node]] with a [[descendant]] that is a <span>visible node</span>.
 
 <p>An <dfn>invisible node</dfn> is a [[node]] that is not a <span>visible
 node</span>.
@@ -4907,27 +4934,6 @@ sense for <address>/<h*>/<pre>, but other browsers don't do it.
     <var>offset</var> and that [[child]] is an <span>editable</span>
     <span>invisible node</span>, remove that [[child]] from <var>node</var>.
 
-    <!-- We need these extra two steps in forwardDelete, relative to delete, to
-    skip over line breaks at the end of blocks. -->
-    <li>Otherwise, if <var>offset</var> is one less than <var>node</var>'s
-    [[length]], and <var>node</var> is a <span>prohibited paragraph
-    child</span> whose last [[child]] is a [[br]], add one to
-    <var>offset</var>.
-
-    <li>Otherwise, if <var>node</var> has a [[child]] with [[index]]
-    <var>offset</var> + 1, and its [[child]] of [[index]] <var>offset</var> is
-    a [[br]], and its [[child]] of [[index]] <var>offset</var> + 1 is a
-    <span>prohibited paragraph child</span>, add one to <var>offset</var>.
-
-    <div class=XXX>
-    <p>These two steps don't correctly handle things like
-
-    <xmp><p>foo<span><br></span></p></xmp>
-
-    <p>For that matter, nor do most cases where we deal with line breaks like
-    this.  Should add a bunch of tests for this and change stuff so we pass.
-    </div>
-
     <li>Otherwise, if <var>offset</var> is the [[nodelength]] of
     <var>node</var> and <var>node</var> is not a <span>prohibited paragraph
     child</span>, or if <var>node</var> is an <span>invisible node</span>, set
@@ -5540,6 +5546,10 @@ http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
   <ol>
     <li><span>Split the parent</span> of the one-[[node]] list consisting of
     <var>container</var>.
+
+    <li>If <var>container</var> has no [[children]], call
+    [[createelement|"br"]] on the [[contextobject]] and append the result as
+    the last [[child]] of <var>container</var>.
 
     <li><span>Fix disallowed ancestors</span> of <var>container</var>.
 

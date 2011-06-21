@@ -683,6 +683,36 @@ function isCollapsedLineBreak(br) {
 	return origHeight != finalHeight;
 }
 
+// "An extraneous line break is a br that has no visual effect, in that
+// removing it from the DOM would not change layout, except that a br that is
+// the sole child of an li is not extraneous."
+function isExtraneousLineBreak(br) {
+	if (!isHtmlElement(br, "br")) {
+		return false;
+	}
+
+	if (isHtmlElement(br.parentNode, "li")
+	&& br.parentNode.childNodes.length == 1) {
+		return false;
+	}
+
+	var ref = br.parentNode;
+	while (getComputedStyle(ref).display == "inline") {
+		ref = ref.parentNode;
+	}
+	var style = br.hasAttribute("style") ? br.getAttribute("style") : null;
+	var origHeight = ref.offsetHeight;
+	br.setAttribute("style", "display:none");
+	var finalHeight = ref.offsetHeight;
+	if (style === null) {
+		br.removeAttribute("style");
+	} else {
+		br.setAttribute("style", style);
+	}
+
+	return origHeight == finalHeight;
+}
+
 //@}
 
 /////////////////////////////
@@ -806,41 +836,58 @@ function setTagName(element, newName) {
 }
 
 function removeExtraneousLineBreaksBefore(node) {
-	// "If node is not an Element, or it is an inline node, do nothing and
-	// abort these steps."
-	if (!node
-	|| node.nodeType != Node.ELEMENT_NODE
-	|| isInlineNode(node)) {
+	// "Let ref be the previousSibling of node."
+	var ref = node.previousSibling;
+
+	// "If ref is null, abort these steps."
+	if (!ref) {
 		return;
 	}
 
-	// "If the previousSibling of node is a br, and the previousSibling of the
-	// previousSibling of node is an inline node that is not a br, remove the
-	// previousSibling of node from its parent."
-	if (isHtmlElement(node.previousSibling, "BR")
-	&& isInlineNode(node.previousSibling.previousSibling)
-	&& !isHtmlElement(node.previousSibling.previousSibling, "BR")) {
-		node.parentNode.removeChild(node.previousSibling);
+	// "While ref has children, set ref to its lastChild."
+	while (ref.hasChildNodes()) {
+		ref = ref.lastChild;
+	}
+
+	// "While ref is an invisible node but not an extraneous line break, and
+	// ref does not equal node's parent, set ref to the node before it in tree
+	// order."
+	while (isInvisibleNode(ref)
+	&& !isExtraneousLineBreak(ref)
+	&& ref != node.parentNode) {
+		ref = previousNode(ref);
+	}
+
+	// "If ref is an editable extraneous line break, remove it from its
+	// parent."
+	if (isEditable(ref)
+	&& isExtraneousLineBreak(ref)) {
+		ref.parentNode.removeChild(ref);
 	}
 }
 
 function removeExtraneousLineBreaksAtTheEndOf(node) {
-	// "If node is not an Element, or it is an inline node, do nothing and
-	// abort these steps."
-	if (!node
-	|| node.nodeType != Node.ELEMENT_NODE
-	|| isInlineNode(node)) {
-		return;
+	// "Let ref be node."
+	var ref = node;
+
+	// "While ref has children, set ref to its lastChild."
+	while (ref.hasChildNodes()) {
+		ref = ref.lastChild;
 	}
 
-	// "If node has at least two children, and its last child is a br, and its
-	// second-to-last child is an inline node that is not a br, remove the last
-	// child of node from node."
-	if (node.childNodes.length >= 2
-	&& isHtmlElement(node.lastChild, "BR")
-	&& isInlineNode(node.lastChild.previousSibling)
-	&& !isHtmlElement(node.lastChild.previousSibling, "BR")) {
-		node.removeChild(node.lastChild);
+	// "While ref is an invisible node but not an extraneous line break, and
+	// ref does not equal node, set ref to the node before it in tree order."
+	while (isInvisibleNode(ref)
+	&& !isExtraneousLineBreak(ref)
+	&& ref != node) {
+		ref = previousNode(ref);
+	}
+
+	// "If ref is an editable extraneous line break, remove it from its
+	// parent."
+	if (isEditable(ref)
+	&& isExtraneousLineBreak(ref)) {
+		ref.parentNode.removeChild(ref);
 	}
 }
 
@@ -956,9 +1003,11 @@ function splitParent(nodeList) {
 		removeExtraneousLineBreaksBefore(originalParent);
 	}
 
-	// "If node list's last member's nextSibling is null, remove extraneous
-	// line breaks at the end of node list's last member's parent."
-	if (!nodeList[nodeList.length - 1].nextSibling) {
+	// "If node list's last member's nextSibling is null, but its parent is not
+	// null, remove extraneous line breaks at the end of node list's last
+	// member's parent."
+	if (!nodeList[nodeList.length - 1].nextSibling
+	&& nodeList[nodeList.length - 1].parentNode) {
 		removeExtraneousLineBreaksAtTheEndOf(nodeList[nodeList.length - 1].parentNode);
 	}
 }
@@ -3013,15 +3062,17 @@ function isSingleLineContainer(node) {
 var defaultSingleLineContainerName = "p";
 
 // "A visible node is a node that either is a prohibited paragraph child, or a
-// Text node whose data is not empty, or a br or img, or any node with a
-// descendant that is a visible node."
+// Text node whose data is not empty, or an img, or a br that is not an
+// extraneous line break, or any node with a descendant that is a visible
+// node."
 function isVisibleNode(node) {
 	if (!node) {
 		return false;
 	}
 	if (isProhibitedParagraphChild(node)
 	|| (node.nodeType == Node.TEXT_NODE && node.length)
-	|| isHtmlElement(node, ["br", "img"])) {
+	|| isHtmlElement(node, "img")
+	|| (isHtmlElement(node, "br") && !isExtraneousLineBreak(node))) {
 		return true;
 	}
 	for (var i = 0; i < node.childNodes.length; i++) {
@@ -5133,22 +5184,6 @@ commands["forwarddelete"] = {
 			&& isEditable(node.childNodes[offset])
 			&& isInvisibleNode(node.childNodes[offset])) {
 				node.removeChild(node.childNodes[offset]);
-
-			// "Otherwise, if offset is one less than node's length, and node
-			// is a prohibited paragraph child whose last child is a br, add
-			// one to offset."
-			} else if (offset == getNodeLength(node) - 1
-			&& isProhibitedParagraphChild(node)
-			&& isHtmlElement(node.lastChild, "br")) {
-				offset++;
-
-			// "Otherwise, if node has a child with index offset + 1, and its
-			// child of index offset is a br, and its child of index offset + 1
-			// is a prohibited paragraph child, add one to offset."
-			} else if (offset + 1 < node.childNodes.length
-			&& isHtmlElement(node.childNodes[offset], "br")
-			&& isProhibitedParagraphChild(node.childNodes[offset + 1])) {
-				offset++;
 
 			// "Otherwise, if offset is the length of node and node is not a
 			// prohibited paragraph child, or if node is an invisible node, set

@@ -2861,6 +2861,78 @@ returned by the following algorithm:
 
   <li>Return <var>buffer</var>.
 </ol>
+
+<p>To <dfn>canonicalize whitespace</dfn> at (<var>node</var>,
+<var>offset</var>):
+
+<p class=XXX>This algorithm fails in all kinds of common cases, like any
+non-text node, or whitespace that spans multiple text nodes.  Needs lots of
+fixing.
+
+<ol>
+  <li>If <var>node</var> is not a [[text]] node, or is not
+  <span>editable</span>, or its [[parent]]'s [[compval]] for "white-space" is
+  "pre" or "pre-wrap", abort these steps.
+
+  <!-- First go to the beginning of the current whitespace run. -->
+  <li>Let <var>start offset</var> equal <var>offset</var>.
+
+  <li>While <var>start offset</var> is positive and the (<var>start
+  offset</var> &minus; 1)st [[strel]] of <var>node</var>'s [[cddata]] is a
+  space (0x0020) or non-breaking space (0x00A0), subtract one from <var>start
+  offset</var>.
+
+  <!-- Now collapse any consecutive spaces. -->
+  <li>Let <var>end offset</var> equal <var>start offset</var>.
+
+  <li>While <var>end offset</var> is less than <var>node</var>'s [[strlen]],
+  and the <var>end offset</var>th [[strel]] of <var>node</var>'s [[cddata]] is
+  0x0020 or 0x00A0:
+
+  <ol>
+    <li>Let <var>length</var> equal zero.
+
+    <li>While <var>end offset</var> plus <var>length</var> is less than
+    <var>node</var>'s [[cdlength]], and the (<var>end offset</var> +
+    <var>length</var>)th [[strel]] of <var>node</var>'s [[cddata]] is 0x0020,
+    add one to <var>length</var>.
+
+    <li>If <var>length</var> is greater than one, call [[deletedata|<var>end
+    offset</var> + 1, <var>length</var> &minus; 1]] on <var>node</var>.
+
+    <li>Add one to <var>end offset</var>.
+  </ol>
+
+  <!-- Now replace with the canonical sequence. -->
+  <li>Let <var>replacement whitespace</var> be the <span>canonical space
+  sequence</span> of length <var>end offset</var> minus <var>start
+  offset</var>.  <var>non-breaking start</var> is true if <var>start
+  offset</var> is zero and false otherwise, and <var>non-breaking end</var> is
+  true if <var>end offset</var> is <var>node</var>'s [[cdlength]] and false
+  otherwise.
+
+  <li>While <var>start offset</var> is less than <var>end offset</var>:
+
+  <ol>
+    <li>Remove the first [[strel]] from <var>replacement whitespace</var>, and
+    let <var>element</var> be that [[strel]].
+
+    <li>If <var>element</var> is not the same as the <var>start offset</var>th
+    [[strel]] of <var>node</var>'s [[cddata]]:
+
+    <ol>
+      <!-- We need to insert then delete, so that we don't change range
+      boundary points. -->
+      <li>Call [[insertdata|<var>start offset</var>, <var>element</var>]] on
+      <var>node</var>.
+
+      <li>Call [[deletedata|<var>start offset</var> + 1, 1]] on
+      <var>node</var>.
+    </ol>
+
+    <li>Add one to <var>start offset</var>.
+  </ol>
+</ol>
 <!-- @} -->
 
 <h3>Allowed children</h3>
@@ -3253,9 +3325,15 @@ we really want to use it, we probably want to change its name.
 
   <!-- This is based on deleteContents() in DOM Range. -->
   <li>If <var>start node</var> and <var>end node</var> are the same, and
-  <var>start node</var> is an <span>editable</span> [[text]] node, call
-  [[deletedata|<var>start offset</var>, <var>end offset</var> &minus;
-  <var>start offset</var>]] on <var>start node</var>.
+  <var>start node</var> is an <span>editable</span> [[text]] node:
+
+  <ol>
+    <li>Call [[deletedata|<var>start offset</var>, <var>end offset</var>
+    &minus; <var>start offset</var>]] on <var>start node</var>.
+
+    <li><span>Canonicalize whitespace</span> at (<var>start node</var>,
+    <var>start offset</var>).
+  </ol>
 
   <li>Otherwise:
 
@@ -4319,6 +4397,11 @@ would be worth the added complexity.
   collapsed?  WebKit seems to do some normalization on the range before
   deciding whether it's collapsed, and that sounds like a good idea.
 
+  <li><span>Canonicalize whitespace</span> at (<span>active range</span>'s
+  [[startnode]], <span>active range</span>'s [[startoffset]]).
+  <!-- Needed so that if there are multiple consecutive spaces we backspace
+  over all at once. -->
+
   <li>Let <var>node</var> and <var>offset</var> be the <span>active
   range</span>'s [[rangestart]] [[bpnode]] and [[bpoffset]].
 
@@ -4805,6 +4888,9 @@ sense for <address>/<h*>/<pre>, but other browsers don't do it.
   <p class=XXX>Maybe we sometimes want to do the following even if it isn't
   collapsed?  WebKit seems to do some normalization on the range before
   deciding whether it's collapsed, and that sounds like a good idea.
+
+  <li><span>Canonicalize whitespace</span> at (<span>active range</span>'s
+  [[startnode]], <span>active range</span>'s [[startoffset]]).
 
   <li>Let <var>node</var> and <var>offset</var> be the <span>active
   range</span>'s [[rangestart]] [[bpnode]] and [[bpoffset]].
@@ -5679,106 +5765,12 @@ This is still a huge headache, though.
   and that [[child]] is a [[text]] node, set <var>node</var> to that [[child]],
   then set <var>offset</var> to zero.
 
-  <li>If <var>node</var> is a [[text]] node whose [[parent]]'s [[compval]]
-  for "white-space" is neither "pre" nor "pre-wrap":
-
-  <p class=XXX>This also needs to take visually adjoining text nodes into
-  account, even if their parents are in different elements.  When inserting "a"
-  in "&lt;a href=/>foo&nbsp;&lt;/a>[] ", for instance, we need to convert the
-  nbsp to a regular space.  This kind of thing is just not feasible using pure
-  DOM stuff, though, so the current definition is a bad hack that will often
-  fail in real-world cases.  Suggestions for how to improve it appreciated.
-
-  <ol>
-    <li>Let <var>leading space</var> equal zero.
-
-    <li>Let <var>start offset</var> equal <var>offset</var> minus one.
-
-    <li>While <var>start offset</var> is nonnegative and the
-    <var>start offset</var>th [[strel]] of <var>node</var>'s [[cddata]] is a
-    space (U+0020) or non-breaking space (U+00A0):
-
-    <ol>
-      <li>If the <var>start offset</var>th [[strel]] of <var>node</var>'s
-      [[cddata]] is a non-breaking space (U+00A0), or the [[strel]] before it
-      is not a space (U+0020), add one to <var>leading space</var>.
-
-      <li>Subtract one from <var>start offset</var>.
-    </ol>
-
-    <li>Add one to <var>start offset</var>.
-
-    <li>Let <var>trailing space</var> equal zero.
-
-    <li>Let <var>end offset</var> equal <var>offset</var>.
-
-    <li>While <var>end offset</var> is less than <var>node</var>'s [[cdlength]]
-    and the <var>end offset</var>th [[strel]] of <var>node</var>'s [[cddata]]
-    is a space (U+0020) or non-breaking space (U+00A0):
-
-    <ol>
-      <li>If the <var>end offset</var>th [[strel]] of <var>node</var>'s
-      [[cddata]] is a non-breaking space (U+00A0), or the [[strel]] before it
-      is not a space (U+0020), add one to <var>trailing space</var>.
-      <!-- If we're between two spaces that are collapsed together, this means
-      we're effectively at the end of the collapsed run.  This shouldn't happen
-      with user-created selections, of course. -->
-
-      <li>Add one to <var>end offset</var>.
-    </ol>
-
-    <li>Set <var>initial nbsp</var> to true if <var>start offset</var> is 0,
-    false otherwise.
-
-    <li>Set <var>final nbsp</var> to true if <var>end offset</var> is the
-    [[cdlength]] of <var>node</var>, false otherwise.
-
-    <p class=XXX>These are wrong in zillions of common cases.  Per XXX above,
-    the fix here is not obvious at all.
-
-    <li>If <var>value</var> is a space (U+0020):
-
-    <ol>
-      <li>Let <var>new trailing space</var> be the <span>canonical space
-      sequence</span> of length <var>leading space</var> plus <var>trailing
-      space</var> plus one, with <var>non-breaking start</var> equal to
-      <var>initial nbsp</var> and <var>non-breaking end</var> equal to
-      <var>final nbsp</var>.
-
-      <li>Remove the first <var>leading space</var> [[strels]] from <var>new
-      trailing space</var>, and let <var>new leading space</var> be the result.
-
-      <li>Remove the first [[strel]] from <var>new trailing space</var>, and
-      let <var>value</var> be the result.
-    </ol>
-
-    <li>Otherwise:
-
-    <ol>
-      <li>Let <var>new leading space</var> be the <span>canonical space
-      sequence</span> of length <var>leading space</var>, with
-      <var>non-breaking start</var> equal to <var>initial nbsp</var> and
-      <var>non-breaking end</var> equal to false.
-
-      <li>Let <var>new trailing space</var> be the <span>canonical space
-      sequence</span> of length <var>trailing space</var>, with
-      <var>non-breaking start</var> equal to false and <var>non-breaking
-      end</var> equal to <var>final nbsp</var>.
-    </ol>
-
-    <li>Call [[replacedata|<var>start offset</var>, <var>offset</var> &minus;
-    <var>start offset</var>, <var>new leading space</var>]] on <var>node</var>.
-
-    <li>Subtract <var>offset</var> from <var>end offset</var>, then add
-    <var>start offset</var> plus <var>leading space</var> to <var>end
-    offset</var>.
-
-    <li>Set <var>offset</var> to <var>start offset</var> plus <var>leading
-    space</var>.
-
-    <li>Call [[replacedata|<var>offset</var>, <var>end offset</var> &minus;
-    <var>offset</var>, <var>new trailing space</var>]] on <var>node</var>.
-  </ol>
+  <li>If <var>value</var> is a space (U+0020), and either <var>node</var> is an
+  [[element]] whose [[compval]] for "white-space" is neither "pre" nor
+  "pre-wrap" or <var>node</var> is not an [[element]] but its [[parent]] is an
+  [[element]] whose [[compval]] for "white-space" is neither "pre" nor
+  "pre-wrap", set <var>value</var> to a non-breaking space (U+00A0).
+  <!-- This may change to a space when we canonicalize. -->
 
   <li>If <var>node</var> is a [[text]] node:
 
@@ -5791,6 +5783,12 @@ This is still a huge headache, though.
     <li>Call [[selcollapse|<var>node</var>, <var>offset</var>]] on the
     [[contextobject]]'s [[selection]].
 
+    <li><span>Canonicalize whitespace</span> at (<var>node</var>,
+    <var>offset</var> &minus; 1).
+
+    <li><span>Canonicalize whitespace</span> at (<var>node</var>,
+    <var>offset</var>).
+
     <li>Abort these steps.
   </ol>
 
@@ -5798,9 +5796,6 @@ This is still a huge headache, though.
   the <br>. -->
   <li>If <var>node</var> has only one [[child]], which is a <span>collapsed
   line break</span>, remove its [[child]] from it.
-
-  <li>If <var>value</var> is a space (U+0020), set <var>value</var> to a
-  non-breaking space (U+00A0).
 
   <p class=XXX>This is wrong in all sorts of cases, like
   "foo&lt;b>[]&lt;/b>bar".  As above, this is hard to get right without heavy

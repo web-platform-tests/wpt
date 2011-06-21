@@ -3280,6 +3280,85 @@ function canonicalSpaceSequence(n, nonBreakingStart, nonBreakingEnd) {
 	return buffer;
 }
 
+function canonicalizeWhitespace(node, offset) {
+	// "If node is not a Text node, or is not editable, or its parent's
+	// computed value for "white-space" is "pre" or "pre-wrap", abort these
+	// steps."
+	if (node.nodeType != Node.TEXT_NODE
+	|| !isEditable(node)
+	|| ["pre", "pre-wrap"].indexOf(getComputedStyle(node.parentNode).whiteSpace) != -1) {
+		return;
+	}
+
+	// "Let start offset equal offset."
+	var startOffset = offset;
+
+	// "While start offset is positive and the (start offset − 1)st element of
+	// node's data is a space (0x0020) or non-breaking space (0x00A0), subtract
+	// one from start offset."
+	while (startOffset > 0
+	&& /[ \xa0]/.test(node.data[startOffset - 1])) {
+		startOffset--;
+	}
+
+	// "Let end offset equal start offset."
+	var endOffset = startOffset;
+
+	// "While end offset is less than node's length, and the end offsetth
+	// element of node's data is 0x0020 or 0x00A0:"
+	while (endOffset < node.length
+	&& /[ \xa0]/.test(node.data[endOffset])) {
+		// "Let length equal zero."
+		var length = 0;
+
+		// "While end offset plus length is less than node's length, and the
+		// (end offset + length)th element of node's data is 0x0020, add one to
+		// length."
+		while (endOffset + length < node.length
+		&& node.data[endOffset + length] == " ") {
+			length++;
+		}
+
+		// "If length is greater than one, call deleteData(end offset + 1,
+		// length − 1) on node."
+		if (length > 1) {
+			node.deleteData(endOffset + 1, length - 1);
+		}
+
+		// "Add one to end offset."
+		endOffset++;
+	}
+
+	// "Let replacement whitespace be the canonical space sequence of length
+	// end offset minus start offset. non-breaking start is true if start
+	// offset is zero and false otherwise, and non-breaking end is true if end
+	// offset is node's length and false otherwise."
+	var replacementWhitespace = canonicalSpaceSequence(endOffset - startOffset,
+		startOffset == 0,
+		endOffset == node.length);
+
+	// "While start offset is less than end offset:"
+	while (startOffset < endOffset) {
+		// "Remove the first element from replacement whitespace, and let
+		// element be that element."
+		var element = replacementWhitespace[0];
+		replacementWhitespace = replacementWhitespace.slice(1);
+
+		// "If element is not the same as the start offsetth element of node's
+		// data:"
+		if (element != node.data[startOffset]) {
+			// "Call insertData(start offset, element) on node."
+			node.insertData(startOffset, element);
+
+			// "Call deleteData(start offset + 1, 1) on node."
+			node.deleteData(startOffset + 1, 1);
+		}
+
+		// "Add one to start offset."
+		startOffset++;
+	}
+}
+
 //@}
 
 ///// Allowed children /////
@@ -3752,12 +3831,16 @@ function deleteContents(node1, offset1, node2, offset2) {
 	}
 
 	// "If start node and end node are the same, and start node is an editable
-	// Text node, call deleteData(start offset, end offset − start offset) on
-	// start node."
+	// Text node:"
 	if (startNode == endNode
 	&& isEditable(startNode)
 	&& startNode.nodeType == Node.TEXT_NODE) {
+		// "Call deleteData(start offset, end offset − start offset) on start
+		// node."
 		startNode.deleteData(startOffset, endOffset - startOffset);
+
+		// "Canonicalize whitespace at (start node, start offset)."
+		canonicalizeWhitespace(startNode, startOffset);
 
 	// "Otherwise:"
 	} else {
@@ -4577,6 +4660,10 @@ commands["delete"] = {
 			return;
 		}
 
+		// "Canonicalize whitespace at (active range's start node, active
+		// range's start offset)."
+		canonicalizeWhitespace(getActiveRange().startContainer, getActiveRange().startOffset);
+
 		// "Let node and offset be the active range's start node and offset."
 		var node = getActiveRange().startContainer;
 		var offset = getActiveRange().startOffset;
@@ -5021,6 +5108,10 @@ commands["forwarddelete"] = {
 			deleteContents(getActiveRange());
 			return;
 		}
+
+		// "Canonicalize whitespace at (active range's start node, active
+		// range's start offset)."
+		canonicalizeWhitespace(getActiveRange().startContainer, getActiveRange().startOffset);
 
 		// "Let node and offset be the active range's start node and offset."
 		var node = getActiveRange().startContainer;
@@ -5795,113 +5886,16 @@ commands.inserttext = {
 			offset = 0;
 		}
 
-		// "If node is a Text node whose parent's computed value for
-		// "white-space" is neither "pre" nor "pre-wrap":"
-		if (node.nodeType == Node.TEXT_NODE
-		&& ["pre", "pre-wrap"].indexOf(getComputedStyle(node.parentNode).whiteSpace) == -1) {
-			// "Let leading space equal zero."
-			var leadingSpace = 0;
-
-			// "Let start offset equal offset minus one."
-			var startOffset = offset - 1;
-
-			// "While start offset is nonnegative and the start offsetth
-			// element of node's data is a space (U+0020) or non-breaking space
-			// (U+00A0):"
-			while (startOffset >= 0
-			&& /[ \xa0]/.test(node.data[startOffset])) {
-				// "If the start offsetth element of node's data is a
-				// non-breaking space (U+00A0), or the element before it is not
-				// a space (U+0020), add one to leading space."
-				if (node.data[startOffset] == "\xa0"
-				|| node.data[startOffset - 1] !== " ") {
-					leadingSpace++;
-				}
-
-				// "Subtract one from start offset."
-				startOffset--;
-			}
-
-			// "Add one to start offset."
-			startOffset++;
-
-			// "Let trailing space equal zero."
-			var trailingSpace = 0;
-
-			// "Let end offset equal offset."
-			var endOffset = offset;
-
-			// "While end offset is less than node's length and the end
-			// offsetth element of node's data is a space (U+0020) or
-			// non-breaking space (U+00A0):"
-			while (endOffset < node.length
-			&& /[ \xa0]/.test(node.data[endOffset])) {
-				// "If the end offsetth element of node's data is a
-				// non-breaking space (U+00A0), or the element before it is not
-				// a space (U+0020), add one to trailing space."
-				if (node.data[endOffset] == "\xa0"
-				|| node.data[endOffset - 1] !== " ") {
-					trailingSpace++;
-				}
-
-				// "Add one to end offset."
-				endOffset++;
-			}
-
-			// "Set initial nbsp to true if start offset is 0, false
-			// otherwise."
-			var initialNbsp = startOffset == 0;
-
-			// "Set final nbsp to true if end offset is the length of node,
-			// false otherwise."
-			var finalNbsp = endOffset == node.length;
-
-			// "If value is a space (U+0020):"
-			if (value == " ") {
-				// "Let new trailing space be the canonical space sequence of
-				// length leading space plus trailing space plus one, with
-				// non-breaking start equal to initial nbsp and non-breaking
-				// end equal to final nbsp."
-				var newTrailingSpace = canonicalSpaceSequence(leadingSpace + trailingSpace + 1, initialNbsp, finalNbsp);
-
-				// "Remove the first leading space elements from new trailing
-				// space, and let new leading space be the result."
-				var newLeadingSpace = newTrailingSpace.slice(0, leadingSpace);
-				newTrailingSpace = newTrailingSpace.slice(leadingSpace);
-
-				// "Remove the first element from new trailing space, and let
-				// value be the result."
-				value = newTrailingSpace[0];
-				newTrailingSpace = newTrailingSpace.slice(1);
-
-			// "Otherwise:"
-			} else {
-				// "Let new leading space be the canonical space sequence of
-				// length leading space, with non-breaking start equal to
-				// initial nbsp and non-breaking end equal to false."
-				var newLeadingSpace = canonicalSpaceSequence(leadingSpace, initialNbsp, false);
-
-				// "Let new trailing space be the canonical space sequence of
-				// length trailing space, with non-breaking start equal to
-				// false and non-breaking end equal to final nbsp."
-				var newTrailingSpace = canonicalSpaceSequence(trailingSpace, false, finalNbsp);
-			}
-
-			// "Call replaceData(start offset, offset − start offset, new
-			// leading space) on node."
-			node.replaceData(startOffset, offset - startOffset, newLeadingSpace);
-
-			// "Subtract offset from end offset, then add start offset plus
-			// leading space to end offset."
-			endOffset -= offset;
-			endOffset += startOffset + leadingSpace;
-
-			// "Set offset to start offset plus leading space."
-			offset = startOffset + leadingSpace;
-
-			// "Call replaceData(offset, end offset − offset, new trailing
-			// space) on node."
-			node.replaceData(offset, endOffset - offset, newTrailingSpace);
+		// "If value is a space (U+0020), and either node is an Element whose
+		// computed value for "white-space" is neither "pre" nor "pre-wrap" or
+		// node is not an Element but its parent is an Element whose computed
+		// value for "white-space" is neither "pre" nor "pre-wrap", set value
+		// to a non-breaking space (U+00A0)."
+		var refElement = node.nodeType == Node.ELEMENT_NODE ? node : node.parentNode;
+		if (value == " "
+		&& refElement.nodeType == Node.ELEMENT_NODE
+		&& ["pre", "pre-wrap"].indexOf(getComputedStyle(refElement).whiteSpace) == -1) {
+			value = "\xa0";
 		}
 
 		// "If node is a Text node:"
@@ -5916,6 +5910,12 @@ commands.inserttext = {
 			getActiveRange().setStart(node, offset);
 			getActiveRange().setEnd(node, offset);
 
+			// "Canonicalize whitespace at (node, offset − 1)."
+			canonicalizeWhitespace(node, offset - 1);
+
+			// "Canonicalize whitespace at (node, offset)."
+			canonicalizeWhitespace(node, offset);
+
 			// "Abort these steps."
 			return;
 		}
@@ -5927,12 +5927,6 @@ commands.inserttext = {
 		if (node.childNodes.length == 1
 		&& isCollapsedLineBreak(node.firstChild)) {
 			node.removeChild(node.firstChild);
-		}
-
-		// "If value is a space (U+0020), set value to a non-breaking space
-		// (U+00A0)."
-		if (value == " ") {
-			value = "\xa0";
 		}
 
 		// "Let text be the result of calling createTextNode(value) on the

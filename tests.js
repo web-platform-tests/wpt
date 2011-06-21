@@ -307,6 +307,15 @@ var tests = {
 		'<a href=/>foo</a>[]bar',
 		'foo<a href=/>[]bar</a>',
 
+		'foo &nbsp;[]bar',
+		'foo&nbsp; []bar',
+		'foo&nbsp;&nbsp;[]bar',
+		'foo  []bar',
+		'<b>foo </b>&nbsp;[]bar',
+		'<b>foo&nbsp;</b> []bar',
+		'<b>foo&nbsp;</b>&nbsp;[]bar',
+		'<b>foo </b> []bar',
+
 		// Tables with collapsed selection
 		'foo<table><tr><td>[]bar</table>baz',
 		'foo<table><tr><td>bar</table>[]baz',
@@ -933,6 +942,15 @@ var tests = {
 		'foo[]<img src=/img/lion.svg>bar',
 		'<a href=/>foo[]</a>bar',
 		'foo[]<a href=/>bar</a>',
+
+		'foo[] &nbsp;bar',
+		'foo[]&nbsp; bar',
+		'foo[]&nbsp;&nbsp;bar',
+		'foo[]  bar',
+		'<b>foo[] </b>&nbsp;bar',
+		'<b>foo[]&nbsp;</b> bar',
+		'<b>foo[]&nbsp;</b>&nbsp;bar',
+		'<b>foo[] </b> bar',
 
 		// Tables with collapsed selection
 		'foo[]<table><tr><td>bar</table>baz',

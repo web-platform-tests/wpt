@@ -3039,7 +3039,7 @@ function isInvisibleNode(node) {
 
 //@}
 
-///// Assorted block formatting algorithm commands /////
+///// Assorted block formatting command algorithms /////
 //@{
 
 function fixDisallowedAncestors(node) {
@@ -3217,6 +3217,67 @@ function normalizeSublists(item) {
 			movePreservingRanges(child, newItem, 0);
 		}
 	}
+}
+
+function canonicalSpaceSequence(n, nonBreakingStart, nonBreakingEnd) {
+	// "If n is zero, return the empty string."
+	if (n == 0) {
+		return "";
+	}
+
+	// "If n is one and both non-breaking start and non-breaking end are false,
+	// return a single space (U+0020)."
+	if (n == 1 && !nonBreakingStart && !nonBreakingEnd) {
+		return " ";
+	}
+
+	// "If n is one, return a single non-breaking space (U+00A0)."
+	if (n == 1) {
+		return "\xa0";
+	}
+
+	// "Let buffer be the empty string."
+	var buffer = "";
+
+	// "If non-breaking start is true, let repeated pair be U+00A0 U+0020.
+	// Otherwise, let it be U+0020 U+00A0."
+	var repeatedPair;
+	if (nonBreakingStart) {
+		repeatedPair = "\xa0 ";
+	} else {
+		repeatedPair = " \xa0";
+	}
+
+	// "While n is greater than three, append repeated pair to buffer and
+	// subtract two from n."
+	while (n > 3) {
+		buffer += repeatedPair;
+		n -= 2;
+	}
+
+	// "If n is three, append a three-element string to buffer depending on
+	// non-breaking start and non-breaking end:"
+	if (n == 3) {
+		buffer +=
+			!nonBreakingStart && !nonBreakingEnd ? " \xa0 "
+			: nonBreakingStart && !nonBreakingEnd ? "\xa0\xa0 "
+			: !nonBreakingStart && nonBreakingEnd ? " \xa0\xa0"
+			: nonBreakingStart && nonBreakingEnd ? "\xa0 \xa0"
+			: "impossible";
+
+	// "Otherwise, append a two-element string to buffer depending on
+	// non-breaking start and non-breaking end:"
+	} else {
+		buffer +=
+			!nonBreakingStart && !nonBreakingEnd ? "\xa0 "
+			: nonBreakingStart && !nonBreakingEnd ? "\xa0 "
+			: !nonBreakingStart && nonBreakingEnd ? " \xa0"
+			: nonBreakingStart && nonBreakingEnd ? "\xa0\xa0"
+			: "impossible";
+	}
+
+	// "Return buffer."
+	return buffer;
 }
 
 //@}
@@ -5734,6 +5795,115 @@ commands.inserttext = {
 			offset = 0;
 		}
 
+		// "If node is a Text node whose parent's computed value for
+		// "white-space" is neither "pre" nor "pre-wrap":"
+		if (node.nodeType == Node.TEXT_NODE
+		&& ["pre", "pre-wrap"].indexOf(getComputedStyle(node.parentNode).whiteSpace) == -1) {
+			// "Let leading space equal zero."
+			var leadingSpace = 0;
+
+			// "Let start offset equal offset minus one."
+			var startOffset = offset - 1;
+
+			// "While start offset is nonnegative and the start offsetth
+			// element of node's data is a space (U+0020) or non-breaking space
+			// (U+00A0):"
+			while (startOffset >= 0
+			&& /[ \xa0]/.test(node.data[startOffset])) {
+				// "If the start offsetth element of node's data is a
+				// non-breaking space (U+00A0), or the element before it is not
+				// a space (U+0020), add one to leading space."
+				if (node.data[startOffset] == "\xa0"
+				|| node.data[startOffset - 1] !== " ") {
+					leadingSpace++;
+				}
+
+				// "Subtract one from start offset."
+				startOffset--;
+			}
+
+			// "Add one to start offset."
+			startOffset++;
+
+			// "Let trailing space equal zero."
+			var trailingSpace = 0;
+
+			// "Let end offset equal offset."
+			var endOffset = offset;
+
+			// "While end offset is less than node's length and the end
+			// offsetth element of node's data is a space (U+0020) or
+			// non-breaking space (U+00A0):"
+			while (endOffset < node.length
+			&& /[ \xa0]/.test(node.data[endOffset])) {
+				// "If the end offsetth element of node's data is a
+				// non-breaking space (U+00A0), or the element before it is not
+				// a space (U+0020), add one to trailing space."
+				if (node.data[endOffset] == "\xa0"
+				|| node.data[endOffset - 1] !== " ") {
+					trailingSpace++;
+				}
+
+				// "Add one to end offset."
+				endOffset++;
+			}
+
+			// "Set initial nbsp to true if start offset is 0, false
+			// otherwise."
+			var initialNbsp = startOffset == 0;
+
+			// "Set final nbsp to true if end offset is the length of node,
+			// false otherwise."
+			var finalNbsp = endOffset == node.length;
+
+			// "If value is a space (U+0020):"
+			if (value == " ") {
+				// "Let new trailing space be the canonical space sequence of
+				// length leading space plus trailing space plus one, with
+				// non-breaking start equal to initial nbsp and non-breaking
+				// end equal to final nbsp."
+				var newTrailingSpace = canonicalSpaceSequence(leadingSpace + trailingSpace + 1, initialNbsp, finalNbsp);
+
+				// "Remove the first leading space elements from new trailing
+				// space, and let new leading space be the result."
+				var newLeadingSpace = newTrailingSpace.slice(0, leadingSpace);
+				newTrailingSpace = newTrailingSpace.slice(leadingSpace);
+
+				// "Remove the first element from new trailing space, and let
+				// value be the result."
+				value = newTrailingSpace[0];
+				newTrailingSpace = newTrailingSpace.slice(1);
+
+			// "Otherwise:"
+			} else {
+				// "Let new leading space be the canonical space sequence of
+				// length leading space, with non-breaking start equal to
+				// initial nbsp and non-breaking end equal to false."
+				var newLeadingSpace = canonicalSpaceSequence(leadingSpace, initialNbsp, false);
+
+				// "Let new trailing space be the canonical space sequence of
+				// length trailing space, with non-breaking start equal to
+				// false and non-breaking end equal to final nbsp."
+				var newTrailingSpace = canonicalSpaceSequence(trailingSpace, false, finalNbsp);
+			}
+
+			// "Call replaceData(start offset, offset − start offset, new
+			// leading space) on node."
+			node.replaceData(startOffset, offset - startOffset, newLeadingSpace);
+
+			// "Subtract offset from end offset, then add start offset plus
+			// leading space to end offset."
+			endOffset -= offset;
+			endOffset += startOffset + leadingSpace;
+
+			// "Set offset to start offset plus leading space."
+			offset = startOffset + leadingSpace;
+
+			// "Call replaceData(offset, end offset − offset, new trailing
+			// space) on node."
+			node.replaceData(offset, endOffset - offset, newTrailingSpace);
+		}
+
 		// "If node is a Text node:"
 		if (node.nodeType == Node.TEXT_NODE) {
 			// "Call insertData(offset, value) on node."
@@ -5757,6 +5927,12 @@ commands.inserttext = {
 		if (node.childNodes.length == 1
 		&& isCollapsedLineBreak(node.firstChild)) {
 			node.removeChild(node.firstChild);
+		}
+
+		// "If value is a space (U+0020), set value to a non-breaking space
+		// (U+00A0)."
+		if (value == " ") {
+			value = "\xa0";
 		}
 
 		// "Let text be the result of calling createTextNode(value) on the

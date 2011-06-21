@@ -20,6 +20,7 @@ replace = {
     'bpoffset': '<span data-anolis-spec=domrange title=concept-boundary-point-offset>offset</span>',
     'bpposition': '<span data-anolis-spec=domrange title=concept-bp-position>position</span>',
     'cddata': '<code data-anolis-spec=domcore title=dom-CharacterData-data>data</code>',
+    'cdlength': '<code data-anolis-spec=domcore title=dom-CharacterData-length>length</code>',
     'child': '<span data-anolis-spec=domcore title=concept-tree-child>child</span>',
     'children': '<span data-anolis-spec=domcore title=concept-tree-child>children</span>',
     'collection': '<span data-anolis-spec=domcore title=concept-collection>collection</span>',
@@ -121,6 +122,7 @@ fnreplace = {
     'extend': '<code data-anolis-spec=domrange title=dom-Selection-extend>extend(\\1)</code>',
     'insertdata': '<code data-anolis-spec=domcore title=dom-CharacterData-insertData>insertData(\\1)</code>',
     'insertnode': '<code data-anolis-spec=domrange title=dom-Range-insertNode>insertNode(\\1)</code>',
+    'replacedata': '<code data-anolis-spec=domcore title=dom-CharacterData-replaceData>replaceData(\\1)</code>',
     'selcollapse': '<code data-anolis-spec=domrange title=dom-Selection-collapse>collapse(\\1)</code>',
     'setattribute': '<code data-anolis-spec=domcore title=dom-Element-setAttribute>setAttribute(\\1)</code>',
 }

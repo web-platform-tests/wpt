@@ -38,7 +38,7 @@
 <body class=draft>
 <div class=head id=head>
 <h1>HTML Editing Commands</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-20-june-2011>Work in Progress &mdash; Last Update 20 June 2011</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-21-june-2011>Work in Progress &mdash; Last Update 21 June 2011</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;ayg+spec@aryeh.name&gt;
@@ -2820,6 +2820,63 @@ confronted with this kind of nesting.)
   </ol>
 </ol>
 
+<p>The <dfn id=canonical-space-sequence>canonical space sequence</dfn> of length <var title="">n</var>, with boolean
+flags <var title="">non-breaking start</var> and <var title="">non-breaking end</var>, is
+returned by the following algorithm:
+<!-- See long comment before insertText. -->
+
+<ol>
+  <li>If <var title="">n</var> is zero, return the empty string.
+
+  <li>If <var title="">n</var> is one and both <var title="">non-breaking start</var> and
+  <var title="">non-breaking end</var> are false, return a single space (U+0020).
+
+  <li>If <var title="">n</var> is one, return a single non-breaking space (U+00A0).
+
+  <li>Let <var title="">buffer</var> be the empty string.
+
+  <li>If <var title="">non-breaking start</var> is true, let <var title="">repeated pair</var> be
+  U+00A0 U+0020.  Otherwise, let it be U+0020 U+00A0.
+
+  <li>While <var title="">n</var> is greater than three, append <var title="">repeated pair</var>
+  to <var title="">buffer</var> and subtract two from <var title="">n</var>.
+
+  <li>If <var title="">n</var> is three, append a three-<a href=http://es5.github.com/#x8.4>element</a> string to
+  <var title="">buffer</var> depending on <var title="">non-breaking start</var> and
+  <var title="">non-breaking end</var>:
+
+  <dl class=switch>
+    <dt><var title="">non-breaking start</var> and <var title="">non-breaking end</var> false
+    <dd>U+0020 U+00A0 U+0020
+
+    <dt><var title="">non-breaking start</var> true, <var title="">non-breaking end</var> false
+    <dd>U+00A0 U+00A0 U+0020
+
+    <dt><var title="">non-breaking start</var> false, <var title="">non-breaking end</var> true
+    <dd>U+0020 U+00A0 U+00A0
+
+    <dt><var title="">non-breaking start</var> and <var title="">non-breaking end</var> both true
+    <dd>U+00A0 U+0020 U+00A0
+  </dl>
+
+  <li>Otherwise, append a two-<a href=http://es5.github.com/#x8.4>element</a> string to <var title="">buffer</var> depending
+  on <var title="">non-breaking start</var> and <var title="">non-breaking end</var>:
+
+  <dl class=switch>
+    <dt><var title="">non-breaking start</var> and <var title="">non-breaking end</var> false
+    <dt><var title="">non-breaking start</var> true, <var title="">non-breaking end</var> false
+    <dd>U+00A0 U+0020
+
+    <dt><var title="">non-breaking start</var> false, <var title="">non-breaking end</var> true
+    <dd>U+0020 U+00A0
+
+    <dt><var title="">non-breaking start</var> and <var title="">non-breaking end</var> both true
+    <dd>U+00A0 U+00A0
+  </dl>
+
+  <li>Return <var title="">buffer</var>.
+</ol>
+
 
 <h3 id=allowed-children><span class=secno>7.3 </span>Allowed children</h3>
 
@@ -4246,6 +4303,8 @@ would be worth the added complexity.
 
 <h3 id=the-delete-command><span class=secno>7.9 </span><dfn>The <code title="">delete</code> command</dfn></h3>
 
+<p class=XXX>Needs nbsp magic.
+
 <p><a href=#action>Action</a>:
 
 <ol>
@@ -4730,6 +4789,8 @@ sense for <address>/<h*>/<pre>, but other browsers don't do it.
 
 
 <h3 id=the-forwarddelete-command><span class=secno>7.11 </span><dfn>The <code title="">forwardDelete</code> command</dfn></h3>
+
+<p class=XXX>Needs nbsp magic.
 
 <p><a href=#action>Action</a>:
 <!-- Copy-pasted from delete, see there for comments. -->
@@ -5521,10 +5582,36 @@ arbitrarily many).
 
 Opera 11.11 has varying behavior, like Firefox and Chrome.  Like Firefox, I
 didn't discern an obvious pattern.
--->
 
-<p class=XXX>We need to handle spaces/nbsps specially here.  See comment and <a href=http://lists.whatwg.org/pipermail/whatwg-whatwg.org/2011-June/032187.html>WHATWG
-discussion</a>.
+This was discussed: http://lists.whatwg.org/pipermail/whatwg-whatwg.org/2011-June/032187.html
+
+Unfortunately, we're stuck with this nbsp stuff, because of 1) legacy reasons,
+2) mail clients might not support CSS equivalents, 3) authors might not know to
+apply any CSS to wherever the content is eventually used.  The behavior I
+decided on to minimize the evil is as follows:
+
+* If the first and last spaces are in non-collapsing positions, two spaces is
+  nbsp+space, three is space+nbsp+space, four or more is space+nbsp followed by
+  the pattern for two less.
+* If the first space has to be an nbsp so it doesn't collapse, three is instead
+  nbsp+nbsp+space, four or more is nbsp+space followed by the pattern for two
+  less.
+* If the last space has to be nbsp, two is space+nbsp, three is
+  space+nbsp+nbsp, four or more is space+nbsp followed by the pattern for two
+  less.
+* If the first and last space must both be nbsp, two is nbsp+nbsp, three is
+  nbsp+space+nbsp, four or more nbsp+space followed by the pattern for two
+  less.
+
+This avoids nbsp at the end of a run except where it's needed, so words won't
+appear indented if they wrap to the next line.  It avoids more than two nbsp's
+in a row, so there won't be huge chunks of space that get wrapped all at once.
+And it avoids nbsp at the beginning of a run except where it's needed or
+if there are only two spaces in the run, so words won't have to wrap
+unnecessarily.
+
+This is still a huge headache, though.
+-->
 
 <ol>
   <li><a href=#delete-the-contents>Delete the contents</a> of the <a href=#active-range>active range</a>.
@@ -5575,6 +5662,107 @@ discussion</a>.
   and that <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node, set <var title="">node</var> to that <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>,
   then set <var title="">offset</var> to zero.
 
+  <li>If <var title="">node</var> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node whose <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>'s <a href=http://www.w3.org/TR/CSS21/cascade.html#computed-value>computed value</a>
+  for "white-space" is neither "pre" nor "pre-wrap":
+
+  <p class=XXX>This also needs to take visually adjoining text nodes into
+  account, even if their parents are in different elements.  When inserting "a"
+  in "&lt;a href=/&gt;foo&nbsp;&lt;/a&gt;[] ", for instance, we need to convert the
+  nbsp to a regular space.  This kind of thing is just not feasible using pure
+  DOM stuff, though, so the current definition is a bad hack that will often
+  fail in real-world cases.  Suggestions for how to improve it appreciated.
+
+  <ol>
+    <li>Let <var title="">leading space</var> equal zero.
+
+    <li>Let <var title="">start offset</var> equal <var title="">offset</var> minus one.
+
+    <li>While <var title="">start offset</var> is nonnegative and the
+    <var title="">start offset</var>th <a href=http://es5.github.com/#x8.4>element</a> of <var title="">node</var>'s <code class=external data-anolis-spec=domcore title=dom-CharacterData-data><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-data>data</a></code> is a
+    space (U+0020) or non-breaking space (U+00A0):
+
+    <ol>
+      <li>If the <var title="">start offset</var>th <a href=http://es5.github.com/#x8.4>element</a> of <var title="">node</var>'s
+      <code class=external data-anolis-spec=domcore title=dom-CharacterData-data><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-data>data</a></code> is a non-breaking space (U+00A0), or the <a href=http://es5.github.com/#x8.4>element</a> before it
+      is not a space (U+0020), add one to <var title="">leading space</var>.
+
+      <li>Subtract one from <var title="">start offset</var>.
+    </ol>
+
+    <li>Add one to <var title="">start offset</var>.
+
+    <li>Let <var title="">trailing space</var> equal zero.
+
+    <li>Let <var title="">end offset</var> equal <var title="">offset</var>.
+
+    <li>While <var title="">end offset</var> is less than <var title="">node</var>'s <code class=external data-anolis-spec=domcore title=dom-CharacterData-length><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-length>length</a></code>
+    and the <var title="">end offset</var>th <a href=http://es5.github.com/#x8.4>element</a> of <var title="">node</var>'s <code class=external data-anolis-spec=domcore title=dom-CharacterData-data><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-data>data</a></code>
+    is a space (U+0020) or non-breaking space (U+00A0):
+
+    <ol>
+      <li>If the <var title="">end offset</var>th <a href=http://es5.github.com/#x8.4>element</a> of <var title="">node</var>'s
+      <code class=external data-anolis-spec=domcore title=dom-CharacterData-data><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-data>data</a></code> is a non-breaking space (U+00A0), or the <a href=http://es5.github.com/#x8.4>element</a> before it
+      is not a space (U+0020), add one to <var title="">trailing space</var>.
+      <!-- If we're between two spaces that are collapsed together, this means
+      we're effectively at the end of the collapsed run.  This shouldn't happen
+      with user-created selections, of course. -->
+
+      <li>Add one to <var title="">end offset</var>.
+    </ol>
+
+    <li>Set <var title="">initial nbsp</var> to true if <var title="">start offset</var> is 0,
+    false otherwise.
+
+    <li>Set <var title="">final nbsp</var> to true if <var title="">end offset</var> is the
+    <code class=external data-anolis-spec=domcore title=dom-CharacterData-length><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-length>length</a></code> of <var title="">node</var>, false otherwise.
+
+    <p class=XXX>These are wrong in zillions of common cases.  Per XXX above,
+    the fix here is not obvious at all.
+
+    <li>If <var title="">value</var> is a space (U+0020):
+
+    <ol>
+      <li>Let <var title="">new trailing space</var> be the <a href=#canonical-space-sequence>canonical space
+      sequence</a> of length <var title="">leading space</var> plus <var title="">trailing
+      space</var> plus one, with <var title="">non-breaking start</var> equal to
+      <var title="">initial nbsp</var> and <var title="">non-breaking end</var> equal to
+      <var title="">final nbsp</var>.
+
+      <li>Remove the first <var title="">leading space</var> <a href=http://es5.github.com/#x8.4>elements</a> from <var title="">new
+      trailing space</var>, and let <var title="">new leading space</var> be the result.
+
+      <li>Remove the first <a href=http://es5.github.com/#x8.4>element</a> from <var title="">new trailing space</var>, and
+      let <var title="">value</var> be the result.
+    </ol>
+
+    <li>Otherwise:
+
+    <ol>
+      <li>Let <var title="">new leading space</var> be the <a href=#canonical-space-sequence>canonical space
+      sequence</a> of length <var title="">leading space</var>, with
+      <var title="">non-breaking start</var> equal to <var title="">initial nbsp</var> and
+      <var title="">non-breaking end</var> equal to false.
+
+      <li>Let <var title="">new trailing space</var> be the <a href=#canonical-space-sequence>canonical space
+      sequence</a> of length <var title="">trailing space</var>, with
+      <var title="">non-breaking start</var> equal to false and <var title="">non-breaking
+      end</var> equal to <var title="">final nbsp</var>.
+    </ol>
+
+    <li>Call <code class=external data-anolis-spec=domcore title=dom-CharacterData-replaceData><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-replacedata>replaceData(<var title="">start offset</var>, <var title="">offset</var> &minus;
+    <var title="">start offset</var>, <var title="">new leading space</var>)</a></code> on <var title="">node</var>.
+
+    <li>Subtract <var title="">offset</var> from <var title="">end offset</var>, then add
+    <var title="">start offset</var> plus <var title="">leading space</var> to <var title="">end
+    offset</var>.
+
+    <li>Set <var title="">offset</var> to <var title="">start offset</var> plus <var title="">leading
+    space</var>.
+
+    <li>Call <code class=external data-anolis-spec=domcore title=dom-CharacterData-replaceData><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-replacedata>replaceData(<var title="">offset</var>, <var title="">end offset</var> &minus;
+    <var title="">offset</var>, <var title="">new trailing space</var>)</a></code> on <var title="">node</var>.
+  </ol>
+
   <li>If <var title="">node</var> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node:
 
   <ol>
@@ -5593,6 +5781,13 @@ discussion</a>.
   the <br>. -->
   <li>If <var title="">node</var> has only one <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>, which is a <a href=#collapsed-line-break>collapsed
   line break</a>, remove its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> from it.
+
+  <li>If <var title="">value</var> is a space (U+0020), set <var title="">value</var> to a
+  non-breaking space (U+00A0).
+
+  <p class=XXX>This is wrong in all sorts of cases, like
+  "foo&lt;b&gt;[]&lt;/b&gt;bar".  As above, this is hard to get right without heavy
+  CSS involvement.
 
   <li>Let <var title="">text</var> be the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createTextNode><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createtextnode>createTextNode(<var title="">value</var>)</a></code> on
   the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>.

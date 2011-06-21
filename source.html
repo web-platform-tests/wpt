@@ -2804,6 +2804,63 @@ confronted with this kind of nesting.)
     </ol>
   </ol>
 </ol>
+
+<p>The <dfn>canonical space sequence</dfn> of length <var>n</var>, with boolean
+flags <var>non-breaking start</var> and <var>non-breaking end</var>, is
+returned by the following algorithm:
+<!-- See long comment before insertText. -->
+
+<ol>
+  <li>If <var>n</var> is zero, return the empty string.
+
+  <li>If <var>n</var> is one and both <var>non-breaking start</var> and
+  <var>non-breaking end</var> are false, return a single space (U+0020).
+
+  <li>If <var>n</var> is one, return a single non-breaking space (U+00A0).
+
+  <li>Let <var>buffer</var> be the empty string.
+
+  <li>If <var>non-breaking start</var> is true, let <var>repeated pair</var> be
+  U+00A0 U+0020.  Otherwise, let it be U+0020 U+00A0.
+
+  <li>While <var>n</var> is greater than three, append <var>repeated pair</var>
+  to <var>buffer</var> and subtract two from <var>n</var>.
+
+  <li>If <var>n</var> is three, append a three-[[strel]] string to
+  <var>buffer</var> depending on <var>non-breaking start</var> and
+  <var>non-breaking end</var>:
+
+  <dl class=switch>
+    <dt><var>non-breaking start</var> and <var>non-breaking end</var> false
+    <dd>U+0020 U+00A0 U+0020
+
+    <dt><var>non-breaking start</var> true, <var>non-breaking end</var> false
+    <dd>U+00A0 U+00A0 U+0020
+
+    <dt><var>non-breaking start</var> false, <var>non-breaking end</var> true
+    <dd>U+0020 U+00A0 U+00A0
+
+    <dt><var>non-breaking start</var> and <var>non-breaking end</var> both true
+    <dd>U+00A0 U+0020 U+00A0
+  </dl>
+
+  <li>Otherwise, append a two-[[strel]] string to <var>buffer</var> depending
+  on <var>non-breaking start</var> and <var>non-breaking end</var>:
+
+  <dl class=switch>
+    <dt><var>non-breaking start</var> and <var>non-breaking end</var> false
+    <dt><var>non-breaking start</var> true, <var>non-breaking end</var> false
+    <dd>U+00A0 U+0020
+
+    <dt><var>non-breaking start</var> false, <var>non-breaking end</var> true
+    <dd>U+0020 U+00A0
+
+    <dt><var>non-breaking start</var> and <var>non-breaking end</var> both true
+    <dd>U+00A0 U+00A0
+  </dl>
+
+  <li>Return <var>buffer</var>.
+</ol>
 <!-- @} -->
 
 <h3>Allowed children</h3>
@@ -4248,6 +4305,8 @@ would be worth the added complexity.
 
 <h3><dfn>The <code title>delete</code> command</dfn></h3>
 <!-- @{ -->
+<p class=XXX>Needs nbsp magic.
+
 <p><span>Action</span>:
 
 <ol>
@@ -4734,6 +4793,8 @@ sense for <address>/<h*>/<pre>, but other browsers don't do it.
 
 <h3><dfn>The <code title>forwardDelete</code> command</dfn></h3>
 <!-- @{ -->
+<p class=XXX>Needs nbsp magic.
+
 <p><span>Action</span>:
 <!-- Copy-pasted from delete, see there for comments. -->
 
@@ -5539,11 +5600,36 @@ arbitrarily many).
 
 Opera 11.11 has varying behavior, like Firefox and Chrome.  Like Firefox, I
 didn't discern an obvious pattern.
--->
 
-<p class=XXX>We need to handle spaces/nbsps specially here.  See comment and <a
-href=http://lists.whatwg.org/pipermail/whatwg-whatwg.org/2011-June/032187.html>WHATWG
-discussion</a>.
+This was discussed: http://lists.whatwg.org/pipermail/whatwg-whatwg.org/2011-June/032187.html
+
+Unfortunately, we're stuck with this nbsp stuff, because of 1) legacy reasons,
+2) mail clients might not support CSS equivalents, 3) authors might not know to
+apply any CSS to wherever the content is eventually used.  The behavior I
+decided on to minimize the evil is as follows:
+
+* If the first and last spaces are in non-collapsing positions, two spaces is
+  nbsp+space, three is space+nbsp+space, four or more is space+nbsp followed by
+  the pattern for two less.
+* If the first space has to be an nbsp so it doesn't collapse, three is instead
+  nbsp+nbsp+space, four or more is nbsp+space followed by the pattern for two
+  less.
+* If the last space has to be nbsp, two is space+nbsp, three is
+  space+nbsp+nbsp, four or more is space+nbsp followed by the pattern for two
+  less.
+* If the first and last space must both be nbsp, two is nbsp+nbsp, three is
+  nbsp+space+nbsp, four or more nbsp+space followed by the pattern for two
+  less.
+
+This avoids nbsp at the end of a run except where it's needed, so words won't
+appear indented if they wrap to the next line.  It avoids more than two nbsp's
+in a row, so there won't be huge chunks of space that get wrapped all at once.
+And it avoids nbsp at the beginning of a run except where it's needed or
+if there are only two spaces in the run, so words won't have to wrap
+unnecessarily.
+
+This is still a huge headache, though.
+-->
 
 <ol>
   <li><span>Delete the contents</span> of the <span>active range</span>.
@@ -5594,6 +5680,107 @@ discussion</a>.
   and that [[child]] is a [[text]] node, set <var>node</var> to that [[child]],
   then set <var>offset</var> to zero.
 
+  <li>If <var>node</var> is a [[text]] node whose [[parent]]'s [[compval]]
+  for "white-space" is neither "pre" nor "pre-wrap":
+
+  <p class=XXX>This also needs to take visually adjoining text nodes into
+  account, even if their parents are in different elements.  When inserting "a"
+  in "&lt;a href=/>foo&nbsp;&lt;/a>[] ", for instance, we need to convert the
+  nbsp to a regular space.  This kind of thing is just not feasible using pure
+  DOM stuff, though, so the current definition is a bad hack that will often
+  fail in real-world cases.  Suggestions for how to improve it appreciated.
+
+  <ol>
+    <li>Let <var>leading space</var> equal zero.
+
+    <li>Let <var>start offset</var> equal <var>offset</var> minus one.
+
+    <li>While <var>start offset</var> is nonnegative and the
+    <var>start offset</var>th [[strel]] of <var>node</var>'s [[cddata]] is a
+    space (U+0020) or non-breaking space (U+00A0):
+
+    <ol>
+      <li>If the <var>start offset</var>th [[strel]] of <var>node</var>'s
+      [[cddata]] is a non-breaking space (U+00A0), or the [[strel]] before it
+      is not a space (U+0020), add one to <var>leading space</var>.
+
+      <li>Subtract one from <var>start offset</var>.
+    </ol>
+
+    <li>Add one to <var>start offset</var>.
+
+    <li>Let <var>trailing space</var> equal zero.
+
+    <li>Let <var>end offset</var> equal <var>offset</var>.
+
+    <li>While <var>end offset</var> is less than <var>node</var>'s [[cdlength]]
+    and the <var>end offset</var>th [[strel]] of <var>node</var>'s [[cddata]]
+    is a space (U+0020) or non-breaking space (U+00A0):
+
+    <ol>
+      <li>If the <var>end offset</var>th [[strel]] of <var>node</var>'s
+      [[cddata]] is a non-breaking space (U+00A0), or the [[strel]] before it
+      is not a space (U+0020), add one to <var>trailing space</var>.
+      <!-- If we're between two spaces that are collapsed together, this means
+      we're effectively at the end of the collapsed run.  This shouldn't happen
+      with user-created selections, of course. -->
+
+      <li>Add one to <var>end offset</var>.
+    </ol>
+
+    <li>Set <var>initial nbsp</var> to true if <var>start offset</var> is 0,
+    false otherwise.
+
+    <li>Set <var>final nbsp</var> to true if <var>end offset</var> is the
+    [[cdlength]] of <var>node</var>, false otherwise.
+
+    <p class=XXX>These are wrong in zillions of common cases.  Per XXX above,
+    the fix here is not obvious at all.
+
+    <li>If <var>value</var> is a space (U+0020):
+
+    <ol>
+      <li>Let <var>new trailing space</var> be the <span>canonical space
+      sequence</span> of length <var>leading space</var> plus <var>trailing
+      space</var> plus one, with <var>non-breaking start</var> equal to
+      <var>initial nbsp</var> and <var>non-breaking end</var> equal to
+      <var>final nbsp</var>.
+
+      <li>Remove the first <var>leading space</var> [[strels]] from <var>new
+      trailing space</var>, and let <var>new leading space</var> be the result.
+
+      <li>Remove the first [[strel]] from <var>new trailing space</var>, and
+      let <var>value</var> be the result.
+    </ol>
+
+    <li>Otherwise:
+
+    <ol>
+      <li>Let <var>new leading space</var> be the <span>canonical space
+      sequence</span> of length <var>leading space</var>, with
+      <var>non-breaking start</var> equal to <var>initial nbsp</var> and
+      <var>non-breaking end</var> equal to false.
+
+      <li>Let <var>new trailing space</var> be the <span>canonical space
+      sequence</span> of length <var>trailing space</var>, with
+      <var>non-breaking start</var> equal to false and <var>non-breaking
+      end</var> equal to <var>final nbsp</var>.
+    </ol>
+
+    <li>Call [[replacedata|<var>start offset</var>, <var>offset</var> &minus;
+    <var>start offset</var>, <var>new leading space</var>]] on <var>node</var>.
+
+    <li>Subtract <var>offset</var> from <var>end offset</var>, then add
+    <var>start offset</var> plus <var>leading space</var> to <var>end
+    offset</var>.
+
+    <li>Set <var>offset</var> to <var>start offset</var> plus <var>leading
+    space</var>.
+
+    <li>Call [[replacedata|<var>offset</var>, <var>end offset</var> &minus;
+    <var>offset</var>, <var>new trailing space</var>]] on <var>node</var>.
+  </ol>
+
   <li>If <var>node</var> is a [[text]] node:
 
   <ol>
@@ -5612,6 +5799,13 @@ discussion</a>.
   the <br>. -->
   <li>If <var>node</var> has only one [[child]], which is a <span>collapsed
   line break</span>, remove its [[child]] from it.
+
+  <li>If <var>value</var> is a space (U+0020), set <var>value</var> to a
+  non-breaking space (U+00A0).
+
+  <p class=XXX>This is wrong in all sorts of cases, like
+  "foo&lt;b>[]&lt;/b>bar".  As above, this is hard to get right without heavy
+  CSS involvement.
 
   <li>Let <var>text</var> be the result of calling <code
   data-anolis-spec=domcore

@@ -898,6 +898,52 @@ function removeExtraneousLineBreaksFrom(node) {
 	removeExtraneousLineBreaksAtTheEndOf(node);
 }
 
+function followsLineBreak(node) {
+	// "Let offset be zero."
+	var offset = 0;
+
+	// "While offset is zero, set offset to the index of node and then set node
+	// to its parent."
+	while (offset == 0) {
+		offset = getNodeIndex(node);
+		node = node.parentNode;
+	}
+
+	// "Let range be a range with start and end (node, offset)."
+	var range = document.createRange();
+	range.setStart(node, offset);
+
+	// "Block-extend range, and let new range be the result."
+	var newRange = blockExtendRange(range);
+
+	// "Return false if new range's start is before (node, offset), true
+	// otherwise."
+	return getPosition(newRange.startContainer, newRange.startOffset, node, offset) != "before";
+}
+
+function precedesLineBreak(node) {
+	// "Let offset be the length of node."
+	var offset = getNodeLength(node);
+
+	// "While offset is the length of node, set offset to one plus the index of
+	// node and then set node to its parent."
+	while (offset == getNodeLength(node)) {
+		offset = 1 + getNodeIndex(node);
+		node = node.parentNode;
+	}
+
+	// "Let range be a range with start and end (node, offset)."
+	var range = document.createRange();
+	range.setStart(node, offset);
+
+	// "Block-extend range, and let new range be the result."
+	var newRange = blockExtendRange(range);
+
+	// "Return false if new range's end is after (node, offset), true
+	// otherwise."
+	return getPosition(newRange.endContainer, newRange.endOffset, node, offset) != "after";
+}
+
 function splitParent(nodeList) {
 	// "Let original parent be the parent of the first member of node list."
 	var originalParent = nodeList[0].parentNode;
@@ -915,19 +961,17 @@ function splitParent(nodeList) {
 		removeExtraneousLineBreaksBefore(originalParent);
 	}
 
-	// "If original parent is not an inline node, and the last child of
-	// original parent is in node list, and original parent's last child and
-	// nextSibling are both inline nodes, and original parent's last child is
-	// not a br, call createElement("br") on the ownerDocument of original
-	// parent, then insert the result into the parent of original parent
-	// immediately after original parent."
-	if (!isInlineNode(originalParent)
-	&& nodeList.indexOf(originalParent.lastChild) != -1
-	&& isInlineNode(originalParent.lastChild)
-	&& isInlineNode(originalParent.nextSibling)
-	&& !isHtmlElement(originalParent.lastChild, "br")) {
-		originalParent.parentNode.insertBefore(originalParent.ownerDocument.createElement("br"), originalParent.nextSibling);
-	}
+	// "If the first child of original parent is in node list, and original
+	// parent follows a line break, set follows line break to true. Otherwise,
+	// set follows line break to false."
+	var followsLineBreak_ = nodeList.indexOf(originalParent.firstChild) != -1
+		&& followsLineBreak(originalParent);
+
+	// "If the last child of original parent is in node list, and original
+	// parent precedes a line break, set precedes line break to true.
+	// Otherwise, set precedes line break to false."
+	var precedesLineBreak_ = nodeList.indexOf(originalParent.lastChild) != -1
+		&& precedesLineBreak(originalParent);
 
 	// "If the first child of original parent is not in node list, but its last
 	// child is:"
@@ -938,6 +982,15 @@ function splitParent(nodeList) {
 		// preserving ranges."
 		for (var i = nodeList.length - 1; i >= 0; i--) {
 			movePreservingRanges(nodeList[i], originalParent.parentNode, 1 + getNodeIndex(originalParent));
+		}
+
+		// "If precedes line break is true, and the last member of node list
+		// does not precede a line break, call createElement("br") on the
+		// context object and insert the result immediately after the last
+		// member of node list."
+		if (precedesLineBreak_
+		&& !precedesLineBreak(nodeList[nodeList.length - 1])) {
+			nodeList[nodeList.length - 1].parentNode.insertBefore(document.createElement("br"), nodeList[nodeList.length - 1].nextSibling);
 		}
 
 		// "Remove extraneous line breaks at the end of original parent."
@@ -965,22 +1018,18 @@ function splitParent(nodeList) {
 		}
 	}
 
-	// "If the first member of node list is an inline node, and original
-	// parent's previousSibling is an inline node other than a br, and original
-	// parent is not an inline node, call createElement("br") on the context
-	// object, then insert the result into the parent of original parent
-	// immediately before original parent."
-	if (isInlineNode(nodeList[0])
-	&& isInlineNode(originalParent.previousSibling)
-	&& !isHtmlElement(originalParent.previousSibling, "br")
-	&& !isInlineNode(originalParent)) {
-		originalParent.parentNode.insertBefore(document.createElement("br"), originalParent);
-	}
-
 	// "For each node in node list, insert node into the parent of original
 	// parent immediately before original parent, preserving ranges."
 	for (var i = 0; i < nodeList.length; i++) {
 		movePreservingRanges(nodeList[i], originalParent.parentNode, getNodeIndex(originalParent));
+	}
+
+	// "If follows line break is true, and the first member of node list does
+	// not follow a line break, call createElement("br") on the context object
+	// and insert the result immediately before the first member of node list."
+	if (followsLineBreak_
+	&& !followsLineBreak(nodeList[0])) {
+		nodeList[0].parentNode.insertBefore(document.createElement("br"), nodeList[0]);
 	}
 
 	// "If the last member of node list is an inline node other than a br, and
@@ -994,9 +1043,19 @@ function splitParent(nodeList) {
 		originalParent.removeChild(originalParent.firstChild);
 	}
 
-	// "If original parent has no children, remove it from its parent."
+	// "If original parent has no children:"
 	if (!originalParent.hasChildNodes()) {
+		// "Remove original parent from its parent."
 		originalParent.parentNode.removeChild(originalParent);
+
+		// "If precedes line break is true, and the last member of node list
+		// does not precede a line break, call createElement("br") on the
+		// context object and insert the result immediately after the last
+		// member of node list."
+		if (precedesLineBreak_
+		&& !precedesLineBreak(nodeList[nodeList.length - 1])) {
+			nodeList[nodeList.length - 1].parentNode.insertBefore(document.createElement("br"), nodeList[nodeList.length - 1].nextSibling);
+		}
 
 	// "Otherwise, remove extraneous line breaks before original parent."
 	} else {

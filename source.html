@@ -527,6 +527,48 @@ here?
 <span>remove extraneous line breaks before</span> it, then <span>remove
 extraneous line breaks at the end of</span> it.
 
+<p>A [[node]] <var>node</var> <dfn>follows a line break</dfn> if the following
+algorithm returns true:
+
+<p class=XXX>Editorial issue: These two algorithms depend on block-extending.
+Should that get moved up to the general algorithms?
+
+<ol>
+  <li>Let <var>offset</var> be zero.
+
+  <li>While <var>offset</var> is zero, set <var>offset</var> to the [[index]]
+  of <var>node</var> and then set <var>node</var> to its [[parent]].
+
+  <li>Let <var>range</var> be a [[range]] with [[rangestart]] and [[rangeend]]
+  (<var>node</var>, <var>offset</var>).
+
+  <li><span>Block-extend</span> <var>range</var>, and let <var>new range</var>
+  be the result.
+
+  <li>Return false if <var>new range</var>'s [[rangestart]] is [[bpbefore]]
+  (<var>node</var>, <var>offset</var>), true otherwise.
+</ol>
+
+<p>A [[node]] <var>node</var> <dfn>precedes a line break</dfn> if the following
+algorithm returns true:
+
+<ol>
+  <li>Let <var>offset</var> be the [[length]] of <var>node</var>.
+
+  <li>While <var>offset</var> is the [[length]] of <var>node</var>, set
+  <var>offset</var> to one plus the [[index]] of <var>node</var> and then set
+  <var>node</var> to its [[parent]].
+
+  <li>Let <var>range</var> be a [[range]] with [[rangestart]] and [[rangeend]]
+  (<var>node</var>, <var>offset</var>).
+
+  <li><span>Block-extend</span> <var>range</var>, and let <var>new range</var>
+  be the result.
+
+  <li>Return false if <var>new range</var>'s [[rangeend]] is [[bpafter]]
+  (<var>node</var>, <var>offset</var>), true otherwise.
+</ol>
+
 <p>To <dfn>split the parent</dfn> of a list <var>node list</var> of consecutive
 [[sibling]] [[nodes]]:
 
@@ -548,16 +590,15 @@ inline descendants in a clone of the former parent.
   list</var>, <span>remove extraneous line breaks before</span> <var>original
   parent</var>.
 
-  <li>If <var>original parent</var> is not an <span>inline node</span>, and the
-  last [[child]] of <var>original parent</var> is in <var>node list</var>, and
-  <var>original parent</var>'s last [[child]] and [[nextsibling]] are both
-  <span title="inline node">inline nodes</span>, and <var>original
-  parent</var>'s last [[child]] is not a [[br]], call <code
-  data-anolis-spec=domcore
-  title=dom-Document-createElement>createElement("br")</code> on the
-  [[ownerdocument]] of <var>original parent</var>, then insert the result into
-  the [[parent]] of <var>original parent</var> immediately after <var>original
-  parent</var>.
+  <li>If the first [[child]] of <var>original parent</var> is in <var>node
+  list</var>, and <var>original parent</var> <span>follows a line break</span>,
+  set <var>follows line break</var> to true.  Otherwise, set <var>follows line
+  break</var> to false.
+
+  <li>If the last [[child]] of <var>original parent</var> is in <var>node
+  list</var>, and <var>original parent</var> <span>precedes a line
+  break</span>, set <var>precedes line break</var> to true.  Otherwise, set
+  <var>precedes line break</var> to false.
 
   <li>If the first [[child]] of <var>original parent</var> is not in <var>node
   list</var>, but its last [[child]] is:
@@ -587,6 +628,12 @@ inline descendants in a clone of the former parent.
     order</em>, insert <var>node</var> into the [[parent]] of <var>original
     parent</var> immediately after <var>original parent</var>, <span>preserving
     ranges</span>.
+
+    <li>If <var>precedes line break</var> is true, and the last member of
+    <var>node list</var> does not <span title="precedes a line break">precede a
+    line break</span>, call [[createelement|"br"]] on the [[contextobject]] and
+    insert the result immediately after the last member of <var>node
+    list</var>.
 
     <li><span>Remove extraneous line breaks at the end of</span> <var>original
     parent</var>.
@@ -618,13 +665,6 @@ inline descendants in a clone of the former parent.
     <span>preserving ranges</span>.
   </ol>
 
-  <li>If the first member of <var>node list</var> is an <span>inline
-  node</span>, and <var>original parent</var>'s [[previoussibling]] is an
-  <span>inline node</span> other than a [[br]], and <var>original parent</var>
-  is not an <span>inline node</span>, call [[createelement|"br"]] on the
-  [[contextobject]], then insert the result into the [[parent]] of
-  <var>original parent</var> immediately before <var>original parent</var>.
-
   <li>For each <var>node</var> in <var>node list</var>, insert <var>node</var>
   into the [[parent]] of <var>original parent</var> immediately before
   <var>original parent</var>, <span>preserving ranges</span>.
@@ -635,14 +675,29 @@ inline descendants in a clone of the former parent.
   removing the element in the final step.  Preserving ranges is only necessary
   for the sake of boundary points in the element or its descendants. -->
 
+  <li>If <var>follows line break</var> is true, and the first member of
+  <var>node list</var> does not <span title="follows a line break">follow a
+  line break</span>, call [[createelement|"br"]] on the [[contextobject]] and
+  insert the result immediately before the first member of <var>node
+  list</var>.
+
   <li>If the last member of <var>node list</var> is an <span>inline node</span>
   other than a [[br]], and the first [[child]] of <var>original parent</var> is
   a [[br]], and <var>original parent</var> is not an <span>inline node</span>,
   remove the first [[child]] of <var>original parent</var> from <var>original
   parent</var>.
 
-  <li>If <var>original parent</var> has no [[children]], remove it from its
-  [[parent]].
+  <li>If <var>original parent</var> has no [[children]]:
+
+  <ol>
+    <li>Remove <var>original parent</var> from its [[parent]].
+
+    <li>If <var>precedes line break</var> is true, and the last member of
+    <var>node list</var> does not <span title="precedes a line break">precede a
+    line break</span>, call [[createelement|"br"]] on the [[contextobject]] and
+    insert the result immediately after the last member of <var>node
+    list</var>.
+  </ol>
 
   <li>Otherwise, <span>remove extraneous line breaks before</span>
   <var>original parent</var>.

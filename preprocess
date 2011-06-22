@@ -16,6 +16,8 @@ replace = {
     'blockquote': '<code data-anolis-spec=html title="the blockquote element">blockquote</code>',
     'br': '<code data-anolis-spec=html title="the br element">br</code>',
     'boundarypoint': '<span data-anolis-spec=domrange title=concept-boundary-point>boundary point</span>',
+    'bpafter': '<span data-anolis-spec=domrange title=concept-bp-after>after</span>',
+    'bpbefore': '<span data-anolis-spec=domrange title=concept-bp-before>before</span>',
     'bpnode': '<span data-anolis-spec=domrange title=concept-boundary-point-node>node</span>',
     'bpoffset': '<span data-anolis-spec=domrange title=concept-boundary-point-offset>offset</span>',
     'bpposition': '<span data-anolis-spec=domrange title=concept-bp-position>position</span>',

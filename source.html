@@ -401,6 +401,25 @@ li won't collapse even if it has no children at all, but that's not true in all
 browsers (at least not in Opera 11.11), and also it breaks assumptions
 elsewhere.  E.g., if it gets turned into a p.
 
+<p>A <dfn>visible node</dfn> is a [[node]] that either is a <span>prohibited
+paragraph child</span>, or a [[text]] node whose [[cddata]] is not empty, or
+an [[img]], or a [[br]] that is not an <span>extraneous line break</span>, or
+any [[node]] with a [[descendant]] that is a <span>visible node</span>.
+
+<p>An <dfn>invisible node</dfn> is a [[node]] that is not a <span>visible
+node</span>.
+
+<p class=XXX>I don't know if the visible/invisible node definitions are really
+the way we want to do things.  If they are, they need some adjustment, like to
+handle collapsed whitespace nodes.
+
+<p>A <dfn>collapsed block prop</dfn> is either a <span>collapsed line
+break</span> that is not an <span>extraneous line break</span>, or an
+[[element]] that is an <span>inline node</span> and whose [[children]] are all
+either <span title="invisible node">invisible nodes</span> or <span
+title="collapsed block prop">collapsed block props</span> and that has at least
+one [[child]] that is a <span>collapsed block prop</span>.
+
 <p>Each [[htmldocument]] has a boolean <dfn>CSS styling flag</dfn> associated
 with it, which must initially be false.  (<span>The <code
 title>styleWithCSS</code> command</span> can be used to modify or query it, by
@@ -2621,18 +2640,6 @@ container</span>, or an <span>HTML element</span> with [[localname]] "li",
 
 <p>The <dfn>default single-line container name</dfn> is "p".
 <!-- Possibly to be made configurable later. -->
-
-<p>A <dfn>visible node</dfn> is a [[node]] that either is a <span>prohibited
-paragraph child</span>, or a [[text]] node whose [[cddata]] is not empty, or
-an [[img]], or a [[br]] that is not an <span>extraneous line break</span>, or
-any [[node]] with a [[descendant]] that is a <span>visible node</span>.
-
-<p>An <dfn>invisible node</dfn> is a [[node]] that is not a <span>visible
-node</span>.
-
-<p class=XXX>I don't know if the visible/invisible node definitions are really
-the way we want to do things.  If they are, they need some adjustment, like to
-handle collapsed whitespace nodes and collapsed br's.
 <!-- @} -->
 
 <h3>Assorted block formatting command algorithms</h3>
@@ -3499,11 +3506,11 @@ we really want to use it, we probably want to change its name.
   winds up empty after merging, we'll add a new br child at the end so it
   doesn't collapse.
   -->
-  <li>If <var>start block</var> has one [[child]], which is a [[br]], remove
-  its [[child]] from it.
+  <li>If <var>start block</var> has one [[child]], which is a <span>collapsed
+  block prop</span>, remove its [[child]] from it.
 
-  <li>If <var>end block</var> has one [[child]], which is a [[br]], remove its
-  [[child]] from it.
+  <li>If <var>end block</var> has one [[child]], which is a <span>collapsed
+  block prop</span>, remove its [[child]] from it.
 
   <li>If <var>start block</var> is an [[ancestor]] of <var>end block</var>:
   <!-- Just repeatedly blow up the end block. -->
@@ -4988,6 +4995,10 @@ sense for <address>/<h*>/<pre>, but other browsers don't do it.
     <li>Otherwise, if <var>node</var> has a [[child]] with [[index]]
     <var>offset</var> and that [[child]] is an <span>editable</span>
     <span>invisible node</span>, remove that [[child]] from <var>node</var>.
+
+    <li>Otherwise, if <var>node</var> has a [[child]] with [[index]]
+    <var>offset</var> and that [[child]] is a <span>collapsed block
+    prop</span>, add one to <var>offset</var>.
 
     <li>Otherwise, if <var>offset</var> is the [[nodelength]] of
     <var>node</var> and <var>node</var> is not a <span>prohibited paragraph

@@ -459,6 +459,24 @@ li won't collapse even if it has no children at all, but that's not true in all
 browsers (at least not in Opera 11.11), and also it breaks assumptions
 elsewhere.  E.g., if it gets turned into a p.
 
+<p>A <dfn id=visible-node>visible node</dfn> is a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> that either is a <a href=#prohibited-paragraph-child>prohibited
+paragraph child</a>, or a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node whose <code class=external data-anolis-spec=domcore title=dom-CharacterData-data><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-data>data</a></code> is not empty, or
+an <code class=external data-anolis-spec=html title="the img element"><a href=http://www.whatwg.org/html/#the-img-element>img</a></code>, or a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code> that is not an <a href=#extraneous-line-break>extraneous line break</a>, or
+any <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> with a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-descendant title=concept-tree-descendant>descendant</a> that is a <a href=#visible-node>visible node</a>.
+
+<p>An <dfn id=invisible-node>invisible node</dfn> is a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> that is not a <a href=#visible-node>visible
+node</a>.
+
+<p class=XXX>I don't know if the visible/invisible node definitions are really
+the way we want to do things.  If they are, they need some adjustment, like to
+handle collapsed whitespace nodes.
+
+<p>A <dfn id=collapsed-block-prop>collapsed block prop</dfn> is either a <a href=#collapsed-line-break>collapsed line
+break</a> that is not an <a href=#extraneous-line-break>extraneous line break</a>, or an
+<code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> that is an <a href=#inline-node>inline node</a> and whose <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a> are all
+either <a href=#invisible-node title="invisible node">invisible nodes</a> or <a href=#collapsed-block-prop title="collapsed block prop">collapsed block props</a> and that has at least
+one <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> that is a <a href=#collapsed-block-prop>collapsed block prop</a>.
+
 <p>Each <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/html/#htmldocument>HTMLDocument</a></code> has a boolean <dfn id=css-styling-flag>CSS styling flag</dfn> associated
 with it, which must initially be false.  (<a href=#the-stylewithcss-command>The <code title="">styleWithCSS</code> command</a> can be used to modify or query it, by
 means of the <code><a href=#execcommand()>execCommand()</a></code> and <code><a href=#querycommandstate()>queryCommandState()</a></code>
@@ -2645,18 +2663,6 @@ container</a>, or an <a href=#html-element>HTML element</a> with <a class=extern
 <p>The <dfn id=default-single-line-container-name>default single-line container name</dfn> is "p".
 <!-- Possibly to be made configurable later. -->
 
-<p>A <dfn id=visible-node>visible node</dfn> is a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> that either is a <a href=#prohibited-paragraph-child>prohibited
-paragraph child</a>, or a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node whose <code class=external data-anolis-spec=domcore title=dom-CharacterData-data><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-data>data</a></code> is not empty, or
-an <code class=external data-anolis-spec=html title="the img element"><a href=http://www.whatwg.org/html/#the-img-element>img</a></code>, or a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code> that is not an <a href=#extraneous-line-break>extraneous line break</a>, or
-any <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> with a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-descendant title=concept-tree-descendant>descendant</a> that is a <a href=#visible-node>visible node</a>.
-
-<p>An <dfn id=invisible-node>invisible node</dfn> is a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> that is not a <a href=#visible-node>visible
-node</a>.
-
-<p class=XXX>I don't know if the visible/invisible node definitions are really
-the way we want to do things.  If they are, they need some adjustment, like to
-handle collapsed whitespace nodes and collapsed br's.
-
 
 <h3 id=assorted-block-formatting-command-algorithms><span class=secno>7.2 </span>Assorted block formatting command algorithms</h3>
 
@@ -3515,11 +3521,11 @@ we really want to use it, we probably want to change its name.
   winds up empty after merging, we'll add a new br child at the end so it
   doesn't collapse.
   -->
-  <li>If <var title="">start block</var> has one <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>, which is a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code>, remove
-  its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> from it.
+  <li>If <var title="">start block</var> has one <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>, which is a <a href=#collapsed-block-prop>collapsed
+  block prop</a>, remove its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> from it.
 
-  <li>If <var title="">end block</var> has one <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>, which is a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code>, remove its
-  <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> from it.
+  <li>If <var title="">end block</var> has one <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>, which is a <a href=#collapsed-block-prop>collapsed
+  block prop</a>, remove its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> from it.
 
   <li>If <var title="">start block</var> is an <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of <var title="">end block</var>:
   <!-- Just repeatedly blow up the end block. -->
@@ -4986,6 +4992,10 @@ sense for <address>/<h*>/<pre>, but other browsers don't do it.
     <li>Otherwise, if <var title="">node</var> has a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a>
     <var title="">offset</var> and that <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> is an <a href=#editable>editable</a>
     <a href=#invisible-node>invisible node</a>, remove that <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> from <var title="">node</var>.
+
+    <li>Otherwise, if <var title="">node</var> has a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a>
+    <var title="">offset</var> and that <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> is a <a href=#collapsed-block-prop>collapsed block
+    prop</a>, add one to <var title="">offset</var>.
 
     <li>Otherwise, if <var title="">offset</var> is the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> of
     <var title="">node</var> and <var title="">node</var> is not a <a href=#prohibited-paragraph-child>prohibited paragraph

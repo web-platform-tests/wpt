@@ -713,6 +713,62 @@ function isExtraneousLineBreak(br) {
 	return origHeight == finalHeight;
 }
 
+// "A visible node is a node that either is a prohibited paragraph child, or a
+// Text node whose data is not empty, or an img, or a br that is not an
+// extraneous line break, or any node with a descendant that is a visible
+// node."
+function isVisibleNode(node) {
+	if (!node) {
+		return false;
+	}
+	if (isProhibitedParagraphChild(node)
+	|| (node.nodeType == Node.TEXT_NODE && node.length)
+	|| isHtmlElement(node, "img")
+	|| (isHtmlElement(node, "br") && !isExtraneousLineBreak(node))) {
+		return true;
+	}
+	for (var i = 0; i < node.childNodes.length; i++) {
+		if (isVisibleNode(node.childNodes[i])) {
+			return true;
+		}
+	}
+	return false;
+}
+
+// "An invisible node is a node that is not a visible node."
+function isInvisibleNode(node) {
+	return node && !isVisibleNode(node);
+}
+
+// "A collapsed block prop is either a collapsed line break that is not an
+// extraneous line break, or an Element that is an inline node and whose
+// children are all either invisible nodes or collapsed block props and that
+// has at least one child that is a collapsed block prop."
+function isCollapsedBlockProp(node) {
+	if (isCollapsedLineBreak(node)
+	&& !isExtraneousLineBreak(node)) {
+		return true;
+	}
+
+	if (!isInlineNode(node)
+	|| node.nodeType != Node.ELEMENT_NODE) {
+		return false;
+	}
+
+	var hasCollapsedBlockPropChild = false;
+	for (var i = 0; i < node.childNodes.length; i++) {
+		if (!isInvisibleNode(node.childNodes[i])
+		&& !isCollapsedBlockProp(node.childNodes[i])) {
+			return false;
+		}
+		if (isCollapsedBlockProp(node.childNodes[i])) {
+			hasCollapsedBlockPropChild = true;
+		}
+	}
+
+	return hasCollapsedBlockPropChild;
+}
+
 //@}
 
 /////////////////////////////
@@ -3120,33 +3176,6 @@ function isSingleLineContainer(node) {
 // "The default single-line container name is "p"."
 var defaultSingleLineContainerName = "p";
 
-// "A visible node is a node that either is a prohibited paragraph child, or a
-// Text node whose data is not empty, or an img, or a br that is not an
-// extraneous line break, or any node with a descendant that is a visible
-// node."
-function isVisibleNode(node) {
-	if (!node) {
-		return false;
-	}
-	if (isProhibitedParagraphChild(node)
-	|| (node.nodeType == Node.TEXT_NODE && node.length)
-	|| isHtmlElement(node, "img")
-	|| (isHtmlElement(node, "br") && !isExtraneousLineBreak(node))) {
-		return true;
-	}
-	for (var i = 0; i < node.childNodes.length; i++) {
-		if (isVisibleNode(node.childNodes[i])) {
-			return true;
-		}
-	}
-	return false;
-}
-
-// "An invisible node is a node that is not a visible node."
-function isInvisibleNode(node) {
-	return node && !isVisibleNode(node);
-}
-
 //@}
 
 ///// Assorted block formatting command algorithms /////
@@ -4025,15 +4054,17 @@ function deleteContents(node1, offset1, node2, offset2) {
 		return;
 	}
 
-	// "If start block has one child, which is a br, remove its child from it."
+	// "If start block has one child, which is a collapsed block prop, remove
+	// its child from it."
 	if (startBlock.children.length == 1
-	&& isHtmlElement(startBlock.firstChild, "br")) {
+	&& isCollapsedBlockProp(startBlock.firstChild)) {
 		startBlock.removeChild(startBlock.firstChild);
 	}
 
-	// "If end block has one child, which is a br, remove its child from it."
+	// "If end block has one child, which is a collapsed block prop, remove its
+	// child from it."
 	if (endBlock.children.length == 1
-	&& isHtmlElement(endBlock.firstChild, "br")) {
+	&& isCollapsedBlockProp(endBlock.firstChild)) {
 		endBlock.removeChild(endBlock.firstChild);
 	}
 
@@ -5243,6 +5274,12 @@ commands["forwarddelete"] = {
 			&& isEditable(node.childNodes[offset])
 			&& isInvisibleNode(node.childNodes[offset])) {
 				node.removeChild(node.childNodes[offset]);
+
+			// "Otherwise, if node has a child with index offset and that child
+			// is a collapsed block prop, add one to offset."
+			} else if (offset < node.childNodes.length
+			&& isCollapsedBlockProp(node.childNodes[offset])) {
+				offset++;
 
 			// "Otherwise, if offset is the length of node and node is not a
 			// prohibited paragraph child, or if node is an invisible node, set

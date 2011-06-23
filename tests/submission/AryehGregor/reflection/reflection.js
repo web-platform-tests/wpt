@@ -160,9 +160,6 @@ var maxUnsigned = 4294967295;
  * here at the time of writing, see
  * http://www.w3.org/Bugs/Public/show_bug.cgi?id=12100
  *
- * TODO: Test setting an IDL attribute to null -- currently there's no interop
- * and WebIDL might not match reality.
- *
  * TODO: Test deleting an IDL attribute, and maybe doing other fun stuff to it.
  *
  * TODO: Test IDL sets of integer types to out-of-range or other weird values.
@@ -186,7 +183,7 @@ ReflectionTests.typeMap = {
 		 * done in a transparent, case-preserving manner."
 		 */
 		"domTests": ["", " " + binaryString + " foo ", undefined, 7, 1.5, true,
-			false, {"test": 6}, NaN, +Infinity, -Infinity, "\0"],
+			false, {"test": 6}, NaN, +Infinity, -Infinity, "\0", null],
 	},
 	/**
 	 * "If a reflecting IDL attribute is a DOMString attribute whose content
@@ -203,7 +200,7 @@ ReflectionTests.typeMap = {
 		"defaultVal": "",
 		"domTests": ["", " foo ", "http://site.example/",
 			"//site.example/path???@#l", binaryString, undefined, 7, 1.5, true,
-			false, {"test": 6}, NaN, +Infinity, -Infinity, "\0"],
+			false, {"test": 6}, NaN, +Infinity, -Infinity, "\0", null],
 		"domExpected": ReflectionTests.resolveUrl,
 		"idlIdlExpected": ReflectionTests.resolveUrl,
 	},
@@ -226,7 +223,7 @@ ReflectionTests.typeMap = {
 		"defaultVal": "",
 		"domTests": ["", " foo   ", "http://site.example/ foo  bar   baz",
 			"//site.example/path???@#l", binaryString, undefined, 7, 1.5, true,
-			false, {"test": 6}, NaN, +Infinity, -Infinity, "\0"],
+			false, {"test": 6}, NaN, +Infinity, -Infinity, "\0", null],
 		"domExpected": ReflectionTests.urlsExpected,
 		"idlIdlExpected": ReflectionTests.urlsExpected,
 	},
@@ -288,7 +285,7 @@ ReflectionTests.typeMap = {
 		"jsType": "string",
 		"defaultVal": "",
 		"domTests": ["", " " + binaryString + " foo ", undefined, 7, 1.5, true,
-			false, {"test": 6}, NaN, +Infinity, -Infinity, "\0"],
+			false, {"test": 6}, NaN, +Infinity, -Infinity, "\0", null],
 	},
 	/**
 	 * "If a reflecting IDL attribute is a boolean attribute, then on getting

@@ -162,21 +162,25 @@ function compareMethods(tr, command, points, label, specFn, browserFn) {
 	var browserCell = document.createElement("td");
 	tr.appendChild(browserCell);
 
-	var browserResult;
-	try {
-		setSelection(points[0], points[1], points[2], points[3]);
-		browserResult = browserFn.call(document, command);
-	} catch (e) {
-		browserCell.textContent = "Exception: " + e;
-		if (typeof e == "object" && "stack" in e) {
-			browserCell.textContent += " (stack: " + e.stack + ")";
+	if (typeof browserFn == "undefined") {
+		browserCell.textContent = "Method undefined";
+	} else {
+		var browserResult;
+		try {
+			setSelection(points[0], points[1], points[2], points[3]);
+			browserResult = browserFn.call(document, command);
+		} catch (e) {
+			browserCell.textContent = "Exception: " + e;
+			if (typeof e == "object" && "stack" in e) {
+				browserCell.textContent += " (stack: " + e.stack + ")";
+			}
 		}
-	}
 
-	getSelection().removeAllRanges();
+		getSelection().removeAllRanges();
 
-	if (typeof browserResult != "undefined") {
-		browserCell.textContent = typeof browserResult + ' "' + browserResult + '"';
+		if (typeof browserResult != "undefined") {
+			browserCell.textContent = typeof browserResult + ' "' + browserResult + '"';
+		}
 	}
 
 

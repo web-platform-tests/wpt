@@ -37,8 +37,17 @@ blank in IE and Opera, which don't support styleWithCSS.)
 
 		var div = document.createElement("div");
 		div.id = command;
+		var supported;
+		try {
+			supported = document.queryCommandSupported(command)
+				? "<span style=color:green>Supported</span>"
+				: "<span style=color:red>Not supported</span>";
+		} catch (e) {
+			supported = "<strong style=color:red>Exception for queryCommandSupported</strong>";
+		}
 		div.innerHTML = "<h1>" + command + "</h1>"
-			+ "<button onclick=\"runTests('" + command + "')\">Run tests</button>"
+			+ supported
+			+ " <button onclick=\"runTests('" + command + "')\">Run tests</button>"
 			+ (command in notes ? "<p>" + notes[command] : "")
 			+ "<table border=1><tr><th>Input <th>Spec <th>Browser <th>Same?</table>"
 			+ (doubleTestingCommands.indexOf(command) != -1 ? "<table border=1><tr><th>Input <th>Spec <th>Browser <th>Same?</table>" : "")

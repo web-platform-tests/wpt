@@ -271,46 +271,75 @@ scripts to ask true-or-false status questions about the current selection, such
 as whether it is bold or not.
 
 <p>The <dfn
+title=queryCommandSupported()><code>queryCommandSupported(<var>command</var>)</code></dfn>
+method on the <code data-anolis-spec=html>HTMLDocument</code> interface allows
+scripts to determine whether a particular command is supported or will do
+nothing.
+
+<p>The <dfn
 title=queryCommandValue()><code>queryCommandValue(<var>command</var>)</code></dfn>
 method on the <code data-anolis-spec=html>HTMLDocument</code> interface allows
 scripts to get the value of some property of the current selection in string
 form, such as what color it is.
 
-<p>All three of these methods operate using particular <dfn
+<p>All of these methods operate using particular <dfn
 title=command>commands</dfn>, identified by a string <var>command</var> passed
-as the first argument.  The <var>command</var> argument of all three methods
-must be treated in an <span data-anolis-spec=domcore>ASCII
-case-insensitive</span> manner.  Each <span>command</span> is defined in its
-own section of this specification.
+as the first argument.  The <var>command</var> argument of all the methods must
+be treated in an <span data-anolis-spec=domcore>ASCII case-insensitive</span>
+manner.  Each <span>command</span> is defined in its own section of this
+specification.
 
 <p><span title=command>Commands</span> may have an associated
 <dfn>action</dfn>, <dfn>state</dfn>, <dfn>value</dfn>, and/or <dfn>relevant
 CSS property</dfn>.  If not otherwise specified, the <span>action</span> for a
-command is to do nothing, the <span>state</span> is false, the
+<span>command</span> is to do nothing, the <span>state</span> is false, the
 <span>value</span> is the empty string, and the <span>relevant CSS
 property</span> is null.
-<!-- Requesting the state of an unknown command throws an exception in IE 9 RC
-and Firefox 4b11, and returns boolean false in Chrome 10 and Opera 11.
+<!--
+Requesting the state of an unknown command throws an exception in IE 9 RC and
+Firefox 4b11, and returns boolean false in Chrome 10 and Opera 11.
 
 Requesting the value of an unknown command throws an exception in IE 9 RC and
 in Firefox 4b11.  It returns boolean false in Chrome 10, and the empty string
-in Opera 11. -->
+in Opera 11.
 
-<!-- We have lots of options for the default value of commands.  Using bold as
-an example, IE 9 RC returns the boolean false, Firefox 4b11 and Opera 11 both
+We have lots of options for the default value of commands.  Using bold as an
+example, IE 9 RC returns the boolean false, Firefox 4b11 and Opera 11 both
 return the empty string, Chrome 10 returns the string "false".  The HTML5 spec
 as of February 2011 mandates WebKit's behavior.  It makes sense to always
 return a string, a majority of string-returners return the empty string, and
 three out of the four return something that evaluates to false as a boolean, so
-I'll go with Firefox and Opera. -->
+I'll go with Firefox and Opera.
+-->
 
 <p>When <code>execCommand()</code> is invoked, the user agent must follow the
 <span>action</span> instructions given in this specification for
 <var>command</var>, with <var>showUI</var> and <var>value</var> passed to the
-instructions as arguments.  When <code>queryCommandState()</code> is invoked,
-the user agent must return the <span>state</span> for <var>command</var>.  When
-<code>queryCommandValue()</code> is invoked, the user agent must return the
-<span>value</span> for <var>command</var>.
+instructions as arguments.
+
+<p>When <code>queryCommandState()</code> is invoked, the user agent must return
+the <span>state</span> for <var>command</var>.
+
+<p>When <code>queryCommandSupported()</code> is invoked, the user agent must
+return false if calling <code
+title=execCommand()>execCommand(<var>command</var>, <var>x</var>,
+<var>y</var>)</code> will never have any effect, and true otherwise.  Thus user
+agents that partially implement a <span>command</span> must return true for
+that <span>command</span>, and user agents that fully conform to this
+specification must return true for all the <span title=command>commands</span>
+defined in it (except possibly <span>the <code title>copy</code>
+command</span>, <span>the <code title>cut</code> command</span>, and/or
+<span>the <code title>paste</code> command</span>).
+<!--
+Firefox 6.0a2 always throws an exception when this is called.  That's
+presumably because it's easy to feature-test, in that it throws an exception if
+you run any of the other methods with an unrecognized command.  Opera 11.11
+seems to return false if there's nothing editable on the page, which is
+unhelpful.  The spec follows IE9 and Chrome 14 dev.
+-->
+
+<p>When <code>queryCommandValue()</code> is invoked, the user agent must return
+the <span>value</span> for <var>command</var>.
 
 <p>Most <span title=command>commands</span> act on the <dfn>active range</dfn>.
 This is defined to be the first [[range]] in the [[selection]] given by calling

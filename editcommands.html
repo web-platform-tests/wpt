@@ -335,45 +335,72 @@ method on the <code class=external data-anolis-spec=html><a href=http://www.what
 scripts to ask true-or-false status questions about the current selection, such
 as whether it is bold or not.
 
+<p>The <dfn id=querycommandsupported() title=queryCommandSupported()><code>queryCommandSupported(<var title="">command</var>)</code></dfn>
+method on the <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/html/#htmldocument>HTMLDocument</a></code> interface allows
+scripts to determine whether a particular command is supported or will do
+nothing.
+
 <p>The <dfn id=querycommandvalue() title=queryCommandValue()><code>queryCommandValue(<var title="">command</var>)</code></dfn>
 method on the <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/html/#htmldocument>HTMLDocument</a></code> interface allows
 scripts to get the value of some property of the current selection in string
 form, such as what color it is.
 
-<p>All three of these methods operate using particular <dfn id=command title=command>commands</dfn>, identified by a string <var title="">command</var> passed
-as the first argument.  The <var title="">command</var> argument of all three methods
-must be treated in an <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#ascii-case-insensitive>ASCII
-case-insensitive</a> manner.  Each <a href=#command>command</a> is defined in its
-own section of this specification.
+<p>All of these methods operate using particular <dfn id=command title=command>commands</dfn>, identified by a string <var title="">command</var> passed
+as the first argument.  The <var title="">command</var> argument of all the methods must
+be treated in an <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#ascii-case-insensitive>ASCII case-insensitive</a>
+manner.  Each <a href=#command>command</a> is defined in its own section of this
+specification.
 
 <p><a href=#command title=command>Commands</a> may have an associated
 <dfn id=action>action</dfn>, <dfn id=state>state</dfn>, <dfn id=value>value</dfn>, and/or <dfn id=relevant-css-property>relevant
 CSS property</dfn>.  If not otherwise specified, the <a href=#action>action</a> for a
-command is to do nothing, the <a href=#state>state</a> is false, the
+<a href=#command>command</a> is to do nothing, the <a href=#state>state</a> is false, the
 <a href=#value>value</a> is the empty string, and the <a href=#relevant-css-property>relevant CSS
 property</a> is null.
-<!-- Requesting the state of an unknown command throws an exception in IE 9 RC
-and Firefox 4b11, and returns boolean false in Chrome 10 and Opera 11.
+<!--
+Requesting the state of an unknown command throws an exception in IE 9 RC and
+Firefox 4b11, and returns boolean false in Chrome 10 and Opera 11.
 
 Requesting the value of an unknown command throws an exception in IE 9 RC and
 in Firefox 4b11.  It returns boolean false in Chrome 10, and the empty string
-in Opera 11. -->
+in Opera 11.
 
-<!-- We have lots of options for the default value of commands.  Using bold as
-an example, IE 9 RC returns the boolean false, Firefox 4b11 and Opera 11 both
+We have lots of options for the default value of commands.  Using bold as an
+example, IE 9 RC returns the boolean false, Firefox 4b11 and Opera 11 both
 return the empty string, Chrome 10 returns the string "false".  The HTML5 spec
 as of February 2011 mandates WebKit's behavior.  It makes sense to always
 return a string, a majority of string-returners return the empty string, and
 three out of the four return something that evaluates to false as a boolean, so
-I'll go with Firefox and Opera. -->
+I'll go with Firefox and Opera.
+-->
 
 <p>When <code><a href=#execcommand()>execCommand()</a></code> is invoked, the user agent must follow the
 <a href=#action>action</a> instructions given in this specification for
 <var title="">command</var>, with <var title="">showUI</var> and <var title="">value</var> passed to the
-instructions as arguments.  When <code><a href=#querycommandstate()>queryCommandState()</a></code> is invoked,
-the user agent must return the <a href=#state>state</a> for <var title="">command</var>.  When
-<code><a href=#querycommandvalue()>queryCommandValue()</a></code> is invoked, the user agent must return the
-<a href=#value>value</a> for <var title="">command</var>.
+instructions as arguments.
+
+<p>When <code><a href=#querycommandstate()>queryCommandState()</a></code> is invoked, the user agent must return
+the <a href=#state>state</a> for <var title="">command</var>.
+
+<p>When <code><a href=#querycommandsupported()>queryCommandSupported()</a></code> is invoked, the user agent must
+return false if calling <code title=execCommand()><a href=#execcommand()>execCommand(<var title="">command</var>, <var title="">x</var>,
+<var title="">y</var>)</a></code> will never have any effect, and true otherwise.  Thus user
+agents that partially implement a <a href=#command>command</a> must return true for
+that <a href=#command>command</a>, and user agents that fully conform to this
+specification must return true for all the <a href=#command title=command>commands</a>
+defined in it (except possibly <a href=#the-copy-command>the <code title="">copy</code>
+command</a>, <a href=#the-cut-command>the <code title="">cut</code> command</a>, and/or
+<a href=#the-paste-command>the <code title="">paste</code> command</a>).
+<!--
+Firefox 6.0a2 always throws an exception when this is called.  That's
+presumably because it's easy to feature-test, in that it throws an exception if
+you run any of the other methods with an unrecognized command.  Opera 11.11
+seems to return false if there's nothing editable on the page, which is
+unhelpful.  The spec follows IE9 and Chrome 14 dev.
+-->
+
+<p>When <code><a href=#querycommandvalue()>queryCommandValue()</a></code> is invoked, the user agent must return
+the <a href=#value>value</a> for <var title="">command</var>.
 
 <p>Most <a href=#command title=command>commands</a> act on the <dfn id=active-range>active range</dfn>.
 This is defined to be the first <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> in the <code class=external data-anolis-spec=domrange><a href=http://html5.org/specs/dom-range.html#selection>Selection</a></code> given by calling

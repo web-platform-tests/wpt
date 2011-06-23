@@ -2911,6 +2911,7 @@ var tests = {
 		'[foo<a name=foo>bar</a>baz]',
 	],
 	//@}
+	quasit: [],
 };
 tests.insertlinebreak = tests.insertparagraph;
 

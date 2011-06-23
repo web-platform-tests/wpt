@@ -676,11 +676,17 @@ function isCollapsedLineBreak(br) {
 	}
 	var space = document.createTextNode("\u200b");
 	var origHeight = ref.offsetHeight;
+	if (origHeight == 0) {
+		throw "isCollapsedLineBreak: original height is zero, bug?";
+	}
 	br.parentNode.insertBefore(space, br.nextSibling);
 	var finalHeight = ref.offsetHeight;
 	space.parentNode.removeChild(space);
 
-	return origHeight != finalHeight;
+	// Allow some leeway in case the zwsp didn't create a whole new line, but
+	// only made an existing line slightly higher.  Firefox 6.0a2 shows this
+	// behavior when the first line is bold.
+	return origHeight < finalHeight - 5;
 }
 
 // "An extraneous line break is a br that has no visual effect, in that
@@ -702,6 +708,9 @@ function isExtraneousLineBreak(br) {
 	}
 	var style = br.hasAttribute("style") ? br.getAttribute("style") : null;
 	var origHeight = ref.offsetHeight;
+	if (origHeight == 0) {
+		throw "isExtraneousLineBreak: original height is zero, bug?";
+	}
 	br.setAttribute("style", "display:none");
 	var finalHeight = ref.offsetHeight;
 	if (style === null) {

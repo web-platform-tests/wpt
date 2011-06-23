@@ -274,6 +274,7 @@ var tests = {
 		'<span>foo</span>{}<span>bar</span>',
 		'<span>foo[</span><span>]bar</span>',
 		'foo<span style=display:none>bar</span>[]baz',
+		'foo<script>bar</script>[]baz',
 		'fo&ouml;[]bar',
 		'foo&#x308;[]bar',
 
@@ -913,6 +914,7 @@ var tests = {
 		'<span>foo</span>{}<span>bar</span>',
 		'<span>foo[</span><span>]bar</span>',
 		'foo[]<span style=display:none>bar</span>baz',
+		'foo[]<script>bar</script>baz',
 		'fo[]&ouml;bar',
 		'fo[]o&#x308;bar',
 
@@ -1764,6 +1766,7 @@ var tests = {
 
 		'<xmp>foo[]bar</xmp>',
 		'<script>foo[]bar</script>baz',
+		'<div style=display:none>foo[]bar</div>baz',
 
 		'<ol><li>{}<br></li></ol>',
 		'foo<ol><li>{}<br></li></ol>',

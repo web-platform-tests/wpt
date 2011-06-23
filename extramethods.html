@@ -1,9 +1,9 @@
 <!doctype html>
 <meta charset=utf-8>
 <title>Auto-running queryCommand*() tests</title>
+<!-- @{ -->
 <link rel=stylesheet href=tests.css>
 <style>
-#toolbar { display: none }
 body > div > table > tbody > tr { display: table-row !important }
 .yes, .no, .maybe { font-size: 1em }
 body > div > table > tbody > tr > td,
@@ -32,13 +32,63 @@ displayed as forwards or such.
 <h1>Table of Contents</h1>
 <ul>
 </ul>
-
 <script src=implementation.js></script>
 <script src=tests.js></script>
+<!-- @} -->
 <script>
 "use strict";
+// Let's have a more useful toolbar
+//@{
+document.querySelector("#toolbar").innerHTML = '<label><input id=enabled-checkbox type=checkbox checked onclick="updateDisplayedRows()"> Display enabled</label>'
+	+ '<label><input id=indeterm-checkbox type=checkbox checked onclick="updateDisplayedRows()"> Display indeterminate</label>'
+	+ '<label><input id=state-checkbox type=checkbox checked onclick="updateDisplayedRows()"> Display state</label>'
+	+ '<label><input id=value-checkbox type=checkbox checked onclick="updateDisplayedRows()"> Display value</label>'
+	+ '<style id=row-hider></style>';
+
+// Number of rows to display per entry
+var rowCount;
+
+function updateDisplayedRows() {
+	var enabled = document.querySelector("#enabled-checkbox").checked;
+	var indeterm = document.querySelector("#indeterm-checkbox").checked;
+	var state = document.querySelector("#state-checkbox").checked;
+	var value = document.querySelector("#value-checkbox").checked;
+
+	rowCount = Number(enabled) + Number(indeterm) + Number(state) + Number(value);
+	var boxes = document.querySelectorAll("#toolbar input");
+	var hiddenRows = [];
+	for (var i = 0; i < boxes.length; i++) {
+		// Don't let the user uncheck the last box
+		boxes[i].disabled = rowCount == 1 && boxes[i].checked;
+		if (!boxes[i].checked) {
+			hiddenRows.push(i);
+		}
+	}
+
+	var hideCss = "";
+	if (hiddenRows.length) {
+		for (var i = 0; i < hiddenRows.length; i++) {
+			if (hiddenRows[i] == 0) {
+				hideCss += "body > div > table > tbody > tr:nth-child(4n + 2) > :not(:first-child), ";
+			} else {
+				hideCss += "body > div > table > tbody > tr:nth-child(4n + " + ((hiddenRows[i] + 2) % 4) + "):not(:first-child), ";
+			}
+		}
+		hideCss = hideCss.replace(/, $/, "");
+		hideCss += " { display: none !important }";
+	}
+	document.querySelector("#row-hider").textContent = hideCss;
+
+	var cells = document.querySelectorAll("[rowspan]");
+	for (var i = 0; i < cells.length; i++) {
+		cells[i].rowSpan = 1 + Number(indeterm) + Number(state) + Number(value);
+	}
+}
+updateDisplayedRows();
+//@}
 // Set up all the HTML automatically so I can add new commands to test without
 // copy-pasting in five places
+//@{
 (function() {
 	var toc = document.querySelector("ul");
 	for (var command in tests) {
@@ -57,8 +107,10 @@ displayed as forwards or such.
 		document.body.appendChild(div);
 	}
 })();
+//@}
 
 function runTests(command) {
+//@{
     var runTestsButton = document.querySelector("#" + command + " button");
     if (runTestsButton.textContent != "Run tests") {
         return;
@@ -88,8 +140,10 @@ function runTests(command) {
 
 	document.querySelector("#" + command).scrollIntoView();
 }
+//@}
 
 function addTest(command) {
+//@{
 	var tr = doSetup("#" + command + " > table", 0);
 
 	var test;
@@ -128,8 +182,10 @@ function addTest(command) {
 	inputCell.firstChild.innerHTML = test;
 	inputCell.lastChild.textContent = inputCell.firstChild.innerHTML;
 }
+//@}
 
 function compareMethods(tr, command, points, label, specFn, browserFn) {
+//@{
 	var labelCell = document.createElement("th");
 	labelCell.textContent = label;
 	tr.appendChild(labelCell);
@@ -194,4 +250,7 @@ function compareMethods(tr, command, points, label, specFn, browserFn) {
 		sameCell.textContent = "\u2717";
 	}
 }
+//@}
 </script>
+<!-- vim: foldmarker=@{,@} foldmethod=marker
+-->

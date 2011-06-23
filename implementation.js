@@ -203,8 +203,8 @@ function isHtmlNamespace(ns) {
 }
 
 // For computing states of the form "True if every editable Text node that is
-// effectively contained in the active range (has property X).  Otherwise
-// false."
+// effectively contained in the active range (has property X), and there is at
+// least one such Text node.  Otherwise false."
 function stateHelper(callback) {
 	var range = getActiveRange();
 	// XXX: This algorithm for getting all effectively contained nodes might be
@@ -215,6 +215,7 @@ function stateHelper(callback) {
 	}
 	var stop = nextNodeDescendants(range.endContainer);
 
+	var atLeastOne = false;
 	for (; node && node != stop; node = nextNode(node)) {
 		if (!isEffectivelyContained(node, range)
 		|| node.nodeType != Node.TEXT_NODE
@@ -222,12 +223,14 @@ function stateHelper(callback) {
 			continue;
 		}
 
+		atLeastOne = true;
+
 		if (!callback(node)) {
 			return false;
 		}
 	}
 
-	return true;
+	return atLeastOne;
 }
 
 //@}
@@ -2611,7 +2614,8 @@ commands.bold = {
 		}
 	}, state: function() { return stateHelper(function(node) {
 		// "True if every editable Text node that is effectively contained in
-		// the active range has effective value at least 700. Otherwise false."
+		// the active range has effective value at least 700, and there is at
+		// least one such text node. Otherwise false."
 		var fontWeight = getEffectiveValue(node, "bold");
 		return fontWeight === "bold"
 			|| fontWeight === "700"
@@ -2846,8 +2850,8 @@ commands.italic = {
 		}
 	}, state: function() { return stateHelper(function(node) {
 		// "True if every editable Text node that is effectively contained in
-		// the active range has effective value either "italic" or "oblique".
-		// Otherwise false."
+		// the active range has effective value either "italic" or "oblique",
+		// and there is at least one such Text node.  Otherwise false."
 		var value = getEffectiveValue(node, "italic");
 		return value == "italic" || value == "oblique";
 	})}, relevantCssProperty: "fontStyle"
@@ -2947,8 +2951,8 @@ commands.strikethrough = {
 		}
 	}, state: function() { return stateHelper(function(node) {
 		// "True if every editable Text node that is effectively contained in
-		// the active range has effective value "line-through". Otherwise
-		// false."
+		// the active range has effective value "line-through", and there is at
+		// least one such Text node. Otherwise false."
 		return getEffectiveValue(node, "strikethrough") == "line-through";
 	})}
 };
@@ -2979,7 +2983,8 @@ commands.subscript = {
 		}
 	}, state: function() { return stateHelper(function(node) {
 		// "True if every editable Text node that is effectively contained in
-		// the active range has effective value "sub". Otherwise false."
+		// the active range has effective value "sub", and there is at least
+		// one such Text node. Otherwise false."
 		return getEffectiveValue(node, "subscript") == "sub";
 	})}, relevantCssProperty: "verticalAlign"
 };
@@ -3010,7 +3015,8 @@ commands.superscript = {
 		}
 	}, state: function() { return stateHelper(function(node) {
 		// "True if every editable Text node that is effectively contained in
-		// the active range has effective value "super". Otherwise false."
+		// the active range has effective value "super", and there is at least
+		// one such Text node. Otherwise false."
 		return getEffectiveValue(node, "superscript") == "super";
 	})}, relevantCssProperty: "verticalAlign"
 };
@@ -3030,7 +3036,8 @@ commands.underline = {
 		}
 	}, state: function() { return stateHelper(function(node) {
 		// "True if every editable Text node that is effectively contained in
-		// the active range has effective value "underline". Otherwise false."
+		// the active range has effective value "underline", and there is at
+		// least one such Text node. Otherwise false."
 		return getEffectiveValue(node, "underline") === "underline";
 	})}
 };

@@ -1991,7 +1991,8 @@ returned [[node]] to "bold", otherwise <span>set the value</span> to "normal".
 
 <p><span>State</span>: True if every <span>editable</span> [[text]] node that
 is <span>effectively contained</span> in the <span>active range</span> has
-<span>effective value</span> at least 700.  Otherwise false.
+<span>effective value</span> at least 700, and there is at least one such
+[[text]] node.  Otherwise false.
 <!-- For bold and similar commands, IE 9 RC seems to consider the state true or
 false depending on the first element.  All other browsers follow the same
 general idea as the spec, considering a range bold only if all text in it is
@@ -2341,7 +2342,8 @@ returned [[node]] to "italic", otherwise <span>set the value</span> to
 
 <p><span>State</span>: True if every <span>editable</span> [[text]] node that
 is <span>effectively contained</span> in the <span>active range</span> has
-<span>effective value</span> either "italic" or "oblique".  Otherwise false.
+<span>effective value</span> either "italic" or "oblique", and there is at
+least one such [[text]] node.  Otherwise false.
 
 <p><span>Relevant CSS property</span>: "font-style"
 <!-- @} -->
@@ -2480,7 +2482,8 @@ title>underline</code> command</span>.
 
 <p><span>State</span>: True if every <span>editable</span> [[text]] node that
 is <span>effectively contained</span> in the <span>active range</span> has
-<span>effective value</span> "line-through".  Otherwise false.
+<span>effective value</span> "line-through", and there is at least one such
+[[text]] node.  Otherwise false.
 <!-- @} -->
 
 <h3><dfn>The <code title>subscript</code> command</dfn></h3>
@@ -2503,7 +2506,8 @@ is <span>effectively contained</span> in the <span>active range</span> has
 
 <p><span>State</span>: True if every <span>editable</span> [[text]] node that
 is <span>effectively contained</span> in the <span>active range</span> has
-<span>effective value</span> "sub".  Otherwise false.
+<span>effective value</span> "sub", and there is at least one such [[text]]
+node.  Otherwise false.
 
 <p><span>Relevant CSS property</span>: "vertical-align"
 <!-- @} -->
@@ -2528,7 +2532,8 @@ is <span>effectively contained</span> in the <span>active range</span> has
 
 <p><span>State</span>: True if every <span>editable</span> [[text]] node that
 is <span>effectively contained</span> in the <span>active range</span> has
-<span>effective value</span> "super".  Otherwise false.
+<span>effective value</span> "super", and there is at least one such [[text]]
+node.  Otherwise false.
 
 <p><span>Relevant CSS property</span>: "vertical-align"
 <!-- @} -->
@@ -2592,7 +2597,8 @@ may be.
 
 <p><span>State</span>: True if every <span>editable</span> [[text]] node that
 is <span>effectively contained</span> in the <span>active range</span> has
-<span>effective value</span> "underline".  Otherwise false.
+<span>effective value</span> "underline", and there is at least one such
+[[text]] node.  Otherwise false.
 <!-- @} -->
 
 <h3><dfn>The <code title>unlink</code> command</dfn></h3>

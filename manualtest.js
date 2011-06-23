@@ -1,5 +1,6 @@
 // If globalValue isn't set, we don't support non-default values for manual
 // tests, so only strings need apply.
+//@{
 if ("globalValue" in window) {
 	tests = tests[command].filter(function(test) {
 		return typeof test == "object"
@@ -8,20 +9,24 @@ if ("globalValue" in window) {
 } else {
 	tests = tests[command].filter(function(test) { return typeof test == "string"});
 }
+//@}
 
 var testsRunning = false;
 
 function clearCachedResults() {
+//@{
 	for (var key in localStorage) {
 		if (RegExp("^" + keyname + "test-").test(key)) {
 			localStorage.removeItem(key);
 		}
 	}
 }
+//@}
 
 var numManualTests = 0;
 
 function runTests() {
+//@{
 	// We don't ask the user to hit a key on all tests, so make sure not to
 	// claim more tests are going to be run than actually are.
 	for (var i = 0; i < tests.length; i++) {
@@ -42,8 +47,10 @@ function runTests() {
 	input.focus();
 	addTestButton.click();
 }
+//@}
 
 function addTest() {
+//@{
 	var tr = doSetup("#tests table", 0);
 	var input = document.querySelector("#tests label input");
 	var test = input.value;
@@ -72,8 +79,10 @@ function addTest() {
 		});
 	}
 }
+//@}
 
 function runNextTest(test) {
+//@{
 	doTearDown();
 	var input = document.querySelector("#tests label input");
 	if (!testsRunning) {
@@ -95,8 +104,10 @@ function runNextTest(test) {
 	input.focus();
 	addTest();
 }
+//@}
 
 function doBrowserCell(tr, test, callback) {
+//@{
 	var browserCell = document.createElement("td");
 	tr.appendChild(browserCell);
 
@@ -129,8 +140,10 @@ function doBrowserCell(tr, test, callback) {
 		callback();
 	}
 }
+//@}
 
 function continueBrowserCell(test, testDiv, browserCell) {
+//@{
 	try {
 		testDiv.contentEditable = "inherit";
 		testDiv.removeAttribute("spellcheck");
@@ -175,3 +188,5 @@ function continueBrowserCell(test, testDiv, browserCell) {
 
 	localStorage[keyname + "test-" + test] = browserCell.innerHTML;
 }
+//@}
+// vim: foldmarker=@{,@} foldmethod=marker

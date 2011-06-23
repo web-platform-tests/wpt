@@ -483,9 +483,7 @@ function parseSimpleColor(color) {
 ///// Methods of the HTMLDocument interface /////
 /////////////////////////////////////////////////
 //@{
-function myExecCommand(command, showUI, value, range) {
-	command = command.toLowerCase();
-
+function setupEditCommandMethod(command, range) {
 	if (typeof range != "undefined") {
 		globalRange = range;
 	} else {
@@ -495,58 +493,76 @@ function myExecCommand(command, showUI, value, range) {
 	// "If the active range is null, all commands must behave as though they
 	// were not defined except those in the miscellaneous commands section."
 	if (!globalRange && command != "selectall" && command != "stylewithcss" && command != "usecss") {
-		return;
+		return false;
 	}
 
 	if (!(command in commands)) {
-		return;
+		return false;
 	}
 
-	commands[command].action(value);
+	return true;
+}
+
+function myExecCommand(command, showUI, value, range) {
+	command = command.toLowerCase();
+
+	if (setupEditCommandMethod(command, range)) {
+		commands[command].action(value);
+	}
 
 	globalRange = null;
 }
 
-function myQueryCommandState(command) {
+function myQueryCommandEnabled(command, range) {
 	command = command.toLowerCase();
 
-	if (typeof range != "undefined") {
-		globalRange = range;
+	if (setupEditCommandMethod(command, range)) {
+		return commands[command].enabled();
 	} else {
-		globalRange = getActiveRange();
+		return false;
 	}
-
-	if (!globalRange && command != "selectall" && command != "stylewithcss" && command != "usecss") {
-		return;
-	}
-
-	if (!(command in commands)) {
-		return;
-	}
-
-	return commands[command].state();
 
 	globalRange = null;
 }
 
-function myQueryCommandValue(command) {
+function myQueryCommandIndeterm(command, range) {
 	command = command.toLowerCase();
 
-	if (typeof range != "undefined") {
-		globalRange = range;
+	if (setupEditCommandMethod(command, range)) {
+		return commands[command].indeterm();
 	} else {
-		globalRange = getActiveRange();
+		return false;
 	}
 
-	if (!globalRange && command != "selectall" && command != "stylewithcss" && command != "usecss") {
-		return;
+	globalRange = null;
+}
+
+function myQueryCommandState(command, range) {
+	command = command.toLowerCase();
+
+	if (setupEditCommandMethod(command, range)) {
+		return commands[command].state();
+	} else {
+		// "If not otherwise specified, the action for a command is to do
+		// nothing, the state is false, the value is the empty string, and the
+		// relevant CSS property is null."
+		return false;
 	}
 
-	if (!(command in commands)) {
-		return;
-	}
+	globalRange = null;
+}
 
-	return commands[command].value();
+function myQueryCommandValue(command, range) {
+	command = command.toLowerCase();
+
+	if (setupEditCommandMethod(command, range)) {
+		return commands[command].value();
+	} else {
+		// "If not otherwise specified, the action for a command is to do
+		// nothing, the state is false, the value is the empty string, and the
+		// relevant CSS property is null."
+		return "";
+	}
 
 	globalRange = null;
 }
@@ -6303,6 +6319,12 @@ commands.usecss = {
 	for (var command in commands) {
 		if (!("action" in commands[command])) {
 			commands[command].action = function() {};
+		}
+		if (!("enabled" in commands[command])) {
+			commands[command].enabled = function() { return true };
+		}
+		if (!("indeterm" in commands[command])) {
+			commands[command].indeterm = function() { return false };
 		}
 		if (!("state" in commands[command])) {
 			commands[command].state = function() { return false };

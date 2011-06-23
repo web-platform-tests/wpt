@@ -330,6 +330,15 @@ method, with one, two, and three arguments respectively. The <var title="">showU
 and <var title="">value</var> parameters, even if specified, are ignored except where
 otherwise stated.
 
+<p>The <dfn id=querycommandenabled() title=queryCommandEnabled()><code>queryCommandEnabled(<var title="">command</var>)</code></dfn>
+method on the <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/html/#htmldocument>HTMLDocument</a></code> interface allows
+scripts to ask whether calling <code><a href=#execcommand()>execCommand()</a></code> would have any
+effect.
+
+<p class=XXX>The <dfn id=querycommandindeterm() title=queryCommandIndeterm()><code>queryCommandIndeterm(<var title="">command</var>)</code></dfn>
+method on the <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/html/#htmldocument>HTMLDocument</a></code> interface is a
+useless method that always returns false.  I think.
+
 <p>The <dfn id=querycommandstate() title=queryCommandState()><code>queryCommandState(<var title="">command</var>)</code></dfn>
 method on the <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/html/#htmldocument>HTMLDocument</a></code> interface allows
 scripts to ask true-or-false status questions about the current selection, such
@@ -352,9 +361,11 @@ manner.  Each <a href=#command>command</a> is defined in its own section of this
 specification.
 
 <p><a href=#command title=command>Commands</a> may have an associated
-<dfn id=action>action</dfn>, <dfn id=state>state</dfn>, <dfn id=value>value</dfn>, and/or <dfn id=relevant-css-property>relevant
-CSS property</dfn>.  If not otherwise specified, the <a href=#action>action</a> for a
-<a href=#command>command</a> is to do nothing, the <a href=#state>state</a> is false, the
+<dfn id=action>action</dfn>, <dfn id=enabled-flag>enabled flag</dfn>, <dfn id=indeterminate-flag>indeterminate flag</dfn>,
+<dfn id=state>state</dfn>, <dfn id=value>value</dfn>, and/or <dfn id=relevant-css-property>relevant CSS property</dfn>.
+If not otherwise specified, the <a href=#action>action</a> for a <a href=#command>command</a>
+is to do nothing, the <a href=#enabled-flag>enabled flag</a> is true, the
+<a href=#indeterminate-flag>indeterminate flag</a> is false, the <a href=#state>state</a> is false, the
 <a href=#value>value</a> is the empty string, and the <a href=#relevant-css-property>relevant CSS
 property</a> is null.
 <!--
@@ -378,6 +389,12 @@ I'll go with Firefox and Opera.
 <a href=#action>action</a> instructions given in this specification for
 <var title="">command</var>, with <var title="">showUI</var> and <var title="">value</var> passed to the
 instructions as arguments.
+
+<p>When <code><a href=#querycommandenabled()>queryCommandEnabled()</a></code> is invoked, the user agent must
+return the <a href=#enabled-flag>enabled flag</a> for <var title="">command</var>.
+
+<p>When <code><a href=#querycommandindeterm()>queryCommandIndeterm()</a></code> is invoked, the user agent must
+return the <a href=#indeterminate-flag>indeterminate flag</a> for <var title="">command</var>.
 
 <p>When <code><a href=#querycommandstate()>queryCommandState()</a></code> is invoked, the user agent must return
 the <a href=#state>state</a> for <var title="">command</var>.

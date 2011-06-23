@@ -265,6 +265,17 @@ and <var>value</var> parameters, even if specified, are ignored except where
 otherwise stated.
 
 <p>The <dfn
+title=queryCommandEnabled()><code>queryCommandEnabled(<var>command</var>)</code></dfn>
+method on the <code data-anolis-spec=html>HTMLDocument</code> interface allows
+scripts to ask whether calling <code>execCommand()</code> would have any
+effect.
+
+<p class=XXX>The <dfn
+title=queryCommandIndeterm()><code>queryCommandIndeterm(<var>command</var>)</code></dfn>
+method on the <code data-anolis-spec=html>HTMLDocument</code> interface is a
+useless method that always returns false.  I think.
+
+<p>The <dfn
 title=queryCommandState()><code>queryCommandState(<var>command</var>)</code></dfn>
 method on the <code data-anolis-spec=html>HTMLDocument</code> interface allows
 scripts to ask true-or-false status questions about the current selection, such
@@ -290,9 +301,11 @@ manner.  Each <span>command</span> is defined in its own section of this
 specification.
 
 <p><span title=command>Commands</span> may have an associated
-<dfn>action</dfn>, <dfn>state</dfn>, <dfn>value</dfn>, and/or <dfn>relevant
-CSS property</dfn>.  If not otherwise specified, the <span>action</span> for a
-<span>command</span> is to do nothing, the <span>state</span> is false, the
+<dfn>action</dfn>, <dfn>enabled flag</dfn>, <dfn>indeterminate flag</dfn>,
+<dfn>state</dfn>, <dfn>value</dfn>, and/or <dfn>relevant CSS property</dfn>.
+If not otherwise specified, the <span>action</span> for a <span>command</span>
+is to do nothing, the <span>enabled flag</span> is true, the
+<span>indeterminate flag</span> is false, the <span>state</span> is false, the
 <span>value</span> is the empty string, and the <span>relevant CSS
 property</span> is null.
 <!--
@@ -316,6 +329,12 @@ I'll go with Firefox and Opera.
 <span>action</span> instructions given in this specification for
 <var>command</var>, with <var>showUI</var> and <var>value</var> passed to the
 instructions as arguments.
+
+<p>When <code>queryCommandEnabled()</code> is invoked, the user agent must
+return the <span>enabled flag</span> for <var>command</var>.
+
+<p>When <code>queryCommandIndeterm()</code> is invoked, the user agent must
+return the <span>indeterminate flag</span> for <var>command</var>.
 
 <p>When <code>queryCommandState()</code> is invoked, the user agent must return
 the <span>state</span> for <var>command</var>.

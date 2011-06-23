@@ -1,0 +1,193 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>Auto-running queryCommand*() tests</title>
+<link rel=stylesheet href=tests.css>
+<style>
+#toolbar { display: none }
+body > div > table > tbody > tr { display: table-row !important }
+.yes, .no, .maybe { font-size: 1em }
+body > div > table > tbody > tr > td,
+body > div > table > tbody > tr > th {
+	width: 15%;
+}
+body > div > table > tbody > tr > td[rowspan],
+body > div > table > tbody > tr > th:first-child {
+	width: 50%;
+}
+body > div > table > tbody > tr > td:last-child,
+body > div > table > tbody > tr > th:last-child {
+	width: 5%;
+}
+</style>
+<p>Legend: {[ are the selection anchor, }] are the selection focus, {}
+represent an element boundary point, [] represent a text node boundary point.
+Syntax and some of the tests taken from <a
+href=http://www.browserscope.org/richtext2/test>Browserscope</a>.  data-start
+and data-end attributes also represent element boundary points, with the node
+being the element with the attribute and the offset given as the attribute
+value, for cases where HTML parsing doesn't allow text nodes.  Currently we
+don't really pay attention to reversed selections at all, so they might get
+displayed as forwards or such.
+
+<h1>Table of Contents</h1>
+<ul>
+</ul>
+
+<script src=implementation.js></script>
+<script src=tests.js></script>
+<script>
+"use strict";
+// Set up all the HTML automatically so I can add new commands to test without
+// copy-pasting in five places
+(function() {
+	var toc = document.querySelector("ul");
+	for (var command in tests) {
+		var li = document.createElement("li");
+		li.innerHTML = "<a href=#" + command + ">" + command + "</a>";
+		toc.appendChild(li);
+
+		var div = document.createElement("div");
+		div.id = command;
+		div.innerHTML = "<h1>" + command + "</h1>"
+			+ "<button onclick=\"runTests('" + command + "')\">Run tests</button>"
+			+ (command in notes ? "<p>" + notes[command] : "")
+			+ "<table border=1><tr><th>Input <th>Feature <th>Spec <th>Browser <th>Same?</table>"
+			+ "<p><label>New test input: <input></label>"
+			+ "<button onclick=\"addTest('" + command + "')\">Add test</button>";
+		document.body.appendChild(div);
+	}
+})();
+
+function runTests(command) {
+    var runTestsButton = document.querySelector("#" + command + " button");
+    if (runTestsButton.textContent != "Run tests") {
+        return;
+    }
+    runTestsButton.parentNode.removeChild(runTestsButton);
+
+	var addTestButton = document.querySelector("#" + command + " button");
+	var input = document.getElementById(command).getElementsByTagName("input")[0];
+	for (var i = 0; i < tests[command].length; i++) {
+		// This code actually focuses and clicks everything because for some
+		// reason, anything else doesn't work in IE9 . . .
+		//
+		// In case the input contains something unpleasant like newlines, we
+		// smuggle in the string as a data attribute, not just the value.  This
+		// is probably unnecessarily magic.
+		if (typeof tests[command][i] == "string") {
+			input.value = tests[command][i];
+			input.setAttribute("data-input", tests[command][i]);
+		} else {
+			input.value = tests[command][i][1];
+			input.setAttribute("data-input", tests[command][i][1]);
+		}
+		input.focus();
+		addTestButton.click();
+	}
+	input.value = "";
+
+	document.querySelector("#" + command).scrollIntoView();
+}
+
+function addTest(command) {
+	var tr = doSetup("#" + command + " > table", 0);
+
+	var test;
+	var input = document.getElementById(command).getElementsByTagName("input")[0];
+
+	if (input.hasAttribute("data-input")) {
+		test = input.getAttribute("data-input");
+	} else {
+		test = input.value;
+	}
+	input.removeAttribute("data-input");
+
+	var inputCell = document.createElement("td");
+	var points = setupCell(inputCell, test);
+	inputCell.rowSpan = 4;
+	tr.appendChild(inputCell);
+	inputCell.firstChild.contentEditable = "true";
+	inputCell.firstChild.spellcheck = false;
+
+	compareMethods(tr, command, points, "Enabled", myQueryCommandEnabled, document.queryCommandEnabled);
+
+	var newTr = document.createElement("tr");
+	tr.parentNode.appendChild(newTr);
+	compareMethods(newTr, command, points, "Indeterm", myQueryCommandIndeterm, document.queryCommandIndeterm);
+
+	newTr = document.createElement("tr");
+	tr.parentNode.appendChild(newTr);
+	compareMethods(newTr, command, points, "State", myQueryCommandState, document.queryCommandState);
+
+	newTr = document.createElement("tr");
+	tr.parentNode.appendChild(newTr);
+	compareMethods(newTr, command, points, "Value", myQueryCommandValue, document.queryCommandValue);
+
+	inputCell.firstChild.contentEditable = "inherit";
+	inputCell.firstChild.removeAttribute("spellcheck");
+	inputCell.firstChild.innerHTML = test;
+	inputCell.lastChild.textContent = inputCell.firstChild.innerHTML;
+}
+
+function compareMethods(tr, command, points, label, specFn, browserFn) {
+	var labelCell = document.createElement("th");
+	labelCell.textContent = label;
+	tr.appendChild(labelCell);
+
+	var specCell = document.createElement("td");
+	tr.appendChild(specCell);
+
+	var specResult;
+	try {
+		var range = document.createRange();
+		range.setStart(points[0], points[1]);
+		range.setEnd(points[2], points[3]);
+		if (range.collapsed) {
+			range.setEnd(points[0], points[1]);
+		}
+
+		specResult = specFn(command, range);
+	} catch (e) {
+		specCell.textContent = "Exception: " + e;
+		if (typeof e == "object" && "stack" in e) {
+			specCell.textContent += " (stack: " + e.stack + ")";
+		}
+	}
+
+	if (typeof specResult != "undefined") {
+		specCell.textContent = typeof specResult + ' "' + specResult + '"';
+	}
+
+
+	var browserCell = document.createElement("td");
+	tr.appendChild(browserCell);
+
+	var browserResult;
+	try {
+		setSelection(points[0], points[1], points[2], points[3]);
+		browserResult = browserFn.call(document, command);
+	} catch (e) {
+		browserCell.textContent = "Exception: " + e;
+		if (typeof e == "object" && "stack" in e) {
+			browserCell.textContent += " (stack: " + e.stack + ")";
+		}
+	}
+
+	getSelection().removeAllRanges();
+
+	if (typeof browserResult != "undefined") {
+		browserCell.textContent = typeof browserResult + ' "' + browserResult + '"';
+	}
+
+
+	var sameCell = document.createElement("td");
+	tr.appendChild(sameCell);
+	if (specResult === browserResult) {
+		sameCell.className = "yes";
+		sameCell.textContent = "\u2713";
+	} else {
+		sameCell.className = "no";
+		sameCell.textContent = "\u2717";
+	}
+}
+</script>

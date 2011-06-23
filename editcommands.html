@@ -127,9 +127,12 @@ have experience using this feature.
    <li><a href=#the-outdent-command><span class=secno>7.25 </span>The <code title="">outdent</code> command</a></ol></li>
  <li><a href=#miscellaneous-commands><span class=secno>8 </span>Miscellaneous commands</a>
   <ol>
-   <li><a href=#the-selectall-command><span class=secno>8.1 </span>The <code title="">selectAll</code> command</a></li>
-   <li><a href=#the-stylewithcss-command><span class=secno>8.2 </span>The <code title="">styleWithCSS</code> command</a></li>
-   <li><a href=#the-usecss-command><span class=secno>8.3 </span>The <code title="">useCSS</code> command</a></ol></li>
+   <li><a href=#the-copy-command><span class=secno>8.1 </span>The <code title="">copy</code> command</a></li>
+   <li><a href=#the-cut-command><span class=secno>8.2 </span>The <code title="">cut</code> command</a></li>
+   <li><a href=#the-paste-command><span class=secno>8.3 </span>The <code title="">paste</code> command</a></li>
+   <li><a href=#the-selectall-command><span class=secno>8.4 </span>The <code title="">selectAll</code> command</a></li>
+   <li><a href=#the-stylewithcss-command><span class=secno>8.5 </span>The <code title="">styleWithCSS</code> command</a></li>
+   <li><a href=#the-usecss-command><span class=secno>8.6 </span>The <code title="">useCSS</code> command</a></ol></li>
  <li><a href=#additional-requirements><span class=secno>9 </span>Additional requirements</a></li>
  <li><a class=no-num href=#acknowledgements>Acknowledgements</a></ol>
 <!--end-toc-->
@@ -160,7 +163,6 @@ useful to spec:
 
 Things I haven't looked at that multiple browsers implement:
 
-* copy, cut, paste: Needs attention to security.
 * redo, undo: Needs review of the Google work on this; will probably be
   quite complicated.
 -->
@@ -5987,7 +5989,62 @@ This is still a huge headache, though.
 
 <h2 id=miscellaneous-commands><span class=secno>8 </span>Miscellaneous commands</h2>
 
-<h3 id=the-selectall-command><span class=secno>8.1 </span><dfn>The <code title="">selectAll</code> command</dfn></h3>
+<h3 id=the-copy-command><span class=secno>8.1 </span><dfn>The <code title="">copy</code> command</dfn></h3>
+
+<!--
+IE9 supports copy/cut/paste with a security warning.  Firefox reportedly only
+supports it if you set a pref.  I didn't find info on other browsers, but in my
+tests it didn't do anything.  I'm not going to try speccing it unless
+implementers are interested in working out the security problems and trying to
+get interop.  It seems like as of June 2011, everyone just uses Flash for this:
+
+http://code.google.com/p/zeroclipboard/
+
+So it would be nice if we could work out a more secure standardized substitute.
+-->
+
+<p><a href=#action>Action</a>: The user agent must either copy the current selection
+to the clipboard as though the user had requested it, or do nothing.  User
+agents should exercise caution in respecting this command, because sites could
+abuse it to confuse and annoy the user by overwriting the clipboard with
+extremely long, obscene, or otherwise objectionable content.  This
+specification does not define exactly how the selection is to be copied to the
+clipboard, but the <a href=http://dev.w3.org/2006/webapi/clipops/clipops.html>Clipboard API and
+events</a> specification might be useful.
+
+
+
+<h3 id=the-cut-command><span class=secno>8.2 </span><dfn>The <code title="">cut</code> command</dfn></h3>
+
+<!-- See comment for copy -->
+
+<p><a href=#action>Action</a>: The user agent must either copy the current selection
+to the clipboard and then delete it, as though the user had requested it, or do
+nothing.  User agents should exercise caution in respecting this command,
+because sites could abuse it to confuse and annoy the user by overwriting the
+clipboard with extremely long, obscene, or otherwise objectionable content.
+This specification does not define exactly how the selection is to be deleted
+or copied to the clipboard, but the <a href=http://dev.w3.org/2006/webapi/clipops/clipops.html>Clipboard API and
+events</a> specification might be useful.
+
+
+
+<h3 id=the-paste-command><span class=secno>8.3 </span><dfn>The <code title="">paste</code> command</dfn></h3>
+
+<!-- See comment for copy -->
+
+<p><a href=#action>Action</a>: The user agent must either <a href=#delete-the-contents>delete the
+contents</a> of the <a href=#active-range>active range</a> and then paste the clipboard's
+contents to the current cursor position, as though the user had requested it,
+or do nothing.  User agents should exercise caution in respecting this command,
+because sites could abuse it to read private information from the clipboard.
+This specification does not define exactly how the clipboard is to be converted
+to HTML for pasting, but the <a href=http://dev.w3.org/2006/webapi/clipops/clipops.html>Clipboard API and
+events</a> specification might be useful.
+
+
+
+<h3 id=the-selectall-command><span class=secno>8.4 </span><dfn>The <code title="">selectAll</code> command</dfn></h3>
 
 <!--
 Tested using roughly this:
@@ -6038,7 +6095,7 @@ The behavior here is relatively simple and largely matches implementations.
 </ol>
 
 
-<h3 id=the-stylewithcss-command><span class=secno>8.2 </span><dfn>The <code title="">styleWithCSS</code> command</dfn></h3>
+<h3 id=the-stylewithcss-command><span class=secno>8.5 </span><dfn>The <code title="">styleWithCSS</code> command</dfn></h3>
 
 <!-- IE9 and Opera 11.00 don't support this command.  By and large, they act
 the way Gecko and WebKit do when styleWithCSS is off.  Gecko invented it, and
@@ -6068,7 +6125,7 @@ otherwise false.
 queryCommandState() for styleWithCSS. -->
 
 
-<h3 id=the-usecss-command><span class=secno>8.3 </span><dfn>The <code title="">useCSS</code> command</dfn></h3>
+<h3 id=the-usecss-command><span class=secno>8.6 </span><dfn>The <code title="">useCSS</code> command</dfn></h3>
 
 <!-- Supported by Firefox 4.0, but not IE9 or Opera 11.00 (which don't support
 styleWithCSS either), nor by Chrome 12 dev (which does support styleWithCSS.

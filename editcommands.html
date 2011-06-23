@@ -2596,7 +2596,7 @@ starting at 2011-05-13 at 16:53 EDT (UTC-0400).
 <h3 id=block-formatting-command-definitions><span class=secno>7.1 </span>Block formatting command definitions</h3>
 
 <p>A <dfn id=prohibited-paragraph-child-name>prohibited paragraph child name</dfn> is "address", "article",
-"aside", "blockquote", "caption", "center", "col", "colgroup", "details", "dd",
+"aside", "blockquote", "caption", "center", "col", "colgroup", "dd", "details",
 "dir", "div", "dl", "dt", "fieldset", "figcaption", "figure", "footer", "form",
 "h1", "h2", "h3", "h4", "h5", "h6", "header", "hgroup", "hr", "li", "listing",
 "menu", "nav", "ol", "p", "plaintext", "pre", "section", "summary", "table",
@@ -2652,8 +2652,10 @@ element</a> that has no attributes other than one or more of
 </ul>
 
 <p>A <dfn id=non-list-single-line-container>non-list single-line container</dfn> is an <a href=#html-element>HTML element</a>
-with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> "address", "div", "h1", "h2", "h3", "h4", "h5", "h6", "p",
-or "pre".
+with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> "address", "div", "h1", "h2", "h3", "h4", "h5", "h6",
+"listing", "p", "pre", or "xmp".
+<!-- listing and xmp are included because otherwise insertParagraph inside them
+won't work, since paragraphs aren't an allowed child. -->
 
 <p>A <dfn id=single-line-container>single-line container</dfn> is either a <a href=#non-list-single-line-container>non-list single-line
 container</a>, or an <a href=#html-element>HTML element</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> "li",
@@ -4806,7 +4808,7 @@ sense for <address>/<h*>/<pre>, but other browsers don't do it.
   Everyone: address, div, h*, p, pre
   Everyone but IE: blockquote
   Everyone but Opera: dd, dt
-  IE only: ol, ul
+  IE only: dir, menu, ol, ul
   Firefox and Chrome only: dl
   Chrome only: article, aside, footer, header, hgroup, nav, section
 
@@ -5546,7 +5548,8 @@ http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
     <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>.  Set <var title="">container</var> to the result.
   </ol>
 
-  <li>If <var title="">container</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> is "address" or "pre":
+  <li>If <var title="">container</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> is "address", "listing", or
+  "pre":
   <!--
   IE9 and Chrome 13 dev just break <pre> up into multiple <pre>s.  Firefox
   5.0a2 and Opera 11.10 insert a <br> instead, treating it differently from
@@ -5558,6 +5561,10 @@ http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
   Firefox 5.0a2 inserts <br> instead.  Opera 11.10 nests <p>s inside.  I don't
   like Opera's behavior, because it means we nest formatBlock candidates inside
   one another, so I'll go with Firefox.
+
+  listing and xmp work the same as pre in all browsers.  For Firefox and Opera,
+  this results in trying to put a br inside an xmp, so I go with IE/Chrome for
+  xmp.
   -->
 
   <p class=XXX>Why don't we just insert a newline character if it's a pre?  We

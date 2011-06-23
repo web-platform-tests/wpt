@@ -3073,14 +3073,14 @@ commands.unlink = {
 //@{
 
 // "A prohibited paragraph child name is "address", "article", "aside",
-// "blockquote", "caption", "center", "col", "colgroup", "details", "dd",
+// "blockquote", "caption", "center", "col", "colgroup", "dd", "details",
 // "dir", "div", "dl", "dt", "fieldset", "figcaption", "figure", "footer",
 // "form", "h1", "h2", "h3", "h4", "h5", "h6", "header", "hgroup", "hr", "li",
 // "listing", "menu", "nav", "ol", "p", "plaintext", "pre", "section",
 // "summary", "table", "tbody", "td", "tfoot", "th", "thead", "tr", "ul", or
 // "xmp"."
 var prohibitedParagraphChildNames = ["address", "article", "aside",
-	"blockquote", "caption", "center", "col", "colgroup", "details", "dd",
+	"blockquote", "caption", "center", "col", "colgroup", "dd", "details",
 	"dir", "div", "dl", "dt", "fieldset", "figcaption", "figure", "footer",
 	"form", "h1", "h2", "h3", "h4", "h5", "h6", "header", "hgroup", "hr", "li",
 	"listing", "menu", "nav", "ol", "p", "plaintext", "pre", "section",
@@ -3169,10 +3169,11 @@ function isIndentationElement(node) {
 }
 
 // "A non-list single-line container is an HTML element with local name
-// "address", "div", "h1", "h2", "h3", "h4", "h5", "h6", "p", or "pre"."
+// "address", "div", "h1", "h2", "h3", "h4", "h5", "h6", "listing", "p", "pre",
+// or "xmp"."
 function isNonListSingleLineContainer(node) {
 	return isHtmlElement(node, ["address", "div", "h1", "h2", "h3", "h4", "h5",
-		"h6", "p", "pre"]);
+		"h6", "listing", "p", "pre", "xmp"]);
 }
 
 // "A single-line container is either a non-list single-line container, or an
@@ -5828,8 +5829,9 @@ commands.insertparagraph = {
 			);
 		}
 
-		// "If container's local name is "address" or "pre":"
+		// "If container's local name is "address", "listing", or "pre":"
 		if (container.tagName == "ADDRESS"
+		|| container.tagName == "LISTING"
 		|| container.tagName == "PRE") {
 			// "Let br be the result of calling createElement("br") on the
 			// context object."

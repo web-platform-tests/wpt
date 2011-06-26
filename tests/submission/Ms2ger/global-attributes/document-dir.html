@@ -7,19 +7,17 @@
 <body>
 <script src="../support/test.js"></script>
 <script>
-try {
-  Test.is(document.dir, "ltr");
-  Test.is(document.documentElement.getAttribute("dir"), "LTR");
-
+test(function() {
+  assert_equals(document.dir, "ltr");
+  assert_equals(document.documentElement.getAttribute("dir"), "LTR");
+}, "Markup attribute")
+test(function() {
   document.dir = "x-garbage";
-  Test.is(document.dir, "");
-  Test.is(document.documentElement.getAttribute("dir"), "x-garbage");
-
-  Test.separate();
+  assert_equals(document.dir, "");
+  assert_equals(document.documentElement.getAttribute("dir"), "x-garbage");
+}, "Setting the idl attribute to a garbage value")
+test(function() {
   document.dir = "";
-  Test.is(document.documentElement.hasAttribute("dir"), false, "Attribute should be gone");
-} catch (e) {
-  Test.fail("Exception was thrown.");
-}
-Test.finish();
+  assert_equals(document.documentElement.hasAttribute("dir"), false, "Attribute should be gone");
+}, "Setting the idl attribute to the empty sting")
 </script>

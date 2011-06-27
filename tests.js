@@ -3057,7 +3057,13 @@ var tests = {
 		'[foo<a name=foo>bar</a>baz]',
 	],
 	//@}
-	quasit: [],
+	copy: ['foo[bar]baz'],
+	cut: ['foo[bar]baz'],
+	paste: ['foo[bar]baz'],
+	selectall: ['foo[bar]baz'],
+	stylewithcss: ['foo[bar]baz'],
+	usecss: ['foo[bar]baz'],
+	quasit: ['foo[bar]baz'],
 };
 tests.insertlinebreak = tests.insertparagraph;
 

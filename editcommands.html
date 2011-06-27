@@ -330,10 +330,9 @@ method, with one, two, and three arguments respectively. The <var title="">showU
 and <var title="">value</var> parameters, even if specified, are ignored except where
 otherwise stated.
 
-<p>The <dfn id=querycommandenabled() title=queryCommandEnabled()><code>queryCommandEnabled(<var title="">command</var>)</code></dfn>
-method on the <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/html/#htmldocument>HTMLDocument</a></code> interface allows
-scripts to ask whether calling <code><a href=#execcommand()>execCommand()</a></code> would have any
-effect.
+<p class=XXX>The <dfn id=querycommandenabled() title=queryCommandEnabled()><code>queryCommandEnabled(<var title="">command</var>)</code></dfn>
+method on the <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/html/#htmldocument>HTMLDocument</a></code> interface does
+the same thing as <code><a href=#querycommandsupported()>queryCommandSupported()</a></code>.
 
 <p class=XXX>The <dfn id=querycommandindeterm() title=queryCommandIndeterm()><code>queryCommandIndeterm(<var title="">command</var>)</code></dfn>
 method on the <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/html/#htmldocument>HTMLDocument</a></code> interface is a
@@ -361,12 +360,11 @@ manner.  Each <a href=#command>command</a> is defined in its own section of this
 specification.
 
 <p><a href=#command title=command>Commands</a> may have an associated
-<dfn id=action>action</dfn>, <dfn id=enabled-flag>enabled flag</dfn>, <dfn id=indeterminate-flag>indeterminate flag</dfn>,
-<dfn id=state>state</dfn>, <dfn id=value>value</dfn>, and/or <dfn id=relevant-css-property>relevant CSS property</dfn>.
-If not otherwise specified, the <a href=#action>action</a> for a <a href=#command>command</a>
-is to do nothing, the <a href=#enabled-flag>enabled flag</a> is true, the
-<a href=#indeterminate-flag>indeterminate flag</a> is false, the <a href=#state>state</a> is false, the
-<a href=#value>value</a> is the empty string, and the <a href=#relevant-css-property>relevant CSS
+<dfn id=action>action</dfn>, <dfn id=indeterminate-flag>indeterminate flag</dfn>, <dfn id=state>state</dfn>,
+<dfn id=value>value</dfn>, and/or <dfn id=relevant-css-property>relevant CSS property</dfn>.  If not otherwise
+specified, the <a href=#action>action</a> for a <a href=#command>command</a> is to do nothing,
+the <a href=#indeterminate-flag>indeterminate flag</a> is false, the <a href=#state>state</a> is false,
+the <a href=#value>value</a> is the empty string, and the <a href=#relevant-css-property>relevant CSS
 property</a> is null.
 <!--
 Requesting the state of an unknown command throws an exception in IE 9 RC and
@@ -391,7 +389,35 @@ I'll go with Firefox and Opera.
 instructions as arguments.
 
 <p>When <code><a href=#querycommandenabled()>queryCommandEnabled()</a></code> is invoked, the user agent must
-return the <a href=#enabled-flag>enabled flag</a> for <var title="">command</var>.
+return the result of calling <code><a href=#querycommandsupported()>queryCommandSupported()</a></code> with the same
+arguments.
+
+<p class=XXX>This isn't how anyone behaves, but no one's behavior is very
+useful anyway.  For this to make sense would require a significant amount of
+work and it's not clear it's worth it at all.  See comment for details.
+<!--
+Testing with bold and formatBlock:
+
+IE9 seems to return false if there's no selection or it's entirely outside
+anything editable, but true if any part of the selection descends from anything
+editable, even if it's fully contained in something non-editable (provided it
+descends from something editable).
+
+Firefox 6.0a2 seems to always return true if there's anything editable on the
+page, and throw otherwise.  Opera 11.11 seems to always return true if there's
+anything editable on the page, and false otherwise.  Neither behavior makes
+much sense.
+
+Chrome 14 dev seems to do something like return true if every node effectively
+contained in the selection is editable, false otherwise.  This makes the most
+sense, but it's too narrow for us, because we take some action in many cases
+even if there's some non-editable stuff around.
+
+What we really want this to do is return true if we'd do something when you run
+the command, false otherwise.  This will actually vary by command, and is
+nontrivial, and I'm not sure what the use-case is.  So for now I'll go with
+Opera, but I'll return to it later.
+-->
 
 <p>When <code><a href=#querycommandindeterm()>queryCommandIndeterm()</a></code> is invoked, the user agent must
 return the <a href=#indeterminate-flag>indeterminate flag</a> for <var title="">command</var>.

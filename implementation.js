@@ -515,7 +515,7 @@ function setupEditCommandMethod(command, range) {
 
 	// "If the active range is null, all commands must behave as though they
 	// were not defined except those in the miscellaneous commands section."
-	if (!globalRange && command != "selectall" && command != "stylewithcss" && command != "usecss") {
+	if (!globalRange && ["copy", "cut", "paste", "selectall", "stylewithcss", "usecss"].indexOf(command) == -1) {
 		return false;
 	}
 
@@ -532,20 +532,13 @@ function myExecCommand(command, showUI, value, range) {
 	if (setupEditCommandMethod(command, range)) {
 		commands[command].action(value);
 	}
-
-	globalRange = null;
+	// else do nothing
 }
 
 function myQueryCommandEnabled(command, range) {
-	command = command.toLowerCase();
-
-	if (setupEditCommandMethod(command, range)) {
-		return commands[command].enabled();
-	} else {
-		return false;
-	}
-
-	globalRange = null;
+	// "When queryCommandEnabled() is invoked, the user agent must return the
+	// result of calling queryCommandSupported() with the same arguments."
+	return myQueryCommandSupported(command, range);
 }
 
 function myQueryCommandIndeterm(command, range) {
@@ -554,10 +547,11 @@ function myQueryCommandIndeterm(command, range) {
 	if (setupEditCommandMethod(command, range)) {
 		return commands[command].indeterm();
 	} else {
+		// "If not otherwise specified, the action for a command is to do
+		// nothing, the indeterminate flag is false, the state is false, the
+		// value is the empty string, and the relevant CSS property is null."
 		return false;
 	}
-
-	globalRange = null;
 }
 
 function myQueryCommandState(command, range) {
@@ -567,12 +561,15 @@ function myQueryCommandState(command, range) {
 		return commands[command].state();
 	} else {
 		// "If not otherwise specified, the action for a command is to do
-		// nothing, the state is false, the value is the empty string, and the
-		// relevant CSS property is null."
+		// nothing, the indeterminate flag is false, the state is false, the
+		// value is the empty string, and the relevant CSS property is null."
 		return false;
 	}
+}
 
-	globalRange = null;
+function myQueryCommandSupported(command, range) {
+	command = command.toLowerCase();
+	return setupEditCommandMethod(command, range);
 }
 
 function myQueryCommandValue(command, range) {
@@ -582,12 +579,10 @@ function myQueryCommandValue(command, range) {
 		return commands[command].value();
 	} else {
 		// "If not otherwise specified, the action for a command is to do
-		// nothing, the state is false, the value is the empty string, and the
-		// relevant CSS property is null."
+		// nothing, the indeterminate flag is false, the state is false, the
+		// value is the empty string, and the relevant CSS property is null."
 		return "";
 	}
-
-	globalRange = null;
 }
 
 /**
@@ -6441,10 +6436,11 @@ commands.usecss = {
 
 // Done with command setup
 
-// "Commands may have an associated action, state, value, and/or relevant CSS
-// property. If not otherwise specified, the action for a command is to do
-// nothing, the state is false, the value is the empty string, and the relevant
-// CSS property is null."
+// "Commands may have an associated action, indeterminate flag, state, value,
+// and/or relevant CSS property. If not otherwise specified, the action for a
+// command is to do nothing, the indeterminate flag is false, the state is
+// false, the value is the empty string, and the relevant CSS property is
+// null."
 //
 // Don't dump the "command" variable into the global scope, it can cause bugs
 // because we have lots of local "command"s.
@@ -6452,9 +6448,6 @@ commands.usecss = {
 	for (var command in commands) {
 		if (!("action" in commands[command])) {
 			commands[command].action = function() {};
-		}
-		if (!("enabled" in commands[command])) {
-			commands[command].enabled = function() { return true };
 		}
 		if (!("indeterm" in commands[command])) {
 			commands[command].indeterm = function() { return false };

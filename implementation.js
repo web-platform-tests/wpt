@@ -5732,7 +5732,36 @@ commands.insertlinebreak = {
 //@{
 commands.insertorderedlist = {
 	// "Toggle lists with tag name "ol"."
-	action: function() { toggleLists("ol") }
+	action: function() { toggleLists("ol") },
+	state: function() {
+		// "Block-extend the active range, and let new range be the result."
+		var newRange = blockExtendRange(getActiveRange());
+
+		// "Let node list be a list of nodes, initially empty."
+		//
+		// "For each node node contained in new range, if node is editable; the
+		// last member of node list (if any) is not an ancestor of node; node
+		// is not a potential indentation element; and either node is an ol or
+		// ul, or its parent is an ol or ul, or it is an allowed child of "li";
+		// then append node to node list."
+		var nodeList = collectContainedNodes(newRange, function(node) {
+			return isEditable(node)
+				&& !isPotentialIndentationElement(node)
+				&& (isHtmlElement(node, ["ol", "ul"])
+				|| isHtmlElement(node.parentNode, ["ol", "ul"])
+				|| isAllowedChild(node, "li"));
+		});
+
+		// "If every member of node list is equal to or the child of an HTML
+		// element with local name "ol", and no member of node list is equal to
+		// or the ancestor of an HTML element with local name "ul", then return
+		// true. Otherwise, return false."
+		return nodeList.every(function(node) {
+			return (isHtmlElement(node, "ol") || isHtmlElement(node.parentNode, "ol"))
+				&& !isHtmlElement(node, "ul")
+				&& !node.querySelector("ul");
+		});
+	},
 };
 //@}
 
@@ -6113,7 +6142,36 @@ commands.inserttext = {
 //@{
 commands.insertunorderedlist = {
 	// "Toggle lists with tag name "ul"."
-	action: function() { toggleLists("ul") }
+	action: function() { toggleLists("ul") },
+	state: function() {
+		// "Block-extend the active range, and let new range be the result."
+		var newRange = blockExtendRange(getActiveRange());
+
+		// "Let node list be a list of nodes, initially empty."
+		//
+		// "For each node node contained in new range, if node is editable; the
+		// last member of node list (if any) is not an ancestor of node; node
+		// is not a potential indentation element; and either node is an ol or
+		// ul, or its parent is an ol or ul, or it is an allowed child of "li";
+		// then append node to node list."
+		var nodeList = collectContainedNodes(newRange, function(node) {
+			return isEditable(node)
+				&& !isPotentialIndentationElement(node)
+				&& (isHtmlElement(node, ["ol", "ul"])
+				|| isHtmlElement(node.parentNode, ["ol", "ul"])
+				|| isAllowedChild(node, "li"));
+		});
+
+		// "If every member of node list is equal to or the child of an HTML
+		// element with local name "ul", and no member of node list is equal to
+		// or the ancestor of an HTML element with local name "ol", then return
+		// true. Otherwise, return false."
+		return nodeList.every(function(node) {
+			return (isHtmlElement(node, "ul") || isHtmlElement(node.parentNode, "ul"))
+				&& !isHtmlElement(node, "ol")
+				&& !node.querySelector("ol");
+		});
+	},
 };
 //@}
 

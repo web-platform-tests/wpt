@@ -1993,10 +1993,17 @@ returned [[node]] to "bold", otherwise <span>set the value</span> to "normal".
 is <span>effectively contained</span> in the <span>active range</span> has
 <span>effective value</span> at least 700, and there is at least one such
 [[text]] node.  Otherwise false.
-<!-- For bold and similar commands, IE 9 RC seems to consider the state true or
+<!--
+For bold and similar commands, IE 9 RC seems to consider the state true or
 false depending on the first element.  All other browsers follow the same
 general idea as the spec, considering a range bold only if all text in it is
-bold, and this seems to match at least OpenOffice.org's bold feature. -->
+bold, and this seems to match at least OpenOffice.org's bold feature.  Opera
+11.11 seemingly doesn't take CSS into account, and only looks at whether
+something descends from a <b>.  I couldn't properly test IE9 because it threw
+exceptions (Error: Unspecified error.) on most of the tests I ran.  But what I
+have here seems to match Firefox 6.0a2 in every case, and Chrome 14 dev in all
+cases with a few exceptions.
+-->
 
 <p><span>Relevant CSS property</span>: "font-weight"
 <!-- @} -->
@@ -2052,6 +2059,13 @@ don't either. -->
   <li><span>Set the value</span> of each [[node]] in <var>node list</var> to
   <var>value</var>.
 </ol>
+
+<!--
+The state is always false in Chrome 14 dev and Opera 11.11.  Firefox 6.0a2
+throws an exception, and IE9 seems to always either return false or throw an
+exception.  Therefore we make the state always false, although this doesn't
+seem very useful.
+-->
 
 <!-- I'd have expected the value to be the URL, but guess not: it's always
 false. -->
@@ -5500,6 +5514,43 @@ Opera 11.11 isn't heedful of <xmp>, and treats <pre> somewhat oddly.
 <!-- @{ -->
 <p><span>Action</span>: <span>Toggle lists</span> with <var>tag name</var>
 "ol".
+
+<p><span>State</span>:
+<!--
+Logically, this should return true if running the command would remove ordered
+lists, false if it would add them, just like for bold etc.  So I copy-paste the
+logic from there.  Note that when we actually run the command, we'll normalize
+sublists, but not just when we query.  This probably doesn't make a difference,
+but I'm not totally sure.
+
+IE9 throws exceptions in most cases, Firefox 6.0a2 in some cases as well, for
+no apparent reason.  Ignoring those, the spec basically matches all browsers,
+except with a few weird random mismatches that looked like browser bugs to me.
+-->
+<p class=XXX>Does the fact that we don't normalize sublists before running this
+mean that it might produce results that don't match the way the action will
+behave?
+
+<ol>
+  <li><span>Block-extend</span> the <span>active range</span>, and let <var>new
+  range</var> be the result.
+
+  <li>Let <var>node list</var> be a list of [[nodes]], initially empty.
+
+  <li>For each [[node]] <var>node</var> [[contained]] in <var>new range</var>,
+  if <var>node</var> is <span>editable</span>; the last member of <var>node
+  list</var> (if any) is not an [[ancestor]] of <var>node</var>;
+  <var>node</var> is not a <span>potential indentation element</span>; and
+  either <var>node</var> is an [[ol]] or [[ul]], or its [[parent]] is an [[ol]]
+  or [[ul]], or it is an <span>allowed child</span> of "li"; then append
+  <var>node</var> to <var>node list</var>.
+
+  <li>If every member of <var>node list</var> is equal to or the [[child]] of
+  an <span>HTML element</span> with [[localname]] "ol", and no member of
+  <var>node list</var> is equal to or the [[ancestor]] of an <span>HTML
+  element</span> with [[localname]] "ul", then return true.  Otherwise, return
+  false.
+</ol>
 <!-- @} -->
 
 <h3><dfn>The <code title>insertParagraph</code> command</dfn></h3>
@@ -5953,6 +6004,33 @@ This is still a huge headache, though.
 <!-- @{ -->
 <p><span>Action</span>: <span>Toggle lists</span> with <var>tag name</var>
 "ul".
+
+<p><span>State</span>:
+<!-- See insertOrderedList for comments. -->
+<p class=XXX>Does the fact that we don't normalize sublists before running this
+mean that it might produce results that don't match the way the action will
+behave?
+
+<ol>
+  <li><span>Block-extend</span> the <span>active range</span>, and let <var>new
+  range</var> be the result.
+
+  <li>Let <var>node list</var> be a list of [[nodes]], initially empty.
+
+  <li>For each [[node]] <var>node</var> [[contained]] in <var>new range</var>,
+  if <var>node</var> is <span>editable</span>; the last member of <var>node
+  list</var> (if any) is not an [[ancestor]] of <var>node</var>;
+  <var>node</var> is not a <span>potential indentation element</span>; and
+  either <var>node</var> is an [[ol]] or [[ul]], or its [[parent]] is an [[ol]]
+  or [[ul]], or it is an <span>allowed child</span> of "li"; then append
+  <var>node</var> to <var>node list</var>.
+
+  <li>If every member of <var>node list</var> is equal to or the [[child]] of
+  an <span>HTML element</span> with [[localname]] "ul", and no member of
+  <var>node list</var> is equal to or the [[ancestor]] of an <span>HTML
+  element</span> with [[localname]] "ol", then return true.  Otherwise, return
+  false.
+</ol>
 <!-- @} -->
 
 <h3><dfn>The <code title>justifyCenter</code> command</dfn></h3>

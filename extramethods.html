@@ -54,16 +54,21 @@ function updateDisplayedRows() {
 	var state = document.querySelector("#state-checkbox").checked;
 	var value = document.querySelector("#value-checkbox").checked;
 
-	rowCount = Number(enabled) + Number(indeterm) + Number(state) + Number(value);
+	var numberChecked = Number(enabled) + Number(indeterm) + Number(state) + Number(value);
 	var boxes = document.querySelectorAll("#toolbar input");
 	var hiddenRows = [];
 	for (var i = 0; i < boxes.length; i++) {
 		// Don't let the user uncheck the last box
-		boxes[i].disabled = rowCount == 1 && boxes[i].checked;
+		boxes[i].disabled = numberChecked == 1 && boxes[i].checked;
 		if (!boxes[i].checked) {
 			hiddenRows.push(i);
 		}
 	}
+
+	// We always need to include the first row in rowCount when using it to set
+	// rowspan, because the first cell of the first row contains the test and
+	// has to always display.
+	rowCount = 1 + Number(indeterm) + Number(state) + Number(value);
 
 	var hideCss = "";
 	if (hiddenRows.length) {
@@ -81,7 +86,7 @@ function updateDisplayedRows() {
 
 	var cells = document.querySelectorAll("[rowspan]");
 	for (var i = 0; i < cells.length; i++) {
-		cells[i].rowSpan = 1 + Number(indeterm) + Number(state) + Number(value);
+		cells[i].rowSpan = rowCount;
 	}
 }
 updateDisplayedRows();
@@ -158,7 +163,7 @@ function addTest(command) {
 
 	var inputCell = document.createElement("td");
 	var points = setupCell(inputCell, test);
-	inputCell.rowSpan = 4;
+	inputCell.rowSpan = rowCount;
 	tr.appendChild(inputCell);
 	inputCell.firstChild.contentEditable = "true";
 	inputCell.firstChild.spellcheck = false;

@@ -18,6 +18,10 @@ body > div > table > tbody > tr > td:last-child,
 body > div > table > tbody > tr > th:last-child {
 	width: 5%;
 }
+td.alert {
+	font-weight: bold;
+	color: red;
+}
 </style>
 <p>Legend: {[ are the selection anchor, }] are the selection focus, {}
 represent an element boundary point, [] represent a text node boundary point.
@@ -172,9 +176,21 @@ function addTest(command) {
 	input.removeAttribute("data-input");
 
 	var inputCell = document.createElement("td");
-	var points = setupCell(inputCell, test);
-	inputCell.rowSpan = rowCount;
 	tr.appendChild(inputCell);
+	try {
+		var points = setupCell(inputCell, test);
+	} catch (e) {
+		tr.style.display = "table-row !important";
+		inputCell.colSpan = 5;
+		inputCell.className = "alert";
+		inputCell.textContent = "Exception: " + e;
+		inputCell.style.display = "table-cell !important";
+		tr.parentNode.appendChild(document.createElement("tr"));
+		tr.parentNode.appendChild(document.createElement("tr"));
+		tr.parentNode.appendChild(document.createElement("tr"));
+		return;
+	}
+	inputCell.rowSpan = rowCount;
 	inputCell.firstChild.contentEditable = "true";
 	inputCell.firstChild.spellcheck = false;
 
@@ -196,6 +212,8 @@ function addTest(command) {
 	inputCell.firstChild.removeAttribute("spellcheck");
 	inputCell.firstChild.innerHTML = test;
 	inputCell.lastChild.textContent = inputCell.firstChild.innerHTML;
+
+	tr.className = (" " + tr.className + " ").replace(" active ", "").trim();
 }
 //@}
 

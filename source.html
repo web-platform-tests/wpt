@@ -3090,6 +3090,66 @@ fixing.
     <li>Add one to <var>start offset</var>.
   </ol>
 </ol>
+
+<p>The <dfn>current alignment state</dfn> is returned by the following
+algorithm:
+<!--
+IE9 throws exceptions in almost every case when querying the state of justify*,
+and Opera 11.11 returns false in every case except some seemingly random crazy
+ones.
+
+Firefox 6.0a2 returns true for the state of justify* if anything in the range
+has the right alignment, not if everything does.  This isn't consistent with
+how state works for the inline commands, nor with WebKit.
+
+Chrome 14 dev counts text-align on inline elements, which is wrong, because the
+property has no effect.  It also counts it on non-editable elements, which is
+wrong, because then the state for justify* wouldn't necessarily be true after
+executing it.  (Chrome actually does align the non-editable elements, but
+that's just a bug.)  Chrome further returns false for justify* if the
+justification is just the default inherited justification, e.g., left for LTR.
+This doesn't seem to make sense either.
+
+It's not actually clear how much sense state makes here.  Most commands that
+have a state that's not always false work differently depending on what the
+state is, generally because they toggle something (bold, lists, etc.).  The
+justify commands behave the same regardless of state.  Still, I'll follow
+Gecko/WebKit in supporting the command.
+-->
+<ol>
+  <li><span>Block-extend</span> the <span>active range</span>, and let <var>new
+  range</var> be the result.
+
+  <li>Let <var>node list</var> be a list of all <span>editable</span> [[nodes]]
+  [[contained]] in <var>new range</var>.
+
+  <li>If <var>node list</var> is empty, return "none".
+
+  <li>Let <var>state</var> be "none".
+
+  <li>For each <var>node</var> in <var>node list</var>:
+
+  <ol>
+    <li>While <var>node</var> is neither null nor an [[element]], or it is an
+    [[element]] but its "display" property has [[compval]] "inline" or "none",
+    set <var>node</var> to its [[parent]].
+
+    <li>If <var>node</var> is not an [[element]] or its "display" property has
+    [[compval]] "inline" or "none", continue with the next <var>node</var>.
+
+    <li>If <var>state</var> is "none", set <var>state</var> to either "center",
+    "justify", "left", or "right", depending on the [[compval]] of
+    <var>node</var>'s "text-align" property.
+
+    <p class=XXX>What to do for "start" "auto" etc. currently undefined.  We
+    assume something CSS 2.1-ish.
+
+    <li>If <var>state</var> is different from the [[compval]] of
+    <var>node</var>'s "text-align" property, return "none".
+  </ol>
+
+  <li>Return <var>state</var>.
+</ol>
 <!-- @} -->
 
 <h3>Allowed children</h3>
@@ -4471,7 +4531,7 @@ would be worth the added complexity.
     <li>Unset the CSS property "text-align" on <var>element</var>, if it's set
     by a [[style]] attribute.
 
-    <li>If <var>element</var> is a [[div]] or <code
+    <li>If <var>element</var> is a [[div]] or [[span]] or <code
     data-anolis-spec=html>center</code> with no attributes, remove it,
     <span>preserving its descendants</span>.
 
@@ -4491,11 +4551,12 @@ would be worth the added complexity.
   <li>For each [[node]] <var>node</var> [[contained]] in <var>new range</var>,
   append <var>node</var> to <var>node list</var> if the last member of
   <var>node list</var> (if any) is not an [[ancestor]] of <var>node</var>;
-  <var>node</var> is <span>editable</span>; and either <var>node</var> is an
-  [[element]] and the CSS property "text-align" does not compute to
-  <var>alignment</var> on it, or it is not an [[element]], but its [[parent]]
-  is an [[element]], and the CSS property "text-align" does not compute to
-  <var>alignment</var> on its [[parent]].
+  <var>node</var> is <span>editable</span>; <var>node</var> is an <span>allowed
+  child</span> of "div"; and either <var>node</var> is an [[element]] and the
+  CSS property "text-align" does not compute to <var>alignment</var> on it, or
+  it is not an [[element]], but its [[parent]] is an [[element]], and the CSS
+  property "text-align" does not compute to <var>alignment</var> on its
+  [[parent]].
   <!-- Of tested browsers, only Chrome 13 dev seems to not apply the alignment
   to nodes that are already aligned.  Even then, it does apply it if the
   alignment is just inherited from the root. -->
@@ -6037,24 +6098,36 @@ behave?
 <!-- @{ -->
 <p><span>Action</span>: <span>Justify the selection</span> with
 <var>alignment</var> "center".
+
+<p><span>State</span>: True if the <span>current alignment state</span> is
+"center", otherwise false.
 <!-- @} -->
 
 <h3><dfn>The <code title>justifyFull</code> command</dfn></h3>
 <!-- @{ -->
 <p><span>Action</span>: <span>Justify the selection</span> with
 <var>alignment</var> "justify".
+
+<p><span>State</span>: True if the <span>current alignment state</span> is
+"justify", otherwise false.
 <!-- @} -->
 
 <h3><dfn>The <code title>justifyLeft</code> command</dfn></h3>
 <!-- @{ -->
 <p><span>Action</span>: <span>Justify the selection</span> with
 <var>alignment</var> "left".
+
+<p><span>State</span>: True if the <span>current alignment state</span> is
+"left", otherwise false.
 <!-- @} -->
 
 <h3><dfn>The <code title>justifyRight</code> command</dfn></h3>
 <!-- @{ -->
 <p><span>Action</span>: <span>Justify the selection</span> with
 <var>alignment</var> "right".
+
+<p><span>State</span>: True if the <span>current alignment state</span> is
+"right", otherwise false.
 <!-- @} -->
 
 <h3><dfn>The <code title>outdent</code> command</dfn></h3>

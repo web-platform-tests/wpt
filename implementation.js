@@ -233,6 +233,26 @@ function stateHelper(callback) {
 	return atLeastOne;
 }
 
+// Returns a standard CSS 2.1 computed value for text-align, adapting
+// nonstandard values and things like "start" and "auto".
+function getRealTextAlign(element) {
+	var computedAlign = getComputedStyle(element).textAlign
+		.replace(/^-(moz|webkit)-/, "");
+	if (computedAlign == "auto" || computedAlign == "start") {
+		// Depends on directionality.  Note: this is a serious hack.
+		do {
+			var dir = element.dir.toLowerCase();
+			element = element.parentNode;
+		} while (element && element.nodeType == Node.ELEMENT_NODE && dir != "ltr" && dir != "rtl");
+		if (dir == "rtl") {
+			computedAlign = "right";
+		} else {
+			computedAlign = "left";
+		}
+	}
+	return computedAlign;
+}
+
 //@}
 
 
@@ -3531,6 +3551,60 @@ function canonicalizeWhitespace(node, offset) {
 	}
 }
 
+function getCurrentAlignmentState() {
+	// "Block-extend the active range, and let new range be the result."
+	var newRange = blockExtendRange(getActiveRange());
+
+	// "Let node list be a list of all editable nodes contained in new
+	// range."
+	var nodeList = collectAllContainedNodes(newRange, isEditable);
+
+	// "If node list is empty, return "none"."
+	if (nodeList.length == 0) {
+		return "none";
+	}
+
+	// "Let state be "none"."
+	var state = "none";
+
+	// "For each node in node list:"
+	for (var i = 0; i < nodeList.length; i++) {
+		var node = nodeList[i];
+
+		// "While node is neither null nor an Element, or it is an Element
+		// but its "display" property has computed value "inline" or
+		// "none", set node to its parent."
+		while ((node && node.nodeType != Node.ELEMENT_NODE)
+		|| (node.nodeType == Node.ELEMENT_NODE && getComputedStyle(node).display == "inline")
+		|| (node.nodeType == Node.ELEMENT_NODE && getComputedStyle(node).display == "none")) {
+			node = node.parentNode;
+		}
+
+		// "If node is not an Element or its "display" property has computed
+		// value "inline" or "none", continue with the next node."
+		if (node.nodeType != Node.ELEMENT_NODE
+		|| getComputedStyle(node).display == "inline"
+		|| getComputedStyle(node).display == "none") {
+			continue;
+		}
+
+		// "If state is "none", set state to either "center", "justify",
+		// "left", or "right", depending on the computed value of node's
+		// "text-align" property."
+		if (state == "none") {
+			state = getRealTextAlign(node);
+		}
+
+		// "If state is different from the computed value of node's
+		// "text-align" property, return "none"."
+		if (state != getRealTextAlign(node)) {
+			return "none";
+		}
+	}
+
+	// "Return state."
+	return state;
+}
 //@}
 
 ///// Allowed children /////
@@ -4720,9 +4794,9 @@ function justifySelection(alignment) {
 			element.removeAttribute("style");
 		}
 
-		// "If element is a div or center with no attributes, remove it,
-		// preserving its descendants."
-		if (isHtmlElement(element, ["div", "center"])
+		// "If element is a div or span or center with no attributes, remove
+		// it, preserving its descendants."
+		if (isHtmlElement(element, ["div", "span", "center"])
 		&& !element.attributes.length) {
 			removePreservingDescendants(element);
 		}
@@ -4743,12 +4817,12 @@ function justifySelection(alignment) {
 
 	// "For each node node contained in new range, append node to node list if
 	// the last member of node list (if any) is not an ancestor of node; node
-	// is editable; and either node is an Element and the CSS property
-	// "text-align" does not compute to alignment on it, or it is not an
-	// Element, but its parent is an Element, and the CSS property "text-align"
-	// does not compute to alignment on its parent."
+	// is editable; node is an allowed child of div; and either node is an
+	// Element and the CSS property "text-align" does not compute to alignment
+	// on it, or it is not an Element, but its parent is an Element, and the
+	// CSS property "text-align" does not compute to alignment on its parent."
 	nodeList = collectContainedNodes(newRange, function(node) {
-		if (!isEditable(node)) {
+		if (!isEditable(node) || !isAllowedChild(node, "div")) {
 			return false;
 		}
 		// Gecko and WebKit have lots of fun here confusing us with
@@ -4759,21 +4833,7 @@ function justifySelection(alignment) {
 		if (!element || element.nodeType != Node.ELEMENT_NODE) {
 			return false;
 		}
-		var computedAlign = getComputedStyle(element).textAlign
-			.replace(/^-(moz|webkit)-/, "");
-		if (computedAlign == "auto" || computedAlign == "start") {
-			// Depends on directionality.  Note: this is a serious hack.
-			do {
-				var dir = element.dir.toLowerCase();
-				element = element.parentNode;
-			} while (element && element.nodeType == Node.ELEMENT_NODE && dir != "ltr" && dir != "rtl");
-			if (dir == "rtl") {
-				computedAlign = "right";
-			} else {
-				computedAlign = "left";
-			}
-		}
-		return computedAlign != alignment;
+		return getRealTextAlign(element) != alignment;
 	});
 
 	// "While node list is not empty:"
@@ -6179,7 +6239,9 @@ commands.insertunorderedlist = {
 //@{
 commands.justifycenter = {
 	// "Justify the selection with alignment "center"."
-	action: function() { justifySelection("center") }
+	action: function() { justifySelection("center") },
+	// "True if the current alignment state is "center", otherwise false."
+	state: function() { return getCurrentAlignmentState() == "center" },
 };
 //@}
 
@@ -6187,7 +6249,9 @@ commands.justifycenter = {
 //@{
 commands.justifyfull = {
 	// "Justify the selection with alignment "justify"."
-	action: function() { justifySelection("justify") }
+	action: function() { justifySelection("justify") },
+	// "True if the current alignment state is "justify", otherwise false."
+	state: function() { return getCurrentAlignmentState() == "justify" },
 };
 //@}
 
@@ -6195,7 +6259,9 @@ commands.justifyfull = {
 //@{
 commands.justifyleft = {
 	// "Justify the selection with alignment "left"."
-	action: function() { justifySelection("left") }
+	action: function() { justifySelection("left") },
+	// "True if the current alignment state is "left", otherwise false."
+	state: function() { return getCurrentAlignmentState() == "left" },
 };
 //@}
 
@@ -6203,7 +6269,9 @@ commands.justifyleft = {
 //@{
 commands.justifyright = {
 	// "Justify the selection with alignment "right"."
-	action: function() { justifySelection("right") }
+	action: function() { justifySelection("right") },
+	// "True if the current alignment state is "right", otherwise false."
+	state: function() { return getCurrentAlignmentState() == "right" },
 };
 //@}
 

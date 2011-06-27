@@ -48,11 +48,21 @@ document.querySelector("#toolbar").innerHTML = '<label><input id=enabled-checkbo
 // Number of rows to display per entry
 var rowCount;
 
+document.querySelector("#enabled-checkbox").checked = localStorage["extramethods-display-enabled"] != "false";
+document.querySelector("#indeterm-checkbox").checked = localStorage["extramethods-display-indeterm"] != "false";
+document.querySelector("#state-checkbox").checked = localStorage["extramethods-display-state"] != "false";
+document.querySelector("#value-checkbox").checked = localStorage["extramethods-display-value"] != "false";
+
 function updateDisplayedRows() {
 	var enabled = document.querySelector("#enabled-checkbox").checked;
 	var indeterm = document.querySelector("#indeterm-checkbox").checked;
 	var state = document.querySelector("#state-checkbox").checked;
 	var value = document.querySelector("#value-checkbox").checked;
+
+	localStorage["extramethods-display-enabled"] = enabled;
+	localStorage["extramethods-display-indeterm"] = indeterm;
+	localStorage["extramethods-display-state"] = state;
+	localStorage["extramethods-display-value"] = value;
 
 	var numberChecked = Number(enabled) + Number(indeterm) + Number(state) + Number(value);
 	var boxes = document.querySelectorAll("#toolbar input");

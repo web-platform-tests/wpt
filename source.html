@@ -2522,6 +2522,15 @@ is <span>effectively contained</span> in the <span>active range</span> has
 is <span>effectively contained</span> in the <span>active range</span> has
 <span>effective value</span> "sub", and there is at least one such [[text]]
 node.  Otherwise false.
+<!--
+For <sup><sub>foo</sub></sup>, Firefox 6.0a2 and Opera 11.11 say the state is
+true for both superscript and subscript; Chrome 14 dev says it's true for
+subscript but not superscript.  We follow neither of these behaviors: we return
+false for both.  The reason is because we want to return true if we'll do
+nothing, false if we'll do something; and if we have nesting like this, we'll
+always do something, namely get rid of all those ancestors and replace them
+with a single tag.
+-->
 
 <p><span>Relevant CSS property</span>: "vertical-align"
 <!-- @} -->

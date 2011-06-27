@@ -321,6 +321,11 @@ as of February 2011 mandates WebKit's behavior.  It makes sense to always
 return a string, a majority of string-returners return the empty string, and
 three out of the four return something that evaluates to false as a boolean, so
 I'll go with Firefox and Opera.
+
+Actually, for commands like bold where state makes sense but not value, it
+looks like Chrome 14 dev makes the value equal to the state cast to a string,
+so either the string "true" or "false".  This seems confusing and unhelpful, so
+I'll pass.
 -->
 
 <p>When <code>execCommand()</code> is invoked, the user agent must follow the

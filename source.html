@@ -2497,6 +2497,13 @@ For color parsing, see the comment for foreColor. -->
   value</span> of each returned [[node]] to <var>value</var>.
 </ol>
 
+<p><span>Indeterminate flag</span>: True if among <span>editable</span>
+[[text]] nodes that are <span>effectively contained</span> in the <span>active
+range</span>, there are two that have distinct <span title="effective
+value">effective values</span>.  Otherwise false.
+<!-- This follows no one.  Firefox 6.0a2 and Chrome 14 dev both always return
+false.  However, it makes sense. -->
+
 <p><span>Value</span>: The <span>effective value</span> of the <span>active
 range</span>'s [[startnode]].
 

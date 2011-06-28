@@ -1272,6 +1272,19 @@ var tests = {
 		'<p style="background-color: #ff8888">foo<span style="background-color: aqua">b[ar]</span>baz</p>',
 		'<div style="background-color: #ff8888"><p style="background-color: aqua">b[ar]</p></div>',
 		'<span style="display: block; background-color: #ff8888"><span style="display: block; background-color: aqua">b[ar]</span></span>',
+
+		// Tests for queryCommandIndeterm() and queryCommandState()
+		'fo[o<span style=background-color:aqua>b]ar</span>baz',
+		'foo<span style=background-color:aqua>ba[r</span>b]az',
+		'fo[o<span style=background-color:aqua>bar</span>b]az',
+		'foo[<span style=background-color:aqua>b]ar</span>baz',
+		'foo<span style=background-color:aqua>ba[r</span>]baz',
+		'foo[<span style=background-color:aqua>bar</span>]baz',
+		'foo<span style=background-color:aqua>[bar]</span>baz',
+		'foo{<span style=background-color:aqua>bar</span>}baz',
+		'<span style=background-color:aqua>fo[o</span><span style=background-color:lime>b]ar</span>',
+		'<span style=background-color:aqua>fo[o</span><span style=background-color:aqua>b]ar</span>',
+		'<span style=background-color:aqua>fo[o<span style=background-color:transparent>b]ar</span></span>',
 	],
 	//@}
 	indent: [

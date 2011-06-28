@@ -2127,7 +2127,11 @@ likely that the font list will be fixed by the author (how many users will
 understand CSS font-family syntax?), so I don't think such usability concerns
 apply. -->
 
-<p><span>Value</span>:
+<p><span>Value</span>: The <span>effective value</span> of the <span>active
+range</span>'s [[startnode]].
+
+<p class=note>This cannot be null, since the boundary point node of a selection
+must always be either an element or a text node that's the child of an element.
 <!-- Complicated.
 
 IE 9 RC: Always the empty string.  Not very useful.
@@ -2144,17 +2148,6 @@ Opera 11: Returns the literal value of font-family, except if it's inherited
 I'm just going to punt on this and say it should be the computed value of
 font-family.  I'll leave CSSOM to decide what that means if there are no
 applicable style rules. -->
-<ol>
-  <li>Let <var>node</var> be the [[startnode]] of the <span>active
-  range</span>.
-
-  <li>If <var>node</var> is not an [[element]], set <var>node</var> to its
-  [[parent]].
-
-  <li>If <var>node</var> is not an [[element]], return the empty string.
-
-  <li>Return the [[compval]] of "font-family" for <var>node</var>.
-</ol>
 
 <p><span>Relevant CSS property</span>: "font-family"
 <!-- @} -->
@@ -2287,15 +2280,12 @@ If the selection isn't someplace editable, Chrome works like usual; some other
 browsers behave differently.  I see no reason to behave differently.
 -->
 <ol>
-  <li>Let <var>node</var> be the <span>active range</span>'s [[startnode]].
+  <li>Let <var>pixel size</var> be the <span>effective value</span> of the
+  <span>active range</span>'s [[startnode]], as a number of pixels.
 
-  <li>If <var>node</var> is not an [[element]], set <var>node</var> to its
-  [[parent]].
-
-  <li>If <var>node</var> is not an [[element]], return "3".
-
-  <li>Let <var>pixel size</var> be the [[compval]] of "font-size" for
-  <var>node</var>, in pixels.
+  <p class=note>The active range's start node cannot be null, since the
+  boundary point node of a selection must always be either an element or a text
+  node that's the child of an element.
 
   <li>Let <var>returned size</var> be 1.
 
@@ -2403,7 +2393,11 @@ false otherwise, which seems fairly useless; authors want to use value here,
 not state.  Firefox 4b11 throws an exception, which is an interesting approach,
 but I'll go with IE/WebKit, which makes at least as much sense. -->
 
-<p><span>Value</span>:
+<p><span>Value</span>: The <span>effective value</span> of the <span>active
+range</span>'s [[startnode]].
+
+<p class=note>This cannot be null, since the boundary point node of a selection
+must always be either an element or a text node that's the child of an element.
 <!--
 The spec essentially matches Firefox 6.0a2 and Chrome 14 dev.  IE9 seems to
 always return the number 0 for some bizarre reason.  There are some cases where
@@ -2412,16 +2406,6 @@ active node a little differently.  Opera uses #xxxxxx format for
 getComputedStyle() but rgb() here, and also drops the transparent part of the
 color if there is any.
 -->
-<ol>
-  <li>Let <var>node</var> be the <span>active range</span>'s [[startnode]].
-
-  <li>If <var>node</var> is not an [[element]], set <var>node</var> to its
-  [[parent]].
-
-  <li>If <var>node</var> is not an [[element]], return "rgb(0, 0, 0)".
-
-  <li>Return the [[compval]] of "color" on <var>node</var>.
-</ol>
 
 <p><span>Relevant CSS property</span>: "color"
 <!-- @} -->

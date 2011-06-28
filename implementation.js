@@ -590,16 +590,29 @@ function myQueryCommandValue(command, range) {
  * range in the Selection given by calling getSelection() on the context
  * object, or null if there is no such range."
  *
- * We cheat and return globalRange if that's defined.
+ * We cheat and return globalRange if that's defined.  We also ensure that the
+ * active range meets the requirements that selection boundary points are
+ * supposed to meet, i.e., that the nodes are both Text or Element nodes that
+ * descend from a Document.
  */
 function getActiveRange() {
+	var ret;
 	if (globalRange) {
-		return globalRange;
+		ret = globalRange;
+	} else if (getSelection().rangeCount) {
+		ret = getSelection().getRangeAt(0);
+	} else {
+		return null;
 	}
-	if (getSelection().rangeCount) {
-		return getSelection().getRangeAt(0);
+	if ([Node.TEXT_NODE, Node.ELEMENT_NODE].indexOf(ret.startContainer.nodeType) == -1
+	|| [Node.TEXT_NODE, Node.ELEMENT_NODE].indexOf(ret.endContainer.nodeType) == -1
+	|| !ret.startContainer.ownerDocument
+	|| !ret.endContainer.ownerDocument
+	|| !isDescendant(ret.startContainer, ret.startContainer.ownerDocument)
+	|| !isDescendant(ret.endContainer, ret.endContainer.ownerDocument)) {
+		throw "Invalid active range; test bug?";
 	}
-	return null;
+	return ret;
 }
 //@}
 
@@ -2685,21 +2698,8 @@ commands.fontname = {
 			setNodeValue(nodeList[i], "fontname", value);
 		}
 	}, value: function() {
-		// "Let node be the start node of the active range."
-		var node = getActiveRange().startContainer;
-
-		// "If node is not an Element, set node to its parent."
-		if (node.nodeType != Node.ELEMENT_NODE) {
-			node = node.parentNode;
-		}
-
-		// "If node is not an Element, return the empty string."
-		if (node.nodeType != Node.ELEMENT_NODE) {
-			return "";
-		}
-
-		// "Return the computed value of "font-family" for node."
-		return getComputedStyle(node).fontFamily;
+		// "The effective value of the active range's start node."
+		return getEffectiveValue(getActiveRange().startContainer, "fontname");
 	}, relevantCssProperty: "fontFamily"
 };
 //@}
@@ -2796,22 +2796,9 @@ commands.fontsize = {
 			setNodeValue(nodeList[i], "fontsize", value);
 		}
 	}, value: function() {
-		// "Let node be the active range's start node."
-		var node = getActiveRange().startContainer;
-
-		// "If node is not an Element, set node to its parent."
-		if (node.nodeType != Node.ELEMENT_NODE) {
-			node = node.parentNode;
-		}
-
-		// "If node is not an Element, return "3"."
-		if (node.nodeType != Node.ELEMENT_NODE) {
-			return "3";
-		}
-
-		// "Let pixel size be the computed value of "font-size" for node, in
-		// pixels."
-		var pixelSize = parseInt(getComputedStyle(node).fontSize);
+		// "Let pixel size be the effective value of the active range's start
+		// node, as a number of pixels."
+		var pixelSize = parseInt(getEffectiveValue(getActiveRange().startContainer, "fontsize"));
 
 		// "Let returned size be 1."
 		var returnedSize = 1;
@@ -2882,31 +2869,18 @@ commands.forecolor = {
 			setNodeValue(nodeList[i], "forecolor", value);
 		}
 	}, value: function() {
-		// "Let node be the active range's start node."
-		var node = getActiveRange().startContainer;
-
-		// "If node is not an Element, set node to its parent."
-		if (node.nodeType != Node.ELEMENT_NODE) {
-			node = node.parentNode;
-		}
-
-		// "If node is not an Element, return "rgb(0, 0, 0)"."
-		if (node.nodeType != Node.ELEMENT_NODE) {
-			return "rgb(0, 0, 0)";
-		}
-
-		// "Return the computed value of "color" on node."
+		// "The effective value of the active range's start node."
 		//
 		// Opera uses a different format, so let's be nice and support that for
 		// the time being (since all this computed value stuff is underdefined
 		// anyway).
-		var computed = getComputedStyle(node).color;
-		if (/^#[0-9a-f]{6}$/.test(computed)) {
-			computed = "rgb(" + parseInt(computed.slice(1, 3), 16)
-				+ "," + parseInt(computed.slice(3, 5), 16)
-				+ "," + parseInt(computed.slice(5), 16) + ")";
+		var value = getEffectiveValue(getActiveRange().startContainer, "forecolor");
+		if (/^#[0-9a-f]{6}$/.test(value)) {
+			value = "rgb(" + parseInt(value.slice(1, 3), 16)
+				+ "," + parseInt(value.slice(3, 5), 16)
+				+ "," + parseInt(value.slice(5), 16) + ")";
 		}
-		return computed;
+		return value;
 	}, relevantCssProperty: "color"
 };
 //@}

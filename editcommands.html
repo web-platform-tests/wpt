@@ -1160,6 +1160,11 @@ either a string or null:
     computes to "inline":
 
     <ol>
+      <!-- Firefox 6.0a2 ignores vertical-align for this purpose, and only
+      cares about <sub> and <sup> tags themselves.  Opera 11.11 is similar, and
+      in fact behaves like that even for commands like bold.  The spec follows
+      Chrome 14 dev, mainly because WebKit itself will produce spans with
+      vertical-align sub or super, and we want to handle them correctly. -->
       <li>If <var title="">node</var>'s "vertical-align" property computes to "sub", set
       <var title="">affected by subscript</var> to true.
 
@@ -1167,7 +1172,7 @@ either a string or null:
       "super", set <var title="">affected by superscript</var> to true.
 
       <li>Otherwise, if <var title="">node</var>'s "vertical-align" property computes to
-      some value other than "baseline", return the string "mixed".
+      some value other than "baseline", return the string "other".
 
       <li>Set <var title="">node</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
     </ol>
@@ -2523,6 +2528,12 @@ If the <a href=#state>state</a> is then false, <a href=#set-the-value>set the va
 returned <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> to "italic", otherwise <a href=#set-the-value>set the value</a> to
 "normal".
 
+<p><a href=#indeterminate-flag>Indeterminate flag</a>: True if among <a href=#editable>editable</a>
+<code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> nodes that are <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active
+range</a>, there is at least one with <a href=#effective-value>effective value</a> either
+"italic" or "oblique" and at least one with <a href=#effective-value>effective value</a>
+"normal".  Otherwise false.
+
 <p><a href=#state>State</a>: True if every <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node that
 is <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active range</a> has
 <a href=#effective-value>effective value</a> either "italic" or "oblique", and there is at
@@ -2662,6 +2673,12 @@ null.
 
 <p class=XXX>Has all the same problems as <a href=#the-underline-command>the <code title="">underline</code> command</a>.
 
+<p><a href=#indeterminate-flag>Indeterminate flag</a>: True if among <a href=#editable>editable</a>
+<code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> nodes that are <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active
+range</a>, there is at least one with <a href=#effective-value>effective value</a>
+"line-through" and at least one with <a href=#effective-value>effective value</a> null.
+Otherwise false.
+
 <p><a href=#state>State</a>: True if every <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node that
 is <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active range</a> has
 <a href=#effective-value>effective value</a> "line-through", and there is at least one such
@@ -2686,18 +2703,28 @@ is <a href=#effectively-contained>effectively contained</a> in the <a href=#acti
   to "sub".
 </ol>
 
+<p><a href=#indeterminate-flag>Indeterminate flag</a>: True if either among <a href=#editable>editable</a>
+<code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> nodes that are <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active
+range</a>, there is at least one with <a href=#effective-value>effective value</a> "sub" and
+at least one with some other <a href=#effective-value>effective value</a>; or if there is some
+<a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node <a href=#effectively-contained>effectively contained</a> in the
+<a href=#active-range>active range</a> with <a href=#effective-value>effective value</a> "mixed".  Otherwise
+false.
+
 <p><a href=#state>State</a>: True if every <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node that
 is <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active range</a> has
 <a href=#effective-value>effective value</a> "sub", and there is at least one such <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code>
 node.  Otherwise false.
 <!--
 For <sup><sub>foo</sub></sup>, Firefox 6.0a2 and Opera 11.11 say the state is
-true for both superscript and subscript; Chrome 14 dev says it's true for
-subscript but not superscript.  We follow neither of these behaviors: we return
-false for both.  The reason is because we want to return true if we'll do
-nothing, false if we'll do something; and if we have nesting like this, we'll
-always do something, namely get rid of all those ancestors and replace them
-with a single tag.
+true for both superscript and subscript, and indeterminate is false; Chrome 14
+dev says it's true for subscript but not superscript, and indeterminate is
+false.  We follow neither of these behaviors: we return false for both states,
+and say indeterminate is true.  The reason is because we want to return true
+for a state if we'll do nothing, false if we'll do something; and if we have
+nesting like this, we'll always do something, namely get rid of all those
+ancestors and replace them with a single tag.  This matches what happens in
+other indeterminate situations, so it's fair to consider it indeterminate.
 -->
 
 <p><a href=#relevant-css-property>Relevant CSS property</a>: "vertical-align"
@@ -2720,6 +2747,14 @@ with a single tag.
   range</a> again and <a href=#set-the-value>set the value</a> of each returned <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>
   to "super".
 </ol>
+
+<p><a href=#indeterminate-flag>Indeterminate flag</a>: True if either among <a href=#editable>editable</a>
+<code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> nodes that are <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active
+range</a>, there is at least one with <a href=#effective-value>effective value</a> "super"
+and at least one with some other <a href=#effective-value>effective value</a>; or if there is
+some <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node <a href=#effectively-contained>effectively contained</a> in
+the <a href=#active-range>active range</a> with <a href=#effective-value>effective value</a> "mixed".
+Otherwise false.
 
 <p><a href=#state>State</a>: True if every <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node that
 is <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active range</a> has
@@ -2783,6 +2818,12 @@ text-decoration in CSS is horrible:
 using the newly-specced features or working around their absence as the case
 may be.
 </div>
+
+<p><a href=#indeterminate-flag>Indeterminate flag</a>: True if among <a href=#editable>editable</a>
+<code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> nodes that are <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active
+range</a>, there is at least one with <a href=#effective-value>effective value</a>
+"underline" and at least one with <a href=#effective-value>effective value</a> null.  Otherwise
+false.
 
 <p><a href=#state>State</a>: True if every <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node that
 is <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active range</a> has

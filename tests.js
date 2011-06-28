@@ -210,7 +210,7 @@ var tests = {
 
 		'<p style="font-weight: bold">foo[bar]baz</p>',
 
-		// Tests for queryCommandIndeterm()
+		// Tests for queryCommandIndeterm() and queryCommandState()
 		'fo[o<b>b]ar</b>baz',
 		'foo<b>ba[r</b>b]az',
 		'fo[o<b>bar</b>b]az',
@@ -2232,6 +2232,21 @@ var tests = {
 		'foo bar <b>baz [qoz</b> quz] sic',
 		'foo [bar <i>baz] qoz</i> quz sic',
 		'foo bar <i>baz [qoz</i> quz] sic',
+
+		// Tests for queryCommandIndeterm() and queryCommandState()
+		'fo[o<i>b]ar</i>baz',
+		'foo<i>ba[r</i>b]az',
+		'fo[o<i>bar</i>b]az',
+		'foo[<i>b]ar</i>baz',
+		'foo<i>ba[r</i>]baz',
+		'foo[<i>bar</i>]baz',
+		'foo<i>[bar]</i>baz',
+		'foo{<i>bar</i>}baz',
+		'fo[o<span style=font-style:italic>b]ar</span>baz',
+		'fo[o<span style=font-style:oblique>b]ar</span>baz',
+		'<span style=font-style:italic>fo[o</span><span style=font-style:oblique>b]ar</span>',
+		'<span style=font-style:oblique>fo[o</span><span style=font-style:italic>b]ar</span>',
+		'<i>fo[o</i><address>b]ar</address>',
 	],
 	//@}
 	justifycenter: [
@@ -2921,6 +2936,19 @@ var tests = {
 		'foo<span class="line-through">b[a]r</span>baz',
 		'foo<span class="underline-and-line-through">[bar]</span>baz',
 		'foo<span class="underline-and-line-through">b[a]r</span>baz',
+
+		// Tests for queryCommandIndeterm() and queryCommandState()
+		'fo[o<s>b]ar</s>baz',
+		'foo<s>ba[r</s>b]az',
+		'fo[o<s>bar</s>b]az',
+		'foo[<s>b]ar</s>baz',
+		'foo<s>ba[r</s>]baz',
+		'foo[<s>bar</s>]baz',
+		'foo<s>[bar]</s>baz',
+		'foo{<s>bar</s>}baz',
+		'fo[o<span style=text-decoration:line-through>b]ar</span>baz',
+		'<strike>fo[o</strike><s>b]ar</s>',
+		'<s>fo[o</s><del>b]ar</del>',
 	],
 	//@}
 	subscript: [
@@ -2929,8 +2957,6 @@ var tests = {
 		'<span>foo</span>{}<span>bar</span>',
 		'<span>foo[</span><span>]bar</span>',
 		'foo[bar]baz',
-		'foo]bar[baz',
-		'{<p><p> <p>foo</p>}',
 		'foo[bar<b>baz]qoz</b>quz',
 
 		'<table><tbody><tr><td>foo<td>b[a]r<td>baz</table>',
@@ -2945,6 +2971,9 @@ var tests = {
 		'foo<sup>[bar]</sup>baz',
 		'foo<sup>b[a]r</sup>baz',
 
+		'foo<span style=vertical-align:sub>[bar]</span>baz',
+		'foo<span style=vertical-align:super>[bar]</span>baz',
+
 		'foo<sub><sub>[bar]</sub></sub>baz',
 		'foo<sub><sub>b[a]r</sub></sub>baz',
 		'foo<sub>b<sub>[a]</sub>r</sub>baz',
@@ -2957,6 +2986,20 @@ var tests = {
 		'foo<sup><sub>[bar]</sub></sup>baz',
 		'foo<sup><sub>b[a]r</sub></sup>baz',
 		'foo<sup>b<sub>[a]</sub>r</sup>baz',
+
+		// Tests for queryCommandIndeterm() and queryCommandState()
+		'fo[o<sub>b]ar</sub>baz',
+		'foo<sub>ba[r</sub>b]az',
+		'fo[o<sub>bar</sub>b]az',
+		'foo[<sub>b]ar</sub>baz',
+		'foo<sub>ba[r</sub>]baz',
+		'foo[<sub>bar</sub>]baz',
+		'foo<sub>[bar]</sub>baz',
+		'foo{<sub>bar</sub>}baz',
+		'<sub>fo[o</sub><sup>b]ar</sup>',
+		'<sub>fo[o</sub><span style=vertical-align:sub>b]ar</span>',
+		'foo<span style=vertical-align:top>[bar]</span>baz',
+		'<sub>fo[o</sub><span style=vertical-align:top>b]ar</span>',
 	],
 	//@}
 	superscript: [
@@ -2965,8 +3008,6 @@ var tests = {
 		'<span>foo</span>{}<span>bar</span>',
 		'<span>foo[</span><span>]bar</span>',
 		'foo[bar]baz',
-		'foo]bar[baz',
-		'{<p><p> <p>foo</p>}',
 		'foo[bar<b>baz]qoz</b>quz',
 
 		'<table><tbody><tr><td>foo<td>b[a]r<td>baz</table>',
@@ -2981,6 +3022,9 @@ var tests = {
 		'foo<sup>[bar]</sup>baz',
 		'foo<sup>b[a]r</sup>baz',
 
+		'foo<span style=vertical-align:sub>[bar]</span>baz',
+		'foo<span style=vertical-align:super>[bar]</span>baz',
+
 		'foo<sub><sub>[bar]</sub></sub>baz',
 		'foo<sub><sub>b[a]r</sub></sub>baz',
 		'foo<sub>b<sub>[a]</sub>r</sub>baz',
@@ -2993,6 +3037,20 @@ var tests = {
 		'foo<sup><sub>[bar]</sub></sup>baz',
 		'foo<sup><sub>b[a]r</sub></sup>baz',
 		'foo<sup>b<sub>[a]</sub>r</sup>baz',
+
+		// Tests for queryCommandIndeterm() and queryCommandState()
+		'fo[o<sup>b]ar</sup>baz',
+		'foo<sup>ba[r</sup>b]az',
+		'fo[o<sup>bar</sup>b]az',
+		'foo[<sup>b]ar</sup>baz',
+		'foo<sup>ba[r</sup>]baz',
+		'foo[<sup>bar</sup>]baz',
+		'foo<sup>[bar]</sup>baz',
+		'foo{<sup>bar</sup>}baz',
+		'<sup>fo[o</sup><sub>b]ar</sub>',
+		'<sup>fo[o</sup><span style=vertical-align:super>b]ar</span>',
+		'foo<span style=vertical-align:bottom>[bar]</span>baz',
+		'<sup>fo[o</sup><span style=vertical-align:bottom>b]ar</span>',
 	],
 	//@}
 	underline: [
@@ -3071,6 +3129,19 @@ var tests = {
 		'foo<span class="line-through">b[a]r</span>baz',
 		'foo<span class="underline-and-line-through">[bar]</span>baz',
 		'foo<span class="underline-and-line-through">b[a]r</span>baz',
+
+		// Tests for queryCommandIndeterm() and queryCommandState()
+		'fo[o<u>b]ar</u>baz',
+		'foo<u>ba[r</u>b]az',
+		'fo[o<u>bar</u>b]az',
+		'foo[<u>b]ar</u>baz',
+		'foo<u>ba[r</u>]baz',
+		'foo[<u>bar</u>]baz',
+		'foo<u>[bar]</u>baz',
+		'foo{<u>bar</u>}baz',
+		'fo[o<span style=text-decoration:underline>b]ar</span>baz',
+		'<ins>fo[o</ins><u>b]ar</u>',
+		'<u>fo[o</u><ins>b]ar</ins>',
 	],
 	//@}
 	unlink: [

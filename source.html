@@ -1113,6 +1113,11 @@ either a string or null:
     computes to "inline":
 
     <ol>
+      <!-- Firefox 6.0a2 ignores vertical-align for this purpose, and only
+      cares about <sub> and <sup> tags themselves.  Opera 11.11 is similar, and
+      in fact behaves like that even for commands like bold.  The spec follows
+      Chrome 14 dev, mainly because WebKit itself will produce spans with
+      vertical-align sub or super, and we want to handle them correctly. -->
       <li>If <var>node</var>'s "vertical-align" property computes to "sub", set
       <var>affected by subscript</var> to true.
 
@@ -1120,7 +1125,7 @@ either a string or null:
       "super", set <var>affected by superscript</var> to true.
 
       <li>Otherwise, if <var>node</var>'s "vertical-align" property computes to
-      some value other than "baseline", return the string "mixed".
+      some value other than "baseline", return the string "other".
 
       <li>Set <var>node</var> to its [[parent]].
     </ol>
@@ -2499,6 +2504,12 @@ If the <span>state</span> is then false, <span>set the value</span> of each
 returned [[node]] to "italic", otherwise <span>set the value</span> to
 "normal".
 
+<p><span>Indeterminate flag</span>: True if among <span>editable</span>
+[[text]] nodes that are <span>effectively contained</span> in the <span>active
+range</span>, there is at least one with <span>effective value</span> either
+"italic" or "oblique" and at least one with <span>effective value</span>
+"normal".  Otherwise false.
+
 <p><span>State</span>: True if every <span>editable</span> [[text]] node that
 is <span>effectively contained</span> in the <span>active range</span> has
 <span>effective value</span> either "italic" or "oblique", and there is at
@@ -2639,6 +2650,12 @@ null.
 <p class=XXX>Has all the same problems as <span>the <code
 title>underline</code> command</span>.
 
+<p><span>Indeterminate flag</span>: True if among <span>editable</span>
+[[text]] nodes that are <span>effectively contained</span> in the <span>active
+range</span>, there is at least one with <span>effective value</span>
+"line-through" and at least one with <span>effective value</span> null.
+Otherwise false.
+
 <p><span>State</span>: True if every <span>editable</span> [[text]] node that
 is <span>effectively contained</span> in the <span>active range</span> has
 <span>effective value</span> "line-through", and there is at least one such
@@ -2663,18 +2680,28 @@ is <span>effectively contained</span> in the <span>active range</span> has
   to "sub".
 </ol>
 
+<p><span>Indeterminate flag</span>: True if either among <span>editable</span>
+[[text]] nodes that are <span>effectively contained</span> in the <span>active
+range</span>, there is at least one with <span>effective value</span> "sub" and
+at least one with some other <span>effective value</span>; or if there is some
+<span>editable</span> [[text]] node <span>effectively contained</span> in the
+<span>active range</span> with <span>effective value</span> "mixed".  Otherwise
+false.
+
 <p><span>State</span>: True if every <span>editable</span> [[text]] node that
 is <span>effectively contained</span> in the <span>active range</span> has
 <span>effective value</span> "sub", and there is at least one such [[text]]
 node.  Otherwise false.
 <!--
 For <sup><sub>foo</sub></sup>, Firefox 6.0a2 and Opera 11.11 say the state is
-true for both superscript and subscript; Chrome 14 dev says it's true for
-subscript but not superscript.  We follow neither of these behaviors: we return
-false for both.  The reason is because we want to return true if we'll do
-nothing, false if we'll do something; and if we have nesting like this, we'll
-always do something, namely get rid of all those ancestors and replace them
-with a single tag.
+true for both superscript and subscript, and indeterminate is false; Chrome 14
+dev says it's true for subscript but not superscript, and indeterminate is
+false.  We follow neither of these behaviors: we return false for both states,
+and say indeterminate is true.  The reason is because we want to return true
+for a state if we'll do nothing, false if we'll do something; and if we have
+nesting like this, we'll always do something, namely get rid of all those
+ancestors and replace them with a single tag.  This matches what happens in
+other indeterminate situations, so it's fair to consider it indeterminate.
 -->
 
 <p><span>Relevant CSS property</span>: "vertical-align"
@@ -2697,6 +2724,14 @@ with a single tag.
   range</span> again and <span>set the value</span> of each returned [[node]]
   to "super".
 </ol>
+
+<p><span>Indeterminate flag</span>: True if either among <span>editable</span>
+[[text]] nodes that are <span>effectively contained</span> in the <span>active
+range</span>, there is at least one with <span>effective value</span> "super"
+and at least one with some other <span>effective value</span>; or if there is
+some <span>editable</span> [[text]] node <span>effectively contained</span> in
+the <span>active range</span> with <span>effective value</span> "mixed".
+Otherwise false.
 
 <p><span>State</span>: True if every <span>editable</span> [[text]] node that
 is <span>effectively contained</span> in the <span>active range</span> has
@@ -2762,6 +2797,12 @@ text-decoration in CSS is horrible:
 using the newly-specced features or working around their absence as the case
 may be.
 </div>
+
+<p><span>Indeterminate flag</span>: True if among <span>editable</span>
+[[text]] nodes that are <span>effectively contained</span> in the <span>active
+range</span>, there is at least one with <span>effective value</span>
+"underline" and at least one with <span>effective value</span> null.  Otherwise
+false.
 
 <p><span>State</span>: True if every <span>editable</span> [[text]] node that
 is <span>effectively contained</span> in the <span>active range</span> has

@@ -1707,9 +1707,9 @@ function getEffectiveValue(node, command) {
 			} else if (verticalAlign == "super") {
 				affectedBySuperscript = true;
 			// "Otherwise, if node's "vertical-align" property computes to some
-			// value other than "baseline", return the string "mixed"."
+			// value other than "baseline", return the string "other"."
 			} else if (verticalAlign != "baseline") {
-				return "mixed";
+				return "other";
 			}
 
 			// "Set node to its parent."
@@ -2991,7 +2991,14 @@ commands.italic = {
 		for (var i = 0; i < nodeList.length; i++) {
 			setNodeValue(nodeList[i], "italic", newValue);
 		}
-	}, state: function() { return stateHelper(function(node) {
+	}, indeterm: function() { return indetermHelper(function(node) {
+		// "True if among editable Text nodes that are effectively contained in
+		// the active range, there is at least one with effective value either
+		// "italic" or "oblique" and at least one with effective value
+		// "normal". Otherwise false."
+		var value = getEffectiveValue(node, "italic");
+		return value == "italic" || value == "oblique";
+	})}, state: function() { return stateHelper(function(node) {
 		// "True if every editable Text node that is effectively contained in
 		// the active range has effective value either "italic" or "oblique",
 		// and there is at least one such Text node.  Otherwise false."
@@ -3092,7 +3099,13 @@ commands.strikethrough = {
 		for (var i = 0; i < nodeList.length; i++) {
 			setNodeValue(nodeList[i], "strikethrough", newValue);
 		}
-	}, state: function() { return stateHelper(function(node) {
+	}, indeterm: function() { return indetermHelper(function(node) {
+		// "True if among editable Text nodes that are effectively contained in
+		// the active range, there is at least one with effective value
+		// "line-through" and at least one with effective value null. Otherwise
+		// false."
+		return getEffectiveValue(node, "strikethrough") == "line-through";
+	})}, state: function() { return stateHelper(function(node) {
 		// "True if every editable Text node that is effectively contained in
 		// the active range has effective value "line-through", and there is at
 		// least one such Text node. Otherwise false."
@@ -3124,6 +3137,25 @@ commands.subscript = {
 				setNodeValue(nodeList[i], "subscript", "sub");
 			}
 		}
+	}, indeterm: function() {
+		// "True if either among editable Text nodes that are effectively
+		// contained in the active range, there is at least one with effective
+		// value "sub" and at least one with some other effective value; or if
+		// there is some editable Text node effectively contained in the active
+		// range with effective value "mixed". Otherwise false."
+		//
+		// The use of stateHelper() here is a bit of a hack, but it works.  The
+		// way the logic works out is that it returns true if every editable
+		// text node etc. does *not* have effective value "mixed" and there's
+		// at least one, so if we negate it that means either there's no
+		// editable etc. text node or else one has effective value mixed.  The
+		// second invocation of stateHelper() handles the case where there are
+		// no editable Text nodes effectively contained in the range.
+		if (indetermHelper(function(node) { return getEffectiveValue(node, "subscript") == "sub" })) {
+			return true;
+		}
+		return !stateHelper(function(node) { return getEffectiveValue(node, "subscript") != "mixed" })
+			&& stateHelper(function() { return true });
 	}, state: function() { return stateHelper(function(node) {
 		// "True if every editable Text node that is effectively contained in
 		// the active range has effective value "sub", and there is at least
@@ -3156,6 +3188,19 @@ commands.superscript = {
 				setNodeValue(nodeList[i], "superscript", "super");
 			}
 		}
+	}, indeterm: function() {
+		// "True if either among editable Text nodes that are effectively
+		// contained in the active range, there is at least one with effective
+		// value "super" and at least one with some other effective value; or
+		// if there is some editable Text node effectively contained in the
+		// active range with effective value "mixed". Otherwise false."
+		//
+		// See subscript for implementation remark.
+		if (indetermHelper(function(node) { return getEffectiveValue(node, "superscript") == "super" })) {
+			return true;
+		}
+		return !stateHelper(function(node) { return getEffectiveValue(node, "superscript") != "mixed" })
+			&& stateHelper(function() { return true });
 	}, state: function() { return stateHelper(function(node) {
 		// "True if every editable Text node that is effectively contained in
 		// the active range has effective value "super", and there is at least
@@ -3177,7 +3222,13 @@ commands.underline = {
 		for (var i = 0; i < nodeList.length; i++) {
 			setNodeValue(nodeList[i], "underline", newValue);
 		}
-	}, state: function() { return stateHelper(function(node) {
+	}, indeterm: function() { return indetermHelper(function(node) {
+		// "True if among editable Text nodes that are effectively contained in
+		// the active range, there is at least one with effective value
+		// "underline" and at least one with effective value null. Otherwise
+		// false."
+		return getEffectiveValue(node, "underline") === "underline";
+	})}, state: function() { return stateHelper(function(node) {
 		// "True if every editable Text node that is effectively contained in
 		// the active range has effective value "underline", and there is at
 		// least one such Text node. Otherwise false."

@@ -334,24 +334,31 @@ otherwise stated.
 method on the <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/html/#htmldocument>HTMLDocument</a></code> interface does
 the same thing as <code><a href=#querycommandsupported()>queryCommandSupported()</a></code>.
 
-<p class=XXX>The <dfn id=querycommandindeterm() title=queryCommandIndeterm()><code>queryCommandIndeterm(<var title="">command</var>)</code></dfn>
-method on the <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/html/#htmldocument>HTMLDocument</a></code> interface is a
-useless method that always returns false.  I think.
+<p>The <dfn id=querycommandindeterm() title=queryCommandIndeterm()><code>queryCommandIndeterm(<var title="">command</var>)</code></dfn>
+method on the <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/html/#htmldocument>HTMLDocument</a></code> interface allows
+scripts to determine whether the selection is in a mixed or indeterminate
+state, like (for <a href=#the-bold-command>the <code title="">bold</code> command</a>) partly bold
+and partly not.  An editing toolbar with a "bold" button might show it
+differently if the selection is indeterminate.
 
 <p>The <dfn id=querycommandstate() title=queryCommandState()><code>queryCommandState(<var title="">command</var>)</code></dfn>
 method on the <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/html/#htmldocument>HTMLDocument</a></code> interface allows
 scripts to ask true-or-false status questions about the current selection, such
-as whether it is bold or not.
+as whether it is bold or not.  An editing toolbar with a "bold" button might
+show it as preseed down if the state is true and undepressed if the state is
+false.
 
 <p>The <dfn id=querycommandsupported() title=queryCommandSupported()><code>queryCommandSupported(<var title="">command</var>)</code></dfn>
 method on the <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/html/#htmldocument>HTMLDocument</a></code> interface allows
 scripts to determine whether a particular command is supported or will do
-nothing.
+nothing.  Authors might write their scripts to use some type of fallback if a
+command is unsupported, or display an error.
 
 <p>The <dfn id=querycommandvalue() title=queryCommandValue()><code>queryCommandValue(<var title="">command</var>)</code></dfn>
 method on the <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/html/#htmldocument>HTMLDocument</a></code> interface allows
 scripts to get the value of some property of the current selection in string
-form, such as what color it is.
+form, such as what color it is.  Usually this will return the value for the
+beginning of the selection, if it's not the same for the whole selection.
 
 <p>All of these methods operate using particular <dfn id=command title=command>commands</dfn>, identified by a string <var title="">command</var> passed
 as the first argument.  The <var title="">command</var> argument of all the methods must
@@ -2044,9 +2051,31 @@ nothing if the selection is empty.  Why strikethrough?  I don't know. -->
 If the <a href=#state>state</a> is then false, <a href=#set-the-value>set the value</a> of each
 returned <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> to "bold", otherwise <a href=#set-the-value>set the value</a> to "normal".
 
+<p><a href=#indeterminate-flag>Indeterminate flag</a>: True if among <a href=#editable>editable</a>
+<code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> nodes that are <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active
+range</a>, there is at least one with <a href=#effective-value>effective value</a> less than
+600 and at least one with <a href=#effective-value>effective value</a> greater than or equal to
+600.  Otherwise false.
+<!--
+The cutoff of 600 (both here and for state) matches Chrome 14 dev.  The cutoff
+used by IE9 and Firefox 6.0a2 seems to be 500, and the distinction isn't
+relevant for Opera 11.11 (it doesn't use CSS here at all AFAICT).  On my test
+systems with default fonts, Chrome 14 dev displays 700 and up as bold, while
+the other three display 600 and up as bold.
+
+Thus in Chrome on my system, the bold command will behave a bit oddly the first
+time you hit it if there's anything in the range with font-weight: 600, but it
+will look right in other browsers.  On the other hand, if I followed
+IE/Firefox, it would look wrong on all my browsers for font-weight: 500.
+
+700 actually makes more sense: then you'd view 100-300 as light, 400-600 as
+medium, 700-900 as bold.  But that's not how it seems to work in browsers, so
+I'll go with 600 as the cutoff.
+-->
+
 <p><a href=#state>State</a>: True if every <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node that
 is <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active range</a> has
-<a href=#effective-value>effective value</a> at least 700, and there is at least one such
+<a href=#effective-value>effective value</a> at least 600, and there is at least one such
 <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node.  Otherwise false.
 <!--
 For bold and similar commands, IE 9 RC seems to consider the state true or

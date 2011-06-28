@@ -269,28 +269,35 @@ title=queryCommandEnabled()><code>queryCommandEnabled(<var>command</var>)</code>
 method on the <code data-anolis-spec=html>HTMLDocument</code> interface does
 the same thing as <code>queryCommandSupported()</code>.
 
-<p class=XXX>The <dfn
+<p>The <dfn
 title=queryCommandIndeterm()><code>queryCommandIndeterm(<var>command</var>)</code></dfn>
-method on the <code data-anolis-spec=html>HTMLDocument</code> interface is a
-useless method that always returns false.  I think.
+method on the <code data-anolis-spec=html>HTMLDocument</code> interface allows
+scripts to determine whether the selection is in a mixed or indeterminate
+state, like (for <span>the <code title>bold</code> command</span>) partly bold
+and partly not.  An editing toolbar with a "bold" button might show it
+differently if the selection is indeterminate.
 
 <p>The <dfn
 title=queryCommandState()><code>queryCommandState(<var>command</var>)</code></dfn>
 method on the <code data-anolis-spec=html>HTMLDocument</code> interface allows
 scripts to ask true-or-false status questions about the current selection, such
-as whether it is bold or not.
+as whether it is bold or not.  An editing toolbar with a "bold" button might
+show it as preseed down if the state is true and undepressed if the state is
+false.
 
 <p>The <dfn
 title=queryCommandSupported()><code>queryCommandSupported(<var>command</var>)</code></dfn>
 method on the <code data-anolis-spec=html>HTMLDocument</code> interface allows
 scripts to determine whether a particular command is supported or will do
-nothing.
+nothing.  Authors might write their scripts to use some type of fallback if a
+command is unsupported, or display an error.
 
 <p>The <dfn
 title=queryCommandValue()><code>queryCommandValue(<var>command</var>)</code></dfn>
 method on the <code data-anolis-spec=html>HTMLDocument</code> interface allows
 scripts to get the value of some property of the current selection in string
-form, such as what color it is.
+form, such as what color it is.  Usually this will return the value for the
+beginning of the selection, if it's not the same for the whole selection.
 
 <p>All of these methods operate using particular <dfn
 title=command>commands</dfn>, identified by a string <var>command</var> passed
@@ -2020,9 +2027,31 @@ nothing if the selection is empty.  Why strikethrough?  I don't know. -->
 If the <span>state</span> is then false, <span>set the value</span> of each
 returned [[node]] to "bold", otherwise <span>set the value</span> to "normal".
 
+<p><span>Indeterminate flag</span>: True if among <span>editable</span>
+[[text]] nodes that are <span>effectively contained</span> in the <span>active
+range</span>, there is at least one with <span>effective value</span> less than
+600 and at least one with <span>effective value</span> greater than or equal to
+600.  Otherwise false.
+<!--
+The cutoff of 600 (both here and for state) matches Chrome 14 dev.  The cutoff
+used by IE9 and Firefox 6.0a2 seems to be 500, and the distinction isn't
+relevant for Opera 11.11 (it doesn't use CSS here at all AFAICT).  On my test
+systems with default fonts, Chrome 14 dev displays 700 and up as bold, while
+the other three display 600 and up as bold.
+
+Thus in Chrome on my system, the bold command will behave a bit oddly the first
+time you hit it if there's anything in the range with font-weight: 600, but it
+will look right in other browsers.  On the other hand, if I followed
+IE/Firefox, it would look wrong on all my browsers for font-weight: 500.
+
+700 actually makes more sense: then you'd view 100-300 as light, 400-600 as
+medium, 700-900 as bold.  But that's not how it seems to work in browsers, so
+I'll go with 600 as the cutoff.
+-->
+
 <p><span>State</span>: True if every <span>editable</span> [[text]] node that
 is <span>effectively contained</span> in the <span>active range</span> has
-<span>effective value</span> at least 700, and there is at least one such
+<span>effective value</span> at least 600, and there is at least one such
 [[text]] node.  Otherwise false.
 <!--
 For bold and similar commands, IE 9 RC seems to consider the state true or

@@ -157,8 +157,13 @@ var tests = {
 		'<b id=purple>bar [baz] qoz</b>',
 
 		'foo<span style="font-weight: 100">[bar]</span>baz',
+		'foo<span style="font-weight: 200">[bar]</span>baz',
+		'foo<span style="font-weight: 300">[bar]</span>baz',
 		'foo<span style="font-weight: 400">[bar]</span>baz',
+		'foo<span style="font-weight: 500">[bar]</span>baz',
+		'foo<span style="font-weight: 600">[bar]</span>baz',
 		'foo<span style="font-weight: 700">[bar]</span>baz',
+		'foo<span style="font-weight: 800">[bar]</span>baz',
 		'foo<span style="font-weight: 900">[bar]</span>baz',
 		'foo<span style="font-weight: 400">[bar</span>]baz',
 		'foo<span style="font-weight: 700">[bar</span>]baz',
@@ -204,6 +209,25 @@ var tests = {
 		'<b><span class=notbold>foo[bar]baz</span></b>',
 
 		'<p style="font-weight: bold">foo[bar]baz</p>',
+
+		// Tests for queryCommandIndeterm()
+		'fo[o<b>b]ar</b>baz',
+		'foo<b>ba[r</b>b]az',
+		'fo[o<b>bar</b>b]az',
+		'foo[<b>b]ar</b>baz',
+		'foo<b>ba[r</b>]baz',
+		'foo[<b>bar</b>]baz',
+		'foo<b>[bar]</b>baz',
+		'foo{<b>bar</b>}baz',
+		'fo[o<span style=font-weight:bold>b]ar</span>baz',
+		'<span style=font-weight:800>fo[o</span><span style=font-weight:900>b]ar</span>',
+		'<span style=font-weight:700>fo[o</span><span style=font-weight:800>b]ar</span>',
+		'<span style=font-weight:600>fo[o</span><span style=font-weight:700>b]ar</span>',
+		'<span style=font-weight:500>fo[o</span><span style=font-weight:600>b]ar</span>',
+		'<span style=font-weight:400>fo[o</span><span style=font-weight:500>b]ar</span>',
+		'<span style=font-weight:300>fo[o</span><span style=font-weight:400>b]ar</span>',
+		'<span style=font-weight:200>fo[o</span><span style=font-weight:300>b]ar</span>',
+		'<span style=font-weight:100>fo[o</span><span style=font-weight:200>b]ar</span>',
 	],
 	//@}
 	createlink: [

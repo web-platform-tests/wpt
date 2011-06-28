@@ -202,6 +202,41 @@ function isHtmlNamespace(ns) {
 		|| ns === htmlNamespace;
 }
 
+// For computing indeterminate flags of the form "True if among editable Text
+// nodes that are effectively contained in the active range, there is at least
+// one with (property X) and at least one with (property not-X).  Otherwise
+// false."
+function indetermHelper(callback) {
+	var range = getActiveRange();
+	// XXX: This algorithm for getting all effectively contained nodes might be
+	// wrong . . .
+	var node = range.startContainer;
+	while (node.parentNode && node.parentNode.firstChild == node) {
+		node = node.parentNode;
+	}
+	var stop = nextNodeDescendants(range.endContainer);
+
+	var hasProperty = false;
+	var lacksProperty = false;
+	for (; node && node != stop; node = nextNode(node)) {
+		if (!isEffectivelyContained(node, range)
+		|| node.nodeType != Node.TEXT_NODE
+		|| !isEditable(node)) {
+			continue;
+		}
+
+		if (callback(node)) {
+			hasProperty = true;
+		} else {
+			lacksProperty = true;
+		}
+		if (hasProperty && lacksProperty) {
+			return true;
+		}
+	}
+	return false;
+}
+
 // For computing states of the form "True if every editable Text node that is
 // effectively contained in the active range (has property X), and there is at
 // least one such Text node.  Otherwise false."
@@ -2640,12 +2675,24 @@ commands.bold = {
 		for (var i = 0; i < nodeList.length; i++) {
 			setNodeValue(nodeList[i], "bold", newValue);
 		}
-	}, state: function() { return stateHelper(function(node) {
+	}, indeterm: function() { return indetermHelper(function(node) {
+		// "True if among editable Text nodes that are effectively contained in
+		// the active range, there is at least one with effective value less
+		// than 600 and at least one with effective value greater than or equal
+		// to 600."
+		var fontWeight = getEffectiveValue(node, "bold");
+		return fontWeight === "bold"
+			|| fontWeight === "600"
+			|| fontWeight === "700"
+			|| fontWeight === "800"
+			|| fontWeight === "900";
+	})}, state: function() { return stateHelper(function(node) {
 		// "True if every editable Text node that is effectively contained in
-		// the active range has effective value at least 700, and there is at
+		// the active range has effective value at least 600, and there is at
 		// least one such text node. Otherwise false."
 		var fontWeight = getEffectiveValue(node, "bold");
 		return fontWeight === "bold"
+			|| fontWeight === "600"
 			|| fontWeight === "700"
 			|| fontWeight === "800"
 			|| fontWeight === "900";

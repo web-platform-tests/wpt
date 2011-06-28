@@ -683,6 +683,25 @@ var tests = {
 		'<span style="color: rgb(255, 0, 0)">foo<span style="color: blue">b[ar]</span>baz</span>',
 		'foo<span id=purple>ba[r</span>ba]z',
 		'<span style="color: rgb(255, 0, 0)">foo<span id=purple>b[a]r</span>baz</span>',
+
+		// Tests for queryCommandValue()
+		'<font color="red">[foo]</font>',
+		'<font color="ff0000">[foo]</font>',
+		'<font color="#ff0000">[foo]</font>',
+		'<span style="color: red">[foo]</span>',
+		'<span style="color: #ff0000">[foo]</span>',
+		'<span style="color: rgb(255, 0, 0)">[foo]</span>',
+		'<span style="color: rgb(100%, 0, 0)">[foo]</span>',
+		'<span style="color: rgb( 255 ,0 ,0)">[foo]</span>',
+		'<span style="color: rgba(255, 0, 0, 0.0)">[foo]</span>',
+		'<span style="color: rgb(375, -10, 15)">[foo]</span>',
+		'<span style="color: rgba(0, 0, 0, 1)">[foo]</span>',
+		'<span style="color: rgba(255, 255, 255, 1)">[foo]</span>',
+		'<span style="color: rgba(255, 0, 0, 0.5)">[foo]</span>',
+		'<span style="color: hsl(0%, 100%, 50%)">[foo]</span>',
+		'<span style="color: cornsilk">[foo]</span>',
+		'<span style="color: transparent">[foo]</span>',
+		'<span style="color: currentColor">[foo]</span>',
 	],
 	//@}
 	formatblock: [

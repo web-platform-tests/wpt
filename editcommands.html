@@ -2427,8 +2427,25 @@ false otherwise, which seems fairly useless; authors want to use value here,
 not state.  Firefox 4b11 throws an exception, which is an interesting approach,
 but I'll go with IE/WebKit, which makes at least as much sense. -->
 
-<p><a href=#value>Value</a>: ?
-<!-- IE 9 RC returns the number 0 always, which makes no sense at all. -->
+<p><a href=#value>Value</a>:
+<!--
+The spec essentially matches Firefox 6.0a2 and Chrome 14 dev.  IE9 seems to
+always return the number 0 for some bizarre reason.  There are some cases where
+Firefox returns the empty string for some reason, and it seems to select the
+active node a little differently.  Opera uses #xxxxxx format for
+getComputedStyle() but rgb() here, and also drops the transparent part of the
+color if there is any.
+-->
+<ol>
+  <li>Let <var title="">node</var> be the <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>.
+
+  <li>If <var title="">node</var> is not an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>, set <var title="">node</var> to its
+  <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+
+  <li>If <var title="">node</var> is not an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>, return "rgb(0, 0, 0)".
+
+  <li>Return the <a href=http://www.w3.org/TR/CSS21/cascade.html#computed-value>computed value</a> of "color" on <var title="">node</var>.
+</ol>
 
 <p><a href=#relevant-css-property>Relevant CSS property</a>: "color"
 

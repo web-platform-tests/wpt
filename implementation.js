@@ -2881,6 +2881,32 @@ commands.forecolor = {
 		for (var i = 0; i < nodeList.length; i++) {
 			setNodeValue(nodeList[i], "forecolor", value);
 		}
+	}, value: function() {
+		// "Let node be the active range's start node."
+		var node = getActiveRange().startContainer;
+
+		// "If node is not an Element, set node to its parent."
+		if (node.nodeType != Node.ELEMENT_NODE) {
+			node = node.parentNode;
+		}
+
+		// "If node is not an Element, return "rgb(0, 0, 0)"."
+		if (node.nodeType != Node.ELEMENT_NODE) {
+			return "rgb(0, 0, 0)";
+		}
+
+		// "Return the computed value of "color" on node."
+		//
+		// Opera uses a different format, so let's be nice and support that for
+		// the time being (since all this computed value stuff is underdefined
+		// anyway).
+		var computed = getComputedStyle(node).color;
+		if (/^#[0-9a-f]{6}$/.test(computed)) {
+			computed = "rgb(" + parseInt(computed.slice(1, 3), 16)
+				+ "," + parseInt(computed.slice(3, 5), 16)
+				+ "," + parseInt(computed.slice(5), 16) + ")";
+		}
+		return computed;
 	}, relevantCssProperty: "color"
 };
 //@}

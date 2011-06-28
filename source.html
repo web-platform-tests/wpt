@@ -2403,8 +2403,25 @@ false otherwise, which seems fairly useless; authors want to use value here,
 not state.  Firefox 4b11 throws an exception, which is an interesting approach,
 but I'll go with IE/WebKit, which makes at least as much sense. -->
 
-<p><span>Value</span>: ?
-<!-- IE 9 RC returns the number 0 always, which makes no sense at all. -->
+<p><span>Value</span>:
+<!--
+The spec essentially matches Firefox 6.0a2 and Chrome 14 dev.  IE9 seems to
+always return the number 0 for some bizarre reason.  There are some cases where
+Firefox returns the empty string for some reason, and it seems to select the
+active node a little differently.  Opera uses #xxxxxx format for
+getComputedStyle() but rgb() here, and also drops the transparent part of the
+color if there is any.
+-->
+<ol>
+  <li>Let <var>node</var> be the <span>active range</span>'s [[startnode]].
+
+  <li>If <var>node</var> is not an [[element]], set <var>node</var> to its
+  [[parent]].
+
+  <li>If <var>node</var> is not an [[element]], return "rgb(0, 0, 0)".
+
+  <li>Return the [[compval]] of "color" on <var>node</var>.
+</ol>
 
 <p><span>Relevant CSS property</span>: "color"
 <!-- @} -->

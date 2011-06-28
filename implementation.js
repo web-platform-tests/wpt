@@ -2684,6 +2684,22 @@ commands.fontname = {
 		for (var i = 0; i < nodeList.length; i++) {
 			setNodeValue(nodeList[i], "fontname", value);
 		}
+	}, value: function() {
+		// "Let node be the start node of the active range."
+		var node = getActiveRange().startContainer;
+
+		// "If node is not an Element, set node to its parent."
+		if (node.nodeType != Node.ELEMENT_NODE) {
+			node = node.parentNode;
+		}
+
+		// "If node is not an Element, return the empty string."
+		if (node.nodeType != Node.ELEMENT_NODE) {
+			return "";
+		}
+
+		// "Return the computed value of "font-family" for node."
+		return getComputedStyle(node).fontFamily;
 	}, relevantCssProperty: "fontFamily"
 };
 //@}

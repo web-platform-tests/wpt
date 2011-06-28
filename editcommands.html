@@ -38,7 +38,7 @@
 <body class=draft>
 <div class=head id=head>
 <h1>HTML Editing Commands</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-27-june-2011>Work in Progress &mdash; Last Update 27 June 2011</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-28-june-2011>Work in Progress &mdash; Last Update 28 June 2011</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;ayg+spec@aryeh.name&gt;
@@ -2151,8 +2151,7 @@ likely that the font list will be fixed by the author (how many users will
 understand CSS font-family syntax?), so I don't think such usability concerns
 apply. -->
 
-<p><a href=#value>Value</a>: The computed value of the CSS property "font-family" for
-. . .
+<p><a href=#value>Value</a>:
 <!-- Complicated.
 
 IE 9 RC: Always the empty string.  Not very useful.
@@ -2169,6 +2168,17 @@ Opera 11: Returns the literal value of font-family, except if it's inherited
 I'm just going to punt on this and say it should be the computed value of
 font-family.  I'll leave CSSOM to decide what that means if there are no
 applicable style rules. -->
+<ol>
+  <li>Let <var title="">node</var> be the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> of the <a href=#active-range>active
+  range</a>.
+
+  <li>If <var title="">node</var> is not an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>, set <var title="">node</var> to its
+  <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+
+  <li>If <var title="">node</var> is not an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>, return the empty string.
+
+  <li>Return the <a href=http://www.w3.org/TR/CSS21/cascade.html#computed-value>computed value</a> of "font-family" for <var title="">node</var>.
+</ol>
 
 <p><a href=#relevant-css-property>Relevant CSS property</a>: "font-family"
 

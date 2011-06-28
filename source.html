@@ -2127,8 +2127,7 @@ likely that the font list will be fixed by the author (how many users will
 understand CSS font-family syntax?), so I don't think such usability concerns
 apply. -->
 
-<p><span>Value</span>: The computed value of the CSS property "font-family" for
-. . .
+<p><span>Value</span>:
 <!-- Complicated.
 
 IE 9 RC: Always the empty string.  Not very useful.
@@ -2145,6 +2144,17 @@ Opera 11: Returns the literal value of font-family, except if it's inherited
 I'm just going to punt on this and say it should be the computed value of
 font-family.  I'll leave CSSOM to decide what that means if there are no
 applicable style rules. -->
+<ol>
+  <li>Let <var>node</var> be the [[startnode]] of the <span>active
+  range</span>.
+
+  <li>If <var>node</var> is not an [[element]], set <var>node</var> to its
+  [[parent]].
+
+  <li>If <var>node</var> is not an [[element]], return the empty string.
+
+  <li>Return the [[compval]] of "font-family" for <var>node</var>.
+</ol>
 
 <p><span>Relevant CSS property</span>: "font-family"
 <!-- @} -->

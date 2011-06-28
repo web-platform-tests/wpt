@@ -545,6 +545,12 @@ var tests = {
 		'foo<span style="font-family: sans-serif">b[a]r</span>baz',
 		'foo<span style="font-family: monospace">[bar]</span>baz',
 		'foo<span style="font-family: monospace">b[a]r</span>baz',
+
+		'foo<tt contenteditable=false>ba[r</tt>b]az',
+		'fo[o<tt contenteditable=false>b]ar</tt>baz',
+		'foo<tt>{}<br></tt>bar',
+		'foo<tt>{<br></tt>}bar',
+		'foo<tt>{<br></tt>b]ar',
 	],
 	//@}
 	fontsize: [

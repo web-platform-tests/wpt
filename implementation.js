@@ -2724,6 +2724,17 @@ commands.fontname = {
 		for (var i = 0; i < nodeList.length; i++) {
 			setNodeValue(nodeList[i], "fontname", value);
 		}
+	}, indeterm: function() {
+		// "True if among editable Text nodes that are effectively contained in
+		// the active range, there are two that have distinct effective values.
+		// Otherwise false."
+		return collectAllEffectivelyContainedNodes(getActiveRange(), function(node) {
+			return isEditable(node) && node.nodeType == Node.TEXT_NODE;
+		}).map(function(node) {
+			return getEffectiveValue(node, "fontname");
+		}).filter(function(value, i, arr) {
+			return arr.slice(0, i).indexOf(value) == -1;
+		}).length >= 2;
 	}, value: function() {
 		// "The effective value of the active range's start node."
 		return getEffectiveValue(getActiveRange().startContainer, "fontname");
@@ -2822,6 +2833,17 @@ commands.fontsize = {
 		for (var i = 0; i < nodeList.length; i++) {
 			setNodeValue(nodeList[i], "fontsize", value);
 		}
+	}, indeterm: function() {
+		// "True if among editable Text nodes that are effectively contained in
+		// the active range, there are two that have distinct effective values.
+		// Otherwise false."
+		return collectAllEffectivelyContainedNodes(getActiveRange(), function(node) {
+			return isEditable(node) && node.nodeType == Node.TEXT_NODE;
+		}).map(function(node) {
+			return getEffectiveValue(node, "fontsize");
+		}).filter(function(value, i, arr) {
+			return arr.slice(0, i).indexOf(value) == -1;
+		}).length >= 2;
 	}, value: function() {
 		// "Let pixel size be the effective value of the active range's start
 		// node, as a number of pixels."
@@ -2895,6 +2917,17 @@ commands.forecolor = {
 		for (var i = 0; i < nodeList.length; i++) {
 			setNodeValue(nodeList[i], "forecolor", value);
 		}
+	}, indeterm: function() {
+		// "True if among editable Text nodes that are effectively contained in
+		// the active range, there are two that have distinct effective values.
+		// Otherwise false."
+		return collectAllEffectivelyContainedNodes(getActiveRange(), function(node) {
+			return isEditable(node) && node.nodeType == Node.TEXT_NODE;
+		}).map(function(node) {
+			return getEffectiveValue(node, "forecolor");
+		}).filter(function(value, i, arr) {
+			return arr.slice(0, i).indexOf(value) == -1;
+		}).length >= 2;
 	}, value: function() {
 		// "The effective value of the active range's start node."
 		//

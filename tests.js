@@ -575,6 +575,25 @@ var tests = {
 		'foo<tt>{}<br></tt>bar',
 		'foo<tt>{<br></tt>}bar',
 		'foo<tt>{<br></tt>b]ar',
+
+		// Tests for queryCommandIndeterm() and queryCommandState()
+		'fo[o<span style=font-family:monospace>b]ar</span>baz',
+		'foo<span style=font-family:monospace>ba[r</span>b]az',
+		'fo[o<span style=font-family:monospace>bar</span>b]az',
+		'foo[<span style=font-family:monospace>b]ar</span>baz',
+		'foo<span style=font-family:monospace>ba[r</span>]baz',
+		'foo[<span style=font-family:monospace>bar</span>]baz',
+		'foo<span style=font-family:monospace>[bar]</span>baz',
+		'foo{<span style=font-family:monospace>bar</span>}baz',
+		'fo[o<code>b]ar</code>',
+		'fo[o<kbd>b]ar</kbd>',
+		'fo[o<listing>b]ar</listing>',
+		'fo[o<pre>b]ar</pre>',
+		'fo[o<samp>b]ar</samp>',
+		'fo[o<tt>b]ar</tt>',
+		'<tt>fo[o</tt><code>b]ar</code>',
+		'<pre>fo[o</pre><samp>b]ar</samp>',
+		'<span style=font-family:monospace>fo[o</span><kbd>b]ar</kbd>',
 	],
 	//@}
 	fontsize: [
@@ -655,6 +674,22 @@ var tests = {
 		["3", 'foo<big>b[a]r</big>baz'],
 		["3", 'foo<small>[bar]</small>baz'],
 		["3", 'foo<small>b[a]r</small>baz'],
+
+		// Tests for queryCommandIndeterm() and queryCommandState()
+		'fo[o<font size=2>b]ar</font>baz',
+		'foo<font size=2>ba[r</font>b]az',
+		'fo[o<font size=2>bar</font>b]az',
+		'foo[<font size=2>b]ar</font>baz',
+		'foo<font size=2>ba[r</font>]baz',
+		'foo[<font size=2>bar</font>]baz',
+		'foo<font size=2>[bar]</font>baz',
+		'foo{<font size=2>bar</font>}baz',
+		'<font size=1>fo[o</font><span style=font-size:xx-small>b]ar</span>',
+		'<font size=2>fo[o</font><span style=font-size:small>b]ar</span>',
+		'<font size=3>fo[o</font><span style=font-size:medium>b]ar</span>',
+		'<font size=4>fo[o</font><span style=font-size:large>b]ar</span>',
+		'<font size=5>fo[o</font><span style=font-size:x-large>b]ar</span>',
+		'<font size=6>fo[o</font><span style=font-size:xx-large>b]ar</span>',
 	],
 	//@}
 	forecolor: [
@@ -726,6 +761,18 @@ var tests = {
 		'<span style="color: cornsilk">[foo]</span>',
 		'<span style="color: transparent">[foo]</span>',
 		'<span style="color: currentColor">[foo]</span>',
+
+		// Tests for queryCommandIndeterm() and queryCommandState()
+		'fo[o<font color=blue>b]ar</font>baz',
+		'foo<font color=blue>ba[r</font>b]az',
+		'fo[o<font color=blue>bar</font>b]az',
+		'foo[<font color=blue>b]ar</font>baz',
+		'foo<font color=blue>ba[r</font>]baz',
+		'foo[<font color=blue>bar</font>]baz',
+		'foo<font color=blue>[bar]</font>baz',
+		'foo{<font color=blue>bar</font>}baz',
+		'<font color=blue>fo[o</font><span style=color:blue>b]ar</span>',
+		'<span style=color:blue>fo[o</span><span style=color:#0000ff>b]ar</span>',
 	],
 	//@}
 	formatblock: [

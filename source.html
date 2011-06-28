@@ -2161,6 +2161,12 @@ likely that the font list will be fixed by the author (how many users will
 understand CSS font-family syntax?), so I don't think such usability concerns
 apply. -->
 
+<p><span>Indeterminate flag</span>: True if among <span>editable</span>
+[[text]] nodes that are <span>effectively contained</span> in the <span>active
+range</span>, there are two that have distinct <span title="effective
+value">effective values</span>.  Otherwise false.
+<!-- This follows Firefox 6.0a2.  Chrome 14 dev always returns false. -->
+
 <p><span>Value</span>: The <span>effective value</span> of the <span>active
 range</span>'s [[startnode]].
 
@@ -2289,6 +2295,12 @@ respecifying non-interoperable behavior anyway.
   <li><span>Decompose</span> the <span>active range</span>, then <span>set the
   value</span> of each returned [[node]] to <var>value</var>.
 </ol>
+
+<p><span>Indeterminate flag</span>: True if among <span>editable</span>
+[[text]] nodes that are <span>effectively contained</span> in the <span>active
+range</span>, there are two that have distinct <span title="effective
+value">effective values</span>.  Otherwise false.
+<!-- This follows Firefox 6.0a2.  Chrome 14 dev always returns false. -->
 
 <p><span>Value</span>:
 <!--
@@ -2426,6 +2438,12 @@ Chrome 10.  Opera 11 seems to return true if there's some color style applied,
 false otherwise, which seems fairly useless; authors want to use value here,
 not state.  Firefox 4b11 throws an exception, which is an interesting approach,
 but I'll go with IE/WebKit, which makes at least as much sense. -->
+
+<p><span>Indeterminate flag</span>: True if among <span>editable</span>
+[[text]] nodes that are <span>effectively contained</span> in the <span>active
+range</span>, there are two that have distinct <span title="effective
+value">effective values</span>.  Otherwise false.
+<!-- This follows Firefox 6.0a2.  Chrome 14 dev always returns false. -->
 
 <p><span>Value</span>: The <span>effective value</span> of the <span>active
 range</span>'s [[startnode]].
@@ -5792,6 +5810,10 @@ Opera 11.11 isn't heedful of <xmp>, and treats <pre> somewhat oddly.
 <!-- @{ -->
 <p><span>Action</span>: <span>Toggle lists</span> with <var>tag name</var>
 "ol".
+
+<p class=XXX>Consider defining indeterminate flag.
+<!-- Gecko sort of supports it, but unreliably, and no one else does.  Ditto
+insertUnorderedList, obviously. -->
 
 <p><span>State</span>:
 <!--

@@ -2185,6 +2185,12 @@ likely that the font list will be fixed by the author (how many users will
 understand CSS font-family syntax?), so I don't think such usability concerns
 apply. -->
 
+<p><a href=#indeterminate-flag>Indeterminate flag</a>: True if among <a href=#editable>editable</a>
+<code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> nodes that are <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active
+range</a>, there are two that have distinct <a href=#effective-value title="effective
+value">effective values</a>.  Otherwise false.
+<!-- This follows Firefox 6.0a2.  Chrome 14 dev always returns false. -->
+
 <p><a href=#value>Value</a>: The <a href=#effective-value>effective value</a> of the <a href=#active-range>active
 range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>.
 
@@ -2313,6 +2319,12 @@ respecifying non-interoperable behavior anyway.
   <li><a href=#decompose>Decompose</a> the <a href=#active-range>active range</a>, then <a href=#set-the-value>set the
   value</a> of each returned <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> to <var title="">value</var>.
 </ol>
+
+<p><a href=#indeterminate-flag>Indeterminate flag</a>: True if among <a href=#editable>editable</a>
+<code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> nodes that are <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active
+range</a>, there are two that have distinct <a href=#effective-value title="effective
+value">effective values</a>.  Otherwise false.
+<!-- This follows Firefox 6.0a2.  Chrome 14 dev always returns false. -->
 
 <p><a href=#value>Value</a>:
 <!--
@@ -2450,6 +2462,12 @@ Chrome 10.  Opera 11 seems to return true if there's some color style applied,
 false otherwise, which seems fairly useless; authors want to use value here,
 not state.  Firefox 4b11 throws an exception, which is an interesting approach,
 but I'll go with IE/WebKit, which makes at least as much sense. -->
+
+<p><a href=#indeterminate-flag>Indeterminate flag</a>: True if among <a href=#editable>editable</a>
+<code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> nodes that are <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active
+range</a>, there are two that have distinct <a href=#effective-value title="effective
+value">effective values</a>.  Otherwise false.
+<!-- This follows Firefox 6.0a2.  Chrome 14 dev always returns false. -->
 
 <p><a href=#value>Value</a>: The <a href=#effective-value>effective value</a> of the <a href=#active-range>active
 range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>.
@@ -5780,6 +5798,10 @@ Opera 11.11 isn't heedful of <xmp>, and treats <pre> somewhat oddly.
 
 <p><a href=#action>Action</a>: <a href=#toggle-lists>Toggle lists</a> with <var title="">tag name</var>
 "ol".
+
+<p class=XXX>Consider defining indeterminate flag.
+<!-- Gecko sort of supports it, but unreliably, and no one else does.  Ditto
+insertUnorderedList, obviously. -->
 
 <p><a href=#state>State</a>:
 <!--

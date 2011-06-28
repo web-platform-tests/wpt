@@ -6296,6 +6296,13 @@ behave?
 <p><a href=#action>Action</a>: <a href=#justify-the-selection>Justify the selection</a> with
 <var title="">alignment</var> "center".
 
+<p><a href=#indeterminate-flag>Indeterminate flag</a>: <a href=#block-extend>Block-extend</a> the <a href=#active-range>active
+range</a>.  Return true if among <a href=#editable>editable</a> nodes <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a>
+in the result, at least one has <a href=#alignment-value>alignment value</a> "center" and at
+least one does not.  Otherwise return false.
+<!-- This roughly matches Chrome 14 dev, although not exactly.  Firefox 6.0a2
+always returns false. -->
+
 <p><a href=#state>State</a>: True if the <a href="#selection's-alignment-value">selection's alignment value</a> is
 "center", otherwise false.
 
@@ -6307,6 +6314,11 @@ behave?
 
 <p><a href=#action>Action</a>: <a href=#justify-the-selection>Justify the selection</a> with
 <var title="">alignment</var> "justify".
+
+<p><a href=#indeterminate-flag>Indeterminate flag</a>: <a href=#block-extend>Block-extend</a> the <a href=#active-range>active
+range</a>.  Return true if among <a href=#editable>editable</a> nodes <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a>
+in the result, at least one has <a href=#alignment-value>alignment value</a> "justify" and at
+least one does not.  Otherwise return false.
 
 <p><a href=#state>State</a>: True if the <a href="#selection's-alignment-value">selection's alignment value</a> is
 "justify", otherwise false.
@@ -6320,6 +6332,11 @@ behave?
 <p><a href=#action>Action</a>: <a href=#justify-the-selection>Justify the selection</a> with
 <var title="">alignment</var> "left".
 
+<p><a href=#indeterminate-flag>Indeterminate flag</a>: <a href=#block-extend>Block-extend</a> the <a href=#active-range>active
+range</a>.  Return true if among <a href=#editable>editable</a> nodes <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a>
+in the result, at least one has <a href=#alignment-value>alignment value</a> "left" and at
+least one does not.  Otherwise return false.
+
 <p><a href=#state>State</a>: True if the <a href="#selection's-alignment-value">selection's alignment value</a> is
 "left", otherwise false.
 
@@ -6331,6 +6348,11 @@ behave?
 
 <p><a href=#action>Action</a>: <a href=#justify-the-selection>Justify the selection</a> with
 <var title="">alignment</var> "right".
+
+<p><a href=#indeterminate-flag>Indeterminate flag</a>: <a href=#block-extend>Block-extend</a> the <a href=#active-range>active
+range</a>.  Return true if among <a href=#editable>editable</a> nodes <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a>
+in the result, at least one has <a href=#alignment-value>alignment value</a> "right" and at
+least one does not.  Otherwise return false.
 
 <p><a href=#state>State</a>: True if the <a href="#selection's-alignment-value">selection's alignment value</a> is
 "right", otherwise false.

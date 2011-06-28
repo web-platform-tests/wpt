@@ -6316,6 +6316,13 @@ behave?
 <p><span>Action</span>: <span>Justify the selection</span> with
 <var>alignment</var> "center".
 
+<p><span>Indeterminate flag</span>: <span>Block-extend</span> the <span>active
+range</span>.  Return true if among <span>editable</span> nodes [[contained]]
+in the result, at least one has <span>alignment value</span> "center" and at
+least one does not.  Otherwise return false.
+<!-- This roughly matches Chrome 14 dev, although not exactly.  Firefox 6.0a2
+always returns false. -->
+
 <p><span>State</span>: True if the <span>selection's alignment value</span> is
 "center", otherwise false.
 
@@ -6327,6 +6334,11 @@ behave?
 <!-- @{ -->
 <p><span>Action</span>: <span>Justify the selection</span> with
 <var>alignment</var> "justify".
+
+<p><span>Indeterminate flag</span>: <span>Block-extend</span> the <span>active
+range</span>.  Return true if among <span>editable</span> nodes [[contained]]
+in the result, at least one has <span>alignment value</span> "justify" and at
+least one does not.  Otherwise return false.
 
 <p><span>State</span>: True if the <span>selection's alignment value</span> is
 "justify", otherwise false.
@@ -6340,6 +6352,11 @@ behave?
 <p><span>Action</span>: <span>Justify the selection</span> with
 <var>alignment</var> "left".
 
+<p><span>Indeterminate flag</span>: <span>Block-extend</span> the <span>active
+range</span>.  Return true if among <span>editable</span> nodes [[contained]]
+in the result, at least one has <span>alignment value</span> "left" and at
+least one does not.  Otherwise return false.
+
 <p><span>State</span>: True if the <span>selection's alignment value</span> is
 "left", otherwise false.
 
@@ -6351,6 +6368,11 @@ behave?
 <!-- @{ -->
 <p><span>Action</span>: <span>Justify the selection</span> with
 <var>alignment</var> "right".
+
+<p><span>Indeterminate flag</span>: <span>Block-extend</span> the <span>active
+range</span>.  Return true if among <span>editable</span> nodes [[contained]]
+in the result, at least one has <span>alignment value</span> "right" and at
+least one does not.  Otherwise return false.
 
 <p><span>State</span>: True if the <span>selection's alignment value</span> is
 "right", otherwise false.

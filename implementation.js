@@ -6414,6 +6414,14 @@ commands.insertunorderedlist = {
 commands.justifycenter = {
 	// "Justify the selection with alignment "center"."
 	action: function() { justifySelection("center") },
+	indeterm: function() {
+		// "Block-extend the active range. Return true if among editable nodes
+		// contained in the result, at least one has alignment value "center"
+		// and at least one does not. Otherwise return false."
+		var nodes = collectAllContainedNodes(blockExtendRange(getActiveRange()), isEditable);
+		return nodes.some(function(node) { return getAlignmentValue(node) == "center" })
+			&& nodes.some(function(node) { return getAlignmentValue(node) != "center" });
+	},
 	// "True if the selection's alignment value is "center", otherwise false."
 	state: function() { return getSelectionAlignmentValue() == "center" },
 	// "The active range's start node's alignment value."
@@ -6426,6 +6434,14 @@ commands.justifycenter = {
 commands.justifyfull = {
 	// "Justify the selection with alignment "justify"."
 	action: function() { justifySelection("justify") },
+	indeterm: function() {
+		// "Block-extend the active range. Return true if among editable nodes
+		// contained in the result, at least one has alignment value "justify"
+		// and at least one does not. Otherwise return false."
+		var nodes = collectAllContainedNodes(blockExtendRange(getActiveRange()), isEditable);
+		return nodes.some(function(node) { return getAlignmentValue(node) == "justify" })
+			&& nodes.some(function(node) { return getAlignmentValue(node) != "justify" });
+	},
 	// "True if the selection's alignment value is "justify", otherwise false."
 	state: function() { return getSelectionAlignmentValue() == "justify" },
 	// "The active range's start node's alignment value."
@@ -6438,6 +6454,14 @@ commands.justifyfull = {
 commands.justifyleft = {
 	// "Justify the selection with alignment "left"."
 	action: function() { justifySelection("left") },
+	indeterm: function() {
+		// "Block-extend the active range. Return true if among editable nodes
+		// contained in the result, at least one has alignment value "left"
+		// and at least one does not. Otherwise return false."
+		var nodes = collectAllContainedNodes(blockExtendRange(getActiveRange()), isEditable);
+		return nodes.some(function(node) { return getAlignmentValue(node) == "left" })
+			&& nodes.some(function(node) { return getAlignmentValue(node) != "left" });
+	},
 	// "True if the selection's alignment value is "left", otherwise false."
 	state: function() { return getSelectionAlignmentValue() == "left" },
 	// "The active range's start node's alignment value."
@@ -6450,6 +6474,14 @@ commands.justifyleft = {
 commands.justifyright = {
 	// "Justify the selection with alignment "right"."
 	action: function() { justifySelection("right") },
+	indeterm: function() {
+		// "Block-extend the active range. Return true if among editable nodes
+		// contained in the result, at least one has alignment value "right"
+		// and at least one does not. Otherwise return false."
+		var nodes = collectAllContainedNodes(blockExtendRange(getActiveRange()), isEditable);
+		return nodes.some(function(node) { return getAlignmentValue(node) == "right" })
+			&& nodes.some(function(node) { return getAlignmentValue(node) != "right" });
+	},
 	// "True if the selection's alignment value is "right", otherwise false."
 	state: function() { return getSelectionAlignmentValue() == "right" },
 	// "The active range's start node's alignment value."

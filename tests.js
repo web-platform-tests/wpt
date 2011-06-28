@@ -2345,6 +2345,13 @@ var tests = {
 		'<div align=nonsense><p>[foo]</div><p>extra',
 		'<div style=text-align:inherit><p>[foo]</div><p>extra',
 		'<quasit align=right><p>[foo]</p></quasit><p>extra',
+
+		'<div align=center>{<div align=left>foo</div>}</div>',
+		'<div align=left>{<div align=center>foo</div>}</div>',
+		'<div align=center>{<div align=left>foo</div>bar}</div>',
+		'<div align=left>{<div align=center>foo</div>bar}</div>',
+		'<div align=center>{<div align=left>foo</div><img src=/img/lion.svg>}</div>',
+		'<div align=left>{<div align=center>foo</div><img src=/img/lion.svg>}</div>',
 	],
 	//@}
 	justifyfull: [

@@ -2263,6 +2263,65 @@ respecifying non-interoperable behavior anyway.
   value</span> of each returned [[node]] to <var>value</var>.
 </ol>
 
+<p><span>Value</span>:
+<!--
+IE9: Seems to return a number based on the computed font-size, but only if it's
+exactly right, otherwise it returns null.  Something like that.
+
+Firefox 6.0a2: Seemingly goes up to the nearest ancestor that's a <font size>
+and returns the literal value of that attribute, or "" if there's no such
+ancestor.
+
+Chrome 14 dev: Gets the computed font-size in pixels, and rounds to the nearest
+<font size> equivalent, rounding up in the event of a tie.  Except that if it's
+small enough, it returns "0", which doesn't make sense because that behaves the
+same as "1".
+
+Opera 11.11: Like Firefox, except it returns "3" if there's no <font size>
+ancestor, and it converts relative values to absolute ("+1" -> "4").
+
+Chrome's behavior seems the most useful.  As usual, IE returns a variable type
+and all other browsers return strings, and we follow other browsers.
+
+If the selection isn't someplace editable, Chrome works like usual; some other
+browsers behave differently.  I see no reason to behave differently.
+-->
+<ol>
+  <li>Let <var>node</var> be the <span>active range</span>'s [[startnode]].
+
+  <li>If <var>node</var> is not an [[element]], set <var>node</var> to its
+  [[parent]].
+
+  <li>If <var>node</var> is not an [[element]], return "3".
+
+  <li>Let <var>pixel size</var> be the [[compval]] of "font-size" for
+  <var>node</var>, in pixels.
+
+  <li>Let <var>returned size</var> be 1.
+
+  <li>While <var>returned size</var> is less than 7:
+
+  <ol>
+    <li>Let <var>lower bound</var> be the [[compval]] of "font-size" in pixels
+    of a [[font]] element whose [[fontsize]] attribute is set to <var>returned
+    size</var>.
+
+    <li>Let <var>upper bound</var> be the [[compval]] of "font-size" in pixels
+    of a [[font]] element whose [[fontsize]] attribute is set to one plus
+    <var>returned size</var>.
+
+    <li>Let <var>average</var> be the average of <var>upper bound</var> and
+    <var>lower bound</var>.
+
+    <li>If <var>pixel size</var> is less than <var>average</var>, return the
+    one-[[strel]] string consisting of the digit <var>returned size</var>.
+
+    <li>Add one to <var>returned size</var>.
+  </ol>
+
+  <li>Return "7".
+</ol>
+
 <p><span>Relevant CSS property</span>: "font-size"
 <!-- @} -->
 

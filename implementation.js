@@ -2795,6 +2795,58 @@ commands.fontsize = {
 		for (var i = 0; i < nodeList.length; i++) {
 			setNodeValue(nodeList[i], "fontsize", value);
 		}
+	}, value: function() {
+		// "Let node be the active range's start node."
+		var node = getActiveRange().startContainer;
+
+		// "If node is not an Element, set node to its parent."
+		if (node.nodeType != Node.ELEMENT_NODE) {
+			node = node.parentNode;
+		}
+
+		// "If node is not an Element, return "3"."
+		if (node.nodeType != Node.ELEMENT_NODE) {
+			return "3";
+		}
+
+		// "Let pixel size be the computed value of "font-size" for node, in
+		// pixels."
+		var pixelSize = parseInt(getComputedStyle(node).fontSize);
+
+		// "Let returned size be 1."
+		var returnedSize = 1;
+
+		// "While returned size is less than 7:"
+		while (returnedSize < 7) {
+			// "Let lower bound be the computed value of "font-size" in pixels
+			// of a font element whose size attribute is set to returned size."
+			var font = document.createElement("font");
+			font.size = returnedSize;
+			document.body.appendChild(font);
+			var lowerBound = parseInt(getComputedStyle(font).fontSize);
+
+			// "Let upper bound be the computed value of "font-size" in pixels
+			// of a font element whose size attribute is set to one plus
+			// returned size."
+			font.size = 1 + returnedSize;
+			var upperBound = parseInt(getComputedStyle(font).fontSize);
+			document.body.removeChild(font);
+
+			// "Let average be the average of upper bound and lower bound."
+			var average = (upperBound + lowerBound)/2;
+
+			// "If pixel size is less than average, return the one-element
+			// string consisting of the digit returned size."
+			if (pixelSize < average) {
+				return String(returnedSize);
+			}
+
+			// "Add one to returned size."
+			returnedSize++;
+		}
+
+		// "Return "7"."
+		return "7";
 	}, relevantCssProperty: "fontSize"
 };
 //@}

@@ -2287,6 +2287,65 @@ respecifying non-interoperable behavior anyway.
   value</a> of each returned <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> to <var title="">value</var>.
 </ol>
 
+<p><a href=#value>Value</a>:
+<!--
+IE9: Seems to return a number based on the computed font-size, but only if it's
+exactly right, otherwise it returns null.  Something like that.
+
+Firefox 6.0a2: Seemingly goes up to the nearest ancestor that's a <font size>
+and returns the literal value of that attribute, or "" if there's no such
+ancestor.
+
+Chrome 14 dev: Gets the computed font-size in pixels, and rounds to the nearest
+<font size> equivalent, rounding up in the event of a tie.  Except that if it's
+small enough, it returns "0", which doesn't make sense because that behaves the
+same as "1".
+
+Opera 11.11: Like Firefox, except it returns "3" if there's no <font size>
+ancestor, and it converts relative values to absolute ("+1" -> "4").
+
+Chrome's behavior seems the most useful.  As usual, IE returns a variable type
+and all other browsers return strings, and we follow other browsers.
+
+If the selection isn't someplace editable, Chrome works like usual; some other
+browsers behave differently.  I see no reason to behave differently.
+-->
+<ol>
+  <li>Let <var title="">node</var> be the <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>.
+
+  <li>If <var title="">node</var> is not an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>, set <var title="">node</var> to its
+  <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+
+  <li>If <var title="">node</var> is not an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>, return "3".
+
+  <li>Let <var title="">pixel size</var> be the <a href=http://www.w3.org/TR/CSS21/cascade.html#computed-value>computed value</a> of "font-size" for
+  <var title="">node</var>, in pixels.
+
+  <li>Let <var title="">returned size</var> be 1.
+
+  <li>While <var title="">returned size</var> is less than 7:
+
+  <ol>
+    <li>Let <var title="">lower bound</var> be the <a href=http://www.w3.org/TR/CSS21/cascade.html#computed-value>computed value</a> of "font-size" in pixels
+    of a <code class=external data-anolis-spec=html title=font><a href=http://www.whatwg.org/html/#font>font</a></code> element whose <code class=external data-anolis-spec=html title=dom-font-size><a href=http://www.whatwg.org/html/#dom-font-size>size</a></code> attribute is set to <var title="">returned
+    size</var>.
+
+    <li>Let <var title="">upper bound</var> be the <a href=http://www.w3.org/TR/CSS21/cascade.html#computed-value>computed value</a> of "font-size" in pixels
+    of a <code class=external data-anolis-spec=html title=font><a href=http://www.whatwg.org/html/#font>font</a></code> element whose <code class=external data-anolis-spec=html title=dom-font-size><a href=http://www.whatwg.org/html/#dom-font-size>size</a></code> attribute is set to one plus
+    <var title="">returned size</var>.
+
+    <li>Let <var title="">average</var> be the average of <var title="">upper bound</var> and
+    <var title="">lower bound</var>.
+
+    <li>If <var title="">pixel size</var> is less than <var title="">average</var>, return the
+    one-<a href=http://es5.github.com/#x8.4>element</a> string consisting of the digit <var title="">returned size</var>.
+
+    <li>Add one to <var title="">returned size</var>.
+  </ol>
+
+  <li>Return "7".
+</ol>
+
 <p><a href=#relevant-css-property>Relevant CSS property</a>: "font-size"
 
 

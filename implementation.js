@@ -207,65 +207,22 @@ function isHtmlNamespace(ns) {
 // one with (property X) and at least one with (property not-X).  Otherwise
 // false."
 function indetermHelper(callback) {
-	var range = getActiveRange();
-	// XXX: This algorithm for getting all effectively contained nodes might be
-	// wrong . . .
-	var node = range.startContainer;
-	while (node.parentNode && node.parentNode.firstChild == node) {
-		node = node.parentNode;
-	}
-	var stop = nextNodeDescendants(range.endContainer);
-
-	var hasProperty = false;
-	var lacksProperty = false;
-	for (; node && node != stop; node = nextNode(node)) {
-		if (!isEffectivelyContained(node, range)
-		|| node.nodeType != Node.TEXT_NODE
-		|| !isEditable(node)) {
-			continue;
-		}
-
-		if (callback(node)) {
-			hasProperty = true;
-		} else {
-			lacksProperty = true;
-		}
-		if (hasProperty && lacksProperty) {
-			return true;
-		}
-	}
-	return false;
+	var nodes = collectAllEffectivelyContainedNodes(getActiveRange(), function(node) {
+		return isEditable(node)
+			&& node.nodeType == Node.TEXT_NODE;
+	});
+	return nodes.some(callback) && !nodes.every(callback);
 }
 
 // For computing states of the form "True if every editable Text node that is
 // effectively contained in the active range (has property X), and there is at
 // least one such Text node.  Otherwise false."
 function stateHelper(callback) {
-	var range = getActiveRange();
-	// XXX: This algorithm for getting all effectively contained nodes might be
-	// wrong . . .
-	var node = range.startContainer;
-	while (node.parentNode && node.parentNode.firstChild == node) {
-		node = node.parentNode;
-	}
-	var stop = nextNodeDescendants(range.endContainer);
-
-	var atLeastOne = false;
-	for (; node && node != stop; node = nextNode(node)) {
-		if (!isEffectivelyContained(node, range)
-		|| node.nodeType != Node.TEXT_NODE
-		|| !isEditable(node)) {
-			continue;
-		}
-
-		atLeastOne = true;
-
-		if (!callback(node)) {
-			return false;
-		}
-	}
-
-	return atLeastOne;
+	var nodes = collectAllEffectivelyContainedNodes(getActiveRange(), function(node) {
+		return isEditable(node)
+			&& node.nodeType == Node.TEXT_NODE;
+	});
+	return nodes.every(callback) && nodes.length >= 1;
 }
 
 // Returns a standard CSS 2.1 computed value for text-align, adapting
@@ -1415,6 +1372,29 @@ function isEffectivelyContained(node, range) {
 		return true;
 	}
 	return false;
+}
+
+// Like collectAllContainedNodes(), but for effectively contained nodes.
+function collectAllEffectivelyContainedNodes(range, condition) {
+	if (typeof condition == "undefined") {
+		condition = function() { return true };
+	}
+	var node = range.startContainer;
+	while (isEffectivelyContained(node.parentNode, range)) {
+		node = node.parentNode;
+	}
+
+	var stop = nextNodeDescendants(range.endContainer);
+
+	var nodeList = [];
+	while (isBefore(node, stop)) {
+		if (isEffectivelyContained(node, range)
+		&& condition(node)) {
+			nodeList.push(node);
+		}
+		node = nextNode(node);
+	}
+	return nodeList;
 }
 
 // "An unwrappable node is an HTML element which may not be used where only
@@ -3143,19 +3123,12 @@ commands.subscript = {
 		// value "sub" and at least one with some other effective value; or if
 		// there is some editable Text node effectively contained in the active
 		// range with effective value "mixed". Otherwise false."
-		//
-		// The use of stateHelper() here is a bit of a hack, but it works.  The
-		// way the logic works out is that it returns true if every editable
-		// text node etc. does *not* have effective value "mixed" and there's
-		// at least one, so if we negate it that means either there's no
-		// editable etc. text node or else one has effective value mixed.  The
-		// second invocation of stateHelper() handles the case where there are
-		// no editable Text nodes effectively contained in the range.
-		if (indetermHelper(function(node) { return getEffectiveValue(node, "subscript") == "sub" })) {
-			return true;
-		}
-		return !stateHelper(function(node) { return getEffectiveValue(node, "subscript") != "mixed" })
-			&& stateHelper(function() { return true });
+		var nodes = collectAllEffectivelyContainedNodes(getActiveRange(), function(node) {
+			return isEditable(node) && node.nodeType == Node.TEXT_NODE;
+		});
+		return (nodes.some(function(node) { return getEffectiveValue(node, "subscript") == "sub" })
+			&& nodes.some(function(node) { return getEffectiveValue(node, "subscript") != "sub" }))
+			|| nodes.some(function(node) { return getEffectiveValue(node, "subscript") == "mixed" });
 	}, state: function() { return stateHelper(function(node) {
 		// "True if every editable Text node that is effectively contained in
 		// the active range has effective value "sub", and there is at least
@@ -3194,13 +3167,12 @@ commands.superscript = {
 		// value "super" and at least one with some other effective value; or
 		// if there is some editable Text node effectively contained in the
 		// active range with effective value "mixed". Otherwise false."
-		//
-		// See subscript for implementation remark.
-		if (indetermHelper(function(node) { return getEffectiveValue(node, "superscript") == "super" })) {
-			return true;
-		}
-		return !stateHelper(function(node) { return getEffectiveValue(node, "superscript") != "mixed" })
-			&& stateHelper(function() { return true });
+		var nodes = collectAllEffectivelyContainedNodes(getActiveRange(), function(node) {
+			return isEditable(node) && node.nodeType == Node.TEXT_NODE;
+		});
+		return (nodes.some(function(node) { return getEffectiveValue(node, "superscript") == "super" })
+			&& nodes.some(function(node) { return getEffectiveValue(node, "superscript") != "super" }))
+			|| nodes.some(function(node) { return getEffectiveValue(node, "superscript") == "mixed" });
 	}, state: function() { return stateHelper(function(node) {
 		// "True if every editable Text node that is effectively contained in
 		// the active range has effective value "super", and there is at least

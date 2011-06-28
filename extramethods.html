@@ -105,6 +105,7 @@ function updateDisplayedRows() {
 }
 updateDisplayedRows();
 //@}
+
 // Set up all the HTML automatically so I can add new commands to test without
 // copy-pasting in five places
 //@{
@@ -128,6 +129,21 @@ updateDisplayedRows();
 })();
 //@}
 
+// Get rid of values and condense tests that differ only in value
+//@{
+(function() {
+	for (var command in tests) {
+		tests[command] = tests[command].map(function(test) {
+			return typeof test == "string"
+				? test
+				: test[1];
+		}).filter(function(el, i, arr) {
+			return arr.slice(0, i).indexOf(el) == -1;
+		});
+	}
+})();
+//@}
+
 function runTests(command) {
 //@{
     var runTestsButton = document.querySelector("#" + command + " button");
@@ -145,13 +161,8 @@ function runTests(command) {
 		// In case the input contains something unpleasant like newlines, we
 		// smuggle in the string as a data attribute, not just the value.  This
 		// is probably unnecessarily magic.
-		if (typeof tests[command][i] == "string") {
-			input.value = tests[command][i];
-			input.setAttribute("data-input", tests[command][i]);
-		} else {
-			input.value = tests[command][i][1];
-			input.setAttribute("data-input", tests[command][i][1]);
-		}
+		input.value = tests[command][i];
+		input.setAttribute("data-input", tests[command][i]);
 		input.focus();
 		addTestButton.click();
 	}

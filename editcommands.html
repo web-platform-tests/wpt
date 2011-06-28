@@ -3231,7 +3231,40 @@ fixing.
   </ol>
 </ol>
 
-<p>The <dfn id=current-alignment-state>current alignment state</dfn> is returned by the following
+<p>The <dfn id=alignment-value>alignment value</dfn> of a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> <var title="">node</var> is returned by
+the following algorithm:
+<!--
+When querying the value of justify*, IE9 seems to return boolean false across
+the board when it doesn't throw exceptions, which it usually does in my tests.
+Chrome 14 dev returns the string "true" or "false" depending on state, as in
+other cases, which is useless.  Opera 11.11 returns "" across the board.
+Firefox 6.0a2 behaves like with other command values: it returns
+"center"/"justify"/"left"/"right" depending on the active range's start node.
+Since this is the only behavior that's possibly useful, it's what I specced.
+Firefox ties the value closely to the state, returning true for the state if
+and only if the value matches the desired value, but this seems less useful
+than what I've specced for the state.
+-->
+<ol>
+  <li>While <var title="">node</var> is neither null nor an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>, or it is an
+  <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> but its "display" property has <a href=http://www.w3.org/TR/CSS21/cascade.html#computed-value>computed value</a> "inline" or "none",
+  set <var title="">node</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+
+  <li>If <var title="">node</var> is not an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>, return "left".
+  <!-- This means there's no applicable style rule, so probably it will wind up
+  left-aligned.  Of course this ignores the fact that the alignment will really
+  be "start", per the XXX below, so this is wrong for RTL, but it's a pretty
+  marginal corner case anyway.  (It will only happen if, e.g., everything up to
+  and including the html and body elements have display: inline or none.) -->
+
+  <li>Return "center", "justify", "left", or "right", depending on the
+  <a href=http://www.w3.org/TR/CSS21/cascade.html#computed-value>computed value</a> of <var title="">node</var>'s "text-align" property.
+
+  <p class=XXX>What to do for "start" "auto" etc. currently undefined.  We
+  assume something CSS 2.1-ish.
+</ol>
+
+<p>The <dfn id="selection's-alignment-value">selection's alignment value</dfn> is returned by the following
 algorithm:
 <!--
 IE9 throws exceptions in almost every case when querying the state of justify*,
@@ -3270,22 +3303,11 @@ Gecko/WebKit in supporting the command.
   <li>For each <var title="">node</var> in <var title="">node list</var>:
 
   <ol>
-    <li>While <var title="">node</var> is neither null nor an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>, or it is an
-    <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> but its "display" property has <a href=http://www.w3.org/TR/CSS21/cascade.html#computed-value>computed value</a> "inline" or "none",
-    set <var title="">node</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+    <li>If <var title="">state</var> is "none", set <var title="">state</var> to
+    <var title="">node</var>'s <a href=#alignment-value>alignment value</a>.
 
-    <li>If <var title="">node</var> is not an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> or its "display" property has
-    <a href=http://www.w3.org/TR/CSS21/cascade.html#computed-value>computed value</a> "inline" or "none", continue with the next <var title="">node</var>.
-
-    <li>If <var title="">state</var> is "none", set <var title="">state</var> to either "center",
-    "justify", "left", or "right", depending on the <a href=http://www.w3.org/TR/CSS21/cascade.html#computed-value>computed value</a> of
-    <var title="">node</var>'s "text-align" property.
-
-    <p class=XXX>What to do for "start" "auto" etc. currently undefined.  We
-    assume something CSS 2.1-ish.
-
-    <li>If <var title="">state</var> is different from the <a href=http://www.w3.org/TR/CSS21/cascade.html#computed-value>computed value</a> of
-    <var title="">node</var>'s "text-align" property, return "none".
+    <li>If <var title="">state</var> is different from <var title="">node</var>'s <a href=#alignment-value>alignment
+    value</a>, return "none".
   </ol>
 
   <li>Return <var title="">state</var>.
@@ -6204,8 +6226,11 @@ behave?
 <p><a href=#action>Action</a>: <a href=#justify-the-selection>Justify the selection</a> with
 <var title="">alignment</var> "center".
 
-<p><a href=#state>State</a>: True if the <a href=#current-alignment-state>current alignment state</a> is
+<p><a href=#state>State</a>: True if the <a href="#selection's-alignment-value">selection's alignment value</a> is
 "center", otherwise false.
+
+<p><a href=#value>Value</a>: The <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>'s
+<a href=#alignment-value>alignment value</a>.
 
 
 <h3 id=the-justifyfull-command><span class=secno>7.22 </span><dfn>The <code title="">justifyFull</code> command</dfn></h3>
@@ -6213,8 +6238,11 @@ behave?
 <p><a href=#action>Action</a>: <a href=#justify-the-selection>Justify the selection</a> with
 <var title="">alignment</var> "justify".
 
-<p><a href=#state>State</a>: True if the <a href=#current-alignment-state>current alignment state</a> is
+<p><a href=#state>State</a>: True if the <a href="#selection's-alignment-value">selection's alignment value</a> is
 "justify", otherwise false.
+
+<p><a href=#value>Value</a>: The <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>'s
+<a href=#alignment-value>alignment value</a>.
 
 
 <h3 id=the-justifyleft-command><span class=secno>7.23 </span><dfn>The <code title="">justifyLeft</code> command</dfn></h3>
@@ -6222,8 +6250,11 @@ behave?
 <p><a href=#action>Action</a>: <a href=#justify-the-selection>Justify the selection</a> with
 <var title="">alignment</var> "left".
 
-<p><a href=#state>State</a>: True if the <a href=#current-alignment-state>current alignment state</a> is
+<p><a href=#state>State</a>: True if the <a href="#selection's-alignment-value">selection's alignment value</a> is
 "left", otherwise false.
+
+<p><a href=#value>Value</a>: The <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>'s
+<a href=#alignment-value>alignment value</a>.
 
 
 <h3 id=the-justifyright-command><span class=secno>7.24 </span><dfn>The <code title="">justifyRight</code> command</dfn></h3>
@@ -6231,8 +6262,11 @@ behave?
 <p><a href=#action>Action</a>: <a href=#justify-the-selection>Justify the selection</a> with
 <var title="">alignment</var> "right".
 
-<p><a href=#state>State</a>: True if the <a href=#current-alignment-state>current alignment state</a> is
+<p><a href=#state>State</a>: True if the <a href="#selection's-alignment-value">selection's alignment value</a> is
 "right", otherwise false.
+
+<p><a href=#value>Value</a>: The <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>'s
+<a href=#alignment-value>alignment value</a>.
 
 
 <h3 id=the-outdent-command><span class=secno>7.25 </span><dfn>The <code title="">outdent</code> command</dfn></h3>

@@ -3216,7 +3216,40 @@ fixing.
   </ol>
 </ol>
 
-<p>The <dfn>current alignment state</dfn> is returned by the following
+<p>The <dfn>alignment value</dfn> of a [[node]] <var>node</var> is returned by
+the following algorithm:
+<!--
+When querying the value of justify*, IE9 seems to return boolean false across
+the board when it doesn't throw exceptions, which it usually does in my tests.
+Chrome 14 dev returns the string "true" or "false" depending on state, as in
+other cases, which is useless.  Opera 11.11 returns "" across the board.
+Firefox 6.0a2 behaves like with other command values: it returns
+"center"/"justify"/"left"/"right" depending on the active range's start node.
+Since this is the only behavior that's possibly useful, it's what I specced.
+Firefox ties the value closely to the state, returning true for the state if
+and only if the value matches the desired value, but this seems less useful
+than what I've specced for the state.
+-->
+<ol>
+  <li>While <var>node</var> is neither null nor an [[element]], or it is an
+  [[element]] but its "display" property has [[compval]] "inline" or "none",
+  set <var>node</var> to its [[parent]].
+
+  <li>If <var>node</var> is not an [[element]], return "left".
+  <!-- This means there's no applicable style rule, so probably it will wind up
+  left-aligned.  Of course this ignores the fact that the alignment will really
+  be "start", per the XXX below, so this is wrong for RTL, but it's a pretty
+  marginal corner case anyway.  (It will only happen if, e.g., everything up to
+  and including the html and body elements have display: inline or none.) -->
+
+  <li>Return "center", "justify", "left", or "right", depending on the
+  [[compval]] of <var>node</var>'s "text-align" property.
+
+  <p class=XXX>What to do for "start" "auto" etc. currently undefined.  We
+  assume something CSS 2.1-ish.
+</ol>
+
+<p>The <dfn>selection's alignment value</dfn> is returned by the following
 algorithm:
 <!--
 IE9 throws exceptions in almost every case when querying the state of justify*,
@@ -3255,22 +3288,11 @@ Gecko/WebKit in supporting the command.
   <li>For each <var>node</var> in <var>node list</var>:
 
   <ol>
-    <li>While <var>node</var> is neither null nor an [[element]], or it is an
-    [[element]] but its "display" property has [[compval]] "inline" or "none",
-    set <var>node</var> to its [[parent]].
+    <li>If <var>state</var> is "none", set <var>state</var> to
+    <var>node</var>'s <span>alignment value</span>.
 
-    <li>If <var>node</var> is not an [[element]] or its "display" property has
-    [[compval]] "inline" or "none", continue with the next <var>node</var>.
-
-    <li>If <var>state</var> is "none", set <var>state</var> to either "center",
-    "justify", "left", or "right", depending on the [[compval]] of
-    <var>node</var>'s "text-align" property.
-
-    <p class=XXX>What to do for "start" "auto" etc. currently undefined.  We
-    assume something CSS 2.1-ish.
-
-    <li>If <var>state</var> is different from the [[compval]] of
-    <var>node</var>'s "text-align" property, return "none".
+    <li>If <var>state</var> is different from <var>node</var>'s <span>alignment
+    value</span>, return "none".
   </ol>
 
   <li>Return <var>state</var>.
@@ -6224,8 +6246,11 @@ behave?
 <p><span>Action</span>: <span>Justify the selection</span> with
 <var>alignment</var> "center".
 
-<p><span>State</span>: True if the <span>current alignment state</span> is
+<p><span>State</span>: True if the <span>selection's alignment value</span> is
 "center", otherwise false.
+
+<p><span>Value</span>: The <span>active range</span>'s [[startnode]]'s
+<span>alignment value</span>.
 <!-- @} -->
 
 <h3><dfn>The <code title>justifyFull</code> command</dfn></h3>
@@ -6233,8 +6258,11 @@ behave?
 <p><span>Action</span>: <span>Justify the selection</span> with
 <var>alignment</var> "justify".
 
-<p><span>State</span>: True if the <span>current alignment state</span> is
+<p><span>State</span>: True if the <span>selection's alignment value</span> is
 "justify", otherwise false.
+
+<p><span>Value</span>: The <span>active range</span>'s [[startnode]]'s
+<span>alignment value</span>.
 <!-- @} -->
 
 <h3><dfn>The <code title>justifyLeft</code> command</dfn></h3>
@@ -6242,8 +6270,11 @@ behave?
 <p><span>Action</span>: <span>Justify the selection</span> with
 <var>alignment</var> "left".
 
-<p><span>State</span>: True if the <span>current alignment state</span> is
+<p><span>State</span>: True if the <span>selection's alignment value</span> is
 "left", otherwise false.
+
+<p><span>Value</span>: The <span>active range</span>'s [[startnode]]'s
+<span>alignment value</span>.
 <!-- @} -->
 
 <h3><dfn>The <code title>justifyRight</code> command</dfn></h3>
@@ -6251,8 +6282,11 @@ behave?
 <p><span>Action</span>: <span>Justify the selection</span> with
 <var>alignment</var> "right".
 
-<p><span>State</span>: True if the <span>current alignment state</span> is
+<p><span>State</span>: True if the <span>selection's alignment value</span> is
 "right", otherwise false.
+
+<p><span>Value</span>: The <span>active range</span>'s [[startnode]]'s
+<span>alignment value</span>.
 <!-- @} -->
 
 <h3><dfn>The <code title>outdent</code> command</dfn></h3>

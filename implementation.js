@@ -3627,7 +3627,27 @@ function canonicalizeWhitespace(node, offset) {
 	}
 }
 
-function getCurrentAlignmentState() {
+function getAlignmentValue(node) {
+	// "While node is neither null nor an Element, or it is an Element but its
+	// "display" property has computed value "inline" or "none", set node to
+	// its parent."
+	while ((node && node.nodeType != Node.ELEMENT_NODE)
+	|| (node.nodeType == Node.ELEMENT_NODE
+	&& ["inline", "none"].indexOf(getComputedStyle(node).display) != -1)) {
+		node = node.parentNode;
+	}
+
+	// "If node is not an Element, return "left"."
+	if (!node || node.nodeType != Node.ELEMENT_NODE) {
+		return "left";
+	}
+
+	// "Return "center", "justify", "left", or "right", depending on the
+	// computed value of node's "text-align" property."
+	return getRealTextAlign(node);
+}
+
+function getSelectionAlignmentValue() {
 	// "Block-extend the active range, and let new range be the result."
 	var newRange = blockExtendRange(getActiveRange());
 
@@ -3647,33 +3667,13 @@ function getCurrentAlignmentState() {
 	for (var i = 0; i < nodeList.length; i++) {
 		var node = nodeList[i];
 
-		// "While node is neither null nor an Element, or it is an Element
-		// but its "display" property has computed value "inline" or
-		// "none", set node to its parent."
-		while ((node && node.nodeType != Node.ELEMENT_NODE)
-		|| (node.nodeType == Node.ELEMENT_NODE && getComputedStyle(node).display == "inline")
-		|| (node.nodeType == Node.ELEMENT_NODE && getComputedStyle(node).display == "none")) {
-			node = node.parentNode;
-		}
-
-		// "If node is not an Element or its "display" property has computed
-		// value "inline" or "none", continue with the next node."
-		if (node.nodeType != Node.ELEMENT_NODE
-		|| getComputedStyle(node).display == "inline"
-		|| getComputedStyle(node).display == "none") {
-			continue;
-		}
-
-		// "If state is "none", set state to either "center", "justify",
-		// "left", or "right", depending on the computed value of node's
-		// "text-align" property."
+		// "If state is "none", set state to node's alignment value."
 		if (state == "none") {
-			state = getRealTextAlign(node);
+			state = getAlignmentValue(node);
 		}
 
-		// "If state is different from the computed value of node's
-		// "text-align" property, return "none"."
-		if (state != getRealTextAlign(node)) {
+		// "If state is different from node's alignment value, return "none"."
+		if (state != getAlignmentValue(node)) {
 			return "none";
 		}
 	}
@@ -6316,8 +6316,10 @@ commands.insertunorderedlist = {
 commands.justifycenter = {
 	// "Justify the selection with alignment "center"."
 	action: function() { justifySelection("center") },
-	// "True if the current alignment state is "center", otherwise false."
-	state: function() { return getCurrentAlignmentState() == "center" },
+	// "True if the selection's alignment value is "center", otherwise false."
+	state: function() { return getSelectionAlignmentValue() == "center" },
+	// "The active range's start node's alignment value."
+	value: function() { return getAlignmentValue(getActiveRange().startContainer) },
 };
 //@}
 
@@ -6326,8 +6328,10 @@ commands.justifycenter = {
 commands.justifyfull = {
 	// "Justify the selection with alignment "justify"."
 	action: function() { justifySelection("justify") },
-	// "True if the current alignment state is "justify", otherwise false."
-	state: function() { return getCurrentAlignmentState() == "justify" },
+	// "True if the selection's alignment value is "justify", otherwise false."
+	state: function() { return getSelectionAlignmentValue() == "justify" },
+	// "The active range's start node's alignment value."
+	value: function() { return getAlignmentValue(getActiveRange().startContainer) },
 };
 //@}
 
@@ -6336,8 +6340,10 @@ commands.justifyfull = {
 commands.justifyleft = {
 	// "Justify the selection with alignment "left"."
 	action: function() { justifySelection("left") },
-	// "True if the current alignment state is "left", otherwise false."
-	state: function() { return getCurrentAlignmentState() == "left" },
+	// "True if the selection's alignment value is "left", otherwise false."
+	state: function() { return getSelectionAlignmentValue() == "left" },
+	// "The active range's start node's alignment value."
+	value: function() { return getAlignmentValue(getActiveRange().startContainer) },
 };
 //@}
 
@@ -6346,8 +6352,10 @@ commands.justifyleft = {
 commands.justifyright = {
 	// "Justify the selection with alignment "right"."
 	action: function() { justifySelection("right") },
-	// "True if the current alignment state is "right", otherwise false."
-	state: function() { return getCurrentAlignmentState() == "right" },
+	// "True if the selection's alignment value is "right", otherwise false."
+	state: function() { return getSelectionAlignmentValue() == "right" },
+	// "The active range's start node's alignment value."
+	value: function() { return getAlignmentValue(getActiveRange().startContainer) },
 };
 //@}
 

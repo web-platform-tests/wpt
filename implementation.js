@@ -2915,6 +2915,19 @@ commands.hilitecolor = {
 		for (var i = 0; i < nodeList.length; i++) {
 			setNodeValue(nodeList[i], "hilitecolor", value);
 		}
+	}, value: function() {
+		// "The effective value of the active range's start node."
+		//
+		// Opera uses a different format, so let's be nice and support that for
+		// the time being (since all this computed value stuff is underdefined
+		// anyway).
+		var value = getEffectiveValue(getActiveRange().startContainer, "hilitecolor");
+		if (/^#[0-9a-f]{6}$/.test(value)) {
+			value = "rgb(" + parseInt(value.slice(1, 3), 16)
+				+ "," + parseInt(value.slice(3, 5), 16)
+				+ "," + parseInt(value.slice(5), 16) + ")";
+		}
+		return value;
 	}, relevantCssProperty: "backgroundColor"
 };
 //@}

@@ -2445,6 +2445,21 @@ For color parsing, see the comment for foreColor. -->
   value</span> of each returned [[node]] to <var>value</var>.
 </ol>
 
+<p><span>Value</span>: The <span>effective value</span> of the <span>active
+range</span>'s [[startnode]].
+
+<p class=note>This cannot be null, since the boundary point node of a selection
+must always be either an element or a text node that's the child of an element.
+<!--
+This seems to match Opera 11.11 exactly.  Chrome 14 dev returns boolean false
+consistently, bizarrely enough.  Firefox 6.0a2 seems to follow the same idea as
+the spec, but it likes to return "transparent", including sometimes when the
+answer really clearly should not be "transparent".  IE9 throws exceptions most
+of the time for backColor, so I can't say for sure, but in the few cases where
+it doesn't throw it returns a random-looking number, so I'll assume it's crazy
+like for foreColor.
+-->
+
 <p><span>Relevant CSS property</span>: "background-color"
 <!-- @} -->
 

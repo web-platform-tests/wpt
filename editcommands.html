@@ -485,6 +485,11 @@ benefit.  Some approximation closer to IE or Chrome is likely in order.
 must run the following steps:
 
 <ol>
+  <li>If only one argument was provided, let <var title="">show UI</var> be false.
+
+  <li>If only one or two arguments were provided, let <var title="">value</var> be the
+  empty string.
+
   <li>If <var title="">command</var> is not <a href=#supported>supported</a>, raise a
   <code class=external data-anolis-spec=domcore title=dom-DOMException-NOT_SUPPORTED_ERR><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-domexception-not_supported_err>NOT_SUPPORTED_ERR</a></code> exception.
 

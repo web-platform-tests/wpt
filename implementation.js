@@ -530,6 +530,22 @@ function myExecCommand(command, showUi, value, range) {
 	// case-insensitively."
 	command = command.toLowerCase();
 
+	// "If only one argument was provided, let show UI be false."
+	//
+	// If range was passed, I can't actually detect how many args were passed
+	// . . .
+	if (arguments.length == 1
+	|| (arguments.length >=4 && typeof showUi == "undefined")) {
+		showUi = false;
+	}
+
+	// "If only one or two arguments were provided, let value be the empty
+	// string."
+	if (arguments.length <= 2
+	|| (arguments.length >=4 && typeof value == "undefined")) {
+		value = "";
+	}
+
 	// "If command is not supported, raise a NOT_SUPPORTED_ERR exception."
 	//
 	// "If command has no action, raise an INVALID_ACCESS_ERR exception."

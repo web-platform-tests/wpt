@@ -424,6 +424,11 @@ data-anolis-spec=html>HTMLDocument</code> interface is invoked, the user agent
 must run the following steps:
 
 <ol>
+  <li>If only one argument was provided, let <var>show UI</var> be false.
+
+  <li>If only one or two arguments were provided, let <var>value</var> be the
+  empty string.
+
   <li>If <var>command</var> is not <span>supported</span>, raise a
   [[NOT_SUPPORTED_ERR]] exception.
 

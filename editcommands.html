@@ -628,13 +628,13 @@ li won't collapse even if it has no children at all, but that's not true in all
 browsers (at least not in Opera 11.11), and also it breaks assumptions
 elsewhere.  E.g., if it gets turned into a p.
 
-<p>A <dfn id=visible-node>visible node</dfn> is a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> that either is a <a href=#prohibited-paragraph-child>prohibited
-paragraph child</a>, or a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node whose <code class=external data-anolis-spec=domcore title=dom-CharacterData-data><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-data>data</a></code> is not empty, or
-an <code class=external data-anolis-spec=html title="the img element"><a href=http://www.whatwg.org/html/#the-img-element>img</a></code>, or a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code> that is not an <a href=#extraneous-line-break>extraneous line break</a>, or
-any <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> with a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-descendant title=concept-tree-descendant>descendant</a> that is a <a href=#visible-node>visible node</a>.
+<p>Something is <dfn id=visible>visible</dfn> if it is a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> that either is a
+<a href=#prohibited-paragraph-child>prohibited paragraph child</a>, or a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node whose <code class=external data-anolis-spec=domcore title=dom-CharacterData-data><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-data>data</a></code> is
+not empty, or an <code class=external data-anolis-spec=html title="the img element"><a href=http://www.whatwg.org/html/#the-img-element>img</a></code>, or a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code> that is not an <a href=#extraneous-line-break>extraneous line
+break</a>, or any <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> with a <a href=#visible>visible</a> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-descendant title=concept-tree-descendant>descendant</a>.
 
-<p>An <dfn id=invisible-node>invisible node</dfn> is a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> that is not a <a href=#visible-node>visible
-node</a>.
+<p>Something is <dfn id=invisible>invisible</dfn> if it is a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> that is not
+<a href=#visible>visible</a>.
 
 <p class=XXX>I don't know if the visible/invisible node definitions are really
 the way we want to do things.  If they are, they need some adjustment, like to
@@ -643,8 +643,9 @@ handle collapsed whitespace nodes.
 <p>A <dfn id=collapsed-block-prop>collapsed block prop</dfn> is either a <a href=#collapsed-line-break>collapsed line
 break</a> that is not an <a href=#extraneous-line-break>extraneous line break</a>, or an
 <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> that is an <a href=#inline-node>inline node</a> and whose <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a> are all
-either <a href=#invisible-node title="invisible node">invisible nodes</a> or <a href=#collapsed-block-prop title="collapsed block prop">collapsed block props</a> and that has at least
-one <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> that is a <a href=#collapsed-block-prop>collapsed block prop</a>.
+either <a href=#invisible>invisible</a> or <a href=#collapsed-block-prop title="collapsed block prop">collapsed
+block props</a> and that has at least one <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> that is a
+<a href=#collapsed-block-prop>collapsed block prop</a>.
 
 <p>The <dfn id=active-range>active range</dfn> is the first <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> in the <code class=external data-anolis-spec=domrange><a href=http://html5.org/specs/dom-range.html#selection>Selection</a></code>
 given by calling <code class=external data-anolis-spec=domrange title=dom-Document-getSelection><a href=http://html5.org/specs/dom-range.html#dom-document-getselection>getSelection()</a></code> on the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>, or null if there is
@@ -749,7 +750,7 @@ here?
   <li>While <var title="">ref</var> has <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, set <var title="">ref</var> to its
   <code class=external data-anolis-spec=domcore title=dom-Node-lastChild><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-lastchild>lastChild</a></code>.
 
-  <li>While <var title="">ref</var> is an <a href=#invisible-node>invisible node</a> but not an
+  <li>While <var title="">ref</var> is <a href=#invisible>invisible</a> but not an
   <a href=#extraneous-line-break>extraneous line break</a>, and <var title="">ref</var> does not equal
   <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>, set <var title="">ref</var> to the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> before it in
   <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#tree-order>tree order</a>.
@@ -767,7 +768,7 @@ here?
   <li>While <var title="">ref</var> has <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, set <var title="">ref</var> to its
   <code class=external data-anolis-spec=domcore title=dom-Node-lastChild><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-lastchild>lastChild</a></code>.
 
-  <li>While <var title="">ref</var> is an <a href=#invisible-node>invisible node</a> but not an
+  <li>While <var title="">ref</var> is <a href=#invisible>invisible</a> but not an
   <a href=#extraneous-line-break>extraneous line break</a>, and <var title="">ref</var> does not equal
   <var title="">node</var>, set <var title="">ref</var> to the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> before it in
   <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#tree-order>tree order</a>.
@@ -4971,17 +4972,17 @@ would be worth the added complexity.
     not necessarily anything like the spec's.
     -->
     <li>If <var title="">offset</var> is zero and <var title="">node</var>'s <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code>
-    is an <a href=#editable>editable</a> <a href=#invisible-node>invisible node</a>, remove
+    is an <a href=#editable>editable</a> <a href=#invisible>invisible</a> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>, remove
     <var title="">node</var>'s <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code> from its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
 
     <li>Otherwise, if <var title="">node</var> has a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a>
     <var title="">offset</var> &minus; 1 and that <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> is an <a href=#editable>editable</a>
-    <a href=#invisible-node>invisible node</a>, remove that <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> from <var title="">node</var>,
-    then subtract one from <var title="">offset</var>.
+    <a href=#invisible>invisible</a> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>, remove that <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> from
+    <var title="">node</var>, then subtract one from <var title="">offset</var>.
 
     <li>Otherwise, if <var title="">offset</var> is zero and <var title="">node</var> is not a
     <a href=#prohibited-paragraph-child>prohibited paragraph child</a>, or if <var title="">node</var> is an
-    <a href=#invisible-node>invisible node</a>, set <var title="">offset</var> to the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> of
+    <a href=#invisible>invisible</a> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>, set <var title="">offset</var> to the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> of
     <var title="">node</var>, then set <var title="">node</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
 
     <li>Otherwise, if <var title="">node</var> has a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a>
@@ -5437,7 +5438,7 @@ sure what it does.  I'm speccing it just because it makes sense.
   <li><a href=#block-extend>Block-extend</a> the <a href=#active-range>active range</a>, and let <var title="">new
   range</var> be the result.
 
-  <li>Let <var title="">node list</var> be all <a href=#visible-node title="visible node">visible</a>
+  <li>Let <var title="">node list</var> be all <a href=#visible>visible</a>
   <a href=#editable>editable</a> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a> that are <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in <var title="">new
   range</var> and have no <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>.
 
@@ -5493,10 +5494,10 @@ writing means what Firefox supports plus div.
   <li><a href=#block-extend>Block-extend</a> the <a href=#active-range>active range</a>, and let <var title="">new
   range</var> be the result.
 
-  <li>Let <var title="">node</var> be the first <a href=#visible-node title="visible
-  node">visible</a> <a href=#editable>editable</a> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> that is <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in
-  <var title="">new range</var> and has no <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>.  If there is no such <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>,
-  return the empty string.
+  <li>Let <var title="">node</var> be the first <a href=#visible>visible</a>
+  <a href=#editable>editable</a> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> that is <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in <var title="">new range</var>
+  and has no <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>.  If there is no such <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>, return the empty
+  string.
 
   <li>While <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is <a href=#editable>editable</a> and <a href=#in-the-same-editing-host>in
   the same editing host</a> as <var title="">node</var>, and <var title="">node</var> is not
@@ -5549,12 +5550,13 @@ writing means what Firefox supports plus div.
   <ol>
     <li>If <var title="">offset</var> is the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> of <var title="">node</var> and
     <var title="">node</var>'s <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code> is an <a href=#editable>editable</a>
-    <a href=#invisible-node>invisible node</a>, remove <var title="">node</var>'s <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code> from
-    its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+    <a href=#invisible>invisible</a> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>, remove <var title="">node</var>'s <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code>
+    from its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
 
     <li>Otherwise, if <var title="">node</var> has a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a>
     <var title="">offset</var> and that <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> is an <a href=#editable>editable</a>
-    <a href=#invisible-node>invisible node</a>, remove that <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> from <var title="">node</var>.
+    <a href=#invisible>invisible</a> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>, remove that <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> from
+    <var title="">node</var>.
 
     <li>Otherwise, if <var title="">node</var> has a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a>
     <var title="">offset</var> and that <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> is a <a href=#collapsed-block-prop>collapsed block
@@ -5562,7 +5564,7 @@ writing means what Firefox supports plus div.
 
     <li>Otherwise, if <var title="">offset</var> is the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> of
     <var title="">node</var> and <var title="">node</var> is not a <a href=#prohibited-paragraph-child>prohibited paragraph
-    child</a>, or if <var title="">node</var> is an <a href=#invisible-node>invisible node</a>, set
+    child</a>, or if <var title="">node</var> is <a href=#invisible>invisible</a>, set
     <var title="">offset</var> to one plus the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> of <var title="">node</var>, then set
     <var title="">node</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
 
@@ -6476,10 +6478,10 @@ false otherwise.
 <var title="">alignment</var> "center".
 
 <p><a href=#indeterminate>Indeterminate</a>: <a href=#block-extend>Block-extend</a> the <a href=#active-range>active
-range</a>.  Return true if among <a href=#visible-node title="visible node">visible</a>
-<a href=#editable>editable</a> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a> that are <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in the result and have
-no <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, at least one has <a href=#alignment-value>alignment value</a> "center" and at
-least one does not.  Otherwise return false.
+range</a>.  Return true if among <a href=#visible>visible</a> <a href=#editable>editable</a>
+<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a> that are <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in the result and have no <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, at
+least one has <a href=#alignment-value>alignment value</a> "center" and at least one does not.
+Otherwise return false.
 <!--
 This roughly matches Chrome 14 dev, although not exactly.  Firefox 6.0a2 always
 returns false.
@@ -6495,10 +6497,10 @@ even to some nodes that do have children.
 -->
 
 <p><a href=#state>State</a>: <a href=#block-extend>Block-extend</a> the <a href=#active-range>active range</a>.
-Return true if there is at least one <a href=#visible-node title="visible node">visible</a>
-<a href=#editable>editable</a> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> that is <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in the result and has no
-<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, and all such <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a> have <a href=#alignment-value>alignment value</a>
-"center".  Otherwise return false.
+Return true if there is at least one <a href=#visible>visible</a> <a href=#editable>editable</a>
+<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> that is <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in the result and has no <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, and all
+such <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a> have <a href=#alignment-value>alignment value</a> "center".  Otherwise return
+false.
 <!--
 IE9 throws exceptions in almost every case when querying the state of justify*,
 and Opera 11.11 returns false in every case except some seemingly random crazy
@@ -6522,10 +6524,9 @@ anyway, since Gecko/WebKit do.
 -->
 
 <p><a href=#value>Value</a>: <a href=#block-extend>Block-extend</a> the <a href=#active-range>active range</a>,
-and return the <a href=#alignment-value>alignment value</a> of the first <a href=#visible-node title="visible
-node">visible</a> <a href=#editable>editable</a> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> that is <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in
-the result and has no <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>.  If there is no such <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>, return
-"left".
+and return the <a href=#alignment-value>alignment value</a> of the first <a href=#visible>visible</a>
+<a href=#editable>editable</a> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> that is <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in the result and has no
+<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>.  If there is no such <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>, return "left".
 <!--
 Not bidi-safe, but it's a pretty marginal corner case.  Firefox 6.0a2 behaves
 weirdly here: it keys off the start node of the active range, even if that's
@@ -6542,22 +6543,21 @@ string, as usual.  Opera 11.11 always returns the empty string.
 <var title="">alignment</var> "justify".
 
 <p><a href=#indeterminate>Indeterminate</a>: <a href=#block-extend>Block-extend</a> the <a href=#active-range>active
-range</a>.  Return true if among <a href=#visible-node title="visible node">visible</a>
-<a href=#editable>editable</a> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a> that are <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in the result and have
-no <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, at least one has <a href=#alignment-value>alignment value</a> "justify" and at
-least one does not.  Otherwise return false.
+range</a>.  Return true if among <a href=#visible>visible</a> <a href=#editable>editable</a>
+<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a> that are <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in the result and have no <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, at
+least one has <a href=#alignment-value>alignment value</a> "justify" and at least one does not.
+Otherwise return false.
 
 <p><a href=#state>State</a>: <a href=#block-extend>Block-extend</a> the <a href=#active-range>active range</a>.
-Return true if there is at least one <a href=#visible-node title="visible node">visible</a>
-<a href=#editable>editable</a> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> that is <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in the result and has no
-<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, and all such <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a> have <a href=#alignment-value>alignment value</a>
-"justify".  Otherwise return false.
+Return true if there is at least one <a href=#visible>visible</a> <a href=#editable>editable</a>
+<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> that is <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in the result and has no <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, and all
+such <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a> have <a href=#alignment-value>alignment value</a> "justify".  Otherwise return
+false.
 
 <p><a href=#value>Value</a>: <a href=#block-extend>Block-extend</a> the <a href=#active-range>active range</a>,
-and return the <a href=#alignment-value>alignment value</a> of the first <a href=#visible-node title="visible
-node">visible</a> <a href=#editable>editable</a> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> that is <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in
-the result and has no <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>.  If there is no such <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>, return
-"left".
+and return the <a href=#alignment-value>alignment value</a> of the first <a href=#visible>visible</a>
+<a href=#editable>editable</a> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> that is <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in the result and has no
+<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>.  If there is no such <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>, return "left".
 
 
 <h3 id=the-justifyleft-command><span class=secno>8.23 </span><dfn>The <code title="">justifyLeft</code> command</dfn></h3>
@@ -6566,22 +6566,21 @@ the result and has no <a class=external data-anolis-spec=domcore href=http://dvc
 <var title="">alignment</var> "left".
 
 <p><a href=#indeterminate>Indeterminate</a>: <a href=#block-extend>Block-extend</a> the <a href=#active-range>active
-range</a>.  Return true if among <a href=#visible-node title="visible node">visible</a>
-<a href=#editable>editable</a> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a> that are <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in the result and have
-no <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, at least one has <a href=#alignment-value>alignment value</a> "left" and at
-least one does not.  Otherwise return false.
-
-<p><a href=#state>State</a>: <a href=#block-extend>Block-extend</a> the <a href=#active-range>active range</a>.
-Return true if there is at least one <a href=#visible-node title="visible node">visible</a>
-<a href=#editable>editable</a> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> that is <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in the result and has no
-<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, and all such <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a> have <a href=#alignment-value>alignment value</a> "left".
+range</a>.  Return true if among <a href=#visible>visible</a> <a href=#editable>editable</a>
+<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a> that are <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in the result and have no <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, at
+least one has <a href=#alignment-value>alignment value</a> "left" and at least one does not.
 Otherwise return false.
 
+<p><a href=#state>State</a>: <a href=#block-extend>Block-extend</a> the <a href=#active-range>active range</a>.
+Return true if there is at least one <a href=#visible>visible</a> <a href=#editable>editable</a>
+<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> that is <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in the result and has no <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, and all
+such <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a> have <a href=#alignment-value>alignment value</a> "left".  Otherwise return
+false.
+
 <p><a href=#value>Value</a>: <a href=#block-extend>Block-extend</a> the <a href=#active-range>active range</a>,
-and return the <a href=#alignment-value>alignment value</a> of the first <a href=#visible-node title="visible
-node">visible</a> <a href=#editable>editable</a> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> that is <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in
-the result and has no <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>.  If there is no such <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>, return
-"left".
+and return the <a href=#alignment-value>alignment value</a> of the first <a href=#visible>visible</a>
+<a href=#editable>editable</a> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> that is <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in the result and has no
+<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>.  If there is no such <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>, return "left".
 
 
 <h3 id=the-justifyright-command><span class=secno>8.24 </span><dfn>The <code title="">justifyRight</code> command</dfn></h3>
@@ -6590,22 +6589,21 @@ the result and has no <a class=external data-anolis-spec=domcore href=http://dvc
 <var title="">alignment</var> "right".
 
 <p><a href=#indeterminate>Indeterminate</a>: <a href=#block-extend>Block-extend</a> the <a href=#active-range>active
-range</a>.  Return true if among <a href=#visible-node title="visible node">visible</a>
-<a href=#editable>editable</a> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a> that are <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in the result and have
-no <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, at least one has <a href=#alignment-value>alignment value</a> "right" and at
-least one does not.  Otherwise return false.
-
-<p><a href=#state>State</a>: <a href=#block-extend>Block-extend</a> the <a href=#active-range>active range</a>.
-Return true if there is at least one <a href=#visible-node title="visible node">visible</a>
-<a href=#editable>editable</a> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> that is <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in the result and has no
-<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, and all such <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a> have <a href=#alignment-value>alignment value</a> "right".
+range</a>.  Return true if among <a href=#visible>visible</a> <a href=#editable>editable</a>
+<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a> that are <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in the result and have no <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, at
+least one has <a href=#alignment-value>alignment value</a> "right" and at least one does not.
 Otherwise return false.
 
+<p><a href=#state>State</a>: <a href=#block-extend>Block-extend</a> the <a href=#active-range>active range</a>.
+Return true if there is at least one <a href=#visible>visible</a> <a href=#editable>editable</a>
+<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> that is <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in the result and has no <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, and all
+such <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a> have <a href=#alignment-value>alignment value</a> "right".  Otherwise return
+false.
+
 <p><a href=#value>Value</a>: <a href=#block-extend>Block-extend</a> the <a href=#active-range>active range</a>,
-and return the <a href=#alignment-value>alignment value</a> of the first <a href=#visible-node title="visible
-node">visible</a> <a href=#editable>editable</a> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> that is <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in
-the result and has no <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>.  If there is no such <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>, return
-"left".
+and return the <a href=#alignment-value>alignment value</a> of the first <a href=#visible>visible</a>
+<a href=#editable>editable</a> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> that is <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in the result and has no
+<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>.  If there is no such <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>, return "left".
 
 
 <h3 id=the-outdent-command><span class=secno>8.25 </span><dfn>The <code title="">outdent</code> command</dfn></h3>

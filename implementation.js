@@ -778,11 +778,10 @@ function isExtraneousLineBreak(br) {
 	return origHeight == finalHeight;
 }
 
-// "A visible node is a node that either is a prohibited paragraph child, or a
-// Text node whose data is not empty, or an img, or a br that is not an
-// extraneous line break, or any node with a descendant that is a visible
-// node."
-function isVisibleNode(node) {
+// "Something is visible if it is a node that either is a prohibited paragraph
+// child, or a Text node whose data is not empty, or an img, or a br that is
+// not an extraneous line break, or any node with a visible descendant."
+function isVisible(node) {
 	if (!node) {
 		return false;
 	}
@@ -793,22 +792,22 @@ function isVisibleNode(node) {
 		return true;
 	}
 	for (var i = 0; i < node.childNodes.length; i++) {
-		if (isVisibleNode(node.childNodes[i])) {
+		if (isVisible(node.childNodes[i])) {
 			return true;
 		}
 	}
 	return false;
 }
 
-// "An invisible node is a node that is not a visible node."
-function isInvisibleNode(node) {
-	return node && !isVisibleNode(node);
+// "Something is invisible if it is a node that is not visible."
+function isInvisible(node) {
+	return node && !isVisible(node);
 }
 
 // "A collapsed block prop is either a collapsed line break that is not an
 // extraneous line break, or an Element that is an inline node and whose
-// children are all either invisible nodes or collapsed block props and that
-// has at least one child that is a collapsed block prop."
+// children are all either invisible or collapsed block props and that has at
+// least one child that is a collapsed block prop."
 function isCollapsedBlockProp(node) {
 	if (isCollapsedLineBreak(node)
 	&& !isExtraneousLineBreak(node)) {
@@ -822,7 +821,7 @@ function isCollapsedBlockProp(node) {
 
 	var hasCollapsedBlockPropChild = false;
 	for (var i = 0; i < node.childNodes.length; i++) {
-		if (!isInvisibleNode(node.childNodes[i])
+		if (!isInvisible(node.childNodes[i])
 		&& !isCollapsedBlockProp(node.childNodes[i])) {
 			return false;
 		}
@@ -996,10 +995,9 @@ function removeExtraneousLineBreaksBefore(node) {
 		ref = ref.lastChild;
 	}
 
-	// "While ref is an invisible node but not an extraneous line break, and
-	// ref does not equal node's parent, set ref to the node before it in tree
-	// order."
-	while (isInvisibleNode(ref)
+	// "While ref is invisible but not an extraneous line break, and ref does
+	// not equal node's parent, set ref to the node before it in tree order."
+	while (isInvisible(ref)
 	&& !isExtraneousLineBreak(ref)
 	&& ref != node.parentNode) {
 		ref = previousNode(ref);
@@ -1022,9 +1020,9 @@ function removeExtraneousLineBreaksAtTheEndOf(node) {
 		ref = ref.lastChild;
 	}
 
-	// "While ref is an invisible node but not an extraneous line break, and
-	// ref does not equal node, set ref to the node before it in tree order."
-	while (isInvisibleNode(ref)
+	// "While ref is invisible but not an extraneous line break, and ref does
+	// not equal node, set ref to the node before it in tree order."
+	while (isInvisible(ref)
 	&& !isExtraneousLineBreak(ref)
 	&& ref != node) {
 		ref = previousNode(ref);
@@ -5175,7 +5173,7 @@ commands["delete"] = {
 			// invisible node, remove node's previousSibling from its parent."
 			if (offset == 0
 			&& isEditable(node.previousSibling)
-			&& isInvisibleNode(node.previousSibling)) {
+			&& isInvisible(node.previousSibling)) {
 				node.parentNode.removeChild(node.previousSibling);
 
 			// "Otherwise, if node has a child with index offset − 1 and that
@@ -5184,16 +5182,16 @@ commands["delete"] = {
 			} else if (0 <= offset - 1
 			&& offset - 1 < node.childNodes.length
 			&& isEditable(node.childNodes[offset - 1])
-			&& isInvisibleNode(node.childNodes[offset - 1])) {
+			&& isInvisible(node.childNodes[offset - 1])) {
 				node.removeChild(node.childNodes[offset - 1]);
 				offset--;
 
 			// "Otherwise, if offset is zero and node is not a prohibited
-			// paragraph child, or if node is an invisible node, set offset to
-			// the index of node, then set node to its parent."
+			// paragraph child, or if node is invisible, set offset to the
+			// index of node, then set node to its parent."
 			} else if ((offset == 0
 			&& !isProhibitedParagraphChild(node))
-			|| isInvisibleNode(node)) {
+			|| isInvisible(node)) {
 				offset = getNodeIndex(node);
 				node = node.parentNode;
 
@@ -5602,7 +5600,7 @@ commands.formatblock = {
 		// "Let node list be all visible editable nodes that are contained in
 		// new range and have no children."
 		var nodeList = getAllContainedNodes(newRange, function(node) {
-			return isVisibleNode(node)
+			return isVisible(node)
 				&& isEditable(node)
 				&& !node.hasChildNodes();
 		});
@@ -5660,7 +5658,7 @@ commands.formatblock = {
 		// new range and has no children. If there is no such node, return the
 		// empty string."
 		var nodes = getAllContainedNodes(newRange, function(node) {
-			return isVisibleNode(node)
+			return isVisible(node)
 				&& isEditable(node)
 				&& !node.hasChildNodes();
 		});
@@ -5719,14 +5717,14 @@ commands["forwarddelete"] = {
 			// parent."
 			if (offset == getNodeLength(node)
 			&& isEditable(node.nextSibling)
-			&& isInvisibleNode(node.nextSibling)) {
+			&& isInvisible(node.nextSibling)) {
 				node.parentNode.removeChild(node.nextSibling);
 
 			// "Otherwise, if node has a child with index offset and that child
 			// is an editable invisible node, remove that child from node."
 			} else if (offset < node.childNodes.length
 			&& isEditable(node.childNodes[offset])
-			&& isInvisibleNode(node.childNodes[offset])) {
+			&& isInvisible(node.childNodes[offset])) {
 				node.removeChild(node.childNodes[offset]);
 
 			// "Otherwise, if node has a child with index offset and that child
@@ -5736,12 +5734,11 @@ commands["forwarddelete"] = {
 				offset++;
 
 			// "Otherwise, if offset is the length of node and node is not a
-			// prohibited paragraph child, or if node is an invisible node, set
-			// offset to one plus the index of node, then set node to its
-			// parent."
+			// prohibited paragraph child, or if node is invisible, set offset
+			// to one plus the index of node, then set node to its parent."
 			} else if ((offset == getNodeLength(node)
 			&& !isProhibitedParagraphChild(node))
-			|| isInvisibleNode(node)) {
+			|| isInvisible(node)) {
 				offset = 1 + getNodeIndex(node);
 				node = node.parentNode;
 
@@ -6559,7 +6556,7 @@ commands.justifycenter = {
 		// children, at least one has alignment value "center" and at least one
 		// does not. Otherwise return false."
 		var nodes = getAllContainedNodes(blockExtend(getActiveRange()), function(node) {
-			return isEditable(node) && isVisibleNode(node) && !node.hasChildNodes();
+			return isEditable(node) && isVisible(node) && !node.hasChildNodes();
 		});
 		return nodes.some(function(node) { return getAlignmentValue(node) == "center" })
 			&& nodes.some(function(node) { return getAlignmentValue(node) != "center" });
@@ -6569,7 +6566,7 @@ commands.justifycenter = {
 		// children, and all such nodes have alignment value "center".
 		// Otherwise return false."
 		var nodes = getAllContainedNodes(blockExtend(getActiveRange()), function(node) {
-			return isEditable(node) && isVisibleNode(node) && !node.hasChildNodes();
+			return isEditable(node) && isVisible(node) && !node.hasChildNodes();
 		});
 		return nodes.length
 			&& nodes.every(function(node) { return getAlignmentValue(node) == "center" });
@@ -6578,7 +6575,7 @@ commands.justifycenter = {
 		// the first visible editable node that is contained in the result and
 		// has no children. If there is no such node, return "left"."
 		var nodes = getAllContainedNodes(blockExtend(getActiveRange()), function(node) {
-			return isEditable(node) && isVisibleNode(node) && !node.hasChildNodes();
+			return isEditable(node) && isVisible(node) && !node.hasChildNodes();
 		});
 		if (nodes.length) {
 			return getAlignmentValue(nodes[0]);
@@ -6600,7 +6597,7 @@ commands.justifyfull = {
 		// children, at least one has alignment value "justify" and at least
 		// one does not. Otherwise return false."
 		var nodes = getAllContainedNodes(blockExtend(getActiveRange()), function(node) {
-			return isEditable(node) && isVisibleNode(node) && !node.hasChildNodes();
+			return isEditable(node) && isVisible(node) && !node.hasChildNodes();
 		});
 		return nodes.some(function(node) { return getAlignmentValue(node) == "justify" })
 			&& nodes.some(function(node) { return getAlignmentValue(node) != "justify" });
@@ -6610,7 +6607,7 @@ commands.justifyfull = {
 		// children, and all such nodes have alignment value "justify".
 		// Otherwise return false."
 		var nodes = getAllContainedNodes(blockExtend(getActiveRange()), function(node) {
-			return isEditable(node) && isVisibleNode(node) && !node.hasChildNodes();
+			return isEditable(node) && isVisible(node) && !node.hasChildNodes();
 		});
 		return nodes.length
 			&& nodes.every(function(node) { return getAlignmentValue(node) == "justify" });
@@ -6619,7 +6616,7 @@ commands.justifyfull = {
 		// the first visible editable node that is contained in the result and
 		// has no children. If there is no such node, return "left"."
 		var nodes = getAllContainedNodes(blockExtend(getActiveRange()), function(node) {
-			return isEditable(node) && isVisibleNode(node) && !node.hasChildNodes();
+			return isEditable(node) && isVisible(node) && !node.hasChildNodes();
 		});
 		if (nodes.length) {
 			return getAlignmentValue(nodes[0]);
@@ -6641,7 +6638,7 @@ commands.justifyleft = {
 		// children, at least one has alignment value "left" and at least one
 		// does not. Otherwise return false."
 		var nodes = getAllContainedNodes(blockExtend(getActiveRange()), function(node) {
-			return isEditable(node) && isVisibleNode(node) && !node.hasChildNodes();
+			return isEditable(node) && isVisible(node) && !node.hasChildNodes();
 		});
 		return nodes.some(function(node) { return getAlignmentValue(node) == "left" })
 			&& nodes.some(function(node) { return getAlignmentValue(node) != "left" });
@@ -6651,7 +6648,7 @@ commands.justifyleft = {
 		// children, and all such nodes have alignment value "left".  Otherwise
 		// return false."
 		var nodes = getAllContainedNodes(blockExtend(getActiveRange()), function(node) {
-			return isEditable(node) && isVisibleNode(node) && !node.hasChildNodes();
+			return isEditable(node) && isVisible(node) && !node.hasChildNodes();
 		});
 		return nodes.length
 			&& nodes.every(function(node) { return getAlignmentValue(node) == "left" });
@@ -6660,7 +6657,7 @@ commands.justifyleft = {
 		// the first visible editable node that is contained in the result and
 		// has no children. If there is no such node, return "left"."
 		var nodes = getAllContainedNodes(blockExtend(getActiveRange()), function(node) {
-			return isEditable(node) && isVisibleNode(node) && !node.hasChildNodes();
+			return isEditable(node) && isVisible(node) && !node.hasChildNodes();
 		});
 		if (nodes.length) {
 			return getAlignmentValue(nodes[0]);
@@ -6682,7 +6679,7 @@ commands.justifyright = {
 		// children, at least one has alignment value "right" and at least one
 		// does not. Otherwise return false."
 		var nodes = getAllContainedNodes(blockExtend(getActiveRange()), function(node) {
-			return isEditable(node) && isVisibleNode(node) && !node.hasChildNodes();
+			return isEditable(node) && isVisible(node) && !node.hasChildNodes();
 		});
 		return nodes.some(function(node) { return getAlignmentValue(node) == "right" })
 			&& nodes.some(function(node) { return getAlignmentValue(node) != "right" });
@@ -6692,7 +6689,7 @@ commands.justifyright = {
 		// children, and all such nodes have alignment value "right".
 		// Otherwise return false."
 		var nodes = getAllContainedNodes(blockExtend(getActiveRange()), function(node) {
-			return isEditable(node) && isVisibleNode(node) && !node.hasChildNodes();
+			return isEditable(node) && isVisible(node) && !node.hasChildNodes();
 		});
 		return nodes.length
 			&& nodes.every(function(node) { return getAlignmentValue(node) == "right" });
@@ -6701,7 +6698,7 @@ commands.justifyright = {
 		// the first visible editable node that is contained in the result and
 		// has no children. If there is no such node, return "left"."
 		var nodes = getAllContainedNodes(blockExtend(getActiveRange()), function(node) {
-			return isEditable(node) && isVisibleNode(node) && !node.hasChildNodes();
+			return isEditable(node) && isVisible(node) && !node.hasChildNodes();
 		});
 		if (nodes.length) {
 			return getAlignmentValue(nodes[0]);

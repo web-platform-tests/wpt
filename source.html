@@ -577,13 +577,13 @@ li won't collapse even if it has no children at all, but that's not true in all
 browsers (at least not in Opera 11.11), and also it breaks assumptions
 elsewhere.  E.g., if it gets turned into a p.
 
-<p>A <dfn>visible node</dfn> is a [[node]] that either is a <span>prohibited
-paragraph child</span>, or a [[text]] node whose [[cddata]] is not empty, or
-an [[img]], or a [[br]] that is not an <span>extraneous line break</span>, or
-any [[node]] with a [[descendant]] that is a <span>visible node</span>.
+<p>Something is <dfn>visible</dfn> if it is a [[node]] that either is a
+<span>prohibited paragraph child</span>, or a [[text]] node whose [[cddata]] is
+not empty, or an [[img]], or a [[br]] that is not an <span>extraneous line
+break</span>, or any [[node]] with a <span>visible</span> [[descendant]].
 
-<p>An <dfn>invisible node</dfn> is a [[node]] that is not a <span>visible
-node</span>.
+<p>Something is <dfn>invisible</dfn> if it is a [[node]] that is not
+<span>visible</span>.
 
 <p class=XXX>I don't know if the visible/invisible node definitions are really
 the way we want to do things.  If they are, they need some adjustment, like to
@@ -592,9 +592,9 @@ handle collapsed whitespace nodes.
 <p>A <dfn>collapsed block prop</dfn> is either a <span>collapsed line
 break</span> that is not an <span>extraneous line break</span>, or an
 [[element]] that is an <span>inline node</span> and whose [[children]] are all
-either <span title="invisible node">invisible nodes</span> or <span
-title="collapsed block prop">collapsed block props</span> and that has at least
-one [[child]] that is a <span>collapsed block prop</span>.
+either <span>invisible</span> or <span title="collapsed block prop">collapsed
+block props</span> and that has at least one [[child]] that is a
+<span>collapsed block prop</span>.
 
 <p>The <dfn>active range</dfn> is the first [[range]] in the [[selection]]
 given by calling [[getselection]] on the [[contextobject]], or null if there is
@@ -702,7 +702,7 @@ here?
   <li>While <var>ref</var> has [[children]], set <var>ref</var> to its
   [[lastchild]].
 
-  <li>While <var>ref</var> is an <span>invisible node</span> but not an
+  <li>While <var>ref</var> is <span>invisible</span> but not an
   <span>extraneous line break</span>, and <var>ref</var> does not equal
   <var>node</var>'s [[parent]], set <var>ref</var> to the [[node]] before it in
   [[treeorder]].
@@ -720,7 +720,7 @@ here?
   <li>While <var>ref</var> has [[children]], set <var>ref</var> to its
   [[lastchild]].
 
-  <li>While <var>ref</var> is an <span>invisible node</span> but not an
+  <li>While <var>ref</var> is <span>invisible</span> but not an
   <span>extraneous line break</span>, and <var>ref</var> does not equal
   <var>node</var>, set <var>ref</var> to the [[node]] before it in
   [[treeorder]].
@@ -4980,17 +4980,17 @@ would be worth the added complexity.
     not necessarily anything like the spec's.
     -->
     <li>If <var>offset</var> is zero and <var>node</var>'s [[previoussibling]]
-    is an <span>editable</span> <span>invisible node</span>, remove
+    is an <span>editable</span> <span>invisible</span> [[node]], remove
     <var>node</var>'s [[previoussibling]] from its [[parent]].
 
     <li>Otherwise, if <var>node</var> has a [[child]] with [[index]]
     <var>offset</var> &minus; 1 and that [[child]] is an <span>editable</span>
-    <span>invisible node</span>, remove that [[child]] from <var>node</var>,
-    then subtract one from <var>offset</var>.
+    <span>invisible</span> [[node]], remove that [[child]] from
+    <var>node</var>, then subtract one from <var>offset</var>.
 
     <li>Otherwise, if <var>offset</var> is zero and <var>node</var> is not a
     <span>prohibited paragraph child</span>, or if <var>node</var> is an
-    <span>invisible node</span>, set <var>offset</var> to the [[index]] of
+    <span>invisible</span> [[node]], set <var>offset</var> to the [[index]] of
     <var>node</var>, then set <var>node</var> to its [[parent]].
 
     <li>Otherwise, if <var>node</var> has a [[child]] with [[index]]
@@ -5446,7 +5446,7 @@ sure what it does.  I'm speccing it just because it makes sense.
   <li><span>Block-extend</span> the <span>active range</span>, and let <var>new
   range</var> be the result.
 
-  <li>Let <var>node list</var> be all <span title="visible node">visible</span>
+  <li>Let <var>node list</var> be all <span>visible</span>
   <span>editable</span> [[nodes]] that are [[contained]] in <var>new
   range</var> and have no [[children]].
 
@@ -5502,10 +5502,10 @@ writing means what Firefox supports plus div.
   <li><span>Block-extend</span> the <span>active range</span>, and let <var>new
   range</var> be the result.
 
-  <li>Let <var>node</var> be the first <span title="visible
-  node">visible</span> <span>editable</span> [[node]] that is [[contained]] in
-  <var>new range</var> and has no [[children]].  If there is no such [[node]],
-  return the empty string.
+  <li>Let <var>node</var> be the first <span>visible</span>
+  <span>editable</span> [[node]] that is [[contained]] in <var>new range</var>
+  and has no [[children]].  If there is no such [[node]], return the empty
+  string.
 
   <li>While <var>node</var>'s [[parent]] is <span>editable</span> and <span>in
   the same editing host</span> as <var>node</var>, and <var>node</var> is not
@@ -5559,12 +5559,13 @@ writing means what Firefox supports plus div.
   <ol>
     <li>If <var>offset</var> is the [[nodelength]] of <var>node</var> and
     <var>node</var>'s [[nextsibling]] is an <span>editable</span>
-    <span>invisible node</span>, remove <var>node</var>'s [[nextsibling]] from
-    its [[parent]].
+    <span>invisible</span> [[node]], remove <var>node</var>'s [[nextsibling]]
+    from its [[parent]].
 
     <li>Otherwise, if <var>node</var> has a [[child]] with [[index]]
     <var>offset</var> and that [[child]] is an <span>editable</span>
-    <span>invisible node</span>, remove that [[child]] from <var>node</var>.
+    <span>invisible</span> [[node]], remove that [[child]] from
+    <var>node</var>.
 
     <li>Otherwise, if <var>node</var> has a [[child]] with [[index]]
     <var>offset</var> and that [[child]] is a <span>collapsed block
@@ -5572,7 +5573,7 @@ writing means what Firefox supports plus div.
 
     <li>Otherwise, if <var>offset</var> is the [[nodelength]] of
     <var>node</var> and <var>node</var> is not a <span>prohibited paragraph
-    child</span>, or if <var>node</var> is an <span>invisible node</span>, set
+    child</span>, or if <var>node</var> is <span>invisible</span>, set
     <var>offset</var> to one plus the [[index]] of <var>node</var>, then set
     <var>node</var> to its [[parent]].
 
@@ -6502,10 +6503,10 @@ false otherwise.
 <var>alignment</var> "center".
 
 <p><span>Indeterminate</span>: <span>Block-extend</span> the <span>active
-range</span>.  Return true if among <span title="visible node">visible</span>
-<span>editable</span> [[nodes]] that are [[contained]] in the result and have
-no [[children]], at least one has <span>alignment value</span> "center" and at
-least one does not.  Otherwise return false.
+range</span>.  Return true if among <span>visible</span> <span>editable</span>
+[[nodes]] that are [[contained]] in the result and have no [[children]], at
+least one has <span>alignment value</span> "center" and at least one does not.
+Otherwise return false.
 <!--
 This roughly matches Chrome 14 dev, although not exactly.  Firefox 6.0a2 always
 returns false.
@@ -6521,10 +6522,10 @@ even to some nodes that do have children.
 -->
 
 <p><span>State</span>: <span>Block-extend</span> the <span>active range</span>.
-Return true if there is at least one <span title="visible node">visible</span>
-<span>editable</span> [[node]] that is [[contained]] in the result and has no
-[[children]], and all such [[nodes]] have <span>alignment value</span>
-"center".  Otherwise return false.
+Return true if there is at least one <span>visible</span> <span>editable</span>
+[[node]] that is [[contained]] in the result and has no [[children]], and all
+such [[nodes]] have <span>alignment value</span> "center".  Otherwise return
+false.
 <!--
 IE9 throws exceptions in almost every case when querying the state of justify*,
 and Opera 11.11 returns false in every case except some seemingly random crazy
@@ -6548,10 +6549,9 @@ anyway, since Gecko/WebKit do.
 -->
 
 <p><span>Value</span>: <span>Block-extend</span> the <span>active range</span>,
-and return the <span>alignment value</span> of the first <span title="visible
-node">visible</span> <span>editable</span> [[node]] that is [[contained]] in
-the result and has no [[children]].  If there is no such [[node]], return
-"left".
+and return the <span>alignment value</span> of the first <span>visible</span>
+<span>editable</span> [[node]] that is [[contained]] in the result and has no
+[[children]].  If there is no such [[node]], return "left".
 <!--
 Not bidi-safe, but it's a pretty marginal corner case.  Firefox 6.0a2 behaves
 weirdly here: it keys off the start node of the active range, even if that's
@@ -6568,22 +6568,21 @@ string, as usual.  Opera 11.11 always returns the empty string.
 <var>alignment</var> "justify".
 
 <p><span>Indeterminate</span>: <span>Block-extend</span> the <span>active
-range</span>.  Return true if among <span title="visible node">visible</span>
-<span>editable</span> [[nodes]] that are [[contained]] in the result and have
-no [[children]], at least one has <span>alignment value</span> "justify" and at
-least one does not.  Otherwise return false.
+range</span>.  Return true if among <span>visible</span> <span>editable</span>
+[[nodes]] that are [[contained]] in the result and have no [[children]], at
+least one has <span>alignment value</span> "justify" and at least one does not.
+Otherwise return false.
 
 <p><span>State</span>: <span>Block-extend</span> the <span>active range</span>.
-Return true if there is at least one <span title="visible node">visible</span>
-<span>editable</span> [[node]] that is [[contained]] in the result and has no
-[[children]], and all such [[nodes]] have <span>alignment value</span>
-"justify".  Otherwise return false.
+Return true if there is at least one <span>visible</span> <span>editable</span>
+[[node]] that is [[contained]] in the result and has no [[children]], and all
+such [[nodes]] have <span>alignment value</span> "justify".  Otherwise return
+false.
 
 <p><span>Value</span>: <span>Block-extend</span> the <span>active range</span>,
-and return the <span>alignment value</span> of the first <span title="visible
-node">visible</span> <span>editable</span> [[node]] that is [[contained]] in
-the result and has no [[children]].  If there is no such [[node]], return
-"left".
+and return the <span>alignment value</span> of the first <span>visible</span>
+<span>editable</span> [[node]] that is [[contained]] in the result and has no
+[[children]].  If there is no such [[node]], return "left".
 <!-- @} -->
 
 <h3><dfn>The <code title>justifyLeft</code> command</dfn></h3>
@@ -6592,22 +6591,21 @@ the result and has no [[children]].  If there is no such [[node]], return
 <var>alignment</var> "left".
 
 <p><span>Indeterminate</span>: <span>Block-extend</span> the <span>active
-range</span>.  Return true if among <span title="visible node">visible</span>
-<span>editable</span> [[nodes]] that are [[contained]] in the result and have
-no [[children]], at least one has <span>alignment value</span> "left" and at
-least one does not.  Otherwise return false.
-
-<p><span>State</span>: <span>Block-extend</span> the <span>active range</span>.
-Return true if there is at least one <span title="visible node">visible</span>
-<span>editable</span> [[node]] that is [[contained]] in the result and has no
-[[children]], and all such [[nodes]] have <span>alignment value</span> "left".
+range</span>.  Return true if among <span>visible</span> <span>editable</span>
+[[nodes]] that are [[contained]] in the result and have no [[children]], at
+least one has <span>alignment value</span> "left" and at least one does not.
 Otherwise return false.
 
+<p><span>State</span>: <span>Block-extend</span> the <span>active range</span>.
+Return true if there is at least one <span>visible</span> <span>editable</span>
+[[node]] that is [[contained]] in the result and has no [[children]], and all
+such [[nodes]] have <span>alignment value</span> "left".  Otherwise return
+false.
+
 <p><span>Value</span>: <span>Block-extend</span> the <span>active range</span>,
-and return the <span>alignment value</span> of the first <span title="visible
-node">visible</span> <span>editable</span> [[node]] that is [[contained]] in
-the result and has no [[children]].  If there is no such [[node]], return
-"left".
+and return the <span>alignment value</span> of the first <span>visible</span>
+<span>editable</span> [[node]] that is [[contained]] in the result and has no
+[[children]].  If there is no such [[node]], return "left".
 <!-- @} -->
 
 <h3><dfn>The <code title>justifyRight</code> command</dfn></h3>
@@ -6616,22 +6614,21 @@ the result and has no [[children]].  If there is no such [[node]], return
 <var>alignment</var> "right".
 
 <p><span>Indeterminate</span>: <span>Block-extend</span> the <span>active
-range</span>.  Return true if among <span title="visible node">visible</span>
-<span>editable</span> [[nodes]] that are [[contained]] in the result and have
-no [[children]], at least one has <span>alignment value</span> "right" and at
-least one does not.  Otherwise return false.
-
-<p><span>State</span>: <span>Block-extend</span> the <span>active range</span>.
-Return true if there is at least one <span title="visible node">visible</span>
-<span>editable</span> [[node]] that is [[contained]] in the result and has no
-[[children]], and all such [[nodes]] have <span>alignment value</span> "right".
+range</span>.  Return true if among <span>visible</span> <span>editable</span>
+[[nodes]] that are [[contained]] in the result and have no [[children]], at
+least one has <span>alignment value</span> "right" and at least one does not.
 Otherwise return false.
 
+<p><span>State</span>: <span>Block-extend</span> the <span>active range</span>.
+Return true if there is at least one <span>visible</span> <span>editable</span>
+[[node]] that is [[contained]] in the result and has no [[children]], and all
+such [[nodes]] have <span>alignment value</span> "right".  Otherwise return
+false.
+
 <p><span>Value</span>: <span>Block-extend</span> the <span>active range</span>,
-and return the <span>alignment value</span> of the first <span title="visible
-node">visible</span> <span>editable</span> [[node]] that is [[contained]] in
-the result and has no [[children]].  If there is no such [[node]], return
-"left".
+and return the <span>alignment value</span> of the first <span>visible</span>
+<span>editable</span> [[node]] that is [[contained]] in the result and has no
+[[children]].  If there is no such [[node]], return "left".
 <!-- @} -->
 
 <h3><dfn>The <code title>outdent</code> command</dfn></h3>

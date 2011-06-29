@@ -108,6 +108,7 @@ replace = {
     'INVALID_ACCESS_ERR': '<code data-anolis-spec=domcore title=dom-DOMException-INVALID_ACCESS_ERR>INVALID_ACCESS_ERR</code>',
     'NOT_SUPPORTED_ERR': '<code data-anolis-spec=domcore title=dom-DOMException-NOT_SUPPORTED_ERR>NOT_SUPPORTED_ERR</code>',
     'SECURITY_ERR': '<code data-anolis-spec=domcore title=dom-DOMException-SECURITY_ERR>SECURITY_ERR</code>',
+    'SYNTAX_ERR': '<code data-anolis-spec=domcore title=dom-DOMException-SYNTAX_ERR>SYNTAX_ERR</code>',
 }
 
 s = open("source.html", "r").read()

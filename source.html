@@ -249,6 +249,13 @@ list</a>.
 
   <li>Have to make sure that in all the places where we set a selection, it's
   valid.
+
+  <li>Where methods take a value, I've decided they should throw SYNTAX_ERR
+  instead of doing nothing if the value makes no sense.  As a rule, this
+  doesn't match browsers.  I think it's more useful to authors, however,
+  especially since in many cases, the command's effect isn't currently
+  interoperable anyway.  I'll switch them back to doing nothing if implementers
+  think this is a problem.
 </ul>
 
 <p class=XXX>A variety of other issues are also noted in the text, formatted
@@ -2238,14 +2245,19 @@ doesn't change anything), then Chrome 12 dev inserts a link at the selection
 start, with the text equal to the link URL.  Other browsers don't do it, so I
 don't either. -->
 <ol>
-  <li>If <var>value</var> is the empty string, abort these steps and do
-  nothing.
-  <!-- This matches Firefox 4b11 and Chrome 11 dev.  IE 9 RC and Opera 11 both
-  treat the request literally.  Gecko and WebKit probably have it right here:
-  users who enter no URL are very unlikely to want to link to a relative URL
-  resolving to the current document.  If they really want to, they can always
-  specify "#" for the value, or the author can rewrite it, so it's not like
-  this makes the API less useful. -->
+  <li>If <var>value</var> is the empty string, raise a [[SYNTAX_ERR]]
+  exception.
+  <!--
+  Firefox 4b11 and Chrome 11 dev both silently do nothing in this case.
+  IE 9 RC and Opera 11 both treat the request literally.  Gecko and WebKit
+  probably have it right here: users who enter no URL are very unlikely to want
+  to link to a relative URL resolving to the current document.  If they really
+  want to, they can always specify "#" for the value, or the author can rewrite
+  it, so it's not like this makes the API less useful.
+
+  As in other cases, I raise a SYNTAX_ERR instead of silently failing, because
+  I think that's more useful.  See issues.
+  -->
 
   <li><span>Decompose</span> the <span>active range</span>, and let <var>node
   list</var> be the result.
@@ -2381,8 +2393,8 @@ thing in IE and Firefox should still do the same thing here, so I'm only
 respecifying non-interoperable behavior anyway.
 -->
 <ol>
-  <li>If <var>value</var> is the empty string, do nothing and abort these
-  steps.
+  <li>If <var>value</var> is the empty string, raise a [[SYNTAX_ERR]]
+  exception.
 
   <li><span data-anolis-spec=html>Strip leading and trailing whitespace</span>
   from <var>value</var>.
@@ -2438,7 +2450,7 @@ respecifying non-interoperable behavior anyway.
 
   <li>If <var>value</var> is not one of the strings "xx-small", "x-small",
   "small", "medium", "large", "x-large", "xx-large", "xxx-large", and is not a
-  valid CSS absolute length, then do nothing and abort these steps.
+  valid CSS absolute length, then raise a [[SYNTAX_ERR]] exception.
 
   <p class=XXX>Not sure this is the best way to do it.  We don't want to allow
   relative lengths, because those can have very weird user-visible behavior.
@@ -2581,7 +2593,7 @@ browsers, but it's unlikely to hurt and it makes sense.
   <li>If <var>value</var> is not a valid CSS color, prepend "#" to it.
 
   <li>If <var>value</var> is still not a valid CSS color, or if it is
-  currentColor, do nothing and abort these steps.
+  currentColor, raise a [[SYNTAX_ERR]] exception.
   <!-- currentColor is bad for the same reason as relative font sizes.  It will
   confuse the algorithm, and doesn't seem very useful anyway. -->
 
@@ -2641,7 +2653,7 @@ For color parsing, see the comment for foreColor. -->
   <li>If <var>value</var> is not a valid CSS color, prepend "#" to it.
 
   <li>If <var>value</var> is still not a valid CSS color, or if it is
-  currentColor, do nothing and abort these steps.
+  currentColor, raise a [[SYNTAX_ERR]] exception.
   <!-- currentColor is bad for the same reason as relative font sizes.  It will
   confuse the algorithm, and doesn't seem very useful anyway.  For hiliteColor
   you could conceive of it being useful, but it will still confuse the
@@ -5319,7 +5331,7 @@ sense for <address>/<h*>/<pre>, but other browsers don't do it.
   lowercase</span>.
 
   <li>If <var>value</var> is not "address", "div", "h1", "h2", "h3", "h4",
-  "h5", "h6", "p", or "pre", then do nothing and abort these steps.
+  "h5", "h6", "p", or "pre", raise a [[SYNTAX_ERR]] exception.
 
   <p class=XXX>We should support dt and dd here, since they make sense here and
   there's no other way to create them.
@@ -5905,13 +5917,14 @@ round-tripping through a character encoding change impossible.
 <p><span>Action</span>:
 
 <ol>
-  <li>If <var>value</var> is the empty string, abort these steps and do
-  nothing.
+  <li>If <var>value</var> is the empty string, raise a [[SYNTAX_ERR]]
+  exception.
   <!-- Similar logic to createLink, except even more compelling, since an HTML
   document linking to itself as an image is just silly.  In fact, the current
   HTML spec instructs UAs to not even try displaying the image, and just fail
-  immediately if the URL is empty.  Firefox 4b11 bails out on an empty string,
-  but the other three browsers I tested stick in the <img> anyway. -->
+  immediately if the URL is empty.  Firefox 4b11 silently does nothing on an
+  empty string, but the other three browsers I tested stick in the <img>
+  anyway. -->
 
   <li>Let <var>range</var> be the <span>active range</span>.
 

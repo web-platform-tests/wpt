@@ -279,6 +279,8 @@ var tests = {
 
 		'<a name=abc>foo[bar]baz</a>',
 		'<a name=abc><b>foo[bar]baz</b></a>',
+
+		['', 'foo[bar]baz'],
 	],
 	//@}
 	// Opera requires this to be quoted, contrary to ES5 11.1.5 which allows
@@ -3441,16 +3443,21 @@ function doSpecCell(tr, test, command, styleWithCss) {
 	} catch (e) {
 		specCell.firstChild.contentEditable = "inherit";
 		specCell.firstChild.removeAttribute("spellcheck");
-		specCell.parentNode.className = "alert";
-		specCell.lastChild.className = "alert";
 		specCell.lastChild.textContent = "Exception: " + e;
-		if (typeof e == "object" && "stack" in e) {
-			specCell.lastChild.textContent += " (stack: " + e.stack + ")";
-		}
 
-		// Don't bother comparing to localStorage, this is always wrong no
-		// matter what.
-		return;
+		// If it's "SYNTAX_ERR", then we threw it, so all is well.  Otherwise,
+		// flag as an alert.
+		if (e !== "SYNTAX_ERR") {
+			specCell.parentNode.className = "alert";
+			specCell.lastChild.className = "alert";
+			if (typeof e == "object" && "stack" in e) {
+				specCell.lastChild.textContent += " (stack: " + e.stack + ")";
+			}
+
+			// Don't bother comparing to localStorage, this is always wrong no
+			// matter what.
+			return;
+		}
 	}
 
 	var key = "execcommand-" + command

@@ -2737,9 +2737,9 @@ commands.bold = {
 //@{
 commands.createlink = {
 	action: function(value) {
-		// "If value is the empty string, abort these steps and do nothing."
+		// "If value is the empty string, raise a SYNTAX_ERR exception."
 		if (value === "") {
-			return;
+			throw "SYNTAX_ERR";
 		}
 
 		// "Decompose the active range, and let node list be the result."
@@ -2799,9 +2799,9 @@ commands.fontname = {
 //@{
 commands.fontsize = {
 	action: function(value) {
-		// "If value is the empty string, do nothing and abort these steps."
+		// "If value is the empty string, raise a SYNTAX_ERR exception."
 		if (value === "") {
-			return;
+			throw "SYNTAX_ERR";
 		}
 
 		// "Strip leading and trailing whitespace from value."
@@ -2872,12 +2872,12 @@ commands.fontsize = {
 
 		// "If value is not one of the strings "xx-small", "x-small", "small",
 		// "medium", "large", "x-large", "xx-large", "xxx-large", and is not a
-		// valid CSS absolute length, then do nothing and abort these steps."
+		// valid CSS absolute length, then raise a SYNTAX_ERR exception."
 		//
 		// More cheap hacks to skip valid CSS absolute length checks.
 		if (["xx-small", "x-small", "small", "medium", "large", "x-large", "xx-large", "xxx-large"].indexOf(value) == -1
 		&& !/^[0-9]+(\.[0-9]+)?(cm|mm|in|pt|pc)$/.test(value)) {
-			return;
+			throw "SYNTAX_ERR";
 		}
 
 		// "Decompose the active range, then set the value of each returned
@@ -2949,7 +2949,7 @@ commands.forecolor = {
 		// "If value is not a valid CSS color, prepend "#" to it."
 		//
 		// "If value is still not a valid CSS color, or if it is currentColor,
-		// do nothing and abort these steps."
+		// raise a SYNTAX_ERR exception."
 		//
 		// Cheap hack for testing, no attempt to be comprehensive.
 		if (/^([0-9a-fA-F]{3}){1,2}$/.test(value)) {
@@ -2961,7 +2961,7 @@ commands.forecolor = {
 		&& value != "red"
 		&& value != "cornsilk"
 		&& value != "transparent") {
-			return;
+			throw "SYNTAX_ERR";
 		}
 
 		// "Decompose the active range, then set the value of each returned
@@ -3007,7 +3007,7 @@ commands.hilitecolor = {
 		// "If value is not a valid CSS color, prepend "#" to it."
 		//
 		// "If value is still not a valid CSS color, or if it is currentColor,
-		// do nothing and abort these steps."
+		// raise a SYNTAX_ERR exception."
 		//
 		// Cheap hack for testing, no attempt to be comprehensive.
 		if (/^([0-9a-fA-F]{3}){1,2}$/.test(value)) {
@@ -3019,7 +3019,7 @@ commands.hilitecolor = {
 		&& value != "red"
 		&& value != "cornsilk"
 		&& value != "transparent") {
-			return;
+			throw "SYNTAX_ERR";
 		}
 
 		// "Decompose the active range, then set the value of each returned
@@ -5451,10 +5451,10 @@ commands.formatblock = {
 		value = value.toLowerCase();
 
 		// "If value is not "address", "div", "h1", "h2", "h3", "h4", "h5",
-		// "h6", "p", or "pre", then do nothing and abort these steps."
+		// "h6", "p", or "pre", raise a SYNTAX_ERR exception."
 		if (["ADDRESS", "DIV", "H1", "H2", "H3", "H4", "H5", "H6", "P",
 		"PRE"].indexOf(value.toUpperCase()) == -1) {
-			return;
+			throw "SYNTAX_ERR";
 		}
 
 		// "Block-extend the active range, and let new range be the result."
@@ -6040,9 +6040,9 @@ commands.inserthtml = {
 //@{
 commands.insertimage = {
 	action: function(value) {
-		// "If value is the empty string, abort these steps and do nothing."
+		// "If value is the empty string, raise a SYNTAX_ERR exception."
 		if (value === "") {
-			return;
+			throw "SYNTAX_ERR";
 		}
 
 		// "Let range be the active range."

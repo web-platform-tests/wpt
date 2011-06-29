@@ -6696,14 +6696,16 @@ commands.selectall = {
 			target = document.documentElement;
 		}
 
-		// "If target is null, let target be the context object."
+		// "If target is null, call getSelection() on the context object, and
+		// call removeAllRanges() on the result."
 		if (!target) {
-			target = document;
-		}
+			getSelection().removeAllRanges();
 
-		// "Call getSelection() on the context object, and call
+		// "Otherwise, call getSelection() on the context object, and call
 		// selectAllChildren(target) on the result."
-		getSelection().selectAllChildren(target);
+		} else {
+			getSelection().selectAllChildren(target);
+		}
 	}
 };
 //@}

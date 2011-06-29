@@ -313,6 +313,9 @@ list</a>.
   <li>What happens if you do something like delete a selection or insert text
   or whatnot in the middle of a surrogate pair?  This could make the content
   not serialize through a character encoding change.
+
+  <li>Have to make sure that in all the places where we set a selection, it's
+  valid.
 </ul>
 
 <p class=XXX>A variety of other issues are also noted in the text, formatted
@@ -6694,11 +6697,11 @@ The behavior here is relatively simple and largely matches implementations.
   <p class=XXX>Is this right even for documents whose root element is not an
   HTML element?
 
-  <li>If <var title="">target</var> is null, let <var title="">target</var> be the
-  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>.
+  <li>If <var title="">target</var> is null, call <code class=external data-anolis-spec=domrange title=dom-Document-getSelection><a href=http://html5.org/specs/dom-range.html#dom-document-getselection>getSelection()</a></code> on the
+  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>, and call <code class=external data-anolis-spec=domrange title=dom-Selection-removeAllRanges><a href=http://html5.org/specs/dom-range.html#dom-selection-removeallranges>removeAllRanges()</a></code> on the result.
 
-  <li>Call <code class=external data-anolis-spec=domrange title=dom-Document-getSelection><a href=http://html5.org/specs/dom-range.html#dom-document-getselection>getSelection()</a></code> on the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>, and call <code class=external data-anolis-spec=domrange title=dom-Selection-selectAllChildren><a href=http://html5.org/specs/dom-range.html#dom-selection-selectallchildren>selectAllChildren(<var title="">target</var>)</a></code>
-  on the result.
+  <li>Otherwise, call <code class=external data-anolis-spec=domrange title=dom-Document-getSelection><a href=http://html5.org/specs/dom-range.html#dom-document-getselection>getSelection()</a></code> on the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>, and call
+  <code class=external data-anolis-spec=domrange title=dom-Selection-selectAllChildren><a href=http://html5.org/specs/dom-range.html#dom-selection-selectallchildren>selectAllChildren(<var title="">target</var>)</a></code> on the result.
 </ol>
 
 

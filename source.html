@@ -246,6 +246,9 @@ list</a>.
   <li>What happens if you do something like delete a selection or insert text
   or whatnot in the middle of a surrogate pair?  This could make the content
   not serialize through a character encoding change.
+
+  <li>Have to make sure that in all the places where we set a selection, it's
+  valid.
 </ul>
 
 <p class=XXX>A variety of other issues are also noted in the text, formatted
@@ -6725,13 +6728,11 @@ The behavior here is relatively simple and largely matches implementations.
   <p class=XXX>Is this right even for documents whose root element is not an
   HTML element?
 
-  <li>If <var>target</var> is null, let <var>target</var> be the
-  [[contextobject]].
+  <li>If <var>target</var> is null, call [[getselection]] on the
+  [[contextobject]], and call [[removeallranges]] on the result.
 
-  <li>Call [[getselection]] on the [[contextobject]], and call <code
-  data-anolis-spec=domrange
-  title=dom-Selection-selectAllChildren>selectAllChildren(<var>target</var>)</code>
-  on the result.
+  <li>Otherwise, call [[getselection]] on the [[contextobject]], and call
+  [[selectallchildren|<var>target</var>]] on the result.
 </ol>
 <!-- @} -->
 

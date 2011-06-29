@@ -255,7 +255,9 @@ list</a>.
 like this.
 <!-- @} -->
 
-<h2>Basic concepts</h2>
+<h2>Commands</h2>
+
+<h3>Properties of commands</h3>
 <!-- @{ -->
 <p>This specification defines a number of <dfn title=command>commands</dfn>,
 identified by <span data-anolis-spec=domcore>ASCII case-insensitive</span>
@@ -324,21 +326,10 @@ with it:
   and is not exposed to authors.  If a <span>command</span> does not have a
   <span>relevant CSS property</span> specified, it defaults to null.
 </ul>
+<!-- @} -->
 
-<p>If the <span>active range</span> is null, then every <span>command</span> in
-this specification must behave as though its <span>action</span> is to do
-nothing, its <span title=indeterminate>indeterminacy</span> is false (if it has
-any associated <span title=indeterminate>indeterminacy</span>), its
-<span>state</span> is false (if it has any associated <span>state</span>), and
-its <span>value</span> is the empty string (if it has any associated
-<span>value</span>).  However, the <span title=command>commands</span> listed
-under <a href=#miscellaneous-commands>Miscellaneous commands</a> must behave as
-usual even if the <span>active range</span> is null.
-<!--
-This matches Firefox 6.0a2 and Opera 11.11.  IE9 and Chrome 14 dev seem to
-return false for the value in this case.
--->
-
+<h3>Supported commands</h3>
+<!-- @{ -->
 <p>Some <span title=command>commands</span> will be <dfn>supported</dfn> in a
 given user agent, and some will not.  All <span title=command>commands</span>
 defined in this specification must be <span>supported</span>, except optionally
@@ -376,39 +367,23 @@ reasons.
 using <code>queryCommandSupported()</code>.
 <!-- @} -->
 
-<h2>Methods of the <code data-anolis-spec=html>HTMLDocument</code> interface</h2>
+<h3>Enabled commands</h3>
 <!-- @{ -->
-<p>When the <dfn title=execCommand()><code>execCommand(<var>command</var>,
-<var>show UI</var>, <var>value</var>)</code></dfn> method on the <code
-data-anolis-spec=html>HTMLDocument</code> interface is invoked, the user agent
-must follow the <span>action</span> instructions given in this specification
-for <var>command</var>, passing <var>value</var> to the instructions as an
-argument, then return true.  If <var>command</var> is not
-<span>supported</span>, the user agent must instead raise a
-[[NOT_SUPPORTED_ERR]] exception.  If <var>command</var> is
-<span>supported</span> but has no associated <span>action</span> (which is not
-the case for any <span>command</span> defined in this specification), the user
-agent must instead raise an [[INVALID_ACCESS_ERR]] exception.
-<!-- I'm just speccing INVALID_ACCESS_ERR for consistency.  I don't expect
-real-world commands are likely to not have an action defined, but you never
-know. -->
+<p>At any given time, a <span>supported</span> command can be either
+<dfn>enabled</dfn> or not.  Authors can tell whether a <span>command</span> is
+currently <span>enabled</span> using <code>queryCommandEnabled()</code>.  <span
+title=command>Commands</span> that are not <span>enabled</span> do nothing, as
+described in the definitions of the various methods that invoke <span
+title=command>commands</span>.
 
-<p class=XXX>WebKit doesn't always return true (and maybe others also).  Needs
-investigation: should we ever return false, and if so when?
+<p>Among <span title=command>commands</span> defined in this specification,
+those listed in <a href=#miscellaneous-commands>Miscellaneous commands</a> are
+always <span>enabled</span>.  The other <span title=command>commands</span>
+defined here are <span>enabled</span> if the <span>active range</span> is not
+null, and are not <span>enabled</span> if it is.
 
-<p class=XXX>Define behavior for <var>show UI</var>.
-
-<p>When the <dfn
-title=queryCommandEnabled()><code>queryCommandEnabled(<var>command</var>)</code></dfn>
-method on the <code data-anolis-spec=html>HTMLDocument</code> interface is
-invoked, the user agent must return true.  If <var>command</var> is not
-<span>supported</span>, the user agent must instead raise a
-[[NOT_SUPPORTED_ERR]] exception.
-
-<p class=XXX>This is useless and not how anyone behaves, but no one's behavior
-is very useful anyway.  For this to make sense would require a significant
-amount of work and it's not clear it's worth it at all.  See comment for
-details.
+<p class=XXX>Not clear that this definition is right.  It doesn't match any
+browser.  Needs more testing and thought.
 <!--
 Testing with bold and formatBlock:
 
@@ -428,21 +403,80 @@ sense, but it's too narrow for us, because we take some action in many cases
 even if there's some non-editable stuff around.
 
 What we really want this to do is return true if we'd do something when you run
-the command, false otherwise.  This will actually vary by command, and is
-nontrivial, and I'm not sure what the use-case is.  So for now I'll go with
-Opera, but I'll return to it later.
+the command, false otherwise.  But that's impractically complicated for little
+benefit.  Some approximation closer to IE or Chrome is likely in order.
 -->
+<!-- @} -->
+
+
+<h2>Methods of the <code data-anolis-spec=html>HTMLDocument</code> interface</h2>
+<!-- @{ -->
+<p>When the <dfn title=execCommand()><code>execCommand(<var>command</var>,
+<var>show UI</var>, <var>value</var>)</code></dfn> method on the <code
+data-anolis-spec=html>HTMLDocument</code> interface is invoked, the user agent
+must run the following steps:
+
+<ol>
+  <li>If <var>command</var> is not <span>supported</span>, raise a
+  [[NOT_SUPPORTED_ERR]] exception.
+
+  <li>If <var>command</var> has no <span>action</span>, raise an
+  [[INVALID_ACCESS_ERR]] exception.
+
+  <p class=note>No such <span>command</span> is defined in this specification.
+  <!-- I'm just speccing INVALID_ACCESS_ERR for consistency.  I don't expect
+  real-world commands are likely to not have an action defined, but you never
+  know. -->
+
+  <li>If <var>command</var> is not <span>enabled</span>, return false.
+  <!--
+  I didn't research this closely, but at a first glance, this is possibly how
+  Chrome 14 dev and Opera 11.11 behave.  Maybe also Firefox 6.0a2, except it
+  throws if the command isn't enabled, I think.  IE9 returns true in at least
+  some cases even if the command is disabled.
+  -->
+  <p class=XXX>Is this right?  Maybe we should be returning false in other
+  cases too?
+
+  <li>Take the <span>action</span> for <var>command</var>, passing
+  <var>value</var> to the instructions as an argument.
+
+  <li>Return true.
+</ol>
+
+<p class=XXX>Define behavior for <var>show UI</var>.
+
+<p>When the <dfn
+title=queryCommandEnabled()><code>queryCommandEnabled(<var>command</var>)</code></dfn>
+method on the <code data-anolis-spec=html>HTMLDocument</code> interface is
+invoked, the user agent must run the following steps:
+
+<ol>
+  <li>If <var>command</var> is not <span>supported</span>, raise a
+  [[NOT_SUPPORTED_ERR]] exception.
+
+  <li>Return true if <var>command</var> is <span>enabled</span>, false
+  otherwise.
+</ol>
 
 <p>When the <dfn
 title=queryCommandIndeterm()><code>queryCommandIndeterm(<var>command</var>)</code></dfn>
 method on the <code data-anolis-spec=html>HTMLDocument</code> interface is
-invoked, the user agent must return true if <var>command</var> is
-<span>indeterminate</span>, otherwise false.  If <var>command</var> is not
-<span>supported</span>, the user agent must instead raise a
-[[NOT_SUPPORTED_ERR]] exception.  If <var>command</var> is
-<span>supported</span> but has no associated <span
-title=indeterminate>indeterminacy</span> definition, the user agent must
-instead raise an [[INVALID_ACCESS_ERR]] exception.
+invoked, the user agent must run the following steps:
+
+<ol>
+  <li>If <var>command</var> is not <span>supported</span>, raise a
+  [[NOT_SUPPORTED_ERR]] exception.
+
+  <li>If <var>command</var> has no <span
+  title=indeterminate>indeterminacy</span>, raise an [[INVALID_ACCESS_ERR]]
+  exception.
+
+  <li>If <var>command</var> is not <span>enabled</span>, return false.
+
+  <li>Return true if <var>command</var> is <span>indeterminate</span>,
+  otherwise false.
+</ol>
 <!--
 What happens if you call queryCommand(Indeterm|State|Value)() on a command
 where it makes no sense?
@@ -471,12 +505,20 @@ makes no sense.
 <p>When the <dfn
 title=queryCommandState()><code>queryCommandState(<var>command</var>)</code></dfn>
 method on the <code data-anolis-spec=html>HTMLDocument</code> interface is
-invoked, the user agent must return the <span>state</span> for
-<var>command</var>.  If <var>command</var> is not <span>supported</span>, the
-user agent must instead raise a [[NOT_SUPPORTED_ERR]] exception.  If
-<var>command</var> is <span>supported</span> but has no associated
-<span>state</span>, the user agent must instead raise an [[INVALID_ACCESS_ERR]]
-exception.
+invoked, the user agent must run the following steps:
+
+<ol>
+  <li>If <var>command</var> is not <span>supported</span>, raise a
+  [[NOT_SUPPORTED_ERR]] exception.
+
+  <li>If <var>command</var> has no <span>state</span>, raise an
+  [[INVALID_ACCESS_ERR]] exception.
+
+  <li>If <var>command</var> is not <span>enabled</span>, return false.
+
+  <li>Return true if <var>command</var>'s <span>state</span> is true, otherwise
+  false.
+</ol>
 
 <p>When the <dfn
 title=queryCommandSupported()><code>queryCommandSupported(<var>command</var>)</code></dfn>
@@ -497,12 +539,23 @@ with unsupported commands.
 <p>When the <dfn
 title=queryCommandValue()><code>queryCommandValue(<var>command</var>)</code></dfn>
 method on the <code data-anolis-spec=html>HTMLDocument</code> interface is
-invoked, the user agent must return the <span>value</span> for
-<var>command</var>.  If <var>command</var> is not <span>supported</span>, the
-user agent must instead raise a [[NOT_SUPPORTED_ERR]] exception.  If
-<var>command</var> is <span>supported</span> but has no associated
-<span>value</span>, the user agent must instead raise an [[INVALID_ACCESS_ERR]]
-exception.
+invoked, the user agent must run the following steps:
+
+<ol>
+  <li>If <var>command</var> is not <span>supported</span>, raise a
+  [[NOT_SUPPORTED_ERR]] exception.
+
+  <li>If <var>command</var> has no <span>value</span>, raise an
+  [[INVALID_ACCESS_ERR]] exception.
+
+  <li>If <var>command</var> is not <span>enabled</span>, return the empty
+  string.
+  <!-- This is what Firefox 6.0a2 and Opera 11.11 seem to do.  Chrome 14 dev
+  seems to return the string "false", and IE9 seems to return boolean false.
+  -->
+
+  <li>Return <var>command</var>'s <span>value</span>.
+</ol>
 
 <p>All of these methods must treat their <var>command</var> argument <span
 data-anolis-spec=domcore title="ASCII case-insensitive">ASCII

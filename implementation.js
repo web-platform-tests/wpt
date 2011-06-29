@@ -499,12 +499,7 @@ function parseSimpleColor(color) {
 /////////////////////////////////////////////////
 //@{
 
-// Helper function for common behavior.  First throws exceptions if the command
-// is unrecognized or doesn't have the thing we want defined (action, indeterm,
-// state, or value).  If we get past that, return false if the global range is
-// null and we're a non-miscellaneous command, otherwise true.  Called by
-// myExecCommand(), myQueryCommandIndeterm(), myQueryCommandState(),
-// myQueryCommandValue(), since they all have this behavior.
+// Helper function for common behavior.
 function setupEditCommandMethod(command, prop, range) {
 	// Set up our global range magic
 	if (typeof range != "undefined") {
@@ -513,115 +508,132 @@ function setupEditCommandMethod(command, prop, range) {
 		globalRange = getActiveRange();
 	}
 
-	// In all cases we throw NOT_SUPPORTED_ERR here.  Of course we can't
-	// actually do that, so we just throw a string.
+	// "If command is not supported, raise a NOT_SUPPORTED_ERR exception."
+	//
+	// We can't throw a real one, but a string will do for our purposes.
 	if (!(command in commands)) {
 		throw "NOT_SUPPORTED_ERR";
 	}
 
-	// Likewise, here we throw INVALID_ACCESS_ERR for all four callers.
+	// "If command has no action, raise an INVALID_ACCESS_ERR exception."
+	// "If command has no indeterminacy, raise an INVALID_ACCESS_ERR
+	// exception."
+	// "If command has no state, raise an INVALID_ACCESS_ERR exception."
+	// "If command has no value, raise an INVALID_ACCESS_ERR exception."
 	if (!(prop in commands[command])) {
 		throw "INVALID_ACCESS_ERR";
 	}
-
-	// "If the active range is null, then every command in this specification
-	// must behave as though its action is to do nothing, its indeterminacy is
-	// false (if it has any associated indeterminacy), its state is false (if
-	// it has any associated state), and its value is the empty string (if it
-	// has any associated value). However, the commands listed under
-	// Miscellaneous commands must behave as usual even if the active range is
-	// null."
-	//
-	// We convey this by returning false.
-	return globalRange || ["copy", "cut", "paste", "selectall", "stylewithcss", "usecss"].indexOf(command) != -1;
 }
 
-// "When the execCommand(command, show UI, value) method on the HTMLDocument
-// interface is invoked, the user agent must follow the action instructions
-// given in this specification for command, passing value to the instructions
-// as an argument, then return true. If command is not supported, the user
-// agent must instead raise a NOT_SUPPORTED_ERR exception. If command is
-// supported but has no associated action (which is not the case for any
-// command defined in this specification), the user agent must instead raise an
-// INVALID_ACCESS_ERR exception."
-//
-// "All of these methods must treat their command argument ASCII
-// case-insensitively."
 function myExecCommand(command, showUi, value, range) {
+	// "All of these methods must treat their command argument ASCII
+	// case-insensitively."
 	command = command.toLowerCase();
 
-	if (setupEditCommandMethod(command, "action", range)) {
-		commands[command].action(value);
+	// "If command is not supported, raise a NOT_SUPPORTED_ERR exception."
+	//
+	// "If command has no action, raise an INVALID_ACCESS_ERR exception."
+	setupEditCommandMethod(command, "action", range);
+
+	// "If command is not enabled, return false."
+	if (!myQueryCommandEnabled(command, range)) {
+		return false;
 	}
 
+	// "Take the action for command, passing value to the instructions as an
+	// argument."
+	commands[command].action(value);
+
+	// "Return true."
 	return true;
 }
 
-// "When the queryCommandEnabled(command) method on the HTMLDocument interface
-// is invoked, the user agent must return true. If command is not supported,
-// the user agent must instead raise a NOT_SUPPORTED_ERR exception."
 function myQueryCommandEnabled(command, range) {
+	// "All of these methods must treat their command argument ASCII
+	// case-insensitively."
 	command = command.toLowerCase();
 
+	// "If command is not supported, raise a NOT_SUPPORTED_ERR exception."
 	if (!(command in commands)) {
 		throw "NOT_SUPPORTED_ERR";
 	}
 
-	return true;
+	// "Return true if command is enabled, false otherwise."
+	//
+	// "Among commands defined in this specification, those listed in
+	// Miscellaneous commands are always enabled. The other commands defined
+	// here are enabled if the active range is not null, and are not enabled if
+	// it is."
+	return getActiveRange() || ["copy", "cut", "paste", "selectall", "stylewithcss", "usecss"].indexOf(command) != -1;
 }
 
-// "When the queryCommandIndeterm(command) method on the HTMLDocument interface
-// is invoked, the user agent must return true if command is indeterminate,
-// otherwise false. If command is not supported, the user agent must instead
-// raise a NOT_SUPPORTED_ERR exception. If command is supported but has no
-// associated indeterminacy definition, the user agent must instead raise an
-// INVALID_ACCESS_ERR exception."
 function myQueryCommandIndeterm(command, range) {
+	// "All of these methods must treat their command argument ASCII
+	// case-insensitively."
 	command = command.toLowerCase();
 
-	if (setupEditCommandMethod(command, "indeterm", range)) {
-		return commands[command].indeterm();
-	} else {
+	// "If command is not supported, raise a NOT_SUPPORTED_ERR exception."
+	//
+	// "If command has no indeterminacy, raise an INVALID_ACCESS_ERR
+	// exception."
+	setupEditCommandMethod(command, "indeterm", range);
+
+	// "If command is not enabled, return false."
+	if (!myQueryCommandEnabled(command, range)) {
 		return false;
 	}
+
+	// "Return true if command is indeterminate, otherwise false."
+	return commands[command].indeterm();
 }
 
-// "When the queryCommandState(command) method on the HTMLDocument interface is
-// invoked, the user agent must return the state for command. If command is not
-// supported, the user agent must instead raise a NOT_SUPPORTED_ERR exception.
-// If command is supported but has no associated state, the user agent must
-// instead raise an INVALID_ACCESS_ERR exception."
 function myQueryCommandState(command, range) {
+	// "All of these methods must treat their command argument ASCII
+	// case-insensitively."
 	command = command.toLowerCase();
 
-	if (setupEditCommandMethod(command, "state", range)) {
-		return commands[command].state();
-	} else {
+	// "If command is not supported, raise a NOT_SUPPORTED_ERR exception."
+	//
+	// "If command has no state, raise an INVALID_ACCESS_ERR exception."
+	setupEditCommandMethod(command, "state", range);
+
+	// "If command is not enabled, return false."
+	if (!myQueryCommandEnabled(command, range)) {
 		return false;
 	}
+
+	// "Return true if command's state is true, otherwise false."
+	return commands[command].state();
 }
 
 // "When the queryCommandSupported(command) method on the HTMLDocument
 // interface is invoked, the user agent must return true if command is
 // supported, and false otherwise."
-function myQueryCommandSupported(command, range) {
+function myQueryCommandSupported(command) {
+	// "All of these methods must treat their command argument ASCII
+	// case-insensitively."
 	command = command.toLowerCase();
+
 	return command in commands;
 }
 
-// "When the queryCommandValue(command) method on the HTMLDocument interface is
-// invoked, the user agent must return the value for command. If command is not
-// supported, the user agent must instead raise a NOT_SUPPORTED_ERR exception.
-// If command is supported but has no associated value, the user agent must
-// instead raise an INVALID_ACCESS_ERR exception."
 function myQueryCommandValue(command, range) {
+	// "All of these methods must treat their command argument ASCII
+	// case-insensitively."
 	command = command.toLowerCase();
 
-	if (setupEditCommandMethod(command, "value", range)) {
-		return commands[command].value();
-	} else {
+	// "If command is not supported, raise a NOT_SUPPORTED_ERR exception."
+	//
+	// "If command has no value, raise an INVALID_ACCESS_ERR exception."
+	setupEditCommandMethod(command, "value", range);
+
+	// "If command is not enabled, return the empty string."
+	if (!myQueryCommandEnabled(command, range)) {
 		return "";
 	}
+
+	// "Return command's value."
+	return commands[command].value();
 }
 //@}
 

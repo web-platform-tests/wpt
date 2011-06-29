@@ -69,7 +69,11 @@ have experience using this feature.
  <li><a class=no-num href=#table-of-contents>Table of contents</a></li>
  <li><a href=#introduction><span class=secno>1 </span>Introduction</a></li>
  <li><a href=#issues><span class=secno>2 </span>Issues</a></li>
- <li><a href=#basic-concepts><span class=secno>3 </span>Basic concepts</a></li>
+ <li><a href=#commands><span class=secno>3 </span>Commands</a>
+  <ol>
+   <li><a href=#properties-of-commands><span class=secno>3.1 </span>Properties of commands</a></li>
+   <li><a href=#supported-commands><span class=secno>3.2 </span>Supported commands</a></li>
+   <li><a href=#enabled-commands><span class=secno>3.3 </span>Enabled commands</a></ol></li>
  <li><a href=#methods-of-the-htmldocument-interface><span class=secno>4 </span>Methods of the <code class=external data-anolis-spec=html>HTMLDocument</code> interface</a></li>
  <li><a href=#common-definitions><span class=secno>5 </span>Common definitions</a></li>
  <li><a href=#common-algorithms><span class=secno>6 </span>Common algorithms</a>
@@ -322,7 +326,9 @@ list</a>.
 like this.
 
 
-<h2 id=basic-concepts><span class=secno>3 </span>Basic concepts</h2>
+<h2 id=commands><span class=secno>3 </span>Commands</h2>
+
+<h3 id=properties-of-commands><span class=secno>3.1 </span>Properties of commands</h3>
 
 <p>This specification defines a number of <dfn id=command title=command>commands</dfn>,
 identified by <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#ascii-case-insensitive>ASCII case-insensitive</a>
@@ -386,19 +392,8 @@ with it:
   <a href=#relevant-css-property>relevant CSS property</a> specified, it defaults to null.
 </ul>
 
-<p>If the <a href=#active-range>active range</a> is null, then every <a href=#command>command</a> in
-this specification must behave as though its <a href=#action>action</a> is to do
-nothing, its <a href=#indeterminate title=indeterminate>indeterminacy</a> is false (if it has
-any associated <a href=#indeterminate title=indeterminate>indeterminacy</a>), its
-<a href=#state>state</a> is false (if it has any associated <a href=#state>state</a>), and
-its <a href=#value>value</a> is the empty string (if it has any associated
-<a href=#value>value</a>).  However, the <a href=#command title=command>commands</a> listed
-under <a href=#miscellaneous-commands>Miscellaneous commands</a> must behave as
-usual even if the <a href=#active-range>active range</a> is null.
-<!--
-This matches Firefox 6.0a2 and Opera 11.11.  IE9 and Chrome 14 dev seem to
-return false for the value in this case.
--->
+
+<h3 id=supported-commands><span class=secno>3.2 </span>Supported commands</h3>
 
 <p>Some <a href=#command title=command>commands</a> will be <dfn id=supported>supported</dfn> in a
 given user agent, and some will not.  All <a href=#command title=command>commands</a>
@@ -436,37 +431,21 @@ reasons.
 using <code><a href=#querycommandsupported()>queryCommandSupported()</a></code>.
 
 
-<h2 id=methods-of-the-htmldocument-interface><span class=secno>4 </span>Methods of the <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/html/#htmldocument>HTMLDocument</a></code> interface</h2>
+<h3 id=enabled-commands><span class=secno>3.3 </span>Enabled commands</h3>
 
-<p>When the <dfn id=execcommand() title=execCommand()><code>execCommand(<var title="">command</var>,
-<var title="">show UI</var>, <var title="">value</var>)</code></dfn> method on the <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/html/#htmldocument>HTMLDocument</a></code> interface is invoked, the user agent
-must follow the <a href=#action>action</a> instructions given in this specification
-for <var title="">command</var>, passing <var title="">value</var> to the instructions as an
-argument, then return true.  If <var title="">command</var> is not
-<a href=#supported>supported</a>, the user agent must instead raise a
-<code class=external data-anolis-spec=domcore title=dom-DOMException-NOT_SUPPORTED_ERR><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-domexception-not_supported_err>NOT_SUPPORTED_ERR</a></code> exception.  If <var title="">command</var> is
-<a href=#supported>supported</a> but has no associated <a href=#action>action</a> (which is not
-the case for any <a href=#command>command</a> defined in this specification), the user
-agent must instead raise an <code class=external data-anolis-spec=domcore title=dom-DOMException-INVALID_ACCESS_ERR><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-domexception-invalid_access_err>INVALID_ACCESS_ERR</a></code> exception.
-<!-- I'm just speccing INVALID_ACCESS_ERR for consistency.  I don't expect
-real-world commands are likely to not have an action defined, but you never
-know. -->
+<p>At any given time, a <a href=#supported>supported</a> command can be either
+<dfn id=enabled>enabled</dfn> or not.  Authors can tell whether a <a href=#command>command</a> is
+currently <a href=#enabled>enabled</a> using <code><a href=#querycommandenabled()>queryCommandEnabled()</a></code>.  <a href=#command title=command>Commands</a> that are not <a href=#enabled>enabled</a> do nothing, as
+described in the definitions of the various methods that invoke <a href=#command title=command>commands</a>.
 
-<p class=XXX>WebKit doesn't always return true (and maybe others also).  Needs
-investigation: should we ever return false, and if so when?
+<p>Among <a href=#command title=command>commands</a> defined in this specification,
+those listed in <a href=#miscellaneous-commands>Miscellaneous commands</a> are
+always <a href=#enabled>enabled</a>.  The other <a href=#command title=command>commands</a>
+defined here are <a href=#enabled>enabled</a> if the <a href=#active-range>active range</a> is not
+null, and are not <a href=#enabled>enabled</a> if it is.
 
-<p class=XXX>Define behavior for <var title="">show UI</var>.
-
-<p>When the <dfn id=querycommandenabled() title=queryCommandEnabled()><code>queryCommandEnabled(<var title="">command</var>)</code></dfn>
-method on the <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/html/#htmldocument>HTMLDocument</a></code> interface is
-invoked, the user agent must return true.  If <var title="">command</var> is not
-<a href=#supported>supported</a>, the user agent must instead raise a
-<code class=external data-anolis-spec=domcore title=dom-DOMException-NOT_SUPPORTED_ERR><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-domexception-not_supported_err>NOT_SUPPORTED_ERR</a></code> exception.
-
-<p class=XXX>This is useless and not how anyone behaves, but no one's behavior
-is very useful anyway.  For this to make sense would require a significant
-amount of work and it's not clear it's worth it at all.  See comment for
-details.
+<p class=XXX>Not clear that this definition is right.  It doesn't match any
+browser.  Needs more testing and thought.
 <!--
 Testing with bold and formatBlock:
 
@@ -486,19 +465,76 @@ sense, but it's too narrow for us, because we take some action in many cases
 even if there's some non-editable stuff around.
 
 What we really want this to do is return true if we'd do something when you run
-the command, false otherwise.  This will actually vary by command, and is
-nontrivial, and I'm not sure what the use-case is.  So for now I'll go with
-Opera, but I'll return to it later.
+the command, false otherwise.  But that's impractically complicated for little
+benefit.  Some approximation closer to IE or Chrome is likely in order.
 -->
+
+
+
+<h2 id=methods-of-the-htmldocument-interface><span class=secno>4 </span>Methods of the <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/html/#htmldocument>HTMLDocument</a></code> interface</h2>
+
+<p>When the <dfn id=execcommand() title=execCommand()><code>execCommand(<var title="">command</var>,
+<var title="">show UI</var>, <var title="">value</var>)</code></dfn> method on the <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/html/#htmldocument>HTMLDocument</a></code> interface is invoked, the user agent
+must run the following steps:
+
+<ol>
+  <li>If <var title="">command</var> is not <a href=#supported>supported</a>, raise a
+  <code class=external data-anolis-spec=domcore title=dom-DOMException-NOT_SUPPORTED_ERR><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-domexception-not_supported_err>NOT_SUPPORTED_ERR</a></code> exception.
+
+  <li>If <var title="">command</var> has no <a href=#action>action</a>, raise an
+  <code class=external data-anolis-spec=domcore title=dom-DOMException-INVALID_ACCESS_ERR><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-domexception-invalid_access_err>INVALID_ACCESS_ERR</a></code> exception.
+
+  <p class=note>No such <a href=#command>command</a> is defined in this specification.
+  <!-- I'm just speccing INVALID_ACCESS_ERR for consistency.  I don't expect
+  real-world commands are likely to not have an action defined, but you never
+  know. -->
+
+  <li>If <var title="">command</var> is not <a href=#enabled>enabled</a>, return false.
+  <!--
+  I didn't research this closely, but at a first glance, this is possibly how
+  Chrome 14 dev and Opera 11.11 behave.  Maybe also Firefox 6.0a2, except it
+  throws if the command isn't enabled, I think.  IE9 returns true in at least
+  some cases even if the command is disabled.
+  -->
+  <p class=XXX>Is this right?  Maybe we should be returning false in other
+  cases too?
+
+  <li>Take the <a href=#action>action</a> for <var title="">command</var>, passing
+  <var title="">value</var> to the instructions as an argument.
+
+  <li>Return true.
+</ol>
+
+<p class=XXX>Define behavior for <var title="">show UI</var>.
+
+<p>When the <dfn id=querycommandenabled() title=queryCommandEnabled()><code>queryCommandEnabled(<var title="">command</var>)</code></dfn>
+method on the <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/html/#htmldocument>HTMLDocument</a></code> interface is
+invoked, the user agent must run the following steps:
+
+<ol>
+  <li>If <var title="">command</var> is not <a href=#supported>supported</a>, raise a
+  <code class=external data-anolis-spec=domcore title=dom-DOMException-NOT_SUPPORTED_ERR><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-domexception-not_supported_err>NOT_SUPPORTED_ERR</a></code> exception.
+
+  <li>Return true if <var title="">command</var> is <a href=#enabled>enabled</a>, false
+  otherwise.
+</ol>
 
 <p>When the <dfn id=querycommandindeterm() title=queryCommandIndeterm()><code>queryCommandIndeterm(<var title="">command</var>)</code></dfn>
 method on the <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/html/#htmldocument>HTMLDocument</a></code> interface is
-invoked, the user agent must return true if <var title="">command</var> is
-<a href=#indeterminate>indeterminate</a>, otherwise false.  If <var title="">command</var> is not
-<a href=#supported>supported</a>, the user agent must instead raise a
-<code class=external data-anolis-spec=domcore title=dom-DOMException-NOT_SUPPORTED_ERR><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-domexception-not_supported_err>NOT_SUPPORTED_ERR</a></code> exception.  If <var title="">command</var> is
-<a href=#supported>supported</a> but has no associated <a href=#indeterminate title=indeterminate>indeterminacy</a> definition, the user agent must
-instead raise an <code class=external data-anolis-spec=domcore title=dom-DOMException-INVALID_ACCESS_ERR><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-domexception-invalid_access_err>INVALID_ACCESS_ERR</a></code> exception.
+invoked, the user agent must run the following steps:
+
+<ol>
+  <li>If <var title="">command</var> is not <a href=#supported>supported</a>, raise a
+  <code class=external data-anolis-spec=domcore title=dom-DOMException-NOT_SUPPORTED_ERR><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-domexception-not_supported_err>NOT_SUPPORTED_ERR</a></code> exception.
+
+  <li>If <var title="">command</var> has no <a href=#indeterminate title=indeterminate>indeterminacy</a>, raise an <code class=external data-anolis-spec=domcore title=dom-DOMException-INVALID_ACCESS_ERR><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-domexception-invalid_access_err>INVALID_ACCESS_ERR</a></code>
+  exception.
+
+  <li>If <var title="">command</var> is not <a href=#enabled>enabled</a>, return false.
+
+  <li>Return true if <var title="">command</var> is <a href=#indeterminate>indeterminate</a>,
+  otherwise false.
+</ol>
 <!--
 What happens if you call queryCommand(Indeterm|State|Value)() on a command
 where it makes no sense?
@@ -526,12 +562,20 @@ makes no sense.
 
 <p>When the <dfn id=querycommandstate() title=queryCommandState()><code>queryCommandState(<var title="">command</var>)</code></dfn>
 method on the <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/html/#htmldocument>HTMLDocument</a></code> interface is
-invoked, the user agent must return the <a href=#state>state</a> for
-<var title="">command</var>.  If <var title="">command</var> is not <a href=#supported>supported</a>, the
-user agent must instead raise a <code class=external data-anolis-spec=domcore title=dom-DOMException-NOT_SUPPORTED_ERR><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-domexception-not_supported_err>NOT_SUPPORTED_ERR</a></code> exception.  If
-<var title="">command</var> is <a href=#supported>supported</a> but has no associated
-<a href=#state>state</a>, the user agent must instead raise an <code class=external data-anolis-spec=domcore title=dom-DOMException-INVALID_ACCESS_ERR><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-domexception-invalid_access_err>INVALID_ACCESS_ERR</a></code>
-exception.
+invoked, the user agent must run the following steps:
+
+<ol>
+  <li>If <var title="">command</var> is not <a href=#supported>supported</a>, raise a
+  <code class=external data-anolis-spec=domcore title=dom-DOMException-NOT_SUPPORTED_ERR><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-domexception-not_supported_err>NOT_SUPPORTED_ERR</a></code> exception.
+
+  <li>If <var title="">command</var> has no <a href=#state>state</a>, raise an
+  <code class=external data-anolis-spec=domcore title=dom-DOMException-INVALID_ACCESS_ERR><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-domexception-invalid_access_err>INVALID_ACCESS_ERR</a></code> exception.
+
+  <li>If <var title="">command</var> is not <a href=#enabled>enabled</a>, return false.
+
+  <li>Return true if <var title="">command</var>'s <a href=#state>state</a> is true, otherwise
+  false.
+</ol>
 
 <p>When the <dfn id=querycommandsupported() title=queryCommandSupported()><code>queryCommandSupported(<var title="">command</var>)</code></dfn>
 method on the <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/html/#htmldocument>HTMLDocument</a></code> interface is
@@ -550,12 +594,23 @@ with unsupported commands.
 
 <p>When the <dfn id=querycommandvalue() title=queryCommandValue()><code>queryCommandValue(<var title="">command</var>)</code></dfn>
 method on the <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/html/#htmldocument>HTMLDocument</a></code> interface is
-invoked, the user agent must return the <a href=#value>value</a> for
-<var title="">command</var>.  If <var title="">command</var> is not <a href=#supported>supported</a>, the
-user agent must instead raise a <code class=external data-anolis-spec=domcore title=dom-DOMException-NOT_SUPPORTED_ERR><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-domexception-not_supported_err>NOT_SUPPORTED_ERR</a></code> exception.  If
-<var title="">command</var> is <a href=#supported>supported</a> but has no associated
-<a href=#value>value</a>, the user agent must instead raise an <code class=external data-anolis-spec=domcore title=dom-DOMException-INVALID_ACCESS_ERR><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-domexception-invalid_access_err>INVALID_ACCESS_ERR</a></code>
-exception.
+invoked, the user agent must run the following steps:
+
+<ol>
+  <li>If <var title="">command</var> is not <a href=#supported>supported</a>, raise a
+  <code class=external data-anolis-spec=domcore title=dom-DOMException-NOT_SUPPORTED_ERR><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-domexception-not_supported_err>NOT_SUPPORTED_ERR</a></code> exception.
+
+  <li>If <var title="">command</var> has no <a href=#value>value</a>, raise an
+  <code class=external data-anolis-spec=domcore title=dom-DOMException-INVALID_ACCESS_ERR><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-domexception-invalid_access_err>INVALID_ACCESS_ERR</a></code> exception.
+
+  <li>If <var title="">command</var> is not <a href=#enabled>enabled</a>, return the empty
+  string.
+  <!-- This is what Firefox 6.0a2 and Opera 11.11 seem to do.  Chrome 14 dev
+  seems to return the string "false", and IE9 seems to return boolean false.
+  -->
+
+  <li>Return <var title="">command</var>'s <a href=#value>value</a>.
+</ol>
 
 <p>All of these methods must treat their <var title="">command</var> argument <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#ascii-case-insensitive title="ASCII case-insensitive">ASCII
 case-insensitively</a>.

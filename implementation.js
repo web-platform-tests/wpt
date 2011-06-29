@@ -3874,41 +3874,6 @@ function getAlignmentValue(node) {
 	// computed value of node's "text-align" property."
 	return getRealTextAlign(node);
 }
-
-function getSelectionAlignmentValue() {
-	// "Block-extend the active range, and let new range be the result."
-	var newRange = blockExtendRange(getActiveRange());
-
-	// "Let node list be a list of all editable nodes contained in new
-	// range."
-	var nodeList = collectAllContainedNodes(newRange, isEditable);
-
-	// "If node list is empty, return "none"."
-	if (nodeList.length == 0) {
-		return "none";
-	}
-
-	// "Let state be "none"."
-	var state = "none";
-
-	// "For each node in node list:"
-	for (var i = 0; i < nodeList.length; i++) {
-		var node = nodeList[i];
-
-		// "If state is "none", set state to node's alignment value."
-		if (state == "none") {
-			state = getAlignmentValue(node);
-		}
-
-		// "If state is different from node's alignment value, return "none"."
-		if (state != getAlignmentValue(node)) {
-			return "none";
-		}
-	}
-
-	// "Return state."
-	return state;
-}
 //@}
 
 ///// Allowed children /////
@@ -6495,17 +6460,38 @@ commands.justifycenter = {
 	// "Justify the selection with alignment "center"."
 	action: function() { justifySelection("center") },
 	indeterm: function() {
-		// "Block-extend the active range. Return true if among editable nodes
-		// contained in the result, at least one has alignment value "center"
-		// and at least one does not. Otherwise return false."
-		var nodes = collectAllContainedNodes(blockExtendRange(getActiveRange()), isEditable);
+		// "Block-extend the active range. Return true if among visible
+		// editable nodes that are contained in the result and have no
+		// children, at least one has alignment value "center" and at least one
+		// does not. Otherwise return false."
+		var nodes = collectAllContainedNodes(blockExtendRange(getActiveRange()), function(node) {
+			return isEditable(node) && isVisibleNode(node) && !node.hasChildNodes();
+		});
 		return nodes.some(function(node) { return getAlignmentValue(node) == "center" })
 			&& nodes.some(function(node) { return getAlignmentValue(node) != "center" });
+	}, state: function() {
+		// "Block-extend the active range. Return true if there is at least one
+		// visible editable node that is contained in the result and has no
+		// children, and all such nodes have alignment value "center".
+		// Otherwise return false."
+		var nodes = collectAllContainedNodes(blockExtendRange(getActiveRange()), function(node) {
+			return isEditable(node) && isVisibleNode(node) && !node.hasChildNodes();
+		});
+		return nodes.length
+			&& nodes.every(function(node) { return getAlignmentValue(node) == "center" });
+	}, value: function() {
+		// "Block-extend the active range, and return the alignment value of
+		// the first visible editable node that is contained in the result and
+		// has no children. If there is no such node, return "left"."
+		var nodes = collectAllContainedNodes(blockExtendRange(getActiveRange()), function(node) {
+			return isEditable(node) && isVisibleNode(node) && !node.hasChildNodes();
+		});
+		if (nodes.length) {
+			return getAlignmentValue(nodes[0]);
+		} else {
+			return "left";
+		}
 	},
-	// "True if the selection's alignment value is "center", otherwise false."
-	state: function() { return getSelectionAlignmentValue() == "center" },
-	// "The active range's start node's alignment value."
-	value: function() { return getAlignmentValue(getActiveRange().startContainer) },
 };
 //@}
 
@@ -6515,17 +6501,38 @@ commands.justifyfull = {
 	// "Justify the selection with alignment "justify"."
 	action: function() { justifySelection("justify") },
 	indeterm: function() {
-		// "Block-extend the active range. Return true if among editable nodes
-		// contained in the result, at least one has alignment value "justify"
-		// and at least one does not. Otherwise return false."
-		var nodes = collectAllContainedNodes(blockExtendRange(getActiveRange()), isEditable);
+		// "Block-extend the active range. Return true if among visible
+		// editable nodes that are contained in the result and have no
+		// children, at least one has alignment value "justify" and at least
+		// one does not. Otherwise return false."
+		var nodes = collectAllContainedNodes(blockExtendRange(getActiveRange()), function(node) {
+			return isEditable(node) && isVisibleNode(node) && !node.hasChildNodes();
+		});
 		return nodes.some(function(node) { return getAlignmentValue(node) == "justify" })
 			&& nodes.some(function(node) { return getAlignmentValue(node) != "justify" });
+	}, state: function() {
+		// "Block-extend the active range. Return true if there is at least one
+		// visible editable node that is contained in the result and has no
+		// children, and all such nodes have alignment value "justify".
+		// Otherwise return false."
+		var nodes = collectAllContainedNodes(blockExtendRange(getActiveRange()), function(node) {
+			return isEditable(node) && isVisibleNode(node) && !node.hasChildNodes();
+		});
+		return nodes.length
+			&& nodes.every(function(node) { return getAlignmentValue(node) == "justify" });
+	}, value: function() {
+		// "Block-extend the active range, and return the alignment value of
+		// the first visible editable node that is contained in the result and
+		// has no children. If there is no such node, return "left"."
+		var nodes = collectAllContainedNodes(blockExtendRange(getActiveRange()), function(node) {
+			return isEditable(node) && isVisibleNode(node) && !node.hasChildNodes();
+		});
+		if (nodes.length) {
+			return getAlignmentValue(nodes[0]);
+		} else {
+			return "left";
+		}
 	},
-	// "True if the selection's alignment value is "justify", otherwise false."
-	state: function() { return getSelectionAlignmentValue() == "justify" },
-	// "The active range's start node's alignment value."
-	value: function() { return getAlignmentValue(getActiveRange().startContainer) },
 };
 //@}
 
@@ -6535,17 +6542,38 @@ commands.justifyleft = {
 	// "Justify the selection with alignment "left"."
 	action: function() { justifySelection("left") },
 	indeterm: function() {
-		// "Block-extend the active range. Return true if among editable nodes
-		// contained in the result, at least one has alignment value "left"
-		// and at least one does not. Otherwise return false."
-		var nodes = collectAllContainedNodes(blockExtendRange(getActiveRange()), isEditable);
+		// "Block-extend the active range. Return true if among visible
+		// editable nodes that are contained in the result and have no
+		// children, at least one has alignment value "left" and at least one
+		// does not. Otherwise return false."
+		var nodes = collectAllContainedNodes(blockExtendRange(getActiveRange()), function(node) {
+			return isEditable(node) && isVisibleNode(node) && !node.hasChildNodes();
+		});
 		return nodes.some(function(node) { return getAlignmentValue(node) == "left" })
 			&& nodes.some(function(node) { return getAlignmentValue(node) != "left" });
+	}, state: function() {
+		// "Block-extend the active range. Return true if there is at least one
+		// visible editable node that is contained in the result and has no
+		// children, and all such nodes have alignment value "left".  Otherwise
+		// return false."
+		var nodes = collectAllContainedNodes(blockExtendRange(getActiveRange()), function(node) {
+			return isEditable(node) && isVisibleNode(node) && !node.hasChildNodes();
+		});
+		return nodes.length
+			&& nodes.every(function(node) { return getAlignmentValue(node) == "left" });
+	}, value: function() {
+		// "Block-extend the active range, and return the alignment value of
+		// the first visible editable node that is contained in the result and
+		// has no children. If there is no such node, return "left"."
+		var nodes = collectAllContainedNodes(blockExtendRange(getActiveRange()), function(node) {
+			return isEditable(node) && isVisibleNode(node) && !node.hasChildNodes();
+		});
+		if (nodes.length) {
+			return getAlignmentValue(nodes[0]);
+		} else {
+			return "left";
+		}
 	},
-	// "True if the selection's alignment value is "left", otherwise false."
-	state: function() { return getSelectionAlignmentValue() == "left" },
-	// "The active range's start node's alignment value."
-	value: function() { return getAlignmentValue(getActiveRange().startContainer) },
 };
 //@}
 
@@ -6555,17 +6583,38 @@ commands.justifyright = {
 	// "Justify the selection with alignment "right"."
 	action: function() { justifySelection("right") },
 	indeterm: function() {
-		// "Block-extend the active range. Return true if among editable nodes
-		// contained in the result, at least one has alignment value "right"
-		// and at least one does not. Otherwise return false."
-		var nodes = collectAllContainedNodes(blockExtendRange(getActiveRange()), isEditable);
+		// "Block-extend the active range. Return true if among visible
+		// editable nodes that are contained in the result and have no
+		// children, at least one has alignment value "right" and at least one
+		// does not. Otherwise return false."
+		var nodes = collectAllContainedNodes(blockExtendRange(getActiveRange()), function(node) {
+			return isEditable(node) && isVisibleNode(node) && !node.hasChildNodes();
+		});
 		return nodes.some(function(node) { return getAlignmentValue(node) == "right" })
 			&& nodes.some(function(node) { return getAlignmentValue(node) != "right" });
+	}, state: function() {
+		// "Block-extend the active range. Return true if there is at least one
+		// visible editable node that is contained in the result and has no
+		// children, and all such nodes have alignment value "right".
+		// Otherwise return false."
+		var nodes = collectAllContainedNodes(blockExtendRange(getActiveRange()), function(node) {
+			return isEditable(node) && isVisibleNode(node) && !node.hasChildNodes();
+		});
+		return nodes.length
+			&& nodes.every(function(node) { return getAlignmentValue(node) == "right" });
+	}, value: function() {
+		// "Block-extend the active range, and return the alignment value of
+		// the first visible editable node that is contained in the result and
+		// has no children. If there is no such node, return "left"."
+		var nodes = collectAllContainedNodes(blockExtendRange(getActiveRange()), function(node) {
+			return isEditable(node) && isVisibleNode(node) && !node.hasChildNodes();
+		});
+		if (nodes.length) {
+			return getAlignmentValue(nodes[0]);
+		} else {
+			return "left";
+		}
 	},
-	// "True if the selection's alignment value is "right", otherwise false."
-	state: function() { return getSelectionAlignmentValue() == "right" },
-	// "The active range's start node's alignment value."
-	value: function() { return getAlignmentValue(getActiveRange().startContainer) },
 };
 //@}
 

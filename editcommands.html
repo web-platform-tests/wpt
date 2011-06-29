@@ -3502,55 +3502,6 @@ than what I've specced for the state.
   assume something CSS 2.1-ish.
 </ol>
 
-<p>The <dfn id="selection's-alignment-value">selection's alignment value</dfn> is returned by the following
-algorithm:
-<!--
-IE9 throws exceptions in almost every case when querying the state of justify*,
-and Opera 11.11 returns false in every case except some seemingly random crazy
-ones.
-
-Firefox 6.0a2 returns true for the state of justify* if anything in the range
-has the right alignment, not if everything does.  This isn't consistent with
-how state works for the inline commands, nor with WebKit.
-
-Chrome 14 dev counts text-align on inline elements, which is wrong, because the
-property has no effect.  It also counts it on non-editable elements, which is
-wrong, because then the state for justify* wouldn't necessarily be true after
-executing it.  (Chrome actually does align the non-editable elements, but
-that's just a bug.)  Chrome further returns false for justify* if the
-justification is just the default inherited justification, e.g., left for LTR.
-This doesn't seem to make sense either.
-
-It's not actually clear how much sense state makes here.  Most commands that
-have a state that's not always false work differently depending on what the
-state is, generally because they toggle something (bold, lists, etc.).  The
-justify commands behave the same regardless of state.  Still, I'll follow
-Gecko/WebKit in supporting the command.
--->
-<ol>
-  <li><a href=#block-extend>Block-extend</a> the <a href=#active-range>active range</a>, and let <var title="">new
-  range</var> be the result.
-
-  <li>Let <var title="">node list</var> be a list of all <a href=#editable>editable</a> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a>
-  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in <var title="">new range</var>.
-
-  <li>If <var title="">node list</var> is empty, return "none".
-
-  <li>Let <var title="">state</var> be "none".
-
-  <li>For each <var title="">node</var> in <var title="">node list</var>:
-
-  <ol>
-    <li>If <var title="">state</var> is "none", set <var title="">state</var> to
-    <var title="">node</var>'s <a href=#alignment-value>alignment value</a>.
-
-    <li>If <var title="">state</var> is different from <var title="">node</var>'s <a href=#alignment-value>alignment
-    value</a>, return "none".
-  </ol>
-
-  <li>Return <var title="">state</var>.
-</ol>
-
 
 <h3 id=allowed-children><span class=secno>8.3 </span>Allowed children</h3>
 
@@ -6428,17 +6379,64 @@ false otherwise.
 <var title="">alignment</var> "center".
 
 <p><a href=#indeterminate>Indeterminate</a>: <a href=#block-extend>Block-extend</a> the <a href=#active-range>active
-range</a>.  Return true if among <a href=#editable>editable</a> nodes <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a>
-in the result, at least one has <a href=#alignment-value>alignment value</a> "center" and at
+range</a>.  Return true if among <a href=#visible-node title="visible node">visible</a>
+<a href=#editable>editable</a> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a> that are <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in the result and have
+no <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, at least one has <a href=#alignment-value>alignment value</a> "center" and at
 least one does not.  Otherwise return false.
-<!-- This roughly matches Chrome 14 dev, although not exactly.  Firefox 6.0a2
-always returns false. -->
+<!--
+This roughly matches Chrome 14 dev, although not exactly.  Firefox 6.0a2 always
+returns false.
 
-<p><a href=#state>State</a>: True if the <a href="#selection's-alignment-value">selection's alignment value</a> is
-"center", otherwise false.
+As a general rule, ignoring nodes with children saves us from treating <div
+align=left><div align=center>foo</div></div> as though it's indeterminate.
+Chrome 14 dev seems to only pay attention to text nodes, instead, or something
+like that.  At any rate, it fails on images.  Firefox 6.0a2 (for state and
+value) gets tripped up by examples like the one given.
 
-<p><a href=#value>Value</a>: The <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>'s
-<a href=#alignment-value>alignment value</a>.
+If we ever support centering of tables and similar, we'd want to pay attention
+even to some nodes that do have children.
+-->
+
+<p><a href=#state>State</a>: <a href=#block-extend>Block-extend</a> the <a href=#active-range>active range</a>.
+Return true if there is at least one <a href=#visible-node title="visible node">visible</a>
+<a href=#editable>editable</a> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> that is <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in the result and has no
+<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, and all such <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a> have <a href=#alignment-value>alignment value</a>
+"center".  Otherwise return false.
+<!--
+IE9 throws exceptions in almost every case when querying the state of justify*,
+and Opera 11.11 returns false in every case except some seemingly random crazy
+ones.
+
+Firefox 6.0a2 returns true for the state of justify* if anything in the range
+has the right alignment, not if everything does.  This isn't consistent with
+how state works for the inline commands, nor with WebKit.
+
+Chrome 14 dev counts text-align on inline elements, which is wrong, because the
+property has no effect.  It also counts it on non-editable elements, which is
+wrong, because then the state for justify* wouldn't necessarily be true after
+executing it.  (Chrome actually does align the non-editable elements, but
+that's just a bug.)  Chrome further returns false for justify* if the
+justification is just the default inherited justification, e.g., left for LTR.
+This doesn't seem to make sense either.
+
+State is kind of redundant here, because it's true if and only if indeterminate
+is false and the value is equal to the desired value.  However, I'll support it
+anyway, since Gecko/WebKit do.
+-->
+
+<p><a href=#value>Value</a>: <a href=#block-extend>Block-extend</a> the <a href=#active-range>active range</a>,
+and return the <a href=#alignment-value>alignment value</a> of the first <a href=#visible-node title="visible
+node">visible</a> <a href=#editable>editable</a> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> that is <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in
+the result and has no <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>.  If there is no such <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>, return
+"left".
+<!--
+Not bidi-safe, but it's a pretty marginal corner case.  Firefox 6.0a2 behaves
+weirdly here: it keys off the start node of the active range, even if that's
+not contained.  Thus {<div align=center>foo</div>} has value "left" and
+indeterminate false, which would suggest that the whole selection is aligned
+left, but that's not the case.  Chrome 14 dev returns the state cast to a
+string, as usual.  Opera 11.11 always returns the empty string.
+-->
 
 
 <h3 id=the-justifyfull-command><span class=secno>8.22 </span><dfn>The <code title="">justifyFull</code> command</dfn></h3>
@@ -6447,15 +6445,22 @@ always returns false. -->
 <var title="">alignment</var> "justify".
 
 <p><a href=#indeterminate>Indeterminate</a>: <a href=#block-extend>Block-extend</a> the <a href=#active-range>active
-range</a>.  Return true if among <a href=#editable>editable</a> nodes <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a>
-in the result, at least one has <a href=#alignment-value>alignment value</a> "justify" and at
+range</a>.  Return true if among <a href=#visible-node title="visible node">visible</a>
+<a href=#editable>editable</a> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a> that are <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in the result and have
+no <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, at least one has <a href=#alignment-value>alignment value</a> "justify" and at
 least one does not.  Otherwise return false.
 
-<p><a href=#state>State</a>: True if the <a href="#selection's-alignment-value">selection's alignment value</a> is
-"justify", otherwise false.
+<p><a href=#state>State</a>: <a href=#block-extend>Block-extend</a> the <a href=#active-range>active range</a>.
+Return true if there is at least one <a href=#visible-node title="visible node">visible</a>
+<a href=#editable>editable</a> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> that is <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in the result and has no
+<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, and all such <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a> have <a href=#alignment-value>alignment value</a>
+"justify".  Otherwise return false.
 
-<p><a href=#value>Value</a>: The <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>'s
-<a href=#alignment-value>alignment value</a>.
+<p><a href=#value>Value</a>: <a href=#block-extend>Block-extend</a> the <a href=#active-range>active range</a>,
+and return the <a href=#alignment-value>alignment value</a> of the first <a href=#visible-node title="visible
+node">visible</a> <a href=#editable>editable</a> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> that is <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in
+the result and has no <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>.  If there is no such <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>, return
+"left".
 
 
 <h3 id=the-justifyleft-command><span class=secno>8.23 </span><dfn>The <code title="">justifyLeft</code> command</dfn></h3>
@@ -6464,15 +6469,22 @@ least one does not.  Otherwise return false.
 <var title="">alignment</var> "left".
 
 <p><a href=#indeterminate>Indeterminate</a>: <a href=#block-extend>Block-extend</a> the <a href=#active-range>active
-range</a>.  Return true if among <a href=#editable>editable</a> nodes <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a>
-in the result, at least one has <a href=#alignment-value>alignment value</a> "left" and at
+range</a>.  Return true if among <a href=#visible-node title="visible node">visible</a>
+<a href=#editable>editable</a> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a> that are <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in the result and have
+no <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, at least one has <a href=#alignment-value>alignment value</a> "left" and at
 least one does not.  Otherwise return false.
 
-<p><a href=#state>State</a>: True if the <a href="#selection's-alignment-value">selection's alignment value</a> is
-"left", otherwise false.
+<p><a href=#state>State</a>: <a href=#block-extend>Block-extend</a> the <a href=#active-range>active range</a>.
+Return true if there is at least one <a href=#visible-node title="visible node">visible</a>
+<a href=#editable>editable</a> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> that is <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in the result and has no
+<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, and all such <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a> have <a href=#alignment-value>alignment value</a> "left".
+Otherwise return false.
 
-<p><a href=#value>Value</a>: The <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>'s
-<a href=#alignment-value>alignment value</a>.
+<p><a href=#value>Value</a>: <a href=#block-extend>Block-extend</a> the <a href=#active-range>active range</a>,
+and return the <a href=#alignment-value>alignment value</a> of the first <a href=#visible-node title="visible
+node">visible</a> <a href=#editable>editable</a> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> that is <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in
+the result and has no <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>.  If there is no such <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>, return
+"left".
 
 
 <h3 id=the-justifyright-command><span class=secno>8.24 </span><dfn>The <code title="">justifyRight</code> command</dfn></h3>
@@ -6481,15 +6493,22 @@ least one does not.  Otherwise return false.
 <var title="">alignment</var> "right".
 
 <p><a href=#indeterminate>Indeterminate</a>: <a href=#block-extend>Block-extend</a> the <a href=#active-range>active
-range</a>.  Return true if among <a href=#editable>editable</a> nodes <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a>
-in the result, at least one has <a href=#alignment-value>alignment value</a> "right" and at
+range</a>.  Return true if among <a href=#visible-node title="visible node">visible</a>
+<a href=#editable>editable</a> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a> that are <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in the result and have
+no <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, at least one has <a href=#alignment-value>alignment value</a> "right" and at
 least one does not.  Otherwise return false.
 
-<p><a href=#state>State</a>: True if the <a href="#selection's-alignment-value">selection's alignment value</a> is
-"right", otherwise false.
+<p><a href=#state>State</a>: <a href=#block-extend>Block-extend</a> the <a href=#active-range>active range</a>.
+Return true if there is at least one <a href=#visible-node title="visible node">visible</a>
+<a href=#editable>editable</a> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> that is <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in the result and has no
+<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, and all such <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a> have <a href=#alignment-value>alignment value</a> "right".
+Otherwise return false.
 
-<p><a href=#value>Value</a>: The <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>'s
-<a href=#alignment-value>alignment value</a>.
+<p><a href=#value>Value</a>: <a href=#block-extend>Block-extend</a> the <a href=#active-range>active range</a>,
+and return the <a href=#alignment-value>alignment value</a> of the first <a href=#visible-node title="visible
+node">visible</a> <a href=#editable>editable</a> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> that is <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in
+the result and has no <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>.  If there is no such <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>, return
+"left".
 
 
 <h3 id=the-outdent-command><span class=secno>8.25 </span><dfn>The <code title="">outdent</code> command</dfn></h3>

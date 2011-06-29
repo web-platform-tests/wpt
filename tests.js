@@ -2412,6 +2412,8 @@ var tests = {
 		'<div align=left>{<div align=center>foo</div>bar}</div>',
 		'<div align=center>{<div align=left>foo</div><img src=/img/lion.svg>}</div>',
 		'<div align=left>{<div align=center>foo</div><img src=/img/lion.svg>}</div>',
+		'<div align=center>{<div align=left>foo</div><!-- bar -->}</div>',
+		'<div align=left>{<div align=center>foo</div><!-- bar -->}</div>',
 	],
 	//@}
 	justifyfull: [

@@ -3492,55 +3492,6 @@ than what I've specced for the state.
   <p class=XXX>What to do for "start" "auto" etc. currently undefined.  We
   assume something CSS 2.1-ish.
 </ol>
-
-<p>The <dfn>selection's alignment value</dfn> is returned by the following
-algorithm:
-<!--
-IE9 throws exceptions in almost every case when querying the state of justify*,
-and Opera 11.11 returns false in every case except some seemingly random crazy
-ones.
-
-Firefox 6.0a2 returns true for the state of justify* if anything in the range
-has the right alignment, not if everything does.  This isn't consistent with
-how state works for the inline commands, nor with WebKit.
-
-Chrome 14 dev counts text-align on inline elements, which is wrong, because the
-property has no effect.  It also counts it on non-editable elements, which is
-wrong, because then the state for justify* wouldn't necessarily be true after
-executing it.  (Chrome actually does align the non-editable elements, but
-that's just a bug.)  Chrome further returns false for justify* if the
-justification is just the default inherited justification, e.g., left for LTR.
-This doesn't seem to make sense either.
-
-It's not actually clear how much sense state makes here.  Most commands that
-have a state that's not always false work differently depending on what the
-state is, generally because they toggle something (bold, lists, etc.).  The
-justify commands behave the same regardless of state.  Still, I'll follow
-Gecko/WebKit in supporting the command.
--->
-<ol>
-  <li><span>Block-extend</span> the <span>active range</span>, and let <var>new
-  range</var> be the result.
-
-  <li>Let <var>node list</var> be a list of all <span>editable</span> [[nodes]]
-  [[contained]] in <var>new range</var>.
-
-  <li>If <var>node list</var> is empty, return "none".
-
-  <li>Let <var>state</var> be "none".
-
-  <li>For each <var>node</var> in <var>node list</var>:
-
-  <ol>
-    <li>If <var>state</var> is "none", set <var>state</var> to
-    <var>node</var>'s <span>alignment value</span>.
-
-    <li>If <var>state</var> is different from <var>node</var>'s <span>alignment
-    value</span>, return "none".
-  </ol>
-
-  <li>Return <var>state</var>.
-</ol>
 <!-- @} -->
 
 <h3>Allowed children</h3>
@@ -6454,17 +6405,64 @@ false otherwise.
 <var>alignment</var> "center".
 
 <p><span>Indeterminate</span>: <span>Block-extend</span> the <span>active
-range</span>.  Return true if among <span>editable</span> nodes [[contained]]
-in the result, at least one has <span>alignment value</span> "center" and at
+range</span>.  Return true if among <span title="visible node">visible</span>
+<span>editable</span> [[nodes]] that are [[contained]] in the result and have
+no [[children]], at least one has <span>alignment value</span> "center" and at
 least one does not.  Otherwise return false.
-<!-- This roughly matches Chrome 14 dev, although not exactly.  Firefox 6.0a2
-always returns false. -->
+<!--
+This roughly matches Chrome 14 dev, although not exactly.  Firefox 6.0a2 always
+returns false.
 
-<p><span>State</span>: True if the <span>selection's alignment value</span> is
-"center", otherwise false.
+As a general rule, ignoring nodes with children saves us from treating <div
+align=left><div align=center>foo</div></div> as though it's indeterminate.
+Chrome 14 dev seems to only pay attention to text nodes, instead, or something
+like that.  At any rate, it fails on images.  Firefox 6.0a2 (for state and
+value) gets tripped up by examples like the one given.
 
-<p><span>Value</span>: The <span>active range</span>'s [[startnode]]'s
-<span>alignment value</span>.
+If we ever support centering of tables and similar, we'd want to pay attention
+even to some nodes that do have children.
+-->
+
+<p><span>State</span>: <span>Block-extend</span> the <span>active range</span>.
+Return true if there is at least one <span title="visible node">visible</span>
+<span>editable</span> [[node]] that is [[contained]] in the result and has no
+[[children]], and all such [[nodes]] have <span>alignment value</span>
+"center".  Otherwise return false.
+<!--
+IE9 throws exceptions in almost every case when querying the state of justify*,
+and Opera 11.11 returns false in every case except some seemingly random crazy
+ones.
+
+Firefox 6.0a2 returns true for the state of justify* if anything in the range
+has the right alignment, not if everything does.  This isn't consistent with
+how state works for the inline commands, nor with WebKit.
+
+Chrome 14 dev counts text-align on inline elements, which is wrong, because the
+property has no effect.  It also counts it on non-editable elements, which is
+wrong, because then the state for justify* wouldn't necessarily be true after
+executing it.  (Chrome actually does align the non-editable elements, but
+that's just a bug.)  Chrome further returns false for justify* if the
+justification is just the default inherited justification, e.g., left for LTR.
+This doesn't seem to make sense either.
+
+State is kind of redundant here, because it's true if and only if indeterminate
+is false and the value is equal to the desired value.  However, I'll support it
+anyway, since Gecko/WebKit do.
+-->
+
+<p><span>Value</span>: <span>Block-extend</span> the <span>active range</span>,
+and return the <span>alignment value</span> of the first <span title="visible
+node">visible</span> <span>editable</span> [[node]] that is [[contained]] in
+the result and has no [[children]].  If there is no such [[node]], return
+"left".
+<!--
+Not bidi-safe, but it's a pretty marginal corner case.  Firefox 6.0a2 behaves
+weirdly here: it keys off the start node of the active range, even if that's
+not contained.  Thus {<div align=center>foo</div>} has value "left" and
+indeterminate false, which would suggest that the whole selection is aligned
+left, but that's not the case.  Chrome 14 dev returns the state cast to a
+string, as usual.  Opera 11.11 always returns the empty string.
+-->
 <!-- @} -->
 
 <h3><dfn>The <code title>justifyFull</code> command</dfn></h3>
@@ -6473,15 +6471,22 @@ always returns false. -->
 <var>alignment</var> "justify".
 
 <p><span>Indeterminate</span>: <span>Block-extend</span> the <span>active
-range</span>.  Return true if among <span>editable</span> nodes [[contained]]
-in the result, at least one has <span>alignment value</span> "justify" and at
+range</span>.  Return true if among <span title="visible node">visible</span>
+<span>editable</span> [[nodes]] that are [[contained]] in the result and have
+no [[children]], at least one has <span>alignment value</span> "justify" and at
 least one does not.  Otherwise return false.
 
-<p><span>State</span>: True if the <span>selection's alignment value</span> is
-"justify", otherwise false.
+<p><span>State</span>: <span>Block-extend</span> the <span>active range</span>.
+Return true if there is at least one <span title="visible node">visible</span>
+<span>editable</span> [[node]] that is [[contained]] in the result and has no
+[[children]], and all such [[nodes]] have <span>alignment value</span>
+"justify".  Otherwise return false.
 
-<p><span>Value</span>: The <span>active range</span>'s [[startnode]]'s
-<span>alignment value</span>.
+<p><span>Value</span>: <span>Block-extend</span> the <span>active range</span>,
+and return the <span>alignment value</span> of the first <span title="visible
+node">visible</span> <span>editable</span> [[node]] that is [[contained]] in
+the result and has no [[children]].  If there is no such [[node]], return
+"left".
 <!-- @} -->
 
 <h3><dfn>The <code title>justifyLeft</code> command</dfn></h3>
@@ -6490,15 +6495,22 @@ least one does not.  Otherwise return false.
 <var>alignment</var> "left".
 
 <p><span>Indeterminate</span>: <span>Block-extend</span> the <span>active
-range</span>.  Return true if among <span>editable</span> nodes [[contained]]
-in the result, at least one has <span>alignment value</span> "left" and at
+range</span>.  Return true if among <span title="visible node">visible</span>
+<span>editable</span> [[nodes]] that are [[contained]] in the result and have
+no [[children]], at least one has <span>alignment value</span> "left" and at
 least one does not.  Otherwise return false.
 
-<p><span>State</span>: True if the <span>selection's alignment value</span> is
-"left", otherwise false.
+<p><span>State</span>: <span>Block-extend</span> the <span>active range</span>.
+Return true if there is at least one <span title="visible node">visible</span>
+<span>editable</span> [[node]] that is [[contained]] in the result and has no
+[[children]], and all such [[nodes]] have <span>alignment value</span> "left".
+Otherwise return false.
 
-<p><span>Value</span>: The <span>active range</span>'s [[startnode]]'s
-<span>alignment value</span>.
+<p><span>Value</span>: <span>Block-extend</span> the <span>active range</span>,
+and return the <span>alignment value</span> of the first <span title="visible
+node">visible</span> <span>editable</span> [[node]] that is [[contained]] in
+the result and has no [[children]].  If there is no such [[node]], return
+"left".
 <!-- @} -->
 
 <h3><dfn>The <code title>justifyRight</code> command</dfn></h3>
@@ -6507,15 +6519,22 @@ least one does not.  Otherwise return false.
 <var>alignment</var> "right".
 
 <p><span>Indeterminate</span>: <span>Block-extend</span> the <span>active
-range</span>.  Return true if among <span>editable</span> nodes [[contained]]
-in the result, at least one has <span>alignment value</span> "right" and at
+range</span>.  Return true if among <span title="visible node">visible</span>
+<span>editable</span> [[nodes]] that are [[contained]] in the result and have
+no [[children]], at least one has <span>alignment value</span> "right" and at
 least one does not.  Otherwise return false.
 
-<p><span>State</span>: True if the <span>selection's alignment value</span> is
-"right", otherwise false.
+<p><span>State</span>: <span>Block-extend</span> the <span>active range</span>.
+Return true if there is at least one <span title="visible node">visible</span>
+<span>editable</span> [[node]] that is [[contained]] in the result and has no
+[[children]], and all such [[nodes]] have <span>alignment value</span> "right".
+Otherwise return false.
 
-<p><span>Value</span>: The <span>active range</span>'s [[startnode]]'s
-<span>alignment value</span>.
+<p><span>Value</span>: <span>Block-extend</span> the <span>active range</span>,
+and return the <span>alignment value</span> of the first <span title="visible
+node">visible</span> <span>editable</span> [[node]] that is [[contained]] in
+the result and has no [[children]].  If there is no such [[node]], return
+"left".
 <!-- @} -->
 
 <h3><dfn>The <code title>outdent</code> command</dfn></h3>

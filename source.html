@@ -252,104 +252,160 @@ list</a>.
 like this.
 <!-- @} -->
 
-<h2>Methods of the <code data-anolis-spec=html>HTMLDocument</code> interface</h2>
+<h2>Basic concepts</h2>
 <!-- @{ -->
-<p>The <dfn title=execCommand()><code>execCommand(<var>command</var>,
-<var>showUI</var>, <var>value</var>)</code></dfn> method on the
-<code data-anolis-spec=html>HTMLDocument</code> interface allows scripts to
-perform actions on the current selection or at the current caret position.
-Generally, these commands would be used to implement editor UI, for example
-having a "delete" button on a toolbar.  There are three variants to this
-method, with one, two, and three arguments respectively. The <var>showUI</var>
-and <var>value</var> parameters, even if specified, are ignored except where
-otherwise stated.
+<p>This specification defines a number of <dfn title=command>commands</dfn>,
+identified by <span data-anolis-spec=domcore>ASCII case-insensitive</span>
+strings.  Each <span>command</span> can have several pieces of data associated
+with it:
 
-<p class=XXX>The <dfn
-title=queryCommandEnabled()><code>queryCommandEnabled(<var>command</var>)</code></dfn>
-method on the <code data-anolis-spec=html>HTMLDocument</code> interface does
-the same thing as <code>queryCommandSupported()</code>.
+<ul>
+  <li><dfn>Action</dfn>: What the <span>command</span> does when executed via
+  <code>execCommand()</code>.  Every <span>command</span> defined in this
+  specification has an <span>action</span> defined for it in the relevant
+  section.  For example, <span>the <code title>bold</code> command</span>'s
+  <span>action</span> generally makes the current selection bold, or removes
+  bold if the selection is already bold.  An editing toolbar might provide
+  buttons that execute the <span>action</span> for a <span>command</span> if
+  clicked, or a script might run an <span>action</span> without user
+  interaction to achieve some particular effect.
 
-<p>The <dfn
-title=queryCommandIndeterm()><code>queryCommandIndeterm(<var>command</var>)</code></dfn>
-method on the <code data-anolis-spec=html>HTMLDocument</code> interface allows
-scripts to determine whether the selection is in a mixed or indeterminate
-state, like (for <span>the <code title>bold</code> command</span>) partly bold
-and partly not.  An editing toolbar with a "bold" button might show it
-differently if the selection is indeterminate.  As a rule, the current
-selection is indeterminate for a command if either the command has a state
-which is true for part of the selection but not the whole selection, or it has
-a value which is different for different parts of the selection.
+  <li><dfn>Indeterminate</dfn>: A boolean value returned by
+  <code>queryCommandIndeterm()</code>, depending on the current state of the
+  document.  Generally, a <span>command</span> that has a <span>state</span>
+  defined will be <span>indeterminate</span> if the <span>state</span> is true
+  for part but not all of the current selection, and a <span>command</span>
+  that has a <span>value</span> defined will be <span>indeterminate</span> if
+  different parts of the selection have different <span
+  title=value>values</span>.  An editing toolbar might display a button or
+  control in a special way if the <span>command</span> is
+  <span>indeterminate</span>, like showing a "bold" button as partially
+  depressed, or leaving a font size selector blank instead of showing the font
+  size of the current selection.  As a rule, a <span>command</span> can only be
+  <span>indeterminate</span> if its <span>state</span> is false, supposing it
+  has a <span>state</span>.
 
-<p>The <dfn
-title=queryCommandState()><code>queryCommandState(<var>command</var>)</code></dfn>
-method on the <code data-anolis-spec=html>HTMLDocument</code> interface allows
-scripts to ask true-or-false status questions about the current selection, such
-as whether it is bold or not.  An editing toolbar with a "bold" button might
-show it as preseed down if the state is true and undepressed if the state is
-false.
+  <li><dfn>State</dfn>: A boolean value returned by
+  <code>queryCommandState()</code>, depending on the current state of the
+  document.  The <span>state</span> of a <span>command</span> is true if it is
+  already in effect, in some sense specific to the <span>command</span>.  Most
+  <span title=command>commands</span> that have a <span>state</span> defined
+  will take opposite <span title=action>actions</span> depending on whether the
+  <span>state</span> is true or false, such as making the selection bold if the
+  <span>state</span> is false and removing bold if the <span>state</span> is
+  true.  Others will just have no effect if the <span>state</span> is true,
+  like <span>the <code title>justifyCenter</code> command</span>.  Still others
+  will have the same effect regardless, like <span>the <code
+  title>styleWithCss</code> command</span>.  An editing toolbar might display a
+  button or control differently depending on the <span>state</span> and <span
+  title=indeterminate>indeterminacy</span> of the <span>command</span>.
 
-<p>The <dfn
-title=queryCommandSupported()><code>queryCommandSupported(<var>command</var>)</code></dfn>
-method on the <code data-anolis-spec=html>HTMLDocument</code> interface allows
-scripts to determine whether a particular command is supported or will do
-nothing.  Authors might write their scripts to use some type of fallback if a
-command is unsupported, or display an error.
+  <li><dfn>Value</dfn>: A string returned by <code>queryCommandValue()</code>,
+  depending on the current state of the document.  A <span>command</span>
+  usually has a <span>value</span> instead of a <span>state</span> if the
+  property it modifies can take more than two different values, like <span>the
+  <code title>foreColor</code> command</span>.  If the <span>command</span> is
+  <span>indeterminate</span>, its <span>value</span> is generally based on the
+  start of the selection.  Otherwise, in most cases the <span>value</span>
+  holds true for the entire selection, but see <span>the <code
+  title>justifyCenter</code> command</span> and <span title="the justifyFull
+  command">its</span> <span title="the justifyLeft command">three</span> <span
+  title="the justifyRight command">companions</span> for an exception.  An
+  editing toolbar might display the <span>value</span> of a
+  <span>command</span> as selected in a drop-down or filled in in a text box,
+  if the <span>command</span> isn't <span>indeterminate</span>.
 
-<p>The <dfn
-title=queryCommandValue()><code>queryCommandValue(<var>command</var>)</code></dfn>
-method on the <code data-anolis-spec=html>HTMLDocument</code> interface allows
-scripts to get the value of some property of the current selection in string
-form, such as what color it is.  Usually this will return the value for the
-beginning of the selection, if it's not the same for the whole selection.
+  <li><dfn>Relevant CSS property</dfn>: This is defined for certain <a
+  href=#inline-formatting-commands>inline formatting commands</a>, and is used
+  in algorithms specific to those commands.  It is an implementation detail,
+  and is not exposed to authors.  If a <span>command</span> does not have a
+  <span>relevant CSS property</span> specified, it defaults to null.
+</ul>
 
-<p>All of these methods operate using particular <dfn
-title=command>commands</dfn>, identified by a string <var>command</var> passed
-as the first argument.  The <var>command</var> argument of all the methods must
-be treated in an <span data-anolis-spec=domcore>ASCII case-insensitive</span>
-manner.  Each <span>command</span> is defined in its own section of this
-specification.
-
-<p><span title=command>Commands</span> may have an associated
-<dfn>action</dfn>, <dfn>indeterminate flag</dfn>, <dfn>state</dfn>,
-<dfn>value</dfn>, and/or <dfn>relevant CSS property</dfn>.  If not otherwise
-specified, the <span>action</span> for a <span>command</span> is to do nothing,
-the <span>indeterminate flag</span> is false, the <span>state</span> is false,
-the <span>value</span> is the empty string, and the <span>relevant CSS
-property</span> is null.
+<p>If the <span>active range</span> is null, then every <span>command</span> in
+this specification must behave as though its <span>action</span> is to do
+nothing, its <span title=indeterminate>indeterminacy</span> is false (if it has
+any associated <span title=indeterminate>indeterminacy</span>), its
+<span>state</span> is false (if it has any associated <span>state</span>), and
+its <span>value</span> is the empty string (if it has any associated
+<span>value</span>).  However, the <span title=command>commands</span> listed
+under <a href=#miscellaneous-commands>Miscellaneous commands</a> must behave as
+usual even if the <span>active range</span> is null.
 <!--
-Requesting the state of an unknown command throws an exception in IE 9 RC and
-Firefox 4b11, and returns boolean false in Chrome 10 and Opera 11.
-
-Requesting the value of an unknown command throws an exception in IE 9 RC and
-in Firefox 4b11.  It returns boolean false in Chrome 10, and the empty string
-in Opera 11.
-
-We have lots of options for the default value of commands.  Using bold as an
-example, IE 9 RC returns the boolean false, Firefox 4b11 and Opera 11 both
-return the empty string, Chrome 10 returns the string "false".  The HTML5 spec
-as of February 2011 mandates WebKit's behavior.  It makes sense to always
-return a string, a majority of string-returners return the empty string, and
-three out of the four return something that evaluates to false as a boolean, so
-I'll go with Firefox and Opera.
-
-Actually, for commands like bold where state makes sense but not value, it
-looks like Chrome 14 dev makes the value equal to the state cast to a string,
-so either the string "true" or "false".  This seems confusing and unhelpful, so
-I'll pass.
+This matches Firefox 6.0a2 and Opera 11.11.  IE9 and Chrome 14 dev seem to
+return false for the value in this case.
 -->
 
-<p>When <code>execCommand()</code> is invoked, the user agent must follow the
-<span>action</span> instructions given in this specification for
-<var>command</var>, with <var>showUI</var> and <var>value</var> passed to the
-instructions as arguments.
+<p>Some <span title=command>commands</span> will be <dfn>supported</dfn> in a
+given user agent, and some will not.  All <span title=command>commands</span>
+defined in this specification must be <span>supported</span>, except optionally
+<span>the <code title>copy</code> command</span>, <span>the <code
+title>cut</code> command</span>, and/or <span>the <code title>paste</code>
+command</span>.  Additional <span title=command>commands</span> can also be
+<span>supported</span>, but implementers should prefix any nonstandard
+<span>command</span> names with a vendor-specific string that ends in a hyphen
+(e.g., "ms-", "gecko-", "webkit-", "opera-").
+<!-- If you try doing anything with an unrecognized command, IE9 throws an
+"Invalid argument" exception, and Firefox 6.0a2 throws
+NS_ERROR_NOT_IMPLEMENTED.  Chrome 14 dev and Opera 11.11 both just return a
+useless value.  I go with IE/Gecko, although of course with a standard
+exception type. -->
 
-<p>When <code>queryCommandEnabled()</code> is invoked, the user agent must
-return the result of calling <code>queryCommandSupported()</code> with the same
-arguments.
+<p>A <span>command</span> that does absolutely nothing in a particular user
+agent, such that <code>execCommand()</code> never has any effect and
+<code>queryCommandEnabled()</code> and <code>queryCommandIndeterm()</code> and
+<code>queryCommandState()</code> and <code>queryCommandValue()</code> each
+return the same value all the time, must not be <span>supported</span>.
+<!-- I.e., no trying to look good on lazy conformance tests by just sticking in
+a stub implementation that does nothing. -->
 
-<p class=XXX>This isn't how anyone behaves, but no one's behavior is very
-useful anyway.  For this to make sense would require a significant amount of
-work and it's not clear it's worth it at all.  See comment for details.
+<p>In a particular user agent, every <span>command</span> must be consistently
+either <span>supported</span> or not.  Specifically, a user agent must not
+permit one page to see the same <span>command</span> sometimes
+<span>supported</span> and sometimes not over the course of the same browsing
+session, unless the user agent has been upgraded or reconfigured in the middle
+of a session.  However, user agents may treat the same <span>command</span> as
+<span>supported</span> for some pages and not others, e.g., if the
+<span>command</span> is only supported for certain origins for security
+reasons.
+
+<p>Authors can tell whether a <span>command</span> is <span>supported</span>
+using <code>queryCommandSupported()</code>.
+<!-- @} -->
+
+<h2>Methods of the <code data-anolis-spec=html>HTMLDocument</code> interface</h2>
+<!-- @{ -->
+<p>When the <dfn title=execCommand()><code>execCommand(<var>command</var>,
+<var>show UI</var>, <var>value</var>)</code></dfn> method on the <code
+data-anolis-spec=html>HTMLDocument</code> interface is invoked, the user agent
+must follow the <span>action</span> instructions given in this specification
+for <var>command</var>, passing <var>value</var> to the instructions as an
+argument, then return true.  If <var>command</var> is not
+<span>supported</span>, the user agent must instead raise a
+[[NOT_SUPPORTED_ERR]] exception.  If <var>command</var> is
+<span>supported</span> but has no associated <span>action</span> (which is not
+the case for any <span>command</span> defined in this specification), the user
+agent must instead raise an [[INVALID_ACCESS_ERR]] exception.
+<!-- I'm just speccing INVALID_ACCESS_ERR for consistency.  I don't expect
+real-world commands are likely to not have an action defined, but you never
+know. -->
+
+<p class=XXX>WebKit doesn't always return true (and maybe others also).  Needs
+investigation: should we ever return false, and if so when?
+
+<p class=XXX>Define behavior for <var>show UI</var>.
+
+<p>When the <dfn
+title=queryCommandEnabled()><code>queryCommandEnabled(<var>command</var>)</code></dfn>
+method on the <code data-anolis-spec=html>HTMLDocument</code> interface is
+invoked, the user agent must return true.  If <var>command</var> is not
+<span>supported</span>, the user agent must instead raise a
+[[NOT_SUPPORTED_ERR]] exception.
+
+<p class=XXX>This is useless and not how anyone behaves, but no one's behavior
+is very useful anyway.  For this to make sense would require a significant
+amount of work and it's not clear it's worth it at all.  See comment for
+details.
 <!--
 Testing with bold and formatBlock:
 
@@ -374,50 +430,80 @@ nontrivial, and I'm not sure what the use-case is.  So for now I'll go with
 Opera, but I'll return to it later.
 -->
 
-<p>When <code>queryCommandIndeterm()</code> is invoked, the user agent must
-return the <span>indeterminate flag</span> for <var>command</var>.
-
-<p>When <code>queryCommandState()</code> is invoked, the user agent must return
-the <span>state</span> for <var>command</var>.
-
-<p>When <code>queryCommandSupported()</code> is invoked, the user agent must
-return false if calling <code
-title=execCommand()>execCommand(<var>command</var>, <var>x</var>,
-<var>y</var>)</code> will never have any effect, and true otherwise.  Thus user
-agents that partially implement a <span>command</span> must return true for
-that <span>command</span>, and user agents that fully conform to this
-specification must return true for all the <span title=command>commands</span>
-defined in it (except possibly <span>the <code title>copy</code>
-command</span>, <span>the <code title>cut</code> command</span>, and/or
-<span>the <code title>paste</code> command</span>).
+<p>When the <dfn
+title=queryCommandIndeterm()><code>queryCommandIndeterm(<var>command</var>)</code></dfn>
+method on the <code data-anolis-spec=html>HTMLDocument</code> interface is
+invoked, the user agent must return true if <var>command</var> is
+<span>indeterminate</span>, otherwise false.  If <var>command</var> is not
+<span>supported</span>, the user agent must instead raise a
+[[NOT_SUPPORTED_ERR]] exception.  If <var>command</var> is
+<span>supported</span> but has no associated <span
+title=indeterminate>indeterminacy</span> definition, the user agent must
+instead raise an [[INVALID_ACCESS_ERR]] exception.
 <!--
-Firefox 6.0a2 always throws an exception when this is called.  That's
-presumably because it's easy to feature-test, in that it throws an exception if
-you run any of the other methods with an unrecognized command.  Opera 11.11
-seems to return false if there's nothing editable on the page, which is
-unhelpful.  The spec follows IE9 and Chrome 14 dev.
+What happens if you call queryCommand(Indeterm|State|Value)() on a command
+where it makes no sense?
+
+IE9 consistently returns false for all three.
+
+Firefox 6.0a2 consistently throws NS_ERROR_FAILURE for indeterm/state if not
+supported, and returns an empty string for value.  Exceptions include unlink
+(seems to always return indeterm/state false), and styleWithCss/useCss (throw
+NS_ERROR_FAILURE even for value).
+
+Chrome 14 dev returns false for all three, and even does this for unrecognized
+commands.  It also always defines value if state is defined: it returns the
+state cast to a string, either "true" or "false".
+
+Opera 11.11 returns false for state and "" for value (it doesn't support
+indeterm).  Like Chrome, this is even for unrecognized commands.
+
+Gecko's behavior is the most useful.  If the author tries querying some aspect
+of a command that makes no sense, they shouldn't receive a value that looks
+like it might make sense but is actually just a constant.  However, I go even
+further than Gecko: I require exceptions even for value, since doing otherwise
+makes no sense.
 -->
 
-<p>When <code>queryCommandValue()</code> is invoked, the user agent must return
-the <span>value</span> for <var>command</var>.
+<p>When the <dfn
+title=queryCommandState()><code>queryCommandState(<var>command</var>)</code></dfn>
+method on the <code data-anolis-spec=html>HTMLDocument</code> interface is
+invoked, the user agent must return the <span>state</span> for
+<var>command</var>.  If <var>command</var> is not <span>supported</span>, the
+user agent must instead raise a [[NOT_SUPPORTED_ERR]] exception.  If
+<var>command</var> is <span>supported</span> but has no associated
+<span>state</span>, the user agent must instead raise an [[INVALID_ACCESS_ERR]]
+exception.
 
-<p>Most <span title=command>commands</span> act on the <dfn>active range</dfn>.
-This is defined to be the first [[range]] in the [[selection]] given by calling
-[[getselection]] on the [[contextobject]], or null if there is no such
-[[range]].  If the <span>active range</span> is null, all <span
-title=command>commands</span> must behave as though they were not defined
-except those in the <a href=#miscellaneous-commands>miscellaneous commands</a>
-section.
+<p>When the <dfn
+title=queryCommandSupported()><code>queryCommandSupported(<var>command</var>)</code></dfn>
+method on the <code data-anolis-spec=html>HTMLDocument</code> interface is
+invoked, the user agent must return true if <var>command</var> is
+<span>supported</span>, and false otherwise.
+<!--
+Firefox 6.0a2 always throws an exception when this is called.  Opera 11.11
+seems to return false if there's nothing editable on the page, which is
+unhelpful.  The spec follows IE9 and Chrome 14 dev.  The reason this is useful,
+compared to just running one of the other methods and seeing if you get a
+NOT_SUPPORTED_ERR, is that other methods might throw different exceptions for
+other reasons.  It's easier to check a boolean than to check exception types,
+especially since as of June 2011 UAs aren't remotely consistent on what they do
+with unsupported commands.
+-->
 
-<p class=XXX>Querying the value or state of an unrecognized command throws an
-exception in IE and Firefox.  Need to consider changing to that behavior.
+<p>When the <dfn
+title=queryCommandValue()><code>queryCommandValue(<var>command</var>)</code></dfn>
+method on the <code data-anolis-spec=html>HTMLDocument</code> interface is
+invoked, the user agent must return the <span>value</span> for
+<var>command</var>.  If <var>command</var> is not <span>supported</span>, the
+user agent must instead raise a [[NOT_SUPPORTED_ERR]] exception.  If
+<var>command</var> is <span>supported</span> but has no associated
+<span>value</span>, the user agent must instead raise an [[INVALID_ACCESS_ERR]]
+exception.
 
-<p class=XXX>I say "first range" because I think that's what Gecko actually
-does, and Gecko is the only one that allows multiple ranges in a selection.
-This is keeping in mind that it stores ranges sorted by start, not by the order
-the user added them, and silently removes or shortens existing ranges to avoid
-overlap.  It probably makes the most sense in the long term to have the command
-affect all ranges.  But I'll leave this for later.
+<p>All of these methods must treat their <var>command</var> argument <span
+data-anolis-spec=domcore title="ASCII case-insensitive">ASCII
+case-insensitively</span>.
 <!-- @} -->
 
 <h2>Common definitions</h2>
@@ -506,6 +592,17 @@ break</span> that is not an <span>extraneous line break</span>, or an
 either <span title="invisible node">invisible nodes</span> or <span
 title="collapsed block prop">collapsed block props</span> and that has at least
 one [[child]] that is a <span>collapsed block prop</span>.
+
+<p>The <dfn>active range</dfn> is the first [[range]] in the [[selection]]
+given by calling [[getselection]] on the [[contextobject]], or null if there is
+no such [[range]].
+
+<p class=XXX>I say "first range" because I think that's what Gecko actually
+does, and Gecko is the only one that allows multiple ranges in a selection.
+This is keeping in mind that it stores ranges sorted by start, not by the order
+the user added them, and silently removes or shortens existing ranges to avoid
+overlap.  It probably makes the most sense in the long term to have the command
+affect all ranges.  But I'll leave this for later.
 
 <p>Each [[htmldocument]] has a boolean <dfn>CSS styling flag</dfn> associated
 with it, which must initially be false.  (<span>The <code
@@ -988,7 +1085,7 @@ instructions</dfn>:
 </ol>
 <!-- @} -->
 
-<h2>Inline formatting commands</h2>
+<h2 id=inline-formatting-commands>Inline formatting commands</h2>
 
 <h3>Inline formatting command definitions</h3>
 <!-- @{ -->
@@ -2035,8 +2132,8 @@ nothing if the selection is empty.  Why strikethrough?  I don't know. -->
 If the <span>state</span> is then false, <span>set the value</span> of each
 returned [[node]] to "bold", otherwise <span>set the value</span> to "normal".
 
-<p><span>Indeterminate flag</span>: True if among <span>editable</span>
-[[text]] nodes that are <span>effectively contained</span> in the <span>active
+<p><span>Indeterminate</span>: True if among <span>editable</span> [[text]]
+nodes that are <span>effectively contained</span> in the <span>active
 range</span>, there is at least one with <span>effective value</span> less than
 600 and at least one with <span>effective value</span> greater than or equal to
 600.  Otherwise false.
@@ -2164,8 +2261,8 @@ likely that the font list will be fixed by the author (how many users will
 understand CSS font-family syntax?), so I don't think such usability concerns
 apply. -->
 
-<p><span>Indeterminate flag</span>: True if among <span>editable</span>
-[[text]] nodes that are <span>effectively contained</span> in the <span>active
+<p><span>Indeterminate</span>: True if among <span>editable</span> [[text]]
+nodes that are <span>effectively contained</span> in the <span>active
 range</span>, there are two that have distinct <span title="effective
 value">effective values</span>.  Otherwise false.
 <!-- This follows Firefox 6.0a2.  Chrome 14 dev always returns false. -->
@@ -2299,8 +2396,8 @@ respecifying non-interoperable behavior anyway.
   value</span> of each returned [[node]] to <var>value</var>.
 </ol>
 
-<p><span>Indeterminate flag</span>: True if among <span>editable</span>
-[[text]] nodes that are <span>effectively contained</span> in the <span>active
+<p><span>Indeterminate</span>: True if among <span>editable</span> [[text]]
+nodes that are <span>effectively contained</span> in the <span>active
 range</span>, there are two that have distinct <span title="effective
 value">effective values</span>.  Otherwise false.
 <!-- This follows Firefox 6.0a2.  Chrome 14 dev always returns false. -->
@@ -2442,8 +2539,8 @@ false otherwise, which seems fairly useless; authors want to use value here,
 not state.  Firefox 4b11 throws an exception, which is an interesting approach,
 but I'll go with IE/WebKit, which makes at least as much sense. -->
 
-<p><span>Indeterminate flag</span>: True if among <span>editable</span>
-[[text]] nodes that are <span>effectively contained</span> in the <span>active
+<p><span>Indeterminate</span>: True if among <span>editable</span> [[text]]
+nodes that are <span>effectively contained</span> in the <span>active
 range</span>, there are two that have distinct <span title="effective
 value">effective values</span>.  Otherwise false.
 <!-- This follows Firefox 6.0a2.  Chrome 14 dev always returns false. -->
@@ -2500,8 +2597,8 @@ For color parsing, see the comment for foreColor. -->
   value</span> of each returned [[node]] to <var>value</var>.
 </ol>
 
-<p><span>Indeterminate flag</span>: True if among <span>editable</span>
-[[text]] nodes that are <span>effectively contained</span> in the <span>active
+<p><span>Indeterminate</span>: True if among <span>editable</span> [[text]]
+nodes that are <span>effectively contained</span> in the <span>active
 range</span>, there are two that have distinct <span title="effective
 value">effective values</span>.  Otherwise false.
 <!-- This follows no one.  Firefox 6.0a2 and Chrome 14 dev both always return
@@ -2532,8 +2629,8 @@ If the <span>state</span> is then false, <span>set the value</span> of each
 returned [[node]] to "italic", otherwise <span>set the value</span> to
 "normal".
 
-<p><span>Indeterminate flag</span>: True if among <span>editable</span>
-[[text]] nodes that are <span>effectively contained</span> in the <span>active
+<p><span>Indeterminate</span>: True if among <span>editable</span> [[text]]
+nodes that are <span>effectively contained</span> in the <span>active
 range</span>, there is at least one with <span>effective value</span> either
 "italic" or "oblique" and at least one with <span>effective value</span>
 "normal".  Otherwise false.
@@ -2678,8 +2775,8 @@ null.
 <p class=XXX>Has all the same problems as <span>the <code
 title>underline</code> command</span>.
 
-<p><span>Indeterminate flag</span>: True if among <span>editable</span>
-[[text]] nodes that are <span>effectively contained</span> in the <span>active
+<p><span>Indeterminate</span>: True if among <span>editable</span> [[text]]
+nodes that are <span>effectively contained</span> in the <span>active
 range</span>, there is at least one with <span>effective value</span>
 "line-through" and at least one with <span>effective value</span> null.
 Otherwise false.
@@ -2708,7 +2805,7 @@ is <span>effectively contained</span> in the <span>active range</span> has
   to "sub".
 </ol>
 
-<p><span>Indeterminate flag</span>: True if either among <span>editable</span>
+<p><span>Indeterminate</span>: True if either among <span>editable</span>
 [[text]] nodes that are <span>effectively contained</span> in the <span>active
 range</span>, there is at least one with <span>effective value</span> "sub" and
 at least one with some other <span>effective value</span>; or if there is some
@@ -2753,7 +2850,7 @@ other indeterminate situations, so it's fair to consider it indeterminate.
   to "super".
 </ol>
 
-<p><span>Indeterminate flag</span>: True if either among <span>editable</span>
+<p><span>Indeterminate</span>: True if either among <span>editable</span>
 [[text]] nodes that are <span>effectively contained</span> in the <span>active
 range</span>, there is at least one with <span>effective value</span> "super"
 and at least one with some other <span>effective value</span>; or if there is
@@ -2826,8 +2923,8 @@ using the newly-specced features or working around their absence as the case
 may be.
 </div>
 
-<p><span>Indeterminate flag</span>: True if among <span>editable</span>
-[[text]] nodes that are <span>effectively contained</span> in the <span>active
+<p><span>Indeterminate</span>: True if among <span>editable</span> [[text]]
+nodes that are <span>effectively contained</span> in the <span>active
 range</span>, there is at least one with <span>effective value</span>
 "underline" and at least one with <span>effective value</span> null.  Otherwise
 false.
@@ -5382,6 +5479,8 @@ sense for <address>/<h*>/<pre>, but other browsers don't do it.
     [[createelement|<var>value</var>]] on the [[contextobject]].
   </ol>
 </ol>
+
+<p class=XXX>Spec value/indeterm.
 <!-- @} -->
 
 <h3><dfn>The <code title>forwardDelete</code> command</dfn></h3>
@@ -5867,8 +5966,8 @@ Opera 11.11 isn't heedful of <xmp>, and treats <pre> somewhat oddly.
 <p><span>Action</span>: <span>Toggle lists</span> with <var>tag name</var>
 "ol".
 
-<p><span>Indeterminate flag</span>: True if the <span>selection's list
-state</span> is "mixed" or "mixed ol", false otherwise.
+<p><span>Indeterminate</span>: True if the <span>selection's list state</span>
+is "mixed" or "mixed ol", false otherwise.
 <!--
 Firefox 6.0a2 sort of supports this, but it throws exceptions most of the
 time.  It has the quirk that even if there are no ol's around, it will say it's
@@ -6339,8 +6438,8 @@ This is still a huge headache, though.
 <p><span>Action</span>: <span>Toggle lists</span> with <var>tag name</var>
 "ul".
 
-<p><span>Indeterminate flag</span>: True if the <span>selection's list
-state</span> is "mixed" or "mixed ul", false otherwise.
+<p><span>Indeterminate</span>: True if the <span>selection's list state</span>
+is "mixed" or "mixed ul", false otherwise.
 
 <p><span>State</span>: True if the <span>selection's list state</span> is "ul",
 false otherwise.
@@ -6351,7 +6450,7 @@ false otherwise.
 <p><span>Action</span>: <span>Justify the selection</span> with
 <var>alignment</var> "center".
 
-<p><span>Indeterminate flag</span>: <span>Block-extend</span> the <span>active
+<p><span>Indeterminate</span>: <span>Block-extend</span> the <span>active
 range</span>.  Return true if among <span>editable</span> nodes [[contained]]
 in the result, at least one has <span>alignment value</span> "center" and at
 least one does not.  Otherwise return false.
@@ -6370,7 +6469,7 @@ always returns false. -->
 <p><span>Action</span>: <span>Justify the selection</span> with
 <var>alignment</var> "justify".
 
-<p><span>Indeterminate flag</span>: <span>Block-extend</span> the <span>active
+<p><span>Indeterminate</span>: <span>Block-extend</span> the <span>active
 range</span>.  Return true if among <span>editable</span> nodes [[contained]]
 in the result, at least one has <span>alignment value</span> "justify" and at
 least one does not.  Otherwise return false.
@@ -6387,7 +6486,7 @@ least one does not.  Otherwise return false.
 <p><span>Action</span>: <span>Justify the selection</span> with
 <var>alignment</var> "left".
 
-<p><span>Indeterminate flag</span>: <span>Block-extend</span> the <span>active
+<p><span>Indeterminate</span>: <span>Block-extend</span> the <span>active
 range</span>.  Return true if among <span>editable</span> nodes [[contained]]
 in the result, at least one has <span>alignment value</span> "left" and at
 least one does not.  Otherwise return false.
@@ -6404,7 +6503,7 @@ least one does not.  Otherwise return false.
 <p><span>Action</span>: <span>Justify the selection</span> with
 <var>alignment</var> "right".
 
-<p><span>Indeterminate flag</span>: <span>Block-extend</span> the <span>active
+<p><span>Indeterminate</span>: <span>Block-extend</span> the <span>active
 range</span>.  Return true if among <span>editable</span> nodes [[contained]]
 in the result, at least one has <span>alignment value</span> "right" and at
 least one does not.  Otherwise return false.
@@ -6511,15 +6610,28 @@ So it would be nice if we could work out a more secure standardized substitute.
 -->
 
 <p><span>Action</span>: The user agent must either copy the current selection
-to the clipboard as though the user had requested it, or do nothing.  User
-agents should exercise caution in respecting this command, because sites could
-abuse it to confuse and annoy the user by overwriting the clipboard with
-extremely long, obscene, or otherwise objectionable content.  This
-specification does not define exactly how the selection is to be copied to the
-clipboard, but the <a
+to the clipboard as though the user had requested it, or raise a
+[[SECURITY_ERR]] exception.  This specification does not define exactly how the
+selection is to be copied to the clipboard, but the <a
 href=http://dev.w3.org/2006/webapi/clipops/clipops.html>Clipboard API and
 events</a> specification might be useful.
 
+<p>User agents should exercise caution in respecting this <span>command</span>,
+because sites could abuse it to confuse and annoy the user by overwriting the
+clipboard with extremely long, obscene, or otherwise objectionable content.
+
+<p>User agents may choose not to <span title=supported>support</span> this
+<span>command</span> at all.  If a user agent will only honor the
+<span>command</span> for some whitelisted sites depending on configuration, it
+may either raise a [[SECURITY_ERR]] for non-whitelisted sites, or it may act as
+though the <span>command</span> is <span title=supported>unsupported</span> on
+those sites.
+<!--
+The idea is sites might catch the SECURITY_ERR and treat it differently from
+NOT_SUPPORTED_ERR, like encouraging users to reconfigure their browser.
+However, browsers might not want to encourage authors to tell users to
+reconfigure their browser insecurely.
+-->
 <!-- @} -->
 
 <h3><dfn>The <code title>cut</code> command</dfn></h3>
@@ -6527,15 +6639,22 @@ events</a> specification might be useful.
 <!-- See comment for copy -->
 
 <p><span>Action</span>: The user agent must either copy the current selection
-to the clipboard and then delete it, as though the user had requested it, or do
-nothing.  User agents should exercise caution in respecting this command,
-because sites could abuse it to confuse and annoy the user by overwriting the
-clipboard with extremely long, obscene, or otherwise objectionable content.
-This specification does not define exactly how the selection is to be deleted
-or copied to the clipboard, but the <a
+to the clipboard and then delete it, as though the user had requested it, or
+raise a [[SECURITY_ERR]] exception.  This specification does not define exactly
+how the selection is to be deleted or copied to the clipboard, but the <a
 href=http://dev.w3.org/2006/webapi/clipops/clipops.html>Clipboard API and
 events</a> specification might be useful.
 
+<p>User agents should exercise caution in respecting this command, because
+sites could abuse it to confuse and annoy the user by overwriting the clipboard
+with extremely long, obscene, or otherwise objectionable content.
+
+<p>User agents may choose not to <span title=supported>support</span> this
+<span>command</span> at all.  If a user agent will only honor the
+<span>command</span> for some whitelisted sites depending on configuration, it
+may either raise a [[SECURITY_ERR]] for non-whitelisted sites, or it may act as
+though the <span>command</span> is <span title=supported>unsupported</span> on
+those sites.
 <!-- @} -->
 
 <h3><dfn>The <code title>paste</code> command</dfn></h3>
@@ -6545,13 +6664,20 @@ events</a> specification might be useful.
 <p><span>Action</span>: The user agent must either <span>delete the
 contents</span> of the <span>active range</span> and then paste the clipboard's
 contents to the current cursor position, as though the user had requested it,
-or do nothing.  User agents should exercise caution in respecting this command,
-because sites could abuse it to read private information from the clipboard.
-This specification does not define exactly how the clipboard is to be converted
-to HTML for pasting, but the <a
+or raise a [[SECURITY_ERR]] exception.  This specification does not define
+exactly how the clipboard is to be converted to HTML for pasting, but the <a
 href=http://dev.w3.org/2006/webapi/clipops/clipops.html>Clipboard API and
 events</a> specification might be useful.
 
+<p>User agents should exercise caution in respecting this command,
+because sites could abuse it to read private information from the clipboard.
+
+<p>User agents may choose not to <span title=supported>support</span> this
+<span>command</span> at all.  If a user agent will only honor the
+<span>command</span> for some whitelisted sites depending on configuration, it
+may either raise a [[SECURITY_ERR]] for non-whitelisted sites, or it may act as
+though the <span>command</span> is <span title=supported>unsupported</span> on
+those sites.
 <!-- @} -->
 
 <h3><dfn>The <code title>selectAll</code> command</dfn></h3>

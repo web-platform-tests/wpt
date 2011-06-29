@@ -498,113 +498,130 @@ function parseSimpleColor(color) {
 ///// Methods of the HTMLDocument interface /////
 /////////////////////////////////////////////////
 //@{
-function setupEditCommandMethod(command, range) {
+
+// Helper function for common behavior.  First throws exceptions if the command
+// is unrecognized or doesn't have the thing we want defined (action, indeterm,
+// state, or value).  If we get past that, return false if the global range is
+// null and we're a non-miscellaneous command, otherwise true.  Called by
+// myExecCommand(), myQueryCommandIndeterm(), myQueryCommandState(),
+// myQueryCommandValue(), since they all have this behavior.
+function setupEditCommandMethod(command, prop, range) {
+	// Set up our global range magic
 	if (typeof range != "undefined") {
 		globalRange = range;
 	} else {
 		globalRange = getActiveRange();
 	}
 
-	// "If the active range is null, all commands must behave as though they
-	// were not defined except those in the miscellaneous commands section."
-	if (!globalRange && ["copy", "cut", "paste", "selectall", "stylewithcss", "usecss"].indexOf(command) == -1) {
-		return false;
+	// In all cases we throw NOT_SUPPORTED_ERR here.  Of course we can't
+	// actually do that, so we just throw a string.
+	if (!(command in commands)) {
+		throw "NOT_SUPPORTED_ERR";
 	}
 
-	if (!(command in commands)) {
-		return false;
+	// Likewise, here we throw INVALID_ACCESS_ERR for all four callers.
+	if (!(prop in commands[command])) {
+		throw "INVALID_ACCESS_ERR";
+	}
+
+	// "If the active range is null, then every command in this specification
+	// must behave as though its action is to do nothing, its indeterminacy is
+	// false (if it has any associated indeterminacy), its state is false (if
+	// it has any associated state), and its value is the empty string (if it
+	// has any associated value). However, the commands listed under
+	// Miscellaneous commands must behave as usual even if the active range is
+	// null."
+	//
+	// We convey this by returning false.
+	return globalRange || ["copy", "cut", "paste", "selectall", "stylewithcss", "usecss"].indexOf(command) != -1;
+}
+
+// "When the execCommand(command, show UI, value) method on the HTMLDocument
+// interface is invoked, the user agent must follow the action instructions
+// given in this specification for command, passing value to the instructions
+// as an argument, then return true. If command is not supported, the user
+// agent must instead raise a NOT_SUPPORTED_ERR exception. If command is
+// supported but has no associated action (which is not the case for any
+// command defined in this specification), the user agent must instead raise an
+// INVALID_ACCESS_ERR exception."
+//
+// "All of these methods must treat their command argument ASCII
+// case-insensitively."
+function myExecCommand(command, showUi, value, range) {
+	command = command.toLowerCase();
+
+	if (setupEditCommandMethod(command, "action", range)) {
+		commands[command].action(value);
 	}
 
 	return true;
 }
 
-function myExecCommand(command, showUI, value, range) {
+// "When the queryCommandEnabled(command) method on the HTMLDocument interface
+// is invoked, the user agent must return true. If command is not supported,
+// the user agent must instead raise a NOT_SUPPORTED_ERR exception."
+function myQueryCommandEnabled(command, range) {
 	command = command.toLowerCase();
 
-	if (setupEditCommandMethod(command, range)) {
-		commands[command].action(value);
+	if (!(command in commands)) {
+		throw "NOT_SUPPORTED_ERR";
 	}
-	// else do nothing
+
+	return true;
 }
 
-function myQueryCommandEnabled(command, range) {
-	// "When queryCommandEnabled() is invoked, the user agent must return the
-	// result of calling queryCommandSupported() with the same arguments."
-	return myQueryCommandSupported(command, range);
-}
-
+// "When the queryCommandIndeterm(command) method on the HTMLDocument interface
+// is invoked, the user agent must return true if command is indeterminate,
+// otherwise false. If command is not supported, the user agent must instead
+// raise a NOT_SUPPORTED_ERR exception. If command is supported but has no
+// associated indeterminacy definition, the user agent must instead raise an
+// INVALID_ACCESS_ERR exception."
 function myQueryCommandIndeterm(command, range) {
 	command = command.toLowerCase();
 
-	if (setupEditCommandMethod(command, range)) {
+	if (setupEditCommandMethod(command, "indeterm", range)) {
 		return commands[command].indeterm();
 	} else {
-		// "If not otherwise specified, the action for a command is to do
-		// nothing, the indeterminate flag is false, the state is false, the
-		// value is the empty string, and the relevant CSS property is null."
 		return false;
 	}
 }
 
+// "When the queryCommandState(command) method on the HTMLDocument interface is
+// invoked, the user agent must return the state for command. If command is not
+// supported, the user agent must instead raise a NOT_SUPPORTED_ERR exception.
+// If command is supported but has no associated state, the user agent must
+// instead raise an INVALID_ACCESS_ERR exception."
 function myQueryCommandState(command, range) {
 	command = command.toLowerCase();
 
-	if (setupEditCommandMethod(command, range)) {
+	if (setupEditCommandMethod(command, "state", range)) {
 		return commands[command].state();
 	} else {
-		// "If not otherwise specified, the action for a command is to do
-		// nothing, the indeterminate flag is false, the state is false, the
-		// value is the empty string, and the relevant CSS property is null."
 		return false;
 	}
 }
 
+// "When the queryCommandSupported(command) method on the HTMLDocument
+// interface is invoked, the user agent must return true if command is
+// supported, and false otherwise."
 function myQueryCommandSupported(command, range) {
 	command = command.toLowerCase();
-	return setupEditCommandMethod(command, range);
+	return command in commands;
 }
 
+// "When the queryCommandValue(command) method on the HTMLDocument interface is
+// invoked, the user agent must return the value for command. If command is not
+// supported, the user agent must instead raise a NOT_SUPPORTED_ERR exception.
+// If command is supported but has no associated value, the user agent must
+// instead raise an INVALID_ACCESS_ERR exception."
 function myQueryCommandValue(command, range) {
 	command = command.toLowerCase();
 
-	if (setupEditCommandMethod(command, range)) {
+	if (setupEditCommandMethod(command, "value", range)) {
 		return commands[command].value();
 	} else {
-		// "If not otherwise specified, the action for a command is to do
-		// nothing, the indeterminate flag is false, the state is false, the
-		// value is the empty string, and the relevant CSS property is null."
 		return "";
 	}
-}
-
-/**
- * "Most commands act on the active range. This is defined to be the first
- * range in the Selection given by calling getSelection() on the context
- * object, or null if there is no such range."
- *
- * We cheat and return globalRange if that's defined.  We also ensure that the
- * active range meets the requirements that selection boundary points are
- * supposed to meet, i.e., that the nodes are both Text or Element nodes that
- * descend from a Document.
- */
-function getActiveRange() {
-	var ret;
-	if (globalRange) {
-		ret = globalRange;
-	} else if (getSelection().rangeCount) {
-		ret = getSelection().getRangeAt(0);
-	} else {
-		return null;
-	}
-	if ([Node.TEXT_NODE, Node.ELEMENT_NODE].indexOf(ret.startContainer.nodeType) == -1
-	|| [Node.TEXT_NODE, Node.ELEMENT_NODE].indexOf(ret.endContainer.nodeType) == -1
-	|| !ret.startContainer.ownerDocument
-	|| !ret.endContainer.ownerDocument
-	|| !isDescendant(ret.startContainer, ret.startContainer.ownerDocument)
-	|| !isDescendant(ret.endContainer, ret.endContainer.ownerDocument)) {
-		throw "Invalid active range; test bug?";
-	}
-	return ret;
 }
 //@}
 
@@ -817,6 +834,32 @@ function isCollapsedBlockProp(node) {
 	return hasCollapsedBlockPropChild;
 }
 
+// "The active range is the first range in the Selection given by calling
+// getSelection() on the context object, or null if there is no such range."
+//
+// We cheat and return globalRange if that's defined.  We also ensure that the
+// active range meets the requirements that selection boundary points are
+// supposed to meet, i.e., that the nodes are both Text or Element nodes that
+// descend from a Document.
+function getActiveRange() {
+	var ret;
+	if (globalRange) {
+		ret = globalRange;
+	} else if (getSelection().rangeCount) {
+		ret = getSelection().getRangeAt(0);
+	} else {
+		return null;
+	}
+	if ([Node.TEXT_NODE, Node.ELEMENT_NODE].indexOf(ret.startContainer.nodeType) == -1
+	|| [Node.TEXT_NODE, Node.ELEMENT_NODE].indexOf(ret.endContainer.nodeType) == -1
+	|| !ret.startContainer.ownerDocument
+	|| !ret.endContainer.ownerDocument
+	|| !isDescendant(ret.startContainer, ret.startContainer.ownerDocument)
+	|| !isDescendant(ret.endContainer, ret.endContainer.ownerDocument)) {
+		throw "Invalid active range; test bug?";
+	}
+	return ret;
+}
 //@}
 
 /////////////////////////////
@@ -2641,7 +2684,7 @@ function setNodeValue(node, command, newValue) {
 
 ///// The backColor command /////
 // Unimplemented
-commands.backcolor = {};
+//commands.backcolor = {};
 
 ///// The bold command /////
 //@{
@@ -6688,36 +6731,5 @@ commands.usecss = {
 	}
 };
 //@}
-
-
-// Done with command setup
-
-// "Commands may have an associated action, indeterminate flag, state, value,
-// and/or relevant CSS property. If not otherwise specified, the action for a
-// command is to do nothing, the indeterminate flag is false, the state is
-// false, the value is the empty string, and the relevant CSS property is
-// null."
-//
-// Don't dump the "command" variable into the global scope, it can cause bugs
-// because we have lots of local "command"s.
-(function() {
-	for (var command in commands) {
-		if (!("action" in commands[command])) {
-			commands[command].action = function() {};
-		}
-		if (!("indeterm" in commands[command])) {
-			commands[command].indeterm = function() { return false };
-		}
-		if (!("state" in commands[command])) {
-			commands[command].state = function() { return false };
-		}
-		if (!("value" in commands[command])) {
-			commands[command].value = function() { return "" };
-		}
-		if (!("relevantCssProperty" in commands[command])) {
-			commands[command].relevantCssProperty = null;
-		}
-	}
-})();
 
 // vim: foldmarker=@{,@} foldmethod=marker

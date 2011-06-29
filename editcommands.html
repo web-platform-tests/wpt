@@ -69,71 +69,72 @@ have experience using this feature.
  <li><a class=no-num href=#table-of-contents>Table of contents</a></li>
  <li><a href=#introduction><span class=secno>1 </span>Introduction</a></li>
  <li><a href=#issues><span class=secno>2 </span>Issues</a></li>
- <li><a href=#methods-of-the-htmldocument-interface><span class=secno>3 </span>Methods of the <code class=external data-anolis-spec=html>HTMLDocument</code> interface</a></li>
- <li><a href=#common-definitions><span class=secno>4 </span>Common definitions</a></li>
- <li><a href=#common-algorithms><span class=secno>5 </span>Common algorithms</a>
+ <li><a href=#basic-concepts><span class=secno>3 </span>Basic concepts</a></li>
+ <li><a href=#methods-of-the-htmldocument-interface><span class=secno>4 </span>Methods of the <code class=external data-anolis-spec=html>HTMLDocument</code> interface</a></li>
+ <li><a href=#common-definitions><span class=secno>5 </span>Common definitions</a></li>
+ <li><a href=#common-algorithms><span class=secno>6 </span>Common algorithms</a>
   <ol>
-   <li><a href=#assorted-common-algorithms><span class=secno>5.1 </span>Assorted common algorithms</a></li>
-   <li><a href=#wrapping-a-list-of-nodes><span class=secno>5.2 </span>Wrapping a list of nodes</a></ol></li>
- <li><a href=#inline-formatting-commands><span class=secno>6 </span>Inline formatting commands</a>
+   <li><a href=#assorted-common-algorithms><span class=secno>6.1 </span>Assorted common algorithms</a></li>
+   <li><a href=#wrapping-a-list-of-nodes><span class=secno>6.2 </span>Wrapping a list of nodes</a></ol></li>
+ <li><a href=#inline-formatting-commands><span class=secno>7 </span>Inline formatting commands</a>
   <ol>
-   <li><a href=#inline-formatting-command-definitions><span class=secno>6.1 </span>Inline formatting command definitions</a></li>
-   <li><a href=#assorted-inline-formatting-command-algorithms><span class=secno>6.2 </span>Assorted inline formatting command algorithms</a></li>
-   <li><a href=#decomposing-a-range-into-nodes><span class=secno>6.3 </span>Decomposing a range into nodes</a></li>
-   <li><a href="#clearing-an-element's-value"><span class=secno>6.4 </span>Clearing an element's value</a></li>
-   <li><a href=#pushing-down-values><span class=secno>6.5 </span>Pushing down values</a></li>
-   <li><a href=#forcing-the-value-of-a-node><span class=secno>6.6 </span>Forcing the value of a node</a></li>
-   <li><a href=#setting-the-value-of-a-node><span class=secno>6.7 </span>Setting the value of a node</a></li>
-   <li><a href=#the-backcolor-command><span class=secno>6.8 </span>The <code title="">backColor</code> command</a></li>
-   <li><a href=#the-bold-command><span class=secno>6.9 </span>The <code title="">bold</code> command</a></li>
-   <li><a href=#the-createlink-command><span class=secno>6.10 </span>The <code title="">createLink</code> command</a></li>
-   <li><a href=#the-fontname-command><span class=secno>6.11 </span>The <code title="">fontName</code> command</a></li>
-   <li><a href=#the-fontsize-command><span class=secno>6.12 </span>The <code title="">fontSize</code> command</a></li>
-   <li><a href=#the-forecolor-command><span class=secno>6.13 </span>The <code title="">foreColor</code> command</a></li>
-   <li><a href=#the-hilitecolor-command><span class=secno>6.14 </span>The <code title="">hiliteColor</code> command</a></li>
-   <li><a href=#the-italic-command><span class=secno>6.15 </span>The <code title="">italic</code> command</a></li>
-   <li><a href=#the-removeformat-command><span class=secno>6.16 </span>The <code title="">removeFormat</code> command</a></li>
-   <li><a href=#the-strikethrough-command><span class=secno>6.17 </span>The <code title="">strikethrough</code> command</a></li>
-   <li><a href=#the-subscript-command><span class=secno>6.18 </span>The <code title="">subscript</code> command</a></li>
-   <li><a href=#the-superscript-command><span class=secno>6.19 </span>The <code title="">superscript</code> command</a></li>
-   <li><a href=#the-underline-command><span class=secno>6.20 </span>The <code title="">underline</code> command</a></li>
-   <li><a href=#the-unlink-command><span class=secno>6.21 </span>The <code title="">unlink</code> command</a></ol></li>
- <li><a href=#block-formatting-commands><span class=secno>7 </span>Block formatting commands</a>
+   <li><a href=#inline-formatting-command-definitions><span class=secno>7.1 </span>Inline formatting command definitions</a></li>
+   <li><a href=#assorted-inline-formatting-command-algorithms><span class=secno>7.2 </span>Assorted inline formatting command algorithms</a></li>
+   <li><a href=#decomposing-a-range-into-nodes><span class=secno>7.3 </span>Decomposing a range into nodes</a></li>
+   <li><a href="#clearing-an-element's-value"><span class=secno>7.4 </span>Clearing an element's value</a></li>
+   <li><a href=#pushing-down-values><span class=secno>7.5 </span>Pushing down values</a></li>
+   <li><a href=#forcing-the-value-of-a-node><span class=secno>7.6 </span>Forcing the value of a node</a></li>
+   <li><a href=#setting-the-value-of-a-node><span class=secno>7.7 </span>Setting the value of a node</a></li>
+   <li><a href=#the-backcolor-command><span class=secno>7.8 </span>The <code title="">backColor</code> command</a></li>
+   <li><a href=#the-bold-command><span class=secno>7.9 </span>The <code title="">bold</code> command</a></li>
+   <li><a href=#the-createlink-command><span class=secno>7.10 </span>The <code title="">createLink</code> command</a></li>
+   <li><a href=#the-fontname-command><span class=secno>7.11 </span>The <code title="">fontName</code> command</a></li>
+   <li><a href=#the-fontsize-command><span class=secno>7.12 </span>The <code title="">fontSize</code> command</a></li>
+   <li><a href=#the-forecolor-command><span class=secno>7.13 </span>The <code title="">foreColor</code> command</a></li>
+   <li><a href=#the-hilitecolor-command><span class=secno>7.14 </span>The <code title="">hiliteColor</code> command</a></li>
+   <li><a href=#the-italic-command><span class=secno>7.15 </span>The <code title="">italic</code> command</a></li>
+   <li><a href=#the-removeformat-command><span class=secno>7.16 </span>The <code title="">removeFormat</code> command</a></li>
+   <li><a href=#the-strikethrough-command><span class=secno>7.17 </span>The <code title="">strikethrough</code> command</a></li>
+   <li><a href=#the-subscript-command><span class=secno>7.18 </span>The <code title="">subscript</code> command</a></li>
+   <li><a href=#the-superscript-command><span class=secno>7.19 </span>The <code title="">superscript</code> command</a></li>
+   <li><a href=#the-underline-command><span class=secno>7.20 </span>The <code title="">underline</code> command</a></li>
+   <li><a href=#the-unlink-command><span class=secno>7.21 </span>The <code title="">unlink</code> command</a></ol></li>
+ <li><a href=#block-formatting-commands><span class=secno>8 </span>Block formatting commands</a>
   <ol>
-   <li><a href=#block-formatting-command-definitions><span class=secno>7.1 </span>Block formatting command definitions</a></li>
-   <li><a href=#assorted-block-formatting-command-algorithms><span class=secno>7.2 </span>Assorted block formatting command algorithms</a></li>
-   <li><a href=#allowed-children><span class=secno>7.3 </span>Allowed children</a></li>
-   <li><a href=#block-extending-a-range><span class=secno>7.4 </span>Block-extending a range</a></li>
-   <li><a href=#deleting-the-contents-of-a-range><span class=secno>7.5 </span>Deleting the contents of a range</a></li>
-   <li><a href=#outdenting-a-node><span class=secno>7.6 </span>Outdenting a node</a></li>
-   <li><a href=#toggling-lists><span class=secno>7.7 </span>Toggling lists</a></li>
-   <li><a href=#justifying-the-selection><span class=secno>7.8 </span>Justifying the selection</a></li>
-   <li><a href=#the-delete-command><span class=secno>7.9 </span>The <code title="">delete</code> command</a></li>
-   <li><a href=#the-formatblock-command><span class=secno>7.10 </span>The <code title="">formatBlock</code> command</a></li>
-   <li><a href=#the-forwarddelete-command><span class=secno>7.11 </span>The <code title="">forwardDelete</code> command</a></li>
-   <li><a href=#the-indent-command><span class=secno>7.12 </span>The <code title="">indent</code> command</a></li>
-   <li><a href=#the-inserthtml-command><span class=secno>7.13 </span>The <code title="">insertHTML</code> command</a></li>
-   <li><a href=#the-insertimage-command><span class=secno>7.14 </span>The <code title="">insertImage</code> command</a></li>
-   <li><a href=#the-inserthorizontalrule-command><span class=secno>7.15 </span>The <code title="">insertHorizontalRule</code> command</a></li>
-   <li><a href=#the-insertlinebreak-command><span class=secno>7.16 </span>The <code title="">insertLineBreak</code> command</a></li>
-   <li><a href=#the-insertorderedlist-command><span class=secno>7.17 </span>The <code title="">insertOrderedList</code> command</a></li>
-   <li><a href=#the-insertparagraph-command><span class=secno>7.18 </span>The <code title="">insertParagraph</code> command</a></li>
-   <li><a href=#the-inserttext-command><span class=secno>7.19 </span>The <code title="">insertText</code> command</a></li>
-   <li><a href=#the-insertunorderedlist-command><span class=secno>7.20 </span>The <code title="">insertUnorderedList</code> command</a></li>
-   <li><a href=#the-justifycenter-command><span class=secno>7.21 </span>The <code title="">justifyCenter</code> command</a></li>
-   <li><a href=#the-justifyfull-command><span class=secno>7.22 </span>The <code title="">justifyFull</code> command</a></li>
-   <li><a href=#the-justifyleft-command><span class=secno>7.23 </span>The <code title="">justifyLeft</code> command</a></li>
-   <li><a href=#the-justifyright-command><span class=secno>7.24 </span>The <code title="">justifyRight</code> command</a></li>
-   <li><a href=#the-outdent-command><span class=secno>7.25 </span>The <code title="">outdent</code> command</a></ol></li>
- <li><a href=#miscellaneous-commands><span class=secno>8 </span>Miscellaneous commands</a>
+   <li><a href=#block-formatting-command-definitions><span class=secno>8.1 </span>Block formatting command definitions</a></li>
+   <li><a href=#assorted-block-formatting-command-algorithms><span class=secno>8.2 </span>Assorted block formatting command algorithms</a></li>
+   <li><a href=#allowed-children><span class=secno>8.3 </span>Allowed children</a></li>
+   <li><a href=#block-extending-a-range><span class=secno>8.4 </span>Block-extending a range</a></li>
+   <li><a href=#deleting-the-contents-of-a-range><span class=secno>8.5 </span>Deleting the contents of a range</a></li>
+   <li><a href=#outdenting-a-node><span class=secno>8.6 </span>Outdenting a node</a></li>
+   <li><a href=#toggling-lists><span class=secno>8.7 </span>Toggling lists</a></li>
+   <li><a href=#justifying-the-selection><span class=secno>8.8 </span>Justifying the selection</a></li>
+   <li><a href=#the-delete-command><span class=secno>8.9 </span>The <code title="">delete</code> command</a></li>
+   <li><a href=#the-formatblock-command><span class=secno>8.10 </span>The <code title="">formatBlock</code> command</a></li>
+   <li><a href=#the-forwarddelete-command><span class=secno>8.11 </span>The <code title="">forwardDelete</code> command</a></li>
+   <li><a href=#the-indent-command><span class=secno>8.12 </span>The <code title="">indent</code> command</a></li>
+   <li><a href=#the-inserthtml-command><span class=secno>8.13 </span>The <code title="">insertHTML</code> command</a></li>
+   <li><a href=#the-insertimage-command><span class=secno>8.14 </span>The <code title="">insertImage</code> command</a></li>
+   <li><a href=#the-inserthorizontalrule-command><span class=secno>8.15 </span>The <code title="">insertHorizontalRule</code> command</a></li>
+   <li><a href=#the-insertlinebreak-command><span class=secno>8.16 </span>The <code title="">insertLineBreak</code> command</a></li>
+   <li><a href=#the-insertorderedlist-command><span class=secno>8.17 </span>The <code title="">insertOrderedList</code> command</a></li>
+   <li><a href=#the-insertparagraph-command><span class=secno>8.18 </span>The <code title="">insertParagraph</code> command</a></li>
+   <li><a href=#the-inserttext-command><span class=secno>8.19 </span>The <code title="">insertText</code> command</a></li>
+   <li><a href=#the-insertunorderedlist-command><span class=secno>8.20 </span>The <code title="">insertUnorderedList</code> command</a></li>
+   <li><a href=#the-justifycenter-command><span class=secno>8.21 </span>The <code title="">justifyCenter</code> command</a></li>
+   <li><a href=#the-justifyfull-command><span class=secno>8.22 </span>The <code title="">justifyFull</code> command</a></li>
+   <li><a href=#the-justifyleft-command><span class=secno>8.23 </span>The <code title="">justifyLeft</code> command</a></li>
+   <li><a href=#the-justifyright-command><span class=secno>8.24 </span>The <code title="">justifyRight</code> command</a></li>
+   <li><a href=#the-outdent-command><span class=secno>8.25 </span>The <code title="">outdent</code> command</a></ol></li>
+ <li><a href=#miscellaneous-commands><span class=secno>9 </span>Miscellaneous commands</a>
   <ol>
-   <li><a href=#the-copy-command><span class=secno>8.1 </span>The <code title="">copy</code> command</a></li>
-   <li><a href=#the-cut-command><span class=secno>8.2 </span>The <code title="">cut</code> command</a></li>
-   <li><a href=#the-paste-command><span class=secno>8.3 </span>The <code title="">paste</code> command</a></li>
-   <li><a href=#the-selectall-command><span class=secno>8.4 </span>The <code title="">selectAll</code> command</a></li>
-   <li><a href=#the-stylewithcss-command><span class=secno>8.5 </span>The <code title="">styleWithCSS</code> command</a></li>
-   <li><a href=#the-usecss-command><span class=secno>8.6 </span>The <code title="">useCSS</code> command</a></ol></li>
- <li><a href=#additional-requirements><span class=secno>9 </span>Additional requirements</a></li>
+   <li><a href=#the-copy-command><span class=secno>9.1 </span>The <code title="">copy</code> command</a></li>
+   <li><a href=#the-cut-command><span class=secno>9.2 </span>The <code title="">cut</code> command</a></li>
+   <li><a href=#the-paste-command><span class=secno>9.3 </span>The <code title="">paste</code> command</a></li>
+   <li><a href=#the-selectall-command><span class=secno>9.4 </span>The <code title="">selectAll</code> command</a></li>
+   <li><a href=#the-stylewithcss-command><span class=secno>9.5 </span>The <code title="">styleWithCSS</code> command</a></li>
+   <li><a href=#the-usecss-command><span class=secno>9.6 </span>The <code title="">useCSS</code> command</a></ol></li>
+ <li><a href=#additional-requirements><span class=secno>10 </span>Additional requirements</a></li>
  <li><a class=no-num href=#acknowledgements>Acknowledgements</a></ol>
 <!--end-toc-->
 
@@ -318,98 +319,151 @@ list</a>.
 like this.
 
 
-<h2 id=methods-of-the-htmldocument-interface><span class=secno>3 </span>Methods of the <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/html/#htmldocument>HTMLDocument</a></code> interface</h2>
+<h2 id=basic-concepts><span class=secno>3 </span>Basic concepts</h2>
 
-<p>The <dfn id=execcommand() title=execCommand()><code>execCommand(<var title="">command</var>,
-<var title="">showUI</var>, <var title="">value</var>)</code></dfn> method on the
-<code class=external data-anolis-spec=html><a href=http://www.whatwg.org/html/#htmldocument>HTMLDocument</a></code> interface allows scripts to
-perform actions on the current selection or at the current caret position.
-Generally, these commands would be used to implement editor UI, for example
-having a "delete" button on a toolbar.  There are three variants to this
-method, with one, two, and three arguments respectively. The <var title="">showUI</var>
-and <var title="">value</var> parameters, even if specified, are ignored except where
-otherwise stated.
+<p>This specification defines a number of <dfn id=command title=command>commands</dfn>,
+identified by <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#ascii-case-insensitive>ASCII case-insensitive</a>
+strings.  Each <a href=#command>command</a> can have several pieces of data associated
+with it:
 
-<p class=XXX>The <dfn id=querycommandenabled() title=queryCommandEnabled()><code>queryCommandEnabled(<var title="">command</var>)</code></dfn>
-method on the <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/html/#htmldocument>HTMLDocument</a></code> interface does
-the same thing as <code><a href=#querycommandsupported()>queryCommandSupported()</a></code>.
+<ul>
+  <li><dfn id=action>Action</dfn>: What the <a href=#command>command</a> does when executed via
+  <code><a href=#execcommand()>execCommand()</a></code>.  Every <a href=#command>command</a> defined in this
+  specification has an <a href=#action>action</a> defined for it in the relevant
+  section.  For example, <a href=#the-bold-command>the <code title="">bold</code> command</a>'s
+  <a href=#action>action</a> generally makes the current selection bold, or removes
+  bold if the selection is already bold.  An editing toolbar might provide
+  buttons that execute the <a href=#action>action</a> for a <a href=#command>command</a> if
+  clicked, or a script might run an <a href=#action>action</a> without user
+  interaction to achieve some particular effect.
 
-<p>The <dfn id=querycommandindeterm() title=queryCommandIndeterm()><code>queryCommandIndeterm(<var title="">command</var>)</code></dfn>
-method on the <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/html/#htmldocument>HTMLDocument</a></code> interface allows
-scripts to determine whether the selection is in a mixed or indeterminate
-state, like (for <a href=#the-bold-command>the <code title="">bold</code> command</a>) partly bold
-and partly not.  An editing toolbar with a "bold" button might show it
-differently if the selection is indeterminate.  As a rule, the current
-selection is indeterminate for a command if either the command has a state
-which is true for part of the selection but not the whole selection, or it has
-a value which is different for different parts of the selection.
+  <li><dfn id=indeterminate>Indeterminate</dfn>: A boolean value returned by
+  <code><a href=#querycommandindeterm()>queryCommandIndeterm()</a></code>, depending on the current state of the
+  document.  Generally, a <a href=#command>command</a> that has a <a href=#state>state</a>
+  defined will be <a href=#indeterminate>indeterminate</a> if the <a href=#state>state</a> is true
+  for part but not all of the current selection, and a <a href=#command>command</a>
+  that has a <a href=#value>value</a> defined will be <a href=#indeterminate>indeterminate</a> if
+  different parts of the selection have different <a href=#value title=value>values</a>.  An editing toolbar might display a button or
+  control in a special way if the <a href=#command>command</a> is
+  <a href=#indeterminate>indeterminate</a>, like showing a "bold" button as partially
+  depressed, or leaving a font size selector blank instead of showing the font
+  size of the current selection.  As a rule, a <a href=#command>command</a> can only be
+  <a href=#indeterminate>indeterminate</a> if its <a href=#state>state</a> is false, supposing it
+  has a <a href=#state>state</a>.
 
-<p>The <dfn id=querycommandstate() title=queryCommandState()><code>queryCommandState(<var title="">command</var>)</code></dfn>
-method on the <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/html/#htmldocument>HTMLDocument</a></code> interface allows
-scripts to ask true-or-false status questions about the current selection, such
-as whether it is bold or not.  An editing toolbar with a "bold" button might
-show it as preseed down if the state is true and undepressed if the state is
-false.
+  <li><dfn id=state>State</dfn>: A boolean value returned by
+  <code><a href=#querycommandstate()>queryCommandState()</a></code>, depending on the current state of the
+  document.  The <a href=#state>state</a> of a <a href=#command>command</a> is true if it is
+  already in effect, in some sense specific to the <a href=#command>command</a>.  Most
+  <a href=#command title=command>commands</a> that have a <a href=#state>state</a> defined
+  will take opposite <a href=#action title=action>actions</a> depending on whether the
+  <a href=#state>state</a> is true or false, such as making the selection bold if the
+  <a href=#state>state</a> is false and removing bold if the <a href=#state>state</a> is
+  true.  Others will just have no effect if the <a href=#state>state</a> is true,
+  like <a href=#the-justifycenter-command>the <code title="">justifyCenter</code> command</a>.  Still others
+  will have the same effect regardless, like <a href=#the-stylewithcss-command>the <code title="">styleWithCss</code> command</a>.  An editing toolbar might display a
+  button or control differently depending on the <a href=#state>state</a> and <a href=#indeterminate title=indeterminate>indeterminacy</a> of the <a href=#command>command</a>.
 
-<p>The <dfn id=querycommandsupported() title=queryCommandSupported()><code>queryCommandSupported(<var title="">command</var>)</code></dfn>
-method on the <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/html/#htmldocument>HTMLDocument</a></code> interface allows
-scripts to determine whether a particular command is supported or will do
-nothing.  Authors might write their scripts to use some type of fallback if a
-command is unsupported, or display an error.
+  <li><dfn id=value>Value</dfn>: A string returned by <code><a href=#querycommandvalue()>queryCommandValue()</a></code>,
+  depending on the current state of the document.  A <a href=#command>command</a>
+  usually has a <a href=#value>value</a> instead of a <a href=#state>state</a> if the
+  property it modifies can take more than two different values, like <a href=#the-forecolor-command>the
+  <code title="">foreColor</code> command</a>.  If the <a href=#command>command</a> is
+  <a href=#indeterminate>indeterminate</a>, its <a href=#value>value</a> is generally based on the
+  start of the selection.  Otherwise, in most cases the <a href=#value>value</a>
+  holds true for the entire selection, but see <a href=#the-justifycenter-command>the <code title="">justifyCenter</code> command</a> and <a href=#the-justifyfull-command title="the justifyFull
+  command">its</a> <a href=#the-justifyleft-command title="the justifyLeft command">three</a> <a href=#the-justifyright-command title="the justifyRight command">companions</a> for an exception.  An
+  editing toolbar might display the <a href=#value>value</a> of a
+  <a href=#command>command</a> as selected in a drop-down or filled in in a text box,
+  if the <a href=#command>command</a> isn't <a href=#indeterminate>indeterminate</a>.
 
-<p>The <dfn id=querycommandvalue() title=queryCommandValue()><code>queryCommandValue(<var title="">command</var>)</code></dfn>
-method on the <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/html/#htmldocument>HTMLDocument</a></code> interface allows
-scripts to get the value of some property of the current selection in string
-form, such as what color it is.  Usually this will return the value for the
-beginning of the selection, if it's not the same for the whole selection.
+  <li><dfn id=relevant-css-property>Relevant CSS property</dfn>: This is defined for certain <a href=#inline-formatting-commands>inline formatting commands</a>, and is used
+  in algorithms specific to those commands.  It is an implementation detail,
+  and is not exposed to authors.  If a <a href=#command>command</a> does not have a
+  <a href=#relevant-css-property>relevant CSS property</a> specified, it defaults to null.
+</ul>
 
-<p>All of these methods operate using particular <dfn id=command title=command>commands</dfn>, identified by a string <var title="">command</var> passed
-as the first argument.  The <var title="">command</var> argument of all the methods must
-be treated in an <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#ascii-case-insensitive>ASCII case-insensitive</a>
-manner.  Each <a href=#command>command</a> is defined in its own section of this
-specification.
-
-<p><a href=#command title=command>Commands</a> may have an associated
-<dfn id=action>action</dfn>, <dfn id=indeterminate-flag>indeterminate flag</dfn>, <dfn id=state>state</dfn>,
-<dfn id=value>value</dfn>, and/or <dfn id=relevant-css-property>relevant CSS property</dfn>.  If not otherwise
-specified, the <a href=#action>action</a> for a <a href=#command>command</a> is to do nothing,
-the <a href=#indeterminate-flag>indeterminate flag</a> is false, the <a href=#state>state</a> is false,
-the <a href=#value>value</a> is the empty string, and the <a href=#relevant-css-property>relevant CSS
-property</a> is null.
+<p>If the <a href=#active-range>active range</a> is null, then every <a href=#command>command</a> in
+this specification must behave as though its <a href=#action>action</a> is to do
+nothing, its <a href=#indeterminate title=indeterminate>indeterminacy</a> is false (if it has
+any associated <a href=#indeterminate title=indeterminate>indeterminacy</a>), its
+<a href=#state>state</a> is false (if it has any associated <a href=#state>state</a>), and
+its <a href=#value>value</a> is the empty string (if it has any associated
+<a href=#value>value</a>).  However, the <a href=#command title=command>commands</a> listed
+under <a href=#miscellaneous-commands>Miscellaneous commands</a> must behave as
+usual even if the <a href=#active-range>active range</a> is null.
 <!--
-Requesting the state of an unknown command throws an exception in IE 9 RC and
-Firefox 4b11, and returns boolean false in Chrome 10 and Opera 11.
-
-Requesting the value of an unknown command throws an exception in IE 9 RC and
-in Firefox 4b11.  It returns boolean false in Chrome 10, and the empty string
-in Opera 11.
-
-We have lots of options for the default value of commands.  Using bold as an
-example, IE 9 RC returns the boolean false, Firefox 4b11 and Opera 11 both
-return the empty string, Chrome 10 returns the string "false".  The HTML5 spec
-as of February 2011 mandates WebKit's behavior.  It makes sense to always
-return a string, a majority of string-returners return the empty string, and
-three out of the four return something that evaluates to false as a boolean, so
-I'll go with Firefox and Opera.
-
-Actually, for commands like bold where state makes sense but not value, it
-looks like Chrome 14 dev makes the value equal to the state cast to a string,
-so either the string "true" or "false".  This seems confusing and unhelpful, so
-I'll pass.
+This matches Firefox 6.0a2 and Opera 11.11.  IE9 and Chrome 14 dev seem to
+return false for the value in this case.
 -->
 
-<p>When <code><a href=#execcommand()>execCommand()</a></code> is invoked, the user agent must follow the
-<a href=#action>action</a> instructions given in this specification for
-<var title="">command</var>, with <var title="">showUI</var> and <var title="">value</var> passed to the
-instructions as arguments.
+<p>Some <a href=#command title=command>commands</a> will be <dfn id=supported>supported</dfn> in a
+given user agent, and some will not.  All <a href=#command title=command>commands</a>
+defined in this specification must be <a href=#supported>supported</a>, except optionally
+<a href=#the-copy-command>the <code title="">copy</code> command</a>, <a href=#the-cut-command>the <code title="">cut</code> command</a>, and/or <a href=#the-paste-command>the <code title="">paste</code>
+command</a>.  Additional <a href=#command title=command>commands</a> can also be
+<a href=#supported>supported</a>, but implementers should prefix any nonstandard
+<a href=#command>command</a> names with a vendor-specific string that ends in a hyphen
+(e.g., "ms-", "gecko-", "webkit-", "opera-").
+<!-- If you try doing anything with an unrecognized command, IE9 throws an
+"Invalid argument" exception, and Firefox 6.0a2 throws
+NS_ERROR_NOT_IMPLEMENTED.  Chrome 14 dev and Opera 11.11 both just return a
+useless value.  I go with IE/Gecko, although of course with a standard
+exception type. -->
 
-<p>When <code><a href=#querycommandenabled()>queryCommandEnabled()</a></code> is invoked, the user agent must
-return the result of calling <code><a href=#querycommandsupported()>queryCommandSupported()</a></code> with the same
-arguments.
+<p>A <a href=#command>command</a> that does absolutely nothing in a particular user
+agent, such that <code><a href=#execcommand()>execCommand()</a></code> never has any effect and
+<code><a href=#querycommandenabled()>queryCommandEnabled()</a></code> and <code><a href=#querycommandindeterm()>queryCommandIndeterm()</a></code> and
+<code><a href=#querycommandstate()>queryCommandState()</a></code> and <code><a href=#querycommandvalue()>queryCommandValue()</a></code> each
+return the same value all the time, must not be <a href=#supported>supported</a>.
+<!-- I.e., no trying to look good on lazy conformance tests by just sticking in
+a stub implementation that does nothing. -->
 
-<p class=XXX>This isn't how anyone behaves, but no one's behavior is very
-useful anyway.  For this to make sense would require a significant amount of
-work and it's not clear it's worth it at all.  See comment for details.
+<p>In a particular user agent, every <a href=#command>command</a> must be consistently
+either <a href=#supported>supported</a> or not.  Specifically, a user agent must not
+permit one page to see the same <a href=#command>command</a> sometimes
+<a href=#supported>supported</a> and sometimes not over the course of the same browsing
+session, unless the user agent has been upgraded or reconfigured in the middle
+of a session.  However, user agents may treat the same <a href=#command>command</a> as
+<a href=#supported>supported</a> for some pages and not others, e.g., if the
+<a href=#command>command</a> is only supported for certain origins for security
+reasons.
+
+<p>Authors can tell whether a <a href=#command>command</a> is <a href=#supported>supported</a>
+using <code><a href=#querycommandsupported()>queryCommandSupported()</a></code>.
+
+
+<h2 id=methods-of-the-htmldocument-interface><span class=secno>4 </span>Methods of the <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/html/#htmldocument>HTMLDocument</a></code> interface</h2>
+
+<p>When the <dfn id=execcommand() title=execCommand()><code>execCommand(<var title="">command</var>,
+<var title="">show UI</var>, <var title="">value</var>)</code></dfn> method on the <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/html/#htmldocument>HTMLDocument</a></code> interface is invoked, the user agent
+must follow the <a href=#action>action</a> instructions given in this specification
+for <var title="">command</var>, passing <var title="">value</var> to the instructions as an
+argument, then return true.  If <var title="">command</var> is not
+<a href=#supported>supported</a>, the user agent must instead raise a
+<code class=external data-anolis-spec=domcore title=dom-DOMException-NOT_SUPPORTED_ERR><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-domexception-not_supported_err>NOT_SUPPORTED_ERR</a></code> exception.  If <var title="">command</var> is
+<a href=#supported>supported</a> but has no associated <a href=#action>action</a> (which is not
+the case for any <a href=#command>command</a> defined in this specification), the user
+agent must instead raise an <code class=external data-anolis-spec=domcore title=dom-DOMException-INVALID_ACCESS_ERR><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-domexception-invalid_access_err>INVALID_ACCESS_ERR</a></code> exception.
+<!-- I'm just speccing INVALID_ACCESS_ERR for consistency.  I don't expect
+real-world commands are likely to not have an action defined, but you never
+know. -->
+
+<p class=XXX>WebKit doesn't always return true (and maybe others also).  Needs
+investigation: should we ever return false, and if so when?
+
+<p class=XXX>Define behavior for <var title="">show UI</var>.
+
+<p>When the <dfn id=querycommandenabled() title=queryCommandEnabled()><code>queryCommandEnabled(<var title="">command</var>)</code></dfn>
+method on the <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/html/#htmldocument>HTMLDocument</a></code> interface is
+invoked, the user agent must return true.  If <var title="">command</var> is not
+<a href=#supported>supported</a>, the user agent must instead raise a
+<code class=external data-anolis-spec=domcore title=dom-DOMException-NOT_SUPPORTED_ERR><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-domexception-not_supported_err>NOT_SUPPORTED_ERR</a></code> exception.
+
+<p class=XXX>This is useless and not how anyone behaves, but no one's behavior
+is very useful anyway.  For this to make sense would require a significant
+amount of work and it's not clear it's worth it at all.  See comment for
+details.
 <!--
 Testing with bold and formatBlock:
 
@@ -434,51 +488,77 @@ nontrivial, and I'm not sure what the use-case is.  So for now I'll go with
 Opera, but I'll return to it later.
 -->
 
-<p>When <code><a href=#querycommandindeterm()>queryCommandIndeterm()</a></code> is invoked, the user agent must
-return the <a href=#indeterminate-flag>indeterminate flag</a> for <var title="">command</var>.
-
-<p>When <code><a href=#querycommandstate()>queryCommandState()</a></code> is invoked, the user agent must return
-the <a href=#state>state</a> for <var title="">command</var>.
-
-<p>When <code><a href=#querycommandsupported()>queryCommandSupported()</a></code> is invoked, the user agent must
-return false if calling <code title=execCommand()><a href=#execcommand()>execCommand(<var title="">command</var>, <var title="">x</var>,
-<var title="">y</var>)</a></code> will never have any effect, and true otherwise.  Thus user
-agents that partially implement a <a href=#command>command</a> must return true for
-that <a href=#command>command</a>, and user agents that fully conform to this
-specification must return true for all the <a href=#command title=command>commands</a>
-defined in it (except possibly <a href=#the-copy-command>the <code title="">copy</code>
-command</a>, <a href=#the-cut-command>the <code title="">cut</code> command</a>, and/or
-<a href=#the-paste-command>the <code title="">paste</code> command</a>).
+<p>When the <dfn id=querycommandindeterm() title=queryCommandIndeterm()><code>queryCommandIndeterm(<var title="">command</var>)</code></dfn>
+method on the <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/html/#htmldocument>HTMLDocument</a></code> interface is
+invoked, the user agent must return true if <var title="">command</var> is
+<a href=#indeterminate>indeterminate</a>, otherwise false.  If <var title="">command</var> is not
+<a href=#supported>supported</a>, the user agent must instead raise a
+<code class=external data-anolis-spec=domcore title=dom-DOMException-NOT_SUPPORTED_ERR><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-domexception-not_supported_err>NOT_SUPPORTED_ERR</a></code> exception.  If <var title="">command</var> is
+<a href=#supported>supported</a> but has no associated <a href=#indeterminate title=indeterminate>indeterminacy</a> definition, the user agent must
+instead raise an <code class=external data-anolis-spec=domcore title=dom-DOMException-INVALID_ACCESS_ERR><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-domexception-invalid_access_err>INVALID_ACCESS_ERR</a></code> exception.
 <!--
-Firefox 6.0a2 always throws an exception when this is called.  That's
-presumably because it's easy to feature-test, in that it throws an exception if
-you run any of the other methods with an unrecognized command.  Opera 11.11
-seems to return false if there's nothing editable on the page, which is
-unhelpful.  The spec follows IE9 and Chrome 14 dev.
+What happens if you call queryCommand(Indeterm|State|Value)() on a command
+where it makes no sense?
+
+IE9 consistently returns false for all three.
+
+Firefox 6.0a2 consistently throws NS_ERROR_FAILURE for indeterm/state if not
+supported, and returns an empty string for value.  Exceptions include unlink
+(seems to always return indeterm/state false), and styleWithCss/useCss (throw
+NS_ERROR_FAILURE even for value).
+
+Chrome 14 dev returns false for all three, and even does this for unrecognized
+commands.  It also always defines value if state is defined: it returns the
+state cast to a string, either "true" or "false".
+
+Opera 11.11 returns false for state and "" for value (it doesn't support
+indeterm).  Like Chrome, this is even for unrecognized commands.
+
+Gecko's behavior is the most useful.  If the author tries querying some aspect
+of a command that makes no sense, they shouldn't receive a value that looks
+like it might make sense but is actually just a constant.  However, I go even
+further than Gecko: I require exceptions even for value, since doing otherwise
+makes no sense.
 -->
 
-<p>When <code><a href=#querycommandvalue()>queryCommandValue()</a></code> is invoked, the user agent must return
-the <a href=#value>value</a> for <var title="">command</var>.
+<p>When the <dfn id=querycommandstate() title=queryCommandState()><code>queryCommandState(<var title="">command</var>)</code></dfn>
+method on the <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/html/#htmldocument>HTMLDocument</a></code> interface is
+invoked, the user agent must return the <a href=#state>state</a> for
+<var title="">command</var>.  If <var title="">command</var> is not <a href=#supported>supported</a>, the
+user agent must instead raise a <code class=external data-anolis-spec=domcore title=dom-DOMException-NOT_SUPPORTED_ERR><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-domexception-not_supported_err>NOT_SUPPORTED_ERR</a></code> exception.  If
+<var title="">command</var> is <a href=#supported>supported</a> but has no associated
+<a href=#state>state</a>, the user agent must instead raise an <code class=external data-anolis-spec=domcore title=dom-DOMException-INVALID_ACCESS_ERR><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-domexception-invalid_access_err>INVALID_ACCESS_ERR</a></code>
+exception.
 
-<p>Most <a href=#command title=command>commands</a> act on the <dfn id=active-range>active range</dfn>.
-This is defined to be the first <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> in the <code class=external data-anolis-spec=domrange><a href=http://html5.org/specs/dom-range.html#selection>Selection</a></code> given by calling
-<code class=external data-anolis-spec=domrange title=dom-Document-getSelection><a href=http://html5.org/specs/dom-range.html#dom-document-getselection>getSelection()</a></code> on the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>, or null if there is no such
-<a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>.  If the <a href=#active-range>active range</a> is null, all <a href=#command title=command>commands</a> must behave as though they were not defined
-except those in the <a href=#miscellaneous-commands>miscellaneous commands</a>
-section.
+<p>When the <dfn id=querycommandsupported() title=queryCommandSupported()><code>queryCommandSupported(<var title="">command</var>)</code></dfn>
+method on the <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/html/#htmldocument>HTMLDocument</a></code> interface is
+invoked, the user agent must return true if <var title="">command</var> is
+<a href=#supported>supported</a>, and false otherwise.
+<!--
+Firefox 6.0a2 always throws an exception when this is called.  Opera 11.11
+seems to return false if there's nothing editable on the page, which is
+unhelpful.  The spec follows IE9 and Chrome 14 dev.  The reason this is useful,
+compared to just running one of the other methods and seeing if you get a
+NOT_SUPPORTED_ERR, is that other methods might throw different exceptions for
+other reasons.  It's easier to check a boolean than to check exception types,
+especially since as of June 2011 UAs aren't remotely consistent on what they do
+with unsupported commands.
+-->
 
-<p class=XXX>Querying the value or state of an unrecognized command throws an
-exception in IE and Firefox.  Need to consider changing to that behavior.
+<p>When the <dfn id=querycommandvalue() title=queryCommandValue()><code>queryCommandValue(<var title="">command</var>)</code></dfn>
+method on the <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/html/#htmldocument>HTMLDocument</a></code> interface is
+invoked, the user agent must return the <a href=#value>value</a> for
+<var title="">command</var>.  If <var title="">command</var> is not <a href=#supported>supported</a>, the
+user agent must instead raise a <code class=external data-anolis-spec=domcore title=dom-DOMException-NOT_SUPPORTED_ERR><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-domexception-not_supported_err>NOT_SUPPORTED_ERR</a></code> exception.  If
+<var title="">command</var> is <a href=#supported>supported</a> but has no associated
+<a href=#value>value</a>, the user agent must instead raise an <code class=external data-anolis-spec=domcore title=dom-DOMException-INVALID_ACCESS_ERR><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-domexception-invalid_access_err>INVALID_ACCESS_ERR</a></code>
+exception.
 
-<p class=XXX>I say "first range" because I think that's what Gecko actually
-does, and Gecko is the only one that allows multiple ranges in a selection.
-This is keeping in mind that it stores ranges sorted by start, not by the order
-the user added them, and silently removes or shortens existing ranges to avoid
-overlap.  It probably makes the most sense in the long term to have the command
-affect all ranges.  But I'll leave this for later.
+<p>All of these methods must treat their <var title="">command</var> argument <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#ascii-case-insensitive title="ASCII case-insensitive">ASCII
+case-insensitively</a>.
 
 
-<h2 id=common-definitions><span class=secno>4 </span>Common definitions</h2>
+<h2 id=common-definitions><span class=secno>5 </span>Common definitions</h2>
 
 <p>An <dfn id=html-element>HTML element</dfn> is an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> whose <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-namespace title=concept-element-namespace>namespace</a> is the
 <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#html-namespace>HTML namespace</a>.
@@ -563,6 +643,17 @@ break</a> that is not an <a href=#extraneous-line-break>extraneous line break</a
 either <a href=#invisible-node title="invisible node">invisible nodes</a> or <a href=#collapsed-block-prop title="collapsed block prop">collapsed block props</a> and that has at least
 one <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> that is a <a href=#collapsed-block-prop>collapsed block prop</a>.
 
+<p>The <dfn id=active-range>active range</dfn> is the first <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> in the <code class=external data-anolis-spec=domrange><a href=http://html5.org/specs/dom-range.html#selection>Selection</a></code>
+given by calling <code class=external data-anolis-spec=domrange title=dom-Document-getSelection><a href=http://html5.org/specs/dom-range.html#dom-document-getselection>getSelection()</a></code> on the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>, or null if there is
+no such <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>.
+
+<p class=XXX>I say "first range" because I think that's what Gecko actually
+does, and Gecko is the only one that allows multiple ranges in a selection.
+This is keeping in mind that it stores ranges sorted by start, not by the order
+the user added them, and silently removes or shortens existing ranges to avoid
+overlap.  It probably makes the most sense in the long term to have the command
+affect all ranges.  But I'll leave this for later.
+
 <p>Each <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/html/#htmldocument>HTMLDocument</a></code> has a boolean <dfn id=css-styling-flag>CSS styling flag</dfn> associated
 with it, which must initially be false.  (<a href=#the-stylewithcss-command>The <code title="">styleWithCSS</code> command</a> can be used to modify or query it, by
 means of the <code><a href=#execcommand()>execCommand()</a></code> and <code><a href=#querycommandstate()>queryCommandState()</a></code>
@@ -581,9 +672,9 @@ is instructed to run particular steps for each member of a list, it must do so
 sequentially in the list's order.
 
 
-<h2 id=common-algorithms><span class=secno>5 </span>Common algorithms</h2>
+<h2 id=common-algorithms><span class=secno>6 </span>Common algorithms</h2>
 
-<h3 id=assorted-common-algorithms><span class=secno>5.1 </span>Assorted common algorithms</h3>
+<h3 id=assorted-common-algorithms><span class=secno>6.1 </span>Assorted common algorithms</h3>
 
 <p>To move a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> to a new location, <dfn id=preserving-ranges>preserving ranges</dfn>, remove
 the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> from its original <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> (if any), then insert it in the new
@@ -872,7 +963,7 @@ descendants</dfn>, <a href=#split-the-parent>split the parent</a> of <var title=
 <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>.
 
 
-<h3 id=wrapping-a-list-of-nodes><span class=secno>5.2 </span>Wrapping a list of nodes</h3>
+<h3 id=wrapping-a-list-of-nodes><span class=secno>6.2 </span>Wrapping a list of nodes</h3>
 
 <p>To <dfn id=wrap>wrap</dfn> a list <var title="">node list</var> of consecutive <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-sibling title=concept-tree-sibling>sibling</a>
 <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a>, given <dfn id=sibling-criteria>sibling criteria</dfn> and <dfn id=new-parent-instructions>new parent
@@ -1035,9 +1126,9 @@ instructions</dfn>:
 </ol>
 
 
-<h2 id=inline-formatting-commands><span class=secno>6 </span>Inline formatting commands</h2>
+<h2 id=inline-formatting-commands><span class=secno>7 </span>Inline formatting commands</h2>
 
-<h3 id=inline-formatting-command-definitions><span class=secno>6.1 </span>Inline formatting command definitions</h3>
+<h3 id=inline-formatting-command-definitions><span class=secno>7.1 </span>Inline formatting command definitions</h3>
 
 <p>A <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> is <dfn id=effectively-contained>effectively contained</dfn> in a <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> if either it
 is <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>; or it is the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a>
@@ -1115,7 +1206,7 @@ which <a href=#specified-value title="specified value">specifies</a> a value for
 command.
 
 
-<h3 id=assorted-inline-formatting-command-algorithms><span class=secno>6.2 </span>Assorted inline formatting command algorithms</h3>
+<h3 id=assorted-inline-formatting-command-algorithms><span class=secno>7.2 </span>Assorted inline formatting command algorithms</h3>
 
 <p>The <dfn id=effective-value>effective value</dfn> of a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> <var title="">node</var> for a given
 <var title="">command</var> is returned by the following algorithm, which will return
@@ -1351,7 +1442,7 @@ value</var>:
 </ol>
 
 
-<h3 id=decomposing-a-range-into-nodes><span class=secno>6.3 </span>Decomposing a range into nodes</h3>
+<h3 id=decomposing-a-range-into-nodes><span class=secno>7.3 </span>Decomposing a range into nodes</h3>
 
 <p>To <dfn id=decompose>decompose</dfn> a <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> <var title="">range</var>:
 
@@ -1394,7 +1485,7 @@ agents follow the <a class=external data-anolis-spec=domrange href=http://html5.
 </ol>
 
 
-<h3 id="clearing-an-element's-value"><span class=secno>6.4 </span>Clearing an element's value</h3>
+<h3 id="clearing-an-element's-value"><span class=secno>7.4 </span>Clearing an element's value</h3>
 
 <p>To <dfn id=clear-the-value>clear the value</dfn> of an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> <var title="">element</var>:
 
@@ -1478,7 +1569,7 @@ id=foo> into <span id=foo> instead of <font id=foo>, but probably not worth it.
 </ol>
 
 
-<h3 id=pushing-down-values><span class=secno>6.5 </span>Pushing down values</h3>
+<h3 id=pushing-down-values><span class=secno>7.5 </span>Pushing down values</h3>
 
 <p>To <dfn id=push-down-values>push down values</dfn> to a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> <var title="">node</var>, given a new
 value <var title="">new value</var>:
@@ -1598,7 +1689,7 @@ with a <code class=external data-anolis-spec=html title="the style attribute"><a
 </ol>
 
 
-<h3 id=forcing-the-value-of-a-node><span class=secno>6.6 </span>Forcing the value of a node</h3>
+<h3 id=forcing-the-value-of-a-node><span class=secno>7.6 </span>Forcing the value of a node</h3>
 
 <p>To <dfn id=force-the-value>force the value</dfn> of a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> <var title="">node</var> to <var title="">new
 value</var>:
@@ -1861,7 +1952,7 @@ different value.
 </ol>
 
 
-<h3 id=setting-the-value-of-a-node><span class=secno>6.7 </span>Setting the value of a node</h3>
+<h3 id=setting-the-value-of-a-node><span class=secno>7.7 </span>Setting the value of a node</h3>
 
 <p>To <dfn id=set-the-value>set the value</dfn> of a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> <var title="">node</var> to <var title="">new
 value</var>:
@@ -2004,7 +2095,7 @@ as desired.
 </ol>
 
 
-<h3 id=the-backcolor-command><span class=secno>6.8 </span><dfn>The <code title="">backColor</code> command</dfn></h3>
+<h3 id=the-backcolor-command><span class=secno>7.8 </span><dfn>The <code title="">backColor</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>:
 
@@ -2047,7 +2138,7 @@ like set the document background color.  Feedback appreciated on this point.
 
 
 
-<h3 id=the-bold-command><span class=secno>6.9 </span><dfn>The <code title="">bold</code> command</dfn></h3>
+<h3 id=the-bold-command><span class=secno>7.9 </span><dfn>The <code title="">bold</code> command</dfn></h3>
 
 <!-- If the selection is collapsed (but not if it contains nothing but is not
 collapsed), IE9 wraps the whole line in a <strong>.  This seems bizarre and no
@@ -2059,8 +2150,8 @@ nothing if the selection is empty.  Why strikethrough?  I don't know. -->
 If the <a href=#state>state</a> is then false, <a href=#set-the-value>set the value</a> of each
 returned <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> to "bold", otherwise <a href=#set-the-value>set the value</a> to "normal".
 
-<p><a href=#indeterminate-flag>Indeterminate flag</a>: True if among <a href=#editable>editable</a>
-<code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> nodes that are <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active
+<p><a href=#indeterminate>Indeterminate</a>: True if among <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code>
+nodes that are <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active
 range</a>, there is at least one with <a href=#effective-value>effective value</a> less than
 600 and at least one with <a href=#effective-value>effective value</a> greater than or equal to
 600.  Otherwise false.
@@ -2100,7 +2191,7 @@ cases with a few exceptions.
 <p><a href=#relevant-css-property>Relevant CSS property</a>: "font-weight"
 
 
-<h3 id=the-createlink-command><span class=secno>6.10 </span><dfn>The <code title="">createLink</code> command</dfn></h3>
+<h3 id=the-createlink-command><span class=secno>7.10 </span><dfn>The <code title="">createLink</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>:
 
@@ -2163,7 +2254,7 @@ seem very useful.
 false. -->
 
 
-<h3 id=the-fontname-command><span class=secno>6.11 </span><dfn>The <code title="">fontName</code> command</dfn></h3>
+<h3 id=the-fontname-command><span class=secno>7.11 </span><dfn>The <code title="">fontName</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>: <a href=#decompose>Decompose</a> the <a href=#active-range>active range</a>,
 then <a href=#set-the-value>set the value</a> of each returned <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> to <var title="">value</var>.
@@ -2188,8 +2279,8 @@ likely that the font list will be fixed by the author (how many users will
 understand CSS font-family syntax?), so I don't think such usability concerns
 apply. -->
 
-<p><a href=#indeterminate-flag>Indeterminate flag</a>: True if among <a href=#editable>editable</a>
-<code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> nodes that are <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active
+<p><a href=#indeterminate>Indeterminate</a>: True if among <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code>
+nodes that are <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active
 range</a>, there are two that have distinct <a href=#effective-value title="effective
 value">effective values</a>.  Otherwise false.
 <!-- This follows Firefox 6.0a2.  Chrome 14 dev always returns false. -->
@@ -2219,7 +2310,7 @@ applicable style rules. -->
 <p><a href=#relevant-css-property>Relevant CSS property</a>: "font-family"
 
 
-<h3 id=the-fontsize-command><span class=secno>6.12 </span><dfn>The <code title="">fontSize</code> command</dfn></h3>
+<h3 id=the-fontsize-command><span class=secno>7.12 </span><dfn>The <code title="">fontSize</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>:
 
@@ -2323,8 +2414,8 @@ respecifying non-interoperable behavior anyway.
   value</a> of each returned <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> to <var title="">value</var>.
 </ol>
 
-<p><a href=#indeterminate-flag>Indeterminate flag</a>: True if among <a href=#editable>editable</a>
-<code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> nodes that are <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active
+<p><a href=#indeterminate>Indeterminate</a>: True if among <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code>
+nodes that are <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active
 range</a>, there are two that have distinct <a href=#effective-value title="effective
 value">effective values</a>.  Otherwise false.
 <!-- This follows Firefox 6.0a2.  Chrome 14 dev always returns false. -->
@@ -2388,7 +2479,7 @@ browsers behave differently.  I see no reason to behave differently.
 <p><a href=#relevant-css-property>Relevant CSS property</a>: "font-size"
 
 
-<h3 id=the-forecolor-command><span class=secno>6.13 </span><dfn>The <code title="">foreColor</code> command</dfn></h3>
+<h3 id=the-forecolor-command><span class=secno>7.13 </span><dfn>The <code title="">foreColor</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>:
 
@@ -2466,8 +2557,8 @@ false otherwise, which seems fairly useless; authors want to use value here,
 not state.  Firefox 4b11 throws an exception, which is an interesting approach,
 but I'll go with IE/WebKit, which makes at least as much sense. -->
 
-<p><a href=#indeterminate-flag>Indeterminate flag</a>: True if among <a href=#editable>editable</a>
-<code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> nodes that are <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active
+<p><a href=#indeterminate>Indeterminate</a>: True if among <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code>
+nodes that are <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active
 range</a>, there are two that have distinct <a href=#effective-value title="effective
 value">effective values</a>.  Otherwise false.
 <!-- This follows Firefox 6.0a2.  Chrome 14 dev always returns false. -->
@@ -2489,7 +2580,7 @@ color if there is any.
 <p><a href=#relevant-css-property>Relevant CSS property</a>: "color"
 
 
-<h3 id=the-hilitecolor-command><span class=secno>6.14 </span><dfn>The <code title="">hiliteColor</code> command</dfn></h3>
+<h3 id=the-hilitecolor-command><span class=secno>7.14 </span><dfn>The <code title="">hiliteColor</code> command</dfn></h3>
 
 <!-- IE 9 RC doesn't support this.  It uses backColor instead, but Gecko and
 Opera treat that differently, while all non-IE browsers treat hiliteColor the
@@ -2524,8 +2615,8 @@ For color parsing, see the comment for foreColor. -->
   value</a> of each returned <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> to <var title="">value</var>.
 </ol>
 
-<p><a href=#indeterminate-flag>Indeterminate flag</a>: True if among <a href=#editable>editable</a>
-<code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> nodes that are <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active
+<p><a href=#indeterminate>Indeterminate</a>: True if among <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code>
+nodes that are <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active
 range</a>, there are two that have distinct <a href=#effective-value title="effective
 value">effective values</a>.  Otherwise false.
 <!-- This follows no one.  Firefox 6.0a2 and Chrome 14 dev both always return
@@ -2549,15 +2640,15 @@ like for foreColor.
 <p><a href=#relevant-css-property>Relevant CSS property</a>: "background-color"
 
 
-<h3 id=the-italic-command><span class=secno>6.15 </span><dfn>The <code title="">italic</code> command</dfn></h3>
+<h3 id=the-italic-command><span class=secno>7.15 </span><dfn>The <code title="">italic</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>: <a href=#decompose>Decompose</a> the <a href=#active-range>active range</a>.
 If the <a href=#state>state</a> is then false, <a href=#set-the-value>set the value</a> of each
 returned <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> to "italic", otherwise <a href=#set-the-value>set the value</a> to
 "normal".
 
-<p><a href=#indeterminate-flag>Indeterminate flag</a>: True if among <a href=#editable>editable</a>
-<code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> nodes that are <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active
+<p><a href=#indeterminate>Indeterminate</a>: True if among <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code>
+nodes that are <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active
 range</a>, there is at least one with <a href=#effective-value>effective value</a> either
 "italic" or "oblique" and at least one with <a href=#effective-value>effective value</a>
 "normal".  Otherwise false.
@@ -2570,7 +2661,7 @@ least one such <code class=external data-anolis-spec=domcore><a href=http://dvcs
 <p><a href=#relevant-css-property>Relevant CSS property</a>: "font-style"
 
 
-<h3 id=the-removeformat-command><span class=secno>6.16 </span><dfn>The <code title="">removeFormat</code> command</dfn></h3>
+<h3 id=the-removeformat-command><span class=secno>7.16 </span><dfn>The <code title="">removeFormat</code> command</dfn></h3>
 
 <!--
 Tested in IE 9, Firefox 4.0, Chrome 12 dev, Opera 11.00.
@@ -2692,7 +2783,7 @@ for elements like <code> or <tt> or <mark> that we don't normally create.
 </ol>
 
 
-<h3 id=the-strikethrough-command><span class=secno>6.17 </span><dfn>The <code title="">strikethrough</code> command</dfn></h3>
+<h3 id=the-strikethrough-command><span class=secno>7.17 </span><dfn>The <code title="">strikethrough</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>: <a href=#decompose>Decompose</a> the <a href=#active-range>active range</a>.
 If the <a href=#state>state</a> is then false, <a href=#set-the-value>set the value</a> of each
@@ -2701,8 +2792,8 @@ null.
 
 <p class=XXX>Has all the same problems as <a href=#the-underline-command>the <code title="">underline</code> command</a>.
 
-<p><a href=#indeterminate-flag>Indeterminate flag</a>: True if among <a href=#editable>editable</a>
-<code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> nodes that are <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active
+<p><a href=#indeterminate>Indeterminate</a>: True if among <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code>
+nodes that are <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active
 range</a>, there is at least one with <a href=#effective-value>effective value</a>
 "line-through" and at least one with <a href=#effective-value>effective value</a> null.
 Otherwise false.
@@ -2713,7 +2804,7 @@ is <a href=#effectively-contained>effectively contained</a> in the <a href=#acti
 <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node.  Otherwise false.
 
 
-<h3 id=the-subscript-command><span class=secno>6.18 </span><dfn>The <code title="">subscript</code> command</dfn></h3>
+<h3 id=the-subscript-command><span class=secno>7.18 </span><dfn>The <code title="">subscript</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>:
 
@@ -2731,7 +2822,7 @@ is <a href=#effectively-contained>effectively contained</a> in the <a href=#acti
   to "sub".
 </ol>
 
-<p><a href=#indeterminate-flag>Indeterminate flag</a>: True if either among <a href=#editable>editable</a>
+<p><a href=#indeterminate>Indeterminate</a>: True if either among <a href=#editable>editable</a>
 <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> nodes that are <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active
 range</a>, there is at least one with <a href=#effective-value>effective value</a> "sub" and
 at least one with some other <a href=#effective-value>effective value</a>; or if there is some
@@ -2758,7 +2849,7 @@ other indeterminate situations, so it's fair to consider it indeterminate.
 <p><a href=#relevant-css-property>Relevant CSS property</a>: "vertical-align"
 
 
-<h3 id=the-superscript-command><span class=secno>6.19 </span><dfn>The <code title="">superscript</code> command</dfn></h3>
+<h3 id=the-superscript-command><span class=secno>7.19 </span><dfn>The <code title="">superscript</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>:
 
@@ -2776,7 +2867,7 @@ other indeterminate situations, so it's fair to consider it indeterminate.
   to "super".
 </ol>
 
-<p><a href=#indeterminate-flag>Indeterminate flag</a>: True if either among <a href=#editable>editable</a>
+<p><a href=#indeterminate>Indeterminate</a>: True if either among <a href=#editable>editable</a>
 <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> nodes that are <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active
 range</a>, there is at least one with <a href=#effective-value>effective value</a> "super"
 and at least one with some other <a href=#effective-value>effective value</a>; or if there is
@@ -2792,7 +2883,7 @@ node.  Otherwise false.
 <p><a href=#relevant-css-property>Relevant CSS property</a>: "vertical-align"
 
 
-<h3 id=the-underline-command><span class=secno>6.20 </span><dfn>The <code title="">underline</code> command</dfn></h3>
+<h3 id=the-underline-command><span class=secno>7.20 </span><dfn>The <code title="">underline</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>: <a href=#decompose>Decompose</a> the <a href=#active-range>active range</a>.
 If the <a href=#state>state</a> is then false, <a href=#set-the-value>set the value</a> of each
@@ -2847,8 +2938,8 @@ using the newly-specced features or working around their absence as the case
 may be.
 </div>
 
-<p><a href=#indeterminate-flag>Indeterminate flag</a>: True if among <a href=#editable>editable</a>
-<code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> nodes that are <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active
+<p><a href=#indeterminate>Indeterminate</a>: True if among <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code>
+nodes that are <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active
 range</a>, there is at least one with <a href=#effective-value>effective value</a>
 "underline" and at least one with <a href=#effective-value>effective value</a> null.  Otherwise
 false.
@@ -2859,7 +2950,7 @@ is <a href=#effectively-contained>effectively contained</a> in the <a href=#acti
 <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node.  Otherwise false.
 
 
-<h3 id=the-unlink-command><span class=secno>6.21 </span><dfn>The <code title="">unlink</code> command</dfn></h3>
+<h3 id=the-unlink-command><span class=secno>7.21 </span><dfn>The <code title="">unlink</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>:
 
@@ -2880,9 +2971,9 @@ starting at 2011-05-13 at 16:53 EDT (UTC-0400).
 </ol>
 
 
-<h2 id=block-formatting-commands><span class=secno>7 </span>Block formatting commands</h2>
+<h2 id=block-formatting-commands><span class=secno>8 </span>Block formatting commands</h2>
 
-<h3 id=block-formatting-command-definitions><span class=secno>7.1 </span>Block formatting command definitions</h3>
+<h3 id=block-formatting-command-definitions><span class=secno>8.1 </span>Block formatting command definitions</h3>
 
 <p>A <dfn id=prohibited-paragraph-child-name>prohibited paragraph child name</dfn> is "address", "article",
 "aside", "blockquote", "caption", "center", "col", "colgroup", "dd", "details",
@@ -2954,7 +3045,7 @@ container</a>, or an <a href=#html-element>HTML element</a> with <a class=extern
 <!-- Possibly to be made configurable later. -->
 
 
-<h3 id=assorted-block-formatting-command-algorithms><span class=secno>7.2 </span>Assorted block formatting command algorithms</h3>
+<h3 id=assorted-block-formatting-command-algorithms><span class=secno>8.2 </span>Assorted block formatting command algorithms</h3>
 
 <p>To <dfn id=fix-disallowed-ancestors>fix disallowed ancestors</dfn> of a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> <var title="">node</var>:
 
@@ -3458,7 +3549,7 @@ Gecko/WebKit in supporting the command.
 </ol>
 
 
-<h3 id=allowed-children><span class=secno>7.3 </span>Allowed children</h3>
+<h3 id=allowed-children><span class=secno>8.3 </span>Allowed children</h3>
 
 <p>A <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> or string <var title="">child</var> is an <dfn id=allowed-child>allowed child</dfn> of a
 <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> or string <var title="">parent</var> if the following algorithm returns true:
@@ -3584,7 +3675,7 @@ reasons:
 </ol>
 
 
-<h3 id=block-extending-a-range><span class=secno>7.4 </span>Block-extending a range</h3>
+<h3 id=block-extending-a-range><span class=secno>8.4 </span>Block-extending a range</h3>
 
 <p>When a user agent is to <dfn id=block-extend>block-extend</dfn> a <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>
 <var title="">range</var>, it must run the following steps:
@@ -3667,7 +3758,7 @@ reasons:
 </ol>
 
 
-<h3 id=deleting-the-contents-of-a-range><span class=secno>7.5 </span>Deleting the contents of a range</h3>
+<h3 id=deleting-the-contents-of-a-range><span class=secno>8.5 </span>Deleting the contents of a range</h3>
 
 <p>To <dfn id=delete-the-contents>delete the contents</dfn> of a <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> <var title="">range</var>:
 
@@ -4052,7 +4143,7 @@ we really want to use it, we probably want to change its name.
 </ol>
 
 
-<h3 id=outdenting-a-node><span class=secno>7.6 </span>Outdenting a node</h3>
+<h3 id=outdenting-a-node><span class=secno>8.6 </span>Outdenting a node</h3>
 
 <p>To <dfn id=outdent>outdent</dfn> a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> <var title="">node</var>:
 
@@ -4248,7 +4339,7 @@ insertOrderedList.
 </ol>
 
 
-<h3 id=toggling-lists><span class=secno>7.7 </span>Toggling lists</h3>
+<h3 id=toggling-lists><span class=secno>8.7 </span>Toggling lists</h3>
 
 <!--
 Research for insertOrderedList/insertUnorderedList: tested the following
@@ -4773,7 +4864,7 @@ or "ul"):
 </ol>
 
 
-<h3 id=justifying-the-selection><span class=secno>7.8 </span>Justifying the selection</h3>
+<h3 id=justifying-the-selection><span class=secno>8.8 </span>Justifying the selection</h3>
 
 <!--
 There are two basic ways it works: using the align attribute, and using CSS
@@ -4891,7 +4982,7 @@ would be worth the added complexity.
 </ol>
 
 
-<h3 id=the-delete-command><span class=secno>7.9 </span><dfn>The <code title="">delete</code> command</dfn></h3>
+<h3 id=the-delete-command><span class=secno>8.9 </span><dfn>The <code title="">delete</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>:
 
@@ -5169,7 +5260,7 @@ would be worth the added complexity.
 </ol>
 
 
-<h3 id=the-formatblock-command><span class=secno>7.10 </span><dfn>The <code title="">formatBlock</code> command</dfn></h3>
+<h3 id=the-formatblock-command><span class=secno>8.10 </span><dfn>The <code title="">formatBlock</code> command</dfn></h3>
 
 <!--
 Tested browser versions: IE9, Firefox 4.0, Chrome 13 dev, Opera 11.10.
@@ -5380,8 +5471,10 @@ sense for <address>/<h*>/<pre>, but other browsers don't do it.
   </ol>
 </ol>
 
+<p class=XXX>Spec value/indeterm.
 
-<h3 id=the-forwarddelete-command><span class=secno>7.11 </span><dfn>The <code title="">forwardDelete</code> command</dfn></h3>
+
+<h3 id=the-forwarddelete-command><span class=secno>8.11 </span><dfn>The <code title="">forwardDelete</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>:
 <!-- Copy-pasted from delete, see there for comments. -->
@@ -5509,7 +5602,7 @@ sense for <address>/<h*>/<pre>, but other browsers don't do it.
 </ol>
 
 
-<h3 id=the-indent-command><span class=secno>7.12 </span><dfn>The <code title="">indent</code> command</dfn></h3>
+<h3 id=the-indent-command><span class=secno>8.12 </span><dfn>The <code title="">indent</code> command</dfn></h3>
 
 <!--
 IE9: Outputs <blockquote style="margin-right: 0px" dir="ltr">, or when
@@ -5613,7 +5706,7 @@ browsers don't normally let you put the cursor in weird places like that.
 </ol>
 
 
-<h3 id=the-inserthtml-command><span class=secno>7.13 </span><dfn>The <code title="">insertHTML</code> command</dfn></h3>
+<h3 id=the-inserthtml-command><span class=secno>8.13 </span><dfn>The <code title="">insertHTML</code> command</dfn></h3>
 
 <!--
 Not supported by IE9.  Handling of disallowed children is interesting:
@@ -5693,7 +5786,7 @@ round-tripping through a character encoding change impossible.
 </ol>
 
 
-<h3 id=the-insertimage-command><span class=secno>7.14 </span><dfn>The <code title="">insertImage</code> command</dfn></h3>
+<h3 id=the-insertimage-command><span class=secno>8.14 </span><dfn>The <code title="">insertImage</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>:
 
@@ -5738,7 +5831,7 @@ round-tripping through a character encoding change impossible.
 </ol>
 
 
-<h3 id=the-inserthorizontalrule-command><span class=secno>7.15 </span><dfn>The <code title="">insertHorizontalRule</code> command</dfn></h3>
+<h3 id=the-inserthorizontalrule-command><span class=secno>8.15 </span><dfn>The <code title="">insertHorizontalRule</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>:
 
@@ -5791,7 +5884,7 @@ splitting up parents to ensure validity . . . -->
 </ol>
 
 
-<h3 id=the-insertlinebreak-command><span class=secno>7.16 </span><dfn>The <code title="">insertLineBreak</code> command</dfn></h3>
+<h3 id=the-insertlinebreak-command><span class=secno>8.16 </span><dfn>The <code title="">insertLineBreak</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>:
 
@@ -5850,13 +5943,13 @@ Opera 11.11 isn't heedful of <xmp>, and treats <pre> somewhat oddly.
 </ol>
 
 
-<h3 id=the-insertorderedlist-command><span class=secno>7.17 </span><dfn>The <code title="">insertOrderedList</code> command</dfn></h3>
+<h3 id=the-insertorderedlist-command><span class=secno>8.17 </span><dfn>The <code title="">insertOrderedList</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>: <a href=#toggle-lists>Toggle lists</a> with <var title="">tag name</var>
 "ol".
 
-<p><a href=#indeterminate-flag>Indeterminate flag</a>: True if the <a href="#selection's-list-state">selection's list
-state</a> is "mixed" or "mixed ol", false otherwise.
+<p><a href=#indeterminate>Indeterminate</a>: True if the <a href="#selection's-list-state">selection's list state</a>
+is "mixed" or "mixed ol", false otherwise.
 <!--
 Firefox 6.0a2 sort of supports this, but it throws exceptions most of the
 time.  It has the quirk that even if there are no ol's around, it will say it's
@@ -5875,7 +5968,7 @@ except with a few weird random mismatches that looked like browser bugs to me.
 -->
 
 
-<h3 id=the-insertparagraph-command><span class=secno>7.18 </span><dfn>The <code title="">insertParagraph</code> command</dfn></h3>
+<h3 id=the-insertparagraph-command><span class=secno>8.18 </span><dfn>The <code title="">insertParagraph</code> command</dfn></h3>
 
 <!--
 There are three major behaviors here.  Firefox 5.0a2 behaves identically to
@@ -6135,7 +6228,7 @@ http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
 </ol>
 
 
-<h3 id=the-inserttext-command><span class=secno>7.19 </span><dfn>The <code title="">insertText</code> command</dfn></h3>
+<h3 id=the-inserttext-command><span class=secno>8.19 </span><dfn>The <code title="">insertText</code> command</dfn></h3>
 
 <!--
 Supported only by WebKit.  Tests in other browsers were manual.  In the manual
@@ -6314,24 +6407,24 @@ This is still a huge headache, though.
 </ol>
 
 
-<h3 id=the-insertunorderedlist-command><span class=secno>7.20 </span><dfn>The <code title="">insertUnorderedList</code> command</dfn></h3>
+<h3 id=the-insertunorderedlist-command><span class=secno>8.20 </span><dfn>The <code title="">insertUnorderedList</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>: <a href=#toggle-lists>Toggle lists</a> with <var title="">tag name</var>
 "ul".
 
-<p><a href=#indeterminate-flag>Indeterminate flag</a>: True if the <a href="#selection's-list-state">selection's list
-state</a> is "mixed" or "mixed ul", false otherwise.
+<p><a href=#indeterminate>Indeterminate</a>: True if the <a href="#selection's-list-state">selection's list state</a>
+is "mixed" or "mixed ul", false otherwise.
 
 <p><a href=#state>State</a>: True if the <a href="#selection's-list-state">selection's list state</a> is "ul",
 false otherwise.
 
 
-<h3 id=the-justifycenter-command><span class=secno>7.21 </span><dfn>The <code title="">justifyCenter</code> command</dfn></h3>
+<h3 id=the-justifycenter-command><span class=secno>8.21 </span><dfn>The <code title="">justifyCenter</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>: <a href=#justify-the-selection>Justify the selection</a> with
 <var title="">alignment</var> "center".
 
-<p><a href=#indeterminate-flag>Indeterminate flag</a>: <a href=#block-extend>Block-extend</a> the <a href=#active-range>active
+<p><a href=#indeterminate>Indeterminate</a>: <a href=#block-extend>Block-extend</a> the <a href=#active-range>active
 range</a>.  Return true if among <a href=#editable>editable</a> nodes <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a>
 in the result, at least one has <a href=#alignment-value>alignment value</a> "center" and at
 least one does not.  Otherwise return false.
@@ -6345,12 +6438,12 @@ always returns false. -->
 <a href=#alignment-value>alignment value</a>.
 
 
-<h3 id=the-justifyfull-command><span class=secno>7.22 </span><dfn>The <code title="">justifyFull</code> command</dfn></h3>
+<h3 id=the-justifyfull-command><span class=secno>8.22 </span><dfn>The <code title="">justifyFull</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>: <a href=#justify-the-selection>Justify the selection</a> with
 <var title="">alignment</var> "justify".
 
-<p><a href=#indeterminate-flag>Indeterminate flag</a>: <a href=#block-extend>Block-extend</a> the <a href=#active-range>active
+<p><a href=#indeterminate>Indeterminate</a>: <a href=#block-extend>Block-extend</a> the <a href=#active-range>active
 range</a>.  Return true if among <a href=#editable>editable</a> nodes <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a>
 in the result, at least one has <a href=#alignment-value>alignment value</a> "justify" and at
 least one does not.  Otherwise return false.
@@ -6362,12 +6455,12 @@ least one does not.  Otherwise return false.
 <a href=#alignment-value>alignment value</a>.
 
 
-<h3 id=the-justifyleft-command><span class=secno>7.23 </span><dfn>The <code title="">justifyLeft</code> command</dfn></h3>
+<h3 id=the-justifyleft-command><span class=secno>8.23 </span><dfn>The <code title="">justifyLeft</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>: <a href=#justify-the-selection>Justify the selection</a> with
 <var title="">alignment</var> "left".
 
-<p><a href=#indeterminate-flag>Indeterminate flag</a>: <a href=#block-extend>Block-extend</a> the <a href=#active-range>active
+<p><a href=#indeterminate>Indeterminate</a>: <a href=#block-extend>Block-extend</a> the <a href=#active-range>active
 range</a>.  Return true if among <a href=#editable>editable</a> nodes <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a>
 in the result, at least one has <a href=#alignment-value>alignment value</a> "left" and at
 least one does not.  Otherwise return false.
@@ -6379,12 +6472,12 @@ least one does not.  Otherwise return false.
 <a href=#alignment-value>alignment value</a>.
 
 
-<h3 id=the-justifyright-command><span class=secno>7.24 </span><dfn>The <code title="">justifyRight</code> command</dfn></h3>
+<h3 id=the-justifyright-command><span class=secno>8.24 </span><dfn>The <code title="">justifyRight</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>: <a href=#justify-the-selection>Justify the selection</a> with
 <var title="">alignment</var> "right".
 
-<p><a href=#indeterminate-flag>Indeterminate flag</a>: <a href=#block-extend>Block-extend</a> the <a href=#active-range>active
+<p><a href=#indeterminate>Indeterminate</a>: <a href=#block-extend>Block-extend</a> the <a href=#active-range>active
 range</a>.  Return true if among <a href=#editable>editable</a> nodes <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a>
 in the result, at least one has <a href=#alignment-value>alignment value</a> "right" and at
 least one does not.  Otherwise return false.
@@ -6396,7 +6489,7 @@ least one does not.  Otherwise return false.
 <a href=#alignment-value>alignment value</a>.
 
 
-<h3 id=the-outdent-command><span class=secno>7.25 </span><dfn>The <code title="">outdent</code> command</dfn></h3>
+<h3 id=the-outdent-command><span class=secno>8.25 </span><dfn>The <code title="">outdent</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>:
 
@@ -6474,9 +6567,9 @@ least one does not.  Otherwise return false.
 </ol>
 
 
-<h2 id=miscellaneous-commands><span class=secno>8 </span>Miscellaneous commands</h2>
+<h2 id=miscellaneous-commands><span class=secno>9 </span>Miscellaneous commands</h2>
 
-<h3 id=the-copy-command><span class=secno>8.1 </span><dfn>The <code title="">copy</code> command</dfn></h3>
+<h3 id=the-copy-command><span class=secno>9.1 </span><dfn>The <code title="">copy</code> command</dfn></h3>
 
 <!--
 IE9 supports copy/cut/paste with a security warning.  Firefox reportedly only
@@ -6491,47 +6584,74 @@ So it would be nice if we could work out a more secure standardized substitute.
 -->
 
 <p><a href=#action>Action</a>: The user agent must either copy the current selection
-to the clipboard as though the user had requested it, or do nothing.  User
-agents should exercise caution in respecting this command, because sites could
-abuse it to confuse and annoy the user by overwriting the clipboard with
-extremely long, obscene, or otherwise objectionable content.  This
-specification does not define exactly how the selection is to be copied to the
-clipboard, but the <a href=http://dev.w3.org/2006/webapi/clipops/clipops.html>Clipboard API and
+to the clipboard as though the user had requested it, or raise a
+<code class=external data-anolis-spec=domcore title=dom-DOMException-SECURITY_ERR><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-domexception-security_err>SECURITY_ERR</a></code> exception.  This specification does not define exactly how the
+selection is to be copied to the clipboard, but the <a href=http://dev.w3.org/2006/webapi/clipops/clipops.html>Clipboard API and
 events</a> specification might be useful.
 
+<p>User agents should exercise caution in respecting this <a href=#command>command</a>,
+because sites could abuse it to confuse and annoy the user by overwriting the
+clipboard with extremely long, obscene, or otherwise objectionable content.
+
+<p>User agents may choose not to <a href=#supported title=supported>support</a> this
+<a href=#command>command</a> at all.  If a user agent will only honor the
+<a href=#command>command</a> for some whitelisted sites depending on configuration, it
+may either raise a <code class=external data-anolis-spec=domcore title=dom-DOMException-SECURITY_ERR><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-domexception-security_err>SECURITY_ERR</a></code> for non-whitelisted sites, or it may act as
+though the <a href=#command>command</a> is <a href=#supported title=supported>unsupported</a> on
+those sites.
+<!--
+The idea is sites might catch the SECURITY_ERR and treat it differently from
+NOT_SUPPORTED_ERR, like encouraging users to reconfigure their browser.
+However, browsers might not want to encourage authors to tell users to
+reconfigure their browser insecurely.
+-->
 
 
-<h3 id=the-cut-command><span class=secno>8.2 </span><dfn>The <code title="">cut</code> command</dfn></h3>
+<h3 id=the-cut-command><span class=secno>9.2 </span><dfn>The <code title="">cut</code> command</dfn></h3>
 
 <!-- See comment for copy -->
 
 <p><a href=#action>Action</a>: The user agent must either copy the current selection
-to the clipboard and then delete it, as though the user had requested it, or do
-nothing.  User agents should exercise caution in respecting this command,
-because sites could abuse it to confuse and annoy the user by overwriting the
-clipboard with extremely long, obscene, or otherwise objectionable content.
-This specification does not define exactly how the selection is to be deleted
-or copied to the clipboard, but the <a href=http://dev.w3.org/2006/webapi/clipops/clipops.html>Clipboard API and
+to the clipboard and then delete it, as though the user had requested it, or
+raise a <code class=external data-anolis-spec=domcore title=dom-DOMException-SECURITY_ERR><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-domexception-security_err>SECURITY_ERR</a></code> exception.  This specification does not define exactly
+how the selection is to be deleted or copied to the clipboard, but the <a href=http://dev.w3.org/2006/webapi/clipops/clipops.html>Clipboard API and
 events</a> specification might be useful.
 
+<p>User agents should exercise caution in respecting this command, because
+sites could abuse it to confuse and annoy the user by overwriting the clipboard
+with extremely long, obscene, or otherwise objectionable content.
+
+<p>User agents may choose not to <a href=#supported title=supported>support</a> this
+<a href=#command>command</a> at all.  If a user agent will only honor the
+<a href=#command>command</a> for some whitelisted sites depending on configuration, it
+may either raise a <code class=external data-anolis-spec=domcore title=dom-DOMException-SECURITY_ERR><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-domexception-security_err>SECURITY_ERR</a></code> for non-whitelisted sites, or it may act as
+though the <a href=#command>command</a> is <a href=#supported title=supported>unsupported</a> on
+those sites.
 
 
-<h3 id=the-paste-command><span class=secno>8.3 </span><dfn>The <code title="">paste</code> command</dfn></h3>
+<h3 id=the-paste-command><span class=secno>9.3 </span><dfn>The <code title="">paste</code> command</dfn></h3>
 
 <!-- See comment for copy -->
 
 <p><a href=#action>Action</a>: The user agent must either <a href=#delete-the-contents>delete the
 contents</a> of the <a href=#active-range>active range</a> and then paste the clipboard's
 contents to the current cursor position, as though the user had requested it,
-or do nothing.  User agents should exercise caution in respecting this command,
-because sites could abuse it to read private information from the clipboard.
-This specification does not define exactly how the clipboard is to be converted
-to HTML for pasting, but the <a href=http://dev.w3.org/2006/webapi/clipops/clipops.html>Clipboard API and
+or raise a <code class=external data-anolis-spec=domcore title=dom-DOMException-SECURITY_ERR><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-domexception-security_err>SECURITY_ERR</a></code> exception.  This specification does not define
+exactly how the clipboard is to be converted to HTML for pasting, but the <a href=http://dev.w3.org/2006/webapi/clipops/clipops.html>Clipboard API and
 events</a> specification might be useful.
 
+<p>User agents should exercise caution in respecting this command,
+because sites could abuse it to read private information from the clipboard.
+
+<p>User agents may choose not to <a href=#supported title=supported>support</a> this
+<a href=#command>command</a> at all.  If a user agent will only honor the
+<a href=#command>command</a> for some whitelisted sites depending on configuration, it
+may either raise a <code class=external data-anolis-spec=domcore title=dom-DOMException-SECURITY_ERR><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-domexception-security_err>SECURITY_ERR</a></code> for non-whitelisted sites, or it may act as
+though the <a href=#command>command</a> is <a href=#supported title=supported>unsupported</a> on
+those sites.
 
 
-<h3 id=the-selectall-command><span class=secno>8.4 </span><dfn>The <code title="">selectAll</code> command</dfn></h3>
+<h3 id=the-selectall-command><span class=secno>9.4 </span><dfn>The <code title="">selectAll</code> command</dfn></h3>
 
 <!--
 Tested using roughly this:
@@ -6582,7 +6702,7 @@ The behavior here is relatively simple and largely matches implementations.
 </ol>
 
 
-<h3 id=the-stylewithcss-command><span class=secno>8.5 </span><dfn>The <code title="">styleWithCSS</code> command</dfn></h3>
+<h3 id=the-stylewithcss-command><span class=secno>9.5 </span><dfn>The <code title="">styleWithCSS</code> command</dfn></h3>
 
 <!-- IE9 and Opera 11.00 don't support this command.  By and large, they act
 the way Gecko and WebKit do when styleWithCSS is off.  Gecko invented it, and
@@ -6612,7 +6732,7 @@ otherwise false.
 queryCommandState() for styleWithCSS. -->
 
 
-<h3 id=the-usecss-command><span class=secno>8.6 </span><dfn>The <code title="">useCSS</code> command</dfn></h3>
+<h3 id=the-usecss-command><span class=secno>9.6 </span><dfn>The <code title="">useCSS</code> command</dfn></h3>
 
 <!-- Supported by Firefox 4.0, but not IE9 or Opera 11.00 (which don't support
 styleWithCSS either), nor by Chrome 12 dev (which does support styleWithCSS.
@@ -6637,7 +6757,7 @@ get rid of it.
 Firefox 6.0a2, it doesn't support queryCommandState() for it. -->
 
 
-<h2 id=additional-requirements><span class=secno>9 </span>Additional requirements</h2>
+<h2 id=additional-requirements><span class=secno>10 </span>Additional requirements</h2>
 
 <p class=XXX>It has been <a href=http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2009-December/024628.html>suggested</a>
 that some things here need to be platform-dependent, not fully standardized.

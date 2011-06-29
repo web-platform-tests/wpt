@@ -1475,45 +1475,6 @@ function getAllEffectivelyContainedNodes(range, condition) {
 	return nodeList;
 }
 
-// "An unwrappable node is an HTML element which may not be used where only
-// phrasing content is expected (not counting unknown or obsolete elements,
-// which cannot be used at all); or any Element whose display property computes
-// to something other than "inline", "inline-block", or "inline-table"; or any
-// node that is not editable."
-//
-// I don't bother implementing this exactly, just well enough for testing.
-function isUnwrappableNode(node) {
-	if (!node) {
-		return false;
-	}
-
-	if (!isEditable(node)) {
-		return true;
-	}
-
-	if (node.nodeType != Node.ELEMENT_NODE) {
-		return false;
-	}
-
-	var display = getComputedStyle(node).display;
-	if (display != "inline"
-	&& display != "inline-block"
-	&& display != "inline-table") {
-		return true;
-	}
-
-	if (!isHtmlElement(node)) {
-		return false;
-	}
-
-	return [
-		"h1", "h2", "h3", "h4", "h5", "h6", "p", "hr", "pre", "blockquote",
-		"ol", "ul", "li", "dl", "dt", "dd", "div", "table", "caption",
-		"colgroup", "col", "tbody", "thead", "tfoot", "tr", "th", "td",
-		"address"
-	].indexOf(node.tagName.toLowerCase()) != -1;
-}
-
 // "A modifiable element is a b, em, i, s, span, strong, sub, sup, or u element
 // with no attributes except possibly style; or a font element with no
 // attributes except possibly style, color, face, and/or size; or an a element
@@ -2350,13 +2311,13 @@ function forceValue(node, command, newValue) {
 		return;
 	}
 
-	// "If node is an Element, Text, Comment, or ProcessingInstruction node,
-	// and is not an unwrappable node:"
+	// "If node is an Element, Text, or Comment node, and is an allowed child
+	// of "span":"
 	if ((node.nodeType == Node.ELEMENT_NODE
 	|| node.nodeType == Node.TEXT_NODE
 	|| node.nodeType == Node.COMMENT_NODE
 	|| node.nodeType == Node.PROCESSING_INSTRUCTION_NODE)
-	&& !isUnwrappableNode(node)) {
+	&& isAllowedChild(node, "span")) {
 		// "Reorder modifiable descendants of node's previousSibling."
 		reorderModifiableDescendants(node.previousSibling, command, newValue);
 
@@ -2383,8 +2344,8 @@ function forceValue(node, command, newValue) {
 		return;
 	}
 
-	// "If node is an unwrappable node:"
-	if (isUnwrappableNode(node)) {
+	// "If node is not an allowed child of "span":"
+	if (!isAllowedChild(node, "span")) {
 		// "Let children be all children of node, omitting any that are
 		// Elements whose specified value for command is neither null nor
 		// equal to new value."

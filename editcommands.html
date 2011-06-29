@@ -1215,15 +1215,6 @@ splitText()), and anyway text nodes might not be returned by decomposing even
 if they're effectively contained: it might be that the new node created by
 splitText() is returned. -->
 
-<p>An <dfn id=unwrappable-node>unwrappable node</dfn> is an <a href=#html-element>HTML element</a> which may not
-be used where only <a class=external data-anolis-spec=html href=http://www.whatwg.org/html/#phrasing-content>phrasing content</a> is expected (not counting unknown or
-obsolete elements, which cannot be used at all); or any <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> whose
-display property computes to something other than "inline", "inline-block", or
-"inline-table"; or any <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> that is not <a href=#editable>editable</a>.
-
-<p class=XXX>Probably want to redefine unwrappable node in terms of allowed
-children or something.
-
 <p>A <dfn id=modifiable-element>modifiable element</dfn> is a <code class=external data-anolis-spec=html title="the b element"><a href=http://www.whatwg.org/html/#the-b-element>b</a></code>, <code class=external data-anolis-spec=html title="the em element"><a href=http://www.whatwg.org/html/#the-em-element>em</a></code>, <code class=external data-anolis-spec=html title="the i element"><a href=http://www.whatwg.org/html/#the-i-element>i</a></code>, <code class=external data-anolis-spec=html title="the s element"><a href=http://www.whatwg.org/html/#the-s-element>s</a></code>, <code class=external data-anolis-spec=html title="the span element"><a href=http://www.whatwg.org/html/#the-span-element>span</a></code>,
 <code class=external data-anolis-spec=html title="the strike element"><a href=http://www.whatwg.org/html/#the-strike-element>strike</a></code>, <code class=external data-anolis-spec=html title="the strong element"><a href=http://www.whatwg.org/html/#the-strong-element>strong</a></code>, <code class=external data-anolis-spec=html title="the sub and sup elements"><a href=http://www.whatwg.org/html/#the-sub-and-sup-elements>sub</a></code>, <code class=external data-anolis-spec=html title="the sub and sup elements"><a href=http://www.whatwg.org/html/#the-sub-and-sup-elements>sup</a></code>, or <code class=external data-anolis-spec=html title="the u element"><a href=http://www.whatwg.org/html/#the-u-element>u</a></code> element with no attributes
 except possibly <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code>; or a <code class=external data-anolis-spec=html title=font><a href=http://www.whatwg.org/html/#font>font</a></code> element with no attributes except
@@ -1780,7 +1771,7 @@ different value.
   <li>If <var title="">new value</var> is null, abort this algorithm.
 
   <li>If <var title="">node</var> is an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>, <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code>, or <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#comment>Comment</a></code> node, and
-  is not an <a href=#unwrappable-node>unwrappable node</a>:
+  is an <a href=#allowed-child>allowed child</a> of "span":
 
   <ol>
     <!-- Even if the value matches, we stick it in a preceding sibling if
@@ -1811,7 +1802,7 @@ different value.
   <li>If the <a href=#effective-value>effective value</a> of <var title="">command</var> is <var title="">new
   value</var> on <var title="">node</var>, abort this algorithm.
 
-  <li>If <var title="">node</var> is an <a href=#unwrappable-node>unwrappable node</a>:
+  <li>If <var title="">node</var> is not an <a href=#allowed-child>allowed child</a> of "span":
 
   <ol>
     <li>Let <var title="">children</var> be all <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a> of <var title="">node</var>,
@@ -2077,11 +2068,11 @@ common that a previous sibling is the simple styling element we want, because
 often we'll style several consecutive siblings in succession.  In that case,
 the element created for the first can be reused for the later ones.
 
-<p>This last step works a bit differently if the node is an <a href=#unwrappable-node>unwrappable
-node</a>.  In that case, wrapping it in a simple styling element would
-make the document less conforming than it already was.  Instead, we recursively
-force style on its children.  The recursion will terminate when we hit a node
-that's wrappable, or when there are no further descendants.
+<p>This last step works a bit differently if the node isn't an <a href=#allowed-child>allowed
+child</a> of "span".  In that case, wrapping it in a simple styling element
+would make the document less conforming than it already was.  Instead, we
+recursively force style on its children.  The recursion will terminate when we
+hit a node that's wrappable, or when there are no further descendants.
 
 <p>After all this, the node is guaranteed to have the style we want, barring
 bugs in the algorithm or the two exceptions noted earlier (!important style

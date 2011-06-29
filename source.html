@@ -1171,15 +1171,6 @@ splitText()), and anyway text nodes might not be returned by decomposing even
 if they're effectively contained: it might be that the new node created by
 splitText() is returned. -->
 
-<p>An <dfn>unwrappable node</dfn> is an <span>HTML element</span> which may not
-be used where only [[phrasingcontent]] is expected (not counting unknown or
-obsolete elements, which cannot be used at all); or any [[element]] whose
-display property computes to something other than "inline", "inline-block", or
-"inline-table"; or any [[node]] that is not <span>editable</span>.
-
-<p class=XXX>Probably want to redefine unwrappable node in terms of allowed
-children or something.
-
 <p>A <dfn>modifiable element</dfn> is a [[b]], [[em]], [[i]], [[s]], [[span]],
 [[strike]], [[strong]], [[sub]], [[sup]], or [[u]] element with no attributes
 except possibly [[style]]; or a [[font]] element with no attributes except
@@ -1741,7 +1732,7 @@ different value.
   <li>If <var>new value</var> is null, abort this algorithm.
 
   <li>If <var>node</var> is an [[element]], [[text]], or [[comment]] node, and
-  is not an <span>unwrappable node</span>:
+  is an <span>allowed child</span> of "span":
 
   <ol>
     <!-- Even if the value matches, we stick it in a preceding sibling if
@@ -1772,7 +1763,7 @@ different value.
   <li>If the <span>effective value</span> of <var>command</var> is <var>new
   value</var> on <var>node</var>, abort this algorithm.
 
-  <li>If <var>node</var> is an <span>unwrappable node</span>:
+  <li>If <var>node</var> is not an <span>allowed child</span> of "span":
 
   <ol>
     <li>Let <var>children</var> be all [[children]] of <var>node</var>,
@@ -2056,11 +2047,11 @@ common that a previous sibling is the simple styling element we want, because
 often we'll style several consecutive siblings in succession.  In that case,
 the element created for the first can be reused for the later ones.
 
-<p>This last step works a bit differently if the node is an <span>unwrappable
-node</span>.  In that case, wrapping it in a simple styling element would
-make the document less conforming than it already was.  Instead, we recursively
-force style on its children.  The recursion will terminate when we hit a node
-that's wrappable, or when there are no further descendants.
+<p>This last step works a bit differently if the node isn't an <span>allowed
+child</span> of "span".  In that case, wrapping it in a simple styling element
+would make the document less conforming than it already was.  Instead, we
+recursively force style on its children.  The recursion will terminate when we
+hit a node that's wrappable, or when there are no further descendants.
 
 <p>After all this, the node is guaranteed to have the style we want, barring
 bugs in the algorithm or the two exceptions noted earlier (!important style

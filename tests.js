@@ -1022,7 +1022,6 @@ var tests = {
 		['<p>', '<xmp>[foo]</xmp>'],
 		['<div>', '<xmp>[foo]</xmp>'],
 
-		// For queryCommandIndeterm() and queryCommandValue()
 		'<div><ol><li>[foo]</ol></div>',
 		'<div><table><tr><td>[foo]</table></div>',
 		'<p>[foo<h1>bar]</h1>',

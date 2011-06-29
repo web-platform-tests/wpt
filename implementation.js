@@ -81,6 +81,15 @@ function isAfter(node1, node2) {
 	return Boolean(node1.compareDocumentPosition(node2) & Node.DOCUMENT_POSITION_PRECEDING);
 }
 
+function getAncestors(node) {
+	var ancestors = [];
+	while (node.parentNode) {
+		ancestors.unshift(node.parentNode);
+		node = node.parentNode;
+	}
+	return ancestors;
+}
+
 function getDescendants(node) {
 	var descendants = [];
 	for (var i = 0; i < node.childNodes.length; i++) {
@@ -3494,6 +3503,11 @@ var defaultSingleLineContainerName = "p";
 //@{
 
 function fixDisallowedAncestors(node) {
+	// "If node is not editable, abort these steps."
+	if (!isEditable(node)) {
+		return;
+	}
+
 	// "If node is not an allowed child of any of its ancestors in the same
 	// editing host:"
 	var hasAllowedAncestor = false;
@@ -3533,59 +3547,6 @@ function fixDisallowedAncestors(node) {
 	while (!isAllowedChild(node, node.parentNode)) {
 		splitParent([node]);
 	}
-}
-
-function fixProhibitedParagraphDescendants(node) {
-	// "If node has no children, return the one-node list consisting of node."
-	if (!node.hasChildNodes()) {
-		return [node];
-	}
-
-	// "Let children be the children of node."
-	var children = [].slice.call(node.childNodes);
-
-	// "Fix prohibited paragraph descendants of each member of children."
-	for (var i = 0; i < children.length; i++) {
-		fixProhibitedParagraphDescendants(children[i]);
-	}
-
-	// "Let children be the children of node."
-	children = [].slice.call(node.childNodes);
-
-	// "For each child in children, if child is a prohibited paragraph child,
-	// split the parent of the one-node list consisting of child."
-	for (var i = 0; i < children.length; i++) {
-		if (isProhibitedParagraphChild(children[i])) {
-			splitParent([children[i]]);
-		}
-	}
-
-	// "If node's parent is null, let node equal the last member of children."
-	if (!node.parentNode) {
-		node = children[children.length - 1];
-	}
-
-	// "Let node list be a list of nodes, initially empty."
-	var nodeList = [];
-
-	// "Repeat these steps:"
-	while (true) {
-		// "Prepend node to node list."
-		nodeList.unshift(node);
-
-		// "If node is children's first member, or children's first member's
-		// parent, break from this loop."
-		if (node == children[0]
-		|| node == children[0].parentNode) {
-			break;
-		}
-
-		// "Set node to its previousSibling."
-		node = node.previousSibling;
-	}
-
-	// "Return node list."
-	return nodeList;
 }
 
 function indentNodes(nodeList) {
@@ -5476,57 +5437,35 @@ commands.formatblock = {
 		// "Block-extend the active range, and let new range be the result."
 		var newRange = blockExtend(getActiveRange());
 
-		// "Let original node list be an empty list of nodes."
-		var originalNodeList = [];
-
-		// "For each node node contained in new range, append node to original
-		// node list if it is editable, the last member of original node list
-		// (if any) is not an ancestor of node, and node is either a non-list
-		// single-line container or an allowed child of "p"."
-		originalNodeList = getContainedNodes(newRange, function(node) {
+		// "Let node list be an empty list of nodes."
+		//
+		// "For each node node contained in new range, append node to node list
+		// if it is editable, the last member of original node list (if any) is
+		// not an ancestor of node, node is either a non-list single-line
+		// container or an allowed child of "p", and node is not the ancestor
+		// of a prohibited paragraph child."
+		var nodeList = getContainedNodes(newRange, function(node) {
 			return isEditable(node)
 				&& (isNonListSingleLineContainer(node)
-				|| isAllowedChild(node, "p"));
+				|| isAllowedChild(node, "p"))
+				&& !getDescendants(node).some(isProhibitedParagraphChild);
 		});
 
-		// "For each node in original node list, while either node is a
-		// descendant of an editable HTML element in the same editing host with
-		// local name "address", "h1", "h2", "h3", "h4", "h5", "h6", "p", or
-		// "pre"; or node's parent is not null, and "p" is not an allowed child
-		// of node's parent: split the parent of the one-node list consisting
-		// of node."
-		for (var i = 0; i < originalNodeList.length; i++) {
-			var node = originalNodeList[i];
-
-			while (true) {
-				if (node.parentNode
-				&& !isAllowedChild("p", node.parentNode)) {
-					splitParent([node]);
-					continue;
-				}
-
-				var ancestor = node.parentNode;
-				while (ancestor
-				&& !isHtmlElement(ancestor, ["ADDRESS", "H1", "H2", "H3", "H4", "H5", "H6", "P", "PRE"])) {
-					ancestor = ancestor.parentNode;
-				}
-				if (ancestor
-				&& isEditable(ancestor)
-				&& inSameEditingHost(node, ancestor)) {
-					splitParent([node]);
-				} else {
-					break;
-				}
+		// "For each node in node list, while node is the descendant of an
+		// editable HTML element in the same editing host, which has local name
+		// "address", "div", "h1", "h2", "h3", "h4", "h5", "h6", "p", or "pre",
+		// and which is not the ancestor of a prohibited paragraph child, split
+		// the parent of the one-node list consisting of node."
+		for (var i = 0; i < nodeList.length; i++) {
+			var node = nodeList[i];
+			while (getAncestors(node).some(function(ancestor) {
+				return isEditable(ancestor)
+					&& inSameEditingHost(ancestor, node)
+					&& isHtmlElement(ancestor, ["address", "div", "h1", "h2", "h3", "h4", "h5", "h6", "p", "pre"])
+					&& !getDescendants(ancestor).some(isProhibitedParagraphChild);
+			})) {
+				splitParent([node]);
 			}
-		}
-
-		// "Let node list be a list of nodes, initially empty."
-		var nodeList = [];
-
-		// "For each node in original node list, fix prohibited paragraph
-		// descendants of node, and append the resulting nodes to node list."
-		for (var i = 0; i < originalNodeList.length; i++) {
-			nodeList = nodeList.concat(fixProhibitedParagraphDescendants(originalNodeList[i]));
 		}
 
 		// "If value is "div" or "p", then while node list is not empty:"
@@ -5564,10 +5503,11 @@ commands.formatblock = {
 
 				// "Wrap sublist, with sibling criteria matching nothing and
 				// new parent instructions returning the result of running
-				// createElement(value) on the context object."
-				wrap(sublist,
+				// createElement(value) on the context object. Then fix
+				// disallowed ancestors of the result."
+				fixDisallowedAncestors(wrap(sublist,
 					function() { return false },
-					function() { return document.createElement(value) });
+					function() { return document.createElement(value) }));
 			}
 
 		// "Otherwise, while node list is not empty:"
@@ -5615,10 +5555,11 @@ commands.formatblock = {
 				// "Wrap sublist, with sibling criteria matching any HTML
 				// element with local name value and no attributes, and new
 				// parent instructions returning the result of running
-				// createElement(value) on the context object."
-				wrap(sublist,
+				// createElement(value) on the context object. Then fix
+				// disallowed ancestors of the result."
+				fixDisallowedAncestors(wrap(sublist,
 					function(node) { return isHtmlElement(node, value.toUpperCase()) && !node.attributes.length },
-					function() { return document.createElement(value) });
+					function() { return document.createElement(value) }));
 			}
 		}
 	}, indeterm: function() {
@@ -5659,10 +5600,12 @@ commands.formatblock = {
 			var currentType = "";
 
 			// "If node is an editable HTML element with local name "address",
-			// "div", "h1", "h2", "h3", "h4", "h5", "h6", "p", or "pre", set
+			// "div", "h1", "h2", "h3", "h4", "h5", "h6", "p", or "pre", and
+			// node is not the ancestor of a prohibited paragraph child, set
 			// current type to node's local name."
 			if (isEditable(node)
-			&& isHtmlElement(node, ["address", "div", "h1", "h2", "h3", "h4", "h5", "h6", "p", "pre"])) {
+			&& isHtmlElement(node, ["address", "div", "h1", "h2", "h3", "h4", "h5", "h6", "p", "pre"])
+			&& !getDescendants(node).some(isProhibitedParagraphChild)) {
 				currentType = node.tagName;
 			}
 
@@ -5706,10 +5649,12 @@ commands.formatblock = {
 		}
 
 		// "If node is an editable HTML element with local name "address",
-		// "div", "h1", "h2", "h3", "h4", "h5", "h6", "p", or "pre", return its
+		// "div", "h1", "h2", "h3", "h4", "h5", "h6", "p", or "pre", and node
+		// is not the ancestor of a prohibited paragraph child, return node's
 		// local name, converted to lowercase."
 		if (isEditable(node)
-		&& isHtmlElement(node, ["address", "div", "h1", "h2", "h3", "h4", "h5", "h6", "p", "pre"])) {
+		&& isHtmlElement(node, ["address", "div", "h1", "h2", "h3", "h4", "h5", "h6", "p", "pre"])
+		&& !getDescendants(node).some(isProhibitedParagraphChild)) {
 			return node.tagName.toLowerCase();
 		}
 

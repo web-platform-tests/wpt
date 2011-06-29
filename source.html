@@ -3103,12 +3103,14 @@ container</span>, or an <span>HTML element</span> with [[localname]] "li",
 
 <h3>Assorted block formatting command algorithms</h3>
 <!-- @{ -->
-<p>To <dfn>fix disallowed ancestors</dfn> of a [[node]] <var>node</var>:
+<p>To <dfn>fix disallowed ancestors</dfn> of <var>node</var>:
 
 <p class=XXX>Do we want to get rid of attributes that are no longer allowed
 here?
 
 <ol>
+  <li>If <var>node</var> is not <span>editable</span>, abort these steps.
+
   <li>If <var>node</var> is not an <span>allowed child</span> of any of its
   [[ancestors]] <span>in the same editing host</span>:
 
@@ -3134,58 +3136,6 @@ here?
   <li>While <var>node</var> is not an <span>allowed child</span> of its
   [[parent]], <span>split the parent</span> of the one-[[node]] list consisting
   of <var>node</var>.
-</ol>
-
-<p>To <dfn>fix prohibited paragraph descendants</dfn> of a [[node]]
-<var>node</var>:
-
-<p class=note>This will fix any case where a descendant of node is a prohibited
-paragraph child.  The function returns a list consisting of <var>node</var> and
-any new siblings this algorithm might give it, if some of its children are
-split out of it.
-
-<p class=XXX>Possibly can be converted to just fix disallowed ancestors of all
-descendant nodes.  The only reason this is nontrivial is because the caller
-needs the list of returned nodes.  (It's only used by formatBlock, but it
-currently has to be a separate function because it's recursive.)
-
-<ol>
-  <li>If <var>node</var> has no [[children]], return the one-[[node]] list
-  consisting of <var>node</var>.
-
-  <li>Let <var>children</var> be the [[children]] of <var>node</var>.
-
-  <li><span>Fix prohibited paragraph descendants</span> of each member of
-  <var>children</var>.
-
-  <!-- When we split the parent of a node, three things can happen.  Either the
-  node gets stuck before its parent, or after its parent, or the parent gets
-  copied and the copy gets stuck before it.  So the nodes we want to return are
-  consecutive siblings; the first is either the original first child of node or
-  its parent, and the last is either the last child of node or node itself. -->
-  <li>Let <var>children</var> be the [[children]] of <var>node</var>.
-
-  <li>For each <var>child</var> in <var>children</var>, if <var>child</var> is
-  a <span>prohibited paragraph child</span>, <span>split the parent</span> of
-  the one-[[node]] list consisting of <var>child</var>.
-
-  <li>If <var>node</var>'s [[parent]] is null, let <var>node</var> equal the
-  last member of <var>children</var>.
-
-  <li>Let <var>node list</var> be a list of [[nodes]], initially empty.
-
-  <li>Repeat these steps:
-
-  <ol>
-    <li>Prepend <var>node</var> to <var>node list</var>.
-
-    <li>If <var>node</var> is <var>children</var>'s first member, or
-    <var>children</var>'s first member's [[parent]], break from this loop.
-
-    <li>Set <var>node</var> to its [[previoussibling]].
-  </ol>
-
-  <li>Return <var>node list</var>.
 </ol>
 
 <p>To <dfn>indent</dfn> a list <var>node list</var> of consecutive [[sibling]]
@@ -5363,44 +5313,34 @@ sense for <address>/<h*>/<pre>, but other browsers don't do it.
   <li><span>Block-extend</span> the <span>active range</span>, and let <var>new
   range</var> be the result.
 
-  <li>Let <var>original node list</var> be an empty list of [[nodes]].
+  <li>Let <var>node list</var> be an empty list of [[nodes]].
 
   <li>For each [[node]] <var>node</var> [[contained]] in <var>new range</var>,
-  append <var>node</var> to <var>original node list</var> if it is
+  append <var>node</var> to <var>node list</var> if it is
   <span>editable</span>, the last member of <var>original node list</var> (if
-  any) is not an [[ancestor]] of <var>node</var>, and <var>node</var> is either
-  a <span>non-list single-line container</span> or an <span>allowed
-  child</span> of "p".
+  any) is not an [[ancestor]] of <var>node</var>, <var>node</var> is either a
+  <span>non-list single-line container</span> or an <span>allowed child</span>
+  of "p", and <var>node</var> is not the [[ancestor]] of a <span>prohibited
+  paragraph child</span>.
 
-  <li>For each <var>node</var> in <var>original node list</var>, while either
-  <var>node</var> is a [[descendant]] of an <span>editable</span> <span>HTML
-  element</span> <span>in the same editing host</span> with [[localname]]
-  "address", "h1", "h2", "h3", "h4", "h5", "h6", "p", or "pre"; or
-  <var>node</var>'s [[parent]] is not null, and "p" is not an <span>allowed
-  child</span> of <var>node</var>'s [[parent]]: <span>split the parent</span>
-  of the one-[[node]] list consisting of <var>node</var>.
-
-  <div class=XXX>
-  <p>This is needed so we don't get things like p nested inside address, and
-  instead convert part of the multi-line address into a p.  But div can contain
-  any of these things, so we don't break that apart ever, which is bad.  It
-  means if you have
-
-  <xmp><div>foo<br>bar</div></xmp>
-
-  <p>then formatBlocking "foo" then "bar" as p has different results from doing
-  both at once.  Maybe we should split divs as well, but only if they're the
-  parent of the node we're dealing with?  Or just split divs always, and hope
-  the "in the same editing host" thing handles it?
-  </div>
-
-  <p class=XXX>We probably don't want to break out of tables and such here.
-
-  <li>Let <var>node list</var> be a list of [[nodes]], initially empty.
-
-  <li>For each <var>node</var> in <var>original node list</var>, <span>fix
-  prohibited paragraph descendants</span> of <var>node</var>, and append the
-  resulting [[nodes]] to <var>node list</var>.
+  <li>For each <var>node</var> in <var>node list</var>, while <var>node</var>
+  is the [[descendant]] of an <span>editable</span> <span>HTML element</span>
+  <span>in the same editing host</span>, which has [[localname]] "address",
+  "div", "h1", "h2", "h3", "h4", "h5", "h6", "p", or "pre", and which is not
+  the [[ancestor]] of a <span>prohibited paragraph child</span>, <span>split
+  the parent</span> of the one-[[node]] list consisting of <var>node</var>.
+  <!--
+  This tries to avoid misnesting if only some lines of an element are selected,
+  so <h1>[foo]<br>bar</h1> becomes <p>[foo]</p><h1>bar</h1> instead of
+  <h1><p>[foo]</p><br>bar</h1> or such.  It tries to heuristically distinguish
+  between divs used as line-breakers and divs used as actual wrappers by
+  checking if they have prohibited paragraph children as descendants.  It works
+  for address too, in case there are paragraphs nested inside.  Thus
+  <address>[foo]<br>bar</address> becomes <p>[foo]</p><address>bar</address>,
+  but <address>[foo]<p>bar</p></address> becomes
+  <address><p>[foo]</p><p>bar</p></address>.  Likewise, we don't break things
+  out of lists or tables or such if they happen to be nested in a <div>.
+  -->
 
   <!--
   We have two different behaviors, one for div and p and one for everything
@@ -5461,7 +5401,13 @@ sense for <address>/<h*>/<pre>, but other browsers don't do it.
     <li><span>Wrap</span> <var>sublist</var>, with <span>sibling
     criteria</span> matching nothing and <span>new parent instructions</span>
     returning the result of running [[createelement|<var>value</var>]] on the
-    [[contextobject]].
+    [[contextobject]].  Then <span>fix disallowed ancestors</span> of the
+    result.
+    <!-- It's possible to have disallowed ancestors in obscure corner cases,
+    where a node is an allowed child of a p but p is not an allowed child of
+    the node's parent and the node's parent is also not one of the whitelisted
+    elements but is a block element.  <xmp>[foo]</xmp> is the only case I can
+    think of. -->
   </ol>
 
   <li>Otherwise, while <var>node list</var> is not empty:
@@ -5500,7 +5446,8 @@ sense for <address>/<h*>/<pre>, but other browsers don't do it.
     criteria</span> matching any <span>HTML element</span> with [[localname]]
     <var>value</var> and no attributes, and <span>new parent
     instructions</span> returning the result of running
-    [[createelement|<var>value</var>]] on the [[contextobject]].
+    [[createelement|<var>value</var>]] on the [[contextobject]].  Then
+    <span>fix disallowed ancestors</span> of the result.
   </ol>
 </ol>
 
@@ -5531,15 +5478,13 @@ sure what it does.  I'm speccing it just because it makes sense.
     "address", "div", "h1", "h2", "h3", "h4", "h5", "h6", "p", or "pre", set
     <var>node</var> to its [[parent]].
 
-    <p class=XXX>This doesn't really make sense if there's an intervening table
-    or something.
-
     <li>Let <var>current type</var> be the empty string.
 
     <li>If <var>node</var> is an <span>editable</span> <span>HTML
     element</span> with [[localname]] "address", "div", "h1", "h2", "h3", "h4",
-    "h5", "h6", "p", or "pre", set <var>current type</var> to <var>node</var>'s
-    [[localname]].
+    "h5", "h6", "p", or "pre", and <var>node</var> is not the [[ancestor]] of a
+    <span>prohibited paragraph child</span>, set <var>current type</var> to
+    <var>node</var>'s [[localname]].
 
     <li>If <var>type</var> is null, set <var>type</var> to <var>current
     type</var>.
@@ -5579,24 +5524,22 @@ writing means what Firefox supports plus div.
   the same editing host</span> as <var>node</var>, and <var>node</var> is not
   an <span>HTML element</span> with [[localname]] "address", "div", "h1", "h2",
   "h3", "h4", "h5", "h6", "p", or "pre", set <var>node</var> to its [[parent]].
-  <!--
-  Opera 11.11 doesn't require it be editable, so it will return "DIV" instead of
-  "" for <div contenteditable>foo</div>.
-
-  Chrome 14 dev will report "div" for <div><ol><li>foo</ol></div> or such.
-  Opera 11.11 reports "".  IE and Firefox didn't cooperate with testing.  Opera
-  makes somewhat more sense, but formatBlock is actually broken in that case
-  right now anyway for any wrapper other than div, so I'll punt on a solution.
-  -->
-  <p class=XXX>This doesn't really make sense if there's an intervening table
-  or something.
+  <!-- Opera 11.11 doesn't require it be editable, so it will return "DIV"
+  instead of "" for <div contenteditable>foo</div>.  -->
 
   <li>If <var>node</var> is an <span>editable</span> <span>HTML element</span>
   with [[localname]] "address", "div", "h1", "h2", "h3", "h4", "h5", "h6", "p",
-  or "pre", return its [[localname]], <span data-anolis-spec=domcore>converted
-  to lowercase</span>.
-  <!-- Actually, we don't really need to specify "editable", since it has to be
-  editable. -->
+  or "pre", and <var>node</var> is not the [[ancestor]] of a <span>prohibited
+  paragraph child</span>, return <var>node</var>'s [[localname]], <span
+  data-anolis-spec=domcore>converted to lowercase</span>.
+  <!--
+  Chrome 14 dev will report "div" for <div><ol><li>foo</ol></div> or such.
+  Opera 11.11 reports "".  IE and Firefox didn't cooperate with testing.  Opera
+  makes more sense, and matches the fact that formatBlock now doesn't recognize
+  such a div as a formatBlock candidate, so Opera it is.
+
+  We don't really need to specify "editable", since it has to be editable.
+  -->
 
   <li>Return the empty string.
 </ol>

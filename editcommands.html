@@ -2610,11 +2610,9 @@ browsers, but it's unlikely to hurt and it makes sense.
   value</a> of each returned <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> to <var title="">value</var>.
 </ol>
 
-<!-- The state is undefined, thus always false.  This matches IE 9 RC and
-Chrome 10.  Opera 11 seems to return true if there's some color style applied,
-false otherwise, which seems fairly useless; authors want to use value here,
-not state.  Firefox 4b11 throws an exception, which is an interesting approach,
-but I'll go with IE/WebKit, which makes at least as much sense. -->
+<!-- Opera 11 seems to return true for the state if there's some color style
+applied, false otherwise, which seems fairly useless; authors want to use value
+here, not state.  So I'll match other browsers and not define any state. -->
 
 <p><a href=#indeterminate>Indeterminate</a>: True if among <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code>
 nodes that are <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active

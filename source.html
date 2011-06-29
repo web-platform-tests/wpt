@@ -2589,11 +2589,9 @@ browsers, but it's unlikely to hurt and it makes sense.
   value</span> of each returned [[node]] to <var>value</var>.
 </ol>
 
-<!-- The state is undefined, thus always false.  This matches IE 9 RC and
-Chrome 10.  Opera 11 seems to return true if there's some color style applied,
-false otherwise, which seems fairly useless; authors want to use value here,
-not state.  Firefox 4b11 throws an exception, which is an interesting approach,
-but I'll go with IE/WebKit, which makes at least as much sense. -->
+<!-- Opera 11 seems to return true for the state if there's some color style
+applied, false otherwise, which seems fairly useless; authors want to use value
+here, not state.  So I'll match other browsers and not define any state. -->
 
 <p><span>Indeterminate</span>: True if among <span>editable</span> [[text]]
 nodes that are <span>effectively contained</span> in the <span>active

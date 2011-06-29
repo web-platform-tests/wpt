@@ -38,7 +38,7 @@
 <body class=draft>
 <div class=head id=head>
 <h1>HTML Editing Commands</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-28-june-2011>Work in Progress &mdash; Last Update 28 June 2011</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-29-june-2011>Work in Progress &mdash; Last Update 29 June 2011</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;ayg+spec@aryeh.name&gt;
@@ -339,7 +339,10 @@ method on the <code class=external data-anolis-spec=html><a href=http://www.what
 scripts to determine whether the selection is in a mixed or indeterminate
 state, like (for <a href=#the-bold-command>the <code title="">bold</code> command</a>) partly bold
 and partly not.  An editing toolbar with a "bold" button might show it
-differently if the selection is indeterminate.
+differently if the selection is indeterminate.  As a rule, the current
+selection is indeterminate for a command if either the command has a state
+which is true for part of the selection but not the whole selection, or it has
+a value which is different for different parts of the selection.
 
 <p>The <dfn id=querycommandstate() title=queryCommandState()><code>queryCommandState(<var title="">command</var>)</code></dfn>
 method on the <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/html/#htmldocument>HTMLDocument</a></code> interface allows
@@ -3197,6 +3200,52 @@ confronted with this kind of nesting.)
   </ol>
 </ol>
 
+<p>The <dfn id="selection's-list-state">selection's list state</dfn> is returned by the following
+algorithm:
+
+<ol>
+  <li><a href=#block-extend>Block-extend</a> the <a href=#active-range>active range</a>, and let <var title="">new
+  range</var> be the result.
+
+  <li>Let <var title="">node list</var> be a list of <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a>, initially empty.
+
+  <li>For each <var title="">node</var> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in <var title="">new range</var>, append
+  <var title="">node</var> to <var title="">node list</var> if the last member of <var title="">node
+  list</var> (if any) is not an <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of <var title="">node</var>;
+  <var title="">node</var> is <a href=#editable>editable</a>; <var title="">node</var> is not a
+  <a href=#potential-indentation-element>potential indentation element</a>; and <var title="">node</var> is either an
+  <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code> or <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code>, or the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code> or <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code>, or an
+  <a href=#allowed-child>allowed child</a> of "li".
+
+  <li>If <var title="">node list</var> is empty, return "none".
+
+  <li>If every member of <var title="">node list</var> is either an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code> or the
+  <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code>, and none is a <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code> or an <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of a <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code>,
+  return "ol".
+
+  <li>If every member of <var title="">node list</var> is either a <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code> or the
+  <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of a <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code>, and none is an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code> or an <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code>,
+  return "ul".
+  <!-- The previous two conditions are mutually exclusive, so the order is
+  actually irrelevant.  Clearly they could only both hold if no member of node
+  list is an ol or ul, so if they both held, every member would have to be both
+  the child of an ol and the child of a ul.  This is impossible unless the list
+  is empty, in which case we already aborted. -->
+
+  <li>If some member of <var title="">node list</var> is either an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code> or the
+  <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> or <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code>, and some member of <var title="">node
+  list</var> is either a <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code> or the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> or <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of a <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code>,
+  return "mixed".
+
+  <li>If some member of <var title="">node list</var> is either an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code> or the
+  <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> or <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code>, return "mixed ol".
+
+  <li>If some member of <var title="">node list</var> is either a <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code> or the
+  <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> or <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of a <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code>, return "mixed ul".
+
+  <li>Return "none".
+</ol>
+
 <p>The <dfn id=canonical-space-sequence>canonical space sequence</dfn> of length <var title="">n</var>, with boolean
 flags <var title="">non-breaking start</var> and <var title="">non-breaking end</var>, is
 returned by the following algorithm:
@@ -3546,7 +3595,7 @@ reasons:
   and <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offsets</a> of <var title="">range</var>.
 
   <li>If some <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#ancestor-container title="ancestor container">ancestor container</a> of <var title="">start node</var> is an <code class=external data-anolis-spec=html title="the li element"><a href=http://www.whatwg.org/html/#the-li-element>li</a></code>, set
-  <var title="">start offset</var> to the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> of the last such <code class=external data-anolis-spec=html title="the li element"><a href=http://www.whatwg.org/html/#the-li-element>li</a></code> in
+  <var title="">start offset</var> to the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> of the first such <code class=external data-anolis-spec=html title="the li element"><a href=http://www.whatwg.org/html/#the-li-element>li</a></code> in
   <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#tree-order>tree order</a>, and set <var title="">start node</var> to that <code class=external data-anolis-spec=html title="the li element"><a href=http://www.whatwg.org/html/#the-li-element>li</a></code>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
 
   <li>Repeat the following steps:
@@ -3579,7 +3628,7 @@ reasons:
   </ol>
 
   <li>If some <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#ancestor-container title="ancestor container">ancestor container</a> of <var title="">end node</var> is an <code class=external data-anolis-spec=html title="the li element"><a href=http://www.whatwg.org/html/#the-li-element>li</a></code>, set
-  <var title="">end offset</var> to one plus the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> of the last such <code class=external data-anolis-spec=html title="the li element"><a href=http://www.whatwg.org/html/#the-li-element>li</a></code> in
+  <var title="">end offset</var> to one plus the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> of the first such <code class=external data-anolis-spec=html title="the li element"><a href=http://www.whatwg.org/html/#the-li-element>li</a></code> in
   <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#tree-order>tree order</a>, and set <var title="">end node</var> to that <code class=external data-anolis-spec=html title="the li element"><a href=http://www.whatwg.org/html/#the-li-element>li</a></code>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
 
   <li>Repeat the following steps:
@@ -4517,6 +4566,9 @@ Sheesh, lists are complicated.
 or "ul"):
 
 <ol>
+  <li>Let <var title="">mode</var> be "disable" if the <a href="#selection's-list-state">selection's list
+  state</a> is <var title="">tag name</var>, and "enable" otherwise.
+
   <li>Let <var title="">other tag name</var> be "ol" if <var title="">tag name</var> is "ul", and
   "ul" if <var title="">tag name</var> is "ol".
 
@@ -4557,11 +4609,8 @@ or "ul"):
   case.
   -->
 
-  <li>If every member of <var title="">node list</var> is equal to or the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of
-  an <a href=#html-element>HTML element</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> <var title="">tag name</var>, and no
-  member of <var title="">node list</var> is equal to or the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of an
-  <a href=#html-element>HTML element</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> <var title="">other tag name</var>, then
-  while <var title="">node list</var> is not empty:
+  <li>If <var title="">mode</var> is "disable", then while <var title="">node list</var> is not
+  empty:
 
   <ol>
     <li>Let <var title="">sublist</var> be an empty list of <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a>.
@@ -5806,46 +5855,24 @@ Opera 11.11 isn't heedful of <xmp>, and treats <pre> somewhat oddly.
 <p><a href=#action>Action</a>: <a href=#toggle-lists>Toggle lists</a> with <var title="">tag name</var>
 "ol".
 
-<p class=XXX>Consider defining indeterminate flag.
-<!-- Gecko sort of supports it, but unreliably, and no one else does.  Ditto
-insertUnorderedList, obviously. -->
-
-<p><a href=#state>State</a>:
+<p><a href=#indeterminate-flag>Indeterminate flag</a>: True if the <a href="#selection's-list-state">selection's list
+state</a> is "mixed" or "mixed ol", false otherwise.
 <!--
-Logically, this should return true if running the command would remove ordered
-lists, false if it would add them, just like for bold etc.  So I copy-paste the
-logic from there.  Note that when we actually run the command, we'll normalize
-sublists, but not just when we query.  This probably doesn't make a difference,
-but I'm not totally sure.
+Firefox 6.0a2 sort of supports this, but it throws exceptions most of the
+time.  It has the quirk that even if there are no ol's around, it will say it's
+indeterminate if there are some things that are ul's and some that are not
+lists at all, but this doesn't make sense and I don't duplicate it.  No one
+else supports indeterminate for insert*List, but it makes sense if you support
+state.
+-->
 
+<p><a href=#state>State</a>: True if the <a href="#selection's-list-state">selection's list state</a> is "ol",
+false otherwise.
+<!--
 IE9 throws exceptions in most cases, Firefox 6.0a2 in some cases as well, for
 no apparent reason.  Ignoring those, the spec basically matches all browsers,
 except with a few weird random mismatches that looked like browser bugs to me.
 -->
-<p class=XXX>Does the fact that we don't normalize sublists before running this
-mean that it might produce results that don't match the way the action will
-behave?
-
-<ol>
-  <li><a href=#block-extend>Block-extend</a> the <a href=#active-range>active range</a>, and let <var title="">new
-  range</var> be the result.
-
-  <li>Let <var title="">node list</var> be a list of <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a>, initially empty.
-
-  <li>For each <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> <var title="">node</var> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in <var title="">new range</var>,
-  if <var title="">node</var> is <a href=#editable>editable</a>; the last member of <var title="">node
-  list</var> (if any) is not an <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of <var title="">node</var>;
-  <var title="">node</var> is not a <a href=#potential-indentation-element>potential indentation element</a>; and
-  either <var title="">node</var> is an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code> or <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code>, or its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code>
-  or <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code>, or it is an <a href=#allowed-child>allowed child</a> of "li"; then append
-  <var title="">node</var> to <var title="">node list</var>.
-
-  <li>If every member of <var title="">node list</var> is equal to or the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of
-  an <a href=#html-element>HTML element</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> "ol", and no member of
-  <var title="">node list</var> is equal to or the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of an <a href=#html-element>HTML
-  element</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> "ul", then return true.  Otherwise, return
-  false.
-</ol>
 
 
 <h3 id=the-insertparagraph-command><span class=secno>7.18 </span><dfn>The <code title="">insertParagraph</code> command</dfn></h3>
@@ -6292,32 +6319,11 @@ This is still a huge headache, though.
 <p><a href=#action>Action</a>: <a href=#toggle-lists>Toggle lists</a> with <var title="">tag name</var>
 "ul".
 
-<p><a href=#state>State</a>:
-<!-- See insertOrderedList for comments. -->
-<p class=XXX>Does the fact that we don't normalize sublists before running this
-mean that it might produce results that don't match the way the action will
-behave?
+<p><a href=#indeterminate-flag>Indeterminate flag</a>: True if the <a href="#selection's-list-state">selection's list
+state</a> is "mixed" or "mixed ul", false otherwise.
 
-<ol>
-  <li><a href=#block-extend>Block-extend</a> the <a href=#active-range>active range</a>, and let <var title="">new
-  range</var> be the result.
-
-  <li>Let <var title="">node list</var> be a list of <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a>, initially empty.
-
-  <li>For each <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> <var title="">node</var> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in <var title="">new range</var>,
-  if <var title="">node</var> is <a href=#editable>editable</a>; the last member of <var title="">node
-  list</var> (if any) is not an <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of <var title="">node</var>;
-  <var title="">node</var> is not a <a href=#potential-indentation-element>potential indentation element</a>; and
-  either <var title="">node</var> is an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code> or <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code>, or its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code>
-  or <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code>, or it is an <a href=#allowed-child>allowed child</a> of "li"; then append
-  <var title="">node</var> to <var title="">node list</var>.
-
-  <li>If every member of <var title="">node list</var> is equal to or the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of
-  an <a href=#html-element>HTML element</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> "ul", and no member of
-  <var title="">node list</var> is equal to or the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of an <a href=#html-element>HTML
-  element</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> "ol", then return true.  Otherwise, return
-  false.
-</ol>
+<p><a href=#state>State</a>: True if the <a href="#selection's-list-state">selection's list state</a> is "ul",
+false otherwise.
 
 
 <h3 id=the-justifycenter-command><span class=secno>7.21 </span><dfn>The <code title="">justifyCenter</code> command</dfn></h3>

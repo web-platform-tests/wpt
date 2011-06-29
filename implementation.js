@@ -3601,6 +3601,77 @@ function normalizeSublists(item) {
 	}
 }
 
+function getSelectionListState() {
+	// "Block-extend the active range, and let new range be the result."
+	var newRange = blockExtendRange(getActiveRange());
+
+	// "Let node list be a list of nodes, initially empty."
+	//
+	// "For each node contained in new range, append node to node list if the
+	// last member of node list (if any) is not an ancestor of node; node is
+	// editable; node is not a potential indentation element; and node is
+	// either an ol or ul, or the child of an ol or ul, or an allowed child of
+	// "li"."
+	var nodeList = collectContainedNodes(newRange, function(node) {
+		return isEditable(node)
+			&& !isPotentialIndentationElement(node)
+			&& (isHtmlElement(node, ["ol", "ul"])
+			|| isHtmlElement(node.parentNode, ["ol", "ul"])
+			|| isAllowedChild(node, "li"));
+	});
+
+	// "If node list is empty, return "none"."
+	if (!nodeList.length) {
+		return "none";
+	}
+
+	// "If every member of node list is either an ol or the child of an ol, and
+	// none is a ul or an ancestor of a ul, return "ol"."
+	if (nodeList.every(function(node) { return isHtmlElement(node, "ol") || isHtmlElement(node.parentNode, "ol") })
+	&& !nodeList.some(function(node) { return isHtmlElement(node, "ul") || ("querySelector" in node && node.querySelector("ul")) })) {
+		return "ol";
+	}
+
+	// "If every member of node list is either a ul or the child of a ul, and
+	// none is an ol or an ancestor of an ol, return "ul"."
+	if (nodeList.every(function(node) { return isHtmlElement(node, "ul") || isHtmlElement(node.parentNode, "ul") })
+	&& !nodeList.some(function(node) { return isHtmlElement(node, "ol") || ("querySelector" in node && node.querySelector("ol")) })) {
+		return "ul";
+	}
+
+	var hasOl = nodeList.some(function(node) {
+		return isHtmlElement(node, "ol")
+			|| isHtmlElement(node.parentNode, "ol")
+			|| ("querySelector" in node && node.querySelector("ol"));
+	});
+	var hasUl = nodeList.some(function(node) {
+		return isHtmlElement(node, "ul")
+			|| isHtmlElement(node.parentNode, "ul")
+			|| ("querySelector" in node && node.querySelector("ul"));
+	});
+	// "If some member of node list is either an ol or the child or ancestor of
+	// an ol, and some member of node list is either a ul or the child or
+	// ancestor of a ul, return "mixed"."
+	if (hasOl && hasUl) {
+		return "mixed";
+	}
+
+	// "If some member of node list is either an ol or the child or ancestor of
+	// an ol, return "mixed ol"."
+	if (hasOl) {
+		return "mixed ol";
+	}
+
+	// "If some member of node list is either a ul or the child or ancestor of
+	// a ul, return "mixed ul"."
+	if (hasUl) {
+		return "mixed ul";
+	}
+
+	// "Return "none"."
+	return "none";
+}
+
 function canonicalSpaceSequence(n, nonBreakingStart, nonBreakingEnd) {
 	// "If n is zero, return the empty string."
 	if (n == 0) {
@@ -3967,7 +4038,7 @@ function blockExtendRange(range) {
 	var endOffset = range.endOffset;
 
 	// "If some ancestor container of start node is an li, set start offset to
-	// the index of the last such li in tree order, and set start node to that
+	// the index of the first such li in tree order, and set start node to that
 	// li's parent."
 	for (
 		var ancestorContainer = startNode;
@@ -3977,7 +4048,6 @@ function blockExtendRange(range) {
 		if (isHtmlElement(ancestorContainer, "LI")) {
 			startOffset = getNodeIndex(ancestorContainer);
 			startNode = ancestorContainer.parentNode;
-			break;
 		}
 	}
 
@@ -4016,7 +4086,7 @@ function blockExtendRange(range) {
 	}
 
 	// "If some ancestor container of end node is an li, set end offset to one
-	// plus the index of the last such li in tree order, and set end node to
+	// plus the index of the first such li in tree order, and set end node to
 	// that li's parent."
 	for (
 		var ancestorContainer = endNode;
@@ -4026,7 +4096,6 @@ function blockExtendRange(range) {
 		if (isHtmlElement(ancestorContainer, "LI")) {
 			endOffset = 1 + getNodeIndex(ancestorContainer);
 			endNode = ancestorContainer.parentNode;
-			break;
 		}
 	}
 
@@ -4689,6 +4758,10 @@ function outdentNode(node) {
 //@{
 
 function toggleLists(tagName) {
+	// "Let mode be "disable" if the selection's list state is tag name, and
+	// "enable" otherwise."
+	var mode = getSelectionListState() == tagName ? "disable" : "enable";
+
 	var range = getActiveRange();
 	tagName = tagName.toUpperCase();
 
@@ -4749,12 +4822,8 @@ function toggleLists(tagName) {
 		}
 	}
 
-	// "If every member of node list is equal to or the child of an HTML
-	// element with local name tag name, and no member of node list is equal to
-	// or the ancestor of an HTML element with local name other tag name, then
-	// while node list is not empty:"
-	if (nodeList.every(function(node) { return isHtmlElement(node, tagName) || isHtmlElement(node.parentNode, tagName) })
-	&& !nodeList.some(function(node) { return isHtmlElement(node, otherTagName) || node.querySelector(otherTagName) })) {
+	// "If mode is "disable", then while node list is not empty:"
+	if (mode == "disable") {
 		while (nodeList.length) {
 			// "Let sublist be an empty list of nodes."
 			var sublist = [];
@@ -5983,35 +6052,11 @@ commands.insertlinebreak = {
 commands.insertorderedlist = {
 	// "Toggle lists with tag name "ol"."
 	action: function() { toggleLists("ol") },
-	state: function() {
-		// "Block-extend the active range, and let new range be the result."
-		var newRange = blockExtendRange(getActiveRange());
-
-		// "Let node list be a list of nodes, initially empty."
-		//
-		// "For each node node contained in new range, if node is editable; the
-		// last member of node list (if any) is not an ancestor of node; node
-		// is not a potential indentation element; and either node is an ol or
-		// ul, or its parent is an ol or ul, or it is an allowed child of "li";
-		// then append node to node list."
-		var nodeList = collectContainedNodes(newRange, function(node) {
-			return isEditable(node)
-				&& !isPotentialIndentationElement(node)
-				&& (isHtmlElement(node, ["ol", "ul"])
-				|| isHtmlElement(node.parentNode, ["ol", "ul"])
-				|| isAllowedChild(node, "li"));
-		});
-
-		// "If every member of node list is equal to or the child of an HTML
-		// element with local name "ol", and no member of node list is equal to
-		// or the ancestor of an HTML element with local name "ul", then return
-		// true. Otherwise, return false."
-		return nodeList.every(function(node) {
-			return (isHtmlElement(node, "ol") || isHtmlElement(node.parentNode, "ol"))
-				&& !isHtmlElement(node, "ul")
-				&& !node.querySelector("ul");
-		});
-	},
+	// "True if the selection's list state is "mixed" or "mixed ol", false
+	// otherwise."
+	indeterm: function() { return /^mixed( ol)?$/.test(getSelectionListState()) },
+	// "True if the selection's list state is "ol", false otherwise."
+	state: function() { return getSelectionListState() == "ol" },
 };
 //@}
 
@@ -6393,35 +6438,11 @@ commands.inserttext = {
 commands.insertunorderedlist = {
 	// "Toggle lists with tag name "ul"."
 	action: function() { toggleLists("ul") },
-	state: function() {
-		// "Block-extend the active range, and let new range be the result."
-		var newRange = blockExtendRange(getActiveRange());
-
-		// "Let node list be a list of nodes, initially empty."
-		//
-		// "For each node node contained in new range, if node is editable; the
-		// last member of node list (if any) is not an ancestor of node; node
-		// is not a potential indentation element; and either node is an ol or
-		// ul, or its parent is an ol or ul, or it is an allowed child of "li";
-		// then append node to node list."
-		var nodeList = collectContainedNodes(newRange, function(node) {
-			return isEditable(node)
-				&& !isPotentialIndentationElement(node)
-				&& (isHtmlElement(node, ["ol", "ul"])
-				|| isHtmlElement(node.parentNode, ["ol", "ul"])
-				|| isAllowedChild(node, "li"));
-		});
-
-		// "If every member of node list is equal to or the child of an HTML
-		// element with local name "ul", and no member of node list is equal to
-		// or the ancestor of an HTML element with local name "ol", then return
-		// true. Otherwise, return false."
-		return nodeList.every(function(node) {
-			return (isHtmlElement(node, "ul") || isHtmlElement(node.parentNode, "ul"))
-				&& !isHtmlElement(node, "ol")
-				&& !node.querySelector("ol");
-		});
-	},
+	// "True if the selection's list state is "mixed" or "mixed ul", false
+	// otherwise."
+	indeterm: function() { return /^mixed( ul)?$/.test(getSelectionListState()) },
+	// "True if the selection's list state is "ul", false otherwise."
+	state: function() { return getSelectionListState() == "ul" },
 };
 //@}
 

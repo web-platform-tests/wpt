@@ -275,7 +275,10 @@ method on the <code data-anolis-spec=html>HTMLDocument</code> interface allows
 scripts to determine whether the selection is in a mixed or indeterminate
 state, like (for <span>the <code title>bold</code> command</span>) partly bold
 and partly not.  An editing toolbar with a "bold" button might show it
-differently if the selection is indeterminate.
+differently if the selection is indeterminate.  As a rule, the current
+selection is indeterminate for a command if either the command has a state
+which is true for part of the selection but not the whole selection, or it has
+a value which is different for different parts of the selection.
 
 <p>The <dfn
 title=queryCommandState()><code>queryCommandState(<var>command</var>)</code></dfn>
@@ -3182,6 +3185,52 @@ confronted with this kind of nesting.)
   </ol>
 </ol>
 
+<p>The <dfn>selection's list state</dfn> is returned by the following
+algorithm:
+
+<ol>
+  <li><span>Block-extend</span> the <span>active range</span>, and let <var>new
+  range</var> be the result.
+
+  <li>Let <var>node list</var> be a list of [[nodes]], initially empty.
+
+  <li>For each <var>node</var> [[contained]] in <var>new range</var>, append
+  <var>node</var> to <var>node list</var> if the last member of <var>node
+  list</var> (if any) is not an [[ancestor]] of <var>node</var>;
+  <var>node</var> is <span>editable</span>; <var>node</var> is not a
+  <span>potential indentation element</span>; and <var>node</var> is either an
+  [[ol]] or [[ul]], or the [[child]] of an [[ol]] or [[ul]], or an
+  <span>allowed child</span> of "li".
+
+  <li>If <var>node list</var> is empty, return "none".
+
+  <li>If every member of <var>node list</var> is either an [[ol]] or the
+  [[child]] of an [[ol]], and none is a [[ul]] or an [[ancestor]] of a [[ul]],
+  return "ol".
+
+  <li>If every member of <var>node list</var> is either a [[ul]] or the
+  [[child]] of a [[ul]], and none is an [[ol]] or an [[ancestor]] of an [[ol]],
+  return "ul".
+  <!-- The previous two conditions are mutually exclusive, so the order is
+  actually irrelevant.  Clearly they could only both hold if no member of node
+  list is an ol or ul, so if they both held, every member would have to be both
+  the child of an ol and the child of a ul.  This is impossible unless the list
+  is empty, in which case we already aborted. -->
+
+  <li>If some member of <var>node list</var> is either an [[ol]] or the
+  [[child]] or [[ancestor]] of an [[ol]], and some member of <var>node
+  list</var> is either a [[ul]] or the [[child]] or [[ancestor]] of a [[ul]],
+  return "mixed".
+
+  <li>If some member of <var>node list</var> is either an [[ol]] or the
+  [[child]] or [[ancestor]] of an [[ol]], return "mixed ol".
+
+  <li>If some member of <var>node list</var> is either a [[ul]] or the
+  [[child]] or [[ancestor]] of a [[ul]], return "mixed ul".
+
+  <li>Return "none".
+</ol>
+
 <p>The <dfn>canonical space sequence</dfn> of length <var>n</var>, with boolean
 flags <var>non-breaking start</var> and <var>non-breaking end</var>, is
 returned by the following algorithm:
@@ -3531,7 +3580,7 @@ reasons:
   and [[bpoffsets]] of <var>range</var>.
 
   <li>If some [[ancestorcontainer]] of <var>start node</var> is an [[li]], set
-  <var>start offset</var> to the [[index]] of the last such [[li]] in
+  <var>start offset</var> to the [[index]] of the first such [[li]] in
   [[treeorder]], and set <var>start node</var> to that [[li]]'s [[parent]].
 
   <li>Repeat the following steps:
@@ -3564,7 +3613,7 @@ reasons:
   </ol>
 
   <li>If some [[ancestorcontainer]] of <var>end node</var> is an [[li]], set
-  <var>end offset</var> to one plus the [[index]] of the last such [[li]] in
+  <var>end offset</var> to one plus the [[index]] of the first such [[li]] in
   [[treeorder]], and set <var>end node</var> to that [[li]]'s [[parent]].
 
   <li>Repeat the following steps:
@@ -4506,6 +4555,9 @@ Sheesh, lists are complicated.
 or "ul"):
 
 <ol>
+  <li>Let <var>mode</var> be "disable" if the <span>selection's list
+  state</span> is <var>tag name</var>, and "enable" otherwise.
+
   <li>Let <var>other tag name</var> be "ol" if <var>tag name</var> is "ul", and
   "ul" if <var>tag name</var> is "ol".
 
@@ -4546,11 +4598,8 @@ or "ul"):
   case.
   -->
 
-  <li>If every member of <var>node list</var> is equal to or the [[child]] of
-  an <span>HTML element</span> with [[localname]] <var>tag name</var>, and no
-  member of <var>node list</var> is equal to or the [[ancestor]] of an
-  <span>HTML element</span> with [[localname]] <var>other tag name</var>, then
-  while <var>node list</var> is not empty:
+  <li>If <var>mode</var> is "disable", then while <var>node list</var> is not
+  empty:
 
   <ol>
     <li>Let <var>sublist</var> be an empty list of [[nodes]].
@@ -5818,46 +5867,24 @@ Opera 11.11 isn't heedful of <xmp>, and treats <pre> somewhat oddly.
 <p><span>Action</span>: <span>Toggle lists</span> with <var>tag name</var>
 "ol".
 
-<p class=XXX>Consider defining indeterminate flag.
-<!-- Gecko sort of supports it, but unreliably, and no one else does.  Ditto
-insertUnorderedList, obviously. -->
-
-<p><span>State</span>:
+<p><span>Indeterminate flag</span>: True if the <span>selection's list
+state</span> is "mixed" or "mixed ol", false otherwise.
 <!--
-Logically, this should return true if running the command would remove ordered
-lists, false if it would add them, just like for bold etc.  So I copy-paste the
-logic from there.  Note that when we actually run the command, we'll normalize
-sublists, but not just when we query.  This probably doesn't make a difference,
-but I'm not totally sure.
+Firefox 6.0a2 sort of supports this, but it throws exceptions most of the
+time.  It has the quirk that even if there are no ol's around, it will say it's
+indeterminate if there are some things that are ul's and some that are not
+lists at all, but this doesn't make sense and I don't duplicate it.  No one
+else supports indeterminate for insert*List, but it makes sense if you support
+state.
+-->
 
+<p><span>State</span>: True if the <span>selection's list state</span> is "ol",
+false otherwise.
+<!--
 IE9 throws exceptions in most cases, Firefox 6.0a2 in some cases as well, for
 no apparent reason.  Ignoring those, the spec basically matches all browsers,
 except with a few weird random mismatches that looked like browser bugs to me.
 -->
-<p class=XXX>Does the fact that we don't normalize sublists before running this
-mean that it might produce results that don't match the way the action will
-behave?
-
-<ol>
-  <li><span>Block-extend</span> the <span>active range</span>, and let <var>new
-  range</var> be the result.
-
-  <li>Let <var>node list</var> be a list of [[nodes]], initially empty.
-
-  <li>For each [[node]] <var>node</var> [[contained]] in <var>new range</var>,
-  if <var>node</var> is <span>editable</span>; the last member of <var>node
-  list</var> (if any) is not an [[ancestor]] of <var>node</var>;
-  <var>node</var> is not a <span>potential indentation element</span>; and
-  either <var>node</var> is an [[ol]] or [[ul]], or its [[parent]] is an [[ol]]
-  or [[ul]], or it is an <span>allowed child</span> of "li"; then append
-  <var>node</var> to <var>node list</var>.
-
-  <li>If every member of <var>node list</var> is equal to or the [[child]] of
-  an <span>HTML element</span> with [[localname]] "ol", and no member of
-  <var>node list</var> is equal to or the [[ancestor]] of an <span>HTML
-  element</span> with [[localname]] "ul", then return true.  Otherwise, return
-  false.
-</ol>
 <!-- @} -->
 
 <h3><dfn>The <code title>insertParagraph</code> command</dfn></h3>
@@ -6312,32 +6339,11 @@ This is still a huge headache, though.
 <p><span>Action</span>: <span>Toggle lists</span> with <var>tag name</var>
 "ul".
 
-<p><span>State</span>:
-<!-- See insertOrderedList for comments. -->
-<p class=XXX>Does the fact that we don't normalize sublists before running this
-mean that it might produce results that don't match the way the action will
-behave?
+<p><span>Indeterminate flag</span>: True if the <span>selection's list
+state</span> is "mixed" or "mixed ul", false otherwise.
 
-<ol>
-  <li><span>Block-extend</span> the <span>active range</span>, and let <var>new
-  range</var> be the result.
-
-  <li>Let <var>node list</var> be a list of [[nodes]], initially empty.
-
-  <li>For each [[node]] <var>node</var> [[contained]] in <var>new range</var>,
-  if <var>node</var> is <span>editable</span>; the last member of <var>node
-  list</var> (if any) is not an [[ancestor]] of <var>node</var>;
-  <var>node</var> is not a <span>potential indentation element</span>; and
-  either <var>node</var> is an [[ol]] or [[ul]], or its [[parent]] is an [[ol]]
-  or [[ul]], or it is an <span>allowed child</span> of "li"; then append
-  <var>node</var> to <var>node list</var>.
-
-  <li>If every member of <var>node list</var> is equal to or the [[child]] of
-  an <span>HTML element</span> with [[localname]] "ul", and no member of
-  <var>node list</var> is equal to or the [[ancestor]] of an <span>HTML
-  element</span> with [[localname]] "ol", then return true.  Otherwise, return
-  false.
-</ol>
+<p><span>State</span>: True if the <span>selection's list state</span> is "ul",
+false otherwise.
 <!-- @} -->
 
 <h3><dfn>The <code title>justifyCenter</code> command</dfn></h3>

@@ -207,7 +207,7 @@ function isHtmlNamespace(ns) {
 // one with (property X) and at least one with (property not-X).  Otherwise
 // false."
 function indetermHelper(callback) {
-	var nodes = collectAllEffectivelyContainedNodes(getActiveRange(), function(node) {
+	var nodes = getAllEffectivelyContainedNodes(getActiveRange(), function(node) {
 		return isEditable(node)
 			&& node.nodeType == Node.TEXT_NODE;
 	});
@@ -218,7 +218,7 @@ function indetermHelper(callback) {
 // effectively contained in the active range (has property X), and there is at
 // least one such Text node.  Otherwise false."
 function stateHelper(callback) {
-	var nodes = collectAllEffectivelyContainedNodes(getActiveRange(), function(node) {
+	var nodes = getAllEffectivelyContainedNodes(getActiveRange(), function(node) {
 		return isEditable(node)
 			&& node.nodeType == Node.TEXT_NODE;
 	});
@@ -373,7 +373,7 @@ function isContained(node, range) {
  * Return all nodes contained in range that the provided function returns true
  * for, omitting any with an ancestor already being returned.
  */
-function collectContainedNodes(range, condition) {
+function getContainedNodes(range, condition) {
 	if (typeof condition == "undefined") {
 		condition = function() { return true };
 	}
@@ -416,7 +416,7 @@ function collectContainedNodes(range, condition) {
 /**
  * As above, but includes nodes with an ancestor that's already been returned.
  */
-function collectAllContainedNodes(range, condition) {
+function getAllContainedNodes(range, condition) {
 	if (typeof condition == "undefined") {
 		condition = function() { return true };
 	}
@@ -1061,7 +1061,7 @@ function followsLineBreak(node) {
 	range.setStart(node, offset);
 
 	// "Block-extend range, and let new range be the result."
-	var newRange = blockExtendRange(range);
+	var newRange = blockExtend(range);
 
 	// "Return false if new range's start is before (node, offset), true
 	// otherwise."
@@ -1084,7 +1084,7 @@ function precedesLineBreak(node) {
 	range.setStart(node, offset);
 
 	// "Block-extend range, and let new range be the result."
-	var newRange = blockExtendRange(range);
+	var newRange = blockExtend(range);
 
 	// "Return false if new range's end is after (node, offset), true
 	// otherwise."
@@ -1417,8 +1417,8 @@ function isEffectivelyContained(node, range) {
 	return false;
 }
 
-// Like collectAllContainedNodes(), but for effectively contained nodes.
-function collectAllEffectivelyContainedNodes(range, condition) {
+// Like getAllContainedNodes(), but for effectively contained nodes.
+function getAllEffectivelyContainedNodes(range, condition) {
 	if (typeof condition == "undefined") {
 		condition = function() { return true };
 	}
@@ -2771,7 +2771,7 @@ commands.fontname = {
 		// "True if among editable Text nodes that are effectively contained in
 		// the active range, there are two that have distinct effective values.
 		// Otherwise false."
-		return collectAllEffectivelyContainedNodes(getActiveRange(), function(node) {
+		return getAllEffectivelyContainedNodes(getActiveRange(), function(node) {
 			return isEditable(node) && node.nodeType == Node.TEXT_NODE;
 		}).map(function(node) {
 			return getEffectiveValue(node, "fontname");
@@ -2880,7 +2880,7 @@ commands.fontsize = {
 		// "True if among editable Text nodes that are effectively contained in
 		// the active range, there are two that have distinct effective values.
 		// Otherwise false."
-		return collectAllEffectivelyContainedNodes(getActiveRange(), function(node) {
+		return getAllEffectivelyContainedNodes(getActiveRange(), function(node) {
 			return isEditable(node) && node.nodeType == Node.TEXT_NODE;
 		}).map(function(node) {
 			return getEffectiveValue(node, "fontsize");
@@ -2964,7 +2964,7 @@ commands.forecolor = {
 		// "True if among editable Text nodes that are effectively contained in
 		// the active range, there are two that have distinct effective values.
 		// Otherwise false."
-		return collectAllEffectivelyContainedNodes(getActiveRange(), function(node) {
+		return getAllEffectivelyContainedNodes(getActiveRange(), function(node) {
 			return isEditable(node) && node.nodeType == Node.TEXT_NODE;
 		}).map(function(node) {
 			return getEffectiveValue(node, "forecolor");
@@ -3022,7 +3022,7 @@ commands.hilitecolor = {
 		// "True if among editable Text nodes that are effectively contained in
 		// the active range, there are two that have distinct effective values.
 		// Otherwise false."
-		return collectAllEffectivelyContainedNodes(getActiveRange(), function(node) {
+		return getAllEffectivelyContainedNodes(getActiveRange(), function(node) {
 			return isEditable(node) && node.nodeType == Node.TEXT_NODE;
 		}).map(function(node) {
 			return getEffectiveValue(node, "hilitecolor");
@@ -3210,7 +3210,7 @@ commands.subscript = {
 		// value "sub" and at least one with some other effective value; or if
 		// there is some editable Text node effectively contained in the active
 		// range with effective value "mixed". Otherwise false."
-		var nodes = collectAllEffectivelyContainedNodes(getActiveRange(), function(node) {
+		var nodes = getAllEffectivelyContainedNodes(getActiveRange(), function(node) {
 			return isEditable(node) && node.nodeType == Node.TEXT_NODE;
 		});
 		return (nodes.some(function(node) { return getEffectiveValue(node, "subscript") == "sub" })
@@ -3254,7 +3254,7 @@ commands.superscript = {
 		// value "super" and at least one with some other effective value; or
 		// if there is some editable Text node effectively contained in the
 		// active range with effective value "mixed". Otherwise false."
-		var nodes = collectAllEffectivelyContainedNodes(getActiveRange(), function(node) {
+		var nodes = getAllEffectivelyContainedNodes(getActiveRange(), function(node) {
 			return isEditable(node) && node.nodeType == Node.TEXT_NODE;
 		});
 		return (nodes.some(function(node) { return getEffectiveValue(node, "superscript") == "super" })
@@ -3646,7 +3646,7 @@ function normalizeSublists(item) {
 
 function getSelectionListState() {
 	// "Block-extend the active range, and let new range be the result."
-	var newRange = blockExtendRange(getActiveRange());
+	var newRange = blockExtend(getActiveRange());
 
 	// "Let node list be a list of nodes, initially empty."
 	//
@@ -3655,7 +3655,7 @@ function getSelectionListState() {
 	// editable; node is not a potential indentation element; and node is
 	// either an ol or ul, or the child of an ol or ul, or an allowed child of
 	// "li"."
-	var nodeList = collectContainedNodes(newRange, function(node) {
+	var nodeList = getContainedNodes(newRange, function(node) {
 		return isEditable(node)
 			&& !isPotentialIndentationElement(node)
 			&& (isHtmlElement(node, ["ol", "ul"])
@@ -4037,7 +4037,7 @@ function isAllowedChild(child, parent_) {
 ///// Block-extending a range /////
 //@{
 
-function blockExtendRange(range) {
+function blockExtend(range) {
 	// "Let start node, start offset, end node, and end offset be the start
 	// and end nodes and offsets of the range."
 	var startNode = range.startContainer;
@@ -4370,7 +4370,7 @@ function deleteContents(node1, offset1, node2, offset2) {
 		// "For each node contained in range, append node to node list if the
 		// last member of node list (if any) is not an ancestor of node; node
 		// is editable; and node is not a thead, tbody, tfoot, tr, th, or td."
-		var nodeList = collectContainedNodes(range,
+		var nodeList = getContainedNodes(range,
 			function(node) {
 				return isEditable(node)
 					&& !isHtmlElement(node, ["thead", "tbody", "tfoot", "tr", "th", "td"]);
@@ -4804,7 +4804,7 @@ function toggleLists(tagName) {
 	}
 
 	// "Block-extend the range, and let new range be the result."
-	var newRange = blockExtendRange(range);
+	var newRange = blockExtend(range);
 
 	// "Let node list be a list of nodes, initially empty."
 	var nodeList = [];
@@ -5029,13 +5029,13 @@ function toggleLists(tagName) {
 
 function justifySelection(alignment) {
 	// "Block-extend the active range, and let new range be the result."
-	var newRange = blockExtendRange(globalRange);
+	var newRange = blockExtend(globalRange);
 
 	// "Let element list be a list of all editable Elements contained in new
 	// range that either has an attribute in the HTML namespace whose local
 	// name is "align", or has a style attribute that sets "text-align", or is
 	// a center."
-	var elementList = collectAllContainedNodes(newRange, function(node) {
+	var elementList = getAllContainedNodes(newRange, function(node) {
 		return node.nodeType == Node.ELEMENT_NODE
 			&& isEditable(node)
 			// Ignoring namespaces here
@@ -5077,7 +5077,7 @@ function justifySelection(alignment) {
 	}
 
 	// "Block-extend the active range, and let new range be the result."
-	newRange = blockExtendRange(globalRange);
+	newRange = blockExtend(globalRange);
 
 	// "Let node list be a list of nodes, initially empty."
 	var nodeList = [];
@@ -5088,7 +5088,7 @@ function justifySelection(alignment) {
 	// Element and the CSS property "text-align" does not compute to alignment
 	// on it, or it is not an Element, but its parent is an Element, and the
 	// CSS property "text-align" does not compute to alignment on its parent."
-	nodeList = collectContainedNodes(newRange, function(node) {
+	nodeList = getContainedNodes(newRange, function(node) {
 		if (!isEditable(node) || !isAllowedChild(node, "div")) {
 			return false;
 		}
@@ -5301,7 +5301,7 @@ commands["delete"] = {
 			// and let new range be the result."
 			var newRange = document.createRange();
 			newRange.setStart(node, 0);
-			newRange = blockExtendRange(newRange);
+			newRange = blockExtend(newRange);
 
 			// "Let node list be a list of nodes, initially empty."
 			//
@@ -5309,7 +5309,7 @@ commands["delete"] = {
 			// current node to node list if the last member of node list (if
 			// any) is not an ancestor of current node, and current node is
 			// editable but has no editable descendants."
-			var nodeList = collectContainedNodes(newRange, function(currentNode) {
+			var nodeList = getContainedNodes(newRange, function(currentNode) {
 				return isEditable(currentNode)
 					&& !hasEditableDescendants(currentNode);
 			});
@@ -5448,7 +5448,7 @@ commands.formatblock = {
 		}
 
 		// "Block-extend the active range, and let new range be the result."
-		var newRange = blockExtendRange(getActiveRange());
+		var newRange = blockExtend(getActiveRange());
 
 		// "Let original node list be an empty list of nodes."
 		var originalNodeList = [];
@@ -5457,7 +5457,7 @@ commands.formatblock = {
 		// node list if it is editable, the last member of original node list
 		// (if any) is not an ancestor of node, and node is either a non-list
 		// single-line container or an allowed child of "p"."
-		originalNodeList = collectContainedNodes(newRange, function(node) {
+		originalNodeList = getContainedNodes(newRange, function(node) {
 			return isEditable(node)
 				&& (isNonListSingleLineContainer(node)
 				|| isAllowedChild(node, "p"));
@@ -5597,11 +5597,11 @@ commands.formatblock = {
 		}
 	}, indeterm: function() {
 		// "Block-extend the active range, and let new range be the result."
-		var newRange = blockExtendRange(getActiveRange());
+		var newRange = blockExtend(getActiveRange());
 
 		// "Let node list be all visible editable nodes that are contained in
 		// new range and have no children."
-		var nodeList = collectAllContainedNodes(newRange, function(node) {
+		var nodeList = getAllContainedNodes(newRange, function(node) {
 			return isVisibleNode(node)
 				&& isEditable(node)
 				&& !node.hasChildNodes();
@@ -5654,12 +5654,12 @@ commands.formatblock = {
 		return false;
 	}, value: function() {
 		// "Block-extend the active range, and let new range be the result."
-		var newRange = blockExtendRange(getActiveRange());
+		var newRange = blockExtend(getActiveRange());
 
 		// "Let node be the first visible editable node that is contained in
 		// new range and has no children. If there is no such node, return the
 		// empty string."
-		var nodes = collectAllContainedNodes(newRange, function(node) {
+		var nodes = getAllContainedNodes(newRange, function(node) {
 			return isVisibleNode(node)
 				&& isEditable(node)
 				&& !node.hasChildNodes();
@@ -5881,7 +5881,7 @@ commands.indent = {
 		}
 
 		// "Block-extend the active range, and let new range be the result."
-		var newRange = blockExtendRange(getActiveRange());
+		var newRange = blockExtend(getActiveRange());
 
 		// "Let node list be a list of nodes, initially empty."
 		var nodeList = [];
@@ -5889,7 +5889,7 @@ commands.indent = {
 		// "For each node node contained in new range, if node is editable and
 		// is an allowed child of "div" or "ol" and if the last member of node
 		// list (if any) is not an ancestor of node, append node to node list."
-		nodeList = collectContainedNodes(newRange, function(node) {
+		nodeList = getContainedNodes(newRange, function(node) {
 			return isEditable(node)
 				&& (isAllowedChild(node, "div")
 				|| isAllowedChild(node, "ol"));
@@ -6225,13 +6225,13 @@ commands.insertparagraph = {
 			var tag = defaultSingleLineContainerName;
 
 			// "Block-extend range, and let new range be the result."
-			var newRange = blockExtendRange(range);
+			var newRange = blockExtend(range);
 
 			// "Let node list be a list of nodes, initially empty."
 			//
 			// "Append to node list the first node in tree order that is
 			// contained in new range and is an allowed child of "p", if any."
-			var nodeList = collectContainedNodes(newRange, function(node) { return isAllowedChild(node, "p") })
+			var nodeList = getContainedNodes(newRange, function(node) { return isAllowedChild(node, "p") })
 				.slice(0, 1);
 
 			// "If node list is empty:"
@@ -6353,7 +6353,7 @@ commands.insertparagraph = {
 
 		// "Let end of line be true if new line range contains either nothing
 		// or a single br, and false otherwise."
-		var containedInNewLineRange = collectContainedNodes(newLineRange);
+		var containedInNewLineRange = getContainedNodes(newLineRange);
 		var endOfLine = !containedInNewLineRange.length
 			|| (containedInNewLineRange.length == 1
 			&& isHtmlElement(containedInNewLineRange[0], "br"));
@@ -6558,7 +6558,7 @@ commands.justifycenter = {
 		// editable nodes that are contained in the result and have no
 		// children, at least one has alignment value "center" and at least one
 		// does not. Otherwise return false."
-		var nodes = collectAllContainedNodes(blockExtendRange(getActiveRange()), function(node) {
+		var nodes = getAllContainedNodes(blockExtend(getActiveRange()), function(node) {
 			return isEditable(node) && isVisibleNode(node) && !node.hasChildNodes();
 		});
 		return nodes.some(function(node) { return getAlignmentValue(node) == "center" })
@@ -6568,7 +6568,7 @@ commands.justifycenter = {
 		// visible editable node that is contained in the result and has no
 		// children, and all such nodes have alignment value "center".
 		// Otherwise return false."
-		var nodes = collectAllContainedNodes(blockExtendRange(getActiveRange()), function(node) {
+		var nodes = getAllContainedNodes(blockExtend(getActiveRange()), function(node) {
 			return isEditable(node) && isVisibleNode(node) && !node.hasChildNodes();
 		});
 		return nodes.length
@@ -6577,7 +6577,7 @@ commands.justifycenter = {
 		// "Block-extend the active range, and return the alignment value of
 		// the first visible editable node that is contained in the result and
 		// has no children. If there is no such node, return "left"."
-		var nodes = collectAllContainedNodes(blockExtendRange(getActiveRange()), function(node) {
+		var nodes = getAllContainedNodes(blockExtend(getActiveRange()), function(node) {
 			return isEditable(node) && isVisibleNode(node) && !node.hasChildNodes();
 		});
 		if (nodes.length) {
@@ -6599,7 +6599,7 @@ commands.justifyfull = {
 		// editable nodes that are contained in the result and have no
 		// children, at least one has alignment value "justify" and at least
 		// one does not. Otherwise return false."
-		var nodes = collectAllContainedNodes(blockExtendRange(getActiveRange()), function(node) {
+		var nodes = getAllContainedNodes(blockExtend(getActiveRange()), function(node) {
 			return isEditable(node) && isVisibleNode(node) && !node.hasChildNodes();
 		});
 		return nodes.some(function(node) { return getAlignmentValue(node) == "justify" })
@@ -6609,7 +6609,7 @@ commands.justifyfull = {
 		// visible editable node that is contained in the result and has no
 		// children, and all such nodes have alignment value "justify".
 		// Otherwise return false."
-		var nodes = collectAllContainedNodes(blockExtendRange(getActiveRange()), function(node) {
+		var nodes = getAllContainedNodes(blockExtend(getActiveRange()), function(node) {
 			return isEditable(node) && isVisibleNode(node) && !node.hasChildNodes();
 		});
 		return nodes.length
@@ -6618,7 +6618,7 @@ commands.justifyfull = {
 		// "Block-extend the active range, and return the alignment value of
 		// the first visible editable node that is contained in the result and
 		// has no children. If there is no such node, return "left"."
-		var nodes = collectAllContainedNodes(blockExtendRange(getActiveRange()), function(node) {
+		var nodes = getAllContainedNodes(blockExtend(getActiveRange()), function(node) {
 			return isEditable(node) && isVisibleNode(node) && !node.hasChildNodes();
 		});
 		if (nodes.length) {
@@ -6640,7 +6640,7 @@ commands.justifyleft = {
 		// editable nodes that are contained in the result and have no
 		// children, at least one has alignment value "left" and at least one
 		// does not. Otherwise return false."
-		var nodes = collectAllContainedNodes(blockExtendRange(getActiveRange()), function(node) {
+		var nodes = getAllContainedNodes(blockExtend(getActiveRange()), function(node) {
 			return isEditable(node) && isVisibleNode(node) && !node.hasChildNodes();
 		});
 		return nodes.some(function(node) { return getAlignmentValue(node) == "left" })
@@ -6650,7 +6650,7 @@ commands.justifyleft = {
 		// visible editable node that is contained in the result and has no
 		// children, and all such nodes have alignment value "left".  Otherwise
 		// return false."
-		var nodes = collectAllContainedNodes(blockExtendRange(getActiveRange()), function(node) {
+		var nodes = getAllContainedNodes(blockExtend(getActiveRange()), function(node) {
 			return isEditable(node) && isVisibleNode(node) && !node.hasChildNodes();
 		});
 		return nodes.length
@@ -6659,7 +6659,7 @@ commands.justifyleft = {
 		// "Block-extend the active range, and return the alignment value of
 		// the first visible editable node that is contained in the result and
 		// has no children. If there is no such node, return "left"."
-		var nodes = collectAllContainedNodes(blockExtendRange(getActiveRange()), function(node) {
+		var nodes = getAllContainedNodes(blockExtend(getActiveRange()), function(node) {
 			return isEditable(node) && isVisibleNode(node) && !node.hasChildNodes();
 		});
 		if (nodes.length) {
@@ -6681,7 +6681,7 @@ commands.justifyright = {
 		// editable nodes that are contained in the result and have no
 		// children, at least one has alignment value "right" and at least one
 		// does not. Otherwise return false."
-		var nodes = collectAllContainedNodes(blockExtendRange(getActiveRange()), function(node) {
+		var nodes = getAllContainedNodes(blockExtend(getActiveRange()), function(node) {
 			return isEditable(node) && isVisibleNode(node) && !node.hasChildNodes();
 		});
 		return nodes.some(function(node) { return getAlignmentValue(node) == "right" })
@@ -6691,7 +6691,7 @@ commands.justifyright = {
 		// visible editable node that is contained in the result and has no
 		// children, and all such nodes have alignment value "right".
 		// Otherwise return false."
-		var nodes = collectAllContainedNodes(blockExtendRange(getActiveRange()), function(node) {
+		var nodes = getAllContainedNodes(blockExtend(getActiveRange()), function(node) {
 			return isEditable(node) && isVisibleNode(node) && !node.hasChildNodes();
 		});
 		return nodes.length
@@ -6700,7 +6700,7 @@ commands.justifyright = {
 		// "Block-extend the active range, and return the alignment value of
 		// the first visible editable node that is contained in the result and
 		// has no children. If there is no such node, return "left"."
-		var nodes = collectAllContainedNodes(blockExtendRange(getActiveRange()), function(node) {
+		var nodes = getAllContainedNodes(blockExtend(getActiveRange()), function(node) {
 			return isEditable(node) && isVisibleNode(node) && !node.hasChildNodes();
 		});
 		if (nodes.length) {
@@ -6743,7 +6743,7 @@ commands.outdent = {
 		}
 
 		// "Block-extend the active range, and let new range be the result."
-		var newRange = blockExtendRange(getActiveRange());
+		var newRange = blockExtend(getActiveRange());
 
 		// "Let node list be a list of nodes, initially empty."
 		var nodeList = [];

@@ -67,6 +67,7 @@ Node-insertBefore.html
 Node-isEqualNode.xhtml
 Node-lookupPrefix.xhtml
 Node-nodeName.html
+Node-parentElement.html
 Node-parentNode.html
 Node-removeChild.html
 support productions.js

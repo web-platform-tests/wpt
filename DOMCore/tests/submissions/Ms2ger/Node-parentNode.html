@@ -4,11 +4,20 @@
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
 <script>
+// XXX need to test for more node types
 test(function() {
-  // need to test for more node types
+  assert_equals(document.parentNode, null)
+}, "Document")
+test(function() {
+  assert_equals(document.doctype.parentNode, document)
+}, "Doctype")
+test(function() {
+  assert_equals(document.documentElement.parentNode, document)
+}, "Root element")
+test(function() {
   var el = document.createElement("div")
-  el.setAttribute("foo", "bar")
-  var a = el.attributes[0]
-  assert_equals(a.firstChild.parentNode, a)
-})
+  assert_equals(el.parentNode, null)
+  document.body.appendChild(el)
+  assert_equals(el.parentNode, document.body)
+}, "Element")
 </script>

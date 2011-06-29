@@ -5326,6 +5326,8 @@ sense for <address>/<h*>/<pre>, but other browsers don't do it.
   the "in the same editing host" thing handles it?
   </div>
 
+  <p class=XXX>We probably don't want to break out of tables and such here.
+
   <li>Let <var>node list</var> be a list of [[nodes]], initially empty.
 
   <li>For each <var>node</var> in <var>original node list</var>, <span>fix
@@ -5434,7 +5436,102 @@ sense for <address>/<h*>/<pre>, but other browsers don't do it.
   </ol>
 </ol>
 
-<p class=XXX>Spec value/indeterm.
+<p><span>Indeterminate</span>:
+<!--
+Firefox 6.0a2 throws, Chrome 14 dev always returns false, Opera 11.11 doesn't
+support indeterm to start with, IE9 was uncooperative in testing so I'm not
+sure what it does.  I'm speccing it just because it makes sense.
+-->
+<ol>
+  <li><span>Block-extend</span> the <span>active range</span>, and let <var>new
+  range</var> be the result.
+
+  <li>Let <var>node list</var> be all <span title="visible node">visible</span>
+  <span>editable</span> [[nodes]] that are [[contained]] in <var>new
+  range</var> and have no [[children]].
+
+  <li>If <var>node list</var> is empty, return false.
+
+  <li>Let <var>type</var> be null.
+
+  <li>For each <var>node</var> in <var>node list</var>:
+
+  <ol>
+    <li>While <var>node</var>'s [[parent]] is <span>editable</span> and
+    <span>in the same editing host</span> as <var>node</var>, and
+    <var>node</var> is not an <span>HTML element</span> with [[localname]]
+    "address", "div", "h1", "h2", "h3", "h4", "h5", "h6", "p", or "pre", set
+    <var>node</var> to its [[parent]].
+
+    <p class=XXX>This doesn't really make sense if there's an intervening table
+    or something.
+
+    <li>Let <var>current type</var> be the empty string.
+
+    <li>If <var>node</var> is an <span>editable</span> <span>HTML
+    element</span> with [[localname]] "address", "div", "h1", "h2", "h3", "h4",
+    "h5", "h6", "p", or "pre", set <var>current type</var> to <var>node</var>'s
+    [[localname]].
+
+    <li>If <var>type</var> is null, set <var>type</var> to <var>current
+    type</var>.
+
+    <li>Otherwise, if <var>type</var> does not equal <var>current type</var>,
+    return true.
+  </ol>
+
+  <li>Return false.
+</ol>
+
+<p><span>Value</span>:
+<!--
+IE9 returns human-readable strings like "Normal" (p/div/etc.), "Formatted"
+(pre), "Heading 1" (h1), etc.  Firefox 6.0a2 and Chrome 14 dev both return the
+appropriate tag name in lowercase, or the empty string if there is no
+appropriate tag.  Opera 11.11 behaves the same, but with uppercase.
+
+IE9 looks like it recognizes address, h*, pre, dd, dt, ol, ul, and dir, with
+everything else registering as "Normal".  Firefox 6.0a2 recognizes only the
+arguments it accepts for formatBlock, namely address, h*, p, and pre.  Chrome
+14 dev recognizes address, div, h*, dd, dl, dt, p, pre plus lots of random
+other stuff like blockquote and section.  I'll go with everything that
+execCommand("formatblock") accepts as an argument, which at the time of this
+writing means what Firefox supports plus div.
+-->
+<ol>
+  <li><span>Block-extend</span> the <span>active range</span>, and let <var>new
+  range</var> be the result.
+
+  <li>Let <var>node</var> be the first <span title="visible
+  node">visible</span> <span>editable</span> [[node]] that is [[contained]] in
+  <var>new range</var> and has no [[children]].  If there is no such [[node]],
+  return the empty string.
+
+  <li>While <var>node</var>'s [[parent]] is <span>editable</span> and <span>in
+  the same editing host</span> as <var>node</var>, and <var>node</var> is not
+  an <span>HTML element</span> with [[localname]] "address", "div", "h1", "h2",
+  "h3", "h4", "h5", "h6", "p", or "pre", set <var>node</var> to its [[parent]].
+  <!--
+  Opera 11.11 doesn't require it be editable, so it will return "DIV" instead of
+  "" for <div contenteditable>foo</div>.
+
+  Chrome 14 dev will report "div" for <div><ol><li>foo</ol></div> or such.
+  Opera 11.11 reports "".  IE and Firefox didn't cooperate with testing.  Opera
+  makes somewhat more sense, but formatBlock is actually broken in that case
+  right now anyway for any wrapper other than div, so I'll punt on a solution.
+  -->
+  <p class=XXX>This doesn't really make sense if there's an intervening table
+  or something.
+
+  <li>If <var>node</var> is an <span>editable</span> <span>HTML element</span>
+  with [[localname]] "address", "div", "h1", "h2", "h3", "h4", "h5", "h6", "p",
+  or "pre", return its [[localname]], <span data-anolis-spec=domcore>converted
+  to lowercase</span>.
+  <!-- Actually, we don't really need to specify "editable", since it has to be
+  editable. -->
+
+  <li>Return the empty string.
+</ol>
 <!-- @} -->
 
 <h3><dfn>The <code title>forwardDelete</code> command</dfn></h3>

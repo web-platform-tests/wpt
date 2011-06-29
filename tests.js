@@ -1015,9 +1015,17 @@ var tests = {
 		['<h1>', '<pre>[foo<br>bar]</pre>'],
 
 		['<h1>', '<p>[foo</p>bar]'],
+		['<h1>', '[foo<p>bar]</p>'],
 		['<p>', '<div>[foo<p>bar]</p></div>'],
 		['<p>', '<xmp>[foo]</xmp>'],
 		['<div>', '<xmp>[foo]</xmp>'],
+
+		// For queryCommandIndeterm() and queryCommandValue()
+		'<div><ol><li>[foo]</ol></div>',
+		'<div><table><tr><td>[foo]</table></div>',
+		'<p>[foo<h1>bar]</h1>',
+		'<h1>[foo</h1><h2>bar]</h2>',
+		'<div>[foo</div>bar]',
 	],
 	//@}
 	forwarddelete: [

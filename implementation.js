@@ -5595,6 +5595,100 @@ commands.formatblock = {
 					function() { return document.createElement(value) });
 			}
 		}
+	}, indeterm: function() {
+		// "Block-extend the active range, and let new range be the result."
+		var newRange = blockExtendRange(getActiveRange());
+
+		// "Let node list be all visible editable nodes that are contained in
+		// new range and have no children."
+		var nodeList = collectAllContainedNodes(newRange, function(node) {
+			return isVisibleNode(node)
+				&& isEditable(node)
+				&& !node.hasChildNodes();
+		});
+
+		// "If node list is empty, return false."
+		if (!nodeList.length) {
+			return false;
+		}
+
+		// "Let type be null."
+		var type = null;
+
+		// "For each node in node list:"
+		for (var i = 0; i < nodeList.length; i++) {
+			var node = nodeList[i];
+
+			// "While node's parent is editable and in the same editing host as
+			// node, and node is not an HTML element with local name "address",
+			// "div", "h1", "h2", "h3", "h4", "h5", "h6", "p", or "pre", set
+			// node to its parent."
+			while (isEditable(node.parentNode)
+			&& inSameEditingHost(node, node.parentNode)
+			&& !isHtmlElement(node, ["address", "div", "h1", "h2", "h3", "h4", "h5", "h6", "p", "pre"])) {
+				node = node.parentNode;
+			}
+
+			// "Let current type be the empty string."
+			var currentType = "";
+
+			// "If node is an editable HTML element with local name "address",
+			// "div", "h1", "h2", "h3", "h4", "h5", "h6", "p", or "pre", set
+			// current type to node's local name."
+			if (isEditable(node)
+			&& isHtmlElement(node, ["address", "div", "h1", "h2", "h3", "h4", "h5", "h6", "p", "pre"])) {
+				currentType = node.tagName;
+			}
+
+			// "If type is null, set type to current type."
+			if (type === null) {
+				type = currentType;
+
+			// "Otherwise, if type does not equal current type, return true."
+			} else if (type != currentType) {
+				return true;
+			}
+		}
+
+		// "Return false."
+		return false;
+	}, value: function() {
+		// "Block-extend the active range, and let new range be the result."
+		var newRange = blockExtendRange(getActiveRange());
+
+		// "Let node be the first visible editable node that is contained in
+		// new range and has no children. If there is no such node, return the
+		// empty string."
+		var nodes = collectAllContainedNodes(newRange, function(node) {
+			return isVisibleNode(node)
+				&& isEditable(node)
+				&& !node.hasChildNodes();
+		});
+		if (!nodes.length) {
+			return "";
+		}
+		var node = nodes[0];
+
+		// "While node's parent is editable and in the same editing host as
+		// node, and node is not an HTML element with local name "address",
+		// "div", "h1", "h2", "h3", "h4", "h5", "h6", "p", or "pre", set node
+		// to its parent."
+		while (isEditable(node.parentNode)
+		&& inSameEditingHost(node, node.parentNode)
+		&& !isHtmlElement(node, ["address", "div", "h1", "h2", "h3", "h4", "h5", "h6", "p", "pre"])) {
+			node = node.parentNode;
+		}
+
+		// "If node is an editable HTML element with local name "address",
+		// "div", "h1", "h2", "h3", "h4", "h5", "h6", "p", or "pre", return its
+		// local name, converted to lowercase."
+		if (isEditable(node)
+		&& isHtmlElement(node, ["address", "div", "h1", "h2", "h3", "h4", "h5", "h6", "p", "pre"])) {
+			return node.tagName.toLowerCase();
+		}
+
+		// "Return the empty string."
+		return "";
 	}
 };
 //@}

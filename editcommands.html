@@ -5317,6 +5317,8 @@ sense for <address>/<h*>/<pre>, but other browsers don't do it.
   the "in the same editing host" thing handles it?
   </div>
 
+  <p class=XXX>We probably don't want to break out of tables and such here.
+
   <li>Let <var title="">node list</var> be a list of <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a>, initially empty.
 
   <li>For each <var title="">node</var> in <var title="">original node list</var>, <a href=#fix-prohibited-paragraph-descendants>fix
@@ -5425,7 +5427,102 @@ sense for <address>/<h*>/<pre>, but other browsers don't do it.
   </ol>
 </ol>
 
-<p class=XXX>Spec value/indeterm.
+<p><a href=#indeterminate>Indeterminate</a>:
+<!--
+Firefox 6.0a2 throws, Chrome 14 dev always returns false, Opera 11.11 doesn't
+support indeterm to start with, IE9 was uncooperative in testing so I'm not
+sure what it does.  I'm speccing it just because it makes sense.
+-->
+<ol>
+  <li><a href=#block-extend>Block-extend</a> the <a href=#active-range>active range</a>, and let <var title="">new
+  range</var> be the result.
+
+  <li>Let <var title="">node list</var> be all <a href=#visible-node title="visible node">visible</a>
+  <a href=#editable>editable</a> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a> that are <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in <var title="">new
+  range</var> and have no <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>.
+
+  <li>If <var title="">node list</var> is empty, return false.
+
+  <li>Let <var title="">type</var> be null.
+
+  <li>For each <var title="">node</var> in <var title="">node list</var>:
+
+  <ol>
+    <li>While <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is <a href=#editable>editable</a> and
+    <a href=#in-the-same-editing-host>in the same editing host</a> as <var title="">node</var>, and
+    <var title="">node</var> is not an <a href=#html-element>HTML element</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a>
+    "address", "div", "h1", "h2", "h3", "h4", "h5", "h6", "p", or "pre", set
+    <var title="">node</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+
+    <p class=XXX>This doesn't really make sense if there's an intervening table
+    or something.
+
+    <li>Let <var title="">current type</var> be the empty string.
+
+    <li>If <var title="">node</var> is an <a href=#editable>editable</a> <a href=#html-element>HTML
+    element</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> "address", "div", "h1", "h2", "h3", "h4",
+    "h5", "h6", "p", or "pre", set <var title="">current type</var> to <var title="">node</var>'s
+    <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a>.
+
+    <li>If <var title="">type</var> is null, set <var title="">type</var> to <var title="">current
+    type</var>.
+
+    <li>Otherwise, if <var title="">type</var> does not equal <var title="">current type</var>,
+    return true.
+  </ol>
+
+  <li>Return false.
+</ol>
+
+<p><a href=#value>Value</a>:
+<!--
+IE9 returns human-readable strings like "Normal" (p/div/etc.), "Formatted"
+(pre), "Heading 1" (h1), etc.  Firefox 6.0a2 and Chrome 14 dev both return the
+appropriate tag name in lowercase, or the empty string if there is no
+appropriate tag.  Opera 11.11 behaves the same, but with uppercase.
+
+IE9 looks like it recognizes address, h*, pre, dd, dt, ol, ul, and dir, with
+everything else registering as "Normal".  Firefox 6.0a2 recognizes only the
+arguments it accepts for formatBlock, namely address, h*, p, and pre.  Chrome
+14 dev recognizes address, div, h*, dd, dl, dt, p, pre plus lots of random
+other stuff like blockquote and section.  I'll go with everything that
+execCommand("formatblock") accepts as an argument, which at the time of this
+writing means what Firefox supports plus div.
+-->
+<ol>
+  <li><a href=#block-extend>Block-extend</a> the <a href=#active-range>active range</a>, and let <var title="">new
+  range</var> be the result.
+
+  <li>Let <var title="">node</var> be the first <a href=#visible-node title="visible
+  node">visible</a> <a href=#editable>editable</a> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> that is <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in
+  <var title="">new range</var> and has no <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>.  If there is no such <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>,
+  return the empty string.
+
+  <li>While <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is <a href=#editable>editable</a> and <a href=#in-the-same-editing-host>in
+  the same editing host</a> as <var title="">node</var>, and <var title="">node</var> is not
+  an <a href=#html-element>HTML element</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> "address", "div", "h1", "h2",
+  "h3", "h4", "h5", "h6", "p", or "pre", set <var title="">node</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+  <!--
+  Opera 11.11 doesn't require it be editable, so it will return "DIV" instead of
+  "" for <div contenteditable>foo</div>.
+
+  Chrome 14 dev will report "div" for <div><ol><li>foo</ol></div> or such.
+  Opera 11.11 reports "".  IE and Firefox didn't cooperate with testing.  Opera
+  makes somewhat more sense, but formatBlock is actually broken in that case
+  right now anyway for any wrapper other than div, so I'll punt on a solution.
+  -->
+  <p class=XXX>This doesn't really make sense if there's an intervening table
+  or something.
+
+  <li>If <var title="">node</var> is an <a href=#editable>editable</a> <a href=#html-element>HTML element</a>
+  with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> "address", "div", "h1", "h2", "h3", "h4", "h5", "h6", "p",
+  or "pre", return its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a>, <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#converted-to-lowercase>converted
+  to lowercase</a>.
+  <!-- Actually, we don't really need to specify "editable", since it has to be
+  editable. -->
+
+  <li>Return the empty string.
+</ol>
 
 
 <h3 id=the-forwarddelete-command><span class=secno>8.11 </span><dfn>The <code title="">forwardDelete</code> command</dfn></h3>

@@ -1311,8 +1311,7 @@ either a string or null:
     <li>Let <var title="">affected by subscript</var> and <var title="">affected by
     superscript</var> be two boolean variables, both initially false.
 
-    <li>While <var title="">node</var> is an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> whose "display" property
-    computes to "inline":
+    <li>While <var title="">node</var> is an <a href=#inline-node>inline node</a>:
 
     <ol>
       <!-- Firefox 6.0a2 ignores vertical-align for this purpose, and only
@@ -1379,8 +1378,7 @@ different name.
   <li>If <var title="">command</var> is "subscript" or "superscript":
 
   <ol>
-    <li>If the <a href=http://www.w3.org/TR/CSS21/cascade.html#computed-value>computed value</a> of <var title="">element</var>'s "display" property is
-    neither "inline" nor "inline-block" nor "inline-table", return null.
+    <li>If <var title="">element</var> is not an <a href=#inline-node>inline node</a>, return null.
 
     <li>If <var title="">element</var> has a <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code> attribute set, and that attribute
     has the effect of setting "vertical-align", return the value that it sets

@@ -1267,8 +1267,7 @@ either a string or null:
     <li>Let <var>affected by subscript</var> and <var>affected by
     superscript</var> be two boolean variables, both initially false.
 
-    <li>While <var>node</var> is an [[element]] whose "display" property
-    computes to "inline":
+    <li>While <var>node</var> is an <span>inline node</span>:
 
     <ol>
       <!-- Firefox 6.0a2 ignores vertical-align for this purpose, and only
@@ -1335,8 +1334,7 @@ different name.
   <li>If <var>command</var> is "subscript" or "superscript":
 
   <ol>
-    <li>If the [[compval]] of <var>element</var>'s "display" property is
-    neither "inline" nor "inline-block" nor "inline-table", return null.
+    <li>If <var>element</var> is not an <span>inline node</span>, return null.
 
     <li>If <var>element</var> has a [[style]] attribute set, and that attribute
     has the effect of setting "vertical-align", return the value that it sets

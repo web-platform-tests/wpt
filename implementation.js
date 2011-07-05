@@ -1734,11 +1734,8 @@ function getEffectiveValue(node, command) {
 		var affectedBySubscript = false;
 		var affectedBySuperscript = false;
 
-		// "While node is an Element whose "display" property computes to
-		// "inline":"
-		while (node
-		&& node.nodeType == Node.ELEMENT_NODE
-		&& getComputedStyle(node).display == "inline") {
+		// "While node is an inline node:"
+		while (isInlineNode(node)) {
 			var verticalAlign = getComputedStyle(node).verticalAlign;
 
 			// "If node's "vertical-align" property computes to "sub", set
@@ -1834,13 +1831,8 @@ function getSpecifiedValue(element, command) {
 
 	// "If command is "subscript" or "superscript":"
 	if (command == "subscript" || command == "superscript") {
-		// "If the computed value of element's "display" property is
-		// neither "inline" nor "inline-block" nor "inline-table", return
-		// null."
-		var style = getComputedStyle(element);
-		if (style.display != "inline"
-		&& style.display != "inline-block"
-		&& style.display != "inline-table") {
+		// "If element is not an inline node, return null."
+		if (!isInlineNode(element)) {
 			return null;
 		}
 

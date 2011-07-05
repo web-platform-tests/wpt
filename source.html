@@ -1571,6 +1571,8 @@ id=foo> into <span id=foo> instead of <font id=foo>, but probably not worth it.
   <!-- If we get past this step, we're something like <b class=foo> where we
   want to keep the extra attributes, so we stick them on a span. -->
 
+  <p class=XXX>Replace the following steps with "set the tag name".
+
   <li>Let <var>new element</var> be a new <span>HTML element</span> with
   [[localname]] "span", with the same attributes and [[ownerdocument]] as
   <var>element</var>.
@@ -1657,11 +1659,35 @@ with a [[style]] attribute).
   <li>If <var>propagated value</var> is null and is not equal to <var>new
   value</var>, abort this algorithm.
 
-  <!-- If we go all the way up to the root and still don't have the desired
-  value, pushing down values is pointless.  It will create extra markup for no
+  <!--
+  If we go all the way up to the root and still don't have the desired value,
+  pushing down values is pointless.  It will create extra markup for no
   purpose.  Except if the value is null, which basically just means "try to get
   rid of anything affecting the current element but don't aim for any specific
-  value". -->
+  value".
+
+  Nevertheless, Chrome 14 dev does seem to do this.  Running bold on <span
+  style=font-weight:300>f[o]o</span> breaks up the span and adds a <b> as a
+  sibling.  In IE9, Firefox 6.0a2, and Opera 11.50, it instead nests the <b>
+  inside the <span>.  It's a tradeoff: WebKit's behavior is better for things
+  like
+
+    <font color=red>fo[o</font><font color=blue>b]ar</font>
+    -> <font color=red>fo</font><font color=green>[ob]</font><font color=blue>ar</font>
+
+  (where the spec adds two extra font tags instead of one), but the spec is
+  simpler for things like
+
+    <font color=red>f[o]o</font>
+    -> <font color=red>f<font color=green>[o]</font>o</font>
+
+  (where WebKit splits the existing tag up in addition to creating a new tag).
+  I'm not particularly sure which approach is better overall, so I'll go with
+  the majority of browsers.  If these algorithms move to use runs of
+  consecutive siblings instead of doing everything node-by-node, it might make
+  sense to break up the parent as long as it won't create an extra node (i.e.,
+  we're styling something that includes the first or last child).
+  -->
   <li>If the <span>effective value</span> of <var>command</var> is not
   <var>new value</var> on the [[parent]] of the last member of <var>ancestor
   list</var>, and <var>new value</var> is not null, abort this algorithm.
@@ -2063,6 +2089,10 @@ it, such as because of a non-inline style rule (like trying to unbold a
 heading), we'll repeat the above steps to ensure that the style really gets set
 as desired.
 </div>
+
+<p class=XXX>Consider porting this algorithm to operate on runs of consecutive
+siblings instead of individual nodes.  We might be able to make some parts
+smarter, and also might be able to make it more efficient.
 
 <ol>
   <li>Let <var>command</var> be the current <span>command</span>.
@@ -2837,6 +2867,9 @@ null.
 <p class=XXX>Has all the same problems as <span>the <code
 title>underline</code> command</span>.
 
+<p class=XXX>Should we treat ins/del the same as u/s?  Currently they're
+unremovable.
+
 <p><span>Indeterminate</span>: True if among <span>editable</span> [[text]]
 nodes that are <span>effectively contained</span> in the <span>active
 range</span>, there is at least one with <span>effective value</span>
@@ -2984,6 +3017,9 @@ text-decoration in CSS is horrible:
 using the newly-specced features or working around their absence as the case
 may be.
 </div>
+
+<p class=XXX>Should we treat ins/del the same as u/s?  Currently they're
+unremovable.
 
 <p><span>Indeterminate</span>: True if among <span>editable</span> [[text]]
 nodes that are <span>effectively contained</span> in the <span>active

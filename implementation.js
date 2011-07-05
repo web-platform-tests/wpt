@@ -6808,4 +6808,14 @@ commands.usecss = {
 };
 //@}
 
+(function() {
+	// "If a command does not have a relevant CSS property specified, it
+	// defaults to null."
+	for (var command in commands) {
+		if (!("relevantCssProperty" in commands[command])) {
+			commands[command].relevantCssProperty = null;
+		}
+	}
+})();
+
 // vim: foldmarker=@{,@} foldmethod=marker

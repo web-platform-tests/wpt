@@ -514,6 +514,8 @@ var tests = {
 		'<dl><dt>foo[<dd>]bar</dl>',
 		'<dl><dt>foo[<dt>]bar<dd>baz</dl>',
 		'<dl><dt>foo<dd>bar[<dd>]baz</dl>',
+
+		'<b>foo [&nbsp;</b>bar]',
 	],
 	//@}
 	fontname: [

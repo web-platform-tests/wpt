@@ -1763,8 +1763,7 @@ different value.
 
   <li>If <var title="">new value</var> is null, abort this algorithm.
 
-  <li>If <var title="">node</var> is an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>, <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code>, or <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#comment>Comment</a></code> node, and
-  is an <a href=#allowed-child>allowed child</a> of "span":
+  <li>If <var title="">node</var> is an <a href=#allowed-child>allowed child</a> of "span":
 
   <ol>
     <!-- Even if the value matches, we stick it in a preceding sibling if
@@ -1813,10 +1812,6 @@ different value.
 
     <li>Abort this algorithm.
   </ol>
-
-  <!-- At this point we have to make a new element as a wrapper.  This isn't
-  worth the effort for comments, so abort in that case. -->
-  <li>If <var title="">node</var> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#comment>Comment</a></code>, abort this algorithm.
 
   <li>If the <a href=#effective-value>effective value</a> of <var title="">command</var> is <var title="">new
   value</var> on <var title="">node</var>, abort this algorithm.
@@ -3735,8 +3730,6 @@ reasons:
 I'm using it mostly because it's convenient and seems relatively sensible.  If
 we really want to use it, we probably want to change its name.
 
-<p class=XXX>Needs nbsp magic.
-
 <ol>
   <li>If <var title="">range</var> is null, abort these steps and do nothing.
 
@@ -3923,7 +3916,8 @@ we really want to use it, we probably want to change its name.
     <li>If <var title="">start node</var> is an <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node,
     call <code class=external data-anolis-spec=domcore title=dom-CharacterData-deleteData><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-deletedata>deleteData()</a></code> on it, with <var title="">start offset</var> as the first
     argument and (<a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> of <var title="">start node</var> &minus; <var title="">start
-    offset</var>) as the second argument.
+    offset</var>) as the second argument.  Then <a href=#canonicalize-whitespace>canonicalize
+    whitespace</a> at (<var title="">start node</var>, <var title="">start offset</var>).
 
     <li>Let <var title="">node list</var> be a list of <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a>, initially empty.
 
@@ -3962,7 +3956,8 @@ we really want to use it, we probably want to change its name.
     </ol>
 
     <li>If <var title="">end node</var> is an <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node, call
-    <code class=external data-anolis-spec=domcore title=dom-CharacterData-deleteData><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-deletedata>deleteData(0, <var title="">end offset</var>)</a></code> on it.
+    <code class=external data-anolis-spec=domcore title=dom-CharacterData-deleteData><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-deletedata>deleteData(0, <var title="">end offset</var>)</a></code> on it, then <a href=#canonicalize-whitespace>canonicalize
+    whitespace</a> at (<var title="">end node</var>, 0).
   </ol>
 
   <!--

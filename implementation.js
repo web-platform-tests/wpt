@@ -290,14 +290,29 @@ function getNodeIndex(node) {
 	return ret;
 }
 
+// "The length of a Node node is the following, depending on node:
+//
+// ProcessingInstruction
+// DocumentType
+//   Always 0.
+// Text
+// Comment
+//   node's length.
+// Any other node
+//   node's childNodes's length."
 function getNodeLength(node) {
-	if (node.nodeType == Node.TEXT_NODE
-	|| node.nodeType == Node.COMMENT_NODE
-	|| node.nodeType == Node.PROCESSING_INSTRUCTION_NODE) {
-		return node.data.length;
-	}
+	switch (node.nodeType) {
+		case Node.PROCESSING_INSTRUCTION_NODE:
+		case Node.DOCUMENT_TYPE_NODE:
+			return 0;
 
-	return node.childNodes.length;
+		case Node.TEXT_NODE:
+		case Node.COMMENT_NODE:
+			return node.length;
+
+		default:
+			return node.childNodes.length;
+	}
 }
 
 /**
@@ -2283,13 +2298,8 @@ function forceValue(node, command, newValue) {
 		return;
 	}
 
-	// "If node is an Element, Text, or Comment node, and is an allowed child
-	// of "span":"
-	if ((node.nodeType == Node.ELEMENT_NODE
-	|| node.nodeType == Node.TEXT_NODE
-	|| node.nodeType == Node.COMMENT_NODE
-	|| node.nodeType == Node.PROCESSING_INSTRUCTION_NODE)
-	&& isAllowedChild(node, "span")) {
+	// "If node is an allowed child of "span":"
+	if (isAllowedChild(node, "span")) {
 		// "Reorder modifiable descendants of node's previousSibling."
 		reorderModifiableDescendants(node.previousSibling, command, newValue);
 
@@ -2341,12 +2351,6 @@ function forceValue(node, command, newValue) {
 		}
 
 		// "Abort this algorithm."
-		return;
-	}
-
-	// "If node is a Comment or ProcessingInstruction, abort this algorithm."
-	if (node.nodeType == Node.COMMENT_NODE
-	|| node.nodeType == Node.PROCESSING_INSTRUCTION_NODE) {
 		return;
 	}
 
@@ -4279,10 +4283,12 @@ function deleteContents(node1, offset1, node2, offset2) {
 	} else {
 		// "If start node is an editable Text node, call deleteData() on it,
 		// with start offset as the first argument and (length of start node −
-		// start offset) as the second argument."
+		// start offset) as the second argument.  Then canonicalize whitespace
+		// at (start node, start offset)."
 		if (isEditable(startNode)
 		&& startNode.nodeType == Node.TEXT_NODE) {
 			startNode.deleteData(startOffset, getNodeLength(startNode) - startOffset);
+			canonicalizeWhitespace(startNode, startOffset);
 		}
 
 		// "Let node list be a list of nodes, initially empty."
@@ -4330,10 +4336,11 @@ function deleteContents(node1, offset1, node2, offset2) {
 		}
 
 		// "If end node is an editable Text node, call deleteData(0, end
-		// offset) on it."
+		// offset) on it, then canonicalize whitespace at (end node, 0)."
 		if (isEditable(endNode)
 		&& endNode.nodeType == Node.TEXT_NODE) {
 			endNode.deleteData(0, endOffset);
+			canonicalizeWhitespace(endNode, 0);
 		}
 	}
 

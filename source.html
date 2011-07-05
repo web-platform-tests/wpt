@@ -1723,8 +1723,7 @@ different value.
 
   <li>If <var>new value</var> is null, abort this algorithm.
 
-  <li>If <var>node</var> is an [[element]], [[text]], or [[comment]] node, and
-  is an <span>allowed child</span> of "span":
+  <li>If <var>node</var> is an <span>allowed child</span> of "span":
 
   <ol>
     <!-- Even if the value matches, we stick it in a preceding sibling if
@@ -1773,10 +1772,6 @@ different value.
 
     <li>Abort this algorithm.
   </ol>
-
-  <!-- At this point we have to make a new element as a wrapper.  This isn't
-  worth the effort for comments, so abort in that case. -->
-  <li>If <var>node</var> is a [[comment]], abort this algorithm.
 
   <li>If the <span>effective value</span> of <var>command</var> is <var>new
   value</var> on <var>node</var>, abort this algorithm.
@@ -3722,8 +3717,6 @@ reasons:
 I'm using it mostly because it's convenient and seems relatively sensible.  If
 we really want to use it, we probably want to change its name.
 
-<p class=XXX>Needs nbsp magic.
-
 <ol>
   <li>If <var>range</var> is null, abort these steps and do nothing.
 
@@ -3911,7 +3904,8 @@ we really want to use it, we probably want to change its name.
     <li>If <var>start node</var> is an <span>editable</span> [[text]] node,
     call [[deletedata|]] on it, with <var>start offset</var> as the first
     argument and ([[nodelength]] of <var>start node</var> &minus; <var>start
-    offset</var>) as the second argument.
+    offset</var>) as the second argument.  Then <span>canonicalize
+    whitespace</span> at (<var>start node</var>, <var>start offset</var>).
 
     <li>Let <var>node list</var> be a list of [[nodes]], initially empty.
 
@@ -3950,7 +3944,8 @@ we really want to use it, we probably want to change its name.
     </ol>
 
     <li>If <var>end node</var> is an <span>editable</span> [[text]] node, call
-    [[deletedata|0, <var>end offset</var>]] on it.
+    [[deletedata|0, <var>end offset</var>]] on it, then <span>canonicalize
+    whitespace</span> at (<var>end node</var>, 0).
   </ol>
 
   <!--

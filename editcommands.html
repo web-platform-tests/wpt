@@ -1294,14 +1294,14 @@ either a string or null:
   <li>If <var title="">command</var> is "hiliteColor":
 
   <ol>
-    <li>While the computed style of "background-color" on <var title="">node</var> is
+    <li>While the <a href=http://www.w3.org/TR/CSS21/cascade.html#computed-value>computed value</a> of "background-color" on <var title="">node</var> is
     any fully transparent value, and <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is an
     <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>, set <var title="">node</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
 
-    <li>If the computed style of "background-color" on <var title="">node</var> is
+    <li>If the <a href=http://www.w3.org/TR/CSS21/cascade.html#computed-value>computed value</a> of "background-color" on <var title="">node</var> is
     a fully transparent value, return "rgb(255, 255, 255)".
 
-    <li>Otherwise, return the computed style of "background-color" for
+    <li>Otherwise, return the <a href=http://www.w3.org/TR/CSS21/cascade.html#computed-value>computed value</a> of "background-color" for
     <var title="">node</var>.
   </ol>
 
@@ -1352,7 +1352,7 @@ either a string or null:
   a value containing "underline", return "underline".  Otherwise, return
   null.
 
-  <li>Return the computed style for <var title="">node</var> of the <a href=#relevant-css-property>relevant CSS
+  <li>Return the <a href=http://www.w3.org/TR/CSS21/cascade.html#computed-value>computed value</a> for <var title="">node</var> of the <a href=#relevant-css-property>relevant CSS
   property</a> for <var title="">command</var>.
 </ol>
 
@@ -1379,7 +1379,7 @@ different name.
   <li>If <var title="">command</var> is "subscript" or "superscript":
 
   <ol>
-    <li>If the computed value of <var title="">element</var>'s "display" property is
+    <li>If the <a href=http://www.w3.org/TR/CSS21/cascade.html#computed-value>computed value</a> of <var title="">element</var>'s "display" property is
     neither "inline" nor "inline-block" nor "inline-table", return null.
 
     <li>If <var title="">element</var> has a <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code> attribute set, and that attribute

@@ -1701,7 +1701,7 @@ function getEffectiveValue(node, command) {
 
 	// "If command is "hiliteColor":"
 	if (command == "hilitecolor") {
-		// "While the computed style of "background-color" on node is any
+		// "While the computed value of "background-color" on node is any
 		// fully transparent value, and node's parent is an Element, set
 		// node to its parent."
 		//
@@ -1714,7 +1714,7 @@ function getEffectiveValue(node, command) {
 			node = node.parentNode;
 		}
 
-		// "If the computed style of "background-color" on node is a fully
+		// "If the computed value of "background-color" on node is a fully
 		// transparent value, return "rgb(255, 255, 255)"."
 		if (getComputedStyle(node).backgroundColor == "rgba(0, 0, 0, 0)"
         || getComputedStyle(node).backgroundColor === ""
@@ -1722,7 +1722,7 @@ function getEffectiveValue(node, command) {
 			return "rgb(255, 255, 255)";
 		}
 
-		// "Otherwise, return the computed style of "background-color" for
+		// "Otherwise, return the computed value of "background-color" for
 		// node."
 		return getComputedStyle(node).backgroundColor;
 	}
@@ -1805,7 +1805,7 @@ function getEffectiveValue(node, command) {
 		return null;
 	}
 
-	// "Return the computed style for node of the relevant CSS property for
+	// "Return the computed value for node of the relevant CSS property for
 	// command."
 	return getComputedStyle(node)[commands[command].relevantCssProperty];
 }
@@ -1834,7 +1834,7 @@ function getSpecifiedValue(element, command) {
 
 	// "If command is "subscript" or "superscript":"
 	if (command == "subscript" || command == "superscript") {
-		// "If the computed style of element's "display" property is
+		// "If the computed value of element's "display" property is
 		// neither "inline" nor "inline-block" nor "inline-table", return
 		// null."
 		var style = getComputedStyle(element);

@@ -1250,14 +1250,14 @@ either a string or null:
   <li>If <var>command</var> is "hiliteColor":
 
   <ol>
-    <li>While the computed style of "background-color" on <var>node</var> is
+    <li>While the [[compval]] of "background-color" on <var>node</var> is
     any fully transparent value, and <var>node</var>'s [[parent]] is an
     [[element]], set <var>node</var> to its [[parent]].
 
-    <li>If the computed style of "background-color" on <var>node</var> is
+    <li>If the [[compval]] of "background-color" on <var>node</var> is
     a fully transparent value, return "rgb(255, 255, 255)".
 
-    <li>Otherwise, return the computed style of "background-color" for
+    <li>Otherwise, return the [[compval]] of "background-color" for
     <var>node</var>.
   </ol>
 
@@ -1308,7 +1308,7 @@ either a string or null:
   a value containing "underline", return "underline".  Otherwise, return
   null.
 
-  <li>Return the computed style for <var>node</var> of the <span>relevant CSS
+  <li>Return the [[compval]] for <var>node</var> of the <span>relevant CSS
   property</span> for <var>command</var>.
 </ol>
 
@@ -1335,7 +1335,7 @@ different name.
   <li>If <var>command</var> is "subscript" or "superscript":
 
   <ol>
-    <li>If the computed value of <var>element</var>'s "display" property is
+    <li>If the [[compval]] of <var>element</var>'s "display" property is
     neither "inline" nor "inline-block" nor "inline-table", return null.
 
     <li>If <var>element</var> has a [[style]] attribute set, and that attribute

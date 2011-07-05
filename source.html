@@ -839,145 +839,6 @@ algorithm returns true:
   <li>Return false if <var>new range</var>'s [[rangeend]] is [[bpafter]]
   (<var>node</var>, <var>offset</var>), true otherwise.
 </ol>
-
-<p>To <dfn>split the parent</dfn> of a list <var>node list</var> of consecutive
-[[sibling]] [[nodes]]:
-
-<p class=XXX>Pretty much any time we call this algorithm, it can cause trouble
-if the parent had styles, classes, etc.  There's not going to be any general
-way to handle this, but we should at least try to handle the special case of
-inline styles, because Firefox does actually add them to arbitrary elements.
-Also, when splitting out of an inline parent, it might be good to wrap all the
-inline descendants in a clone of the former parent.
-
-<ol>
-  <li>Let <var>original parent</var> be the [[parent]] of the first member of
-  <var>node list</var>.
-
-  <li>If <var>original parent</var> is not <span>editable</span> or its
-  [[parent]] is null, do nothing and abort these steps.
-
-  <li>If the first [[child]] of <var>original parent</var> is in <var>node
-  list</var>, <span>remove extraneous line breaks before</span> <var>original
-  parent</var>.
-
-  <li>If the first [[child]] of <var>original parent</var> is in <var>node
-  list</var>, and <var>original parent</var> <span>follows a line break</span>,
-  set <var>follows line break</var> to true.  Otherwise, set <var>follows line
-  break</var> to false.
-
-  <li>If the last [[child]] of <var>original parent</var> is in <var>node
-  list</var>, and <var>original parent</var> <span>precedes a line
-  break</span>, set <var>precedes line break</var> to true.  Otherwise, set
-  <var>precedes line break</var> to false.
-
-  <li>If the first [[child]] of <var>original parent</var> is not in <var>node
-  list</var>, but its last [[child]] is:
-
-  <div class=XXX>
-  <p>We insert things after the parent.  This is bad, because it will cause
-  them to become part of any ranges that immediately follow.  For instance, if
-  we're hitting "bar" in
-
-  <xmp><div><p>foo<p>bar</div>{<p>baz}</xmp>
-
-  <p>it becomes
-
-  <xmp><div><p>foo</div>{<p>bar<p>baz}</xmp>
-
-  <p>instead of
-
-  <xmp><div><p>foo</div><p>bar{<p>baz}</xmp>
-
-  <p>because of how range mutation rules work.  This doesn't happen if we
-  insert before.  Probably this isn't important enough to try working around,
-  though.
-  </div>
-
-  <ol>
-    <li>For each <var>node</var> in <var>node list</var>, <em>in reverse
-    order</em>, insert <var>node</var> into the [[parent]] of <var>original
-    parent</var> immediately after <var>original parent</var>, <span>preserving
-    ranges</span>.
-
-    <li>If <var>precedes line break</var> is true, and the last member of
-    <var>node list</var> does not <span title="precedes a line break">precede a
-    line break</span>, call [[createelement|"br"]] on the [[contextobject]] and
-    insert the result immediately after the last member of <var>node
-    list</var>.
-
-    <li><span>Remove extraneous line breaks at the end of</span> <var>original
-    parent</var>.
-
-    <li>Abort these steps.
-  </ol>
-
-  <li>If the first [[child]] of <var>original parent</var> is not in <var>node
-  list</var>:
-
-  <ol>
-    <li>Let <var>cloned parent</var> be the result of calling <code
-    data-anolis-spec=domcore title=dom-Node-cloneNode>cloneNode(false)</code>
-    on <var>original parent</var>.
-
-    <li>If <var>original parent</var> has an [[id]] attribute, unset it.
-
-    <li>Insert <var>cloned parent</var> into the [[parent]] of <var>original
-    parent</var> immediately before <var>original parent</var>.
-
-    <li>While the [[previoussibling]] of the first member of <var>node
-    list</var> is not null, append the first [[child]] of <var>original
-    parent</var> as the last [[child]] of <var>cloned parent</var>,
-    <span>preserving ranges</span>.
-  </ol>
-
-  <li>For each <var>node</var> in <var>node list</var>, insert <var>node</var>
-  into the [[parent]] of <var>original parent</var> immediately before
-  <var>original parent</var>, <span>preserving ranges</span>.
-  <!-- Notice that a boundary point that was immediately before the element
-  will now be immediately before its children, just because of the regular
-  range mutation rules, without needing to worry about preserving ranges.
-  Likewise for boundary points immediately after the element, if we wind up
-  removing the element in the final step.  Preserving ranges is only necessary
-  for the sake of boundary points in the element or its descendants. -->
-
-  <li>If <var>follows line break</var> is true, and the first member of
-  <var>node list</var> does not <span title="follows a line break">follow a
-  line break</span>, call [[createelement|"br"]] on the [[contextobject]] and
-  insert the result immediately before the first member of <var>node
-  list</var>.
-
-  <li>If the last member of <var>node list</var> is an <span>inline node</span>
-  other than a [[br]], and the first [[child]] of <var>original parent</var> is
-  a [[br]], and <var>original parent</var> is not an <span>inline node</span>,
-  remove the first [[child]] of <var>original parent</var> from <var>original
-  parent</var>.
-
-  <li>If <var>original parent</var> has no [[children]]:
-
-  <ol>
-    <li>Remove <var>original parent</var> from its [[parent]].
-
-    <li>If <var>precedes line break</var> is true, and the last member of
-    <var>node list</var> does not <span title="precedes a line break">precede a
-    line break</span>, call [[createelement|"br"]] on the [[contextobject]] and
-    insert the result immediately after the last member of <var>node
-    list</var>.
-  </ol>
-
-  <li>Otherwise, <span>remove extraneous line breaks before</span>
-  <var>original parent</var>.
-
-  <li>If <var>node list</var>'s last member's [[nextsibling]] is null,
-  but its [[parent]] is not null, <span>remove extraneous line breaks at the
-  end of</span> <var>node list</var>'s last member's [[parent]].
-  <!-- The parent might be null if it's a br that we removed in the last step,
-  in which case this step isn't necessary. -->
-</ol>
-
-<p>To remove a [[node]] <var>node</var> while <dfn>preserving its
-descendants</dfn>, <span>split the parent</span> of <var>node</var>'s
-[[children]].
 <!-- @} -->
 
 <h3>Wrapping a list of nodes</h3>
@@ -1512,7 +1373,11 @@ id=foo> into <span id=foo> instead of <font id=foo>, but probably not worth it.
   <ol>
     <li>Let <var>children</var> be the [[children]] of <var>element</var>.
 
-    <li>Remove <var>element</var>, <span>preserving its descendants</span>.
+    <li>For each <var>child</var> in <var>children</var>, insert
+    <var>child</var> into <var>element</var>'s [[parent]] immediately before
+    <var>element</var>, <span>preserving ranges</span>.
+
+    <li>Remove <var>element</var> from its [[parent]].
 
     <li>Return <var>children</var>.
   </ol>
@@ -3120,6 +2985,145 @@ here?
   [[parent]], <span>split the parent</span> of the one-[[node]] list consisting
   of <var>node</var>.
 </ol>
+
+<p>To <dfn>split the parent</dfn> of a list <var>node list</var> of consecutive
+[[sibling]] [[nodes]]:
+
+<p class=XXX>Pretty much any time we call this algorithm, it can cause trouble
+if the parent had styles, classes, etc.  There's not going to be any general
+way to handle this, but we should at least try to handle the special case of
+inline styles, because Firefox does actually add them to arbitrary elements.
+Also, when splitting out of an inline parent, it might be good to wrap all the
+inline descendants in a clone of the former parent.
+
+<ol>
+  <li>Let <var>original parent</var> be the [[parent]] of the first member of
+  <var>node list</var>.
+
+  <li>If <var>original parent</var> is not <span>editable</span> or its
+  [[parent]] is null, do nothing and abort these steps.
+
+  <li>If the first [[child]] of <var>original parent</var> is in <var>node
+  list</var>, <span>remove extraneous line breaks before</span> <var>original
+  parent</var>.
+
+  <li>If the first [[child]] of <var>original parent</var> is in <var>node
+  list</var>, and <var>original parent</var> <span>follows a line break</span>,
+  set <var>follows line break</var> to true.  Otherwise, set <var>follows line
+  break</var> to false.
+
+  <li>If the last [[child]] of <var>original parent</var> is in <var>node
+  list</var>, and <var>original parent</var> <span>precedes a line
+  break</span>, set <var>precedes line break</var> to true.  Otherwise, set
+  <var>precedes line break</var> to false.
+
+  <li>If the first [[child]] of <var>original parent</var> is not in <var>node
+  list</var>, but its last [[child]] is:
+
+  <div class=XXX>
+  <p>We insert things after the parent.  This is bad, because it will cause
+  them to become part of any ranges that immediately follow.  For instance, if
+  we're hitting "bar" in
+
+  <xmp><div><p>foo<p>bar</div>{<p>baz}</xmp>
+
+  <p>it becomes
+
+  <xmp><div><p>foo</div>{<p>bar<p>baz}</xmp>
+
+  <p>instead of
+
+  <xmp><div><p>foo</div><p>bar{<p>baz}</xmp>
+
+  <p>because of how range mutation rules work.  This doesn't happen if we
+  insert before.  Probably this isn't important enough to try working around,
+  though.
+  </div>
+
+  <ol>
+    <li>For each <var>node</var> in <var>node list</var>, <em>in reverse
+    order</em>, insert <var>node</var> into the [[parent]] of <var>original
+    parent</var> immediately after <var>original parent</var>, <span>preserving
+    ranges</span>.
+
+    <li>If <var>precedes line break</var> is true, and the last member of
+    <var>node list</var> does not <span title="precedes a line break">precede a
+    line break</span>, call [[createelement|"br"]] on the [[contextobject]] and
+    insert the result immediately after the last member of <var>node
+    list</var>.
+
+    <li><span>Remove extraneous line breaks at the end of</span> <var>original
+    parent</var>.
+
+    <li>Abort these steps.
+  </ol>
+
+  <li>If the first [[child]] of <var>original parent</var> is not in <var>node
+  list</var>:
+
+  <ol>
+    <li>Let <var>cloned parent</var> be the result of calling <code
+    data-anolis-spec=domcore title=dom-Node-cloneNode>cloneNode(false)</code>
+    on <var>original parent</var>.
+
+    <li>If <var>original parent</var> has an [[id]] attribute, unset it.
+
+    <li>Insert <var>cloned parent</var> into the [[parent]] of <var>original
+    parent</var> immediately before <var>original parent</var>.
+
+    <li>While the [[previoussibling]] of the first member of <var>node
+    list</var> is not null, append the first [[child]] of <var>original
+    parent</var> as the last [[child]] of <var>cloned parent</var>,
+    <span>preserving ranges</span>.
+  </ol>
+
+  <li>For each <var>node</var> in <var>node list</var>, insert <var>node</var>
+  into the [[parent]] of <var>original parent</var> immediately before
+  <var>original parent</var>, <span>preserving ranges</span>.
+  <!-- Notice that a boundary point that was immediately before the element
+  will now be immediately before its children, just because of the regular
+  range mutation rules, without needing to worry about preserving ranges.
+  Likewise for boundary points immediately after the element, if we wind up
+  removing the element in the final step.  Preserving ranges is only necessary
+  for the sake of boundary points in the element or its descendants. -->
+
+  <li>If <var>follows line break</var> is true, and the first member of
+  <var>node list</var> does not <span title="follows a line break">follow a
+  line break</span>, call [[createelement|"br"]] on the [[contextobject]] and
+  insert the result immediately before the first member of <var>node
+  list</var>.
+
+  <li>If the last member of <var>node list</var> is an <span>inline node</span>
+  other than a [[br]], and the first [[child]] of <var>original parent</var> is
+  a [[br]], and <var>original parent</var> is not an <span>inline node</span>,
+  remove the first [[child]] of <var>original parent</var> from <var>original
+  parent</var>.
+
+  <li>If <var>original parent</var> has no [[children]]:
+
+  <ol>
+    <li>Remove <var>original parent</var> from its [[parent]].
+
+    <li>If <var>precedes line break</var> is true, and the last member of
+    <var>node list</var> does not <span title="precedes a line break">precede a
+    line break</span>, call [[createelement|"br"]] on the [[contextobject]] and
+    insert the result immediately after the last member of <var>node
+    list</var>.
+  </ol>
+
+  <li>Otherwise, <span>remove extraneous line breaks before</span>
+  <var>original parent</var>.
+
+  <li>If <var>node list</var>'s last member's [[nextsibling]] is null,
+  but its [[parent]] is not null, <span>remove extraneous line breaks at the
+  end of</span> <var>node list</var>'s last member's [[parent]].
+  <!-- The parent might be null if it's a br that we removed in the last step,
+  in which case this step isn't necessary. -->
+</ol>
+
+<p>To remove a [[node]] <var>node</var> while <dfn>preserving its
+descendants</dfn>, <span>split the parent</span> of <var>node</var>'s
+[[children]].
 
 <p>To <dfn>indent</dfn> a list <var>node list</var> of consecutive [[sibling]]
 [[nodes]]:

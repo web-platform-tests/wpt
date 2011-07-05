@@ -3410,72 +3410,131 @@ returned by the following algorithm:
 <p>To <dfn id=canonicalize-whitespace>canonicalize whitespace</dfn> at (<var title="">node</var>,
 <var title="">offset</var>):
 
-<p class=XXX>This algorithm fails in all kinds of common cases, like any
-non-text node, or whitespace that spans multiple text nodes.  Needs lots of
-fixing.
-
 <ol>
-  <li>If <var title="">node</var> is not a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node, or is not
-  <a href=#editable>editable</a>, or its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>'s <a href=http://www.w3.org/TR/CSS21/cascade.html#computed-value>computed value</a> for "white-space" is
-  "pre" or "pre-wrap", abort these steps.
+  <li>If <var title="">node</var> is neither <a href=#editable>editable</a> nor an <a href=#editing-host>editing
+  host</a>, abort these steps.
+
+  <li>Let <var title="">start node</var> equal <var title="">node</var> and let <var title="">start
+  offset</var> equal <var title="">offset</var>.
 
   <!-- First go to the beginning of the current whitespace run. -->
-  <li>Let <var title="">start offset</var> equal <var title="">offset</var>.
-
-  <li>While <var title="">start offset</var> is positive and the (<var title="">start
-  offset</var> &minus; 1)st <a href=http://es5.github.com/#x8.4>element</a> of <var title="">node</var>'s <code class=external data-anolis-spec=domcore title=dom-CharacterData-data><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-data>data</a></code> is a
-  space (0x0020) or non-breaking space (0x00A0), subtract one from <var title="">start
-  offset</var>.
-
-  <!-- Now collapse any consecutive spaces. -->
-  <li>Let <var title="">end offset</var> equal <var title="">start offset</var>.
-
-  <li>While <var title="">end offset</var> is less than <var title="">node</var>'s <a href=http://es5.github.com/#x15.5.5.1>length</a>,
-  and the <var title="">end offset</var>th <a href=http://es5.github.com/#x8.4>element</a> of <var title="">node</var>'s <code class=external data-anolis-spec=domcore title=dom-CharacterData-data><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-data>data</a></code> is
-  0x0020 or 0x00A0:
+  <li>Repeat the following steps:
 
   <ol>
-    <li>Let <var title="">length</var> equal zero.
+    <li>If <var title="">start node</var> has a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> <a href=#in-the-same-editing-host>in the same editing
+    host</a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> <var title="">start offset</var> minus one, set
+    <var title="">start node</var> to that <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>, then set <var title="">start offset</var>
+    to <var title="">start node</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a>.
 
-    <li>While <var title="">end offset</var> plus <var title="">length</var> is less than
-    <var title="">node</var>'s <code class=external data-anolis-spec=domcore title=dom-CharacterData-length><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-length>length</a></code>, and the (<var title="">end offset</var> +
-    <var title="">length</var>)th <a href=http://es5.github.com/#x8.4>element</a> of <var title="">node</var>'s <code class=external data-anolis-spec=domcore title=dom-CharacterData-data><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-data>data</a></code> is 0x0020,
-    add one to <var title="">length</var>.
+    <li>Otherwise, if <var title="">start offset</var> is zero and <var title="">start node</var>
+    does not <a href=#follows-a-line-break title="follows a line break">follow a line break</a> and
+    <var title="">start node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is <a href=#in-the-same-editing-host>in the same editing
+    host</a>, set <var title="">start offset</var> to <var title="">start node</var>'s
+    <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a>, then set <var title="">start node</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
 
-    <li>If <var title="">length</var> is greater than one, call <code class=external data-anolis-spec=domcore title=dom-CharacterData-deleteData><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-deletedata>deleteData(<var title="">end
-    offset</var> + 1, <var title="">length</var> &minus; 1)</a></code> on <var title="">node</var>.
+    <p class=XXX>Following a line break is unlikely to be the right criterion.
 
-    <li>Add one to <var title="">end offset</var>.
+    <li>Otherwise, if <var title="">start node</var> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node and its
+    <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>'s <a href=http://www.w3.org/TR/CSS21/cascade.html#computed-value>computed value</a> for "white-space" is neither "pre" nor "pre-wrap"
+    and <var title="">start offset</var> is not zero and the (<var title="">start offset</var>
+    &minus; 1)st <a href=http://es5.github.com/#x8.4>element</a> of <var title="">start node</var>'s <code class=external data-anolis-spec=domcore title=dom-CharacterData-data><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-data>data</a></code> is a space
+    (0x0020) or non-breaking space (0x00A0), subtract one from <var title="">start
+    offset</var>.
+
+    <li>Otherwise, break from this loop.
+  </ol>
+
+  <!-- Now collapse any consecutive spaces. -->
+  <li>Let <var title="">end node</var> equal <var title="">start node</var> and <var title="">end
+  offset</var> equal <var title="">start offset</var>.
+
+  <li>Let <var title="">length</var> equal zero.
+
+  <li>Let <var title="">follows space</var> be false.
+
+  <li>Repeat the following steps:
+
+  <ol>
+    <li>If <var title="">end node</var> has a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> <a href=#in-the-same-editing-host>in the same editing
+    host</a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> <var title="">end offset</var>, set <var title="">end node</var>
+    to that <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>, then set <var title="">end offset</var> to zero.
+
+    <li>Otherwise, if <var title="">end offset</var> is <var title="">end node</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a>
+    and <var title="">end node</var> does not <a href=#precedes-a-line-break title="precedes a line
+    break">precede a line break</a> and <var title="">end node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is
+    <a href=#in-the-same-editing-host>in the same editing host</a>, set <var title="">end offset</var> to one
+    plus <var title="">end node</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a>, then set <var title="">end node</var> to its
+    <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+
+    <p class=XXX>Preceding a line break is unlikely to be the right criterion.
+
+    <li>Otherwise, if <var title="">end node</var> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node and its
+    <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>'s <a href=http://www.w3.org/TR/CSS21/cascade.html#computed-value>computed value</a> for "white-space" is neither "pre" nor "pre-wrap"
+    and <var title="">end offset</var> is not <var title="">end node</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> and the
+    <var title="">end offset</var>th <a href=http://es5.github.com/#x8.4>element</a> of <var title="">end node</var>'s <code class=external data-anolis-spec=domcore title=dom-CharacterData-data><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-data>data</a></code> is a
+    space (0x0020) or non-breaking space (0x00A0):
+
+    <ol>
+      <li>If <var title="">follows space</var> is true and the <var title="">end offset</var>th
+      <a href=http://es5.github.com/#x8.4>element</a> of <var title="">end node</var>'s <code class=external data-anolis-spec=domcore title=dom-CharacterData-data><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-data>data</a></code> is a space (0x0020), call
+      <code class=external data-anolis-spec=domcore title=dom-CharacterData-deleteData><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-deletedata>deleteData(<var title="">end offset</var>, 1)</a></code> on <var title="">end node</var>, then
+      continue this loop from the beginning.
+
+      <li>Set <var title="">follows space</var> to true if the <var title="">end offset</var>th
+      <a href=http://es5.github.com/#x8.4>element</a> of <var title="">end node</var>'s <code class=external data-anolis-spec=domcore title=dom-CharacterData-data><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-data>data</a></code> is a space (0x0020), false
+      otherwise.
+
+      <li>Add one to <var title="">end offset</var>.
+
+      <li>Add one to <var title="">length</var>.
+    </ol>
+
+    <li>Otherwise, break from this loop.
   </ol>
 
   <!-- Now replace with the canonical sequence. -->
   <li>Let <var title="">replacement whitespace</var> be the <a href=#canonical-space-sequence>canonical space
-  sequence</a> of length <var title="">end offset</var> minus <var title="">start
-  offset</var>.  <var title="">non-breaking start</var> is true if <var title="">start
-  offset</var> is zero and false otherwise, and <var title="">non-breaking end</var> is
-  true if <var title="">end offset</var> is <var title="">node</var>'s <code class=external data-anolis-spec=domcore title=dom-CharacterData-length><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-length>length</a></code> and false
-  otherwise.
+  sequence</a> of length <var title="">length</var>.  <var title="">non-breaking start</var>
+  is true if <var title="">start offset</var> is zero and <var title="">start node</var>
+  <a href=#follows-a-line-break>follows a line break</a>, and false otherwise.  <var title="">non-breaking
+  end</var> is true if <var title="">end offset</var> is <var title="">end node</var>'s
+  <code class=external data-anolis-spec=domcore title=dom-CharacterData-length><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-length>length</a></code> and <var title="">end node</var> <a href=#precedes-a-line-break>precedes a line break</a>, and
+  false otherwise.
 
-  <li>While <var title="">start offset</var> is less than <var title="">end offset</var>:
+  <li>While (<var title="">start node</var>, <var title="">start offset</var>) is <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-bp-before title=concept-bp-before>before</a>
+  (<var title="">end node</var>, <var title="">end offset</var>):
 
   <ol>
-    <li>Remove the first <a href=http://es5.github.com/#x8.4>element</a> from <var title="">replacement whitespace</var>, and
-    let <var title="">element</var> be that <a href=http://es5.github.com/#x8.4>element</a>.
+    <li>If <var title="">start node</var> has a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> <var title="">start
+    offset</var>, set <var title="">start node</var> to that <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>, then set
+    <var title="">start offset</var> to zero.
 
-    <li>If <var title="">element</var> is not the same as the <var title="">start offset</var>th
-    <a href=http://es5.github.com/#x8.4>element</a> of <var title="">node</var>'s <code class=external data-anolis-spec=domcore title=dom-CharacterData-data><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-data>data</a></code>:
+    <li>Otherwise, if <var title="">start node</var> is not a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node or if
+    <var title="">start offset</var> is <var title="">start node</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a>, set
+    <var title="">start offset</var> to one plus <var title="">start node</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a>, then
+    set <var title="">start node</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+
+    <li>Otherwise:
 
     <ol>
-      <!-- We need to insert then delete, so that we don't change range
-      boundary points. -->
-      <li>Call <code class=external data-anolis-spec=domcore title=dom-CharacterData-insertData><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-insertdata>insertData(<var title="">start offset</var>, <var title="">element</var>)</a></code> on
-      <var title="">node</var>.
+      <li>Remove the first <a href=http://es5.github.com/#x8.4>element</a> from <var title="">replacement whitespace</var>,
+      and let <var title="">element</var> be that <a href=http://es5.github.com/#x8.4>element</a>.
 
-      <li>Call <code class=external data-anolis-spec=domcore title=dom-CharacterData-deleteData><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-deletedata>deleteData(<var title="">start offset</var> + 1, 1)</a></code> on
-      <var title="">node</var>.
+      <li>If <var title="">element</var> is not the same as the <var title="">start
+      offset</var>th <a href=http://es5.github.com/#x8.4>element</a> of <var title="">start node</var>'s <code class=external data-anolis-spec=domcore title=dom-CharacterData-data><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-data>data</a></code>:
+
+      <ol>
+        <!-- We need to insert then delete, so that we don't change range
+        boundary points. -->
+        <li>Call <code class=external data-anolis-spec=domcore title=dom-CharacterData-insertData><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-insertdata>insertData(<var title="">start offset</var>, <var title="">element</var>)</a></code> on
+        <var title="">start node</var>.
+
+        <li>Call <code class=external data-anolis-spec=domcore title=dom-CharacterData-deleteData><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-deletedata>deleteData(<var title="">start offset</var> + 1, 1)</a></code> on
+        <var title="">start node</var>.
+      </ol>
+
+      <li>Add one to <var title="">start offset</var>.
     </ol>
-
-    <li>Add one to <var title="">start offset</var>.
   </ol>
 </ol>
 
@@ -3908,57 +3967,60 @@ we really want to use it, we probably want to change its name.
 
     <li><a href=#canonicalize-whitespace>Canonicalize whitespace</a> at (<var title="">start node</var>,
     <var title="">start offset</var>).
+
+    <li>Set <var title="">range</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> to its <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a>.
+
+    <li>Abort these steps.
   </ol>
 
-  <li>Otherwise:
+  <li>If <var title="">start node</var> is an <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node, call
+  <code class=external data-anolis-spec=domcore title=dom-CharacterData-deleteData><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-deletedata>deleteData()</a></code> on it, with <var title="">start offset</var> as the first argument and
+  (<a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> of <var title="">start node</var> &minus; <var title="">start offset</var>) as
+  the second argument.
+
+  <li>Let <var title="">node list</var> be a list of <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a>, initially empty.
+
+  <li>For each <var title="">node</var> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in <var title="">range</var>, append
+  <var title="">node</var> to <var title="">node list</var> if the last member of <var title="">node
+  list</var> (if any) is not an <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of <var title="">node</var>;
+  <var title="">node</var> is <a href=#editable>editable</a>; and <var title="">node</var> is not a
+  <code class=external data-anolis-spec=html title="the thead element"><a href=http://www.whatwg.org/html/#the-thead-element>thead</a></code>, <code class=external data-anolis-spec=html title="the tbody element"><a href=http://www.whatwg.org/html/#the-tbody-element>tbody</a></code>, <code class=external data-anolis-spec=html title="the tfoot element"><a href=http://www.whatwg.org/html/#the-tfoot-element>tfoot</a></code>, <code class=external data-anolis-spec=html title="the tr element"><a href=http://www.whatwg.org/html/#the-tr-element>tr</a></code>, <code class=external data-anolis-spec=html title="the th element"><a href=http://www.whatwg.org/html/#the-th-element>th</a></code>, or <code class=external data-anolis-spec=html title="the td element"><a href=http://www.whatwg.org/html/#the-td-element>td</a></code>.
+  <!--
+  IE9 doesn't seem to let you do any intercell deletions: the delete key does
+  nothing if you select across multiple cells.  Firefox 5.0a2 and Opera 11.11
+  behave as the spec says, not removing any table things.  Chrome 13 dev will
+  remove entire rows if selected.  Note that IE, Firefox, Word 2007, and
+  OpenOffice.org 3.2.1 Ubuntu all switch to a magic cell-selection mode when
+  you try to select between cells, at least in some cases, instead of selecting
+  letter-by-letter.
+  -->
+
+  <li>For each <var title="">node</var> in <var title="">node list</var>:
 
   <ol>
-    <li>If <var title="">start node</var> is an <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node,
-    call <code class=external data-anolis-spec=domcore title=dom-CharacterData-deleteData><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-deletedata>deleteData()</a></code> on it, with <var title="">start offset</var> as the first
-    argument and (<a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> of <var title="">start node</var> &minus; <var title="">start
-    offset</var>) as the second argument.  Then <a href=#canonicalize-whitespace>canonicalize
-    whitespace</a> at (<var title="">start node</var>, <var title="">start offset</var>).
+    <li>Let <var title="">parent</var> be the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of <var title="">node</var>.
 
-    <li>Let <var title="">node list</var> be a list of <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a>, initially empty.
+    <li>Remove <var title="">node</var> from <var title="">parent</var>.
 
-    <li>For each <var title="">node</var> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in <var title="">range</var>, append
-    <var title="">node</var> to <var title="">node list</var> if the last member of <var title="">node
-    list</var> (if any) is not an <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of <var title="">node</var>;
-    <var title="">node</var> is <a href=#editable>editable</a>; and <var title="">node</var> is not a
-    <code class=external data-anolis-spec=html title="the thead element"><a href=http://www.whatwg.org/html/#the-thead-element>thead</a></code>, <code class=external data-anolis-spec=html title="the tbody element"><a href=http://www.whatwg.org/html/#the-tbody-element>tbody</a></code>, <code class=external data-anolis-spec=html title="the tfoot element"><a href=http://www.whatwg.org/html/#the-tfoot-element>tfoot</a></code>, <code class=external data-anolis-spec=html title="the tr element"><a href=http://www.whatwg.org/html/#the-tr-element>tr</a></code>, <code class=external data-anolis-spec=html title="the th element"><a href=http://www.whatwg.org/html/#the-th-element>th</a></code>, or <code class=external data-anolis-spec=html title="the td element"><a href=http://www.whatwg.org/html/#the-td-element>td</a></code>.
-    <!--
-    IE9 doesn't seem to let you do any intercell deletions: the delete key does
-    nothing if you select across multiple cells.  Firefox 5.0a2 and Opera 11.11
-    behave as the spec says, not removing any table things.  Chrome 13 dev will
-    remove entire rows if selected.  Note that IE, Firefox, Word 2007, and
-    OpenOffice.org 3.2.1 Ubuntu all switch to a magic cell-selection mode when
-    you try to select between cells, at least in some cases, instead of
-    selecting letter-by-letter.
-    -->
+    <li>While <var title="">parent</var> is an <a href=#editable>editable</a> <a href=#inline-node>inline
+    node</a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> 0, let <var title="">grandparent</var> be the
+    <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of <var title="">parent</var>, then remove <var title="">parent</var> from
+    <var title="">grandparent</var>, then set <var title="">parent</var> to
+    <var title="">grandparent</var>.
 
-    <li>For each <var title="">node</var> in <var title="">node list</var>:
-
-    <ol>
-      <li>Let <var title="">parent</var> be the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of <var title="">node</var>.
-
-      <li>Remove <var title="">node</var> from <var title="">parent</var>.
-
-      <li>While <var title="">parent</var> is an <a href=#editable>editable</a> <a href=#inline-node>inline
-      node</a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> 0, let <var title="">grandparent</var> be the
-      <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of <var title="">parent</var>, then remove <var title="">parent</var> from
-      <var title="">grandparent</var>, then set <var title="">parent</var> to
-      <var title="">grandparent</var>.
-
-      <li>If <var title="">parent</var> is <a href=#editable>editable</a> or an <a href=#editing-host>editing
-      host</a>, is not an <a href=#inline-node>inline node</a>, and has no <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>,
-      call <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("br")</a></code> on the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a> and append the
-      result as the last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">parent</var>.
-    </ol>
-
-    <li>If <var title="">end node</var> is an <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node, call
-    <code class=external data-anolis-spec=domcore title=dom-CharacterData-deleteData><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-deletedata>deleteData(0, <var title="">end offset</var>)</a></code> on it, then <a href=#canonicalize-whitespace>canonicalize
-    whitespace</a> at (<var title="">end node</var>, 0).
+    <li>If <var title="">parent</var> is <a href=#editable>editable</a> or an <a href=#editing-host>editing
+    host</a>, is not an <a href=#inline-node>inline node</a>, and has no <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>,
+    call <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("br")</a></code> on the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a> and append the result
+    as the last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">parent</var>.
   </ol>
+
+  <li>If <var title="">end node</var> is an <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node, call
+  <code class=external data-anolis-spec=domcore title=dom-CharacterData-deleteData><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-deletedata>deleteData(0, <var title="">end offset</var>)</a></code> on it.
+
+  <li><a href=#canonicalize-whitespace>Canonicalize whitespace</a> at <var title="">range</var>'s
+  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a>.
+
+  <li><a href=#canonicalize-whitespace>Canonicalize whitespace</a> at <var title="">range</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a>.
 
   <!--
   Now we need to merge blocks.  The simplest case is something like
@@ -6456,9 +6518,8 @@ This is still a huge headache, though.
 
   <li>Call <code class=external data-anolis-spec=domrange title=dom-Range-insertNode><a href=http://html5.org/specs/dom-range.html#dom-range-insertnode>insertNode(<var title="">text</var>)</a></code> on the <a href=#active-range>active range</a>.
 
-  <li>Call <code class=external data-anolis-spec=domrange title=dom-Selection-collapse><a href=http://html5.org/specs/dom-range.html#dom-selection-collapse>collapse(<var title="">text</var>, <var title="">length</var>)</a></code> on the
-  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>'s <code class=external data-anolis-spec=domrange><a href=http://html5.org/specs/dom-range.html#selection>Selection</a></code>, where <var title="">length</var> is the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a>
-  of <var title="">text</var>.
+  <li>Call <code class=external data-anolis-spec=domrange title=dom-Selection-collapse><a href=http://html5.org/specs/dom-range.html#dom-selection-collapse>collapse(<var title="">text</var>, 1)</a></code> on the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>'s
+  <code class=external data-anolis-spec=domrange><a href=http://html5.org/specs/dom-range.html#selection>Selection</a></code>.
 </ol>
 
 

@@ -2019,6 +2019,10 @@ var tests = {
 		[' ', '{}<br>'],
 		[' ', '<p>{}<br>'],
 
+		[' ', '<p>foo[]<p>bar'],
+		[' ', '<p>foo&nbsp;[]<p>bar'],
+		[' ', '<p>foo[]<p>&nbsp;bar'],
+
 		['   ', 'foo[]'],
 
 		'foo[]bar',

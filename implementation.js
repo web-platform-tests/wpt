@@ -3701,81 +3701,159 @@ function canonicalSpaceSequence(n, nonBreakingStart, nonBreakingEnd) {
 }
 
 function canonicalizeWhitespace(node, offset) {
-	// "If node is not a Text node, or is not editable, or its parent's
-	// computed value for "white-space" is "pre" or "pre-wrap", abort these
-	// steps."
-	if (node.nodeType != Node.TEXT_NODE
-	|| !isEditable(node)
-	|| ["pre", "pre-wrap"].indexOf(getComputedStyle(node.parentNode).whiteSpace) != -1) {
+	// "If node is neither editable nor an editing host, abort these steps."
+	if (!isEditable(node) && !isEditingHost(node)) {
 		return;
 	}
 
-	// "Let start offset equal offset."
+	// "Let start node equal node and let start offset equal offset."
+	var startNode = node;
 	var startOffset = offset;
 
-	// "While start offset is positive and the (start offset − 1)st element of
-	// node's data is a space (0x0020) or non-breaking space (0x00A0), subtract
-	// one from start offset."
-	while (startOffset > 0
-	&& /[ \xa0]/.test(node.data[startOffset - 1])) {
-		startOffset--;
+	// "Repeat the following steps:"
+	while (true) {
+		// "If start node has a child in the same editing host with index start
+		// offset minus one, set start node to that child, then set start
+		// offset to start node's length."
+		if (0 <= startOffset - 1
+		&& inSameEditingHost(startNode, startNode.childNodes[startOffset - 1])) {
+			startNode = startNode.childNodes[startOffset - 1];
+			startOffset = getNodeLength(startNode);
+
+		// "Otherwise, if start offset is zero and start node does not follow a
+		// line break and start node's parent is in the same editing host, set
+		// start offset to start node's index, then set start node to its
+		// parent."
+		} else if (startOffset == 0
+		&& !followsLineBreak(startNode)
+		&& inSameEditingHost(startNode, startNode.parentNode)) {
+			startOffset = getNodeIndex(startNode);
+			startNode = startNode.parentNode;
+
+		// "Otherwise, if start node is a Text node and its parent's computed
+		// value for "white-space" is neither "pre" nor "pre-wrap" and start
+		// offset is not zero and the (start offset − 1)st element of start
+		// node's data is a space (0x0020) or non-breaking space (0x00A0),
+		// subtract one from start offset."
+		} else if (startNode.nodeType == Node.TEXT_NODE
+		&& ["pre", "pre-wrap"].indexOf(getComputedStyle(startNode.parentNode).whiteSpace) == -1
+		&& startOffset != 0
+		&& /[ \xa0]/.test(startNode.data[startOffset - 1])) {
+			startOffset--;
+
+		// "Otherwise, break from this loop."
+		} else {
+			break;
+		}
 	}
 
-	// "Let end offset equal start offset."
+	// "Let end node equal start node and end offset equal start offset."
+	var endNode = startNode;
 	var endOffset = startOffset;
 
-	// "While end offset is less than node's length, and the end offsetth
-	// element of node's data is 0x0020 or 0x00A0:"
-	while (endOffset < node.length
-	&& /[ \xa0]/.test(node.data[endOffset])) {
-		// "Let length equal zero."
-		var length = 0;
+	// "Let length equal zero."
+	var length = 0;
 
-		// "While end offset plus length is less than node's length, and the
-		// (end offset + length)th element of node's data is 0x0020, add one to
-		// length."
-		while (endOffset + length < node.length
-		&& node.data[endOffset + length] == " ") {
+	// "Let follows space be false."
+	var followsSpace = false;
+
+	// "Repeat the following steps:"
+	while (true) {
+		// "If end node has a child in the same editing host with index end
+		// offset, set end node to that child, then set end offset to zero."
+		if (endOffset < endNode.childNodes.length
+		&& inSameEditingHost(endNode, endNode.childNodes[endOffset])) {
+			endNode = endNode.childNodes[endOffset];
+			endOffset = 0;
+
+		// "Otherwise, if end offset is end node's length and end node does not
+		// precede a line break and end node's parent is in the same editing
+		// host, set end offset to one plus end node's index, then set end node
+		// to its parent."
+		} else if (endOffset == getNodeLength(endNode)
+		&& !precedesLineBreak(endNode)
+		&& inSameEditingHost(endNode, endNode.parentNode)) {
+			endOffset = 1 + getNodeIndex(endNode);
+			endNode = endNode.parentNode;
+
+		// "Otherwise, if end node is a Text node and its parent's computed
+		// value for "white-space" is neither "pre" nor "pre-wrap" and end
+		// offset is not end node's length and the end offsetth element of
+		// end node's data is a space (0x0020) or non-breaking space (0x00A0):"
+		} else if (endNode.nodeType == Node.TEXT_NODE
+		&& ["pre", "pre-wrap"].indexOf(getComputedStyle(endNode.parentNode).whiteSpace) == -1
+		&& endOffset != getNodeLength(endNode)
+		&& /[ \xa0]/.test(endNode.data[endOffset])) {
+			// "If follows space is true and the end offsetth element of end
+			// node's data is a space (0x0020), call deleteData(end offset, 1)
+			// on end node, then continue this loop from the beginning."
+			if (followsSpace
+			&& " " == endNode.data[endOffset]) {
+				endNode.deleteData(endOffset, 1);
+				continue;
+			}
+
+			// "Set follows space to true if the end offsetth element of end
+			// node's data is a space (0x0020), false otherwise."
+			followsSpace = " " == endNode.data[endOffset];
+
+			// "Add one to end offset."
+			endOffset++;
+
+			// "Add one to length."
 			length++;
-		}
 
-		// "If length is greater than one, call deleteData(end offset + 1,
-		// length − 1) on node."
-		if (length > 1) {
-			node.deleteData(endOffset + 1, length - 1);
+		// "Otherwise, break from this loop."
+		} else {
+			break;
 		}
-
-		// "Add one to end offset."
-		endOffset++;
 	}
 
 	// "Let replacement whitespace be the canonical space sequence of length
-	// end offset minus start offset. non-breaking start is true if start
-	// offset is zero and false otherwise, and non-breaking end is true if end
-	// offset is node's length and false otherwise."
-	var replacementWhitespace = canonicalSpaceSequence(endOffset - startOffset,
-		startOffset == 0,
-		endOffset == node.length);
+	// length. non-breaking start is true if start offset is zero and start
+	// node follows a line break, and false otherwise. non-breaking end is true
+	// if end offset is end node's length and end node precedes a line break,
+	// and false otherwise."
+	var replacementWhitespace = canonicalSpaceSequence(length,
+		startOffset == 0 && followsLineBreak(startNode),
+		endOffset == getNodeLength(endNode) && precedesLineBreak(endNode));
 
-	// "While start offset is less than end offset:"
-	while (startOffset < endOffset) {
-		// "Remove the first element from replacement whitespace, and let
-		// element be that element."
-		var element = replacementWhitespace[0];
-		replacementWhitespace = replacementWhitespace.slice(1);
+	// "While (start node, start offset) is before (end node, end offset):"
+	while (getPosition(startNode, startOffset, endNode, endOffset) == "before") {
+		// "If start node has a child with index start offset, set start node
+		// to that child, then set start offset to zero."
+		if (startOffset < startNode.childNodes.length) {
+			startNode = startNode.childNodes[startOffset];
+			startOffset = 0;
 
-		// "If element is not the same as the start offsetth element of node's
-		// data:"
-		if (element != node.data[startOffset]) {
-			// "Call insertData(start offset, element) on node."
-			node.insertData(startOffset, element);
+		// "Otherwise, if start node is not a Text node or if start offset is
+		// start node's length, set start offset to one plus start node's
+		// index, then set start node to its parent."
+		} else if (startNode.nodeType != Node.TEXT_NODE
+		|| startOffset == getNodeLength(startNode)) {
+			startOffset = 1 + getNodeIndex(startNode);
+			startNode = startNode.parentNode;
 
-			// "Call deleteData(start offset + 1, 1) on node."
-			node.deleteData(startOffset + 1, 1);
+		// "Otherwise:"
+		} else {
+			// "Remove the first element from replacement whitespace, and let
+			// element be that element."
+			var element = replacementWhitespace[0];
+			replacementWhitespace = replacementWhitespace.slice(1);
+
+			// "If element is not the same as the start offsetth element of
+			// start node's data:"
+			if (element != startNode.data[startOffset]) {
+				// "Call insertData(start offset, element) on start node."
+				startNode.insertData(startOffset, element);
+
+				// "Call deleteData(start offset + 1, 1) on start node."
+				startNode.deleteData(startOffset + 1, 1);
+			}
+
+			// "Add one to start offset."
+			startOffset++;
 		}
-
-		// "Add one to start offset."
-		startOffset++;
 	}
 }
 
@@ -4279,70 +4357,76 @@ function deleteContents(node1, offset1, node2, offset2) {
 		// "Canonicalize whitespace at (start node, start offset)."
 		canonicalizeWhitespace(startNode, startOffset);
 
-	// "Otherwise:"
-	} else {
-		// "If start node is an editable Text node, call deleteData() on it,
-		// with start offset as the first argument and (length of start node −
-		// start offset) as the second argument.  Then canonicalize whitespace
-		// at (start node, start offset)."
-		if (isEditable(startNode)
-		&& startNode.nodeType == Node.TEXT_NODE) {
-			startNode.deleteData(startOffset, getNodeLength(startNode) - startOffset);
-			canonicalizeWhitespace(startNode, startOffset);
+		// "Set range's end to its start."
+		range.setEnd(range.startContainer, range.startOffset);
+
+		// "Abort these steps."
+		return;
+	}
+
+	// "If start node is an editable Text node, call deleteData() on it, with
+	// start offset as the first argument and (length of start node − start
+	// offset) as the second argument."
+	if (isEditable(startNode)
+	&& startNode.nodeType == Node.TEXT_NODE) {
+		startNode.deleteData(startOffset, getNodeLength(startNode) - startOffset);
+	}
+
+	// "Let node list be a list of nodes, initially empty."
+	//
+	// "For each node contained in range, append node to node list if the last
+	// member of node list (if any) is not an ancestor of node; node is
+	// editable; and node is not a thead, tbody, tfoot, tr, th, or td."
+	var nodeList = getContainedNodes(range,
+		function(node) {
+			return isEditable(node)
+				&& !isHtmlElement(node, ["thead", "tbody", "tfoot", "tr", "th", "td"]);
+		}
+	);
+
+	// "For each node in node list:"
+	for (var i = 0; i < nodeList.length; i++) {
+		var node = nodeList[i];
+
+		// "Let parent be the parent of node."
+		var parent_ = node.parentNode;
+
+		// "Remove node from parent."
+		parent_.removeChild(node);
+
+		// "While parent is an editable inline node with length 0, let
+		// grandparent be the parent of parent, then remove parent from
+		// grandparent, then set parent to grandparent."
+		while (isEditable(parent_)
+		&& isInlineNode(parent_)
+		&& getNodeLength(parent_) == 0) {
+			var grandparent = parent_.parentNode;
+			grandparent.removeChild(parent_);
+			parent_ = grandparent;
 		}
 
-		// "Let node list be a list of nodes, initially empty."
-		//
-		// "For each node contained in range, append node to node list if the
-		// last member of node list (if any) is not an ancestor of node; node
-		// is editable; and node is not a thead, tbody, tfoot, tr, th, or td."
-		var nodeList = getContainedNodes(range,
-			function(node) {
-				return isEditable(node)
-					&& !isHtmlElement(node, ["thead", "tbody", "tfoot", "tr", "th", "td"]);
-			}
-		);
-
-		// "For each node in node list:"
-		for (var i = 0; i < nodeList.length; i++) {
-			var node = nodeList[i];
-
-			// "Let parent be the parent of node."
-			var parent_ = node.parentNode;
-
-			// "Remove node from parent."
-			parent_.removeChild(node);
-
-			// "While parent is an editable inline node with length 0, let
-			// grandparent be the parent of parent, then remove parent from
-			// grandparent, then set parent to grandparent."
-			while (isEditable(parent_)
-			&& isInlineNode(parent_)
-			&& getNodeLength(parent_) == 0) {
-				var grandparent = parent_.parentNode;
-				grandparent.removeChild(parent_);
-				parent_ = grandparent;
-			}
-
-			// "If parent is editable or an editing host, is not an inline
-			// node, and has no children, call createElement("br") on the
-			// context object and append the result as the last child of
-			// parent."
-			if ((isEditable(parent_) || isEditingHost(parent_))
-			&& !isInlineNode(parent_)
-			&& !parent_.hasChildNodes()) {
-				parent_.appendChild(document.createElement("br"));
-			}
-		}
-
-		// "If end node is an editable Text node, call deleteData(0, end
-		// offset) on it, then canonicalize whitespace at (end node, 0)."
-		if (isEditable(endNode)
-		&& endNode.nodeType == Node.TEXT_NODE) {
-			endNode.deleteData(0, endOffset);
-			canonicalizeWhitespace(endNode, 0);
+		// "If parent is editable or an editing host, is not an inline node,
+		// and has no children, call createElement("br") on the context object
+		// and append the result as the last child of parent."
+		if ((isEditable(parent_) || isEditingHost(parent_))
+		&& !isInlineNode(parent_)
+		&& !parent_.hasChildNodes()) {
+			parent_.appendChild(document.createElement("br"));
 		}
 	}
+
+	// "If end node is an editable Text node, call deleteData(0, end offset) on
+	// it."
+	if (isEditable(endNode)
+	&& endNode.nodeType == Node.TEXT_NODE) {
+		endNode.deleteData(0, endOffset);
+	}
+
+	// "Canonicalize whitespace at range's start."
+	canonicalizeWhitespace(range.startContainer, range.startOffset);
+
+	// "Canonicalize whitespace at range's end."
+	canonicalizeWhitespace(range.endContainer, range.endOffset);
 
 	// "If start block or end block is null, or start block is not in the same
 	// editing host as end block, or start block and end block are the same,

@@ -3397,72 +3397,131 @@ returned by the following algorithm:
 <p>To <dfn>canonicalize whitespace</dfn> at (<var>node</var>,
 <var>offset</var>):
 
-<p class=XXX>This algorithm fails in all kinds of common cases, like any
-non-text node, or whitespace that spans multiple text nodes.  Needs lots of
-fixing.
-
 <ol>
-  <li>If <var>node</var> is not a [[text]] node, or is not
-  <span>editable</span>, or its [[parent]]'s [[compval]] for "white-space" is
-  "pre" or "pre-wrap", abort these steps.
+  <li>If <var>node</var> is neither <span>editable</span> nor an <span>editing
+  host</span>, abort these steps.
+
+  <li>Let <var>start node</var> equal <var>node</var> and let <var>start
+  offset</var> equal <var>offset</var>.
 
   <!-- First go to the beginning of the current whitespace run. -->
-  <li>Let <var>start offset</var> equal <var>offset</var>.
-
-  <li>While <var>start offset</var> is positive and the (<var>start
-  offset</var> &minus; 1)st [[strel]] of <var>node</var>'s [[cddata]] is a
-  space (0x0020) or non-breaking space (0x00A0), subtract one from <var>start
-  offset</var>.
-
-  <!-- Now collapse any consecutive spaces. -->
-  <li>Let <var>end offset</var> equal <var>start offset</var>.
-
-  <li>While <var>end offset</var> is less than <var>node</var>'s [[strlen]],
-  and the <var>end offset</var>th [[strel]] of <var>node</var>'s [[cddata]] is
-  0x0020 or 0x00A0:
+  <li>Repeat the following steps:
 
   <ol>
-    <li>Let <var>length</var> equal zero.
+    <li>If <var>start node</var> has a [[child]] <span>in the same editing
+    host</span> with [[index]] <var>start offset</var> minus one, set
+    <var>start node</var> to that [[child]], then set <var>start offset</var>
+    to <var>start node</var>'s [[length]].
 
-    <li>While <var>end offset</var> plus <var>length</var> is less than
-    <var>node</var>'s [[cdlength]], and the (<var>end offset</var> +
-    <var>length</var>)th [[strel]] of <var>node</var>'s [[cddata]] is 0x0020,
-    add one to <var>length</var>.
+    <li>Otherwise, if <var>start offset</var> is zero and <var>start node</var>
+    does not <span title="follows a line break">follow a line break</span> and
+    <var>start node</var>'s [[parent]] is <span>in the same editing
+    host</span>, set <var>start offset</var> to <var>start node</var>'s
+    [[index]], then set <var>start node</var> to its [[parent]].
 
-    <li>If <var>length</var> is greater than one, call [[deletedata|<var>end
-    offset</var> + 1, <var>length</var> &minus; 1]] on <var>node</var>.
+    <p class=XXX>Following a line break is unlikely to be the right criterion.
 
-    <li>Add one to <var>end offset</var>.
+    <li>Otherwise, if <var>start node</var> is a [[text]] node and its
+    [[parent]]'s [[compval]] for "white-space" is neither "pre" nor "pre-wrap"
+    and <var>start offset</var> is not zero and the (<var>start offset</var>
+    &minus; 1)st [[strel]] of <var>start node</var>'s [[cddata]] is a space
+    (0x0020) or non-breaking space (0x00A0), subtract one from <var>start
+    offset</var>.
+
+    <li>Otherwise, break from this loop.
+  </ol>
+
+  <!-- Now collapse any consecutive spaces. -->
+  <li>Let <var>end node</var> equal <var>start node</var> and <var>end
+  offset</var> equal <var>start offset</var>.
+
+  <li>Let <var>length</var> equal zero.
+
+  <li>Let <var>follows space</var> be false.
+
+  <li>Repeat the following steps:
+
+  <ol>
+    <li>If <var>end node</var> has a [[child]] <span>in the same editing
+    host</span> with [[index]] <var>end offset</var>, set <var>end node</var>
+    to that [[child]], then set <var>end offset</var> to zero.
+
+    <li>Otherwise, if <var>end offset</var> is <var>end node</var>'s [[length]]
+    and <var>end node</var> does not <span title="precedes a line
+    break">precede a line break</span> and <var>end node</var>'s [[parent]] is
+    <span>in the same editing host</span>, set <var>end offset</var> to one
+    plus <var>end node</var>'s [[index]], then set <var>end node</var> to its
+    [[parent]].
+
+    <p class=XXX>Preceding a line break is unlikely to be the right criterion.
+
+    <li>Otherwise, if <var>end node</var> is a [[text]] node and its
+    [[parent]]'s [[compval]] for "white-space" is neither "pre" nor "pre-wrap"
+    and <var>end offset</var> is not <var>end node</var>'s [[length]] and the
+    <var>end offset</var>th [[strel]] of <var>end node</var>'s [[cddata]] is a
+    space (0x0020) or non-breaking space (0x00A0):
+
+    <ol>
+      <li>If <var>follows space</var> is true and the <var>end offset</var>th
+      [[strel]] of <var>end node</var>'s [[cddata]] is a space (0x0020), call
+      [[deletedata|<var>end offset</var>, 1]] on <var>end node</var>, then
+      continue this loop from the beginning.
+
+      <li>Set <var>follows space</var> to true if the <var>end offset</var>th
+      [[strel]] of <var>end node</var>'s [[cddata]] is a space (0x0020), false
+      otherwise.
+
+      <li>Add one to <var>end offset</var>.
+
+      <li>Add one to <var>length</var>.
+    </ol>
+
+    <li>Otherwise, break from this loop.
   </ol>
 
   <!-- Now replace with the canonical sequence. -->
   <li>Let <var>replacement whitespace</var> be the <span>canonical space
-  sequence</span> of length <var>end offset</var> minus <var>start
-  offset</var>.  <var>non-breaking start</var> is true if <var>start
-  offset</var> is zero and false otherwise, and <var>non-breaking end</var> is
-  true if <var>end offset</var> is <var>node</var>'s [[cdlength]] and false
-  otherwise.
+  sequence</span> of length <var>length</var>.  <var>non-breaking start</var>
+  is true if <var>start offset</var> is zero and <var>start node</var>
+  <span>follows a line break</span>, and false otherwise.  <var>non-breaking
+  end</var> is true if <var>end offset</var> is <var>end node</var>'s
+  [[cdlength]] and <var>end node</var> <span>precedes a line break</span>, and
+  false otherwise.
 
-  <li>While <var>start offset</var> is less than <var>end offset</var>:
+  <li>While (<var>start node</var>, <var>start offset</var>) is [[bpbefore]]
+  (<var>end node</var>, <var>end offset</var>):
 
   <ol>
-    <li>Remove the first [[strel]] from <var>replacement whitespace</var>, and
-    let <var>element</var> be that [[strel]].
+    <li>If <var>start node</var> has a [[child]] with [[index]] <var>start
+    offset</var>, set <var>start node</var> to that [[child]], then set
+    <var>start offset</var> to zero.
 
-    <li>If <var>element</var> is not the same as the <var>start offset</var>th
-    [[strel]] of <var>node</var>'s [[cddata]]:
+    <li>Otherwise, if <var>start node</var> is not a [[text]] node or if
+    <var>start offset</var> is <var>start node</var>'s [[length]], set
+    <var>start offset</var> to one plus <var>start node</var>'s [[index]], then
+    set <var>start node</var> to its [[parent]].
+
+    <li>Otherwise:
 
     <ol>
-      <!-- We need to insert then delete, so that we don't change range
-      boundary points. -->
-      <li>Call [[insertdata|<var>start offset</var>, <var>element</var>]] on
-      <var>node</var>.
+      <li>Remove the first [[strel]] from <var>replacement whitespace</var>,
+      and let <var>element</var> be that [[strel]].
 
-      <li>Call [[deletedata|<var>start offset</var> + 1, 1]] on
-      <var>node</var>.
+      <li>If <var>element</var> is not the same as the <var>start
+      offset</var>th [[strel]] of <var>start node</var>'s [[cddata]]:
+
+      <ol>
+        <!-- We need to insert then delete, so that we don't change range
+        boundary points. -->
+        <li>Call [[insertdata|<var>start offset</var>, <var>element</var>]] on
+        <var>start node</var>.
+
+        <li>Call [[deletedata|<var>start offset</var> + 1, 1]] on
+        <var>start node</var>.
+      </ol>
+
+      <li>Add one to <var>start offset</var>.
     </ol>
-
-    <li>Add one to <var>start offset</var>.
   </ol>
 </ol>
 
@@ -3896,57 +3955,60 @@ we really want to use it, we probably want to change its name.
 
     <li><span>Canonicalize whitespace</span> at (<var>start node</var>,
     <var>start offset</var>).
+
+    <li>Set <var>range</var>'s [[rangeend]] to its [[rangestart]].
+
+    <li>Abort these steps.
   </ol>
 
-  <li>Otherwise:
+  <li>If <var>start node</var> is an <span>editable</span> [[text]] node, call
+  [[deletedata|]] on it, with <var>start offset</var> as the first argument and
+  ([[nodelength]] of <var>start node</var> &minus; <var>start offset</var>) as
+  the second argument.
+
+  <li>Let <var>node list</var> be a list of [[nodes]], initially empty.
+
+  <li>For each <var>node</var> [[contained]] in <var>range</var>, append
+  <var>node</var> to <var>node list</var> if the last member of <var>node
+  list</var> (if any) is not an [[ancestor]] of <var>node</var>;
+  <var>node</var> is <span>editable</span>; and <var>node</var> is not a
+  [[thead]], [[tbody]], [[tfoot]], [[tr]], [[th]], or [[td]].
+  <!--
+  IE9 doesn't seem to let you do any intercell deletions: the delete key does
+  nothing if you select across multiple cells.  Firefox 5.0a2 and Opera 11.11
+  behave as the spec says, not removing any table things.  Chrome 13 dev will
+  remove entire rows if selected.  Note that IE, Firefox, Word 2007, and
+  OpenOffice.org 3.2.1 Ubuntu all switch to a magic cell-selection mode when
+  you try to select between cells, at least in some cases, instead of selecting
+  letter-by-letter.
+  -->
+
+  <li>For each <var>node</var> in <var>node list</var>:
 
   <ol>
-    <li>If <var>start node</var> is an <span>editable</span> [[text]] node,
-    call [[deletedata|]] on it, with <var>start offset</var> as the first
-    argument and ([[nodelength]] of <var>start node</var> &minus; <var>start
-    offset</var>) as the second argument.  Then <span>canonicalize
-    whitespace</span> at (<var>start node</var>, <var>start offset</var>).
+    <li>Let <var>parent</var> be the [[parent]] of <var>node</var>.
 
-    <li>Let <var>node list</var> be a list of [[nodes]], initially empty.
+    <li>Remove <var>node</var> from <var>parent</var>.
 
-    <li>For each <var>node</var> [[contained]] in <var>range</var>, append
-    <var>node</var> to <var>node list</var> if the last member of <var>node
-    list</var> (if any) is not an [[ancestor]] of <var>node</var>;
-    <var>node</var> is <span>editable</span>; and <var>node</var> is not a
-    [[thead]], [[tbody]], [[tfoot]], [[tr]], [[th]], or [[td]].
-    <!--
-    IE9 doesn't seem to let you do any intercell deletions: the delete key does
-    nothing if you select across multiple cells.  Firefox 5.0a2 and Opera 11.11
-    behave as the spec says, not removing any table things.  Chrome 13 dev will
-    remove entire rows if selected.  Note that IE, Firefox, Word 2007, and
-    OpenOffice.org 3.2.1 Ubuntu all switch to a magic cell-selection mode when
-    you try to select between cells, at least in some cases, instead of
-    selecting letter-by-letter.
-    -->
+    <li>While <var>parent</var> is an <span>editable</span> <span>inline
+    node</span> with [[nodelength]] 0, let <var>grandparent</var> be the
+    [[parent]] of <var>parent</var>, then remove <var>parent</var> from
+    <var>grandparent</var>, then set <var>parent</var> to
+    <var>grandparent</var>.
 
-    <li>For each <var>node</var> in <var>node list</var>:
-
-    <ol>
-      <li>Let <var>parent</var> be the [[parent]] of <var>node</var>.
-
-      <li>Remove <var>node</var> from <var>parent</var>.
-
-      <li>While <var>parent</var> is an <span>editable</span> <span>inline
-      node</span> with [[nodelength]] 0, let <var>grandparent</var> be the
-      [[parent]] of <var>parent</var>, then remove <var>parent</var> from
-      <var>grandparent</var>, then set <var>parent</var> to
-      <var>grandparent</var>.
-
-      <li>If <var>parent</var> is <span>editable</span> or an <span>editing
-      host</span>, is not an <span>inline node</span>, and has no [[children]],
-      call [[createelement|"br"]] on the [[contextobject]] and append the
-      result as the last [[child]] of <var>parent</var>.
-    </ol>
-
-    <li>If <var>end node</var> is an <span>editable</span> [[text]] node, call
-    [[deletedata|0, <var>end offset</var>]] on it, then <span>canonicalize
-    whitespace</span> at (<var>end node</var>, 0).
+    <li>If <var>parent</var> is <span>editable</span> or an <span>editing
+    host</span>, is not an <span>inline node</span>, and has no [[children]],
+    call [[createelement|"br"]] on the [[contextobject]] and append the result
+    as the last [[child]] of <var>parent</var>.
   </ol>
+
+  <li>If <var>end node</var> is an <span>editable</span> [[text]] node, call
+  [[deletedata|0, <var>end offset</var>]] on it.
+
+  <li><span>Canonicalize whitespace</span> at <var>range</var>'s
+  [[rangestart]].
+
+  <li><span>Canonicalize whitespace</span> at <var>range</var>'s [[rangeend]].
 
   <!--
   Now we need to merge blocks.  The simplest case is something like
@@ -6479,9 +6541,8 @@ This is still a huge headache, though.
 
   <li>Call [[insertnode|<var>text</var>]] on the <span>active range</span>.
 
-  <li>Call [[selcollapse|<var>text</var>, <var>length</var>]] on the
-  [[contextobject]]'s [[selection]], where <var>length</var> is the [[length]]
-  of <var>text</var>.
+  <li>Call [[selcollapse|<var>text</var>, 1]] on the [[contextobject]]'s
+  [[selection]].
 </ol>
 <!-- @} -->
 

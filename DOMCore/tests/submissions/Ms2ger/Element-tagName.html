@@ -13,4 +13,12 @@ test(function() {
   assert_equals(document.createElementNS(SVGNS, "SVG").tagName, "SVG")
   assert_equals(document.createElementNS(HTMLNS, "x:b").tagName, "X:B")
 })
+test(function() {
+  var xmlel = new DOMParser()
+    .parseFromString('<div xmlns="http://www.w3.org/1999/xhtml">Test</div>', 'text/xml')
+    .documentElement;
+  assert_equals(xmlel.tagName, "div", "tagName should be lowercase in XML")
+  var htmlel = document.importNode(xmlel, true)
+  assert_equals(htmlel.tagName, "DIV", "tagName should be uppercase in HTML")
+}, "tagName should be updated when changing ownerDocument")
 </script>

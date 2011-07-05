@@ -1452,7 +1452,31 @@ function isEffectivelyContained(node, range) {
 	return false;
 }
 
-// Like getAllContainedNodes(), but for effectively contained nodes.
+// Like get(All)ContainedNodes(), but for effectively contained nodes.
+function getEffectivelyContainedNodes(range, condition) {
+	if (typeof condition == "undefined") {
+		condition = function() { return true };
+	}
+	var node = range.startContainer;
+	while (isEffectivelyContained(node.parentNode, range)) {
+		node = node.parentNode;
+	}
+
+	var stop = nextNodeDescendants(range.endContainer);
+
+	var nodeList = [];
+	while (isBefore(node, stop)) {
+		if (isEffectivelyContained(node, range)
+		&& condition(node)) {
+			nodeList.push(node);
+			node = nextNodeDescendants(node);
+			continue;
+		}
+		node = nextNode(node);
+	}
+	return nodeList;
+}
+
 function getAllEffectivelyContainedNodes(range, condition) {
 	if (typeof condition == "undefined") {
 		condition = function() { return true };
@@ -1997,10 +2021,11 @@ function decomposeRange(range) {
 		return [];
 	}
 
-	// "If range's start node is a Text node and its start offset is neither 0
-	// nor the length of its start node, run splitText() on its start node with
-	// argument equal to its start offset."
-	if (range.startContainer.nodeType == Node.TEXT_NODE
+	// "If range's start node is an editable Text node and its start offset is
+	// neither 0 nor the length of its start node, run splitText() on its start
+	// node with argument equal to its start offset."
+	if (isEditable(range.startContainer)
+	&& range.startContainer.nodeType == Node.TEXT_NODE
 	&& range.startOffset != 0
 	&& range.startOffset != getNodeLength(range.startContainer)) {
 		// Account for UAs not following range mutation rules
@@ -2015,10 +2040,11 @@ function decomposeRange(range) {
 		}
 	}
 
-	// "If range's end node is a Text node and its end offset is neither 0 nor
-	// the length of its end node, run splitText() on its end node with
-	// argument equal to its end offset."
-	if (range.endContainer.nodeType == Node.TEXT_NODE
+	// "If range's end node is an editable Text node and its end offset is
+	// neither 0 nor the length of its end node, run splitText() on its end
+	// node with argument equal to its end offset."
+	if (isEditable(range.endContainer)
+	&& range.endContainer.nodeType == Node.TEXT_NODE
 	&& range.endOffset != 0
 	&& range.endOffset != getNodeLength(range.endContainer)) {
 		// IE seems to mutate the range incorrectly here, so we need correction
@@ -2030,36 +2056,9 @@ function decomposeRange(range) {
 		range.setEnd(newEnd[0], newEnd[1]);
 	}
 
-	// "Let cloned range be the result of calling cloneRange() on range."
-	var clonedRange = range.cloneRange();
-
-	// "While the start offset of cloned range is 0, and the parent of cloned
-	// range's start node is not null, set the start of cloned range to (parent
-	// of start node, index of start node)."
-	while (clonedRange.startOffset == 0
-	&& clonedRange.startContainer.parentNode) {
-		clonedRange.setStart(clonedRange.startContainer.parentNode, getNodeIndex(clonedRange.startContainer));
-	}
-
-	// "While the end offset of cloned range equals the length of its end node,
-	// and the parent of clone range's end node is not null, set the end of
-	// cloned range to (parent of end node, 1 + index of end node)."
-	while (clonedRange.endOffset == getNodeLength(clonedRange.endContainer)
-	&& clonedRange.endContainer.parentNode) {
-		clonedRange.setEnd(clonedRange.endContainer.parentNode, 1 + getNodeIndex(clonedRange.endContainer));
-	}
-
-	// "Return a list consisting of every Node contained in cloned range in
-	// tree order, omitting any whose parent is also contained in cloned
-	// range."
-	var ret = [];
-	for (var node = clonedRange.startContainer; node != nextNodeDescendants(clonedRange.endContainer); node = nextNode(node)) {
-		if (isContained(node, clonedRange)
-		&& !isContained(node.parentNode, clonedRange)) {
-			ret.push(node);
-		}
-	}
-	return ret;
+	// "Return a list consisting of every node effectively contained in range,
+	// omitting any whose parent is also effectively contained in range."
+	return getEffectivelyContainedNodes(range);
 }
 
 //@}

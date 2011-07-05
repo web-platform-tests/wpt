@@ -1164,12 +1164,11 @@ is [[contained]] in the [[range]]; or it is the [[range]]'s [[rangestart]]
 [[bpnode]], it is a [[text]] node, and the [[range]]'s [[rangeend]]
 [[bpoffset]] is not 0; or it has at least one [[child]], and all its
 [[children]] are <span>effectively contained</span> in the [[range]].
-<!-- Logically, the effectively contained nodes are supposed to be the ones
-returned by decomposing the range, or their descendants.  We can't actually
-define it that way, because decomposing the range has side effects (calling
-splitText()), and anyway text nodes might not be returned by decomposing even
-if they're effectively contained: it might be that the new node created by
-splitText() is returned. -->
+<!-- The difference between "contained" and "effectively contained" is
+basically that 1) in <b>[foo]</b>, the <b> is effectively contained but not
+contained; and 2) in <b>f[o]o</b>, the text node is effectively contained but
+not contained.  This is used mostly for the "decompose" algorithm, and also for
+most inline commands' states. -->
 
 <p>A <dfn>modifiable element</dfn> is a [[b]], [[em]], [[i]], [[s]], [[span]],
 [[strike]], [[strong]], [[sub]], [[sup]], or [[u]] element with no attributes
@@ -1472,38 +1471,24 @@ title>splitText()</code>.
   <li>If <var>range</var>'s [[rangestart]] and [[rangeend]] are the same,
   return an empty list.
 
-  <li>If <var>range</var>'s [[rangestart]] [[bpnode]] is a [[text]] node and
-  its [[rangestart]] [[bpoffset]] is neither 0 nor the [[nodelength]] of its
-  [[rangestart]] [[bpnode]], run <code data-anolis-spec=domcore
-  title=dom-Text-splitText>splitText()</code> on its [[rangestart]] [[bpnode]]
-  with argument equal to its [[rangestart]] [[bpoffset]].
+  <li>If <var>range</var>'s [[rangestart]] [[bpnode]] is an
+  <span>editable</span> [[text]] node and its [[rangestart]] [[bpoffset]] is
+  neither 0 nor the [[nodelength]] of its [[rangestart]] [[bpnode]], run <code
+  data-anolis-spec=domcore title=dom-Text-splitText>splitText()</code> on its
+  [[rangestart]] [[bpnode]] with argument equal to its [[rangestart]]
+  [[bpoffset]].
 
-  <li>If <var>range</var>'s [[rangeend]] [[bpnode]] is a [[text]] node and
-  its [[rangeend]] [[bpoffset]] is neither 0 nor the [[nodelength]] of its
-  [[rangeend]] [[bpnode]], run <code data-anolis-spec=domcore
-  title=dom-Text-splitText>splitText()</code> on its [[rangeend]] [[bpnode]]
-  with argument equal to its [[rangeend]] [[bpoffset]].
+  <li>If <var>range</var>'s [[rangeend]] [[bpnode]] is an <span>editable</span>
+  [[text]] node and its [[rangeend]] [[bpoffset]] is neither 0 nor the
+  [[nodelength]] of its [[rangeend]] [[bpnode]], run <code
+  data-anolis-spec=domcore title=dom-Text-splitText>splitText()</code> on its
+  [[rangeend]] [[bpnode]] with argument equal to its [[rangeend]] [[bpoffset]].
 
-  <!-- Now we want to make sure our range contains as many nodes as possible,
-  such as by changing <tag>[foo]</tag> to {<tag>foo</tag>}. -->
-  <li>Let <var>cloned range</var> be the result of calling <code
-  data-anolis-spec=domrange title=dom-Range-cloneRange>cloneRange()</code> on
-  <var>range</var>.
-
-  <li>While the [[rangestart]] [[bpoffset]] of <var>cloned range</var> is 0,
-  and the [[parent]] of <var>cloned range</var>'s [[rangestart]] [[bpnode]] is
-  not null, set the [[rangestart]] of <var>cloned range</var> to ([[parent]] of
-  [[rangestart]] [[bpnode]], [[index]] of [[rangestart]] [[bpnode]]).
-
-  <li>While the [[rangeend]] [[bpoffset]] of <var>cloned range</var> equals the
-  [[nodelength]] of its [[rangeend]] [[bpnode]], and the [[parent]] of
-  <var>cloned range</var>'s [[rangeend]] [[bpnode]] is not null, set the
-  [[rangeend]] of <var>cloned range</var> to ([[parent]] of [[rangeend]]
-  [[bpnode]], 1 + [[index]] of [[rangeend]] [[bpnode]]).
-
-  <li>Return a list consisting of every [[node]] [[contained]] in <var>cloned
-  range</var> in [[treeorder]], omitting any whose [[parent]] is also
-  [[contained]] in <var>cloned range</var>.
+  <!-- We want to make sure the returned list contains as many nodes as
+  possible, such as by treating <tag>[foo]</tag> as {<tag>foo</tag>}. -->
+  <li>Return a list consisting of every [[node]] <span>effectively
+  contained</span> in <var>range</var>, omitting any whose [[parent]] is also
+  <span>effectively contained</span> in <var>range</var>.
 </ol>
 <!-- @} -->
 

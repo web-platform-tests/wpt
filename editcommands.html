@@ -1611,25 +1611,8 @@ id=foo> into <span id=foo> instead of <font id=foo>, but probably not worth it.
   <!-- If we get past this step, we're something like <b class=foo> where we
   want to keep the extra attributes, so we stick them on a span. -->
 
-  <p class=XXX>Replace the following steps with "set the tag name".
-
-  <li>Let <var title="">new element</var> be a new <a href=#html-element>HTML element</a> with
-  <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> "span", with the same attributes and <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> as
-  <var title="">element</var>.
-
-  <li>Insert <var title="">new element</var> into the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of <var title="">element</var>
-  immediately before it.
-  <!-- This means that the boundary point immediately before the element goes
-  before the new element, and after we remove the old element, the boundary
-  point immediately after the old element will be immediately after the new
-  element, because of the regular range mutation rules. -->
-
-  <li>While <var title="">element</var> has <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, append its first <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> as
-  the last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">new element</var>, <a href=#preserving-ranges>preserving ranges</a>.
-
-  <li>Remove <var title="">element</var> from its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
-
-  <li>Return the one-<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> list consisting of <var title="">new element</var>.
+  <li><a href=#set-the-tag-name>Set the tag name</a> of <var title="">element</var> to "span", and return
+  the one-<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> list consisting of the result.
 </ol>
 
 

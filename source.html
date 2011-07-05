@@ -1571,25 +1571,8 @@ id=foo> into <span id=foo> instead of <font id=foo>, but probably not worth it.
   <!-- If we get past this step, we're something like <b class=foo> where we
   want to keep the extra attributes, so we stick them on a span. -->
 
-  <p class=XXX>Replace the following steps with "set the tag name".
-
-  <li>Let <var>new element</var> be a new <span>HTML element</span> with
-  [[localname]] "span", with the same attributes and [[ownerdocument]] as
-  <var>element</var>.
-
-  <li>Insert <var>new element</var> into the [[parent]] of <var>element</var>
-  immediately before it.
-  <!-- This means that the boundary point immediately before the element goes
-  before the new element, and after we remove the old element, the boundary
-  point immediately after the old element will be immediately after the new
-  element, because of the regular range mutation rules. -->
-
-  <li>While <var>element</var> has [[children]], append its first [[child]] as
-  the last [[child]] of <var>new element</var>, <span>preserving ranges</span>.
-
-  <li>Remove <var>element</var> from its [[parent]].
-
-  <li>Return the one-[[node]] list consisting of <var>new element</var>.
+  <li><span>Set the tag name</span> of <var>element</var> to "span", and return
+  the one-[[node]] list consisting of the result.
 </ol>
 <!-- @} -->
 

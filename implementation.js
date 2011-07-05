@@ -2162,28 +2162,9 @@ function clearValue(element, command) {
 		return [];
 	}
 
-	// "Let new element be a new HTML element with name "span", with the
-	// same attributes and ownerDocument as element."
-	var newElement = element.ownerDocument.createElement("span");
-	for (var j = 0; j < element.attributes.length; j++) {
-		// FIXME: Namespaces?
-		newElement.setAttribute(element.attributes[j].localName, element.attributes[j].value);
-	}
-
-	// "Insert new element into the parent of element immediately before it."
-	element.parentNode.insertBefore(newElement, element);
-
-	// "While element has children, append its first child as the last child of
-	// new element, preserving ranges."
-	while (element.childNodes.length) {
-		movePreservingRanges(element.firstChild, newElement, newElement.childNodes.length);
-	}
-
-	// "Remove element from its parent."
-	element.parentNode.removeChild(element);
-
-	// "Return the one-Node list consisting of new element."
-	return [newElement];
+	// "Set the tag name of element to "span", and return the one-node list
+	// consisting of the result."
+	return [setTagName(element, "span")];
 }
 
 //@}

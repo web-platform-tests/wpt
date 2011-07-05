@@ -969,12 +969,7 @@ inline descendants in a clone of the former parent.
     <li>Let <var title="">cloned parent</var> be the result of calling <code class=external data-anolis-spec=domcore title=dom-Node-cloneNode><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-clonenode>cloneNode(false)</a></code>
     on <var title="">original parent</var>.
 
-    <p class=XXX>This will duplicate id's, as well as other bad things.  Do we
-    care?  We don't want to not copy attributes at all, because that wouldn't
-    copy style attributes, and Firefox in CSS mode will actually add style
-    attributes to any elements it feels like.  If we do exclude id's, even
-    though they'd only occur if someone manually added them, do we want to
-    exclude other things like itemid or accesskey or . . .
+    <li>If <var title="">original parent</var> has an <code class=external data-anolis-spec=html title="the id attribute"><a href=http://www.whatwg.org/html/#the-id-attribute>id</a></code> attribute, unset it.
 
     <li>Insert <var title="">cloned parent</var> into the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of <var title="">original
     parent</var> immediately before <var title="">original parent</var>.
@@ -1288,7 +1283,7 @@ either a string or null:
 
     <li>If <var title="">node</var> is null, return null.
 
-    <li>Return the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-attr-value title=concept-attr-value>value</a> of <var title="">node</var>'s <code class=external data-anolis-spec=html title=attr-hyperlink-href><a href=http://www.whatwg.org/html/#attr-hyperlink-href>href</a></code> attribute.
+    <li>Return the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-attribute-value title=concept-attribute-value>value</a> of <var title="">node</var>'s <code class=external data-anolis-spec=html title=attr-hyperlink-href><a href=http://www.whatwg.org/html/#attr-hyperlink-href>href</a></code> attribute.
   </ol>
 
   <li>If <var title="">command</var> is "hiliteColor":
@@ -1370,7 +1365,7 @@ different name.
 
   <ol>
     <li>If <var title="">element</var> is an <code class=external data-anolis-spec=html title="the a element"><a href=http://www.whatwg.org/html/#the-a-element>a</a></code> element and has an <code class=external data-anolis-spec=html title=attr-hyperlink-href><a href=http://www.whatwg.org/html/#attr-hyperlink-href>href</a></code>
-    attribute, return the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-attr-value title=concept-attr-value>value</a> of that attribute.
+    attribute, return the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-attribute-value title=concept-attribute-value>value</a> of that attribute.
 
     <li>Return null.
   </ol>
@@ -4925,7 +4920,7 @@ would be worth the added complexity.
 
   <li>Let <var title="">element list</var> be a list of all <a href=#editable>editable</a>
   <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in <var title="">new range</var> that either has an
-  attribute in the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#html-namespace>HTML namespace</a> whose <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-attr-local-name title=concept-attr-local-name>local name</a> is "align", or has
+  attribute in the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#html-namespace>HTML namespace</a> whose <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-attribute-local-name title=concept-attribute-local-name>local name</a> is "align", or has
   a <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code> attribute that sets "text-align", or is a <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/html/#center>center</a></code>.
   <!-- No browser actually removes center, but it makes sense to do so. -->
 
@@ -4933,7 +4928,7 @@ would be worth the added complexity.
 
   <ol>
     <li>If <var title="">element</var> has an attribute in the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#html-namespace>HTML namespace</a> whose
-    <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-attr-local-name title=concept-attr-local-name>local name</a> is "align", remove that attribute.
+    <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-attribute-local-name title=concept-attribute-local-name>local name</a> is "align", remove that attribute.
 
     <li>Unset the CSS property "text-align" on <var title="">element</var>, if it's set
     by a <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code> attribute.
@@ -4989,7 +4984,7 @@ would be worth the added complexity.
 
     <ul>
       <li>An <code class=external data-anolis-spec=html title=attr-div-align><a href=http://www.whatwg.org/html/#attr-div-align>align</a></code>
-      attribute whose <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-attr-value title=concept-attr-value>value</a> is an <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#ascii-case-insensitive>ASCII
+      attribute whose <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-attribute-value title=concept-attribute-value>value</a> is an <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#ascii-case-insensitive>ASCII
       case-insensitive</a> match for <var title="">alignment</var>.
 
       <li>A <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code> attribute which sets exactly one CSS property (including
@@ -5327,8 +5322,8 @@ sense for <address>/<h*>/<pre>, but other browsers don't do it.
   <!-- IE9 requires the brackets.  If they're not provided, it does nothing.
   -->
 
-  <li>Let <var title="">value</var> be <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#converted-to-lowercase>converted to
-  lowercase</a>.
+  <li>Let <var title="">value</var> be <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#converted-to-ascii-lowercase>converted to
+  ASCII lowercase</a>.
 
   <li>If <var title="">value</var> is not "address", "div", "h1", "h2", "h3", "h4",
   "h5", "h6", "p", or "pre", raise a <code class=external data-anolis-spec=domcore title=dom-DOMException-SYNTAX_ERR><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-domexception-syntax_err>SYNTAX_ERR</a></code> exception.
@@ -5575,7 +5570,7 @@ writing means what Firefox supports plus div.
   <li>If <var title="">node</var> is an <a href=#editable>editable</a> <a href=#html-element>HTML element</a>
   with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> "address", "div", "h1", "h2", "h3", "h4", "h5", "h6", "p",
   or "pre", and <var title="">node</var> is not the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of a <a href=#prohibited-paragraph-child>prohibited
-  paragraph child</a>, return <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a>, <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#converted-to-lowercase>converted to lowercase</a>.
+  paragraph child</a>, return <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a>, <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#converted-to-ascii-lowercase>converted to ASCII lowercase</a>.
   <!--
   Chrome 14 dev will report "div" for <div><ol><li>foo</ol></div> or such.
   Opera 11.11 reports "".  IE and Firefox didn't cooperate with testing.  Opera
@@ -6307,21 +6302,26 @@ http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
 
   <li>Copy all attributes of <var title="">container</var> to <var title="">new container</var>.
 
-  <p class=XXX>Copies id's.
+  <li>If <var title="">new container</var> has an <code class=external data-anolis-spec=html title="the id attribute"><a href=http://www.whatwg.org/html/#the-id-attribute>id</a></code> attribute, unset it.
 
   <li>Insert <var title="">new container</var> into the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of
   <var title="">container</var> immediately after <var title="">container</var>.
 
-  <li>Let <var title="">frag</var> be the result of calling <code class=external data-anolis-spec=domrange title=dom-Range-extractContents><a href=http://html5.org/specs/dom-range.html#dom-range-extractcontents>extractContents()</a></code> on <var title="">new line
-  range</var>.
+  <li>Let <var title="">contained nodes</var> be all <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in <var title="">new
+  line range</var>.
+
+  <li>Let <var title="">frag</var> be the result of calling <code class=external data-anolis-spec=domrange title=dom-Range-extractContents><a href=http://html5.org/specs/dom-range.html#dom-range-extractcontents>extractContents()</a></code> on
+  <var title="">new line range</var>.
 
   <p class=XXX>This blows up any ranges (other than the selection, which we
-  reset), duplicates id's, and other bad stuff.  May or may not be the best
-  solution.  The intermediate fragment is also probably black-box detectable by
-  DOM mutation events, but I like to pretend those don't exist.
+  reset), and maybe other bad stuff.  May or may not be the best solution.  The
+  intermediate fragment is also probably black-box detectable by DOM mutation
+  events, but I like to pretend those don't exist.
 
-  <li>Call <code class=external data-anolis-spec=domcore title=dom-Node-appendChild><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-appendchild>appendChild(<var title="">frag</var>)</a></code> on <var title="">new
-  container</var>.
+  <li>Unset the <code class=external data-anolis-spec=html title="the id attribute"><a href=http://www.whatwg.org/html/#the-id-attribute>id</a></code> attribute (if any) of each <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-descendant title=concept-tree-descendant>descendant</a> of
+  <var title="">frag</var> that is not in <var title="">contained nodes</var>.
+
+  <li>Call <code class=external data-anolis-spec=domcore title=dom-Node-appendChild><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-appendchild>appendChild(<var title="">frag</var>)</a></code> on <var title="">new container</var>.
 
   <li>If <var title="">container</var> has no <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, call <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("br")</a></code>
   on the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>, and append the result as the last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of

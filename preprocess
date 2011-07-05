@@ -10,8 +10,8 @@ replace = {
     'a': '<code data-anolis-spec=html title="the a element">a</code>',
     'ancestor': '<span data-anolis-spec=domcore title=concept-tree-ancestor>ancestor</span>',
     'ancestorcontainer': '<span data-anolis-spec=domrange title="ancestor container">ancestor container</span>',
-    'attrlocalname': '<span data-anolis-spec=domcore title=concept-attr-local-name>local name</span>',
-    'attrvalue': '<span data-anolis-spec=domcore title=concept-attr-value>value</span>',
+    'attrlocalname': '<span data-anolis-spec=domcore title=concept-attribute-local-name>local name</span>',
+    'attrvalue': '<span data-anolis-spec=domcore title=concept-attribute-value>value</span>',
     'b': '<code data-anolis-spec=html title="the b element">b</code>',
     'blockquote': '<code data-anolis-spec=html title="the blockquote element">blockquote</code>',
     'br': '<code data-anolis-spec=html title="the br element">br</code>',
@@ -43,6 +43,7 @@ replace = {
     'em': '<code data-anolis-spec=html title="the em element">em</code>',
     'endnode': '<span data-anolis-spec=domrange title=concept-range-end>end</span> <span data-anolis-spec=domrange title=concept-boundary-point-node>node</span>',
     'endoffset': '<span data-anolis-spec=domrange title=concept-range-end>end</span> <span data-anolis-spec=domrange title=concept-boundary-point-offset>offset</span>',
+    'extractcontents': '<code data-anolis-spec=domrange title=dom-Range-extractContents>extractContents()</code>',
     'firstchild': '<code data-anolis-spec=domcore title=dom-Node-firstChild>firstChild</code>',
     'followingsibling': '<span data-anolis-spec=domcore title="concept-tree-following-sibling">following sibling</span>',
     'font': '<code data-anolis-spec=html title=font>font</code>',
@@ -55,6 +56,7 @@ replace = {
     'hr': '<code data-anolis-spec=html title="the hr element">hr</code>',
     'href': '<code data-anolis-spec=html title=attr-hyperlink-href>href</code>',
     'i': '<code data-anolis-spec=html title="the i element">i</code>',
+    'id': '<code data-anolis-spec=html title="the id attribute">id</code>',
     'img': '<code data-anolis-spec=html title="the img element">img</code>',
     'index': '<span data-anolis-spec=domrange title=concept-indexof>index</span>',
     'lastchild': '<code data-anolis-spec=domcore title=dom-Node-lastChild>lastChild</code>',
@@ -124,6 +126,7 @@ for key in replace:
     s = s.replace("[[" + key.capitalize() + "]]", capreplace)
 
 fnreplace = {
+    'appendchild': '<code data-anolis-spec=domcore title=dom-Node-appendChild>appendChild(\\1)</code>',
     'createelement': '<code data-anolis-spec=domcore title=dom-Document-createElement>createElement(\\1)</code>',
     'deletedata': '<code data-anolis-spec=domcore title=dom-CharacterData-deleteData>deleteData(\\1)</code>',
     'extend': '<code data-anolis-spec=domrange title=dom-Selection-extend>extend(\\1)</code>',
@@ -139,7 +142,7 @@ for key in fnreplace:
     s = re.sub(r"\[\[" + key + "\|([^]]*)\]\]", fnreplace[key], s)
 
 if "[[" in s:
-    raise Exception("Something mistyped?  " + s[s.find("[["):s.rfind("]]") + 2])
+    raise Exception("Something mistyped?  " + s[s.find("[["):s.find("]]") + 2])
 
 s = s.replace("<var>", "<var title>")
 

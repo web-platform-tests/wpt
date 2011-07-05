@@ -920,12 +920,7 @@ inline descendants in a clone of the former parent.
     data-anolis-spec=domcore title=dom-Node-cloneNode>cloneNode(false)</code>
     on <var>original parent</var>.
 
-    <p class=XXX>This will duplicate id's, as well as other bad things.  Do we
-    care?  We don't want to not copy attributes at all, because that wouldn't
-    copy style attributes, and Firefox in CSS mode will actually add style
-    attributes to any elements it feels like.  If we do exclude id's, even
-    though they'd only occur if someone manually added them, do we want to
-    exclude other things like itemid or accesskey or . . .
+    <li>If <var>original parent</var> has an [[id]] attribute, unset it.
 
     <li>Insert <var>cloned parent</var> into the [[parent]] of <var>original
     parent</var> immediately before <var>original parent</var>.
@@ -5333,7 +5328,7 @@ sense for <address>/<h*>/<pre>, but other browsers don't do it.
   -->
 
   <li>Let <var>value</var> be <span data-anolis-spec=domcore>converted to
-  lowercase</span>.
+  ASCII lowercase</span>.
 
   <li>If <var>value</var> is not "address", "div", "h1", "h2", "h3", "h4",
   "h5", "h6", "p", or "pre", raise a [[SYNTAX_ERR]] exception.
@@ -5581,7 +5576,7 @@ writing means what Firefox supports plus div.
   with [[localname]] "address", "div", "h1", "h2", "h3", "h4", "h5", "h6", "p",
   or "pre", and <var>node</var> is not the [[ancestor]] of a <span>prohibited
   paragraph child</span>, return <var>node</var>'s [[localname]], <span
-  data-anolis-spec=domcore>converted to lowercase</span>.
+  data-anolis-spec=domcore>converted to ASCII lowercase</span>.
   <!--
   Chrome 14 dev will report "div" for <div><ol><li>foo</ol></div> or such.
   Opera 11.11 reports "".  IE and Firefox didn't cooperate with testing.  Opera
@@ -6325,24 +6320,26 @@ http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
 
   <li>Copy all attributes of <var>container</var> to <var>new container</var>.
 
-  <p class=XXX>Copies id's.
+  <li>If <var>new container</var> has an [[id]] attribute, unset it.
 
   <li>Insert <var>new container</var> into the [[parent]] of
   <var>container</var> immediately after <var>container</var>.
 
-  <li>Let <var>frag</var> be the result of calling <code
-  data-anolis-spec=domrange
-  title=dom-Range-extractContents>extractContents()</code> on <var>new line
-  range</var>.
+  <li>Let <var>contained nodes</var> be all [[nodes]] [[contained]] in <var>new
+  line range</var>.
+
+  <li>Let <var>frag</var> be the result of calling [[extractcontents]] on
+  <var>new line range</var>.
 
   <p class=XXX>This blows up any ranges (other than the selection, which we
-  reset), duplicates id's, and other bad stuff.  May or may not be the best
-  solution.  The intermediate fragment is also probably black-box detectable by
-  DOM mutation events, but I like to pretend those don't exist.
+  reset), and maybe other bad stuff.  May or may not be the best solution.  The
+  intermediate fragment is also probably black-box detectable by DOM mutation
+  events, but I like to pretend those don't exist.
 
-  <li>Call <code data-anolis-spec=domcore
-  title=dom-Node-appendChild>appendChild(<var>frag</var>)</code> on <var>new
-  container</var>.
+  <li>Unset the [[id]] attribute (if any) of each [[element]] [[descendant]] of
+  <var>frag</var> that is not in <var>contained nodes</var>.
+
+  <li>Call [[appendchild|<var>frag</var>]] on <var>new container</var>.
 
   <li>If <var>container</var> has no [[children]], call [[createelement|"br"]]
   on the [[contextobject]], and append the result as the last [[child]] of

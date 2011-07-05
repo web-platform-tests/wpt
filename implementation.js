@@ -1203,6 +1203,9 @@ function splitParent(nodeList) {
 		// original parent."
 		var clonedParent = originalParent.cloneNode(false);
 
+		// "If original parent has an id attribute, unset it."
+		originalParent.removeAttribute("id");
+
 		// "Insert cloned parent into the parent of original parent immediately
 		// before original parent."
 		originalParent.parentNode.insertBefore(clonedParent, originalParent);
@@ -5448,7 +5451,7 @@ commands.formatblock = {
 			value = value.slice(1, -1);
 		}
 
-		// "Let value be converted to lowercase."
+		// "Let value be converted to ASCII lowercase."
 		value = value.toLowerCase();
 
 		// "If value is not "address", "div", "h1", "h2", "h3", "h4", "h5",
@@ -5675,7 +5678,7 @@ commands.formatblock = {
 		// "If node is an editable HTML element with local name "address",
 		// "div", "h1", "h2", "h3", "h4", "h5", "h6", "p", or "pre", and node
 		// is not the ancestor of a prohibited paragraph child, return node's
-		// local name, converted to lowercase."
+		// local name, converted to ASCII lowercase."
 		if (isEditable(node)
 		&& isHtmlElement(node, ["address", "div", "h1", "h2", "h3", "h4", "h5", "h6", "p", "pre"])
 		&& !getDescendants(node).some(isProhibitedParagraphChild)) {
@@ -6386,13 +6389,29 @@ commands.insertparagraph = {
 			newContainer.setAttributeNS(container.attributes[i].namespaceURI, container.attributes[i].name, container.attributes[i].value);
 		}
 
+		// "If new container has an id attribute, unset it."
+		newContainer.removeAttribute("id");
+
 		// "Insert new container into the parent of container immediately after
 		// container."
 		container.parentNode.insertBefore(newContainer, container.nextSibling);
 
+		// "Let contained nodes be all nodes contained in new line range."
+		var containedNodes = getAllContainedNodes(newLineRange);
+
 		// "Let frag be the result of calling extractContents() on new line
 		// range."
 		var frag = newLineRange.extractContents();
+
+		// "Unset the id attribute (if any) of each Element descendant of frag
+		// that is not in contained nodes."
+		var descendants = getDescendants(frag);
+		for (var i = 0; i < descendants.length; i++) {
+			if (descendants[i].nodeType == Node.ELEMENT_NODE
+			&& containedNodes.indexOf(descendants[i]) == -1) {
+				descendants[i].removeAttribute("id");
+			}
+		}
 
 		// "Call appendChild(frag) on new container."
 		newContainer.appendChild(frag);

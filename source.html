@@ -387,40 +387,35 @@ title=command>commands</span>.
 those listed in <a href=#miscellaneous-commands>Miscellaneous commands</a> are
 always <span>enabled</span>.  The other <span title=command>commands</span>
 defined here are <span>enabled</span> if the <span>active range</span> is not
-null, and either there is some [[node]] <span>effectively contained</span> in
-it that is an <span>editing host</span> or the [[descendant]] of an
-<span>editing host</span>, or its [[startnode]] or [[endnode]] is an
-<span>editing host</span> or the [[descendant]] of an <span>editing
-host</span>.
+null, and disabled otherwise.
 
 <!--
-Testing with bold and formatBlock:
+Testing with bold:
 
-IE9 seems to return false if there's no selection or it's entirely outside
-anything editable, but true if any part of the selection descends from anything
-editable, even if it's fully contained in something non-editable (provided it
-descends from something editable).
+IE10PP2 seems to return true if the active range's start node is editable,
+false otherwise.
 
 Firefox 6.0a2 seems to always return true if there's anything editable on the
 page, and throw otherwise.
 
-Chrome 14 dev seems to do something like return true if every node effectively
-contained in the selection is editable, false otherwise.
+Chrome 14 dev seems to behave the same as IE10PP2.
 
 Opera 11.11 seems to always return true if there's anything editable on the
 page, and false otherwise.
 
-Firefox and Opera behave more or less uselessly.  Chrome is not ideal because
-we want commands to be enabled if they'll have any effect at all, and basically
-all commands have an effect if there are some non-editable nodes effectively
-contained in the selection as I've specced it currently.  IE is conservative,
-in that it will return true in some cases even if running the command will have
-no effect, but it's pretty simple and it will only return false if there's no
-way the command will have an effect.
+Firefox and Opera behave more or less uselessly.  IE doesn't make much sense,
+in that whether a command is enabled seems meaningless: it will execute it on
+all nodes in the selection, editable or not.  Chrome's definition makes sense
+in that it will only run the command if it's enabled, but it doesn't make much
+sense to only have the command run if the start is editable.
 
-Thus I go with IE.  Note that at least createLink and unlink can have an effect
-if the entire selection is non-editable, if something descends from an editable
-<a>, so we want to remain enabled in that case.
+It's not clear to me what the point of this command is.  There's no way we're
+going to always return true if the command will do something and false if it
+won't.  I just stuck with a really conservative definition that happens to be
+convenient: if there's nothing selected, obviously nothing will work, and we
+want to bail out early in that case anyway because all the algorithms will talk
+about the active range.  If there are use-cases for it to be more precise, I
+could make it so.
 -->
 <!-- @} -->
 

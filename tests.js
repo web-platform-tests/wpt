@@ -108,9 +108,13 @@ var tests = {
 
 		'foo<span contenteditable=false>[bar]</span>baz',
 		'fo[o<span contenteditable=false>bar</span>b]az',
+		'foo<span contenteditable=false>ba[r</span>b]az',
+		'fo[o<span contenteditable=false>b]ar</span>baz',
 		'fo[<b>o</b><span contenteditable=false>bar</span><b>b</b>]az',
 		'<span contenteditable=false>foo<span contenteditable=true>[bar]</span>baz</span>',
 		'<span contenteditable=false>fo[o<span contenteditable=true>bar</span>b]az</span>',
+		'<span contenteditable=false>foo<span contenteditable=true>ba[r</span>b]az</span>',
+		'<span contenteditable=false>fo[o<span contenteditable=true>b]ar</span>baz</span>',
 		'<span contenteditable=false>fo[<b>o<span contenteditable=true>bar</span>b</b>]az</span>',
 
 		'<table><tbody><tr><td>foo<td>b[a]r<td>baz</table>',

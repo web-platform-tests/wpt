@@ -578,27 +578,12 @@ function myQueryCommandEnabled(command, range) {
 	// "If command is not supported, raise a NOT_SUPPORTED_ERR exception."
 	setupEditCommandMethod(command, "action", range);
 
-	// "Return true if command is enabled, false otherwise."
-	//
 	// "Among commands defined in this specification, those listed in
 	// Miscellaneous commands are always enabled. The other commands defined
-	// here are enabled if the active range is not null, and either there is
-	// some node effectively contained in it that is an editing host or the
-	// descendant of an editing host, or its start node or end node is an
-	// editing host or the descendant of an editing host."
-	if (["copy", "cut", "paste", "selectall", "stylewithcss", "usecss"].indexOf(command) != -1) {
-		return true;
-	}
-
-	return Boolean(getActiveRange()
-	&& (getAllEffectivelyContainedNodes(getActiveRange(), function(node) {
-		return isEditingHost(node)
-			|| getAncestors(node).some(isEditingHost);
-	}).length
-	|| isEditingHost(getActiveRange().startContainer)
-	|| getAncestors(getActiveRange().startContainer).some(isEditingHost)
-	|| isEditingHost(getActiveRange().endContainer)
-	|| getAncestors(getActiveRange().endContainer).some(isEditingHost)));
+	// here are enabled if the active range is not null, and disabled
+	// otherwise."
+	return ["copy", "cut", "paste", "selectall", "stylewithcss", "usecss"].indexOf(command) != -1
+		|| getActiveRange() !== null;
 }
 
 function myQueryCommandIndeterm(command, range) {

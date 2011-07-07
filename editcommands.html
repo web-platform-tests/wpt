@@ -117,9 +117,9 @@ have experience using this feature.
    <li><a href=#the-formatblock-command><span class=secno>8.10 </span>The <code title="">formatBlock</code> command</a></li>
    <li><a href=#the-forwarddelete-command><span class=secno>8.11 </span>The <code title="">forwardDelete</code> command</a></li>
    <li><a href=#the-indent-command><span class=secno>8.12 </span>The <code title="">indent</code> command</a></li>
-   <li><a href=#the-inserthtml-command><span class=secno>8.13 </span>The <code title="">insertHTML</code> command</a></li>
-   <li><a href=#the-insertimage-command><span class=secno>8.14 </span>The <code title="">insertImage</code> command</a></li>
-   <li><a href=#the-inserthorizontalrule-command><span class=secno>8.15 </span>The <code title="">insertHorizontalRule</code> command</a></li>
+   <li><a href=#the-inserthorizontalrule-command><span class=secno>8.13 </span>The <code title="">insertHorizontalRule</code> command</a></li>
+   <li><a href=#the-inserthtml-command><span class=secno>8.14 </span>The <code title="">insertHTML</code> command</a></li>
+   <li><a href=#the-insertimage-command><span class=secno>8.15 </span>The <code title="">insertImage</code> command</a></li>
    <li><a href=#the-insertlinebreak-command><span class=secno>8.16 </span>The <code title="">insertLineBreak</code> command</a></li>
    <li><a href=#the-insertorderedlist-command><span class=secno>8.17 </span>The <code title="">insertOrderedList</code> command</a></li>
    <li><a href=#the-insertparagraph-command><span class=secno>8.18 </span>The <code title="">insertParagraph</code> command</a></li>
@@ -5831,7 +5831,63 @@ browsers don't normally let you put the cursor in weird places like that.
 </ol>
 
 
-<h3 id=the-inserthtml-command><span class=secno>8.13 </span><dfn>The <code title="">insertHTML</code> command</dfn></h3>
+<h3 id=the-inserthorizontalrule-command><span class=secno>8.13 </span><dfn>The <code title="">insertHorizontalRule</code> command</dfn></h3>
+
+<p><a href=#action>Action</a>:
+
+<!-- You'd think interop here would be simple, right?  Nope: we have three
+different behaviors across four browsers.  Opera 11.00 is the only one that
+acts more or less like the spec.  IE9 and Chrome 12 dev treat the value as an
+id, which is weird and probably useless, so I don't do it.  Firefox 4.0
+produces <hr size=2 width=100%> instead of <hr>, which is also weird and almost
+definitely useless, so I don't do it.  Then you have the varying behavior in
+splitting up parents to ensure validity . . . -->
+<ol>
+  <li>Let <var title="">range</var> be the <a href=#active-range>active range</a>.
+
+  <li>While <var title="">range</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a> is 0 and its <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>'s
+  <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is not null, set <var title="">range</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> to (<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>
+  of <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>, <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> of <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>).
+
+  <li>While <var title="">range</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a> is the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> of its
+  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>, and its <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is not null, set
+  <var title="">range</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> to (<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>, 1 + <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a>
+  of <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>).
+
+  <li>Run <code class=external data-anolis-spec=domrange title=dom-Range-deleteContents><a href=http://html5.org/specs/dom-range.html#dom-range-deletecontents>deleteContents()</a></code> on <var title="">range</var>.
+
+  <p class=XXX>This might blow up non-contenteditable stuff.
+
+  <li>If the <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> is neither
+  <a href=#editable>editable</a> nor an <a href=#editing-host>editing host</a>, abort these steps.
+
+  <li>Let <var title="">hr</var> be the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("hr")</a></code> on the
+  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>.
+
+  <li>Run <code class=external data-anolis-spec=domrange title=dom-Range-insertNode><a href=http://html5.org/specs/dom-range.html#dom-range-insertnode>insertNode(<var title="">hr</var>)</a></code> on
+  <var title="">range</var>.
+
+  <li><a href=#fix-disallowed-ancestors>Fix disallowed ancestors</a> of <var title="">hr</var>.
+  <!--
+  IE9 and Chrome 13 dev seem to never break up any ancestors, which can lead to
+  unserializable DOMs like <hr> inside <p>.  Opera 11.11 seems to always break
+  up parents going all the way up to the contenteditable root, even ones like
+  <div> that can contain <hr>.  Firefox 5.0a2 acts the most sensibly: it only
+  breaks up things like <p> or <b> that shouldn't contain <hr>.  The spec goes
+  with Firefox here (although the list of what to break up isn't precisely
+  identical).
+  -->
+
+  <li>Let <var title="">selection</var> be the result of running <code class=external data-anolis-spec=domrange title=dom-Document-getSelection><a href=http://html5.org/specs/dom-range.html#dom-document-getselection>getSelection()</a></code> on the
+  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>.
+
+  <li>Run <code class=external data-anolis-spec=domrange title=dom-Selection-collapse><a href=http://html5.org/specs/dom-range.html#dom-selection-collapse>collapse()</a></code> on <var title="">selection</var>, with
+  first argument equal to the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of <var title="">hr</var> and the second
+  argument equal to one plus the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> of <var title="">hr</var>.
+</ol>
+
+
+<h3 id=the-inserthtml-command><span class=secno>8.14 </span><dfn>The <code title="">insertHTML</code> command</dfn></h3>
 
 <!--
 Not supported by IE9.  Handling of disallowed children is interesting:
@@ -5914,7 +5970,7 @@ round-tripping through a character encoding change impossible.
 </ol>
 
 
-<h3 id=the-insertimage-command><span class=secno>8.14 </span><dfn>The <code title="">insertImage</code> command</dfn></h3>
+<h3 id=the-insertimage-command><span class=secno>8.15 </span><dfn>The <code title="">insertImage</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>:
 
@@ -5960,62 +6016,6 @@ round-tripping through a character encoding change impossible.
   <li>Run <code class=external data-anolis-spec=domrange title=dom-Selection-collapse><a href=http://html5.org/specs/dom-range.html#dom-selection-collapse>collapse()</a></code> on <var title="">selection</var>, with first argument equal
   to the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of <var title="">img</var> and the second argument equal to one plus
   the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> of <var title="">img</var>.
-</ol>
-
-
-<h3 id=the-inserthorizontalrule-command><span class=secno>8.15 </span><dfn>The <code title="">insertHorizontalRule</code> command</dfn></h3>
-
-<p><a href=#action>Action</a>:
-
-<!-- You'd think interop here would be simple, right?  Nope: we have three
-different behaviors across four browsers.  Opera 11.00 is the only one that
-acts more or less like the spec.  IE9 and Chrome 12 dev treat the value as an
-id, which is weird and probably useless, so I don't do it.  Firefox 4.0
-produces <hr size=2 width=100%> instead of <hr>, which is also weird and almost
-definitely useless, so I don't do it.  Then you have the varying behavior in
-splitting up parents to ensure validity . . . -->
-<ol>
-  <li>Let <var title="">range</var> be the <a href=#active-range>active range</a>.
-
-  <li>While <var title="">range</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a> is 0 and its <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>'s
-  <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is not null, set <var title="">range</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> to (<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>
-  of <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>, <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> of <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>).
-
-  <li>While <var title="">range</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a> is the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> of its
-  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>, and its <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is not null, set
-  <var title="">range</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> to (<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>, 1 + <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a>
-  of <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>).
-
-  <li>Run <code class=external data-anolis-spec=domrange title=dom-Range-deleteContents><a href=http://html5.org/specs/dom-range.html#dom-range-deletecontents>deleteContents()</a></code> on <var title="">range</var>.
-
-  <p class=XXX>This might blow up non-contenteditable stuff.
-
-  <li>If the <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> is neither
-  <a href=#editable>editable</a> nor an <a href=#editing-host>editing host</a>, abort these steps.
-
-  <li>Let <var title="">hr</var> be the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("hr")</a></code> on the
-  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>.
-
-  <li>Run <code class=external data-anolis-spec=domrange title=dom-Range-insertNode><a href=http://html5.org/specs/dom-range.html#dom-range-insertnode>insertNode(<var title="">hr</var>)</a></code> on
-  <var title="">range</var>.
-
-  <li><a href=#fix-disallowed-ancestors>Fix disallowed ancestors</a> of <var title="">hr</var>.
-  <!--
-  IE9 and Chrome 13 dev seem to never break up any ancestors, which can lead to
-  unserializable DOMs like <hr> inside <p>.  Opera 11.11 seems to always break
-  up parents going all the way up to the contenteditable root, even ones like
-  <div> that can contain <hr>.  Firefox 5.0a2 acts the most sensibly: it only
-  breaks up things like <p> or <b> that shouldn't contain <hr>.  The spec goes
-  with Firefox here (although the list of what to break up isn't precisely
-  identical).
-  -->
-
-  <li>Let <var title="">selection</var> be the result of running <code class=external data-anolis-spec=domrange title=dom-Document-getSelection><a href=http://html5.org/specs/dom-range.html#dom-document-getselection>getSelection()</a></code> on the
-  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>.
-
-  <li>Run <code class=external data-anolis-spec=domrange title=dom-Selection-collapse><a href=http://html5.org/specs/dom-range.html#dom-selection-collapse>collapse()</a></code> on <var title="">selection</var>, with
-  first argument equal to the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of <var title="">hr</var> and the second
-  argument equal to one plus the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> of <var title="">hr</var>.
 </ol>
 
 

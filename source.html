@@ -5838,6 +5838,69 @@ browsers don't normally let you put the cursor in weird places like that.
 </ol>
 <!-- @} -->
 
+<h3><dfn>The <code title>insertHorizontalRule</code> command</dfn></h3>
+<!-- @{ -->
+<p><span>Action</span>:
+
+<!-- You'd think interop here would be simple, right?  Nope: we have three
+different behaviors across four browsers.  Opera 11.00 is the only one that
+acts more or less like the spec.  IE9 and Chrome 12 dev treat the value as an
+id, which is weird and probably useless, so I don't do it.  Firefox 4.0
+produces <hr size=2 width=100%> instead of <hr>, which is also weird and almost
+definitely useless, so I don't do it.  Then you have the varying behavior in
+splitting up parents to ensure validity . . . -->
+<ol>
+  <li>Let <var>range</var> be the <span>active range</span>.
+
+  <li>While <var>range</var>'s [[startoffset]] is 0 and its [[startnode]]'s
+  [[parent]] is not null, set <var>range</var>'s [[rangestart]] to ([[parent]]
+  of [[startnode]], [[index]] of [[startnode]]).
+
+  <li>While <var>range</var>'s [[endoffset]] is the [[nodelength]] of its
+  [[endnode]], and its [[endnode]]'s [[parent]] is not null, set
+  <var>range</var>'s [[rangeend]] to ([[parent]] of [[endnode]], 1 + [[index]]
+  of [[startnode]]).
+
+  <li>Run <code data-anolis-spec=domrange
+  title=dom-Range-deleteContents>deleteContents()</code> on <var>range</var>.
+
+  <p class=XXX>This might blow up non-contenteditable stuff.
+
+  <li>If the <span>active range</span>'s [[startnode]] is neither
+  <span>editable</span> nor an <span>editing host</span>, abort these steps.
+
+  <li>Let <var>hr</var> be the result of calling <code
+  data-anolis-spec=domcore
+  title=dom-Document-createElement>createElement("hr")</code> on the
+  [[contextobject]].
+
+  <li>Run <code data-anolis-spec=domrange
+  title=dom-Range-insertNode>insertNode(<var>hr</var>)</code> on
+  <var>range</var>.
+
+  <li><span>Fix disallowed ancestors</span> of <var>hr</var>.
+  <!--
+  IE9 and Chrome 13 dev seem to never break up any ancestors, which can lead to
+  unserializable DOMs like <hr> inside <p>.  Opera 11.11 seems to always break
+  up parents going all the way up to the contenteditable root, even ones like
+  <div> that can contain <hr>.  Firefox 5.0a2 acts the most sensibly: it only
+  breaks up things like <p> or <b> that shouldn't contain <hr>.  The spec goes
+  with Firefox here (although the list of what to break up isn't precisely
+  identical).
+  -->
+
+  <li>Let <var>selection</var> be the result of running <code
+  data-anolis-spec=domrange
+  title=dom-Document-getSelection>getSelection()</code> on the
+  [[contextobject]].
+
+  <li>Run <code data-anolis-spec=domrange
+  title=dom-Selection-collapse>collapse()</code> on <var>selection</var>, with
+  first argument equal to the [[parent]] of <var>hr</var> and the second
+  argument equal to one plus the [[index]] of <var>hr</var>.
+</ol>
+<!-- @} -->
+
 <h3><dfn>The <code title>insertHTML</code> command</dfn></h3>
 <!-- @{ -->
 <!--
@@ -5968,69 +6031,6 @@ round-tripping through a character encoding change impossible.
   <li>Run [[selcollapse|]] on <var>selection</var>, with first argument equal
   to the [[parent]] of <var>img</var> and the second argument equal to one plus
   the [[index]] of <var>img</var>.
-</ol>
-<!-- @} -->
-
-<h3><dfn>The <code title>insertHorizontalRule</code> command</dfn></h3>
-<!-- @{ -->
-<p><span>Action</span>:
-
-<!-- You'd think interop here would be simple, right?  Nope: we have three
-different behaviors across four browsers.  Opera 11.00 is the only one that
-acts more or less like the spec.  IE9 and Chrome 12 dev treat the value as an
-id, which is weird and probably useless, so I don't do it.  Firefox 4.0
-produces <hr size=2 width=100%> instead of <hr>, which is also weird and almost
-definitely useless, so I don't do it.  Then you have the varying behavior in
-splitting up parents to ensure validity . . . -->
-<ol>
-  <li>Let <var>range</var> be the <span>active range</span>.
-
-  <li>While <var>range</var>'s [[startoffset]] is 0 and its [[startnode]]'s
-  [[parent]] is not null, set <var>range</var>'s [[rangestart]] to ([[parent]]
-  of [[startnode]], [[index]] of [[startnode]]).
-
-  <li>While <var>range</var>'s [[endoffset]] is the [[nodelength]] of its
-  [[endnode]], and its [[endnode]]'s [[parent]] is not null, set
-  <var>range</var>'s [[rangeend]] to ([[parent]] of [[endnode]], 1 + [[index]]
-  of [[startnode]]).
-
-  <li>Run <code data-anolis-spec=domrange
-  title=dom-Range-deleteContents>deleteContents()</code> on <var>range</var>.
-
-  <p class=XXX>This might blow up non-contenteditable stuff.
-
-  <li>If the <span>active range</span>'s [[startnode]] is neither
-  <span>editable</span> nor an <span>editing host</span>, abort these steps.
-
-  <li>Let <var>hr</var> be the result of calling <code
-  data-anolis-spec=domcore
-  title=dom-Document-createElement>createElement("hr")</code> on the
-  [[contextobject]].
-
-  <li>Run <code data-anolis-spec=domrange
-  title=dom-Range-insertNode>insertNode(<var>hr</var>)</code> on
-  <var>range</var>.
-
-  <li><span>Fix disallowed ancestors</span> of <var>hr</var>.
-  <!--
-  IE9 and Chrome 13 dev seem to never break up any ancestors, which can lead to
-  unserializable DOMs like <hr> inside <p>.  Opera 11.11 seems to always break
-  up parents going all the way up to the contenteditable root, even ones like
-  <div> that can contain <hr>.  Firefox 5.0a2 acts the most sensibly: it only
-  breaks up things like <p> or <b> that shouldn't contain <hr>.  The spec goes
-  with Firefox here (although the list of what to break up isn't precisely
-  identical).
-  -->
-
-  <li>Let <var>selection</var> be the result of running <code
-  data-anolis-spec=domrange
-  title=dom-Document-getSelection>getSelection()</code> on the
-  [[contextobject]].
-
-  <li>Run <code data-anolis-spec=domrange
-  title=dom-Selection-collapse>collapse()</code> on <var>selection</var>, with
-  first argument equal to the [[parent]] of <var>hr</var> and the second
-  argument equal to one plus the [[index]] of <var>hr</var>.
 </ol>
 <!-- @} -->
 

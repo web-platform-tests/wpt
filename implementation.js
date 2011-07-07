@@ -544,7 +544,8 @@ function setupEditCommandMethod(command, prop, range) {
 	// exception."
 	// "If command has no state, raise an INVALID_ACCESS_ERR exception."
 	// "If command has no value, raise an INVALID_ACCESS_ERR exception."
-	if (!(prop in commands[command])) {
+	if (prop != "enabled"
+	&& !(prop in commands[command])) {
 		throw "INVALID_ACCESS_ERR";
 	}
 }
@@ -594,9 +595,7 @@ function myQueryCommandEnabled(command, range) {
 	command = command.toLowerCase();
 
 	// "If command is not supported, raise a NOT_SUPPORTED_ERR exception."
-	if (!(command in commands)) {
-		throw "NOT_SUPPORTED_ERR";
-	}
+	setupEditCommandMethod(command, "action", range);
 
 	// "Return true if command is enabled, false otherwise."
 	//
@@ -610,7 +609,7 @@ function myQueryCommandEnabled(command, range) {
 		return true;
 	}
 
-	return getActiveRange()
+	return Boolean(getActiveRange()
 	&& (getAllEffectivelyContainedNodes(getActiveRange(), function(node) {
 		return isEditingHost(node)
 			|| getAncestors(node).some(isEditingHost);
@@ -618,7 +617,7 @@ function myQueryCommandEnabled(command, range) {
 	|| isEditingHost(getActiveRange().startContainer)
 	|| getAncestors(getActiveRange().startContainer).some(isEditingHost)
 	|| isEditingHost(getActiveRange().endContainer)
-	|| getAncestors(getActiveRange().endContainer).some(isEditingHost));
+	|| getAncestors(getActiveRange().endContainer).some(isEditingHost)));
 }
 
 function myQueryCommandIndeterm(command, range) {

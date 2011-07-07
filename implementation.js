@@ -263,29 +263,10 @@ function getRealTextAlign(element) {
 //@{
 
 function getNodeIndex(node) {
-	if (!node.parentNode) {
-		// No preceding siblings, so . . .
-		return 0;
-	}
-
 	var ret = 0;
-	// These are no-ops to avoid a completely ridiculous bug in IE where
-	// sometimes a node is not actually equal to any of its parents' children.
-	// Somehow this makes it go away.  Sigh.
-	if (node.nextSibling) {
-		node = node.nextSibling.previousSibling;
-	} else if (node.previousSibling) {
-		node = node.previousSibling.nextSibling;
-	} else {
-		node = node.parentNode.firstChild;
-	}
-	while (ret < node.parentNode.childNodes.length && node != node.parentNode.childNodes[ret]) {
+	while (node.previousSibling) {
 		ret++;
-	}
-	if (ret >= node.parentNode.childNodes.length) {
-		// This actually happens in IE sometimes (although hopefully not with
-		// my workaround in place).
-		throw "node is not equal to any of its parents' children";
+		node = node.previousSibling;
 	}
 	return ret;
 }

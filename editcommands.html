@@ -38,7 +38,7 @@
 <body class=draft>
 <div class=head id=head>
 <h1>HTML Editing Commands</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-5-july-2011>Work in Progress &mdash; Last Update 5 July 2011</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-7-july-2011>Work in Progress &mdash; Last Update 7 July 2011</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;ayg+spec@aryeh.name&gt;
@@ -449,10 +449,12 @@ described in the definitions of the various methods that invoke <a href=#command
 those listed in <a href=#miscellaneous-commands>Miscellaneous commands</a> are
 always <a href=#enabled>enabled</a>.  The other <a href=#command title=command>commands</a>
 defined here are <a href=#enabled>enabled</a> if the <a href=#active-range>active range</a> is not
-null, and are not <a href=#enabled>enabled</a> if it is.
+null, and either there is some <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> <a href=#effectively-contained>effectively contained</a> in
+it that is an <a href=#editing-host>editing host</a> or the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-descendant title=concept-tree-descendant>descendant</a> of an
+<a href=#editing-host>editing host</a>, or its <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> or <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> is an
+<a href=#editing-host>editing host</a> or the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-descendant title=concept-tree-descendant>descendant</a> of an <a href=#editing-host>editing
+host</a>.
 
-<p class=XXX>Not clear that this definition is right.  It doesn't match any
-browser.  Needs more testing and thought.
 <!--
 Testing with bold and formatBlock:
 
@@ -462,18 +464,25 @@ editable, even if it's fully contained in something non-editable (provided it
 descends from something editable).
 
 Firefox 6.0a2 seems to always return true if there's anything editable on the
-page, and throw otherwise.  Opera 11.11 seems to always return true if there's
-anything editable on the page, and false otherwise.  Neither behavior makes
-much sense.
+page, and throw otherwise.
 
 Chrome 14 dev seems to do something like return true if every node effectively
-contained in the selection is editable, false otherwise.  This makes the most
-sense, but it's too narrow for us, because we take some action in many cases
-even if there's some non-editable stuff around.
+contained in the selection is editable, false otherwise.
 
-What we really want this to do is return true if we'd do something when you run
-the command, false otherwise.  But that's impractically complicated for little
-benefit.  Some approximation closer to IE or Chrome is likely in order.
+Opera 11.11 seems to always return true if there's anything editable on the
+page, and false otherwise.
+
+Firefox and Opera behave more or less uselessly.  Chrome is not ideal because
+we want commands to be enabled if they'll have any effect at all, and basically
+all commands have an effect if there are some non-editable nodes effectively
+contained in the selection as I've specced it currently.  IE is conservative,
+in that it will return true in some cases even if running the command will have
+no effect, but it's pretty simple and it will only return false if there's no
+way the command will have an effect.
+
+Thus I go with IE.  Note that at least createLink and unlink can have an effect
+if the entire selection is non-editable, if something descends from an editable
+<a>, so we want to remain enabled in that case.
 -->
 
 
@@ -1405,6 +1414,9 @@ id=foo> into <span id=foo> instead of <font id=foo>, but probably not worth it.
 <ol>
   <li>Let <var title="">command</var> be the current <a href=#command>command</a>.
 
+  <li>If <var title="">element</var> is not <a href=#editable>editable</a>, return the empty
+  list.
+
   <li>If <var title="">element</var>'s <a href=#specified-value>specified value</a> for
   <var title="">command</var> is null, return the empty list.  <!-- We want to abort
   early so that we don't try unsetting background-color on a non-inline
@@ -2132,9 +2144,9 @@ don't either. -->
   <li><a href=#decompose>Decompose</a> the <a href=#active-range>active range</a>, and let <var title="">node
   list</var> be the result.
 
-  <li>For each <code class=external data-anolis-spec=html title="the a element"><a href=http://www.whatwg.org/html/#the-a-element>a</a></code> element that has an <code class=external data-anolis-spec=html title=attr-hyperlink-href><a href=http://www.whatwg.org/html/#attr-hyperlink-href>href</a></code> attribute and is an
-  <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of some <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> in <var title="">node list</var>, set that element's
-  <code class=external data-anolis-spec=html title=attr-hyperlink-href><a href=http://www.whatwg.org/html/#attr-hyperlink-href>href</a></code> attribute to <var title="">value</var>.
+  <li>For each <a href=#editable>editable</a> <code class=external data-anolis-spec=html title="the a element"><a href=http://www.whatwg.org/html/#the-a-element>a</a></code> element that has an <code class=external data-anolis-spec=html title=attr-hyperlink-href><a href=http://www.whatwg.org/html/#attr-hyperlink-href>href</a></code>
+  attribute and is an <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of some <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> in <var title="">node list</var>,
+  set that element's <code class=external data-anolis-spec=html title=attr-hyperlink-href><a href=http://www.whatwg.org/html/#attr-hyperlink-href>href</a></code> attribute to <var title="">value</var>.
   <!-- There are three approaches here.  For instance, if you ask browsers to
   create a link to "http://example.org" on the "b" here:
 
@@ -2649,13 +2661,14 @@ for elements like <code> or <tt> or <mark> that we don't normally create.
   list</var> be the result.
 
   <li>For each <var title="">node</var> in <var title="">node list</var>, unset the <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code>
-  attribute of <var title="">node</var> (if it's an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>) and then all its
+  attribute of <var title="">node</var> if it's an <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>,
+  then unset the <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code> attribute of all its <a href=#editable>editable</a>
   <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-descendant title=concept-tree-descendant>descendants</a>.
 
-  <li>Let <var title="">elements to remove</var> be a list of all <a href=#html-element title="HTML
-  element">HTML elements</a> that are the same as or <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-descendant title=concept-tree-descendant>descendants</a> of some
-  member of <var title="">node list</var> and have non-null <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parents</a> and satisfy
-  (insert conditions here).
+  <li>Let <var title="">elements to remove</var> be a list of all <a href=#editable>editable</a>
+  <a href=#html-element title="HTML element">HTML elements</a> that are the same as or
+  <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-descendant title=concept-tree-descendant>descendants</a> of some member of <var title="">node list</var> and have non-null
+  <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parents</a> and satisfy (insert conditions here).
 
   <p class=XXX>The conditions are not so simple to define, because we want to
   include non-conforming elements, which HTML doesn't give content models.  If
@@ -5857,6 +5870,9 @@ round-tripping through a character encoding change impossible.
   <!-- Chrome 14 dev and Opera 11.11 do this even if the value is empty.
   Firefox 5.0a2 throws an exception. -->
 
+  <li>If the <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> is neither
+  <a href=#editable>editable</a> nor an <a href=#editing-host>editing host</a>, abort these steps.
+
   <li>Let <var title="">frag</var> be the result of calling <code class=external data-anolis-spec=domps title=dom-Range-createContextualFragment><a href=http://html5.org/specs/dom-parsing.html#dom-range-createcontextualfragment>createContextualFragment(<var title="">value</var>)</a></code>
   on the <a href=#active-range>active range</a>.
 
@@ -5916,6 +5932,9 @@ round-tripping through a character encoding change impossible.
 
   <li><a href=#delete-the-contents>Delete the contents</a> of <var title="">range</var>.
 
+  <li>If the <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> is neither
+  <a href=#editable>editable</a> nor an <a href=#editing-host>editing host</a>, abort these steps.
+
   <li>If <var title="">range</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> is a <a href=#prohibited-paragraph-child>prohibited paragraph
   child</a> whose sole <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> is a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code>, and its <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a> is 0,
   remove its <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> from it.
@@ -5971,6 +5990,9 @@ splitting up parents to ensure validity . . . -->
 
   <p class=XXX>This might blow up non-contenteditable stuff.
 
+  <li>If the <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> is neither
+  <a href=#editable>editable</a> nor an <a href=#editing-host>editing host</a>, abort these steps.
+
   <li>Let <var title="">hr</var> be the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("hr")</a></code> on the
   <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>.
 
@@ -6019,6 +6041,9 @@ Opera 11.11 isn't heedful of <xmp>, and treats <pre> somewhat oddly.
 
 <ol>
   <li><a href=#delete-the-contents>Delete the contents</a> of the <a href=#active-range>active range</a>.
+
+  <li>If the <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> is neither
+  <a href=#editable>editable</a> nor an <a href=#editing-host>editing host</a>, abort these steps.
 
   <li>If the <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> is an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>, and
   "br" is not an <a href=#allowed-child>allowed child</a> of it, abort these steps.
@@ -6106,6 +6131,9 @@ http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
 
 <ol>
   <li><a href=#delete-the-contents>Delete the contents</a> of the <a href=#active-range>active range</a>.
+
+  <li>If the <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> is neither
+  <a href=#editable>editable</a> nor an <a href=#editing-host>editing host</a>, abort these steps.
 
   <li>Let <var title="">range</var> be the <a href=#active-range>active range</a>.
 
@@ -6426,15 +6454,18 @@ unnecessarily.
 This is still a huge headache, though.
 -->
 
+<p class=XXX>This doesn't work well if the input contains things that aren't
+supposed to appear in HTML, like carriage returns or nulls.  Nor is it going to
+work well if the current cursor position is in between two halves of a non-BMP
+character.  This will result in unserializability.  The current spec disregards
+this, as Chrome 14 dev does.
+
 <ol>
   <li><a href=#delete-the-contents>Delete the contents</a> of the <a href=#active-range>active range</a>.
   <!-- Chrome 14 dev does this even if passed the empty string. -->
 
-  <p class=XXX>This doesn't work well if the input contains things that aren't
-  supposed to appear in HTML, like carriage returns or nulls.  Nor is it going
-  to work well if the current cursor position is in between two halves of a
-  non-BMP character.  This will result in unserializability.  The current spec
-  disregards this, as Chrome 14 dev does.
+  <li>If the <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> is neither
+  <a href=#editable>editable</a> nor an <a href=#editing-host>editing host</a>, abort these steps.
 
   <li>If <var title="">value</var>'s <a href=http://es5.github.com/#x15.5.5.1>length</a> is greater than one:
 

@@ -602,9 +602,23 @@ function myQueryCommandEnabled(command, range) {
 	//
 	// "Among commands defined in this specification, those listed in
 	// Miscellaneous commands are always enabled. The other commands defined
-	// here are enabled if the active range is not null, and are not enabled if
-	// it is."
-	return getActiveRange() || ["copy", "cut", "paste", "selectall", "stylewithcss", "usecss"].indexOf(command) != -1;
+	// here are enabled if the active range is not null, and either there is
+	// some node effectively contained in it that is an editing host or the
+	// descendant of an editing host, or its start node or end node is an
+	// editing host or the descendant of an editing host."
+	if (["copy", "cut", "paste", "selectall", "stylewithcss", "usecss"].indexOf(command) != -1) {
+		return true;
+	}
+
+	return getActiveRange()
+	&& (getAllEffectivelyContainedNodes(getActiveRange(), function(node) {
+		return isEditingHost(node)
+			|| getAncestors(node).some(isEditingHost);
+	}).length
+	|| isEditingHost(getActiveRange().startContainer)
+	|| getAncestors(getActiveRange().startContainer).some(isEditingHost)
+	|| isEditingHost(getActiveRange().endContainer)
+	|| getAncestors(getActiveRange().endContainer).some(isEditingHost));
 }
 
 function myQueryCommandIndeterm(command, range) {
@@ -1941,6 +1955,11 @@ function decomposeRange(range) {
 //@{
 
 function clearValue(element, command) {
+	// "If element is not editable, return the empty list."
+	if (!isEditable(element)) {
+		return [];
+	}
+
 	// "If element's specified value for command is null, return the empty
 	// list."
 	if (getSpecifiedValue(element, command) === null) {
@@ -2574,19 +2593,21 @@ commands.createlink = {
 		// "Decompose the active range, and let node list be the result."
 		var nodeList = decomposeRange(getActiveRange());
 
-		// "For each a element that has an href attribute and is an ancestor of
-		// some node in node list, set that element's href attribute to value."
-		for (var i = 0; i < nodeList.length; i++) {
-			var candidate = nodeList[i].parentNode;
-			while (candidate) {
-				if (isHtmlElement(candidate, "A")
-				&& candidate.hasAttribute("href")) {
-					candidate.setAttribute("href", value);
+		// "For each editable a element that has an href attribute and is an
+		// ancestor of some node in node list, set that element's href
+		// attribute to value."
+		//
+		// TODO: We don't actually do this in tree order, not that it matters
+		// unless you're spying with mutation events.
+		nodeList.forEach(function(node) {
+			getAncestors(node).forEach(function(ancestor) {
+				if (isEditable(ancestor)
+				&& isHtmlElement(ancestor, "a")
+				&& ancestor.hasAttribute("href")) {
+					ancestor.setAttribute("href", value);
 				}
-
-				candidate = candidate.parentNode;
-			}
-		}
+			});
+		});
 
 		// "Set the value of each node in node list to value."
 		for (var i = 0; i < nodeList.length; i++) {
@@ -2921,38 +2942,37 @@ commands.removeformat = {
 		// "Decompose the active range, and let node list be the result."
 		var nodeList = decomposeRange(getActiveRange());
 
-		// "For each node in node list, unset the style attribute of node (if
-		// it's an Element) and then all its Element descendants."
-		for (var i = 0; i < nodeList.length; i++) {
-			for (
-				var node = nodeList[i];
-				node != nextNodeDescendants(nodeList[i]);
-				node = nextNode(node)
-			) {
-				if (node.nodeType == Node.ELEMENT_NODE) {
-					node.removeAttribute("style");
-				}
+		// "For each node in node list, unset the style attribute of node if
+		// it's an editable Element, then unset the style attribute of all its
+		// editable Element descendants."
+		nodeList.forEach(function(node) {
+			if (isEditable(node)
+			&& node.nodeType == Node.ELEMENT_NODE) {
+				node.removeAttribute("style");
 			}
-		}
+			getDescendants(node).forEach(function(descendant) {
+				if (isEditable(descendant)
+				&& descendant.nodeType == Node.ELEMENT_NODE) {
+					descendant.removeAttribute("style");
+				}
+			});
+		});
 
-		// "Let elements to remove be a list of all HTML elements that are the
-		// same as or descendants of some member of node list and have non-null
-		// parents and satisfy (insert conditions here)."
+		// "Let elements to remove be a list of all editable HTML elements that
+		// are the same as or descendants of some member of node list and have
+		// non-null parents and satisfy (insert conditions here)."
 		var elementsToRemove = [];
-		for (var i = 0; i < nodeList.length; i++) {
-			for (
-				var node = nodeList[i];
-				node == nodeList[i] || isDescendant(node, nodeList[i]);
-				node = nextNode(node)
-			) {
-				if (isHtmlElement(node)
+		nodeList.forEach(function(node) {
+			elementsToRemove.push(node);
+			[].push.apply(elementsToRemove, getDescendants(node));
+		});
+		elementsToRemove = elementsToRemove.filter(function(node) {
+			return isEditable(node)
+				&& isHtmlElement(node)
 				&& node.parentNode
 				// FIXME: Extremely partial list for testing
-				&& ["A", "AUDIO", "BR", "DIV", "HR", "IMG", "P", "TD", "VIDEO", "WBR"].indexOf(node.tagName) == -1) {
-					elementsToRemove.push(node);
-				}
-			}
-		}
+				&& ["A", "AUDIO", "BR", "DIV", "HR", "IMG", "P", "TD", "VIDEO", "WBR"].indexOf(node.tagName) == -1;
+		});
 
 		// "For each element in elements to remove:"
 		for (var i = 0; i < elementsToRemove.length; i++) {
@@ -5951,6 +5971,13 @@ commands.inserthorizontalrule = {
 		// "Run deleteContents() on the range."
 		range.deleteContents();
 
+		// "If the active range's start node is neither editable nor an editing
+		// host, abort these steps."
+		if (!isEditable(getActiveRange().startContainer)
+		&& !isEditingHost(getActiveRange().startContainer)) {
+			return;
+		}
+
 		// "Let hr be the result of calling createElement("hr") on the
 		// context object."
 		var hr = document.createElement("hr");
@@ -5982,6 +6009,13 @@ commands.inserthtml = {
 	action: function(value) {
 		// "Delete the contents of the active range."
 		deleteContents(getActiveRange());
+
+		// "If the active range's start node is neither editable nor an editing
+		// host, abort these steps."
+		if (!isEditable(getActiveRange().startContainer)
+		&& !isEditingHost(getActiveRange().startContainer)) {
+			return;
+		}
 
 		// "Let frag be the result of calling createContextualFragment(value)
 		// on the active range."
@@ -6039,6 +6073,13 @@ commands.insertimage = {
 		// "Delete the contents of range."
 		deleteContents(range);
 
+		// "If the active range's start node is neither editable nor an editing
+		// host, abort these steps."
+		if (!isEditable(getActiveRange().startContainer)
+		&& !isEditingHost(getActiveRange().startContainer)) {
+			return;
+		}
+
 		// "If range's start node is a prohibited paragraph child whose sole
 		// child is a br, and its start offset is 0, remove its start node's
 		// child from it."
@@ -6085,6 +6126,13 @@ commands.insertlinebreak = {
 	action: function(value) {
 		// "Delete the contents of the active range."
 		deleteContents(getActiveRange());
+
+		// "If the active range's start node is neither editable nor an editing
+		// host, abort these steps."
+		if (!isEditable(getActiveRange().startContainer)
+		&& !isEditingHost(getActiveRange().startContainer)) {
+			return;
+		}
 
 		// "If the active range's start node is an Element, and "br" is not an
 		// allowed child of it, abort these steps."
@@ -6165,6 +6213,13 @@ commands.insertparagraph = {
 	action: function() {
 		// "Delete the contents of the active range."
 		deleteContents(getActiveRange());
+
+		// "If the active range's start node is neither editable nor an editing
+		// host, abort these steps."
+		if (!isEditable(getActiveRange().startContainer)
+		&& !isEditingHost(getActiveRange().startContainer)) {
+			return;
+		}
 
 		// "Let range be the active range."
 		var range = getActiveRange();
@@ -6442,6 +6497,13 @@ commands.inserttext = {
 	action: function(value) {
 		// "Delete the contents of the active range."
 		deleteContents(getActiveRange());
+
+		// "If the active range's start node is neither editable nor an editing
+		// host, abort these steps."
+		if (!isEditable(getActiveRange().startContainer)
+		&& !isEditingHost(getActiveRange().startContainer)) {
+			return;
+		}
 
 		// "If value's length is greater than one:"
 		if (value.length > 1) {

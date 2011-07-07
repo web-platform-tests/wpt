@@ -387,10 +387,12 @@ title=command>commands</span>.
 those listed in <a href=#miscellaneous-commands>Miscellaneous commands</a> are
 always <span>enabled</span>.  The other <span title=command>commands</span>
 defined here are <span>enabled</span> if the <span>active range</span> is not
-null, and are not <span>enabled</span> if it is.
+null, and either there is some [[node]] <span>effectively contained</span> in
+it that is an <span>editing host</span> or the [[descendant]] of an
+<span>editing host</span>, or its [[startnode]] or [[endnode]] is an
+<span>editing host</span> or the [[descendant]] of an <span>editing
+host</span>.
 
-<p class=XXX>Not clear that this definition is right.  It doesn't match any
-browser.  Needs more testing and thought.
 <!--
 Testing with bold and formatBlock:
 
@@ -400,18 +402,25 @@ editable, even if it's fully contained in something non-editable (provided it
 descends from something editable).
 
 Firefox 6.0a2 seems to always return true if there's anything editable on the
-page, and throw otherwise.  Opera 11.11 seems to always return true if there's
-anything editable on the page, and false otherwise.  Neither behavior makes
-much sense.
+page, and throw otherwise.
 
 Chrome 14 dev seems to do something like return true if every node effectively
-contained in the selection is editable, false otherwise.  This makes the most
-sense, but it's too narrow for us, because we take some action in many cases
-even if there's some non-editable stuff around.
+contained in the selection is editable, false otherwise.
 
-What we really want this to do is return true if we'd do something when you run
-the command, false otherwise.  But that's impractically complicated for little
-benefit.  Some approximation closer to IE or Chrome is likely in order.
+Opera 11.11 seems to always return true if there's anything editable on the
+page, and false otherwise.
+
+Firefox and Opera behave more or less uselessly.  Chrome is not ideal because
+we want commands to be enabled if they'll have any effect at all, and basically
+all commands have an effect if there are some non-editable nodes effectively
+contained in the selection as I've specced it currently.  IE is conservative,
+in that it will return true in some cases even if running the command will have
+no effect, but it's pretty simple and it will only return false if there's no
+way the command will have an effect.
+
+Thus I go with IE.  Note that at least createLink and unlink can have an effect
+if the entire selection is non-editable, if something descends from an editable
+<a>, so we want to remain enabled in that case.
 -->
 <!-- @} -->
 
@@ -1363,6 +1372,9 @@ id=foo> into <span id=foo> instead of <font id=foo>, but probably not worth it.
 <ol>
   <li>Let <var>command</var> be the current <span>command</span>.
 
+  <li>If <var>element</var> is not <span>editable</span>, return the empty
+  list.
+
   <li>If <var>element</var>'s <span>specified value</span> for
   <var>command</var> is null, return the empty list.  <!-- We want to abort
   early so that we don't try unsetting background-color on a non-inline
@@ -2109,9 +2121,9 @@ don't either. -->
   <li><span>Decompose</span> the <span>active range</span>, and let <var>node
   list</var> be the result.
 
-  <li>For each [[a]] element that has an [[href]] attribute and is an
-  [[ancestor]] of some [[node]] in <var>node list</var>, set that element's
-  [[href]] attribute to <var>value</var>.
+  <li>For each <span>editable</span> [[a]] element that has an [[href]]
+  attribute and is an [[ancestor]] of some [[node]] in <var>node list</var>,
+  set that element's [[href]] attribute to <var>value</var>.
   <!-- There are three approaches here.  For instance, if you ask browsers to
   create a link to "http://example.org" on the "b" here:
 
@@ -2626,13 +2638,14 @@ for elements like <code> or <tt> or <mark> that we don't normally create.
   list</var> be the result.
 
   <li>For each <var>node</var> in <var>node list</var>, unset the [[style]]
-  attribute of <var>node</var> (if it's an [[element]]) and then all its
+  attribute of <var>node</var> if it's an <span>editable</span> [[element]],
+  then unset the [[style]] attribute of all its <span>editable</span>
   [[element]] [[descendants]].
 
-  <li>Let <var>elements to remove</var> be a list of all <span title="HTML
-  element">HTML elements</span> that are the same as or [[descendants]] of some
-  member of <var>node list</var> and have non-null [[parents]] and satisfy
-  (insert conditions here).
+  <li>Let <var>elements to remove</var> be a list of all <span>editable</span>
+  <span title="HTML element">HTML elements</span> that are the same as or
+  [[descendants]] of some member of <var>node list</var> and have non-null
+  [[parents]] and satisfy (insert conditions here).
 
   <p class=XXX>The conditions are not so simple to define, because we want to
   include non-conforming elements, which HTML doesn't give content models.  If
@@ -5864,6 +5877,9 @@ round-tripping through a character encoding change impossible.
   <!-- Chrome 14 dev and Opera 11.11 do this even if the value is empty.
   Firefox 5.0a2 throws an exception. -->
 
+  <li>If the <span>active range</span>'s [[startnode]] is neither
+  <span>editable</span> nor an <span>editing host</span>, abort these steps.
+
   <li>Let <var>frag</var> be the result of calling <code data-anolis-spec=domps
   title=dom-Range-createContextualFragment>createContextualFragment(<var>value</var>)</code>
   on the <span>active range</span>.
@@ -5924,6 +5940,9 @@ round-tripping through a character encoding change impossible.
 
   <li><span>Delete the contents</span> of <var>range</var>.
 
+  <li>If the <span>active range</span>'s [[startnode]] is neither
+  <span>editable</span> nor an <span>editing host</span>, abort these steps.
+
   <li>If <var>range</var>'s [[startnode]] is a <span>prohibited paragraph
   child</span> whose sole [[child]] is a [[br]], and its [[startoffset]] is 0,
   remove its [[startnode]]'s [[child]] from it.
@@ -5980,6 +5999,9 @@ splitting up parents to ensure validity . . . -->
 
   <p class=XXX>This might blow up non-contenteditable stuff.
 
+  <li>If the <span>active range</span>'s [[startnode]] is neither
+  <span>editable</span> nor an <span>editing host</span>, abort these steps.
+
   <li>Let <var>hr</var> be the result of calling <code
   data-anolis-spec=domcore
   title=dom-Document-createElement>createElement("hr")</code> on the
@@ -6034,6 +6056,9 @@ Opera 11.11 isn't heedful of <xmp>, and treats <pre> somewhat oddly.
 
 <ol>
   <li><span>Delete the contents</span> of the <span>active range</span>.
+
+  <li>If the <span>active range</span>'s [[startnode]] is neither
+  <span>editable</span> nor an <span>editing host</span>, abort these steps.
 
   <li>If the <span>active range</span>'s [[startnode]] is an [[element]], and
   "br" is not an <span>allowed child</span> of it, abort these steps.
@@ -6121,6 +6146,9 @@ http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
 
 <ol>
   <li><span>Delete the contents</span> of the <span>active range</span>.
+
+  <li>If the <span>active range</span>'s [[startnode]] is neither
+  <span>editable</span> nor an <span>editing host</span>, abort these steps.
 
   <li>Let <var>range</var> be the <span>active range</span>.
 
@@ -6444,15 +6472,18 @@ unnecessarily.
 This is still a huge headache, though.
 -->
 
+<p class=XXX>This doesn't work well if the input contains things that aren't
+supposed to appear in HTML, like carriage returns or nulls.  Nor is it going to
+work well if the current cursor position is in between two halves of a non-BMP
+character.  This will result in unserializability.  The current spec disregards
+this, as Chrome 14 dev does.
+
 <ol>
   <li><span>Delete the contents</span> of the <span>active range</span>.
   <!-- Chrome 14 dev does this even if passed the empty string. -->
 
-  <p class=XXX>This doesn't work well if the input contains things that aren't
-  supposed to appear in HTML, like carriage returns or nulls.  Nor is it going
-  to work well if the current cursor position is in between two halves of a
-  non-BMP character.  This will result in unserializability.  The current spec
-  disregards this, as Chrome 14 dev does.
+  <li>If the <span>active range</span>'s [[startnode]] is neither
+  <span>editable</span> nor an <span>editing host</span>, abort these steps.
 
   <li>If <var>value</var>'s [[strlen]] is greater than one:
 

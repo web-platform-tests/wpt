@@ -75,25 +75,7 @@ updateAlertRowStyle();
 // Now for the meat of the file.
 var tests = {
 	backcolor: [
-	//@{
-		'foo[]bar',
-		'<span>foo</span>{}<span>bar</span>',
-		'<span>foo[</span><span>]bar</span>',
-		'<p>foo[bar]baz',
-		'<p>foo]bar[baz',
-		'<div><p>foo[bar]baz</p></div>',
-
-		'<table><tbody><tr><td>foo<td>b[a]r<td>baz</table>',
-		'<table><tbody><tr data-start=1 data-end=2><td>foo<td>bar<td>baz</table>',
-		'<table><tbody><tr data-start=0 data-end=2><td>foo<td>bar<td>baz</table>',
-		'<table><tbody data-start=0 data-end=1><tr><td>foo<td>bar<td>baz</table>',
-		'<table data-start=0 data-end=1><tbody><tr><td>foo<td>bar<td>baz</table>',
-		'{<table><tr><td>foo<td>bar<td>baz</table>}',
-
-		'{<p><p> <p>foo</p>}',
-		'{<p>foo</p><p>bar</p>}',
-		'<p>[foo</p><p>bar]</p>',
-		'<p>foo[bar<i>baz]qoz</i>quz',
+	//@{ Same as hilitecolor (set below)
 	],
 	//@}
 	bold: [
@@ -1659,7 +1641,7 @@ var tests = {
 	],
 	//@}
 	insertlinebreak: [
-	//@{ Just the same as insertparagraph (set below).
+	//@{ Same as insertparagraph (set below)
 	],
 	//@}
 	insertorderedlist: [
@@ -3273,6 +3255,7 @@ var tests = {
 	usecss: ['foo[bar]baz'],
 	quasit: ['foo[bar]baz'],
 };
+tests.backcolor = tests.hilitecolor;
 tests.insertlinebreak = tests.insertparagraph;
 
 var defaultValues = {

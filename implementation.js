@@ -1560,8 +1560,9 @@ function getEffectiveValue(node, command) {
 		return node.getAttribute("href");
 	}
 
-	// "If command is "hiliteColor":"
-	if (command == "hilitecolor") {
+	// "If command is "backColor" or "hiliteColor":"
+	if (command == "backcolor"
+	|| command == "hilitecolor") {
 		// "While the computed value of "background-color" on node is any
 		// fully transparent value, and node's parent is an Element, set
 		// node to its parent."
@@ -1669,9 +1670,9 @@ function getEffectiveValue(node, command) {
 }
 
 function getSpecifiedValue(element, command) {
-	// "If command is "hiliteColor" and element's display property does not
-	// compute to "inline", return null."
-	if (command == "hilitecolor"
+	// "If command is "backColor" or "hiliteColor" and element's display
+	// property does not compute to "inline", return null."
+	if ((command == "backcolor" || command == "hilitecolor")
 	&& getComputedStyle(element).display != "inline") {
 		return null;
 	}
@@ -2506,8 +2507,61 @@ function setNodeValue(node, command, newValue) {
 //@}
 
 ///// The backColor command /////
-// Unimplemented
-//commands.backcolor = {};
+//@{
+commands.backcolor = {
+	// Copy-pasted, same as hiliteColor
+	action: function(value) {
+		// "If value is not a valid CSS color, prepend "#" to it."
+		//
+		// "If value is still not a valid CSS color, or if it is currentColor,
+		// raise a SYNTAX_ERR exception."
+		//
+		// Cheap hack for testing, no attempt to be comprehensive.
+		if (/^([0-9a-fA-F]{3}){1,2}$/.test(value)) {
+			value = "#" + value;
+		}
+		if (!/^#([0-9a-fA-F]{3}){1,2}$/.test(value)
+		&& !/^(rgba?|hsla?)\(.*\)$/.test(value)
+		// Not gonna list all the keywords, only the ones I use.
+		&& value != "red"
+		&& value != "cornsilk"
+		&& value != "transparent") {
+			throw "SYNTAX_ERR";
+		}
+
+		// "Decompose the active range, then set the value of each returned
+		// node to value."
+		var nodeList = decomposeRange(getActiveRange());
+		for (var i = 0; i < nodeList.length; i++) {
+			setNodeValue(nodeList[i], "backcolor", value);
+		}
+	}, indeterm: function() {
+		// "True if among editable Text nodes that are effectively contained in
+		// the active range, there are two that have distinct effective values.
+		// Otherwise false."
+		return getAllEffectivelyContainedNodes(getActiveRange(), function(node) {
+			return isEditable(node) && node.nodeType == Node.TEXT_NODE;
+		}).map(function(node) {
+			return getEffectiveValue(node, "backcolor");
+		}).filter(function(value, i, arr) {
+			return arr.slice(0, i).indexOf(value) == -1;
+		}).length >= 2;
+	}, value: function() {
+		// "The effective value of the active range's start node."
+		//
+		// Opera uses a different format, so let's be nice and support that for
+		// the time being (since all this computed value stuff is underdefined
+		// anyway).
+		var value = getEffectiveValue(getActiveRange().startContainer, "backcolor");
+		if (/^#[0-9a-f]{6}$/.test(value)) {
+			value = "rgb(" + parseInt(value.slice(1, 3), 16)
+				+ "," + parseInt(value.slice(3, 5), 16)
+				+ "," + parseInt(value.slice(5), 16) + ")";
+		}
+		return value;
+	}, relevantCssProperty: "backgroundColor"
+};
+//@}
 
 ///// The bold command /////
 //@{
@@ -2870,6 +2924,9 @@ commands.hilitecolor = {
 	}, relevantCssProperty: "backgroundColor"
 };
 //@}
+
+// "The backColor command must behave identically to the hiliteColor command."
+commands.backcolor = commands.hilitecolor;
 
 ///// The italic command /////
 //@{

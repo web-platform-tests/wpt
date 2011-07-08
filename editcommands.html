@@ -38,7 +38,7 @@
 <body class=draft>
 <div class=head id=head>
 <h1>HTML Editing Commands</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-7-july-2011>Work in Progress &mdash; Last Update 7 July 2011</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-8-july-2011>Work in Progress &mdash; Last Update 8 July 2011</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;ayg+spec@aryeh.name&gt;
@@ -471,7 +471,7 @@ all nodes in the selection, editable or not.  Chrome's definition makes sense
 in that it will only run the command if it's enabled, but it doesn't make much
 sense to only have the command run if the start is editable.
 
-It's not clear to me what the point of this command is.  There's no way we're
+It's not clear to me what the point of this method is.  There's no way we're
 going to always return true if the command will do something and false if it
 won't.  I just stuck with a really conservative definition that happens to be
 convenient: if there's nothing selected, obviously nothing will work, and we
@@ -1152,7 +1152,7 @@ either a string or null:
     <li>Return the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-attribute-value title=concept-attribute-value>value</a> of <var title="">node</var>'s <code class=external data-anolis-spec=html title=attr-hyperlink-href><a href=http://www.whatwg.org/html/#attr-hyperlink-href>href</a></code> attribute.
   </ol>
 
-  <li>If <var title="">command</var> is "hiliteColor":
+  <li>If <var title="">command</var> is "backColor" or "hiliteColor":
 
   <ol>
     <li>While the <a href=http://www.w3.org/TR/CSS21/cascade.html#computed-value>computed value</a> of "background-color" on <var title="">node</var> is
@@ -1224,8 +1224,8 @@ return either a string or null:
 different name.
 
 <ol>
-  <li>If <var title="">command</var> is "hiliteColor" and the <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>'s
-  display property does not compute to "inline", return null.
+  <li>If <var title="">command</var> is "backColor" or "hiliteColor" and the
+  <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>'s display property does not compute to "inline", return null.
 
   <li>If <var title="">command</var> is "createLink" or "unlink":
 
@@ -2019,28 +2019,24 @@ smarter, and also might be able to make it more efficient.
 
 <h3 id=the-backcolor-command><span class=secno>7.8 </span><dfn>The <code title="">backColor</code> command</dfn></h3>
 
-<p><a href=#action>Action</a>:
+<!--
+We have three behaviors to choose from for this one:
 
-<div class=XXX>
-<p>We have three behaviors to choose from for this one:
+1) Chrome 11 dev and IE 9 RC treat it the same as hiliteColor (although IE 9 RC
+doesn't support hiliteColor itself).
 
-<ol>
-  <li>Chrome 11 dev and IE 9 RC treat it the same as hiliteColor (although IE 9
-  RC doesn't support hiliteColor itself).
+2) Firefox 4 in non-CSS mode sets the bgcolor of the nearest td or body, or
+something like that.  In testing, it seems to jump out of contenteditable
+elements to style non-editable ancestors, which is alarming.
 
-  <li>Firefox 4 in non-CSS mode sets the bgcolor of the nearest td or body, or
-  something like that.  In testing, it seems to jump out of contenteditable
-  elements to style non-editable ancestors, which is alarming.
+3) Firefox 4 in CSS mode and Opera 11 set the background of the nearest block
+container, although it doesn't seem to be very dependable (probably I just
+don't get what exactlyit's doing).
 
-  <li>Firefox 4 in CSS mode and Opera 11 set the background of the nearest
-  block container, although it doesn't seem to be very dependable (probably I
-  just don't get what exactlyit's doing).
-</ol>
+(1) is obviously redundant, but has plurality support, so we could spec it that
+way if the other ways were useless.
 
-<p>(1) is obviously redundant, but has plurality support, so we could spec it
-that way if the other ways were useless.
-
-<p>(3) is incoherent from a user perspective.  For instance, if you try it on
+(3) is incoherent from a user perspective.  For instance, if you try it on
 paragraphs the background will have big gaps where the margins are.  If you try
 it on an inline element that's a child of the editing host, it will do nothing
 or apply the background to everything or such, even though such an inline
@@ -2049,15 +2045,38 @@ would only make sense if we take considerable effort to ensure that block
 elements all have no margins, or if we wrap things in a div if they have
 margins, or something like that.
 
-<p>That leaves (2).  That might be useful if it actually set the document's
+That leaves (2).  That might be useful if it actually set the document's
 background color, but it seems like it sets table cell backgrounds sometimes
 instead, which is really confusing.
 
-<p>The path of least resistance seems to be to standardize this as meaning the
-same thing as hiliteColor, and make up new commands if we want to do things
-like set the document background color.  Feedback appreciated on this point.
-</div>
+The path of least resistance is to standardize this as meaning the same thing
+as hiliteColor, and make up new commands if we want to do things like set the
+document background color.  See hiliteColor for comments.
+-->
+<p><a href=#action>Action</a>:
 
+<ol>
+  <li>If <var title="">value</var> is not a valid CSS color, prepend "#" to it.
+
+  <li>If <var title="">value</var> is still not a valid CSS color, or if it is
+  currentColor, raise a <code class=external data-anolis-spec=domcore title=dom-DOMException-SYNTAX_ERR><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-domexception-syntax_err>SYNTAX_ERR</a></code> exception.
+
+  <li><a href=#decompose>Decompose</a> the <a href=#active-range>active range</a>, then <a href=#set-the-value>set the
+  value</a> of each returned <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> to <var title="">value</var>.
+</ol>
+
+<p><a href=#indeterminate>Indeterminate</a>: True if among <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code>
+nodes that are <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active
+range</a>, there are two that have distinct <a href=#effective-value title="effective
+value">effective values</a>.  Otherwise false.
+
+<p><a href=#value>Value</a>: The <a href=#effective-value>effective value</a> of the <a href=#active-range>active
+range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>.
+
+<p class=note>This cannot be null, since the boundary point node of a selection
+must always be either an element or a text node that's the child of an element.
+
+<p><a href=#relevant-css-property>Relevant CSS property</a>: "background-color"
 
 
 <h3 id=the-bold-command><span class=secno>7.9 </span><dfn>The <code title="">bold</code> command</dfn></h3>

@@ -409,7 +409,7 @@ all nodes in the selection, editable or not.  Chrome's definition makes sense
 in that it will only run the command if it's enabled, but it doesn't make much
 sense to only have the command run if the start is editable.
 
-It's not clear to me what the point of this command is.  There's no way we're
+It's not clear to me what the point of this method is.  There's no way we're
 going to always return true if the command will do something and false if it
 won't.  I just stuck with a really conservative definition that happens to be
 convenient: if there's nothing selected, obviously nothing will work, and we
@@ -1107,7 +1107,7 @@ either a string or null:
     <li>Return the [[attrvalue]] of <var>node</var>'s [[href]] attribute.
   </ol>
 
-  <li>If <var>command</var> is "hiliteColor":
+  <li>If <var>command</var> is "backColor" or "hiliteColor":
 
   <ol>
     <li>While the [[compval]] of "background-color" on <var>node</var> is
@@ -1179,8 +1179,8 @@ return either a string or null:
 different name.
 
 <ol>
-  <li>If <var>command</var> is "hiliteColor" and the [[element]]'s
-  display property does not compute to "inline", return null.
+  <li>If <var>command</var> is "backColor" or "hiliteColor" and the
+  [[element]]'s display property does not compute to "inline", return null.
 
   <li>If <var>command</var> is "createLink" or "unlink":
 
@@ -1996,28 +1996,24 @@ smarter, and also might be able to make it more efficient.
 
 <h3><dfn>The <code title>backColor</code> command</dfn></h3>
 <!-- @{ -->
-<p><span>Action</span>:
+<!--
+We have three behaviors to choose from for this one:
 
-<div class=XXX>
-<p>We have three behaviors to choose from for this one:
+1) Chrome 11 dev and IE 9 RC treat it the same as hiliteColor (although IE 9 RC
+doesn't support hiliteColor itself).
 
-<ol>
-  <li>Chrome 11 dev and IE 9 RC treat it the same as hiliteColor (although IE 9
-  RC doesn't support hiliteColor itself).
+2) Firefox 4 in non-CSS mode sets the bgcolor of the nearest td or body, or
+something like that.  In testing, it seems to jump out of contenteditable
+elements to style non-editable ancestors, which is alarming.
 
-  <li>Firefox 4 in non-CSS mode sets the bgcolor of the nearest td or body, or
-  something like that.  In testing, it seems to jump out of contenteditable
-  elements to style non-editable ancestors, which is alarming.
+3) Firefox 4 in CSS mode and Opera 11 set the background of the nearest block
+container, although it doesn't seem to be very dependable (probably I just
+don't get what exactlyit's doing).
 
-  <li>Firefox 4 in CSS mode and Opera 11 set the background of the nearest
-  block container, although it doesn't seem to be very dependable (probably I
-  just don't get what exactlyit's doing).
-</ol>
+(1) is obviously redundant, but has plurality support, so we could spec it that
+way if the other ways were useless.
 
-<p>(1) is obviously redundant, but has plurality support, so we could spec it
-that way if the other ways were useless.
-
-<p>(3) is incoherent from a user perspective.  For instance, if you try it on
+(3) is incoherent from a user perspective.  For instance, if you try it on
 paragraphs the background will have big gaps where the margins are.  If you try
 it on an inline element that's a child of the editing host, it will do nothing
 or apply the background to everything or such, even though such an inline
@@ -2026,15 +2022,38 @@ would only make sense if we take considerable effort to ensure that block
 elements all have no margins, or if we wrap things in a div if they have
 margins, or something like that.
 
-<p>That leaves (2).  That might be useful if it actually set the document's
+That leaves (2).  That might be useful if it actually set the document's
 background color, but it seems like it sets table cell backgrounds sometimes
 instead, which is really confusing.
 
-<p>The path of least resistance seems to be to standardize this as meaning the
-same thing as hiliteColor, and make up new commands if we want to do things
-like set the document background color.  Feedback appreciated on this point.
-</div>
-</dl>
+The path of least resistance is to standardize this as meaning the same thing
+as hiliteColor, and make up new commands if we want to do things like set the
+document background color.  See hiliteColor for comments.
+-->
+<p><span>Action</span>:
+
+<ol>
+  <li>If <var>value</var> is not a valid CSS color, prepend "#" to it.
+
+  <li>If <var>value</var> is still not a valid CSS color, or if it is
+  currentColor, raise a [[SYNTAX_ERR]] exception.
+
+  <li><span>Decompose</span> the <span>active range</span>, then <span>set the
+  value</span> of each returned [[node]] to <var>value</var>.
+</ol>
+
+<p><span>Indeterminate</span>: True if among <span>editable</span> [[text]]
+nodes that are <span>effectively contained</span> in the <span>active
+range</span>, there are two that have distinct <span title="effective
+value">effective values</span>.  Otherwise false.
+
+<p><span>Value</span>: The <span>effective value</span> of the <span>active
+range</span>'s [[startnode]].
+
+<p class=note>This cannot be null, since the boundary point node of a selection
+must always be either an element or a text node that's the child of an element.
+
+<p><span>Relevant CSS property</span>: "background-color"
 <!-- @} -->
 
 <h3><dfn>The <code title>bold</code> command</dfn></h3>

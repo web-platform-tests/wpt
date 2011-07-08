@@ -1974,6 +1974,11 @@ as desired.
 
   <li>For each <var>node</var> in <var>node list</var>:
 
+  <p class=XXX>This is inefficient.  It would be most efficient to only push
+  down values on the highest-level effectively contained nodes, and to batch
+  operations so we handle runs of adjacent siblings at once.  Should we bother
+  fixing this?
+
   <ol>
     <li><span>Push down values</span> on <var>node</var>.
 

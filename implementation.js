@@ -1289,35 +1289,40 @@ function isEffectivelyContained(node, range) {
 		return true;
 	}
 
-	// "node is range's start node, it is a Text node, and its length is
-	// different from range's start offset."
+	// "node is range's start node, it is a Text node, its length is different
+	// from range's start offset, and range is not collapsed."
 	if (node == range.startContainer
 	&& node.nodeType == Node.TEXT_NODE
-	&& getNodeLength(node) != range.startOffset) {
+	&& getNodeLength(node) != range.startOffset
+	&& !range.collapsed) {
 		return true;
 	}
 
-	// "node is range's end node, it is a Text node, and range's end offset is
-	// not 0."
+	// "node is range's end node, it is a Text node, range's end offset is not
+	// 0, and range is not collapsed."
 	if (node == range.endContainer
 	&& node.nodeType == Node.TEXT_NODE
-	&& range.endOffset != 0) {
+	&& range.endOffset != 0
+	&& !range.collapsed) {
 		return true;
 	}
 
 	// "node has at least one child; and all its children are effectively
 	// contained in range; and either range's start node is not a descendant of
-	// node or is not a Text node or range's start offset is zero; and either
-	// range's end node is not a descendant of node or is not a Text node or
-	// range's end offset is its end node's length."
+	// node or is not a Text node or range's start offset is zero or range is
+	// collapsed; and either range's end node is not a descendant of node or is
+	// not a Text node or range's end offset is its end node's length or range
+	// is collapsed."
 	if (node.hasChildNodes()
 	&& [].every.call(node.childNodes, function(child) { return isEffectivelyContained(child, range) })
 	&& (!isDescendant(range.startContainer, node)
 	|| range.startContainer.nodeType != Node.TEXT_NODE
-	|| range.startOffset == 0)
+	|| range.startOffset == 0
+	|| range.collapsed)
 	&& (!isDescendant(range.endContainer, node)
 	|| range.endContainer.nodeType != Node.TEXT_NODE
-	|| range.endOffset == getNodeLength(range.endContainer))) {
+	|| range.endOffset == getNodeLength(range.endContainer
+	|| range.collapsed))) {
 		return true;
 	}
 
@@ -1876,58 +1881,6 @@ function reorderModifiableDescendants(node, command, newValue) {
 
 //@}
 
-///// Decomposing a range into nodes /////
-//@{
-
-function decomposeRange(range) {
-	// "If range's start and end are the same, return an empty list."
-	if (range.startContainer == range.endContainer
-	&& range.startOffset == range.endOffset) {
-		return [];
-	}
-
-	// "If range's start node is an editable Text node and its start offset is
-	// neither 0 nor the length of its start node, run splitText() on its start
-	// node with argument equal to its start offset."
-	if (isEditable(range.startContainer)
-	&& range.startContainer.nodeType == Node.TEXT_NODE
-	&& range.startOffset != 0
-	&& range.startOffset != getNodeLength(range.startContainer)) {
-		// Account for UAs not following range mutation rules
-		if (range.startContainer == range.endContainer) {
-			var newEndOffset = range.endOffset - range.startOffset;
-			var newText = range.startContainer.splitText(range.startOffset);
-			range.setStart(newText, 0);
-			range.setEnd(newText, newEndOffset);
-		} else {
-			var newText = range.startContainer.splitText(range.startOffset);
-			range.setStart(newText, 0);
-		}
-	}
-
-	// "If range's end node is an editable Text node and its end offset is
-	// neither 0 nor the length of its end node, run splitText() on its end
-	// node with argument equal to its end offset."
-	if (isEditable(range.endContainer)
-	&& range.endContainer.nodeType == Node.TEXT_NODE
-	&& range.endOffset != 0
-	&& range.endOffset != getNodeLength(range.endContainer)) {
-		// IE seems to mutate the range incorrectly here, so we need correction
-		// here as well.
-		var newStart = [range.startContainer, range.startOffset];
-		var newEnd = [range.endContainer, range.endOffset];
-		range.endContainer.splitText(range.endOffset);
-		range.setStart(newStart[0], newStart[1]);
-		range.setEnd(newEnd[0], newEnd[1]);
-	}
-
-	// "Return a list consisting of every node effectively contained in range,
-	// omitting any whose parent is also effectively contained in range."
-	return getEffectivelyContainedNodes(range);
-}
-
-//@}
-
 ///// Clearing an element's value /////
 //@{
 
@@ -2465,54 +2418,68 @@ function forceValue(node, command, newValue) {
 
 //@}
 
-///// Setting the value of a node /////
+///// Setting the selection's value /////
 //@{
 
-function setNodeValue(node, command, newValue) {
-	// "If node is not editable:"
-	if (!isEditable(node)) {
-		// "Let children be the children of node."
-		var children = Array.prototype.slice.call(node.childNodes);
-
-		// "Set the value of each member of children."
-		for (var i = 0; i < children.length; i++) {
-			setNodeValue(children[i], command, newValue);
-		}
-
-		// "Abort this algorithm."
-		return;
-	}
-
-	// "If node is an Element:"
-	if (node.nodeType == Node.ELEMENT_NODE) {
-		// "Clear the value of node, and let new nodes be the result."
-		var newNodes = clearValue(node, command);
-
-		// "For each new node in new nodes, set the value of new node, with the
-		// same inputs as this invocation of the algorithm."
-		for (var i = 0; i < newNodes.length; i++) {
-			setNodeValue(newNodes[i], command, newValue);
-		}
-
-		// "If node's parent is null, abort this algorithm."
-		if (!node.parentNode) {
-			return;
+function setSelectionValue(command, newValue) {
+	// "If the active range's start node is an editable Text node, and its
+	// start offset is neither zero nor its start node's length, call
+	// splitText() on the active range's start node, with argument equal to the
+	// active range's start offset. Then set the active range's start node to
+	// the result, and its start offset to zero."
+	if (isEditable(getActiveRange().startContainer)
+	&& getActiveRange().startContainer.nodeType == Node.TEXT_NODE
+	&& getActiveRange().startOffset != 0
+	&& getActiveRange().startOffset != getNodeLength(getActiveRange().startContainer)) {
+		// Account for browsers not following range mutation rules
+		if (getActiveRange().startContainer == getActiveRange().endContainer) {
+			var newEnd = getActiveRange().endOffset - getActiveRange().startOffset;
+			var newNode = getActiveRange().startContainer.splitText(getActiveRange().startOffset);
+			getActiveRange().setStart(newNode, 0);
+			getActiveRange().setEnd(newNode, newEnd);
+		} else {
+			getActiveRange().setStart(getActiveRange().startContainer.splitText(getActiveRange().startOffset), 0);
 		}
 	}
 
-	// "Push down values on node."
-	pushDownValues(node, command, newValue);
-
-	// "Force the value of node."
-	forceValue(node, command, newValue);
-
-	// "Let children be the children of node."
-	var children = Array.prototype.slice.call(node.childNodes);
-
-	// "Set the value of each member of children."
-	for (var i = 0; i < children.length; i++) {
-		setNodeValue(children[i], command, newValue);
+	// "If the active range's end node is an editable Text node, and its end
+	// offset is neither zero nor its end node's length, call splitText() on
+	// the active range's end node, with argument equal to the active range's
+	// end offset."
+	if (isEditable(getActiveRange().endContainer)
+	&& getActiveRange().endContainer.nodeType == Node.TEXT_NODE
+	&& getActiveRange().endOffset != 0
+	&& getActiveRange().endOffset != getNodeLength(getActiveRange().endContainer)) {
+		// IE seems to mutate the range incorrectly here, so we need correction
+		// here as well.
+		var newStart = [getActiveRange().startContainer, getActiveRange().startOffset];
+		var newEnd = [getActiveRange().endContainer, getActiveRange().endOffset];
+		getActiveRange().endContainer.splitText(getActiveRange().endOffset);
+		getActiveRange().setStart(newStart[0], newStart[1]);
+		getActiveRange().setEnd(newEnd[0], newEnd[1]);
 	}
+
+	// "Let element list be all editable Elements effectively contained in the
+	// active range.
+	//
+	// "For each element in element list, clear the value of element."
+	getAllEffectivelyContainedNodes(getActiveRange(), function(node) {
+		return isEditable(node) && node.nodeType == Node.ELEMENT_NODE;
+	}).forEach(function(element) {
+		clearValue(element, command);
+	});
+
+	// "Let node list be all editable nodes effectively contained in the active
+	// range.
+	//
+	// "For each node in node list:"
+	getAllEffectivelyContainedNodes(getActiveRange(), isEditable).forEach(function(node) {
+		// "Push down values on node."
+		pushDownValues(node, command, newValue);
+
+		// "Force the value of node."
+		forceValue(node, command, newValue);
+	});
 }
 
 //@}
@@ -2540,12 +2507,8 @@ commands.backcolor = {
 			throw "SYNTAX_ERR";
 		}
 
-		// "Decompose the active range, then set the value of each returned
-		// node to value."
-		var nodeList = decomposeRange(getActiveRange());
-		for (var i = 0; i < nodeList.length; i++) {
-			setNodeValue(nodeList[i], "backcolor", value);
-		}
+		// "Set the selection's value to value."
+		setSelectionValue("backcolor", value);
 	}, indeterm: function() {
 		// "True if among editable Text nodes that are effectively contained in
 		// the active range, there are two that have distinct effective values.
@@ -2578,13 +2541,12 @@ commands.backcolor = {
 //@{
 commands.bold = {
 	action: function() {
-		// "Decompose the active range. If the state is then false, set the
-		// value of each returned node to "bold", otherwise set the value to
-		// "normal"."
-		var nodeList = decomposeRange(getActiveRange());
-		var newValue = commands.bold.state() ? "normal" : "bold";
-		for (var i = 0; i < nodeList.length; i++) {
-			setNodeValue(nodeList[i], "bold", newValue);
+		// "If the state is false, set the selection's value to "bold",
+		// otherwise set the selection's value to "normal"."
+		if (!commands.bold.state()) {
+			setSelectionValue("bold", "bold");
+		} else {
+			setSelectionValue("bold", "normal");
 		}
 	}, indeterm: function() { return indetermHelper(function(node) {
 		// "True if among editable Text nodes that are effectively contained in
@@ -2620,16 +2582,13 @@ commands.createlink = {
 			throw "SYNTAX_ERR";
 		}
 
-		// "Decompose the active range, and let node list be the result."
-		var nodeList = decomposeRange(getActiveRange());
-
 		// "For each editable a element that has an href attribute and is an
-		// ancestor of some node in node list, set that element's href
-		// attribute to value."
+		// ancestor of some node effectively contained in the active range, set
+		// that a element's href attribute to value."
 		//
 		// TODO: We don't actually do this in tree order, not that it matters
 		// unless you're spying with mutation events.
-		nodeList.forEach(function(node) {
+		getAllEffectivelyContainedNodes(getActiveRange()).forEach(function(node) {
 			getAncestors(node).forEach(function(ancestor) {
 				if (isEditable(ancestor)
 				&& isHtmlElement(ancestor, "a")
@@ -2639,10 +2598,8 @@ commands.createlink = {
 			});
 		});
 
-		// "Set the value of each node in node list to value."
-		for (var i = 0; i < nodeList.length; i++) {
-			setNodeValue(nodeList[i], "createlink", value);
-		}
+		// "Set the selection's value to value."
+		setSelectionValue("createlink", value);
 	}
 };
 //@}
@@ -2651,12 +2608,8 @@ commands.createlink = {
 //@{
 commands.fontname = {
 	action: function(value) {
-		// "Decompose the active range, then set the value of each returned
-		// node to value."
-		var nodeList = decomposeRange(getActiveRange());
-		for (var i = 0; i < nodeList.length; i++) {
-			setNodeValue(nodeList[i], "fontname", value);
-		}
+		// "Set the selection's value to value."
+		setSelectionValue("fontname", value);
 	}, indeterm: function() {
 		// "True if among editable Text nodes that are effectively contained in
 		// the active range, there are two that have distinct effective values.
@@ -2760,12 +2713,8 @@ commands.fontsize = {
 			throw "SYNTAX_ERR";
 		}
 
-		// "Decompose the active range, then set the value of each returned
-		// node to value."
-		var nodeList = decomposeRange(getActiveRange());
-		for (var i = 0; i < nodeList.length; i++) {
-			setNodeValue(nodeList[i], "fontsize", value);
-		}
+		// "Set the selection's value to value."
+		setSelectionValue("fontsize", value);
 	}, indeterm: function() {
 		// "True if among editable Text nodes that are effectively contained in
 		// the active range, there are two that have distinct effective values.
@@ -2844,12 +2793,8 @@ commands.forecolor = {
 			throw "SYNTAX_ERR";
 		}
 
-		// "Decompose the active range, then set the value of each returned
-		// node to value."
-		var nodeList = decomposeRange(getActiveRange());
-		for (var i = 0; i < nodeList.length; i++) {
-			setNodeValue(nodeList[i], "forecolor", value);
-		}
+		// "Set the selection's value to value."
+		setSelectionValue("forecolor", value);
 	}, indeterm: function() {
 		// "True if among editable Text nodes that are effectively contained in
 		// the active range, there are two that have distinct effective values.
@@ -2902,12 +2847,8 @@ commands.hilitecolor = {
 			throw "SYNTAX_ERR";
 		}
 
-		// "Decompose the active range, then set the value of each returned
-		// node to value."
-		var nodeList = decomposeRange(getActiveRange());
-		for (var i = 0; i < nodeList.length; i++) {
-			setNodeValue(nodeList[i], "hilitecolor", value);
-		}
+		// "Set the selection's value to value."
+		setSelectionValue("hilitecolor", value);
 	}, indeterm: function() {
 		// "True if among editable Text nodes that are effectively contained in
 		// the active range, there are two that have distinct effective values.
@@ -2940,13 +2881,12 @@ commands.hilitecolor = {
 //@{
 commands.italic = {
 	action: function() {
-		// "Decompose the active range. If the state is then false, set the
-		// value of each returned node to "italic", otherwise set the value to
-		// "normal"."
-		var nodeList = decomposeRange(getActiveRange());
-		var newValue = commands.italic.state() ? "normal" : "italic";
-		for (var i = 0; i < nodeList.length; i++) {
-			setNodeValue(nodeList[i], "italic", newValue);
+		// "If the state is false, set the selection's value to "italic",
+		// otherwise set the selection's value to "normal"."
+		if (!commands.italic.state()) {
+			setSelectionValue("italic", "italic");
+		} else {
+			setSelectionValue("italic", "normal");
 		}
 	}, indeterm: function() { return indetermHelper(function(node) {
 		// "True if among editable Text nodes that are effectively contained in
@@ -2993,15 +2933,52 @@ commands.removeformat = {
 			element.parentNode.removeChild(element);
 		});
 
-		// "Decompose the active range, and let node list be the result."
-		var nodeList = decomposeRange(getActiveRange());
+		// "If the active range's start node is an editable Text node, and its
+		// start offset is neither zero nor its start node's length, call
+		// splitText() on the active range's start node, with argument equal to
+		// the active range's start offset. Then set the active range's start
+		// node to the result, and its start offset to zero."
+		if (isEditable(getActiveRange().startContainer)
+		&& getActiveRange().startContainer.nodeType == Node.TEXT_NODE
+		&& getActiveRange().startOffset != 0
+		&& getActiveRange().startOffset != getNodeLength(getActiveRange().startContainer)) {
+			// Account for browsers not following range mutation rules
+			if (getActiveRange().startContainer == getActiveRange().endContainer) {
+				var newEnd = getActiveRange().endOffset - getActiveRange().startOffset;
+				var newNode = getActiveRange().startContainer.splitText(getActiveRange().startOffset);
+				getActiveRange().setStart(newNode, 0);
+				getActiveRange().setEnd(newNode, newEnd);
+			} else {
+				getActiveRange().setStart(getActiveRange().startContainer.splitText(getActiveRange().startOffset), 0);
+			}
+		}
 
+		// "If the active range's end node is an editable Text node, and its
+		// end offset is neither zero nor its end node's length, call
+		// splitText() on the active range's end node, with argument equal to
+		// the active range's end offset."
+		if (isEditable(getActiveRange().endContainer)
+		&& getActiveRange().endContainer.nodeType == Node.TEXT_NODE
+		&& getActiveRange().endOffset != 0
+		&& getActiveRange().endOffset != getNodeLength(getActiveRange().endContainer)) {
+			// IE seems to mutate the range incorrectly here, so we need
+			// correction here as well.
+			var newStart = [getActiveRange().startContainer, getActiveRange().startOffset];
+			var newEnd = [getActiveRange().endContainer, getActiveRange().endOffset];
+			getActiveRange().endContainer.splitText(getActiveRange().endOffset);
+			getActiveRange().setStart(newStart[0], newStart[1]);
+			getActiveRange().setEnd(newEnd[0], newEnd[1]);
+		}
+
+		// "Let node list consist of all editable nodes effectively contained
+		// in the active range."
+		//
 		// "For each node in node list, while node's parent is an editable HTML
 		// element in the same editing host as node, and node's parent is not a
 		// prohibited paragraph child and does not have local name "a" or
 		// "audio" or "br" or "img" or "video" or "wbr", split the parent of
 		// the one-node list consisting of node."
-		nodeList.forEach(function(node) {
+		getAllEffectivelyContainedNodes(getActiveRange(), isEditable).forEach(function(node) {
 			while (isEditable(node.parentNode)
 			&& isHtmlElement(node.parentNode)
 			&& !isProhibitedParagraphChild(node.parentNode)
@@ -3010,9 +2987,8 @@ commands.removeformat = {
 			}
 		});
 
-		// "For each of the entries in the following list, in the given order:
-		// decompose the active range again; then set the value of the
-		// resulting nodes to null, with command as given."
+		// "For each of the entries in the following list, in the given order,
+		// set the selection's value to null, with command as given."
 		[
 			"subscript",
 			"bold",
@@ -3024,9 +3000,7 @@ commands.removeformat = {
 			"strikethrough",
 			"underline",
 		].forEach(function(command) {
-			decomposeRange(getActiveRange()).forEach(function(node) {
-				setNodeValue(node, command, null);
-			});
+			setSelectionValue(command, null);
 		});
 	}
 };
@@ -3036,13 +3010,12 @@ commands.removeformat = {
 //@{
 commands.strikethrough = {
 	action: function() {
-		// "Decompose the active range. If the state is then false, set the
-		// value of each returned node to "line-through", otherwise set the
-		// value to null."
-		var nodeList = decomposeRange(getActiveRange());
-		var newValue = commands.strikethrough.state() ? null : "line-through";
-		for (var i = 0; i < nodeList.length; i++) {
-			setNodeValue(nodeList[i], "strikethrough", newValue);
+		// "If the state is false, set the selection's value to "line-through",
+		// otherwise set the selection's value to null."
+		if (!commands.strikethrough.state()) {
+			setSelectionValue("strikethrough", "line-through");
+		} else {
+			setSelectionValue("strikethrough", null);
 		}
 	}, indeterm: function() { return indetermHelper(function(node) {
 		// "True if among editable Text nodes that are effectively contained in
@@ -3063,24 +3036,15 @@ commands.strikethrough = {
 //@{
 commands.subscript = {
 	action: function() {
-		// "Decompose the active range, and let node list be the result."
-		var nodeList = decomposeRange(getActiveRange());
-
 		// "Let state be the state."
 		var state = commands.subscript.state();
 
-		// "Set the value of each node in node list to "baseline"."
-		for (var i = 0; i < nodeList.length; i++) {
-			setNodeValue(nodeList[i], "subscript", "baseline");
-		}
+		// "Set the selection's value to "baseline"."
+		setSelectionValue("subscript", "baseline");
 
-		// "If state is false, decompose the active range again and set the
-		// value of each returned node to "sub"."
+		// "If state is false, set the selection's value to "sub"."
 		if (!state) {
-			nodeList = decomposeRange(getActiveRange());
-			for (var i = 0; i < nodeList.length; i++) {
-				setNodeValue(nodeList[i], "subscript", "sub");
-			}
+			setSelectionValue("subscript", "sub");
 		}
 	}, indeterm: function() {
 		// "True if either among editable Text nodes that are effectively
@@ -3107,24 +3071,15 @@ commands.subscript = {
 //@{
 commands.superscript = {
 	action: function() {
-		// "Decompose the active range, and let node list be the result."
-		var nodeList = decomposeRange(getActiveRange());
-
 		// "Let state be the state."
 		var state = commands.superscript.state();
 
-		// "Set the value of each node in node list to "baseline"."
-		for (var i = 0; i < nodeList.length; i++) {
-			setNodeValue(nodeList[i], "superscript", "baseline");
-		}
+		// "Set the selection's value to "baseline"."
+		setSelectionValue("superscript", "baseline");
 
-		// "If state is false, decompose the active range again and set the
-		// value of each returned node to "super"."
+		// "If state is false, set the selection's value to "super"."
 		if (!state) {
-			nodeList = decomposeRange(getActiveRange());
-			for (var i = 0; i < nodeList.length; i++) {
-				setNodeValue(nodeList[i], "superscript", "super");
-			}
+			setSelectionValue("superscript", "super");
 		}
 	}, indeterm: function() {
 		// "True if either among editable Text nodes that are effectively
@@ -3151,13 +3106,12 @@ commands.superscript = {
 //@{
 commands.underline = {
 	action: function() {
-		// "Decompose the active range. If the state is then false, set the
-		// value of each returned node to "underline", otherwise set the value
-		// to null."
-		var nodeList = decomposeRange(getActiveRange());
-		var newValue = commands.underline.state() ? null : "underline";
-		for (var i = 0; i < nodeList.length; i++) {
-			setNodeValue(nodeList[i], "underline", newValue);
+		// "If the state is false, set the selection's value to "underline",
+		// otherwise set the selection's value to null."
+		if (!commands.underline.state()) {
+			setSelectionValue("underline", "underline");
+		} else {
+			setSelectionValue("underline", null);
 		}
 	}, indeterm: function() { return indetermHelper(function(node) {
 		// "True if among editable Text nodes that are effectively contained in

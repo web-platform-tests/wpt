@@ -25,6 +25,7 @@ replace = {
     'cdlength': '<code data-anolis-spec=domcore title=dom-CharacterData-length>length</code>',
     'child': '<span data-anolis-spec=domcore title=concept-tree-child>child</span>',
     'children': '<span data-anolis-spec=domcore title=concept-tree-child>children</span>',
+    'collapsed': '<code data-anolis-spec=domrange title=dom-Range-collapsed>collapsed</code>',
     'collection': '<span data-anolis-spec=domcore title=concept-collection>collection</span>',
     'contained': '<span data-anolis-spec=domrange>contained</span>',
     'comment': '<code data-anolis-spec=domcore>Comment</code>',
@@ -136,6 +137,7 @@ fnreplace = {
     'selcollapse': '<code data-anolis-spec=domrange title=dom-Selection-collapse>collapse(\\1)</code>',
     'selectallchildren': '<code data-anolis-spec=domrange title=dom-Selection-selectAllChildren>selectAllChildren(\\1)</code>',
     'setattribute': '<code data-anolis-spec=domcore title=dom-Element-setAttribute>setAttribute(\\1)</code>',
+    'splittext': '<code data-anolis-spec=domcore title=dom-Text-splitText>splitText(\\1)</code>',
 }
 
 for key in fnreplace:

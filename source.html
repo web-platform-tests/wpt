@@ -1024,32 +1024,35 @@ The difference between "contained" and "effectively contained" is basically
 that 1) in <b>[foo]</b>, the text node and the <b> are effectively contained
 but not contained; and 2) in <b>f[o]o</b>, the text node is effectively
 contained but not contained, and the <b> is neither effectively contained nor
-contained.  This is used mostly for the "decompose" algorithm, and also for
-most inline commands' states.
+contained.
 -->
 <ul>
   <li><var>node</var> is [[contained]] in <var>range</var>.
 
   <li><var>node</var> is <var>range</var>'s [[startnode]], it is a [[text]]
-  node, and its [[nodelength]] is different from <var>range</var>'s
-  [[startoffset]].
+  node, its [[nodelength]] is different from <var>range</var>'s
+  [[startoffset]], and <var>range</var> is not [[collapsed]].
+  <!-- So like <b>f[oo]</b> or <b>f[o]o</b> or <b>f[oo</b>}, but not
+  <b>foo[</b>} or <b>f[]oo</b>. -->
 
   <li><var>node</var> is <var>range</var>'s [[endnode]], it is a [[text]] node,
-  and <var>range</var>'s [[endoffset]] is not 0.
+  <var>range</var>'s [[endoffset]] is not 0, and <var>range</var> is not
+  [[collapsed]].
 
   <li><var>node</var> has at least one [[child]]; and all its [[children]] are
   <span>effectively contained</span> in <var>range</var>; and either
   <var>range</var>'s [[startnode]] is not a [[descendant]] of <var>node</var>
-  or is not a [[text]] node or <var>range</var>'s [[startoffset]] is zero; and
-  either <var>range</var>'s [[endnode]] is not a [[descendant]] of
-  <var>node</var> or is not a [[text]] node or <var>range</var>'s [[endoffset]]
-  is its [[endnode]]'s [[length]].
+  or is not a [[text]] node or <var>range</var>'s [[startoffset]] is zero or
+  <var>range</var> is [[collapsed]]; and either <var>range</var>'s [[endnode]]
+  is not a [[descendant]] of <var>node</var> or is not a [[text]] node or
+  <var>range</var>'s [[endoffset]] is its [[endnode]]'s [[length]] or
+  <var>range</var> is [[collapsed]].
   <!--
   Basically, anything whose children are all effectively contained should be
   effectively contained itself, except that in a case like <b>f[o]o</b> we
   don't want <b> to be effectively contained even though the text node is.
-  That's because as soon as we decompose the range, the text node is split and
-  the <b> will no longer be effectively contained.
+  That's because we split the text node before we actually do anything, and the
+  <b> will no longer be effectively contained.
   -->
 </ul>
 
@@ -1337,39 +1340,6 @@ value</var>:
 
   <li>Append the <var>node</var> as the last [[child]] of <var>candidate</var>,
   <span>preserving ranges</span>.
-</ol>
-<!-- @} -->
-
-<h3>Decomposing a range into nodes</h3>
-<!-- @{ -->
-<p>To <dfn>decompose</dfn> a [[range]] <var>range</var>:
-
-<p class=note>For this algorithm to be correct, it is essential that user
-agents follow the [[rangemutationrules]], particularly those for <code
-title>splitText()</code>.
-
-<ol>
-  <li>If <var>range</var>'s [[rangestart]] and [[rangeend]] are the same,
-  return an empty list.
-
-  <li>If <var>range</var>'s [[rangestart]] [[bpnode]] is an
-  <span>editable</span> [[text]] node and its [[rangestart]] [[bpoffset]] is
-  neither 0 nor the [[nodelength]] of its [[rangestart]] [[bpnode]], run <code
-  data-anolis-spec=domcore title=dom-Text-splitText>splitText()</code> on its
-  [[rangestart]] [[bpnode]] with argument equal to its [[rangestart]]
-  [[bpoffset]].
-
-  <li>If <var>range</var>'s [[rangeend]] [[bpnode]] is an <span>editable</span>
-  [[text]] node and its [[rangeend]] [[bpoffset]] is neither 0 nor the
-  [[nodelength]] of its [[rangeend]] [[bpnode]], run <code
-  data-anolis-spec=domcore title=dom-Text-splitText>splitText()</code> on its
-  [[rangeend]] [[bpnode]] with argument equal to its [[rangeend]] [[bpoffset]].
-
-  <!-- We want to make sure the returned list contains as many nodes as
-  possible, such as by treating <tag>[foo]</tag> as {<tag>foo</tag>}. -->
-  <li>Return a list consisting of every [[node]] <span>effectively
-  contained</span> in <var>range</var>, omitting any whose [[parent]] is also
-  <span>effectively contained</span> in <var>range</var>.
 </ol>
 <!-- @} -->
 
@@ -1869,22 +1839,22 @@ different value.
 </ol>
 <!-- @} -->
 
-<h3>Setting the value of a node</h3>
+<h3>Setting the selection's value</h3>
 <!-- @{ -->
-<p>To <dfn>set the value</dfn> of a [[node]] <var>node</var> to <var>new
-value</var>:
+<p>To <dfn>set the selection's value</dfn> to <var>new value</var>:
 
 <div class=note>
-<p>The effect of this algorithm is to ensure that the node and all its
-descendants have the style requested, no matter what, producing the simplest
-markup possible to achieve that effect.  It's inspired by the approach WebKit
-takes.  The only places where the algorithm should fail are when there's an
-!important CSS rule that conflicts with the requested style (which we don't try
-to override because we assume it's !important for a reason), or when it's
-literally impossible to succeed (such as when a text-decoration is propagated
-from an ancestor we can't reach).  Any other failures are bugs.
+<p>The effect of this algorithm is to ensure that all nodes effectively
+contained in the selection have the style requested, no matter what, producing
+the simplest markup possible to achieve that effect.  It's inspired by the
+approach WebKit takes.  The only places where the algorithm should fail are
+when there's an !important CSS rule that conflicts with the requested style
+(which we don't try to override because we assume it's !important for a
+reason), or when it's literally impossible to succeed (such as when a
+text-decoration is propagated from an ancestor we can't reach).  Any other
+failures are bugs.
 
-<p>First, if the node is an element with an inline style rule for this
+<p>First, if a node is an element with an inline style rule for this
 property, we unset it ("clearing styles").  This step also removes <span
 title="simple modifiable element">simple modifiable elements</span> entirely, and
 replaces elements like [[b]] or [[font]] with [[span]]s if they aren't simple
@@ -1941,15 +1911,34 @@ heading), we'll repeat the above steps to ensure that the style really gets set
 as desired.
 </div>
 
-<p class=XXX>Consider porting this algorithm to operate on runs of consecutive
-siblings instead of individual nodes.  We might be able to make some parts
-smarter, and also might be able to make it more efficient.
-
 <ol>
   <li>Let <var>command</var> be the current <span>command</span>.
 
-  <li>If <var>node</var> is not <span>editable</span>:
+  <li>If the <span>active range</span>'s [[startnode]] is an
+  <span>editable</span> [[text]] node, and its [[startoffset]] is neither zero
+  nor its [[startnode]]'s [[length]], call [[splittext|]] on the <span>active
+  range</span>'s [[startnode]], with argument equal to the <span>active
+  range</span>'s [[startoffset]].  Then set the <span>active range</span>'s
+  [[startnode]] to the result, and its [[startoffset]] to zero.
+  <!-- This last sentence just prettifies the resulting range a bit. -->
+
+  <li>If the <span>active range</span>'s [[endnode]] is an
+  <span>editable</span> [[text]] node, and its [[endoffset]] is neither zero
+  nor its [[endnode]]'s [[length]], call [[splittext|]] on the <span>active
+  range</span>'s [[endnode]], with argument equal to the <span>active
+  range</span>'s [[endoffset]].
+
+  <li>Let <var>element list</var> be all <span>editable</span> [[element]]s
+  <span>effectively contained</span> in the <span>active range</span>.
+
+  <li>For each <var>element</var> in <var>element list</var>, <span>clear the
+  value</span> of <var>element</var>.
+
+  <li>Let <var>node list</var> be all <span>editable</span> [[nodes]]
+  <span>effectively contained</span> in the <span>active range</span>.
   <!--
+  We skip non-editable nodes.
+
   IE9: Allows everything to be modified by execCommand(), regardless of whether
     it's editable.
   Firefox 4.0: Ignores execCommand() if the start and end of the selection are
@@ -1983,37 +1972,13 @@ smarter, and also might be able to make it more efficient.
   are bolded, it will unbold instead of bolding.
   -->
 
-  <ol>
-    <li>Let <var>children</var> be the [[children]] of <var>node</var>.
-
-    <li><span>Set the value</span> of each member of <var>children</var>.
-
-    <li>Abort this algorithm.
-  </ol>
-
-  <li>If <var>node</var> is an [[element]]:
+  <li>For each <var>node</var> in <var>node list</var>:
 
   <ol>
-    <li><span>Clear the value</span> of <var>node</var>, and let <var>new
-    nodes</var> be the result.
+    <li><span>Push down values</span> on <var>node</var>.
 
-    <li>For each <var>new node</var> in <var>new nodes</var>,
-    <span>set the value</span> of <var>new node</var>.
-
-    <li>If <var>node</var>'s [[parent]] is null, abort this algorithm.
+    <li><span>Force the value</span> of <var>node</var>.
   </ol>
-
-  <li><span>Push down values</span> on <var>node</var>.
-
-  <li><span>Force the value</span> of <var>node</var>.
-
-  <li>Let <var>children</var> be the [[children]] of <var>node</var>.
-
-  <li><span>Set the value</span> of each member of <var>children</var>.
-
-  <p class=note>Styling a node involves clearing its styles, which can remove
-  it from the tree.  Implementers should be careful to compute the list of
-  children in full before they begin styling.
 </ol>
 <!-- @} -->
 
@@ -2061,8 +2026,7 @@ document background color.  See hiliteColor for comments.
   <li>If <var>value</var> is still not a valid CSS color, or if it is
   currentColor, raise a [[SYNTAX_ERR]] exception.
 
-  <li><span>Decompose</span> the <span>active range</span>, then <span>set the
-  value</span> of each returned [[node]] to <var>value</var>.
+  <li><span>Set the selection's value</span> to <var>value</var>.
 </ol>
 
 <p><span>Indeterminate</span>: True if among <span>editable</span> [[text]]
@@ -2087,9 +2051,9 @@ one else does it, so I don't do it.  It's a similar story for similar commands
 (fontName, italic, etc.).  Except not for strikethrough, where it just does
 nothing if the selection is empty.  Why strikethrough?  I don't know. -->
 
-<p><span>Action</span>: <span>Decompose</span> the <span>active range</span>.
-If the <span>state</span> is then false, <span>set the value</span> of each
-returned [[node]] to "bold", otherwise <span>set the value</span> to "normal".
+<p><span>Action</span>: If the <span>state</span> is false, <span>set the
+selection's value</span> to "bold", otherwise <span>set the selection's
+value</span> to "normal".
 
 <p><span>Indeterminate</span>: True if among <span>editable</span> [[text]]
 nodes that are <span>effectively contained</span> in the <span>active
@@ -2155,12 +2119,10 @@ don't either. -->
   I think that's more useful.  See issues.
   -->
 
-  <li><span>Decompose</span> the <span>active range</span>, and let <var>node
-  list</var> be the result.
-
   <li>For each <span>editable</span> [[a]] element that has an [[href]]
-  attribute and is an [[ancestor]] of some [[node]] in <var>node list</var>,
-  set that element's [[href]] attribute to <var>value</var>.
+  attribute and is an [[ancestor]] of some [[node]] <span>effectively
+  contained</span> in the <span>active range</span>, set that [[a]] element's
+  [[href]] attribute to <var>value</var>.
   <!-- There are three approaches here.  For instance, if you ask browsers to
   create a link to "http://example.org" on the "b" here:
 
@@ -2185,8 +2147,7 @@ don't either. -->
   really intend to only change the link of part of it?
   -->
 
-  <li><span>Set the value</span> of each [[node]] in <var>node list</var> to
-  <var>value</var>.
+  <li><span>Set the selection's value</span> to <var>value</var>.
 </ol>
 
 <!--
@@ -2202,8 +2163,8 @@ false. -->
 
 <h3><dfn>The <code title>fontName</code> command</dfn></h3>
 <!-- @{ -->
-<p><span>Action</span>: <span>Decompose</span> the <span>active range</span>,
-then <span>set the value</span> of each returned [[node]] to <var>value</var>.
+<p><span>Action</span>: <span>Set the selection's value</span> to
+<var>value</var>.
 <!-- UAs differ a bit in the details here:
 
 IE 9 RC: Empty string sets <font face="">
@@ -2356,8 +2317,7 @@ respecifying non-interoperable behavior anyway.
   allow numeric values.  There's no harm in allowing "x-small" and absolute
   sizes, I don't think.
 
-  <li><span>Decompose</span> the <span>active range</span>, then <span>set the
-  value</span> of each returned [[node]] to <var>value</var>.
+  <li><span>Set the selection's value</span> to <var>value</var>.
 </ol>
 
 <p><span>Indeterminate</span>: True if among <span>editable</span> [[text]]
@@ -2493,8 +2453,7 @@ browsers, but it's unlikely to hurt and it makes sense.
   <!-- currentColor is bad for the same reason as relative font sizes.  It will
   confuse the algorithm, and doesn't seem very useful anyway. -->
 
-  <li><span>Decompose</span> the <span>active range</span>, then <span>set the
-  value</span> of each returned [[node]] to <var>value</var>.
+  <li><span>Set the selection's value</span> to <var>value</var>.
 </ol>
 
 <!-- Opera 11 seems to return true for the state if there's some color style
@@ -2555,8 +2514,7 @@ For color parsing, see the comment for foreColor. -->
   you could conceive of it being useful, but it will still confuse the
   algorithm, so ban it for now anyway. -->
 
-  <li><span>Decompose</span> the <span>active range</span>, then <span>set the
-  value</span> of each returned [[node]] to <var>value</var>.
+  <li><span>Set the selection's value</span> to <var>value</var>.
 </ol>
 
 <p><span>Indeterminate</span>: True if among <span>editable</span> [[text]]
@@ -2586,10 +2544,9 @@ like for foreColor.
 
 <h3><dfn>The <code title>italic</code> command</dfn></h3>
 <!-- @{ -->
-<p><span>Action</span>: <span>Decompose</span> the <span>active range</span>.
-If the <span>state</span> is then false, <span>set the value</span> of each
-returned [[node]] to "italic", otherwise <span>set the value</span> to
-"normal".
+<p><span>Action</span>: If the <span>state</span> is false, <span>set the
+selection's value</span> to "italic", otherwise <span>set the selection's
+value</span> to "normal".
 
 <p><span>Indeterminate</span>: True if among <span>editable</span> [[text]]
 nodes that are <span>effectively contained</span> in the <span>active
@@ -2677,8 +2634,22 @@ IE10PP2, Firefox 7.0a2, and Opera 11.50 do not, so I go with them.
     <li>Remove <var>element</var> from its [[parent]].
   </ol>
 
-  <li><span>Decompose</span> the <span>active range</span>, and let <var>node
-  list</var> be the result.
+  <li>If the <span>active range</span>'s [[startnode]] is an
+  <span>editable</span> [[text]] node, and its [[startoffset]] is neither zero
+  nor its [[startnode]]'s [[length]], call [[splittext|]] on the <span>active
+  range</span>'s [[startnode]], with argument equal to the <span>active
+  range</span>'s [[startoffset]].  Then set the <span>active range</span>'s
+  [[startnode]] to the result, and its [[startoffset]] to zero.
+  <!-- This last sentence just prettifies the resulting range a bit. -->
+
+  <li>If the <span>active range</span>'s [[endnode]] is an
+  <span>editable</span> [[text]] node, and its [[endoffset]] is neither zero
+  nor its [[endnode]]'s [[length]], call [[splittext|]] on the <span>active
+  range</span>'s [[endnode]], with argument equal to the <span>active
+  range</span>'s [[endoffset]].
+
+  <li>Let <var>node list</var> consist of all <span>editable</span> [[nodes]]
+  <span>effectively contained</span> in the <span>active range</span>.
 
   <li>For each <var>node</var> in <var>node list</var>, while <var>node</var>'s
   [[parent]] is an <span>editable</span> <span>HTML element</span> <span>in the
@@ -2688,10 +2659,9 @@ IE10PP2, Firefox 7.0a2, and Opera 11.50 do not, so I go with them.
   <span>split the parent</span> of the one-[[node]] list consisting of
   <var>node</var>.
 
-  <li>For each of the entries in the following list, in the given order:
-  <span>decompose</span> the <span>active range</span> again; then <span>set
-  the value</span> of the resulting [[nodes]] to null, with <var>command</var>
-  as given.
+  <li>For each of the entries in the following list, in the given order,
+  <span>set the selection's value</span> to null, with <var>command</var> as
+  given.
   <!-- For cases like <p style=font-weight:bold>foo[bar]baz</p>. -->
 
   <ol>
@@ -2712,10 +2682,9 @@ IE10PP2, Firefox 7.0a2, and Opera 11.50 do not, so I go with them.
 
 <h3><dfn>The <code title>strikethrough</code> command</dfn></h3>
 <!-- @{ -->
-<p><span>Action</span>: <span>Decompose</span> the <span>active range</span>.
-If the <span>state</span> is then false, <span>set the value</span> of each
-returned [[node]] to "line-through", otherwise <span>set the value</span> to
-null.
+<p><span>Action</span>: If the <span>state</span> is false, <span>set the
+selection's value</span> to "line-through", otherwise <span>set the selection's
+value</span> to null.
 
 <p class=XXX>Has all the same problems as <span>the <code
 title>underline</code> command</span>.
@@ -2740,17 +2709,12 @@ is <span>effectively contained</span> in the <span>active range</span> has
 <p><span>Action</span>:
 
 <ol>
-  <li><span>Decompose</span> the <span>active range</span>, and let <var>node
-  list</var> be the result.
-
   <li>Let <var>state</var> be the <span>state</span>.
 
-  <li><span>Set the value</span> of each [[node]] in <var>node list</var> to
-  "baseline".
+  <li><span>Set the selection's value</span> to "baseline".
 
-  <li>If <var>state</var> is false, <span>decompose</span> the <span>active
-  range</span> again and <span>set the value</span> of each returned [[node]]
-  to "sub".
+  <li>If <var>state</var> is false, <span>set the selection's value</span> to
+  "sub".
 </ol>
 
 <p><span>Indeterminate</span>: True if either among <span>editable</span>
@@ -2785,17 +2749,12 @@ other indeterminate situations, so it's fair to consider it indeterminate.
 <p><span>Action</span>:
 
 <ol>
-  <li><span>Decompose</span> the <span>active range</span>, and let <var>node
-  list</var> be the result.
-
   <li>Let <var>state</var> be the <span>state</span>.
 
-  <li><span>Set the value</span> of each [[node]] in <var>node list</var> to
-  "baseline".
+  <li><span>Set the selection's value</span> to "baseline".
 
-  <li>If <var>state</var> is false, <span>decompose</span> the <span>active
-  range</span> again and <span>set the value</span> of each returned [[node]]
-  to "super".
+  <li>If <var>state</var> is false, <span>set the selection's value</span> to
+  "super".
 </ol>
 
 <p><span>Indeterminate</span>: True if either among <span>editable</span>
@@ -2816,9 +2775,9 @@ node.  Otherwise false.
 
 <h3><dfn>The <code title>underline</code> command</dfn></h3>
 <!-- @{ -->
-<p><span>Action</span>: <span>Decompose</span> the <span>active range</span>.
-If the <span>state</span> is then false, <span>set the value</span> of each
-returned [[node]] to "underline", otherwise <span>set the value</span> to null.
+<p><span>Action</span>: If the <span>state</span> is false, <span>set the
+selection's value</span> to "underline", otherwise <span>set the selection's
+value</span> to null.
 
 <div class=XXX>
 <p>There are a lot of problems with underline color and thickness, because

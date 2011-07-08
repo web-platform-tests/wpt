@@ -1062,18 +1062,41 @@ instructions</dfn>:
 
 <h3 id=inline-formatting-command-definitions><span class=secno>7.1 </span>Inline formatting command definitions</h3>
 
-<p>A <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> is <dfn id=effectively-contained>effectively contained</dfn> in a <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> if either it
-is <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>; or it is the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a>
-<a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>, it is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node, and its <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> is different from the
-<a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a>; or it is the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a>
-<a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>, it is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node, and the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a>
-<a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a> is not 0; or it has at least one <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>, and all its
-<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a> are <a href=#effectively-contained>effectively contained</a> in the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>.
-<!-- The difference between "contained" and "effectively contained" is
-basically that 1) in <b>[foo]</b>, the <b> is effectively contained but not
-contained; and 2) in <b>f[o]o</b>, the text node is effectively contained but
-not contained.  This is used mostly for the "decompose" algorithm, and also for
-most inline commands' states. -->
+<p>A <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> <var title="">node</var> is <dfn id=effectively-contained>effectively contained</dfn> in a
+<a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> <var title="">range</var> if at least one of the following holds:
+<!--
+The difference between "contained" and "effectively contained" is basically
+that 1) in <b>[foo]</b>, the text node and the <b> are effectively contained
+but not contained; and 2) in <b>f[o]o</b>, the text node is effectively
+contained but not contained, and the <b> is neither effectively contained nor
+contained.  This is used mostly for the "decompose" algorithm, and also for
+most inline commands' states.
+-->
+<ul>
+  <li><var title="">node</var> is <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in <var title="">range</var>.
+
+  <li><var title="">node</var> is <var title="">range</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>, it is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code>
+  node, and its <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> is different from <var title="">range</var>'s
+  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a>.
+
+  <li><var title="">node</var> is <var title="">range</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>, it is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node,
+  and <var title="">range</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a> is not 0.
+
+  <li><var title="">node</var> has at least one <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>; and all its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a> are
+  <a href=#effectively-contained>effectively contained</a> in <var title="">range</var>; and either
+  <var title="">range</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> is not a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-descendant title=concept-tree-descendant>descendant</a> of <var title="">node</var>
+  or is not a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node or <var title="">range</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a> is zero; and
+  either <var title="">range</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> is not a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-descendant title=concept-tree-descendant>descendant</a> of
+  <var title="">node</var> or is not a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node or <var title="">range</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a>
+  is its <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a>.
+  <!--
+  Basically, anything whose children are all effectively contained should be
+  effectively contained itself, except that in a case like <b>f[o]o</b> we
+  don't want <b> to be effectively contained even though the text node is.
+  That's because as soon as we decompose the range, the text node is split and
+  the <b> will no longer be effectively contained.
+  -->
+</ul>
 
 <p>A <dfn id=modifiable-element>modifiable element</dfn> is a <code class=external data-anolis-spec=html title="the b element"><a href=http://www.whatwg.org/html/#the-b-element>b</a></code>, <code class=external data-anolis-spec=html title="the em element"><a href=http://www.whatwg.org/html/#the-em-element>em</a></code>, <code class=external data-anolis-spec=html title="the i element"><a href=http://www.whatwg.org/html/#the-i-element>i</a></code>, <code class=external data-anolis-spec=html title="the s element"><a href=http://www.whatwg.org/html/#the-s-element>s</a></code>, <code class=external data-anolis-spec=html title="the span element"><a href=http://www.whatwg.org/html/#the-span-element>span</a></code>,
 <code class=external data-anolis-spec=html title="the strike element"><a href=http://www.whatwg.org/html/#the-strike-element>strike</a></code>, <code class=external data-anolis-spec=html title="the strong element"><a href=http://www.whatwg.org/html/#the-strong-element>strong</a></code>, <code class=external data-anolis-spec=html title="the sub and sup elements"><a href=http://www.whatwg.org/html/#the-sub-and-sup-elements>sub</a></code>, <code class=external data-anolis-spec=html title="the sub and sup elements"><a href=http://www.whatwg.org/html/#the-sub-and-sup-elements>sup</a></code>, or <code class=external data-anolis-spec=html title="the u element"><a href=http://www.whatwg.org/html/#the-u-element>u</a></code> element with no attributes
@@ -2643,53 +2666,29 @@ that (somehow I doubt it will come up much).  <video> behaves the same as
 <img>, although Firefox adds tabindex=0 (???), so I'm assuming the rest are
 similar.  Also, I'll keep all foreign elements and form elements.
 
-
 Browsers will split up all these inline elements if the selection is contained
 within them.  Opera does strip unrecognized elements with display: block if
 they're within the selection, but doesn't split them up if they contain the
 selection.
 
-Upon consideration, I've decided to go for something for now that's totally
-different from what any browser does: get rid of all elements actually
-contained in the selection (pretty much matching browsers), but for elements
-containing the selection, I'll just run all the other styling commands in a
-fashion that will reset the style in normal cases.  This avoids having to
-create a lot of new logic to decide exactly what we can split up or not, and
-should be able to correctly remove anything that can actually be created by
-these algorithms.
-
-This approach currently results in incorrect behavior in some cases for
-non-modifiable elements with default styling, like <code>.  The correct
-approach is probably to declare these elements modifiable; this would roughly
-match what browsers do.  I'm ignoring the issue for now, because such elements
-cannot actually be created by implementations of execCommand(), so they're not
-likely to be common.  Also, the way pushing down styles works right now is that
-the element is destroyed and the style is recreated, which isn't going to work
-for elements like <code> or <tt> or <mark> that we don't normally create.
+Chrome 14 dev removes style attributes from every element in the range, but
+IE10PP2, Firefox 7.0a2, and Opera 11.50 do not, so I go with them.
 -->
 
 <p><a href=#action>Action</a>:
 
 <ol>
-  <li><a href=#decompose>Decompose</a> the <a href=#active-range>active range</a>, and let <var title="">node
-  list</var> be the result.
-
-  <li>For each <var title="">node</var> in <var title="">node list</var>, unset the <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code>
-  attribute of <var title="">node</var> if it's an <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>,
-  then unset the <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code> attribute of all its <a href=#editable>editable</a>
-  <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-descendant title=concept-tree-descendant>descendants</a>.
-
   <li>Let <var title="">elements to remove</var> be a list of all <a href=#editable>editable</a>
-  <a href=#html-element title="HTML element">HTML elements</a> that are the same as or
-  <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-descendant title=concept-tree-descendant>descendants</a> of some member of <var title="">node list</var> and have non-null
-  <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parents</a> and satisfy (insert conditions here).
+  <a href=#html-element title="HTML element">HTML elements</a> <a href=#effectively-contained>effectively
+  contained</a> in the <a href=#active-range>active range</a>, excluding those with
+  <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> "a", "audio", "br", "img", "video", or "wbr", and excluding
+  <a href=#prohibited-paragraph-child title="prohibited paragraph child">prohibited paragraph
+  children</a>.
 
-  <p class=XXX>The conditions are not so simple to define, because we want to
-  include non-conforming elements, which HTML doesn't give content models.  If
-  everything had categories, we'd want something like "either it's
-  unrecognized, or it's phrasing content that's not also embedded or
-  interactive".  Except this has weird corner-cases like ins and del that are
-  sometimes phrasing and sometimes flow.
+  <p class=XXX>Double-check that this element list is correct.
+
+  <p class=XXX>Do we want to go with this whitelist approach, or a blacklist?
+  If a whitelist, should we also whitelist display: block elements?
 
   <li>For each <var title="">element</var> in <var title="">elements to remove</var>:
 
@@ -2701,30 +2700,36 @@ for elements like <code> or <tt> or <mark> that we don't normally create.
     <li>Remove <var title="">element</var> from its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
   </ol>
 
-  <li>For each of the entries in the following table, in the given order:
+  <li><a href=#decompose>Decompose</a> the <a href=#active-range>active range</a>, and let <var title="">node
+  list</var> be the result.
+
+  <li>For each <var title="">node</var> in <var title="">node list</var>, while <var title="">node</var>'s
+  <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is an <a href=#editable>editable</a> <a href=#html-element>HTML element</a> <a href=#in-the-same-editing-host>in the
+  same editing host</a> as <var title="">node</var>, and <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>
+  is not a <a href=#prohibited-paragraph-child>prohibited paragraph child</a> and does not have
+  <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> "a" or "audio" or "br" or "img" or "video" or "wbr",
+  <a href=#split-the-parent>split the parent</a> of the one-<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> list consisting of
+  <var title="">node</var>.
+
+  <li>For each of the entries in the following list, in the given order:
   <a href=#decompose>decompose</a> the <a href=#active-range>active range</a> again; then <a href=#set-the-value>set
-  the value</a> of the resulting <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a>, with <var title="">command</var> and
-  <var title="">new value</var> as given.
+  the value</a> of the resulting <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a> to null, with <var title="">command</var>
+  as given.
+  <!-- For cases like <p style=font-weight:bold>foo[bar]baz</p>. -->
 
-  <p class=XXX>This has no relationship to what browsers actually do, although
-  it mostly works okay.  If I don't throw it out and replace it with something
-  more like what browsers do, it still probably needs refinement to handle some
-  elements that it doesn't deal with yet.
-
-  <table>
-    <tr><th><var title="">command</var> <th><var title="">new value</var>
-    <tr><td>subscript <td>"baseline"
+  <ol>
+    <li>subscript
     <!-- superscript not needed, subscript does the same thing.  We run this
     first so <sub>/<sup> won't upset fontSize. -->
-    <tr><td>bold <td>"normal"
-    <tr><td>fontName <td>null
-    <tr><td>fontSize <td>null
-    <tr><td>foreColor <td>null
-    <tr><td>hiliteColor <td>null
-    <tr><td>italic <td>"normal"
-    <tr><td>strikethrough <td>null
-    <tr><td>underline <td>null
-  </table>
+    <li>bold
+    <li>fontName
+    <li>fontSize
+    <li>foreColor
+    <li>hiliteColor
+    <li>italic
+    <li>strikethrough
+    <li>underline
+  </ol>
 </ol>
 
 

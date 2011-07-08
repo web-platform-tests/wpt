@@ -1281,35 +1281,46 @@ function wrap(nodeList, siblingCriteria, newParentInstructions) {
 ///// Inline formatting command definitions /////
 //@{
 
-/**
- * "A Node is effectively contained in a Range if either it is contained in the
- * Range; or it is the Range's start node, it is a Text node, and its length is
- * different from the Range's start offset; or it is the Range's end node, it
- * is a Text node, and the Range's end offset is not 0; or it has at least one
- * child, and all its children are effectively contained in the Range."
- */
+// "A node node is effectively contained in a range range if at least one of
+// the following holds:"
 function isEffectivelyContained(node, range) {
+	// "node is contained in range."
 	if (isContained(node, range)) {
 		return true;
 	}
+
+	// "node is range's start node, it is a Text node, and its length is
+	// different from range's start offset."
 	if (node == range.startContainer
 	&& node.nodeType == Node.TEXT_NODE
 	&& getNodeLength(node) != range.startOffset) {
 		return true;
 	}
+
+	// "node is range's end node, it is a Text node, and range's end offset is
+	// not 0."
 	if (node == range.endContainer
 	&& node.nodeType == Node.TEXT_NODE
 	&& range.endOffset != 0) {
 		return true;
 	}
-	if (node.childNodes.length != 0) {
-		for (var i = 0; i < node.childNodes.length; i++) {
-			if (!isEffectivelyContained(node.childNodes[i], range)) {
-				return false;
-			}
-		}
+
+	// "node has at least one child; and all its children are effectively
+	// contained in range; and either range's start node is not a descendant of
+	// node or is not a Text node or range's start offset is zero; and either
+	// range's end node is not a descendant of node or is not a Text node or
+	// range's end offset is its end node's length."
+	if (node.hasChildNodes()
+	&& [].every.call(node.childNodes, function(child) { return isEffectivelyContained(child, range) })
+	&& (!isDescendant(range.startContainer, node)
+	|| range.startContainer.nodeType != Node.TEXT_NODE
+	|| range.startOffset == 0)
+	&& (!isDescendant(range.endContainer, node)
+	|| range.endContainer.nodeType != Node.TEXT_NODE
+	|| range.endOffset == getNodeLength(range.endContainer))) {
 		return true;
 	}
+
 	return false;
 }
 
@@ -2958,76 +2969,65 @@ commands.italic = {
 //@{
 commands.removeformat = {
 	action: function() {
-		// "Decompose the active range, and let node list be the result."
-		var nodeList = decomposeRange(getActiveRange());
-
-		// "For each node in node list, unset the style attribute of node if
-		// it's an editable Element, then unset the style attribute of all its
-		// editable Element descendants."
-		nodeList.forEach(function(node) {
-			if (isEditable(node)
-			&& node.nodeType == Node.ELEMENT_NODE) {
-				node.removeAttribute("style");
-			}
-			getDescendants(node).forEach(function(descendant) {
-				if (isEditable(descendant)
-				&& descendant.nodeType == Node.ELEMENT_NODE) {
-					descendant.removeAttribute("style");
-				}
-			});
-		});
-
-		// "Let elements to remove be a list of all editable HTML elements that
-		// are the same as or descendants of some member of node list and have
-		// non-null parents and satisfy (insert conditions here)."
-		var elementsToRemove = [];
-		nodeList.forEach(function(node) {
-			elementsToRemove.push(node);
-			[].push.apply(elementsToRemove, getDescendants(node));
-		});
-		elementsToRemove = elementsToRemove.filter(function(node) {
+		// "Let elements to remove be a list of all editable HTML elements
+		// effectively contained in the active range, excluding those with
+		// local name "a", "audio", "br", "img", "video", or "wbr", and
+		// excluding prohibited paragraph children."
+		var elementsToRemove = getAllEffectivelyContainedNodes(getActiveRange(), function(node) {
 			return isEditable(node)
 				&& isHtmlElement(node)
-				&& node.parentNode
-				// FIXME: Extremely partial list for testing
-				&& ["A", "AUDIO", "BR", "DIV", "HR", "IMG", "P", "TD", "VIDEO", "WBR"].indexOf(node.tagName) == -1;
+				&& ["A", "AUDIO", "BR", "IMG", "VIDEO", "WBR"].indexOf(node.tagName) == -1
+				&& !isProhibitedParagraphChild(node);
 		});
 
 		// "For each element in elements to remove:"
-		for (var i = 0; i < elementsToRemove.length; i++) {
-			var element = elementsToRemove[i];
-
+		elementsToRemove.forEach(function(element) {
 			// "While element has children, insert the first child of element
 			// into the parent of element immediately before element,
 			// preserving ranges."
-			while (element.childNodes.length) {
+			while (element.hasChildNodes()) {
 				movePreservingRanges(element.firstChild, element.parentNode, getNodeIndex(element));
 			}
 
 			// "Remove element from its parent."
 			element.parentNode.removeChild(element);
-		}
+		});
 
-		// "For each of the entries in the following table, in the given order:
-		// decompose the active range again; then set the value of the
-		// resulting nodes, with command and new value as given."
-		var table = {
-			"subscript": "baseline",
-			"bold": "normal",
-			"fontname": null,
-			"fontsize": null,
-			"forecolor": null,
-			"hilitecolor": null,
-			"italic": "normal",
-			"strikethrough": null,
-			"underline": null,
-		};
-		for (var command in table) {
-			var nodeList = decomposeRange(getActiveRange());
-			for (var i = 0; i < nodeList.length; i++) {
-				setNodeValue(nodeList[i], command, table[command]);
+		// "Decompose the active range, and let node list be the result."
+		var nodeList = decomposeRange(getActiveRange());
+
+		// "For each node in node list, while node's parent is an editable HTML
+		// element in the same editing host as node, and node's parent is not a
+		// prohibited paragraph child and does not have local name "a" or
+		// "audio" or "br" or "img" or "video" or "wbr", split the parent of
+		// the one-node list consisting of node."
+		nodeList.forEach(function(node) {
+			while (isEditable(node.parentNode)
+			&& isHtmlElement(node.parentNode)
+			&& !isProhibitedParagraphChild(node.parentNode)
+			&& ["A", "AUDIO", "BR", "IMG", "VIDEO", "WBR"].indexOf(node.parentNode.tagName) == -1) {
+				splitParent([node]);
 			}
-		}
+		});
+
+		// "For each of the entries in the following list, in the given order:
+		// decompose the active range again; then set the value of the
+		// resulting nodes to null, with command as given."
+		[
+			"subscript",
+			"bold",
+			"fontname",
+			"fontsize",
+			"forecolor",
+			"hilitecolor",
+			"italic",
+			"strikethrough",
+			"underline",
+		].forEach(function(command) {
+			decomposeRange(getActiveRange()).forEach(function(node) {
+				setNodeValue(node, command, null);
+			});
+		});
 	}
 };
 //@}

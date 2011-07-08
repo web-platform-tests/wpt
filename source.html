@@ -1017,18 +1017,41 @@ instructions</dfn>:
 
 <h3>Inline formatting command definitions</h3>
 <!-- @{ -->
-<p>A [[node]] is <dfn>effectively contained</dfn> in a [[range]] if either it
-is [[contained]] in the [[range]]; or it is the [[range]]'s [[rangestart]]
-[[bpnode]], it is a [[text]] node, and its [[nodelength]] is different from the
-[[range]]'s [[rangestart]] [[bpoffset]]; or it is the [[range]]'s [[rangeend]]
-[[bpnode]], it is a [[text]] node, and the [[range]]'s [[rangeend]]
-[[bpoffset]] is not 0; or it has at least one [[child]], and all its
-[[children]] are <span>effectively contained</span> in the [[range]].
-<!-- The difference between "contained" and "effectively contained" is
-basically that 1) in <b>[foo]</b>, the <b> is effectively contained but not
-contained; and 2) in <b>f[o]o</b>, the text node is effectively contained but
-not contained.  This is used mostly for the "decompose" algorithm, and also for
-most inline commands' states. -->
+<p>A [[node]] <var>node</var> is <dfn>effectively contained</dfn> in a
+[[range]] <var>range</var> if at least one of the following holds:
+<!--
+The difference between "contained" and "effectively contained" is basically
+that 1) in <b>[foo]</b>, the text node and the <b> are effectively contained
+but not contained; and 2) in <b>f[o]o</b>, the text node is effectively
+contained but not contained, and the <b> is neither effectively contained nor
+contained.  This is used mostly for the "decompose" algorithm, and also for
+most inline commands' states.
+-->
+<ul>
+  <li><var>node</var> is [[contained]] in <var>range</var>.
+
+  <li><var>node</var> is <var>range</var>'s [[startnode]], it is a [[text]]
+  node, and its [[nodelength]] is different from <var>range</var>'s
+  [[startoffset]].
+
+  <li><var>node</var> is <var>range</var>'s [[endnode]], it is a [[text]] node,
+  and <var>range</var>'s [[endoffset]] is not 0.
+
+  <li><var>node</var> has at least one [[child]]; and all its [[children]] are
+  <span>effectively contained</span> in <var>range</var>; and either
+  <var>range</var>'s [[startnode]] is not a [[descendant]] of <var>node</var>
+  or is not a [[text]] node or <var>range</var>'s [[startoffset]] is zero; and
+  either <var>range</var>'s [[endnode]] is not a [[descendant]] of
+  <var>node</var> or is not a [[text]] node or <var>range</var>'s [[endoffset]]
+  is its [[endnode]]'s [[length]].
+  <!--
+  Basically, anything whose children are all effectively contained should be
+  effectively contained itself, except that in a case like <b>f[o]o</b> we
+  don't want <b> to be effectively contained even though the text node is.
+  That's because as soon as we decompose the range, the text node is split and
+  the <b> will no longer be effectively contained.
+  -->
+</ul>
 
 <p>A <dfn>modifiable element</dfn> is a [[b]], [[em]], [[i]], [[s]], [[span]],
 [[strike]], [[strong]], [[sub]], [[sup]], or [[u]] element with no attributes
@@ -2620,53 +2643,29 @@ that (somehow I doubt it will come up much).  <video> behaves the same as
 <img>, although Firefox adds tabindex=0 (???), so I'm assuming the rest are
 similar.  Also, I'll keep all foreign elements and form elements.
 
-
 Browsers will split up all these inline elements if the selection is contained
 within them.  Opera does strip unrecognized elements with display: block if
 they're within the selection, but doesn't split them up if they contain the
 selection.
 
-Upon consideration, I've decided to go for something for now that's totally
-different from what any browser does: get rid of all elements actually
-contained in the selection (pretty much matching browsers), but for elements
-containing the selection, I'll just run all the other styling commands in a
-fashion that will reset the style in normal cases.  This avoids having to
-create a lot of new logic to decide exactly what we can split up or not, and
-should be able to correctly remove anything that can actually be created by
-these algorithms.
-
-This approach currently results in incorrect behavior in some cases for
-non-modifiable elements with default styling, like <code>.  The correct
-approach is probably to declare these elements modifiable; this would roughly
-match what browsers do.  I'm ignoring the issue for now, because such elements
-cannot actually be created by implementations of execCommand(), so they're not
-likely to be common.  Also, the way pushing down styles works right now is that
-the element is destroyed and the style is recreated, which isn't going to work
-for elements like <code> or <tt> or <mark> that we don't normally create.
+Chrome 14 dev removes style attributes from every element in the range, but
+IE10PP2, Firefox 7.0a2, and Opera 11.50 do not, so I go with them.
 -->
 
 <p><span>Action</span>:
 
 <ol>
-  <li><span>Decompose</span> the <span>active range</span>, and let <var>node
-  list</var> be the result.
-
-  <li>For each <var>node</var> in <var>node list</var>, unset the [[style]]
-  attribute of <var>node</var> if it's an <span>editable</span> [[element]],
-  then unset the [[style]] attribute of all its <span>editable</span>
-  [[element]] [[descendants]].
-
   <li>Let <var>elements to remove</var> be a list of all <span>editable</span>
-  <span title="HTML element">HTML elements</span> that are the same as or
-  [[descendants]] of some member of <var>node list</var> and have non-null
-  [[parents]] and satisfy (insert conditions here).
+  <span title="HTML element">HTML elements</span> <span>effectively
+  contained</span> in the <span>active range</span>, excluding those with
+  [[localname]] "a", "audio", "br", "img", "video", or "wbr", and excluding
+  <span title="prohibited paragraph child">prohibited paragraph
+  children</span>.
 
-  <p class=XXX>The conditions are not so simple to define, because we want to
-  include non-conforming elements, which HTML doesn't give content models.  If
-  everything had categories, we'd want something like "either it's
-  unrecognized, or it's phrasing content that's not also embedded or
-  interactive".  Except this has weird corner-cases like ins and del that are
-  sometimes phrasing and sometimes flow.
+  <p class=XXX>Double-check that this element list is correct.
+
+  <p class=XXX>Do we want to go with this whitelist approach, or a blacklist?
+  If a whitelist, should we also whitelist display: block elements?
 
   <li>For each <var>element</var> in <var>elements to remove</var>:
 
@@ -2678,30 +2677,36 @@ for elements like <code> or <tt> or <mark> that we don't normally create.
     <li>Remove <var>element</var> from its [[parent]].
   </ol>
 
-  <li>For each of the entries in the following table, in the given order:
+  <li><span>Decompose</span> the <span>active range</span>, and let <var>node
+  list</var> be the result.
+
+  <li>For each <var>node</var> in <var>node list</var>, while <var>node</var>'s
+  [[parent]] is an <span>editable</span> <span>HTML element</span> <span>in the
+  same editing host</span> as <var>node</var>, and <var>node</var>'s [[parent]]
+  is not a <span>prohibited paragraph child</span> and does not have
+  [[localname]] "a" or "audio" or "br" or "img" or "video" or "wbr",
+  <span>split the parent</span> of the one-[[node]] list consisting of
+  <var>node</var>.
+
+  <li>For each of the entries in the following list, in the given order:
   <span>decompose</span> the <span>active range</span> again; then <span>set
-  the value</span> of the resulting [[nodes]], with <var>command</var> and
-  <var>new value</var> as given.
+  the value</span> of the resulting [[nodes]] to null, with <var>command</var>
+  as given.
+  <!-- For cases like <p style=font-weight:bold>foo[bar]baz</p>. -->
 
-  <p class=XXX>This has no relationship to what browsers actually do, although
-  it mostly works okay.  If I don't throw it out and replace it with something
-  more like what browsers do, it still probably needs refinement to handle some
-  elements that it doesn't deal with yet.
-
-  <table>
-    <tr><th><var>command</var> <th><var>new value</var>
-    <tr><td>subscript <td>"baseline"
+  <ol>
+    <li>subscript
     <!-- superscript not needed, subscript does the same thing.  We run this
     first so <sub>/<sup> won't upset fontSize. -->
-    <tr><td>bold <td>"normal"
-    <tr><td>fontName <td>null
-    <tr><td>fontSize <td>null
-    <tr><td>foreColor <td>null
-    <tr><td>hiliteColor <td>null
-    <tr><td>italic <td>"normal"
-    <tr><td>strikethrough <td>null
-    <tr><td>underline <td>null
-  </table>
+    <li>bold
+    <li>fontName
+    <li>fontSize
+    <li>foreColor
+    <li>hiliteColor
+    <li>italic
+    <li>strikethrough
+    <li>underline
+  </ol>
 </ol>
 <!-- @} -->
 

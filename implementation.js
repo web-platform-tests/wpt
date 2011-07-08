@@ -2925,9 +2925,6 @@ commands.hilitecolor = {
 };
 //@}
 
-// "The backColor command must behave identically to the hiliteColor command."
-commands.backcolor = commands.hilitecolor;
-
 ///// The italic command /////
 //@{
 commands.italic = {

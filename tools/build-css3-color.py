@@ -11,10 +11,10 @@ rawDirs = {'other-formats':'other'}
 
 import sys
 from os.path import join, exists, basename
-from CSSTestLib.Suite import CSSTestSuite
-from CSSTestLib.Indexer import Indexer
-from CSSTestLib.Groups import SelftestGroup
-from CSSTestLib.Utils import listdirs, listfiles, basepath
+from w3ctestlib.Suite import CSSTestSuite
+from w3ctestlib.Indexer import Indexer
+from w3ctestlib.Groups import SelftestGroup
+from w3ctestlib.Utils import listdirs, listfiles, basepath
 
 # run from css test suite repo root
 

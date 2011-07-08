@@ -16,7 +16,7 @@ from os.path import join, getmtime
 import sys
 import re
 import os
-from CSSTestLib.Sources import XHTMLSource
+from w3ctestlib.Sources import XHTMLSource
 
 def xhtml2html(source, dest):
     """Convert XHTML file given by path `source` into HTML file at path `dest`."""

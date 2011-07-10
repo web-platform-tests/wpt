@@ -1046,6 +1046,29 @@ instructions</dfn>:
 
 <h3 id=allowed-children><span class=secno>6.3 </span>Allowed children</h3>
 
+<p>A <dfn id=name-of-an-element-with-inline-contents>name of an element with inline contents</dfn> is "a", "abbr", "b",
+"bdi", "bdo", "cite", "code", "dfn", "em", "h1", "h2", "h3", "h4", "h5", "h6",
+"i", "kbd", "mark", "p", "pre", "q", "rp", "rt", "ruby", "s", "samp", "small",
+"span", "strong", "sub", "sup", "u", "var", "acronym", "listing", "strike",
+"xmp", "big", "blink", "font", "marquee", "nobr", or "tt".
+
+<p class=XXX>This deliberately omits "dt", because I don't like the fact that
+including it will cause various commands to break apart lists rather than put
+bad things inside dt.
+
+<p>An <dfn id=element-with-inline-contents>element with inline contents</dfn> is an <a href=#html-element>HTML element</a>
+whose <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> is a <a href=#name-of-an-element-with-inline-contents>name of an element with inline contents</a>.
+<!-- List is mostly based on current HTML5, together with obsolete elements.  I
+mostly got the obsolete element list by testing what Firefox 5.0a2 splits when
+you do insertHorizontalRule. -->
+
+<p class=XXX>The definitions of prohibited paragraph children and elements with
+inline contents should be in the HTML spec (possibly under a different name) so
+they don't fall out of sync.  They'll do for now.  Also, I might want to rename
+"prohibited paragraph child" given how I'm using it; I have to decide whether I
+want to key off CSS (like "inline node" does) or HTML (like "prohibited
+paragraph child") when deciding what to treat as a block and what not.
+
 <p>A <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> or string <var title="">child</var> is an <dfn id=allowed-child>allowed child</dfn> of a
 <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> or string <var title="">parent</var> if the following algorithm returns true:
 
@@ -1098,10 +1121,10 @@ reasons:
     cases too, so no need for complication. -->
 
     <li>If <var title="">child</var> is a <a href=#prohibited-paragraph-child-name>prohibited paragraph child name</a>
-    and <var title="">parent</var> or some <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of <var title="">parent</var> is a <code class=external data-anolis-spec=html title="the p element"><a href=http://www.whatwg.org/html/#the-p-element>p</a></code>
-    or <a href=#element-with-inline-contents>element with inline contents</a>, return false.
-    <!-- This generally cannot be serialized either, for p.  For elements with
-    inline contents, this serves to prevent things like
+    and <var title="">parent</var> or some <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of <var title="">parent</var> is an
+    <a href=#element-with-inline-contents>element with inline contents</a>, return false.
+    <!-- This generally cannot be serialized either, for p.  For other elements
+    with inline contents, this serves to prevent things like
     <span><p>foo</p></span>, which will parse fine but aren't supposed to
     happen anyway. -->
 
@@ -1159,7 +1182,7 @@ reasons:
     <tr><td>h1, h2, h3, h4, h5, h6 <td>h1, h2, h3, h4, h5, h6
     <tr><td>li <td>li
     <tr><td>nobr <td>nobr
-    <tr><td>p, all <a href=#name-of-an-element-with-inline-contents title="name of an element with inline contents">names
+    <tr><td>all <a href=#name-of-an-element-with-inline-contents title="name of an element with inline contents">names
           of an element with inline contents</a>
         <td>All <a href=#prohibited-paragraph-child-name title="prohibited paragraph child name">prohibited
           paragraph child names</a>
@@ -3013,29 +3036,6 @@ starting at 2011-05-13 at 16:53 EDT (UTC-0400).
 <h2 id=block-formatting-commands><span class=secno>8 </span>Block formatting commands</h2>
 
 <h3 id=block-formatting-command-definitions><span class=secno>8.1 </span>Block formatting command definitions</h3>
-
-<p>A <dfn id=name-of-an-element-with-inline-contents>name of an element with inline contents</dfn> is "a", "abbr", "b",
-"bdi", "bdo", "cite", "code", "dfn", "em", "h1", "h2", "h3", "h4", "h5", "h6",
-"i", "kbd", "mark", "pre", "q", "rp", "rt", "ruby", "s", "samp", "small",
-"span", "strong", "sub", "sup", "u", "var", "acronym", "listing", "strike",
-"xmp", "big", "blink", "font", "marquee", "nobr", or "tt".
-
-<p class=XXX>This deliberately omits "dt", because I don't like the fact that
-including it will cause various commands to break apart lists rather than put
-bad things inside dt.
-
-<p>An <dfn id=element-with-inline-contents>element with inline contents</dfn> is an <a href=#html-element>HTML element</a>
-whose <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> is a <a href=#name-of-an-element-with-inline-contents>name of an element with inline contents</a>.
-<!-- List is mostly based on current HTML5, together with obsolete elements.  I
-mostly got the obsolete element list by testing what Firefox 5.0a2 splits when
-you do insertHorizontalRule. -->
-
-<p class=XXX>The definitions of prohibited paragraph children and elements with
-inline contents should be in the HTML spec (possibly under a different name) so
-they don't fall out of sync.  They'll do for now.  Also, I might want to rename
-"prohibited paragraph child" given how I'm using it; I have to decide whether I
-want to key off CSS (like "inline node" does) or HTML (like "prohibited
-paragraph child") when deciding what to treat as a block and what not.
 
 <p>A <dfn id=potential-indentation-element>potential indentation element</dfn> is either a <code class=external data-anolis-spec=html title="the blockquote element"><a href=http://www.whatwg.org/html/#the-blockquote-element>blockquote</a></code>, or a
 <code class=external data-anolis-spec=html title="the div element"><a href=http://www.whatwg.org/html/#the-div-element>div</a></code> that has a <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code> attribute that sets "margin" or some subproperty

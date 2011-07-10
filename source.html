@@ -1000,6 +1000,29 @@ instructions</dfn>:
 
 <h3>Allowed children</h3>
 <!-- @{ -->
+<p>A <dfn>name of an element with inline contents</dfn> is "a", "abbr", "b",
+"bdi", "bdo", "cite", "code", "dfn", "em", "h1", "h2", "h3", "h4", "h5", "h6",
+"i", "kbd", "mark", "p", "pre", "q", "rp", "rt", "ruby", "s", "samp", "small",
+"span", "strong", "sub", "sup", "u", "var", "acronym", "listing", "strike",
+"xmp", "big", "blink", "font", "marquee", "nobr", or "tt".
+
+<p class=XXX>This deliberately omits "dt", because I don't like the fact that
+including it will cause various commands to break apart lists rather than put
+bad things inside dt.
+
+<p>An <dfn>element with inline contents</dfn> is an <span>HTML element</span>
+whose [[localname]] is a <span>name of an element with inline contents</span>.
+<!-- List is mostly based on current HTML5, together with obsolete elements.  I
+mostly got the obsolete element list by testing what Firefox 5.0a2 splits when
+you do insertHorizontalRule. -->
+
+<p class=XXX>The definitions of prohibited paragraph children and elements with
+inline contents should be in the HTML spec (possibly under a different name) so
+they don't fall out of sync.  They'll do for now.  Also, I might want to rename
+"prohibited paragraph child" given how I'm using it; I have to decide whether I
+want to key off CSS (like "inline node" does) or HTML (like "prohibited
+paragraph child") when deciding what to treat as a block and what not.
+
 <p>A [[node]] or string <var>child</var> is an <dfn>allowed child</dfn> of a
 [[node]] or string <var>parent</var> if the following algorithm returns true:
 
@@ -1052,10 +1075,10 @@ reasons:
     cases too, so no need for complication. -->
 
     <li>If <var>child</var> is a <span>prohibited paragraph child name</span>
-    and <var>parent</var> or some [[ancestor]] of <var>parent</var> is a [[p]]
-    or <span>element with inline contents</span>, return false.
-    <!-- This generally cannot be serialized either, for p.  For elements with
-    inline contents, this serves to prevent things like
+    and <var>parent</var> or some [[ancestor]] of <var>parent</var> is an
+    <span>element with inline contents</span>, return false.
+    <!-- This generally cannot be serialized either, for p.  For other elements
+    with inline contents, this serves to prevent things like
     <span><p>foo</p></span>, which will parse fine but aren't supposed to
     happen anyway. -->
 
@@ -1113,7 +1136,7 @@ reasons:
     <tr><td>h1, h2, h3, h4, h5, h6 <td>h1, h2, h3, h4, h5, h6
     <tr><td>li <td>li
     <tr><td>nobr <td>nobr
-    <tr><td>p, all <span title="name of an element with inline contents">names
+    <tr><td>all <span title="name of an element with inline contents">names
           of an element with inline contents</span>
         <td>All <span title="prohibited paragraph child name">prohibited
           paragraph child names</span>
@@ -2990,29 +3013,6 @@ starting at 2011-05-13 at 16:53 EDT (UTC-0400).
 
 <h3>Block formatting command definitions</h3>
 <!-- @{ -->
-<p>A <dfn>name of an element with inline contents</dfn> is "a", "abbr", "b",
-"bdi", "bdo", "cite", "code", "dfn", "em", "h1", "h2", "h3", "h4", "h5", "h6",
-"i", "kbd", "mark", "pre", "q", "rp", "rt", "ruby", "s", "samp", "small",
-"span", "strong", "sub", "sup", "u", "var", "acronym", "listing", "strike",
-"xmp", "big", "blink", "font", "marquee", "nobr", or "tt".
-
-<p class=XXX>This deliberately omits "dt", because I don't like the fact that
-including it will cause various commands to break apart lists rather than put
-bad things inside dt.
-
-<p>An <dfn>element with inline contents</dfn> is an <span>HTML element</span>
-whose [[localname]] is a <span>name of an element with inline contents</span>.
-<!-- List is mostly based on current HTML5, together with obsolete elements.  I
-mostly got the obsolete element list by testing what Firefox 5.0a2 splits when
-you do insertHorizontalRule. -->
-
-<p class=XXX>The definitions of prohibited paragraph children and elements with
-inline contents should be in the HTML spec (possibly under a different name) so
-they don't fall out of sync.  They'll do for now.  Also, I might want to rename
-"prohibited paragraph child" given how I'm using it; I have to decide whether I
-want to key off CSS (like "inline node" does) or HTML (like "prohibited
-paragraph child") when deciding what to treat as a block and what not.
-
 <p>A <dfn>potential indentation element</dfn> is either a [[blockquote]], or a
 [[div]] that has a [[style]] attribute that sets "margin" or some subproperty
 of it.

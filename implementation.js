@@ -1277,6 +1277,23 @@ function wrap(nodeList, siblingCriteria, newParentInstructions) {
 ///// Allowed children /////
 //@{
 
+// "A name of an element with inline contents is "a", "abbr", "b", "bdi",
+// "bdo", "cite", "code", "dfn", "em", "h1", "h2", "h3", "h4", "h5", "h6", "i",
+// "kbd", "mark", "p", "pre", "q", "rp", "rt", "ruby", "s", "samp", "small",
+// "span", "strong", "sub", "sup", "u", "var", "acronym", "listing", "strike",
+// "xmp", "big", "blink", "font", "marquee", "nobr", or "tt"."
+var namesOfElementsWithInlineContents = ["a", "abbr", "b", "bdi", "bdo",
+	"cite", "code", "dfn", "em", "h1", "h2", "h3", "h4", "h5", "h6", "i",
+	"kbd", "mark", "p", "pre", "q", "rp", "rt", "ruby", "s", "samp", "small",
+	"span", "strong", "sub", "sup", "u", "var", "acronym", "listing", "strike",
+	"xmp", "big", "blink", "font", "marquee", "nobr", "tt"];
+
+// "An element with inline contents is an HTML element whose local name is a
+// name of an element with inline contents."
+function isElementWithInlineContents(node) {
+	return isHtmlElement(node, namesOfElementsWithInlineContents);
+}
+
 function isAllowedChild(child, parent_) {
 	// "If parent is "colgroup", "table", "tbody", "tfoot", "thead", "tr", or
 	// an HTML element with local name equal to one of those, and child is a
@@ -1324,7 +1341,7 @@ function isAllowedChild(child, parent_) {
 		// return false."
 		//
 		// "If child is a prohibited paragraph child name and parent or some
-		// ancestor of parent is a p or element with inline contents, return
+		// ancestor of parent is an element with inline contents, return
 		// false."
 		//
 		// "If child is "h1", "h2", "h3", "h4", "h5", or "h6", and parent or
@@ -1336,8 +1353,7 @@ function isAllowedChild(child, parent_) {
 				return false;
 			}
 			if (prohibitedParagraphChildNames.indexOf(child) != -1
-			&& (isHtmlElement(ancestor, "p")
-			|| isElementWithInlineContents(ancestor))) {
+			&& isElementWithInlineContents(ancestor)) {
 				return false;
 			}
 			if (/^h[1-6]$/.test(child)
@@ -1416,7 +1432,7 @@ function isAllowedChild(child, parent_) {
 		[["h1", "h2", "h3", "h4", "h5", "h6"], ["h1", "h2", "h3", "h4", "h5", "h6"]],
 		[["li"], ["li"]],
 		[["nobr"], ["nobr"]],
-		[["p"].concat(namesOfElementsWithInlineContents), prohibitedParagraphChildNames],
+		[namesOfElementsWithInlineContents, prohibitedParagraphChildNames],
 		[["td", "th"], ["caption", "col", "colgroup", "tbody", "td", "tfoot", "th", "thead", "tr"]],
 	];
 	for (var i = 0; i < table.length; i++) {
@@ -3338,23 +3354,6 @@ commands.unlink = {
 
 ///// Block formatting command definitions /////
 //@{
-
-// "A name of an element with inline contents is "a", "abbr", "b", "bdi",
-// "bdo", "cite", "code", "dfn", "em", "h1", "h2", "h3", "h4", "h5", "h6", "i",
-// "kbd", "mark", "pre", "q", "rp", "rt", "ruby", "s", "samp", "small", "span",
-// "strong", "sub", "sup", "u", "var", "acronym", "listing", "strike", "xmp",
-// "big", "blink", "font", "marquee", "nobr", or "tt"."
-var namesOfElementsWithInlineContents = ["a", "abbr", "b", "bdi", "bdo",
-	"cite", "code", "dfn", "em", "h1", "h2", "h3", "h4", "h5", "h6", "i",
-	"kbd", "mark", "pre", "q", "rp", "rt", "ruby", "s", "samp", "small",
-	"span", "strong", "sub", "sup", "u", "var", "acronym", "listing", "strike",
-	"xmp", "big", "blink", "font", "marquee", "nobr", "tt"];
-
-// "An element with inline contents is an HTML element whose local name is a
-// name of an element with inline contents."
-function isElementWithInlineContents(node) {
-	return isHtmlElement(node, namesOfElementsWithInlineContents);
-}
 
 // "A potential indentation element is either a blockquote, or a div that has a
 // style attribute that sets "margin" or some subproperty of it."

@@ -3212,15 +3212,16 @@ won't remember that we aren't supposed to indent "foo" a second time.
   title=dom-Document-createElement>createElement("blockquote")</code> on the
   [[ownerdocument]] of <var>first node</var>.  Let <var>new parent</var> be the
   result.
-
-  <p class=XXX>This indents on both sides, so we don't have to worry about
-  directionality.  Preferably we should indent only on the start side, but
-  that requires care to get right in mixed-direction cases.  Even once
-  browsers start to support margin-start and so on, we can't use them because
-  a) we have to work okay in legacy browsers and b) it doesn't help if a
-  descendant block has different direction (so should be indented the other
-  way).  It's not clear to me that we should worry about it: most browsers
-  don't, and the ones that do get it wrong.
+  <!--
+  This indents on both sides, so we don't have to worry about directionality.
+  In theory it would be better if we indented only on the start side, but that
+  requires care to get right in mixed-direction cases.  Even once browsers
+  start to support margin-start and so on, we can't use them because a) we have
+  to work okay in legacy browsers and b) it doesn't help if a descendant block
+  has different direction (so should be indented the other way).  So let's not
+  worry about it: most browsers don't, and the ones that do get it wrong.  Just
+  indent on both sides.
+  -->
 
   <li><span>Fix disallowed ancestors</span> of <var>new parent</var>.
 </ol>

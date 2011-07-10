@@ -5023,10 +5023,6 @@ would be worth the added complexity.
   title=dom-Range-collapsed>collapsed</code>, <span>delete the contents</span>
   of the <span>active range</span> and abort these steps.
 
-  <p class=XXX>Maybe we sometimes want to do the following even if it isn't
-  collapsed?  WebKit seems to do some normalization on the range before
-  deciding whether it's collapsed, and that sounds like a good idea.
-
   <li><span>Canonicalize whitespace</span> at (<span>active range</span>'s
   [[startnode]], <span>active range</span>'s [[startoffset]]).
   <!-- Needed so that if there are multiple consecutive spaces we backspace
@@ -5606,10 +5602,6 @@ writing means what Firefox supports plus div.
   <li>If the <span>active range</span> is not <code data-anolis-spec=domrange
   title=dom-Range-collapsed>collapsed</code>, <span>delete the contents</span>
   of the <span>active range</span> and abort these steps.
-
-  <p class=XXX>Maybe we sometimes want to do the following even if it isn't
-  collapsed?  WebKit seems to do some normalization on the range before
-  deciding whether it's collapsed, and that sounds like a good idea.
 
   <li><span>Canonicalize whitespace</span> at (<span>active range</span>'s
   [[startnode]], <span>active range</span>'s [[startoffset]]).
@@ -6243,16 +6235,11 @@ http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
   listing and xmp work the same as pre in all browsers.  For Firefox and Opera,
   this results in trying to put a br inside an xmp, so I go with IE/Chrome for
   xmp.
+
+  In cases where hitting enter in a header doesn't break out of the header, we
+  should probably follow this code path too, instead of creating an adjoining
+  header.  No browser does this, though, so we don't.
   -->
-
-  <p class=XXX>Why don't we just insert a newline character if it's a pre?  We
-  don't really need to use br in that case.  Need to test: what do browsers do
-  if a pre element has newlines in it, do they convert to line breaks when you
-  make it no longer a pre?
-
-  <p class=XXX>In cases where hitting enter in a header doesn't break out of
-  the header, we should probably follow this code path too, instead of creating
-  an adjoining header.  No browser does this, though.
 
   <ol>
     <li>Let <var>br</var> be the result of calling [[createelement|"br"]] on

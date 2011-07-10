@@ -5022,10 +5022,6 @@ would be worth the added complexity.
   <li>If the <a href=#active-range>active range</a> is not <code class=external data-anolis-spec=domrange title=dom-Range-collapsed><a href=http://html5.org/specs/dom-range.html#dom-range-collapsed>collapsed</a></code>, <a href=#delete-the-contents>delete the contents</a>
   of the <a href=#active-range>active range</a> and abort these steps.
 
-  <p class=XXX>Maybe we sometimes want to do the following even if it isn't
-  collapsed?  WebKit seems to do some normalization on the range before
-  deciding whether it's collapsed, and that sounds like a good idea.
-
   <li><a href=#canonicalize-whitespace>Canonicalize whitespace</a> at (<a href=#active-range>active range</a>'s
   <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>, <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a>).
   <!-- Needed so that if there are multiple consecutive spaces we backspace
@@ -5603,10 +5599,6 @@ writing means what Firefox supports plus div.
 <ol>
   <li>If the <a href=#active-range>active range</a> is not <code class=external data-anolis-spec=domrange title=dom-Range-collapsed><a href=http://html5.org/specs/dom-range.html#dom-range-collapsed>collapsed</a></code>, <a href=#delete-the-contents>delete the contents</a>
   of the <a href=#active-range>active range</a> and abort these steps.
-
-  <p class=XXX>Maybe we sometimes want to do the following even if it isn't
-  collapsed?  WebKit seems to do some normalization on the range before
-  deciding whether it's collapsed, and that sounds like a good idea.
 
   <li><a href=#canonicalize-whitespace>Canonicalize whitespace</a> at (<a href=#active-range>active range</a>'s
   <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>, <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a>).
@@ -6230,16 +6222,11 @@ http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
   listing and xmp work the same as pre in all browsers.  For Firefox and Opera,
   this results in trying to put a br inside an xmp, so I go with IE/Chrome for
   xmp.
+
+  In cases where hitting enter in a header doesn't break out of the header, we
+  should probably follow this code path too, instead of creating an adjoining
+  header.  No browser does this, though, so we don't.
   -->
-
-  <p class=XXX>Why don't we just insert a newline character if it's a pre?  We
-  don't really need to use br in that case.  Need to test: what do browsers do
-  if a pre element has newlines in it, do they convert to line breaks when you
-  make it no longer a pre?
-
-  <p class=XXX>In cases where hitting enter in a header doesn't break out of
-  the header, we should probably follow this code path too, instead of creating
-  an adjoining header.  No browser does this, though.
 
   <ol>
     <li>Let <var title="">br</var> be the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("br")</a></code> on

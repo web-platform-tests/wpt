@@ -5323,9 +5323,11 @@ commands["delete"] = {
 			return;
 		}
 
-		// "If node is an li or dt or dd and is the first child of its parent:"
+		// "If node is an li or dt or dd and is the first child of its parent,
+		// and offset is zero:"
 		if (isHtmlElement(node, ["li", "dt", "dd"])
-		&& node == node.parentNode.firstChild) {
+		&& node == node.parentNode.firstChild
+		&& offset == 0) {
 			// "Let items be a list of all lis that are ancestors of node."
 			//
 			// Remember, must be in tree order.

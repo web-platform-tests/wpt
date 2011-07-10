@@ -366,6 +366,8 @@ var tests = {
 		'<ol><li>foo<li>[]bar<br>baz</ol>',
 		'<ol><li>foo<br>bar<li>[]baz</ol>',
 
+		'<ol><li><p>foo</p>{}bar</ol>',
+
 		'<ol><li><p>foo<li>[]bar</ol>',
 		'<ol><li>foo<li><p>[]bar</ol>',
 		'<ol><li><p>foo<li><p>[]bar</ol>',

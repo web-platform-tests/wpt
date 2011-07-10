@@ -654,8 +654,12 @@ whose <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domc
 I think.  Plus table stuff, since that can't be a descendant of a p either,
 although it won't auto-close it. -->
 
-<p>An <dfn id=inline-node>inline node</dfn> is either a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node, or an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> whose
-"display" property computes to "inline", "inline-block", or "inline-table".
+<p>A <dfn id=block-node>block node</dfn> is either an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> whose "display" property
+does not have <a href=http://www.w3.org/TR/CSS21/cascade.html#computed-value>computed value</a> "inline" or "inline-block" or "inline-table" or
+"none", or a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#document>Document</a></code>, or a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#documentfragment>DocumentFragment</a></code>.
+
+<p>An <dfn id=inline-node>inline node</dfn> is a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> that is not a <a href=#block-node>block
+node</a>.
 
 <p class=XXX>We might not want this to key off CSS; perhaps we should be
 listing elements instead?  Needs testing.
@@ -3382,10 +3386,8 @@ algorithm returns true:
 <h3 id=deleting-the-contents-of-a-range><span class=secno>8.4 </span>Deleting the contents of a range</h3>
 
 <p>To <dfn id=delete-the-contents>delete the contents</dfn> of a <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> <var title="">range</var>:
-
-<p class=XXX>I'm uncertain about the use of prohibited paragraph children here.
-I'm using it mostly because it's convenient and seems relatively sensible.  If
-we really want to use it, we probably want to change its name.
+<!-- TODO V2: Consider what should happen for block merging in corner cases
+like display: inline-table. -->
 
 <ol>
   <li>If <var title="">range</var> is null, abort these steps and do nothing.
@@ -3410,12 +3412,12 @@ we really want to use it, we probably want to change its name.
   -->
 
   <ol>
-    <li>If <var title="">start offset</var> is <var title="">start node</var>'s
-    <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a>, and <var title="">start node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is <a href=#in-the-same-editing-host>in the same
-    editing host</a>, and <var title="">start node</var> is not a <a href=#prohibited-paragraph-child>prohibited
-    paragraph child</a>, set <var title="">start offset</var> to one plus the
-    <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> of <var title="">start node</var>, then set <var title="">start node</var> to its
-    <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> and continue this loop from the beginning.
+    <li>If <var title="">start offset</var> is <var title="">start node</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a>, and
+    <var title="">start node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is <a href=#in-the-same-editing-host>in the same editing
+    host</a>, and <var title="">start node</var> is an <a href=#inline-node>inline node</a>, set
+    <var title="">start offset</var> to one plus the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> of <var title="">start node</var>,
+    then set <var title="">start node</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> and continue this loop
+    from the beginning.
     <!--
     For instance:
 
@@ -3425,8 +3427,8 @@ we really want to use it, we probably want to change its name.
 
     Then the next step will make it <b>foo</b><i>[bar]</i>.
 
-    We don't want to do this for prohibited paragraph children, because that
-    would lead to something like
+    We don't want to do this for block nodes, because that would lead to
+    something like
 
       <p>foo[</p><p>]bar<p>
 
@@ -3443,14 +3445,13 @@ we really want to use it, we probably want to change its name.
     <li>Let <var title="">reference node</var> be the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">start node</var>
     with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> equal to <var title="">start offset</var>.
 
-    <li>If <var title="">reference node</var> is a <a href=#prohibited-paragraph-child>prohibited paragraph
-    child</a> or an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> with no <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, or is neither an
-    <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> nor a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node, break from this loop.
+    <li>If <var title="">reference node</var> is a <a href=#block-node>block node</a> or an
+    <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> with no <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, or is neither an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> nor a
+    <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node, break from this loop.
     <!--
     Don't descend into an element with no children, since then it won't get
-    deleted even if it's selected.  Don't descend into a prohibited paragraph
-    child, because then we might wind up not mergings blocks when we should,
-    e.g.
+    deleted even if it's selected.  Don't descend into a block node, because
+    then we might wind up not mergings blocks when we should, e.g.
 
       foo{<p>}bar</p>
       -> foo<p>{}bar</p>
@@ -3467,18 +3468,18 @@ we really want to use it, we probably want to change its name.
   <ol>
     <li>If <var title="">end offset</var> is 0, and <var title="">end node</var>'s
     <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is <a href=#in-the-same-editing-host>in the same editing host</a>, and <var title="">end
-    node</var> is not a <a href=#prohibited-paragraph-child>prohibited paragraph child</a>, set <var title="">end
-    offset</var> to the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> of <var title="">end node</var>, then set <var title="">end
-    node</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> and continue this loop from the beginning.
+    node</var> is an <a href=#inline-node>inline node</a>, set <var title="">end offset</var> to the
+    <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> of <var title="">end node</var>, then set <var title="">end node</var> to its
+    <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> and continue this loop from the beginning.
 
     <li>If <var title="">end offset</var> is 0, break from this loop.
 
     <li>Let <var title="">reference node</var> be the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">end node</var>
     with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> equal to <var title="">end offset</var> minus one.
 
-    <li>If <var title="">reference node</var> is a <a href=#prohibited-paragraph-child>prohibited paragraph
-    child</a> or an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> with no <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, or is neither an
-    <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> nor a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node, break from this loop.
+    <li>If <var title="">reference node</var> is a <a href=#block-node>block node</a> or an
+    <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> with no <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, or is neither an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> nor a
+    <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node, break from this loop.
 
     <li>Set <var title="">end node</var> to <var title="">reference node</var> and <var title="">end
     offset</var> to the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> of <var title="">reference node</var>.
@@ -3514,19 +3515,21 @@ we really want to use it, we probably want to change its name.
   <var title="">range</var>.
 
   <li>While <var title="">start block</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is <a href=#in-the-same-editing-host>in the same editing
-  host</a> and <var title="">start block</var> is not a <a href=#prohibited-paragraph-child>prohibited paragraph
-  child</a>, set <var title="">start block</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+  host</a> and <var title="">start block</var> is an <a href=#inline-node>inline node</a>, set
+  <var title="">start block</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
 
-  <li>If <var title="">start block</var> is neither a <a href=#prohibited-paragraph-child>prohibited paragraph
-  child</a> nor an <a href=#editing-host>editing host</a>, or "span" is not an
-  <a href=#allowed-child>allowed child</a> of <var title="">start block</var>, or <var title="">start
-  block</var> is a <code class=external data-anolis-spec=html title="the td element"><a href=http://www.whatwg.org/html/#the-td-element>td</a></code> or <code class=external data-anolis-spec=html title="the th element"><a href=http://www.whatwg.org/html/#the-th-element>th</a></code>, set <var title="">start block</var> to null.
+  <li>If <var title="">start block</var> is neither a <a href=#block-node>block node</a> nor an
+  <a href=#editing-host>editing host</a>, or "span" is not an <a href=#allowed-child>allowed child</a> of
+  <var title="">start block</var>, or <var title="">start block</var> is a <code class=external data-anolis-spec=html title="the td element"><a href=http://www.whatwg.org/html/#the-td-element>td</a></code> or <code class=external data-anolis-spec=html title="the th element"><a href=http://www.whatwg.org/html/#the-th-element>th</a></code>, set
+  <var title="">start block</var> to null.
   <!--
-  We only merge to or from prohibited paragraph children or editing hosts.
-  (This is just in case someone makes a span into an editing host and sticks
-  paragraphs inside it or something . . . we could probably drop that proviso.)
-  Anything else is presumed to be an inline element, basically.  This might not
-  be ideal.
+  We only merge to or from block nodes or editing hosts.  (This is just in case
+  someone makes a span into an editing host and sticks paragraphs inside it or
+  something . . . we could probably drop that proviso.)  Firefox 7.0a2 ignores
+  the display property when merging, so it doesn't merge <span
+  style=display:block> but does merge <p style=display:inline>.  This is
+  undesirable, because it's visually wrong.  IE10PP2 and Chrome 14 dev behave
+  more like the spec, and Opera 11.50 seems to be unable to make up its mind.
 
   If span isn't an allowed child, it's probably something unpleasant like a
   table row or a list or such.  We don't want to merge to or from something
@@ -3547,13 +3550,13 @@ we really want to use it, we probably want to change its name.
   <var title="">range</var>.
 
   <li>While <var title="">end block</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is <a href=#in-the-same-editing-host>in the same editing
-  host</a> and <var title="">end block</var> is not a <a href=#prohibited-paragraph-child>prohibited paragraph
-  child</a>, set <var title="">end block</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+  host</a> and <var title="">end block</var> is an <a href=#inline-node>inline node</a>, set
+  <var title="">end block</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
 
-  <li>If <var title="">end block</var> is neither a <a href=#prohibited-paragraph-child>prohibited paragraph
-  child</a> nor an <a href=#editing-host>editing host</a>, or "span" is not an
-  <a href=#allowed-child>allowed child</a> of <var title="">end block</var>, or <var title="">end block</var>
-  is a <code class=external data-anolis-spec=html title="the td element"><a href=http://www.whatwg.org/html/#the-td-element>td</a></code> or <code class=external data-anolis-spec=html title="the th element"><a href=http://www.whatwg.org/html/#the-th-element>th</a></code>, set <var title="">end block</var> to null.
+  <li>If <var title="">end block</var> is neither a <a href=#block-node>block node</a> nor an
+  <a href=#editing-host>editing host</a>, or "span" is not an <a href=#allowed-child>allowed child</a> of
+  <var title="">end block</var>, or <var title="">end block</var> is a <code class=external data-anolis-spec=html title="the td element"><a href=http://www.whatwg.org/html/#the-td-element>td</a></code> or <code class=external data-anolis-spec=html title="the th element"><a href=http://www.whatwg.org/html/#the-th-element>th</a></code>, set
+  <var title="">end block</var> to null.
 
   <!-- This is based on deleteContents() in DOM Range. -->
   <li>If <var title="">start node</var> and <var title="">end node</var> are the same, and
@@ -3716,7 +3719,7 @@ we really want to use it, we probably want to change its name.
   <li>Otherwise, if <var title="">start block</var> is a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-descendant title=concept-tree-descendant>descendant</a> of <var title="">end
   block</var>:
   <!-- Pull in everything that comes after <var title>start block</var>, until we hit
-  a br or prohibited paragraph child. -->
+  a br or block node. -->
 
   <ol>
     <li>Set the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> and <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> of <var title="">range</var> to
@@ -3732,9 +3735,9 @@ we really want to use it, we probably want to change its name.
     <var title="">start block</var>'s <code class=external data-anolis-spec=domcore title=dom-Node-lastChild><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-lastchild>lastChild</a></code> from it.
 
     <li>While the <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code> of <var title="">reference node</var> is neither null
-    nor a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code> nor a <a href=#prohibited-paragraph-child>prohibited paragraph child</a>, append the
-    <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code> of <var title="">reference node</var> as the last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of
-    <var title="">start block</var>, <a href=#preserving-ranges>preserving ranges</a>.
+    nor a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code> nor a <a href=#block-node>block node</a>, append the <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code> of
+    <var title="">reference node</var> as the last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">start block</var>,
+    <a href=#preserving-ranges>preserving ranges</a>.
 
     <li>If the <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code> of <var title="">reference node</var> is a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code>, remove
     it from its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
@@ -5074,15 +5077,15 @@ would be worth the added complexity.
     <a href=#invisible>invisible</a> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>, remove that <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> from
     <var title="">node</var>, then subtract one from <var title="">offset</var>.
 
-    <li>Otherwise, if <var title="">offset</var> is zero and <var title="">node</var> is not a
-    <a href=#prohibited-paragraph-child>prohibited paragraph child</a>, or if <var title="">node</var> is an
+    <li>Otherwise, if <var title="">offset</var> is zero and <var title="">node</var> is an
+    <a href=#inline-node>inline node</a>, or if <var title="">node</var> is an
     <a href=#invisible>invisible</a> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>, set <var title="">offset</var> to the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> of
     <var title="">node</var>, then set <var title="">node</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
 
     <li>Otherwise, if <var title="">node</var> has a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a>
-    <var title="">offset</var> &minus; 1 and that <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> is not a <a href=#prohibited-paragraph-child>prohibited
-    paragraph child</a> or a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code> or an <code class=external data-anolis-spec=html title="the img element"><a href=http://www.whatwg.org/html/#the-img-element>img</a></code>, set <var title="">node</var> to
-    that <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>, then set <var title="">offset</var> to the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> of
+    <var title="">offset</var> &minus; 1 and that <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> is not a <a href=#block-node>block
+    node</a> or a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code> or an <code class=external data-anolis-spec=html title="the img element"><a href=http://www.whatwg.org/html/#the-img-element>img</a></code>, set <var title="">node</var> to that
+    <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>, then set <var title="">offset</var> to the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> of
     <var title="">node</var>.
 
     <li>Otherwise, break from this loop.
@@ -5091,18 +5094,18 @@ would be worth the added complexity.
   <!--
   At this point, node cannot be an invisible node.  There are three cases:
 
-  1) offset is zero and node is a prohibited paragraph child.  Then we'll
-  usually merge with the previous block if one exists.
+  1) offset is zero and node is a block node.  Then we'll usually merge with
+  the previous block if one exists.
 
-  2) offset is not zero, node is not a prohibited paragraph child, and node
-  does not have a child with index offset - 1.  The only way this is possible
-  is if node has a length greater than zero but no children, which implies it's
-  a text or comment or PI.  Comments and PIs are invisible nodes, so it must be
-  a text node.  We delete the previous character.
+  2) offset is not zero, node is not a block node, and node does not have a
+  child with index offset - 1.  The only way this is possible is if node has a
+  length greater than zero but no children, which implies it's a text or
+  comment or PI.  Comments and PIs are invisible nodes, so it must be a text
+  node.  We delete the previous character.
 
   3) offset is not zero, and the child of node with index offset - 1 is a
-  prohibited paragraph child or a br or an img.  Then we'll usually merge the
-  offsetth child of node with the last descendant of the offset - 1st.
+  block node or a br or an img.  Then we'll usually merge the offsetth child of
+  node with the last descendant of the offset - 1st.
   -->
 
   <li>If <var title="">node</var> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node and <var title="">offset</var> is not zero,
@@ -5112,8 +5115,7 @@ would be worth the added complexity.
   (<var title="">node</var>, <var title="">offset</var>) and abort these steps.
 
   <!-- At the time of this writing, this should be impossible. -->
-  <li>If <var title="">node</var> is not a <a href=#prohibited-paragraph-child>prohibited paragraph child</a>,
-  abort these steps.
+  <li>If <var title="">node</var> is an <a href=#inline-node>inline node</a>, abort these steps.
 
   <li>If <var title="">node</var> has a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> <var title="">offset</var>
   &minus; 1 and that <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> is a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code> or <code class=external data-anolis-spec=html title="the hr element"><a href=http://www.whatwg.org/html/#the-hr-element>hr</a></code> or <code class=external data-anolis-spec=html title="the img element"><a href=http://www.whatwg.org/html/#the-img-element>img</a></code>, call
@@ -5637,15 +5639,15 @@ writing means what Firefox supports plus div.
     prop</a>, add one to <var title="">offset</var>.
 
     <li>Otherwise, if <var title="">offset</var> is the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> of
-    <var title="">node</var> and <var title="">node</var> is not a <a href=#prohibited-paragraph-child>prohibited paragraph
-    child</a>, or if <var title="">node</var> is <a href=#invisible>invisible</a>, set
-    <var title="">offset</var> to one plus the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> of <var title="">node</var>, then set
-    <var title="">node</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+    <var title="">node</var> and <var title="">node</var> is an <a href=#inline-node>inline node</a>, or if
+    <var title="">node</var> is <a href=#invisible>invisible</a>, set <var title="">offset</var> to one
+    plus the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> of <var title="">node</var>, then set <var title="">node</var> to its
+    <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
 
     <li>Otherwise, if <var title="">node</var> has a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a>
-    <var title="">offset</var> and that <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> is not a <a href=#prohibited-paragraph-child>prohibited paragraph
-    child</a> or a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code> or an <code class=external data-anolis-spec=html title="the img element"><a href=http://www.whatwg.org/html/#the-img-element>img</a></code>, set <var title="">node</var> to that
-    <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>, then set <var title="">offset</var> to zero.
+    <var title="">offset</var> and that <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> is not a <a href=#block-node>block node</a> or a
+    <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code> or an <code class=external data-anolis-spec=html title="the img element"><a href=http://www.whatwg.org/html/#the-img-element>img</a></code>, set <var title="">node</var> to that <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>, then set
+    <var title="">offset</var> to zero.
 
     <li>Otherwise, break from this loop.
   </ol>
@@ -5661,8 +5663,7 @@ writing means what Firefox supports plus div.
   diacritic on the next letter being added to the previous one when the letter
   is deleted.  Worse, it places the cursor between a letter and its diacritic.
 
-  <li>If <var title="">node</var> is not a <a href=#prohibited-paragraph-child>prohibited paragraph child</a>,
-  abort these steps.
+  <li>If <var title="">node</var> is an <a href=#inline-node>inline node</a>, abort these steps.
 
   <li>If <var title="">node</var> has a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> <var title="">offset</var> and
   that <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> is a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code> or <code class=external data-anolis-spec=html title="the hr element"><a href=http://www.whatwg.org/html/#the-hr-element>hr</a></code> or <code class=external data-anolis-spec=html title="the img element"><a href=http://www.whatwg.org/html/#the-img-element>img</a></code>, call

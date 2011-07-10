@@ -599,8 +599,12 @@ whose [[localname]] is a <span>prohibited paragraph child name</span>.
 I think.  Plus table stuff, since that can't be a descendant of a p either,
 although it won't auto-close it. -->
 
-<p>An <dfn>inline node</dfn> is either a [[text]] node, or an [[element]] whose
-"display" property computes to "inline", "inline-block", or "inline-table".
+<p>A <dfn>block node</dfn> is either an [[element]] whose "display" property
+does not have [[compval]] "inline" or "inline-block" or "inline-table" or
+"none", or a [[document]], or a [[documentfragment]].
+
+<p>An <dfn>inline node</dfn> is a [[node]] that is not a <span>block
+node</span>.
 
 <p class=XXX>We might not want this to key off CSS; perhaps we should be
 listing elements instead?  Needs testing.
@@ -3360,10 +3364,8 @@ algorithm returns true:
 <h3>Deleting the contents of a range</h3>
 <!-- @{ -->
 <p>To <dfn>delete the contents</dfn> of a [[range]] <var>range</var>:
-
-<p class=XXX>I'm uncertain about the use of prohibited paragraph children here.
-I'm using it mostly because it's convenient and seems relatively sensible.  If
-we really want to use it, we probably want to change its name.
+<!-- TODO V2: Consider what should happen for block merging in corner cases
+like display: inline-table. -->
 
 <ol>
   <li>If <var>range</var> is null, abort these steps and do nothing.
@@ -3388,12 +3390,12 @@ we really want to use it, we probably want to change its name.
   -->
 
   <ol>
-    <li>If <var>start offset</var> is <var>start node</var>'s
-    [[nodelength]], and <var>start node</var>'s [[parent]] is <span>in the same
-    editing host</span>, and <var>start node</var> is not a <span>prohibited
-    paragraph child</span>, set <var>start offset</var> to one plus the
-    [[index]] of <var>start node</var>, then set <var>start node</var> to its
-    [[parent]] and continue this loop from the beginning.
+    <li>If <var>start offset</var> is <var>start node</var>'s [[length]], and
+    <var>start node</var>'s [[parent]] is <span>in the same editing
+    host</span>, and <var>start node</var> is an <span>inline node</span>, set
+    <var>start offset</var> to one plus the [[index]] of <var>start node</var>,
+    then set <var>start node</var> to its [[parent]] and continue this loop
+    from the beginning.
     <!--
     For instance:
 
@@ -3403,8 +3405,8 @@ we really want to use it, we probably want to change its name.
 
     Then the next step will make it <b>foo</b><i>[bar]</i>.
 
-    We don't want to do this for prohibited paragraph children, because that
-    would lead to something like
+    We don't want to do this for block nodes, because that would lead to
+    something like
 
       <p>foo[</p><p>]bar<p>
 
@@ -3421,14 +3423,13 @@ we really want to use it, we probably want to change its name.
     <li>Let <var>reference node</var> be the [[child]] of <var>start node</var>
     with [[index]] equal to <var>start offset</var>.
 
-    <li>If <var>reference node</var> is a <span>prohibited paragraph
-    child</span> or an [[element]] with no [[children]], or is neither an
-    [[element]] nor a [[text]] node, break from this loop.
+    <li>If <var>reference node</var> is a <span>block node</span> or an
+    [[element]] with no [[children]], or is neither an [[element]] nor a
+    [[text]] node, break from this loop.
     <!--
     Don't descend into an element with no children, since then it won't get
-    deleted even if it's selected.  Don't descend into a prohibited paragraph
-    child, because then we might wind up not mergings blocks when we should,
-    e.g.
+    deleted even if it's selected.  Don't descend into a block node, because
+    then we might wind up not mergings blocks when we should, e.g.
 
       foo{<p>}bar</p>
       -> foo<p>{}bar</p>
@@ -3445,18 +3446,18 @@ we really want to use it, we probably want to change its name.
   <ol>
     <li>If <var>end offset</var> is 0, and <var>end node</var>'s
     [[parent]] is <span>in the same editing host</span>, and <var>end
-    node</var> is not a <span>prohibited paragraph child</span>, set <var>end
-    offset</var> to the [[index]] of <var>end node</var>, then set <var>end
-    node</var> to its [[parent]] and continue this loop from the beginning.
+    node</var> is an <span>inline node</span>, set <var>end offset</var> to the
+    [[index]] of <var>end node</var>, then set <var>end node</var> to its
+    [[parent]] and continue this loop from the beginning.
 
     <li>If <var>end offset</var> is 0, break from this loop.
 
     <li>Let <var>reference node</var> be the [[child]] of <var>end node</var>
     with [[index]] equal to <var>end offset</var> minus one.
 
-    <li>If <var>reference node</var> is a <span>prohibited paragraph
-    child</span> or an [[element]] with no [[children]], or is neither an
-    [[element]] nor a [[text]] node, break from this loop.
+    <li>If <var>reference node</var> is a <span>block node</span> or an
+    [[element]] with no [[children]], or is neither an [[element]] nor a
+    [[text]] node, break from this loop.
 
     <li>Set <var>end node</var> to <var>reference node</var> and <var>end
     offset</var> to the [[nodelength]] of <var>reference node</var>.
@@ -3493,19 +3494,21 @@ we really want to use it, we probably want to change its name.
   <var>range</var>.
 
   <li>While <var>start block</var>'s [[parent]] is <span>in the same editing
-  host</span> and <var>start block</var> is not a <span>prohibited paragraph
-  child</span>, set <var>start block</var> to its [[parent]].
+  host</span> and <var>start block</var> is an <span>inline node</span>, set
+  <var>start block</var> to its [[parent]].
 
-  <li>If <var>start block</var> is neither a <span>prohibited paragraph
-  child</span> nor an <span>editing host</span>, or "span" is not an
-  <span>allowed child</span> of <var>start block</var>, or <var>start
-  block</var> is a [[td]] or [[th]], set <var>start block</var> to null.
+  <li>If <var>start block</var> is neither a <span>block node</span> nor an
+  <span>editing host</span>, or "span" is not an <span>allowed child</span> of
+  <var>start block</var>, or <var>start block</var> is a [[td]] or [[th]], set
+  <var>start block</var> to null.
   <!--
-  We only merge to or from prohibited paragraph children or editing hosts.
-  (This is just in case someone makes a span into an editing host and sticks
-  paragraphs inside it or something . . . we could probably drop that proviso.)
-  Anything else is presumed to be an inline element, basically.  This might not
-  be ideal.
+  We only merge to or from block nodes or editing hosts.  (This is just in case
+  someone makes a span into an editing host and sticks paragraphs inside it or
+  something . . . we could probably drop that proviso.)  Firefox 7.0a2 ignores
+  the display property when merging, so it doesn't merge <span
+  style=display:block> but does merge <p style=display:inline>.  This is
+  undesirable, because it's visually wrong.  IE10PP2 and Chrome 14 dev behave
+  more like the spec, and Opera 11.50 seems to be unable to make up its mind.
 
   If span isn't an allowed child, it's probably something unpleasant like a
   table row or a list or such.  We don't want to merge to or from something
@@ -3526,13 +3529,13 @@ we really want to use it, we probably want to change its name.
   <var>range</var>.
 
   <li>While <var>end block</var>'s [[parent]] is <span>in the same editing
-  host</span> and <var>end block</var> is not a <span>prohibited paragraph
-  child</span>, set <var>end block</var> to its [[parent]].
+  host</span> and <var>end block</var> is an <span>inline node</span>, set
+  <var>end block</var> to its [[parent]].
 
-  <li>If <var>end block</var> is neither a <span>prohibited paragraph
-  child</span> nor an <span>editing host</span>, or "span" is not an
-  <span>allowed child</span> of <var>end block</var>, or <var>end block</var>
-  is a [[td]] or [[th]], set <var>end block</var> to null.
+  <li>If <var>end block</var> is neither a <span>block node</span> nor an
+  <span>editing host</span>, or "span" is not an <span>allowed child</span> of
+  <var>end block</var>, or <var>end block</var> is a [[td]] or [[th]], set
+  <var>end block</var> to null.
 
   <!-- This is based on deleteContents() in DOM Range. -->
   <li>If <var>start node</var> and <var>end node</var> are the same, and
@@ -3695,7 +3698,7 @@ we really want to use it, we probably want to change its name.
   <li>Otherwise, if <var>start block</var> is a [[descendant]] of <var>end
   block</var>:
   <!-- Pull in everything that comes after <var>start block</var>, until we hit
-  a br or prohibited paragraph child. -->
+  a br or block node. -->
 
   <ol>
     <li>Set the [[rangestart]] and [[rangeend]] of <var>range</var> to
@@ -3711,9 +3714,9 @@ we really want to use it, we probably want to change its name.
     <var>start block</var>'s [[lastchild]] from it.
 
     <li>While the [[nextsibling]] of <var>reference node</var> is neither null
-    nor a [[br]] nor a <span>prohibited paragraph child</span>, append the
-    [[nextsibling]] of <var>reference node</var> as the last [[child]] of
-    <var>start block</var>, <span>preserving ranges</span>.
+    nor a [[br]] nor a <span>block node</span>, append the [[nextsibling]] of
+    <var>reference node</var> as the last [[child]] of <var>start block</var>,
+    <span>preserving ranges</span>.
 
     <li>If the [[nextsibling]] of <var>reference node</var> is a [[br]], remove
     it from its [[parent]].
@@ -5075,15 +5078,15 @@ would be worth the added complexity.
     <span>invisible</span> [[node]], remove that [[child]] from
     <var>node</var>, then subtract one from <var>offset</var>.
 
-    <li>Otherwise, if <var>offset</var> is zero and <var>node</var> is not a
-    <span>prohibited paragraph child</span>, or if <var>node</var> is an
+    <li>Otherwise, if <var>offset</var> is zero and <var>node</var> is an
+    <span>inline node</span>, or if <var>node</var> is an
     <span>invisible</span> [[node]], set <var>offset</var> to the [[index]] of
     <var>node</var>, then set <var>node</var> to its [[parent]].
 
     <li>Otherwise, if <var>node</var> has a [[child]] with [[index]]
-    <var>offset</var> &minus; 1 and that [[child]] is not a <span>prohibited
-    paragraph child</span> or a [[br]] or an [[img]], set <var>node</var> to
-    that [[child]], then set <var>offset</var> to the [[nodelength]] of
+    <var>offset</var> &minus; 1 and that [[child]] is not a <span>block
+    node</span> or a [[br]] or an [[img]], set <var>node</var> to that
+    [[child]], then set <var>offset</var> to the [[nodelength]] of
     <var>node</var>.
 
     <li>Otherwise, break from this loop.
@@ -5092,18 +5095,18 @@ would be worth the added complexity.
   <!--
   At this point, node cannot be an invisible node.  There are three cases:
 
-  1) offset is zero and node is a prohibited paragraph child.  Then we'll
-  usually merge with the previous block if one exists.
+  1) offset is zero and node is a block node.  Then we'll usually merge with
+  the previous block if one exists.
 
-  2) offset is not zero, node is not a prohibited paragraph child, and node
-  does not have a child with index offset - 1.  The only way this is possible
-  is if node has a length greater than zero but no children, which implies it's
-  a text or comment or PI.  Comments and PIs are invisible nodes, so it must be
-  a text node.  We delete the previous character.
+  2) offset is not zero, node is not a block node, and node does not have a
+  child with index offset - 1.  The only way this is possible is if node has a
+  length greater than zero but no children, which implies it's a text or
+  comment or PI.  Comments and PIs are invisible nodes, so it must be a text
+  node.  We delete the previous character.
 
   3) offset is not zero, and the child of node with index offset - 1 is a
-  prohibited paragraph child or a br or an img.  Then we'll usually merge the
-  offsetth child of node with the last descendant of the offset - 1st.
+  block node or a br or an img.  Then we'll usually merge the offsetth child of
+  node with the last descendant of the offset - 1st.
   -->
 
   <li>If <var>node</var> is a [[text]] node and <var>offset</var> is not zero,
@@ -5113,8 +5116,7 @@ would be worth the added complexity.
   (<var>node</var>, <var>offset</var>) and abort these steps.
 
   <!-- At the time of this writing, this should be impossible. -->
-  <li>If <var>node</var> is not a <span>prohibited paragraph child</span>,
-  abort these steps.
+  <li>If <var>node</var> is an <span>inline node</span>, abort these steps.
 
   <li>If <var>node</var> has a [[child]] with [[index]] <var>offset</var>
   &minus; 1 and that [[child]] is a [[br]] or [[hr]] or [[img]], call
@@ -5640,15 +5642,15 @@ writing means what Firefox supports plus div.
     prop</span>, add one to <var>offset</var>.
 
     <li>Otherwise, if <var>offset</var> is the [[nodelength]] of
-    <var>node</var> and <var>node</var> is not a <span>prohibited paragraph
-    child</span>, or if <var>node</var> is <span>invisible</span>, set
-    <var>offset</var> to one plus the [[index]] of <var>node</var>, then set
-    <var>node</var> to its [[parent]].
+    <var>node</var> and <var>node</var> is an <span>inline node</span>, or if
+    <var>node</var> is <span>invisible</span>, set <var>offset</var> to one
+    plus the [[index]] of <var>node</var>, then set <var>node</var> to its
+    [[parent]].
 
     <li>Otherwise, if <var>node</var> has a [[child]] with [[index]]
-    <var>offset</var> and that [[child]] is not a <span>prohibited paragraph
-    child</span> or a [[br]] or an [[img]], set <var>node</var> to that
-    [[child]], then set <var>offset</var> to zero.
+    <var>offset</var> and that [[child]] is not a <span>block node</span> or a
+    [[br]] or an [[img]], set <var>node</var> to that [[child]], then set
+    <var>offset</var> to zero.
 
     <li>Otherwise, break from this loop.
   </ol>
@@ -5664,8 +5666,7 @@ writing means what Firefox supports plus div.
   diacritic on the next letter being added to the previous one when the letter
   is deleted.  Worse, it places the cursor between a letter and its diacritic.
 
-  <li>If <var>node</var> is not a <span>prohibited paragraph child</span>,
-  abort these steps.
+  <li>If <var>node</var> is an <span>inline node</span>, abort these steps.
 
   <li>If <var>node</var> has a [[child]] with [[index]] <var>offset</var> and
   that [[child]] is a [[br]] or [[hr]] or [[img]], call

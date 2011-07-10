@@ -502,6 +502,14 @@ var tests = {
 		'<dl><dt>foo<dd>bar[<dd>]baz</dl>',
 
 		'<b>foo [&nbsp;</b>bar]',
+
+		// Do we merge based on element names or the display property?
+		'<p style=display:inline>fo[o<p style=display:inline>b]ar',
+		'<span style=display:block>fo[o</span><span style=display:block>b]ar</span>',
+		'<span style=display:inline-block>fo[o</span><span style=display:inline-block>b]ar</span>',
+		'<span style=display:inline-table>fo[o</span><span style=display:inline-table>b]ar</span>',
+		'<span style=display:none>fo[o</span><span style=display:none>b]ar</span>',
+		'<quasit style=display:block>fo[o</quasit><quasit style=display:block>b]ar</quasit>',
 	],
 	//@}
 	fontname: [

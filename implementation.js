@@ -720,13 +720,19 @@ function isProhibitedParagraphChild(node) {
 	return isHtmlElement(node, prohibitedParagraphChildNames);
 }
 
-// "An inline node is either a Text node, or an Element whose "display"
-// property computes to "inline", "inline-block", or "inline-table"."
-function isInlineNode(node) {
+// "A block node is either an Element whose "display" property does not have
+// computed value "inline" or "inline-block" or "inline-table" or "none", or a
+// Document, or a DocumentFragment."
+function isBlockNode(node) {
 	return node
-		&& (node.nodeType == Node.TEXT_NODE
-		|| (node.nodeType == Node.ELEMENT_NODE
-		&& ["inline", "inline-block", "inline-table"].indexOf(getComputedStyle(node).display) != -1));
+		&& ((node.nodeType == Node.ELEMENT_NODE && ["inline", "inline-block", "inline-table", "none"].indexOf(getComputedStyle(node).display) == -1)
+		|| node.nodeType == Node.DOCUMENT_NODE
+		|| node.nodeType == Node.DOCUMENT_FRAGMENT_NODE);
+}
+
+// "An inline node is a node that is not a block node."
+function isInlineNode(node) {
+	return node && !isBlockNode(node);
 }
 
 // "An editing host is a node that is either an Element with a contenteditable
@@ -3870,13 +3876,12 @@ function deleteContents(node1, offset1, node2, offset2) {
 	// "While start node has at least one child:"
 	while (startNode.hasChildNodes()) {
 		// "If start offset is start node's length, and start node's parent is
-		// in the same editing host, and start node is not a prohibited
-		// paragraph child, set start offset to one plus the index of start
-		// node, then set start node to its parent and continue this loop from
-		// the beginning."
+		// in the same editing host, and start node is an inline node, set
+		// start offset to one plus the index of start node, then set start
+		// node to its parent and continue this loop from the beginning."
 		if (startOffset == getNodeLength(startNode)
 		&& inSameEditingHost(startNode, startNode.parentNode)
-		&& !isProhibitedParagraphChild(startNode)) {
+		&& isInlineNode(startNode)) {
 			startOffset = 1 + getNodeIndex(startNode);
 			startNode = startNode.parentNode;
 			continue;
@@ -3891,10 +3896,9 @@ function deleteContents(node1, offset1, node2, offset2) {
 		// start offset."
 		var referenceNode = startNode.childNodes[startOffset];
 
-		// "If reference node is a prohibited paragraph child or an Element
-		// with no children, or is neither an Element nor a Text node, break
-		// from this loop."
-		if (isProhibitedParagraphChild(referenceNode)
+		// "If reference node is a block node or an Element with no children,
+		// or is neither an Element nor a Text node, break from this loop."
+		if (isBlockNode(referenceNode)
 		|| (referenceNode.nodeType == Node.ELEMENT_NODE
 		&& !referenceNode.hasChildNodes())
 		|| (referenceNode.nodeType != Node.ELEMENT_NODE
@@ -3910,12 +3914,12 @@ function deleteContents(node1, offset1, node2, offset2) {
 	// "While end node has at least one child:"
 	while (endNode.hasChildNodes()) {
 		// "If end offset is 0, and end node's parent is in the same editing
-		// host, and end node is not a prohibited paragraph child, set end
-		// offset to the index of end node, then set end node to its parent and
-		// continue this loop from the beginning."
+		// host, and end node is an inline node, set end offset to the index of
+		// end node, then set end node to its parent and continue this loop
+		// from the beginning."
 		if (endOffset == 0
 		&& inSameEditingHost(endNode, endNode.parentNode)
-		&& !isProhibitedParagraphChild(endNode)) {
+		&& isInlineNode(endNode)) {
 			endOffset = getNodeIndex(endNode);
 			endNode = endNode.parentNode;
 			continue;
@@ -3930,10 +3934,9 @@ function deleteContents(node1, offset1, node2, offset2) {
 		// offset minus one."
 		var referenceNode = endNode.childNodes[endOffset - 1];
 
-		// "If reference node is a prohibited paragraph child or an Element
-		// with no children, or is neither an Element nor a Text node, break
-		// from this loop."
-		if (isProhibitedParagraphChild(referenceNode)
+		// "If reference node is a block node or an Element with no children,
+		// or is neither an Element nor a Text node, break from this loop."
+		if (isBlockNode(referenceNode)
 		|| (referenceNode.nodeType == Node.ELEMENT_NODE
 		&& !referenceNode.hasChildNodes())
 		|| (referenceNode.nodeType != Node.ELEMENT_NODE
@@ -3983,16 +3986,16 @@ function deleteContents(node1, offset1, node2, offset2) {
 	var startBlock = range.startContainer;
 
 	// "While start block's parent is in the same editing host and start block
-	// is not a prohibited paragraph child, set start block to its parent."
+	// is an inline node, set start block to its parent."
 	while (inSameEditingHost(startBlock, startBlock.parentNode)
-	&& !isProhibitedParagraphChild(startBlock)) {
+	&& isInlineNode(startBlock)) {
 		startBlock = startBlock.parentNode;
 	}
 
-	// "If start block is neither a prohibited paragraph child nor an editing
-	// host, or "span" is not an allowed child of start block, or start block
-	// is a td or th, set start block to null."
-	if ((!isProhibitedParagraphChild(startBlock) && !isEditingHost(startBlock))
+	// "If start block is neither a block node nor an editing host, or "span"
+	// is not an allowed child of start block, or start block is a td or th,
+	// set start block to null."
+	if ((!isBlockNode(startBlock) && !isEditingHost(startBlock))
 	|| !isAllowedChild("span", startBlock)
 	|| isHtmlElement(startBlock, ["td", "th"])) {
 		startBlock = null;
@@ -4002,16 +4005,16 @@ function deleteContents(node1, offset1, node2, offset2) {
 	var endBlock = range.endContainer;
 
 	// "While end block's parent is in the same editing host and end block is
-	// not a prohibited paragraph child, set end block to its parent."
+	// an inline node, set end block to its parent."
 	while (inSameEditingHost(endBlock, endBlock.parentNode)
-	&& !isProhibitedParagraphChild(endBlock)) {
+	&& isInlineNode(endBlock)) {
 		endBlock = endBlock.parentNode;
 	}
 
-	// "If end block is neither a prohibited paragraph child nor an editing
-	// host, or "span" is not an allowed child of end block, or end block is a
-	// td or th, set end block to null."
-	if ((!isProhibitedParagraphChild(endBlock) && !isEditingHost(endBlock))
+	// "If end block is neither a block node nor an editing host, or "span" is
+	// not an allowed child of end block, or end block is a td or th, set end
+	// block to null."
+	if ((!isBlockNode(endBlock) && !isEditingHost(endBlock))
 	|| !isAllowedChild("span", endBlock)
 	|| isHtmlElement(endBlock, ["td", "th"])) {
 		endBlock = null;
@@ -4232,11 +4235,11 @@ function deleteContents(node1, offset1, node2, offset2) {
 		}
 
 		// "While the nextSibling of reference node is neither null nor a br
-		// nor a prohibited paragraph child, append the nextSibling of
-		// reference node as the last child of start block, preserving ranges."
+		// nor a block node, append the nextSibling of reference node as the
+		// last child of start block, preserving ranges."
 		while (referenceNode.nextSibling
 		&& !isHtmlElement(referenceNode.nextSibling, "br")
-		&& !isProhibitedParagraphChild(referenceNode.nextSibling)) {
+		&& !isBlockNode(referenceNode.nextSibling)) {
 			movePreservingRanges(referenceNode.nextSibling, startBlock, -1);
 		}
 
@@ -5266,21 +5269,21 @@ commands["delete"] = {
 				node.removeChild(node.childNodes[offset - 1]);
 				offset--;
 
-			// "Otherwise, if offset is zero and node is not a prohibited
-			// paragraph child, or if node is invisible, set offset to the
-			// index of node, then set node to its parent."
+			// "Otherwise, if offset is zero and node is an inline node, or if
+			// node is an invisible node, set offset to the index of node, then
+			// set node to its parent."
 			} else if ((offset == 0
-			&& !isProhibitedParagraphChild(node))
+			&& isInlineNode(node))
 			|| isInvisible(node)) {
 				offset = getNodeIndex(node);
 				node = node.parentNode;
 
 			// "Otherwise, if node has a child with index offset − 1 and that
-			// child is not a prohibited paragraph child or a br or an img, set
-			// node to that child, then set offset to the length of node."
+			// child is not a block node or a br or an img, set node to that
+			// child, then set offset to the length of node."
 			} else if (0 <= offset - 1
 			&& offset - 1 < node.childNodes.length
-			&& !isProhibitedParagraphChild(node.childNodes[offset - 1])
+			&& !isBlockNode(node.childNodes[offset - 1])
 			&& !isHtmlElement(node.childNodes[offset - 1], ["br", "img"])) {
 				node = node.childNodes[offset - 1];
 				offset = getNodeLength(node);
@@ -5303,8 +5306,8 @@ commands["delete"] = {
 			return;
 		}
 
-		// "If node is not a prohibited paragraph child, abort these steps."
-		if (!isProhibitedParagraphChild(node)) {
+		// "If node is an inline node, abort these steps."
+		if (isInlineNode(node)) {
 			return;
 		}
 
@@ -5769,20 +5772,20 @@ commands["forwarddelete"] = {
 			&& isCollapsedBlockProp(node.childNodes[offset])) {
 				offset++;
 
-			// "Otherwise, if offset is the length of node and node is not a
-			// prohibited paragraph child, or if node is invisible, set offset
-			// to one plus the index of node, then set node to its parent."
+			// "Otherwise, if offset is the length of node and node is an
+			// inline node, or if node is invisible, set offset to one plus the
+			// index of node, then set node to its parent."
 			} else if ((offset == getNodeLength(node)
-			&& !isProhibitedParagraphChild(node))
+			&& isInlineNode(node))
 			|| isInvisible(node)) {
 				offset = 1 + getNodeIndex(node);
 				node = node.parentNode;
 
 			// "Otherwise, if node has a child with index offset and that child
-			// is not a prohibited paragraph child or a br or an img, set node
-			// to that child, then set offset to zero."
+			// is not a block node or a br or an img, set node to that child,
+			// then set offset to zero."
 			} else if (offset < node.childNodes.length
-			&& !isProhibitedParagraphChild(node.childNodes[offset])
+			&& !isBlockNode(node.childNodes[offset])
 			&& !isHtmlElement(node.childNodes[offset], ["br", "img"])) {
 				node = node.childNodes[offset];
 				offset = 0;
@@ -5805,8 +5808,8 @@ commands["forwarddelete"] = {
 			return;
 		}
 
-		// "If node is not a prohibited paragraph child, abort these steps."
-		if (!isProhibitedParagraphChild(node)) {
+		// "If node is an inline node, abort these steps."
+		if (isInlineNode(node)) {
 			return;
 		}
 

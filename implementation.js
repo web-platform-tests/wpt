@@ -679,6 +679,27 @@ function isHtmlElement(node, tags) {
 		&& (typeof tags == "undefined" || tags.indexOf(node.tagName) != -1);
 }
 
+// "A prohibited paragraph child name is "address", "article", "aside",
+// "blockquote", "caption", "center", "col", "colgroup", "dd", "details",
+// "dir", "div", "dl", "dt", "fieldset", "figcaption", "figure", "footer",
+// "form", "h1", "h2", "h3", "h4", "h5", "h6", "header", "hgroup", "hr", "li",
+// "listing", "menu", "nav", "ol", "p", "plaintext", "pre", "section",
+// "summary", "table", "tbody", "td", "tfoot", "th", "thead", "tr", "ul", or
+// "xmp"."
+var prohibitedParagraphChildNames = ["address", "article", "aside",
+	"blockquote", "caption", "center", "col", "colgroup", "dd", "details",
+	"dir", "div", "dl", "dt", "fieldset", "figcaption", "figure", "footer",
+	"form", "h1", "h2", "h3", "h4", "h5", "h6", "header", "hgroup", "hr", "li",
+	"listing", "menu", "nav", "ol", "p", "plaintext", "pre", "section",
+	"summary", "table", "tbody", "td", "tfoot", "th", "thead", "tr", "ul",
+	"xmp"];
+
+// "A prohibited paragraph child is an HTML element whose local name is a
+// prohibited paragraph child name."
+function isProhibitedParagraphChild(node) {
+	return isHtmlElement(node, prohibitedParagraphChildNames);
+}
+
 // "An inline node is either a Text node, or an Element whose "display"
 // property computes to "inline", "inline-block", or "inline-table"."
 function isInlineNode(node) {
@@ -1074,52 +1095,6 @@ function removeExtraneousLineBreaksFrom(node) {
 	removeExtraneousLineBreaksAtTheEndOf(node);
 }
 
-function followsLineBreak(node) {
-	// "Let offset be zero."
-	var offset = 0;
-
-	// "While offset is zero, set offset to the index of node and then set node
-	// to its parent."
-	while (offset == 0) {
-		offset = getNodeIndex(node);
-		node = node.parentNode;
-	}
-
-	// "Let range be a range with start and end (node, offset)."
-	var range = document.createRange();
-	range.setStart(node, offset);
-
-	// "Block-extend range, and let new range be the result."
-	var newRange = blockExtend(range);
-
-	// "Return false if new range's start is before (node, offset), true
-	// otherwise."
-	return getPosition(newRange.startContainer, newRange.startOffset, node, offset) != "before";
-}
-
-function precedesLineBreak(node) {
-	// "Let offset be the length of node."
-	var offset = getNodeLength(node);
-
-	// "While offset is the length of node, set offset to one plus the index of
-	// node and then set node to its parent."
-	while (offset == getNodeLength(node)) {
-		offset = 1 + getNodeIndex(node);
-		node = node.parentNode;
-	}
-
-	// "Let range be a range with start and end (node, offset)."
-	var range = document.createRange();
-	range.setStart(node, offset);
-
-	// "Block-extend range, and let new range be the result."
-	var newRange = blockExtend(range);
-
-	// "Return false if new range's end is after (node, offset), true
-	// otherwise."
-	return getPosition(newRange.endContainer, newRange.endOffset, node, offset) != "after";
-}
-
 //@}
 
 ///// Wrapping a list of nodes /////
@@ -1269,6 +1244,164 @@ function wrap(nodeList, siblingCriteria, newParentInstructions) {
 
 	// "Return new parent."
 	return newParent;
+}
+
+//@}
+
+///// Allowed children /////
+//@{
+
+function isAllowedChild(child, parent_) {
+	// "If parent is "colgroup", "table", "tbody", "tfoot", "thead", "tr", or
+	// an HTML element with local name equal to one of those, and child is a
+	// Text node whose data does not consist solely of space characters, return
+	// false."
+	if ((["colgroup", "table", "tbody", "tfoot", "thead", "tr"].indexOf(parent_) != -1
+	|| isHtmlElement(parent_, ["colgroup", "table", "tbody", "tfoot", "thead", "tr"]))
+	&& typeof child == "object"
+	&& child.nodeType == Node.TEXT_NODE
+	&& !/^[ \t\n\f\r]*$/.test(child.data)) {
+		return false;
+	}
+
+	// "If parent is "script", "style", "plaintext", or "xmp", or an HTML
+	// element with local name equal to one of those, and child is not a Text
+	// node, return false."
+	if ((["script", "style", "plaintext", "xmp"].indexOf(parent_) != -1
+	|| isHtmlElement(parent_, ["script", "style", "plaintext", "xmp"]))
+	&& (typeof child != "object" || child.nodeType != Node.TEXT_NODE)) {
+		return false;
+	}
+
+	// "If child is a Document, DocumentFragment, or DocumentType, return
+	// false."
+	if (typeof child == "object"
+	&& (child.nodeType == Node.DOCUMENT_NODE
+	|| child.nodeType == Node.DOCUMENT_FRAGMENT_NODE
+	|| child.nodeType == Node.DOCUMENT_TYPE_NODE)) {
+		return false;
+	}
+
+	// "If child is an HTML element, set child to the local name of child."
+	if (isHtmlElement(child)) {
+		child = child.tagName.toLowerCase();
+	}
+
+	// "If child is not a string, return true."
+	if (typeof child != "string") {
+		return true;
+	}
+
+	// "If parent is an HTML element:"
+	if (isHtmlElement(parent_)) {
+		// "If child is "a", and parent or some ancestor of parent is an a,
+		// return false."
+		//
+		// "If child is a prohibited paragraph child name and parent or some
+		// ancestor of parent is a p or element with inline contents, return
+		// false."
+		//
+		// "If child is "h1", "h2", "h3", "h4", "h5", or "h6", and parent or
+		// some ancestor of parent is an HTML element with local name "h1",
+		// "h2", "h3", "h4", "h5", or "h6", return false."
+		var ancestor = parent_;
+		while (ancestor) {
+			if (child == "a" && isHtmlElement(ancestor, "a")) {
+				return false;
+			}
+			if (prohibitedParagraphChildNames.indexOf(child) != -1
+			&& (isHtmlElement(ancestor, "p")
+			|| isElementWithInlineContents(ancestor))) {
+				return false;
+			}
+			if (/^h[1-6]$/.test(child)
+			&& isHtmlElement(ancestor)
+			&& /^H[1-6]$/.test(ancestor.tagName)) {
+				return false;
+			}
+			ancestor = ancestor.parentNode;
+		}
+
+		// "Let parent be the local name of parent."
+		parent_ = parent_.tagName.toLowerCase();
+	}
+
+	// "If parent is an Element or DocumentFragment, return true."
+	if (typeof parent_ == "object"
+	&& (parent_.nodeType == Node.ELEMENT_NODE
+	|| parent_.nodeType == Node.DOCUMENT_FRAGMENT_NODE)) {
+		return true;
+	}
+
+	// "If parent is not a string, return false."
+	if (typeof parent_ != "string") {
+		return false;
+	}
+
+	// "If parent is in the following table, then return true if child is
+	// listed as an allowed child, and false otherwise."
+	switch (parent_) {
+		case "colgroup":
+			return child == "col";
+		case "table":
+			return ["caption", "col", "colgroup", "tbody", "td", "tfoot", "th", "thead", "tr"].indexOf(child) != -1;
+		case "tbody":
+		case "thead":
+		case "tfoot":
+			return ["td", "th", "tr"].indexOf(child) != -1;
+		case "tr":
+			return ["td", "th"].indexOf(child) != -1;
+		case "dl":
+			return ["dt", "dd"].indexOf(child) != -1;
+		case "dir":
+		case "ol":
+		case "ul":
+			return ["dir", "li", "ol", "ul"].indexOf(child) != -1;
+		case "hgroup":
+			return /^h[1-6]$/.test(child);
+	}
+
+	// "If child is "body", "caption", "col", "colgroup", "frame", "frameset",
+	// "head", "html", "tbody", "td", "tfoot", "th", "thead", or "tr", return
+	// false."
+	if (["body", "caption", "col", "colgroup", "frame", "frameset", "head",
+	"html", "tbody", "td", "tfoot", "th", "thead", "tr"].indexOf(child) != -1) {
+		return false;
+	}
+
+	// "If child is "dd" or "dt" and parent is not "dl", return false."
+	if (["dd", "dt"].indexOf(child) != -1
+	&& parent_ != "dl") {
+		return false;
+	}
+
+	// "If child is "li" and parent is not "ol" or "ul", return false."
+	if (child == "li"
+	&& parent_ != "ol"
+	&& parent_ != "ul") {
+		return false;
+	}
+
+	// "If parent is in the following table and child is listed as a prohibited
+	// child, return false."
+	var table = [
+		[["a"], ["a"]],
+		[["dd", "dt"], ["dd", "dt"]],
+		[["h1", "h2", "h3", "h4", "h5", "h6"], ["h1", "h2", "h3", "h4", "h5", "h6"]],
+		[["li"], ["li"]],
+		[["nobr"], ["nobr"]],
+		[["p"].concat(namesOfElementsWithInlineContents), prohibitedParagraphChildNames],
+		[["td", "th"], ["caption", "col", "colgroup", "tbody", "td", "tfoot", "th", "thead", "tr"]],
+	];
+	for (var i = 0; i < table.length; i++) {
+		if (table[i][0].indexOf(parent_) != -1
+		&& table[i][1].indexOf(child) != -1) {
+			return false;
+		}
+	}
+
+	// "Return true."
+	return true;
 }
 
 //@}
@@ -3180,27 +3313,6 @@ commands.unlink = {
 ///// Block formatting command definitions /////
 //@{
 
-// "A prohibited paragraph child name is "address", "article", "aside",
-// "blockquote", "caption", "center", "col", "colgroup", "dd", "details",
-// "dir", "div", "dl", "dt", "fieldset", "figcaption", "figure", "footer",
-// "form", "h1", "h2", "h3", "h4", "h5", "h6", "header", "hgroup", "hr", "li",
-// "listing", "menu", "nav", "ol", "p", "plaintext", "pre", "section",
-// "summary", "table", "tbody", "td", "tfoot", "th", "thead", "tr", "ul", or
-// "xmp"."
-var prohibitedParagraphChildNames = ["address", "article", "aside",
-	"blockquote", "caption", "center", "col", "colgroup", "dd", "details",
-	"dir", "div", "dl", "dt", "fieldset", "figcaption", "figure", "footer",
-	"form", "h1", "h2", "h3", "h4", "h5", "h6", "header", "hgroup", "hr", "li",
-	"listing", "menu", "nav", "ol", "p", "plaintext", "pre", "section",
-	"summary", "table", "tbody", "td", "tfoot", "th", "thead", "tr", "ul",
-	"xmp"];
-
-// "A prohibited paragraph child is an HTML element whose local name is a
-// prohibited paragraph child name."
-function isProhibitedParagraphChild(node) {
-	return isHtmlElement(node, prohibitedParagraphChildNames);
-}
-
 // "A name of an element with inline contents is "a", "abbr", "b", "bdi",
 // "bdo", "cite", "code", "dfn", "em", "h1", "h2", "h3", "h4", "h5", "h6", "i",
 // "kbd", "mark", "pre", "q", "rp", "rt", "ruby", "s", "samp", "small", "span",
@@ -3346,179 +3458,6 @@ function fixDisallowedAncestors(node) {
 	}
 }
 
-function splitParent(nodeList) {
-	// "Let original parent be the parent of the first member of node list."
-	var originalParent = nodeList[0].parentNode;
-
-	// "If original parent is not editable or its parent is null, do nothing
-	// and abort these steps."
-	if (!isEditable(originalParent)
-	|| !originalParent.parentNode) {
-		return;
-	}
-
-	// "If the first child of original parent is in node list, remove
-	// extraneous line breaks before original parent."
-	if (nodeList.indexOf(originalParent.firstChild) != -1) {
-		removeExtraneousLineBreaksBefore(originalParent);
-	}
-
-	// "If the first child of original parent is in node list, and original
-	// parent follows a line break, set follows line break to true. Otherwise,
-	// set follows line break to false."
-	var followsLineBreak_ = nodeList.indexOf(originalParent.firstChild) != -1
-		&& followsLineBreak(originalParent);
-
-	// "If the last child of original parent is in node list, and original
-	// parent precedes a line break, set precedes line break to true.
-	// Otherwise, set precedes line break to false."
-	var precedesLineBreak_ = nodeList.indexOf(originalParent.lastChild) != -1
-		&& precedesLineBreak(originalParent);
-
-	// "If the first child of original parent is not in node list, but its last
-	// child is:"
-	if (nodeList.indexOf(originalParent.firstChild) == -1
-	&& nodeList.indexOf(originalParent.lastChild) != -1) {
-		// "For each node in node list, in reverse order, insert node into the
-		// parent of original parent immediately after original parent,
-		// preserving ranges."
-		for (var i = nodeList.length - 1; i >= 0; i--) {
-			movePreservingRanges(nodeList[i], originalParent.parentNode, 1 + getNodeIndex(originalParent));
-		}
-
-		// "If precedes line break is true, and the last member of node list
-		// does not precede a line break, call createElement("br") on the
-		// context object and insert the result immediately after the last
-		// member of node list."
-		if (precedesLineBreak_
-		&& !precedesLineBreak(nodeList[nodeList.length - 1])) {
-			nodeList[nodeList.length - 1].parentNode.insertBefore(document.createElement("br"), nodeList[nodeList.length - 1].nextSibling);
-		}
-
-		// "Remove extraneous line breaks at the end of original parent."
-		removeExtraneousLineBreaksAtTheEndOf(originalParent);
-
-		// "Abort these steps."
-		return;
-	}
-
-	// "If the first child of original parent is not in node list:"
-	if (nodeList.indexOf(originalParent.firstChild) == -1) {
-		// "Let cloned parent be the result of calling cloneNode(false) on
-		// original parent."
-		var clonedParent = originalParent.cloneNode(false);
-
-		// "If original parent has an id attribute, unset it."
-		originalParent.removeAttribute("id");
-
-		// "Insert cloned parent into the parent of original parent immediately
-		// before original parent."
-		originalParent.parentNode.insertBefore(clonedParent, originalParent);
-
-		// "While the previousSibling of the first member of node list is not
-		// null, append the first child of original parent as the last child of
-		// cloned parent, preserving ranges."
-		while (nodeList[0].previousSibling) {
-			movePreservingRanges(originalParent.firstChild, clonedParent, clonedParent.childNodes.length);
-		}
-	}
-
-	// "For each node in node list, insert node into the parent of original
-	// parent immediately before original parent, preserving ranges."
-	for (var i = 0; i < nodeList.length; i++) {
-		movePreservingRanges(nodeList[i], originalParent.parentNode, getNodeIndex(originalParent));
-	}
-
-	// "If follows line break is true, and the first member of node list does
-	// not follow a line break, call createElement("br") on the context object
-	// and insert the result immediately before the first member of node list."
-	if (followsLineBreak_
-	&& !followsLineBreak(nodeList[0])) {
-		nodeList[0].parentNode.insertBefore(document.createElement("br"), nodeList[0]);
-	}
-
-	// "If the last member of node list is an inline node other than a br, and
-	// the first child of original parent is a br, and original parent is not
-	// an inline node, remove the first child of original parent from original
-	// parent."
-	if (isInlineNode(nodeList[nodeList.length - 1])
-	&& !isHtmlElement(nodeList[nodeList.length - 1], "br")
-	&& isHtmlElement(originalParent.firstChild, "br")
-	&& !isInlineNode(originalParent)) {
-		originalParent.removeChild(originalParent.firstChild);
-	}
-
-	// "If original parent has no children:"
-	if (!originalParent.hasChildNodes()) {
-		// "Remove original parent from its parent."
-		originalParent.parentNode.removeChild(originalParent);
-
-		// "If precedes line break is true, and the last member of node list
-		// does not precede a line break, call createElement("br") on the
-		// context object and insert the result immediately after the last
-		// member of node list."
-		if (precedesLineBreak_
-		&& !precedesLineBreak(nodeList[nodeList.length - 1])) {
-			nodeList[nodeList.length - 1].parentNode.insertBefore(document.createElement("br"), nodeList[nodeList.length - 1].nextSibling);
-		}
-
-	// "Otherwise, remove extraneous line breaks before original parent."
-	} else {
-		removeExtraneousLineBreaksBefore(originalParent);
-	}
-
-	// "If node list's last member's nextSibling is null, but its parent is not
-	// null, remove extraneous line breaks at the end of node list's last
-	// member's parent."
-	if (!nodeList[nodeList.length - 1].nextSibling
-	&& nodeList[nodeList.length - 1].parentNode) {
-		removeExtraneousLineBreaksAtTheEndOf(nodeList[nodeList.length - 1].parentNode);
-	}
-}
-
-// "To remove a node node while preserving its descendants, split the parent of
-// node's children."
-function removePreservingDescendants(node) {
-	splitParent([].slice.call(node.childNodes));
-}
-
-function indentNodes(nodeList) {
-	// "If node list is empty, do nothing and abort these steps."
-	if (!nodeList.length) {
-		return;
-	}
-
-	// "Let first node be the first member of node list."
-	var firstNode = nodeList[0];
-
-	// "If first node's parent is an ol or ul:"
-	if (isHtmlElement(firstNode.parentNode, ["OL", "UL"])) {
-		// "Let tag be the local name of the parent of first node."
-		var tag = firstNode.parentNode.tagName;
-
-		// "Wrap node list, with sibling criteria matching only HTML elements
-		// with local name tag and new parent instructions returning the result
-		// of calling createElement(tag) on the ownerDocument of first node."
-		wrap(nodeList,
-			function(node) { return isHtmlElement(node, tag) },
-			function() { return firstNode.ownerDocument.createElement(tag) });
-
-		// "Abort these steps."
-		return;
-	}
-
-	// "Wrap node list, with sibling criteria matching any indentation element,
-	// and new parent instructions to return the result of calling
-	// createElement("blockquote") on the ownerDocument of first node. Let new
-	// parent be the result."
-	var newParent = wrap(nodeList,
-		function(node) { return isIndentationElement(node) },
-		function() { return firstNode.ownerDocument.createElement("blockquote") });
-
-	// "Fix disallowed ancestors of new parent."
-	fixDisallowedAncestors(newParent);
-}
-
 function normalizeSublists(item) {
 	// "If item is not an li or it is not editable or its parent is not
 	// editable, abort these steps."
@@ -3635,224 +3574,6 @@ function getSelectionListState() {
 	return "none";
 }
 
-function canonicalSpaceSequence(n, nonBreakingStart, nonBreakingEnd) {
-	// "If n is zero, return the empty string."
-	if (n == 0) {
-		return "";
-	}
-
-	// "If n is one and both non-breaking start and non-breaking end are false,
-	// return a single space (U+0020)."
-	if (n == 1 && !nonBreakingStart && !nonBreakingEnd) {
-		return " ";
-	}
-
-	// "If n is one, return a single non-breaking space (U+00A0)."
-	if (n == 1) {
-		return "\xa0";
-	}
-
-	// "Let buffer be the empty string."
-	var buffer = "";
-
-	// "If non-breaking start is true, let repeated pair be U+00A0 U+0020.
-	// Otherwise, let it be U+0020 U+00A0."
-	var repeatedPair;
-	if (nonBreakingStart) {
-		repeatedPair = "\xa0 ";
-	} else {
-		repeatedPair = " \xa0";
-	}
-
-	// "While n is greater than three, append repeated pair to buffer and
-	// subtract two from n."
-	while (n > 3) {
-		buffer += repeatedPair;
-		n -= 2;
-	}
-
-	// "If n is three, append a three-element string to buffer depending on
-	// non-breaking start and non-breaking end:"
-	if (n == 3) {
-		buffer +=
-			!nonBreakingStart && !nonBreakingEnd ? " \xa0 "
-			: nonBreakingStart && !nonBreakingEnd ? "\xa0\xa0 "
-			: !nonBreakingStart && nonBreakingEnd ? " \xa0\xa0"
-			: nonBreakingStart && nonBreakingEnd ? "\xa0 \xa0"
-			: "impossible";
-
-	// "Otherwise, append a two-element string to buffer depending on
-	// non-breaking start and non-breaking end:"
-	} else {
-		buffer +=
-			!nonBreakingStart && !nonBreakingEnd ? "\xa0 "
-			: nonBreakingStart && !nonBreakingEnd ? "\xa0 "
-			: !nonBreakingStart && nonBreakingEnd ? " \xa0"
-			: nonBreakingStart && nonBreakingEnd ? "\xa0\xa0"
-			: "impossible";
-	}
-
-	// "Return buffer."
-	return buffer;
-}
-
-function canonicalizeWhitespace(node, offset) {
-	// "If node is neither editable nor an editing host, abort these steps."
-	if (!isEditable(node) && !isEditingHost(node)) {
-		return;
-	}
-
-	// "Let start node equal node and let start offset equal offset."
-	var startNode = node;
-	var startOffset = offset;
-
-	// "Repeat the following steps:"
-	while (true) {
-		// "If start node has a child in the same editing host with index start
-		// offset minus one, set start node to that child, then set start
-		// offset to start node's length."
-		if (0 <= startOffset - 1
-		&& inSameEditingHost(startNode, startNode.childNodes[startOffset - 1])) {
-			startNode = startNode.childNodes[startOffset - 1];
-			startOffset = getNodeLength(startNode);
-
-		// "Otherwise, if start offset is zero and start node does not follow a
-		// line break and start node's parent is in the same editing host, set
-		// start offset to start node's index, then set start node to its
-		// parent."
-		} else if (startOffset == 0
-		&& !followsLineBreak(startNode)
-		&& inSameEditingHost(startNode, startNode.parentNode)) {
-			startOffset = getNodeIndex(startNode);
-			startNode = startNode.parentNode;
-
-		// "Otherwise, if start node is a Text node and its parent's computed
-		// value for "white-space" is neither "pre" nor "pre-wrap" and start
-		// offset is not zero and the (start offset − 1)st element of start
-		// node's data is a space (0x0020) or non-breaking space (0x00A0),
-		// subtract one from start offset."
-		} else if (startNode.nodeType == Node.TEXT_NODE
-		&& ["pre", "pre-wrap"].indexOf(getComputedStyle(startNode.parentNode).whiteSpace) == -1
-		&& startOffset != 0
-		&& /[ \xa0]/.test(startNode.data[startOffset - 1])) {
-			startOffset--;
-
-		// "Otherwise, break from this loop."
-		} else {
-			break;
-		}
-	}
-
-	// "Let end node equal start node and end offset equal start offset."
-	var endNode = startNode;
-	var endOffset = startOffset;
-
-	// "Let length equal zero."
-	var length = 0;
-
-	// "Let follows space be false."
-	var followsSpace = false;
-
-	// "Repeat the following steps:"
-	while (true) {
-		// "If end node has a child in the same editing host with index end
-		// offset, set end node to that child, then set end offset to zero."
-		if (endOffset < endNode.childNodes.length
-		&& inSameEditingHost(endNode, endNode.childNodes[endOffset])) {
-			endNode = endNode.childNodes[endOffset];
-			endOffset = 0;
-
-		// "Otherwise, if end offset is end node's length and end node does not
-		// precede a line break and end node's parent is in the same editing
-		// host, set end offset to one plus end node's index, then set end node
-		// to its parent."
-		} else if (endOffset == getNodeLength(endNode)
-		&& !precedesLineBreak(endNode)
-		&& inSameEditingHost(endNode, endNode.parentNode)) {
-			endOffset = 1 + getNodeIndex(endNode);
-			endNode = endNode.parentNode;
-
-		// "Otherwise, if end node is a Text node and its parent's computed
-		// value for "white-space" is neither "pre" nor "pre-wrap" and end
-		// offset is not end node's length and the end offsetth element of
-		// end node's data is a space (0x0020) or non-breaking space (0x00A0):"
-		} else if (endNode.nodeType == Node.TEXT_NODE
-		&& ["pre", "pre-wrap"].indexOf(getComputedStyle(endNode.parentNode).whiteSpace) == -1
-		&& endOffset != getNodeLength(endNode)
-		&& /[ \xa0]/.test(endNode.data[endOffset])) {
-			// "If follows space is true and the end offsetth element of end
-			// node's data is a space (0x0020), call deleteData(end offset, 1)
-			// on end node, then continue this loop from the beginning."
-			if (followsSpace
-			&& " " == endNode.data[endOffset]) {
-				endNode.deleteData(endOffset, 1);
-				continue;
-			}
-
-			// "Set follows space to true if the end offsetth element of end
-			// node's data is a space (0x0020), false otherwise."
-			followsSpace = " " == endNode.data[endOffset];
-
-			// "Add one to end offset."
-			endOffset++;
-
-			// "Add one to length."
-			length++;
-
-		// "Otherwise, break from this loop."
-		} else {
-			break;
-		}
-	}
-
-	// "Let replacement whitespace be the canonical space sequence of length
-	// length. non-breaking start is true if start offset is zero and start
-	// node follows a line break, and false otherwise. non-breaking end is true
-	// if end offset is end node's length and end node precedes a line break,
-	// and false otherwise."
-	var replacementWhitespace = canonicalSpaceSequence(length,
-		startOffset == 0 && followsLineBreak(startNode),
-		endOffset == getNodeLength(endNode) && precedesLineBreak(endNode));
-
-	// "While (start node, start offset) is before (end node, end offset):"
-	while (getPosition(startNode, startOffset, endNode, endOffset) == "before") {
-		// "If start node has a child with index start offset, set start node
-		// to that child, then set start offset to zero."
-		if (startOffset < startNode.childNodes.length) {
-			startNode = startNode.childNodes[startOffset];
-			startOffset = 0;
-
-		// "Otherwise, if start node is not a Text node or if start offset is
-		// start node's length, set start offset to one plus start node's
-		// index, then set start node to its parent."
-		} else if (startNode.nodeType != Node.TEXT_NODE
-		|| startOffset == getNodeLength(startNode)) {
-			startOffset = 1 + getNodeIndex(startNode);
-			startNode = startNode.parentNode;
-
-		// "Otherwise:"
-		} else {
-			// "Remove the first element from replacement whitespace, and let
-			// element be that element."
-			var element = replacementWhitespace[0];
-			replacementWhitespace = replacementWhitespace.slice(1);
-
-			// "If element is not the same as the start offsetth element of
-			// start node's data:"
-			if (element != startNode.data[startOffset]) {
-				// "Call insertData(start offset, element) on start node."
-				startNode.insertData(startOffset, element);
-
-				// "Call deleteData(start offset + 1, 1) on start node."
-				startNode.deleteData(startOffset + 1, 1);
-			}
-
-			// "Add one to start offset."
-			startOffset++;
-		}
-	}
-}
-
 function getAlignmentValue(node) {
 	// "While node is neither null nor an Element, or it is an Element but its
 	// "display" property has computed value "inline" or "none", set node to
@@ -3872,164 +3593,6 @@ function getAlignmentValue(node) {
 	// computed value of node's "text-align" property."
 	return getRealTextAlign(node);
 }
-//@}
-
-///// Allowed children /////
-//@{
-
-function isAllowedChild(child, parent_) {
-	// "If parent is "colgroup", "table", "tbody", "tfoot", "thead", "tr", or
-	// an HTML element with local name equal to one of those, and child is a
-	// Text node whose data does not consist solely of space characters, return
-	// false."
-	if ((["colgroup", "table", "tbody", "tfoot", "thead", "tr"].indexOf(parent_) != -1
-	|| isHtmlElement(parent_, ["colgroup", "table", "tbody", "tfoot", "thead", "tr"]))
-	&& typeof child == "object"
-	&& child.nodeType == Node.TEXT_NODE
-	&& !/^[ \t\n\f\r]*$/.test(child.data)) {
-		return false;
-	}
-
-	// "If parent is "script", "style", "plaintext", or "xmp", or an HTML
-	// element with local name equal to one of those, and child is not a Text
-	// node, return false."
-	if ((["script", "style", "plaintext", "xmp"].indexOf(parent_) != -1
-	|| isHtmlElement(parent_, ["script", "style", "plaintext", "xmp"]))
-	&& (typeof child != "object" || child.nodeType != Node.TEXT_NODE)) {
-		return false;
-	}
-
-	// "If child is a Document, DocumentFragment, or DocumentType, return
-	// false."
-	if (typeof child == "object"
-	&& (child.nodeType == Node.DOCUMENT_NODE
-	|| child.nodeType == Node.DOCUMENT_FRAGMENT_NODE
-	|| child.nodeType == Node.DOCUMENT_TYPE_NODE)) {
-		return false;
-	}
-
-	// "If child is an HTML element, set child to the local name of child."
-	if (isHtmlElement(child)) {
-		child = child.tagName.toLowerCase();
-	}
-
-	// "If child is not a string, return true."
-	if (typeof child != "string") {
-		return true;
-	}
-
-	// "If parent is an HTML element:"
-	if (isHtmlElement(parent_)) {
-		// "If child is "a", and parent or some ancestor of parent is an a,
-		// return false."
-		//
-		// "If child is a prohibited paragraph child name and parent or some
-		// ancestor of parent is a p or element with inline contents, return
-		// false."
-		//
-		// "If child is "h1", "h2", "h3", "h4", "h5", or "h6", and parent or
-		// some ancestor of parent is an HTML element with local name "h1",
-		// "h2", "h3", "h4", "h5", or "h6", return false."
-		var ancestor = parent_;
-		while (ancestor) {
-			if (child == "a" && isHtmlElement(ancestor, "a")) {
-				return false;
-			}
-			if (prohibitedParagraphChildNames.indexOf(child) != -1
-			&& (isHtmlElement(ancestor, "p")
-			|| isElementWithInlineContents(ancestor))) {
-				return false;
-			}
-			if (/^h[1-6]$/.test(child)
-			&& isHtmlElement(ancestor)
-			&& /^H[1-6]$/.test(ancestor.tagName)) {
-				return false;
-			}
-			ancestor = ancestor.parentNode;
-		}
-
-		// "Let parent be the local name of parent."
-		parent_ = parent_.tagName.toLowerCase();
-	}
-
-	// "If parent is an Element or DocumentFragment, return true."
-	if (typeof parent_ == "object"
-	&& (parent_.nodeType == Node.ELEMENT_NODE
-	|| parent_.nodeType == Node.DOCUMENT_FRAGMENT_NODE)) {
-		return true;
-	}
-
-	// "If parent is not a string, return false."
-	if (typeof parent_ != "string") {
-		return false;
-	}
-
-	// "If parent is in the following table, then return true if child is
-	// listed as an allowed child, and false otherwise."
-	switch (parent_) {
-		case "colgroup":
-			return child == "col";
-		case "table":
-			return ["caption", "col", "colgroup", "tbody", "td", "tfoot", "th", "thead", "tr"].indexOf(child) != -1;
-		case "tbody":
-		case "thead":
-		case "tfoot":
-			return ["td", "th", "tr"].indexOf(child) != -1;
-		case "tr":
-			return ["td", "th"].indexOf(child) != -1;
-		case "dl":
-			return ["dt", "dd"].indexOf(child) != -1;
-		case "dir":
-		case "ol":
-		case "ul":
-			return ["dir", "li", "ol", "ul"].indexOf(child) != -1;
-		case "hgroup":
-			return /^h[1-6]$/.test(child);
-	}
-
-	// "If child is "body", "caption", "col", "colgroup", "frame", "frameset",
-	// "head", "html", "tbody", "td", "tfoot", "th", "thead", or "tr", return
-	// false."
-	if (["body", "caption", "col", "colgroup", "frame", "frameset", "head",
-	"html", "tbody", "td", "tfoot", "th", "thead", "tr"].indexOf(child) != -1) {
-		return false;
-	}
-
-	// "If child is "dd" or "dt" and parent is not "dl", return false."
-	if (["dd", "dt"].indexOf(child) != -1
-	&& parent_ != "dl") {
-		return false;
-	}
-
-	// "If child is "li" and parent is not "ol" or "ul", return false."
-	if (child == "li"
-	&& parent_ != "ol"
-	&& parent_ != "ul") {
-		return false;
-	}
-
-	// "If parent is in the following table and child is listed as a prohibited
-	// child, return false."
-	var table = [
-		[["a"], ["a"]],
-		[["dd", "dt"], ["dd", "dt"]],
-		[["h1", "h2", "h3", "h4", "h5", "h6"], ["h1", "h2", "h3", "h4", "h5", "h6"]],
-		[["li"], ["li"]],
-		[["nobr"], ["nobr"]],
-		[["p"].concat(namesOfElementsWithInlineContents), prohibitedParagraphChildNames],
-		[["td", "th"], ["caption", "col", "colgroup", "tbody", "td", "tfoot", "th", "thead", "tr"]],
-	];
-	for (var i = 0; i < table.length; i++) {
-		if (table[i][0].indexOf(parent_) != -1
-		&& table[i][1].indexOf(child) != -1) {
-			return false;
-		}
-	}
-
-	// "Return true."
-	return true;
-}
-
 //@}
 
 ///// Block-extending a range /////
@@ -4159,6 +3722,52 @@ function blockExtend(range) {
 
 	// "Return new range."
 	return newRange;
+}
+
+function followsLineBreak(node) {
+	// "Let offset be zero."
+	var offset = 0;
+
+	// "While offset is zero, set offset to the index of node and then set node
+	// to its parent."
+	while (offset == 0) {
+		offset = getNodeIndex(node);
+		node = node.parentNode;
+	}
+
+	// "Let range be a range with start and end (node, offset)."
+	var range = document.createRange();
+	range.setStart(node, offset);
+
+	// "Block-extend range, and let new range be the result."
+	var newRange = blockExtend(range);
+
+	// "Return false if new range's start is before (node, offset), true
+	// otherwise."
+	return getPosition(newRange.startContainer, newRange.startOffset, node, offset) != "before";
+}
+
+function precedesLineBreak(node) {
+	// "Let offset be the length of node."
+	var offset = getNodeLength(node);
+
+	// "While offset is the length of node, set offset to one plus the index of
+	// node and then set node to its parent."
+	while (offset == getNodeLength(node)) {
+		offset = 1 + getNodeIndex(node);
+		node = node.parentNode;
+	}
+
+	// "Let range be a range with start and end (node, offset)."
+	var range = document.createRange();
+	range.setStart(node, offset);
+
+	// "Block-extend range, and let new range be the result."
+	var newRange = blockExtend(range);
+
+	// "Return false if new range's end is after (node, offset), true
+	// otherwise."
+	return getPosition(newRange.endContainer, newRange.endOffset, node, offset) != "after";
 }
 
 //@}
@@ -4609,8 +4218,409 @@ function deleteContents(node1, offset1, node2, offset2) {
 
 //@}
 
-///// Outdenting a node /////
+///// Splitting a node list's parent /////
 //@{
+
+function splitParent(nodeList) {
+	// "Let original parent be the parent of the first member of node list."
+	var originalParent = nodeList[0].parentNode;
+
+	// "If original parent is not editable or its parent is null, do nothing
+	// and abort these steps."
+	if (!isEditable(originalParent)
+	|| !originalParent.parentNode) {
+		return;
+	}
+
+	// "If the first child of original parent is in node list, remove
+	// extraneous line breaks before original parent."
+	if (nodeList.indexOf(originalParent.firstChild) != -1) {
+		removeExtraneousLineBreaksBefore(originalParent);
+	}
+
+	// "If the first child of original parent is in node list, and original
+	// parent follows a line break, set follows line break to true. Otherwise,
+	// set follows line break to false."
+	var followsLineBreak_ = nodeList.indexOf(originalParent.firstChild) != -1
+		&& followsLineBreak(originalParent);
+
+	// "If the last child of original parent is in node list, and original
+	// parent precedes a line break, set precedes line break to true.
+	// Otherwise, set precedes line break to false."
+	var precedesLineBreak_ = nodeList.indexOf(originalParent.lastChild) != -1
+		&& precedesLineBreak(originalParent);
+
+	// "If the first child of original parent is not in node list, but its last
+	// child is:"
+	if (nodeList.indexOf(originalParent.firstChild) == -1
+	&& nodeList.indexOf(originalParent.lastChild) != -1) {
+		// "For each node in node list, in reverse order, insert node into the
+		// parent of original parent immediately after original parent,
+		// preserving ranges."
+		for (var i = nodeList.length - 1; i >= 0; i--) {
+			movePreservingRanges(nodeList[i], originalParent.parentNode, 1 + getNodeIndex(originalParent));
+		}
+
+		// "If precedes line break is true, and the last member of node list
+		// does not precede a line break, call createElement("br") on the
+		// context object and insert the result immediately after the last
+		// member of node list."
+		if (precedesLineBreak_
+		&& !precedesLineBreak(nodeList[nodeList.length - 1])) {
+			nodeList[nodeList.length - 1].parentNode.insertBefore(document.createElement("br"), nodeList[nodeList.length - 1].nextSibling);
+		}
+
+		// "Remove extraneous line breaks at the end of original parent."
+		removeExtraneousLineBreaksAtTheEndOf(originalParent);
+
+		// "Abort these steps."
+		return;
+	}
+
+	// "If the first child of original parent is not in node list:"
+	if (nodeList.indexOf(originalParent.firstChild) == -1) {
+		// "Let cloned parent be the result of calling cloneNode(false) on
+		// original parent."
+		var clonedParent = originalParent.cloneNode(false);
+
+		// "If original parent has an id attribute, unset it."
+		originalParent.removeAttribute("id");
+
+		// "Insert cloned parent into the parent of original parent immediately
+		// before original parent."
+		originalParent.parentNode.insertBefore(clonedParent, originalParent);
+
+		// "While the previousSibling of the first member of node list is not
+		// null, append the first child of original parent as the last child of
+		// cloned parent, preserving ranges."
+		while (nodeList[0].previousSibling) {
+			movePreservingRanges(originalParent.firstChild, clonedParent, clonedParent.childNodes.length);
+		}
+	}
+
+	// "For each node in node list, insert node into the parent of original
+	// parent immediately before original parent, preserving ranges."
+	for (var i = 0; i < nodeList.length; i++) {
+		movePreservingRanges(nodeList[i], originalParent.parentNode, getNodeIndex(originalParent));
+	}
+
+	// "If follows line break is true, and the first member of node list does
+	// not follow a line break, call createElement("br") on the context object
+	// and insert the result immediately before the first member of node list."
+	if (followsLineBreak_
+	&& !followsLineBreak(nodeList[0])) {
+		nodeList[0].parentNode.insertBefore(document.createElement("br"), nodeList[0]);
+	}
+
+	// "If the last member of node list is an inline node other than a br, and
+	// the first child of original parent is a br, and original parent is not
+	// an inline node, remove the first child of original parent from original
+	// parent."
+	if (isInlineNode(nodeList[nodeList.length - 1])
+	&& !isHtmlElement(nodeList[nodeList.length - 1], "br")
+	&& isHtmlElement(originalParent.firstChild, "br")
+	&& !isInlineNode(originalParent)) {
+		originalParent.removeChild(originalParent.firstChild);
+	}
+
+	// "If original parent has no children:"
+	if (!originalParent.hasChildNodes()) {
+		// "Remove original parent from its parent."
+		originalParent.parentNode.removeChild(originalParent);
+
+		// "If precedes line break is true, and the last member of node list
+		// does not precede a line break, call createElement("br") on the
+		// context object and insert the result immediately after the last
+		// member of node list."
+		if (precedesLineBreak_
+		&& !precedesLineBreak(nodeList[nodeList.length - 1])) {
+			nodeList[nodeList.length - 1].parentNode.insertBefore(document.createElement("br"), nodeList[nodeList.length - 1].nextSibling);
+		}
+
+	// "Otherwise, remove extraneous line breaks before original parent."
+	} else {
+		removeExtraneousLineBreaksBefore(originalParent);
+	}
+
+	// "If node list's last member's nextSibling is null, but its parent is not
+	// null, remove extraneous line breaks at the end of node list's last
+	// member's parent."
+	if (!nodeList[nodeList.length - 1].nextSibling
+	&& nodeList[nodeList.length - 1].parentNode) {
+		removeExtraneousLineBreaksAtTheEndOf(nodeList[nodeList.length - 1].parentNode);
+	}
+}
+
+// "To remove a node node while preserving its descendants, split the parent of
+// node's children."
+function removePreservingDescendants(node) {
+	splitParent([].slice.call(node.childNodes));
+}
+
+//@}
+
+///// Canonical space sequences /////
+//@{
+
+function canonicalSpaceSequence(n, nonBreakingStart, nonBreakingEnd) {
+	// "If n is zero, return the empty string."
+	if (n == 0) {
+		return "";
+	}
+
+	// "If n is one and both non-breaking start and non-breaking end are false,
+	// return a single space (U+0020)."
+	if (n == 1 && !nonBreakingStart && !nonBreakingEnd) {
+		return " ";
+	}
+
+	// "If n is one, return a single non-breaking space (U+00A0)."
+	if (n == 1) {
+		return "\xa0";
+	}
+
+	// "Let buffer be the empty string."
+	var buffer = "";
+
+	// "If non-breaking start is true, let repeated pair be U+00A0 U+0020.
+	// Otherwise, let it be U+0020 U+00A0."
+	var repeatedPair;
+	if (nonBreakingStart) {
+		repeatedPair = "\xa0 ";
+	} else {
+		repeatedPair = " \xa0";
+	}
+
+	// "While n is greater than three, append repeated pair to buffer and
+	// subtract two from n."
+	while (n > 3) {
+		buffer += repeatedPair;
+		n -= 2;
+	}
+
+	// "If n is three, append a three-element string to buffer depending on
+	// non-breaking start and non-breaking end:"
+	if (n == 3) {
+		buffer +=
+			!nonBreakingStart && !nonBreakingEnd ? " \xa0 "
+			: nonBreakingStart && !nonBreakingEnd ? "\xa0\xa0 "
+			: !nonBreakingStart && nonBreakingEnd ? " \xa0\xa0"
+			: nonBreakingStart && nonBreakingEnd ? "\xa0 \xa0"
+			: "impossible";
+
+	// "Otherwise, append a two-element string to buffer depending on
+	// non-breaking start and non-breaking end:"
+	} else {
+		buffer +=
+			!nonBreakingStart && !nonBreakingEnd ? "\xa0 "
+			: nonBreakingStart && !nonBreakingEnd ? "\xa0 "
+			: !nonBreakingStart && nonBreakingEnd ? " \xa0"
+			: nonBreakingStart && nonBreakingEnd ? "\xa0\xa0"
+			: "impossible";
+	}
+
+	// "Return buffer."
+	return buffer;
+}
+
+function canonicalizeWhitespace(node, offset) {
+	// "If node is neither editable nor an editing host, abort these steps."
+	if (!isEditable(node) && !isEditingHost(node)) {
+		return;
+	}
+
+	// "Let start node equal node and let start offset equal offset."
+	var startNode = node;
+	var startOffset = offset;
+
+	// "Repeat the following steps:"
+	while (true) {
+		// "If start node has a child in the same editing host with index start
+		// offset minus one, set start node to that child, then set start
+		// offset to start node's length."
+		if (0 <= startOffset - 1
+		&& inSameEditingHost(startNode, startNode.childNodes[startOffset - 1])) {
+			startNode = startNode.childNodes[startOffset - 1];
+			startOffset = getNodeLength(startNode);
+
+		// "Otherwise, if start offset is zero and start node does not follow a
+		// line break and start node's parent is in the same editing host, set
+		// start offset to start node's index, then set start node to its
+		// parent."
+		} else if (startOffset == 0
+		&& !followsLineBreak(startNode)
+		&& inSameEditingHost(startNode, startNode.parentNode)) {
+			startOffset = getNodeIndex(startNode);
+			startNode = startNode.parentNode;
+
+		// "Otherwise, if start node is a Text node and its parent's computed
+		// value for "white-space" is neither "pre" nor "pre-wrap" and start
+		// offset is not zero and the (start offset − 1)st element of start
+		// node's data is a space (0x0020) or non-breaking space (0x00A0),
+		// subtract one from start offset."
+		} else if (startNode.nodeType == Node.TEXT_NODE
+		&& ["pre", "pre-wrap"].indexOf(getComputedStyle(startNode.parentNode).whiteSpace) == -1
+		&& startOffset != 0
+		&& /[ \xa0]/.test(startNode.data[startOffset - 1])) {
+			startOffset--;
+
+		// "Otherwise, break from this loop."
+		} else {
+			break;
+		}
+	}
+
+	// "Let end node equal start node and end offset equal start offset."
+	var endNode = startNode;
+	var endOffset = startOffset;
+
+	// "Let length equal zero."
+	var length = 0;
+
+	// "Let follows space be false."
+	var followsSpace = false;
+
+	// "Repeat the following steps:"
+	while (true) {
+		// "If end node has a child in the same editing host with index end
+		// offset, set end node to that child, then set end offset to zero."
+		if (endOffset < endNode.childNodes.length
+		&& inSameEditingHost(endNode, endNode.childNodes[endOffset])) {
+			endNode = endNode.childNodes[endOffset];
+			endOffset = 0;
+
+		// "Otherwise, if end offset is end node's length and end node does not
+		// precede a line break and end node's parent is in the same editing
+		// host, set end offset to one plus end node's index, then set end node
+		// to its parent."
+		} else if (endOffset == getNodeLength(endNode)
+		&& !precedesLineBreak(endNode)
+		&& inSameEditingHost(endNode, endNode.parentNode)) {
+			endOffset = 1 + getNodeIndex(endNode);
+			endNode = endNode.parentNode;
+
+		// "Otherwise, if end node is a Text node and its parent's computed
+		// value for "white-space" is neither "pre" nor "pre-wrap" and end
+		// offset is not end node's length and the end offsetth element of
+		// end node's data is a space (0x0020) or non-breaking space (0x00A0):"
+		} else if (endNode.nodeType == Node.TEXT_NODE
+		&& ["pre", "pre-wrap"].indexOf(getComputedStyle(endNode.parentNode).whiteSpace) == -1
+		&& endOffset != getNodeLength(endNode)
+		&& /[ \xa0]/.test(endNode.data[endOffset])) {
+			// "If follows space is true and the end offsetth element of end
+			// node's data is a space (0x0020), call deleteData(end offset, 1)
+			// on end node, then continue this loop from the beginning."
+			if (followsSpace
+			&& " " == endNode.data[endOffset]) {
+				endNode.deleteData(endOffset, 1);
+				continue;
+			}
+
+			// "Set follows space to true if the end offsetth element of end
+			// node's data is a space (0x0020), false otherwise."
+			followsSpace = " " == endNode.data[endOffset];
+
+			// "Add one to end offset."
+			endOffset++;
+
+			// "Add one to length."
+			length++;
+
+		// "Otherwise, break from this loop."
+		} else {
+			break;
+		}
+	}
+
+	// "Let replacement whitespace be the canonical space sequence of length
+	// length. non-breaking start is true if start offset is zero and start
+	// node follows a line break, and false otherwise. non-breaking end is true
+	// if end offset is end node's length and end node precedes a line break,
+	// and false otherwise."
+	var replacementWhitespace = canonicalSpaceSequence(length,
+		startOffset == 0 && followsLineBreak(startNode),
+		endOffset == getNodeLength(endNode) && precedesLineBreak(endNode));
+
+	// "While (start node, start offset) is before (end node, end offset):"
+	while (getPosition(startNode, startOffset, endNode, endOffset) == "before") {
+		// "If start node has a child with index start offset, set start node
+		// to that child, then set start offset to zero."
+		if (startOffset < startNode.childNodes.length) {
+			startNode = startNode.childNodes[startOffset];
+			startOffset = 0;
+
+		// "Otherwise, if start node is not a Text node or if start offset is
+		// start node's length, set start offset to one plus start node's
+		// index, then set start node to its parent."
+		} else if (startNode.nodeType != Node.TEXT_NODE
+		|| startOffset == getNodeLength(startNode)) {
+			startOffset = 1 + getNodeIndex(startNode);
+			startNode = startNode.parentNode;
+
+		// "Otherwise:"
+		} else {
+			// "Remove the first element from replacement whitespace, and let
+			// element be that element."
+			var element = replacementWhitespace[0];
+			replacementWhitespace = replacementWhitespace.slice(1);
+
+			// "If element is not the same as the start offsetth element of
+			// start node's data:"
+			if (element != startNode.data[startOffset]) {
+				// "Call insertData(start offset, element) on start node."
+				startNode.insertData(startOffset, element);
+
+				// "Call deleteData(start offset + 1, 1) on start node."
+				startNode.deleteData(startOffset + 1, 1);
+			}
+
+			// "Add one to start offset."
+			startOffset++;
+		}
+	}
+}
+
+//@}
+
+///// Indenting and outdenting /////
+//@{
+
+function indentNodes(nodeList) {
+	// "If node list is empty, do nothing and abort these steps."
+	if (!nodeList.length) {
+		return;
+	}
+
+	// "Let first node be the first member of node list."
+	var firstNode = nodeList[0];
+
+	// "If first node's parent is an ol or ul:"
+	if (isHtmlElement(firstNode.parentNode, ["OL", "UL"])) {
+		// "Let tag be the local name of the parent of first node."
+		var tag = firstNode.parentNode.tagName;
+
+		// "Wrap node list, with sibling criteria matching only HTML elements
+		// with local name tag and new parent instructions returning the result
+		// of calling createElement(tag) on the ownerDocument of first node."
+		wrap(nodeList,
+			function(node) { return isHtmlElement(node, tag) },
+			function() { return firstNode.ownerDocument.createElement(tag) });
+
+		// "Abort these steps."
+		return;
+	}
+
+	// "Wrap node list, with sibling criteria matching any indentation element,
+	// and new parent instructions to return the result of calling
+	// createElement("blockquote") on the ownerDocument of first node. Let new
+	// parent be the result."
+	var newParent = wrap(nodeList,
+		function(node) { return isIndentationElement(node) },
+		function() { return firstNode.ownerDocument.createElement("blockquote") });
+
+	// "Fix disallowed ancestors of new parent."
+	fixDisallowedAncestors(newParent);
+}
 
 function outdentNode(node) {
 	// "If node is not editable, abort these steps."

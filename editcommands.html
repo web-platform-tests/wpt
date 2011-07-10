@@ -1051,10 +1051,13 @@ instructions</dfn>:
 "i", "kbd", "mark", "p", "pre", "q", "rp", "rt", "ruby", "s", "samp", "small",
 "span", "strong", "sub", "sup", "u", "var", "acronym", "listing", "strike",
 "xmp", "big", "blink", "font", "marquee", "nobr", or "tt".
-
-<p class=XXX>This deliberately omits "dt", because I don't like the fact that
-including it will cause various commands to break apart lists rather than put
-bad things inside dt.
+<!--
+At the time of this writing (July 2011), dt is only allowed to contain inline
+contents by HTML.  I deliberately omit it from the list regardless, because I
+don't like the fact that including it will cause various commands to break
+apart lists rather than put bad things inside dt.  I filed a bug asking that
+the spec be changed: http://www.w3.org/Bugs/Public/show_bug.cgi?id=13201
+-->
 
 <p>An <dfn id=element-with-inline-contents>element with inline contents</dfn> is an <a href=#html-element>HTML element</a>
 whose <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> is a <a href=#name-of-an-element-with-inline-contents>name of an element with inline contents</a>.
@@ -1062,34 +1065,30 @@ whose <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domc
 mostly got the obsolete element list by testing what Firefox 5.0a2 splits when
 you do insertHorizontalRule. -->
 
-<p class=XXX>The definitions of prohibited paragraph children and elements with
+<!--
+TODO V2: The definitions of prohibited paragraph children and elements with
 inline contents should be in the HTML spec (possibly under a different name) so
-they don't fall out of sync.  They'll do for now.  Also, I might want to rename
-"prohibited paragraph child" given how I'm using it; I have to decide whether I
-want to key off CSS (like "inline node" does) or HTML (like "prohibited
-paragraph child") when deciding what to treat as a block and what not.
+they don't fall out of sync.  They'll do for now.
+-->
 
 <p>A <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> or string <var title="">child</var> is an <dfn id=allowed-child>allowed child</dfn> of a
 <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> or string <var title="">parent</var> if the following algorithm returns true:
+<!--
+TODO V2: This list doesn't currently match HTML's validity requirements for a
+few reasons:
 
-<div class=XXX>
-<p>This list doesn't currently match HTML's validity requirements for a few
-reasons:
+1) We need to handle invalid elements, which have no conformance requirements
+but should be treated properly.  In particular, they can interfere with
+serialization (e.g., center cannot descend from p).
 
-<ol>
-  <li>We need to handle invalid elements, which have no conformance
-  requirements but should be treated properly.  In particular, they can
-  interfere with serialization (e.g., center cannot descend from p).
+2) Sometimes users give instructions that have to produce invalid DOMs to get
+the expected effect, like indenting the first item of a list.
 
-  <li>Sometimes users give instructions that have to produce invalid DOMs to
-  get the expected effect, like indenting the first item of a list.
+3) The HTML validity requirements are sometimes quite complicated.
 
-  <li>The HTML validity requirements are sometimes quite complicated.
-
-  <li>I just haven't had bothered to be systematic about it yet&nbsp;&ndash;
-  I've only covered what's come up in my tests.
-</ol>
-</div>
+4) I just haven't had bothered to be systematic about it yet.  I've only
+covered what's come up in my tests.
+-->
 
 <ol>
   <li>If <var title="">parent</var> is "colgroup", "table", "tbody", "tfoot", "thead",

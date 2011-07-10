@@ -583,6 +583,19 @@ case-insensitively</span>.
 <p>An <dfn>HTML element</dfn> is an [[element]] whose [[namespace]] is the
 [[htmlnamespace]].
 
+<p>A <dfn>prohibited paragraph child name</dfn> is "address", "article",
+"aside", "blockquote", "caption", "center", "col", "colgroup", "dd", "details",
+"dir", "div", "dl", "dt", "fieldset", "figcaption", "figure", "footer", "form",
+"h1", "h2", "h3", "h4", "h5", "h6", "header", "hgroup", "hr", "li", "listing",
+"menu", "nav", "ol", "p", "plaintext", "pre", "section", "summary", "table",
+"tbody", "td", "tfoot", "th", "thead", "tr", "ul", or "xmp".
+
+<p>A <dfn>prohibited paragraph child</dfn> is an <span>HTML element</span>
+whose [[localname]] is a <span>prohibited paragraph child name</span>.
+<!-- These are all the things that will close a <p> if found as a descendant.
+I think.  Plus table stuff, since that can't be a descendant of a p either,
+although it won't auto-close it. -->
+
 <p>An <dfn>inline node</dfn> is either a [[text]] node, or an [[element]] whose
 "display" property computes to "inline", "inline-block", or "inline-table".
 
@@ -801,48 +814,6 @@ here?
 <p>To <dfn>remove extraneous line breaks from</dfn> a [[node]], first
 <span>remove extraneous line breaks before</span> it, then <span>remove
 extraneous line breaks at the end of</span> it.
-
-<p>A [[node]] <var>node</var> <dfn>follows a line break</dfn> if the following
-algorithm returns true:
-
-<p class=XXX>Editorial issue: These two algorithms depend on block-extending.
-Should that get moved up to the general algorithms?
-
-<ol>
-  <li>Let <var>offset</var> be zero.
-
-  <li>While <var>offset</var> is zero, set <var>offset</var> to the [[index]]
-  of <var>node</var> and then set <var>node</var> to its [[parent]].
-
-  <li>Let <var>range</var> be a [[range]] with [[rangestart]] and [[rangeend]]
-  (<var>node</var>, <var>offset</var>).
-
-  <li><span>Block-extend</span> <var>range</var>, and let <var>new range</var>
-  be the result.
-
-  <li>Return false if <var>new range</var>'s [[rangestart]] is [[bpbefore]]
-  (<var>node</var>, <var>offset</var>), true otherwise.
-</ol>
-
-<p>A [[node]] <var>node</var> <dfn>precedes a line break</dfn> if the following
-algorithm returns true:
-
-<ol>
-  <li>Let <var>offset</var> be the [[length]] of <var>node</var>.
-
-  <li>While <var>offset</var> is the [[length]] of <var>node</var>, set
-  <var>offset</var> to one plus the [[index]] of <var>node</var> and then set
-  <var>node</var> to its [[parent]].
-
-  <li>Let <var>range</var> be a [[range]] with [[rangestart]] and [[rangeend]]
-  (<var>node</var>, <var>offset</var>).
-
-  <li><span>Block-extend</span> <var>range</var>, and let <var>new range</var>
-  be the result.
-
-  <li>Return false if <var>new range</var>'s [[rangeend]] is [[bpafter]]
-  (<var>node</var>, <var>offset</var>), true otherwise.
-</ol>
 <!-- @} -->
 
 <h3>Wrapping a list of nodes</h3>
@@ -1010,6 +981,132 @@ instructions</dfn>:
   <li><span>Remove extraneous line breaks from</span> <var>new parent</var>.
 
   <li>Return <var>new parent</var>.
+</ol>
+<!-- @} -->
+
+<h3>Allowed children</h3>
+<!-- @{ -->
+<p>A [[node]] or string <var>child</var> is an <dfn>allowed child</dfn> of a
+[[node]] or string <var>parent</var> if the following algorithm returns true:
+
+<div class=XXX>
+<p>This list doesn't currently match HTML's validity requirements for a few
+reasons:
+
+<ol>
+  <li>We need to handle invalid elements, which have no conformance
+  requirements but should be treated properly.  In particular, they can
+  interfere with serialization (e.g., center cannot descend from p).
+
+  <li>Sometimes users give instructions that have to produce invalid DOMs to
+  get the expected effect, like indenting the first item of a list.
+
+  <li>The HTML validity requirements are sometimes quite complicated.
+
+  <li>I just haven't had bothered to be systematic about it yet&nbsp;&ndash;
+  I've only covered what's come up in my tests.
+</ol>
+</div>
+
+<ol>
+  <li>If <var>parent</var> is "colgroup", "table", "tbody", "tfoot", "thead",
+  "tr", or an <span>HTML element</span> with [[localname]] equal to one of
+  those, and <var>child</var> is a [[text]] node whose [[cddata]] does not
+  consist solely of [[spacecharacters]], return false.
+
+  <li>If <var>parent</var> is "script", "style", "plaintext", or "xmp", or an
+  <span>HTML element</span> with [[localname]] equal to one of those, and
+  <var>child</var> is not a [[text]] node, return false.
+  <!-- Actually, no node can occur in the DOM after plaintext, generally.  But
+  let's not get too carried away. -->
+
+  <li>If <var>child</var> is a [[document]], [[documentfragment]], or
+  [[documenttype]], return false.
+
+  <li>If <var>child</var> is an <span>HTML element</span>, set <var>child</var>
+  to the [[localname]] of <var>child</var>.
+
+  <li>If <var>child</var> is not a string, return true.
+
+  <li>If <var>parent</var> is an <span>HTML element</span>:
+
+  <ol>
+    <li>If <var>child</var> is "a", and <var>parent</var> or some [[ancestor]]
+    of <var>parent</var> is an [[a]], return false.
+    <!-- Cannot be serialized as text/html.  In some cases it can, like
+    <a>foo<table><td><a>bar</a></td></table>baz</a>, but it's invalid in those
+    cases too, so no need for complication. -->
+
+    <li>If <var>child</var> is a <span>prohibited paragraph child name</span>
+    and <var>parent</var> or some [[ancestor]] of <var>parent</var> is a [[p]]
+    or <span>element with inline contents</span>, return false.
+    <!-- This generally cannot be serialized either, for p.  For elements with
+    inline contents, this serves to prevent things like
+    <span><p>foo</p></span>, which will parse fine but aren't supposed to
+    happen anyway. -->
+
+    <li>If <var>child</var> is "h1", "h2", "h3", "h4", "h5", or "h6", and
+    <var>parent</var> or some [[ancestor]] of <var>parent</var> is an
+    <span>HTML element</span> with [[localname]] "h1", "h2", "h3", "h4", "h5",
+    or "h6", return false.
+    <!-- Nor this. -->
+
+    <li>Let <var>parent</var> be the [[localname]] of <var>parent</var>.
+    <!-- Further requirements only care about the parent itself, not ancestors,
+    so we don't need to know the node itself. -->
+  </ol>
+
+  <li>If <var>parent</var> is an [[element]] or [[documentfragment]], return
+  true.
+
+  <li>If <var>parent</var> is not a string, return false.
+
+  <li>If <var>parent</var> is in the following table, then return true if
+  <var>child</var> is listed as an allowed child, and false otherwise.
+  <!-- We allow children even where some intervening nodes will be inserted,
+  like tr as a child of table. -->
+
+  <table>
+    <tr><th>Parent <th>Allowed children
+    <tr><td>colgroup <td>col
+    <tr><td>table <td>caption, col, colgroup, tbody, td, tfoot, th, thead, tr
+    <tr><td>tbody, tfoot, thead <td>td, th, tr
+    <tr><td>tr <td>td, th
+    <tr><td>dl <td>dt, dd
+    <tr><td>dir, ol, ul <td>dir, li, ol, ul
+    <tr><td>hgroup <td>h1, h2, h3, h4, h5, h6
+  </table>
+
+  <li>If <var>child</var> is "body", "caption", "col", "colgroup", "frame",
+  "frameset", "head", "html", "tbody", "td", "tfoot", "th", "thead", or "tr",
+  return false.
+
+  <!-- dd/dt/li will serialize fine as the child of random stuff, but it makes
+  no sense at all, so we want to avoid it anyway. -->
+  <li>If <var>child</var> is "dd" or "dt" and <var>parent</var> is not "dl",
+  return false.
+
+  <li>If <var>child</var> is "li" and <var>parent</var> is not "ol" or "ul",
+  return false.
+
+  <li>If <var>parent</var> is in the following table and <var>child</var> is
+  listed as a prohibited child, return false.
+
+  <table>
+    <tr><th>Parent <th>Prohibited children
+    <tr><td>a <td>a
+    <tr><td>dd, dt <td>dd, dt
+    <tr><td>h1, h2, h3, h4, h5, h6 <td>h1, h2, h3, h4, h5, h6
+    <tr><td>li <td>li
+    <tr><td>nobr <td>nobr
+    <tr><td>p, all <span title="name of an element with inline contents">names
+          of an element with inline contents</span>
+        <td>All <span title="prohibited paragraph child name">prohibited
+          paragraph child names</span>
+    <tr><td>td, th <td>caption, col, colgroup, tbody, td, tfoot, th, thead, tr
+  </table>
+
+  <li>Return true.
 </ol>
 <!-- @} -->
 
@@ -2664,6 +2761,10 @@ IE10PP2, Firefox 7.0a2, and Opera 11.50 do not, so I go with them.
   <span>split the parent</span> of the one-[[node]] list consisting of
   <var>node</var>.
 
+  <p class=XXX>Splitting the parent is really a block algorithm.  It's not
+  clear whether it's desirable to use for inline nodes.  Perhaps it's okay, but
+  it makes me a little uneasy.
+
   <li>For each of the entries in the following list, in the given order,
   <span>set the selection's value</span> to null, with <var>command</var> as
   given.
@@ -2875,19 +2976,6 @@ starting at 2011-05-13 at 16:53 EDT (UTC-0400).
 
 <h3>Block formatting command definitions</h3>
 <!-- @{ -->
-<p>A <dfn>prohibited paragraph child name</dfn> is "address", "article",
-"aside", "blockquote", "caption", "center", "col", "colgroup", "dd", "details",
-"dir", "div", "dl", "dt", "fieldset", "figcaption", "figure", "footer", "form",
-"h1", "h2", "h3", "h4", "h5", "h6", "header", "hgroup", "hr", "li", "listing",
-"menu", "nav", "ol", "p", "plaintext", "pre", "section", "summary", "table",
-"tbody", "td", "tfoot", "th", "thead", "tr", "ul", or "xmp".
-
-<p>A <dfn>prohibited paragraph child</dfn> is an <span>HTML element</span>
-whose [[localname]] is a <span>prohibited paragraph child name</span>.
-<!-- These are all the things that will close a <p> if found as a descendant.
-I think.  Plus table stuff, since that can't be a descendant of a p either,
-although it won't auto-close it. -->
-
 <p>A <dfn>name of an element with inline contents</dfn> is "a", "abbr", "b",
 "bdi", "bdo", "cite", "code", "dfn", "em", "h1", "h2", "h3", "h4", "h5", "h6",
 "i", "kbd", "mark", "pre", "q", "rp", "rt", "ruby", "s", "samp", "small",
@@ -2980,250 +3068,6 @@ here?
   <li>While <var>node</var> is not an <span>allowed child</span> of its
   [[parent]], <span>split the parent</span> of the one-[[node]] list consisting
   of <var>node</var>.
-</ol>
-
-<p>To <dfn>split the parent</dfn> of a list <var>node list</var> of consecutive
-[[sibling]] [[nodes]]:
-
-<p class=XXX>Pretty much any time we call this algorithm, it can cause trouble
-if the parent had styles, classes, etc.  There's not going to be any general
-way to handle this, but we should at least try to handle the special case of
-inline styles, because Firefox does actually add them to arbitrary elements.
-Also, when splitting out of an inline parent, it might be good to wrap all the
-inline descendants in a clone of the former parent.
-
-<ol>
-  <li>Let <var>original parent</var> be the [[parent]] of the first member of
-  <var>node list</var>.
-
-  <li>If <var>original parent</var> is not <span>editable</span> or its
-  [[parent]] is null, do nothing and abort these steps.
-
-  <li>If the first [[child]] of <var>original parent</var> is in <var>node
-  list</var>, <span>remove extraneous line breaks before</span> <var>original
-  parent</var>.
-
-  <li>If the first [[child]] of <var>original parent</var> is in <var>node
-  list</var>, and <var>original parent</var> <span>follows a line break</span>,
-  set <var>follows line break</var> to true.  Otherwise, set <var>follows line
-  break</var> to false.
-
-  <li>If the last [[child]] of <var>original parent</var> is in <var>node
-  list</var>, and <var>original parent</var> <span>precedes a line
-  break</span>, set <var>precedes line break</var> to true.  Otherwise, set
-  <var>precedes line break</var> to false.
-
-  <li>If the first [[child]] of <var>original parent</var> is not in <var>node
-  list</var>, but its last [[child]] is:
-
-  <div class=XXX>
-  <p>We insert things after the parent.  This is bad, because it will cause
-  them to become part of any ranges that immediately follow.  For instance, if
-  we're hitting "bar" in
-
-  <xmp><div><p>foo<p>bar</div>{<p>baz}</xmp>
-
-  <p>it becomes
-
-  <xmp><div><p>foo</div>{<p>bar<p>baz}</xmp>
-
-  <p>instead of
-
-  <xmp><div><p>foo</div><p>bar{<p>baz}</xmp>
-
-  <p>because of how range mutation rules work.  This doesn't happen if we
-  insert before.  Probably this isn't important enough to try working around,
-  though.
-  </div>
-
-  <ol>
-    <li>For each <var>node</var> in <var>node list</var>, <em>in reverse
-    order</em>, insert <var>node</var> into the [[parent]] of <var>original
-    parent</var> immediately after <var>original parent</var>, <span>preserving
-    ranges</span>.
-
-    <li>If <var>precedes line break</var> is true, and the last member of
-    <var>node list</var> does not <span title="precedes a line break">precede a
-    line break</span>, call [[createelement|"br"]] on the [[contextobject]] and
-    insert the result immediately after the last member of <var>node
-    list</var>.
-
-    <li><span>Remove extraneous line breaks at the end of</span> <var>original
-    parent</var>.
-
-    <li>Abort these steps.
-  </ol>
-
-  <li>If the first [[child]] of <var>original parent</var> is not in <var>node
-  list</var>:
-
-  <ol>
-    <li>Let <var>cloned parent</var> be the result of calling <code
-    data-anolis-spec=domcore title=dom-Node-cloneNode>cloneNode(false)</code>
-    on <var>original parent</var>.
-
-    <li>If <var>original parent</var> has an [[id]] attribute, unset it.
-
-    <li>Insert <var>cloned parent</var> into the [[parent]] of <var>original
-    parent</var> immediately before <var>original parent</var>.
-
-    <li>While the [[previoussibling]] of the first member of <var>node
-    list</var> is not null, append the first [[child]] of <var>original
-    parent</var> as the last [[child]] of <var>cloned parent</var>,
-    <span>preserving ranges</span>.
-  </ol>
-
-  <li>For each <var>node</var> in <var>node list</var>, insert <var>node</var>
-  into the [[parent]] of <var>original parent</var> immediately before
-  <var>original parent</var>, <span>preserving ranges</span>.
-  <!-- Notice that a boundary point that was immediately before the element
-  will now be immediately before its children, just because of the regular
-  range mutation rules, without needing to worry about preserving ranges.
-  Likewise for boundary points immediately after the element, if we wind up
-  removing the element in the final step.  Preserving ranges is only necessary
-  for the sake of boundary points in the element or its descendants. -->
-
-  <li>If <var>follows line break</var> is true, and the first member of
-  <var>node list</var> does not <span title="follows a line break">follow a
-  line break</span>, call [[createelement|"br"]] on the [[contextobject]] and
-  insert the result immediately before the first member of <var>node
-  list</var>.
-
-  <li>If the last member of <var>node list</var> is an <span>inline node</span>
-  other than a [[br]], and the first [[child]] of <var>original parent</var> is
-  a [[br]], and <var>original parent</var> is not an <span>inline node</span>,
-  remove the first [[child]] of <var>original parent</var> from <var>original
-  parent</var>.
-
-  <li>If <var>original parent</var> has no [[children]]:
-
-  <ol>
-    <li>Remove <var>original parent</var> from its [[parent]].
-
-    <li>If <var>precedes line break</var> is true, and the last member of
-    <var>node list</var> does not <span title="precedes a line break">precede a
-    line break</span>, call [[createelement|"br"]] on the [[contextobject]] and
-    insert the result immediately after the last member of <var>node
-    list</var>.
-  </ol>
-
-  <li>Otherwise, <span>remove extraneous line breaks before</span>
-  <var>original parent</var>.
-
-  <li>If <var>node list</var>'s last member's [[nextsibling]] is null,
-  but its [[parent]] is not null, <span>remove extraneous line breaks at the
-  end of</span> <var>node list</var>'s last member's [[parent]].
-  <!-- The parent might be null if it's a br that we removed in the last step,
-  in which case this step isn't necessary. -->
-</ol>
-
-<p>To remove a [[node]] <var>node</var> while <dfn>preserving its
-descendants</dfn>, <span>split the parent</span> of <var>node</var>'s
-[[children]].
-
-<p>To <dfn>indent</dfn> a list <var>node list</var> of consecutive [[sibling]]
-[[nodes]]:
-<!--
-We have to handle entire lists of siblings at once, or else we'd wind up doing
-something like
-
-  <ol>
-    {<li>foo</li>
-    <ol><li>bar</li></ol>}
-  </ol>
-  ->
-  <ol><ol>
-    <li>foo</li>
-    <li>bar</li>
-  </ol></ol>
-  ->
-  <ol><ol><ol>
-    <li>foo</li>
-    <li>bar</li>
-  </ol></ol></ol>
-
-since by the time we got to doing the <ol> that originally contained "bar", we
-won't remember that we aren't supposed to indent "foo" a second time.
--->
-
-<ol>
-  <li>If <var>node list</var> is empty, do nothing and abort these steps.
-
-  <li>Let <var>first node</var> be the first member of <var>node list</var>.
-
-  <li>If <var>first node</var>'s [[parent]] is an [[ol]] or [[ul]]:
-
-  <ol>
-    <li>Let <var>tag</var> be the [[localname]] of the [[parent]] of
-    <var>first node</var>.
-
-    <li><span>Wrap</span> <var>node list</var>, with <span>sibling
-    criteria</span> matching only <span title="HTML element">HTML
-    elements</span> with [[localname]] <var>tag</var> and <span>new parent
-    instructions</span> returning the result of calling <code
-    data-anolis-spec=domcore
-    title=dom-Document-createElement>createElement(<var>tag</var>)</code> on
-    the [[ownerdocument]] of <var>first node</var>.
-    <!--
-    This matches IE9, Firefox 4.0, and Chrome 12 dev.  If there's a preceding
-    <li>, Opera 11.10 instead adds the new parent to the end of that <li>, so
-    it's not the child of another list, which is invalid.  But the other
-    browsers' way of doing things makes things simpler.  E.g., if we want to
-    indent an <li> and it has <ol>/<ul> children, we have to distinguish
-    between the case where we want to indent the whole <li> or only the first
-    part.  It also allows things like
-
-      <ol><li>
-        foo
-        <ol><li>bar</li></ol>
-        baz
-      </li></ol>
-
-    in which case it's unclear what we should do if the user selects "foo" and
-    indents.  I've filed a bug on HTML5:
-
-    http://www.w3.org/Bugs/Public/show_bug.cgi?id=12609
-    -->
-
-    <li>Abort these steps.
-  </ol>
-
-  <!--
-  Firefox 4.0 respects the CSS styling flag for indent, but Chrome 12 dev does
-  not.  I always produce blockquotes, even if CSS styling is on, for two
-  reasons.  One, IE9 handles inline margin attributes badly: when outdenting,
-  it propagates the margin to the parent, which doesn't actually remove it.
-  Two, in CSS mode I'd want to use <div style="margin: 1em 40px"> to match
-  non-CSS mode, but authors are very likely to want to remove the top/bottom
-  margin, which they can't do if it's not a special tag.  Authors who really
-  want divs for indentation could always convert the blockquotes to divs
-  themselves.  But if people really want it, I could respect CSS styling mode
-  here too.
-
-  The top/bottom margins might be undesirable here, but no more so than for
-  <ol>/<ul>/<p>/etc.  Here as there, authors can remove them with CSS if they
-  want.
-  -->
-
-  <li><span>Wrap</span> <var>node list</var>, with <span>sibling
-  criteria</span> matching any <span>indentation element</span>, and <span>new
-  parent instructions</span> to return the result of calling <code
-  data-anolis-spec=domcore
-  title=dom-Document-createElement>createElement("blockquote")</code> on the
-  [[ownerdocument]] of <var>first node</var>.  Let <var>new parent</var> be the
-  result.
-  <!--
-  This indents on both sides, so we don't have to worry about directionality.
-  In theory it would be better if we indented only on the start side, but that
-  requires care to get right in mixed-direction cases.  Even once browsers
-  start to support margin-start and so on, we can't use them because a) we have
-  to work okay in legacy browsers and b) it doesn't help if a descendant block
-  has different direction (so should be indented the other way).  So let's not
-  worry about it: most browsers don't, and the ones that do get it wrong.  Just
-  indent on both sides.
-  -->
-
-  <li><span>Fix disallowed ancestors</span> of <var>new parent</var>.
 </ol>
 
 <p>To <dfn>normalize sublists</dfn> in a [[node]] <var>item</var>:
@@ -3333,194 +3177,6 @@ algorithm:
   <li>Return "none".
 </ol>
 
-<p>The <dfn>canonical space sequence</dfn> of length <var>n</var>, with boolean
-flags <var>non-breaking start</var> and <var>non-breaking end</var>, is
-returned by the following algorithm:
-<!-- See long comment before insertText. -->
-
-<ol>
-  <li>If <var>n</var> is zero, return the empty string.
-
-  <li>If <var>n</var> is one and both <var>non-breaking start</var> and
-  <var>non-breaking end</var> are false, return a single space (U+0020).
-
-  <li>If <var>n</var> is one, return a single non-breaking space (U+00A0).
-
-  <li>Let <var>buffer</var> be the empty string.
-
-  <li>If <var>non-breaking start</var> is true, let <var>repeated pair</var> be
-  U+00A0 U+0020.  Otherwise, let it be U+0020 U+00A0.
-
-  <li>While <var>n</var> is greater than three, append <var>repeated pair</var>
-  to <var>buffer</var> and subtract two from <var>n</var>.
-
-  <li>If <var>n</var> is three, append a three-[[strel]] string to
-  <var>buffer</var> depending on <var>non-breaking start</var> and
-  <var>non-breaking end</var>:
-
-  <dl class=switch>
-    <dt><var>non-breaking start</var> and <var>non-breaking end</var> false
-    <dd>U+0020 U+00A0 U+0020
-
-    <dt><var>non-breaking start</var> true, <var>non-breaking end</var> false
-    <dd>U+00A0 U+00A0 U+0020
-
-    <dt><var>non-breaking start</var> false, <var>non-breaking end</var> true
-    <dd>U+0020 U+00A0 U+00A0
-
-    <dt><var>non-breaking start</var> and <var>non-breaking end</var> both true
-    <dd>U+00A0 U+0020 U+00A0
-  </dl>
-
-  <li>Otherwise, append a two-[[strel]] string to <var>buffer</var> depending
-  on <var>non-breaking start</var> and <var>non-breaking end</var>:
-
-  <dl class=switch>
-    <dt><var>non-breaking start</var> and <var>non-breaking end</var> false
-    <dt><var>non-breaking start</var> true, <var>non-breaking end</var> false
-    <dd>U+00A0 U+0020
-
-    <dt><var>non-breaking start</var> false, <var>non-breaking end</var> true
-    <dd>U+0020 U+00A0
-
-    <dt><var>non-breaking start</var> and <var>non-breaking end</var> both true
-    <dd>U+00A0 U+00A0
-  </dl>
-
-  <li>Return <var>buffer</var>.
-</ol>
-
-<p>To <dfn>canonicalize whitespace</dfn> at (<var>node</var>,
-<var>offset</var>):
-
-<ol>
-  <li>If <var>node</var> is neither <span>editable</span> nor an <span>editing
-  host</span>, abort these steps.
-
-  <li>Let <var>start node</var> equal <var>node</var> and let <var>start
-  offset</var> equal <var>offset</var>.
-
-  <!-- First go to the beginning of the current whitespace run. -->
-  <li>Repeat the following steps:
-
-  <ol>
-    <li>If <var>start node</var> has a [[child]] <span>in the same editing
-    host</span> with [[index]] <var>start offset</var> minus one, set
-    <var>start node</var> to that [[child]], then set <var>start offset</var>
-    to <var>start node</var>'s [[length]].
-
-    <li>Otherwise, if <var>start offset</var> is zero and <var>start node</var>
-    does not <span title="follows a line break">follow a line break</span> and
-    <var>start node</var>'s [[parent]] is <span>in the same editing
-    host</span>, set <var>start offset</var> to <var>start node</var>'s
-    [[index]], then set <var>start node</var> to its [[parent]].
-
-    <p class=XXX>Following a line break is unlikely to be the right criterion.
-
-    <li>Otherwise, if <var>start node</var> is a [[text]] node and its
-    [[parent]]'s [[compval]] for "white-space" is neither "pre" nor "pre-wrap"
-    and <var>start offset</var> is not zero and the (<var>start offset</var>
-    &minus; 1)st [[strel]] of <var>start node</var>'s [[cddata]] is a space
-    (0x0020) or non-breaking space (0x00A0), subtract one from <var>start
-    offset</var>.
-
-    <li>Otherwise, break from this loop.
-  </ol>
-
-  <!-- Now collapse any consecutive spaces. -->
-  <li>Let <var>end node</var> equal <var>start node</var> and <var>end
-  offset</var> equal <var>start offset</var>.
-
-  <li>Let <var>length</var> equal zero.
-
-  <li>Let <var>follows space</var> be false.
-
-  <li>Repeat the following steps:
-
-  <ol>
-    <li>If <var>end node</var> has a [[child]] <span>in the same editing
-    host</span> with [[index]] <var>end offset</var>, set <var>end node</var>
-    to that [[child]], then set <var>end offset</var> to zero.
-
-    <li>Otherwise, if <var>end offset</var> is <var>end node</var>'s [[length]]
-    and <var>end node</var> does not <span title="precedes a line
-    break">precede a line break</span> and <var>end node</var>'s [[parent]] is
-    <span>in the same editing host</span>, set <var>end offset</var> to one
-    plus <var>end node</var>'s [[index]], then set <var>end node</var> to its
-    [[parent]].
-
-    <p class=XXX>Preceding a line break is unlikely to be the right criterion.
-
-    <li>Otherwise, if <var>end node</var> is a [[text]] node and its
-    [[parent]]'s [[compval]] for "white-space" is neither "pre" nor "pre-wrap"
-    and <var>end offset</var> is not <var>end node</var>'s [[length]] and the
-    <var>end offset</var>th [[strel]] of <var>end node</var>'s [[cddata]] is a
-    space (0x0020) or non-breaking space (0x00A0):
-
-    <ol>
-      <li>If <var>follows space</var> is true and the <var>end offset</var>th
-      [[strel]] of <var>end node</var>'s [[cddata]] is a space (0x0020), call
-      [[deletedata|<var>end offset</var>, 1]] on <var>end node</var>, then
-      continue this loop from the beginning.
-
-      <li>Set <var>follows space</var> to true if the <var>end offset</var>th
-      [[strel]] of <var>end node</var>'s [[cddata]] is a space (0x0020), false
-      otherwise.
-
-      <li>Add one to <var>end offset</var>.
-
-      <li>Add one to <var>length</var>.
-    </ol>
-
-    <li>Otherwise, break from this loop.
-  </ol>
-
-  <!-- Now replace with the canonical sequence. -->
-  <li>Let <var>replacement whitespace</var> be the <span>canonical space
-  sequence</span> of length <var>length</var>.  <var>non-breaking start</var>
-  is true if <var>start offset</var> is zero and <var>start node</var>
-  <span>follows a line break</span>, and false otherwise.  <var>non-breaking
-  end</var> is true if <var>end offset</var> is <var>end node</var>'s
-  [[cdlength]] and <var>end node</var> <span>precedes a line break</span>, and
-  false otherwise.
-
-  <li>While (<var>start node</var>, <var>start offset</var>) is [[bpbefore]]
-  (<var>end node</var>, <var>end offset</var>):
-
-  <ol>
-    <li>If <var>start node</var> has a [[child]] with [[index]] <var>start
-    offset</var>, set <var>start node</var> to that [[child]], then set
-    <var>start offset</var> to zero.
-
-    <li>Otherwise, if <var>start node</var> is not a [[text]] node or if
-    <var>start offset</var> is <var>start node</var>'s [[length]], set
-    <var>start offset</var> to one plus <var>start node</var>'s [[index]], then
-    set <var>start node</var> to its [[parent]].
-
-    <li>Otherwise:
-
-    <ol>
-      <li>Remove the first [[strel]] from <var>replacement whitespace</var>,
-      and let <var>element</var> be that [[strel]].
-
-      <li>If <var>element</var> is not the same as the <var>start
-      offset</var>th [[strel]] of <var>start node</var>'s [[cddata]]:
-
-      <ol>
-        <!-- We need to insert then delete, so that we don't change range
-        boundary points. -->
-        <li>Call [[insertdata|<var>start offset</var>, <var>element</var>]] on
-        <var>start node</var>.
-
-        <li>Call [[deletedata|<var>start offset</var> + 1, 1]] on
-        <var>start node</var>.
-      </ol>
-
-      <li>Add one to <var>start offset</var>.
-    </ol>
-  </ol>
-</ol>
-
 <p>The <dfn>alignment value</dfn> of a [[node]] <var>node</var> is returned by
 the following algorithm:
 <!--
@@ -3552,132 +3208,6 @@ than what I've specced for the state.
 
   <p class=XXX>What to do for "start" "auto" etc. currently undefined.  We
   assume something CSS 2.1-ish.
-</ol>
-<!-- @} -->
-
-<h3>Allowed children</h3>
-<!-- @{ -->
-<p>A [[node]] or string <var>child</var> is an <dfn>allowed child</dfn> of a
-[[node]] or string <var>parent</var> if the following algorithm returns true:
-
-<div class=XXX>
-<p>This list doesn't currently match HTML's validity requirements for a few
-reasons:
-
-<ol>
-  <li>We need to handle invalid elements, which have no conformance
-  requirements but should be treated properly.  In particular, they can
-  interfere with serialization (e.g., center cannot descend from p).
-
-  <li>Sometimes users give instructions that have to produce invalid DOMs to
-  get the expected effect, like indenting the first item of a list.
-
-  <li>The HTML validity requirements are sometimes quite complicated.
-
-  <li>I just haven't had bothered to be systematic about it yet&nbsp;&ndash;
-  I've only covered what's come up in my tests.
-</ol>
-</div>
-
-<ol>
-  <li>If <var>parent</var> is "colgroup", "table", "tbody", "tfoot", "thead",
-  "tr", or an <span>HTML element</span> with [[localname]] equal to one of
-  those, and <var>child</var> is a [[text]] node whose [[cddata]] does not
-  consist solely of [[spacecharacters]], return false.
-
-  <li>If <var>parent</var> is "script", "style", "plaintext", or "xmp", or an
-  <span>HTML element</span> with [[localname]] equal to one of those, and
-  <var>child</var> is not a [[text]] node, return false.
-  <!-- Actually, no node can occur in the DOM after plaintext, generally.  But
-  let's not get too carried away. -->
-
-  <li>If <var>child</var> is a [[document]], [[documentfragment]], or
-  [[documenttype]], return false.
-
-  <li>If <var>child</var> is an <span>HTML element</span>, set <var>child</var>
-  to the [[localname]] of <var>child</var>.
-
-  <li>If <var>child</var> is not a string, return true.
-
-  <li>If <var>parent</var> is an <span>HTML element</span>:
-
-  <ol>
-    <li>If <var>child</var> is "a", and <var>parent</var> or some [[ancestor]]
-    of <var>parent</var> is an [[a]], return false.
-    <!-- Cannot be serialized as text/html.  In some cases it can, like
-    <a>foo<table><td><a>bar</a></td></table>baz</a>, but it's invalid in those
-    cases too, so no need for complication. -->
-
-    <li>If <var>child</var> is a <span>prohibited paragraph child name</span>
-    and <var>parent</var> or some [[ancestor]] of <var>parent</var> is a [[p]]
-    or <span>element with inline contents</span>, return false.
-    <!-- This generally cannot be serialized either, for p.  For elements with
-    inline contents, this serves to prevent things like
-    <span><p>foo</p></span>, which will parse fine but aren't supposed to
-    happen anyway. -->
-
-    <li>If <var>child</var> is "h1", "h2", "h3", "h4", "h5", or "h6", and
-    <var>parent</var> or some [[ancestor]] of <var>parent</var> is an
-    <span>HTML element</span> with [[localname]] "h1", "h2", "h3", "h4", "h5",
-    or "h6", return false.
-    <!-- Nor this. -->
-
-    <li>Let <var>parent</var> be the [[localname]] of <var>parent</var>.
-    <!-- Further requirements only care about the parent itself, not ancestors,
-    so we don't need to know the node itself. -->
-  </ol>
-
-  <li>If <var>parent</var> is an [[element]] or [[documentfragment]], return
-  true.
-
-  <li>If <var>parent</var> is not a string, return false.
-
-  <li>If <var>parent</var> is in the following table, then return true if
-  <var>child</var> is listed as an allowed child, and false otherwise.
-  <!-- We allow children even where some intervening nodes will be inserted,
-  like tr as a child of table. -->
-
-  <table>
-    <tr><th>Parent <th>Allowed children
-    <tr><td>colgroup <td>col
-    <tr><td>table <td>caption, col, colgroup, tbody, td, tfoot, th, thead, tr
-    <tr><td>tbody, tfoot, thead <td>td, th, tr
-    <tr><td>tr <td>td, th
-    <tr><td>dl <td>dt, dd
-    <tr><td>dir, ol, ul <td>dir, li, ol, ul
-    <tr><td>hgroup <td>h1, h2, h3, h4, h5, h6
-  </table>
-
-  <li>If <var>child</var> is "body", "caption", "col", "colgroup", "frame",
-  "frameset", "head", "html", "tbody", "td", "tfoot", "th", "thead", or "tr",
-  return false.
-
-  <!-- dd/dt/li will serialize fine as the child of random stuff, but it makes
-  no sense at all, so we want to avoid it anyway. -->
-  <li>If <var>child</var> is "dd" or "dt" and <var>parent</var> is not "dl",
-  return false.
-
-  <li>If <var>child</var> is "li" and <var>parent</var> is not "ol" or "ul",
-  return false.
-
-  <li>If <var>parent</var> is in the following table and <var>child</var> is
-  listed as a prohibited child, return false.
-
-  <table>
-    <tr><th>Parent <th>Prohibited children
-    <tr><td>a <td>a
-    <tr><td>dd, dt <td>dd, dt
-    <tr><td>h1, h2, h3, h4, h5, h6 <td>h1, h2, h3, h4, h5, h6
-    <tr><td>li <td>li
-    <tr><td>nobr <td>nobr
-    <tr><td>p, all <span title="name of an element with inline contents">names
-          of an element with inline contents</span>
-        <td>All <span title="prohibited paragraph child name">prohibited
-          paragraph child names</span>
-    <tr><td>td, th <td>caption, col, colgroup, tbody, td, tfoot, th, thead, tr
-  </table>
-
-  <li>Return true.
 </ol>
 <!-- @} -->
 
@@ -3761,6 +3291,45 @@ reasons:
   <var>start offset</var>, <var>end node</var>, and <var>end offset</var>.
 
   <li>Return <var>new range</var>.
+</ol>
+
+<p>A [[node]] <var>node</var> <dfn>follows a line break</dfn> if the following
+algorithm returns true:
+
+<ol>
+  <li>Let <var>offset</var> be zero.
+
+  <li>While <var>offset</var> is zero, set <var>offset</var> to the [[index]]
+  of <var>node</var> and then set <var>node</var> to its [[parent]].
+
+  <li>Let <var>range</var> be a [[range]] with [[rangestart]] and [[rangeend]]
+  (<var>node</var>, <var>offset</var>).
+
+  <li><span>Block-extend</span> <var>range</var>, and let <var>new range</var>
+  be the result.
+
+  <li>Return false if <var>new range</var>'s [[rangestart]] is [[bpbefore]]
+  (<var>node</var>, <var>offset</var>), true otherwise.
+</ol>
+
+<p>A [[node]] <var>node</var> <dfn>precedes a line break</dfn> if the following
+algorithm returns true:
+
+<ol>
+  <li>Let <var>offset</var> be the [[length]] of <var>node</var>.
+
+  <li>While <var>offset</var> is the [[length]] of <var>node</var>, set
+  <var>offset</var> to one plus the [[index]] of <var>node</var> and then set
+  <var>node</var> to its [[parent]].
+
+  <li>Let <var>range</var> be a [[range]] with [[rangestart]] and [[rangeend]]
+  (<var>node</var>, <var>offset</var>).
+
+  <li><span>Block-extend</span> <var>range</var>, and let <var>new range</var>
+  be the result.
+
+  <li>Return false if <var>new range</var>'s [[rangeend]] is [[bpafter]]
+  (<var>node</var>, <var>offset</var>), true otherwise.
 </ol>
 <!-- @} -->
 
@@ -4153,8 +3722,445 @@ we really want to use it, we probably want to change its name.
 </ol>
 <!-- @} -->
 
-<h3>Outdenting a node</h3>
+<h3>Splitting a node list's parent</h3>
 <!-- @{ -->
+<p>To <dfn>split the parent</dfn> of a list <var>node list</var> of consecutive
+[[sibling]] [[nodes]]:
+
+<p class=XXX>Pretty much any time we call this algorithm, it can cause trouble
+if the parent had styles, classes, etc.  There's not going to be any general
+way to handle this, but we should at least try to handle the special case of
+inline styles, because Firefox does actually add them to arbitrary elements.
+Also, when splitting out of an inline parent, it might be good to wrap all the
+inline descendants in a clone of the former parent.
+
+<ol>
+  <li>Let <var>original parent</var> be the [[parent]] of the first member of
+  <var>node list</var>.
+
+  <li>If <var>original parent</var> is not <span>editable</span> or its
+  [[parent]] is null, do nothing and abort these steps.
+
+  <li>If the first [[child]] of <var>original parent</var> is in <var>node
+  list</var>, <span>remove extraneous line breaks before</span> <var>original
+  parent</var>.
+
+  <li>If the first [[child]] of <var>original parent</var> is in <var>node
+  list</var>, and <var>original parent</var> <span>follows a line break</span>,
+  set <var>follows line break</var> to true.  Otherwise, set <var>follows line
+  break</var> to false.
+
+  <li>If the last [[child]] of <var>original parent</var> is in <var>node
+  list</var>, and <var>original parent</var> <span>precedes a line
+  break</span>, set <var>precedes line break</var> to true.  Otherwise, set
+  <var>precedes line break</var> to false.
+
+  <li>If the first [[child]] of <var>original parent</var> is not in <var>node
+  list</var>, but its last [[child]] is:
+
+  <div class=XXX>
+  <p>We insert things after the parent.  This is bad, because it will cause
+  them to become part of any ranges that immediately follow.  For instance, if
+  we're hitting "bar" in
+
+  <xmp><div><p>foo<p>bar</div>{<p>baz}</xmp>
+
+  <p>it becomes
+
+  <xmp><div><p>foo</div>{<p>bar<p>baz}</xmp>
+
+  <p>instead of
+
+  <xmp><div><p>foo</div><p>bar{<p>baz}</xmp>
+
+  <p>because of how range mutation rules work.  This doesn't happen if we
+  insert before.  Probably this isn't important enough to try working around,
+  though.
+  </div>
+
+  <ol>
+    <li>For each <var>node</var> in <var>node list</var>, <em>in reverse
+    order</em>, insert <var>node</var> into the [[parent]] of <var>original
+    parent</var> immediately after <var>original parent</var>, <span>preserving
+    ranges</span>.
+
+    <li>If <var>precedes line break</var> is true, and the last member of
+    <var>node list</var> does not <span title="precedes a line break">precede a
+    line break</span>, call [[createelement|"br"]] on the [[contextobject]] and
+    insert the result immediately after the last member of <var>node
+    list</var>.
+
+    <li><span>Remove extraneous line breaks at the end of</span> <var>original
+    parent</var>.
+
+    <li>Abort these steps.
+  </ol>
+
+  <li>If the first [[child]] of <var>original parent</var> is not in <var>node
+  list</var>:
+
+  <ol>
+    <li>Let <var>cloned parent</var> be the result of calling <code
+    data-anolis-spec=domcore title=dom-Node-cloneNode>cloneNode(false)</code>
+    on <var>original parent</var>.
+
+    <li>If <var>original parent</var> has an [[id]] attribute, unset it.
+
+    <li>Insert <var>cloned parent</var> into the [[parent]] of <var>original
+    parent</var> immediately before <var>original parent</var>.
+
+    <li>While the [[previoussibling]] of the first member of <var>node
+    list</var> is not null, append the first [[child]] of <var>original
+    parent</var> as the last [[child]] of <var>cloned parent</var>,
+    <span>preserving ranges</span>.
+  </ol>
+
+  <li>For each <var>node</var> in <var>node list</var>, insert <var>node</var>
+  into the [[parent]] of <var>original parent</var> immediately before
+  <var>original parent</var>, <span>preserving ranges</span>.
+  <!-- Notice that a boundary point that was immediately before the element
+  will now be immediately before its children, just because of the regular
+  range mutation rules, without needing to worry about preserving ranges.
+  Likewise for boundary points immediately after the element, if we wind up
+  removing the element in the final step.  Preserving ranges is only necessary
+  for the sake of boundary points in the element or its descendants. -->
+
+  <li>If <var>follows line break</var> is true, and the first member of
+  <var>node list</var> does not <span title="follows a line break">follow a
+  line break</span>, call [[createelement|"br"]] on the [[contextobject]] and
+  insert the result immediately before the first member of <var>node
+  list</var>.
+
+  <li>If the last member of <var>node list</var> is an <span>inline node</span>
+  other than a [[br]], and the first [[child]] of <var>original parent</var> is
+  a [[br]], and <var>original parent</var> is not an <span>inline node</span>,
+  remove the first [[child]] of <var>original parent</var> from <var>original
+  parent</var>.
+
+  <li>If <var>original parent</var> has no [[children]]:
+
+  <ol>
+    <li>Remove <var>original parent</var> from its [[parent]].
+
+    <li>If <var>precedes line break</var> is true, and the last member of
+    <var>node list</var> does not <span title="precedes a line break">precede a
+    line break</span>, call [[createelement|"br"]] on the [[contextobject]] and
+    insert the result immediately after the last member of <var>node
+    list</var>.
+  </ol>
+
+  <li>Otherwise, <span>remove extraneous line breaks before</span>
+  <var>original parent</var>.
+
+  <li>If <var>node list</var>'s last member's [[nextsibling]] is null,
+  but its [[parent]] is not null, <span>remove extraneous line breaks at the
+  end of</span> <var>node list</var>'s last member's [[parent]].
+  <!-- The parent might be null if it's a br that we removed in the last step,
+  in which case this step isn't necessary. -->
+</ol>
+
+<p>To remove a [[node]] <var>node</var> while <dfn>preserving its
+descendants</dfn>, <span>split the parent</span> of <var>node</var>'s
+[[children]].
+<!-- @} -->
+
+<h3>Canonical space sequences</h3>
+<!-- @{ -->
+<p>The <dfn>canonical space sequence</dfn> of length <var>n</var>, with boolean
+flags <var>non-breaking start</var> and <var>non-breaking end</var>, is
+returned by the following algorithm:
+<!-- See long comment before insertText. -->
+
+<ol>
+  <li>If <var>n</var> is zero, return the empty string.
+
+  <li>If <var>n</var> is one and both <var>non-breaking start</var> and
+  <var>non-breaking end</var> are false, return a single space (U+0020).
+
+  <li>If <var>n</var> is one, return a single non-breaking space (U+00A0).
+
+  <li>Let <var>buffer</var> be the empty string.
+
+  <li>If <var>non-breaking start</var> is true, let <var>repeated pair</var> be
+  U+00A0 U+0020.  Otherwise, let it be U+0020 U+00A0.
+
+  <li>While <var>n</var> is greater than three, append <var>repeated pair</var>
+  to <var>buffer</var> and subtract two from <var>n</var>.
+
+  <li>If <var>n</var> is three, append a three-[[strel]] string to
+  <var>buffer</var> depending on <var>non-breaking start</var> and
+  <var>non-breaking end</var>:
+
+  <dl class=switch>
+    <dt><var>non-breaking start</var> and <var>non-breaking end</var> false
+    <dd>U+0020 U+00A0 U+0020
+
+    <dt><var>non-breaking start</var> true, <var>non-breaking end</var> false
+    <dd>U+00A0 U+00A0 U+0020
+
+    <dt><var>non-breaking start</var> false, <var>non-breaking end</var> true
+    <dd>U+0020 U+00A0 U+00A0
+
+    <dt><var>non-breaking start</var> and <var>non-breaking end</var> both true
+    <dd>U+00A0 U+0020 U+00A0
+  </dl>
+
+  <li>Otherwise, append a two-[[strel]] string to <var>buffer</var> depending
+  on <var>non-breaking start</var> and <var>non-breaking end</var>:
+
+  <dl class=switch>
+    <dt><var>non-breaking start</var> and <var>non-breaking end</var> false
+    <dt><var>non-breaking start</var> true, <var>non-breaking end</var> false
+    <dd>U+00A0 U+0020
+
+    <dt><var>non-breaking start</var> false, <var>non-breaking end</var> true
+    <dd>U+0020 U+00A0
+
+    <dt><var>non-breaking start</var> and <var>non-breaking end</var> both true
+    <dd>U+00A0 U+00A0
+  </dl>
+
+  <li>Return <var>buffer</var>.
+</ol>
+
+<p>To <dfn>canonicalize whitespace</dfn> at (<var>node</var>,
+<var>offset</var>):
+
+<ol>
+  <li>If <var>node</var> is neither <span>editable</span> nor an <span>editing
+  host</span>, abort these steps.
+
+  <li>Let <var>start node</var> equal <var>node</var> and let <var>start
+  offset</var> equal <var>offset</var>.
+
+  <!-- First go to the beginning of the current whitespace run. -->
+  <li>Repeat the following steps:
+
+  <ol>
+    <li>If <var>start node</var> has a [[child]] <span>in the same editing
+    host</span> with [[index]] <var>start offset</var> minus one, set
+    <var>start node</var> to that [[child]], then set <var>start offset</var>
+    to <var>start node</var>'s [[length]].
+
+    <li>Otherwise, if <var>start offset</var> is zero and <var>start node</var>
+    does not <span title="follows a line break">follow a line break</span> and
+    <var>start node</var>'s [[parent]] is <span>in the same editing
+    host</span>, set <var>start offset</var> to <var>start node</var>'s
+    [[index]], then set <var>start node</var> to its [[parent]].
+
+    <p class=XXX>Following a line break is unlikely to be the right criterion.
+
+    <li>Otherwise, if <var>start node</var> is a [[text]] node and its
+    [[parent]]'s [[compval]] for "white-space" is neither "pre" nor "pre-wrap"
+    and <var>start offset</var> is not zero and the (<var>start offset</var>
+    &minus; 1)st [[strel]] of <var>start node</var>'s [[cddata]] is a space
+    (0x0020) or non-breaking space (0x00A0), subtract one from <var>start
+    offset</var>.
+
+    <li>Otherwise, break from this loop.
+  </ol>
+
+  <!-- Now collapse any consecutive spaces. -->
+  <li>Let <var>end node</var> equal <var>start node</var> and <var>end
+  offset</var> equal <var>start offset</var>.
+
+  <li>Let <var>length</var> equal zero.
+
+  <li>Let <var>follows space</var> be false.
+
+  <li>Repeat the following steps:
+
+  <ol>
+    <li>If <var>end node</var> has a [[child]] <span>in the same editing
+    host</span> with [[index]] <var>end offset</var>, set <var>end node</var>
+    to that [[child]], then set <var>end offset</var> to zero.
+
+    <li>Otherwise, if <var>end offset</var> is <var>end node</var>'s [[length]]
+    and <var>end node</var> does not <span title="precedes a line
+    break">precede a line break</span> and <var>end node</var>'s [[parent]] is
+    <span>in the same editing host</span>, set <var>end offset</var> to one
+    plus <var>end node</var>'s [[index]], then set <var>end node</var> to its
+    [[parent]].
+
+    <p class=XXX>Preceding a line break is unlikely to be the right criterion.
+
+    <li>Otherwise, if <var>end node</var> is a [[text]] node and its
+    [[parent]]'s [[compval]] for "white-space" is neither "pre" nor "pre-wrap"
+    and <var>end offset</var> is not <var>end node</var>'s [[length]] and the
+    <var>end offset</var>th [[strel]] of <var>end node</var>'s [[cddata]] is a
+    space (0x0020) or non-breaking space (0x00A0):
+
+    <ol>
+      <li>If <var>follows space</var> is true and the <var>end offset</var>th
+      [[strel]] of <var>end node</var>'s [[cddata]] is a space (0x0020), call
+      [[deletedata|<var>end offset</var>, 1]] on <var>end node</var>, then
+      continue this loop from the beginning.
+
+      <li>Set <var>follows space</var> to true if the <var>end offset</var>th
+      [[strel]] of <var>end node</var>'s [[cddata]] is a space (0x0020), false
+      otherwise.
+
+      <li>Add one to <var>end offset</var>.
+
+      <li>Add one to <var>length</var>.
+    </ol>
+
+    <li>Otherwise, break from this loop.
+  </ol>
+
+  <!-- Now replace with the canonical sequence. -->
+  <li>Let <var>replacement whitespace</var> be the <span>canonical space
+  sequence</span> of length <var>length</var>.  <var>non-breaking start</var>
+  is true if <var>start offset</var> is zero and <var>start node</var>
+  <span>follows a line break</span>, and false otherwise.  <var>non-breaking
+  end</var> is true if <var>end offset</var> is <var>end node</var>'s
+  [[cdlength]] and <var>end node</var> <span>precedes a line break</span>, and
+  false otherwise.
+
+  <li>While (<var>start node</var>, <var>start offset</var>) is [[bpbefore]]
+  (<var>end node</var>, <var>end offset</var>):
+
+  <ol>
+    <li>If <var>start node</var> has a [[child]] with [[index]] <var>start
+    offset</var>, set <var>start node</var> to that [[child]], then set
+    <var>start offset</var> to zero.
+
+    <li>Otherwise, if <var>start node</var> is not a [[text]] node or if
+    <var>start offset</var> is <var>start node</var>'s [[length]], set
+    <var>start offset</var> to one plus <var>start node</var>'s [[index]], then
+    set <var>start node</var> to its [[parent]].
+
+    <li>Otherwise:
+
+    <ol>
+      <li>Remove the first [[strel]] from <var>replacement whitespace</var>,
+      and let <var>element</var> be that [[strel]].
+
+      <li>If <var>element</var> is not the same as the <var>start
+      offset</var>th [[strel]] of <var>start node</var>'s [[cddata]]:
+
+      <ol>
+        <!-- We need to insert then delete, so that we don't change range
+        boundary points. -->
+        <li>Call [[insertdata|<var>start offset</var>, <var>element</var>]] on
+        <var>start node</var>.
+
+        <li>Call [[deletedata|<var>start offset</var> + 1, 1]] on
+        <var>start node</var>.
+      </ol>
+
+      <li>Add one to <var>start offset</var>.
+    </ol>
+  </ol>
+</ol>
+<!-- @} -->
+
+<h3>Indenting and outdenting</h3>
+<!-- @{ -->
+<p>To <dfn>indent</dfn> a list <var>node list</var> of consecutive [[sibling]]
+[[nodes]]:
+<!--
+We have to handle entire lists of siblings at once, or else we'd wind up doing
+something like
+
+  <ol>
+    {<li>foo</li>
+    <ol><li>bar</li></ol>}
+  </ol>
+  ->
+  <ol><ol>
+    <li>foo</li>
+    <li>bar</li>
+  </ol></ol>
+  ->
+  <ol><ol><ol>
+    <li>foo</li>
+    <li>bar</li>
+  </ol></ol></ol>
+
+since by the time we got to doing the <ol> that originally contained "bar", we
+won't remember that we aren't supposed to indent "foo" a second time.
+-->
+<ol>
+  <li>If <var>node list</var> is empty, do nothing and abort these steps.
+
+  <li>Let <var>first node</var> be the first member of <var>node list</var>.
+
+  <li>If <var>first node</var>'s [[parent]] is an [[ol]] or [[ul]]:
+
+  <ol>
+    <li>Let <var>tag</var> be the [[localname]] of the [[parent]] of
+    <var>first node</var>.
+
+    <li><span>Wrap</span> <var>node list</var>, with <span>sibling
+    criteria</span> matching only <span title="HTML element">HTML
+    elements</span> with [[localname]] <var>tag</var> and <span>new parent
+    instructions</span> returning the result of calling <code
+    data-anolis-spec=domcore
+    title=dom-Document-createElement>createElement(<var>tag</var>)</code> on
+    the [[ownerdocument]] of <var>first node</var>.
+    <!--
+    This matches IE9, Firefox 4.0, and Chrome 12 dev.  If there's a preceding
+    <li>, Opera 11.10 instead adds the new parent to the end of that <li>, so
+    it's not the child of another list, which is invalid.  But the other
+    browsers' way of doing things makes things simpler.  E.g., if we want to
+    indent an <li> and it has <ol>/<ul> children, we have to distinguish
+    between the case where we want to indent the whole <li> or only the first
+    part.  It also allows things like
+
+      <ol><li>
+        foo
+        <ol><li>bar</li></ol>
+        baz
+      </li></ol>
+
+    in which case it's unclear what we should do if the user selects "foo" and
+    indents.  I've filed a bug on HTML5:
+
+    http://www.w3.org/Bugs/Public/show_bug.cgi?id=12609
+    -->
+
+    <li>Abort these steps.
+  </ol>
+
+  <!--
+  Firefox 4.0 respects the CSS styling flag for indent, but Chrome 12 dev does
+  not.  I always produce blockquotes, even if CSS styling is on, for two
+  reasons.  One, IE9 handles inline margin attributes badly: when outdenting,
+  it propagates the margin to the parent, which doesn't actually remove it.
+  Two, in CSS mode I'd want to use <div style="margin: 1em 40px"> to match
+  non-CSS mode, but authors are very likely to want to remove the top/bottom
+  margin, which they can't do if it's not a special tag.  Authors who really
+  want divs for indentation could always convert the blockquotes to divs
+  themselves.  But if people really want it, I could respect CSS styling mode
+  here too.
+
+  The top/bottom margins might be undesirable here, but no more so than for
+  <ol>/<ul>/<p>/etc.  Here as there, authors can remove them with CSS if they
+  want.
+  -->
+
+  <li><span>Wrap</span> <var>node list</var>, with <span>sibling
+  criteria</span> matching any <span>indentation element</span>, and <span>new
+  parent instructions</span> to return the result of calling <code
+  data-anolis-spec=domcore
+  title=dom-Document-createElement>createElement("blockquote")</code> on the
+  [[ownerdocument]] of <var>first node</var>.  Let <var>new parent</var> be the
+  result.
+  <!--
+  This indents on both sides, so we don't have to worry about directionality.
+  In theory it would be better if we indented only on the start side, but that
+  requires care to get right in mixed-direction cases.  Even once browsers
+  start to support margin-start and so on, we can't use them because a) we have
+  to work okay in legacy browsers and b) it doesn't help if a descendant block
+  has different direction (so should be indented the other way).  So let's not
+  worry about it: most browsers don't, and the ones that do get it wrong.  Just
+  indent on both sides.
+  -->
+
+  <li><span>Fix disallowed ancestors</span> of <var>new parent</var>.
+</ol>
+
 <p>To <dfn>outdent</dfn> a [[node]] <var>node</var>:
 
 <!--

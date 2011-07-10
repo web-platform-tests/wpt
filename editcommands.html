@@ -79,7 +79,8 @@ have experience using this feature.
  <li><a href=#common-algorithms><span class=secno>6 </span>Common algorithms</a>
   <ol>
    <li><a href=#assorted-common-algorithms><span class=secno>6.1 </span>Assorted common algorithms</a></li>
-   <li><a href=#wrapping-a-list-of-nodes><span class=secno>6.2 </span>Wrapping a list of nodes</a></ol></li>
+   <li><a href=#wrapping-a-list-of-nodes><span class=secno>6.2 </span>Wrapping a list of nodes</a></li>
+   <li><a href=#allowed-children><span class=secno>6.3 </span>Allowed children</a></ol></li>
  <li><a href=#inline-formatting-commands><span class=secno>7 </span>Inline formatting commands</a>
   <ol>
    <li><a href=#inline-formatting-command-definitions><span class=secno>7.1 </span>Inline formatting command definitions</a></li>
@@ -106,29 +107,30 @@ have experience using this feature.
   <ol>
    <li><a href=#block-formatting-command-definitions><span class=secno>8.1 </span>Block formatting command definitions</a></li>
    <li><a href=#assorted-block-formatting-command-algorithms><span class=secno>8.2 </span>Assorted block formatting command algorithms</a></li>
-   <li><a href=#allowed-children><span class=secno>8.3 </span>Allowed children</a></li>
-   <li><a href=#block-extending-a-range><span class=secno>8.4 </span>Block-extending a range</a></li>
-   <li><a href=#deleting-the-contents-of-a-range><span class=secno>8.5 </span>Deleting the contents of a range</a></li>
-   <li><a href=#outdenting-a-node><span class=secno>8.6 </span>Outdenting a node</a></li>
-   <li><a href=#toggling-lists><span class=secno>8.7 </span>Toggling lists</a></li>
-   <li><a href=#justifying-the-selection><span class=secno>8.8 </span>Justifying the selection</a></li>
-   <li><a href=#the-delete-command><span class=secno>8.9 </span>The <code title="">delete</code> command</a></li>
-   <li><a href=#the-formatblock-command><span class=secno>8.10 </span>The <code title="">formatBlock</code> command</a></li>
-   <li><a href=#the-forwarddelete-command><span class=secno>8.11 </span>The <code title="">forwardDelete</code> command</a></li>
-   <li><a href=#the-indent-command><span class=secno>8.12 </span>The <code title="">indent</code> command</a></li>
-   <li><a href=#the-inserthorizontalrule-command><span class=secno>8.13 </span>The <code title="">insertHorizontalRule</code> command</a></li>
-   <li><a href=#the-inserthtml-command><span class=secno>8.14 </span>The <code title="">insertHTML</code> command</a></li>
-   <li><a href=#the-insertimage-command><span class=secno>8.15 </span>The <code title="">insertImage</code> command</a></li>
-   <li><a href=#the-insertlinebreak-command><span class=secno>8.16 </span>The <code title="">insertLineBreak</code> command</a></li>
-   <li><a href=#the-insertorderedlist-command><span class=secno>8.17 </span>The <code title="">insertOrderedList</code> command</a></li>
-   <li><a href=#the-insertparagraph-command><span class=secno>8.18 </span>The <code title="">insertParagraph</code> command</a></li>
-   <li><a href=#the-inserttext-command><span class=secno>8.19 </span>The <code title="">insertText</code> command</a></li>
-   <li><a href=#the-insertunorderedlist-command><span class=secno>8.20 </span>The <code title="">insertUnorderedList</code> command</a></li>
-   <li><a href=#the-justifycenter-command><span class=secno>8.21 </span>The <code title="">justifyCenter</code> command</a></li>
-   <li><a href=#the-justifyfull-command><span class=secno>8.22 </span>The <code title="">justifyFull</code> command</a></li>
-   <li><a href=#the-justifyleft-command><span class=secno>8.23 </span>The <code title="">justifyLeft</code> command</a></li>
-   <li><a href=#the-justifyright-command><span class=secno>8.24 </span>The <code title="">justifyRight</code> command</a></li>
-   <li><a href=#the-outdent-command><span class=secno>8.25 </span>The <code title="">outdent</code> command</a></ol></li>
+   <li><a href=#block-extending-a-range><span class=secno>8.3 </span>Block-extending a range</a></li>
+   <li><a href=#deleting-the-contents-of-a-range><span class=secno>8.4 </span>Deleting the contents of a range</a></li>
+   <li><a href="#splitting-a-node-list's-parent"><span class=secno>8.5 </span>Splitting a node list's parent</a></li>
+   <li><a href=#canonical-space-sequences><span class=secno>8.6 </span>Canonical space sequences</a></li>
+   <li><a href=#indenting-and-outdenting><span class=secno>8.7 </span>Indenting and outdenting</a></li>
+   <li><a href=#toggling-lists><span class=secno>8.8 </span>Toggling lists</a></li>
+   <li><a href=#justifying-the-selection><span class=secno>8.9 </span>Justifying the selection</a></li>
+   <li><a href=#the-delete-command><span class=secno>8.10 </span>The <code title="">delete</code> command</a></li>
+   <li><a href=#the-formatblock-command><span class=secno>8.11 </span>The <code title="">formatBlock</code> command</a></li>
+   <li><a href=#the-forwarddelete-command><span class=secno>8.12 </span>The <code title="">forwardDelete</code> command</a></li>
+   <li><a href=#the-indent-command><span class=secno>8.13 </span>The <code title="">indent</code> command</a></li>
+   <li><a href=#the-inserthorizontalrule-command><span class=secno>8.14 </span>The <code title="">insertHorizontalRule</code> command</a></li>
+   <li><a href=#the-inserthtml-command><span class=secno>8.15 </span>The <code title="">insertHTML</code> command</a></li>
+   <li><a href=#the-insertimage-command><span class=secno>8.16 </span>The <code title="">insertImage</code> command</a></li>
+   <li><a href=#the-insertlinebreak-command><span class=secno>8.17 </span>The <code title="">insertLineBreak</code> command</a></li>
+   <li><a href=#the-insertorderedlist-command><span class=secno>8.18 </span>The <code title="">insertOrderedList</code> command</a></li>
+   <li><a href=#the-insertparagraph-command><span class=secno>8.19 </span>The <code title="">insertParagraph</code> command</a></li>
+   <li><a href=#the-inserttext-command><span class=secno>8.20 </span>The <code title="">insertText</code> command</a></li>
+   <li><a href=#the-insertunorderedlist-command><span class=secno>8.21 </span>The <code title="">insertUnorderedList</code> command</a></li>
+   <li><a href=#the-justifycenter-command><span class=secno>8.22 </span>The <code title="">justifyCenter</code> command</a></li>
+   <li><a href=#the-justifyfull-command><span class=secno>8.23 </span>The <code title="">justifyFull</code> command</a></li>
+   <li><a href=#the-justifyleft-command><span class=secno>8.24 </span>The <code title="">justifyLeft</code> command</a></li>
+   <li><a href=#the-justifyright-command><span class=secno>8.25 </span>The <code title="">justifyRight</code> command</a></li>
+   <li><a href=#the-outdent-command><span class=secno>8.26 </span>The <code title="">outdent</code> command</a></ol></li>
  <li><a href=#miscellaneous-commands><span class=secno>9 </span>Miscellaneous commands</a>
   <ol>
    <li><a href=#the-copy-command><span class=secno>9.1 </span>The <code title="">copy</code> command</a></li>
@@ -636,6 +638,19 @@ case-insensitively</a>.
 <p>An <dfn id=html-element>HTML element</dfn> is an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> whose <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-namespace title=concept-element-namespace>namespace</a> is the
 <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#html-namespace>HTML namespace</a>.
 
+<p>A <dfn id=prohibited-paragraph-child-name>prohibited paragraph child name</dfn> is "address", "article",
+"aside", "blockquote", "caption", "center", "col", "colgroup", "dd", "details",
+"dir", "div", "dl", "dt", "fieldset", "figcaption", "figure", "footer", "form",
+"h1", "h2", "h3", "h4", "h5", "h6", "header", "hgroup", "hr", "li", "listing",
+"menu", "nav", "ol", "p", "plaintext", "pre", "section", "summary", "table",
+"tbody", "td", "tfoot", "th", "thead", "tr", "ul", or "xmp".
+
+<p>A <dfn id=prohibited-paragraph-child>prohibited paragraph child</dfn> is an <a href=#html-element>HTML element</a>
+whose <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> is a <a href=#prohibited-paragraph-child-name>prohibited paragraph child name</a>.
+<!-- These are all the things that will close a <p> if found as a descendant.
+I think.  Plus table stuff, since that can't be a descendant of a p either,
+although it won't auto-close it. -->
+
 <p>An <dfn id=inline-node>inline node</dfn> is either a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node, or an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> whose
 "display" property computes to "inline", "inline-block", or "inline-table".
 
@@ -851,48 +866,6 @@ here?
 <a href=#remove-extraneous-line-breaks-before>remove extraneous line breaks before</a> it, then <a href=#remove-extraneous-line-breaks-at-the-end-of>remove
 extraneous line breaks at the end of</a> it.
 
-<p>A <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> <var title="">node</var> <dfn id=follows-a-line-break>follows a line break</dfn> if the following
-algorithm returns true:
-
-<p class=XXX>Editorial issue: These two algorithms depend on block-extending.
-Should that get moved up to the general algorithms?
-
-<ol>
-  <li>Let <var title="">offset</var> be zero.
-
-  <li>While <var title="">offset</var> is zero, set <var title="">offset</var> to the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a>
-  of <var title="">node</var> and then set <var title="">node</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
-
-  <li>Let <var title="">range</var> be a <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> and <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a>
-  (<var title="">node</var>, <var title="">offset</var>).
-
-  <li><a href=#block-extend>Block-extend</a> <var title="">range</var>, and let <var title="">new range</var>
-  be the result.
-
-  <li>Return false if <var title="">new range</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> is <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-bp-before title=concept-bp-before>before</a>
-  (<var title="">node</var>, <var title="">offset</var>), true otherwise.
-</ol>
-
-<p>A <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> <var title="">node</var> <dfn id=precedes-a-line-break>precedes a line break</dfn> if the following
-algorithm returns true:
-
-<ol>
-  <li>Let <var title="">offset</var> be the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> of <var title="">node</var>.
-
-  <li>While <var title="">offset</var> is the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> of <var title="">node</var>, set
-  <var title="">offset</var> to one plus the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> of <var title="">node</var> and then set
-  <var title="">node</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
-
-  <li>Let <var title="">range</var> be a <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> and <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a>
-  (<var title="">node</var>, <var title="">offset</var>).
-
-  <li><a href=#block-extend>Block-extend</a> <var title="">range</var>, and let <var title="">new range</var>
-  be the result.
-
-  <li>Return false if <var title="">new range</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> is <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-bp-after title=concept-bp-after>after</a>
-  (<var title="">node</var>, <var title="">offset</var>), true otherwise.
-</ol>
-
 
 <h3 id=wrapping-a-list-of-nodes><span class=secno>6.2 </span>Wrapping a list of nodes</h3>
 
@@ -1054,6 +1027,132 @@ instructions</dfn>:
   <li><a href=#remove-extraneous-line-breaks-from>Remove extraneous line breaks from</a> <var title="">new parent</var>.
 
   <li>Return <var title="">new parent</var>.
+</ol>
+
+
+<h3 id=allowed-children><span class=secno>6.3 </span>Allowed children</h3>
+
+<p>A <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> or string <var title="">child</var> is an <dfn id=allowed-child>allowed child</dfn> of a
+<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> or string <var title="">parent</var> if the following algorithm returns true:
+
+<div class=XXX>
+<p>This list doesn't currently match HTML's validity requirements for a few
+reasons:
+
+<ol>
+  <li>We need to handle invalid elements, which have no conformance
+  requirements but should be treated properly.  In particular, they can
+  interfere with serialization (e.g., center cannot descend from p).
+
+  <li>Sometimes users give instructions that have to produce invalid DOMs to
+  get the expected effect, like indenting the first item of a list.
+
+  <li>The HTML validity requirements are sometimes quite complicated.
+
+  <li>I just haven't had bothered to be systematic about it yet&nbsp;&ndash;
+  I've only covered what's come up in my tests.
+</ol>
+</div>
+
+<ol>
+  <li>If <var title="">parent</var> is "colgroup", "table", "tbody", "tfoot", "thead",
+  "tr", or an <a href=#html-element>HTML element</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> equal to one of
+  those, and <var title="">child</var> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node whose <code class=external data-anolis-spec=domcore title=dom-CharacterData-data><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-data>data</a></code> does not
+  consist solely of <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#space-character title="space character">space characters</a>, return false.
+
+  <li>If <var title="">parent</var> is "script", "style", "plaintext", or "xmp", or an
+  <a href=#html-element>HTML element</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> equal to one of those, and
+  <var title="">child</var> is not a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node, return false.
+  <!-- Actually, no node can occur in the DOM after plaintext, generally.  But
+  let's not get too carried away. -->
+
+  <li>If <var title="">child</var> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#document>Document</a></code>, <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#documentfragment>DocumentFragment</a></code>, or
+  <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#documenttype>DocumentType</a></code>, return false.
+
+  <li>If <var title="">child</var> is an <a href=#html-element>HTML element</a>, set <var title="">child</var>
+  to the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> of <var title="">child</var>.
+
+  <li>If <var title="">child</var> is not a string, return true.
+
+  <li>If <var title="">parent</var> is an <a href=#html-element>HTML element</a>:
+
+  <ol>
+    <li>If <var title="">child</var> is "a", and <var title="">parent</var> or some <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a>
+    of <var title="">parent</var> is an <code class=external data-anolis-spec=html title="the a element"><a href=http://www.whatwg.org/html/#the-a-element>a</a></code>, return false.
+    <!-- Cannot be serialized as text/html.  In some cases it can, like
+    <a>foo<table><td><a>bar</a></td></table>baz</a>, but it's invalid in those
+    cases too, so no need for complication. -->
+
+    <li>If <var title="">child</var> is a <a href=#prohibited-paragraph-child-name>prohibited paragraph child name</a>
+    and <var title="">parent</var> or some <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of <var title="">parent</var> is a <code class=external data-anolis-spec=html title="the p element"><a href=http://www.whatwg.org/html/#the-p-element>p</a></code>
+    or <a href=#element-with-inline-contents>element with inline contents</a>, return false.
+    <!-- This generally cannot be serialized either, for p.  For elements with
+    inline contents, this serves to prevent things like
+    <span><p>foo</p></span>, which will parse fine but aren't supposed to
+    happen anyway. -->
+
+    <li>If <var title="">child</var> is "h1", "h2", "h3", "h4", "h5", or "h6", and
+    <var title="">parent</var> or some <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of <var title="">parent</var> is an
+    <a href=#html-element>HTML element</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> "h1", "h2", "h3", "h4", "h5",
+    or "h6", return false.
+    <!-- Nor this. -->
+
+    <li>Let <var title="">parent</var> be the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> of <var title="">parent</var>.
+    <!-- Further requirements only care about the parent itself, not ancestors,
+    so we don't need to know the node itself. -->
+  </ol>
+
+  <li>If <var title="">parent</var> is an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> or <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#documentfragment>DocumentFragment</a></code>, return
+  true.
+
+  <li>If <var title="">parent</var> is not a string, return false.
+
+  <li>If <var title="">parent</var> is in the following table, then return true if
+  <var title="">child</var> is listed as an allowed child, and false otherwise.
+  <!-- We allow children even where some intervening nodes will be inserted,
+  like tr as a child of table. -->
+
+  <table>
+    <tr><th>Parent <th>Allowed children
+    <tr><td>colgroup <td>col
+    <tr><td>table <td>caption, col, colgroup, tbody, td, tfoot, th, thead, tr
+    <tr><td>tbody, tfoot, thead <td>td, th, tr
+    <tr><td>tr <td>td, th
+    <tr><td>dl <td>dt, dd
+    <tr><td>dir, ol, ul <td>dir, li, ol, ul
+    <tr><td>hgroup <td>h1, h2, h3, h4, h5, h6
+  </table>
+
+  <li>If <var title="">child</var> is "body", "caption", "col", "colgroup", "frame",
+  "frameset", "head", "html", "tbody", "td", "tfoot", "th", "thead", or "tr",
+  return false.
+
+  <!-- dd/dt/li will serialize fine as the child of random stuff, but it makes
+  no sense at all, so we want to avoid it anyway. -->
+  <li>If <var title="">child</var> is "dd" or "dt" and <var title="">parent</var> is not "dl",
+  return false.
+
+  <li>If <var title="">child</var> is "li" and <var title="">parent</var> is not "ol" or "ul",
+  return false.
+
+  <li>If <var title="">parent</var> is in the following table and <var title="">child</var> is
+  listed as a prohibited child, return false.
+
+  <table>
+    <tr><th>Parent <th>Prohibited children
+    <tr><td>a <td>a
+    <tr><td>dd, dt <td>dd, dt
+    <tr><td>h1, h2, h3, h4, h5, h6 <td>h1, h2, h3, h4, h5, h6
+    <tr><td>li <td>li
+    <tr><td>nobr <td>nobr
+    <tr><td>p, all <a href=#name-of-an-element-with-inline-contents title="name of an element with inline contents">names
+          of an element with inline contents</a>
+        <td>All <a href=#prohibited-paragraph-child-name title="prohibited paragraph child name">prohibited
+          paragraph child names</a>
+    <tr><td>td, th <td>caption, col, colgroup, tbody, td, tfoot, th, thead, tr
+  </table>
+
+  <li>Return true.
 </ol>
 
 
@@ -2689,6 +2788,10 @@ IE10PP2, Firefox 7.0a2, and Opera 11.50 do not, so I go with them.
   <a href=#split-the-parent>split the parent</a> of the one-<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> list consisting of
   <var title="">node</var>.
 
+  <p class=XXX>Splitting the parent is really a block algorithm.  It's not
+  clear whether it's desirable to use for inline nodes.  Perhaps it's okay, but
+  it makes me a little uneasy.
+
   <li>For each of the entries in the following list, in the given order,
   <a href="#set-the-selection's-value">set the selection's value</a> to null, with <var title="">command</var> as
   given.
@@ -2897,19 +3000,6 @@ starting at 2011-05-13 at 16:53 EDT (UTC-0400).
 
 <h3 id=block-formatting-command-definitions><span class=secno>8.1 </span>Block formatting command definitions</h3>
 
-<p>A <dfn id=prohibited-paragraph-child-name>prohibited paragraph child name</dfn> is "address", "article",
-"aside", "blockquote", "caption", "center", "col", "colgroup", "dd", "details",
-"dir", "div", "dl", "dt", "fieldset", "figcaption", "figure", "footer", "form",
-"h1", "h2", "h3", "h4", "h5", "h6", "header", "hgroup", "hr", "li", "listing",
-"menu", "nav", "ol", "p", "plaintext", "pre", "section", "summary", "table",
-"tbody", "td", "tfoot", "th", "thead", "tr", "ul", or "xmp".
-
-<p>A <dfn id=prohibited-paragraph-child>prohibited paragraph child</dfn> is an <a href=#html-element>HTML element</a>
-whose <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> is a <a href=#prohibited-paragraph-child-name>prohibited paragraph child name</a>.
-<!-- These are all the things that will close a <p> if found as a descendant.
-I think.  Plus table stuff, since that can't be a descendant of a p either,
-although it won't auto-close it. -->
-
 <p>A <dfn id=name-of-an-element-with-inline-contents>name of an element with inline contents</dfn> is "a", "abbr", "b",
 "bdi", "bdo", "cite", "code", "dfn", "em", "h1", "h2", "h3", "h4", "h5", "h6",
 "i", "kbd", "mark", "pre", "q", "rp", "rt", "ruby", "s", "samp", "small",
@@ -3002,245 +3092,6 @@ here?
   <li>While <var title="">node</var> is not an <a href=#allowed-child>allowed child</a> of its
   <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>, <a href=#split-the-parent>split the parent</a> of the one-<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> list consisting
   of <var title="">node</var>.
-</ol>
-
-<p>To <dfn id=split-the-parent>split the parent</dfn> of a list <var title="">node list</var> of consecutive
-<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-sibling title=concept-tree-sibling>sibling</a> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a>:
-
-<p class=XXX>Pretty much any time we call this algorithm, it can cause trouble
-if the parent had styles, classes, etc.  There's not going to be any general
-way to handle this, but we should at least try to handle the special case of
-inline styles, because Firefox does actually add them to arbitrary elements.
-Also, when splitting out of an inline parent, it might be good to wrap all the
-inline descendants in a clone of the former parent.
-
-<ol>
-  <li>Let <var title="">original parent</var> be the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of the first member of
-  <var title="">node list</var>.
-
-  <li>If <var title="">original parent</var> is not <a href=#editable>editable</a> or its
-  <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is null, do nothing and abort these steps.
-
-  <li>If the first <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">original parent</var> is in <var title="">node
-  list</var>, <a href=#remove-extraneous-line-breaks-before>remove extraneous line breaks before</a> <var title="">original
-  parent</var>.
-
-  <li>If the first <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">original parent</var> is in <var title="">node
-  list</var>, and <var title="">original parent</var> <a href=#follows-a-line-break>follows a line break</a>,
-  set <var title="">follows line break</var> to true.  Otherwise, set <var title="">follows line
-  break</var> to false.
-
-  <li>If the last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">original parent</var> is in <var title="">node
-  list</var>, and <var title="">original parent</var> <a href=#precedes-a-line-break>precedes a line
-  break</a>, set <var title="">precedes line break</var> to true.  Otherwise, set
-  <var title="">precedes line break</var> to false.
-
-  <li>If the first <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">original parent</var> is not in <var title="">node
-  list</var>, but its last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> is:
-
-  <div class=XXX>
-  <p>We insert things after the parent.  This is bad, because it will cause
-  them to become part of any ranges that immediately follow.  For instance, if
-  we're hitting "bar" in
-
-  </p><xmp><div><p>foo<p>bar</div>{<p>baz}</xmp>
-
-  <p>it becomes
-
-  </p><xmp><div><p>foo</div>{<p>bar<p>baz}</xmp>
-
-  <p>instead of
-
-  </p><xmp><div><p>foo</div><p>bar{<p>baz}</xmp>
-
-  <p>because of how range mutation rules work.  This doesn't happen if we
-  insert before.  Probably this isn't important enough to try working around,
-  though.
-  </div>
-
-  <ol>
-    <li>For each <var title="">node</var> in <var title="">node list</var>, <em>in reverse
-    order</em>, insert <var title="">node</var> into the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of <var title="">original
-    parent</var> immediately after <var title="">original parent</var>, <a href=#preserving-ranges>preserving
-    ranges</a>.
-
-    <li>If <var title="">precedes line break</var> is true, and the last member of
-    <var title="">node list</var> does not <a href=#precedes-a-line-break title="precedes a line break">precede a
-    line break</a>, call <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("br")</a></code> on the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a> and
-    insert the result immediately after the last member of <var title="">node
-    list</var>.
-
-    <li><a href=#remove-extraneous-line-breaks-at-the-end-of>Remove extraneous line breaks at the end of</a> <var title="">original
-    parent</var>.
-
-    <li>Abort these steps.
-  </ol>
-
-  <li>If the first <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">original parent</var> is not in <var title="">node
-  list</var>:
-
-  <ol>
-    <li>Let <var title="">cloned parent</var> be the result of calling <code class=external data-anolis-spec=domcore title=dom-Node-cloneNode><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-clonenode>cloneNode(false)</a></code>
-    on <var title="">original parent</var>.
-
-    <li>If <var title="">original parent</var> has an <code class=external data-anolis-spec=html title="the id attribute"><a href=http://www.whatwg.org/html/#the-id-attribute>id</a></code> attribute, unset it.
-
-    <li>Insert <var title="">cloned parent</var> into the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of <var title="">original
-    parent</var> immediately before <var title="">original parent</var>.
-
-    <li>While the <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code> of the first member of <var title="">node
-    list</var> is not null, append the first <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">original
-    parent</var> as the last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">cloned parent</var>,
-    <a href=#preserving-ranges>preserving ranges</a>.
-  </ol>
-
-  <li>For each <var title="">node</var> in <var title="">node list</var>, insert <var title="">node</var>
-  into the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of <var title="">original parent</var> immediately before
-  <var title="">original parent</var>, <a href=#preserving-ranges>preserving ranges</a>.
-  <!-- Notice that a boundary point that was immediately before the element
-  will now be immediately before its children, just because of the regular
-  range mutation rules, without needing to worry about preserving ranges.
-  Likewise for boundary points immediately after the element, if we wind up
-  removing the element in the final step.  Preserving ranges is only necessary
-  for the sake of boundary points in the element or its descendants. -->
-
-  <li>If <var title="">follows line break</var> is true, and the first member of
-  <var title="">node list</var> does not <a href=#follows-a-line-break title="follows a line break">follow a
-  line break</a>, call <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("br")</a></code> on the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a> and
-  insert the result immediately before the first member of <var title="">node
-  list</var>.
-
-  <li>If the last member of <var title="">node list</var> is an <a href=#inline-node>inline node</a>
-  other than a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code>, and the first <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">original parent</var> is
-  a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code>, and <var title="">original parent</var> is not an <a href=#inline-node>inline node</a>,
-  remove the first <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">original parent</var> from <var title="">original
-  parent</var>.
-
-  <li>If <var title="">original parent</var> has no <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>:
-
-  <ol>
-    <li>Remove <var title="">original parent</var> from its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
-
-    <li>If <var title="">precedes line break</var> is true, and the last member of
-    <var title="">node list</var> does not <a href=#precedes-a-line-break title="precedes a line break">precede a
-    line break</a>, call <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("br")</a></code> on the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a> and
-    insert the result immediately after the last member of <var title="">node
-    list</var>.
-  </ol>
-
-  <li>Otherwise, <a href=#remove-extraneous-line-breaks-before>remove extraneous line breaks before</a>
-  <var title="">original parent</var>.
-
-  <li>If <var title="">node list</var>'s last member's <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code> is null,
-  but its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is not null, <a href=#remove-extraneous-line-breaks-at-the-end-of>remove extraneous line breaks at the
-  end of</a> <var title="">node list</var>'s last member's <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
-  <!-- The parent might be null if it's a br that we removed in the last step,
-  in which case this step isn't necessary. -->
-</ol>
-
-<p>To remove a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> <var title="">node</var> while <dfn id=preserving-its-descendants>preserving its
-descendants</dfn>, <a href=#split-the-parent>split the parent</a> of <var title="">node</var>'s
-<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>.
-
-<p>To <dfn id=indent>indent</dfn> a list <var title="">node list</var> of consecutive <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-sibling title=concept-tree-sibling>sibling</a>
-<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a>:
-<!--
-We have to handle entire lists of siblings at once, or else we'd wind up doing
-something like
-
-  <ol>
-    {<li>foo</li>
-    <ol><li>bar</li></ol>}
-  </ol>
-  ->
-  <ol><ol>
-    <li>foo</li>
-    <li>bar</li>
-  </ol></ol>
-  ->
-  <ol><ol><ol>
-    <li>foo</li>
-    <li>bar</li>
-  </ol></ol></ol>
-
-since by the time we got to doing the <ol> that originally contained "bar", we
-won't remember that we aren't supposed to indent "foo" a second time.
--->
-
-<ol>
-  <li>If <var title="">node list</var> is empty, do nothing and abort these steps.
-
-  <li>Let <var title="">first node</var> be the first member of <var title="">node list</var>.
-
-  <li>If <var title="">first node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code> or <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code>:
-
-  <ol>
-    <li>Let <var title="">tag</var> be the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> of the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of
-    <var title="">first node</var>.
-
-    <li><a href=#wrap>Wrap</a> <var title="">node list</var>, with <a href=#sibling-criteria>sibling
-    criteria</a> matching only <a href=#html-element title="HTML element">HTML
-    elements</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> <var title="">tag</var> and <a href=#new-parent-instructions>new parent
-    instructions</a> returning the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement(<var title="">tag</var>)</a></code> on
-    the <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">first node</var>.
-    <!--
-    This matches IE9, Firefox 4.0, and Chrome 12 dev.  If there's a preceding
-    <li>, Opera 11.10 instead adds the new parent to the end of that <li>, so
-    it's not the child of another list, which is invalid.  But the other
-    browsers' way of doing things makes things simpler.  E.g., if we want to
-    indent an <li> and it has <ol>/<ul> children, we have to distinguish
-    between the case where we want to indent the whole <li> or only the first
-    part.  It also allows things like
-
-      <ol><li>
-        foo
-        <ol><li>bar</li></ol>
-        baz
-      </li></ol>
-
-    in which case it's unclear what we should do if the user selects "foo" and
-    indents.  I've filed a bug on HTML5:
-
-    http://www.w3.org/Bugs/Public/show_bug.cgi?id=12609
-    -->
-
-    <li>Abort these steps.
-  </ol>
-
-  <!--
-  Firefox 4.0 respects the CSS styling flag for indent, but Chrome 12 dev does
-  not.  I always produce blockquotes, even if CSS styling is on, for two
-  reasons.  One, IE9 handles inline margin attributes badly: when outdenting,
-  it propagates the margin to the parent, which doesn't actually remove it.
-  Two, in CSS mode I'd want to use <div style="margin: 1em 40px"> to match
-  non-CSS mode, but authors are very likely to want to remove the top/bottom
-  margin, which they can't do if it's not a special tag.  Authors who really
-  want divs for indentation could always convert the blockquotes to divs
-  themselves.  But if people really want it, I could respect CSS styling mode
-  here too.
-
-  The top/bottom margins might be undesirable here, but no more so than for
-  <ol>/<ul>/<p>/etc.  Here as there, authors can remove them with CSS if they
-  want.
-  -->
-
-  <li><a href=#wrap>Wrap</a> <var title="">node list</var>, with <a href=#sibling-criteria>sibling
-  criteria</a> matching any <a href=#indentation-element>indentation element</a>, and <a href=#new-parent-instructions>new
-  parent instructions</a> to return the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("blockquote")</a></code> on the
-  <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">first node</var>.  Let <var title="">new parent</var> be the
-  result.
-  <!--
-  This indents on both sides, so we don't have to worry about directionality.
-  In theory it would be better if we indented only on the start side, but that
-  requires care to get right in mixed-direction cases.  Even once browsers
-  start to support margin-start and so on, we can't use them because a) we have
-  to work okay in legacy browsers and b) it doesn't help if a descendant block
-  has different direction (so should be indented the other way).  So let's not
-  worry about it: most browsers don't, and the ones that do get it wrong.  Just
-  indent on both sides.
-  -->
-
-  <li><a href=#fix-disallowed-ancestors>Fix disallowed ancestors</a> of <var title="">new parent</var>.
 </ol>
 
 <p>To <dfn id=normalize-sublists>normalize sublists</dfn> in a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> <var title="">item</var>:
@@ -3348,194 +3199,6 @@ algorithm:
   <li>Return "none".
 </ol>
 
-<p>The <dfn id=canonical-space-sequence>canonical space sequence</dfn> of length <var title="">n</var>, with boolean
-flags <var title="">non-breaking start</var> and <var title="">non-breaking end</var>, is
-returned by the following algorithm:
-<!-- See long comment before insertText. -->
-
-<ol>
-  <li>If <var title="">n</var> is zero, return the empty string.
-
-  <li>If <var title="">n</var> is one and both <var title="">non-breaking start</var> and
-  <var title="">non-breaking end</var> are false, return a single space (U+0020).
-
-  <li>If <var title="">n</var> is one, return a single non-breaking space (U+00A0).
-
-  <li>Let <var title="">buffer</var> be the empty string.
-
-  <li>If <var title="">non-breaking start</var> is true, let <var title="">repeated pair</var> be
-  U+00A0 U+0020.  Otherwise, let it be U+0020 U+00A0.
-
-  <li>While <var title="">n</var> is greater than three, append <var title="">repeated pair</var>
-  to <var title="">buffer</var> and subtract two from <var title="">n</var>.
-
-  <li>If <var title="">n</var> is three, append a three-<a href=http://es5.github.com/#x8.4>element</a> string to
-  <var title="">buffer</var> depending on <var title="">non-breaking start</var> and
-  <var title="">non-breaking end</var>:
-
-  <dl class=switch>
-    <dt><var title="">non-breaking start</var> and <var title="">non-breaking end</var> false
-    <dd>U+0020 U+00A0 U+0020
-
-    <dt><var title="">non-breaking start</var> true, <var title="">non-breaking end</var> false
-    <dd>U+00A0 U+00A0 U+0020
-
-    <dt><var title="">non-breaking start</var> false, <var title="">non-breaking end</var> true
-    <dd>U+0020 U+00A0 U+00A0
-
-    <dt><var title="">non-breaking start</var> and <var title="">non-breaking end</var> both true
-    <dd>U+00A0 U+0020 U+00A0
-  </dl>
-
-  <li>Otherwise, append a two-<a href=http://es5.github.com/#x8.4>element</a> string to <var title="">buffer</var> depending
-  on <var title="">non-breaking start</var> and <var title="">non-breaking end</var>:
-
-  <dl class=switch>
-    <dt><var title="">non-breaking start</var> and <var title="">non-breaking end</var> false
-    <dt><var title="">non-breaking start</var> true, <var title="">non-breaking end</var> false
-    <dd>U+00A0 U+0020
-
-    <dt><var title="">non-breaking start</var> false, <var title="">non-breaking end</var> true
-    <dd>U+0020 U+00A0
-
-    <dt><var title="">non-breaking start</var> and <var title="">non-breaking end</var> both true
-    <dd>U+00A0 U+00A0
-  </dl>
-
-  <li>Return <var title="">buffer</var>.
-</ol>
-
-<p>To <dfn id=canonicalize-whitespace>canonicalize whitespace</dfn> at (<var title="">node</var>,
-<var title="">offset</var>):
-
-<ol>
-  <li>If <var title="">node</var> is neither <a href=#editable>editable</a> nor an <a href=#editing-host>editing
-  host</a>, abort these steps.
-
-  <li>Let <var title="">start node</var> equal <var title="">node</var> and let <var title="">start
-  offset</var> equal <var title="">offset</var>.
-
-  <!-- First go to the beginning of the current whitespace run. -->
-  <li>Repeat the following steps:
-
-  <ol>
-    <li>If <var title="">start node</var> has a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> <a href=#in-the-same-editing-host>in the same editing
-    host</a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> <var title="">start offset</var> minus one, set
-    <var title="">start node</var> to that <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>, then set <var title="">start offset</var>
-    to <var title="">start node</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a>.
-
-    <li>Otherwise, if <var title="">start offset</var> is zero and <var title="">start node</var>
-    does not <a href=#follows-a-line-break title="follows a line break">follow a line break</a> and
-    <var title="">start node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is <a href=#in-the-same-editing-host>in the same editing
-    host</a>, set <var title="">start offset</var> to <var title="">start node</var>'s
-    <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a>, then set <var title="">start node</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
-
-    <p class=XXX>Following a line break is unlikely to be the right criterion.
-
-    <li>Otherwise, if <var title="">start node</var> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node and its
-    <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>'s <a href=http://www.w3.org/TR/CSS21/cascade.html#computed-value>computed value</a> for "white-space" is neither "pre" nor "pre-wrap"
-    and <var title="">start offset</var> is not zero and the (<var title="">start offset</var>
-    &minus; 1)st <a href=http://es5.github.com/#x8.4>element</a> of <var title="">start node</var>'s <code class=external data-anolis-spec=domcore title=dom-CharacterData-data><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-data>data</a></code> is a space
-    (0x0020) or non-breaking space (0x00A0), subtract one from <var title="">start
-    offset</var>.
-
-    <li>Otherwise, break from this loop.
-  </ol>
-
-  <!-- Now collapse any consecutive spaces. -->
-  <li>Let <var title="">end node</var> equal <var title="">start node</var> and <var title="">end
-  offset</var> equal <var title="">start offset</var>.
-
-  <li>Let <var title="">length</var> equal zero.
-
-  <li>Let <var title="">follows space</var> be false.
-
-  <li>Repeat the following steps:
-
-  <ol>
-    <li>If <var title="">end node</var> has a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> <a href=#in-the-same-editing-host>in the same editing
-    host</a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> <var title="">end offset</var>, set <var title="">end node</var>
-    to that <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>, then set <var title="">end offset</var> to zero.
-
-    <li>Otherwise, if <var title="">end offset</var> is <var title="">end node</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a>
-    and <var title="">end node</var> does not <a href=#precedes-a-line-break title="precedes a line
-    break">precede a line break</a> and <var title="">end node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is
-    <a href=#in-the-same-editing-host>in the same editing host</a>, set <var title="">end offset</var> to one
-    plus <var title="">end node</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a>, then set <var title="">end node</var> to its
-    <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
-
-    <p class=XXX>Preceding a line break is unlikely to be the right criterion.
-
-    <li>Otherwise, if <var title="">end node</var> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node and its
-    <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>'s <a href=http://www.w3.org/TR/CSS21/cascade.html#computed-value>computed value</a> for "white-space" is neither "pre" nor "pre-wrap"
-    and <var title="">end offset</var> is not <var title="">end node</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> and the
-    <var title="">end offset</var>th <a href=http://es5.github.com/#x8.4>element</a> of <var title="">end node</var>'s <code class=external data-anolis-spec=domcore title=dom-CharacterData-data><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-data>data</a></code> is a
-    space (0x0020) or non-breaking space (0x00A0):
-
-    <ol>
-      <li>If <var title="">follows space</var> is true and the <var title="">end offset</var>th
-      <a href=http://es5.github.com/#x8.4>element</a> of <var title="">end node</var>'s <code class=external data-anolis-spec=domcore title=dom-CharacterData-data><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-data>data</a></code> is a space (0x0020), call
-      <code class=external data-anolis-spec=domcore title=dom-CharacterData-deleteData><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-deletedata>deleteData(<var title="">end offset</var>, 1)</a></code> on <var title="">end node</var>, then
-      continue this loop from the beginning.
-
-      <li>Set <var title="">follows space</var> to true if the <var title="">end offset</var>th
-      <a href=http://es5.github.com/#x8.4>element</a> of <var title="">end node</var>'s <code class=external data-anolis-spec=domcore title=dom-CharacterData-data><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-data>data</a></code> is a space (0x0020), false
-      otherwise.
-
-      <li>Add one to <var title="">end offset</var>.
-
-      <li>Add one to <var title="">length</var>.
-    </ol>
-
-    <li>Otherwise, break from this loop.
-  </ol>
-
-  <!-- Now replace with the canonical sequence. -->
-  <li>Let <var title="">replacement whitespace</var> be the <a href=#canonical-space-sequence>canonical space
-  sequence</a> of length <var title="">length</var>.  <var title="">non-breaking start</var>
-  is true if <var title="">start offset</var> is zero and <var title="">start node</var>
-  <a href=#follows-a-line-break>follows a line break</a>, and false otherwise.  <var title="">non-breaking
-  end</var> is true if <var title="">end offset</var> is <var title="">end node</var>'s
-  <code class=external data-anolis-spec=domcore title=dom-CharacterData-length><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-length>length</a></code> and <var title="">end node</var> <a href=#precedes-a-line-break>precedes a line break</a>, and
-  false otherwise.
-
-  <li>While (<var title="">start node</var>, <var title="">start offset</var>) is <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-bp-before title=concept-bp-before>before</a>
-  (<var title="">end node</var>, <var title="">end offset</var>):
-
-  <ol>
-    <li>If <var title="">start node</var> has a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> <var title="">start
-    offset</var>, set <var title="">start node</var> to that <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>, then set
-    <var title="">start offset</var> to zero.
-
-    <li>Otherwise, if <var title="">start node</var> is not a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node or if
-    <var title="">start offset</var> is <var title="">start node</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a>, set
-    <var title="">start offset</var> to one plus <var title="">start node</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a>, then
-    set <var title="">start node</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
-
-    <li>Otherwise:
-
-    <ol>
-      <li>Remove the first <a href=http://es5.github.com/#x8.4>element</a> from <var title="">replacement whitespace</var>,
-      and let <var title="">element</var> be that <a href=http://es5.github.com/#x8.4>element</a>.
-
-      <li>If <var title="">element</var> is not the same as the <var title="">start
-      offset</var>th <a href=http://es5.github.com/#x8.4>element</a> of <var title="">start node</var>'s <code class=external data-anolis-spec=domcore title=dom-CharacterData-data><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-data>data</a></code>:
-
-      <ol>
-        <!-- We need to insert then delete, so that we don't change range
-        boundary points. -->
-        <li>Call <code class=external data-anolis-spec=domcore title=dom-CharacterData-insertData><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-insertdata>insertData(<var title="">start offset</var>, <var title="">element</var>)</a></code> on
-        <var title="">start node</var>.
-
-        <li>Call <code class=external data-anolis-spec=domcore title=dom-CharacterData-deleteData><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-deletedata>deleteData(<var title="">start offset</var> + 1, 1)</a></code> on
-        <var title="">start node</var>.
-      </ol>
-
-      <li>Add one to <var title="">start offset</var>.
-    </ol>
-  </ol>
-</ol>
-
 <p>The <dfn id=alignment-value>alignment value</dfn> of a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> <var title="">node</var> is returned by
 the following algorithm:
 <!--
@@ -3570,133 +3233,7 @@ than what I've specced for the state.
 </ol>
 
 
-<h3 id=allowed-children><span class=secno>8.3 </span>Allowed children</h3>
-
-<p>A <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> or string <var title="">child</var> is an <dfn id=allowed-child>allowed child</dfn> of a
-<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> or string <var title="">parent</var> if the following algorithm returns true:
-
-<div class=XXX>
-<p>This list doesn't currently match HTML's validity requirements for a few
-reasons:
-
-<ol>
-  <li>We need to handle invalid elements, which have no conformance
-  requirements but should be treated properly.  In particular, they can
-  interfere with serialization (e.g., center cannot descend from p).
-
-  <li>Sometimes users give instructions that have to produce invalid DOMs to
-  get the expected effect, like indenting the first item of a list.
-
-  <li>The HTML validity requirements are sometimes quite complicated.
-
-  <li>I just haven't had bothered to be systematic about it yet&nbsp;&ndash;
-  I've only covered what's come up in my tests.
-</ol>
-</div>
-
-<ol>
-  <li>If <var title="">parent</var> is "colgroup", "table", "tbody", "tfoot", "thead",
-  "tr", or an <a href=#html-element>HTML element</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> equal to one of
-  those, and <var title="">child</var> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node whose <code class=external data-anolis-spec=domcore title=dom-CharacterData-data><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-data>data</a></code> does not
-  consist solely of <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#space-character title="space character">space characters</a>, return false.
-
-  <li>If <var title="">parent</var> is "script", "style", "plaintext", or "xmp", or an
-  <a href=#html-element>HTML element</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> equal to one of those, and
-  <var title="">child</var> is not a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node, return false.
-  <!-- Actually, no node can occur in the DOM after plaintext, generally.  But
-  let's not get too carried away. -->
-
-  <li>If <var title="">child</var> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#document>Document</a></code>, <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#documentfragment>DocumentFragment</a></code>, or
-  <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#documenttype>DocumentType</a></code>, return false.
-
-  <li>If <var title="">child</var> is an <a href=#html-element>HTML element</a>, set <var title="">child</var>
-  to the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> of <var title="">child</var>.
-
-  <li>If <var title="">child</var> is not a string, return true.
-
-  <li>If <var title="">parent</var> is an <a href=#html-element>HTML element</a>:
-
-  <ol>
-    <li>If <var title="">child</var> is "a", and <var title="">parent</var> or some <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a>
-    of <var title="">parent</var> is an <code class=external data-anolis-spec=html title="the a element"><a href=http://www.whatwg.org/html/#the-a-element>a</a></code>, return false.
-    <!-- Cannot be serialized as text/html.  In some cases it can, like
-    <a>foo<table><td><a>bar</a></td></table>baz</a>, but it's invalid in those
-    cases too, so no need for complication. -->
-
-    <li>If <var title="">child</var> is a <a href=#prohibited-paragraph-child-name>prohibited paragraph child name</a>
-    and <var title="">parent</var> or some <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of <var title="">parent</var> is a <code class=external data-anolis-spec=html title="the p element"><a href=http://www.whatwg.org/html/#the-p-element>p</a></code>
-    or <a href=#element-with-inline-contents>element with inline contents</a>, return false.
-    <!-- This generally cannot be serialized either, for p.  For elements with
-    inline contents, this serves to prevent things like
-    <span><p>foo</p></span>, which will parse fine but aren't supposed to
-    happen anyway. -->
-
-    <li>If <var title="">child</var> is "h1", "h2", "h3", "h4", "h5", or "h6", and
-    <var title="">parent</var> or some <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of <var title="">parent</var> is an
-    <a href=#html-element>HTML element</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> "h1", "h2", "h3", "h4", "h5",
-    or "h6", return false.
-    <!-- Nor this. -->
-
-    <li>Let <var title="">parent</var> be the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> of <var title="">parent</var>.
-    <!-- Further requirements only care about the parent itself, not ancestors,
-    so we don't need to know the node itself. -->
-  </ol>
-
-  <li>If <var title="">parent</var> is an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> or <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#documentfragment>DocumentFragment</a></code>, return
-  true.
-
-  <li>If <var title="">parent</var> is not a string, return false.
-
-  <li>If <var title="">parent</var> is in the following table, then return true if
-  <var title="">child</var> is listed as an allowed child, and false otherwise.
-  <!-- We allow children even where some intervening nodes will be inserted,
-  like tr as a child of table. -->
-
-  <table>
-    <tr><th>Parent <th>Allowed children
-    <tr><td>colgroup <td>col
-    <tr><td>table <td>caption, col, colgroup, tbody, td, tfoot, th, thead, tr
-    <tr><td>tbody, tfoot, thead <td>td, th, tr
-    <tr><td>tr <td>td, th
-    <tr><td>dl <td>dt, dd
-    <tr><td>dir, ol, ul <td>dir, li, ol, ul
-    <tr><td>hgroup <td>h1, h2, h3, h4, h5, h6
-  </table>
-
-  <li>If <var title="">child</var> is "body", "caption", "col", "colgroup", "frame",
-  "frameset", "head", "html", "tbody", "td", "tfoot", "th", "thead", or "tr",
-  return false.
-
-  <!-- dd/dt/li will serialize fine as the child of random stuff, but it makes
-  no sense at all, so we want to avoid it anyway. -->
-  <li>If <var title="">child</var> is "dd" or "dt" and <var title="">parent</var> is not "dl",
-  return false.
-
-  <li>If <var title="">child</var> is "li" and <var title="">parent</var> is not "ol" or "ul",
-  return false.
-
-  <li>If <var title="">parent</var> is in the following table and <var title="">child</var> is
-  listed as a prohibited child, return false.
-
-  <table>
-    <tr><th>Parent <th>Prohibited children
-    <tr><td>a <td>a
-    <tr><td>dd, dt <td>dd, dt
-    <tr><td>h1, h2, h3, h4, h5, h6 <td>h1, h2, h3, h4, h5, h6
-    <tr><td>li <td>li
-    <tr><td>nobr <td>nobr
-    <tr><td>p, all <a href=#name-of-an-element-with-inline-contents title="name of an element with inline contents">names
-          of an element with inline contents</a>
-        <td>All <a href=#prohibited-paragraph-child-name title="prohibited paragraph child name">prohibited
-          paragraph child names</a>
-    <tr><td>td, th <td>caption, col, colgroup, tbody, td, tfoot, th, thead, tr
-  </table>
-
-  <li>Return true.
-</ol>
-
-
-<h3 id=block-extending-a-range><span class=secno>8.4 </span>Block-extending a range</h3>
+<h3 id=block-extending-a-range><span class=secno>8.3 </span>Block-extending a range</h3>
 
 <p>When a user agent is to <dfn id=block-extend>block-extend</dfn> a <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a>
 <var title="">range</var>, it must run the following steps:
@@ -3778,8 +3315,47 @@ reasons:
   <li>Return <var title="">new range</var>.
 </ol>
 
+<p>A <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> <var title="">node</var> <dfn id=follows-a-line-break>follows a line break</dfn> if the following
+algorithm returns true:
 
-<h3 id=deleting-the-contents-of-a-range><span class=secno>8.5 </span>Deleting the contents of a range</h3>
+<ol>
+  <li>Let <var title="">offset</var> be zero.
+
+  <li>While <var title="">offset</var> is zero, set <var title="">offset</var> to the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a>
+  of <var title="">node</var> and then set <var title="">node</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+
+  <li>Let <var title="">range</var> be a <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> and <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a>
+  (<var title="">node</var>, <var title="">offset</var>).
+
+  <li><a href=#block-extend>Block-extend</a> <var title="">range</var>, and let <var title="">new range</var>
+  be the result.
+
+  <li>Return false if <var title="">new range</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> is <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-bp-before title=concept-bp-before>before</a>
+  (<var title="">node</var>, <var title="">offset</var>), true otherwise.
+</ol>
+
+<p>A <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> <var title="">node</var> <dfn id=precedes-a-line-break>precedes a line break</dfn> if the following
+algorithm returns true:
+
+<ol>
+  <li>Let <var title="">offset</var> be the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> of <var title="">node</var>.
+
+  <li>While <var title="">offset</var> is the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> of <var title="">node</var>, set
+  <var title="">offset</var> to one plus the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> of <var title="">node</var> and then set
+  <var title="">node</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+
+  <li>Let <var title="">range</var> be a <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> and <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a>
+  (<var title="">node</var>, <var title="">offset</var>).
+
+  <li><a href=#block-extend>Block-extend</a> <var title="">range</var>, and let <var title="">new range</var>
+  be the result.
+
+  <li>Return false if <var title="">new range</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> is <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-bp-after title=concept-bp-after>after</a>
+  (<var title="">node</var>, <var title="">offset</var>), true otherwise.
+</ol>
+
+
+<h3 id=deleting-the-contents-of-a-range><span class=secno>8.4 </span>Deleting the contents of a range</h3>
 
 <p>To <dfn id=delete-the-contents>delete the contents</dfn> of a <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> <var title="">range</var>:
 
@@ -4167,7 +3743,439 @@ we really want to use it, we probably want to change its name.
 </ol>
 
 
-<h3 id=outdenting-a-node><span class=secno>8.6 </span>Outdenting a node</h3>
+<h3 id="splitting-a-node-list's-parent"><span class=secno>8.5 </span>Splitting a node list's parent</h3>
+
+<p>To <dfn id=split-the-parent>split the parent</dfn> of a list <var title="">node list</var> of consecutive
+<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-sibling title=concept-tree-sibling>sibling</a> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a>:
+
+<p class=XXX>Pretty much any time we call this algorithm, it can cause trouble
+if the parent had styles, classes, etc.  There's not going to be any general
+way to handle this, but we should at least try to handle the special case of
+inline styles, because Firefox does actually add them to arbitrary elements.
+Also, when splitting out of an inline parent, it might be good to wrap all the
+inline descendants in a clone of the former parent.
+
+<ol>
+  <li>Let <var title="">original parent</var> be the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of the first member of
+  <var title="">node list</var>.
+
+  <li>If <var title="">original parent</var> is not <a href=#editable>editable</a> or its
+  <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is null, do nothing and abort these steps.
+
+  <li>If the first <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">original parent</var> is in <var title="">node
+  list</var>, <a href=#remove-extraneous-line-breaks-before>remove extraneous line breaks before</a> <var title="">original
+  parent</var>.
+
+  <li>If the first <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">original parent</var> is in <var title="">node
+  list</var>, and <var title="">original parent</var> <a href=#follows-a-line-break>follows a line break</a>,
+  set <var title="">follows line break</var> to true.  Otherwise, set <var title="">follows line
+  break</var> to false.
+
+  <li>If the last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">original parent</var> is in <var title="">node
+  list</var>, and <var title="">original parent</var> <a href=#precedes-a-line-break>precedes a line
+  break</a>, set <var title="">precedes line break</var> to true.  Otherwise, set
+  <var title="">precedes line break</var> to false.
+
+  <li>If the first <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">original parent</var> is not in <var title="">node
+  list</var>, but its last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> is:
+
+  <div class=XXX>
+  <p>We insert things after the parent.  This is bad, because it will cause
+  them to become part of any ranges that immediately follow.  For instance, if
+  we're hitting "bar" in
+
+  </p><xmp><div><p>foo<p>bar</div>{<p>baz}</xmp>
+
+  <p>it becomes
+
+  </p><xmp><div><p>foo</div>{<p>bar<p>baz}</xmp>
+
+  <p>instead of
+
+  </p><xmp><div><p>foo</div><p>bar{<p>baz}</xmp>
+
+  <p>because of how range mutation rules work.  This doesn't happen if we
+  insert before.  Probably this isn't important enough to try working around,
+  though.
+  </div>
+
+  <ol>
+    <li>For each <var title="">node</var> in <var title="">node list</var>, <em>in reverse
+    order</em>, insert <var title="">node</var> into the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of <var title="">original
+    parent</var> immediately after <var title="">original parent</var>, <a href=#preserving-ranges>preserving
+    ranges</a>.
+
+    <li>If <var title="">precedes line break</var> is true, and the last member of
+    <var title="">node list</var> does not <a href=#precedes-a-line-break title="precedes a line break">precede a
+    line break</a>, call <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("br")</a></code> on the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a> and
+    insert the result immediately after the last member of <var title="">node
+    list</var>.
+
+    <li><a href=#remove-extraneous-line-breaks-at-the-end-of>Remove extraneous line breaks at the end of</a> <var title="">original
+    parent</var>.
+
+    <li>Abort these steps.
+  </ol>
+
+  <li>If the first <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">original parent</var> is not in <var title="">node
+  list</var>:
+
+  <ol>
+    <li>Let <var title="">cloned parent</var> be the result of calling <code class=external data-anolis-spec=domcore title=dom-Node-cloneNode><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-clonenode>cloneNode(false)</a></code>
+    on <var title="">original parent</var>.
+
+    <li>If <var title="">original parent</var> has an <code class=external data-anolis-spec=html title="the id attribute"><a href=http://www.whatwg.org/html/#the-id-attribute>id</a></code> attribute, unset it.
+
+    <li>Insert <var title="">cloned parent</var> into the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of <var title="">original
+    parent</var> immediately before <var title="">original parent</var>.
+
+    <li>While the <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code> of the first member of <var title="">node
+    list</var> is not null, append the first <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">original
+    parent</var> as the last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">cloned parent</var>,
+    <a href=#preserving-ranges>preserving ranges</a>.
+  </ol>
+
+  <li>For each <var title="">node</var> in <var title="">node list</var>, insert <var title="">node</var>
+  into the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of <var title="">original parent</var> immediately before
+  <var title="">original parent</var>, <a href=#preserving-ranges>preserving ranges</a>.
+  <!-- Notice that a boundary point that was immediately before the element
+  will now be immediately before its children, just because of the regular
+  range mutation rules, without needing to worry about preserving ranges.
+  Likewise for boundary points immediately after the element, if we wind up
+  removing the element in the final step.  Preserving ranges is only necessary
+  for the sake of boundary points in the element or its descendants. -->
+
+  <li>If <var title="">follows line break</var> is true, and the first member of
+  <var title="">node list</var> does not <a href=#follows-a-line-break title="follows a line break">follow a
+  line break</a>, call <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("br")</a></code> on the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a> and
+  insert the result immediately before the first member of <var title="">node
+  list</var>.
+
+  <li>If the last member of <var title="">node list</var> is an <a href=#inline-node>inline node</a>
+  other than a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code>, and the first <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">original parent</var> is
+  a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code>, and <var title="">original parent</var> is not an <a href=#inline-node>inline node</a>,
+  remove the first <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">original parent</var> from <var title="">original
+  parent</var>.
+
+  <li>If <var title="">original parent</var> has no <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>:
+
+  <ol>
+    <li>Remove <var title="">original parent</var> from its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+
+    <li>If <var title="">precedes line break</var> is true, and the last member of
+    <var title="">node list</var> does not <a href=#precedes-a-line-break title="precedes a line break">precede a
+    line break</a>, call <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("br")</a></code> on the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a> and
+    insert the result immediately after the last member of <var title="">node
+    list</var>.
+  </ol>
+
+  <li>Otherwise, <a href=#remove-extraneous-line-breaks-before>remove extraneous line breaks before</a>
+  <var title="">original parent</var>.
+
+  <li>If <var title="">node list</var>'s last member's <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code> is null,
+  but its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is not null, <a href=#remove-extraneous-line-breaks-at-the-end-of>remove extraneous line breaks at the
+  end of</a> <var title="">node list</var>'s last member's <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+  <!-- The parent might be null if it's a br that we removed in the last step,
+  in which case this step isn't necessary. -->
+</ol>
+
+<p>To remove a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> <var title="">node</var> while <dfn id=preserving-its-descendants>preserving its
+descendants</dfn>, <a href=#split-the-parent>split the parent</a> of <var title="">node</var>'s
+<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>.
+
+
+<h3 id=canonical-space-sequences><span class=secno>8.6 </span>Canonical space sequences</h3>
+
+<p>The <dfn id=canonical-space-sequence>canonical space sequence</dfn> of length <var title="">n</var>, with boolean
+flags <var title="">non-breaking start</var> and <var title="">non-breaking end</var>, is
+returned by the following algorithm:
+<!-- See long comment before insertText. -->
+
+<ol>
+  <li>If <var title="">n</var> is zero, return the empty string.
+
+  <li>If <var title="">n</var> is one and both <var title="">non-breaking start</var> and
+  <var title="">non-breaking end</var> are false, return a single space (U+0020).
+
+  <li>If <var title="">n</var> is one, return a single non-breaking space (U+00A0).
+
+  <li>Let <var title="">buffer</var> be the empty string.
+
+  <li>If <var title="">non-breaking start</var> is true, let <var title="">repeated pair</var> be
+  U+00A0 U+0020.  Otherwise, let it be U+0020 U+00A0.
+
+  <li>While <var title="">n</var> is greater than three, append <var title="">repeated pair</var>
+  to <var title="">buffer</var> and subtract two from <var title="">n</var>.
+
+  <li>If <var title="">n</var> is three, append a three-<a href=http://es5.github.com/#x8.4>element</a> string to
+  <var title="">buffer</var> depending on <var title="">non-breaking start</var> and
+  <var title="">non-breaking end</var>:
+
+  <dl class=switch>
+    <dt><var title="">non-breaking start</var> and <var title="">non-breaking end</var> false
+    <dd>U+0020 U+00A0 U+0020
+
+    <dt><var title="">non-breaking start</var> true, <var title="">non-breaking end</var> false
+    <dd>U+00A0 U+00A0 U+0020
+
+    <dt><var title="">non-breaking start</var> false, <var title="">non-breaking end</var> true
+    <dd>U+0020 U+00A0 U+00A0
+
+    <dt><var title="">non-breaking start</var> and <var title="">non-breaking end</var> both true
+    <dd>U+00A0 U+0020 U+00A0
+  </dl>
+
+  <li>Otherwise, append a two-<a href=http://es5.github.com/#x8.4>element</a> string to <var title="">buffer</var> depending
+  on <var title="">non-breaking start</var> and <var title="">non-breaking end</var>:
+
+  <dl class=switch>
+    <dt><var title="">non-breaking start</var> and <var title="">non-breaking end</var> false
+    <dt><var title="">non-breaking start</var> true, <var title="">non-breaking end</var> false
+    <dd>U+00A0 U+0020
+
+    <dt><var title="">non-breaking start</var> false, <var title="">non-breaking end</var> true
+    <dd>U+0020 U+00A0
+
+    <dt><var title="">non-breaking start</var> and <var title="">non-breaking end</var> both true
+    <dd>U+00A0 U+00A0
+  </dl>
+
+  <li>Return <var title="">buffer</var>.
+</ol>
+
+<p>To <dfn id=canonicalize-whitespace>canonicalize whitespace</dfn> at (<var title="">node</var>,
+<var title="">offset</var>):
+
+<ol>
+  <li>If <var title="">node</var> is neither <a href=#editable>editable</a> nor an <a href=#editing-host>editing
+  host</a>, abort these steps.
+
+  <li>Let <var title="">start node</var> equal <var title="">node</var> and let <var title="">start
+  offset</var> equal <var title="">offset</var>.
+
+  <!-- First go to the beginning of the current whitespace run. -->
+  <li>Repeat the following steps:
+
+  <ol>
+    <li>If <var title="">start node</var> has a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> <a href=#in-the-same-editing-host>in the same editing
+    host</a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> <var title="">start offset</var> minus one, set
+    <var title="">start node</var> to that <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>, then set <var title="">start offset</var>
+    to <var title="">start node</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a>.
+
+    <li>Otherwise, if <var title="">start offset</var> is zero and <var title="">start node</var>
+    does not <a href=#follows-a-line-break title="follows a line break">follow a line break</a> and
+    <var title="">start node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is <a href=#in-the-same-editing-host>in the same editing
+    host</a>, set <var title="">start offset</var> to <var title="">start node</var>'s
+    <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a>, then set <var title="">start node</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+
+    <p class=XXX>Following a line break is unlikely to be the right criterion.
+
+    <li>Otherwise, if <var title="">start node</var> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node and its
+    <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>'s <a href=http://www.w3.org/TR/CSS21/cascade.html#computed-value>computed value</a> for "white-space" is neither "pre" nor "pre-wrap"
+    and <var title="">start offset</var> is not zero and the (<var title="">start offset</var>
+    &minus; 1)st <a href=http://es5.github.com/#x8.4>element</a> of <var title="">start node</var>'s <code class=external data-anolis-spec=domcore title=dom-CharacterData-data><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-data>data</a></code> is a space
+    (0x0020) or non-breaking space (0x00A0), subtract one from <var title="">start
+    offset</var>.
+
+    <li>Otherwise, break from this loop.
+  </ol>
+
+  <!-- Now collapse any consecutive spaces. -->
+  <li>Let <var title="">end node</var> equal <var title="">start node</var> and <var title="">end
+  offset</var> equal <var title="">start offset</var>.
+
+  <li>Let <var title="">length</var> equal zero.
+
+  <li>Let <var title="">follows space</var> be false.
+
+  <li>Repeat the following steps:
+
+  <ol>
+    <li>If <var title="">end node</var> has a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> <a href=#in-the-same-editing-host>in the same editing
+    host</a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> <var title="">end offset</var>, set <var title="">end node</var>
+    to that <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>, then set <var title="">end offset</var> to zero.
+
+    <li>Otherwise, if <var title="">end offset</var> is <var title="">end node</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a>
+    and <var title="">end node</var> does not <a href=#precedes-a-line-break title="precedes a line
+    break">precede a line break</a> and <var title="">end node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is
+    <a href=#in-the-same-editing-host>in the same editing host</a>, set <var title="">end offset</var> to one
+    plus <var title="">end node</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a>, then set <var title="">end node</var> to its
+    <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+
+    <p class=XXX>Preceding a line break is unlikely to be the right criterion.
+
+    <li>Otherwise, if <var title="">end node</var> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node and its
+    <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>'s <a href=http://www.w3.org/TR/CSS21/cascade.html#computed-value>computed value</a> for "white-space" is neither "pre" nor "pre-wrap"
+    and <var title="">end offset</var> is not <var title="">end node</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> and the
+    <var title="">end offset</var>th <a href=http://es5.github.com/#x8.4>element</a> of <var title="">end node</var>'s <code class=external data-anolis-spec=domcore title=dom-CharacterData-data><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-data>data</a></code> is a
+    space (0x0020) or non-breaking space (0x00A0):
+
+    <ol>
+      <li>If <var title="">follows space</var> is true and the <var title="">end offset</var>th
+      <a href=http://es5.github.com/#x8.4>element</a> of <var title="">end node</var>'s <code class=external data-anolis-spec=domcore title=dom-CharacterData-data><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-data>data</a></code> is a space (0x0020), call
+      <code class=external data-anolis-spec=domcore title=dom-CharacterData-deleteData><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-deletedata>deleteData(<var title="">end offset</var>, 1)</a></code> on <var title="">end node</var>, then
+      continue this loop from the beginning.
+
+      <li>Set <var title="">follows space</var> to true if the <var title="">end offset</var>th
+      <a href=http://es5.github.com/#x8.4>element</a> of <var title="">end node</var>'s <code class=external data-anolis-spec=domcore title=dom-CharacterData-data><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-data>data</a></code> is a space (0x0020), false
+      otherwise.
+
+      <li>Add one to <var title="">end offset</var>.
+
+      <li>Add one to <var title="">length</var>.
+    </ol>
+
+    <li>Otherwise, break from this loop.
+  </ol>
+
+  <!-- Now replace with the canonical sequence. -->
+  <li>Let <var title="">replacement whitespace</var> be the <a href=#canonical-space-sequence>canonical space
+  sequence</a> of length <var title="">length</var>.  <var title="">non-breaking start</var>
+  is true if <var title="">start offset</var> is zero and <var title="">start node</var>
+  <a href=#follows-a-line-break>follows a line break</a>, and false otherwise.  <var title="">non-breaking
+  end</var> is true if <var title="">end offset</var> is <var title="">end node</var>'s
+  <code class=external data-anolis-spec=domcore title=dom-CharacterData-length><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-length>length</a></code> and <var title="">end node</var> <a href=#precedes-a-line-break>precedes a line break</a>, and
+  false otherwise.
+
+  <li>While (<var title="">start node</var>, <var title="">start offset</var>) is <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-bp-before title=concept-bp-before>before</a>
+  (<var title="">end node</var>, <var title="">end offset</var>):
+
+  <ol>
+    <li>If <var title="">start node</var> has a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> <var title="">start
+    offset</var>, set <var title="">start node</var> to that <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>, then set
+    <var title="">start offset</var> to zero.
+
+    <li>Otherwise, if <var title="">start node</var> is not a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node or if
+    <var title="">start offset</var> is <var title="">start node</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a>, set
+    <var title="">start offset</var> to one plus <var title="">start node</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a>, then
+    set <var title="">start node</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+
+    <li>Otherwise:
+
+    <ol>
+      <li>Remove the first <a href=http://es5.github.com/#x8.4>element</a> from <var title="">replacement whitespace</var>,
+      and let <var title="">element</var> be that <a href=http://es5.github.com/#x8.4>element</a>.
+
+      <li>If <var title="">element</var> is not the same as the <var title="">start
+      offset</var>th <a href=http://es5.github.com/#x8.4>element</a> of <var title="">start node</var>'s <code class=external data-anolis-spec=domcore title=dom-CharacterData-data><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-data>data</a></code>:
+
+      <ol>
+        <!-- We need to insert then delete, so that we don't change range
+        boundary points. -->
+        <li>Call <code class=external data-anolis-spec=domcore title=dom-CharacterData-insertData><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-insertdata>insertData(<var title="">start offset</var>, <var title="">element</var>)</a></code> on
+        <var title="">start node</var>.
+
+        <li>Call <code class=external data-anolis-spec=domcore title=dom-CharacterData-deleteData><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-deletedata>deleteData(<var title="">start offset</var> + 1, 1)</a></code> on
+        <var title="">start node</var>.
+      </ol>
+
+      <li>Add one to <var title="">start offset</var>.
+    </ol>
+  </ol>
+</ol>
+
+
+<h3 id=indenting-and-outdenting><span class=secno>8.7 </span>Indenting and outdenting</h3>
+
+<p>To <dfn id=indent>indent</dfn> a list <var title="">node list</var> of consecutive <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-sibling title=concept-tree-sibling>sibling</a>
+<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a>:
+<!--
+We have to handle entire lists of siblings at once, or else we'd wind up doing
+something like
+
+  <ol>
+    {<li>foo</li>
+    <ol><li>bar</li></ol>}
+  </ol>
+  ->
+  <ol><ol>
+    <li>foo</li>
+    <li>bar</li>
+  </ol></ol>
+  ->
+  <ol><ol><ol>
+    <li>foo</li>
+    <li>bar</li>
+  </ol></ol></ol>
+
+since by the time we got to doing the <ol> that originally contained "bar", we
+won't remember that we aren't supposed to indent "foo" a second time.
+-->
+<ol>
+  <li>If <var title="">node list</var> is empty, do nothing and abort these steps.
+
+  <li>Let <var title="">first node</var> be the first member of <var title="">node list</var>.
+
+  <li>If <var title="">first node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code> or <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code>:
+
+  <ol>
+    <li>Let <var title="">tag</var> be the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> of the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of
+    <var title="">first node</var>.
+
+    <li><a href=#wrap>Wrap</a> <var title="">node list</var>, with <a href=#sibling-criteria>sibling
+    criteria</a> matching only <a href=#html-element title="HTML element">HTML
+    elements</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> <var title="">tag</var> and <a href=#new-parent-instructions>new parent
+    instructions</a> returning the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement(<var title="">tag</var>)</a></code> on
+    the <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">first node</var>.
+    <!--
+    This matches IE9, Firefox 4.0, and Chrome 12 dev.  If there's a preceding
+    <li>, Opera 11.10 instead adds the new parent to the end of that <li>, so
+    it's not the child of another list, which is invalid.  But the other
+    browsers' way of doing things makes things simpler.  E.g., if we want to
+    indent an <li> and it has <ol>/<ul> children, we have to distinguish
+    between the case where we want to indent the whole <li> or only the first
+    part.  It also allows things like
+
+      <ol><li>
+        foo
+        <ol><li>bar</li></ol>
+        baz
+      </li></ol>
+
+    in which case it's unclear what we should do if the user selects "foo" and
+    indents.  I've filed a bug on HTML5:
+
+    http://www.w3.org/Bugs/Public/show_bug.cgi?id=12609
+    -->
+
+    <li>Abort these steps.
+  </ol>
+
+  <!--
+  Firefox 4.0 respects the CSS styling flag for indent, but Chrome 12 dev does
+  not.  I always produce blockquotes, even if CSS styling is on, for two
+  reasons.  One, IE9 handles inline margin attributes badly: when outdenting,
+  it propagates the margin to the parent, which doesn't actually remove it.
+  Two, in CSS mode I'd want to use <div style="margin: 1em 40px"> to match
+  non-CSS mode, but authors are very likely to want to remove the top/bottom
+  margin, which they can't do if it's not a special tag.  Authors who really
+  want divs for indentation could always convert the blockquotes to divs
+  themselves.  But if people really want it, I could respect CSS styling mode
+  here too.
+
+  The top/bottom margins might be undesirable here, but no more so than for
+  <ol>/<ul>/<p>/etc.  Here as there, authors can remove them with CSS if they
+  want.
+  -->
+
+  <li><a href=#wrap>Wrap</a> <var title="">node list</var>, with <a href=#sibling-criteria>sibling
+  criteria</a> matching any <a href=#indentation-element>indentation element</a>, and <a href=#new-parent-instructions>new
+  parent instructions</a> to return the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("blockquote")</a></code> on the
+  <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">first node</var>.  Let <var title="">new parent</var> be the
+  result.
+  <!--
+  This indents on both sides, so we don't have to worry about directionality.
+  In theory it would be better if we indented only on the start side, but that
+  requires care to get right in mixed-direction cases.  Even once browsers
+  start to support margin-start and so on, we can't use them because a) we have
+  to work okay in legacy browsers and b) it doesn't help if a descendant block
+  has different direction (so should be indented the other way).  So let's not
+  worry about it: most browsers don't, and the ones that do get it wrong.  Just
+  indent on both sides.
+  -->
+
+  <li><a href=#fix-disallowed-ancestors>Fix disallowed ancestors</a> of <var title="">new parent</var>.
+</ol>
 
 <p>To <dfn id=outdent>outdent</dfn> a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> <var title="">node</var>:
 
@@ -4363,7 +4371,7 @@ insertOrderedList.
 </ol>
 
 
-<h3 id=toggling-lists><span class=secno>8.7 </span>Toggling lists</h3>
+<h3 id=toggling-lists><span class=secno>8.8 </span>Toggling lists</h3>
 
 <!--
 Research for insertOrderedList/insertUnorderedList: tested the following
@@ -4888,7 +4896,7 @@ or "ul"):
 </ol>
 
 
-<h3 id=justifying-the-selection><span class=secno>8.8 </span>Justifying the selection</h3>
+<h3 id=justifying-the-selection><span class=secno>8.9 </span>Justifying the selection</h3>
 
 <!--
 There are two basic ways it works: using the align attribute, and using CSS
@@ -5006,7 +5014,7 @@ would be worth the added complexity.
 </ol>
 
 
-<h3 id=the-delete-command><span class=secno>8.9 </span><dfn>The <code title="">delete</code> command</dfn></h3>
+<h3 id=the-delete-command><span class=secno>8.10 </span><dfn>The <code title="">delete</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>:
 
@@ -5284,7 +5292,7 @@ would be worth the added complexity.
 </ol>
 
 
-<h3 id=the-formatblock-command><span class=secno>8.10 </span><dfn>The <code title="">formatBlock</code> command</dfn></h3>
+<h3 id=the-formatblock-command><span class=secno>8.11 </span><dfn>The <code title="">formatBlock</code> command</dfn></h3>
 
 <!--
 Tested browser versions: IE9, Firefox 4.0, Chrome 13 dev, Opera 11.10.
@@ -5587,7 +5595,7 @@ writing means what Firefox supports plus div.
 </ol>
 
 
-<h3 id=the-forwarddelete-command><span class=secno>8.11 </span><dfn>The <code title="">forwardDelete</code> command</dfn></h3>
+<h3 id=the-forwarddelete-command><span class=secno>8.12 </span><dfn>The <code title="">forwardDelete</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>:
 <!-- Copy-pasted from delete, see there for comments. -->
@@ -5716,7 +5724,7 @@ writing means what Firefox supports plus div.
 </ol>
 
 
-<h3 id=the-indent-command><span class=secno>8.12 </span><dfn>The <code title="">indent</code> command</dfn></h3>
+<h3 id=the-indent-command><span class=secno>8.13 </span><dfn>The <code title="">indent</code> command</dfn></h3>
 
 <!--
 IE9: Outputs <blockquote style="margin-right: 0px" dir="ltr">, or when
@@ -5817,7 +5825,7 @@ browsers don't normally let you put the cursor in weird places like that.
 </ol>
 
 
-<h3 id=the-inserthorizontalrule-command><span class=secno>8.13 </span><dfn>The <code title="">insertHorizontalRule</code> command</dfn></h3>
+<h3 id=the-inserthorizontalrule-command><span class=secno>8.14 </span><dfn>The <code title="">insertHorizontalRule</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>:
 
@@ -5873,7 +5881,7 @@ splitting up parents to ensure validity . . . -->
 </ol>
 
 
-<h3 id=the-inserthtml-command><span class=secno>8.14 </span><dfn>The <code title="">insertHTML</code> command</dfn></h3>
+<h3 id=the-inserthtml-command><span class=secno>8.15 </span><dfn>The <code title="">insertHTML</code> command</dfn></h3>
 
 <!--
 Not supported by IE9.  Handling of disallowed children is interesting:
@@ -5956,7 +5964,7 @@ round-tripping through a character encoding change impossible.
 </ol>
 
 
-<h3 id=the-insertimage-command><span class=secno>8.15 </span><dfn>The <code title="">insertImage</code> command</dfn></h3>
+<h3 id=the-insertimage-command><span class=secno>8.16 </span><dfn>The <code title="">insertImage</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>:
 
@@ -6005,7 +6013,7 @@ round-tripping through a character encoding change impossible.
 </ol>
 
 
-<h3 id=the-insertlinebreak-command><span class=secno>8.16 </span><dfn>The <code title="">insertLineBreak</code> command</dfn></h3>
+<h3 id=the-insertlinebreak-command><span class=secno>8.17 </span><dfn>The <code title="">insertLineBreak</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>:
 
@@ -6067,7 +6075,7 @@ Opera 11.11 isn't heedful of <xmp>, and treats <pre> somewhat oddly.
 </ol>
 
 
-<h3 id=the-insertorderedlist-command><span class=secno>8.17 </span><dfn>The <code title="">insertOrderedList</code> command</dfn></h3>
+<h3 id=the-insertorderedlist-command><span class=secno>8.18 </span><dfn>The <code title="">insertOrderedList</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>: <a href=#toggle-lists>Toggle lists</a> with <var title="">tag name</var>
 "ol".
@@ -6092,7 +6100,7 @@ except with a few weird random mismatches that looked like browser bugs to me.
 -->
 
 
-<h3 id=the-insertparagraph-command><span class=secno>8.18 </span><dfn>The <code title="">insertParagraph</code> command</dfn></h3>
+<h3 id=the-insertparagraph-command><span class=secno>8.19 </span><dfn>The <code title="">insertParagraph</code> command</dfn></h3>
 
 <!--
 There are three major behaviors here.  Firefox 5.0a2 behaves identically to
@@ -6357,7 +6365,7 @@ http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
 </ol>
 
 
-<h3 id=the-inserttext-command><span class=secno>8.19 </span><dfn>The <code title="">insertText</code> command</dfn></h3>
+<h3 id=the-inserttext-command><span class=secno>8.20 </span><dfn>The <code title="">insertText</code> command</dfn></h3>
 
 <!--
 Supported only by WebKit.  Tests in other browsers were manual.  In the manual
@@ -6538,7 +6546,7 @@ this, as Chrome 14 dev does.
 </ol>
 
 
-<h3 id=the-insertunorderedlist-command><span class=secno>8.20 </span><dfn>The <code title="">insertUnorderedList</code> command</dfn></h3>
+<h3 id=the-insertunorderedlist-command><span class=secno>8.21 </span><dfn>The <code title="">insertUnorderedList</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>: <a href=#toggle-lists>Toggle lists</a> with <var title="">tag name</var>
 "ul".
@@ -6550,7 +6558,7 @@ is "mixed" or "mixed ul", false otherwise.
 false otherwise.
 
 
-<h3 id=the-justifycenter-command><span class=secno>8.21 </span><dfn>The <code title="">justifyCenter</code> command</dfn></h3>
+<h3 id=the-justifycenter-command><span class=secno>8.22 </span><dfn>The <code title="">justifyCenter</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>: <a href=#justify-the-selection>Justify the selection</a> with
 <var title="">alignment</var> "center".
@@ -6615,7 +6623,7 @@ string, as usual.  Opera 11.11 always returns the empty string.
 -->
 
 
-<h3 id=the-justifyfull-command><span class=secno>8.22 </span><dfn>The <code title="">justifyFull</code> command</dfn></h3>
+<h3 id=the-justifyfull-command><span class=secno>8.23 </span><dfn>The <code title="">justifyFull</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>: <a href=#justify-the-selection>Justify the selection</a> with
 <var title="">alignment</var> "justify".
@@ -6638,7 +6646,7 @@ and return the <a href=#alignment-value>alignment value</a> of the first <a href
 <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>.  If there is no such <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>, return "left".
 
 
-<h3 id=the-justifyleft-command><span class=secno>8.23 </span><dfn>The <code title="">justifyLeft</code> command</dfn></h3>
+<h3 id=the-justifyleft-command><span class=secno>8.24 </span><dfn>The <code title="">justifyLeft</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>: <a href=#justify-the-selection>Justify the selection</a> with
 <var title="">alignment</var> "left".
@@ -6661,7 +6669,7 @@ and return the <a href=#alignment-value>alignment value</a> of the first <a href
 <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>.  If there is no such <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>, return "left".
 
 
-<h3 id=the-justifyright-command><span class=secno>8.24 </span><dfn>The <code title="">justifyRight</code> command</dfn></h3>
+<h3 id=the-justifyright-command><span class=secno>8.25 </span><dfn>The <code title="">justifyRight</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>: <a href=#justify-the-selection>Justify the selection</a> with
 <var title="">alignment</var> "right".
@@ -6684,7 +6692,7 @@ and return the <a href=#alignment-value>alignment value</a> of the first <a href
 <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>.  If there is no such <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>, return "left".
 
 
-<h3 id=the-outdent-command><span class=secno>8.25 </span><dfn>The <code title="">outdent</code> command</dfn></h3>
+<h3 id=the-outdent-command><span class=secno>8.26 </span><dfn>The <code title="">outdent</code> command</dfn></h3>
 
 <p><a href=#action>Action</a>:
 

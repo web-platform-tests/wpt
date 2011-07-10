@@ -3012,14 +3012,10 @@ starting at 2011-05-13 at 16:53 EDT (UTC-0400).
 
 <h3>Block formatting command definitions</h3>
 <!-- @{ -->
-<p>A <dfn>potential indentation element</dfn> is either a [[blockquote]], or a
-[[div]] that has a [[style]] attribute that sets "margin" or some subproperty
-of it.
+<p>An <dfn>indentation element</dfn> is either a [[blockquote]], or a [[div]]
+that has a [[style]] attribute that sets "margin" or some subproperty of it.
 
-<p class=XXX>Terminology is inconsistent with "modifiable" etc. used for inline
-styles.
-
-<p>An <dfn>indentation element</dfn> is an <span>potential indentation
+<p>A <dfn>simple indentation element</dfn> is an <span>indentation
 element</span> that has no attributes other than one or more of
 
 <ul>
@@ -3159,10 +3155,10 @@ algorithm:
   <li>For each <var>node</var> [[contained]] in <var>new range</var>, append
   <var>node</var> to <var>node list</var> if the last member of <var>node
   list</var> (if any) is not an [[ancestor]] of <var>node</var>;
-  <var>node</var> is <span>editable</span>; <var>node</var> is not a
-  <span>potential indentation element</span>; and <var>node</var> is either an
-  [[ol]] or [[ul]], or the [[child]] of an [[ol]] or [[ul]], or an
-  <span>allowed child</span> of "li".
+  <var>node</var> is <span>editable</span>; <var>node</var> is not an
+  <span>indentation element</span>; and <var>node</var> is either an [[ol]] or
+  [[ul]], or the [[child]] of an [[ol]] or [[ul]], or an <span>allowed
+  child</span> of "li".
 
   <li>If <var>node list</var> is empty, return "none".
 
@@ -4175,8 +4171,8 @@ won't remember that we aren't supposed to indent "foo" a second time.
   -->
 
   <li><span>Wrap</span> <var>node list</var>, with <span>sibling
-  criteria</span> matching any <span>indentation element</span>, and <span>new
-  parent instructions</span> to return the result of calling <code
+  criteria</span> matching any <span>simple indentation element</span>, and
+  <span>new parent instructions</span> to return the result of calling <code
   data-anolis-spec=domcore
   title=dom-Document-createElement>createElement("blockquote")</code> on the
   [[ownerdocument]] of <var>first node</var>.  Let <var>new parent</var> be the
@@ -4221,7 +4217,7 @@ insertOrderedList.
   created by IE, this might change the direction of some children, but then
   their direction was probably changed incorrectly in the first place, so no
   harm. -->
-  <li>If <var>node</var> is an <span>indentation element</span>, remove
+  <li>If <var>node</var> is a <span>simple indentation element</span>, remove
   <var>node</var>, <span>preserving its descendants</span>.  Then abort these
   steps.
 
@@ -4229,8 +4225,8 @@ insertOrderedList.
   margin attribute to an existing element, including Firefox itself.  So let's
   just skip it. -->
 
-  <li>If <var>node</var> is a <span>potential indentation element</span>:
-  <!-- This might be an indentation element that had style added to it by
+  <li>If <var>node</var> is an <span>indentation element</span>:
+  <!-- This might be a simple indentation element that had style added to it by
   Firefox in CSS mode, for instance (color, font-family, etc.). -->
 
   <ol>
@@ -4276,19 +4272,19 @@ insertOrderedList.
 
   Overall, all flawed, so I'll make up my own, patterned after pushing down
   styles.  First we search ancestors for an indentation element, which we stand
-  a chance of completely removing.  Failing that, we look for a potential
-  indentation element, which we cannot completely remove. -->
+  a chance of completely removing.  Failing that, we look for an indentation
+  element, which we cannot completely remove. -->
   <li>Let <var>current ancestor</var> be <var>node</var>'s [[parent]].
 
   <li>Let <var>ancestor list</var> be a list of [[nodes]], initially empty.
 
   <li>While <var>current ancestor</var> is an <span>editable</span> [[element]]
-  that is not an <span>indentation element</span>, append <var>current
+  that is not a <span>simple indentation element</span>, append <var>current
   ancestor</var> to <var>ancestor list</var> and then set <var>current
   ancestor</var> to its [[parent]].
 
   <li>If <var>current ancestor</var> is not an <span>editable</span>
-  <span>indentation element</span>:
+  <span>simple indentation element</span>:
 
   <ol>
     <li>Let <var>current ancestor</var> be <var>node</var>'s [[parent]].
@@ -4296,19 +4292,19 @@ insertOrderedList.
     <li>Let <var>ancestor list</var> be the empty list.
 
     <li>While <var>current ancestor</var> is an <span>editable</span>
-    [[element]] that is not a <span>potential indentation element</span>,
-    append <var>current ancestor</var> to <var>ancestor list</var> and then set
+    [[element]] that is not an <span>indentation element</span>, append
+    <var>current ancestor</var> to <var>ancestor list</var> and then set
     <var>current ancestor</var> to its [[parent]].
   </ol>
 
   <li>If <var>node</var> is an [[ol]] or [[ul]], and either <var>current
-  ancestor</var> is not an <span>editable</span> <span>potential indentation
+  ancestor</var> is not an <span>editable</span> <span>indentation
   element</span> or <var>node</var>'s [[parent]] is an [[ol]] or [[ul]]:
   <!--
-  When asked to outdent a list wrapped in an indentation element, Chrome 12 dev
-  removes the list instead of the indentation element.  Opera 11.10 seems to
-  remove both.  IE9 and Firefox 4.0 remove the indentation element, as does the
-  spec.
+  When asked to outdent a list wrapped in a simple indentation element, Chrome
+  12 dev removes the list instead of the simple indentation element.  Opera
+  11.10 seems to remove both.  IE9 and Firefox 4.0 remove the simple
+  indentation element, as does the spec.
   -->
 
   <div class=XXX>
@@ -4354,7 +4350,7 @@ insertOrderedList.
   </ol>
 
   <li>If <var>current ancestor</var> is not an <span>editable</span>
-  <span>potential indentation element</span>, abort these steps.
+  <span>indentation element</span>, abort these steps.
 
   <!-- At this point, we have an ancestor to split up. -->
   <li>Append <var>current ancestor</var> to <var>ancestor list</var>.
@@ -4733,14 +4729,14 @@ or "ul"):
   <li>For each [[node]] <var>node</var> [[contained]] in <var>new range</var>,
   if <var>node</var> is <span>editable</span>; the last member of <var>node
   list</var> (if any) is not an [[ancestor]] of <var>node</var>;
-  <var>node</var> is not a <span>potential indentation element</span>; and
-  either <var>node</var> is an [[ol]] or [[ul]], or its [[parent]] is an [[ol]]
-  or [[ul]], or it is an <span>allowed child</span> of "li"; then append
+  <var>node</var> is not an <span>indentation element</span>; and either
+  <var>node</var> is an [[ol]] or [[ul]], or its [[parent]] is an [[ol]] or
+  [[ul]], or it is an <span>allowed child</span> of "li"; then append
   <var>node</var> to <var>node list</var>.
   <!--
-  We exclude potential indentation elements so that selecting some random text
-  and doing indent followed by insertOrderedList will have the same result as
-  the reverse.  Specifically,
+  We exclude indentation elements so that selecting some random text and doing
+  indent followed by insertOrderedList will have the same result as the
+  reverse.  Specifically,
 
     <blockquote>[foo]</blockquote> ->
     <blockquote><ol><li>[foo]</li></ol></blockquote>
@@ -4900,13 +4896,11 @@ or "ul"):
 
     <ol>
       <li>If the [[parent]] of <var>node</var> is not an <span>editable</span>
-      <span>indentation element</span>, or the [[previoussibling]] of the
-      [[parent]] of <var>node</var> is not an <span>editable</span> <span>HTML
-      element</span> with [[localname]] <var>tag name</var>, call <code
-      data-anolis-spec=domcore
-      title=dom-Document-createElement>createElement(<var>tag
-      name</var>)</code> on the [[contextobject]] and return the result.
-      Otherwise:
+      <span>simple indentation element</span>, or the [[previoussibling]] of
+      the [[parent]] of <var>node</var> is not an <span>editable</span>
+      <span>HTML element</span> with [[localname]] <var>tag name</var>, call
+      [[createelement|<var>tag name</var>]] on the [[contextobject]] and return
+      the result.  Otherwise:
 
       <li>Let <var>list</var> be the [[previoussibling]] of the [[parent]] of
       <var>node</var>.
@@ -5185,8 +5179,8 @@ would be worth the added complexity.
   Browsers don't do this, word processors do.
   -->
   <li>If <var>offset</var> is zero, and <var>node</var> has an
-  [[ancestorcontainer]] that is both a <span>potential indentation
-  element</span> and a [[descendant]] of <var>start node</var>:
+  [[ancestorcontainer]] that is both an <span>indentation element</span> and a
+  [[descendant]] of <var>start node</var>:
 
   <p class=XXX>This copy-pastes from the outdent command action.  I'm also not
   totally sure it's correct.

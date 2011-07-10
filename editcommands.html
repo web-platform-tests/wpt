@@ -3036,14 +3036,10 @@ starting at 2011-05-13 at 16:53 EDT (UTC-0400).
 
 <h3 id=block-formatting-command-definitions><span class=secno>8.1 </span>Block formatting command definitions</h3>
 
-<p>A <dfn id=potential-indentation-element>potential indentation element</dfn> is either a <code class=external data-anolis-spec=html title="the blockquote element"><a href=http://www.whatwg.org/html/#the-blockquote-element>blockquote</a></code>, or a
-<code class=external data-anolis-spec=html title="the div element"><a href=http://www.whatwg.org/html/#the-div-element>div</a></code> that has a <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code> attribute that sets "margin" or some subproperty
-of it.
+<p>An <dfn id=indentation-element>indentation element</dfn> is either a <code class=external data-anolis-spec=html title="the blockquote element"><a href=http://www.whatwg.org/html/#the-blockquote-element>blockquote</a></code>, or a <code class=external data-anolis-spec=html title="the div element"><a href=http://www.whatwg.org/html/#the-div-element>div</a></code>
+that has a <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code> attribute that sets "margin" or some subproperty of it.
 
-<p class=XXX>Terminology is inconsistent with "modifiable" etc. used for inline
-styles.
-
-<p>An <dfn id=indentation-element>indentation element</dfn> is an <a href=#potential-indentation-element>potential indentation
+<p>A <dfn id=simple-indentation-element>simple indentation element</dfn> is an <a href=#indentation-element>indentation
 element</a> that has no attributes other than one or more of
 
 <ul>
@@ -3181,10 +3177,10 @@ algorithm:
   <li>For each <var title="">node</var> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in <var title="">new range</var>, append
   <var title="">node</var> to <var title="">node list</var> if the last member of <var title="">node
   list</var> (if any) is not an <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of <var title="">node</var>;
-  <var title="">node</var> is <a href=#editable>editable</a>; <var title="">node</var> is not a
-  <a href=#potential-indentation-element>potential indentation element</a>; and <var title="">node</var> is either an
-  <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code> or <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code>, or the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code> or <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code>, or an
-  <a href=#allowed-child>allowed child</a> of "li".
+  <var title="">node</var> is <a href=#editable>editable</a>; <var title="">node</var> is not an
+  <a href=#indentation-element>indentation element</a>; and <var title="">node</var> is either an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code> or
+  <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code>, or the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code> or <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code>, or an <a href=#allowed-child>allowed
+  child</a> of "li".
 
   <li>If <var title="">node list</var> is empty, return "none".
 
@@ -4193,8 +4189,8 @@ won't remember that we aren't supposed to indent "foo" a second time.
   -->
 
   <li><a href=#wrap>Wrap</a> <var title="">node list</var>, with <a href=#sibling-criteria>sibling
-  criteria</a> matching any <a href=#indentation-element>indentation element</a>, and <a href=#new-parent-instructions>new
-  parent instructions</a> to return the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("blockquote")</a></code> on the
+  criteria</a> matching any <a href=#simple-indentation-element>simple indentation element</a>, and
+  <a href=#new-parent-instructions>new parent instructions</a> to return the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("blockquote")</a></code> on the
   <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">first node</var>.  Let <var title="">new parent</var> be the
   result.
   <!--
@@ -4237,7 +4233,7 @@ insertOrderedList.
   created by IE, this might change the direction of some children, but then
   their direction was probably changed incorrectly in the first place, so no
   harm. -->
-  <li>If <var title="">node</var> is an <a href=#indentation-element>indentation element</a>, remove
+  <li>If <var title="">node</var> is a <a href=#simple-indentation-element>simple indentation element</a>, remove
   <var title="">node</var>, <a href=#preserving-its-descendants>preserving its descendants</a>.  Then abort these
   steps.
 
@@ -4245,8 +4241,8 @@ insertOrderedList.
   margin attribute to an existing element, including Firefox itself.  So let's
   just skip it. -->
 
-  <li>If <var title="">node</var> is a <a href=#potential-indentation-element>potential indentation element</a>:
-  <!-- This might be an indentation element that had style added to it by
+  <li>If <var title="">node</var> is an <a href=#indentation-element>indentation element</a>:
+  <!-- This might be a simple indentation element that had style added to it by
   Firefox in CSS mode, for instance (color, font-family, etc.). -->
 
   <ol>
@@ -4292,19 +4288,19 @@ insertOrderedList.
 
   Overall, all flawed, so I'll make up my own, patterned after pushing down
   styles.  First we search ancestors for an indentation element, which we stand
-  a chance of completely removing.  Failing that, we look for a potential
-  indentation element, which we cannot completely remove. -->
+  a chance of completely removing.  Failing that, we look for an indentation
+  element, which we cannot completely remove. -->
   <li>Let <var title="">current ancestor</var> be <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
 
   <li>Let <var title="">ancestor list</var> be a list of <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a>, initially empty.
 
   <li>While <var title="">current ancestor</var> is an <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>
-  that is not an <a href=#indentation-element>indentation element</a>, append <var title="">current
+  that is not a <a href=#simple-indentation-element>simple indentation element</a>, append <var title="">current
   ancestor</var> to <var title="">ancestor list</var> and then set <var title="">current
   ancestor</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
 
   <li>If <var title="">current ancestor</var> is not an <a href=#editable>editable</a>
-  <a href=#indentation-element>indentation element</a>:
+  <a href=#simple-indentation-element>simple indentation element</a>:
 
   <ol>
     <li>Let <var title="">current ancestor</var> be <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
@@ -4312,19 +4308,19 @@ insertOrderedList.
     <li>Let <var title="">ancestor list</var> be the empty list.
 
     <li>While <var title="">current ancestor</var> is an <a href=#editable>editable</a>
-    <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> that is not a <a href=#potential-indentation-element>potential indentation element</a>,
-    append <var title="">current ancestor</var> to <var title="">ancestor list</var> and then set
+    <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> that is not an <a href=#indentation-element>indentation element</a>, append
+    <var title="">current ancestor</var> to <var title="">ancestor list</var> and then set
     <var title="">current ancestor</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
   </ol>
 
   <li>If <var title="">node</var> is an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code> or <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code>, and either <var title="">current
-  ancestor</var> is not an <a href=#editable>editable</a> <a href=#potential-indentation-element>potential indentation
+  ancestor</var> is not an <a href=#editable>editable</a> <a href=#indentation-element>indentation
   element</a> or <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code> or <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code>:
   <!--
-  When asked to outdent a list wrapped in an indentation element, Chrome 12 dev
-  removes the list instead of the indentation element.  Opera 11.10 seems to
-  remove both.  IE9 and Firefox 4.0 remove the indentation element, as does the
-  spec.
+  When asked to outdent a list wrapped in a simple indentation element, Chrome
+  12 dev removes the list instead of the simple indentation element.  Opera
+  11.10 seems to remove both.  IE9 and Firefox 4.0 remove the simple
+  indentation element, as does the spec.
   -->
 
   <div class=XXX>
@@ -4367,7 +4363,7 @@ insertOrderedList.
   </ol>
 
   <li>If <var title="">current ancestor</var> is not an <a href=#editable>editable</a>
-  <a href=#potential-indentation-element>potential indentation element</a>, abort these steps.
+  <a href=#indentation-element>indentation element</a>, abort these steps.
 
   <!-- At this point, we have an ancestor to split up. -->
   <li>Append <var title="">current ancestor</var> to <var title="">ancestor list</var>.
@@ -4746,14 +4742,14 @@ or "ul"):
   <li>For each <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> <var title="">node</var> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in <var title="">new range</var>,
   if <var title="">node</var> is <a href=#editable>editable</a>; the last member of <var title="">node
   list</var> (if any) is not an <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of <var title="">node</var>;
-  <var title="">node</var> is not a <a href=#potential-indentation-element>potential indentation element</a>; and
-  either <var title="">node</var> is an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code> or <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code>, or its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code>
-  or <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code>, or it is an <a href=#allowed-child>allowed child</a> of "li"; then append
+  <var title="">node</var> is not an <a href=#indentation-element>indentation element</a>; and either
+  <var title="">node</var> is an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code> or <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code>, or its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code> or
+  <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code>, or it is an <a href=#allowed-child>allowed child</a> of "li"; then append
   <var title="">node</var> to <var title="">node list</var>.
   <!--
-  We exclude potential indentation elements so that selecting some random text
-  and doing indent followed by insertOrderedList will have the same result as
-  the reverse.  Specifically,
+  We exclude indentation elements so that selecting some random text and doing
+  indent followed by insertOrderedList will have the same result as the
+  reverse.  Specifically,
 
     <blockquote>[foo]</blockquote> ->
     <blockquote><ol><li>[foo]</li></ol></blockquote>
@@ -4905,11 +4901,11 @@ or "ul"):
 
     <ol>
       <li>If the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of <var title="">node</var> is not an <a href=#editable>editable</a>
-      <a href=#indentation-element>indentation element</a>, or the <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code> of the
-      <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of <var title="">node</var> is not an <a href=#editable>editable</a> <a href=#html-element>HTML
-      element</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> <var title="">tag name</var>, call <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement(<var title="">tag
-      name</var>)</a></code> on the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a> and return the result.
-      Otherwise:
+      <a href=#simple-indentation-element>simple indentation element</a>, or the <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code> of
+      the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of <var title="">node</var> is not an <a href=#editable>editable</a>
+      <a href=#html-element>HTML element</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> <var title="">tag name</var>, call
+      <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement(<var title="">tag name</var>)</a></code> on the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a> and return
+      the result.  Otherwise:
 
       <li>Let <var title="">list</var> be the <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code> of the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of
       <var title="">node</var>.
@@ -5184,8 +5180,8 @@ would be worth the added complexity.
   Browsers don't do this, word processors do.
   -->
   <li>If <var title="">offset</var> is zero, and <var title="">node</var> has an
-  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#ancestor-container title="ancestor container">ancestor container</a> that is both a <a href=#potential-indentation-element>potential indentation
-  element</a> and a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-descendant title=concept-tree-descendant>descendant</a> of <var title="">start node</var>:
+  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#ancestor-container title="ancestor container">ancestor container</a> that is both an <a href=#indentation-element>indentation element</a> and a
+  <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-descendant title=concept-tree-descendant>descendant</a> of <var title="">start node</var>:
 
   <p class=XXX>This copy-pastes from the outdent command action.  I'm also not
   totally sure it's correct.

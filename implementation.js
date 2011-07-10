@@ -3355,9 +3355,9 @@ commands.unlink = {
 ///// Block formatting command definitions /////
 //@{
 
-// "A potential indentation element is either a blockquote, or a div that has a
-// style attribute that sets "margin" or some subproperty of it."
-function isPotentialIndentationElement(node) {
+// "An indentation element is either a blockquote, or a div that has a style
+// attribute that sets "margin" or some subproperty of it."
+function isIndentationElement(node) {
 	if (!isHtmlElement(node)) {
 		return false;
 	}
@@ -3380,15 +3380,15 @@ function isPotentialIndentationElement(node) {
 	return false;
 }
 
-// "An indentation element is a potential indentation element that has no
+// "A simple indentation element is an indentation element that has no
 // attributes other than one or more of
 //
 //   * "a style attribute that sets no properties other than "margin", "border",
 //     "padding", or subproperties of those;
 //   * "a class attribute;
 //   * "a dir attribute."
-function isIndentationElement(node) {
-	if (!isPotentialIndentationElement(node)) {
+function isSimpleIndentationElement(node) {
+	if (!isIndentationElement(node)) {
 		return false;
 	}
 
@@ -3543,12 +3543,11 @@ function getSelectionListState() {
 	//
 	// "For each node contained in new range, append node to node list if the
 	// last member of node list (if any) is not an ancestor of node; node is
-	// editable; node is not a potential indentation element; and node is
-	// either an ol or ul, or the child of an ol or ul, or an allowed child of
-	// "li"."
+	// editable; node is not an indentation element; and node is either an ol
+	// or ul, or the child of an ol or ul, or an allowed child of "li"."
 	var nodeList = getContainedNodes(newRange, function(node) {
 		return isEditable(node)
-			&& !isPotentialIndentationElement(node)
+			&& !isIndentationElement(node)
 			&& (isHtmlElement(node, ["ol", "ul"])
 			|| isHtmlElement(node.parentNode, ["ol", "ul"])
 			|| isAllowedChild(node, "li"));
@@ -4684,12 +4683,12 @@ function indentNodes(nodeList) {
 		return;
 	}
 
-	// "Wrap node list, with sibling criteria matching any indentation element,
-	// and new parent instructions to return the result of calling
+	// "Wrap node list, with sibling criteria matching any simple indentation
+	// element, and new parent instructions to return the result of calling
 	// createElement("blockquote") on the ownerDocument of first node. Let new
 	// parent be the result."
 	var newParent = wrap(nodeList,
-		function(node) { return isIndentationElement(node) },
+		function(node) { return isSimpleIndentationElement(node) },
 		function() { return firstNode.ownerDocument.createElement("blockquote") });
 
 	// "Fix disallowed ancestors of new parent."
@@ -4702,15 +4701,15 @@ function outdentNode(node) {
 		return;
 	}
 
-	// "If node is an indentation element, remove node, preserving its
+	// "If node is a simple indentation element, remove node, preserving its
 	// descendants.  Then abort these steps."
-	if (isIndentationElement(node)) {
+	if (isSimpleIndentationElement(node)) {
 		removePreservingDescendants(node);
 		return;
 	}
 
-	// "If node is a potential indentation element:"
-	if (isPotentialIndentationElement(node)) {
+	// "If node is an indentation element:"
+	if (isIndentationElement(node)) {
 		// "Unset the class and dir attributes of node, if any."
 		node.removeAttribute("class");
 		node.removeAttribute("dir");
@@ -4736,41 +4735,41 @@ function outdentNode(node) {
 	// "Let ancestor list be a list of nodes, initially empty."
 	var ancestorList = [];
 
-	// "While current ancestor is an editable Element that is not an
+	// "While current ancestor is an editable Element that is not a simple
 	// indentation element, append current ancestor to ancestor list and then
 	// set current ancestor to its parent."
 	while (isEditable(currentAncestor)
 	&& currentAncestor.nodeType == Node.ELEMENT_NODE
-	&& !isIndentationElement(currentAncestor)) {
+	&& !isSimpleIndentationElement(currentAncestor)) {
 		ancestorList.push(currentAncestor);
 		currentAncestor = currentAncestor.parentNode;
 	}
 
-	// "If current ancestor is not an editable indentation element:"
+	// "If current ancestor is not an editable simple indentation element:"
 	if (!isEditable(currentAncestor)
-	|| !isIndentationElement(currentAncestor)) {
+	|| !isSimpleIndentationElement(currentAncestor)) {
 		// "Let current ancestor be node's parent."
 		currentAncestor = node.parentNode;
 
 		// "Let ancestor list be the empty list."
 		ancestorList = [];
 
-		// "While current ancestor is an editable Element that is not a
-		// potential indentation element, append current ancestor to ancestor
-		// list and then set current ancestor to its parent."
+		// "While current ancestor is an editable Element that is not an
+		// indentation element, append current ancestor to ancestor list and
+		// then set current ancestor to its parent."
 		while (isEditable(currentAncestor)
 		&& currentAncestor.nodeType == Node.ELEMENT_NODE
-		&& !isPotentialIndentationElement(currentAncestor)) {
+		&& !isIndentationElement(currentAncestor)) {
 			ancestorList.push(currentAncestor);
 			currentAncestor = currentAncestor.parentNode;
 		}
 	}
 
 	// "If node is an ol or ul, and either current ancestor is not an editable
-	// potential indentation element or node's parent is an ol or ul:"
+	// indentation element or node's parent is an ol or ul:"
 	if (isHtmlElement(node, ["OL", "UL"])
 	&& (!isEditable(currentAncestor)
-	|| !isPotentialIndentationElement(currentAncestor)
+	|| !isIndentationElement(currentAncestor)
 	|| isHtmlElement(node.parentNode, ["OL", "UL"]))) {
 		// "Unset the reversed, start, and type attributes of node, if any are
 		// set."
@@ -4801,10 +4800,10 @@ function outdentNode(node) {
 		return;
 	}
 
-	// "If current ancestor is not an editable potential indentation element,
-	// abort these steps."
+	// "If current ancestor is not an editable indentation element, abort these
+	// steps."
 	if (!isEditable(currentAncestor)
-	|| !isPotentialIndentationElement(currentAncestor)) {
+	|| !isIndentationElement(currentAncestor)) {
 		return;
 	}
 
@@ -4902,9 +4901,9 @@ function toggleLists(tagName) {
 
 	// "For each node node contained in new range, if node is editable; the
 	// last member of node list (if any) is not an ancestor of node; node
-	// is not a potential indentation element; and either node is an ol or
-	// ul, or its parent is an ol or ul, or it is an allowed child of "li";
-	// then append node to node list."
+	// is not an indentation element; and either node is an ol or ul, or its
+	// parent is an ol or ul, or it is an allowed child of "li"; then append
+	// node to node list."
 	for (
 		var node = newRange.startContainer;
 		node != nextNodeDescendants(newRange.endContainer);
@@ -4913,7 +4912,7 @@ function toggleLists(tagName) {
 		if (isEditable(node)
 		&& isContained(node, newRange)
 		&& (!nodeList.length || !isAncestor(nodeList[nodeList.length - 1], node))
-		&& !isPotentialIndentationElement(node)
+		&& !isIndentationElement(node)
 		&& (isHtmlElement(node, ["OL", "UL"])
 		|| isHtmlElement(node.parentNode, ["OL", "UL"])
 		|| isAllowedChild(node, "li"))) {
@@ -5076,13 +5075,13 @@ function toggleLists(tagName) {
 			var newParent = wrap([node],
 				function(node) { return isHtmlElement(node, tagName) },
 				function() {
-					// "If the parent of node is not an editable indentation
-					// element, or the previousSibling of the parent of node is
-					// not an editable HTML element with local name tag name,
-					// call createElement(tag name) on the context object and
-					// return the result. Otherwise:"
+					// "If the parent of node is not an editable simple
+					// indentation element, or the previousSibling of the
+					// parent of node is not an editable HTML element with
+					// local name tag name, call createElement(tag name) on the
+					// context object and return the result. Otherwise:"
 					if (!isEditable(node.parentNode)
-					|| !isIndentationElement(node.parentNode)
+					|| !isSimpleIndentationElement(node.parentNode)
 					|| !isEditable(node.parentNode.previousSibling)
 					|| !isHtmlElement(node.parentNode.previousSibling, tagName)) {
 						return document.createElement(tagName);
@@ -5377,14 +5376,14 @@ commands["delete"] = {
 		}
 
 		// "If offset is zero, and node has an ancestor container that is both
-		// a potential indentation element and a descendant of start node:"
+		// an indentation element and a descendant of start node:"
 		var outdentableAncestor = false;
 		for (
 			var ancestor = node;
 			isDescendant(ancestor, startNode);
 			ancestor = ancestor.parentNode
 		) {
-			if (isPotentialIndentationElement(ancestor)) {
+			if (isIndentationElement(ancestor)) {
 				outdentableAncestor = true;
 				break;
 			}

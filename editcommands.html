@@ -3989,8 +3989,8 @@ returned by the following algorithm:
     <var title="">start node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is <a href=#in-the-same-editing-host>in the same editing
     host</a>, set <var title="">start offset</var> to <var title="">start node</var>'s
     <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a>, then set <var title="">start node</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
-
-    <p class=XXX>Following a line break is unlikely to be the right criterion.
+    <!-- TODO V2: Following a line break is unlikely to be the right criterion.
+    -->
 
     <li>Otherwise, if <var title="">start node</var> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node and its
     <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>'s <a href=http://www.w3.org/TR/CSS21/cascade.html#computed-value>computed value</a> for "white-space" is neither "pre" nor "pre-wrap"
@@ -4023,8 +4023,8 @@ returned by the following algorithm:
     <a href=#in-the-same-editing-host>in the same editing host</a>, set <var title="">end offset</var> to one
     plus <var title="">end node</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a>, then set <var title="">end node</var> to its
     <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
-
-    <p class=XXX>Preceding a line break is unlikely to be the right criterion.
+    <!-- TODO V2: Preceding a line break is unlikely to be the right criterion.
+    -->
 
     <li>Otherwise, if <var title="">end node</var> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node and its
     <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>'s <a href=http://www.w3.org/TR/CSS21/cascade.html#computed-value>computed value</a> for "white-space" is neither "pre" nor "pre-wrap"
@@ -4323,7 +4323,9 @@ insertOrderedList.
   <p>If the inner <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code> is selected to be outdented, "foo" and "bar" will stop
   being red.  It seems nontrivial to handle this case in general, since we
   can't group <code class=external data-anolis-spec=html title="the li element"><a href=http://www.whatwg.org/html/#the-li-element>li</a></code>s.  If the list we're outdenting is a child of a non-list,
-  then we can just change it to a div.
+  then we can just change it to a div.  Hopefully
+  <a href="http://www.w3.org/Bugs/Public/show_bug.cgi?id=13128">HTML bug
+  13128</a> will get fixed, in which case I can just use a div here too.
   </div>
   <!--
   Chrome 12 dev seems to special-case style attributes by converting them to

@@ -3969,8 +3969,8 @@ returned by the following algorithm:
     <var>start node</var>'s [[parent]] is <span>in the same editing
     host</span>, set <var>start offset</var> to <var>start node</var>'s
     [[index]], then set <var>start node</var> to its [[parent]].
-
-    <p class=XXX>Following a line break is unlikely to be the right criterion.
+    <!-- TODO V2: Following a line break is unlikely to be the right criterion.
+    -->
 
     <li>Otherwise, if <var>start node</var> is a [[text]] node and its
     [[parent]]'s [[compval]] for "white-space" is neither "pre" nor "pre-wrap"
@@ -4003,8 +4003,8 @@ returned by the following algorithm:
     <span>in the same editing host</span>, set <var>end offset</var> to one
     plus <var>end node</var>'s [[index]], then set <var>end node</var> to its
     [[parent]].
-
-    <p class=XXX>Preceding a line break is unlikely to be the right criterion.
+    <!-- TODO V2: Preceding a line break is unlikely to be the right criterion.
+    -->
 
     <li>Otherwise, if <var>end node</var> is a [[text]] node and its
     [[parent]]'s [[compval]] for "white-space" is neither "pre" nor "pre-wrap"
@@ -4307,7 +4307,9 @@ insertOrderedList.
   <p>If the inner [[ol]] is selected to be outdented, "foo" and "bar" will stop
   being red.  It seems nontrivial to handle this case in general, since we
   can't group [[li]]s.  If the list we're outdenting is a child of a non-list,
-  then we can just change it to a div.
+  then we can just change it to a div.  Hopefully
+  <a href=http://www.w3.org/Bugs/Public/show_bug.cgi?id=13128>HTML bug
+  13128</a> will get fixed, in which case I can just use a div here too.
   </div>
   <!--
   Chrome 12 dev seems to special-case style attributes by converting them to

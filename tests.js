@@ -1905,6 +1905,8 @@ var tests = {
 		'<dl><dt>{}<br></dt></dl>',
 		'<dl><dt>foo<dd>{}<br></dl>',
 		'<dl><dt>{}<br><dd>bar</dl>',
+		'<dl><dt>foo<dd>bar<dl><dt>{}<br><dd>baz</dl></dl>',
+		'<dl><dt>foo<dd>bar<dl><dt>baz<dd>{}<br></dl></dl>',
 
 		'<h1>foo[bar</h1><p>baz]quz</p>',
 		'<p>foo[bar</p><h1>baz]quz</h1>',

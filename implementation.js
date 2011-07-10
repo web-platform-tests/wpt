@@ -3419,14 +3419,21 @@ function fixDisallowedAncestors(node) {
 
 	// "If node is not an allowed child of any of its ancestors in the same
 	// editing host:"
-	var hasAllowedAncestor = false;
-	for (var ancestor = node.parentNode; inSameEditingHost(node, ancestor); ancestor = ancestor.parentNode) {
-		if (isAllowedChild(node, ancestor)) {
-			hasAllowedAncestor = true;
-			break;
+	if (getAncestors(node).every(function(ancestor) {
+		return !inSameEditingHost(node, ancestor)
+			|| !isAllowedChild(node, ancestor)
+	})) {
+		// "If node is a dd or dt, wrap the one-node list consisting of node,
+		// with sibling criteria matching any dl with no attributes, and new
+		// parent instructions returning the result of calling
+		// createElement("dl") on the context object. Then abort these steps."
+		if (isHtmlElement(node, ["dd", "dt"])) {
+			wrap([node],
+				function(sibling) { return isHtmlElement(sibling, "dl") && !sibling.attributes.length },
+				function() { return document.createElement("dl") });
+			return;
 		}
-	}
-	if (!hasAllowedAncestor) {
+
 		// "If node is not a prohibited paragraph child, abort these steps."
 		if (!isProhibitedParagraphChild(node)) {
 			return;
@@ -4352,9 +4359,14 @@ function splitParent(nodeList) {
 }
 
 // "To remove a node node while preserving its descendants, split the parent of
-// node's children."
+// node's children if it has any. If it has no children, instead remove it from
+// its parent."
 function removePreservingDescendants(node) {
-	splitParent([].slice.call(node.childNodes));
+	if (node.hasChildNodes()) {
+		splitParent([].slice.call(node.childNodes));
+	} else {
+		node.parentNode.removeChild(node);
+	}
 }
 
 //@}
@@ -5281,6 +5293,18 @@ commands["delete"] = {
 			// "Split the parent of the one-node list consisting of node."
 			splitParent([node]);
 
+			// "If node is a dd or dt, and it is not an allowed child of any of
+			// its ancestors in the same editing host, set the tag name of node
+			// to the default single-line container name and let node be the
+			// result."
+			if (isHtmlElement(node, ["dd", "dt"])
+			&& getAncestors(node).every(function(ancestor) {
+				return !inSameEditingHost(node, ancestor)
+					|| !isAllowedChild(node, ancestor)
+			})) {
+				node = setTagName(node, defaultSingleLineContainerName);
+			}
+
 			// "Fix disallowed ancestors of node."
 			fixDisallowedAncestors(node);
 
@@ -5457,10 +5481,10 @@ commands.formatblock = {
 		// "Let value be converted to ASCII lowercase."
 		value = value.toLowerCase();
 
-		// "If value is not "address", "div", "h1", "h2", "h3", "h4", "h5",
-		// "h6", "p", or "pre", raise a SYNTAX_ERR exception."
-		if (["ADDRESS", "DIV", "H1", "H2", "H3", "H4", "H5", "H6", "P",
-		"PRE"].indexOf(value.toUpperCase()) == -1) {
+		// "If value is not "address", "dd", "div", "dt", "h1", "h2", "h3",
+		// "h4", "h5", "h6", "p", or "pre", raise a SYNTAX_ERR exception."
+		if (["address", "dd", "div", "dt", "h1", "h2", "h3", "h4", "h5", "h6",
+		"p", "pre"].indexOf(value) == -1) {
 			throw "SYNTAX_ERR";
 		}
 
@@ -5472,125 +5496,85 @@ commands.formatblock = {
 		// "For each node node contained in new range, append node to node list
 		// if it is editable, the last member of original node list (if any) is
 		// not an ancestor of node, node is either a non-list single-line
-		// container or an allowed child of "p", and node is not the ancestor
-		// of a prohibited paragraph child."
+		// container or an allowed child of "p" or a dd or dt, and node is not
+		// the ancestor of a prohibited paragraph child."
 		var nodeList = getContainedNodes(newRange, function(node) {
 			return isEditable(node)
 				&& (isNonListSingleLineContainer(node)
-				|| isAllowedChild(node, "p"))
+				|| isAllowedChild(node, "p")
+				|| isHtmlElement(node, ["dd", "dt"]))
 				&& !getDescendants(node).some(isProhibitedParagraphChild);
 		});
 
 		// "For each node in node list, while node is the descendant of an
 		// editable HTML element in the same editing host, which has local name
-		// "address", "div", "h1", "h2", "h3", "h4", "h5", "h6", "p", or "pre",
-		// and which is not the ancestor of a prohibited paragraph child, split
-		// the parent of the one-node list consisting of node."
+		// "address", "dd", "div", "dt", "h1", "h2", "h3", "h4", "h5", "h6",
+		// "p", or "pre", and which is not the ancestor of a prohibited
+		// paragraph child, split the parent of the one-node list consisting of
+		// node."
 		for (var i = 0; i < nodeList.length; i++) {
 			var node = nodeList[i];
 			while (getAncestors(node).some(function(ancestor) {
 				return isEditable(ancestor)
 					&& inSameEditingHost(ancestor, node)
-					&& isHtmlElement(ancestor, ["address", "div", "h1", "h2", "h3", "h4", "h5", "h6", "p", "pre"])
+					&& isHtmlElement(ancestor, ["address", "dd", "div", "dt", "h1", "h2", "h3", "h4", "h5", "h6", "p", "pre"])
 					&& !getDescendants(ancestor).some(isProhibitedParagraphChild);
 			})) {
 				splitParent([node]);
 			}
 		}
 
-		// "If value is "div" or "p", then while node list is not empty:"
-		if (value == "div" || value == "p") {
-			while (nodeList.length) {
-				// "If the first member of node list is a non-list single-line
-				// container, set the tag name of the first member of node list
-				// to value, then remove the first member from node list and
-				// continue this loop from the beginning."
-				if (isNonListSingleLineContainer(nodeList[0])) {
-					setTagName(nodeList[0], value);
-					nodeList.shift();
-					continue;
-				}
+		// "While node list is not empty:"
+		while (nodeList.length) {
+			var sublist;
 
+			// "If the first member of node list is a single-line
+			// container:"
+			if (isSingleLineContainer(nodeList[0])) {
+				// "Let sublist be the children of the first member of node
+				// list."
+				sublist = [].slice.call(nodeList[0].childNodes);
+
+				// "Remove the first member of node list from its parent,
+				// preserving its descendants."
+				removePreservingDescendants(nodeList[0]);
+
+				// "Remove the first member from node list."
+				nodeList.shift();
+
+			// "Otherwise:"
+			} else {
 				// "Let sublist be an empty list of nodes."
-				var sublist = [];
+				sublist = [];
 
 				// "Remove the first member of node list and append it to
 				// sublist."
 				sublist.push(nodeList.shift());
 
-				// "While node list is not empty, and the first member of node
-				// list is the nextSibling of the last member of sublist, and
-				// the first member of node list is not a non-list single-line
-				// container, and the last member of sublist is not a br,
-				// remove the first member of node list and append it to
-				// sublist."
+				// "While node list is not empty, and the first member of
+				// node list is the nextSibling of the last member of
+				// sublist, and the first member of node list is not a
+				// single-line container, and the last member of sublist is
+				// not a br, remove the first member of node list and
+				// append it to sublist."
 				while (nodeList.length
 				&& nodeList[0] == sublist[sublist.length - 1].nextSibling
-				&& !isNonListSingleLineContainer(nodeList[0])
+				&& !isSingleLineContainer(nodeList[0])
 				&& !isHtmlElement(sublist[sublist.length - 1], "BR")) {
 					sublist.push(nodeList.shift());
 				}
-
-				// "Wrap sublist, with sibling criteria matching nothing and
-				// new parent instructions returning the result of running
-				// createElement(value) on the context object. Then fix
-				// disallowed ancestors of the result."
-				fixDisallowedAncestors(wrap(sublist,
-					function() { return false },
-					function() { return document.createElement(value) }));
 			}
 
-		// "Otherwise, while node list is not empty:"
-		} else {
-			while (nodeList.length) {
-				var sublist;
-
-				// "If the first member of node list is a non-list single-line
-				// container:"
-				if (isNonListSingleLineContainer(nodeList[0])) {
-					// "Let sublist be the children of the first member of node
-					// list."
-					sublist = [].slice.call(nodeList[0].childNodes);
-
-					// "Remove the first member of node list from its parent,
-					// preserving its descendants."
-					removePreservingDescendants(nodeList[0]);
-
-					// "Remove the first member from node list."
-					nodeList.shift();
-
-				// "Otherwise:"
-				} else {
-					// "Let sublist be an empty list of nodes."
-					sublist = [];
-
-					// "Remove the first member of node list and append it to
-					// sublist."
-					sublist.push(nodeList.shift());
-
-					// "While node list is not empty, and the first member of
-					// node list is the nextSibling of the last member of
-					// sublist, and the first member of node list is not a
-					// non-list single-line container, and the last member of
-					// sublist is not a br, remove the first member of node
-					// list and append it to sublist."
-					while (nodeList.length
-					&& nodeList[0] == sublist[sublist.length - 1].nextSibling
-					&& !isNonListSingleLineContainer(nodeList[0])
-					&& !isHtmlElement(sublist[sublist.length - 1], "BR")) {
-						sublist.push(nodeList.shift());
-					}
-				}
-
-				// "Wrap sublist, with sibling criteria matching any HTML
-				// element with local name value and no attributes, and new
-				// parent instructions returning the result of running
-				// createElement(value) on the context object. Then fix
-				// disallowed ancestors of the result."
-				fixDisallowedAncestors(wrap(sublist,
-					function(node) { return isHtmlElement(node, value.toUpperCase()) && !node.attributes.length },
-					function() { return document.createElement(value) }));
-			}
+			// "Wrap sublist. If value is "div" or "p", sibling criteria match
+			// nothing; otherwise they match any HTML element with local name
+			// value and no attributes. New parent instructions return the
+			// result of running createElement(value) on the context object.
+			// Then fix disallowed ancestors of the result."
+			fixDisallowedAncestors(wrap(sublist,
+				["div", "p"].indexOf(value) == - 1
+					? function(node) { return isHtmlElement(node, value) && !node.attributes.length }
+					: function() { return false },
+				function() { return document.createElement(value) }));
 		}
 	}, indeterm: function() {
 		// "Block-extend the active range, and let new range be the result."
@@ -6356,6 +6340,25 @@ commands.insertparagraph = {
 		&& isHtmlElement(container.firstChild, "br")))) {
 			// "Split the parent of the one-node list consisting of container."
 			splitParent([container]);
+
+			// "If container has no children, call createElement("br") on the
+			// context object and append the result as the last child of
+			// container."
+			if (!container.hasChildNodes()) {
+				container.appendChild(document.createElement("br"));
+			}
+
+			// "If container is a dd or dt, and it is not an allowed child of
+			// any of its ancestors in the same editing host, set the tag name
+			// of container to the default single-line container name and let
+			// container be the result."
+			if (isHtmlElement(container, ["dd", "dt"])
+			&& getAncestors(container).every(function(ancestor) {
+				return !inSameEditingHost(container, ancestor)
+					|| !isAllowedChild(container, ancestor)
+			})) {
+				container = setTagName(container, defaultSingleLineContainerName);
+			}
 
 			// "Fix disallowed ancestors of container."
 			fixDisallowedAncestors(container);

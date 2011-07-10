@@ -10,6 +10,7 @@ replace = {
     'a': '<code data-anolis-spec=html title="the a element">a</code>',
     'ancestor': '<span data-anolis-spec=domcore title=concept-tree-ancestor>ancestor</span>',
     'ancestorcontainer': '<span data-anolis-spec=domrange title="ancestor container">ancestor container</span>',
+    'attribute': '<span data-anolis-spec=domcore title=concept-attribute>attribute</span>',
     'attrlocalname': '<span data-anolis-spec=domcore title=concept-attribute-local-name>local name</span>',
     'attrvalue': '<span data-anolis-spec=domcore title=concept-attribute-value>value</span>',
     'b': '<code data-anolis-spec=html title="the b element">b</code>',
@@ -144,7 +145,7 @@ for key in fnreplace:
     s = re.sub(r"\[\[" + key + "\|([^]]*)\]\]", fnreplace[key], s)
 
 if "[[" in s:
-    raise Exception("Something mistyped?  " + s[s.find("[["):s.find("]]") + 2])
+    raise Exception("Unrecognized macro: " + s[s.find("[["):s.find("]]") + 2])
 
 s = s.replace("<var>", "<var title>")
 

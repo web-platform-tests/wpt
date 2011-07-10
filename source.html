@@ -3047,6 +3047,12 @@ here?
   [[ancestors]] <span>in the same editing host</span>:
 
   <ol>
+    <li>If <var>node</var> is a [[dd]] or [[dt]], <span>wrap</span> the
+    one-[[node]] list consisting of <var>node</var>, with <span>sibling
+    criteria</span> matching any [[dl]] with no [[attributes]], and <span>new
+    parent instructions</span> returning the result of calling
+    [[createelement|"dl"]] on the [[contextobject]].  Then abort these steps.
+
     <li>If <var>node</var> is not a <span>prohibited paragraph child</span>,
     abort these steps.
 
@@ -3861,7 +3867,8 @@ inline descendants in a clone of the former parent.
 
 <p>To remove a [[node]] <var>node</var> while <dfn>preserving its
 descendants</dfn>, <span>split the parent</span> of <var>node</var>'s
-[[children]].
+[[children]] if it has any.  If it has no [[children]], instead remove it from
+its [[parent]].
 <!-- @} -->
 
 <h3>Canonical space sequences</h3>
@@ -5122,6 +5129,18 @@ would be worth the added complexity.
     <li><span>Split the parent</span> of the one-[[node]] list consisting of
     <var>node</var>.
 
+    <li>If <var>node</var> is a [[dd]] or [[dt]], and it is not an
+    <span>allowed child</span> of any of its [[ancestors]] <span>in the same
+    editing host</span>, <span>set the tag name</span> of <var>node</var> to
+    the <span>default single-line container name</span> and let <var>node</var>
+    be the result.
+    <!--
+    Annoying hack to prevent the dl from being re-added when fixing disallowed
+    ancestors.  In most cases we want a wrapper dl added, but in two cases
+    (delete and insertParagraph) we're actually trying to outdent the list
+    item.  There might be a better way to do this.
+    -->
+
     <li><span>Fix disallowed ancestors</span> of <var>node</var>.
 
     <li>Abort these steps.
@@ -5333,11 +5352,8 @@ sense for <address>/<h*>/<pre>, but other browsers don't do it.
   <li>Let <var>value</var> be <span data-anolis-spec=domcore>converted to
   ASCII lowercase</span>.
 
-  <li>If <var>value</var> is not "address", "div", "h1", "h2", "h3", "h4",
-  "h5", "h6", "p", or "pre", raise a [[SYNTAX_ERR]] exception.
-
-  <p class=XXX>We should support dt and dd here, since they make sense here and
-  there's no other way to create them.
+  <li>If <var>value</var> is not "address", "dd", "div", "dt", "h1", "h2",
+  "h3", "h4", "h5", "h6", "p", or "pre", raise a [[SYNTAX_ERR]] exception.
   <!--
   Opera 11.10 throws NOT_SUPPORTED_ERR for bad elements, all other tested
   browsers ignore the input.  Testing in IE9, Firefox 4.0, Chrome 13 dev, and
@@ -5368,15 +5384,16 @@ sense for <address>/<h*>/<pre>, but other browsers don't do it.
   <span>editable</span>, the last member of <var>original node list</var> (if
   any) is not an [[ancestor]] of <var>node</var>, <var>node</var> is either a
   <span>non-list single-line container</span> or an <span>allowed child</span>
-  of "p", and <var>node</var> is not the [[ancestor]] of a <span>prohibited
-  paragraph child</span>.
+  of "p" or a [[dd]] or [[dt]], and <var>node</var> is not the [[ancestor]] of
+  a <span>prohibited paragraph child</span>.
 
   <li>For each <var>node</var> in <var>node list</var>, while <var>node</var>
   is the [[descendant]] of an <span>editable</span> <span>HTML element</span>
   <span>in the same editing host</span>, which has [[localname]] "address",
-  "div", "h1", "h2", "h3", "h4", "h5", "h6", "p", or "pre", and which is not
-  the [[ancestor]] of a <span>prohibited paragraph child</span>, <span>split
-  the parent</span> of the one-[[node]] list consisting of <var>node</var>.
+  "dd", "div", "dt", "h1", "h2", "h3", "h4", "h5", "h6", "p", or "pre", and
+  which is not the [[ancestor]] of a <span>prohibited paragraph child</span>,
+  <span>split the parent</span> of the one-[[node]] list consisting of
+  <var>node</var>.
   <!--
   This tries to avoid misnesting if only some lines of an element are selected,
   so <h1>[foo]<br>bar</h1> becomes <p>[foo]</p><h1>bar</h1> instead of
@@ -5410,8 +5427,9 @@ sense for <address>/<h*>/<pre>, but other browsers don't do it.
   IE9 will just change the elements as they are, so it gives
   <p>foo</p><p>bar</p> and <h1>foo</h1><h1>bar</h1> for
   <div>foo</div><div>bar</div>, but <p>foo<br>bar</p> and <h1>foo<br>bar</h1>
-  for foo<br>bar.  This is unreasonable, but the two possible inputs here look
-  identical to the user and might have been produced by identical user input.
+  for foo<br>bar.  This is unreasonable, because the two possible inputs here
+  look identical to the user and might have been produced by identical user
+  input.
 
   Firefox 5.0a2 will give results like <p>foo</p><p>bar</p> or
   <h1>foo</h1><h1>bar</h1> no matter what (modulo oddities in its handling of
@@ -5425,46 +5443,27 @@ sense for <address>/<h*>/<pre>, but other browsers don't do it.
   predicated on the fact that <h1>foo</h1><h1>bar</h1> almost never makes
   sense, and <p>foo<br>bar</p> isn't usually what's wanted either.
   -->
-  <li>If <var>value</var> is "div" or "p", then while <var>node list</var> is
-  not empty:
+  <li>While <var>node list</var> is not empty:
 
   <ol>
-    <li>If the first member of <var>node list</var> is a <span>non-list
-    single-line container</span>, <span>set the tag name</span> of the first
-    member of <var>node list</var> to <var>value</var>, then remove the first
-    member from <var>node list</var> and continue this loop from the beginning.
-
-    <li>Let <var>sublist</var> be an empty list of [[nodes]].
-
-    <li>Remove the first member of <var>node list</var> and append it to
-    <var>sublist</var>.
-
-    <li>While <var>node list</var> is not empty, and the first member of
-    <var>node list</var> is the [[nextsibling]] of the last member of
-    <var>sublist</var>, and the first member of <var>node list</var> is not a
-    <span>non-list single-line container</span>, and the last member of
-    <var>sublist</var> is not a [[br]], remove the first member of <var>node
-    list</var> and append it to <var>sublist</var>.
-
-    <li><span>Wrap</span> <var>sublist</var>, with <span>sibling
-    criteria</span> matching nothing and <span>new parent instructions</span>
-    returning the result of running [[createelement|<var>value</var>]] on the
-    [[contextobject]].  Then <span>fix disallowed ancestors</span> of the
-    result.
-    <!-- It's possible to have disallowed ancestors in obscure corner cases,
-    where a node is an allowed child of a p but p is not an allowed child of
-    the node's parent and the node's parent is also not one of the whitelisted
-    elements but is a block element.  <xmp>[foo]</xmp> is the only case I can
-    think of. -->
-  </ol>
-
-  <li>Otherwise, while <var>node list</var> is not empty:
-
-  <ol>
-    <li>If the first member of <var>node list</var> is a <span>non-list
-    single-line container</span>:
+    <li>If the first member of <var>node list</var> is a <span>single-line
+    container</span>:
 
     <ol>
+      <!--
+      If you try to format a single-line container with no children, IE10PP2
+      inserts an nbsp before formatting.  (It uses nbsp instead of <br> to make
+      blocks not collapse, so the equivalent for us would be to insert a <br>.)
+      Firefox 7.0a2 and Opera 11.50 make the element disappear.  Chrome 14 dev
+      leaves it alone and doesn't format it.  I follow Firefox/Opera just
+      because it's the simplest given how I happen to have written the spec,
+      and it's a corner case, so exact behavior isn't important.
+
+      For blocks that contain only a collapsed whitespace node, IE10PP2 and
+      Firefox 7.0a2 convert them like normal.  Chrome 14 dev and Opera 11.50
+      leave it alone and don't format it.  I go with the majority, which is
+      again simpler to spec.
+      -->
       <li>Let <var>sublist</var> be the [[children]] of the first member of
       <var>node list</var>.
 
@@ -5485,16 +5484,16 @@ sense for <address>/<h*>/<pre>, but other browsers don't do it.
       <li>While <var>node list</var> is not empty, and the first member of
       <var>node list</var> is the [[nextsibling]] of the last member of
       <var>sublist</var>, and the first member of <var>node list</var> is not a
-      <span>non-list single-line container</span>, and the last member of
+      <span>single-line container</span>, and the last member of
       <var>sublist</var> is not a [[br]], remove the first member of <var>node
       list</var> and append it to <var>sublist</var>.
     </ol>
 
-    <li><span>Wrap</span> <var>sublist</var>, with <span>sibling
-    criteria</span> matching any <span>HTML element</span> with [[localname]]
-    <var>value</var> and no attributes, and <span>new parent
-    instructions</span> returning the result of running
-    [[createelement|<var>value</var>]] on the [[contextobject]].  Then
+    <li><span>Wrap</span> <var>sublist</var>.  If <var>value</var> is "div" or
+    "p", <span>sibling criteria</span> match nothing; otherwise they match any
+    <span>HTML element</span> with [[localname]] <var>value</var> and no
+    attributes.  <span>New parent instructions</span> return the result of
+    running [[createelement|<var>value</var>]] on the [[contextobject]].  Then
     <span>fix disallowed ancestors</span> of the result.
   </ol>
 </ol>
@@ -6274,6 +6273,18 @@ http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
     <li>If <var>container</var> has no [[children]], call
     [[createelement|"br"]] on the [[contextobject]] and append the result as
     the last [[child]] of <var>container</var>.
+
+    <li>If <var>container</var> is a [[dd]] or [[dt]], and it is not an
+    <span>allowed child</span> of any of its [[ancestors]] <span>in the same
+    editing host</span>, <span>set the tag name</span> of <var>container</var>
+    to the <span>default single-line container name</span> and let
+    <var>container</var> be the result.
+    <!--
+    Annoying hack to prevent the dl from being re-added when fixing disallowed
+    ancestors.  In most cases we want a wrapper dl added, but in two cases
+    (delete and insertParagraph) we're actually trying to outdent the list
+    item.  There might be a better way to do this.
+    -->
 
     <li><span>Fix disallowed ancestors</span> of <var>container</var>.
 

@@ -333,6 +333,9 @@ list</a>.
 <p class=XXX>A variety of other issues are also noted in the text, formatted
 like this.
 
+<p>Things that would be useful to address for the future but aren't important
+to fix right now are in comments prefixed with "TODO V2".
+
 
 <h2 id=commands><span class=secno>3 </span>Commands</h2>
 
@@ -4927,18 +4930,20 @@ differently, and in those cases the align attribute is more useful.
 <p>To <dfn id=justify-the-selection>justify the selection</dfn> to a string <var title="">alignment</var> (either
 "center", "justify", "left", or "right"):
 
-<p class=XXX>text-align doesn't behave as expected if there are descendant
-blocks with non-100% width, like tables.  The align attribute behaves a lot
-more nicely in such cases, but it's not valid.  Not clear what to do.  For now
-I've stuck with text-align, just because the cases where it misbehaves can't be
+<!--
+TODO V2: text-align doesn't behave as expected if there are descendant blocks
+with non-100% width, like tables.  The align attribute behaves a lot more
+nicely in such cases, but it's not valid.  Not clear what to do.  For now I've
+stuck with text-align, just because the cases where it misbehaves can't be
 created by any sequence of stock execCommand()s that I know of, but this needs
 more careful consideration.  Gecko in CSS mode seems to special-case tables,
 adding auto margins to the table element to get it to align correctly.
 
-<p class=XXX>Need to do something along the lines of pushing down values here
-(although no browser does).  In fact, it's very likely this can be rewritten in
+TODO V2: We could do something along the lines of pushing down values here,
+although no browser does.  In fact, it's very likely this can be rewritten in
 terms of the inline formatting command primitives, but it's not clear if it
 would be worth the added complexity.
+-->
 
 <ol>
   <li><a href=#block-extend>Block-extend</a> the <a href=#active-range>active range</a>, and let <var title="">new
@@ -4985,9 +4990,6 @@ would be worth the added complexity.
   to nodes that are already aligned.  Even then, it does apply it if the
   alignment is just inherited from the root. -->
 
-  <p class=XXX>What does this imply when text-align is "start" or "end"?  As
-  with lots of CSS stuff in this spec, needs to be clarified.
-
   <li>While <var title="">node list</var> is not empty:
 
   <ol>
@@ -5020,7 +5022,7 @@ would be worth the added complexity.
     <var title="">alignment</var>, and return the result.
     <!-- As for inline formatting, I only ever create new elements, and don't
     ever modify existing ones.  This doesn't match how any browser behaves
-    in this case, but for inline formatting it matches everyone but Gecko's CSS
+   in this case, but for inline formatting it matches everyone but Gecko's CSS
     mode. -->
   </ol>
 </ol>
@@ -6227,9 +6229,9 @@ http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
   this results in trying to put a br inside an xmp, so I go with IE/Chrome for
   xmp.
 
-  In cases where hitting enter in a header doesn't break out of the header, we
-  should probably follow this code path too, instead of creating an adjoining
-  header.  No browser does this, though, so we don't.
+  TODO V2: In cases where hitting enter in a header doesn't break out of the
+  header, we should probably follow this code path too, instead of creating an
+  adjoining header.  No browser does this, though, so we don't.
   -->
 
   <ol>

@@ -605,9 +605,16 @@ does not have [[compval]] "inline" or "inline-block" or "inline-table" or
 
 <p>An <dfn>inline node</dfn> is a [[node]] that is not a <span>block
 node</span>.
+<!--
+The block/inline node definitions are CSS-based.  "Prohibited paragraph child"
+is conceptually similar to "block node", but based on the element name.
+Generally we want to use block/inline node when we're interested in the visual
+effect, and prohibited paragraph children when we're concerned about parsing or
+semantics.  The current spec is not always so consistent.
+-->
 
-<p class=XXX>We might not want this to key off CSS; perhaps we should be
-listing elements instead?  Needs testing.
+<p class=XXX>Audit the spec to find places where we should use block node
+instead of prohibited paragraph child or vice versa (see comment).
 
 <p>An <dfn>editing host</dfn> is a [[node]] that is either an [[element]] with
 a <code data-anolis-spec=html title=attr-contenteditable>contenteditable</code>

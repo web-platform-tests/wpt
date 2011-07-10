@@ -3786,26 +3786,18 @@ inline descendants in a clone of the former parent.
 
   <li>If the first [[child]] of <var>original parent</var> is not in <var>node
   list</var>, but its last [[child]] is:
-
-  <div class=XXX>
-  <p>We insert things after the parent.  This is bad, because it will cause
-  them to become part of any ranges that immediately follow.  For instance, if
-  we're hitting "bar" in
-
-  <xmp><div><p>foo<p>bar</div>{<p>baz}</xmp>
-
-  <p>it becomes
-
-  <xmp><div><p>foo</div>{<p>bar<p>baz}</xmp>
-
-  <p>instead of
-
-  <xmp><div><p>foo</div><p>bar{<p>baz}</xmp>
-
-  <p>because of how range mutation rules work.  This doesn't happen if we
-  insert before.  Probably this isn't important enough to try working around,
-  though.
-  </div>
+  <!--
+  TODO V2: We insert things after the parent.  This is bad, because it will
+  cause them to become part of any ranges that immediately follow.  For
+  instance, if we're hitting "bar" in
+    <div><p>foo<p>bar</div>{<p>baz}
+  it becomes
+    <div><p>foo</div>{<p>bar<p>baz}
+  instead of
+    <div><p>foo</div><p>bar{<p>baz}
+  because of how range mutation rules work.  This doesn't happen if we insert
+  before.  This may or may not be important enough to bother working around.
+  -->
 
   <ol>
     <li>For each <var>node</var> in <var>node list</var>, <em>in reverse
@@ -5942,11 +5934,12 @@ round-tripping through a character encoding change impossible.
   <li>Let <var>frag</var> be the result of calling <code data-anolis-spec=domps
   title=dom-Range-createContextualFragment>createContextualFragment(<var>value</var>)</code>
   on the <span>active range</span>.
-
-  <p class=XXX>This has some interesting consequences.  For instance, table
-  cells and similar will just vanish if they're not in an appropriate place;
-  and inside a script or style or xmp or such, the argument will effectively be
+  <!--
+  TODO V2: This has some interesting consequences.  For instance, table cells
+  and similar will just vanish if they're not in an appropriate place; and
+  inside a script or style or xmp or such, the argument will effectively be
   HTML-escaped before use.  Some of these consequences might be undesirable.
+  -->
 
   <li>Let <var>last child</var> be the [[lastchild]] of <var>frag</var>.
 

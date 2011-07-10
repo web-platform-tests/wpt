@@ -3807,26 +3807,18 @@ inline descendants in a clone of the former parent.
 
   <li>If the first <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">original parent</var> is not in <var title="">node
   list</var>, but its last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> is:
-
-  <div class=XXX>
-  <p>We insert things after the parent.  This is bad, because it will cause
-  them to become part of any ranges that immediately follow.  For instance, if
-  we're hitting "bar" in
-
-  </p><xmp><div><p>foo<p>bar</div>{<p>baz}</xmp>
-
-  <p>it becomes
-
-  </p><xmp><div><p>foo</div>{<p>bar<p>baz}</xmp>
-
-  <p>instead of
-
-  </p><xmp><div><p>foo</div><p>bar{<p>baz}</xmp>
-
-  <p>because of how range mutation rules work.  This doesn't happen if we
-  insert before.  Probably this isn't important enough to try working around,
-  though.
-  </div>
+  <!--
+  TODO V2: We insert things after the parent.  This is bad, because it will
+  cause them to become part of any ranges that immediately follow.  For
+  instance, if we're hitting "bar" in
+    <div><p>foo<p>bar</div>{<p>baz}
+  it becomes
+    <div><p>foo</div>{<p>bar<p>baz}
+  instead of
+    <div><p>foo</div><p>bar{<p>baz}
+  because of how range mutation rules work.  This doesn't happen if we insert
+  before.  This may or may not be important enough to bother working around.
+  -->
 
   <ol>
     <li>For each <var title="">node</var> in <var title="">node list</var>, <em>in reverse
@@ -5933,11 +5925,12 @@ round-tripping through a character encoding change impossible.
 
   <li>Let <var title="">frag</var> be the result of calling <code class=external data-anolis-spec=domps title=dom-Range-createContextualFragment><a href=http://html5.org/specs/dom-parsing.html#dom-range-createcontextualfragment>createContextualFragment(<var title="">value</var>)</a></code>
   on the <a href=#active-range>active range</a>.
-
-  <p class=XXX>This has some interesting consequences.  For instance, table
-  cells and similar will just vanish if they're not in an appropriate place;
-  and inside a script or style or xmp or such, the argument will effectively be
+  <!--
+  TODO V2: This has some interesting consequences.  For instance, table cells
+  and similar will just vanish if they're not in an appropriate place; and
+  inside a script or style or xmp or such, the argument will effectively be
   HTML-escaped before use.  Some of these consequences might be undesirable.
+  -->
 
   <li>Let <var title="">last child</var> be the <code class=external data-anolis-spec=domcore title=dom-Node-lastChild><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-lastchild>lastChild</a></code> of <var title="">frag</var>.
 

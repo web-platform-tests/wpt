@@ -3037,9 +3037,6 @@ container</span>, or an <span>HTML element</span> with [[localname]] "li",
 <!-- @{ -->
 <p>To <dfn>fix disallowed ancestors</dfn> of <var>node</var>:
 
-<p class=XXX>Do we want to get rid of attributes that are no longer allowed
-here?
-
 <ol>
   <li>If <var>node</var> is not <span>editable</span>, abort these steps.
 
@@ -3196,6 +3193,10 @@ Since this is the only behavior that's possibly useful, it's what I specced.
 Firefox ties the value closely to the state, returning true for the state if
 and only if the value matches the desired value, but this seems less useful
 than what I've specced for the state.
+
+This API is based on the four-state text-align of CSS 2.1.  We do some crude
+mapping to make it not break too badly with CSS3 values, but it's not going to
+work well given the design of the API.
 -->
 <ol>
   <li>While <var>node</var> is neither null nor an [[element]], or it is an
@@ -3209,11 +3210,18 @@ than what I've specced for the state.
   marginal corner case anyway.  (It will only happen if, e.g., everything up to
   and including the html and body elements have display: inline or none.) -->
 
-  <li>Return "center", "justify", "left", or "right", depending on the
-  [[compval]] of <var>node</var>'s "text-align" property.
+  <li>If <var>node</var>'s "text-align" property has [[compval]] "start",
+  return "left" if the [[directionality]] of <var>node</var> is "ltr", "right"
+  if it is "rtl".
 
-  <p class=XXX>What to do for "start" "auto" etc. currently undefined.  We
-  assume something CSS 2.1-ish.
+  <li>If <var>node</var>'s "text-align" property has [[compval]] "end", return
+  "right" if the [[directionality]] of <var>node</var> is "ltr", "left" if it
+  is "rtl".
+
+  <li>If <var>node</var>'s "text-align" property has [[compval]] "center",
+  "justify", "left", or "right", return that value.
+
+  <li>Return "left".
 </ol>
 <!-- @} -->
 
@@ -4971,11 +4979,8 @@ would be worth the added complexity.
   append <var>node</var> to <var>node list</var> if the last member of
   <var>node list</var> (if any) is not an [[ancestor]] of <var>node</var>;
   <var>node</var> is <span>editable</span>; <var>node</var> is an <span>allowed
-  child</span> of "div"; and either <var>node</var> is an [[element]] and the
-  CSS property "text-align" does not compute to <var>alignment</var> on it, or
-  it is not an [[element]], but its [[parent]] is an [[element]], and the CSS
-  property "text-align" does not compute to <var>alignment</var> on its
-  [[parent]].
+  child</span> of "div"; and <var>node</var>'s <span>alignment value</span> is
+  not <var>alignment</var>.
   <!-- Of tested browsers, only Chrome 13 dev seems to not apply the alignment
   to nodes that are already aligned.  Even then, it does apply it if the
   alignment is just inherited from the root. -->

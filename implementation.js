@@ -234,24 +234,44 @@ function stateHelper(callback) {
 	return nodes.every(callback) && nodes.length >= 1;
 }
 
-// Returns a standard CSS 2.1 computed value for text-align, adapting
-// nonstandard values and things like "start" and "auto".
-function getRealTextAlign(element) {
-	var computedAlign = getComputedStyle(element).textAlign
-		.replace(/^-(moz|webkit)-/, "");
-	if (computedAlign == "auto" || computedAlign == "start") {
-		// Depends on directionality.  Note: this is a serious hack.
-		do {
-			var dir = element.dir.toLowerCase();
-			element = element.parentNode;
-		} while (element && element.nodeType == Node.ELEMENT_NODE && dir != "ltr" && dir != "rtl");
-		if (dir == "rtl") {
-			computedAlign = "right";
-		} else {
-			computedAlign = "left";
-		}
+// "the directionality" from HTML.  I don't bother caring about non-HTML
+// elements.
+//
+// "The directionality of an element is either 'ltr' or 'rtl', and is
+// determined as per the first appropriate set of steps from the following
+// list:"
+function getDirectionality(element) {
+	// "If the element's dir attribute is in the ltr state
+	//     The directionality of the element is 'ltr'."
+	if (element.dir == "ltr") {
+		return "ltr";
 	}
-	return computedAlign;
+
+	// "If the element's dir attribute is in the rtl state
+	//     The directionality of the element is 'rtl'."
+	if (element.dir == "rtl") {
+		return "rtl";
+	}
+
+	// "If the element's dir attribute is in the auto state
+	// "If the element is a bdi element and the dir attribute is not in a
+	// defined state (i.e. it is not present or has an invalid value)
+	//     [lots of complicated stuff]
+	//
+	// Skip this, since no browser implements it anyway.
+
+	// "If the element is a root element and the dir attribute is not in a
+	// defined state (i.e. it is not present or has an invalid value)
+	//     The directionality of the element is 'ltr'."
+	if (!isHtmlElement(element.parentNode)) {
+		return "ltr";
+	}
+
+	// "If the element has a parent element and the dir attribute is not in a
+	// defined state (i.e. it is not present or has an invalid value)
+	//     The directionality of the element is the same as the element's
+	//     parent element's directionality."
+	return getDirectionality(element.parentNode);
 }
 
 //@}
@@ -3596,9 +3616,31 @@ function getAlignmentValue(node) {
 		return "left";
 	}
 
-	// "Return "center", "justify", "left", or "right", depending on the
-	// computed value of node's "text-align" property."
-	return getRealTextAlign(node);
+	var computedValue = getComputedStyle(node).textAlign
+		// Hack around browser non-standardness
+		.replace(/^-(moz|webkit)-/, "")
+		.replace(/^auto$/, "start");
+
+	// "If node's "text-align" property has computed value "start", return
+	// "left" if the directionality of node is "ltr", "right" if it is "rtl"."
+	if (computedValue == "start") {
+		return getDirectionality(node) == "ltr" ? "left" : "right";
+	}
+
+	// "If node's "text-align" property has computed value "end", return
+	// "right" if the directionality of node is "ltr", "left" if it is "rtl"."
+	if (computedValue == "end") {
+		return getDirectionality(node) == "ltr" ? "right" : "left";
+	}
+
+	// "If node's "text-align" property has computed value "center", "justify",
+	// "left", or "right", return that value."
+	if (["center", "justify", "left", "right"].indexOf(computedValue) != -1) {
+		return computedValue;
+	}
+
+	// "Return "left"."
+	return "left";
 }
 //@}
 
@@ -5113,23 +5155,12 @@ function justifySelection(alignment) {
 
 	// "For each node node contained in new range, append node to node list if
 	// the last member of node list (if any) is not an ancestor of node; node
-	// is editable; node is an allowed child of div; and either node is an
-	// Element and the CSS property "text-align" does not compute to alignment
-	// on it, or it is not an Element, but its parent is an Element, and the
-	// CSS property "text-align" does not compute to alignment on its parent."
+	// is editable; node is an allowed child of "div"; and node's alignment
+	// value is not alignment."
 	nodeList = getContainedNodes(newRange, function(node) {
-		if (!isEditable(node) || !isAllowedChild(node, "div")) {
-			return false;
-		}
-		// Gecko and WebKit have lots of fun here confusing us with
-		// vendor-specific values, and in Gecko's case "start".
-		var element = node.nodeType == Node.ELEMENT_NODE
-			? node
-			: node.parentNode;
-		if (!element || element.nodeType != Node.ELEMENT_NODE) {
-			return false;
-		}
-		return getRealTextAlign(element) != alignment;
+		return isEditable(node)
+			&& isAllowedChild(node, "div")
+			&& getAlignmentValue(node) != alignment;
 	});
 
 	// "While node list is not empty:"

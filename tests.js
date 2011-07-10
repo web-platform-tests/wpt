@@ -2417,6 +2417,11 @@ var tests = {
 		'<div align=left>{<div align=center>foo</div><img src=/img/lion.svg>}</div>',
 		'<div align=center>{<div align=left>foo</div><!-- bar -->}</div>',
 		'<div align=left>{<div align=center>foo</div><!-- bar -->}</div>',
+
+		'<div style=text-align:start>[foo]</div><p>extra',
+		'<div style=text-align:end>[foo]</div><p>extra',
+		'<div dir=rtl style=text-align:start>[foo]</div><p>extra',
+		'<div dir=rtl style=text-align:end>[foo]</div><p>extra',
 	],
 	//@}
 	justifyfull: [
@@ -2510,6 +2515,11 @@ var tests = {
 		'<div align=nonsense><p>[foo]</div><p>extra',
 		'<div style=text-align:inherit><p>[foo]</div><p>extra',
 		'<quasit align=center><p>[foo]</p></quasit><p>extra',
+
+		'<div style=text-align:start>[foo]</div><p>extra',
+		'<div style=text-align:end>[foo]</div><p>extra',
+		'<div dir=rtl style=text-align:start>[foo]</div><p>extra',
+		'<div dir=rtl style=text-align:end>[foo]</div><p>extra',
 	],
 	//@}
 	justifyleft: [
@@ -2603,6 +2613,11 @@ var tests = {
 		'<div align=nonsense><p>[foo]</div><p>extra',
 		'<div style=text-align:inherit><p>[foo]</div><p>extra',
 		'<quasit align=center><p>[foo]</p></quasit><p>extra',
+
+		'<div style=text-align:start>[foo]</div><p>extra',
+		'<div style=text-align:end>[foo]</div><p>extra',
+		'<div dir=rtl style=text-align:start>[foo]</div><p>extra',
+		'<div dir=rtl style=text-align:end>[foo]</div><p>extra',
 	],
 	//@}
 	justifyright: [
@@ -2696,6 +2711,11 @@ var tests = {
 		'<div align=nonsense><p>[foo]</div><p>extra',
 		'<div style=text-align:inherit><p>[foo]</div><p>extra',
 		'<quasit align=center><p>[foo]</p></quasit><p>extra',
+
+		'<div style=text-align:start>[foo]</div><p>extra',
+		'<div style=text-align:end>[foo]</div><p>extra',
+		'<div dir=rtl style=text-align:start>[foo]</div><p>extra',
+		'<div dir=rtl style=text-align:end>[foo]</div><p>extra',
 	],
 	//@}
 	outdent: [

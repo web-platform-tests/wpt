@@ -3061,9 +3061,6 @@ container</a>, or an <a href=#html-element>HTML element</a> with <a class=extern
 
 <p>To <dfn id=fix-disallowed-ancestors>fix disallowed ancestors</dfn> of <var title="">node</var>:
 
-<p class=XXX>Do we want to get rid of attributes that are no longer allowed
-here?
-
 <ol>
   <li>If <var title="">node</var> is not <a href=#editable>editable</a>, abort these steps.
 
@@ -3218,6 +3215,10 @@ Since this is the only behavior that's possibly useful, it's what I specced.
 Firefox ties the value closely to the state, returning true for the state if
 and only if the value matches the desired value, but this seems less useful
 than what I've specced for the state.
+
+This API is based on the four-state text-align of CSS 2.1.  We do some crude
+mapping to make it not break too badly with CSS3 values, but it's not going to
+work well given the design of the API.
 -->
 <ol>
   <li>While <var title="">node</var> is neither null nor an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>, or it is an
@@ -3231,11 +3232,18 @@ than what I've specced for the state.
   marginal corner case anyway.  (It will only happen if, e.g., everything up to
   and including the html and body elements have display: inline or none.) -->
 
-  <li>Return "center", "justify", "left", or "right", depending on the
-  <a href=http://www.w3.org/TR/CSS21/cascade.html#computed-value>computed value</a> of <var title="">node</var>'s "text-align" property.
+  <li>If <var title="">node</var>'s "text-align" property has <a href=http://www.w3.org/TR/CSS21/cascade.html#computed-value>computed value</a> "start",
+  return "left" if the <a class=external data-anolis-spec=html href=http://www.whatwg.org/html/#the-directionality title="the directionality">directionality</a> of <var title="">node</var> is "ltr", "right"
+  if it is "rtl".
 
-  <p class=XXX>What to do for "start" "auto" etc. currently undefined.  We
-  assume something CSS 2.1-ish.
+  <li>If <var title="">node</var>'s "text-align" property has <a href=http://www.w3.org/TR/CSS21/cascade.html#computed-value>computed value</a> "end", return
+  "right" if the <a class=external data-anolis-spec=html href=http://www.whatwg.org/html/#the-directionality title="the directionality">directionality</a> of <var title="">node</var> is "ltr", "left" if it
+  is "rtl".
+
+  <li>If <var title="">node</var>'s "text-align" property has <a href=http://www.w3.org/TR/CSS21/cascade.html#computed-value>computed value</a> "center",
+  "justify", "left", or "right", return that value.
+
+  <li>Return "left".
 </ol>
 
 
@@ -4971,11 +4979,8 @@ would be worth the added complexity.
   append <var title="">node</var> to <var title="">node list</var> if the last member of
   <var title="">node list</var> (if any) is not an <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestor</a> of <var title="">node</var>;
   <var title="">node</var> is <a href=#editable>editable</a>; <var title="">node</var> is an <a href=#allowed-child>allowed
-  child</a> of "div"; and either <var title="">node</var> is an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> and the
-  CSS property "text-align" does not compute to <var title="">alignment</var> on it, or
-  it is not an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>, but its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>, and the CSS
-  property "text-align" does not compute to <var title="">alignment</var> on its
-  <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+  child</a> of "div"; and <var title="">node</var>'s <a href=#alignment-value>alignment value</a> is
+  not <var title="">alignment</var>.
   <!-- Of tested browsers, only Chrome 13 dev seems to not apply the alignment
   to nodes that are already aligned.  Even then, it does apply it if the
   alignment is just inherited from the root. -->

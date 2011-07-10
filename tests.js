@@ -1430,6 +1430,11 @@ var tests = {
 		'<ol><li>foo<ol><li>[bar]</ol>baz</ol>',
 		'<ol><li>foo<ol><li>bar</ol>[baz]</ol>',
 		'<ol><li>[foo<ol><li>bar]</ol>baz</ol>',
+
+		'foo<!--bar-->[baz]<p>extra',
+		'[foo]<!--bar-->baz<p>extra',
+		'<p>foo<!--bar-->{}<p>extra',
+		'<p>{}<!--foo-->bar<p>extra',
 	],
 	//@}
 	inserthorizontalrule: [

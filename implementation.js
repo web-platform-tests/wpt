@@ -3680,21 +3680,31 @@ function blockExtend(range) {
 			startOffset = getNodeIndex(startNode);
 			startNode = startNode.parentNode;
 
-		// "Otherwise, if start offset is start node's length and start node's
-		// last child is an inline node that's not a br, subtract one from
-		// start offset."
-		} else if (startOffset == getNodeLength(startNode)
-		&& isInlineNode(startNode.lastChild)
-		&& !isHtmlElement(startNode.lastChild, "br")) {
+		// "Otherwise, if start node's child with index start offset minus one
+		// is invisible, subtract one from start offset."
+		} else if (isInvisible(startNode.childNodes[startOffset - 1])) {
 			startOffset--;
 
-		// "Otherwise, if start node has a child with index start offset, and
-		// that child and its previousSibling are both inline nodes and the
-		// previousSibling isn't a br, subtract one from start offset."
-		} else if (startOffset < startNode.childNodes.length
-		&& isInlineNode(startNode.childNodes[startOffset])
-		&& isInlineNode(startNode.childNodes[startOffset].previousSibling)
-		&& !isHtmlElement(startNode.childNodes[startOffset].previousSibling, "BR")) {
+		// "Otherwise, if start node has no visible children with index greater
+		// than or equal to start offset and start node's last visible child is
+		// an inline node that's not a br, subtract one from start offset."
+		} else if (![].slice.call(startNode.childNodes, startOffset).some(isVisible)
+		&& isInlineNode([].filter.call(startNode.childNodes, isVisible).slice(-1)[0])
+		&& !isHtmlElement([].filter.call(startNode.childNodes, isVisible).slice(-1)[0], "br")) {
+			startOffset--;
+
+		// "Otherwise, if start node has a visible child with index greater
+		// than or equal to start offset, and the first such child is an inline
+		// node, and start node's child with index start offset minus one is an
+		// inline node other than a br, subtract one from start offset."
+		//
+		// The functional programming here might be a bit heavy, but it would
+		// be a pain to write it differently.
+		} else if (isInlineNode([].filter.call(startNode.childNodes, function(child, i) {
+			return isVisible(child) && i >= startOffset;
+		})[0])
+		&& isInlineNode(startNode.childNodes[startOffset - 1])
+		&& !isHtmlElement(startNode.childNodes[startOffset - 1], "br")) {
 			startOffset--;
 
 		// "Otherwise, break from this loop."
@@ -3728,20 +3738,28 @@ function blockExtend(range) {
 			endOffset = 1 + getNodeIndex(endNode);
 			endNode = endNode.parentNode;
 
-		// "Otherwise, if end offset is 0 and end node's first child is an
-		// inline node that's not a br, add one to end offset."
-		} else if (endOffset == 0
-		&& isInlineNode(endNode.firstChild)
-		&& !isHtmlElement(endNode.firstChild, "br")) {
+		// "Otherwise, if end node's child with index end offset is invisible,
+		// add one to end offset."
+		} else if (isInvisible(endNode.childNodes[endOffset])) {
 			endOffset++;
 
-		// "Otherwise, if end node has a child with index end offset, and that
-		// child and its previousSibling are both inline nodes, and the
-		// previousSibling isn't a br, add one to end offset."
-		} else if (endOffset < endNode.childNodes.length
+		// "Otherwise, if end node has no visible children with index less than
+		// end offset and end node's first visible child is an inline node
+		// that's not a br, add one to end offset."
+		} else if (![].slice.call(endNode.childNodes, 0, endOffset).some(isVisible)
+		&& isInlineNode([].filter.call(endNode.childNodes, isVisible)[0])
+		&& !isHtmlElement([].filter.call(endNode.childNodes, isVisible)[0], "br")) {
+			endOffset++;
+
+		// "Otherwise, if end node has a visible child with index less than end
+		// offset, and the last such child is an inline node, and end node's
+		// child with index end offset is an inline node other than a br, add
+		// one to end offset."
+		} else if (isInlineNode([].filter.call(endNode.childNodes, function(child, i) {
+			return isVisible(child) && i < endOffset;
+		}).slice(-1)[0])
 		&& isInlineNode(endNode.childNodes[endOffset])
-		&& isInlineNode(endNode.childNodes[endOffset].previousSibling)
-		&& !isHtmlElement(endNode.childNodes[endOffset], "BR")) {
+		&& !isHtmlElement(endNode.childNodes[endOffset], "br")) {
 			endOffset++;
 
 		// "Otherwise, break from this loop."

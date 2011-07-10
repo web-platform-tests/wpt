@@ -3250,23 +3250,26 @@ work well given the design of the API.
     of <var>start node</var> and then set <var>start node</var> to its
     [[parent]].
 
-    <li>Otherwise, if <var>start offset</var> is <var>start node</var>'s
-    [[nodelength]] and <var>start node</var>'s last [[child]] is an
-    <span>inline node</span> that's not a [[br]], subtract one from <var>start
-    offset</var>.
+    <li>Otherwise, if <var>start node</var>'s [[child]] with [[index]]
+    <var>start offset</var> minus one is <span>invisible</span>, subtract one
+    from <var>start offset</var>.
+
+    <li>Otherwise, if <var>start node</var> has no <span>visible</span>
+    [[children]] with [[index]] greater than or equal to <var>start
+    offset</var> and <var>start node</var>'s last <span>visible</span>
+    [[child]] is an <span>inline node</span> that's not a [[br]], subtract one
+    from <var>start offset</var>.
     <!-- So if you have a collapsed selection at the end of a block, for
     instance, it will extend backwards into a block. -->
 
-    <li>Otherwise, if <var>start node</var> has a [[child]] with [[index]]
-    <var>start offset</var>, and that [[child]] and its [[previoussibling]] are
-    both <span title="inline node">inline nodes</span> and the
-    [[previoussibling]] isn't a [[br]], subtract one from <var>start
-    offset</var>.
+    <li>Otherwise, if <var>start node</var> has a <span>visible</span>
+    [[child]] with [[index]] greater than or equal to <var>start offset</var>,
+    and the first such [[child]] is an <span>inline node</span>, and <var>start
+    node</var>'s [[child]] with [[index]] <var>start offset</var> minus one is
+    an <span>inline node</span> other than a [[br]], subtract one from
+    <var>start offset</var>.
     <!-- IE also includes <br> (at least for the purposes of the indent
     command), but this is unlikely to match user expectations. -->
-
-    <p class=XXX>This is wrong in the presence of comments or display: none or
-    probably other things.  Do we care?
 
     <li>Otherwise, break from this loop.
   </ol>
@@ -3283,15 +3286,19 @@ work well given the design of the API.
     <var>end offset</var> to one plus the [[index]] of <var>end node</var> and
     then set <var>end node</var> to its [[parent]].
 
-    <li>Otherwise, if <var>end offset</var> is 0 and <var>end node</var>'s
-    first [[child]] is an <span>inline node</span> that's not a [[br]], add one
-    to <var>end offset</var>.
+    <li>Otherwise, if <var>end node</var>'s [[child]] with [[index]] <var>end
+    offset</var> is <span>invisible</span>, add one to <var>end offset</var>.
 
-    <li>Otherwise, if <var>end node</var> has a [[child]] with [[index]]
-    <var>end offset</var>, and that [[child]] and its [[previoussibling]] are
-    both <span title="inline node">inline nodes</span>, and the [[child]] of
-    <var>end node</var> with [[index]] <var>end offset</var> isn't a [[br]],
-    add one to <var>end offset</var>.
+    <li>Otherwise, if <var>end node</var> has no <span>visible</span>
+    [[children]] with [[index]] less than <var>end offset</var> and <var>end
+    node</var>'s first <span>visible</span> [[child]] is an <span>inline
+    node</span> that's not a [[br]], add one to <var>end offset</var>.
+
+    <li>Otherwise, if <var>end node</var> has a <span>visible</span> [[child]]
+    with [[index]] less than <var>end offset</var>, and the last such [[child]]
+    is an <span>inline node</span>, and <var>end node</var>'s [[child]] with
+    [[index]] <var>end offset</var> is an <span>inline node</span> other than a
+    [[br]], add one to <var>end offset</var>.
 
     <li>Otherwise, break from this loop.
   </ol>

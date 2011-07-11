@@ -5368,11 +5368,28 @@ commands["delete"] = {
 		var startNode = node;
 		var startOffset = offset;
 
-		// "While start offset is zero, set start offset to the index of start
-		// node and then set start node to its parent."
-		while (startOffset == 0) {
-			startOffset = getNodeIndex(startNode);
-			startNode = startNode.parentNode;
+		// "Repeat the following steps:"
+		while (true) {
+			// "If start offset is zero, set start offset to the index of start
+			// node and then set start node to its parent."
+			if (startOffset == 0) {
+				startOffset = getNodeIndex(startNode);
+				startNode = startNode.parentNode;
+
+			// "Otherwise, if start node has an editable invisible child with
+			// index start offset minus one, remove it from start node and
+			// subtract one from start offset."
+			} else if (0 <= startOffset - 1
+			&& startOffset - 1 < startNode.childNodes.length
+			&& isEditable(startNode.childNodes[startOffset - 1])
+			&& isInvisible(startNode.childNodes[startOffset - 1])) {
+				startNode.removeChild(startNode.childNodes[startOffset - 1]);
+				startOffset--;
+
+			// "Otherwise, break from this loop."
+			} else {
+				break;
+			}
 		}
 
 		// "If offset is zero, and node has an ancestor container that is both
@@ -5503,13 +5520,25 @@ commands["delete"] = {
 			offset = 0;
 
 		// "Otherwise, while start node has a child with index start offset
-		// minus one, set start node to that child, then set start offset to
-		// the length of start node."
+		// minus one:"
 		} else {
 			while (0 <= startOffset - 1
 			&& startOffset - 1 < startNode.childNodes.length) {
-				startNode = startNode.childNodes[startOffset - 1];
-				startOffset = getNodeLength(startNode);
+				// "If start node's child with index start offset minus one is
+				// editable and invisible, remove it from start node, then
+				// subtract one from start offset."
+				if (isEditable(startNode.childNodes[startOffset - 1])
+				&& isInvisible(startNode.childNodes[startOffset - 1])) {
+					startNode.removeChild(startNode.childNodes[startOffset - 1]);
+					startOffset--;
+
+				// "Otherwise, set start node to its child with index start
+				// offset minus one, then set start offset to the length of
+				// start node."
+				} else {
+					startNode = startNode.childNodes[startOffset - 1];
+					startOffset = getNodeLength(startNode);
+				}
 			}
 		}
 
@@ -5829,11 +5858,25 @@ commands["forwarddelete"] = {
 		var endNode = node;
 		var endOffset = offset;
 
-		// "While end offset is the length of end node, set end offset to one
-		// plus the index of end node and then set end node to its parent."
-		while (endOffset == getNodeLength(endNode)) {
-			endOffset = 1 + getNodeIndex(endNode);
-			endNode = endNode.parentNode;
+		// "Repeat the following steps:"
+		while (true) {
+			// "If end offset is the length of end node, set end offset to one
+			// plus the index of end node and then set end node to its parent."
+			if (endOffset == getNodeLength(endNode)) {
+				endOffset = 1 + getNodeIndex(endNode);
+				endNode = endNode.parentNode;
+
+			// "Otherwise, if end node has a an editable invisible child with
+			// index end offset, remove it from end node."
+			} else if (endOffset < endNode.childNodes.length
+			&& isEditable(endNode.childNodes[endOffset])
+			&& isInvisible(endNode.childNodes[endOffset])) {
+				endNode.removeChild(endNode.childNodes[endOffset]);
+
+			// "Otherwise, break from this loop."
+			} else {
+				break;
+			}
 		}
 
 		// "If the child of end node with index end offset minus one is a
@@ -5872,11 +5915,20 @@ commands["forwarddelete"] = {
 			return;
 		}
 
-		// "While end node has a child with index end offset, set end node to
-		// that child and set end offset to zero."
+		// "While end node has a child with index end offset:"
 		while (endOffset < endNode.childNodes.length) {
-			endNode = endNode.childNodes[endOffset];
-			endOffset = 0;
+			// "If end node's child with index end offset is editable and
+			// invisible, remove it from end node."
+			if (isEditable(endNode.childNodes[endOffset])
+			&& isInvisible(endNode.childNodes[endOffset])) {
+				endNode.removeChild(endNode.childNodes[endOffset]);
+
+			// "Otherwise, set end node to its child with index end offset and
+			// set end offset to zero."
+			} else {
+				endNode = endNode.childNodes[endOffset];
+				endOffset = 0;
+			}
 		}
 
 		// "Delete the contents of the range with start (node, offset) and end

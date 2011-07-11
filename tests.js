@@ -2884,6 +2884,7 @@ var tests = {
 
 		'<ol><li><h1>[foo]</h1></ol>',
 		'<ol><li><xmp>[foo]</xmp></li></ol>',
+		'<blockquote><ol><li>foo<div><ol><li>[bar]</ol></div><li>baz</ol></blockquote>',
 	],
 	//@}
 	removeformat: [

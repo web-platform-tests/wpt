@@ -3163,28 +3163,46 @@ algorithm:
   <li>If <var>node list</var> is empty, return "none".
 
   <li>If every member of <var>node list</var> is either an [[ol]] or the
-  [[child]] of an [[ol]], and none is a [[ul]] or an [[ancestor]] of a [[ul]],
-  return "ol".
+  [[child]] of an [[ol]] or the [[child]] of a [[child]] of an [[li]] [[child]]
+  of an [[ol]], and none is a [[ul]] or an [[ancestor]] of a [[ul]], return
+  "ol".
+  <!--
+  The child-of-child case is necessary right now because of the following:
+    <ol><li>[foo<ol><li>bar]</ol>baz</ol>
+  With the current (July 2011) block-extend algorithm, this will become:
+    {<ol><li>foo<ol><li>bar</ol>}baz</ol>
+  because of the magical li handling in block-extend.  We want this to register
+  as ol, because after normalizing sublists it will become
+    {<ol><li>foo</li><ol><li>bar</ol>}<li>baz</ol>
+
+  But the text node "foo" will wind up in node list, and is not the child of an
+  ol.  This is all very messy and has to do with questionable decisions about
+  how to handle nested lists.
+  -->
 
   <li>If every member of <var>node list</var> is either a [[ul]] or the
-  [[child]] of a [[ul]], and none is an [[ol]] or an [[ancestor]] of an [[ol]],
-  return "ul".
+  [[child]] of a [[ul]] or the [[child]] of an [[li]] [[child]] of a [[ul]],
+  and none is an [[ol]] or an [[ancestor]] of an [[ol]], return "ul".
   <!-- The previous two conditions are mutually exclusive, so the order is
   actually irrelevant.  Clearly they could only both hold if no member of node
-  list is an ol or ul, so if they both held, every member would have to be both
-  the child of an ol and the child of a ul.  This is impossible unless the list
-  is empty, in which case we already aborted. -->
+  list is an ol or ul, so if they both held, every member would have to be
+  either the child of an ol and of a ul, or of an ol and an li, or a ul and an
+  li, or of an li that's the child of both an ol and a ul.  This is impossible
+  unless the list is empty, in which case we already aborted. -->
 
   <li>If some member of <var>node list</var> is either an [[ol]] or the
-  [[child]] or [[ancestor]] of an [[ol]], and some member of <var>node
-  list</var> is either a [[ul]] or the [[child]] or [[ancestor]] of a [[ul]],
-  return "mixed".
+  [[child]] or [[ancestor]] of an [[ol]] or the [[child]] of an [[li]]
+  [[child]] of an [[ol]], and some member of <var>node list</var> is either a
+  [[ul]] or the [[child]] or [[ancestor]] of a [[ul]] or the [[child]] of an
+  [[li]] [[child]] of a [[ul]], return "mixed".
 
   <li>If some member of <var>node list</var> is either an [[ol]] or the
-  [[child]] or [[ancestor]] of an [[ol]], return "mixed ol".
+  [[child]] or [[ancestor]] of an [[ol]] or the [[child]] of an [[li]]
+  [[child]] of an [[ol]], return "mixed ol".
 
   <li>If some member of <var>node list</var> is either a [[ul]] or the
-  [[child]] or [[ancestor]] of a [[ul]], return "mixed ul".
+  [[child]] or [[ancestor]] of a [[ul]] or the [[child]] of an [[li]] [[child]]
+  of a [[ul]], return "mixed ul".
 
   <li>Return "none".
 </ol>
@@ -3245,8 +3263,11 @@ work well given the design of the API.
   and [[bpoffsets]] of <var>range</var>.
 
   <li>If some [[ancestorcontainer]] of <var>start node</var> is an [[li]], set
-  <var>start offset</var> to the [[index]] of the first such [[li]] in
+  <var>start offset</var> to the [[index]] of the last such [[li]] in
   [[treeorder]], and set <var>start node</var> to that [[li]]'s [[parent]].
+
+  <p class=XXX>This plus the normalizing sublists stuff seems very messy.  Can
+  we do better?
 
   <li>Repeat the following steps:
 
@@ -3281,7 +3302,7 @@ work well given the design of the API.
   </ol>
 
   <li>If some [[ancestorcontainer]] of <var>end node</var> is an [[li]], set
-  <var>end offset</var> to one plus the [[index]] of the first such [[li]] in
+  <var>end offset</var> to one plus the [[index]] of the last such [[li]] in
   [[treeorder]], and set <var>end node</var> to that [[li]]'s [[parent]].
 
   <li>Repeat the following steps:
@@ -4213,9 +4234,8 @@ insertOrderedList.
   <var>node</var>, <span>preserving its descendants</span>.  Then abort these
   steps.
 
-  <!-- No browser handles the case of Firefox 4.0 in CSS mode, where it adds a
-  margin attribute to an existing element, including Firefox itself.  So let's
-  just skip it. -->
+  <p class=XXX>Look into handling indentation like Gecko in CSS mode, where a
+  margin attribute is added to a random element.
 
   <li>If <var>node</var> is an <span>indentation element</span>:
   <!-- This might be a simple indentation element that had style added to it by
@@ -4271,9 +4291,9 @@ insertOrderedList.
   <li>Let <var>ancestor list</var> be a list of [[nodes]], initially empty.
 
   <li>While <var>current ancestor</var> is an <span>editable</span> [[element]]
-  that is not a <span>simple indentation element</span>, append <var>current
-  ancestor</var> to <var>ancestor list</var> and then set <var>current
-  ancestor</var> to its [[parent]].
+  that is neither a <span>simple indentation element</span> nor an [[ol]] nor a
+  [[ul]], append <var>current ancestor</var> to <var>ancestor list</var> and
+  then set <var>current ancestor</var> to its [[parent]].
 
   <li>If <var>current ancestor</var> is not an <span>editable</span>
   <span>simple indentation element</span>:
@@ -4284,14 +4304,13 @@ insertOrderedList.
     <li>Let <var>ancestor list</var> be the empty list.
 
     <li>While <var>current ancestor</var> is an <span>editable</span>
-    [[element]] that is not an <span>indentation element</span>, append
-    <var>current ancestor</var> to <var>ancestor list</var> and then set
-    <var>current ancestor</var> to its [[parent]].
+    [[element]] that is neither an <span>indentation element</span> nor an
+    [[ol]] nor a [[ul]], append <var>current ancestor</var> to <var>ancestor
+    list</var> and then set <var>current ancestor</var> to its [[parent]].
   </ol>
 
-  <li>If <var>node</var> is an [[ol]] or [[ul]], and either <var>current
-  ancestor</var> is not an <span>editable</span> <span>indentation
-  element</span> or <var>node</var>'s [[parent]] is an [[ol]] or [[ul]]:
+  <li>If <var>node</var> is an [[ol]] or [[ul]] and <var>current ancestor</var>
+  is not an <span>editable</span> <span>indentation element</span>:
   <!--
   When asked to outdent a list wrapped in a simple indentation element, Chrome
   12 dev removes the list instead of the simple indentation element.  Opera
@@ -4319,10 +4338,6 @@ insertOrderedList.
   here.
   -->
 
-  <p class=XXX>What about if node isn't a child of a list, but there's a list
-  ancestor below current ancestor?  Is that even possible given how the
-  block-extend algorithm works?
-
   <ol>
     <li>Unset the <code data-anolis-spec=html
     title=attr-ol-reversed>reversed</code>, <code data-anolis-spec=html
@@ -4332,7 +4347,7 @@ insertOrderedList.
 
     <li>Let <var>children</var> be the [[children]] of <var>node</var>.
 
-    <li>If <var>node</var> has attributes, and its [[parent]] or not an [[ol]]
+    <li>If <var>node</var> has attributes, and its [[parent]] is not an [[ol]]
     or [[ul]], <span>set the tag name</span> of <var>node</var> to "div".
 
     <li>Otherwise remove <var>node</var>, <span>preserving its descendants</span>.

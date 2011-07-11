@@ -3558,16 +3558,26 @@ function getSelectionListState() {
 		return "none";
 	}
 
-	// "If every member of node list is either an ol or the child of an ol, and
-	// none is a ul or an ancestor of a ul, return "ol"."
-	if (nodeList.every(function(node) { return isHtmlElement(node, "ol") || isHtmlElement(node.parentNode, "ol") })
+	// "If every member of node list is either an ol or the child of an ol or
+	// the child of a child of an li child of an ol, and none is a ul or an
+	// ancestor of a ul, return "ol"."
+	if (nodeList.every(function(node) {
+		return isHtmlElement(node, "ol")
+			|| isHtmlElement(node.parentNode, "ol")
+			|| (isHtmlElement(node.parentNode, "li") && isHtmlElement(node.parentNode.parentNode, "ol"));
+	})
 	&& !nodeList.some(function(node) { return isHtmlElement(node, "ul") || ("querySelector" in node && node.querySelector("ul")) })) {
 		return "ol";
 	}
 
-	// "If every member of node list is either a ul or the child of a ul, and
-	// none is an ol or an ancestor of an ol, return "ul"."
-	if (nodeList.every(function(node) { return isHtmlElement(node, "ul") || isHtmlElement(node.parentNode, "ul") })
+	// "If every member of node list is either a ul or the child of a ul or the
+	// child of an li child of a ul, and none is an ol or an ancestor of an ol,
+	// return "ul"."
+	if (nodeList.every(function(node) {
+		return isHtmlElement(node, "ul")
+			|| isHtmlElement(node.parentNode, "ul")
+			|| (isHtmlElement(node.parentNode, "li") && isHtmlElement(node.parentNode.parentNode, "ul"));
+	})
 	&& !nodeList.some(function(node) { return isHtmlElement(node, "ol") || ("querySelector" in node && node.querySelector("ol")) })) {
 		return "ul";
 	}
@@ -3575,28 +3585,31 @@ function getSelectionListState() {
 	var hasOl = nodeList.some(function(node) {
 		return isHtmlElement(node, "ol")
 			|| isHtmlElement(node.parentNode, "ol")
-			|| ("querySelector" in node && node.querySelector("ol"));
+			|| ("querySelector" in node && node.querySelector("ol"))
+			|| (isHtmlElement(node.parentNode, "li") && isHtmlElement(node.parentNode.parentNode, "ol"));
 	});
 	var hasUl = nodeList.some(function(node) {
 		return isHtmlElement(node, "ul")
 			|| isHtmlElement(node.parentNode, "ul")
-			|| ("querySelector" in node && node.querySelector("ul"));
+			|| ("querySelector" in node && node.querySelector("ul"))
+			|| (isHtmlElement(node.parentNode, "li") && isHtmlElement(node.parentNode.parentNode, "ul"));
 	});
 	// "If some member of node list is either an ol or the child or ancestor of
-	// an ol, and some member of node list is either a ul or the child or
-	// ancestor of a ul, return "mixed"."
+	// an ol or the child of an li child of an ol, and some member of node list
+	// is either a ul or the child or ancestor of a ul or the child of an li
+	// child of a ul, return "mixed"."
 	if (hasOl && hasUl) {
 		return "mixed";
 	}
 
 	// "If some member of node list is either an ol or the child or ancestor of
-	// an ol, return "mixed ol"."
+	// an ol or the child of an li child of an ol, return "mixed ol"."
 	if (hasOl) {
 		return "mixed ol";
 	}
 
 	// "If some member of node list is either a ul or the child or ancestor of
-	// a ul, return "mixed ul"."
+	// a ul or the child of an li child of a ul, return "mixed ul"."
 	if (hasUl) {
 		return "mixed ul";
 	}
@@ -3660,17 +3673,14 @@ function blockExtend(range) {
 	var endOffset = range.endOffset;
 
 	// "If some ancestor container of start node is an li, set start offset to
-	// the index of the first such li in tree order, and set start node to that
+	// the index of the last such li in tree order, and set start node to that
 	// li's parent."
-	for (
-		var ancestorContainer = startNode;
-		ancestorContainer;
-		ancestorContainer = ancestorContainer.parentNode
-	) {
-		if (isHtmlElement(ancestorContainer, "LI")) {
-			startOffset = getNodeIndex(ancestorContainer);
-			startNode = ancestorContainer.parentNode;
-		}
+	var liAncestors = getAncestors(startNode).concat(startNode)
+		.filter(function(ancestor) { return isHtmlElement(ancestor, "li") })
+		.slice(-1);
+	if (liAncestors.length) {
+		startOffset = getNodeIndex(liAncestors[0]);
+		startNode = liAncestors[0].parentNode;
 	}
 
 	// "Repeat the following steps:"
@@ -3718,17 +3728,14 @@ function blockExtend(range) {
 	}
 
 	// "If some ancestor container of end node is an li, set end offset to one
-	// plus the index of the first such li in tree order, and set end node to
+	// plus the index of the last such li in tree order, and set end node to
 	// that li's parent."
-	for (
-		var ancestorContainer = endNode;
-		ancestorContainer;
-		ancestorContainer = ancestorContainer.parentNode
-	) {
-		if (isHtmlElement(ancestorContainer, "LI")) {
-			endOffset = 1 + getNodeIndex(ancestorContainer);
-			endNode = ancestorContainer.parentNode;
-		}
+	var liAncestors = getAncestors(endNode).concat(endNode)
+		.filter(function(ancestor) { return isHtmlElement(ancestor, "li") })
+		.slice(-1);
+	if (liAncestors.length) {
+		endOffset = 1 + getNodeIndex(liAncestors[0]);
+		endNode = liAncestors[0].parentNode;
 	}
 
 	// "Repeat the following steps:"
@@ -4735,12 +4742,13 @@ function outdentNode(node) {
 	// "Let ancestor list be a list of nodes, initially empty."
 	var ancestorList = [];
 
-	// "While current ancestor is an editable Element that is not a simple
-	// indentation element, append current ancestor to ancestor list and then
-	// set current ancestor to its parent."
+	// "While current ancestor is an editable Element that is neither a simple
+	// indentation element nor an ol nor a ul, append current ancestor to
+	// ancestor list and then set current ancestor to its parent."
 	while (isEditable(currentAncestor)
 	&& currentAncestor.nodeType == Node.ELEMENT_NODE
-	&& !isSimpleIndentationElement(currentAncestor)) {
+	&& !isSimpleIndentationElement(currentAncestor)
+	&& !isHtmlElement(currentAncestor, ["ol", "ul"])) {
 		ancestorList.push(currentAncestor);
 		currentAncestor = currentAncestor.parentNode;
 	}
@@ -4754,23 +4762,23 @@ function outdentNode(node) {
 		// "Let ancestor list be the empty list."
 		ancestorList = [];
 
-		// "While current ancestor is an editable Element that is not an
-		// indentation element, append current ancestor to ancestor list and
-		// then set current ancestor to its parent."
+		// "While current ancestor is an editable Element that is neither an
+		// indentation element nor an ol nor a ul, append current ancestor to
+		// ancestor list and then set current ancestor to its parent."
 		while (isEditable(currentAncestor)
 		&& currentAncestor.nodeType == Node.ELEMENT_NODE
-		&& !isIndentationElement(currentAncestor)) {
+		&& !isIndentationElement(currentAncestor)
+		&& !isHtmlElement(currentAncestor, ["ol", "ul"])) {
 			ancestorList.push(currentAncestor);
 			currentAncestor = currentAncestor.parentNode;
 		}
 	}
 
-	// "If node is an ol or ul, and either current ancestor is not an editable
-	// indentation element or node's parent is an ol or ul:"
+	// "If node is an ol or ul and current ancestor is not an editable
+	// indentation element:"
 	if (isHtmlElement(node, ["OL", "UL"])
 	&& (!isEditable(currentAncestor)
-	|| !isIndentationElement(currentAncestor)
-	|| isHtmlElement(node.parentNode, ["OL", "UL"]))) {
+	|| !isIndentationElement(currentAncestor))) {
 		// "Unset the reversed, start, and type attributes of node, if any are
 		// set."
 		node.removeAttribute("reversed");
@@ -4780,7 +4788,7 @@ function outdentNode(node) {
 		// "Let children be the children of node."
 		var children = [].slice.call(node.childNodes);
 
-		// "If node has attributes, and its parent or not an ol or ul, set the
+		// "If node has attributes, and its parent is not an ol or ul, set the
 		// tag name of node to "div"."
 		if (node.attributes.length
 		&& !isHtmlElement(node.parentNode, ["OL", "UL"])) {

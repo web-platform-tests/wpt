@@ -3125,6 +3125,17 @@ OpenOffice.org 3.2.1 Ubuntu package, nor in  any browser using just
 execCommand(), so it should be no big problem if we require that such nesting
 not occur.  (Existing browsers behave weirdly and inconsistently when
 confronted with this kind of nesting.)
+
+The reason we need this is that otherwise it gets very confusing to figure out
+what happens in cases like trying to outdent
+  <ol><li>[foo<ol><li>bar]</ol>baz</ol>
+If we first normalize, then the natural answer is something like
+  <p>[foo<ol><li>bar]<li>baz</ol>
+but if we don't, we'd have to special-case in the toggle lists and outdent
+algorithms.  This might be worthwhile, but it's not at all clear, and what I
+have works okay, so I'll stick with it for now.
+
+TODO V2: Investigate fixing this.
 -->
 
 <ol>
@@ -3287,9 +3298,6 @@ work well given the design of the API.
   <li>If some <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#ancestor-container title="ancestor container">ancestor container</a> of <var title="">start node</var> is an <code class=external data-anolis-spec=html title="the li element"><a href=http://www.whatwg.org/html/#the-li-element>li</a></code>, set
   <var title="">start offset</var> to the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> of the last such <code class=external data-anolis-spec=html title="the li element"><a href=http://www.whatwg.org/html/#the-li-element>li</a></code> in
   <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#tree-order>tree order</a>, and set <var title="">start node</var> to that <code class=external data-anolis-spec=html title="the li element"><a href=http://www.whatwg.org/html/#the-li-element>li</a></code>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
-
-  <p class=XXX>This plus the normalizing sublists stuff seems very messy.  Can
-  we do better?
 
   <li>Repeat the following steps:
 

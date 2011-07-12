@@ -5554,21 +5554,14 @@ commands["delete"] = {
 			}
 		}
 
-		// "If offset is zero, and node has an ancestor container that is both
-		// an indentation element and a descendant of start node:"
-		var outdentableAncestor = false;
-		for (
-			var ancestor = node;
-			isDescendant(ancestor, startNode);
-			ancestor = ancestor.parentNode
-		) {
-			if (isIndentationElement(ancestor)) {
-				outdentableAncestor = true;
-				break;
-			}
-		}
+		// "If offset is zero, and node has an editable ancestor container in
+		// the same editing host that's an indentation element:"
 		if (offset == 0
-		&& outdentableAncestor) {
+		&& getAncestors(node).concat(node).filter(function(ancestor) {
+			return isEditable(ancestor)
+				&& inSameEditingHost(ancestor, node)
+				&& isIndentationElement(ancestor);
+		}).length) {
 			// "Block-extend the range whose start and end are both (node, 0),
 			// and let new range be the result."
 			var newRange = document.createRange();

@@ -5335,13 +5335,12 @@ would be worth the added complexity.
   <!--
   At the beginning of an indented block, outdent it, similar to a list item.
   Browsers don't do this, word processors do.
+
+  Note: this copy-pastes from the outdent command action.
   -->
   <li>If <var title="">offset</var> is zero, and <var title="">node</var> has an
-  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#ancestor-container title="ancestor container">ancestor container</a> that is both an <a href=#indentation-element>indentation element</a> and a
-  <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-descendant title=concept-tree-descendant>descendant</a> of <var title="">start node</var>:
-
-  <p class=XXX>This copy-pastes from the outdent command action.  I'm also not
-  totally sure it's correct.
+  <a href=#editable>editable</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#ancestor-container title="ancestor container">ancestor container</a> <a href=#in-the-same-editing-host>in the same editing
+  host</a> that's an <a href=#indentation-element>indentation element</a>:
 
   <ol>
     <li><a href=#block-extend>Block-extend</a> the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> whose <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> and

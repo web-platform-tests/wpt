@@ -5328,13 +5328,12 @@ would be worth the added complexity.
   <!--
   At the beginning of an indented block, outdent it, similar to a list item.
   Browsers don't do this, word processors do.
+
+  Note: this copy-pastes from the outdent command action.
   -->
   <li>If <var>offset</var> is zero, and <var>node</var> has an
-  [[ancestorcontainer]] that is both an <span>indentation element</span> and a
-  [[descendant]] of <var>start node</var>:
-
-  <p class=XXX>This copy-pastes from the outdent command action.  I'm also not
-  totally sure it's correct.
+  <span>editable</span> [[ancestorcontainer]] <span>in the same editing
+  host</span> that's an <span>indentation element</span>:
 
   <ol>
     <li><span>Block-extend</span> the [[range]] whose [[rangestart]] and

@@ -343,7 +343,7 @@ list</a>.
 like this.
 
 <p>Things that would be useful to address for the future but aren't important
-to fix right now are in comments prefixed with "TODO V2".
+to fix right now are in comments prefixed with "TODO".
 
 
 <h2 id=commands><span class=secno>3 </span>Commands</h2>
@@ -1075,16 +1075,16 @@ mostly got the obsolete element list by testing what Firefox 5.0a2 splits when
 you do insertHorizontalRule. -->
 
 <!--
-TODO V2: The definitions of prohibited paragraph children and elements with
-inline contents should be in the HTML spec (possibly under a different name) so
-they don't fall out of sync.  They'll do for now.
+TODO: The definitions of prohibited paragraph children and elements with inline
+contents should be in the HTML spec (possibly under a different name) so they
+don't fall out of sync.  They'll do for now.
 -->
 
 <p>A <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> or string <var title="">child</var> is an <dfn id=allowed-child>allowed child</dfn> of a
 <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> or string <var title="">parent</var> if the following algorithm returns true:
 <!--
-TODO V2: This list doesn't currently match HTML's validity requirements for a
-few reasons:
+TODO: This list doesn't currently match HTML's validity requirements for a few
+reasons:
 
 1) We need to handle invalid elements, which have no conformance requirements
 but should be treated properly.  In particular, they can interfere with
@@ -3131,14 +3131,14 @@ container</a>, or an <a href=#html-element>HTML element</a> with <a class=extern
 "dt", or "dd".
 
 <p>The <dfn id=default-single-line-container-name>default single-line container name</dfn> is "p".
-<!-- TODO V2: Make this configurable. -->
+<!-- TODO: Make this configurable. -->
 
 
 <h3 id=assorted-block-formatting-command-algorithms><span class=secno>8.2 </span>Assorted block formatting command algorithms</h3>
 
 <p>To <dfn id=fix-disallowed-ancestors>fix disallowed ancestors</dfn> of <var title="">node</var>:
-<!-- TODO V2: When breaking a non-inline element out of an inline element, like
-p in b or whatever, it would make sense to re-wrap the contents in the inline
+<!-- TODO: When breaking a non-inline element out of an inline element, like p
+in b or whatever, it would make sense to re-wrap the contents in the inline
 tag. -->
 
 <ol>
@@ -3216,7 +3216,7 @@ but if we don't, we'd have to special-case in the toggle lists and outdent
 algorithms.  This might be worthwhile, but it's not at all clear, and what I
 have works okay, so I'll stick with it for now.
 
-TODO V2: Investigate fixing this.
+TODO: Investigate fixing this.
 -->
 
 <ol>
@@ -3498,8 +3498,8 @@ algorithm returns true:
 <h3 id=deleting-the-contents-of-a-range><span class=secno>8.4 </span>Deleting the contents of a range</h3>
 
 <p>To <dfn id=delete-the-contents>delete the contents</dfn> of a <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> <var title="">range</var>:
-<!-- TODO V2: Consider what should happen for block merging in corner cases
-like display: inline-table. -->
+<!-- TODO: Consider what should happen for block merging in corner cases like
+display: inline-table. -->
 
 <ol>
   <li>If <var title="">range</var> is null, abort these steps and do nothing.
@@ -3931,9 +3931,9 @@ like display: inline-table. -->
   <li>If the first <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">original parent</var> is not in <var title="">node
   list</var>, but its last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> is:
   <!--
-  TODO V2: We insert things after the parent.  This is bad, because it will
-  cause them to become part of any ranges that immediately follow.  For
-  instance, if we're hitting "bar" in
+  TODO: We insert things after the parent.  This is bad, because it will cause
+  them to become part of any ranges that immediately follow.  For instance, if
+  we're hitting "bar" in
     <div><p>foo<p>bar</div>{<p>baz}
   it becomes
     <div><p>foo</div>{<p>bar<p>baz}
@@ -4112,7 +4112,7 @@ returned by the following algorithm:
     <var title="">start node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is <a href=#in-the-same-editing-host>in the same editing
     host</a>, set <var title="">start offset</var> to <var title="">start node</var>'s
     <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a>, then set <var title="">start node</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
-    <!-- TODO V2: Following a line break is unlikely to be the right criterion.
+    <!-- TODO: Following a line break is unlikely to be the right criterion.
     -->
 
     <li>Otherwise, if <var title="">start node</var> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node and its
@@ -4146,7 +4146,7 @@ returned by the following algorithm:
     <a href=#in-the-same-editing-host>in the same editing host</a>, set <var title="">end offset</var> to one
     plus <var title="">end node</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a>, then set <var title="">end node</var> to its
     <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
-    <!-- TODO V2: Preceding a line break is unlikely to be the right criterion.
+    <!-- TODO: Preceding a line break is unlikely to be the right criterion.
     -->
 
     <li>Otherwise, if <var title="">end node</var> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node and its
@@ -4446,7 +4446,7 @@ insertOrderedList.
     or <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code>, <a href=#set-the-tag-name>set the tag name</a> of <var title="">node</var> to "div".
     <!--
     We can't turn it into a div if it's the child of an ol or ul, because
-    that's not currently allowed.  TODO V2: change this if
+    that's not currently allowed.  TODO: change this if
     http://www.w3.org/Bugs/Public/show_bug.cgi?id=13128 is fixed and we can
     make it a div.
     -->
@@ -5063,15 +5063,15 @@ differently, and in those cases the align attribute is more useful.
 "center", "justify", "left", or "right"):
 
 <!--
-TODO V2: text-align doesn't behave as expected if there are descendant blocks
-with non-100% width, like tables.  The align attribute behaves a lot more
-nicely in such cases, but it's not valid.  Not clear what to do.  For now I've
-stuck with text-align, just because the cases where it misbehaves can't be
-created by any sequence of stock execCommand()s that I know of, but this needs
-more careful consideration.  Gecko in CSS mode seems to special-case tables,
-adding auto margins to the table element to get it to align correctly.
+TODO: text-align doesn't behave as expected if there are descendant blocks with
+non-100% width, like tables.  The align attribute behaves a lot more nicely in
+such cases, but it's not valid.  Not clear what to do.  For now I've stuck with
+text-align, just because the cases where it misbehaves can't be created by any
+sequence of stock execCommand()s that I know of, but this needs more careful
+consideration.  Gecko in CSS mode seems to special-case tables, adding auto
+margins to the table element to get it to align correctly.
 
-TODO V2: We could do something along the lines of pushing down values here,
+TODO: We could do something along the lines of pushing down values here,
 although no browser does.  In fact, it's very likely this can be rewritten in
 terms of the inline formatting command primitives, but it's not clear if it
 would be worth the added complexity.
@@ -6102,10 +6102,10 @@ round-tripping through a character encoding change impossible.
   <li>Let <var title="">frag</var> be the result of calling <code class=external data-anolis-spec=domps title=dom-Range-createContextualFragment><a href=http://html5.org/specs/dom-parsing.html#dom-range-createcontextualfragment>createContextualFragment(<var title="">value</var>)</a></code>
   on the <a href=#active-range>active range</a>.
   <!--
-  TODO V2: This has some interesting consequences.  For instance, table cells
-  and similar will just vanish if they're not in an appropriate place; and
-  inside a script or style or xmp or such, the argument will effectively be
-  HTML-escaped before use.  Some of these consequences might be undesirable.
+  TODO: This has some interesting consequences.  For instance, table cells and
+  similar will just vanish if they're not in an appropriate place; and inside a
+  script or style or xmp or such, the argument will effectively be HTML-escaped
+  before use.  Some of these consequences might be undesirable.
   -->
 
   <li>Let <var title="">last child</var> be the <code class=external data-anolis-spec=domcore title=dom-Node-lastChild><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-lastchild>lastChild</a></code> of <var title="">frag</var>.
@@ -6408,7 +6408,7 @@ http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
   this results in trying to put a br inside an xmp, so I go with IE/Chrome for
   xmp.
 
-  TODO V2: In cases where hitting enter in a header doesn't break out of the
+  TODO: In cases where hitting enter in a header doesn't break out of the
   header, we should probably follow this code path too, instead of creating an
   adjoining header.  No browser does this, though, so we don't.
   -->
@@ -6919,7 +6919,7 @@ and return the <a href=#alignment-value>alignment value</a> of the first <a href
 
     foo<ol><li>bar</li></ol>.
 
-  But this is a bit weird and I'm wondering if it's really correct.  TODO V2:
+  But this is a bit weird and I'm wondering if it's really correct.  TODO:
   Reexamine this.
   -->
 

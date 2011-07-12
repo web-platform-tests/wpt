@@ -274,7 +274,7 @@ list</a>.
 like this.
 
 <p>Things that would be useful to address for the future but aren't important
-to fix right now are in comments prefixed with "TODO V2".
+to fix right now are in comments prefixed with "TODO".
 <!-- @} -->
 
 <h2>Commands</h2>
@@ -1032,16 +1032,16 @@ mostly got the obsolete element list by testing what Firefox 5.0a2 splits when
 you do insertHorizontalRule. -->
 
 <!--
-TODO V2: The definitions of prohibited paragraph children and elements with
-inline contents should be in the HTML spec (possibly under a different name) so
-they don't fall out of sync.  They'll do for now.
+TODO: The definitions of prohibited paragraph children and elements with inline
+contents should be in the HTML spec (possibly under a different name) so they
+don't fall out of sync.  They'll do for now.
 -->
 
 <p>A [[node]] or string <var>child</var> is an <dfn>allowed child</dfn> of a
 [[node]] or string <var>parent</var> if the following algorithm returns true:
 <!--
-TODO V2: This list doesn't currently match HTML's validity requirements for a
-few reasons:
+TODO: This list doesn't currently match HTML's validity requirements for a few
+reasons:
 
 1) We need to handle invalid elements, which have no conformance requirements
 but should be treated properly.  In particular, they can interfere with
@@ -3110,14 +3110,14 @@ container</span>, or an <span>HTML element</span> with [[localname]] "li",
 "dt", or "dd".
 
 <p>The <dfn>default single-line container name</dfn> is "p".
-<!-- TODO V2: Make this configurable. -->
+<!-- TODO: Make this configurable. -->
 <!-- @} -->
 
 <h3>Assorted block formatting command algorithms</h3>
 <!-- @{ -->
 <p>To <dfn>fix disallowed ancestors</dfn> of <var>node</var>:
-<!-- TODO V2: When breaking a non-inline element out of an inline element, like
-p in b or whatever, it would make sense to re-wrap the contents in the inline
+<!-- TODO: When breaking a non-inline element out of an inline element, like p
+in b or whatever, it would make sense to re-wrap the contents in the inline
 tag. -->
 
 <ol>
@@ -3195,7 +3195,7 @@ but if we don't, we'd have to special-case in the toggle lists and outdent
 algorithms.  This might be worthwhile, but it's not at all clear, and what I
 have works okay, so I'll stick with it for now.
 
-TODO V2: Investigate fixing this.
+TODO: Investigate fixing this.
 -->
 
 <ol>
@@ -3479,8 +3479,8 @@ algorithm returns true:
 <h3>Deleting the contents of a range</h3>
 <!-- @{ -->
 <p>To <dfn>delete the contents</dfn> of a [[range]] <var>range</var>:
-<!-- TODO V2: Consider what should happen for block merging in corner cases
-like display: inline-table. -->
+<!-- TODO: Consider what should happen for block merging in corner cases like
+display: inline-table. -->
 
 <ol>
   <li>If <var>range</var> is null, abort these steps and do nothing.
@@ -3913,9 +3913,9 @@ like display: inline-table. -->
   <li>If the first [[child]] of <var>original parent</var> is not in <var>node
   list</var>, but its last [[child]] is:
   <!--
-  TODO V2: We insert things after the parent.  This is bad, because it will
-  cause them to become part of any ranges that immediately follow.  For
-  instance, if we're hitting "bar" in
+  TODO: We insert things after the parent.  This is bad, because it will cause
+  them to become part of any ranges that immediately follow.  For instance, if
+  we're hitting "bar" in
     <div><p>foo<p>bar</div>{<p>baz}
   it becomes
     <div><p>foo</div>{<p>bar<p>baz}
@@ -4095,7 +4095,7 @@ returned by the following algorithm:
     <var>start node</var>'s [[parent]] is <span>in the same editing
     host</span>, set <var>start offset</var> to <var>start node</var>'s
     [[index]], then set <var>start node</var> to its [[parent]].
-    <!-- TODO V2: Following a line break is unlikely to be the right criterion.
+    <!-- TODO: Following a line break is unlikely to be the right criterion.
     -->
 
     <li>Otherwise, if <var>start node</var> is a [[text]] node and its
@@ -4129,7 +4129,7 @@ returned by the following algorithm:
     <span>in the same editing host</span>, set <var>end offset</var> to one
     plus <var>end node</var>'s [[index]], then set <var>end node</var> to its
     [[parent]].
-    <!-- TODO V2: Preceding a line break is unlikely to be the right criterion.
+    <!-- TODO: Preceding a line break is unlikely to be the right criterion.
     -->
 
     <li>Otherwise, if <var>end node</var> is a [[text]] node and its
@@ -4436,7 +4436,7 @@ insertOrderedList.
     or [[ul]], <span>set the tag name</span> of <var>node</var> to "div".
     <!--
     We can't turn it into a div if it's the child of an ol or ul, because
-    that's not currently allowed.  TODO V2: change this if
+    that's not currently allowed.  TODO: change this if
     http://www.w3.org/Bugs/Public/show_bug.cgi?id=13128 is fixed and we can
     make it a div.
     -->
@@ -5057,15 +5057,15 @@ differently, and in those cases the align attribute is more useful.
 "center", "justify", "left", or "right"):
 
 <!--
-TODO V2: text-align doesn't behave as expected if there are descendant blocks
-with non-100% width, like tables.  The align attribute behaves a lot more
-nicely in such cases, but it's not valid.  Not clear what to do.  For now I've
-stuck with text-align, just because the cases where it misbehaves can't be
-created by any sequence of stock execCommand()s that I know of, but this needs
-more careful consideration.  Gecko in CSS mode seems to special-case tables,
-adding auto margins to the table element to get it to align correctly.
+TODO: text-align doesn't behave as expected if there are descendant blocks with
+non-100% width, like tables.  The align attribute behaves a lot more nicely in
+such cases, but it's not valid.  Not clear what to do.  For now I've stuck with
+text-align, just because the cases where it misbehaves can't be created by any
+sequence of stock execCommand()s that I know of, but this needs more careful
+consideration.  Gecko in CSS mode seems to special-case tables, adding auto
+margins to the table element to get it to align correctly.
 
-TODO V2: We could do something along the lines of pushing down values here,
+TODO: We could do something along the lines of pushing down values here,
 although no browser does.  In fact, it's very likely this can be rewritten in
 terms of the inline formatting command primitives, but it's not clear if it
 would be worth the added complexity.
@@ -6109,10 +6109,10 @@ round-tripping through a character encoding change impossible.
   title=dom-Range-createContextualFragment>createContextualFragment(<var>value</var>)</code>
   on the <span>active range</span>.
   <!--
-  TODO V2: This has some interesting consequences.  For instance, table cells
-  and similar will just vanish if they're not in an appropriate place; and
-  inside a script or style or xmp or such, the argument will effectively be
-  HTML-escaped before use.  Some of these consequences might be undesirable.
+  TODO: This has some interesting consequences.  For instance, table cells and
+  similar will just vanish if they're not in an appropriate place; and inside a
+  script or style or xmp or such, the argument will effectively be HTML-escaped
+  before use.  Some of these consequences might be undesirable.
   -->
 
   <li>Let <var>last child</var> be the [[lastchild]] of <var>frag</var>.
@@ -6417,7 +6417,7 @@ http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
   this results in trying to put a br inside an xmp, so I go with IE/Chrome for
   xmp.
 
-  TODO V2: In cases where hitting enter in a header doesn't break out of the
+  TODO: In cases where hitting enter in a header doesn't break out of the
   header, we should probably follow this code path too, instead of creating an
   adjoining header.  No browser does this, though, so we don't.
   -->
@@ -6931,7 +6931,7 @@ and return the <span>alignment value</span> of the first <span>visible</span>
 
     foo<ol><li>bar</li></ol>.
 
-  But this is a bit weird and I'm wondering if it's really correct.  TODO V2:
+  But this is a bit weird and I'm wondering if it's really correct.  TODO:
   Reexamine this.
   -->
 

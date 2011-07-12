@@ -2073,6 +2073,9 @@ var tests = {
 		'<a href=foo>foo[]bar</a>baz',
 		'<a href=foo>foo[]</a>bar',
 		'foo<a href=foo>[]bar</a>',
+
+		'<p>foo[]<!--bar-->',
+		'<p><!--foo-->[]bar',
 	],
 	//@}
 	inserttext: [

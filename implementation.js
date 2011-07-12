@@ -6781,17 +6781,17 @@ commands.insertparagraph = {
 		// "Call appendChild(frag) on new container."
 		newContainer.appendChild(frag);
 
-		// "If container has no children, call createElement("br") on the
-		// context object, and append the result as the last child of
+		// "If container has no visible children, call createElement("br") on
+		// the context object, and append the result as the last child of
 		// container."
-		if (!container.hasChildNodes()) {
+		if (![].some.call(container.childNodes, isVisible)) {
 			container.appendChild(document.createElement("br"));
 		}
 
-		// "If new container has no children, call createElement("br") on the
-		// context object, and append the result as the last child of new
-		// container."
-		if (!newContainer.hasChildNodes()) {
+		// "If new container has no visible children, call createElement("br")
+		// on the context object, and append the result as the last child of
+		// new container."
+		if (![].some.call(newContainer.childNodes, isVisible)) {
 			newContainer.appendChild(document.createElement("br"));
 		}
 

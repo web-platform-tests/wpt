@@ -6569,19 +6569,17 @@ http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
 
   <li>Call [[appendchild|<var>frag</var>]] on <var>new container</var>.
 
-  <li>If <var>container</var> has no [[children]], call [[createelement|"br"]]
-  on the [[contextobject]], and append the result as the last [[child]] of
-  <var>container</var>.
-
-  <li>If <var>new container</var> has no [[children]], call
+  <li>If <var>container</var> has no <span>visible</span> [[children]], call
   [[createelement|"br"]] on the [[contextobject]], and append the result as the
-  last [[child]] of <var>new container</var>.
+  last [[child]] of <var>container</var>.
+
+  <li>If <var>new container</var> has no <span>visible</span> [[children]],
+  call [[createelement|"br"]] on the [[contextobject]], and append the result
+  as the last [[child]] of <var>new container</var>.
   <!-- These two steps follow Firefox 5.0a2, Chrome 13 dev, and Opera 11.10.
   IE9 instead inserts an &nbsp; which magically does not appear in innerHTML.
   In all cases, the reason is that an empty block box in CSS will have zero
   height, so the user won't be able to put the selection cursor inside it. -->
-
-  <p class=XXX>Needs to also happen if there are only comments/whitespace/etc.
 
   <li>Set the [[rangestart]] of <var>range</var> to (<var>new container</var>,
   0).

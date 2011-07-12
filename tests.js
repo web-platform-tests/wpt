@@ -433,6 +433,37 @@ var tests = {
 		'<div><div><p>foo</p></div></div><div><div><!--abc--><div>[]bar</div></div></div>',
 		'<div><div><p>foo</p></div></div><div><div><div><!--abc-->[]bar</div></div></div>',
 
+		// Styled stuff with collapsed selection
+		'<p style=color:red>foo<p>[]bar',
+		'<p style=color:red>foo<p style=color:blue>[]bar',
+		'<p>foo<p style=color:blue>[]bar',
+		'<p><font color=red>foo</font><p>[]bar',
+		'<p><font color=red>foo</font><p><font color=blue>[]bar</font>',
+		'<p>foo<p><font color=blue>[]bar</font>',
+		'<p><span style=color:red>foo</font><p>[]bar',
+		'<p><span style=color:red>foo</font><p><span style=color:blue>[]bar</font>',
+		'<p>foo<p><span style=color:blue>[]bar</font>',
+
+		'<p style=background-color:salmon>foo<p>[]bar',
+		'<p style=background-color:salmon>foo<p style=background-color:aqua>[]bar',
+		'<p>foo<p style=background-color:aqua>[]bar',
+		'<p><span style=background-color:salmon>foo</font><p>[]bar',
+		'<p><span style=background-color:salmon>foo</font><p><span style=background-color:aqua>[]bar</font>',
+		'<p>foo<p><span style=background-color:aqua>[]bar</font>',
+
+		'<p style=text-decoration:underline>foo<p>[]bar',
+		'<p style=text-decoration:underline>foo<p style=text-decoration:line-through>[]bar',
+		'<p>foo<p style=text-decoration:line-through>[]bar',
+		'<p><u>foo</u><p>[]bar',
+		'<p><u>foo</u><p><s>[]bar</s>',
+		'<p>foo<p><s>[]bar</s>',
+
+		'<p style=color:red>foo</p>[]bar',
+		'foo<p style=color:blue>[]bar',
+		'<div style=color:red><p style=color:green>foo</div>[]bar',
+		'<div style=color:red><p style=color:green>foo</div><p style=color:blue>[]bar',
+		'<p style=color:red>foo<div style=color:blue><p style=color:green>[]bar',
+
 		// Uncollapsed selection
 		'foo[bar]baz',
 
@@ -1043,6 +1074,8 @@ var tests = {
 		'<p>[foo<h1>bar]</h1>',
 		'<h1>[foo</h1><h2>bar]</h2>',
 		'<div>[foo</div>bar]',
+
+		['<p>', '<div style=color:red>[foo]</div>'],
 	],
 	//@}
 	forwarddelete: [
@@ -1197,6 +1230,37 @@ var tests = {
 		'<div><div><p>foo[]</p></div></div><div><!--abc--><div><div>bar</div></div></div>',
 		'<div><div><p>foo[]</p></div></div><div><div><!--abc--><div>bar</div></div></div>',
 		'<div><div><p>foo[]</p></div></div><div><div><div><!--abc-->bar</div></div></div>',
+
+		// Styled stuff with collapsed selection
+		'<p style=color:red>foo[]<p>bar',
+		'<p style=color:red>foo[]<p style=color:blue>bar',
+		'<p>foo[]<p style=color:blue>bar',
+		'<p><font color=red>foo[]</font><p>bar',
+		'<p><font color=red>foo[]</font><p><font color=blue>bar</font>',
+		'<p>foo[]<p><font color=blue>bar</font>',
+		'<p><span style=color:red>foo[]</font><p>bar',
+		'<p><span style=color:red>foo[]</font><p><span style=color:blue>bar</font>',
+		'<p>foo[]<p><span style=color:blue>bar</font>',
+
+		'<p style=background-color:salmon>foo[]<p>bar',
+		'<p style=background-color:salmon>foo[]<p style=background-color:aqua>bar',
+		'<p>foo[]<p style=background-color:aqua>bar',
+		'<p><span style=background-color:salmon>foo[]</font><p>bar',
+		'<p><span style=background-color:salmon>foo[]</font><p><span style=background-color:aqua>bar</font>',
+		'<p>foo[]<p><span style=background-color:aqua>bar</font>',
+
+		'<p style=text-decoration:underline>foo[]<p>bar',
+		'<p style=text-decoration:underline>foo[]<p style=text-decoration:line-through>bar',
+		'<p>foo[]<p style=text-decoration:line-through>bar',
+		'<p><u>foo[]</u><p>bar',
+		'<p><u>foo[]</u><p><s>bar</s>',
+		'<p>foo[]<p><s>bar</s>',
+
+		'<p style=color:red>foo[]</p>bar',
+		'foo[]<p style=color:blue>bar',
+		'<div style=color:red><p style=color:green>foo[]</div>bar',
+		'<div style=color:red><p style=color:green>foo[]</div><p style=color:blue>bar',
+		'<p style=color:red>foo[]<div style=color:blue><p style=color:green>bar',
 
 		// Uncollapsed selection (should be same as delete command)
 		'foo[bar]baz',
@@ -1639,6 +1703,10 @@ var tests = {
 
 		['<nobr>abc</nobr>', '<nobr>f[o]o</nobr>'],
 		['<nobr>abc</nobr>', 'f[o]o'],
+
+		['<p>abc', '<font color=red>foo[]bar</font>'],
+		['<p>abc', '<span style=color:red>foo[]bar</span>'],
+		['<p>abc', '<span style=font-variant:small-caps>foo[]bar</span>'],
 	],
 	//@}
 	insertimage: [

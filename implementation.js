@@ -2054,6 +2054,91 @@ function reorderModifiableDescendants(node, command, newValue) {
 	movePreservingRanges(node, candidate, -1);
 }
 
+function recordValues(nodeList) {
+	// "Let values be a list of (node, command, specified value) triples,
+	// initially empty."
+	var values = [];
+
+	// "For each node in node list, for each command in the list "subscript",
+	// "bold", "fontName", "fontSize", "foreColor", "hiliteColor", "italic",
+	// "strikethrough", and "underline" in that order:"
+	nodeList.forEach(function(node) {
+		["subscript", "bold", "fontname", "fontsize", "forecolor",
+		"hilitecolor", "italic", "strikethrough", "underline"].forEach(function(command) {
+			// "Let ancestor equal node."
+			var ancestor = node;
+
+			// "If ancestor is not an Element, set it to its parent."
+			if (ancestor.nodeType != Node.ELEMENT_NODE) {
+				ancestor = ancestor.parentNode;
+			}
+
+			// "While ancestor is an Element and its specified value for
+			// command is null, set it to its parent."
+			while (ancestor
+			&& ancestor.nodeType == Node.ELEMENT_NODE
+			&& getSpecifiedValue(ancestor, command) === null) {
+				ancestor = ancestor.parentNode;
+			}
+
+			// "If ancestor is an Element, add (node, command, ancestor's
+			// specified value for command) to values. Otherwise add (node,
+			// command, null) to values."
+			if (ancestor && ancestor.nodeType == Node.ELEMENT_NODE) {
+				values.push([node, command, getSpecifiedValue(ancestor, command)]);
+			} else {
+				values.push([node, command, null]);
+			}
+		});
+	});
+
+	// "Return values."
+	return values;
+}
+
+function restoreValues(values) {
+	// "For each (node, command, value) triple in values:"
+	values.forEach(function(triple) {
+		var node = triple[0];
+		var command = triple[1];
+		var value = triple[2];
+
+		// "Let ancestor equal node."
+		var ancestor = node;
+
+		// "If ancestor is not an Element, set it to its parent."
+		if (!ancestor || ancestor.nodeType != Node.ELEMENT_NODE) {
+			ancestor = ancestor.parentNode;
+		}
+
+		// "While ancestor is an Element and its specified value for command is
+		// null, set it to its parent."
+		while (ancestor
+		&& ancestor.nodeType == Node.ELEMENT_NODE
+		&& getSpecifiedValue(ancestor, command) === null) {
+			ancestor = ancestor.parentNode;
+		}
+
+		// "If value is null and ancestor is an Element, push down values on
+		// node for command, with new value null."
+		if (value === null
+		&& ancestor
+		&& ancestor.nodeType == Node.ELEMENT_NODE) {
+			pushDownValues(node, command, null);
+
+		// "Otherwise, if ancestor is an Element and its specified value for
+		// command is different from value, or if ancestor is not an Element
+		// and value is not null, force the value of command to value on node."
+		} else if ((ancestor
+		&& ancestor.nodeType == Node.ELEMENT_NODE
+		&& !valuesEqual(command, getSpecifiedValue(ancestor, command), value))
+		|| ((!ancestor || ancestor.nodeType != Node.ELEMENT_NODE)
+		&& value !== null)) {
+			forceValue(node, command, value);
+		}
+	});
+}
+
 //@}
 
 ///// Clearing an element's value /////
@@ -3443,11 +3528,13 @@ function fixDisallowedAncestors(node) {
 	}
 
 	// "If node is not an allowed child of any of its ancestors in the same
-	// editing host:"
+	// editing host, and is not an HTML element with local name equal to the
+	// default single-line container name:"
 	if (getAncestors(node).every(function(ancestor) {
 		return !inSameEditingHost(node, ancestor)
 			|| !isAllowedChild(node, ancestor)
-	})) {
+	})
+	&& !isHtmlElement(node, defaultSingleLineContainerName)) {
 		// "If node is a dd or dt, wrap the one-node list consisting of node,
 		// with sibling criteria matching any dl with no attributes, and new
 		// parent instructions returning the result of calling
@@ -3483,11 +3570,18 @@ function fixDisallowedAncestors(node) {
 		return;
 	}
 
+	// "Record the values of the one-node list consisting of node, and let
+	// values be the result."
+	var values = recordValues([node]);
+
 	// "While node is not an allowed child of its parent, split the parent of
 	// the one-node list consisting of node."
 	while (!isAllowedChild(node, node.parentNode)) {
 		splitParent([node]);
 	}
+
+	// "Restore the values from values."
+	restoreValues(values);
 }
 
 function normalizeSublists(item) {
@@ -4189,7 +4283,7 @@ function deleteContents(node1, offset1, node2, offset2) {
 			return;
 		}
 
-		// "Let children be an array of nodes, initially empty."
+		// "Let children be a list of nodes, initially empty."
 		var children = [];
 
 		// "Append the first child of end block to children."
@@ -4202,6 +4296,9 @@ function deleteContents(node1, offset1, node2, offset2) {
 		&& isInlineNode(children[children.length - 1].nextSibling)) {
 			children.push(children[children.length - 1].nextSibling);
 		}
+
+		// "Record the values of children, and let values be the result."
+		var values = recordValues(children);
 
 		// "While children's first member's parent is not start block, split
 		// the parent of children."
@@ -4239,14 +4336,35 @@ function deleteContents(node1, offset1, node2, offset2) {
 			startBlock.removeChild(startBlock.lastChild);
 		}
 
-		// "While the nextSibling of reference node is neither null nor a br
-		// nor a block node, append the nextSibling of reference node as the
-		// last child of start block, preserving ranges."
-		while (referenceNode.nextSibling
+		// "Let nodes to move be a list of nodes, initially empty."
+		var nodesToMove = [];
+
+		// "If reference node's nextSibling is neither null nor a br nor a
+		// block node, append it to nodes to move."
+		if (referenceNode.nextSibling
 		&& !isHtmlElement(referenceNode.nextSibling, "br")
 		&& !isBlockNode(referenceNode.nextSibling)) {
-			movePreservingRanges(referenceNode.nextSibling, startBlock, -1);
+			nodesToMove.push(referenceNode.nextSibling);
 		}
+
+		// "While nodes to move is nonempty and its last member's nextSibling
+		// is neither null nor a br nor a block node, append it to nodes to
+		// move."
+		if (nodesToMove.length
+		&& nodesToMove[nodesToMove.length - 1].nextSibling
+		&& !isHtmlElement(nodesToMove[nodesToMove.length - 1].nextSibling, "br")
+		&& !isBlockNode(nodesToMove[nodesToMove.length - 1].nextSibling)) {
+			nodesToMove.push(nodesToMove[nodesToMove.length - 1].nextSibling);
+		}
+
+		// "Record the values of nodes to move, and let values be the result."
+		var values = recordValues(nodesToMove);
+
+		// "For each node in nodes to move, append node as the last child of
+		// start block, preserving ranges."
+		nodesToMove.forEach(function(node) {
+			movePreservingRanges(node, startBlock, -1);
+		});
 
 		// "If the nextSibling of reference node is a br, remove it from its
 		// parent."
@@ -4268,6 +4386,10 @@ function deleteContents(node1, offset1, node2, offset2) {
 			startBlock.removeChild(startBlock.lastChild);
 		}
 
+		// "Record the values of end block's children, and let values be the
+		// result."
+		var values = recordValues([].slice.call(endBlock.childNodes));
+
 		// "While end block has children, append the first child of end block
 		// to start block, preserving ranges."
 		while (endBlock.hasChildNodes()) {
@@ -4283,6 +4405,9 @@ function deleteContents(node1, offset1, node2, offset2) {
 			endBlock = parent_;
 		}
 	}
+
+	// "Restore the values from values."
+	restoreValues(values);
 
 	// "If start block has no children, call createElement("br") on the context
 	// object and append the result as the last child of start block."
@@ -4794,9 +4919,17 @@ function outdentNode(node) {
 		&& !isHtmlElement(node.parentNode, ["OL", "UL"])) {
 			setTagName(node, "div");
 
-		// "Otherwise remove node, preserving its descendants."
+		// "Otherwise:"
 		} else {
+			// "Record the values of node's children, and let values be the
+			// result."
+			var values = recordValues([].slice.call(node.childNodes));
+
+			// "Remove node, preserving its descendants."
 			removePreservingDescendants(node);
+
+			// "Restore the values from values."
+			restoreValues(values);
 		}
 
 		// "Fix disallowed ancestors of each member of children."
@@ -4877,24 +5010,13 @@ function toggleLists(tagName) {
 
 	// "Let items be a list of all lis that are ancestor containers of the
 	// range's start and/or end node."
-	//
-	// Has to be in tree order, remember!
-	var items = [];
-	for (var node = range.endContainer; node != range.commonAncestorContainer; node = node.parentNode) {
-		if (isHtmlElement(node, "LI")) {
-			items.unshift(node);
-		}
-	}
-	for (var node = range.startContainer; node != range.commonAncestorContainer; node = node.parentNode) {
-		if (isHtmlElement(node, "LI")) {
-			items.unshift(node);
-		}
-	}
-	for (var node = range.commonAncestorContainer; node; node = node.parentNode) {
-		if (isHtmlElement(node, "LI")) {
-			items.unshift(node);
-		}
-	}
+	var items = getDescendants(document).filter(function(node) {
+		return isHtmlElement(node, "li")
+			&& (isAncestor(node, range.startContainer)
+			|| node == range.startContainer
+			|| isAncestor(node, range.endContainer)
+			|| node == range.endContainer);
+	});
 
 	// "For each item in items, normalize sublists of item."
 	for (var i = 0; i < items.length; i++) {
@@ -4905,28 +5027,19 @@ function toggleLists(tagName) {
 	var newRange = blockExtend(range);
 
 	// "Let node list be a list of nodes, initially empty."
-	var nodeList = [];
-
+	//
 	// "For each node node contained in new range, if node is editable; the
 	// last member of node list (if any) is not an ancestor of node; node
 	// is not an indentation element; and either node is an ol or ul, or its
 	// parent is an ol or ul, or it is an allowed child of "li"; then append
 	// node to node list."
-	for (
-		var node = newRange.startContainer;
-		node != nextNodeDescendants(newRange.endContainer);
-		node = nextNode(node)
-	) {
-		if (isEditable(node)
-		&& isContained(node, newRange)
-		&& (!nodeList.length || !isAncestor(nodeList[nodeList.length - 1], node))
+	var nodeList = getContainedNodes(newRange, function(node) {
+		return isEditable(node)
 		&& !isIndentationElement(node)
 		&& (isHtmlElement(node, ["OL", "UL"])
 		|| isHtmlElement(node.parentNode, ["OL", "UL"])
-		|| isAllowedChild(node, "li"))) {
-			nodeList.push(node);
-		}
-	}
+		|| isAllowedChild(node, "li"));
+	});
 
 	// "If mode is "disable", then while node list is not empty:"
 	if (mode == "disable") {
@@ -4956,6 +5069,9 @@ function toggleLists(tagName) {
 				sublist.push(nodeList.shift());
 			}
 
+			// "Record the values of sublist, and let values be the result."
+			var values = recordValues(sublist);
+
 			// "Split the parent of sublist."
 			splitParent(sublist);
 
@@ -4963,6 +5079,9 @@ function toggleLists(tagName) {
 			for (var i = 0; i < sublist.length; i++) {
 				fixDisallowedAncestors(sublist[i]);
 			}
+
+			// "Restore the values from values."
+			restoreValues(values);
 		}
 
 	// "Otherwise, while node list is not empty:"
@@ -5009,6 +5128,10 @@ function toggleLists(tagName) {
 				// "Let children be the children of node."
 				var children = [].slice.call(node.childNodes);
 
+				// "Record the values of children, and let values be the
+				// result."
+				var values = recordValues(children);
+
 				// "Remove node, preserving its descendants."
 				removePreservingDescendants(node);
 
@@ -5019,6 +5142,9 @@ function toggleLists(tagName) {
 				node = wrap(children,
 					function(node) { return isHtmlElement(node, tagName) },
 					function() { return document.createElement(tagName) });
+
+				// "Restore the values from values."
+				restoreValues(values);
 
 				// "Prepend the descendants of node that are HTML elements with
 				// local name other tag name (if any) to node list."
@@ -5037,6 +5163,10 @@ function toggleLists(tagName) {
 			// "If node is the child of an HTML element with local name other
 			// tag name:"
 			if (isHtmlElement(node.parentNode, otherTagName)) {
+				// "Record the values of the one-node list consisting of node,
+				// and let values be the result."
+				var values = recordValues([node]);
+
 				// "Split the parent of the one-node list consisting of
 				// node."
 				splitParent([node]);
@@ -5048,6 +5178,9 @@ function toggleLists(tagName) {
 				wrap([node],
 					function(node) { return isHtmlElement(node, tagName) },
 					function() { return document.createElement(tagName) });
+
+				// "Restore the values from values."
+				restoreValues(values);
 
 				// "Prepend the descendants of node that are HTML elements with
 				// local name other tag name (if any) to node list."
@@ -5350,8 +5483,15 @@ commands["delete"] = {
 				normalizeSublists(items[i]);
 			}
 
+			// "Record the values of the one-node list consisting of node, and
+			// let values be the result."
+			var values = recordValues([node]);
+
 			// "Split the parent of the one-node list consisting of node."
 			splitParent([node]);
+
+			// "Restore the values from values."
+			restoreValues(values);
 
 			// "If node is a dd or dt, and it is not an allowed child of any of
 			// its ancestors in the same editing host, set the tag name of node
@@ -5595,6 +5735,9 @@ commands.formatblock = {
 				&& !getDescendants(node).some(isProhibitedParagraphChild);
 		});
 
+		// "Record the values of node list, and let values be the result."
+		var values = recordValues(nodeList);
+
 		// "For each node in node list, while node is the descendant of an
 		// editable HTML element in the same editing host, which has local name
 		// "address", "dd", "div", "dt", "h1", "h2", "h3", "h4", "h5", "h6",
@@ -5613,6 +5756,9 @@ commands.formatblock = {
 			}
 		}
 
+		// "Restore the values from values."
+		restoreValues(values);
+
 		// "While node list is not empty:"
 		while (nodeList.length) {
 			var sublist;
@@ -5624,9 +5770,16 @@ commands.formatblock = {
 				// list."
 				sublist = [].slice.call(nodeList[0].childNodes);
 
+				// "Record the values of sublist, and let values be the
+				// result."
+				var values = recordValues(sublist);
+
 				// "Remove the first member of node list from its parent,
 				// preserving its descendants."
 				removePreservingDescendants(nodeList[0]);
+
+				// "Restore the values from values."
+				restoreValues(values);
 
 				// "Remove the first member from node list."
 				nodeList.shift();
@@ -6891,24 +7044,13 @@ commands.outdent = {
 	action: function() {
 		// "Let items be a list of all lis that are ancestor containers of the
 		// active range's start and/or end node."
-		//
-		// Has to be in tree order, remember!
-		var items = [];
-		for (var node = getActiveRange().endContainer; node != getActiveRange().commonAncestorContainer; node = node.parentNode) {
-			if (isHtmlElement(node, "LI")) {
-				items.unshift(node);
-			}
-		}
-		for (var node = getActiveRange().startContainer; node != getActiveRange().commonAncestorContainer; node = node.parentNode) {
-			if (isHtmlElement(node, "LI")) {
-				items.unshift(node);
-			}
-		}
-		for (var node = getActiveRange().commonAncestorContainer; node; node = node.parentNode) {
-			if (isHtmlElement(node, "LI")) {
-				items.unshift(node);
-			}
-		}
+		var items = getDescendants(document).filter(function(node) {
+			return isHtmlElement(node, "li")
+				&& (isAncestor(node, getActiveRange().startContainer)
+				|| node == getActiveRange().startContainer
+				|| isAncestor(node, getActiveRange().endContainer)
+				|| node == getActiveRange().endContainer);
+		});
 
 		// "For each item in items, normalize sublists of item."
 		for (var i = 0; i < items.length; i++) {
@@ -6919,34 +7061,17 @@ commands.outdent = {
 		var newRange = blockExtend(getActiveRange());
 
 		// "Let node list be a list of nodes, initially empty."
-		var nodeList = [];
-
-		// "For each node node contained in new range:"
-		for (
-			var node = newRange.startContainer;
-			node != nextNodeDescendants(newRange.endContainer);
-			node = nextNode(node)
-		) {
-			if (!isContained(node, newRange)) {
-				continue;
-			}
-
-			// "If the last member of node list (if any) is an ancestor of
-			// node, or if node is not editable, continue with the next node."
-			if ((nodeList.length && isAncestor(nodeList[nodeList.length - 1], node))
-			|| !isEditable(node)) {
-				continue;
-			}
-
-			// "If node has no editable descendants, or is an ol or ul, or is
-			// an li whose parent is an ol or ul, append it to node list."
-			if (!hasEditableDescendants(node)
-			|| isHtmlElement(node, ["OL", "UL"])
-			|| (isHtmlElement(node, "LI")
-			&& isHtmlElement(node.parentNode, ["OL", "UL"]))) {
-				nodeList.push(node);
-			}
-		}
+		//
+		// "For each node node contained in new range, append node to node list
+		// if the last member of node list (if any) is not an ancestor of node;
+		// node is editable; and either node has no editable descendants, or is
+		// an ol or ul, or is an li whose parent is an ol or ul."
+		var nodeList = getContainedNodes(newRange, function(node) {
+			return isEditable(node)
+				&& (!getDescendants(node).some(isEditable)
+				|| isHtmlElement(node, ["ol", "ul"])
+				|| (isHtmlElement(node, "li") && isHtmlElement(node.parentNode, ["ol", "ul"])));
+		});
 
 		// "While node list is not empty:"
 		while (nodeList.length) {
@@ -6980,13 +7105,17 @@ commands.outdent = {
 				sublist.push(nodeList.shift());
 			}
 
+			// "Record the values of sublist, and let values be the result."
+			var values = recordValues(sublist);
+
 			// "Split the parent of sublist, with new parent null."
 			splitParent(sublist);
 
 			// "Fix disallowed ancestors of each member of sublist."
-			for (var i = 0; i < sublist.length; i++) {
-				fixDisallowedAncestors(sublist[i]);
-			}
+			sublist.forEach(fixDisallowedAncestors);
+
+			// "Restore the values from values."
+			restoreValues(values);
 		}
 	}
 };

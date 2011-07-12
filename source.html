@@ -256,6 +256,18 @@ list</a>.
   especially since in many cases, the command's effect isn't currently
   interoperable anyway.  I'll switch them back to doing nothing if implementers
   think this is a problem.
+
+  <li>The CSS styling flag is an issue.  Currently authors are forced to turn
+  it entirely on or entirely off.  If it's on, it produces stuff like <code
+  title>&lt;span style=font-weight:bold></code> instead of <code
+  title>&lt;b></code>, while if it's off, it produces stuff like <code
+  title>&lt;font color=red></code> instead of <code title>&lt;span
+  style=color:red></code>.  The issue is that authors might want a mix, like
+  making the markup as concise as possible while still conforming, and they
+  can't do that.  Changing the flag on a per-command basis doesn't help because
+  of things like the "restore the values" algorithm, which might create several
+  different types of style at once and has to use the same styling flag for all
+  of them.
 </ul>
 
 <p class=XXX>A variety of other issues are also noted in the text, formatted
@@ -1474,6 +1486,65 @@ value</var>:
   <li>Append the <var>node</var> as the last [[child]] of <var>candidate</var>,
   <span>preserving ranges</span>.
 </ol>
+
+<p>To <dfn>record the values</dfn> of a list of [[nodes]] <var>node list</var>:
+
+<ol>
+  <li>Let <var>values</var> be a list of ([[node]], <span>command</span>,
+  <span>specified value</span>) triples, initially empty.
+
+  <li>For each <var>node</var> in <var>node list</var>, for each
+  <var>command</var> in the list "subscript", "bold", "fontName", "fontSize",
+  "foreColor", "hiliteColor", "italic", "strikethrough", and "underline" in
+  that order:
+  <!-- As with removeFormat, we put subscript first so it doesn't interfere
+  with fontSize, and omit superscript because it's redundant with subscript.
+  -->
+
+  <ol>
+    <li>Let <var>ancestor</var> equal <var>node</var>.
+
+    <li>If <var>ancestor</var> is not an [[element]], set it to its [[parent]].
+
+    <li>While <var>ancestor</var> is an [[element]] and its <span>specified
+    value</span> for <var>command</var> is null, set it to its [[parent]].
+
+    <li>If <var>ancestor</var> is an [[element]], add (<var>node</var>,
+    <var>command</var>, <var>ancestor</var>'s <span>specified value</span> for
+    <var>command</var>) to <var>values</var>.  Otherwise add (<var>node</var>,
+    <var>command</var>, null) to <var>values</var>.
+  </ol>
+
+  <li>Return <var>values</var>.
+</ol>
+
+<p>To <dfn>restore the values</dfn> specified by a list <var>values</var>
+returned by the <span>record the values</span> algorithm:
+
+<ol>
+  <li>For each (<var>node</var>, <var>command</var>, <var>value</var>) triple
+  in <var>values</var>:
+
+  <ol>
+    <li>Let <var>ancestor</var> equal <var>node</var>.
+
+    <li>If <var>ancestor</var> is not an [[element]], set it to its [[parent]].
+
+    <li>While <var>ancestor</var> is an [[element]] and its <span>specified
+    value</span> for <var>command</var> is null, set it to its [[parent]].
+
+    <li>If <var>value</var> is null and <var>ancestor</var> is an [[element]],
+    <span>push down values</span> on <var>node</var> for <var>command</var>,
+    with <var>new value</var> null.
+
+    <li>Otherwise, if <var>ancestor</var> is an [[element]] and its
+    <span>specified value</span> for <var>command</var> is different from
+    <var>value</var>, or if <var>ancestor</var> is not an [[element]] and
+    <var>value</var> is not null, <span>force the value</span> of
+    <var>command</var> to <var>value</var> on <var>node</var>.
+  </ol>
+</ol>
+
 <!-- @} -->
 
 <h3>Clearing an element's value</h3>
@@ -3039,18 +3110,26 @@ container</span>, or an <span>HTML element</span> with [[localname]] "li",
 "dt", or "dd".
 
 <p>The <dfn>default single-line container name</dfn> is "p".
-<!-- Possibly to be made configurable later. -->
+<!-- TODO V2: Make this configurable. -->
 <!-- @} -->
 
 <h3>Assorted block formatting command algorithms</h3>
 <!-- @{ -->
 <p>To <dfn>fix disallowed ancestors</dfn> of <var>node</var>:
+<!-- TODO V2: When breaking a non-inline element out of an inline element, like
+p in b or whatever, it would make sense to re-wrap the contents in the inline
+tag. -->
 
 <ol>
   <li>If <var>node</var> is not <span>editable</span>, abort these steps.
 
   <li>If <var>node</var> is not an <span>allowed child</span> of any of its
-  [[ancestors]] <span>in the same editing host</span>:
+  [[ancestors]] <span>in the same editing host</span>, and is not an <span>HTML
+  element</span> with [[localname]] equal to the <span>default single-line
+  container name</span>:
+  <!-- The requirement about default containers is to prevent an infinite loop.
+  This case is really intended to handle stuff like list items or table cells
+  that wander outside their proper place. -->
 
   <ol>
     <li>If <var>node</var> is a [[dd]] or [[dt]], <span>wrap</span> the
@@ -3077,9 +3156,14 @@ container</span>, or an <span>HTML element</span> with [[localname]] "li",
     <li>Abort these steps.
   </ol>
 
+  <li><span>Record the values</span> of the one-[[node]] list consisting of
+  <var>node</var>, and let <var>values</var> be the result.
+
   <li>While <var>node</var> is not an <span>allowed child</span> of its
   [[parent]], <span>split the parent</span> of the one-[[node]] list consisting
   of <var>node</var>.
+
+  <li><span>Restore the values</span> from <var>values</var>.
 </ol>
 
 <p>To <dfn>normalize sublists</dfn> in a [[node]] <var>item</var>:
@@ -3709,7 +3793,7 @@ like display: inline-table. -->
     <li>If <var>end block</var>'s [[firstchild]] is not an <span>inline
     node</span>, abort these steps.
 
-    <li>Let <var>children</var> be an array of [[nodes]], initially empty.
+    <li>Let <var>children</var> be a list of [[nodes]], initially empty.
 
     <li>Append the first [[child]] of <var>end block</var> to
     <var>children</var>.
@@ -3718,6 +3802,9 @@ like display: inline-table. -->
     <var>children</var>'s last member's [[nextsibling]] is an <span>inline
     node</span>, append <var>children</var>'s last member's [[nextsibling]] to
     <var>children</var>.
+
+    <li><span>Record the values</span> of <var>children</var>, and let
+    <var>values</var> be the result.
 
     <li>While <var>children</var>'s first member's [[parent]] is not <var>start
     block</var>, <span>split the parent</span> of <var>children</var>.
@@ -3744,9 +3831,21 @@ like display: inline-table. -->
     node</span> and <var>start block</var>'s [[lastchild]] is a [[br]], remove
     <var>start block</var>'s [[lastchild]] from it.
 
-    <li>While the [[nextsibling]] of <var>reference node</var> is neither null
-    nor a [[br]] nor a <span>block node</span>, append the [[nextsibling]] of
-    <var>reference node</var> as the last [[child]] of <var>start block</var>,
+    <li>Let <var>nodes to move</var> be a list of [[nodes]], initially empty.
+
+    <li>If <var>reference node</var>'s [[nextsibling]] is neither null nor a
+    [[br]] nor a <span>block node</span>, append it to <var>nodes to
+    move</var>.
+
+    <li>While <var>nodes to move</var> is nonempty and its last member's
+    [[nextsibling]] is neither null nor a [[br]] nor a <span>block node</span>,
+    append it to <var>nodes to move</var>.
+
+    <li><span>Record the values</span> of <var>nodes to move</var>, and let
+    <var>values</var> be the result.
+
+    <li>For each <var>node</var> in <var>nodes to move</var>, append
+    <var>node</var> as the last [[child]] of <var>start block</var>,
     <span>preserving ranges</span>.
 
     <li>If the [[nextsibling]] of <var>reference node</var> is a [[br]], remove
@@ -3765,6 +3864,9 @@ like display: inline-table. -->
     and <var>start block</var>'s [[lastchild]] is a [[br]], remove <var>start
     block</var>'s [[lastchild]] from it.
 
+    <li><span>Record the values</span> of <var>end block</var>'s [[children]],
+    and let <var>values</var> be the result.
+
     <li>While <var>end block</var> has [[children]], append the first [[child]]
     of <var>end block</var> to <var>start block</var>, <span>preserving
     ranges</span>.
@@ -3773,6 +3875,8 @@ like display: inline-table. -->
     the [[parent]] of <var>end block</var>, then remove <var>end block</var> from
     <var>parent</var>, then set <var>end block</var> to <var>parent</var>.
   </ol>
+
+  <li><span>Restore the values</span> from <var>values</var>.
 
   <li>If <var>start block</var> has no [[children]], call
   [[createelement|"br"]] on the [[contextobject]] and append the result as the
@@ -3784,13 +3888,6 @@ like display: inline-table. -->
 <!-- @{ -->
 <p>To <dfn>split the parent</dfn> of a list <var>node list</var> of consecutive
 [[sibling]] [[nodes]]:
-
-<p class=XXX>Pretty much any time we call this algorithm, it can cause trouble
-if the parent had styles, classes, etc.  There's not going to be any general
-way to handle this, but we should at least try to handle the special case of
-inline styles, because Firefox does actually add them to arbitrary elements.
-Also, when splitting out of an inline parent, it might be good to wrap all the
-inline descendants in a clone of the former parent.
 
 <ol>
   <li>Let <var>original parent</var> be the [[parent]] of the first member of
@@ -4326,26 +4423,6 @@ insertOrderedList.
   indentation element, as does the spec.
   -->
 
-  <div class=XXX>
-  <p>We don't handle a case like
-
-  <xmp><ol><ol style="color: red"><li>foo<li>bar</ol><li>baz</ol></xmp>
-
-  <p>If the inner [[ol]] is selected to be outdented, "foo" and "bar" will stop
-  being red.  It seems nontrivial to handle this case in general, since we
-  can't group [[li]]s.  If the list we're outdenting is a child of a non-list,
-  then we can just change it to a div.  Hopefully
-  <a href=http://www.w3.org/Bugs/Public/show_bug.cgi?id=13128>HTML bug
-  13128</a> will get fixed, in which case I can just use a div here too.
-  </div>
-  <!--
-  Chrome 12 dev seems to special-case style attributes by converting them to
-  the corresponding inline markup elements (at least in easy cases like color).
-  For other attributes and non-WebKit browsers (IE9/FF4/O11.10), it looks like
-  all the attributes are just removed.  Maybe we should try to copy WebKit
-  here.
-  -->
-
   <ol>
     <li>Unset the <code data-anolis-spec=html
     title=attr-ol-reversed>reversed</code>, <code data-anolis-spec=html
@@ -4357,8 +4434,23 @@ insertOrderedList.
 
     <li>If <var>node</var> has attributes, and its [[parent]] is not an [[ol]]
     or [[ul]], <span>set the tag name</span> of <var>node</var> to "div".
+    <!--
+    We can't turn it into a div if it's the child of an ol or ul, because
+    that's not currently allowed.  TODO V2: change this if
+    http://www.w3.org/Bugs/Public/show_bug.cgi?id=13128 is fixed and we can
+    make it a div.
+    -->
 
-    <li>Otherwise remove <var>node</var>, <span>preserving its descendants</span>.
+    <li>Otherwise:
+
+    <ol>
+      <li><span>Record the values</span> of <var>node</var>'s [[children]], and
+      let <var>values</var> be the result.
+
+      <li>Remove <var>node</var>, <span>preserving its descendants</span>.
+
+      <li><span>Restore the values</span> from <var>values</var>.
+    </ol>
 
     <li><span>Fix disallowed ancestors</span> of each member of
     <var>children</var>.
@@ -4785,10 +4877,15 @@ or "ul"):
     [[localname]] <var>tag name</var>, remove the first member from <var>node
     list</var> and append it to <var>sublist</var>.
 
+    <li><span>Record the values</span> of <var>sublist</var>, and let
+    <var>values</var> be the result.
+
     <li><span>Split the parent</span> of <var>sublist</var>.
 
     <li><span>Fix disallowed ancestors</span> of each member of
     <var>sublist</var>.
+
+    <li><span>Restore the values</span> from <var>values</var>.
   </ol>
 
   <li>Otherwise, while <var>node list</var> is not empty:
@@ -4809,10 +4906,9 @@ or "ul"):
 
     <li>If <var>sublist</var> contains more than one member, <span>wrap</span>
     <var>sublist</var>, with <span>sibling criteria</span> matching nothing and
-    <span>new parent instructions</span> returning the result of calling <code
-    data-anolis-spec=domcore
-    title=dom-Document-createElement>createElement("li")</code> on the
-    [[contextobject]].  Let <var>node</var> be the result.
+    <span>new parent instructions</span> returning the result of calling
+    [[createelement|"li"]] on the [[contextobject]].  Let <var>node</var> be
+    the result.
 
     <li>Otherwise, let <var>node</var> be the sole member of
     <var>sublist</var>.
@@ -4823,16 +4919,18 @@ or "ul"):
     <ol>
       <li>Let <var>children</var> be the [[children]] of <var>node</var>.
 
+      <li><span>Record the values</span> of <var>children</var>, and let
+      <var>values</var> be the result.
+
       <li>Remove <var>node</var>, <span>preserving its descendants</span>.
 
       <li><span>Wrap</span> <var>children</var>, with <span>sibling
       criteria</span> matching any <span>HTML element</span> with [[localname]]
-      <var>tag name</var> and <span>new parent
-      instructions</span> returning the result of calling <code
-      data-anolis-spec=domcore
-      title=dom-Document-createElement>createElement(<var>tag
-      name</var>)</code> on the [[contextobject]].  Let <var>node</var> be the
-      result.
+      <var>tag name</var> and <span>new parent instructions</span> returning
+      the result of calling [[createelement|<var>tag name</var>]] on the
+      [[contextobject]].  Let <var>node</var> be the result.
+
+      <li><span>Restore the values</span> from <var>values</var>.
 
       <li>Prepend the [[descendants]] of <var>node</var> that are <span
       title="HTML element">HTML elements</span> with [[localname]] <var>other
@@ -4875,6 +4973,9 @@ or "ul"):
     with [[localname]] <var>other tag name</var>:
 
     <ol>
+      <li><span>Record the values</span> of the one-[[node]] list consisting of
+      <var>node</var>, and let <var>values</var> be the result.
+
       <li><span>Split the parent</span> of the one-[[node]] list consisting of
       <var>node</var>.
 
@@ -4882,9 +4983,9 @@ or "ul"):
       <var>node</var>, with <span>sibling criteria</span> matching any
       <span>HTML element</span> with [[localname]] <var>tag name</var>,
       and with <span>new parent instructions</span> returning the result of
-      calling <code data-anolis-spec=domcore
-      title=dom-Document-createElement>createElement(<var>tag
-      name</var>)</code> on the [[contextobject]].
+      calling [[createelement|<var>tag name</var>]] on the [[contextobject]].
+
+      <li><span>Restore the values</span> from <var>values</var>.
 
       <li>Prepend the [[descendants]] of <var>node</var> that are <span
       title="HTML element">HTML elements</span> with [[localname]] <var>other
@@ -5159,8 +5260,13 @@ would be worth the added complexity.
     <li><span>Normalize sublists</span> of each <var>item</var> in
     <var>items</var>.
 
+    <li><span>Record the values</span> of the one-[[node]] list consisting of
+    <var>node</var>, and let <var>values</var> be the result.
+
     <li><span>Split the parent</span> of the one-[[node]] list consisting of
     <var>node</var>.
+
+    <li><span>Restore the values</span> from <var>values</var>.
 
     <li>If <var>node</var> is a [[dd]] or [[dt]], and it is not an
     <span>allowed child</span> of any of its [[ancestors]] <span>in the same
@@ -5437,6 +5543,9 @@ sense for <address>/<h*>/<pre>, but other browsers don't do it.
   of "p" or a [[dd]] or [[dt]], and <var>node</var> is not the [[ancestor]] of
   a <span>prohibited paragraph child</span>.
 
+  <li><span>Record the values</span> of <var>node list</var>, and let
+  <var>values</var> be the result.
+
   <li>For each <var>node</var> in <var>node list</var>, while <var>node</var>
   is the [[descendant]] of an <span>editable</span> <span>HTML element</span>
   <span>in the same editing host</span>, which has [[localname]] "address",
@@ -5456,6 +5565,8 @@ sense for <address>/<h*>/<pre>, but other browsers don't do it.
   <address><p>[foo]</p><p>bar</p></address>.  Likewise, we don't break things
   out of lists or tables or such if they happen to be nested in a <div>.
   -->
+
+  <li><span>Restore the values</span> from <var>values</var>.
 
   <!--
   We have two different behaviors, one for div and p and one for everything
@@ -5517,8 +5628,13 @@ sense for <address>/<h*>/<pre>, but other browsers don't do it.
       <li>Let <var>sublist</var> be the [[children]] of the first member of
       <var>node list</var>.
 
+      <li><span>Record the values</span> of <var>sublist</var>, and let
+      <var>values</var> be the result.
+
       <li>Remove the first member of <var>node list</var> from its [[parent]],
       <span>preserving its descendants</span>.
+
+      <li><span>Restore the values</span> from <var>values</var>.
 
       <li>Remove the first member from <var>node list</var>.
     </ol>
@@ -6791,37 +6907,33 @@ and return the <span>alignment value</span> of the first <span>visible</span>
 
   <li>Let <var>node list</var> be a list of [[nodes]], initially empty.
 
-  <li>For each [[node]] <var>node</var> [[contained]] in <var>new range</var>:
+  <li>For each [[node]] <var>node</var> [[contained]] in <var>new range</var>,
+  append <var>node</var> to <var>node list</var> if the last member of
+  <var>node list</var> (if any) is not an [[ancestor]] of <var>node</var>;
+  <var>node</var> is <span>editable</span>; and either <var>node</var> has no
+  <span>editable</span> [[descendants]], or is an [[ol]] or [[ul]], or is an
+  [[li]] whose [[parent]] is an [[ol]] or [[ul]].
+  <!--
+  This step is kind of weird.  For regular outdenting, we start at the inside
+  and outdent going out, so that we remove the innermost indentation, on the
+  theory that that will produce the cleanest markup (remove the most nodes).
+  For lists, we remove the outermost indentation, because it makes a difference
+  whether we remove inner or outer indentation, and logically we want to remove
+  outer.  E.g.,
 
-  <ol>
-    <li>If the last member of <var>node list</var> (if any) is an [[ancestor]]
-    of <var>node</var>, or if <var>node</var> is not <span>editable</span>,
-    continue with the next <var>node</var>.
+    <ol><li>foo</li><ul><li>bar</li></ul></ol>
 
-    <!--
-    This step is kind of weird.  For regular outdenting, we start at the inside
-    and outdent going out, so that we remove the innermost indentation, on the
-    theory that that will produce the cleanest markup (remove the most nodes).
-    For lists, we remove the outermost indentation, because it makes a
-    difference whether we remove inner or outer indentation, and logically we
-    want to remove outer.  E.g.,
+  should become
 
-      <ol><li>foo</li><ul><li>bar</li></ul></ol>
+    foo<ul><li>bar</li></ul>
 
-    should become
+  not
 
-      foo<ul><li>bar</li></ul>
+    foo<ol><li>bar</li></ol>.
 
-    not
-
-      foo<ol><li>bar</li></ol>.
-
-    But this is a bit weird and I'm wondering if it's really correct.
-    -->
-    <li>If <var>node</var> has no <span>editable</span> [[descendants]], or is
-    an [[ol]] or [[ul]], or is an [[li]] whose [[parent]] is an [[ol]] or
-    [[ul]], append it to <var>node list</var>.
-  </ol>
+  But this is a bit weird and I'm wondering if it's really correct.  TODO V2:
+  Reexamine this.
+  -->
 
   <li>While <var>node list</var> is not empty:
 
@@ -6842,10 +6954,15 @@ and return the <span>alignment value</span> of the first <span>visible</span>
     list</var> is not an [[ol]] or [[ul]], remove the first member of <var>node
     list</var> and append it to <var>sublist</var>.
 
+    <li><span>Record the values</span> of <var>sublist</var>, and let
+    <var>values</var> be the result.
+
     <li><span>Split the parent</span> of <var>sublist</var>.
 
     <li><span>Fix disallowed ancestors</span> of each member of
     <var>sublist</var>.
+
+    <li><span>Restore the values</span> from <var>values</var>.
   </ol>
 </ol>
 <!-- @} -->

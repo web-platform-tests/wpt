@@ -5825,15 +5825,30 @@ writing means what Firefox supports plus div.
   </ol>
 
   <li>If <var>node</var> is a [[text]] node and <var>offset</var> is not
-  <var>node</var>'s [[nodelength]], call [[selcollapse|<var>node</var>,
-  <var>offset</var>]] on the [[selection]].  Then <span>delete the
-  contents</span> of the [[range]] with [[rangestart]] (<var>node</var>,
-  <var>offset</var>) and [[rangeend]] (<var>node</var>, <var>offset</var> + 1)
-  and abort these steps.
+  <var>node</var>'s [[nodelength]]:
 
-  <p class=XXX>This is wrong for combining diacritics.  It can result in a
-  diacritic on the next letter being added to the previous one when the letter
-  is deleted.  Worse, it places the cursor between a letter and its diacritic.
+  <ol>
+    <li>Call [[selcollapse|<var>node</var>, <var>offset</var>]] on the
+    [[selection]].
+
+    <li>Let <var>end offset</var> be <var>offset</var> plus one.
+
+    <li>While <var>end offset</var> is not <var>node</var>'s [[length]] and the
+    <var>end offset</var>th [[strel]] of <var>node</var>'s [[cddata]] has
+    general category M when interpreted as a Unicode code point, add one to
+    <var>end offset</var>.
+    <!-- TODO: This is probably not right.  We probably want to normalize to
+    grapheme cluster boundaries, using UAX#29 or something.  We also need to
+    handle non-BMP stuff.  The idea is that if the cursor is before a character
+    that precedes a combining mark, you need to delete the combining mark too.
+    -->
+
+    <li><span>Delete the contents</span> of the [[range]] with [[rangestart]]
+    (<var>node</var>, <var>offset</var>) and [[rangeend]] (<var>node</var>,
+    <var>end offset</var>).
+
+    <li>Abort these steps.
+  </ol>
 
   <li>If <var>node</var> is an <span>inline node</span>, abort these steps.
 

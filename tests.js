@@ -1091,6 +1091,7 @@ var tests = {
 		'foo[]<script>bar</script>baz',
 		'fo[]&ouml;bar',
 		'fo[]o&#x308;bar',
+		'fo[]o&#x308;&#x327;bar',
 
 		'<p>foo[]</p><p>bar</p>',
 		'<p>foo[]</p>bar',

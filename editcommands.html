@@ -5830,15 +5830,30 @@ writing means what Firefox supports plus div.
   </ol>
 
   <li>If <var title="">node</var> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node and <var title="">offset</var> is not
-  <var title="">node</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a>, call <code class=external data-anolis-spec=domrange title=dom-Selection-collapse><a href=http://html5.org/specs/dom-range.html#dom-selection-collapse>collapse(<var title="">node</var>,
-  <var title="">offset</var>)</a></code> on the <code class=external data-anolis-spec=domrange><a href=http://html5.org/specs/dom-range.html#selection>Selection</a></code>.  Then <a href=#delete-the-contents>delete the
-  contents</a> of the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> (<var title="">node</var>,
-  <var title="">offset</var>) and <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> (<var title="">node</var>, <var title="">offset</var> + 1)
-  and abort these steps.
+  <var title="">node</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a>:
 
-  <p class=XXX>This is wrong for combining diacritics.  It can result in a
-  diacritic on the next letter being added to the previous one when the letter
-  is deleted.  Worse, it places the cursor between a letter and its diacritic.
+  <ol>
+    <li>Call <code class=external data-anolis-spec=domrange title=dom-Selection-collapse><a href=http://html5.org/specs/dom-range.html#dom-selection-collapse>collapse(<var title="">node</var>, <var title="">offset</var>)</a></code> on the
+    <code class=external data-anolis-spec=domrange><a href=http://html5.org/specs/dom-range.html#selection>Selection</a></code>.
+
+    <li>Let <var title="">end offset</var> be <var title="">offset</var> plus one.
+
+    <li>While <var title="">end offset</var> is not <var title="">node</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> and the
+    <var title="">end offset</var>th <a href=http://es5.github.com/#x8.4>element</a> of <var title="">node</var>'s <code class=external data-anolis-spec=domcore title=dom-CharacterData-data><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-data>data</a></code> has
+    general category M when interpreted as a Unicode code point, add one to
+    <var title="">end offset</var>.
+    <!-- TODO: This is probably not right.  We probably want to normalize to
+    grapheme cluster boundaries, using UAX#29 or something.  We also need to
+    handle non-BMP stuff.  The idea is that if the cursor is before a character
+    that precedes a combining mark, you need to delete the combining mark too.
+    -->
+
+    <li><a href=#delete-the-contents>Delete the contents</a> of the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> with <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a>
+    (<var title="">node</var>, <var title="">offset</var>) and <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> (<var title="">node</var>,
+    <var title="">end offset</var>).
+
+    <li>Abort these steps.
+  </ol>
 
   <li>If <var title="">node</var> is an <a href=#inline-node>inline node</a>, abort these steps.
 

@@ -5993,15 +5993,32 @@ commands["forwarddelete"] = {
 			}
 		}
 
-		// "If node is a Text node and offset is not node's length, call
-		// collapse(node, offset) on the Selection. Then delete the contents of
-		// the range with start (node, offset) and end (node, offset + 1) and
-		// abort these steps."
+		// "If node is a Text node and offset is not node's length:"
 		if (node.nodeType == Node.TEXT_NODE
 		&& offset != getNodeLength(node)) {
+			// "Call collapse(node, offset) on the Selection."
 			getActiveRange().setStart(node, offset);
 			getActiveRange().setEnd(node, offset);
-			deleteContents(node, offset, node, offset + 1);
+
+			// "Let end offset be offset plus one."
+			var endOffset = offset + 1;
+
+			// "While end offset is not node's length and the end offsetth
+			// element of node's data has general category M when interpreted
+			// as a Unicode code point, add one to end offset."
+			//
+			// TODO: Not even going to try handling anything beyond the most
+			// basic combining marks.
+			while (endOffset != node.length
+			&& /^[\u0300-\u036f]$/.test(node.data[endOffset])) {
+				endOffset++;
+			}
+
+			// "Delete the contents of the range with start (node, offset) and
+			// end (node, end offset)."
+			deleteContents(node, offset, node, endOffset);
+
+			// "Abort these steps."
 			return;
 		}
 

@@ -6670,11 +6670,13 @@ unnecessarily.
 This is still a huge headache, though.
 -->
 
-<p class=XXX>This doesn't work well if the input contains things that aren't
-supposed to appear in HTML, like carriage returns or nulls.  Nor is it going to
-work well if the current cursor position is in between two halves of a non-BMP
+<!--
+TODO: This doesn't work well if the input contains things that aren't supposed
+to appear in HTML, like carriage returns or nulls.  Nor is it going to work
+well if the current cursor position is in between two halves of a non-BMP
 character.  This will result in unserializability.  The current spec disregards
 this, as Chrome 14 dev does.
+-->
 
 <ol>
   <li><span>Delete the contents</span> of the <span>active range</span>.
@@ -6698,9 +6700,8 @@ this, as Chrome 14 dev does.
   <li>If <var>value</var> is a newline (U+00A0), take the <span>action</span>
   for <span>the <code title>insertParagraph</code> command</span> and abort
   these steps.
-
-  <p class=XXX>WebKit also does magic for tabs, wrapping them in a
-  whitespace-preserving span.
+  <!-- TODO: WebKit also does magic for tabs, wrapping them in a
+  whitespace-preserving span.  Should we? -->
 
   <li>Let <var>node</var> and <var>offset</var> be the <span>active
   range</span>'s [[startnode]] and [[bpoffset]].
@@ -6753,10 +6754,6 @@ this, as Chrome 14 dev does.
   the <br>. -->
   <li>If <var>node</var> has only one [[child]], which is a <span>collapsed
   line break</span>, remove its [[child]] from it.
-
-  <p class=XXX>This is wrong in all sorts of cases, like
-  "foo&lt;b>[]&lt;/b>bar".  As above, this is hard to get right without heavy
-  CSS involvement.
 
   <li>Let <var>text</var> be the result of calling <code
   data-anolis-spec=domcore

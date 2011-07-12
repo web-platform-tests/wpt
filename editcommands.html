@@ -6673,11 +6673,13 @@ unnecessarily.
 This is still a huge headache, though.
 -->
 
-<p class=XXX>This doesn't work well if the input contains things that aren't
-supposed to appear in HTML, like carriage returns or nulls.  Nor is it going to
-work well if the current cursor position is in between two halves of a non-BMP
+<!--
+TODO: This doesn't work well if the input contains things that aren't supposed
+to appear in HTML, like carriage returns or nulls.  Nor is it going to work
+well if the current cursor position is in between two halves of a non-BMP
 character.  This will result in unserializability.  The current spec disregards
 this, as Chrome 14 dev does.
+-->
 
 <ol>
   <li><a href=#delete-the-contents>Delete the contents</a> of the <a href=#active-range>active range</a>.
@@ -6701,9 +6703,8 @@ this, as Chrome 14 dev does.
   <li>If <var title="">value</var> is a newline (U+00A0), take the <a href=#action>action</a>
   for <a href=#the-insertparagraph-command>the <code title="">insertParagraph</code> command</a> and abort
   these steps.
-
-  <p class=XXX>WebKit also does magic for tabs, wrapping them in a
-  whitespace-preserving span.
+  <!-- TODO: WebKit also does magic for tabs, wrapping them in a
+  whitespace-preserving span.  Should we? -->
 
   <li>Let <var title="">node</var> and <var title="">offset</var> be the <a href=#active-range>active
   range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> and <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a>.
@@ -6756,10 +6757,6 @@ this, as Chrome 14 dev does.
   the <br>. -->
   <li>If <var title="">node</var> has only one <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>, which is a <a href=#collapsed-line-break>collapsed
   line break</a>, remove its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> from it.
-
-  <p class=XXX>This is wrong in all sorts of cases, like
-  "foo&lt;b&gt;[]&lt;/b&gt;bar".  As above, this is hard to get right without heavy
-  CSS involvement.
 
   <li>Let <var title="">text</var> be the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createTextNode><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createtextnode>createTextNode(<var title="">value</var>)</a></code> on
   the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>.

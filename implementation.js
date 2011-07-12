@@ -3956,17 +3956,32 @@ function precedesLineBreak(node) {
 ///// Deleting the contents of a range /////
 //@{
 
-function deleteContents(node1, offset1, node2, offset2) {
+function deleteContents() {
+	// We accept several different calling conventions:
+	//
+	// 1) A single argument, which is a range.
+	//
+	// 2) Two arguments, the first being a range and the second the
+	// blockMerging flag.
+	//
+	// 3) Four arguments, the start and end of a range.
+	//
+	// 4) Five arguments, the start and end of a range plus blockMerging.
 	var range;
+	var blockMerging = true;
 
-	// We allow passing four arguments instead of one, in which case they're
-	// the start and end points of the range.
-	if (typeof offset1 == "undefined") {
-		range = node1;
+	if (arguments.length < 3) {
+		range = arguments[0];
 	} else {
 		range = document.createRange();
-		range.setStart(node1, offset1);
-		range.setEnd(node2, offset2);
+		range.setStart(arguments[0], arguments[1]);
+		range.setEnd(arguments[2], arguments[3]);
+	}
+	if (arguments.length == 2) {
+		blockMerging = arguments[1];
+	}
+	if (arguments.length == 5) {
+		blockMerging = arguments[4];
 	}
 
 	// "If range is null, abort these steps and do nothing."
@@ -4211,10 +4226,12 @@ function deleteContents(node1, offset1, node2, offset2) {
 	// "Canonicalize whitespace at range's end."
 	canonicalizeWhitespace(range.endContainer, range.endOffset);
 
-	// "If start block or end block is null, or start block is not in the same
-	// editing host as end block, or start block and end block are the same,
-	// set range's end to its start and then abort these steps."
-	if (!startBlock
+	// "If block merging is false, or start block or end block is null, or
+	// start block is not in the same editing host as end block, or start block
+	// and end block are the same, set range's end to its start and then abort
+	// these steps."
+	if (!blockMerging
+	|| !startBlock
 	|| !endBlock
 	|| !inSameEditingHost(startBlock, endBlock)
 	|| startBlock == endBlock) {
@@ -6224,14 +6241,32 @@ commands.inserthorizontalrule = {
 			range.setEnd(range.endContainer.parentNode, 1 + getNodeIndex(range.endContainer));
 		}
 
-		// "Run deleteContents() on the range."
-		range.deleteContents();
+		// "Delete the contents of range, with block merging false."
+		deleteContents(range, false);
 
 		// "If the active range's start node is neither editable nor an editing
 		// host, abort these steps."
 		if (!isEditable(getActiveRange().startContainer)
 		&& !isEditingHost(getActiveRange().startContainer)) {
 			return;
+		}
+
+		// "If the active range's start node is a Text node and its start
+		// offset is zero, set the active range's start and end to (parent of
+		// start node, index of start node)."
+		if (getActiveRange().startContainer.nodeType == Node.TEXT_NODE
+		&& getActiveRange().startOffset == 0) {
+			getActiveRange().setStart(getActiveRange().startContainer.parentNode, getNodeIndex(getActiveRange().startContainer));
+			getActiveRange().setEnd(getActiveRange().startContainer.parentNode, getNodeIndex(getActiveRange().startContainer));
+		}
+
+		// "If the active range's start node is a Text node and its start
+		// offset is the length of its start node, set the active range's start
+		// and end to (parent of start node, 1 + index of start node)."
+		if (getActiveRange().startContainer.nodeType == Node.TEXT_NODE
+		&& getActiveRange().startOffset == getNodeLength(getActiveRange().startContainer)) {
+			getActiveRange().setStart(getActiveRange().startContainer.parentNode, 1 + getNodeIndex(getActiveRange().startContainer));
+			getActiveRange().setEnd(getActiveRange().startContainer.parentNode, 1 + getNodeIndex(getActiveRange().startContainer));
 		}
 
 		// "Let hr be the result of calling createElement("hr") on the

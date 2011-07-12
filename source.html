@@ -3480,7 +3480,8 @@ algorithm returns true:
 
 <h3>Deleting the contents of a range</h3>
 <!-- @{ -->
-<p>To <dfn>delete the contents</dfn> of a [[range]] <var>range</var>:
+<p>To <dfn>delete the contents</dfn> of a [[range]] <var>range</var>, given a
+<var>block merging</var> flag that defaults to true:
 <!-- TODO: Consider what should happen for block merging in corner cases like
 display: inline-table. -->
 
@@ -3740,11 +3741,11 @@ display: inline-table. -->
   where one descends from the other.
   -->
 
-  <li>If <var>start block</var> or <var>end block</var> is null, or <var>start
-  block</var> is not <span>in the same editing host</span> as <var>end
-  block</var>, or <var>start block</var> and <var>end block</var> are the same,
-  set <var>range</var>'s [[rangeend]] to its [[rangestart]] and then abort
-  these steps.
+  <li>If <var>block merging</var> is false, or <var>start block</var> or
+  <var>end block</var> is null, or <var>start block</var> is not <span>in the
+  same editing host</span> as <var>end block</var>, or <var>start block</var>
+  and <var>end block</var> are the same, set <var>range</var>'s [[rangeend]] to
+  its [[rangestart]] and then abort these steps.
 
   <!--
   We might have added a br to the start/end block in an earlier step.  Now
@@ -6052,22 +6053,28 @@ splitting up parents to ensure validity . . . -->
   <var>range</var>'s [[rangeend]] to ([[parent]] of [[endnode]], 1 + [[index]]
   of [[startnode]]).
 
-  <li>Run <code data-anolis-spec=domrange
-  title=dom-Range-deleteContents>deleteContents()</code> on <var>range</var>.
-
-  <p class=XXX>This might blow up non-contenteditable stuff.
+  <li><span>Delete the contents</span> of <var>range</var>, with <var>block
+  merging</var> false.
 
   <li>If the <span>active range</span>'s [[startnode]] is neither
   <span>editable</span> nor an <span>editing host</span>, abort these steps.
 
-  <li>Let <var>hr</var> be the result of calling <code
-  data-anolis-spec=domcore
-  title=dom-Document-createElement>createElement("hr")</code> on the
+  <!-- We don't want to call insertNode at the start or end of a text node,
+  because that will leave an empty text node. -->
+  <li>If the <span>active range</span>'s [[startnode]] is a [[text]] node and
+  its [[startoffset]] is zero, set the <span>active range</span>'s
+  [[rangestart]] and [[rangeend]] to ([[parent]] of [[startnode]], [[index]] of
+  [[startnode]]).
+
+  <li>If the <span>active range</span>'s [[startnode]] is a [[text]] node and
+  its [[startoffset]] is the [[length]] of its [[startnode]], set the
+  <span>active range</span>'s [[rangestart]] and [[rangeend]] to ([[parent]] of
+  [[startnode]], 1 + [[index]] of [[startnode]]).
+
+  <li>Let <var>hr</var> be the result of calling [[createelement|"hr"]] on the
   [[contextobject]].
 
-  <li>Run <code data-anolis-spec=domrange
-  title=dom-Range-insertNode>insertNode(<var>hr</var>)</code> on
-  <var>range</var>.
+  <li>Run [[insertnode|<var>hr</var>]] on <var>range</var>.
 
   <li><span>Fix disallowed ancestors</span> of <var>hr</var>.
   <!--
@@ -6080,15 +6087,12 @@ splitting up parents to ensure validity . . . -->
   identical).
   -->
 
-  <li>Let <var>selection</var> be the result of running <code
-  data-anolis-spec=domrange
-  title=dom-Document-getSelection>getSelection()</code> on the
+  <li>Let <var>selection</var> be the result of running [[getselection]] on the
   [[contextobject]].
 
-  <li>Run <code data-anolis-spec=domrange
-  title=dom-Selection-collapse>collapse()</code> on <var>selection</var>, with
-  first argument equal to the [[parent]] of <var>hr</var> and the second
-  argument equal to one plus the [[index]] of <var>hr</var>.
+  <li>Run [[selcollapse|]] on <var>selection</var>, with first argument equal
+  to the [[parent]] of <var>hr</var> and the second argument equal to one plus
+  the [[index]] of <var>hr</var>.
 </ol>
 <!-- @} -->
 

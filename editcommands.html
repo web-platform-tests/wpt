@@ -3499,7 +3499,8 @@ algorithm returns true:
 
 <h3 id=deleting-the-contents-of-a-range><span class=secno>8.4 </span>Deleting the contents of a range</h3>
 
-<p>To <dfn id=delete-the-contents>delete the contents</dfn> of a <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> <var title="">range</var>:
+<p>To <dfn id=delete-the-contents>delete the contents</dfn> of a <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> <var title="">range</var>, given a
+<var title="">block merging</var> flag that defaults to true:
 <!-- TODO: Consider what should happen for block merging in corner cases like
 display: inline-table. -->
 
@@ -3758,11 +3759,11 @@ display: inline-table. -->
   where one descends from the other.
   -->
 
-  <li>If <var title="">start block</var> or <var title="">end block</var> is null, or <var title="">start
-  block</var> is not <a href=#in-the-same-editing-host>in the same editing host</a> as <var title="">end
-  block</var>, or <var title="">start block</var> and <var title="">end block</var> are the same,
-  set <var title="">range</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> to its <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> and then abort
-  these steps.
+  <li>If <var title="">block merging</var> is false, or <var title="">start block</var> or
+  <var title="">end block</var> is null, or <var title="">start block</var> is not <a href=#in-the-same-editing-host>in the
+  same editing host</a> as <var title="">end block</var>, or <var title="">start block</var>
+  and <var title="">end block</var> are the same, set <var title="">range</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> to
+  its <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> and then abort these steps.
 
   <!--
   We might have added a br to the start/end block in an earlier step.  Now
@@ -6057,18 +6058,28 @@ splitting up parents to ensure validity . . . -->
   <var title="">range</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> to (<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>, 1 + <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a>
   of <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>).
 
-  <li>Run <code class=external data-anolis-spec=domrange title=dom-Range-deleteContents><a href=http://html5.org/specs/dom-range.html#dom-range-deletecontents>deleteContents()</a></code> on <var title="">range</var>.
-
-  <p class=XXX>This might blow up non-contenteditable stuff.
+  <li><a href=#delete-the-contents>Delete the contents</a> of <var title="">range</var>, with <var title="">block
+  merging</var> false.
 
   <li>If the <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> is neither
   <a href=#editable>editable</a> nor an <a href=#editing-host>editing host</a>, abort these steps.
 
+  <!-- We don't want to call insertNode at the start or end of a text node,
+  because that will leave an empty text node. -->
+  <li>If the <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node and
+  its <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a> is zero, set the <a href=#active-range>active range</a>'s
+  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> and <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> to (<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>, <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> of
+  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>).
+
+  <li>If the <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node and
+  its <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a> is the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> of its <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>, set the
+  <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> and <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-end title=concept-range-end>end</a> to (<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of
+  <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>, 1 + <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> of <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>).
+
   <li>Let <var title="">hr</var> be the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("hr")</a></code> on the
   <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>.
 
-  <li>Run <code class=external data-anolis-spec=domrange title=dom-Range-insertNode><a href=http://html5.org/specs/dom-range.html#dom-range-insertnode>insertNode(<var title="">hr</var>)</a></code> on
-  <var title="">range</var>.
+  <li>Run <code class=external data-anolis-spec=domrange title=dom-Range-insertNode><a href=http://html5.org/specs/dom-range.html#dom-range-insertnode>insertNode(<var title="">hr</var>)</a></code> on <var title="">range</var>.
 
   <li><a href=#fix-disallowed-ancestors>Fix disallowed ancestors</a> of <var title="">hr</var>.
   <!--
@@ -6084,9 +6095,9 @@ splitting up parents to ensure validity . . . -->
   <li>Let <var title="">selection</var> be the result of running <code class=external data-anolis-spec=domrange title=dom-Document-getSelection><a href=http://html5.org/specs/dom-range.html#dom-document-getselection>getSelection()</a></code> on the
   <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>.
 
-  <li>Run <code class=external data-anolis-spec=domrange title=dom-Selection-collapse><a href=http://html5.org/specs/dom-range.html#dom-selection-collapse>collapse()</a></code> on <var title="">selection</var>, with
-  first argument equal to the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of <var title="">hr</var> and the second
-  argument equal to one plus the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> of <var title="">hr</var>.
+  <li>Run <code class=external data-anolis-spec=domrange title=dom-Selection-collapse><a href=http://html5.org/specs/dom-range.html#dom-selection-collapse>collapse()</a></code> on <var title="">selection</var>, with first argument equal
+  to the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of <var title="">hr</var> and the second argument equal to one plus
+  the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> of <var title="">hr</var>.
 </ol>
 
 

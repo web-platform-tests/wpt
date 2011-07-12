@@ -1647,6 +1647,9 @@ var tests = {
 		'<xmp>foo[bar]baz</xmp>',
 
 		'<quasit>foo[bar]baz</quasit>',
+
+		'<table><tr><td>fo[o<td>b]ar</table>',
+		'fo[o<span contenteditable=false>bar</span>b]az',
 	],
 	//@}
 	inserthtml: [

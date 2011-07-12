@@ -622,11 +622,8 @@ The block/inline node definitions are CSS-based.  "Prohibited paragraph child"
 is conceptually similar to "block node", but based on the element name.
 Generally we want to use block/inline node when we're interested in the visual
 effect, and prohibited paragraph children when we're concerned about parsing or
-semantics.  The current spec is not always so consistent.
+semantics.
 -->
-
-<p class=XXX>Audit the spec to find places where we should use block node
-instead of prohibited paragraph child or vice versa (see comment).
 
 <p>An <dfn>editing host</dfn> is a [[node]] that is either an [[element]] with
 a <code data-anolis-spec=html title=attr-contenteditable>contenteditable</code>
@@ -686,9 +683,9 @@ browsers (at least not in Opera 11.11), and also it breaks assumptions
 elsewhere.  E.g., if it gets turned into a p. -->
 
 <p>Something is <dfn>visible</dfn> if it is a [[node]] that either is a
-<span>prohibited paragraph child</span>, or a [[text]] node whose [[cddata]] is
-not empty, or an [[img]], or a [[br]] that is not an <span>extraneous line
-break</span>, or any [[node]] with a <span>visible</span> [[descendant]].
+<span>block node</span>, or a [[text]] node whose [[cddata]] is not empty, or
+an [[img]], or a [[br]] that is not an <span>extraneous line break</span>, or
+any [[node]] with a <span>visible</span> [[descendant]].
 
 <p>Something is <dfn>invisible</dfn> if it is a [[node]] that is not
 <span>visible</span>.
@@ -6162,9 +6159,9 @@ parser.
 
   <li>Let <var>descendants</var> be all [[descendants]] of <var>frag</var>.
 
-  <li>If the <span>active range</span>'s [[startnode]] is a <span>prohibited
-  paragraph child</span> whose sole [[child]] is a [[br]], and its
-  [[startoffset]] is 0, remove its [[startnode]]'s [[child]] from it.
+  <li>If the <span>active range</span>'s [[startnode]] is a <span>block
+  node</span> whose sole [[child]] is a [[br]], and its [[startoffset]] is 0,
+  remove its [[startnode]]'s [[child]] from it.
   <!--
   This is so we don't get something like
     <div>[foo]</div>
@@ -6208,9 +6205,9 @@ parser.
   <li>If the <span>active range</span>'s [[startnode]] is neither
   <span>editable</span> nor an <span>editing host</span>, abort these steps.
 
-  <li>If <var>range</var>'s [[startnode]] is a <span>prohibited paragraph
-  child</span> whose sole [[child]] is a [[br]], and its [[startoffset]] is 0,
-  remove its [[startnode]]'s [[child]] from it.
+  <li>If <var>range</var>'s [[startnode]] is a <span>block node</span> whose
+  sole [[child]] is a [[br]], and its [[startoffset]] is 0, remove its
+  [[startnode]]'s [[child]] from it.
   <!-- Same logic as with insertHTML. -->
 
   <li>Let <var>img</var> be the result of calling [[createelement|"img"]] on

@@ -856,14 +856,14 @@ function isExtraneousLineBreak(br) {
 	return origHeight == finalHeight;
 }
 
-// "Something is visible if it is a node that either is a prohibited paragraph
-// child, or a Text node whose data is not empty, or an img, or a br that is
-// not an extraneous line break, or any node with a visible descendant."
+// "Something is visible if it is a node that either is a block node, or a Text
+// node whose data is not empty, or an img, or a br that is not an extraneous
+// line break, or any node with a visible descendant."
 function isVisible(node) {
 	if (!node) {
 		return false;
 	}
-	if (isProhibitedParagraphChild(node)
+	if (isBlockNode(node)
 	|| (node.nodeType == Node.TEXT_NODE && node.length)
 	|| isHtmlElement(node, "img")
 	|| (isHtmlElement(node, "br") && !isExtraneousLineBreak(node))) {
@@ -6323,10 +6323,10 @@ commands.inserthtml = {
 		// "Let descendants be all descendants of frag."
 		var descendants = getDescendants(frag);
 
-		// "If the active range's start node is a prohibited paragraph child
-		// whose sole child is a br, and its start offset is 0, remove its
-		// start node's child from it."
-		if (isProhibitedParagraphChild(getActiveRange().startContainer)
+		// "If the active range's start node is a block node whose sole child
+		// is a br, and its start offset is 0, remove its start node's child
+		// from it."
+		if (isBlockNode(getActiveRange().startContainer)
 		&& getActiveRange().startContainer.childNodes.length == 1
 		&& isHtmlElement(getActiveRange().startContainer.firstChild, "br")
 		&& getActiveRange().startOffset == 0) {
@@ -6371,10 +6371,9 @@ commands.insertimage = {
 			return;
 		}
 
-		// "If range's start node is a prohibited paragraph child whose sole
-		// child is a br, and its start offset is 0, remove its start node's
-		// child from it."
-		if (isProhibitedParagraphChild(range.startContainer)
+		// "If range's start node is a block node whose sole child is a br, and
+		// its start offset is 0, remove its start node's child from it."
+		if (isBlockNode(range.startContainer)
 		&& range.startContainer.childNodes.length == 1
 		&& isHtmlElement(range.startContainer.firstChild, "br")
 		&& range.startOffset == 0) {

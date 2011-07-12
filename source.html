@@ -6349,10 +6349,8 @@ http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
   [[rangestart]] [[bpnode]] and [[bpoffset]].
 
   <li>If <var>node</var> is a [[text]] node, and <var>offset</var> is neither 0
-  nor the [[nodelength]] of <var>node</var>, call <code
-  data-anolis-spec=domcore
-  title=dom-Text-splitText>splitText(<var>offset</var>)</code> on
-  <var>node</var>.
+  nor the [[nodelength]] of <var>node</var>, call
+  [[splittext|<var>offset</var>]] on <var>node</var>.
 
   <li>If <var>node</var> is a [[text]] node and <var>offset</var> is its
   [[nodelength]], set <var>offset</var> to one plus the [[index]] of
@@ -6418,10 +6416,11 @@ http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
     <li>While the [[nextsibling]] of the last member of <var>node list</var> is
     not null and is an <span>allowed child</span> of "p", append it to
     <var>node list</var>.
-
-    <p class=XXX>It is not at all obvious that this is the correct list of
-    nodes in all cases.  It should probably work because of how the
-    block-extend algorithm works, but further thought would be good.
+    <!--
+    TODO: It is not at all obvious that this is the correct list of nodes in
+    all cases.  It should probably work because of how the block-extend
+    algorithm works, but further thought would be good.
+    -->
 
     <li><span>Wrap</span> <var>node list</var>, with <span>sibling
     criteria</span> matching nothing and <span>new parent instructions</span>

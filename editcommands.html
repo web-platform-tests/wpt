@@ -6353,8 +6353,8 @@ http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
   <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> and <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a>.
 
   <li>If <var title="">node</var> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node, and <var title="">offset</var> is neither 0
-  nor the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> of <var title="">node</var>, call <code class=external data-anolis-spec=domcore title=dom-Text-splitText><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-text-splittext>splitText(<var title="">offset</var>)</a></code> on
-  <var title="">node</var>.
+  nor the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> of <var title="">node</var>, call
+  <code class=external data-anolis-spec=domcore title=dom-Text-splitText><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-text-splittext>splitText(<var title="">offset</var>)</a></code> on <var title="">node</var>.
 
   <li>If <var title="">node</var> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node and <var title="">offset</var> is its
   <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a>, set <var title="">offset</var> to one plus the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-indexof title=concept-indexof>index</a> of
@@ -6420,10 +6420,11 @@ http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
     <li>While the <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code> of the last member of <var title="">node list</var> is
     not null and is an <a href=#allowed-child>allowed child</a> of "p", append it to
     <var title="">node list</var>.
-
-    <p class=XXX>It is not at all obvious that this is the correct list of
-    nodes in all cases.  It should probably work because of how the
-    block-extend algorithm works, but further thought would be good.
+    <!--
+    TODO: It is not at all obvious that this is the correct list of nodes in
+    all cases.  It should probably work because of how the block-extend
+    algorithm works, but further thought would be good.
+    -->
 
     <li><a href=#wrap>Wrap</a> <var title="">node list</var>, with <a href=#sibling-criteria>sibling
     criteria</a> matching nothing and <a href=#new-parent-instructions>new parent instructions</a>

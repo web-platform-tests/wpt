@@ -6558,11 +6558,12 @@ http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
 
   <li>Let <var>frag</var> be the result of calling [[extractcontents]] on
   <var>new line range</var>.
-
-  <p class=XXX>This blows up any ranges (other than the selection, which we
-  reset), and maybe other bad stuff.  May or may not be the best solution.  The
-  intermediate fragment is also probably black-box detectable by DOM mutation
-  events, but I like to pretend those don't exist.
+  <!--
+  TODO: This blows up any ranges (other than the selection, which we reset),
+  and can alter non-editable nodes, and maybe other bad stuff.  May or may not
+  be the best solution.  The intermediate fragment is also probably black-box
+  detectable by DOM mutation events, but I like to pretend those don't exist.
+  -->
 
   <li>Unset the [[id]] attribute (if any) of each [[element]] [[descendant]] of
   <var>frag</var> that is not in <var>contained nodes</var>.

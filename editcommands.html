@@ -6561,11 +6561,12 @@ http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
 
   <li>Let <var title="">frag</var> be the result of calling <code class=external data-anolis-spec=domrange title=dom-Range-extractContents><a href=http://html5.org/specs/dom-range.html#dom-range-extractcontents>extractContents()</a></code> on
   <var title="">new line range</var>.
-
-  <p class=XXX>This blows up any ranges (other than the selection, which we
-  reset), and maybe other bad stuff.  May or may not be the best solution.  The
-  intermediate fragment is also probably black-box detectable by DOM mutation
-  events, but I like to pretend those don't exist.
+  <!--
+  TODO: This blows up any ranges (other than the selection, which we reset),
+  and can alter non-editable nodes, and maybe other bad stuff.  May or may not
+  be the best solution.  The intermediate fragment is also probably black-box
+  detectable by DOM mutation events, but I like to pretend those don't exist.
+  -->
 
   <li>Unset the <code class=external data-anolis-spec=html title="the id attribute"><a href=http://www.whatwg.org/html/#the-id-attribute>id</a></code> attribute (if any) of each <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-descendant title=concept-tree-descendant>descendant</a> of
   <var title="">frag</var> that is not in <var title="">contained nodes</var>.

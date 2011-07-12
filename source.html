@@ -846,7 +846,9 @@ extraneous line breaks at the end of</span> it.
 <!-- @{ -->
 <p>To <dfn>wrap</dfn> a list <var>node list</var> of consecutive [[sibling]]
 [[nodes]], given <dfn>sibling criteria</dfn> and <dfn>new parent
-instructions</dfn>:
+instructions</dfn>, run the following algorithm.  If not provided,
+<span>sibling criteria</span> match nothing and <span>new parent
+instructions</span> return null.
 
 <ol>
   <li>If <var>node list</var> is empty, or the first member of <var>node
@@ -4840,6 +4842,38 @@ or "ul"):
   <li><span>Block-extend</span> the <span>active range</span>, and let <var>new
   range</var> be the result.
 
+  <li>If <var>mode</var> is "enable", then let <var>lists to convert</var>
+  consist of every <span>editable</span> <span>HTML element</span> with
+  [[localname]] <var>other tag name</var> that is [[contained]] in <var>new
+  range</var>, and for every <var>list</var> in <var>lists to convert</var>:
+
+  <ol>
+    <li>If <var>list</var>'s [[previoussibling]] or [[nextsibling]] is an
+    <span>editable</span> <span>HTML element</span> with [[localname]] <var>tag
+    name</var>:
+    <!-- Convert it to the right name.  If possible, we want to merge with a
+    neighboring list of the correct type.  Failing that, we set the tag name.
+    -->
+
+    <ol>
+      <li>Let <var>children</var> be <var>list</var>'s [[children]].
+
+      <li><span>Record the values</span> of <var>children</var>, and let
+      <var>values</var> be the result.
+
+      <li><span>Split the parent</span> of <var>children</var>.
+
+      <li><span>Wrap</span> <var>children</var>, with <span>sibling
+      criteria</span> matching any <span>HTML element</span> with [[localname]]
+      <var>tag name</var>.
+
+      <li><span>Restore the values</span> from <var>values</var>.
+    </ol>
+
+    <li>Otherwise, <span>set the tag name</span> of <var>list</var> to <var>tag
+    name</var>.
+  </ol>
+
   <li>Let <var>node list</var> be a list of [[nodes]], initially empty.
 
   <li>For each [[node]] <var>node</var> [[contained]] in <var>new range</var>,
@@ -4863,6 +4897,19 @@ or "ul"):
   different from how it would work if you reversed the commands.
   OpenOffice.org 3.2.1 (Ubuntu) and Word 2007 both agree with the spec in this
   case.
+  -->
+
+  <li>If <var>mode</var> is "enable", remove from <var>node list</var> any
+  [[ol]] or [[ul]] whose [[parent]] is not also an [[ol]] or [[ul]].
+  <!--
+  We don't want to touch these.  E.g., assuming tag name is "ol",
+    [foo<ol><li>bar</ol>baz]
+    -> <ol><li>[foo<li>bar<li>baz]</ol>
+    not <ol><li>[foo</li><ol><li>bar</ol><li>baz]</ol>.
+  But
+    <ul><li>foo<li>[bar</li><ol><li>baz</ol><li>quz]</ul>
+    -> <ul><li>foo</ul><ol><li>[bar</li><ol><li>baz</ol><li>quz]</ol>
+    not <ul><li>foo</ul><ol><li>[bar</ol><ul><ol><li>baz</ol></ul><ol><li>quz]</ol>
   -->
 
   <li>If <var>mode</var> is "disable", then while <var>node list</var> is not
@@ -4900,144 +4947,110 @@ or "ul"):
   <ol>
     <li>Let <var>sublist</var> be an empty list of [[nodes]].
 
-    <li>Remove the first member from <var>node list</var> and append it to
-    <var>sublist</var>.
-
-    <li>While <var>node list</var> is not empty, and the first member of
-    <var>node list</var> is the [[nextsibling]] of the last member of
-    <var>sublist</var>, and the last member of <var>sublist</var> and first
-    member of <var>node list</var> are both <span title="inline node">inline
-    nodes</span>, and the last member of <var>sublist</var> is not a [[br]],
-    remove the first member from <var>node list</var> and append it to
-    <var>sublist</var>.
-
-    <li>If <var>sublist</var> contains more than one member, <span>wrap</span>
-    <var>sublist</var>, with <span>sibling criteria</span> matching nothing and
-    <span>new parent instructions</span> returning the result of calling
-    [[createelement|"li"]] on the [[contextobject]].  Let <var>node</var> be
-    the result.
-
-    <li>Otherwise, let <var>node</var> be the sole member of
-    <var>sublist</var>.
-
-    <li>If <var>node</var> is an <span>HTML element</span> with [[localname]]
-    <var>other tag name</var>:
+    <li>While either <var>sublist</var> is empty, or <var>node list</var> is
+    not empty and its first member is the [[nextsibling]] of
+    <var>sublist</var>'s last member:
+    <!-- Accumulate consecutive sibling nodes in sublist, first converting them
+    all to li's (except if they're already lists). -->
 
     <ol>
-      <li>Let <var>children</var> be the [[children]] of <var>node</var>.
+      <li>If <var>node list</var>'s first member is a [[p]] or [[div]],
+      <span>set the tag name</span> of <var>node list</var>'s first member to
+      "li", and append the result to <var>sublist</var>.  Remove the first
+      member from <var>node list</var>.
+      <!-- Thus <p>foo</p> becomes <ol><li>foo</ol> instead of
+      <ol><li><p>foo</ol>, and likewise for div, but other things will be put
+      inside the <li>. -->
 
-      <li><span>Record the values</span> of <var>children</var>, and let
+      <li>Otherwise, if the first member of <var>node list</var> is an [[li]]
+      or [[ol]] or [[ul]], remove it from <var>node list</var> and append it to
+      <var>sublist</var>.
+
+      <li>Otherwise:
+
+      <ol>
+        <li>Let <var>nodes to wrap</var> be a list of [[nodes]], initially
+        empty.
+
+        <li>While <var>nodes to wrap</var> is empty, or <var>node list</var> is
+        not empty and its first member is the [[nextsibling]] of
+        <var>nodes to wrap</var>'s last member and the first member of
+        <var>node list</var> is an <span>inline node</span> and the last member
+        of <var>nodes to wrap</var> is an <span>inline node</span> other than a
+        [[br]], remove the first member from <var>node list</var> and append it
+        to <var>nodes to wrap</var>.
+
+        <li><span>Wrap</span> <var>nodes to wrap</var>, with <span>new parent
+        instructions</span> returning the result of calling
+        [[createelement|"li"]] on the [[contextobject]].  Append the result to
+        <var>sublist</var>.
+      </ol>
+    </ol>
+
+    <li>If <var>sublist</var>'s first member's [[parent]] is an <span>HTML
+    element</span> with [[localname]] <var>tag name</var>, or if every member
+    of <var>sublist</var> is an [[ol]] or [[ul]], continue this loop from the
+    beginning.
+    <!-- Already wrapped properly, nothing more to do. -->
+
+    <li>If <var>sublist</var>'s first member's [[parent]] is an <span>HTML
+    element</span> with [[localname]] <var>other tag name</var>:
+
+    <ol>
+      <li><span>Record the values</span> of <var>sublist</var>, and let
       <var>values</var> be the result.
 
-      <li>Remove <var>node</var>, <span>preserving its descendants</span>.
+      <li><span>Split the parent</span> of <var>sublist</var>.
 
-      <li><span>Wrap</span> <var>children</var>, with <span>sibling
+      <li><span>Wrap</span> <var>sublist</var>, with <span>sibling
       criteria</span> matching any <span>HTML element</span> with [[localname]]
-      <var>tag name</var> and <span>new parent instructions</span> returning
+      <var>tag name</var>, and <span>new parent instructions</span> returning
       the result of calling [[createelement|<var>tag name</var>]] on the
-      [[contextobject]].  Let <var>node</var> be the result.
+      [[contextobject]].
 
       <li><span>Restore the values</span> from <var>values</var>.
 
-      <li>Prepend the [[descendants]] of <var>node</var> that are <span
-      title="HTML element">HTML elements</span> with [[localname]] <var>other
-      tag name</var> (if any) to <var>node list</var>.
-
-      <li>Continue from the beginning of this loop.
-
-      <div class=XXX>
-      <p>This does the wrong thing for input like
-
-      <ul>
-        <li>foo</li>
-        <li>[bar</li>
-        <ul><li>baz</li></ul>
-        <li>quz]</li>
-      </ul>
-
-      <p>which becomes
-
-      <ul><li>foo</li></ul>
-      <ol><li>[bar</li></ol>
-      <ul><ol><li>baz</li></ol></ul>
-      <ol><li>quz]</li></ol>
-
-      <p>when we want
-
-      <ul><li>foo</li></ul>
-      <ol>
-        <li>[bar</li>
-        <ol><li>baz</li></ol>
-        <li>quz]</li>
-      </ol>
-      </div>
+      <li>Continue this loop from the beginning.
     </ol>
 
-    <li>If <var>node</var> is a [[p]] or [[div]], <span>set the tag name</span>
-    of <var>node</var> to "li", and let <var>node</var> be the result.
-
-    <li>If <var>node</var> is the [[child]] of an <span>HTML element</span>
-    with [[localname]] <var>other tag name</var>:
-
-    <ol>
-      <li><span>Record the values</span> of the one-[[node]] list consisting of
-      <var>node</var>, and let <var>values</var> be the result.
-
-      <li><span>Split the parent</span> of the one-[[node]] list consisting of
-      <var>node</var>.
-
-      <li><span>Wrap</span> the one-[[node]] list consisting of
-      <var>node</var>, with <span>sibling criteria</span> matching any
-      <span>HTML element</span> with [[localname]] <var>tag name</var>,
-      and with <span>new parent instructions</span> returning the result of
-      calling [[createelement|<var>tag name</var>]] on the [[contextobject]].
-
-      <li><span>Restore the values</span> from <var>values</var>.
-
-      <li>Prepend the [[descendants]] of <var>node</var> that are <span
-      title="HTML element">HTML elements</span> with [[localname]] <var>other
-      tag name</var> (if any) to <var>node list</var>.
-
-      <li>Continue from the beginning of this loop.
-    </ol>
-
-    <li>If <var>node</var> is equal to or the [[child]] of an <span>HTML
-    element</span> with [[localname]] <var>tag name</var>, prepend the
-    [[descendants]] of <var>node</var> that are <span title="HTML element">HTML
-    elements</span> with [[localname]] <var>other tag name</var> (if any) to
-    <var>node list</var> and continue from the beginning of this loop.
-
-    <li>If <var>node</var> is not an [[li]], <span>wrap</span> the one-[[node]]
-    list consisting of <var>node</var>, with <span>sibling criteria</span>
-    matching nothing and <span>new parent instructions</span> returning
-    the result of calling <code data-anolis-spec=domcore
-    title=dom-Document-createElement>createElement("li")</code> on the
-    [[contextobject]].  Set <var>node</var> to the result.
-
-    <li><span>Wrap</span> the one-[[node]] list consisting of <var>node</var>,
-    with the <span>sibling criteria</span> matching any <span>HTML
-    element</span> with [[localname]] <var>tag name</var>, and the <span>new
-    parent instructions</span> being the following:
+    <li><span>Wrap</span> <var>sublist</var>, with the <span>sibling
+    criteria</span> matching any <span>HTML element</span> with [[localname]]
+    <var>tag name</var>, and the <span>new parent instructions</span> being the
+    following:
 
     <ol>
-      <li>If the [[parent]] of <var>node</var> is not an <span>editable</span>
-      <span>simple indentation element</span>, or the [[previoussibling]] of
-      the [[parent]] of <var>node</var> is not an <span>editable</span>
+      <!--
+      Special case: something like
+        <ol><li>foo</ol><blockquote>[bar]</blockquote>
+      becomes
+        <ol><li>foo</li><ol><li>[bar]</ol></ol>
+      instead of
+        <ol><li>foo</ol><blockquote><ol><li>[bar]</ol></blockquote>.
+      We handle the special case in the new parent instructions instead of
+      outside because we'd prefer to wind up in a sibling if there is one.  We
+      handle only previousSibling, not nextSibling, because we really mean for
+      this to cover something like
+        [foo<blockquote>bar]</blockquote>
+      which we'll handle node-by-node.  TODO: Maybe we should do this
+      differently, like just special-case simple indentation elements in an
+      earlier part of the algorithm?  This way's a bit weird.
+      -->
+      <li>If <var>sublist</var>'s first member's [[parent]] is not an
+      <span>editable</span> <span>simple indentation element</span>, or
+      <var>sublist</var>'s first member's [[parent]]'s [[previoussibling]] is
+      not an <span>editable</span> <span>HTML element</span> with [[localname]]
+      <var>tag name</var>, call [[createelement|<var>tag name</var>]] on the
+      [[contextobject]] and return the result.
+
+      <li>Let <var>list</var> be <var>sublist</var>'s first member's
+      [[parent]]'s [[previoussibling]].
+
+      <li><span>Normalize sublists</span> of <var>list</var>'s [[lastchild]].
+
+      <li>If <var>list</var>'s [[lastchild]] is not an <span>editable</span>
       <span>HTML element</span> with [[localname]] <var>tag name</var>, call
-      [[createelement|<var>tag name</var>]] on the [[contextobject]] and return
-      the result.  Otherwise:
-
-      <li>Let <var>list</var> be the [[previoussibling]] of the [[parent]] of
-      <var>node</var>.
-
-      <li><span>Normalize sublists</span> of <var>list</var>'s last [[child]].
-
-      <li>If <var>list</var>'s last [[child]] is not an <span>editable</span>
-      <span>HTML element</span> with [[localname]] <var>tag name</var>, call
-      <code data-anolis-spec=domcore
-      title=dom-Document-createElement>createElement(<var>tag
-      name</var>)</code> on the [[contextobject]], and append the result as the
-      last [[child]] of <var>list</var>.
+      [[createelement|<var>tag name</var>]] on the [[contextobject]], and
+      append the result as the last [[child]] of <var>list</var>.
 
       <li>Return the last [[child]] of <var>list</var>.
     </ol>

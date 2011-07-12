@@ -1127,6 +1127,15 @@ function removeExtraneousLineBreaksFrom(node) {
 //@{
 
 function wrap(nodeList, siblingCriteria, newParentInstructions) {
+	// "If not provided, sibling criteria match nothing and new parent
+	// instructions return null."
+	if (typeof siblingCriteria == "undefined") {
+		siblingCriteria = function() { return false };
+	}
+	if (typeof newParentInstructions == "undefined") {
+		newParentInstructions = function() { return null };
+	}
+
 	// "If node list is empty, or the first member of node list is not
 	// editable, return null and abort these steps."
 	if (!nodeList.length
@@ -5026,6 +5035,42 @@ function toggleLists(tagName) {
 	// "Block-extend the range, and let new range be the result."
 	var newRange = blockExtend(range);
 
+	// "If mode is "enable", then let lists to convert consist of every
+	// editable HTML element with local name other tag name that is contained
+	// in new range, and for every list in lists to convert:"
+	if (mode == "enable") {
+		getAllContainedNodes(newRange, function(node) {
+			return isEditable(node)
+				&& isHtmlElement(node, otherTagName);
+		}).forEach(function(list) {
+			// "If list's previousSibling or nextSibling is an editable HTML
+			// element with local name tag name:"
+			if ((isEditable(list.previousSibling) && isHtmlElement(list.previousSibling, tagName))
+			|| (isEditable(list.nextSibling) && isHtmlElement(list.nextSibling, tagName))) {
+				// "Let children be list's children."
+				var children = [].slice.call(list.childNodes);
+
+				// "Record the values of children, and let values be the
+				// result."
+				var values = recordValues(children);
+
+				// "Split the parent of children."
+				splitParent(children);
+
+				// "Wrap children, with sibling criteria matching any HTML
+				// element with local name tag name."
+				wrap(children, function(node) { return isHtmlElement(node, tagName) });
+
+				// "Restore the values from values."
+				restoreValues(values);
+
+			// "Otherwise, set the tag name of list to tag name."
+			} else {
+				setTagName(list, tagName);
+			}
+		});
+	}
+
 	// "Let node list be a list of nodes, initially empty."
 	//
 	// "For each node node contained in new range, if node is editable; the
@@ -5040,6 +5085,15 @@ function toggleLists(tagName) {
 		|| isHtmlElement(node.parentNode, ["OL", "UL"])
 		|| isAllowedChild(node, "li"));
 	});
+
+	// "If mode is "enable", remove from node list any ol or ul whose parent is
+	// not also an ol or ul."
+	if (mode == "enable") {
+		nodeList = nodeList.filter(function(node) {
+			return !isHtmlElement(node, ["ol", "ul"])
+				|| isHtmlElement(node.parentNode, ["ol", "ul"]);
+		});
+	}
 
 	// "If mode is "disable", then while node list is not empty:"
 	if (mode == "disable") {
@@ -5090,151 +5144,113 @@ function toggleLists(tagName) {
 			// "Let sublist be an empty list of nodes."
 			var sublist = [];
 
-			// "Remove the first member from node list and append it to
-			// sublist."
-			sublist.push(nodeList.shift());
+			// "While either sublist is empty, or node list is not empty and
+			// its first member is the nextSibling of sublist's last member:"
+			while (!sublist.length
+			|| (nodeList.length
+			&& nodeList[0] == sublist[sublist.length - 1].nextSibling)) {
+				// "If node list's first member is a p or div, set the tag name
+				// of node list's first member to "li", and append the result
+				// to sublist. Remove the first member from node list."
+				if (isHtmlElement(nodeList[0], ["p", "div"])) {
+					sublist.push(setTagName(nodeList[0], "li"));
+					nodeList.shift();
 
-			// "While node list is not empty, and the first member of node
-			// list is the nextSibling of the last member of sublist, and
-			// the last member of sublist and first member of node list are
-			// both inline nodes, and the last member of sublist is not a
-			// br, remove the first member from node list and append it to
-			// sublist."
-			while (nodeList.length
-			&& nodeList[0] == sublist[sublist.length - 1].nextSibling
-			&& isInlineNode(sublist[sublist.length - 1])
-			&& isInlineNode(nodeList[0])
-			&& !isHtmlElement(sublist[sublist.length - 1], "BR")) {
-				sublist.push(nodeList.shift());
+				// "Otherwise, if the first member of node list is an li or ol
+				// or ul, remove it from node list and append it to sublist."
+				} else if (isHtmlElement(nodeList[0], ["li", "ol", "ul"])) {
+					sublist.push(nodeList.shift());
+
+				// "Otherwise:"
+				} else {
+					// "Let nodes to wrap be a list of nodes, initially empty."
+					var nodesToWrap = [];
+
+					// "While nodes to wrap is empty, or node list is not empty
+					// and its first member is the nextSibling of nodes to
+					// wrap's last member and the first member of node list is
+					// an inline node and the last member of nodes to wrap is
+					// an inline node other than a br, remove the first member
+					// from node list and append it to nodes to wrap."
+					while (!nodesToWrap.length
+					|| (nodeList.length
+					&& nodeList[0] == nodesToWrap[nodesToWrap.length - 1].nextSibling
+					&& isInlineNode(nodeList[0])
+					&& isInlineNode(nodesToWrap[nodesToWrap.length - 1])
+					&& !isHtmlElement(nodesToWrap[nodesToWrap.length - 1], "br"))) {
+						nodesToWrap.push(nodeList.shift());
+					}
+
+					// "Wrap nodes to wrap, with new parent instructions
+					// returning the result of calling createElement("li") on
+					// the context object.  Append the result to sublist."
+					sublist.push(wrap(nodesToWrap,
+						undefined,
+						function() { return document.createElement("li") }));
+				}
 			}
 
-			// "If sublist contains more than one member, wrap sublist, with
-			// sibling criteria matching nothing and new parent instructions
-			// returning the result of calling createElement("li") on the
-			// context object. Let node be the result."
-			var node;
-			if (sublist.length > 1) {
-				node = wrap(sublist,
-					function() { return false },
-					function() { return document.createElement("li") });
-
-			// "Otherwise, let node be the sole member of sublist."
-			} else {
-				node = sublist[0];
+			// "If sublist's first member's parent is an HTML element with
+			// local name tag name, or if every member of sublist is an ol or
+			// ul, continue this loop from the beginning."
+			if (isHtmlElement(sublist[0].parentNode, tagName)
+			|| sublist.every(function(node) { return isHtmlElement(node, ["ol", "ul"]) })) {
+				continue;
 			}
 
-			// "If node is an HTML element with local name other tag name:"
-			if (isHtmlElement(node, otherTagName)) {
-				// "Let children be the children of node."
-				var children = [].slice.call(node.childNodes);
-
-				// "Record the values of children, and let values be the
+			// "If sublist's first member's parent is an HTML element with
+			// local name other tag name:"
+			if (isHtmlElement(sublist[0].parentNode, otherTagName)) {
+				// "Record the values of sublist, and let values be the
 				// result."
-				var values = recordValues(children);
+				var values = recordValues(sublist);
 
-				// "Remove node, preserving its descendants."
-				removePreservingDescendants(node);
+				// "Split the parent of sublist."
+				splitParent(sublist);
 
-				// "Wrap children, with sibling criteria matching any HTML
-				// element with local name tag name and new parent instructions
-				// returning the result of calling createElement(tag name) on
-				// the context object. Let node be the result."
-				node = wrap(children,
+				// "Wrap sublist, with sibling criteria matching any HTML
+				// element with local name tag name, and new parent
+				// instructions returning the result of calling
+				// createElement(tag name) on the context object."
+				wrap(sublist,
 					function(node) { return isHtmlElement(node, tagName) },
 					function() { return document.createElement(tagName) });
 
 				// "Restore the values from values."
 				restoreValues(values);
 
-				// "Prepend the descendants of node that are HTML elements with
-				// local name other tag name (if any) to node list."
-				nodeList = [].slice.call(node.querySelectorAll(otherTagName)).concat(nodeList);
-
-				// "Continue from the beginning of this loop."
+				// "Continue this loop from the beginning."
 				continue;
 			}
 
-			// "If node is a p or div, set the tag name of node to "li",
-			// and let node be the result."
-			if (isHtmlElement(node, ["P", "DIV"])) {
-				node = setTagName(node, "li");
-			}
-
-			// "If node is the child of an HTML element with local name other
-			// tag name:"
-			if (isHtmlElement(node.parentNode, otherTagName)) {
-				// "Record the values of the one-node list consisting of node,
-				// and let values be the result."
-				var values = recordValues([node]);
-
-				// "Split the parent of the one-node list consisting of
-				// node."
-				splitParent([node]);
-
-				// "Wrap the one-node list consisting of node, with sibling
-				// criteria matching any HTML element with local name tag name,
-				// and with new parent instructions returning the result of
-				// calling createElement(tag name) on the context object."
-				wrap([node],
-					function(node) { return isHtmlElement(node, tagName) },
-					function() { return document.createElement(tagName) });
-
-				// "Restore the values from values."
-				restoreValues(values);
-
-				// "Prepend the descendants of node that are HTML elements with
-				// local name other tag name (if any) to node list."
-				nodeList = [].slice.call(node.querySelectorAll(otherTagName)).concat(nodeList);
-
-				// "Continue from the beginning of this loop."
-				continue;
-			}
-
-			// "If node is equal to or the child of an HTML element with local
-			// name tag name, prepend the descendants of node that are HTML
-			// elements with local name other tag name (if any) to node list
-			// and continue from the beginning of this loop."
-			if (isHtmlElement(node, tagName)
-			|| isHtmlElement(node.parentNode, tagName)) {
-				nodeList = [].slice.call(node.querySelectorAll(otherTagName)).concat(nodeList);
-				continue;
-			}
-
-			// "If node is not an li, wrap the one-node list consisting of
-			// node, with sibling criteria matching nothing and new parent
-			// instructions returning the result of calling createElement("li")
-			// on the context object. Set node to the result."
-			if (!isHtmlElement(node, "LI")) {
-				node = wrap([node],
-					function() { return false },
-					function() { return document.createElement("li") });
-			}
-
-			// "Wrap the one-node list consisting of node, with the sibling
-			// criteria matching any HTML element with local name tag name, and
-			// the new parent instructions being the following:"
-			var newParent = wrap([node],
+			// "Wrap sublist, with the sibling criteria matching any HTML
+			// element with local name tag name, and the new parent
+			// instructions being the following:"
+			// . . .
+			// "Fix disallowed ancestors of the previous step's result."
+			fixDisallowedAncestors(wrap(sublist,
 				function(node) { return isHtmlElement(node, tagName) },
 				function() {
-					// "If the parent of node is not an editable simple
-					// indentation element, or the previousSibling of the
-					// parent of node is not an editable HTML element with
-					// local name tag name, call createElement(tag name) on the
-					// context object and return the result. Otherwise:"
-					if (!isEditable(node.parentNode)
-					|| !isSimpleIndentationElement(node.parentNode)
-					|| !isEditable(node.parentNode.previousSibling)
-					|| !isHtmlElement(node.parentNode.previousSibling, tagName)) {
+					// "If sublist's first member's parent is not an editable
+					// simple indentation element, or sublist's first member's
+					// parent's previousSibling is not an editable HTML element
+					// with local name tag name, call createElement(tag name)
+					// on the context object and return the result."
+					if (!isEditable(sublist[0].parentNode)
+					|| !isSimpleIndentationElement(sublist[0].parentNode)
+					|| !isEditable(sublist[0].parentNode.previousSibling)
+					|| !isHtmlElement(sublist[0].parentNode.previousSibling, tagName)) {
 						return document.createElement(tagName);
 					}
 
-					// "Let list be the previousSibling of the parent of node."
-					var list = node.parentNode.previousSibling;
+					// "Let list be sublist's first member's parent's
+					// previousSibling."
+					var list = sublist[0].parentNode.previousSibling;
 
-					// "Normalize sublists of list's last child."
+					// "Normalize sublists of list's lastChild."
 					normalizeSublists(list.lastChild);
 
-					// "If list's last child is not an editable HTML element
+					// "If list's lastChild is not an editable HTML element
 					// with local name tag name, call createElement(tag name)
 					// on the context object, and append the result as the last
 					// child of list."
@@ -5245,10 +5261,8 @@ function toggleLists(tagName) {
 
 					// "Return the last child of list."
 					return list.lastChild;
-				});
-
-			// "Fix disallowed ancestors of the previous step's result."
-			fixDisallowedAncestors(newParent);
+				}
+			));
 		}
 	}
 }

@@ -894,7 +894,9 @@ extraneous line breaks at the end of</a> it.
 
 <p>To <dfn id=wrap>wrap</dfn> a list <var title="">node list</var> of consecutive <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-sibling title=concept-tree-sibling>sibling</a>
 <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a>, given <dfn id=sibling-criteria>sibling criteria</dfn> and <dfn id=new-parent-instructions>new parent
-instructions</dfn>:
+instructions</dfn>, run the following algorithm.  If not provided,
+<a href=#sibling-criteria>sibling criteria</a> match nothing and <a href=#new-parent-instructions>new parent
+instructions</a> return null.
 
 <ol>
   <li>If <var title="">node list</var> is empty, or the first member of <var title="">node
@@ -4850,6 +4852,38 @@ or "ul"):
   <li><a href=#block-extend>Block-extend</a> the <a href=#active-range>active range</a>, and let <var title="">new
   range</var> be the result.
 
+  <li>If <var title="">mode</var> is "enable", then let <var title="">lists to convert</var>
+  consist of every <a href=#editable>editable</a> <a href=#html-element>HTML element</a> with
+  <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> <var title="">other tag name</var> that is <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in <var title="">new
+  range</var>, and for every <var title="">list</var> in <var title="">lists to convert</var>:
+
+  <ol>
+    <li>If <var title="">list</var>'s <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code> or <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code> is an
+    <a href=#editable>editable</a> <a href=#html-element>HTML element</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> <var title="">tag
+    name</var>:
+    <!-- Convert it to the right name.  If possible, we want to merge with a
+    neighboring list of the correct type.  Failing that, we set the tag name.
+    -->
+
+    <ol>
+      <li>Let <var title="">children</var> be <var title="">list</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>.
+
+      <li><a href=#record-the-values>Record the values</a> of <var title="">children</var>, and let
+      <var title="">values</var> be the result.
+
+      <li><a href=#split-the-parent>Split the parent</a> of <var title="">children</var>.
+
+      <li><a href=#wrap>Wrap</a> <var title="">children</var>, with <a href=#sibling-criteria>sibling
+      criteria</a> matching any <a href=#html-element>HTML element</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a>
+      <var title="">tag name</var>.
+
+      <li><a href=#restore-the-values>Restore the values</a> from <var title="">values</var>.
+    </ol>
+
+    <li>Otherwise, <a href=#set-the-tag-name>set the tag name</a> of <var title="">list</var> to <var title="">tag
+    name</var>.
+  </ol>
+
   <li>Let <var title="">node list</var> be a list of <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a>, initially empty.
 
   <li>For each <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> <var title="">node</var> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#contained>contained</a> in <var title="">new range</var>,
@@ -4873,6 +4907,19 @@ or "ul"):
   different from how it would work if you reversed the commands.
   OpenOffice.org 3.2.1 (Ubuntu) and Word 2007 both agree with the spec in this
   case.
+  -->
+
+  <li>If <var title="">mode</var> is "enable", remove from <var title="">node list</var> any
+  <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code> or <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code> whose <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is not also an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code> or <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code>.
+  <!--
+  We don't want to touch these.  E.g., assuming tag name is "ol",
+    [foo<ol><li>bar</ol>baz]
+    -> <ol><li>[foo<li>bar<li>baz]</ol>
+    not <ol><li>[foo</li><ol><li>bar</ol><li>baz]</ol>.
+  But
+    <ul><li>foo<li>[bar</li><ol><li>baz</ol><li>quz]</ul>
+    -> <ul><li>foo</ul><ol><li>[bar</li><ol><li>baz</ol><li>quz]</ol>
+    not <ul><li>foo</ul><ol><li>[bar</ol><ul><ol><li>baz</ol></ul><ol><li>quz]</ol>
   -->
 
   <li>If <var title="">mode</var> is "disable", then while <var title="">node list</var> is not
@@ -4910,140 +4957,110 @@ or "ul"):
   <ol>
     <li>Let <var title="">sublist</var> be an empty list of <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a>.
 
-    <li>Remove the first member from <var title="">node list</var> and append it to
-    <var title="">sublist</var>.
-
-    <li>While <var title="">node list</var> is not empty, and the first member of
-    <var title="">node list</var> is the <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code> of the last member of
-    <var title="">sublist</var>, and the last member of <var title="">sublist</var> and first
-    member of <var title="">node list</var> are both <a href=#inline-node title="inline node">inline
-    nodes</a>, and the last member of <var title="">sublist</var> is not a <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code>,
-    remove the first member from <var title="">node list</var> and append it to
-    <var title="">sublist</var>.
-
-    <li>If <var title="">sublist</var> contains more than one member, <a href=#wrap>wrap</a>
-    <var title="">sublist</var>, with <a href=#sibling-criteria>sibling criteria</a> matching nothing and
-    <a href=#new-parent-instructions>new parent instructions</a> returning the result of calling
-    <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("li")</a></code> on the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>.  Let <var title="">node</var> be
-    the result.
-
-    <li>Otherwise, let <var title="">node</var> be the sole member of
-    <var title="">sublist</var>.
-
-    <li>If <var title="">node</var> is an <a href=#html-element>HTML element</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a>
-    <var title="">other tag name</var>:
+    <li>While either <var title="">sublist</var> is empty, or <var title="">node list</var> is
+    not empty and its first member is the <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code> of
+    <var title="">sublist</var>'s last member:
+    <!-- Accumulate consecutive sibling nodes in sublist, first converting them
+    all to li's (except if they're already lists). -->
 
     <ol>
-      <li>Let <var title="">children</var> be the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a> of <var title="">node</var>.
+      <li>If <var title="">node list</var>'s first member is a <code class=external data-anolis-spec=html title="the p element"><a href=http://www.whatwg.org/html/#the-p-element>p</a></code> or <code class=external data-anolis-spec=html title="the div element"><a href=http://www.whatwg.org/html/#the-div-element>div</a></code>,
+      <a href=#set-the-tag-name>set the tag name</a> of <var title="">node list</var>'s first member to
+      "li", and append the result to <var title="">sublist</var>.  Remove the first
+      member from <var title="">node list</var>.
+      <!-- Thus <p>foo</p> becomes <ol><li>foo</ol> instead of
+      <ol><li><p>foo</ol>, and likewise for div, but other things will be put
+      inside the <li>. -->
 
-      <li><a href=#record-the-values>Record the values</a> of <var title="">children</var>, and let
+      <li>Otherwise, if the first member of <var title="">node list</var> is an <code class=external data-anolis-spec=html title="the li element"><a href=http://www.whatwg.org/html/#the-li-element>li</a></code>
+      or <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code> or <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code>, remove it from <var title="">node list</var> and append it to
+      <var title="">sublist</var>.
+
+      <li>Otherwise:
+
+      <ol>
+        <li>Let <var title="">nodes to wrap</var> be a list of <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a>, initially
+        empty.
+
+        <li>While <var title="">nodes to wrap</var> is empty, or <var title="">node list</var> is
+        not empty and its first member is the <code class=external data-anolis-spec=domcore title=dom-Node-nextSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-nextsibling>nextSibling</a></code> of
+        <var title="">nodes to wrap</var>'s last member and the first member of
+        <var title="">node list</var> is an <a href=#inline-node>inline node</a> and the last member
+        of <var title="">nodes to wrap</var> is an <a href=#inline-node>inline node</a> other than a
+        <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code>, remove the first member from <var title="">node list</var> and append it
+        to <var title="">nodes to wrap</var>.
+
+        <li><a href=#wrap>Wrap</a> <var title="">nodes to wrap</var>, with <a href=#new-parent-instructions>new parent
+        instructions</a> returning the result of calling
+        <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("li")</a></code> on the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>.  Append the result to
+        <var title="">sublist</var>.
+      </ol>
+    </ol>
+
+    <li>If <var title="">sublist</var>'s first member's <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is an <a href=#html-element>HTML
+    element</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> <var title="">tag name</var>, or if every member
+    of <var title="">sublist</var> is an <code class=external data-anolis-spec=html title="the ol element"><a href=http://www.whatwg.org/html/#the-ol-element>ol</a></code> or <code class=external data-anolis-spec=html title="the ul element"><a href=http://www.whatwg.org/html/#the-ul-element>ul</a></code>, continue this loop from the
+    beginning.
+    <!-- Already wrapped properly, nothing more to do. -->
+
+    <li>If <var title="">sublist</var>'s first member's <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is an <a href=#html-element>HTML
+    element</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> <var title="">other tag name</var>:
+
+    <ol>
+      <li><a href=#record-the-values>Record the values</a> of <var title="">sublist</var>, and let
       <var title="">values</var> be the result.
 
-      <li>Remove <var title="">node</var>, <a href=#preserving-its-descendants>preserving its descendants</a>.
+      <li><a href=#split-the-parent>Split the parent</a> of <var title="">sublist</var>.
 
-      <li><a href=#wrap>Wrap</a> <var title="">children</var>, with <a href=#sibling-criteria>sibling
+      <li><a href=#wrap>Wrap</a> <var title="">sublist</var>, with <a href=#sibling-criteria>sibling
       criteria</a> matching any <a href=#html-element>HTML element</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a>
-      <var title="">tag name</var> and <a href=#new-parent-instructions>new parent instructions</a> returning
+      <var title="">tag name</var>, and <a href=#new-parent-instructions>new parent instructions</a> returning
       the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement(<var title="">tag name</var>)</a></code> on the
-      <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>.  Let <var title="">node</var> be the result.
+      <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>.
 
       <li><a href=#restore-the-values>Restore the values</a> from <var title="">values</var>.
 
-      <li>Prepend the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-descendant title=concept-tree-descendant>descendants</a> of <var title="">node</var> that are <a href=#html-element title="HTML element">HTML elements</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> <var title="">other
-      tag name</var> (if any) to <var title="">node list</var>.
-
-      <li>Continue from the beginning of this loop.
-
-      <div class=XXX>
-      <p>This does the wrong thing for input like
-
-      <ul>
-        <li>foo</li>
-        <li>[bar</li>
-        <ul><li>baz</ul>
-        <li>quz]</li>
-      </ul>
-
-      <p>which becomes
-
-      <ul><li>foo</ul>
-      <ol><li>[bar</ol>
-      <ul><ol><li>baz</ol></ul>
-      <ol><li>quz]</ol>
-
-      <p>when we want
-
-      <ul><li>foo</ul>
-      <ol>
-        <li>[bar</li>
-        <ol><li>baz</ol>
-        <li>quz]</li>
-      </ol>
-      </div>
+      <li>Continue this loop from the beginning.
     </ol>
 
-    <li>If <var title="">node</var> is a <code class=external data-anolis-spec=html title="the p element"><a href=http://www.whatwg.org/html/#the-p-element>p</a></code> or <code class=external data-anolis-spec=html title="the div element"><a href=http://www.whatwg.org/html/#the-div-element>div</a></code>, <a href=#set-the-tag-name>set the tag name</a>
-    of <var title="">node</var> to "li", and let <var title="">node</var> be the result.
-
-    <li>If <var title="">node</var> is the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of an <a href=#html-element>HTML element</a>
-    with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> <var title="">other tag name</var>:
-
-    <ol>
-      <li><a href=#record-the-values>Record the values</a> of the one-<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> list consisting of
-      <var title="">node</var>, and let <var title="">values</var> be the result.
-
-      <li><a href=#split-the-parent>Split the parent</a> of the one-<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> list consisting of
-      <var title="">node</var>.
-
-      <li><a href=#wrap>Wrap</a> the one-<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> list consisting of
-      <var title="">node</var>, with <a href=#sibling-criteria>sibling criteria</a> matching any
-      <a href=#html-element>HTML element</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> <var title="">tag name</var>,
-      and with <a href=#new-parent-instructions>new parent instructions</a> returning the result of
-      calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement(<var title="">tag name</var>)</a></code> on the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>.
-
-      <li><a href=#restore-the-values>Restore the values</a> from <var title="">values</var>.
-
-      <li>Prepend the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-descendant title=concept-tree-descendant>descendants</a> of <var title="">node</var> that are <a href=#html-element title="HTML element">HTML elements</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> <var title="">other
-      tag name</var> (if any) to <var title="">node list</var>.
-
-      <li>Continue from the beginning of this loop.
-    </ol>
-
-    <li>If <var title="">node</var> is equal to or the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of an <a href=#html-element>HTML
-    element</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> <var title="">tag name</var>, prepend the
-    <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-descendant title=concept-tree-descendant>descendants</a> of <var title="">node</var> that are <a href=#html-element title="HTML element">HTML
-    elements</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> <var title="">other tag name</var> (if any) to
-    <var title="">node list</var> and continue from the beginning of this loop.
-
-    <li>If <var title="">node</var> is not an <code class=external data-anolis-spec=html title="the li element"><a href=http://www.whatwg.org/html/#the-li-element>li</a></code>, <a href=#wrap>wrap</a> the one-<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>
-    list consisting of <var title="">node</var>, with <a href=#sibling-criteria>sibling criteria</a>
-    matching nothing and <a href=#new-parent-instructions>new parent instructions</a> returning
-    the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("li")</a></code> on the
-    <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>.  Set <var title="">node</var> to the result.
-
-    <li><a href=#wrap>Wrap</a> the one-<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> list consisting of <var title="">node</var>,
-    with the <a href=#sibling-criteria>sibling criteria</a> matching any <a href=#html-element>HTML
-    element</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> <var title="">tag name</var>, and the <a href=#new-parent-instructions>new
-    parent instructions</a> being the following:
+    <li><a href=#wrap>Wrap</a> <var title="">sublist</var>, with the <a href=#sibling-criteria>sibling
+    criteria</a> matching any <a href=#html-element>HTML element</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a>
+    <var title="">tag name</var>, and the <a href=#new-parent-instructions>new parent instructions</a> being the
+    following:
 
     <ol>
-      <li>If the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of <var title="">node</var> is not an <a href=#editable>editable</a>
-      <a href=#simple-indentation-element>simple indentation element</a>, or the <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code> of
-      the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of <var title="">node</var> is not an <a href=#editable>editable</a>
+      <!--
+      Special case: something like
+        <ol><li>foo</ol><blockquote>[bar]</blockquote>
+      becomes
+        <ol><li>foo</li><ol><li>[bar]</ol></ol>
+      instead of
+        <ol><li>foo</ol><blockquote><ol><li>[bar]</ol></blockquote>.
+      We handle the special case in the new parent instructions instead of
+      outside because we'd prefer to wind up in a sibling if there is one.  We
+      handle only previousSibling, not nextSibling, because we really mean for
+      this to cover something like
+        [foo<blockquote>bar]</blockquote>
+      which we'll handle node-by-node.  TODO: Maybe we should do this
+      differently, like just special-case simple indentation elements in an
+      earlier part of the algorithm?  This way's a bit weird.
+      -->
+      <li>If <var title="">sublist</var>'s first member's <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is not an
+      <a href=#editable>editable</a> <a href=#simple-indentation-element>simple indentation element</a>, or
+      <var title="">sublist</var>'s first member's <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>'s <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code> is
+      not an <a href=#editable>editable</a> <a href=#html-element>HTML element</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a>
+      <var title="">tag name</var>, call <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement(<var title="">tag name</var>)</a></code> on the
+      <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a> and return the result.
+
+      <li>Let <var title="">list</var> be <var title="">sublist</var>'s first member's
+      <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>'s <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code>.
+
+      <li><a href=#normalize-sublists>Normalize sublists</a> of <var title="">list</var>'s <code class=external data-anolis-spec=domcore title=dom-Node-lastChild><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-lastchild>lastChild</a></code>.
+
+      <li>If <var title="">list</var>'s <code class=external data-anolis-spec=domcore title=dom-Node-lastChild><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-lastchild>lastChild</a></code> is not an <a href=#editable>editable</a>
       <a href=#html-element>HTML element</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> <var title="">tag name</var>, call
-      <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement(<var title="">tag name</var>)</a></code> on the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a> and return
-      the result.  Otherwise:
-
-      <li>Let <var title="">list</var> be the <code class=external data-anolis-spec=domcore title=dom-Node-previousSibling><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-previoussibling>previousSibling</a></code> of the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of
-      <var title="">node</var>.
-
-      <li><a href=#normalize-sublists>Normalize sublists</a> of <var title="">list</var>'s last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>.
-
-      <li>If <var title="">list</var>'s last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> is not an <a href=#editable>editable</a>
-      <a href=#html-element>HTML element</a> with <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-element-local-name title=concept-element-local-name>local name</a> <var title="">tag name</var>, call
-      <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement(<var title="">tag
-      name</var>)</a></code> on the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>, and append the result as the
-      last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">list</var>.
+      <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement(<var title="">tag name</var>)</a></code> on the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a>, and
+      append the result as the last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">list</var>.
 
       <li>Return the last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> of <var title="">list</var>.
     </ol>

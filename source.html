@@ -466,8 +466,8 @@ must run the following steps:
   throws if the command isn't enabled, I think.  IE9 returns true in at least
   some cases even if the command is disabled.
   -->
-  <p class=XXX>Is this right?  Maybe we should be returning false in other
-  cases too?
+  <!-- TODO: Is this right?  Maybe we should be returning false in other cases
+  too? -->
 
   <li>Take the <span>action</span> for <var>command</var>, passing
   <var>value</var> to the instructions as an argument.
@@ -475,7 +475,7 @@ must run the following steps:
   <li>Return true.
 </ol>
 
-<p class=XXX>Define behavior for <var>show UI</var>.
+<!-- TODO: Define behavior for <var>show UI</var>. -->
 
 <p>When the <dfn
 title=queryCommandEnabled()><code>queryCommandEnabled(<var>command</var>)</code></dfn>
@@ -680,10 +680,10 @@ that is the sole child of an [[li]] is not extraneous.
 and seeing what happens.  (Actually, setting display: none, so that it doesn't
 mess up ranges.)
 
-<p class=XXX>The thing about li is a not very nice hack.  The issue is that an
-li won't collapse even if it has no children at all, but that's not true in all
+<!-- TODO: The thing about li is a not very nice hack.  The issue is that an li
+won't collapse even if it has no children at all, but that's not true in all
 browsers (at least not in Opera 11.11), and also it breaks assumptions
-elsewhere.  E.g., if it gets turned into a p.
+elsewhere.  E.g., if it gets turned into a p. -->
 
 <p>Something is <dfn>visible</dfn> if it is a [[node]] that either is a
 <span>prohibited paragraph child</span>, or a [[text]] node whose [[cddata]] is
@@ -708,12 +708,12 @@ block props</span> and that has at least one [[child]] that is a
 given by calling [[getselection]] on the [[contextobject]], or null if there is
 no such [[range]].
 
-<p class=XXX>I say "first range" because I think that's what Gecko actually
-does, and Gecko is the only one that allows multiple ranges in a selection.
-This is keeping in mind that it stores ranges sorted by start, not by the order
-the user added them, and silently removes or shortens existing ranges to avoid
+<!-- TODO: I say "first range" because I think that's what Gecko actually does,
+and Gecko is the only one that allows multiple ranges in a selection.  This is
+keeping in mind that it stores ranges sorted by start, not by the order the
+user added them, and silently removes or shortens existing ranges to avoid
 overlap.  It probably makes the most sense in the long term to have the command
-affect all ranges.  But I'll leave this for later.
+affect all ranges.  But I'll leave this for later. -->
 
 <p>Each [[htmldocument]] has a boolean <dfn>CSS styling flag</dfn> associated
 with it, which must initially be false.  (<span>The <code
@@ -770,8 +770,8 @@ instead follow these rules:
 <p>To <dfn>set the tag name</dfn> of an [[element]] <var>element</var> to
 <var>new name</var>:
 
-<p class=XXX>Do we want to get rid of attributes that are no longer allowed
-here?
+<!-- TODO: Do we want to get rid of attributes that are no longer allowed here?
+-->
 
 <ol>
   <li>If <var>element</var> is an <span>HTML element</span> with [[localname]]
@@ -1630,37 +1630,37 @@ id=foo> into <span id=foo> instead of <font id=foo>, but probably not worth it.
 <p>To <dfn>push down values</dfn> to a [[node]] <var>node</var>, given a new
 value <var>new value</var>:
 
-<div class=XXX>
-<p>This algorithm goes up to just below the nearest ancestor with the right
+<!--
+This algorithm goes up to just below the nearest ancestor with the right
 style, then re-applies the bad styles repeatedly going down, omitting the
 things we want to have the new style.  This is basically what WebKit does,
 although WebKit sometimes starts higher up and therefore makes more intrusive
 changes, often creating more markup.  IE follows the same general approach too.
 
-<p>Gecko instead seems to start breaking up elements from the bottom, so that the
+Gecko instead seems to start breaking up elements from the bottom, so that the
 range consists of a few consecutive siblings, and it can then break up the
 problematic element into a maximum of two pieces.  The spec's approach seems to
 create fewer elements and simpler markup (or at least markup that's no more
 complex) in most cases I throw at it.
 
-<p>Gecko's approach does have the major advantage that it gets underlines right in
+Gecko's approach does have the major advantage that it gets underlines right in
 many cases for free.  E.g.,
 
-<xmp>  <u>foo<font color=red>[bar]baz</font></u>
+  <u>foo<font color=red>[bar]baz</font></u>
   -> <u>foo</u><font color=red>bar<u>baz</u></font> (spec)
-  -> <u>foo</u><font color=red>bar</font><u><font color=red>baz</font></u> (Gecko)</xmp>
+  -> <u>foo</u><font color=red>bar</font><u><font color=red>baz</font></u> (Gecko)
 
-<p>The spec's markup here is much shorter and contains fewer elements, but is
+The spec's markup here is much shorter and contains fewer elements, but is
 wrong: the underline under "baz" has changed color from black to red.  It might
 be worth trying to copy Gecko's results in such cases, but that won't solve all
 underline problems, so perhaps it's not worth it.
 
-<p>Opera also seems to break up the markup surrounding the range, but even more
+Opera also seems to break up the markup surrounding the range, but even more
 aggressively: even if it doesn't need to pull down styles.  In some cases this
 does actually result in shorter markup, specifically if the existing tags are
 short (like [[i]] or [[b]]) and we're adding tags that are long (like [[span]]
 with a [[style]] attribute).
-</div>
+-->
 
 <ol>
   <li>Let <var>command</var> be the current <span>command</span>.
@@ -1752,11 +1752,12 @@ with a [[style]] attribute).
       <li>If <var>child</var> is an [[element]] whose <span>specified
       value</span> for <var>command</var> is neither null nor equal to
       <var>propagated value</var>, continue with the next <var>child</var>.
-
-      <p class=XXX>This will be incorrect for relative font sizes.  If the font
-      size on the parent was removed and the font size on the child is in ems
-      or percents or something, it will now change value.  This isn't likely to
+      <!--
+      TODO: This will be incorrect for relative font sizes.  If the font size
+      on the parent was removed and the font size on the child is in ems or
+      percents or something, it will now change value.  This isn't likely to
       come up, so we'll ignore it for now.
+      -->
 
       <li>If <var>child</var> is the last member of <var>ancestor list</var>,
       continue with the next <var>child</var>.
@@ -1924,10 +1925,11 @@ different value.
       <var>ancestor</var> to "span", and let <var>ancestor</var> be the
       result.
 
-      <p class=XXX>This will mean any link-specific attributes will be
-      transferred, which makes them both invalid and useless.  Is that okay?  I
-      don't really want to list them all, because that sort of list is prone to
-      bitrot.
+      <!--
+      TODO: This will mean any link-specific attributes will be transferred,
+      which makes them both invalid and useless.  Is that okay?  I don't really
+      want to list them all, because that sort of list is prone to bitrot.
+      -->
 
       <li>Set <var>ancestor</var> to its [[parent]].
     </ol>
@@ -2180,10 +2182,12 @@ as desired.
 
   <li>For each <var>node</var> in <var>node list</var>:
 
-  <p class=XXX>This is inefficient.  It would be most efficient to only push
-  down values on the highest-level effectively contained nodes, and to batch
+  <!--
+  TODO: This is inefficient.  It would be most efficient to only push down
+  values on the highest-level effectively contained nodes, and to batch
   operations so we handle runs of adjacent siblings at once.  Should we bother
   fixing this?
+  -->
 
   <ol>
     <li><span>Push down values</span> on <var>node</var>.
@@ -2507,26 +2511,30 @@ respecifying non-interoperable behavior anyway.
       <dt>7 <dd>xxx-large
     </dl>
 
-    <p class=XXX>The entry for 7 here is an issue: there's no CSS value that
-    corresponds to it.  Even if we got one added to the drafts, it wouldn't be
+    <!--
+    The entry for 7 here is an issue: there's no CSS value that corresponds to
+    it.  Even if we got one added to the drafts, it wouldn't be
     backward-compatible to use it.  WebKit is the only engine that supports CSS
     output for fontSize, and it uses -webkit-xxx-large in this case, which is
     unworkable.  Instead, we just always output a font tag for size 7.  If
     authors want conforming markup, they'll need to give CSS sizes above size
     7, not legacy sizes.
+    -->
   </ol>
 
   <li>If <var>value</var> is not one of the strings "xx-small", "x-small",
   "small", "medium", "large", "x-large", "xx-large", "xxx-large", and is not a
   valid CSS absolute length, then raise a [[SYNTAX_ERR]] exception.
 
-  <p class=XXX>Not sure this is the best way to do it.  We don't want to allow
-  relative lengths, because those can have very weird user-visible behavior.
-  For instance, a size of 2em would sometimes double the text size, but if you
+  <!--
+  Not sure this is the best way to do it.  We don't want to allow relative
+  lengths, because those can have very weird user-visible behavior.  For
+  instance, a size of 2em would sometimes double the text size, but if you
   applied it a second time it would do nothing, but if you deselected one
   character it would suddenly double the size again.  Current UAs just only
   allow numeric values.  There's no harm in allowing "x-small" and absolute
   sizes, I don't think.
+  -->
 
   <li><span>Set the selection's value</span> to <var>value</var>.
 </ol>
@@ -2870,9 +2878,11 @@ IE10PP2, Firefox 7.0a2, and Opera 11.50 do not, so I go with them.
   <span>split the parent</span> of the one-[[node]] list consisting of
   <var>node</var>.
 
-  <p class=XXX>Splitting the parent is really a block algorithm.  It's not
-  clear whether it's desirable to use for inline nodes.  Perhaps it's okay, but
-  it makes me a little uneasy.
+  <!--
+  TODO: Splitting the parent is really a block algorithm.  It's not clear
+  whether it's desirable to use for inline nodes.  Perhaps it's okay, but it
+  makes me a little uneasy.
+  -->
 
   <li>For each of the entries in the following list, in the given order,
   <span>set the selection's value</span> to null, with <var>command</var> as
@@ -2901,8 +2911,7 @@ IE10PP2, Firefox 7.0a2, and Opera 11.50 do not, so I go with them.
 selection's value</span> to "line-through", otherwise <span>set the selection's
 value</span> to null.
 
-<p class=XXX>Has all the same problems as <span>the <code
-title>underline</code> command</span>.
+<!-- Has all the same problems as underline. -->
 
 <p class=XXX>Should we treat ins/del the same as u/s?  Currently they're
 unremovable.
@@ -3330,9 +3339,9 @@ work well given the design of the API.
   <li>If <var>node</var> is not an [[element]], return "left".
   <!-- This means there's no applicable style rule, so probably it will wind up
   left-aligned.  Of course this ignores the fact that the alignment will really
-  be "start", per the XXX below, so this is wrong for RTL, but it's a pretty
-  marginal corner case anyway.  (It will only happen if, e.g., everything up to
-  and including the html and body elements have display: inline or none.) -->
+  be "start", so this is wrong for RTL, but it's a pretty marginal corner case
+  anyway.  (It will only happen if, e.g., everything up to and including the
+  html and body elements have display: inline or none.) -->
 
   <li>If <var>node</var>'s "text-align" property has [[compval]] "start",
   return "left" if the [[directionality]] of <var>node</var> is "ltr", "right"
@@ -7114,15 +7123,13 @@ The behavior here is relatively simple and largely matches implementations.
 <ol>
   <li>Let <var>target</var> be <span data-anolis-spec=html
   title=the-body-element-0>the body element</span> of the [[contextobject]].
-
-  <p class=XXX>Is this right even for framesets?
+  <!-- TODO: Is this right even for framesets? -->
 
   <li>If <var>target</var> is null, let <var>target</var> be the
   [[contextobject]]'s <code data-anolis-spec=domcore
   title=dom-Document-documentElement>documentElement</code>.
-
-  <p class=XXX>Is this right even for documents whose root element is not an
-  HTML element?
+  <!-- TODO: Is this right even for documents whose root element is not an HTML
+  element? -->
 
   <li>If <var>target</var> is null, call [[getselection]] on the
   [[contextobject]], and call [[removeallranges]] on the result.

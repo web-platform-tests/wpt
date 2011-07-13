@@ -1298,22 +1298,21 @@ which at least one of the following holds:
 </ul>
 
 <p class=note>Conceptually, a simple modifiable element is a modifiable element
-which <a href=#specified-value title="specified value">specifies</a> a value for at most one
-command.
+which specifies a value for at most one command.
 
 
 <h3 id=assorted-inline-formatting-command-algorithms><span class=secno>7.2 </span>Assorted inline formatting command algorithms</h3>
 
-<p>The <dfn id=effective-value>effective value</dfn> of a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> <var title="">node</var> for a given
-<var title="">command</var> is returned by the following algorithm, which will return
-either a string or null:
+<p>The <dfn id=effective-command-value>effective command value</dfn> of a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> <var title="">node</var> for a
+given <var title="">command</var> is returned by the following algorithm, which will
+return either a string or null:
 
 <ol>
   <li>If neither <var title="">node</var> nor its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>, return
   null.
 
-  <li>If <var title="">node</var> is not an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>, return the <a href=#effective-value>effective
-  value</a> of its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> for <var title="">command</var>.
+  <li>If <var title="">node</var> is not an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>, return the <a href=#effective-command-value>effective
+  command value</a> of its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> for <var title="">command</var>.
 
   <li>If <var title="">command</var> is "createLink" or "unlink":
 
@@ -1390,12 +1389,9 @@ either a string or null:
   property</a> for <var title="">command</var>.
 </ol>
 
-<p>The <dfn id=specified-value>specified value</dfn> of an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> <var title="">element</var> for a
-given <var title="">command</var> is returned by the following algorithm, which will
-return either a string or null:
-
-<p class=XXX>"Specified value" already means something in CSS, I need to find a
-different name.
+<p>The <dfn id=specified-command-value>specified command value</dfn> of an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> <var title="">element</var>
+for a given <var title="">command</var> is returned by the following algorithm, which
+will return either a string or null:
 
 <ol>
   <li>If <var title="">command</var> is "backColor" or "hiliteColor" and the
@@ -1494,13 +1490,13 @@ value</var>:
   <var title="">candidate</var> has exactly one <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>, and that <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a> is also a
   <a href=#modifiable-element>modifiable element</a>, and <var title="">candidate</var> is not a
   <a href=#simple-modifiable-element>simple modifiable element</a> or <var title="">candidate</var>'s
-  <a href=#specified-value>specified value</a> for <var title="">command</var> is not <var title="">new
+  <a href=#specified-command-value>specified command value</a> for <var title="">command</var> is not <var title="">new
   value</var>, set <var title="">candidate</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>.
 
   <li>If <var title="">candidate</var> is <var title="">node</var>, or is not a <a href=#simple-modifiable-element>simple
-  modifiable element</a>, or its <a href=#specified-value>specified value</a> and
-  <a href=#effective-value>effective value</a> for <var title="">command</var> are not both <var title="">new
-  value</var>, abort these steps.
+  modifiable element</a>, or its <a href=#specified-command-value>specified command value</a> and
+  <a href=#effective-command-value>effective command value</a> for <var title="">command</var> are not both
+  <var title="">new value</var>, abort these steps.
 
   <li>While <var title="">candidate</var> has <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, insert the first <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>
   of <var title="">candidate</var> into <var title="">candidate</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> immediately
@@ -1539,7 +1535,7 @@ value</var>:
 
 <ol>
   <li>Let <var title="">values</var> be a list of (<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a>, <a href=#command>command</a>,
-  <a href=#specified-value>specified value</a>) triples, initially empty.
+  <a href=#specified-command-value>specified command value</a>) triples, initially empty.
 
   <li>For each <var title="">node</var> in <var title="">node list</var>, for each
   <var title="">command</var> in the list "subscript", "bold", "fontName", "fontSize",
@@ -1554,14 +1550,14 @@ value</var>:
 
     <li>If <var title="">ancestor</var> is not an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>, set it to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
 
-    <li>While <var title="">ancestor</var> is an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> and its <a href=#specified-value>specified
-    value</a> for <var title="">command</var> is null, set it to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+    <li>While <var title="">ancestor</var> is an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> and its <a href=#specified-command-value>specified
+    command value</a> for <var title="">command</var> is null, set it to its
+    <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
 
     <li>If <var title="">ancestor</var> is an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>, add (<var title="">node</var>,
-    <var title="">command</var>, <var title="">ancestor</var>'s <a href=#specified-value>specified value</a> for
-    <var title="">command</var>) to <var title="">values</var>.  Otherwise add (<var title="">node</var>,
-    <var title="">command</var>, null) to <var title="">values</var>.
-  </ol>
+    <var title="">command</var>, <var title="">ancestor</var>'s <a href=#specified-command-value>specified command
+    value</a> for <var title="">command</var>) to <var title="">values</var>.  Otherwise add
+    (<var title="">node</var>, <var title="">command</var>, null) to <var title="">values</var>.  </ol>
 
   <li>Return <var title="">values</var>.
 </ol>
@@ -1578,16 +1574,17 @@ returned by the <a href=#record-the-values>record the values</a> algorithm:
 
     <li>If <var title="">ancestor</var> is not an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>, set it to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
 
-    <li>While <var title="">ancestor</var> is an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> and its <a href=#specified-value>specified
-    value</a> for <var title="">command</var> is null, set it to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+    <li>While <var title="">ancestor</var> is an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> and its <a href=#specified-command-value>specified
+    command value</a> for <var title="">command</var> is null, set it to its
+    <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
 
     <li>If <var title="">value</var> is null and <var title="">ancestor</var> is an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>,
     <a href=#push-down-values>push down values</a> on <var title="">node</var> for <var title="">command</var>,
     with <var title="">new value</var> null.
 
     <li>Otherwise, if <var title="">ancestor</var> is an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> and its
-    <a href=#specified-value>specified value</a> for <var title="">command</var> is different from
-    <var title="">value</var>, or if <var title="">ancestor</var> is not an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> and
+    <a href=#specified-command-value>specified command value</a> for <var title="">command</var> is different
+    from <var title="">value</var>, or if <var title="">ancestor</var> is not an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> and
     <var title="">value</var> is not null, <a href=#force-the-value>force the value</a> of
     <var title="">command</var> to <var title="">value</var> on <var title="">node</var>.
   </ol>
@@ -1615,7 +1612,7 @@ id=foo> into <span id=foo> instead of <font id=foo>, but probably not worth it.
   <li>If <var title="">element</var> is not <a href=#editable>editable</a>, return the empty
   list.
 
-  <li>If <var title="">element</var>'s <a href=#specified-value>specified value</a> for
+  <li>If <var title="">element</var>'s <a href=#specified-command-value>specified command value</a> for
   <var title="">command</var> is null, return the empty list.  <!-- We want to abort
   early so that we don't try unsetting background-color on a non-inline
   element. -->
@@ -1661,7 +1658,7 @@ id=foo> into <span id=foo> instead of <font id=foo>, but probably not worth it.
   <li>If <var title="">element</var> is an <code class=external data-anolis-spec=html title="the a element"><a href=http://www.whatwg.org/html/#the-a-element>a</a></code> element and <var title="">command</var> is
   "createLink" or "unlink", unset the <code class=external data-anolis-spec=html title=attr-hyperlink-href><a href=http://www.whatwg.org/html/#attr-hyperlink-href>href</a></code> property of <var title="">element</var>.
 
-  <li>If <var title="">element</var>'s <a href=#specified-value>specified value</a> for
+  <li>If <var title="">element</var>'s <a href=#specified-command-value>specified command value</a> for
   <var title="">command</var> is null, return the empty list.
   <!-- If we get past this step, we're something like <b class=foo> where we
   want to keep the extra attributes, so we stick them on a span. -->
@@ -1714,22 +1711,24 @@ with a <code data-anolis-spec=html title="the style attribute">style</code> attr
   <li>If <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is not an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>, abort this
   algorithm. <!-- E.g., a text node child of a document fragment. -->
 
-  <li>If the <a href=#effective-value>effective value</a> of <var title="">command</var> is <var title="">new
-  value</var> on <var title="">node</var>, abort this algorithm.
+  <li>If the <a href=#effective-command-value>effective command value</a> of <var title="">command</var> is
+  <var title="">new value</var> on <var title="">node</var>, abort this algorithm.
 
   <li>Let <var title="">current ancestor</var> be <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
 
   <li>Let <var title="">ancestor list</var> be a list of <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>nodes</a>, initially empty.
 
   <li>While <var title="">current ancestor</var> is an <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>
-  and the <a href=#effective-value>effective value</a> of <var title="">command</var> is not <var title="">new
-  value</var> on it, append <var title="">current ancestor</var> to <var title="">ancestor
-  list</var>, then set <var title="">current ancestor</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
+  and the <a href=#effective-command-value>effective command value</a> of <var title="">command</var> is not
+  <var title="">new value</var> on it, append <var title="">current ancestor</var> to
+  <var title="">ancestor list</var>, then set <var title="">current ancestor</var> to its
+  <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
 
   <li>If <var title="">ancestor list</var> is empty, abort this algorithm.
 
-  <li>Let <var title="">propagated value</var> be the <a href=#specified-value>specified value</a> of
-  <var title="">command</var> on the last member of <var title="">ancestor list</var>.
+  <li>Let <var title="">propagated value</var> be the <a href=#specified-command-value>specified command
+  value</a> of <var title="">command</var> on the last member of <var title="">ancestor
+  list</var>.
 
   <!-- We can only remove specified values, so if the value isn't specified,
   give up.  Unless we're actually trying to push down a null specified value,
@@ -1766,7 +1765,7 @@ with a <code data-anolis-spec=html title="the style attribute">style</code> attr
   sense to break up the parent as long as it won't create an extra node (i.e.,
   we're styling something that includes the first or last child).
   -->
-  <li>If the <a href=#effective-value>effective value</a> of <var title="">command</var> is not
+  <li>If the <a href=#effective-command-value>effective command value</a> of <var title="">command</var> is not
   <var title="">new value</var> on the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of the last member of <var title="">ancestor
   list</var>, and <var title="">new value</var> is not null, abort this algorithm.
 
@@ -1778,16 +1777,16 @@ with a <code data-anolis-spec=html title="the style attribute">style</code> attr
 
     <li>Remove the last member from <var title="">ancestor list</var>.
 
-    <li>If the <a href=#specified-value>specified value</a> of <var title="">current ancestor</var> for
-    <var title="">command</var> is not null, set <var title="">propagated value</var> to that
-    value.
+    <li>If the <a href=#specified-command-value>specified command value</a> of <var title="">current
+    ancestor</var> for <var title="">command</var> is not null, set <var title="">propagated
+    value</var> to that value.
 
     <li>Let <var title="">children</var> be the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a> of <var title="">current
     ancestor</var>.
 
-    <li>If the <a href=#specified-value>specified value</a> of <var title="">current ancestor</var> for
-    <var title="">command</var> is not null, <a href=#clear-the-value>clear the value</a> of
-    <var title="">current ancestor</var>.
+    <li>If the <a href=#specified-command-value>specified command value</a> of <var title="">current
+    ancestor</var> for <var title="">command</var> is not null, <a href=#clear-the-value>clear the
+    value</a> of <var title="">current ancestor</var>.
 
     <li>For every <var title="">child</var> in <var title="">children</var>:
 
@@ -1795,7 +1794,7 @@ with a <code data-anolis-spec=html title="the style attribute">style</code> attr
       <li>If <var title="">child</var> is <var title="">node</var>, continue with the next
       <var title="">child</var>.
 
-      <li>If <var title="">child</var> is an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> whose <a href=#specified-value>specified
+      <li>If <var title="">child</var> is an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> whose <a href=#specified-command-value>specified command
       value</a> for <var title="">command</var> is neither null nor equal to
       <var title="">propagated value</var>, continue with the next <var title="">child</var>.
       <!--
@@ -1856,22 +1855,24 @@ different value.
 
     <li><a href=#wrap>Wrap</a> the one-<a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> list consisting of <var title="">node</var>,
     with <a href=#sibling-criteria>sibling criteria</a> matching a <a href=#simple-modifiable-element>simple modifiable
-    element</a> whose <a href=#specified-value>specified value</a> and <a href=#effective-value>effective
-    value</a> for <var title="">command</var> are both <var title="">new value</var>, and with
-    <a href=#new-parent-instructions>new parent instructions</a> returning null.
+    element</a> whose <a href=#specified-command-value>specified command value</a> and
+    <a href=#effective-command-value>effective command value</a> for <var title="">command</var> are both
+    <var title="">new value</var>, and with <a href=#new-parent-instructions>new parent instructions</a>
+    returning null.
     <!-- The new parent instructions are too complicated to reasonably feed
     into the wrap algorithm. -->
   </ol>
 
-  <li>If the <a href=#effective-value>effective value</a> of <var title="">command</var> is <var title="">new
-  value</var> on <var title="">node</var>, abort this algorithm.
+  <li>If the <a href=#effective-command-value>effective command value</a> of <var title="">command</var> is
+  <var title="">new value</var> on <var title="">node</var>, abort this algorithm.
 
   <li>If <var title="">node</var> is not an <a href=#allowed-child>allowed child</a> of "span":
 
   <ol>
     <li>Let <var title="">children</var> be all <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a> of <var title="">node</var>,
-    omitting any that are <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>s whose <a href=#specified-value>specified value</a> for
-    <var title="">command</var> is neither null nor equal to <var title="">new value</var>.
+    omitting any that are <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>s whose <a href=#specified-command-value>specified command
+    value</a> for <var title="">command</var> is neither null nor equal to <var title="">new
+    value</var>.
 
     <li><a href=#force-the-value>Force the value</a> of each <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> in <var title="">children</var>,
     with <var title="">command</var> and <var title="">new value</var> as in this invocation of
@@ -1885,8 +1886,8 @@ different value.
     <li>Abort this algorithm.
   </ol>
 
-  <li>If the <a href=#effective-value>effective value</a> of <var title="">command</var> is <var title="">new
-  value</var> on <var title="">node</var>, abort this algorithm.
+  <li>If the <a href=#effective-command-value>effective command value</a> of <var title="">command</var> is
+  <var title="">new value</var> on <var title="">node</var>, abort this algorithm.
 
   <li>Let <var title="">new parent</var> be null.
 
@@ -2012,27 +2013,28 @@ different value.
   <var title="">node</var>.  <!-- This preserves boundary points correctly, as usual.
   -->
 
-  <li>If the <a href=#effective-value>effective value</a> of <var title="">command</var> for <var title="">new
-  parent</var> is not <var title="">new value</var>, and the <a href=#relevant-css-property>relevant CSS
+  <li>If the <a href=#effective-command-value>effective command value</a> of <var title="">command</var> for
+  <var title="">new parent</var> is not <var title="">new value</var>, and the <a href=#relevant-css-property>relevant CSS
   property</a> for <var title="">command</var> is not null, set that CSS property of
   <var title="">new parent</var> to <var title="">new value</var> (if the new value would be
   valid).
 
   <li>If <var title="">command</var> is "strikethrough", and <var title="">new value</var> is
-  "line-through", and the <a href=#effective-value>effective value</a> of "strikethrough" for
-  <var title="">new parent</var> is not "line-through", set the "text-decoration"
-  property of <var title="">new parent</var> to "line-through".
+  "line-through", and the <a href=#effective-command-value>effective command value</a> of
+  "strikethrough" for <var title="">new parent</var> is not "line-through", set the
+  "text-decoration" property of <var title="">new parent</var> to "line-through".
 
   <li>If <var title="">command</var> is "underline", and <var title="">new value</var> is
-  "underline", and the <a href=#effective-value>effective value</a> of "underline" for <var title="">new
-  parent</var> is not "underline", set the "text-decoration" property of
-  <var title="">new parent</var> to "underline".
+  "underline", and the <a href=#effective-command-value>effective command value</a> of "underline" for
+  <var title="">new parent</var> is not "underline", set the "text-decoration" property
+  of <var title="">new parent</var> to "underline".
 
   <li>Append <var title="">node</var> to <var title="">new parent</var> as its last <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>child</a>,
   <a href=#preserving-ranges>preserving ranges</a>.
 
-  <li>If <var title="">node</var> is an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> and the <a href=#effective-value>effective value</a>
-  of <var title="">command</var> for <var title="">node</var> is not <var title="">new value</var>:
+  <li>If <var title="">node</var> is an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> and the <a href=#effective-command-value>effective command
+  value</a> of <var title="">command</var> for <var title="">node</var> is not <var title="">new
+  value</var>:
 
   <ol>
     <li>Insert <var title="">node</var> into the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of <var title="">new parent</var>
@@ -2065,8 +2067,9 @@ different value.
 
     <ol>
       <li>Let <var title="">children</var> be all <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a> of <var title="">node</var>,
-      omitting any that are <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>s whose <a href=#specified-value>specified value</a> for
-      <var title="">command</var> is neither null nor equal to <var title="">new value</var>.
+      omitting any that are <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>s whose <a href=#specified-command-value>specified command
+      value</a> for <var title="">command</var> is neither null nor equal to <var title="">new
+      value</var>.
 
       <li><a href=#force-the-value>Force the value</a> of each <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> in <var title="">children</var>,
       with <var title="">command</var> and <var title="">new value</var> as in this invocation
@@ -2274,11 +2277,11 @@ document background color.  See hiliteColor for comments.
 
 <p><a href=#indeterminate>Indeterminate</a>: True if among <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code>
 nodes that are <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active
-range</a>, there are two that have distinct <a href=#effective-value title="effective
-value">effective values</a>.  Otherwise false.
+range</a>, there are two that have distinct <a href=#effective-command-value title="effective command
+value">effective command values</a>.  Otherwise false.
 
-<p><a href=#value>Value</a>: The <a href=#effective-value>effective value</a> of the <a href=#active-range>active
-range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>.
+<p><a href=#value>Value</a>: The <a href=#effective-command-value>effective command value</a> of the
+<a href=#active-range>active range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>.
 
 <p class=note>This cannot be null, since the boundary point node of a selection
 must always be either an element or a text node that's the child of an element.
@@ -2300,9 +2303,9 @@ value</a> to "normal".
 
 <p><a href=#indeterminate>Indeterminate</a>: True if among <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code>
 nodes that are <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active
-range</a>, there is at least one with <a href=#effective-value>effective value</a> less than
-600 and at least one with <a href=#effective-value>effective value</a> greater than or equal to
-600.  Otherwise false.
+range</a>, there is at least one with <a href=#effective-command-value>effective command value</a>
+less than 600 and at least one with <a href=#effective-command-value>effective command value</a>
+greater than or equal to 600.  Otherwise false.
 <!--
 The cutoff of 600 (both here and for state) matches Chrome 14 dev.  The cutoff
 used by IE9 and Firefox 6.0a2 seems to be 500, and the distinction isn't
@@ -2322,8 +2325,8 @@ I'll go with 600 as the cutoff.
 
 <p><a href=#state>State</a>: True if every <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node that
 is <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active range</a> has
-<a href=#effective-value>effective value</a> at least 600, and there is at least one such
-<code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node.  Otherwise false.
+<a href=#effective-command-value>effective command value</a> at least 600, and there is at least one
+such <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node.  Otherwise false.
 <!--
 For bold and similar commands, IE 9 RC seems to consider the state true or
 false depending on the first element.  All other browsers follow the same
@@ -2431,12 +2434,12 @@ apply. -->
 
 <p><a href=#indeterminate>Indeterminate</a>: True if among <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code>
 nodes that are <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active
-range</a>, there are two that have distinct <a href=#effective-value title="effective
-value">effective values</a>.  Otherwise false.
+range</a>, there are two that have distinct <a href=#effective-command-value title="effective command
+value">effective command values</a>.  Otherwise false.
 <!-- This follows Firefox 6.0a2.  Chrome 14 dev always returns false. -->
 
-<p><a href=#value>Value</a>: The <a href=#effective-value>effective value</a> of the <a href=#active-range>active
-range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>.
+<p><a href=#value>Value</a>: The <a href=#effective-command-value>effective command value</a> of the
+<a href=#active-range>active range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>.
 
 <p class=note>This cannot be null, since the boundary point node of a selection
 must always be either an element or a text node that's the child of an element.
@@ -2569,8 +2572,8 @@ respecifying non-interoperable behavior anyway.
 
 <p><a href=#indeterminate>Indeterminate</a>: True if among <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code>
 nodes that are <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active
-range</a>, there are two that have distinct <a href=#effective-value title="effective
-value">effective values</a>.  Otherwise false.
+range</a>, there are two that have distinct <a href=#effective-command-value title="effective command
+value">effective command values</a>.  Otherwise false.
 <!-- This follows Firefox 6.0a2.  Chrome 14 dev always returns false. -->
 
 <p><a href=#value>Value</a>:
@@ -2597,8 +2600,8 @@ If the selection isn't someplace editable, Chrome works like usual; some other
 browsers behave differently.  I see no reason to behave differently.
 -->
 <ol>
-  <li>Let <var title="">pixel size</var> be the <a href=#effective-value>effective value</a> of the
-  <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>, as a number of pixels.
+  <li>Let <var title="">pixel size</var> be the <a href=#effective-command-value>effective command value</a> of
+  the <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>, as a number of pixels.
 
   <p class=note>The active range's start node cannot be null, since the
   boundary point node of a selection must always be either an element or a text
@@ -2709,12 +2712,12 @@ here, not state.  So I'll match other browsers and not define any state. -->
 
 <p><a href=#indeterminate>Indeterminate</a>: True if among <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code>
 nodes that are <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active
-range</a>, there are two that have distinct <a href=#effective-value title="effective
-value">effective values</a>.  Otherwise false.
+range</a>, there are two that have distinct <a href=#effective-command-value title="effective command
+value">effective command values</a>.  Otherwise false.
 <!-- This follows Firefox 6.0a2.  Chrome 14 dev always returns false. -->
 
-<p><a href=#value>Value</a>: The <a href=#effective-value>effective value</a> of the <a href=#active-range>active
-range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>.
+<p><a href=#value>Value</a>: The <a href=#effective-command-value>effective command value</a> of the
+<a href=#active-range>active range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>.
 
 <p class=note>This cannot be null, since the boundary point node of a selection
 must always be either an element or a text node that's the child of an element.
@@ -2766,13 +2769,13 @@ For color parsing, see the comment for foreColor. -->
 
 <p><a href=#indeterminate>Indeterminate</a>: True if among <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code>
 nodes that are <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active
-range</a>, there are two that have distinct <a href=#effective-value title="effective
-value">effective values</a>.  Otherwise false.
+range</a>, there are two that have distinct <a href=#effective-command-value title="effective command
+value">effective command values</a>.  Otherwise false.
 <!-- This follows no one.  Firefox 6.0a2 and Chrome 14 dev both always return
 false.  However, it makes sense. -->
 
-<p><a href=#value>Value</a>: The <a href=#effective-value>effective value</a> of the <a href=#active-range>active
-range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>.
+<p><a href=#value>Value</a>: The <a href=#effective-command-value>effective command value</a> of the
+<a href=#active-range>active range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>.
 
 <p class=note>This cannot be null, since the boundary point node of a selection
 must always be either an element or a text node that's the child of an element.
@@ -2797,14 +2800,14 @@ value</a> to "normal".
 
 <p><a href=#indeterminate>Indeterminate</a>: True if among <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code>
 nodes that are <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active
-range</a>, there is at least one with <a href=#effective-value>effective value</a> either
-"italic" or "oblique" and at least one with <a href=#effective-value>effective value</a>
-"normal".  Otherwise false.
+range</a>, there is at least one with <a href=#effective-command-value>effective command value</a>
+either "italic" or "oblique" and at least one with <a href=#effective-command-value>effective command
+value</a> "normal".  Otherwise false.
 
 <p><a href=#state>State</a>: True if every <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node that
 is <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active range</a> has
-<a href=#effective-value>effective value</a> either "italic" or "oblique", and there is at
-least one such <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node.  Otherwise false.
+<a href=#effective-command-value>effective command value</a> either "italic" or "oblique", and there is
+at least one such <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node.  Otherwise false.
 
 <p><a href=#relevant-css-property>Relevant CSS property</a>: "font-style"
 
@@ -2946,14 +2949,14 @@ unremovable.
 
 <p><a href=#indeterminate>Indeterminate</a>: True if among <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code>
 nodes that are <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active
-range</a>, there is at least one with <a href=#effective-value>effective value</a>
-"line-through" and at least one with <a href=#effective-value>effective value</a> null.
+range</a>, there is at least one with <a href=#effective-command-value>effective command value</a>
+"line-through" and at least one with <a href=#effective-command-value>effective command value</a> null.
 Otherwise false.
 
 <p><a href=#state>State</a>: True if every <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node that
 is <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active range</a> has
-<a href=#effective-value>effective value</a> "line-through", and there is at least one such
-<code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node.  Otherwise false.
+<a href=#effective-command-value>effective command value</a> "line-through", and there is at least one
+such <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node.  Otherwise false.
 
 
 <h3 id=the-subscript-command><span class=secno>7.17 </span><dfn>The <code title="">subscript</code> command</dfn></h3>
@@ -2971,16 +2974,16 @@ is <a href=#effectively-contained>effectively contained</a> in the <a href=#acti
 
 <p><a href=#indeterminate>Indeterminate</a>: True if either among <a href=#editable>editable</a>
 <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> nodes that are <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active
-range</a>, there is at least one with <a href=#effective-value>effective value</a> "sub" and
-at least one with some other <a href=#effective-value>effective value</a>; or if there is some
-<a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node <a href=#effectively-contained>effectively contained</a> in the
-<a href=#active-range>active range</a> with <a href=#effective-value>effective value</a> "mixed".  Otherwise
-false.
+range</a>, there is at least one with <a href=#effective-command-value>effective command value</a>
+"sub" and at least one with some other <a href=#effective-command-value>effective command value</a>; or
+if there is some <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node <a href=#effectively-contained>effectively
+contained</a> in the <a href=#active-range>active range</a> with <a href=#effective-command-value>effective command
+value</a> "mixed".  Otherwise false.
 
 <p><a href=#state>State</a>: True if every <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node that
 is <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active range</a> has
-<a href=#effective-value>effective value</a> "sub", and there is at least one such <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code>
-node.  Otherwise false.
+<a href=#effective-command-value>effective command value</a> "sub", and there is at least one such
+<code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node.  Otherwise false.
 <!--
 For <sup><sub>foo</sub></sup>, Firefox 6.0a2 and Opera 11.11 say the state is
 true for both superscript and subscript, and indeterminate is false; Chrome 14
@@ -3011,16 +3014,16 @@ other indeterminate situations, so it's fair to consider it indeterminate.
 
 <p><a href=#indeterminate>Indeterminate</a>: True if either among <a href=#editable>editable</a>
 <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> nodes that are <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active
-range</a>, there is at least one with <a href=#effective-value>effective value</a> "super"
-and at least one with some other <a href=#effective-value>effective value</a>; or if there is
-some <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node <a href=#effectively-contained>effectively contained</a> in
-the <a href=#active-range>active range</a> with <a href=#effective-value>effective value</a> "mixed".
-Otherwise false.
+range</a>, there is at least one with <a href=#effective-command-value>effective command value</a>
+"super" and at least one with some other <a href=#effective-command-value>effective command value</a>;
+or if there is some <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node <a href=#effectively-contained>effectively
+contained</a> in the <a href=#active-range>active range</a> with <a href=#effective-command-value>effective command
+value</a> "mixed".  Otherwise false.
 
 <p><a href=#state>State</a>: True if every <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node that
 is <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active range</a> has
-<a href=#effective-value>effective value</a> "super", and there is at least one such <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code>
-node.  Otherwise false.
+<a href=#effective-command-value>effective command value</a> "super", and there is at least one such
+<code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node.  Otherwise false.
 
 <p><a href=#relevant-css-property>Relevant CSS property</a>: "vertical-align"
 
@@ -3085,14 +3088,14 @@ unremovable.
 
 <p><a href=#indeterminate>Indeterminate</a>: True if among <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code>
 nodes that are <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active
-range</a>, there is at least one with <a href=#effective-value>effective value</a>
-"underline" and at least one with <a href=#effective-value>effective value</a> null.  Otherwise
-false.
+range</a>, there is at least one with <a href=#effective-command-value>effective command value</a>
+"underline" and at least one with <a href=#effective-command-value>effective command value</a> null.
+Otherwise false.
 
 <p><a href=#state>State</a>: True if every <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node that
 is <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active range</a> has
-<a href=#effective-value>effective value</a> "underline", and there is at least one such
-<code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node.  Otherwise false.
+<a href=#effective-command-value>effective command value</a> "underline", and there is at least one
+such <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node.  Otherwise false.
 
 
 <h3 id=the-unlink-command><span class=secno>7.20 </span><dfn>The <code title="">unlink</code> command</dfn></h3>

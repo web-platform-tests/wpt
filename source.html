@@ -1254,22 +1254,21 @@ which at least one of the following holds:
 </ul>
 
 <p class=note>Conceptually, a simple modifiable element is a modifiable element
-which <span title="specified value">specifies</span> a value for at most one
-command.
+which specifies a value for at most one command.
 <!-- @} -->
 
 <h3>Assorted inline formatting command algorithms</h3>
 <!-- @{ -->
-<p>The <dfn>effective value</dfn> of a [[node]] <var>node</var> for a given
-<var>command</var> is returned by the following algorithm, which will return
-either a string or null:
+<p>The <dfn>effective command value</dfn> of a [[node]] <var>node</var> for a
+given <var>command</var> is returned by the following algorithm, which will
+return either a string or null:
 
 <ol>
   <li>If neither <var>node</var> nor its [[parent]] is an [[element]], return
   null.
 
   <li>If <var>node</var> is not an [[element]], return the <span>effective
-  value</span> of its [[parent]] for <var>command</var>.
+  command value</span> of its [[parent]] for <var>command</var>.
 
   <li>If <var>command</var> is "createLink" or "unlink":
 
@@ -1346,12 +1345,9 @@ either a string or null:
   property</span> for <var>command</var>.
 </ol>
 
-<p>The <dfn>specified value</dfn> of an [[element]] <var>element</var> for a
-given <var>command</var> is returned by the following algorithm, which will
-return either a string or null:
-
-<p class=XXX>"Specified value" already means something in CSS, I need to find a
-different name.
+<p>The <dfn>specified command value</dfn> of an [[element]] <var>element</var>
+for a given <var>command</var> is returned by the following algorithm, which
+will return either a string or null:
 
 <ol>
   <li>If <var>command</var> is "backColor" or "hiliteColor" and the
@@ -1450,13 +1446,13 @@ value</var>:
   <var>candidate</var> has exactly one [[child]], and that [[child]] is also a
   <span>modifiable element</span>, and <var>candidate</var> is not a
   <span>simple modifiable element</span> or <var>candidate</var>'s
-  <span>specified value</span> for <var>command</var> is not <var>new
+  <span>specified command value</span> for <var>command</var> is not <var>new
   value</var>, set <var>candidate</var> to its [[child]].
 
   <li>If <var>candidate</var> is <var>node</var>, or is not a <span>simple
-  modifiable element</span>, or its <span>specified value</span> and
-  <span>effective value</span> for <var>command</var> are not both <var>new
-  value</var>, abort these steps.
+  modifiable element</span>, or its <span>specified command value</span> and
+  <span>effective command value</span> for <var>command</var> are not both
+  <var>new value</var>, abort these steps.
 
   <li>While <var>candidate</var> has [[children]], insert the first [[child]]
   of <var>candidate</var> into <var>candidate</var>'s [[parent]] immediately
@@ -1495,7 +1491,7 @@ value</var>:
 
 <ol>
   <li>Let <var>values</var> be a list of ([[node]], <span>command</span>,
-  <span>specified value</span>) triples, initially empty.
+  <span>specified command value</span>) triples, initially empty.
 
   <li>For each <var>node</var> in <var>node list</var>, for each
   <var>command</var> in the list "subscript", "bold", "fontName", "fontSize",
@@ -1511,13 +1507,13 @@ value</var>:
     <li>If <var>ancestor</var> is not an [[element]], set it to its [[parent]].
 
     <li>While <var>ancestor</var> is an [[element]] and its <span>specified
-    value</span> for <var>command</var> is null, set it to its [[parent]].
+    command value</span> for <var>command</var> is null, set it to its
+    [[parent]].
 
     <li>If <var>ancestor</var> is an [[element]], add (<var>node</var>,
-    <var>command</var>, <var>ancestor</var>'s <span>specified value</span> for
-    <var>command</var>) to <var>values</var>.  Otherwise add (<var>node</var>,
-    <var>command</var>, null) to <var>values</var>.
-  </ol>
+    <var>command</var>, <var>ancestor</var>'s <span>specified command
+    value</span> for <var>command</var>) to <var>values</var>.  Otherwise add
+    (<var>node</var>, <var>command</var>, null) to <var>values</var>.  </ol>
 
   <li>Return <var>values</var>.
 </ol>
@@ -1535,15 +1531,16 @@ returned by the <span>record the values</span> algorithm:
     <li>If <var>ancestor</var> is not an [[element]], set it to its [[parent]].
 
     <li>While <var>ancestor</var> is an [[element]] and its <span>specified
-    value</span> for <var>command</var> is null, set it to its [[parent]].
+    command value</span> for <var>command</var> is null, set it to its
+    [[parent]].
 
     <li>If <var>value</var> is null and <var>ancestor</var> is an [[element]],
     <span>push down values</span> on <var>node</var> for <var>command</var>,
     with <var>new value</var> null.
 
     <li>Otherwise, if <var>ancestor</var> is an [[element]] and its
-    <span>specified value</span> for <var>command</var> is different from
-    <var>value</var>, or if <var>ancestor</var> is not an [[element]] and
+    <span>specified command value</span> for <var>command</var> is different
+    from <var>value</var>, or if <var>ancestor</var> is not an [[element]] and
     <var>value</var> is not null, <span>force the value</span> of
     <var>command</var> to <var>value</var> on <var>node</var>.
   </ol>
@@ -1571,7 +1568,7 @@ id=foo> into <span id=foo> instead of <font id=foo>, but probably not worth it.
   <li>If <var>element</var> is not <span>editable</span>, return the empty
   list.
 
-  <li>If <var>element</var>'s <span>specified value</span> for
+  <li>If <var>element</var>'s <span>specified command value</span> for
   <var>command</var> is null, return the empty list.  <!-- We want to abort
   early so that we don't try unsetting background-color on a non-inline
   element. -->
@@ -1617,7 +1614,7 @@ id=foo> into <span id=foo> instead of <font id=foo>, but probably not worth it.
   <li>If <var>element</var> is an [[a]] element and <var>command</var> is
   "createLink" or "unlink", unset the [[href]] property of <var>element</var>.
 
-  <li>If <var>element</var>'s <span>specified value</span> for
+  <li>If <var>element</var>'s <span>specified command value</span> for
   <var>command</var> is null, return the empty list.
   <!-- If we get past this step, we're something like <b class=foo> where we
   want to keep the extra attributes, so we stick them on a span. -->
@@ -1670,22 +1667,24 @@ with a [[style]] attribute).
   <li>If <var>node</var>'s [[parent]] is not an [[element]], abort this
   algorithm. <!-- E.g., a text node child of a document fragment. -->
 
-  <li>If the <span>effective value</span> of <var>command</var> is <var>new
-  value</var> on <var>node</var>, abort this algorithm.
+  <li>If the <span>effective command value</span> of <var>command</var> is
+  <var>new value</var> on <var>node</var>, abort this algorithm.
 
   <li>Let <var>current ancestor</var> be <var>node</var>'s [[parent]].
 
   <li>Let <var>ancestor list</var> be a list of [[nodes]], initially empty.
 
   <li>While <var>current ancestor</var> is an <span>editable</span> [[element]]
-  and the <span>effective value</span> of <var>command</var> is not <var>new
-  value</var> on it, append <var>current ancestor</var> to <var>ancestor
-  list</var>, then set <var>current ancestor</var> to its [[parent]].
+  and the <span>effective command value</span> of <var>command</var> is not
+  <var>new value</var> on it, append <var>current ancestor</var> to
+  <var>ancestor list</var>, then set <var>current ancestor</var> to its
+  [[parent]].
 
   <li>If <var>ancestor list</var> is empty, abort this algorithm.
 
-  <li>Let <var>propagated value</var> be the <span>specified value</span> of
-  <var>command</var> on the last member of <var>ancestor list</var>.
+  <li>Let <var>propagated value</var> be the <span>specified command
+  value</span> of <var>command</var> on the last member of <var>ancestor
+  list</var>.
 
   <!-- We can only remove specified values, so if the value isn't specified,
   give up.  Unless we're actually trying to push down a null specified value,
@@ -1722,7 +1721,7 @@ with a [[style]] attribute).
   sense to break up the parent as long as it won't create an extra node (i.e.,
   we're styling something that includes the first or last child).
   -->
-  <li>If the <span>effective value</span> of <var>command</var> is not
+  <li>If the <span>effective command value</span> of <var>command</var> is not
   <var>new value</var> on the [[parent]] of the last member of <var>ancestor
   list</var>, and <var>new value</var> is not null, abort this algorithm.
 
@@ -1734,16 +1733,16 @@ with a [[style]] attribute).
 
     <li>Remove the last member from <var>ancestor list</var>.
 
-    <li>If the <span>specified value</span> of <var>current ancestor</var> for
-    <var>command</var> is not null, set <var>propagated value</var> to that
-    value.
+    <li>If the <span>specified command value</span> of <var>current
+    ancestor</var> for <var>command</var> is not null, set <var>propagated
+    value</var> to that value.
 
     <li>Let <var>children</var> be the [[children]] of <var>current
     ancestor</var>.
 
-    <li>If the <span>specified value</span> of <var>current ancestor</var> for
-    <var>command</var> is not null, <span>clear the value</span> of
-    <var>current ancestor</var>.
+    <li>If the <span>specified command value</span> of <var>current
+    ancestor</var> for <var>command</var> is not null, <span>clear the
+    value</span> of <var>current ancestor</var>.
 
     <li>For every <var>child</var> in <var>children</var>:
 
@@ -1751,7 +1750,7 @@ with a [[style]] attribute).
       <li>If <var>child</var> is <var>node</var>, continue with the next
       <var>child</var>.
 
-      <li>If <var>child</var> is an [[element]] whose <span>specified
+      <li>If <var>child</var> is an [[element]] whose <span>specified command
       value</span> for <var>command</var> is neither null nor equal to
       <var>propagated value</var>, continue with the next <var>child</var>.
       <!--
@@ -1813,22 +1812,24 @@ different value.
 
     <li><span>Wrap</span> the one-[[node]] list consisting of <var>node</var>,
     with <span>sibling criteria</span> matching a <span>simple modifiable
-    element</span> whose <span>specified value</span> and <span>effective
-    value</span> for <var>command</var> are both <var>new value</var>, and with
-    <span>new parent instructions</span> returning null.
+    element</span> whose <span>specified command value</span> and
+    <span>effective command value</span> for <var>command</var> are both
+    <var>new value</var>, and with <span>new parent instructions</span>
+    returning null.
     <!-- The new parent instructions are too complicated to reasonably feed
     into the wrap algorithm. -->
   </ol>
 
-  <li>If the <span>effective value</span> of <var>command</var> is <var>new
-  value</var> on <var>node</var>, abort this algorithm.
+  <li>If the <span>effective command value</span> of <var>command</var> is
+  <var>new value</var> on <var>node</var>, abort this algorithm.
 
   <li>If <var>node</var> is not an <span>allowed child</span> of "span":
 
   <ol>
     <li>Let <var>children</var> be all [[children]] of <var>node</var>,
-    omitting any that are [[element]]s whose <span>specified value</span> for
-    <var>command</var> is neither null nor equal to <var>new value</var>.
+    omitting any that are [[element]]s whose <span>specified command
+    value</span> for <var>command</var> is neither null nor equal to <var>new
+    value</var>.
 
     <li><span>Force the value</span> of each [[node]] in <var>children</var>,
     with <var>command</var> and <var>new value</var> as in this invocation of
@@ -1842,8 +1843,8 @@ different value.
     <li>Abort this algorithm.
   </ol>
 
-  <li>If the <span>effective value</span> of <var>command</var> is <var>new
-  value</var> on <var>node</var>, abort this algorithm.
+  <li>If the <span>effective command value</span> of <var>command</var> is
+  <var>new value</var> on <var>node</var>, abort this algorithm.
 
   <li>Let <var>new parent</var> be null.
 
@@ -1986,27 +1987,28 @@ different value.
   <var>node</var>.  <!-- This preserves boundary points correctly, as usual.
   -->
 
-  <li>If the <span>effective value</span> of <var>command</var> for <var>new
-  parent</var> is not <var>new value</var>, and the <span>relevant CSS
+  <li>If the <span>effective command value</span> of <var>command</var> for
+  <var>new parent</var> is not <var>new value</var>, and the <span>relevant CSS
   property</span> for <var>command</var> is not null, set that CSS property of
   <var>new parent</var> to <var>new value</var> (if the new value would be
   valid).
 
   <li>If <var>command</var> is "strikethrough", and <var>new value</var> is
-  "line-through", and the <span>effective value</span> of "strikethrough" for
-  <var>new parent</var> is not "line-through", set the "text-decoration"
-  property of <var>new parent</var> to "line-through".
+  "line-through", and the <span>effective command value</span> of
+  "strikethrough" for <var>new parent</var> is not "line-through", set the
+  "text-decoration" property of <var>new parent</var> to "line-through".
 
   <li>If <var>command</var> is "underline", and <var>new value</var> is
-  "underline", and the <span>effective value</span> of "underline" for <var>new
-  parent</var> is not "underline", set the "text-decoration" property of
-  <var>new parent</var> to "underline".
+  "underline", and the <span>effective command value</span> of "underline" for
+  <var>new parent</var> is not "underline", set the "text-decoration" property
+  of <var>new parent</var> to "underline".
 
   <li>Append <var>node</var> to <var>new parent</var> as its last [[child]],
   <span>preserving ranges</span>.
 
-  <li>If <var>node</var> is an [[element]] and the <span>effective value</span>
-  of <var>command</var> for <var>node</var> is not <var>new value</var>:
+  <li>If <var>node</var> is an [[element]] and the <span>effective command
+  value</span> of <var>command</var> for <var>node</var> is not <var>new
+  value</var>:
 
   <ol>
     <li>Insert <var>node</var> into the [[parent]] of <var>new parent</var>
@@ -2039,8 +2041,9 @@ different value.
 
     <ol>
       <li>Let <var>children</var> be all [[children]] of <var>node</var>,
-      omitting any that are [[element]]s whose <span>specified value</span> for
-      <var>command</var> is neither null nor equal to <var>new value</var>.
+      omitting any that are [[element]]s whose <span>specified command
+      value</span> for <var>command</var> is neither null nor equal to <var>new
+      value</var>.
 
       <li><span>Force the value</span> of each [[node]] in <var>children</var>,
       with <var>command</var> and <var>new value</var> as in this invocation
@@ -2249,11 +2252,11 @@ document background color.  See hiliteColor for comments.
 
 <p><span>Indeterminate</span>: True if among <span>editable</span> [[text]]
 nodes that are <span>effectively contained</span> in the <span>active
-range</span>, there are two that have distinct <span title="effective
-value">effective values</span>.  Otherwise false.
+range</span>, there are two that have distinct <span title="effective command
+value">effective command values</span>.  Otherwise false.
 
-<p><span>Value</span>: The <span>effective value</span> of the <span>active
-range</span>'s [[startnode]].
+<p><span>Value</span>: The <span>effective command value</span> of the
+<span>active range</span>'s [[startnode]].
 
 <p class=note>This cannot be null, since the boundary point node of a selection
 must always be either an element or a text node that's the child of an element.
@@ -2275,9 +2278,9 @@ value</span> to "normal".
 
 <p><span>Indeterminate</span>: True if among <span>editable</span> [[text]]
 nodes that are <span>effectively contained</span> in the <span>active
-range</span>, there is at least one with <span>effective value</span> less than
-600 and at least one with <span>effective value</span> greater than or equal to
-600.  Otherwise false.
+range</span>, there is at least one with <span>effective command value</span>
+less than 600 and at least one with <span>effective command value</span>
+greater than or equal to 600.  Otherwise false.
 <!--
 The cutoff of 600 (both here and for state) matches Chrome 14 dev.  The cutoff
 used by IE9 and Firefox 6.0a2 seems to be 500, and the distinction isn't
@@ -2297,8 +2300,8 @@ I'll go with 600 as the cutoff.
 
 <p><span>State</span>: True if every <span>editable</span> [[text]] node that
 is <span>effectively contained</span> in the <span>active range</span> has
-<span>effective value</span> at least 600, and there is at least one such
-[[text]] node.  Otherwise false.
+<span>effective command value</span> at least 600, and there is at least one
+such [[text]] node.  Otherwise false.
 <!--
 For bold and similar commands, IE 9 RC seems to consider the state true or
 false depending on the first element.  All other browsers follow the same
@@ -2406,12 +2409,12 @@ apply. -->
 
 <p><span>Indeterminate</span>: True if among <span>editable</span> [[text]]
 nodes that are <span>effectively contained</span> in the <span>active
-range</span>, there are two that have distinct <span title="effective
-value">effective values</span>.  Otherwise false.
+range</span>, there are two that have distinct <span title="effective command
+value">effective command values</span>.  Otherwise false.
 <!-- This follows Firefox 6.0a2.  Chrome 14 dev always returns false. -->
 
-<p><span>Value</span>: The <span>effective value</span> of the <span>active
-range</span>'s [[startnode]].
+<p><span>Value</span>: The <span>effective command value</span> of the
+<span>active range</span>'s [[startnode]].
 
 <p class=note>This cannot be null, since the boundary point node of a selection
 must always be either an element or a text node that's the child of an element.
@@ -2544,8 +2547,8 @@ respecifying non-interoperable behavior anyway.
 
 <p><span>Indeterminate</span>: True if among <span>editable</span> [[text]]
 nodes that are <span>effectively contained</span> in the <span>active
-range</span>, there are two that have distinct <span title="effective
-value">effective values</span>.  Otherwise false.
+range</span>, there are two that have distinct <span title="effective command
+value">effective command values</span>.  Otherwise false.
 <!-- This follows Firefox 6.0a2.  Chrome 14 dev always returns false. -->
 
 <p><span>Value</span>:
@@ -2572,8 +2575,8 @@ If the selection isn't someplace editable, Chrome works like usual; some other
 browsers behave differently.  I see no reason to behave differently.
 -->
 <ol>
-  <li>Let <var>pixel size</var> be the <span>effective value</span> of the
-  <span>active range</span>'s [[startnode]], as a number of pixels.
+  <li>Let <var>pixel size</var> be the <span>effective command value</span> of
+  the <span>active range</span>'s [[startnode]], as a number of pixels.
 
   <p class=note>The active range's start node cannot be null, since the
   boundary point node of a selection must always be either an element or a text
@@ -2684,12 +2687,12 @@ here, not state.  So I'll match other browsers and not define any state. -->
 
 <p><span>Indeterminate</span>: True if among <span>editable</span> [[text]]
 nodes that are <span>effectively contained</span> in the <span>active
-range</span>, there are two that have distinct <span title="effective
-value">effective values</span>.  Otherwise false.
+range</span>, there are two that have distinct <span title="effective command
+value">effective command values</span>.  Otherwise false.
 <!-- This follows Firefox 6.0a2.  Chrome 14 dev always returns false. -->
 
-<p><span>Value</span>: The <span>effective value</span> of the <span>active
-range</span>'s [[startnode]].
+<p><span>Value</span>: The <span>effective command value</span> of the
+<span>active range</span>'s [[startnode]].
 
 <p class=note>This cannot be null, since the boundary point node of a selection
 must always be either an element or a text node that's the child of an element.
@@ -2741,13 +2744,13 @@ For color parsing, see the comment for foreColor. -->
 
 <p><span>Indeterminate</span>: True if among <span>editable</span> [[text]]
 nodes that are <span>effectively contained</span> in the <span>active
-range</span>, there are two that have distinct <span title="effective
-value">effective values</span>.  Otherwise false.
+range</span>, there are two that have distinct <span title="effective command
+value">effective command values</span>.  Otherwise false.
 <!-- This follows no one.  Firefox 6.0a2 and Chrome 14 dev both always return
 false.  However, it makes sense. -->
 
-<p><span>Value</span>: The <span>effective value</span> of the <span>active
-range</span>'s [[startnode]].
+<p><span>Value</span>: The <span>effective command value</span> of the
+<span>active range</span>'s [[startnode]].
 
 <p class=note>This cannot be null, since the boundary point node of a selection
 must always be either an element or a text node that's the child of an element.
@@ -2772,14 +2775,14 @@ value</span> to "normal".
 
 <p><span>Indeterminate</span>: True if among <span>editable</span> [[text]]
 nodes that are <span>effectively contained</span> in the <span>active
-range</span>, there is at least one with <span>effective value</span> either
-"italic" or "oblique" and at least one with <span>effective value</span>
-"normal".  Otherwise false.
+range</span>, there is at least one with <span>effective command value</span>
+either "italic" or "oblique" and at least one with <span>effective command
+value</span> "normal".  Otherwise false.
 
 <p><span>State</span>: True if every <span>editable</span> [[text]] node that
 is <span>effectively contained</span> in the <span>active range</span> has
-<span>effective value</span> either "italic" or "oblique", and there is at
-least one such [[text]] node.  Otherwise false.
+<span>effective command value</span> either "italic" or "oblique", and there is
+at least one such [[text]] node.  Otherwise false.
 
 <p><span>Relevant CSS property</span>: "font-style"
 <!-- @} -->
@@ -2921,14 +2924,14 @@ unremovable.
 
 <p><span>Indeterminate</span>: True if among <span>editable</span> [[text]]
 nodes that are <span>effectively contained</span> in the <span>active
-range</span>, there is at least one with <span>effective value</span>
-"line-through" and at least one with <span>effective value</span> null.
+range</span>, there is at least one with <span>effective command value</span>
+"line-through" and at least one with <span>effective command value</span> null.
 Otherwise false.
 
 <p><span>State</span>: True if every <span>editable</span> [[text]] node that
 is <span>effectively contained</span> in the <span>active range</span> has
-<span>effective value</span> "line-through", and there is at least one such
-[[text]] node.  Otherwise false.
+<span>effective command value</span> "line-through", and there is at least one
+such [[text]] node.  Otherwise false.
 <!-- @} -->
 
 <h3><dfn>The <code title>subscript</code> command</dfn></h3>
@@ -2946,16 +2949,16 @@ is <span>effectively contained</span> in the <span>active range</span> has
 
 <p><span>Indeterminate</span>: True if either among <span>editable</span>
 [[text]] nodes that are <span>effectively contained</span> in the <span>active
-range</span>, there is at least one with <span>effective value</span> "sub" and
-at least one with some other <span>effective value</span>; or if there is some
-<span>editable</span> [[text]] node <span>effectively contained</span> in the
-<span>active range</span> with <span>effective value</span> "mixed".  Otherwise
-false.
+range</span>, there is at least one with <span>effective command value</span>
+"sub" and at least one with some other <span>effective command value</span>; or
+if there is some <span>editable</span> [[text]] node <span>effectively
+contained</span> in the <span>active range</span> with <span>effective command
+value</span> "mixed".  Otherwise false.
 
 <p><span>State</span>: True if every <span>editable</span> [[text]] node that
 is <span>effectively contained</span> in the <span>active range</span> has
-<span>effective value</span> "sub", and there is at least one such [[text]]
-node.  Otherwise false.
+<span>effective command value</span> "sub", and there is at least one such
+[[text]] node.  Otherwise false.
 <!--
 For <sup><sub>foo</sub></sup>, Firefox 6.0a2 and Opera 11.11 say the state is
 true for both superscript and subscript, and indeterminate is false; Chrome 14
@@ -2986,16 +2989,16 @@ other indeterminate situations, so it's fair to consider it indeterminate.
 
 <p><span>Indeterminate</span>: True if either among <span>editable</span>
 [[text]] nodes that are <span>effectively contained</span> in the <span>active
-range</span>, there is at least one with <span>effective value</span> "super"
-and at least one with some other <span>effective value</span>; or if there is
-some <span>editable</span> [[text]] node <span>effectively contained</span> in
-the <span>active range</span> with <span>effective value</span> "mixed".
-Otherwise false.
+range</span>, there is at least one with <span>effective command value</span>
+"super" and at least one with some other <span>effective command value</span>;
+or if there is some <span>editable</span> [[text]] node <span>effectively
+contained</span> in the <span>active range</span> with <span>effective command
+value</span> "mixed".  Otherwise false.
 
 <p><span>State</span>: True if every <span>editable</span> [[text]] node that
 is <span>effectively contained</span> in the <span>active range</span> has
-<span>effective value</span> "super", and there is at least one such [[text]]
-node.  Otherwise false.
+<span>effective command value</span> "super", and there is at least one such
+[[text]] node.  Otherwise false.
 
 <p><span>Relevant CSS property</span>: "vertical-align"
 <!-- @} -->
@@ -3062,14 +3065,14 @@ unremovable.
 
 <p><span>Indeterminate</span>: True if among <span>editable</span> [[text]]
 nodes that are <span>effectively contained</span> in the <span>active
-range</span>, there is at least one with <span>effective value</span>
-"underline" and at least one with <span>effective value</span> null.  Otherwise
-false.
+range</span>, there is at least one with <span>effective command value</span>
+"underline" and at least one with <span>effective command value</span> null.
+Otherwise false.
 
 <p><span>State</span>: True if every <span>editable</span> [[text]] node that
 is <span>effectively contained</span> in the <span>active range</span> has
-<span>effective value</span> "underline", and there is at least one such
-[[text]] node.  Otherwise false.
+<span>effective command value</span> "underline", and there is at least one
+such [[text]] node.  Otherwise false.
 <!-- @} -->
 
 <h3><dfn>The <code title>unlink</code> command</dfn></h3>

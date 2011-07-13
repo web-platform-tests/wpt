@@ -1728,17 +1728,17 @@ function isSimpleModifiableElement(node) {
 ///// Assorted inline formatting command algorithms /////
 //@{
 
-function getEffectiveValue(node, command) {
+function getEffectiveCommandValue(node, command) {
 	// "If neither node nor its parent is an Element, return null."
 	if (node.nodeType != Node.ELEMENT_NODE
 	&& (!node.parentNode || node.parentNode.nodeType != Node.ELEMENT_NODE)) {
 		return null;
 	}
 
-	// "If node is not an Element, return the effective value of its parent for
-	// command."
+	// "If node is not an Element, return the effective command value of its
+	// parent for command."
 	if (node.nodeType != Node.ELEMENT_NODE) {
-		return getEffectiveValue(node.parentNode, command);
+		return getEffectiveCommandValue(node.parentNode, command);
 	}
 
 	// "If command is "createLink" or "unlink":"
@@ -1870,7 +1870,7 @@ function getEffectiveValue(node, command) {
 	return getComputedStyle(node)[commands[command].relevantCssProperty];
 }
 
-function getSpecifiedValue(element, command) {
+function getSpecifiedCommandValue(element, command) {
 	// "If command is "backColor" or "hiliteColor" and element's display
 	// property does not compute to "inline", return null."
 	if ((command == "backcolor" || command == "hilitecolor")
@@ -2032,22 +2032,22 @@ function reorderModifiableDescendants(node, command, newValue) {
 
 	// "While candidate is a modifiable element, and candidate has exactly one
 	// child, and that child is also a modifiable element, and candidate is not
-	// a simple modifiable element or candidate's specified value for command
-	// is not new value, set candidate to its child."
+	// a simple modifiable element or candidate's specified command value for
+	// command is not new value, set candidate to its child."
 	while (isModifiableElement(candidate)
 	&& candidate.childNodes.length == 1
 	&& (!isSimpleModifiableElement(candidate)
-	|| !valuesEqual(command, getSpecifiedValue(candidate, command), newValue))) {
+	|| !valuesEqual(command, getSpecifiedCommandValue(candidate, command), newValue))) {
 		candidate = candidate.firstChild;
 	}
 
 	// "If candidate is node, or is not a simple modifiable element, or its
-	// specified value and effective value for command are not both new value,
-	// abort these steps."
+	// specified command value and effective command value for command are not
+	// both new value, abort these steps."
 	if (candidate == node
 	|| !isSimpleModifiableElement(candidate)
-	|| !valuesEqual(command, getSpecifiedValue(candidate, command), newValue)
-	|| !valuesEqual(command, getEffectiveValue(candidate, command), newValue)) {
+	|| !valuesEqual(command, getSpecifiedCommandValue(candidate, command), newValue)
+	|| !valuesEqual(command, getEffectiveCommandValue(candidate, command), newValue)) {
 		return;
 	}
 
@@ -2065,8 +2065,8 @@ function reorderModifiableDescendants(node, command, newValue) {
 }
 
 function recordValues(nodeList) {
-	// "Let values be a list of (node, command, specified value) triples,
-	// initially empty."
+	// "Let values be a list of (node, command, specified command value)
+	// triples, initially empty."
 	var values = [];
 
 	// "For each node in node list, for each command in the list "subscript",
@@ -2083,19 +2083,19 @@ function recordValues(nodeList) {
 				ancestor = ancestor.parentNode;
 			}
 
-			// "While ancestor is an Element and its specified value for
-			// command is null, set it to its parent."
+			// "While ancestor is an Element and its specified command value
+			// for command is null, set it to its parent."
 			while (ancestor
 			&& ancestor.nodeType == Node.ELEMENT_NODE
-			&& getSpecifiedValue(ancestor, command) === null) {
+			&& getSpecifiedCommandValue(ancestor, command) === null) {
 				ancestor = ancestor.parentNode;
 			}
 
 			// "If ancestor is an Element, add (node, command, ancestor's
-			// specified value for command) to values. Otherwise add (node,
-			// command, null) to values."
+			// specified command value for command) to values. Otherwise add
+			// (node, command, null) to values."
 			if (ancestor && ancestor.nodeType == Node.ELEMENT_NODE) {
-				values.push([node, command, getSpecifiedValue(ancestor, command)]);
+				values.push([node, command, getSpecifiedCommandValue(ancestor, command)]);
 			} else {
 				values.push([node, command, null]);
 			}
@@ -2121,11 +2121,11 @@ function restoreValues(values) {
 			ancestor = ancestor.parentNode;
 		}
 
-		// "While ancestor is an Element and its specified value for command is
-		// null, set it to its parent."
+		// "While ancestor is an Element and its specified command value for
+		// command is null, set it to its parent."
 		while (ancestor
 		&& ancestor.nodeType == Node.ELEMENT_NODE
-		&& getSpecifiedValue(ancestor, command) === null) {
+		&& getSpecifiedCommandValue(ancestor, command) === null) {
 			ancestor = ancestor.parentNode;
 		}
 
@@ -2136,12 +2136,13 @@ function restoreValues(values) {
 		&& ancestor.nodeType == Node.ELEMENT_NODE) {
 			pushDownValues(node, command, null);
 
-		// "Otherwise, if ancestor is an Element and its specified value for
-		// command is different from value, or if ancestor is not an Element
-		// and value is not null, force the value of command to value on node."
+		// "Otherwise, if ancestor is an Element and its specified command
+		// value for command is different from value, or if ancestor is not an
+		// Element and value is not null, force the value of command to value
+		// on node."
 		} else if ((ancestor
 		&& ancestor.nodeType == Node.ELEMENT_NODE
-		&& !valuesEqual(command, getSpecifiedValue(ancestor, command), value))
+		&& !valuesEqual(command, getSpecifiedCommandValue(ancestor, command), value))
 		|| ((!ancestor || ancestor.nodeType != Node.ELEMENT_NODE)
 		&& value !== null)) {
 			forceValue(node, command, value);
@@ -2160,9 +2161,9 @@ function clearValue(element, command) {
 		return [];
 	}
 
-	// "If element's specified value for command is null, return the empty
-	// list."
-	if (getSpecifiedValue(element, command) === null) {
+	// "If element's specified command value for command is null, return the
+	// empty list."
+	if (getSpecifiedCommandValue(element, command) === null) {
 		return [];
 	}
 
@@ -2248,9 +2249,9 @@ function clearValue(element, command) {
 		element.removeAttribute("href");
 	}
 
-	// "If element's specified value for command is null, return the empty
-	// list."
-	if (getSpecifiedValue(element, command) === null) {
+	// "If element's specified command value for command is null, return the
+	// empty list."
+	if (getSpecifiedCommandValue(element, command) === null) {
 		return [];
 	}
 
@@ -2271,9 +2272,9 @@ function pushDownValues(node, command, newValue) {
 		return;
 	}
 
-	// "If the effective value of command is new value on node, abort this
-	// algorithm."
-	if (valuesEqual(command, getEffectiveValue(node, command), newValue)) {
+	// "If the effective command value of command is new value on node, abort
+	// this algorithm."
+	if (valuesEqual(command, getEffectiveCommandValue(node, command), newValue)) {
 		return;
 	}
 
@@ -2283,12 +2284,12 @@ function pushDownValues(node, command, newValue) {
 	// "Let ancestor list be a list of Nodes, initially empty."
 	var ancestorList = [];
 
-	// "While current ancestor is an editable Element and the effective value
-	// of command is not new value on it, append current ancestor to ancestor
-	// list, then set current ancestor to its parent."
+	// "While current ancestor is an editable Element and the effective command
+	// value of command is not new value on it, append current ancestor to
+	// ancestor list, then set current ancestor to its parent."
 	while (isEditable(currentAncestor)
 	&& currentAncestor.nodeType == Node.ELEMENT_NODE
-	&& !valuesEqual(command, getEffectiveValue(currentAncestor, command), newValue)) {
+	&& !valuesEqual(command, getEffectiveCommandValue(currentAncestor, command), newValue)) {
 		ancestorList.push(currentAncestor);
 		currentAncestor = currentAncestor.parentNode;
 	}
@@ -2298,9 +2299,9 @@ function pushDownValues(node, command, newValue) {
 		return;
 	}
 
-	// "Let propagated value be the specified value of command on the last
-	// member of ancestor list."
-	var propagatedValue = getSpecifiedValue(ancestorList[ancestorList.length - 1], command);
+	// "Let propagated value be the specified command value of command on the
+	// last member of ancestor list."
+	var propagatedValue = getSpecifiedCommandValue(ancestorList[ancestorList.length - 1], command);
 
 	// "If propagated value is null and is not equal to new value, abort this
 	// algorithm."
@@ -2308,11 +2309,11 @@ function pushDownValues(node, command, newValue) {
 		return;
 	}
 
-	// "If the effective value of command is not new value on the parent of
-	// the last member of ancestor list, and new value is not null, abort this
-	// algorithm."
+	// "If the effective command value of command is not new value on the
+	// parent of the last member of ancestor list, and new value is not null,
+	// abort this algorithm."
 	if (newValue !== null
-	&& !valuesEqual(command, getEffectiveValue(ancestorList[ancestorList.length - 1].parentNode, command), newValue)) {
+	&& !valuesEqual(command, getEffectiveCommandValue(ancestorList[ancestorList.length - 1].parentNode, command), newValue)) {
 		return;
 	}
 
@@ -2322,18 +2323,18 @@ function pushDownValues(node, command, newValue) {
 		// "Remove the last member from ancestor list."
 		var currentAncestor = ancestorList.pop();
 
-		// "If the specified value of current ancestor for command is not null,
-		// set propagated value to that value."
-		if (getSpecifiedValue(currentAncestor, command) !== null) {
-			propagatedValue = getSpecifiedValue(currentAncestor, command);
+		// "If the specified command value of current ancestor for command is
+		// not null, set propagated value to that value."
+		if (getSpecifiedCommandValue(currentAncestor, command) !== null) {
+			propagatedValue = getSpecifiedCommandValue(currentAncestor, command);
 		}
 
 		// "Let children be the children of current ancestor."
 		var children = Array.prototype.slice.call(currentAncestor.childNodes);
 
-		// "If the specified value of current ancestor for command is not null,
-		// clear the value of current ancestor."
-		if (getSpecifiedValue(currentAncestor, command) !== null) {
+		// "If the specified command value of current ancestor for command is
+		// not null, clear the value of current ancestor."
+		if (getSpecifiedCommandValue(currentAncestor, command) !== null) {
 			clearValue(currentAncestor, command);
 		}
 
@@ -2346,12 +2347,12 @@ function pushDownValues(node, command, newValue) {
 				continue;
 			}
 
-			// "If child is an Element whose specified value for command
-			// is neither null nor equal to propagated value, continue with the
-			// next child."
+			// "If child is an Element whose specified command value for
+			// command is neither null nor equal to propagated value, continue
+			// with the next child."
 			if (child.nodeType == Node.ELEMENT_NODE
-			&& getSpecifiedValue(child, command) !== null
-			&& !valuesEqual(command, propagatedValue, getSpecifiedValue(child, command))) {
+			&& getSpecifiedCommandValue(child, command) !== null
+			&& !valuesEqual(command, propagatedValue, getSpecifiedCommandValue(child, command))) {
 				continue;
 			}
 
@@ -2393,34 +2394,34 @@ function forceValue(node, command, newValue) {
 		reorderModifiableDescendants(node.nextSibling, command, newValue);
 
 		// "Wrap the one-node list consisting of node, with sibling criteria
-		// matching a simple modifiable element whose specified value and
-		// effective value for command are both new value, and with new parent
-		// instructions returning null."
+		// matching a simple modifiable element whose specified command value
+		// and effective command value for command are both new value, and with
+		// new parent instructions returning null."
 		wrap([node],
 			function(node) {
 				return isSimpleModifiableElement(node)
-					&& valuesEqual(command, getSpecifiedValue(node, command), newValue)
-					&& valuesEqual(command, getEffectiveValue(node, command), newValue);
+					&& valuesEqual(command, getSpecifiedCommandValue(node, command), newValue)
+					&& valuesEqual(command, getEffectiveCommandValue(node, command), newValue);
 			},
 			function() { return null }
 		);
 	}
 
-	// "If the effective value of command is new value on node, abort this
-	// algorithm."
-	if (valuesEqual(command, getEffectiveValue(node, command), newValue)) {
+	// "If the effective command value of command is new value on node, abort
+	// this algorithm."
+	if (valuesEqual(command, getEffectiveCommandValue(node, command), newValue)) {
 		return;
 	}
 
 	// "If node is not an allowed child of "span":"
 	if (!isAllowedChild(node, "span")) {
 		// "Let children be all children of node, omitting any that are
-		// Elements whose specified value for command is neither null nor
-		// equal to new value."
+		// Elements whose specified command value for command is neither null
+		// nor equal to new value."
 		var children = [];
 		for (var i = 0; i < node.childNodes.length; i++) {
 			if (node.childNodes[i].nodeType == Node.ELEMENT_NODE) {
-				var specifiedValue = getSpecifiedValue(node.childNodes[i], command);
+				var specifiedValue = getSpecifiedCommandValue(node.childNodes[i], command);
 
 				if (specifiedValue !== null
 				&& !valuesEqual(command, newValue, specifiedValue)) {
@@ -2440,9 +2441,9 @@ function forceValue(node, command, newValue) {
 		return;
 	}
 
-	// "If the effective value of command is new value on node, abort this
-	// algorithm."
-	if (valuesEqual(command, getEffectiveValue(node, command), newValue)) {
+	// "If the effective command value of command is new value on node, abort
+	// this algorithm."
+	if (valuesEqual(command, getEffectiveCommandValue(node, command), newValue)) {
 		return;
 	}
 
@@ -2577,40 +2578,43 @@ function forceValue(node, command, newValue) {
 	// "Insert new parent in node's parent before node."
 	node.parentNode.insertBefore(newParent, node);
 
-	// "If the effective value of command for new parent is not new value, and
-	// the relevant CSS property for command is not null, set that CSS property
-	// of new parent to new value (if the new value would be valid)."
+	// "If the effective command value of command for new parent is not new
+	// value, and the relevant CSS property for command is not null, set that
+	// CSS property of new parent to new value (if the new value would be
+	// valid)."
 	var property = commands[command].relevantCssProperty;
 	if (property !== null
-	&& !valuesEqual(command, getEffectiveValue(newParent, command), newValue)) {
+	&& !valuesEqual(command, getEffectiveCommandValue(newParent, command), newValue)) {
 		newParent.style[property] = newValue;
 	}
 
 	// "If command is "strikethrough", and new value is "line-through", and the
-	// effective value of "strikethrough" for new parent is not "line-through",
-	// set the "text-decoration" property of new parent to "line-through"."
+	// effective command value of "strikethrough" for new parent is not
+	// "line-through", set the "text-decoration" property of new parent to
+	// "line-through"."
 	if (command == "strikethrough"
 	&& newValue == "line-through"
-	&& getEffectiveValue(newParent, "strikethrough") != "line-through") {
+	&& getEffectiveCommandValue(newParent, "strikethrough") != "line-through") {
 		newParent.style.textDecoration = "line-through";
 	}
 
 	// "If command is "underline", and new value is "underline", and the
-	// effective value of "underline" for new parent is not "underline", set
-	// the "text-decoration" property of new parent to "underline"."
+	// effective command value of "underline" for new parent is not
+	// "underline", set the "text-decoration" property of new parent to
+	// "underline"."
 	if (command == "underline"
 	&& newValue == "underline"
-	&& getEffectiveValue(newParent, "underline") != "underline") {
+	&& getEffectiveCommandValue(newParent, "underline") != "underline") {
 		newParent.style.textDecoration = "underline";
 	}
 
 	// "Append node to new parent as its last child, preserving ranges."
 	movePreservingRanges(node, newParent, newParent.childNodes.length);
 
-	// "If node is an Element and the effective value of command for node is
-	// not new value:"
+	// "If node is an Element and the effective command value of command for
+	// node is not new value:"
 	if (node.nodeType == Node.ELEMENT_NODE
-	&& !valuesEqual(command, getEffectiveValue(node, command), newValue)) {
+	&& !valuesEqual(command, getEffectiveCommandValue(node, command), newValue)) {
 		// "Insert node into the parent of new parent before new parent,
 		// preserving ranges."
 		movePreservingRanges(node, newParent.parentNode, getNodeIndex(newParent));
@@ -2662,12 +2666,12 @@ function forceValue(node, command, newValue) {
 		// "Otherwise:"
 		} else {
 			// "Let children be all children of node, omitting any that are
-			// Elements whose specified value for command is neither null nor
-			// equal to new value."
+			// Elements whose specified command value for command is neither
+			// null nor equal to new value."
 			var children = [];
 			for (var i = 0; i < node.childNodes.length; i++) {
 				if (node.childNodes[i].nodeType == Node.ELEMENT_NODE) {
-					var specifiedValue = getSpecifiedValue(node.childNodes[i], command);
+					var specifiedValue = getSpecifiedCommandValue(node.childNodes[i], command);
 
 					if (specifiedValue !== null
 					&& !valuesEqual(command, newValue, specifiedValue)) {
@@ -2781,22 +2785,22 @@ commands.backcolor = {
 		setSelectionValue("backcolor", value);
 	}, indeterm: function() {
 		// "True if among editable Text nodes that are effectively contained in
-		// the active range, there are two that have distinct effective values.
-		// Otherwise false."
+		// the active range, there are two that have distinct effective command
+		// values.  Otherwise false."
 		return getAllEffectivelyContainedNodes(getActiveRange(), function(node) {
 			return isEditable(node) && node.nodeType == Node.TEXT_NODE;
 		}).map(function(node) {
-			return getEffectiveValue(node, "backcolor");
+			return getEffectiveCommandValue(node, "backcolor");
 		}).filter(function(value, i, arr) {
 			return arr.slice(0, i).indexOf(value) == -1;
 		}).length >= 2;
 	}, value: function() {
-		// "The effective value of the active range's start node."
+		// "The effective command value of the active range's start node."
 		//
 		// Opera uses a different format, so let's be nice and support that for
 		// the time being (since all this computed value stuff is underdefined
 		// anyway).
-		var value = getEffectiveValue(getActiveRange().startContainer, "backcolor");
+		var value = getEffectiveCommandValue(getActiveRange().startContainer, "backcolor");
 		if (/^#[0-9a-f]{6}$/.test(value)) {
 			value = "rgb(" + parseInt(value.slice(1, 3), 16)
 				+ "," + parseInt(value.slice(3, 5), 16)
@@ -2820,10 +2824,10 @@ commands.bold = {
 		}
 	}, indeterm: function() { return indetermHelper(function(node) {
 		// "True if among editable Text nodes that are effectively contained in
-		// the active range, there is at least one with effective value less
-		// than 600 and at least one with effective value greater than or equal
-		// to 600."
-		var fontWeight = getEffectiveValue(node, "bold");
+		// the active range, there is at least one with effective command value
+		// less than 600 and at least one with effective command value greater
+		// than or equal to 600."
+		var fontWeight = getEffectiveCommandValue(node, "bold");
 		return fontWeight === "bold"
 			|| fontWeight === "600"
 			|| fontWeight === "700"
@@ -2831,9 +2835,9 @@ commands.bold = {
 			|| fontWeight === "900";
 	})}, state: function() { return stateHelper(function(node) {
 		// "True if every editable Text node that is effectively contained in
-		// the active range has effective value at least 600, and there is at
-		// least one such text node. Otherwise false."
-		var fontWeight = getEffectiveValue(node, "bold");
+		// the active range has effective command value at least 600, and there
+		// is at least one such text node. Otherwise false."
+		var fontWeight = getEffectiveCommandValue(node, "bold");
 		return fontWeight === "bold"
 			|| fontWeight === "600"
 			|| fontWeight === "700"
@@ -2882,18 +2886,18 @@ commands.fontname = {
 		setSelectionValue("fontname", value);
 	}, indeterm: function() {
 		// "True if among editable Text nodes that are effectively contained in
-		// the active range, there are two that have distinct effective values.
-		// Otherwise false."
+		// the active range, there are two that have distinct effective command
+		// values.  Otherwise false."
 		return getAllEffectivelyContainedNodes(getActiveRange(), function(node) {
 			return isEditable(node) && node.nodeType == Node.TEXT_NODE;
 		}).map(function(node) {
-			return getEffectiveValue(node, "fontname");
+			return getEffectiveCommandValue(node, "fontname");
 		}).filter(function(value, i, arr) {
 			return arr.slice(0, i).indexOf(value) == -1;
 		}).length >= 2;
 	}, value: function() {
-		// "The effective value of the active range's start node."
-		return getEffectiveValue(getActiveRange().startContainer, "fontname");
+		// "The effective command value of the active range's start node."
+		return getEffectiveCommandValue(getActiveRange().startContainer, "fontname");
 	}, relevantCssProperty: "fontFamily"
 };
 //@}
@@ -2987,19 +2991,19 @@ commands.fontsize = {
 		setSelectionValue("fontsize", value);
 	}, indeterm: function() {
 		// "True if among editable Text nodes that are effectively contained in
-		// the active range, there are two that have distinct effective values.
-		// Otherwise false."
+		// the active range, there are two that have distinct effective command
+		// values.  Otherwise false."
 		return getAllEffectivelyContainedNodes(getActiveRange(), function(node) {
 			return isEditable(node) && node.nodeType == Node.TEXT_NODE;
 		}).map(function(node) {
-			return getEffectiveValue(node, "fontsize");
+			return getEffectiveCommandValue(node, "fontsize");
 		}).filter(function(value, i, arr) {
 			return arr.slice(0, i).indexOf(value) == -1;
 		}).length >= 2;
 	}, value: function() {
-		// "Let pixel size be the effective value of the active range's start
-		// node, as a number of pixels."
-		var pixelSize = parseInt(getEffectiveValue(getActiveRange().startContainer, "fontsize"));
+		// "Let pixel size be the effective command value of the active range's
+		// start node, as a number of pixels."
+		var pixelSize = parseInt(getEffectiveCommandValue(getActiveRange().startContainer, "fontsize"));
 
 		// "Let returned size be 1."
 		var returnedSize = 1;
@@ -3067,22 +3071,22 @@ commands.forecolor = {
 		setSelectionValue("forecolor", value);
 	}, indeterm: function() {
 		// "True if among editable Text nodes that are effectively contained in
-		// the active range, there are two that have distinct effective values.
-		// Otherwise false."
+		// the active range, there are two that have distinct effective command
+		// values.  Otherwise false."
 		return getAllEffectivelyContainedNodes(getActiveRange(), function(node) {
 			return isEditable(node) && node.nodeType == Node.TEXT_NODE;
 		}).map(function(node) {
-			return getEffectiveValue(node, "forecolor");
+			return getEffectiveCommandValue(node, "forecolor");
 		}).filter(function(value, i, arr) {
 			return arr.slice(0, i).indexOf(value) == -1;
 		}).length >= 2;
 	}, value: function() {
-		// "The effective value of the active range's start node."
+		// "The effective command value of the active range's start node."
 		//
 		// Opera uses a different format, so let's be nice and support that for
 		// the time being (since all this computed value stuff is underdefined
 		// anyway).
-		var value = getEffectiveValue(getActiveRange().startContainer, "forecolor");
+		var value = getEffectiveCommandValue(getActiveRange().startContainer, "forecolor");
 		if (/^#[0-9a-f]{6}$/.test(value)) {
 			value = "rgb(" + parseInt(value.slice(1, 3), 16)
 				+ "," + parseInt(value.slice(3, 5), 16)
@@ -3121,22 +3125,22 @@ commands.hilitecolor = {
 		setSelectionValue("hilitecolor", value);
 	}, indeterm: function() {
 		// "True if among editable Text nodes that are effectively contained in
-		// the active range, there are two that have distinct effective values.
-		// Otherwise false."
+		// the active range, there are two that have distinct effective command
+		// values.  Otherwise false."
 		return getAllEffectivelyContainedNodes(getActiveRange(), function(node) {
 			return isEditable(node) && node.nodeType == Node.TEXT_NODE;
 		}).map(function(node) {
-			return getEffectiveValue(node, "hilitecolor");
+			return getEffectiveCommandValue(node, "hilitecolor");
 		}).filter(function(value, i, arr) {
 			return arr.slice(0, i).indexOf(value) == -1;
 		}).length >= 2;
 	}, value: function() {
-		// "The effective value of the active range's start node."
+		// "The effective command value of the active range's start node."
 		//
 		// Opera uses a different format, so let's be nice and support that for
 		// the time being (since all this computed value stuff is underdefined
 		// anyway).
-		var value = getEffectiveValue(getActiveRange().startContainer, "hilitecolor");
+		var value = getEffectiveCommandValue(getActiveRange().startContainer, "hilitecolor");
 		if (/^#[0-9a-f]{6}$/.test(value)) {
 			value = "rgb(" + parseInt(value.slice(1, 3), 16)
 				+ "," + parseInt(value.slice(3, 5), 16)
@@ -3160,16 +3164,17 @@ commands.italic = {
 		}
 	}, indeterm: function() { return indetermHelper(function(node) {
 		// "True if among editable Text nodes that are effectively contained in
-		// the active range, there is at least one with effective value either
-		// "italic" or "oblique" and at least one with effective value
-		// "normal". Otherwise false."
-		var value = getEffectiveValue(node, "italic");
+		// the active range, there is at least one with effective command value
+		// either "italic" or "oblique" and at least one with effective command
+		// value "normal". Otherwise false."
+		var value = getEffectiveCommandValue(node, "italic");
 		return value == "italic" || value == "oblique";
 	})}, state: function() { return stateHelper(function(node) {
 		// "True if every editable Text node that is effectively contained in
-		// the active range has effective value either "italic" or "oblique",
-		// and there is at least one such Text node.  Otherwise false."
-		var value = getEffectiveValue(node, "italic");
+		// the active range has effective command value either "italic" or
+		// "oblique", and there is at least one such Text node.  Otherwise
+		// false."
+		var value = getEffectiveCommandValue(node, "italic");
 		return value == "italic" || value == "oblique";
 	})}, relevantCssProperty: "fontStyle"
 };
@@ -3289,15 +3294,15 @@ commands.strikethrough = {
 		}
 	}, indeterm: function() { return indetermHelper(function(node) {
 		// "True if among editable Text nodes that are effectively contained in
-		// the active range, there is at least one with effective value
-		// "line-through" and at least one with effective value null. Otherwise
-		// false."
-		return getEffectiveValue(node, "strikethrough") == "line-through";
+		// the active range, there is at least one with effective command value
+		// "line-through" and at least one with effective command value null.
+		// Otherwise false."
+		return getEffectiveCommandValue(node, "strikethrough") == "line-through";
 	})}, state: function() { return stateHelper(function(node) {
 		// "True if every editable Text node that is effectively contained in
-		// the active range has effective value "line-through", and there is at
-		// least one such Text node. Otherwise false."
-		return getEffectiveValue(node, "strikethrough") == "line-through";
+		// the active range has effective command value "line-through", and
+		// there is at least one such Text node. Otherwise false."
+		return getEffectiveCommandValue(node, "strikethrough") == "line-through";
 	})}
 };
 //@}
@@ -3319,20 +3324,21 @@ commands.subscript = {
 	}, indeterm: function() {
 		// "True if either among editable Text nodes that are effectively
 		// contained in the active range, there is at least one with effective
-		// value "sub" and at least one with some other effective value; or if
-		// there is some editable Text node effectively contained in the active
-		// range with effective value "mixed". Otherwise false."
+		// command value "sub" and at least one with some other effective
+		// command value; or if there is some editable Text node effectively
+		// contained in the active range with effective command value "mixed".
+		// Otherwise false."
 		var nodes = getAllEffectivelyContainedNodes(getActiveRange(), function(node) {
 			return isEditable(node) && node.nodeType == Node.TEXT_NODE;
 		});
-		return (nodes.some(function(node) { return getEffectiveValue(node, "subscript") == "sub" })
-			&& nodes.some(function(node) { return getEffectiveValue(node, "subscript") != "sub" }))
-			|| nodes.some(function(node) { return getEffectiveValue(node, "subscript") == "mixed" });
+		return (nodes.some(function(node) { return getEffectiveCommandValue(node, "subscript") == "sub" })
+			&& nodes.some(function(node) { return getEffectiveCommandValue(node, "subscript") != "sub" }))
+			|| nodes.some(function(node) { return getEffectiveCommandValue(node, "subscript") == "mixed" });
 	}, state: function() { return stateHelper(function(node) {
 		// "True if every editable Text node that is effectively contained in
-		// the active range has effective value "sub", and there is at least
-		// one such Text node. Otherwise false."
-		return getEffectiveValue(node, "subscript") == "sub";
+		// the active range has effective command value "sub", and there is at
+		// least one such Text node. Otherwise false."
+		return getEffectiveCommandValue(node, "subscript") == "sub";
 	})}, relevantCssProperty: "verticalAlign"
 };
 //@}
@@ -3354,20 +3360,22 @@ commands.superscript = {
 	}, indeterm: function() {
 		// "True if either among editable Text nodes that are effectively
 		// contained in the active range, there is at least one with effective
-		// value "super" and at least one with some other effective value; or
-		// if there is some editable Text node effectively contained in the
-		// active range with effective value "mixed". Otherwise false."
-		var nodes = getAllEffectivelyContainedNodes(getActiveRange(), function(node) {
+		// command value "super" and at least one with some other effective
+		// command value; or if there is some editable Text node effectively
+		// contained in the active range with effective command value "mixed".
+		// Otherwise false."
+		var nodes = getAllEffectivelyContainedNodes(getActiveRange(),
+				function(node) {
 			return isEditable(node) && node.nodeType == Node.TEXT_NODE;
 		});
-		return (nodes.some(function(node) { return getEffectiveValue(node, "superscript") == "super" })
-			&& nodes.some(function(node) { return getEffectiveValue(node, "superscript") != "super" }))
-			|| nodes.some(function(node) { return getEffectiveValue(node, "superscript") == "mixed" });
+		return (nodes.some(function(node) { return getEffectiveCommandValue(node, "superscript") == "super" })
+			&& nodes.some(function(node) { return getEffectiveCommandValue(node, "superscript") != "super" }))
+			|| nodes.some(function(node) { return getEffectiveCommandValue(node, "superscript") == "mixed" });
 	}, state: function() { return stateHelper(function(node) {
 		// "True if every editable Text node that is effectively contained in
-		// the active range has effective value "super", and there is at least
-		// one such Text node. Otherwise false."
-		return getEffectiveValue(node, "superscript") == "super";
+		// the active range has effective command value "super", and there is
+		// at least one such Text node. Otherwise false."
+		return getEffectiveCommandValue(node, "superscript") == "super";
 	})}, relevantCssProperty: "verticalAlign"
 };
 //@}
@@ -3385,15 +3393,15 @@ commands.underline = {
 		}
 	}, indeterm: function() { return indetermHelper(function(node) {
 		// "True if among editable Text nodes that are effectively contained in
-		// the active range, there is at least one with effective value
-		// "underline" and at least one with effective value null. Otherwise
-		// false."
-		return getEffectiveValue(node, "underline") === "underline";
+		// the active range, there is at least one with effective command value
+		// "underline" and at least one with effective command value null.
+		// Otherwise false."
+		return getEffectiveCommandValue(node, "underline") === "underline";
 	})}, state: function() { return stateHelper(function(node) {
 		// "True if every editable Text node that is effectively contained in
-		// the active range has effective value "underline", and there is at
-		// least one such Text node. Otherwise false."
-		return getEffectiveValue(node, "underline") === "underline";
+		// the active range has effective command value "underline", and there
+		// is at least one such Text node. Otherwise false."
+		return getEffectiveCommandValue(node, "underline") === "underline";
 	})}
 };
 //@}

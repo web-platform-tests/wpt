@@ -1231,22 +1231,22 @@ contained.
 
   <li><var>node</var> is <var>range</var>'s [[startnode]], it is a [[text]]
   node, its [[nodelength]] is different from <var>range</var>'s
-  [[startoffset]], and <var>range</var> is not [[collapsed]].
+  [[startoffset]], and <var>range</var> is not [[rangecollapsed]].
   <!-- So like <b>f[oo]</b> or <b>f[o]o</b> or <b>f[oo</b>}, but not
   <b>foo[</b>} or <b>f[]oo</b>. -->
 
   <li><var>node</var> is <var>range</var>'s [[endnode]], it is a [[text]] node,
   <var>range</var>'s [[endoffset]] is not 0, and <var>range</var> is not
-  [[collapsed]].
+  [[rangecollapsed]].
 
   <li><var>node</var> has at least one [[child]]; and all its [[children]] are
   <span>effectively contained</span> in <var>range</var>; and either
   <var>range</var>'s [[startnode]] is not a [[descendant]] of <var>node</var>
   or is not a [[text]] node or <var>range</var>'s [[startoffset]] is zero or
-  <var>range</var> is [[collapsed]]; and either <var>range</var>'s [[endnode]]
+  <var>range</var> is [[rangecollapsed]]; and either <var>range</var>'s [[endnode]]
   is not a [[descendant]] of <var>node</var> or is not a [[text]] node or
   <var>range</var>'s [[endoffset]] is its [[endnode]]'s [[length]] or
-  <var>range</var> is [[collapsed]].
+  <var>range</var> is [[rangecollapsed]].
   <!--
   Basically, anything whose children are all effectively contained should be
   effectively contained itself, except that in a case like <b>f[o]o</b> we

@@ -2843,10 +2843,12 @@ IE10PP2, Firefox 7.0a2, and Opera 11.50 do not, so I go with them.
   <span title="prohibited paragraph child">prohibited paragraph
   children</span>.
 
-  <p class=XXX>Double-check that this element list is correct.
-
   <p class=XXX>Do we want to go with this whitelist approach, or a blacklist?
-  If a whitelist, should we also whitelist display: block elements?
+  If a whitelist, should we also whitelist display: block elements?  Either
+  way, what exact list should we use?  I specced it this way because it's
+  easiest given the definitions I'm using, since I have a mostly complete list
+  of things to exclude (prohibited paragraph children) but no list of things to
+  include (inline elements).
 
   <li>For each <var>element</var> in <var>elements to remove</var>:
 

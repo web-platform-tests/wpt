@@ -6177,6 +6177,16 @@ parser.
 
   <li>Call <code class=external data-anolis-spec=domrange title=dom-Range-insertNode><a href=http://html5.org/specs/dom-range.html#dom-range-insertnode>insertNode(<var title="">frag</var>)</a></code> on the <a href=#active-range>active range</a>.
 
+  <!--
+  We could canonicalize whitespace at this point, but let's not.  If the author
+  wants HTML, give them HTML behavior.  When asked to replace a paragraph's
+  contents with a single space, Firefox 7.0a2 does so but inserts a <br> before
+  it (not after); Chrome 14 dev does so and doesn't insert a <br>, so the
+  paragraph collapses; Opera 11.50 doesn't insert the space at all, and just
+  inserts a <br>.  Correct behavior is to insert a space, then insert a <br>
+  after it in the next step because it's an invisible node.
+  -->
+
   <li>If the <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> is a <a href=#block-node>block
   node</a> with no <a href=#visible>visible</a> <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-child title=concept-tree-child>children</a>, call
   <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("br")</a></code> on the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#context-object>context object</a> and append the result as the

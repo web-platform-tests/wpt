@@ -1659,7 +1659,9 @@ var tests = {
 		['', 'foo[bar]baz'],
 		['\0', 'foo[bar]baz'],
 		['\x07', 'foo[bar]baz'],
-		['\ud800', 'foo[bar]baz'],
+		// The following line makes Firefox 7.0a2 go into an infinite loop on
+		// my machine.
+		//['\ud800', 'foo[bar]baz'],
 
 		['<b>', 'foo[bar]baz'],
 		['<b>abc', 'foo[bar]baz'],
@@ -1711,6 +1713,7 @@ var tests = {
 		['<p>abc', '<font color=red>foo[]bar</font>'],
 		['<p>abc', '<span style=color:red>foo[]bar</span>'],
 		['<p>abc', '<span style=font-variant:small-caps>foo[]bar</span>'],
+		[' ', '<p>[foo]</p>'],
 		['<span style=display:none></span>', '<p>[foo]</p>'],
 		['<!--abc-->', '<p>[foo]</p>'],
 	],

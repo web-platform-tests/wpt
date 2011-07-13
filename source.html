@@ -6172,6 +6172,16 @@ parser.
 
   <li>Call [[insertnode|<var>frag</var>]] on the <span>active range</span>.
 
+  <!--
+  We could canonicalize whitespace at this point, but let's not.  If the author
+  wants HTML, give them HTML behavior.  When asked to replace a paragraph's
+  contents with a single space, Firefox 7.0a2 does so but inserts a <br> before
+  it (not after); Chrome 14 dev does so and doesn't insert a <br>, so the
+  paragraph collapses; Opera 11.50 doesn't insert the space at all, and just
+  inserts a <br>.  Correct behavior is to insert a space, then insert a <br>
+  after it in the next step because it's an invisible node.
+  -->
+
   <li>If the <span>active range</span>'s [[startnode]] is a <span>block
   node</span> with no <span>visible</span> [[children]], call
   [[createelement|"br"]] on the [[contextobject]] and append the result as the

@@ -1711,6 +1711,7 @@ var tests = {
 		['<p>abc', '<font color=red>foo[]bar</font>'],
 		['<p>abc', '<span style=color:red>foo[]bar</span>'],
 		['<p>abc', '<span style=font-variant:small-caps>foo[]bar</span>'],
+		['<!--abc-->', '<p>[foo]</p>'],
 	],
 	//@}
 	insertimage: [

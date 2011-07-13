@@ -6337,10 +6337,11 @@ commands.inserthtml = {
 		// "Call insertNode(frag) on the active range."
 		getActiveRange().insertNode(frag);
 
-		// "Set the active range's start and end to (last child, length of last
-		// child)."
-		getActiveRange().setStart(lastChild, getNodeLength(lastChild));
-		getActiveRange().setEnd(lastChild, getNodeLength(lastChild));
+		// "Call collapse() on the context object's Selection, with last
+		// child's parent as the first argument and one plus its index as the
+		// second."
+		getActiveRange().setStart(lastChild.parentNode, 1 + getNodeIndex(lastChild));
+		getActiveRange().setEnd(lastChild.parentNode, 1 + getNodeIndex(lastChild));
 
 		// "Fix disallowed ancestors of each member of descendants."
 		for (var i = 0; i < descendants.length; i++) {

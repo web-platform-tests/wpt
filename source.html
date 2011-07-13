@@ -6172,8 +6172,9 @@ parser.
 
   <li>Call [[insertnode|<var>frag</var>]] on the <span>active range</span>.
 
-  <li>Set the <span>active range</span>'s [[rangestart]] and [[rangeend]] to
-  (<var>last child</var>, [[nodelength]] of <var>last child</var>).
+  <li>Call [[selcollapse|]] on the [[contextobject]]'s [[selection]], with
+  <var>last child</var>'s [[parent]] as the first argument and one plus its
+  [[index]] as the second.
   <!-- Need to do this before fixing disallowed ancestors, since otherwise the
   last child might have been removed (e.g., it's an li). -->
 

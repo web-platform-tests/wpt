@@ -527,6 +527,7 @@ function parseSimpleColor(color) {
 // Helper function for common behavior.
 function setupEditCommandMethod(command, prop, range) {
 	// Set up our global range magic
+	globalRange = null;
 	if (typeof range != "undefined") {
 		globalRange = range;
 	} else {

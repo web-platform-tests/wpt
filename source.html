@@ -68,36 +68,6 @@ have experience using this feature.
 <h2 class=no-num>Table of contents</h2>
 <!--toc-->
 
-<!--
-Things that are only implemented by a couple of browsers and may or may not be
-useful to spec:
-
-* decreaseFontSize, increaseFontSize: Only implemented in Gecko and Opera.
-* contentReadOnly, enableInlineTableEditing, enableObjectResizing, heading,
-  insertBrOnReturn: MDC docs say not implemented in IE (didn't test).
-* readOnly: MDC docs say it's a deprecated equivalent of contentReadOnly, so
-  presumably like useCSS but less popular.
-* 2D-Position, absolutePosition, clearAuthenticationCache, createBookmark,
-  insertButton, insertFieldset, insertIframe, insertInput*, insertMarquee,
-  insertSelectDropdown, insertSelectListbox, insertTextarea, liveResize,
-  multipleSelection, overwrite, print, refresh, saveAs, unbookmark: Mentioned
-  in MSDN docs but not MDC, so presumably IE-only.  Some of these seem
-  inappropriate or useless, others will bear investigation.
-* findString, fontSizeDelta, insertNewlineInQuotedContent, justifyNone, print,
-  transpose: There's code for these in WebKit,
-  Source/WebCore/editing/EditorCommand.cpp, but I didn't see them mentioned
-  elsewhere.  Some might be worth adding.
-* unselect: Seems to not be implemented by Gecko or Opera, and IE behaves
-  oddly: it seems to collapse the selection instead of removing it.  Will only
-  implement if there seems to be demand; it's redundant to
-  Selection.removeAllRanges() anyway.
-
-Things I haven't looked at that multiple browsers implement:
-
-* redo, undo: Needs review of the Google work on this; will probably be
-  quite complicated.
--->
-
 <h2>Introduction</h2>
 <!-- @{ -->
 <p>This specification defines commands to edit HTML documents programmatically.
@@ -280,6 +250,35 @@ TODO:
   serialize through a character encoding change.
 -->
 
+<!--
+TODO: Things that are only implemented by a couple of browsers and may or may
+not be useful to spec:
+
+* decreaseFontSize, increaseFontSize: Only implemented in Gecko and Opera.
+* contentReadOnly, enableInlineTableEditing, enableObjectResizing, heading,
+  insertBrOnReturn: MDC docs say not implemented in IE (didn't test).
+* readOnly: MDC docs say it's a deprecated equivalent of contentReadOnly, so
+  presumably like useCSS but less popular.
+* 2D-Position, absolutePosition, clearAuthenticationCache, createBookmark,
+  insertButton, insertFieldset, insertIframe, insertInput*, insertMarquee,
+  insertSelectDropdown, insertSelectListbox, insertTextarea, liveResize,
+  multipleSelection, overwrite, print, refresh, saveAs, unbookmark: Mentioned
+  in MSDN docs but not MDC, so presumably IE-only.  Some of these seem
+  inappropriate or useless, others will bear investigation.
+* findString, fontSizeDelta, insertNewlineInQuotedContent, justifyNone, print,
+  transpose: There's code for these in WebKit,
+  Source/WebCore/editing/EditorCommand.cpp, but I didn't see them mentioned
+  elsewhere.  Some might be worth adding.
+* unselect: Seems to not be implemented by Gecko or Opera, and IE behaves
+  oddly: it seems to collapse the selection instead of removing it.  Will only
+  implement if there seems to be demand; it's redundant to
+  Selection.removeAllRanges() anyway.
+
+Things I haven't looked at that multiple browsers implement:
+
+* redo, undo: Needs review of the Google work on this; will probably be
+  quite complicated.
+-->
 <!-- @} -->
 
 <h2>Commands</h2>
@@ -353,8 +352,8 @@ with it:
   and is not exposed to authors.  If a <span>command</span> does not have a
   <span>relevant CSS property</span> specified, it defaults to null.
 </ul>
-<!-- @} -->
 
+<!-- @} -->
 <h3>Supported commands</h3>
 <!-- @{ -->
 <p>Some <span title=command>commands</span> will be <dfn>supported</dfn> in a
@@ -392,8 +391,8 @@ reasons.
 
 <p>Authors can tell whether a <span>command</span> is <span>supported</span>
 using <code>queryCommandSupported()</code>.
-<!-- @} -->
 
+<!-- @} -->
 <h3>Enabled commands</h3>
 <!-- @{ -->
 <p>At any given time, a <span>supported</span> command can be either
@@ -437,8 +436,8 @@ want to bail out early in that case anyway because all the algorithms will talk
 about the active range.  If there are use-cases for it to be more precise, I
 could make it so.
 -->
-<!-- @} -->
 
+<!-- @} -->
 
 <h2>Methods of the <code data-anolis-spec=html>HTMLDocument</code> interface</h2>
 <!-- @{ -->
@@ -842,8 +841,8 @@ instead follow these rules:
 <p>To <dfn>remove extraneous line breaks from</dfn> a [[node]], first
 <span>remove extraneous line breaks before</span> it, then <span>remove
 extraneous line breaks at the end of</span> it.
-<!-- @} -->
 
+<!-- @} -->
 <h3>Wrapping a list of nodes</h3>
 <!-- @{ -->
 <p>To <dfn>wrap</dfn> a list <var>node list</var> of consecutive [[sibling]]
@@ -1012,8 +1011,8 @@ instructions</span> return null.
 
   <li>Return <var>new parent</var>.
 </ol>
-<!-- @} -->
 
+<!-- @} -->
 <h3>Allowed children</h3>
 <!-- @{ -->
 <p>A <dfn>name of an element with inline contents</dfn> is "a", "abbr", "b",
@@ -1255,8 +1254,8 @@ which at least one of the following holds:
 
 <p class=note>Conceptually, a simple modifiable element is a modifiable element
 which specifies a value for at most one command.
-<!-- @} -->
 
+<!-- @} -->
 <h3>Assorted inline formatting command algorithms</h3>
 <!-- @{ -->
 <p>The <dfn>effective command value</dfn> of a [[node]] <var>node</var> for a
@@ -1546,8 +1545,8 @@ returned by the <span>record the values</span> algorithm:
   </ol>
 </ol>
 
-<!-- @} -->
 
+<!-- @} -->
 <h3>Clearing an element's value</h3>
 <!-- @{ -->
 <p>To <dfn>clear the value</dfn> of an [[element]] <var>element</var>:
@@ -1622,8 +1621,8 @@ id=foo> into <span id=foo> instead of <font id=foo>, but probably not worth it.
   <li><span>Set the tag name</span> of <var>element</var> to "span", and return
   the one-[[node]] list consisting of the result.
 </ol>
-<!-- @} -->
 
+<!-- @} -->
 <h3>Pushing down values</h3>
 <!-- @{ -->
 <p>To <dfn>push down values</dfn> to a [[node]] <var>node</var>, given a new
@@ -1769,8 +1768,8 @@ with a [[style]] attribute).
     </ol>
   </ol>
 </ol>
-<!-- @} -->
 
+<!-- @} -->
 <h3>Forcing the value of a node</h3>
 <!-- @{ -->
 <p>To <dfn>force the value</dfn> of a [[node]] <var>node</var> to <var>new
@@ -2051,8 +2050,8 @@ different value.
     </ol>
   </ol>
 </ol>
-<!-- @} -->
 
+<!-- @} -->
 <h3>Setting the selection's value</h3>
 <!-- @{ -->
 <p>To <dfn>set the selection's value</dfn> to <var>new value</var>:
@@ -2201,8 +2200,8 @@ as desired.
     <li><span>Force the value</span> of <var>node</var>.
   </ol>
 </ol>
-<!-- @} -->
 
+<!-- @} -->
 <h3><dfn>The <code title>backColor</code> command</dfn></h3>
 <!-- @{ -->
 <!--
@@ -2262,8 +2261,8 @@ value">effective command values</span>.  Otherwise false.
 must always be either an element or a text node that's the child of an element.
 
 <p><span>Relevant CSS property</span>: "background-color"
-<!-- @} -->
 
+<!-- @} -->
 <h3><dfn>The <code title>bold</code> command</dfn></h3>
 <!-- @{ -->
 <!-- If the selection is collapsed (but not if it contains nothing but is not
@@ -2315,8 +2314,8 @@ cases with a few exceptions.
 -->
 
 <p><span>Relevant CSS property</span>: "font-weight"
-<!-- @} -->
 
+<!-- @} -->
 <h3><dfn>The <code title>createLink</code> command</dfn></h3>
 <!-- @{ -->
 <p><span>Action</span>:
@@ -2380,8 +2379,8 @@ seem very useful.
 
 <!-- I'd have expected the value to be the URL, but guess not: it's always
 false. -->
-<!-- @} -->
 
+<!-- @} -->
 <h3><dfn>The <code title>fontName</code> command</dfn></h3>
 <!-- @{ -->
 <p><span>Action</span>: <span>Set the selection's value</span> to
@@ -2436,8 +2435,8 @@ font-family.  I'll leave CSSOM to decide what that means if there are no
 applicable style rules. -->
 
 <p><span>Relevant CSS property</span>: "font-family"
-<!-- @} -->
 
+<!-- @} -->
 <h3><dfn>The <code title>fontSize</code> command</dfn></h3>
 <!-- @{ -->
 <p><span>Action</span>:
@@ -2608,8 +2607,8 @@ browsers behave differently.  I see no reason to behave differently.
 </ol>
 
 <p><span>Relevant CSS property</span>: "font-size"
-<!-- @} -->
 
+<!-- @} -->
 <h3><dfn>The <code title>foreColor</code> command</dfn></h3>
 <!-- @{ -->
 <p><span>Action</span>:
@@ -2706,8 +2705,8 @@ color if there is any.
 -->
 
 <p><span>Relevant CSS property</span>: "color"
-<!-- @} -->
 
+<!-- @} -->
 <h3><dfn>The <code title>hiliteColor</code> command</dfn></h3>
 <!-- @{ -->
 <!-- IE 9 RC doesn't support this.  It uses backColor instead, but Gecko and
@@ -2765,8 +2764,8 @@ like for foreColor.
 -->
 
 <p><span>Relevant CSS property</span>: "background-color"
-<!-- @} -->
 
+<!-- @} -->
 <h3><dfn>The <code title>italic</code> command</dfn></h3>
 <!-- @{ -->
 <p><span>Action</span>: If the <span>state</span> is false, <span>set the
@@ -2785,8 +2784,8 @@ is <span>effectively contained</span> in the <span>active range</span> has
 at least one such [[text]] node.  Otherwise false.
 
 <p><span>Relevant CSS property</span>: "font-style"
-<!-- @} -->
 
+<!-- @} -->
 <h3><dfn>The <code title>removeFormat</code> command</dfn></h3>
 <!-- @{ -->
 <!--
@@ -2909,8 +2908,8 @@ IE10PP2, Firefox 7.0a2, and Opera 11.50 do not, so I go with them.
     <li>underline
   </ol>
 </ol>
-<!-- @} -->
 
+<!-- @} -->
 <h3><dfn>The <code title>strikethrough</code> command</dfn></h3>
 <!-- @{ -->
 <p><span>Action</span>: If the <span>state</span> is false, <span>set the
@@ -2932,8 +2931,8 @@ Otherwise false.
 is <span>effectively contained</span> in the <span>active range</span> has
 <span>effective command value</span> "line-through", and there is at least one
 such [[text]] node.  Otherwise false.
-<!-- @} -->
 
+<!-- @} -->
 <h3><dfn>The <code title>subscript</code> command</dfn></h3>
 <!-- @{ -->
 <p><span>Action</span>:
@@ -2972,8 +2971,8 @@ other indeterminate situations, so it's fair to consider it indeterminate.
 -->
 
 <p><span>Relevant CSS property</span>: "vertical-align"
-<!-- @} -->
 
+<!-- @} -->
 <h3><dfn>The <code title>superscript</code> command</dfn></h3>
 <!-- @{ -->
 <p><span>Action</span>:
@@ -3001,8 +3000,8 @@ is <span>effectively contained</span> in the <span>active range</span> has
 [[text]] node.  Otherwise false.
 
 <p><span>Relevant CSS property</span>: "vertical-align"
-<!-- @} -->
 
+<!-- @} -->
 <h3><dfn>The <code title>underline</code> command</dfn></h3>
 <!-- @{ -->
 <p><span>Action</span>: If the <span>state</span> is false, <span>set the
@@ -3073,8 +3072,8 @@ Otherwise false.
 is <span>effectively contained</span> in the <span>active range</span> has
 <span>effective command value</span> "underline", and there is at least one
 such [[text]] node.  Otherwise false.
-<!-- @} -->
 
+<!-- @} -->
 <h3><dfn>The <code title>unlink</code> command</dfn></h3>
 <!-- @{ -->
 <p><span>Action</span>:
@@ -3128,8 +3127,8 @@ container</span>, or an <span>HTML element</span> with [[localname]] "li",
 
 <p>The <dfn>default single-line container name</dfn> is "p".
 <!-- TODO: Make this configurable. -->
-<!-- @} -->
 
+<!-- @} -->
 <h3>Assorted block formatting command algorithms</h3>
 <!-- @{ -->
 <p>To <dfn>fix disallowed ancestors</dfn> of <var>node</var>:
@@ -3362,8 +3361,8 @@ work well given the design of the API.
 
   <li>Return "left".
 </ol>
-<!-- @} -->
 
+<!-- @} -->
 <h3>Block-extending a range</h3>
 <!-- @{ -->
 <p>When a user agent is to <dfn>block-extend</dfn> a [[range]]
@@ -3491,8 +3490,8 @@ algorithm returns true:
   <li>Return false if <var>new range</var>'s [[rangeend]] is [[bpafter]]
   (<var>node</var>, <var>offset</var>), true otherwise.
 </ol>
-<!-- @} -->
 
+<!-- @} -->
 <h3>Deleting the contents of a range</h3>
 <!-- @{ -->
 <p>To <dfn>delete the contents</dfn> of a [[range]] <var>range</var>, given a
@@ -3900,8 +3899,8 @@ display: inline-table. -->
   [[createelement|"br"]] on the [[contextobject]] and append the result as the
   last [[child]] of <var>start block</var>.
 </ol>
-<!-- @} -->
 
+<!-- @} -->
 <h3>Splitting a node list's parent</h3>
 <!-- @{ -->
 <p>To <dfn>split the parent</dfn> of a list <var>node list</var> of consecutive
@@ -4028,8 +4027,8 @@ display: inline-table. -->
 descendants</dfn>, <span>split the parent</span> of <var>node</var>'s
 [[children]] if it has any.  If it has no [[children]], instead remove it from
 its [[parent]].
-<!-- @} -->
 
+<!-- @} -->
 <h3>Canonical space sequences</h3>
 <!-- @{ -->
 <p>The <dfn>canonical space sequence</dfn> of length <var>n</var>, with boolean
@@ -4219,8 +4218,8 @@ returned by the following algorithm:
     </ol>
   </ol>
 </ol>
-<!-- @} -->
 
+<!-- @} -->
 <h3>Indenting and outdenting</h3>
 <!-- @{ -->
 <p>To <dfn>indent</dfn> a list <var>node list</var> of consecutive [[sibling]]
@@ -4520,8 +4519,8 @@ insertOrderedList.
 
   <li><span>Outdent</span> <var>original ancestor</var>.
 </ol>
-<!-- @} -->
 
+<!-- @} -->
 <h3>Toggling lists</h3>
 <!-- @{ -->
 <!--
@@ -5074,8 +5073,8 @@ or "ul"):
     <li><span>Fix disallowed ancestors</span> of the previous step's result.
   </ol>
 </ol>
-<!-- @} -->
 
+<!-- @} -->
 <h3>Justifying the selection</h3>
 <!-- @{ -->
 <!--
@@ -5190,8 +5189,8 @@ would be worth the added complexity.
     mode. -->
   </ol>
 </ol>
-<!-- @} -->
 
+<!-- @} -->
 <h3><dfn>The <code title>delete</code> command</dfn></h3>
 <!-- @{ -->
 <p><span>Action</span>:
@@ -5497,8 +5496,8 @@ would be worth the added complexity.
   (<var>start node</var>, <var>start offset</var>) and [[rangeend]]
   (<var>node</var>, <var>offset</var>).
 </ol>
-<!-- @} -->
 
+<!-- @} -->
 <h3><dfn>The <code title>formatBlock</code> command</dfn></h3>
 <!-- @{ -->
 <!--
@@ -5791,8 +5790,8 @@ writing means what Firefox supports plus div.
 
   <li>Return the empty string.
 </ol>
-<!-- @} -->
 
+<!-- @} -->
 <h3><dfn>The <code title>forwardDelete</code> command</dfn></h3>
 <!-- @{ -->
 <p><span>Action</span>:
@@ -5947,8 +5946,8 @@ writing means what Firefox supports plus div.
   (<var>node</var>, <var>offset</var>) and [[rangeend]] (<var>end node</var>,
   <var>end offset</var>).
 </ol>
-<!-- @} -->
 
+<!-- @} -->
 <h3><dfn>The <code title>indent</code> command</dfn></h3>
 <!-- @{ -->
 <!--
@@ -6043,8 +6042,8 @@ differing from all browsers in lots of ways.
     <li><span>Indent</span> <var>sublist</var>.
   </ol>
 </ol>
-<!-- @} -->
 
+<!-- @} -->
 <h3><dfn>The <code title>insertHorizontalRule</code> command</dfn></h3>
 <!-- @{ -->
 <p><span>Action</span>:
@@ -6109,8 +6108,8 @@ splitting up parents to ensure validity . . . -->
   to the [[parent]] of <var>hr</var> and the second argument equal to one plus
   the [[index]] of <var>hr</var>.
 </ol>
-<!-- @} -->
 
+<!-- @} -->
 <h3><dfn>The <code title>insertHTML</code> command</dfn></h3>
 <!-- @{ -->
 <!--
@@ -6211,8 +6210,8 @@ parser.
   <!-- We want to fix all descendants, not just children.  Consider
   <div><li>foo</li></div>, for example. -->
 </ol>
-<!-- @} -->
 
+<!-- @} -->
 <h3><dfn>The <code title>insertImage</code> command</dfn></h3>
 <!-- @{ -->
 <p><span>Action</span>:
@@ -6260,8 +6259,8 @@ parser.
   to the [[parent]] of <var>img</var> and the second argument equal to one plus
   the [[index]] of <var>img</var>.
 </ol>
-<!-- @} -->
 
+<!-- @} -->
 <h3><dfn>The <code title>insertLineBreak</code> command</dfn></h3>
 <!-- @{ -->
 <p><span>Action</span>:
@@ -6322,8 +6321,8 @@ Opera 11.11 isn't heedful of <xmp>, and treats <pre> somewhat oddly.
   be the result, then call [[insertnode|<var>extra br</var>]] on the
   <span>active range</span>.
 </ol>
-<!-- @} -->
 
+<!-- @} -->
 <h3><dfn>The <code title>insertOrderedList</code> command</dfn></h3>
 <!-- @{ -->
 <p><span>Action</span>: <span>Toggle lists</span> with <var>tag name</var>
@@ -6347,8 +6346,8 @@ IE9 throws exceptions in most cases, Firefox 6.0a2 in some cases as well, for
 no apparent reason.  Ignoring those, the spec basically matches all browsers,
 except with a few weird random mismatches that looked like browser bugs to me.
 -->
-<!-- @} -->
 
+<!-- @} -->
 <h3><dfn>The <code title>insertParagraph</code> command</dfn></h3>
 <!-- @{ -->
 <!--
@@ -6620,8 +6619,8 @@ http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
   <li>Set the [[rangestart]] of <var>range</var> to (<var>new container</var>,
   0).
 </ol>
-<!-- @} -->
 
+<!-- @} -->
 <h3><dfn>The <code title>insertText</code> command</dfn></h3>
 <!-- @{ -->
 <!--
@@ -6800,8 +6799,8 @@ this, as Chrome 14 dev does.
   <li>Call [[selcollapse|<var>text</var>, 1]] on the [[contextobject]]'s
   [[selection]].
 </ol>
-<!-- @} -->
 
+<!-- @} -->
 <h3><dfn>The <code title>insertUnorderedList</code> command</dfn></h3>
 <!-- @{ -->
 <p><span>Action</span>: <span>Toggle lists</span> with <var>tag name</var>
@@ -6812,8 +6811,8 @@ is "mixed" or "mixed ul", false otherwise.
 
 <p><span>State</span>: True if the <span>selection's list state</span> is "ul",
 false otherwise.
-<!-- @} -->
 
+<!-- @} -->
 <h3><dfn>The <code title>justifyCenter</code> command</dfn></h3>
 <!-- @{ -->
 <p><span>Action</span>: <span>Justify the selection</span> with
@@ -6877,8 +6876,8 @@ indeterminate false, which would suggest that the whole selection is aligned
 left, but that's not the case.  Chrome 14 dev returns the state cast to a
 string, as usual.  Opera 11.11 always returns the empty string.
 -->
-<!-- @} -->
 
+<!-- @} -->
 <h3><dfn>The <code title>justifyFull</code> command</dfn></h3>
 <!-- @{ -->
 <p><span>Action</span>: <span>Justify the selection</span> with
@@ -6900,8 +6899,8 @@ false.
 and return the <span>alignment value</span> of the first <span>visible</span>
 <span>editable</span> [[node]] that is [[contained]] in the result and has no
 [[children]].  If there is no such [[node]], return "left".
-<!-- @} -->
 
+<!-- @} -->
 <h3><dfn>The <code title>justifyLeft</code> command</dfn></h3>
 <!-- @{ -->
 <p><span>Action</span>: <span>Justify the selection</span> with
@@ -6923,8 +6922,8 @@ false.
 and return the <span>alignment value</span> of the first <span>visible</span>
 <span>editable</span> [[node]] that is [[contained]] in the result and has no
 [[children]].  If there is no such [[node]], return "left".
-<!-- @} -->
 
+<!-- @} -->
 <h3><dfn>The <code title>justifyRight</code> command</dfn></h3>
 <!-- @{ -->
 <p><span>Action</span>: <span>Justify the selection</span> with
@@ -6946,8 +6945,8 @@ false.
 and return the <span>alignment value</span> of the first <span>visible</span>
 <span>editable</span> [[node]] that is [[contained]] in the result and has no
 [[children]].  If there is no such [[node]], return "left".
-<!-- @} -->
 
+<!-- @} -->
 <h3><dfn>The <code title>outdent</code> command</dfn></h3>
 <!-- @{ -->
 <p><span>Action</span>:
@@ -7066,8 +7065,8 @@ NOT_SUPPORTED_ERR, like encouraging users to reconfigure their browser.
 However, browsers might not want to encourage authors to tell users to
 reconfigure their browser insecurely.
 -->
-<!-- @} -->
 
+<!-- @} -->
 <h3><dfn>The <code title>cut</code> command</dfn></h3>
 <!-- @{ -->
 <!-- See comment for copy -->
@@ -7089,8 +7088,8 @@ with extremely long, obscene, or otherwise objectionable content.
 may either raise a [[SECURITY_ERR]] for non-whitelisted sites, or it may act as
 though the <span>command</span> is <span title=supported>unsupported</span> on
 those sites.
-<!-- @} -->
 
+<!-- @} -->
 <h3><dfn>The <code title>paste</code> command</dfn></h3>
 <!-- @{ -->
 <!-- See comment for copy -->
@@ -7112,8 +7111,8 @@ because sites could abuse it to read private information from the clipboard.
 may either raise a [[SECURITY_ERR]] for non-whitelisted sites, or it may act as
 though the <span>command</span> is <span title=supported>unsupported</span> on
 those sites.
-<!-- @} -->
 
+<!-- @} -->
 <h3><dfn>The <code title>selectAll</code> command</dfn></h3>
 <!-- @{ -->
 <!--
@@ -7163,8 +7162,8 @@ The behavior here is relatively simple and largely matches implementations.
   <li>Otherwise, call [[getselection]] on the [[contextobject]], and call
   [[selectallchildren|<var>target</var>]] on the result.
 </ol>
-<!-- @} -->
 
+<!-- @} -->
 <h3><dfn>The <code title>styleWithCSS</code> command</dfn></h3>
 <!-- @{ -->
 <!-- IE9 and Opera 11.00 don't support this command.  By and large, they act
@@ -7194,8 +7193,8 @@ using styleWithCSS, in which case the two behaviors work the same. -->
 otherwise false.
 <!-- This follows Chrome 13 dev.  Firefox 5.0a2 doesn't support
 queryCommandState() for styleWithCSS. -->
-<!-- @} -->
 
+<!-- @} -->
 <h3><dfn>The <code title>useCSS</code> command</dfn></h3>
 <!-- @{ -->
 <!-- Supported by Firefox 4.0, but not IE9 or Opera 11.00 (which don't support

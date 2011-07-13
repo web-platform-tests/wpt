@@ -274,8 +274,8 @@ function getDirectionality(element) {
 	return getDirectionality(element.parentNode);
 }
 
-//@}
 
+//@}
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////// DOM Range functions /////////////////////////////
@@ -512,8 +512,8 @@ function parseSimpleColor(color) {
 		"currentColor": false,
 	}[color];
 }
-//@}
 
+//@}
 
 //////////////////////////////////////////////////////////////////////////////
 /////////////////////////// Edit command functions ///////////////////////////
@@ -1122,8 +1122,8 @@ function removeExtraneousLineBreaksFrom(node) {
 	removeExtraneousLineBreaksAtTheEndOf(node);
 }
 
-//@}
 
+//@}
 ///// Wrapping a list of nodes /////
 //@{
 
@@ -1282,8 +1282,8 @@ function wrap(nodeList, siblingCriteria, newParentInstructions) {
 	return newParent;
 }
 
-//@}
 
+//@}
 ///// Allowed children /////
 //@{
 
@@ -1456,8 +1456,8 @@ function isAllowedChild(child, parent_) {
 	return true;
 }
 
-//@}
 
+//@}
 
 //////////////////////////////////////
 ///// Inline formatting commands /////
@@ -1723,8 +1723,8 @@ function isSimpleModifiableElement(node) {
 	return false;
 }
 
-//@}
 
+//@}
 ///// Assorted inline formatting command algorithms /////
 //@{
 
@@ -2150,8 +2150,8 @@ function restoreValues(values) {
 	});
 }
 
-//@}
 
+//@}
 ///// Clearing an element's value /////
 //@{
 
@@ -2260,8 +2260,8 @@ function clearValue(element, command) {
 	return [setTagName(element, "span")];
 }
 
-//@}
 
+//@}
 ///// Pushing down values /////
 //@{
 
@@ -2369,8 +2369,8 @@ function pushDownValues(node, command, newValue) {
 	}
 }
 
-//@}
 
+//@}
 ///// Forcing the value of a node /////
 //@{
 
@@ -2690,8 +2690,8 @@ function forceValue(node, command, newValue) {
 	}
 }
 
-//@}
 
+//@}
 ///// Setting the selection's value /////
 //@{
 
@@ -2756,8 +2756,8 @@ function setSelectionValue(command, newValue) {
 	});
 }
 
-//@}
 
+//@}
 ///// The backColor command /////
 //@{
 commands.backcolor = {
@@ -2809,8 +2809,8 @@ commands.backcolor = {
 		return value;
 	}, relevantCssProperty: "backgroundColor"
 };
-//@}
 
+//@}
 ///// The bold command /////
 //@{
 commands.bold = {
@@ -2845,8 +2845,8 @@ commands.bold = {
 			|| fontWeight === "900";
 	})}, relevantCssProperty: "fontWeight"
 };
-//@}
 
+//@}
 ///// The createLink command /////
 //@{
 commands.createlink = {
@@ -2876,8 +2876,8 @@ commands.createlink = {
 		setSelectionValue("createlink", value);
 	}
 };
-//@}
 
+//@}
 ///// The fontName command /////
 //@{
 commands.fontname = {
@@ -2900,8 +2900,8 @@ commands.fontname = {
 		return getEffectiveCommandValue(getActiveRange().startContainer, "fontname");
 	}, relevantCssProperty: "fontFamily"
 };
-//@}
 
+//@}
 ///// The fontSize command /////
 //@{
 commands.fontsize = {
@@ -3041,8 +3041,8 @@ commands.fontsize = {
 		return "7";
 	}, relevantCssProperty: "fontSize"
 };
-//@}
 
+//@}
 ///// The foreColor command /////
 //@{
 commands.forecolor = {
@@ -3095,8 +3095,8 @@ commands.forecolor = {
 		return value;
 	}, relevantCssProperty: "color"
 };
-//@}
 
+//@}
 ///// The hiliteColor command /////
 //@{
 commands.hilitecolor = {
@@ -3149,8 +3149,8 @@ commands.hilitecolor = {
 		return value;
 	}, relevantCssProperty: "backgroundColor"
 };
-//@}
 
+//@}
 ///// The italic command /////
 //@{
 commands.italic = {
@@ -3178,8 +3178,8 @@ commands.italic = {
 		return value == "italic" || value == "oblique";
 	})}, relevantCssProperty: "fontStyle"
 };
-//@}
 
+//@}
 ///// The removeFormat command /////
 //@{
 commands.removeformat = {
@@ -3279,8 +3279,8 @@ commands.removeformat = {
 		});
 	}
 };
-//@}
 
+//@}
 ///// The strikethrough command /////
 //@{
 commands.strikethrough = {
@@ -3305,8 +3305,8 @@ commands.strikethrough = {
 		return getEffectiveCommandValue(node, "strikethrough") == "line-through";
 	})}
 };
-//@}
 
+//@}
 ///// The subscript command /////
 //@{
 commands.subscript = {
@@ -3341,8 +3341,8 @@ commands.subscript = {
 		return getEffectiveCommandValue(node, "subscript") == "sub";
 	})}, relevantCssProperty: "verticalAlign"
 };
-//@}
 
+//@}
 ///// The superscript command /////
 //@{
 commands.superscript = {
@@ -3378,8 +3378,8 @@ commands.superscript = {
 		return getEffectiveCommandValue(node, "superscript") == "super";
 	})}, relevantCssProperty: "verticalAlign"
 };
-//@}
 
+//@}
 ///// The underline command /////
 //@{
 commands.underline = {
@@ -3404,8 +3404,8 @@ commands.underline = {
 		return getEffectiveCommandValue(node, "underline") === "underline";
 	})}
 };
-//@}
 
+//@}
 ///// The unlink command /////
 //@{
 commands.unlink = {
@@ -3448,8 +3448,8 @@ commands.unlink = {
 		}
 	}
 };
-//@}
 
+//@}
 
 /////////////////////////////////////
 ///// Block formatting commands /////
@@ -3534,8 +3534,8 @@ function isSingleLineContainer(node) {
 // "The default single-line container name is "p"."
 var defaultSingleLineContainerName = "p";
 
-//@}
 
+//@}
 ///// Assorted block formatting command algorithms /////
 //@{
 
@@ -3771,8 +3771,8 @@ function getAlignmentValue(node) {
 	// "Return "left"."
 	return "left";
 }
-//@}
 
+//@}
 ///// Block-extending a range /////
 //@{
 
@@ -3960,8 +3960,8 @@ function precedesLineBreak(node) {
 	return getPosition(newRange.endContainer, newRange.endOffset, node, offset) != "after";
 }
 
-//@}
 
+//@}
 ///// Deleting the contents of a range /////
 //@{
 
@@ -4451,8 +4451,8 @@ function deleteContents() {
 	}
 }
 
-//@}
 
+//@}
 ///// Splitting a node list's parent /////
 //@{
 
@@ -4597,8 +4597,8 @@ function removePreservingDescendants(node) {
 	}
 }
 
-//@}
 
+//@}
 ///// Canonical space sequences /////
 //@{
 
@@ -4820,8 +4820,8 @@ function canonicalizeWhitespace(node, offset) {
 	}
 }
 
-//@}
 
+//@}
 ///// Indenting and outdenting /////
 //@{
 
@@ -5026,8 +5026,8 @@ function outdentNode(node) {
 	outdentNode(originalAncestor);
 }
 
-//@}
 
+//@}
 ///// Toggling lists /////
 //@{
 
@@ -5293,8 +5293,8 @@ function toggleLists(tagName) {
 	}
 }
 
-//@}
 
+//@}
 ///// Justifying the selection /////
 //@{
 
@@ -5408,8 +5408,8 @@ function justifySelection(alignment) {
 	}
 }
 
-//@}
 
+//@}
 ///// The delete command /////
 //@{
 commands["delete"] = {
@@ -5728,8 +5728,8 @@ commands["delete"] = {
 		deleteContents(startNode, startOffset, node, offset);
 	}
 };
-//@}
 
+//@}
 ///// The formatBlock command /////
 //@{
 commands.formatblock = {
@@ -5951,8 +5951,8 @@ commands.formatblock = {
 		return "";
 	}
 };
-//@}
 
+//@}
 ///// The forwardDelete command /////
 //@{
 commands["forwarddelete"] = {
@@ -6147,8 +6147,8 @@ commands["forwarddelete"] = {
 		deleteContents(node, offset, endNode, endOffset);
 	}
 };
-//@}
 
+//@}
 ///// The indent command /////
 //@{
 commands.indent = {
@@ -6225,8 +6225,8 @@ commands.indent = {
 		}
 	}
 };
-//@}
 
+//@}
 ///// The insertHorizontalRule command /////
 //@{
 commands.inserthorizontalrule = {
@@ -6301,8 +6301,8 @@ commands.inserthorizontalrule = {
 		getSelection().addRange(range);
 	}
 };
-//@}
 
+//@}
 ///// The insertHTML command /////
 //@{
 commands.inserthtml = {
@@ -6365,8 +6365,8 @@ commands.inserthtml = {
 		}
 	}
 };
-//@}
 
+//@}
 ///// The insertImage command /////
 //@{
 commands.insertimage = {
@@ -6426,8 +6426,8 @@ commands.insertimage = {
 		img.removeAttribute("height");
 	}
 };
-//@}
 
+//@}
 ///// The insertLineBreak command /////
 //@{
 commands.insertlinebreak = {
@@ -6500,8 +6500,8 @@ commands.insertlinebreak = {
 		}
 	}
 };
-//@}
 
+//@}
 ///// The insertOrderedList command /////
 //@{
 commands.insertorderedlist = {
@@ -6513,8 +6513,8 @@ commands.insertorderedlist = {
 	// "True if the selection's list state is "ol", false otherwise."
 	state: function() { return getSelectionListState() == "ol" },
 };
-//@}
 
+//@}
 ///// The insertParagraph command /////
 //@{
 commands.insertparagraph = {
@@ -6816,8 +6816,8 @@ commands.insertparagraph = {
 		range.setStart(newContainer, 0);
 	}
 };
-//@}
 
+//@}
 ///// The insertText command /////
 //@{
 commands.inserttext = {
@@ -6935,8 +6935,8 @@ commands.inserttext = {
 		getActiveRange().setEnd(text, text.length);
 	}
 };
-//@}
 
+//@}
 ///// The insertUnorderedList command /////
 //@{
 commands.insertunorderedlist = {
@@ -6948,8 +6948,8 @@ commands.insertunorderedlist = {
 	// "True if the selection's list state is "ul", false otherwise."
 	state: function() { return getSelectionListState() == "ul" },
 };
-//@}
 
+//@}
 ///// The justifyCenter command /////
 //@{
 commands.justifycenter = {
@@ -6989,8 +6989,8 @@ commands.justifycenter = {
 		}
 	},
 };
-//@}
 
+//@}
 ///// The justifyFull command /////
 //@{
 commands.justifyfull = {
@@ -7030,8 +7030,8 @@ commands.justifyfull = {
 		}
 	},
 };
-//@}
 
+//@}
 ///// The justifyLeft command /////
 //@{
 commands.justifyleft = {
@@ -7071,8 +7071,8 @@ commands.justifyleft = {
 		}
 	},
 };
-//@}
 
+//@}
 ///// The justifyRight command /////
 //@{
 commands.justifyright = {
@@ -7112,8 +7112,8 @@ commands.justifyright = {
 		}
 	},
 };
-//@}
 
+//@}
 ///// The outdent command /////
 //@{
 commands.outdent = {
@@ -7195,8 +7195,8 @@ commands.outdent = {
 		}
 	}
 };
-//@}
 
+//@}
 
 //////////////////////////////////
 ///// Miscellaneous commands /////
@@ -7229,8 +7229,8 @@ commands.selectall = {
 		}
 	}
 };
-//@}
 
+//@}
 ///// The styleWithCSS command /////
 //@{
 commands.stylewithcss = {
@@ -7241,8 +7241,8 @@ commands.stylewithcss = {
 		cssStylingFlag = String(value).toLowerCase() != "false";
 	}, state: function() { return cssStylingFlag }
 };
-//@}
 
+//@}
 ///// The useCSS command /////
 //@{
 commands.usecss = {
@@ -7253,8 +7253,8 @@ commands.usecss = {
 		cssStylingFlag = String(value).toLowerCase() == "false";
 	}
 };
-//@}
 
+//@}
 (function() {
 	// "If a command does not have a relevant CSS property specified, it
 	// defaults to null."

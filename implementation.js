@@ -722,7 +722,7 @@ function isProhibitedParagraphChild(node) {
 }
 
 // "A block node is either an Element whose "display" property does not have
-// computed value "inline" or "inline-block" or "inline-table" or "none", or a
+// resolved value "inline" or "inline-block" or "inline-table" or "none", or a
 // Document, or a DocumentFragment."
 function isBlockNode(node) {
 	return node
@@ -1764,7 +1764,7 @@ function getEffectiveCommandValue(node, command) {
 	// "If command is "backColor" or "hiliteColor":"
 	if (command == "backcolor"
 	|| command == "hilitecolor") {
-		// "While the computed value of "background-color" on node is any
+		// "While the resolved value of "background-color" on node is any
 		// fully transparent value, and node's parent is an Element, set
 		// node to its parent."
 		//
@@ -1777,7 +1777,7 @@ function getEffectiveCommandValue(node, command) {
 			node = node.parentNode;
 		}
 
-		// "If the computed value of "background-color" on node is a fully
+		// "If the resolved value of "background-color" on node is a fully
 		// transparent value, return "rgb(255, 255, 255)"."
 		if (getComputedStyle(node).backgroundColor == "rgba(0, 0, 0, 0)"
         || getComputedStyle(node).backgroundColor === ""
@@ -1785,7 +1785,7 @@ function getEffectiveCommandValue(node, command) {
 			return "rgb(255, 255, 255)";
 		}
 
-		// "Otherwise, return the computed value of "background-color" for
+		// "Otherwise, return the resolved value of "background-color" for
 		// node."
 		return getComputedStyle(node).backgroundColor;
 	}
@@ -1801,15 +1801,15 @@ function getEffectiveCommandValue(node, command) {
 		while (isInlineNode(node)) {
 			var verticalAlign = getComputedStyle(node).verticalAlign;
 
-			// "If node's "vertical-align" property computes to "sub", set
-			// affected by subscript to true."
+			// "If node's "vertical-align" property has resolved value "sub",
+			// set affected by subscript to true."
 			if (verticalAlign == "sub") {
 				affectedBySubscript = true;
-			// "Otherwise, if node's "vertical-align" property computes to
-			// "super", set affected by superscript to true."
+			// "Otherwise, if node's "vertical-align" property has resolved
+			// value "super", set affected by superscript to true."
 			} else if (verticalAlign == "super") {
 				affectedBySuperscript = true;
-			// "Otherwise, if node's "vertical-align" property computes to some
+			// "Otherwise, if node's "vertical-align" property has resolved
 			// value other than "baseline", return the string "other"."
 			} else if (verticalAlign != "baseline") {
 				return "other";
@@ -1840,7 +1840,7 @@ function getEffectiveCommandValue(node, command) {
 	}
 
 	// "If command is "strikethrough", and the "text-decoration" property of
-	// node or any of its ancestors computes to a value containing
+	// node or any of its ancestors has resolved value containing
 	// "line-through", return "line-through". Otherwise, return null."
 	if (command == "strikethrough") {
 		do {
@@ -1853,7 +1853,7 @@ function getEffectiveCommandValue(node, command) {
 	}
 
 	// "If command is "underline", and the "text-decoration" property of node
-	// or any of its ancestors computes to a value containing "underline",
+	// or any of its ancestors has resolved value containing "underline",
 	// return "underline". Otherwise, return null."
 	if (command == "underline") {
 		do {
@@ -1865,14 +1865,14 @@ function getEffectiveCommandValue(node, command) {
 		return null;
 	}
 
-	// "Return the computed value for node of the relevant CSS property for
+	// "Return the resolved value for node of the relevant CSS property for
 	// command."
 	return getComputedStyle(node)[commands[command].relevantCssProperty];
 }
 
 function getSpecifiedCommandValue(element, command) {
 	// "If command is "backColor" or "hiliteColor" and element's display
-	// property does not compute to "inline", return null."
+	// property does not have resolved value "inline", return null."
 	if ((command == "backcolor" || command == "hilitecolor")
 	&& getComputedStyle(element).display != "inline") {
 		return null;
@@ -2798,7 +2798,7 @@ commands.backcolor = {
 		// "The effective command value of the active range's start node."
 		//
 		// Opera uses a different format, so let's be nice and support that for
-		// the time being (since all this computed value stuff is underdefined
+		// the time being (since all this resolved value stuff is underdefined
 		// anyway).
 		var value = getEffectiveCommandValue(getActiveRange().startContainer, "backcolor");
 		if (/^#[0-9a-f]{6}$/.test(value)) {
@@ -3010,14 +3010,14 @@ commands.fontsize = {
 
 		// "While returned size is less than 7:"
 		while (returnedSize < 7) {
-			// "Let lower bound be the computed value of "font-size" in pixels
+			// "Let lower bound be the resolved value of "font-size" in pixels
 			// of a font element whose size attribute is set to returned size."
 			var font = document.createElement("font");
 			font.size = returnedSize;
 			document.body.appendChild(font);
 			var lowerBound = parseInt(getComputedStyle(font).fontSize);
 
-			// "Let upper bound be the computed value of "font-size" in pixels
+			// "Let upper bound be the resolved value of "font-size" in pixels
 			// of a font element whose size attribute is set to one plus
 			// returned size."
 			font.size = 1 + returnedSize;
@@ -3084,7 +3084,7 @@ commands.forecolor = {
 		// "The effective command value of the active range's start node."
 		//
 		// Opera uses a different format, so let's be nice and support that for
-		// the time being (since all this computed value stuff is underdefined
+		// the time being (since all this resolved value stuff is underdefined
 		// anyway).
 		var value = getEffectiveCommandValue(getActiveRange().startContainer, "forecolor");
 		if (/^#[0-9a-f]{6}$/.test(value)) {
@@ -3138,7 +3138,7 @@ commands.hilitecolor = {
 		// "The effective command value of the active range's start node."
 		//
 		// Opera uses a different format, so let's be nice and support that for
-		// the time being (since all this computed value stuff is underdefined
+		// the time being (since all this resolved value stuff is underdefined
 		// anyway).
 		var value = getEffectiveCommandValue(getActiveRange().startContainer, "hilitecolor");
 		if (/^#[0-9a-f]{6}$/.test(value)) {
@@ -3732,7 +3732,7 @@ function getSelectionListState() {
 
 function getAlignmentValue(node) {
 	// "While node is neither null nor an Element, or it is an Element but its
-	// "display" property has computed value "inline" or "none", set node to
+	// "display" property has resolved value "inline" or "none", set node to
 	// its parent."
 	while ((node && node.nodeType != Node.ELEMENT_NODE)
 	|| (node.nodeType == Node.ELEMENT_NODE
@@ -3745,27 +3745,27 @@ function getAlignmentValue(node) {
 		return "left";
 	}
 
-	var computedValue = getComputedStyle(node).textAlign
+	var resolvedValue = getComputedStyle(node).textAlign
 		// Hack around browser non-standardness
 		.replace(/^-(moz|webkit)-/, "")
 		.replace(/^auto$/, "start");
 
-	// "If node's "text-align" property has computed value "start", return
+	// "If node's "text-align" property has resolved value "start", return
 	// "left" if the directionality of node is "ltr", "right" if it is "rtl"."
-	if (computedValue == "start") {
+	if (resolvedValue == "start") {
 		return getDirectionality(node) == "ltr" ? "left" : "right";
 	}
 
-	// "If node's "text-align" property has computed value "end", return
+	// "If node's "text-align" property has resolved value "end", return
 	// "right" if the directionality of node is "ltr", "left" if it is "rtl"."
-	if (computedValue == "end") {
+	if (resolvedValue == "end") {
 		return getDirectionality(node) == "ltr" ? "right" : "left";
 	}
 
-	// "If node's "text-align" property has computed value "center", "justify",
+	// "If node's "text-align" property has resolved value "center", "justify",
 	// "left", or "right", return that value."
-	if (["center", "justify", "left", "right"].indexOf(computedValue) != -1) {
-		return computedValue;
+	if (["center", "justify", "left", "right"].indexOf(resolvedValue) != -1) {
+		return resolvedValue;
 	}
 
 	// "Return "left"."
@@ -4693,7 +4693,7 @@ function canonicalizeWhitespace(node, offset) {
 			startOffset = getNodeIndex(startNode);
 			startNode = startNode.parentNode;
 
-		// "Otherwise, if start node is a Text node and its parent's computed
+		// "Otherwise, if start node is a Text node and its parent's resolved
 		// value for "white-space" is neither "pre" nor "pre-wrap" and start
 		// offset is not zero and the (start offset − 1)st element of start
 		// node's data is a space (0x0020) or non-breaking space (0x00A0),
@@ -4739,7 +4739,7 @@ function canonicalizeWhitespace(node, offset) {
 			endOffset = 1 + getNodeIndex(endNode);
 			endNode = endNode.parentNode;
 
-		// "Otherwise, if end node is a Text node and its parent's computed
+		// "Otherwise, if end node is a Text node and its parent's resolved
 		// value for "white-space" is neither "pre" nor "pre-wrap" and end
 		// offset is not end node's length and the end offsetth element of
 		// end node's data is a space (0x0020) or non-breaking space (0x00A0):"
@@ -6880,8 +6880,8 @@ commands.inserttext = {
 		}
 
 		// "If value is a space (U+0020), and either node is an Element whose
-		// computed value for "white-space" is neither "pre" nor "pre-wrap" or
-		// node is not an Element but its parent is an Element whose computed
+		// resolved value for "white-space" is neither "pre" nor "pre-wrap" or
+		// node is not an Element but its parent is an Element whose resolved
 		// value for "white-space" is neither "pre" nor "pre-wrap", set value
 		// to a non-breaking space (U+00A0)."
 		var refElement = node.nodeType == Node.ELEMENT_NODE ? node : node.parentNode;

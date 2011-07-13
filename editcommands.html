@@ -41,7 +41,7 @@
 <h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-13-july-2011>Work in Progress &mdash; Last Update 13 July 2011</h2>
 <dl>
  <dt>Editor
- <dd>Aryeh Gregor &lt;ayg+spec@aryeh.name&gt;
+ <dd>Aryeh Gregor &lt;<a href=mailto:ayg@aryeh.name>ayg@aryeh.name</a>&gt;
 
  <dt>Version history
  <dd><a href="http://aryeh.name/gitweb.cgi?p=editcommands">http://aryeh.name/gitweb.cgi?p=editcommands</a>
@@ -52,13 +52,14 @@
 <h2 class=no-num id=status-of-this-document>Status of this Document</h2>
 
 <p>This document is an early draft of a specification for HTML editing APIs,
-defining <code><a href=#execcommand()>execCommand()</a></code> and related functions.  It will eventually
-be merged into the main <a href=http://www.whatwg.org/html>HTML</a>
-specification, replacing the <a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/dnd.html#editing-apis>Editing
-APIs</a> section.  Although this spec is still very incomplete and will likely
-be changed heavily before it's finished, feedback to <a href=http://lists.whatwg.org/listinfo.cgi/whatwg-whatwg.org>the WHATWG list</a>
-is encouraged, particularly from implementers and particularly from authors who
-have experience using this feature.
+defining <code><a href=#execcommand()>execCommand()</a></code> and related functions.  It largely replaces
+the <a href=http://www.whatwg.org/specs/web-apps/current-work/multipage/dnd.html#editing-apis>Editing
+APIs</a> section of the <a href=http://www.whatwg.org/html>HTML</a>
+specification.  Feedback should preferably be sent to <a href=http://lists.whatwg.org/listinfo.cgi/whatwg-whatwg.org>the WHATWG
+list</a>, or alternatively to <a href=http://lists.w3.org/Archives/Public/public-html/>public-html</a> for those
+who prefer the W3C.  In either case, include the string "[editing]" somewhere
+in the subject, and CC <a href=mailto:ayg@aryeh.name>ayg@aryeh.name</a> (or any
+of my other e-mail addresses) to make sure I see it.
 
 
 <h2 class=no-num id=table-of-contents>Table of contents</h2>
@@ -154,7 +155,10 @@ to in the future.
 
 <p>Where the reasoning behind the specification is of interest, such as when
 major preexisting rendering engines are known not to match it, the reasoning is
-included in HTML comments so as not to distract the reader.
+included in HTML comments so as not to distract the reader.  If you have
+questions about why the specification says something, check for comments in the
+source first.  They're sometimes longer than the specification text itself, and
+commonly record what the major browsers do and other essential information.
 
 <p>The principles I've used for writing this specification so far are:
 
@@ -188,9 +192,9 @@ included in HTML comments so as not to distract the reader.
   was actually modified.
 
   <li>But if we are already changing around something's style, convert existing
-  styles to the preferred format.  For instance, we use <code class=external data-anolis-spec=html title="the b element"><a href=http://www.whatwg.org/html/#the-b-element>b</a></code> for bold, and
-  convert <code class=external data-anolis-spec=html title="the strong element"><a href=http://www.whatwg.org/html/#the-strong-element>strong</a></code> and &lt;<code class=external data-anolis-spec=html title="the span element"><a href=http://www.whatwg.org/html/#the-span-element>span</a></code> <code class=external data-anolis-spec=html title="the style attribute"><a href=http://www.whatwg.org/html/#the-style-attribute>style</a></code>="font-weight: bold"&gt; if we
-  happen to be modifying that node anyway.
+  styles to the preferred format.  For instance, we use <code title="">&lt;b&gt;</code> for bold (if the CSS styling flag is false), and convert
+  <code title="">&lt;strong&gt;</code> and <code title="">&lt;span style="font-weight:
+  bold"&gt;</code> if we happen to be modifying that node anyway.
 
   <li>Try not to make the document less conforming than it originally was.  If
   we happen to make it more conforming, good, although we don't have to go out
@@ -198,8 +202,7 @@ included in HTML comments so as not to distract the reader.
   conforming, generally because there's some clear use-case that requires it or
   because it matches existing browsers behavior.  (For instance, see the
   styleWithCSS = false mode, and the fact that insertImage doesn't add an
-  alt attribute, and how list-related commands can make list elements nested in
-  one another directly without intervening &lt;li&gt;, etc.)
+  alt attribute, etc.)
 
   <li>Keep the markup as concise as possible.  (I've received feedback that
   this is very important to authors.)  Ideally, the markup should look as
@@ -219,23 +222,76 @@ included in HTML comments so as not to distract the reader.
 
 <h2 id=issues><span class=secno>2 </span>Issues</h2>
 
-<p>This specification is very preliminary and is undergoing constant change.
-It should not be used for anything other than review, comment, and experimental
-implementations that you don't intend to inflict on unwitting users without
-their informed consent.  It should definitely be used for review and comment,
-especially in the form of specific test-cases where the current spec produces
-bad results.  As noted, feedback should be sent to <a href=http://lists.whatwg.org/listinfo.cgi/whatwg-whatwg.org>the WHATWG
-list</a>.
+<p>This specification is mostly feature-complete.  It's more or less fully
+implemented in JavaScript, and has been tested on a fairly significant amount
+of artificial input.  It has not been tested on real-world sites that use
+execCommand(), and has not been thoroughly reviewed by anyone other than me.
+I'm close to calling it stable and ready for implementer feedback.
+
+<p>Significant known issues that I need feedback on, or otherwise am not
+planning to fix just yet:
 
 <ul>
   <li>Need to make CSS terminology more precise, about setting/unsetting CSS
   properties.  The intent is to modify the style attribute, CSSOM-style.
   Likewise, CSS value comparisons need to be done after serializing both
-  values, so "bold" == "700" and "red" == "#f00" and so on.
+  values, so "bold" == "700" and "red" == "#f00" and so on.  Suggestions
+  appreciated on how I should spec this.
 
-  <li>Also not sure about computed style.  There are differences between
-  "computed" and "used" and things like that, what do we actually want here?
+  <li>I use <a href=http://dev.w3.org/csswg/cssom/#resolved-value>resolved value</a> instead of computed or used or anything like that, just
+  because that's what my test implementation uses (via getComputedStyle).  This
+  is not necessarily the best actual choice: if it should be something else,
+  please tell me.
 
+  <li><p>I haven't paid much attention to performance.  The algorithms here
+  aren't performance-critical in most cases, but I might have accidentally
+  included some algorithms that are too slow anyway on large pages.  Generally
+  I haven't worried about throwing nodes away and recreating them multiple
+  times or things like that, as long as it produces the correct result.
+
+  <p>If it would be useful to implementers for me to spend time and spec
+  complexity on avoiding some of the masses of useless operations that are
+  currently required, please say so.  All intermediate DOM states are
+  black-box detectable via mutation events or whatever their replacement will
+  be, so implementers theoretically can't optimize most of this stuff too much
+  themselves, but in practice I doubt anyone will rely on the intermediate DOM
+  states much.
+
+  <li><code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code>s are a nightmare.  I have tons of hacks all over the place which
+  are totally wrong, mostly to account for the fact that sometimes <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code>s do
+  nothing and we need to treat that case magically.  I don't know what a good
+  way is to fix this.  At this point I've mostly gotten the evil concentrated
+  in the definitions "collapsed line break", "extraneous line break", and
+  "collapsed block prop", but there's lots of other special-case handling
+  scattered about.  Feedback appreciated.  How do browsers handle this?
+
+  <li>Where methods take a value, I've decided they should throw SYNTAX_ERR
+  instead of doing nothing if the value makes no sense.  As a rule, this
+  doesn't match browsers.  I think it's more useful to authors, however,
+  especially since in many cases, the command's effect isn't currently
+  interoperable anyway.  I'll switch them back to doing nothing if implementers
+  think this is a problem.
+
+  <li>The CSS styling flag is an issue.  Currently authors are forced to turn
+  it entirely on or entirely off.  If it's on, it produces stuff like <code title="">&lt;span style=font-weight:bold&gt;</code> instead of <code title="">&lt;b&gt;</code>, while if it's off, it produces stuff like <code title="">&lt;font color=red&gt;</code> instead of <code title="">&lt;span
+  style=color:red&gt;</code>.  The issue is that authors might want a mix, like
+  making the markup as concise as possible while still conforming, and they
+  can't do that.  Changing the flag on a per-command basis doesn't help because
+  of things like the "restore the values" algorithm, which might create several
+  different types of style at once and has to use the same styling flag for all
+  of them.  This was discussed back in March in <a href=http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-March/030714.html>this
+  thread</a>, along with a number of other things, but at that time I hadn't
+  written commands that change multiple styles at once, so it seemed feasible
+  to ask authors to switch styleWithCSS on or off on a per-command basis.
+
+  <li>I haven't defined the "undo" or "redo" commands yet.  They look very
+  complicated to define precisely, and other people are working on them right
+  now.
+</ul>
+
+<p>Things I need to fix before announcing that the draft is basically complete:
+
+<ul>
   <li>Some more thought needs to go into what happens to the selection when you
   mutate the DOM.  In some cases the results are pretty arbitrary.  It might
   make sense to do some kind of normalization.
@@ -246,12 +302,6 @@ list</a>.
   should be able to avoid the problems by requiring that everything be
   editable, since that immediately means it has to descend from an element or
   Document (and cannot be parentless itself).
-
-  <li>I haven't paid much attention to performance.  The algorithms here aren't
-  performance-critical in most cases, but I might have accidentally included
-  some algorithms that are too slow anyway on large pages.  Generally I haven't
-  worried about throwing nodes away and recreating them multiple times or
-  things like that, as long as it produces the correct result.
 
   <li>I need to pay more attention to invisible nodes.  These will have no
   visual effect, but they'll make many algorithms behave differently:
@@ -270,33 +320,12 @@ list</a>.
   Previously the spec assumed <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code> should separate lines, which is like Gecko
   and sometimes WebKit, but I'm moving it to use <code class=external data-anolis-spec=html title="the p element"><a href=http://www.whatwg.org/html/#the-p-element>p</a></code> instead.
 
-  <li><code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code>s are a nightmare.  I have tons of hacks all over the place which
-  are totally wrong, mostly to account for the fact that sometimes <code class=external data-anolis-spec=html title="the br element"><a href=http://www.whatwg.org/html/#the-br-element>br</a></code>s do
-  nothing and we need to treat that case magically.  I don't know what a good
-  way is to fix this.
-
   <li>Have to make sure that in all the places where we set a selection, it's
   valid.
-
-  <li>Where methods take a value, I've decided they should throw SYNTAX_ERR
-  instead of doing nothing if the value makes no sense.  As a rule, this
-  doesn't match browsers.  I think it's more useful to authors, however,
-  especially since in many cases, the command's effect isn't currently
-  interoperable anyway.  I'll switch them back to doing nothing if implementers
-  think this is a problem.
-
-  <li>The CSS styling flag is an issue.  Currently authors are forced to turn
-  it entirely on or entirely off.  If it's on, it produces stuff like <code title="">&lt;span style=font-weight:bold&gt;</code> instead of <code title="">&lt;b&gt;</code>, while if it's off, it produces stuff like <code title="">&lt;font color=red&gt;</code> instead of <code title="">&lt;span
-  style=color:red&gt;</code>.  The issue is that authors might want a mix, like
-  making the markup as concise as possible while still conforming, and they
-  can't do that.  Changing the flag on a per-command basis doesn't help because
-  of things like the "restore the values" algorithm, which might create several
-  different types of style at once and has to use the same styling flag for all
-  of them.
 </ul>
 
 <p class=XXX>A variety of other issues are also noted in the text, formatted
-like this.
+like this.  Feedback would be appreciated on all of them.
 
 <p>Things that would be useful to address for the future but aren't important
 to fix right now are in comments prefixed with "TODO".
@@ -669,7 +698,7 @@ I think.  Plus table stuff, since that can't be a descendant of a p either,
 although it won't auto-close it. -->
 
 <p>A <dfn id=block-node>block node</dfn> is either an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> whose "display" property
-does not have <a href=http://www.w3.org/TR/CSS21/cascade.html#computed-value>computed value</a> "inline" or "inline-block" or "inline-table" or
+does not have <a href=http://dev.w3.org/csswg/cssom/#resolved-value>resolved value</a> "inline" or "inline-block" or "inline-table" or
 "none", or a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#document>Document</a></code>, or a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#documentfragment>DocumentFragment</a></code>.
 
 <p>An <dfn id=inline-node>inline node</dfn> is a <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-node title=concept-node>node</a> that is not a <a href=#block-node>block
@@ -1327,14 +1356,14 @@ return either a string or null:
   <li>If <var title="">command</var> is "backColor" or "hiliteColor":
 
   <ol>
-    <li>While the <a href=http://www.w3.org/TR/CSS21/cascade.html#computed-value>computed value</a> of "background-color" on <var title="">node</var> is
+    <li>While the <a href=http://dev.w3.org/csswg/cssom/#resolved-value>resolved value</a> of "background-color" on <var title="">node</var> is
     any fully transparent value, and <var title="">node</var>'s <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is an
     <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>, set <var title="">node</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
 
-    <li>If the <a href=http://www.w3.org/TR/CSS21/cascade.html#computed-value>computed value</a> of "background-color" on <var title="">node</var> is
+    <li>If the <a href=http://dev.w3.org/csswg/cssom/#resolved-value>resolved value</a> of "background-color" on <var title="">node</var> is
     a fully transparent value, return "rgb(255, 255, 255)".
 
-    <li>Otherwise, return the <a href=http://www.w3.org/TR/CSS21/cascade.html#computed-value>computed value</a> of "background-color" for
+    <li>Otherwise, return the <a href=http://dev.w3.org/csswg/cssom/#resolved-value>resolved value</a> of "background-color" for
     <var title="">node</var>.
   </ol>
 
@@ -1352,14 +1381,14 @@ return either a string or null:
       in fact behaves like that even for commands like bold.  The spec follows
       Chrome 14 dev, mainly because WebKit itself will produce spans with
       vertical-align sub or super, and we want to handle them correctly. -->
-      <li>If <var title="">node</var>'s "vertical-align" property computes to "sub", set
-      <var title="">affected by subscript</var> to true.
+      <li>If <var title="">node</var>'s "vertical-align" property has <a href=http://dev.w3.org/csswg/cssom/#resolved-value>resolved value</a> "sub",
+      set <var title="">affected by subscript</var> to true.
 
-      <li>Otherwise, if <var title="">node</var>'s "vertical-align" property computes to
-      "super", set <var title="">affected by superscript</var> to true.
+      <li>Otherwise, if <var title="">node</var>'s "vertical-align" property has
+      <a href=http://dev.w3.org/csswg/cssom/#resolved-value>resolved value</a> "super", set <var title="">affected by superscript</var> to true.
 
-      <li>Otherwise, if <var title="">node</var>'s "vertical-align" property computes to
-      some value other than "baseline", return the string "other".
+      <li>Otherwise, if <var title="">node</var>'s "vertical-align" property has
+      <a href=http://dev.w3.org/csswg/cssom/#resolved-value>resolved value</a> other than "baseline", return the string "other".
 
       <li>Set <var title="">node</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
     </ol>
@@ -1375,16 +1404,14 @@ return either a string or null:
   </ol>
 
   <li>If <var title="">command</var> is "strikethrough", and the "text-decoration"
-  property of <var title="">node</var> or any of its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestors</a> computes to
-  a value containing "line-through", return "line-through".  Otherwise, return
-  null.
+  property of <var title="">node</var> or any of its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestors</a> has <a href=http://dev.w3.org/csswg/cssom/#resolved-value>resolved value</a>
+  containing "line-through", return "line-through".  Otherwise, return null.
 
   <li>If <var title="">command</var> is "underline", and the "text-decoration"
-  property of <var title="">node</var> or any of its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestors</a> computes to
-  a value containing "underline", return "underline".  Otherwise, return
-  null.
+  property of <var title="">node</var> or any of its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-ancestor title=concept-tree-ancestor>ancestors</a> has <a href=http://dev.w3.org/csswg/cssom/#resolved-value>resolved value</a>
+  containing "underline", return "underline".  Otherwise, return null.
 
-  <li>Return the <a href=http://www.w3.org/TR/CSS21/cascade.html#computed-value>computed value</a> for <var title="">node</var> of the <a href=#relevant-css-property>relevant CSS
+  <li>Return the <a href=http://dev.w3.org/csswg/cssom/#resolved-value>resolved value</a> for <var title="">node</var> of the <a href=#relevant-css-property>relevant CSS
   property</a> for <var title="">command</var>.
 </ol>
 
@@ -1394,7 +1421,8 @@ will return either a string or null:
 
 <ol>
   <li>If <var title="">command</var> is "backColor" or "hiliteColor" and the
-  <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>'s display property does not compute to "inline", return null.
+  <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>'s display property does not have <a href=http://dev.w3.org/csswg/cssom/#resolved-value>resolved value</a> "inline", return
+  null.
 
   <li>If <var title="">command</var> is "createLink" or "unlink":
 
@@ -2455,7 +2483,7 @@ Chrome 11 dev: Gives the literal value of font-family, except if it's inherited
 Opera 11: Returns the literal value of font-family, except if it's inherited
   from default values, when it returns the empty string.
 
-I'm just going to punt on this and say it should be the computed value of
+I'm just going to punt on this and say it should be the resolved value of
 font-family.  I'll leave CSSOM to decide what that means if there are no
 applicable style rules. -->
 
@@ -2611,11 +2639,11 @@ browsers behave differently.  I see no reason to behave differently.
   <li>While <var title="">returned size</var> is less than 7:
 
   <ol>
-    <li>Let <var title="">lower bound</var> be the <a href=http://www.w3.org/TR/CSS21/cascade.html#computed-value>computed value</a> of "font-size" in pixels
+    <li>Let <var title="">lower bound</var> be the <a href=http://dev.w3.org/csswg/cssom/#resolved-value>resolved value</a> of "font-size" in pixels
     of a <code class=external data-anolis-spec=html title=font><a href=http://www.whatwg.org/html/#font>font</a></code> element whose <code class=external data-anolis-spec=html title=dom-font-size><a href=http://www.whatwg.org/html/#dom-font-size>size</a></code> attribute is set to <var title="">returned
     size</var>.
 
-    <li>Let <var title="">upper bound</var> be the <a href=http://www.w3.org/TR/CSS21/cascade.html#computed-value>computed value</a> of "font-size" in pixels
+    <li>Let <var title="">upper bound</var> be the <a href=http://dev.w3.org/csswg/cssom/#resolved-value>resolved value</a> of "font-size" in pixels
     of a <code class=external data-anolis-spec=html title=font><a href=http://www.whatwg.org/html/#font>font</a></code> element whose <code class=external data-anolis-spec=html title=dom-font-size><a href=http://www.whatwg.org/html/#dom-font-size>size</a></code> attribute is set to one plus
     <var title="">returned size</var>.
 
@@ -3351,7 +3379,7 @@ work well given the design of the API.
 -->
 <ol>
   <li>While <var title="">node</var> is neither null nor an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>, or it is an
-  <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> but its "display" property has <a href=http://www.w3.org/TR/CSS21/cascade.html#computed-value>computed value</a> "inline" or "none",
+  <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> but its "display" property has <a href=http://dev.w3.org/csswg/cssom/#resolved-value>resolved value</a> "inline" or "none",
   set <var title="">node</var> to its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>.
 
   <li>If <var title="">node</var> is not an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code>, return "left".
@@ -3361,15 +3389,15 @@ work well given the design of the API.
   anyway.  (It will only happen if, e.g., everything up to and including the
   html and body elements have display: inline or none.) -->
 
-  <li>If <var title="">node</var>'s "text-align" property has <a href=http://www.w3.org/TR/CSS21/cascade.html#computed-value>computed value</a> "start",
+  <li>If <var title="">node</var>'s "text-align" property has <a href=http://dev.w3.org/csswg/cssom/#resolved-value>resolved value</a> "start",
   return "left" if the <a class=external data-anolis-spec=html href=http://www.whatwg.org/html/#the-directionality title="the directionality">directionality</a> of <var title="">node</var> is "ltr", "right"
   if it is "rtl".
 
-  <li>If <var title="">node</var>'s "text-align" property has <a href=http://www.w3.org/TR/CSS21/cascade.html#computed-value>computed value</a> "end", return
+  <li>If <var title="">node</var>'s "text-align" property has <a href=http://dev.w3.org/csswg/cssom/#resolved-value>resolved value</a> "end", return
   "right" if the <a class=external data-anolis-spec=html href=http://www.whatwg.org/html/#the-directionality title="the directionality">directionality</a> of <var title="">node</var> is "ltr", "left" if it
   is "rtl".
 
-  <li>If <var title="">node</var>'s "text-align" property has <a href=http://www.w3.org/TR/CSS21/cascade.html#computed-value>computed value</a> "center",
+  <li>If <var title="">node</var>'s "text-align" property has <a href=http://dev.w3.org/csswg/cssom/#resolved-value>resolved value</a> "center",
   "justify", "left", or "right", return that value.
 
   <li>Return "left".
@@ -4127,7 +4155,7 @@ returned by the following algorithm:
     -->
 
     <li>Otherwise, if <var title="">start node</var> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node and its
-    <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>'s <a href=http://www.w3.org/TR/CSS21/cascade.html#computed-value>computed value</a> for "white-space" is neither "pre" nor "pre-wrap"
+    <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>'s <a href=http://dev.w3.org/csswg/cssom/#resolved-value>resolved value</a> for "white-space" is neither "pre" nor "pre-wrap"
     and <var title="">start offset</var> is not zero and the (<var title="">start offset</var>
     &minus; 1)st <a href=http://es5.github.com/#x8.4>element</a> of <var title="">start node</var>'s <code class=external data-anolis-spec=domcore title=dom-CharacterData-data><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-data>data</a></code> is a space
     (0x0020) or non-breaking space (0x00A0), subtract one from <var title="">start
@@ -4161,7 +4189,7 @@ returned by the following algorithm:
     -->
 
     <li>Otherwise, if <var title="">end node</var> is a <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node and its
-    <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>'s <a href=http://www.w3.org/TR/CSS21/cascade.html#computed-value>computed value</a> for "white-space" is neither "pre" nor "pre-wrap"
+    <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a>'s <a href=http://dev.w3.org/csswg/cssom/#resolved-value>resolved value</a> for "white-space" is neither "pre" nor "pre-wrap"
     and <var title="">end offset</var> is not <var title="">end node</var>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a> and the
     <var title="">end offset</var>th <a href=http://es5.github.com/#x8.4>element</a> of <var title="">end node</var>'s <code class=external data-anolis-spec=domcore title=dom-CharacterData-data><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-characterdata-data>data</a></code> is a
     space (0x0020) or non-breaking space (0x00A0):
@@ -6755,9 +6783,9 @@ this, as Chrome 14 dev does.
   then set <var title="">offset</var> to zero.
 
   <li>If <var title="">value</var> is a space (U+0020), and either <var title="">node</var> is an
-  <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> whose <a href=http://www.w3.org/TR/CSS21/cascade.html#computed-value>computed value</a> for "white-space" is neither "pre" nor
+  <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> whose <a href=http://dev.w3.org/csswg/cssom/#resolved-value>resolved value</a> for "white-space" is neither "pre" nor
   "pre-wrap" or <var title="">node</var> is not an <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> but its <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> is an
-  <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> whose <a href=http://www.w3.org/TR/CSS21/cascade.html#computed-value>computed value</a> for "white-space" is neither "pre" nor
+  <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#element>Element</a></code> whose <a href=http://dev.w3.org/csswg/cssom/#resolved-value>resolved value</a> for "white-space" is neither "pre" nor
   "pre-wrap", set <var title="">value</var> to a non-breaking space (U+00A0).
   <!-- This may change to a space when we canonicalize. -->
 

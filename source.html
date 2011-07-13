@@ -43,7 +43,7 @@
 <h2 class="no-num no-toc">Work in Progress &mdash; Last Update [DATE: 01 Jan 1901]</h2>
 <dl>
  <dt>Editor
- <dd>Aryeh Gregor &lt;ayg+spec@aryeh.name>
+ <dd>Aryeh Gregor &lt;<a href=mailto:ayg@aryeh.name>ayg@aryeh.name</a>>
 
  <dt>Version history
  <dd><a href=http://aryeh.name/gitweb.cgi?p=editcommands>http://aryeh.name/gitweb.cgi?p=editcommands</a>
@@ -54,15 +54,17 @@
 <h2 class=no-num>Status of this Document</h2>
 <!-- @{ -->
 <p>This document is an early draft of a specification for HTML editing APIs,
-defining <code>execCommand()</code> and related functions.  It will eventually
-be merged into the main <a href=http://www.whatwg.org/html>HTML</a>
-specification, replacing the <a
+defining <code>execCommand()</code> and related functions.  It largely replaces
+the <a
 href=http://www.whatwg.org/specs/web-apps/current-work/multipage/dnd.html#editing-apis>Editing
-APIs</a> section.  Although this spec is still very incomplete and will likely
-be changed heavily before it's finished, feedback to <a
-href=http://lists.whatwg.org/listinfo.cgi/whatwg-whatwg.org>the WHATWG list</a>
-is encouraged, particularly from implementers and particularly from authors who
-have experience using this feature.
+APIs</a> section of the <a href=http://www.whatwg.org/html>HTML</a>
+specification.  Feedback should preferably be sent to <a
+href=http://lists.whatwg.org/listinfo.cgi/whatwg-whatwg.org>the WHATWG
+list</a>, or alternatively to <a
+href=http://lists.w3.org/Archives/Public/public-html/>public-html</a> for those
+who prefer the W3C.  In either case, include the string "[editing]" somewhere
+in the subject, and CC <a href=mailto:ayg@aryeh.name>ayg@aryeh.name</a> (or any
+of my other e-mail addresses) to make sure I see it.
 <!-- @} -->
 
 <h2 class=no-num>Table of contents</h2>
@@ -79,7 +81,10 @@ to in the future.
 
 <p>Where the reasoning behind the specification is of interest, such as when
 major preexisting rendering engines are known not to match it, the reasoning is
-included in HTML comments so as not to distract the reader.
+included in HTML comments so as not to distract the reader.  If you have
+questions about why the specification says something, check for comments in the
+source first.  They're sometimes longer than the specification text itself, and
+commonly record what the major browsers do and other essential information.
 
 <p>The principles I've used for writing this specification so far are:
 
@@ -113,9 +118,10 @@ included in HTML comments so as not to distract the reader.
   was actually modified.
 
   <li>But if we are already changing around something's style, convert existing
-  styles to the preferred format.  For instance, we use [[b]] for bold, and
-  convert [[strong]] and &lt;[[span]] [[style]]="font-weight: bold"> if we
-  happen to be modifying that node anyway.
+  styles to the preferred format.  For instance, we use <code
+  title>&lt;b></code> for bold (if the CSS styling flag is false), and convert
+  <code title>&lt;strong></code> and <code title>&lt;span style="font-weight:
+  bold"></code> if we happen to be modifying that node anyway.
 
   <li>Try not to make the document less conforming than it originally was.  If
   we happen to make it more conforming, good, although we don't have to go out
@@ -123,8 +129,7 @@ included in HTML comments so as not to distract the reader.
   conforming, generally because there's some clear use-case that requires it or
   because it matches existing browsers behavior.  (For instance, see the
   styleWithCSS = false mode, and the fact that insertImage doesn't add an
-  alt attribute, and how list-related commands can make list elements nested in
-  one another directly without intervening &lt;li>, etc.)
+  alt attribute, etc.)
 
   <li>Keep the markup as concise as possible.  (I've received feedback that
   this is very important to authors.)  Ideally, the markup should look as
@@ -144,24 +149,80 @@ included in HTML comments so as not to distract the reader.
 
 <h2>Issues</h2>
 <!-- @{ -->
-<p>This specification is very preliminary and is undergoing constant change.
-It should not be used for anything other than review, comment, and experimental
-implementations that you don't intend to inflict on unwitting users without
-their informed consent.  It should definitely be used for review and comment,
-especially in the form of specific test-cases where the current spec produces
-bad results.  As noted, feedback should be sent to <a
-href=http://lists.whatwg.org/listinfo.cgi/whatwg-whatwg.org>the WHATWG
-list</a>.
+<p>This specification is mostly feature-complete.  It's more or less fully
+implemented in JavaScript, and has been tested on a fairly significant amount
+of artificial input.  It has not been tested on real-world sites that use
+execCommand(), and has not been thoroughly reviewed by anyone other than me.
+I'm close to calling it stable and ready for implementer feedback.
+
+<p>Significant known issues that I need feedback on, or otherwise am not
+planning to fix just yet:
 
 <ul>
   <li>Need to make CSS terminology more precise, about setting/unsetting CSS
   properties.  The intent is to modify the style attribute, CSSOM-style.
   Likewise, CSS value comparisons need to be done after serializing both
-  values, so "bold" == "700" and "red" == "#f00" and so on.
+  values, so "bold" == "700" and "red" == "#f00" and so on.  Suggestions
+  appreciated on how I should spec this.
 
-  <li>Also not sure about computed style.  There are differences between
-  "computed" and "used" and things like that, what do we actually want here?
+  <li>I use [[resval]] instead of computed or used or anything like that, just
+  because that's what my test implementation uses (via getComputedStyle).  This
+  is not necessarily the best actual choice: if it should be something else,
+  please tell me.
 
+  <li><p>I haven't paid much attention to performance.  The algorithms here
+  aren't performance-critical in most cases, but I might have accidentally
+  included some algorithms that are too slow anyway on large pages.  Generally
+  I haven't worried about throwing nodes away and recreating them multiple
+  times or things like that, as long as it produces the correct result.
+
+  <p>If it would be useful to implementers for me to spend time and spec
+  complexity on avoiding some of the masses of useless operations that are
+  currently required, please say so.  All intermediate DOM states are
+  black-box detectable via mutation events or whatever their replacement will
+  be, so implementers theoretically can't optimize most of this stuff too much
+  themselves, but in practice I doubt anyone will rely on the intermediate DOM
+  states much.
+
+  <li>[[br]]s are a nightmare.  I have tons of hacks all over the place which
+  are totally wrong, mostly to account for the fact that sometimes [[br]]s do
+  nothing and we need to treat that case magically.  I don't know what a good
+  way is to fix this.  At this point I've mostly gotten the evil concentrated
+  in the definitions "collapsed line break", "extraneous line break", and
+  "collapsed block prop", but there's lots of other special-case handling
+  scattered about.  Feedback appreciated.  How do browsers handle this?
+
+  <li>Where methods take a value, I've decided they should throw SYNTAX_ERR
+  instead of doing nothing if the value makes no sense.  As a rule, this
+  doesn't match browsers.  I think it's more useful to authors, however,
+  especially since in many cases, the command's effect isn't currently
+  interoperable anyway.  I'll switch them back to doing nothing if implementers
+  think this is a problem.
+
+  <li>The CSS styling flag is an issue.  Currently authors are forced to turn
+  it entirely on or entirely off.  If it's on, it produces stuff like <code
+  title>&lt;span style=font-weight:bold></code> instead of <code
+  title>&lt;b></code>, while if it's off, it produces stuff like <code
+  title>&lt;font color=red></code> instead of <code title>&lt;span
+  style=color:red></code>.  The issue is that authors might want a mix, like
+  making the markup as concise as possible while still conforming, and they
+  can't do that.  Changing the flag on a per-command basis doesn't help because
+  of things like the "restore the values" algorithm, which might create several
+  different types of style at once and has to use the same styling flag for all
+  of them.  This was discussed back in March in <a
+  href=http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-March/030714.html>this
+  thread</a>, along with a number of other things, but at that time I hadn't
+  written commands that change multiple styles at once, so it seemed feasible
+  to ask authors to switch styleWithCSS on or off on a per-command basis.
+
+  <li>I haven't defined the "undo" or "redo" commands yet.  They look very
+  complicated to define precisely, and other people are working on them right
+  now.
+</ul>
+
+<p>Things I need to fix before announcing that the draft is basically complete:
+
+<ul>
   <li>Some more thought needs to go into what happens to the selection when you
   mutate the DOM.  In some cases the results are pretty arbitrary.  It might
   make sense to do some kind of normalization.
@@ -172,12 +233,6 @@ list</a>.
   should be able to avoid the problems by requiring that everything be
   editable, since that immediately means it has to descend from an element or
   Document (and cannot be parentless itself).
-
-  <li>I haven't paid much attention to performance.  The algorithms here aren't
-  performance-critical in most cases, but I might have accidentally included
-  some algorithms that are too slow anyway on large pages.  Generally I haven't
-  worried about throwing nodes away and recreating them multiple times or
-  things like that, as long as it produces the correct result.
 
   <li>I need to pay more attention to invisible nodes.  These will have no
   visual effect, but they'll make many algorithms behave differently:
@@ -197,36 +252,12 @@ list</a>.
   Previously the spec assumed [[br]] should separate lines, which is like Gecko
   and sometimes WebKit, but I'm moving it to use [[p]] instead.
 
-  <li>[[br]]s are a nightmare.  I have tons of hacks all over the place which
-  are totally wrong, mostly to account for the fact that sometimes [[br]]s do
-  nothing and we need to treat that case magically.  I don't know what a good
-  way is to fix this.
-
   <li>Have to make sure that in all the places where we set a selection, it's
   valid.
-
-  <li>Where methods take a value, I've decided they should throw SYNTAX_ERR
-  instead of doing nothing if the value makes no sense.  As a rule, this
-  doesn't match browsers.  I think it's more useful to authors, however,
-  especially since in many cases, the command's effect isn't currently
-  interoperable anyway.  I'll switch them back to doing nothing if implementers
-  think this is a problem.
-
-  <li>The CSS styling flag is an issue.  Currently authors are forced to turn
-  it entirely on or entirely off.  If it's on, it produces stuff like <code
-  title>&lt;span style=font-weight:bold></code> instead of <code
-  title>&lt;b></code>, while if it's off, it produces stuff like <code
-  title>&lt;font color=red></code> instead of <code title>&lt;span
-  style=color:red></code>.  The issue is that authors might want a mix, like
-  making the markup as concise as possible while still conforming, and they
-  can't do that.  Changing the flag on a per-command basis doesn't help because
-  of things like the "restore the values" algorithm, which might create several
-  different types of style at once and has to use the same styling flag for all
-  of them.
 </ul>
 
 <p class=XXX>A variety of other issues are also noted in the text, formatted
-like this.
+like this.  Feedback would be appreciated on all of them.
 
 <p>Things that would be useful to address for the future but aren't important
 to fix right now are in comments prefixed with "TODO".
@@ -616,7 +647,7 @@ I think.  Plus table stuff, since that can't be a descendant of a p either,
 although it won't auto-close it. -->
 
 <p>A <dfn>block node</dfn> is either an [[element]] whose "display" property
-does not have [[compval]] "inline" or "inline-block" or "inline-table" or
+does not have [[resval]] "inline" or "inline-block" or "inline-table" or
 "none", or a [[document]], or a [[documentfragment]].
 
 <p>An <dfn>inline node</dfn> is a [[node]] that is not a <span>block
@@ -1283,14 +1314,14 @@ return either a string or null:
   <li>If <var>command</var> is "backColor" or "hiliteColor":
 
   <ol>
-    <li>While the [[compval]] of "background-color" on <var>node</var> is
+    <li>While the [[resval]] of "background-color" on <var>node</var> is
     any fully transparent value, and <var>node</var>'s [[parent]] is an
     [[element]], set <var>node</var> to its [[parent]].
 
-    <li>If the [[compval]] of "background-color" on <var>node</var> is
+    <li>If the [[resval]] of "background-color" on <var>node</var> is
     a fully transparent value, return "rgb(255, 255, 255)".
 
-    <li>Otherwise, return the [[compval]] of "background-color" for
+    <li>Otherwise, return the [[resval]] of "background-color" for
     <var>node</var>.
   </ol>
 
@@ -1308,14 +1339,14 @@ return either a string or null:
       in fact behaves like that even for commands like bold.  The spec follows
       Chrome 14 dev, mainly because WebKit itself will produce spans with
       vertical-align sub or super, and we want to handle them correctly. -->
-      <li>If <var>node</var>'s "vertical-align" property computes to "sub", set
-      <var>affected by subscript</var> to true.
+      <li>If <var>node</var>'s "vertical-align" property has [[resval]] "sub",
+      set <var>affected by subscript</var> to true.
 
-      <li>Otherwise, if <var>node</var>'s "vertical-align" property computes to
-      "super", set <var>affected by superscript</var> to true.
+      <li>Otherwise, if <var>node</var>'s "vertical-align" property has
+      [[resval]] "super", set <var>affected by superscript</var> to true.
 
-      <li>Otherwise, if <var>node</var>'s "vertical-align" property computes to
-      some value other than "baseline", return the string "other".
+      <li>Otherwise, if <var>node</var>'s "vertical-align" property has
+      [[resval]] other than "baseline", return the string "other".
 
       <li>Set <var>node</var> to its [[parent]].
     </ol>
@@ -1331,16 +1362,14 @@ return either a string or null:
   </ol>
 
   <li>If <var>command</var> is "strikethrough", and the "text-decoration"
-  property of <var>node</var> or any of its [[ancestors]] computes to
-  a value containing "line-through", return "line-through".  Otherwise, return
-  null.
+  property of <var>node</var> or any of its [[ancestors]] has [[resval]]
+  containing "line-through", return "line-through".  Otherwise, return null.
 
   <li>If <var>command</var> is "underline", and the "text-decoration"
-  property of <var>node</var> or any of its [[ancestors]] computes to
-  a value containing "underline", return "underline".  Otherwise, return
-  null.
+  property of <var>node</var> or any of its [[ancestors]] has [[resval]]
+  containing "underline", return "underline".  Otherwise, return null.
 
-  <li>Return the [[compval]] for <var>node</var> of the <span>relevant CSS
+  <li>Return the [[resval]] for <var>node</var> of the <span>relevant CSS
   property</span> for <var>command</var>.
 </ol>
 
@@ -1350,7 +1379,8 @@ will return either a string or null:
 
 <ol>
   <li>If <var>command</var> is "backColor" or "hiliteColor" and the
-  [[element]]'s display property does not compute to "inline", return null.
+  [[element]]'s display property does not have [[resval]] "inline", return
+  null.
 
   <li>If <var>command</var> is "createLink" or "unlink":
 
@@ -2430,7 +2460,7 @@ Chrome 11 dev: Gives the literal value of font-family, except if it's inherited
 Opera 11: Returns the literal value of font-family, except if it's inherited
   from default values, when it returns the empty string.
 
-I'm just going to punt on this and say it should be the computed value of
+I'm just going to punt on this and say it should be the resolved value of
 font-family.  I'll leave CSSOM to decide what that means if there are no
 applicable style rules. -->
 
@@ -2586,11 +2616,11 @@ browsers behave differently.  I see no reason to behave differently.
   <li>While <var>returned size</var> is less than 7:
 
   <ol>
-    <li>Let <var>lower bound</var> be the [[compval]] of "font-size" in pixels
+    <li>Let <var>lower bound</var> be the [[resval]] of "font-size" in pixels
     of a [[font]] element whose [[fontsize]] attribute is set to <var>returned
     size</var>.
 
-    <li>Let <var>upper bound</var> be the [[compval]] of "font-size" in pixels
+    <li>Let <var>upper bound</var> be the [[resval]] of "font-size" in pixels
     of a [[font]] element whose [[fontsize]] attribute is set to one plus
     <var>returned size</var>.
 
@@ -3328,7 +3358,7 @@ work well given the design of the API.
 -->
 <ol>
   <li>While <var>node</var> is neither null nor an [[element]], or it is an
-  [[element]] but its "display" property has [[compval]] "inline" or "none",
+  [[element]] but its "display" property has [[resval]] "inline" or "none",
   set <var>node</var> to its [[parent]].
 
   <li>If <var>node</var> is not an [[element]], return "left".
@@ -3338,15 +3368,15 @@ work well given the design of the API.
   anyway.  (It will only happen if, e.g., everything up to and including the
   html and body elements have display: inline or none.) -->
 
-  <li>If <var>node</var>'s "text-align" property has [[compval]] "start",
+  <li>If <var>node</var>'s "text-align" property has [[resval]] "start",
   return "left" if the [[directionality]] of <var>node</var> is "ltr", "right"
   if it is "rtl".
 
-  <li>If <var>node</var>'s "text-align" property has [[compval]] "end", return
+  <li>If <var>node</var>'s "text-align" property has [[resval]] "end", return
   "right" if the [[directionality]] of <var>node</var> is "ltr", "left" if it
   is "rtl".
 
-  <li>If <var>node</var>'s "text-align" property has [[compval]] "center",
+  <li>If <var>node</var>'s "text-align" property has [[resval]] "center",
   "justify", "left", or "right", return that value.
 
   <li>Return "left".
@@ -4106,7 +4136,7 @@ returned by the following algorithm:
     -->
 
     <li>Otherwise, if <var>start node</var> is a [[text]] node and its
-    [[parent]]'s [[compval]] for "white-space" is neither "pre" nor "pre-wrap"
+    [[parent]]'s [[resval]] for "white-space" is neither "pre" nor "pre-wrap"
     and <var>start offset</var> is not zero and the (<var>start offset</var>
     &minus; 1)st [[strel]] of <var>start node</var>'s [[cddata]] is a space
     (0x0020) or non-breaking space (0x00A0), subtract one from <var>start
@@ -4140,7 +4170,7 @@ returned by the following algorithm:
     -->
 
     <li>Otherwise, if <var>end node</var> is a [[text]] node and its
-    [[parent]]'s [[compval]] for "white-space" is neither "pre" nor "pre-wrap"
+    [[parent]]'s [[resval]] for "white-space" is neither "pre" nor "pre-wrap"
     and <var>end offset</var> is not <var>end node</var>'s [[length]] and the
     <var>end offset</var>th [[strel]] of <var>end node</var>'s [[cddata]] is a
     space (0x0020) or non-breaking space (0x00A0):
@@ -6748,9 +6778,9 @@ this, as Chrome 14 dev does.
   then set <var>offset</var> to zero.
 
   <li>If <var>value</var> is a space (U+0020), and either <var>node</var> is an
-  [[element]] whose [[compval]] for "white-space" is neither "pre" nor
+  [[element]] whose [[resval]] for "white-space" is neither "pre" nor
   "pre-wrap" or <var>node</var> is not an [[element]] but its [[parent]] is an
-  [[element]] whose [[compval]] for "white-space" is neither "pre" nor
+  [[element]] whose [[resval]] for "white-space" is neither "pre" nor
   "pre-wrap", set <var>value</var> to a non-breaking space (U+00A0).
   <!-- This may change to a space when we canonicalize. -->
 

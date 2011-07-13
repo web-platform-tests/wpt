@@ -266,19 +266,9 @@ list</a>.
   <li>Also not sure about computed style.  There are differences between
   "computed" and "used" and things like that, what do we actually want here?
 
-  <li>The wording I use for DOM stuff is not maximally precise.  Really I want
-  DOM Core to define nice concepts that I can xref, like "insert a node".  I
-  don't want to have to explicitly refer to DOM methods like insertBefore()
-  every time I want to move things.
-
   <li>Some more thought needs to go into what happens to the selection when you
   mutate the DOM.  In some cases the results are pretty arbitrary.  It might
   make sense to do some kind of normalization.
-
-  <li>JavaScript can modify the DOM synchronously in some cases, such as DOM
-  mutation events and onunload when moving around iframes and objects.  This
-  has to be dealt with somehow.  (Pointed out by Ryosuke Niwa of WebKit: <a href=http://lists.whatwg.org/pipermail/whatwg-whatwg.org/2011-March/030730.html>1</a>
-  <a href=http://lists.whatwg.org/pipermail/whatwg-whatwg.org/2011-March/030751.html>2</a>)
 
   <li>I'm sloppy about handling things like nodes that don't descend from a
   Document, comments that are children of a Document, that sort of thing.  Not
@@ -315,10 +305,6 @@ list</a>.
   nothing and we need to treat that case magically.  I don't know what a good
   way is to fix this.
 
-  <li>What happens if you do something like delete a selection or insert text
-  or whatnot in the middle of a surrogate pair?  This could make the content
-  not serialize through a character encoding change.
-
   <li>Have to make sure that in all the places where we set a selection, it's
   valid.
 
@@ -344,6 +330,26 @@ like this.
 
 <p>Things that would be useful to address for the future but aren't important
 to fix right now are in comments prefixed with "TODO".
+
+<!--
+TODO:
+
+* The wording I use for DOM stuff is not maximally precise.  Really I want DOM
+  Core to define nice concepts that I can xref, like "insert a node".  I
+  don't want to have to explicitly refer to DOM methods like insertBefore()
+  every time I want to move things.
+
+* JavaScript can modify the DOM synchronously in some cases, such as DOM
+  mutation events and onunload when moving around iframes and objects.  This
+  has to be dealt with somehow.  (Pointed out by Ryosuke Niwa of WebKit:
+  http://lists.whatwg.org/pipermail/whatwg-whatwg.org/2011-March/030730.html
+  http://lists.whatwg.org/pipermail/whatwg-whatwg.org/2011-March/030751.html)
+
+* What happens if you do something like delete a selection or insert text or
+  whatnot in the middle of a surrogate pair?  This could make the content not
+  serialize through a character encoding change.
+-->
+
 
 
 <h2 id=commands><span class=secno>3 </span>Commands</h2>
@@ -941,7 +947,7 @@ instructions</a> return null.
 
       {}<br>
       -> {}<blockquote></blockquote><br>
-      -> {}<blockquote></blockquote><br>.
+      -> {}<blockquote><br></blockquote>.
 
     The second line is due to range mutation rules: a boundary point with an
     offset equal to the index of a newly-inserted node stays put, so it remains
@@ -981,9 +987,9 @@ instructions</a> return null.
     An alternative solution would be to define the concept of moving a list of
     adjacent sibling nodes while preserving ranges, and handle this explicitly
     at a more abstract level.
-    -->
 
-    <p class=XXX>Not clear this is the best solution.  See comment.
+    TODO: Think about this some more.  Maybe there's a better way.
+    -->
   </ol>
 
   <li>Let <var title="">original parent</var> be the <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#concept-tree-parent title=concept-tree-parent>parent</a> of the first member of
@@ -1898,10 +1904,11 @@ different value.
     <li>If <var title="">command</var> is "strikethrough" and <var title="">new value</var> is
     "line-through", let <var title="">new parent</var> be the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("s")</a></code> on the
     <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">node</var>.
-
-    <p class=XXX>Actual UAs use strike, not s, but s is shorter and HTML5 makes
-    strike invalid.  I've gone with s for now, but maybe we want to change the
-    spec to require strike.
+    <!--
+    TODO: Actual UAs use strike, not s, but s is shorter and HTML5 makes strike
+    invalid.  I've gone with s for now, but maybe we want to change the spec to
+    require strike.
+    -->
 
     <li>If <var title="">command</var> is "underline" and <var title="">new value</var> is
     "underline", let <var title="">new parent</var> be the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("u")</a></code> on the

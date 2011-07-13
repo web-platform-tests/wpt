@@ -1390,8 +1390,9 @@ function isAllowedChild(child, parent_) {
 		return false;
 	}
 
-	// "If parent is in the following table, then return true if child is
-	// listed as an allowed child, and false otherwise."
+	// "If parent is on the left-hand side of an entry on the following list,
+	// then return true if child is listed on the right-hand side of that
+	// entry, and false otherwise."
 	switch (parent_) {
 		case "colgroup":
 			return child == "col";
@@ -1434,8 +1435,8 @@ function isAllowedChild(child, parent_) {
 		return false;
 	}
 
-	// "If parent is in the following table and child is listed as a prohibited
-	// child, return false."
+	// "If parent is on the left-hand side of an entry on the following list
+	// and child is listed on the right-hand side of that entry, return false."
 	var table = [
 		[["a"], ["a"]],
 		[["dd", "dt"], ["dd", "dt"]],

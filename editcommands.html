@@ -2,38 +2,60 @@
 <title>HTML Editing Commands</title>
 <link href=http://www.whatwg.org/style/specification rel=stylesheet>
 <style>
-  pre, code, xmp { font-family:monospace, sans-serif; }
-  h2 code, h3 code, h3 code,
-  h2 :link, h3 :link, h3 :link,
-  h2 :visited, h3 :visited, h3 :visited
-  { font:inherit; color:inherit; font-style:italic; }
-  @media print {
-    :not([data-anolis-spec]) > [data-anolis-spec]::after {
-      content: "[" attr(data-anolis-spec) "]";
-      font-size: 0.6em;
-      vertical-align: super;
-      text-transform: uppercase;
-    }
+pre, code, xmp { font-family:monospace, sans-serif; }
+h2 code, h3 code, h3 code,
+h2 :link, h3 :link, h3 :link,
+h2 :visited, h3 :visited, h3 :visited
+{ font:inherit; color:inherit; font-style:italic; }
+@media print {
+  :not([data-anolis-spec]) > [data-anolis-spec]::after {
+    content: "[" attr(data-anolis-spec) "]";
+    font-size: 0.6em;
+    vertical-align: super;
+    text-transform: uppercase;
   }
-  xmp {
-    font-size: inherit;
-    font-variant: normal;
-    margin-left: 2em;
-    white-space: pre-wrap;
-  }
-  div.note > p:first-child::before { content: 'Note: '; }
-  .XXX > :last-child { margin-bottom: 0 }
-  .XXX li {
-    margin-top: 0;
-    margin-bottom: 0;
-  }
-  dd .XXX p { margin: 1em 0 }
-  ol li { margin: 1em 0 }
-  li li { margin: 0 }
-  table { margin: 1em 0 }
-  /* Overwrite the underline so it's orange instead of blue, thus looks less
-   * silly */
-  a code { text-decoration: underline }
+}
+xmp {
+  font-size: inherit;
+  font-variant: normal;
+  margin-left: 2em;
+  white-space: pre-wrap;
+}
+div.note > p:first-child::before { content: 'Note: '; }
+.XXX > :last-child { margin-bottom: 0 }
+.XXX li {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+dd .XXX p { margin: 1em 0 }
+ol li { margin: 1em 0 }
+li li { margin: 0 }
+table { margin: 1em 0 }
+/* Overwrite the underline so it's orange instead of blue, thus looks less
+ * silly */
+a code { text-decoration: underline }
+/* Make my own compact dl styling because I don't like existing options */
+dl.compact > dt, dl.compact > dd {
+  display: inline;
+  font-weight: normal;
+  margin: 0;
+  padding: 0;
+}
+dl.compact { margin: 0.5em 0 0.5em 1em }
+dl.compact > dt::before {
+  content: '\2022  ';
+}
+dl.compact > dd::before {
+  content: ': ';
+}
+dl.compact > dd + dt::before {
+  white-space: pre;
+  content: '\A\2022  ';
+}
+dl.compact > dt + dt::before,
+dl.compact > dd + dd::before {
+  content: ', ';
+}
 </style>
 <body class=draft>
 <div class=head id=head>
@@ -1185,21 +1207,21 @@ covered what's come up in my tests.
 
   <li>If <var title="">parent</var> is not a string, return false.
 
-  <li>If <var title="">parent</var> is in the following table, then return true if
-  <var title="">child</var> is listed as an allowed child, and false otherwise.
+  <li>If <var title="">parent</var> is on the left-hand side of an entry on the
+  following list, then return true if <var title="">child</var> is listed on the
+  right-hand side of that entry, and false otherwise.
   <!-- We allow children even where some intervening nodes will be inserted,
   like tr as a child of table. -->
 
-  <table>
-    <tr><th>Parent <th>Allowed children
-    <tr><td>colgroup <td>col
-    <tr><td>table <td>caption, col, colgroup, tbody, td, tfoot, th, thead, tr
-    <tr><td>tbody, tfoot, thead <td>td, th, tr
-    <tr><td>tr <td>td, th
-    <tr><td>dl <td>dt, dd
-    <tr><td>dir, ol, ul <td>dir, li, ol, ul
-    <tr><td>hgroup <td>h1, h2, h3, h4, h5, h6
-  </table>
+  <dl class=compact>
+    <dt>colgroup<dd>col
+    <dt>table<dd>caption<dd>col<dd>colgroup<dd>tbody<dd>td<dd>tfoot<dd>th<dd>thead<dd>tr
+    <dt>tbody<dt>tfoot<dt>thead<dd>td<dd>th<dd>tr
+    <dt>tr<dd>td<dd>th
+    <dt>dl<dd>dt<dd>dd
+    <dt>dir<dt>ol<dt>ul<dd>dir<dd>li<dd>ol<dd>ul
+    <dt>hgroup<dd>h1<dd>h2<dd>h3<dd>h4<dd>h5<dd>h6
+  </dl>
 
   <li>If <var title="">child</var> is "body", "caption", "col", "colgroup", "frame",
   "frameset", "head", "html", "tbody", "td", "tfoot", "th", "thead", or "tr",
@@ -1213,22 +1235,21 @@ covered what's come up in my tests.
   <li>If <var title="">child</var> is "li" and <var title="">parent</var> is not "ol" or "ul",
   return false.
 
-  <li>If <var title="">parent</var> is in the following table and <var title="">child</var> is
-  listed as a prohibited child, return false.
+  <li>If <var title="">parent</var> is on the left-hand side of an entry on the
+  following list and <var title="">child</var> is listed on the right-hand side of that
+  entry, return false.
 
-  <table>
-    <tr><th>Parent <th>Prohibited children
-    <tr><td>a <td>a
-    <tr><td>dd, dt <td>dd, dt
-    <tr><td>h1, h2, h3, h4, h5, h6 <td>h1, h2, h3, h4, h5, h6
-    <tr><td>li <td>li
-    <tr><td>nobr <td>nobr
-    <tr><td>all <a href=#name-of-an-element-with-inline-contents title="name of an element with inline contents">names
-          of an element with inline contents</a>
-        <td>All <a href=#prohibited-paragraph-child-name title="prohibited paragraph child name">prohibited
-          paragraph child names</a>
-    <tr><td>td, th <td>caption, col, colgroup, tbody, td, tfoot, th, thead, tr
-  </table>
+  <dl class=compact>
+    <dt>a<dd>a
+    <dt>dd<dt>dt<dd>dd<dd>dt
+    <dt>h1<dt>h2<dt>h3<dt>h4<dt>h5<dt>h6<dd>h1<dd>h2<dd>h3<dd>h4<dd>h5<dd>h6
+    <dt>li<dd>li
+    <dt>nobr<dd>nobr
+    <dt>All <a href=#name-of-an-element-with-inline-contents title="name of an element with inline contents">names of an
+    element with inline contents</a><dd>all <a href=#prohibited-paragraph-child-name title="prohibited
+    paragraph child name">prohibited paragraph child names</a>
+    <dt>td<dt>th<dd>caption<dd>col<dd>colgroup<dd>tbody<dd>td<dd>tfoot<dd>th<dd>thead<dd>tr
+  </dl>
 
   <li>Return true.
 </ol>
@@ -1493,14 +1514,10 @@ will return either a string or null:
   equal to the CSS property name listed for it, return the string listed for
   it.
 
-  <dl class=switch>
-    <dt><code class=external data-anolis-spec=html title="the b element"><a href=http://www.whatwg.org/html/#the-b-element>b</a></code>
-    <dt><code class=external data-anolis-spec=html title="the strong element"><a href=http://www.whatwg.org/html/#the-strong-element>strong</a></code>
-    <dd>font-weight: "bold"
+  <dl class=compact>
+    <dt><code class=external data-anolis-spec=html title="the b element"><a href=http://www.whatwg.org/html/#the-b-element>b</a></code><dt><code class=external data-anolis-spec=html title="the strong element"><a href=http://www.whatwg.org/html/#the-strong-element>strong</a></code><dd>font-weight: "bold"
 
-    <dt><code class=external data-anolis-spec=html title="the i element"><a href=http://www.whatwg.org/html/#the-i-element>i</a></code>
-    <dt><code class=external data-anolis-spec=html title="the em element"><a href=http://www.whatwg.org/html/#the-em-element>em</a></code>
-    <dd>font-style: "italic"
+    <dt><code class=external data-anolis-spec=html title="the i element"><a href=http://www.whatwg.org/html/#the-i-element>i</a></code><dt><code class=external data-anolis-spec=html title="the em element"><a href=http://www.whatwg.org/html/#the-em-element>em</a></code><dd>font-style: "italic"
   </dl>
 
   <li>Return null.
@@ -2008,14 +2025,14 @@ different value.
   <var title="">new parent</var> to the number from the following table based on
   <var title="">new value</var>:
 
-  <dl class=switch>
-    <dt>xx-small <dd>1
-    <dt>small <dd>2
-    <dt>normal <dd>3
-    <dt>large <dd>4
-    <dt>x-large <dd>5
-    <dt>xx-large <dd>6
-    <dt>xxx-large <dd>7
+  <dl class=compact>
+    <dt>xx-small<dd>1
+    <dt>small<dd>2
+    <dt>normal<dd>3
+    <dt>large<dd>4
+    <dt>x-large<dd>5
+    <dt>xx-large<dd>6
+    <dt>xxx-large<dd>7
   </dl>
 
   <!-- We always use sup/sub elements, even in CSS mode, following Gecko and
@@ -2559,14 +2576,14 @@ respecifying non-interoperable behavior anyway.
     <li>Set <var title="">value</var> to the string here corresponding to
     <var title="">number</var>:
 
-    <dl class=switch>
-      <dt>1 <dd>xx-small
-      <dt>2 <dd>small
-      <dt>3 <dd>medium
-      <dt>4 <dd>large
-      <dt>5 <dd>x-large
-      <dt>6 <dd>xx-large
-      <dt>7 <dd>xxx-large
+    <dl class=compact>
+      <dt>1<dd>xx-small
+      <dt>2<dd>small
+      <dt>3<dd>medium
+      <dt>4<dd>large
+      <dt>5<dd>x-large
+      <dt>6<dd>xx-large
+      <dt>7<dd>xxx-large
     </dl>
 
     <!--
@@ -2583,7 +2600,6 @@ respecifying non-interoperable behavior anyway.
   <li>If <var title="">value</var> is not one of the strings "xx-small", "x-small",
   "small", "medium", "large", "x-large", "xx-large", "xxx-large", and is not a
   valid CSS absolute length, then raise a <code class=external data-anolis-spec=domcore title=dom-DOMException-SYNTAX_ERR><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-domexception-syntax_err>SYNTAX_ERR</a></code> exception.
-
   <!--
   Not sure this is the best way to do it.  We don't want to allow relative
   lengths, because those can have very weird user-visible behavior.  For

@@ -6337,6 +6337,14 @@ commands.inserthtml = {
 		// "Call insertNode(frag) on the active range."
 		getActiveRange().insertNode(frag);
 
+		// "If the active range's start node is a block node with no visible
+		// children, call createElement("br") on the context object and append
+		// the result as the last child of the active range's start node."
+		if (isBlockNode(getActiveRange().startContainer)
+		&& ![].some.call(getActiveRange().startContainer.childNodes, isVisible)) {
+			getActiveRange().startContainer.appendChild(document.createElement("br"));
+		}
+
 		// "Call collapse() on the context object's Selection, with last
 		// child's parent as the first argument and one plus its index as the
 		// second."

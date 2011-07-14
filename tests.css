@@ -15,6 +15,9 @@ div.alert {
 	color: red;
 	font-weight: bold;
 }
+.extra-results { font-size: small }
+.good-result { color: green }
+.bad-result { color: red }
 /* http://www.w3.org/Bugs/Public/show_bug.cgi?id=12154
  * https://bugzilla.mozilla.org/show_bug.cgi?id=589124
  * https://bugs.webkit.org/show_bug.cgi?id=56400 */

@@ -187,7 +187,7 @@ var tests = {
 		'<i><b>foo</b></i>[bar]<i><b>baz</b></i>',
 		'<i><b>foo</b></i>[bar]<b>baz</b>',
 		'<b>foo</b>[bar]<i><b>baz</b></i>',
-		'<font color=red face=monospace><b>foo</b></font>[bar]',
+		'<font color=blue face=monospace><b>foo</b></font>[bar]',
 
 		'foo<span style="font-weight: normal"><b>{bar}</b></span>baz',
 		'[foo<span class=notbold>bar</span>baz]',
@@ -393,11 +393,11 @@ var tests = {
 		'foo<blockquote>[]bar</blockquote>',
 		'foo<blockquote><blockquote>[]bar</blockquote></blockquote>',
 		'foo<blockquote><div>[]bar</div></blockquote>',
-		'foo<blockquote style="color: red">[]bar</blockquote>',
+		'foo<blockquote style="color: blue">[]bar</blockquote>',
 
 		'foo<blockquote><blockquote><p>[]bar<p>baz</blockquote></blockquote>',
 		'foo<blockquote><div><p>[]bar<p>baz</div></blockquote>',
-		'foo<blockquote style="color: red"><p>[]bar<p>baz</blockquote>',
+		'foo<blockquote style="color: blue"><p>[]bar<p>baz</blockquote>',
 
 		'foo<blockquote><p><b>[]bar</b><p>baz</blockquote>',
 		'foo<blockquote><p><strong>[]bar</strong><p>baz</blockquote>',
@@ -434,22 +434,22 @@ var tests = {
 		'<div><div><p>foo</p></div></div><div><div><div><!--abc-->[]bar</div></div></div>',
 
 		// Styled stuff with collapsed selection
-		'<p style=color:red>foo<p>[]bar',
-		'<p style=color:red>foo<p style=color:blue>[]bar',
-		'<p>foo<p style=color:blue>[]bar',
-		'<p><font color=red>foo</font><p>[]bar',
-		'<p><font color=red>foo</font><p><font color=blue>[]bar</font>',
-		'<p>foo<p><font color=blue>[]bar</font>',
-		'<p><span style=color:red>foo</font><p>[]bar',
-		'<p><span style=color:red>foo</font><p><span style=color:blue>[]bar</font>',
-		'<p>foo<p><span style=color:blue>[]bar</font>',
+		'<p style=color:blue>foo<p>[]bar',
+		'<p style=color:blue>foo<p style=color:brown>[]bar',
+		'<p>foo<p style=color:brown>[]bar',
+		'<p><font color=blue>foo</font><p>[]bar',
+		'<p><font color=blue>foo</font><p><font color=brown>[]bar</font>',
+		'<p>foo<p><font color=brown>[]bar</font>',
+		'<p><span style=color:blue>foo</font><p>[]bar',
+		'<p><span style=color:blue>foo</font><p><span style=color:brown>[]bar</font>',
+		'<p>foo<p><span style=color:brown>[]bar</font>',
 
-		'<p style=background-color:salmon>foo<p>[]bar',
-		'<p style=background-color:salmon>foo<p style=background-color:aqua>[]bar',
-		'<p>foo<p style=background-color:aqua>[]bar',
-		'<p><span style=background-color:salmon>foo</font><p>[]bar',
-		'<p><span style=background-color:salmon>foo</font><p><span style=background-color:aqua>[]bar</font>',
-		'<p>foo<p><span style=background-color:aqua>[]bar</font>',
+		'<p style=background-color:aqua>foo<p>[]bar',
+		'<p style=background-color:aqua>foo<p style=background-color:tan>[]bar',
+		'<p>foo<p style=background-color:tan>[]bar',
+		'<p><span style=background-color:aqua>foo</font><p>[]bar',
+		'<p><span style=background-color:aqua>foo</font><p><span style=background-color:tan>[]bar</font>',
+		'<p>foo<p><span style=background-color:tan>[]bar</font>',
 
 		'<p style=text-decoration:underline>foo<p>[]bar',
 		'<p style=text-decoration:underline>foo<p style=text-decoration:line-through>[]bar',
@@ -458,11 +458,11 @@ var tests = {
 		'<p><u>foo</u><p><s>[]bar</s>',
 		'<p>foo<p><s>[]bar</s>',
 
-		'<p style=color:red>foo</p>[]bar',
-		'foo<p style=color:blue>[]bar',
-		'<div style=color:red><p style=color:green>foo</div>[]bar',
-		'<div style=color:red><p style=color:green>foo</div><p style=color:blue>[]bar',
-		'<p style=color:red>foo<div style=color:blue><p style=color:green>[]bar',
+		'<p style=color:blue>foo</p>[]bar',
+		'foo<p style=color:brown>[]bar',
+		'<div style=color:blue><p style=color:green>foo</div>[]bar',
+		'<div style=color:blue><p style=color:green>foo</div><p style=color:brown>[]bar',
+		'<p style=color:blue>foo<div style=color:brown><p style=color:green>[]bar',
 
 		// Uncollapsed selection
 		'foo[bar]baz',
@@ -489,7 +489,7 @@ var tests = {
 		'<p><b>foo[bar</b><p>baz]quz',
 		'<div><p>foo[bar</div><p>baz]quz',
 		'<p>foo[bar<blockquote><p>baz]quz<p>qoz</blockquote',
-		'<p>foo[bar<p style=color:red>baz]quz',
+		'<p>foo[bar<p style=color:blue>baz]quz',
 		'<p>foo[bar<p><b>baz]quz</b>',
 
 		'<div><p>foo<p>[bar<p>baz]</div>',
@@ -751,24 +751,24 @@ var tests = {
 		'{<p><p> <p>foo</p>}',
 		'foo[bar<i>baz]qoz</i>quz',
 
-		['red', 'foo[bar]baz'],
+		['blue', 'foo[bar]baz'],
 		['f', 'foo[bar]baz'],
 		['#f', 'foo[bar]baz'],
-		['f00', 'foo[bar]baz'],
-		['#f00', 'foo[bar]baz'],
-		['ff0000', 'foo[bar]baz'],
-		['#ff0000', 'foo[bar]baz'],
-		['fff000000', 'foo[bar]baz'],
-		['#fff000000', 'foo[bar]baz'],
-		['rgb(255, 0, 0)', 'foo[bar]baz'],
-		['rgb(100%, 0, 0)', 'foo[bar]baz'],
-		['rgb( 255 ,0 ,0)', 'foo[bar]baz'],
-		['rgba(255, 0, 0, 0.0)', 'foo[bar]baz'],
-		['rgb(375, -10, 15)', 'foo[bar]baz'],
+		['00f', 'foo[bar]baz'],
+		['#00f', 'foo[bar]baz'],
+		['0000ff', 'foo[bar]baz'],
+		['#0000ff', 'foo[bar]baz'],
+		['000000fff', 'foo[bar]baz'],
+		['#000000fff', 'foo[bar]baz'],
+		['rgb(0, 0, 255)', 'foo[bar]baz'],
+		['rgb(0%, 0%, 100%)', 'foo[bar]baz'],
+		['rgb( 0 ,0 ,255)', 'foo[bar]baz'],
+		['rgba(0, 0, 255, 0.0)', 'foo[bar]baz'],
+		['rgb(15, -10, 375)', 'foo[bar]baz'],
 		['rgba(0, 0, 0, 1)', 'foo[bar]baz'],
 		['rgba(255, 255, 255, 1)', 'foo[bar]baz'],
-		['rgba(255, 0, 0, 0.5)', 'foo[bar]baz'],
-		['hsl(0%, 100%, 50%)', 'foo[bar]baz'],
+		['rgba(0, 0, 255, 0.5)', 'foo[bar]baz'],
+		['hsl(240, 100%, 50%)', 'foo[bar]baz'],
 		['cornsilk', 'foo[bar]baz'],
 		['potato quiche', 'foo[bar]baz'],
 		['transparent', 'foo[bar]baz'],
@@ -781,47 +781,47 @@ var tests = {
 		'<table data-start=0 data-end=1><tbody><tr><td>foo<td>bar<td>baz</table>',
 		'{<table><tr><td>foo<td>bar<td>baz</table>}',
 
-		'foo<font color=red>[bar]</font>baz',
-		'foo{<font color=red>bar</font>}baz',
-		'<span style="color: red">foo<span style="color: blue">[bar]</span>baz</span>',
-		'<span style="color: #f00">foo<span style="color: blue">[bar]</span>baz</span>',
-		'<span style="color: #ff0000">foo<span style="color: blue">[bar]</span>baz</span>',
-		'<span style="color: rgb(255, 0, 0)">foo<span style="color: blue">[bar]</span>baz</span>',
-		'<font color=red>foo<font color=blue>[bar]</font>baz</font>',
-		'<span style="color: rgb(255, 0, 0)">foo<span style="color: blue">b[ar]</span>baz</span>',
+		'foo<font color=blue>[bar]</font>baz',
+		'foo{<font color=blue>bar</font>}baz',
+		'<span style="color: blue">foo<span style="color: brown">[bar]</span>baz</span>',
+		'<span style="color: #00f">foo<span style="color: brown">[bar]</span>baz</span>',
+		'<span style="color: #0000ff">foo<span style="color: brown">[bar]</span>baz</span>',
+		'<span style="color: rgb(0, 0, 255)">foo<span style="color: brown">[bar]</span>baz</span>',
+		'<font color=blue>foo<font color=brown>[bar]</font>baz</font>',
+		'<span style="color: rgb(0, 0, 255)">foo<span style="color: brown">b[ar]</span>baz</span>',
 		'foo<span id=purple>ba[r</span>ba]z',
-		'<span style="color: rgb(255, 0, 0)">foo<span id=purple>b[a]r</span>baz</span>',
+		'<span style="color: rgb(0, 0, 255)">foo<span id=purple>b[a]r</span>baz</span>',
 
 		// Tests for queryCommandValue()
-		'<font color="red">[foo]</font>',
-		'<font color="ff0000">[foo]</font>',
-		'<font color="#ff0000">[foo]</font>',
-		'<span style="color: red">[foo]</span>',
-		'<span style="color: #ff0000">[foo]</span>',
-		'<span style="color: rgb(255, 0, 0)">[foo]</span>',
-		'<span style="color: rgb(100%, 0, 0)">[foo]</span>',
-		'<span style="color: rgb( 255 ,0 ,0)">[foo]</span>',
-		'<span style="color: rgba(255, 0, 0, 0.0)">[foo]</span>',
-		'<span style="color: rgb(375, -10, 15)">[foo]</span>',
+		'<font color="blue">[foo]</font>',
+		'<font color="0000ff">[foo]</font>',
+		'<font color="#0000ff">[foo]</font>',
+		'<span style="color: blue">[foo]</span>',
+		'<span style="color: #0000ff">[foo]</span>',
+		'<span style="color: rgb(0, 0, 255)">[foo]</span>',
+		'<span style="color: rgb(0%, 0%, 100%)">[foo]</span>',
+		'<span style="color: rgb( 0 ,0 ,255)">[foo]</span>',
+		'<span style="color: rgba(0, 0, 255, 0.0)">[foo]</span>',
+		'<span style="color: rgb(15, -10, 375)">[foo]</span>',
 		'<span style="color: rgba(0, 0, 0, 1)">[foo]</span>',
 		'<span style="color: rgba(255, 255, 255, 1)">[foo]</span>',
-		'<span style="color: rgba(255, 0, 0, 0.5)">[foo]</span>',
-		'<span style="color: hsl(0%, 100%, 50%)">[foo]</span>',
+		'<span style="color: rgba(0, 0, 255, 0.5)">[foo]</span>',
+		'<span style="color: hsl(240, 100%, 50%)">[foo]</span>',
 		'<span style="color: cornsilk">[foo]</span>',
 		'<span style="color: transparent">[foo]</span>',
 		'<span style="color: currentColor">[foo]</span>',
 
 		// Tests for queryCommandIndeterm() and queryCommandState()
-		'fo[o<font color=blue>b]ar</font>baz',
-		'foo<font color=blue>ba[r</font>b]az',
-		'fo[o<font color=blue>bar</font>b]az',
-		'foo[<font color=blue>b]ar</font>baz',
-		'foo<font color=blue>ba[r</font>]baz',
-		'foo[<font color=blue>bar</font>]baz',
-		'foo<font color=blue>[bar]</font>baz',
-		'foo{<font color=blue>bar</font>}baz',
-		'<font color=blue>fo[o</font><span style=color:blue>b]ar</span>',
-		'<span style=color:blue>fo[o</span><span style=color:#0000ff>b]ar</span>',
+		'fo[o<font color=brown>b]ar</font>baz',
+		'foo<font color=brown>ba[r</font>b]az',
+		'fo[o<font color=brown>bar</font>b]az',
+		'foo[<font color=brown>b]ar</font>baz',
+		'foo<font color=brown>ba[r</font>]baz',
+		'foo[<font color=brown>bar</font>]baz',
+		'foo<font color=brown>[bar]</font>baz',
+		'foo{<font color=brown>bar</font>}baz',
+		'<font color=brown>fo[o</font><span style=color:brown>b]ar</span>',
+		'<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>',
 	],
 	//@}
 	formatblock: [
@@ -1075,7 +1075,7 @@ var tests = {
 		'<h1>[foo</h1><h2>bar]</h2>',
 		'<div>[foo</div>bar]',
 
-		['<p>', '<div style=color:red>[foo]</div>'],
+		['<p>', '<div style=color:blue>[foo]</div>'],
 	],
 	//@}
 	forwarddelete: [
@@ -1192,11 +1192,11 @@ var tests = {
 		'foo[]<blockquote>bar</blockquote>',
 		'foo[]<blockquote><blockquote>bar</blockquote></blockquote>',
 		'foo[]<blockquote><div>bar</div></blockquote>',
-		'foo[]<blockquote style="color: red">bar</blockquote>',
+		'foo[]<blockquote style="color: blue">bar</blockquote>',
 
 		'foo[]<blockquote><blockquote><p>bar<p>baz</blockquote></blockquote>',
 		'foo[]<blockquote><div><p>bar<p>baz</div></blockquote>',
-		'foo[]<blockquote style="color: red"><p>bar<p>baz</blockquote>',
+		'foo[]<blockquote style="color: blue"><p>bar<p>baz</blockquote>',
 
 		'foo[]<blockquote><p><b>bar</b><p>baz</blockquote>',
 		'foo[]<blockquote><p><strong>bar</strong><p>baz</blockquote>',
@@ -1233,22 +1233,22 @@ var tests = {
 		'<div><div><p>foo[]</p></div></div><div><div><div><!--abc-->bar</div></div></div>',
 
 		// Styled stuff with collapsed selection
-		'<p style=color:red>foo[]<p>bar',
-		'<p style=color:red>foo[]<p style=color:blue>bar',
-		'<p>foo[]<p style=color:blue>bar',
-		'<p><font color=red>foo[]</font><p>bar',
-		'<p><font color=red>foo[]</font><p><font color=blue>bar</font>',
-		'<p>foo[]<p><font color=blue>bar</font>',
-		'<p><span style=color:red>foo[]</font><p>bar',
-		'<p><span style=color:red>foo[]</font><p><span style=color:blue>bar</font>',
-		'<p>foo[]<p><span style=color:blue>bar</font>',
+		'<p style=color:blue>foo[]<p>bar',
+		'<p style=color:blue>foo[]<p style=color:brown>bar',
+		'<p>foo[]<p style=color:brown>bar',
+		'<p><font color=blue>foo[]</font><p>bar',
+		'<p><font color=blue>foo[]</font><p><font color=brown>bar</font>',
+		'<p>foo[]<p><font color=brown>bar</font>',
+		'<p><span style=color:blue>foo[]</font><p>bar',
+		'<p><span style=color:blue>foo[]</font><p><span style=color:brown>bar</font>',
+		'<p>foo[]<p><span style=color:brown>bar</font>',
 
-		'<p style=background-color:salmon>foo[]<p>bar',
-		'<p style=background-color:salmon>foo[]<p style=background-color:aqua>bar',
-		'<p>foo[]<p style=background-color:aqua>bar',
-		'<p><span style=background-color:salmon>foo[]</font><p>bar',
-		'<p><span style=background-color:salmon>foo[]</font><p><span style=background-color:aqua>bar</font>',
-		'<p>foo[]<p><span style=background-color:aqua>bar</font>',
+		'<p style=background-color:aqua>foo[]<p>bar',
+		'<p style=background-color:aqua>foo[]<p style=background-color:tan>bar',
+		'<p>foo[]<p style=background-color:tan>bar',
+		'<p><span style=background-color:aqua>foo[]</font><p>bar',
+		'<p><span style=background-color:aqua>foo[]</font><p><span style=background-color:tan>bar</font>',
+		'<p>foo[]<p><span style=background-color:tan>bar</font>',
 
 		'<p style=text-decoration:underline>foo[]<p>bar',
 		'<p style=text-decoration:underline>foo[]<p style=text-decoration:line-through>bar',
@@ -1257,11 +1257,11 @@ var tests = {
 		'<p><u>foo[]</u><p><s>bar</s>',
 		'<p>foo[]<p><s>bar</s>',
 
-		'<p style=color:red>foo[]</p>bar',
-		'foo[]<p style=color:blue>bar',
-		'<div style=color:red><p style=color:green>foo[]</div>bar',
-		'<div style=color:red><p style=color:green>foo[]</div><p style=color:blue>bar',
-		'<p style=color:red>foo[]<div style=color:blue><p style=color:green>bar',
+		'<p style=color:blue>foo[]</p>bar',
+		'foo[]<p style=color:brown>bar',
+		'<div style=color:blue><p style=color:green>foo[]</div>bar',
+		'<div style=color:blue><p style=color:green>foo[]</div><p style=color:brown>bar',
+		'<p style=color:blue>foo[]<div style=color:brown><p style=color:green>bar',
 
 		// Uncollapsed selection (should be same as delete command)
 		'foo[bar]baz',
@@ -1288,7 +1288,7 @@ var tests = {
 		'<p><b>foo[bar</b><p>baz]quz',
 		'<div><p>foo[bar</div><p>baz]quz',
 		'<p>foo[bar<blockquote><p>baz]quz<p>qoz</blockquote',
-		'<p>foo[bar<p style=color:red>baz]quz',
+		'<p>foo[bar<p style=color:blue>baz]quz',
 		'<p>foo[bar<p><b>baz]quz</b>',
 
 		'<div><p>foo<p>[bar<p>baz]</div>',
@@ -1369,30 +1369,31 @@ var tests = {
 		'<table data-start=0 data-end=1><tbody><tr><td>foo<td>bar<td>baz</table>',
 		'{<table><tr><td>foo<td>bar<td>baz</table>}',
 
-		'<p style="background-color: rgb(255, 136, 136)">foo[bar]baz</p>',
-		'<p style="background-color: #ff8888">foo[bar]baz</p>',
+		'<p style="background-color: rgb(0, 255, 255)">foo[bar]baz</p>',
+		'<p style="background-color: #00ffff">foo[bar]baz</p>',
 		'<p style="background-color: aqua">foo[bar]baz</p>',
 		'{<p style="background-color: aqua">foo</p><p>bar</p>}',
-		'<span style="background-color: #ff8888">foo<span style="background-color: aqua">[bar]</span>baz</span>',
-		'<span style="background-color: #f88">foo<span style="background-color: aqua">[bar]</span>baz</span>',
-		'<span style="background-color: rgb(255, 136, 136)">foo<span style="background-color: aqua">[bar]</span>baz</span>',
-		'<span style="background-color: #ff8888">foo<span style="background-color: aqua">b[ar]</span>baz</span>',
-		'<p style="background-color: #ff8888">foo<span style="background-color: aqua">b[ar]</span>baz</p>',
-		'<div style="background-color: #ff8888"><p style="background-color: aqua">b[ar]</p></div>',
-		'<span style="display: block; background-color: #ff8888"><span style="display: block; background-color: aqua">b[ar]</span></span>',
+		'<span style="background-color: aqua">foo<span style="background-color: tan">[bar]</span>baz</span>',
+		'<span style="background-color: #00ffff">foo<span style="background-color: tan">[bar]</span>baz</span>',
+		'<span style="background-color: #0ff">foo<span style="background-color: tan">[bar]</span>baz</span>',
+		'<span style="background-color: rgb(0, 255, 255)">foo<span style="background-color: tan">[bar]</span>baz</span>',
+		'<span style="background-color: aqua">foo<span style="background-color: tan">b[ar]</span>baz</span>',
+		'<p style="background-color: aqua">foo<span style="background-color: tan">b[ar]</span>baz</p>',
+		'<div style="background-color: aqua"><p style="background-color: tan">b[ar]</p></div>',
+		'<span style="display: block; background-color: aqua"><span style="display: block; background-color: tan">b[ar]</span></span>',
 
 		// Tests for queryCommandIndeterm() and queryCommandState()
-		'fo[o<span style=background-color:aqua>b]ar</span>baz',
-		'foo<span style=background-color:aqua>ba[r</span>b]az',
-		'fo[o<span style=background-color:aqua>bar</span>b]az',
-		'foo[<span style=background-color:aqua>b]ar</span>baz',
-		'foo<span style=background-color:aqua>ba[r</span>]baz',
-		'foo[<span style=background-color:aqua>bar</span>]baz',
-		'foo<span style=background-color:aqua>[bar]</span>baz',
-		'foo{<span style=background-color:aqua>bar</span>}baz',
-		'<span style=background-color:aqua>fo[o</span><span style=background-color:lime>b]ar</span>',
-		'<span style=background-color:aqua>fo[o</span><span style=background-color:aqua>b]ar</span>',
-		'<span style=background-color:aqua>fo[o<span style=background-color:transparent>b]ar</span></span>',
+		'fo[o<span style=background-color:tan>b]ar</span>baz',
+		'foo<span style=background-color:tan>ba[r</span>b]az',
+		'fo[o<span style=background-color:tan>bar</span>b]az',
+		'foo[<span style=background-color:tan>b]ar</span>baz',
+		'foo<span style=background-color:tan>ba[r</span>]baz',
+		'foo[<span style=background-color:tan>bar</span>]baz',
+		'foo<span style=background-color:tan>[bar]</span>baz',
+		'foo{<span style=background-color:tan>bar</span>}baz',
+		'<span style=background-color:tan>fo[o</span><span style=background-color:yellow>b]ar</span>',
+		'<span style=background-color:tan>fo[o</span><span style=background-color:tan>b]ar</span>',
+		'<span style=background-color:tan>fo[o<span style=background-color:transparent>b]ar</span></span>',
 	],
 	//@}
 	indent: [
@@ -1710,8 +1711,8 @@ var tests = {
 		['<nobr>abc</nobr>', '<nobr>f[o]o</nobr>'],
 		['<nobr>abc</nobr>', 'f[o]o'],
 
-		['<p>abc', '<font color=red>foo[]bar</font>'],
-		['<p>abc', '<span style=color:red>foo[]bar</span>'],
+		['<p>abc', '<font color=blue>foo[]bar</font>'],
+		['<p>abc', '<span style=color:blue>foo[]bar</span>'],
 		['<p>abc', '<span style=font-variant:small-caps>foo[]bar</span>'],
 		[' ', '<p>[foo]</p>'],
 		['<span style=display:none></span>', '<p>[foo]</p>'],
@@ -1746,7 +1747,7 @@ var tests = {
 		'<p><b>foo[bar</b><p>baz]quz',
 		'<div><p>foo[bar</div><p>baz]quz',
 		'<p>foo[bar<blockquote><p>baz]quz<p>qoz</blockquote',
-		'<p>foo[bar<p style=color:red>baz]quz',
+		'<p>foo[bar<p style=color:blue>baz]quz',
 		'<p>foo[bar<p><b>baz]quz</b>',
 
 		'<div><p>foo<p>[bar<p>baz]</div>',
@@ -1951,13 +1952,13 @@ var tests = {
 
 		// Attributes
 		'<ul id=abc><li>foo<li>[bar]<li>baz</ul>',
-		'<ul style=color:red><li>foo<li>[bar]<li>baz</ul>',
+		'<ul style=color:blue><li>foo<li>[bar]<li>baz</ul>',
 		'<ul style=text-indent:1em><li>foo<li>[bar]<li>baz</ul>',
 		'<ul id=abc><li>[foo]<li>bar<li>baz</ul>',
-		'<ul style=color:red><li>[foo]<li>bar<li>baz</ul>',
+		'<ul style=color:blue><li>[foo]<li>bar<li>baz</ul>',
 		'<ul style=text-indent:1em><li>[foo]<li>bar<li>baz</ul>',
 		'<ul id=abc><li>foo<li>bar<li>[baz]</ul>',
-		'<ul style=color:red><li>foo<li>bar<li>[baz]</ul>',
+		'<ul style=color:blue><li>foo<li>bar<li>[baz]</ul>',
 		'<ul style=text-indent:1em><li>foo<li>bar<li>[baz]</ul>',
 	],
 	//@}
@@ -2346,13 +2347,13 @@ var tests = {
 
 		// Attributes
 		'<ul id=abc><li>foo<li>[bar]<li>baz</ul>',
-		'<ul style=color:red><li>foo<li>[bar]<li>baz</ul>',
+		'<ul style=color:blue><li>foo<li>[bar]<li>baz</ul>',
 		'<ul style=text-indent:1em><li>foo<li>[bar]<li>baz</ul>',
 		'<ul id=abc><li>[foo]<li>bar<li>baz</ul>',
-		'<ul style=color:red><li>[foo]<li>bar<li>baz</ul>',
+		'<ul style=color:blue><li>[foo]<li>bar<li>baz</ul>',
 		'<ul style=text-indent:1em><li>[foo]<li>bar<li>baz</ul>',
 		'<ul id=abc><li>foo<li>bar<li>[baz]</ul>',
-		'<ul style=color:red><li>foo<li>bar<li>[baz]</ul>',
+		'<ul style=color:blue><li>foo<li>bar<li>[baz]</ul>',
 		'<ul style=text-indent:1em><li>foo<li>bar<li>[baz]</ul>',
 	],
 	//@}
@@ -2884,7 +2885,7 @@ var tests = {
 		'<blockquote><div>foo[bar]baz</div></blockquote>',
 		'<blockquote><div id=abc>foo[bar]baz</div></blockquote>',
 		'<blockquote id=abc>foo[bar]baz</blockquote>',
-		'<blockquote style="color: red">foo[bar]baz</blockquote>',
+		'<blockquote style="color: blue">foo[bar]baz</blockquote>',
 
 		'<blockquote><blockquote><p>foo[bar]<p>baz</blockquote></blockquote>',
 		'<blockquote><blockquote data-abc=def><p>foo[bar]<p>baz</blockquote></blockquote>',
@@ -2892,13 +2893,13 @@ var tests = {
 		'<blockquote><div><p>foo[bar]<p>baz</div></blockquote>',
 		'<blockquote><div id=abc><p>foo[bar]<p>baz</div></blockquote>',
 		'<blockquote id=abc><p>foo[bar]<p>baz</blockquote>',
-		'<blockquote style="color: red"><p>foo[bar]<p>baz</blockquote>',
+		'<blockquote style="color: blue"><p>foo[bar]<p>baz</blockquote>',
 
 		'<blockquote><p><b>foo[bar]</b><p>baz</blockquote>',
 		'<blockquote><p><strong>foo[bar]</strong><p>baz</blockquote>',
 		'<blockquote><p><span>foo[bar]</span><p>baz</blockquote>',
-		'<blockquote><blockquote style="color: red"><p>foo[bar]</blockquote><p>baz</blockquote>',
-		'<blockquote style="color: red"><blockquote><p>foo[bar]</blockquote><p>baz</blockquote>',
+		'<blockquote><blockquote style="color: blue"><p>foo[bar]</blockquote><p>baz</blockquote>',
+		'<blockquote style="color: blue"><blockquote><p>foo[bar]</blockquote><p>baz</blockquote>',
 
 		// Lists!
 		'<ol><li>foo<li>[bar]<li>baz</ol>',
@@ -2942,19 +2943,19 @@ var tests = {
 		// Attribute handling on lists
 		'foo<ol start=5><li>[bar]</ol>baz',
 		'foo<ol id=abc><li>[bar]</ol>baz',
-		'foo<ol style=color:red><li>[bar]</ol>baz',
+		'foo<ol style=color:blue><li>[bar]</ol>baz',
 		'foo<ol><li value=5>[bar]</ol>baz',
 		'foo<ol><li id=abc>[bar]</ol>baz',
-		'foo<ol><li style=color:red>[bar]</ol>baz',
+		'foo<ol><li style=color:blue>[bar]</ol>baz',
 		'<ol><li>foo</li><ol><li value=5>[bar]</ol></ol>',
 		'<ul><li>foo</li><ol><li value=5>[bar]</ol></ul>',
 		'<ol><li>foo</li><ol start=5><li>[bar]</ol><li>baz</ol>',
 		'<ol><li>foo</li><ol id=abc><li>[bar]</ol><li>baz</ol>',
-		'<ol><li>foo</li><ol style=color:red><li>[bar]</ol><li>baz</ol>',
+		'<ol><li>foo</li><ol style=color:blue><li>[bar]</ol><li>baz</ol>',
 		'<ol><li>foo</li><ol style=text-indent:1em><li>[bar]</ol><li>baz</ol>',
 		'<ol><li>foo</li><ol start=5><li>[bar<li>baz]</ol><li>quz</ol>',
 		'<ol><li>foo</li><ol id=abc><li>[bar<li>baz]</ol><li>quz</ol>',
-		'<ol><li>foo</li><ol style=color:red><li>[bar<li>baz]</ol><li>quz</ol>',
+		'<ol><li>foo</li><ol style=color:blue><li>[bar<li>baz]</ol><li>quz</ol>',
 		'<ol><li>foo</li><ol style=text-indent:1em><li>[bar<li>baz]</ol><li>quz</ol>',
 
 		// List inside indentation element
@@ -3014,8 +3015,8 @@ var tests = {
 		'foo<em>b[a]r</em>baz',
 		'[foo<font>bar</font>baz]',
 		'foo<font>b[a]r</font>baz',
-		'[foo<font color=red>bar</font>baz]',
-		'foo<font color=red>b[a]r</font>baz',
+		'[foo<font color=blue>bar</font>baz]',
+		'foo<font color=blue>b[a]r</font>baz',
 		'[foo<i>bar</i>baz]',
 		'foo<i>b[a]r</i>baz',
 		'[foo<ins>bar</ins>baz]',
@@ -3059,7 +3060,7 @@ var tests = {
 		'[foo<img src=abc>bar]',
 		'[foo<video></video>bar]',
 		'[foo<video src=abc></video>bar]',
-		'[foo<svg><circle fill=red r=20 cx=20 cy=20 /></svg>bar]',
+		'[foo<svg><circle fill=blue r=20 cx=20 cy=20 /></svg>bar]',
 
 		// Unrecognized elements
 		'[foo<nonexistentelement>bar</nonexistentelement>baz]',
@@ -3074,8 +3075,8 @@ var tests = {
 		'foo<span class=foo>b[a]r</span>baz',
 		'[foo<b style="font-weight: normal">bar</b>baz]',
 		'foo<b style="font-weight: normal">b[a]r</b>baz',
-		'<p style="background-color: red">foo[bar]baz</p>',
-		'<p><span style="background-color: red">foo[bar]baz</span></p>',
+		'<p style="background-color: blue">foo[bar]baz</p>',
+		'<p><span style="background-color: blue">foo[bar]baz</span></p>',
 		'<p style="font-weight: bold">foo[bar]baz</p>',
 		'<b><p style="font-weight: bold">foo[bar]baz</p></b>',
 		'<p style="font-variant: small-caps">foo[bar]baz</p>',
@@ -3104,8 +3105,8 @@ var tests = {
 		'foo<u>[bar]</u>baz',
 		'foo<span style="text-decoration: underline">[bar]</span>baz',
 		'<u>foo[bar]baz</u>',
-		'<u>foo[b<span style="color:red">ar]ba</span>z</u>',
-		'<u>foo[b<span style="color:red" id=foo>ar]ba</span>z</u>',
+		'<u>foo[b<span style="color:blue">ar]ba</span>z</u>',
+		'<u>foo[b<span style="color:blue" id=foo>ar]ba</span>z</u>',
 		'<u>foo[b<span style="font-size:3em">ar]ba</span>z</u>',
 		'<u>foo[b<i>ar]ba</i>z</u>',
 		'<p style="text-decoration: underline">foo[bar]baz</p>',
@@ -3113,30 +3114,30 @@ var tests = {
 		'foo<s>[bar]</s>baz',
 		'foo<span style="text-decoration: line-through">[bar]</span>baz',
 		'<s>foo[bar]baz</s>',
-		'<s>foo[b<span style="color:red">ar]ba</span>z</s>',
-		'<s>foo[b<span style="color:red" id=foo>ar]ba</span>z</s>',
+		'<s>foo[b<span style="color:blue">ar]ba</span>z</s>',
+		'<s>foo[b<span style="color:blue" id=foo>ar]ba</span>z</s>',
 		'<s>foo[b<span style="font-size:3em">ar]ba</span>z</s>',
 		'<s>foo[b<i>ar]ba</i>z</s>',
 		'<p style="text-decoration: line-through">foo[bar]baz</p>',
 
 		'foo<strike>[bar]</strike>baz',
 		'<strike>foo[bar]baz</strike>',
-		'<strike>foo[b<span style="color:red">ar]ba</span>z</strike>',
-		'<strike>foo[b<span style="color:red" id=foo>ar]ba</span>z</strike>',
+		'<strike>foo[b<span style="color:blue">ar]ba</span>z</strike>',
+		'<strike>foo[b<span style="color:blue" id=foo>ar]ba</span>z</strike>',
 		'<strike>foo[b<span style="font-size:3em">ar]ba</span>z</strike>',
 		'<strike>foo[b<i>ar]ba</i>z</strike>',
 
 		'foo<ins>[bar]</ins>baz',
 		'<ins>foo[bar]baz</ins>',
-		'<ins>foo[b<span style="color:red">ar]ba</span>z</ins>',
-		'<ins>foo[b<span style="color:red" id=foo>ar]ba</span>z</ins>',
+		'<ins>foo[b<span style="color:blue">ar]ba</span>z</ins>',
+		'<ins>foo[b<span style="color:blue" id=foo>ar]ba</span>z</ins>',
 		'<ins>foo[b<span style="font-size:3em">ar]ba</span>z</ins>',
 		'<ins>foo[b<i>ar]ba</i>z</ins>',
 
 		'foo<del>[bar]</del>baz',
 		'<del>foo[bar]baz</del>',
-		'<del>foo[b<span style="color:red">ar]ba</span>z</del>',
-		'<del>foo[b<span style="color:red" id=foo>ar]ba</span>z</del>',
+		'<del>foo[b<span style="color:blue">ar]ba</span>z</del>',
+		'<del>foo[b<span style="color:blue" id=foo>ar]ba</span>z</del>',
 		'<del>foo[b<span style="font-size:3em">ar]ba</span>z</del>',
 		'<del>foo[b<i>ar]ba</i>z</del>',
 
@@ -3297,8 +3298,8 @@ var tests = {
 		'foo<u>[bar]</u>baz',
 		'foo<span style="text-decoration: underline">[bar]</span>baz',
 		'<u>foo[bar]baz</u>',
-		'<u>foo[b<span style="color:red">ar]ba</span>z</u>',
-		'<u>foo[b<span style="color:red" id=foo>ar]ba</span>z</u>',
+		'<u>foo[b<span style="color:blue">ar]ba</span>z</u>',
+		'<u>foo[b<span style="color:blue" id=foo>ar]ba</span>z</u>',
 		'<u>foo[b<span style="font-size:3em">ar]ba</span>z</u>',
 		'<u>foo[b<i>ar]ba</i>z</u>',
 		'<p style="text-decoration: underline">foo[bar]baz</p>',
@@ -3306,30 +3307,30 @@ var tests = {
 		'foo<s>[bar]</s>baz',
 		'foo<span style="text-decoration: line-through">[bar]</span>baz',
 		'<s>foo[bar]baz</s>',
-		'<s>foo[b<span style="color:red">ar]ba</span>z</s>',
-		'<s>foo[b<span style="color:red" id=foo>ar]ba</span>z</s>',
+		'<s>foo[b<span style="color:blue">ar]ba</span>z</s>',
+		'<s>foo[b<span style="color:blue" id=foo>ar]ba</span>z</s>',
 		'<s>foo[b<span style="font-size:3em">ar]ba</span>z</s>',
 		'<s>foo[b<i>ar]ba</i>z</s>',
 		'<p style="text-decoration: line-through">foo[bar]baz</p>',
 
 		'foo<strike>[bar]</strike>baz',
 		'<strike>foo[bar]baz</strike>',
-		'<strike>foo[b<span style="color:red">ar]ba</span>z</strike>',
-		'<strike>foo[b<span style="color:red" id=foo>ar]ba</span>z</strike>',
+		'<strike>foo[b<span style="color:blue">ar]ba</span>z</strike>',
+		'<strike>foo[b<span style="color:blue" id=foo>ar]ba</span>z</strike>',
 		'<strike>foo[b<span style="font-size:3em">ar]ba</span>z</strike>',
 		'<strike>foo[b<i>ar]ba</i>z</strike>',
 
 		'foo<ins>[bar]</ins>baz',
 		'<ins>foo[bar]baz</ins>',
-		'<ins>foo[b<span style="color:red">ar]ba</span>z</ins>',
-		'<ins>foo[b<span style="color:red" id=foo>ar]ba</span>z</ins>',
+		'<ins>foo[b<span style="color:blue">ar]ba</span>z</ins>',
+		'<ins>foo[b<span style="color:blue" id=foo>ar]ba</span>z</ins>',
 		'<ins>foo[b<span style="font-size:3em">ar]ba</span>z</ins>',
 		'<ins>foo[b<i>ar]ba</i>z</ins>',
 
 		'foo<del>[bar]</del>baz',
 		'<del>foo[bar]baz</del>',
-		'<del>foo[b<span style="color:red">ar]ba</span>z</del>',
-		'<del>foo[b<span style="color:red" id=foo>ar]ba</span>z</del>',
+		'<del>foo[b<span style="color:blue">ar]ba</span>z</del>',
+		'<del>foo[b<span style="color:blue" id=foo>ar]ba</span>z</del>',
 		'<del>foo[b<span style="font-size:3em">ar]ba</span>z</del>',
 		'<del>foo[b<i>ar]ba</i>z</del>',
 
@@ -3414,13 +3415,13 @@ tests.insertlinebreak = tests.insertparagraph;
 
 var defaultValues = {
 //@{
-	backcolor: "#FF8888",
+	backcolor: "#00FFFF",
 	createlink: "http://www.google.com/",
 	fontname: "sans-serif",
 	fontsize: "4",
-	forecolor: "#FF0000",
+	forecolor: "#0000FF",
 	formatblock: "<div>",
-	hilitecolor: "#FF8888",
+	hilitecolor: "#00FFFF",
 	inserthorizontalrule: "",
 	inserthtml: "ab<b>c</b>d",
 	insertimage: "/img/lion.svg",
@@ -3430,9 +3431,7 @@ var defaultValues = {
 
 var notes = {
 //@{
-	backcolor: '<strong>Note:</strong> No spec has yet been written, so the spec column does nothing.',
 	fontname: 'Note that the body\'s font-family is "serif".',
-	hilitecolor: 'In IE we run backColor instead of hiliteColor.',
 };
 //@}
 
@@ -3512,6 +3511,69 @@ function doSetup(selector, idx) {
 }
 //@}
 
+function queryOutputHelper(beforeIndeterm, beforeState, beforeValue, afterIndeterm, afterState, afterValue, command, value) {
+//@{
+	var frag = document.createDocumentFragment();
+	var beforeDiv = document.createElement("div");
+	var afterDiv = document.createElement("div");
+	frag.appendChild(beforeDiv);
+	frag.appendChild(afterDiv);
+	beforeDiv.className = afterDiv.className = "extra-results";
+	beforeDiv.textContent = "Before: ";
+	afterDiv.textContent = "After: ";
+
+	beforeDiv.appendChild(document.createElement("span"));
+	afterDiv.appendChild(document.createElement("span"));
+	if (afterIndeterm !== "Exception") {
+		afterDiv.lastChild.className =
+			!afterIndeterm
+				? "good-result"
+				: "bad-result";
+	}
+	beforeDiv.lastChild.textContent = "indeterm " + beforeIndeterm;
+	afterDiv.lastChild.textContent = "indeterm " + afterIndeterm;
+
+	beforeDiv.appendChild(document.createTextNode(", "));
+	afterDiv.appendChild(document.createTextNode(", "));
+
+	beforeDiv.appendChild(document.createElement("span"));
+	afterDiv.appendChild(document.createElement("span"));
+	if (beforeState !== "Exception" || afterState !== "Exception") {
+		beforeDiv.lastChild.className =
+		afterDiv.lastChild.className =
+			beforeState !== "Exception" && afterState !== "Exception" && beforeState === !afterState
+				? "good-result"
+				: "bad-result";
+	}
+	beforeDiv.lastChild.textContent = "state " + beforeState;
+	afterDiv.lastChild.textContent = "state " + afterState;
+
+	beforeDiv.appendChild(document.createTextNode(", "));
+	afterDiv.appendChild(document.createTextNode(", "));
+
+	// Hack to get highlighting working right for colors
+	if (command == "backcolor" || command == "forecolor" || command == "hilitecolor") {
+		if (/^([0-9a-fA-F]{3}){1,2}$/.test(value)) {
+			value = "#" + value;
+		}
+	}
+
+	beforeDiv.appendChild(document.createElement("span"));
+	afterDiv.appendChild(document.createElement("span"));
+	if (afterValue !== "Exception"
+	&& typeof value != "undefined") {
+		afterDiv.lastChild.className =
+			valuesEqual(command, afterValue, value)
+				? "good-result"
+				: "bad-result";
+	}
+	beforeDiv.lastChild.textContent = "value " + beforeValue;
+	afterDiv.lastChild.textContent = "value " + afterValue;
+
+	return frag;
+}
+//@}
+
 function doInputCell(tr, test) {
 //@{
 	var value = null;
@@ -3553,8 +3615,24 @@ function doSpecCell(tr, test, command, styleWithCss) {
 		}
 		specCell.firstChild.contentEditable = "true";
 		specCell.firstChild.spellcheck = false;
-		myExecCommand("styleWithCSS", false, styleWithCss);
+		myExecCommand("styleWithCSS", false, styleWithCss, range);
+
+		try { var beforeIndeterm = myQueryCommandIndeterm(command, range) }
+		catch(e) { beforeIndeterm = "Exception" }
+		try { var beforeState = myQueryCommandState(command, range) }
+		catch(e) { beforeState = "Exception" }
+		try { var beforeValue = myQueryCommandValue(command, range) }
+		catch(e) { beforeValue = "Exception" }
+
 		myExecCommand(command, false, value, range);
+
+		try { var afterIndeterm = myQueryCommandIndeterm(command, range) }
+		catch(e) { afterIndeterm = "Exception" }
+		try { var afterState = myQueryCommandState(command, range) }
+		catch(e) { afterState = "Exception" }
+		try { var afterValue = myQueryCommandValue(command, range) }
+		catch(e) { afterValue = "Exception" }
+
 		specCell.firstChild.contentEditable = "inherit";
 		specCell.firstChild.removeAttribute("spellcheck");
 		var compareDiv1 = specCell.firstChild.cloneNode(true);
@@ -3586,6 +3664,10 @@ function doSpecCell(tr, test, command, styleWithCss) {
 		}
 
 		specCell.lastChild.textContent = specCell.firstChild.innerHTML;
+		specCell.lastChild.appendChild(queryOutputHelper(
+			beforeIndeterm, beforeState, beforeValue,
+			afterIndeterm, afterState, afterValue,
+			command, value));
 	} catch (e) {
 		specCell.firstChild.contentEditable = "inherit";
 		specCell.firstChild.removeAttribute("spellcheck");

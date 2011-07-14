@@ -149,6 +149,16 @@ function valuesEqual(command, val1, val2) {
 			|| (val1.toLowerCase() == "normal" && val2 == "400")
 			|| (val2.toLowerCase() == "normal" && val1 == "400");
 	}
+
+	// This code path should probably only be hit by queryOutputHelper() in
+	// tests.js.  Anything else is most likely a bug.
+	if (command == "fontname" && /^[1-7]$/.test(val1)) {
+		val1 = [, "xx-small", "small", "medium", "large", "x-large", "xx-large", "xxx-large"][val1];
+	}
+	if (command == "fontname" && /^[1-7]$/.test(val2)) {
+		val2 = [, "xx-small", "small", "medium", "large", "x-large", "xx-large", "xxx-large"][val2];
+	}
+
 	var property = commands[command].relevantCssProperty;
 	var test1 = document.createElement("span");
 	test1.style[property] = val1;
@@ -479,38 +489,81 @@ function getAllContainedNodes(range, condition) {
 	return nodeList;
 }
 
-
+// Returns either null, or something of the form #xxxxxx, or the color itself
+// if it's a valid keyword.
 function parseSimpleColor(color) {
-	// This is stupid, but otherwise my automated tests will have places where
-	// they're known to contradict the spec, which is annoying, so . . . I
-	// don't aim for correctness, beyond my own provisional tests.  Real tests
-	// will have to be more exhaustive.
-
-	if (color.length == 7 && color[0] == "#") {
+	color = color.toLowerCase();
+	// Yay for Gecko allowing you to select a column of a table without
+	// selecting anything from other columns.
+	if (["aliceblue", "antiquewhite", "aqua", "aquamarine", "azure", "beige",
+	"bisque", "black", "blanchedalmond", "blue", "blueviolet", "brown",
+	"burlywood", "cadetblue", "chartreuse", "chocolate", "coral",
+	"cornflowerblue", "cornsilk", "crimson", "cyan", "darkblue", "darkcyan",
+	"darkgoldenrod", "darkgray", "darkgreen", "darkgrey", "darkkhaki",
+	"darkmagenta", "darkolivegreen", "darkorange", "darkorchid", "darkred",
+	"darksalmon", "darkseagreen", "darkslateblue", "darkslategray",
+	"darkslategrey", "darkturquoise", "darkviolet", "deeppink", "deepskyblue",
+	"dimgray", "dimgrey", "dodgerblue", "firebrick", "floralwhite",
+	"forestgreen", "fuchsia", "gainsboro", "ghostwhite", "gold", "goldenrod",
+	"gray", "green", "greenyellow", "grey", "honeydew", "hotpink", "indianred",
+	"indigo", "ivory", "khaki", "lavender", "lavenderblush", "lawngreen",
+	"lemonchiffon", "lightblue", "lightcoral", "lightcyan",
+	"lightgoldenrodyellow", "lightgray", "lightgreen", "lightgrey",
+	"lightpink", "lightsalmon", "lightseagreen", "lightskyblue",
+	"lightslategray", "lightslategrey", "lightsteelblue", "lightyellow",
+	"lime", "limegreen", "linen", "magenta", "maroon", "mediumaquamarine",
+	"mediumblue", "mediumorchid", "mediumpurple", "mediumseagreen",
+	"mediumslateblue", "mediumspringgreen", "mediumturquoise",
+	"mediumvioletred", "midnightblue", "mintcream", "mistyrose", "moccasin",
+	"navajowhite", "navy", "oldlace", "olive", "olivedrab", "orange",
+	"orangered", "orchid", "palegoldenrod", "palegreen", "paleturquoise",
+	"palevioletred", "papayawhip", "peachpuff", "peru", "pink", "plum",
+	"powderblue", "purple", "red", "rosybrown", "royalblue", "saddlebrown",
+	"salmon", "sandybrown", "seagreen", "seashell", "sienna", "silver",
+	"skyblue", "slateblue", "slategray", "slategrey", "snow", "springgreen",
+	"steelblue", "tan", "teal", "thistle", "tomato", "turquoise", "violet",
+	"wheat", "white", "whitesmoke", "yellow", "yellowgreen"].indexOf(color) != -1) {
 		return color;
 	}
 
-	if (color.length == 4 && color[0] == "#") {
-		return "#" + color[1] + color[1] + color[2] + color[2] + color[3] + color[3];
+	var outerSpan = document.createElement("span");
+	document.body.appendChild(outerSpan);
+	outerSpan.style.color = "black";
+
+	var innerSpan = document.createElement("span");
+	outerSpan.appendChild(innerSpan);
+	innerSpan.style.color = color;
+	color = getComputedStyle(innerSpan).color;
+
+	if (color == "rgb(0, 0, 0)") {
+		// Maybe it's really black, maybe it's invalid.
+		outerSpan.color = "white";
+		color = getComputedStyle(innerSpan).color;
+		if (color == "rgb(0, 0, 0)") {
+			return null;
+		}
 	}
 
-	// Otherwise, don't even try.
-	return {
-		"red": "red",
-		"blue": "blue",
-		"rgb(255, 0, 0)": "#ff0000",
-		"rgb(100%, 0, 0)": "#ff0000",
-		"rgb( 255 ,0 ,0)": "#ff0000",
-		"rgba(255, 0, 0, 0.0)": false,
-		"rgb(375, -10, 15)": false,
-		"rgba(0, 0, 0, 1)": "#000000",
-		"rgba(255, 255, 255, 1)": "#ffffff",
-		"rgba(255, 0, 0, 0.5)": false,
-		"hsl(0%, 100%, 50%)": "#ff0000",
-		"cornsilk": "cornsilk",
-		"transparent": false,
-		"currentColor": false,
-	}[color];
+	document.body.removeChild(outerSpan);
+
+	if (/^rgba\([0-9]+, [0-9]+, [0-9]+, 1\)$/.test(color)) {
+		// IE10PP2 seems to do this sometimes.
+		color = color.replace("rgba", "rgb").replace(", 1)", ")");
+	}
+	// I rely on the fact that browsers generally provide consistent syntax for
+	// getComputedStyle(), although it's not standardized.  In particular, they
+	// seem to clamp the components to integers between 0 and 255, and use
+	// consistent spacing, and always return rgb() syntax.  (Firefox 7.0a2
+	// sometimes returns "transparent", but we need to return null then
+	// anyway.)
+	var matches = /^rgb\(([0-9]+), ([0-9]+), ([0-9]+)\)$/.exec(color);
+	if (matches) {
+		return "#"
+			+ parseInt(matches[1]).toString(16).replace(/^.$/, "0$&")
+			+ parseInt(matches[2]).toString(16).replace(/^.$/, "0$&")
+			+ parseInt(matches[3]).toString(16).replace(/^.$/, "0$&");
+	}
+	return null;
 }
 
 //@}
@@ -642,6 +695,11 @@ function myQueryCommandState(command, range) {
 		return false;
 	}
 
+	// "If the state override for command is set, return it."
+	if (typeof getStateOverride(command) != "undefined") {
+		return getStateOverride(command);
+	}
+
 	// "Return true if command's state is true, otherwise false."
 	return commands[command].state();
 }
@@ -670,6 +728,11 @@ function myQueryCommandValue(command, range) {
 	// "If command is not enabled, return the empty string."
 	if (!myQueryCommandEnabled(command, range)) {
 		return "";
+	}
+
+	// "If the value override for command is set, return it."
+	if (typeof getValueOverride(command) != "undefined") {
+		return getValueOverride(command);
 	}
 
 	// "Return command's value."
@@ -938,6 +1001,72 @@ function getActiveRange() {
 	}
 	return ret;
 }
+
+// "For some commands, each HTMLDocument must have a boolean state override
+// and/or a string value override. These do not change the command's state or
+// value, but change the way some algorithms behave, as specified in those
+// algorithms' definitions. Initially, both must be unset for every command.
+// Whenever the number of ranges in the Selection changes to something
+// different, and whenever a boundary point of the range at a given index in
+// the Selection changes to something different, the state override and value
+// override must be unset for every command."
+//
+// We implement this crudely by using setters and getters.  To verify that the
+// selection hasn't changed, we copy the active range and just check the
+// endpoints match.  This isn't really correct, but it's good enough for us.
+// Unset state/value overrides are undefined.  We put everything in a function
+// so no one can access anything except via the provided functions, since
+// otherwise callers might mistakenly use outdated overrides (if the selection
+// has changed).
+var getStateOverride, setStateOverride, unsetStateOverride,
+	getValueOverride, setValueOverride, unsetValueOverride;
+(function() {
+	var stateOverrides = {};
+	var valueOverrides = {};
+	var storedRange = null;
+
+	function resetOverrides() {
+		if (!storedRange
+		|| storedRange.startContainer != getActiveRange().startContainer
+		|| storedRange.endContainer != getActiveRange().endContainer
+		|| storedRange.startOffset != getActiveRange().startOffset
+		|| storedRange.endOffset != getActiveRange().endOffset) {
+			stateOverrides = {};
+			valueOverrides = {};
+			storedRange = getActiveRange().cloneRange();
+		}
+	}
+
+	getStateOverride = function(command) {
+		resetOverrides();
+		return stateOverrides[command];
+	};
+
+	setStateOverride = function(command, newState) {
+		resetOverrides();
+		stateOverrides[command] = newState;
+	};
+
+	unsetStateOverride = function(command) {
+		resetOverrides();
+		delete stateOverrides[command];
+	}
+
+	getValueOverride = function(command) {
+		resetOverrides();
+		return valueOverrides[command];
+	}
+
+	setValueOverride = function(command, newValue) {
+		resetOverrides();
+		valueOverrides[command] = newValue;
+	}
+
+	unsetValueOverride = function(command) {
+		resetOverrides();
+		delete valueOverrides[command];
+	}
+})();
 //@}
 
 /////////////////////////////
@@ -2482,16 +2611,13 @@ function forceValue(node, command, newValue) {
 
 		// "If command is "foreColor", and new value is fully opaque with red,
 		// green, and blue components in the range 0 to 255:"
-		//
-		// Not going to do this properly, only well enough to pass tests.
 		if (command == "forecolor" && parseSimpleColor(newValue)) {
 			// "Let new parent be the result of calling createElement("font")
 			// on the ownerDocument of node."
 			newParent = node.ownerDocument.createElement("font");
 
-			// "If new value is one of the colors listed in the SVG color
-			// keywords section of CSS3 Color, set the color attribute of new
-			// parent to new value."
+			// "If new value is an extended color keyword, set the color
+			// attribute of new parent to new value."
 			//
 			// "Otherwise, set the color attribute of new parent to the result
 			// of applying the rules for serializing simple color values to new
@@ -2697,6 +2823,51 @@ function forceValue(node, command, newValue) {
 //@{
 
 function setSelectionValue(command, newValue) {
+	// "If there is no editable text node effectively contained in the active
+	// range:"
+	if (!getAllEffectivelyContainedNodes(getActiveRange())
+	.filter(function(node) { return node.nodeType == Node.TEXT_NODE})
+	.some(isEditable)) {
+		// "If command is in the following list, set the state override
+		// appropriately:"
+		switch (command) {
+			// "bold: True if new value is not null and is greater than or
+			// equal to 600, false otherwise."
+			case "bold": setStateOverride(command, newValue === "bold"); break;
+
+			// "italic: True if new value is "italic" or "oblique", false
+			// otherwise."
+			case "italic": setStateOverride(command, newValue === "italic"); break;
+
+			// "strikethrough: True if new value is "line-through", false
+			// otherwise."
+			case "strikethrough": setStateOverride(command, newValue === "line-through"); break;
+
+			// "subscript: True if new value is "sub", false otherwise."
+			case "subscript": setStateOverride(command, newValue === "sub"); break;
+
+			// "superscript: True if new value is "super", false otherwise."
+			case "superscript": setStateOverride(command, newValue === "super"); break;
+
+			// "underline: True if new value is "underline", false otherwise."
+			case "underline": setStateOverride(command, newValue === "underline");
+		}
+
+		// "If command has a value specified, unset the value override if new
+		// value is null, and set the value override to new value if it is not
+		// null."
+		if ("value" in commands[command]) {
+			if (newValue === null) {
+				unsetValueOverride(command);
+			} else {
+				setValueOverride(command, newValue);
+			}
+		}
+
+		// "Abort these steps."
+		return;
+	}
+
 	// "If the active range's start node is an editable Text node, and its
 	// start offset is neither zero nor its start node's length, call
 	// splitText() on the active range's start node, with argument equal to the
@@ -2764,6 +2935,8 @@ function setSelectionValue(command, newValue) {
 commands.backcolor = {
 	// Copy-pasted, same as hiliteColor
 	action: function(value) {
+		// Action is further copy-pasted, same as foreColor
+
 		// "If value is not a valid CSS color, prepend "#" to it."
 		//
 		// "If value is still not a valid CSS color, or if it is currentColor,
@@ -2773,12 +2946,9 @@ commands.backcolor = {
 		if (/^([0-9a-fA-F]{3}){1,2}$/.test(value)) {
 			value = "#" + value;
 		}
-		if (!/^#([0-9a-fA-F]{3}){1,2}$/.test(value)
-		&& !/^(rgba?|hsla?)\(.*\)$/.test(value)
-		// Not gonna list all the keywords, only the ones I use.
-		&& value != "red"
-		&& value != "cornsilk"
-		&& value != "transparent") {
+		if (!/^(rgba?|hsla?)\(.*\)$/.test(value)
+		&& !parseSimpleColor(value)
+		&& value.toLowerCase() != "transparent") {
 			throw "SYNTAX_ERR";
 		}
 
@@ -2796,12 +2966,20 @@ commands.backcolor = {
 			return arr.slice(0, i).indexOf(value) == -1;
 		}).length >= 2;
 	}, value: function() {
-		// "The effective command value of the active range's start node."
+		// "The effective command value of the first editable Text node that is
+		// effectively contained in the active range, or if there is no such
+		// node, the effective command value of the active range's start node."
 		//
 		// Opera uses a different format, so let's be nice and support that for
 		// the time being (since all this resolved value stuff is underdefined
 		// anyway).
-		var value = getEffectiveCommandValue(getActiveRange().startContainer, "backcolor");
+		var node = getAllEffectivelyContainedNodes(getActiveRange(), function(node) {
+			return isEditable(node) && node.nodeType == Node.TEXT_NODE;
+		})[0];
+		if (node === undefined) {
+			node = getActiveRange().startContainer;
+		}
+		var value = getEffectiveCommandValue(node, "backcolor");
 		if (/^#[0-9a-f]{6}$/.test(value)) {
 			value = "rgb(" + parseInt(value.slice(1, 3), 16)
 				+ "," + parseInt(value.slice(3, 5), 16)
@@ -2816,12 +2994,12 @@ commands.backcolor = {
 //@{
 commands.bold = {
 	action: function() {
-		// "If the state is false, set the selection's value to "bold",
-		// otherwise set the selection's value to "normal"."
-		if (!commands.bold.state()) {
-			setSelectionValue("bold", "bold");
-		} else {
+		// "If queryCommandState("bold") returns true, set the selection's
+		// value to "normal". Otherwise set the selection's value to "bold"."
+		if (myQueryCommandState("bold", getActiveRange())) {
 			setSelectionValue("bold", "normal");
+		} else {
+			setSelectionValue("bold", "bold");
 		}
 	}, indeterm: function() { return indetermHelper(function(node) {
 		// "True if among editable Text nodes that are effectively contained in
@@ -2897,8 +3075,16 @@ commands.fontname = {
 			return arr.slice(0, i).indexOf(value) == -1;
 		}).length >= 2;
 	}, value: function() {
-		// "The effective command value of the active range's start node."
-		return getEffectiveCommandValue(getActiveRange().startContainer, "fontname");
+		// "The effective command value of the first editable Text node that is
+		// effectively contained in the active range, or if there is no such
+		// node, the effective command value of the active range's start node."
+		var node = getAllEffectivelyContainedNodes(getActiveRange(), function(node) {
+			return isEditable(node) && node.nodeType == Node.TEXT_NODE;
+		})[0];
+		if (node === undefined) {
+			node = getActiveRange().startContainer;
+		}
+		return getEffectiveCommandValue(node, "fontname");
 	}, relevantCssProperty: "fontFamily"
 };
 
@@ -3002,9 +3188,18 @@ commands.fontsize = {
 			return arr.slice(0, i).indexOf(value) == -1;
 		}).length >= 2;
 	}, value: function() {
-		// "Let pixel size be the effective command value of the active range's
-		// start node, as a number of pixels."
-		var pixelSize = parseInt(getEffectiveCommandValue(getActiveRange().startContainer, "fontsize"));
+		// "Let pixel size be the effective command value of the first editable
+		// Text node that is effectively contained in the active range, or if
+		// there is no such node, the effective command value of the active
+		// range's start node, in either case interpreted as a number of
+		// pixels."
+		var node = getAllEffectivelyContainedNodes(getActiveRange(), function(node) {
+			return isEditable(node) && node.nodeType == Node.TEXT_NODE;
+		})[0];
+		if (node === undefined) {
+			node = getActiveRange().startContainer;
+		}
+		var pixelSize = parseInt(getEffectiveCommandValue(node, "fontsize"));
 
 		// "Let returned size be 1."
 		var returnedSize = 1;
@@ -3048,7 +3243,7 @@ commands.fontsize = {
 //@{
 commands.forecolor = {
 	action: function(value) {
-		// Copy-pasted, same as hiliteColor
+		// Copy-pasted, same as backColor and hiliteColor
 
 		// "If value is not a valid CSS color, prepend "#" to it."
 		//
@@ -3059,12 +3254,9 @@ commands.forecolor = {
 		if (/^([0-9a-fA-F]{3}){1,2}$/.test(value)) {
 			value = "#" + value;
 		}
-		if (!/^#([0-9a-fA-F]{3}){1,2}$/.test(value)
-		&& !/^(rgba?|hsla?)\(.*\)$/.test(value)
-		// Not gonna list all the keywords, only the ones I use.
-		&& value != "red"
-		&& value != "cornsilk"
-		&& value != "transparent") {
+		if (!/^(rgba?|hsla?)\(.*\)$/.test(value)
+		&& !parseSimpleColor(value)
+		&& value.toLowerCase() != "transparent") {
 			throw "SYNTAX_ERR";
 		}
 
@@ -3082,12 +3274,20 @@ commands.forecolor = {
 			return arr.slice(0, i).indexOf(value) == -1;
 		}).length >= 2;
 	}, value: function() {
-		// "The effective command value of the active range's start node."
+		// "The effective command value of the first editable Text node that is
+		// effectively contained in the active range, or if there is no such
+		// node, the effective command value of the active range's start node."
 		//
 		// Opera uses a different format, so let's be nice and support that for
 		// the time being (since all this resolved value stuff is underdefined
 		// anyway).
-		var value = getEffectiveCommandValue(getActiveRange().startContainer, "forecolor");
+		var node = getAllEffectivelyContainedNodes(getActiveRange(), function(node) {
+			return isEditable(node) && node.nodeType == Node.TEXT_NODE;
+		})[0];
+		if (node === undefined) {
+			node = getActiveRange().startContainer;
+		}
+		var value = getEffectiveCommandValue(node, "forecolor");
 		if (/^#[0-9a-f]{6}$/.test(value)) {
 			value = "rgb(" + parseInt(value.slice(1, 3), 16)
 				+ "," + parseInt(value.slice(3, 5), 16)
@@ -3101,8 +3301,9 @@ commands.forecolor = {
 ///// The hiliteColor command /////
 //@{
 commands.hilitecolor = {
+	// Copy-pasted, same as backColor
 	action: function(value) {
-		// Copy-pasted, same as foreColor
+		// Action is further copy-pasted, same as foreColor
 
 		// "If value is not a valid CSS color, prepend "#" to it."
 		//
@@ -3113,12 +3314,9 @@ commands.hilitecolor = {
 		if (/^([0-9a-fA-F]{3}){1,2}$/.test(value)) {
 			value = "#" + value;
 		}
-		if (!/^#([0-9a-fA-F]{3}){1,2}$/.test(value)
-		&& !/^(rgba?|hsla?)\(.*\)$/.test(value)
-		// Not gonna list all the keywords, only the ones I use.
-		&& value != "red"
-		&& value != "cornsilk"
-		&& value != "transparent") {
+		if (!/^(rgba?|hsla?)\(.*\)$/.test(value)
+		&& !parseSimpleColor(value)
+		&& value.toLowerCase() != "transparent") {
 			throw "SYNTAX_ERR";
 		}
 
@@ -3136,12 +3334,20 @@ commands.hilitecolor = {
 			return arr.slice(0, i).indexOf(value) == -1;
 		}).length >= 2;
 	}, value: function() {
-		// "The effective command value of the active range's start node."
+		// "The effective command value of the first editable Text node that is
+		// effectively contained in the active range, or if there is no such
+		// node, the effective command value of the active range's start node."
 		//
 		// Opera uses a different format, so let's be nice and support that for
 		// the time being (since all this resolved value stuff is underdefined
 		// anyway).
-		var value = getEffectiveCommandValue(getActiveRange().startContainer, "hilitecolor");
+		var node = getAllEffectivelyContainedNodes(getActiveRange(), function(node) {
+			return isEditable(node) && node.nodeType == Node.TEXT_NODE;
+		})[0];
+		if (node === undefined) {
+			node = getActiveRange().startContainer;
+		}
+		var value = getEffectiveCommandValue(node, "hilitecolor");
 		if (/^#[0-9a-f]{6}$/.test(value)) {
 			value = "rgb(" + parseInt(value.slice(1, 3), 16)
 				+ "," + parseInt(value.slice(3, 5), 16)
@@ -3156,12 +3362,12 @@ commands.hilitecolor = {
 //@{
 commands.italic = {
 	action: function() {
-		// "If the state is false, set the selection's value to "italic",
-		// otherwise set the selection's value to "normal"."
-		if (!commands.italic.state()) {
-			setSelectionValue("italic", "italic");
-		} else {
+		// "If queryCommandState("italic") returns true, set the selection's
+		// value to "normal". Otherwise set the selection's value to "italic"."
+		if (myQueryCommandState("italic", getActiveRange())) {
 			setSelectionValue("italic", "normal");
+		} else {
+			setSelectionValue("italic", "italic");
 		}
 	}, indeterm: function() { return indetermHelper(function(node) {
 		// "True if among editable Text nodes that are effectively contained in
@@ -3286,12 +3492,13 @@ commands.removeformat = {
 //@{
 commands.strikethrough = {
 	action: function() {
-		// "If the state is false, set the selection's value to "line-through",
-		// otherwise set the selection's value to null."
-		if (!commands.strikethrough.state()) {
-			setSelectionValue("strikethrough", "line-through");
-		} else {
+		// "If queryCommandState("strikethrough") returns true, set the
+		// selection's value to null. Otherwise set the selection's value to
+		// "line-through"."
+		if (myQueryCommandState("strikethrough", getActiveRange())) {
 			setSelectionValue("strikethrough", null);
+		} else {
+			setSelectionValue("strikethrough", "line-through");
 		}
 	}, indeterm: function() { return indetermHelper(function(node) {
 		// "True if among editable Text nodes that are effectively contained in
@@ -3312,8 +3519,8 @@ commands.strikethrough = {
 //@{
 commands.subscript = {
 	action: function() {
-		// "Let state be the state."
-		var state = commands.subscript.state();
+		// "Call queryCommandState("subscript"), and let state be the result."
+		var state = myQueryCommandState("subscript", getActiveRange());
 
 		// "Set the selection's value to "baseline"."
 		setSelectionValue("subscript", "baseline");
@@ -3348,8 +3555,9 @@ commands.subscript = {
 //@{
 commands.superscript = {
 	action: function() {
-		// "Let state be the state."
-		var state = commands.superscript.state();
+		// "Call queryCommandState("superscript"), and let state be the
+		// result."
+		var state = myQueryCommandState("superscript", getActiveRange());
 
 		// "Set the selection's value to "baseline"."
 		setSelectionValue("superscript", "baseline");
@@ -3385,12 +3593,12 @@ commands.superscript = {
 //@{
 commands.underline = {
 	action: function() {
-		// "If the state is false, set the selection's value to "underline",
-		// otherwise set the selection's value to null."
-		if (!commands.underline.state()) {
-			setSelectionValue("underline", "underline");
-		} else {
+		// "If queryCommandState("underline") returns true, set the selection's
+		// value to null. Otherwise set the selection's value to "underline"."
+		if (myQueryCommandState("underline", getActiveRange())) {
 			setSelectionValue("underline", null);
+		} else {
+			setSelectionValue("underline", "underline");
 		}
 	}, indeterm: function() { return indetermHelper(function(node) {
 		// "True if among editable Text nodes that are effectively contained in

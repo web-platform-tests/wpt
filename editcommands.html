@@ -60,7 +60,7 @@ dl.compact > dd + dd::before {
 <body class=draft>
 <div class=head id=head>
 <h1>HTML Editing Commands</h1>
-<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-13-july-2011>Work in Progress &mdash; Last Update 13 July 2011</h2>
+<h2 class="no-num no-toc" id=work-in-progress-&mdash;-last-update-14-july-2011>Work in Progress &mdash; Last Update 14 July 2011</h2>
 <dl>
  <dt>Editor
  <dd>Aryeh Gregor &lt;<a href=mailto:ayg@aryeh.name>ayg@aryeh.name</a>&gt;
@@ -658,6 +658,9 @@ invoked, the user agent must run the following steps:
 
   <li>If <var title="">command</var> is not <a href=#enabled>enabled</a>, return false.
 
+  <li>If the <a href=#state-override>state override</a> for <var title="">command</var> is set, return
+  it.
+
   <li>Return true if <var title="">command</var>'s <a href=#state>state</a> is true, otherwise
   false.
 </ol>
@@ -694,11 +697,35 @@ invoked, the user agent must run the following steps:
   seems to return the string "false", and IE9 seems to return boolean false.
   -->
 
+  <li>If the <a href=#value-override>value override</a> for <var title="">command</var> is set, return
+  it.
+
   <li>Return <var title="">command</var>'s <a href=#value>value</a>.
 </ol>
 
 <p>All of these methods must treat their <var title="">command</var> argument <a class=external data-anolis-spec=domcore href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#ascii-case-insensitive title="ASCII case-insensitive">ASCII
 case-insensitively</a>.
+
+<p>The methods in this section have been designed so that the following
+invariants hold after <code><a href=#execcommand()>execCommand()</a></code> is called, assuming it didn't
+throw an exception:
+
+<ul>
+  <li><code><a href=#querycommandindeterm()>queryCommandIndeterm()</a></code> will return false (or throw an
+  exception).
+
+  <li><code><a href=#querycommandstate()>queryCommandState()</a></code> will return the opposite of what it did
+  before <code><a href=#execcommand()>execCommand()</a></code> was called (or throw an exception).
+
+  <li><code><a href=#querycommandvalue()>queryCommandValue()</a></code> will return something equivalent to the
+  value passed to <code><a href=#execcommand()>execCommand()</a></code> (or throw an exception).
+  "Equivalent" here needs to be construed broadly in some cases, such as
+  <a href=#the-fontsize-command>the <code title="">fontSize</code> command</a>.
+</ul>
+
+<p>The first two points do not always hold for <a href=#the-strikethrough-command>the <code title="">strikethrough</code> command</a> or <a href=#the-underline-command>the <code title="">underline</code> command</a>, because it can be impossible to unset
+text-decoration in CSS, but all three points otherwise hold in all cases
+barring bugs.
 
 
 <h2 id=common-definitions><span class=secno>5 </span>Common definitions</h2>
@@ -823,6 +850,17 @@ affect all ranges.  But I'll leave this for later. -->
 with it, which must initially be false.  (<a href=#the-stylewithcss-command>The <code title="">styleWithCSS</code> command</a> can be used to modify or query it, by
 means of the <code><a href=#execcommand()>execCommand()</a></code> and <code><a href=#querycommandstate()>queryCommandState()</a></code>
 methods.)
+
+<p>For some <a href=#command title=command>commands</a>, each <code class=external data-anolis-spec=html><a href=http://www.whatwg.org/html/#htmldocument>HTMLDocument</a></code> must
+have a boolean <dfn id=state-override>state override</dfn> and/or a string <dfn id=value-override>value
+override</dfn>.  These do not change the <a href=#command>command</a>'s
+<a href=#state>state</a> or <a href=#value>value</a>, but change the way some algorithms
+behave, as specified in those algorithms' definitions.  Initially, both must be
+unset for every <a href=#command>command</a>.  Whenever the number of <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>ranges</a> in the
+<code class=external data-anolis-spec=domrange><a href=http://html5.org/specs/dom-range.html#selection>Selection</a></code> changes to something different, and whenever a <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point title=concept-boundary-point>boundary point</a>
+of the <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range title=concept-range>range</a> at a given index in the <code class=external data-anolis-spec=domrange><a href=http://html5.org/specs/dom-range.html#selection>Selection</a></code> changes to something
+different, the <a href=#state-override>state override</a> and <a href=#value-override>value override</a> must
+be unset for every <a href=#command>command</a>.
 
 <p>When the user agent is instructed to run a particular method, it must follow
 the steps defined for that method in the appropriate specification, not act as
@@ -1961,14 +1999,18 @@ different value.
 
     <li>If <var title="">command</var> is "foreColor", and <var title="">new value</var> is fully
     opaque with red, green, and blue components in the range 0 to 255:
+    <!-- See comment for foreColor for discussion. -->
+
+    <p class=XXX>Check this more carefully for what happens if the components
+    are not integers or are out-of-range.
 
     <ol>
       <li>Let <var title="">new parent</var> be the result of calling <code class=external data-anolis-spec=domcore title=dom-Document-createElement><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-document-createelement>createElement("font")</a></code> on the
       <code class=external data-anolis-spec=domcore title=dom-Node-ownerDocument><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-node-ownerdocument>ownerDocument</a></code> of <var title="">node</var>.
 
-      <li>If <var title="">new value</var> is one of the colors listed in the SVG color
-      keywords section of CSS3 Color, set the <code class=external data-anolis-spec=html title=dom-font-color><a href=http://www.whatwg.org/html/#dom-font-color>color</a></code> attribute of
-      <var title="">new parent</var> to <var title="">new value</var>.
+      <li>If <var title="">new value</var> is an <a href=http://www.w3.org/TR/css3-color/#svg-color>extended color
+      keyword</a>, set the <code class=external data-anolis-spec=html title=dom-font-color><a href=http://www.whatwg.org/html/#dom-font-color>color</a></code> attribute of <var title="">new parent</var> to
+      <var title="">new value</var>.
 
       <li>Otherwise, set the <code class=external data-anolis-spec=html title=dom-font-color><a href=http://www.whatwg.org/html/#dom-font-color>color</a></code> attribute of <var title="">new parent</var>
       to the result of applying the <a class=external data-anolis-spec=html href=http://www.whatwg.org/html/#rules-for-serializing-simple-color-values>rules for
@@ -2197,6 +2239,39 @@ as desired.
 <ol>
   <li>Let <var title="">command</var> be the current <a href=#command>command</a>.
 
+  <li>If there is no <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node <a href=#effectively-contained>effectively
+  contained</a> in the <a href=#active-range>active range</a>:
+
+  <ol>
+    <li>If <var title="">command</var> is in the following list, set the <a href=#state-override>state
+    override</a> appropriately:
+
+    <dl class=compact>
+      <dt>bold<dd>True if <var title="">new value</var> is not null and is greater than or equal
+      to 600, false otherwise.
+
+      <dt>italic<dd>True if <var title="">new value</var> is "italic" or "oblique", false
+      otherwise.
+
+      <dt>strikethrough<dd>True if <var title="">new value</var> is "line-through", false otherwise.
+
+      <dt>subscript<dd>True if <var title="">new value</var> is "sub", false otherwise.
+
+      <dt>superscript<dd>True if <var title="">new value</var> is "super", false otherwise.
+
+      <dt>underline<dd>True if <var title="">new value</var> is "underline", false otherwise.
+    </dl>
+
+    <li>If <var title="">command</var> has a <a href=#value>value</a> specified, unset the
+    <a href=#value-override>value override</a> if <var title="">new value</var> is null, and set the
+    <a href=#value-override>value override</a> to <var title="">new value</var> if it is not null.
+
+    <p class=XXX>This doesn't work as-is for fontSize, because that uses a
+    different format for the value.
+
+    <li>Abort these steps.
+  </ol>
+
   <li>If the <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a> is an
   <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node, and its <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-offset title=concept-boundary-point-offset>offset</a> is neither zero
   nor its <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-node-length title=concept-node-length>length</a>, call <code class=external data-anolis-spec=domcore title=dom-Text-splitText><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#dom-text-splittext>splitText()</a></code> on the <a href=#active-range>active
@@ -2324,11 +2399,15 @@ nodes that are <a href=#effectively-contained>effectively contained</a> in the <
 range</a>, there are two that have distinct <a href=#effective-command-value title="effective command
 value">effective command values</a>.  Otherwise false.
 
-<p><a href=#value>Value</a>: The <a href=#effective-command-value>effective command value</a> of the
-<a href=#active-range>active range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>.
+<p><a href=#value>Value</a>: The <a href=#effective-command-value>effective command value</a> of the first
+<a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node that is <a href=#effectively-contained>effectively contained</a>
+in the <a href=#active-range>active range</a>, or if there is no such node, the
+<a href=#effective-command-value>effective command value</a> of the <a href=#active-range>active range</a>'s
+<a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>.
 
-<p class=note>This cannot be null, since the boundary point node of a selection
-must always be either an element or a text node that's the child of an element.
+<p class=note>The effective command value of the active range's start node
+cannot be null, since the boundary point node of a selection must always be
+either an element or a text node that's the child of an element.
 
 <p><a href=#relevant-css-property>Relevant CSS property</a>: "background-color"
 
@@ -2341,9 +2420,9 @@ one else does it, so I don't do it.  It's a similar story for similar commands
 (fontName, italic, etc.).  Except not for strikethrough, where it just does
 nothing if the selection is empty.  Why strikethrough?  I don't know. -->
 
-<p><a href=#action>Action</a>: If the <a href=#state>state</a> is false, <a href="#set-the-selection's-value">set the
-selection's value</a> to "bold", otherwise <a href="#set-the-selection's-value">set the selection's
-value</a> to "normal".
+<p><a href=#action>Action</a>: If <code title=queryCommandState()><a href=#querycommandstate()>queryCommandState("bold")</a></code> returns true,
+<a href="#set-the-selection's-value">set the selection's value</a> to "normal".  Otherwise <a href="#set-the-selection's-value">set the
+selection's value</a> to "bold".
 
 <p><a href=#indeterminate>Indeterminate</a>: True if among <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code>
 nodes that are <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active
@@ -2440,15 +2519,7 @@ don't either. -->
   <li><a href="#set-the-selection's-value">Set the selection's value</a> to <var title="">value</var>.
 </ol>
 
-<!--
-The state is always false in Chrome 14 dev and Opera 11.11.  Firefox 6.0a2
-throws an exception, and IE9 seems to always either return false or throw an
-exception.  Therefore we make the state always false, although this doesn't
-seem very useful.
--->
-
-<!-- I'd have expected the value to be the URL, but guess not: it's always
-false. -->
+<p class=XXX>Define state and value, although browsers don't.
 
 
 <h3 id=the-fontname-command><span class=secno>7.10 </span><dfn>The <code title="">fontName</code> command</dfn></h3>
@@ -2482,12 +2553,17 @@ range</a>, there are two that have distinct <a href=#effective-command-value tit
 value">effective command values</a>.  Otherwise false.
 <!-- This follows Firefox 6.0a2.  Chrome 14 dev always returns false. -->
 
-<p><a href=#value>Value</a>: The <a href=#effective-command-value>effective command value</a> of the
-<a href=#active-range>active range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>.
+<p><a href=#value>Value</a>: The <a href=#effective-command-value>effective command value</a> of the first
+<a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node that is <a href=#effectively-contained>effectively contained</a>
+in the <a href=#active-range>active range</a>, or if there is no such node, the
+<a href=#effective-command-value>effective command value</a> of the <a href=#active-range>active range</a>'s
+<a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>.
 
-<p class=note>This cannot be null, since the boundary point node of a selection
-must always be either an element or a text node that's the child of an element.
-<!-- Complicated.
+<p class=note>The effective command value of the active range's start node
+cannot be null, since the boundary point node of a selection must always be
+either an element or a text node that's the child of an element.
+<!--
+Complicated.
 
 IE 9 RC: Always the empty string.  Not very useful.
 Firefox 4b11: Confusing.  Sometimes it returns generic family names, like
@@ -2502,7 +2578,10 @@ Opera 11: Returns the literal value of font-family, except if it's inherited
 
 I'm just going to punt on this and say it should be the resolved value of
 font-family.  I'll leave CSSOM to decide what that means if there are no
-applicable style rules. -->
+applicable style rules.
+
+For deciding which node should be checked, see comment for hiliteColor.
+-->
 
 <p><a href=#relevant-css-property>Relevant CSS property</a>: "font-family"
 
@@ -2644,11 +2723,16 @@ browsers behave differently.  I see no reason to behave differently.
 -->
 <ol>
   <li>Let <var title="">pixel size</var> be the <a href=#effective-command-value>effective command value</a> of
-  the <a href=#active-range>active range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>, as a number of pixels.
+  the first <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node that is <a href=#effectively-contained>effectively
+  contained</a> in the <a href=#active-range>active range</a>, or if there is no such
+  node, the <a href=#effective-command-value>effective command value</a> of the <a href=#active-range>active
+  range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>, in either case interpreted as a number of
+  pixels.
+  <!-- See comment for hiliteColor on how I decided on this choice of node. -->
 
-  <p class=note>The active range's start node cannot be null, since the
-  boundary point node of a selection must always be either an element or a text
-  node that's the child of an element.
+  <p class=note>The effective command value of the active range's start node
+  cannot be null, since the boundary point node of a selection must always be
+  either an element or a text node that's the child of an element.
 
   <li>Let <var title="">returned size</var> be 1.
 
@@ -2684,29 +2768,29 @@ browsers behave differently.  I see no reason to behave differently.
 
 <!-- Color interpretations (wide screen recommended):
 
-                        IE9           Firefox 4.0              Chrome 12 dev            Opera 11.00
-red                     red           red                      #ff0000                  #ff0000
+                        IE10PP2       Firefox 7.0a2            Chrome 14 dev            Opera 11.50
+blue                    blue          blue                     #0000ff                  #0000ff
 f                       #f            -                        -                        #f00000
 #f                      #f            -                        -                        #f00000
-f00                     #f00          -                        #ff0000                  #0f0000
-#f00                    #f00          rgb(255, 0, 0)           #ff0000                  #0f0000
-ff0000                  #ff0000       -                        #ff0000                  #ff0000
-#ff0000                 #ff0000       rgb(255, 0, 0)           #ff0000                  #ff0000
-fff000000               #ff0000       -                        -                        #fff000
-#fff000000              #ff0000       -                        -                        #fff000
-rgb(255, 0, 0)          rgb(255,0,0)  rgb(255, 0, 0)           #ff0000                  #00b025
-rgb(100%, 0, 0)         rgb(255,0,0)  -                        -                        #00b010
-rgb( 255 ,0 ,0)         rgb(255,0,0)  rgb(255, 0, 0)           #ff0000                  #00b025
-rgba(255, 0, 0, 0.0)    #005000       rgba(255, 0, 0, 0)       rgba(255, 0, 0, 0.0)     #00ba02
-rgb(375, -10, 15)       rgb(255,0,15) rgb(255, 0, 15)          #ff000f                  #00b037
+00f                     #00f          -                        #0000ff                  #00000f
+#00f                    #00f          rgb(0, 0, 255)           #0000ff                  #00000f
+0000ff                  #0000ff       -                        #0000ff                  #0000ff
+#0000ff                 #0000ff       rgb(0, 0, 255)           #0000ff                  #0000ff
+000000fff               #0000ff       -                        -                        -
+#000000fff              #0000ff       -                        -                        -
+rgb(0, 0, 255)          rgb(0,0,255)  rgb(0, 0, 255)           #0000ff                  #00b000
+rgb(0%, 0%, 100%)       rgb(0,0,255)  rgb(0, 0, 255)           #0000ff                  #00b000
+rgb( 0 ,0 ,255)         rgb(0,0,255)  rgb(0, 0, 255)           #0000ff                  #00b000
+rgba(0, 0, 255, 0.0)    #ba0000       rgba(0, 0, 255, 0)       rgba(0, 0, 255, 0)       #00ba00
+rgb(15, -10, 375)       rgb(15,0,255) rgb(15, 0, 255)          #0f00ff                  #00b015
 rgba(0, 0, 0, 1)        #ba0010       rgb(0, 0, 0)             -                        #00ba00
 rgba(255, 255, 255, 1)  #000055       rgb(255, 255, 255)       #ffffff                  #00ba02
-rgba(255, 0, 0, 0.5)    #005000       rgba(255, 255, 255, 0.5) rgba(255, 0, 0, 0.49804) #00ba02
-hsl(0%, 100%, 50%)      #001050       -                        -                        -
+rgba(0, 0, 255, 0.5)    #ba0000       rgba(0, 0, 255, 0.5)     rgba(0, 0, 255, 0.5)     #00ba00
+hsl(240, 100%, 50%)     #000150       rgb(0, 0, 255)           #0000ff                  #000024
 cornsilk                cornsilk      cornsilk                 #fff8dc                  #fff8dc
 potato quiche           #0000c0       -                        -                        #000a00
-transparent             transparent   -                        rgba(0, 0, 0.0)          #00a000
-currentColor            #c0e000       currentcolor             rgba(0, 0, 0.0)          #c000e0
+transparent             transparent   -                        rgba(0, 0, 0, 0)         #00a000
+currentColor            #c0e000       currentcolor             rgba(0, 0, 0, 0)         #c000e0
 
 The interpretations given for Firefox are only in styleWithCSS mode.  In
 non-styleWithCSS mode, it just outputs the string literally as the <font color>
@@ -2721,8 +2805,8 @@ Conclusions:
 * Opera mangles #xxx, but everyone else handles it fine.
 * The leading # is optional in all browsers but Gecko.
 * rgb() is accepted by everyone but Opera.
-* rgba() is accepted by Gecko and WebKit, but rejected by IE and Opera.
-* hsl() isn't accepted by anyone.
+* rgba() and hsl() are accepted by Gecko and WebKit, but rejected by IE and
+  Opera.
 * IE and Opera mangle unrecognized stuff, Gecko and WebKit ignore.
 * Browsers will happily output stuff like "transparent" and "rgba()" into <font
   color> even though it won't be uniformly accepted there.
@@ -2759,18 +2843,25 @@ range</a>, there are two that have distinct <a href=#effective-command-value tit
 value">effective command values</a>.  Otherwise false.
 <!-- This follows Firefox 6.0a2.  Chrome 14 dev always returns false. -->
 
-<p><a href=#value>Value</a>: The <a href=#effective-command-value>effective command value</a> of the
-<a href=#active-range>active range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>.
+<p><a href=#value>Value</a>: The <a href=#effective-command-value>effective command value</a> of the first
+<a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node that is <a href=#effectively-contained>effectively contained</a>
+in the <a href=#active-range>active range</a>, or if there is no such node, the
+<a href=#effective-command-value>effective command value</a> of the <a href=#active-range>active range</a>'s
+<a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>.
 
-<p class=note>This cannot be null, since the boundary point node of a selection
-must always be either an element or a text node that's the child of an element.
+<p class=note>The effective command value of the active range's start node
+cannot be null, since the boundary point node of a selection must always be
+either an element or a text node that's the child of an element.
 <!--
-The spec essentially matches Firefox 6.0a2 and Chrome 14 dev.  IE9 seems to
-always return the number 0 for some bizarre reason.  There are some cases where
-Firefox returns the empty string for some reason, and it seems to select the
-active node a little differently.  Opera uses #xxxxxx format for
-getComputedStyle() but rgb() here, and also drops the transparent part of the
-color if there is any.
+The spec essentially matches Firefox 6.0a2 and Chrome 14 dev, as far as how to
+decide what color the node has.  IE9 seems to always return the number 0 for
+some bizarre reason.  There are some cases where Firefox returns the empty
+string for some reason, and it seems to select the active node a little
+differently.  Opera uses #xxxxxx format for getComputedStyle() but rgb() here,
+and also drops the transparent part of the color if there is any.
+
+For why I chose this node to key the color off of, see the comment for
+hiliteColor.
 -->
 
 <p><a href=#relevant-css-property>Relevant CSS property</a>: "color"
@@ -2817,19 +2908,28 @@ value">effective command values</a>.  Otherwise false.
 <!-- This follows no one.  Firefox 6.0a2 and Chrome 14 dev both always return
 false.  However, it makes sense. -->
 
-<p><a href=#value>Value</a>: The <a href=#effective-command-value>effective command value</a> of the
-<a href=#active-range>active range</a>'s <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>.
+<p><a href=#value>Value</a>: The <a href=#effective-command-value>effective command value</a> of the first
+<a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code> node that is <a href=#effectively-contained>effectively contained</a>
+in the <a href=#active-range>active range</a>, or if there is no such node, the
+<a href=#effective-command-value>effective command value</a> of the <a href=#active-range>active range</a>'s
+<a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-range-start title=concept-range-start>start</a> <a class=external data-anolis-spec=domrange href=http://html5.org/specs/dom-range.html#concept-boundary-point-node title=concept-boundary-point-node>node</a>.
 
-<p class=note>This cannot be null, since the boundary point node of a selection
-must always be either an element or a text node that's the child of an element.
+<p class=note>The effective command value of the active range's start node
+cannot be null, since the boundary point node of a selection must always be
+either an element or a text node that's the child of an element.
 <!--
-This seems to match Opera 11.11 exactly.  Chrome 14 dev returns boolean false
-consistently, bizarrely enough.  Firefox 6.0a2 seems to follow the same idea as
-the spec, but it likes to return "transparent", including sometimes when the
-answer really clearly should not be "transparent".  IE9 throws exceptions most
-of the time for backColor, so I can't say for sure, but in the few cases where
-it doesn't throw it returns a random-looking number, so I'll assume it's crazy
-like for foreColor.
+Opera 11.11 seems to always return the effective command value of the active
+range's start node.  Chrome 14 dev returns boolean false consistently,
+bizarrely enough.  Firefox 6.0a2 seems to follow the same idea as the spec, but
+it likes to return "transparent", including sometimes when the answer really
+clearly should not be "transparent".  IE9 throws exceptions most of the time
+for backColor, so I can't say for sure, but in the few cases where it doesn't
+throw it returns a random-looking number, so I'll assume it's crazy like for
+foreColor.
+
+I decided on something that would guarantee the following invariant: whenever
+you execute a command with a value provided (assuming value is relevant),
+queryCommandValue() will always return something equivalent to what you set.
 -->
 
 <p><a href=#relevant-css-property>Relevant CSS property</a>: "background-color"
@@ -2837,9 +2937,9 @@ like for foreColor.
 
 <h3 id=the-italic-command><span class=secno>7.14 </span><dfn>The <code title="">italic</code> command</dfn></h3>
 
-<p><a href=#action>Action</a>: If the <a href=#state>state</a> is false, <a href="#set-the-selection's-value">set the
-selection's value</a> to "italic", otherwise <a href="#set-the-selection's-value">set the selection's
-value</a> to "normal".
+<p><a href=#action>Action</a>: If <code title=queryCommandState()><a href=#querycommandstate()>queryCommandState("italic")</a></code> returns true,
+<a href="#set-the-selection's-value">set the selection's value</a> to "normal".  Otherwise <a href="#set-the-selection's-value">set the
+selection's value</a> to "italic".
 
 <p><a href=#indeterminate>Indeterminate</a>: True if among <a href=#editable>editable</a> <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#text>Text</a></code>
 nodes that are <a href=#effectively-contained>effectively contained</a> in the <a href=#active-range>active
@@ -2983,9 +3083,9 @@ IE10PP2, Firefox 7.0a2, and Opera 11.50 do not, so I go with them.
 
 <h3 id=the-strikethrough-command><span class=secno>7.16 </span><dfn>The <code title="">strikethrough</code> command</dfn></h3>
 
-<p><a href=#action>Action</a>: If the <a href=#state>state</a> is false, <a href="#set-the-selection's-value">set the
-selection's value</a> to "line-through", otherwise <a href="#set-the-selection's-value">set the selection's
-value</a> to null.
+<p><a href=#action>Action</a>: If <code title=queryCommandState()><a href=#querycommandstate()>queryCommandState("strikethrough")</a></code> returns
+true, <a href="#set-the-selection's-value">set the selection's value</a> to null.  Otherwise <a href="#set-the-selection's-value">set the
+selection's value</a> to "line-through".
 
 <!-- TODO: See underline TODO. -->
 
@@ -3006,7 +3106,8 @@ such <code class=external data-anolis-spec=domcore><a href=http://dvcs.w3.org/hg
 <p><a href=#action>Action</a>:
 
 <ol>
-  <li>Let <var title="">state</var> be the <a href=#state>state</a>.
+  <li>Call <code title=queryCommandState()><a href=#querycommandstate()>queryCommandState("subscript")</a></code>, and let
+  <var title="">state</var> be the result.
 
   <li><a href="#set-the-selection's-value">Set the selection's value</a> to "baseline".
 
@@ -3046,7 +3147,8 @@ other indeterminate situations, so it's fair to consider it indeterminate.
 <p><a href=#action>Action</a>:
 
 <ol>
-  <li>Let <var title="">state</var> be the <a href=#state>state</a>.
+  <li>Call <code title=queryCommandState()><a href=#querycommandstate()>queryCommandState("superscript")</a></code>, and let
+  <var title="">state</var> be the result.
 
   <li><a href="#set-the-selection's-value">Set the selection's value</a> to "baseline".
 
@@ -3072,9 +3174,9 @@ is <a href=#effectively-contained>effectively contained</a> in the <a href=#acti
 
 <h3 id=the-underline-command><span class=secno>7.19 </span><dfn>The <code title="">underline</code> command</dfn></h3>
 
-<p><a href=#action>Action</a>: If the <a href=#state>state</a> is false, <a href="#set-the-selection's-value">set the
-selection's value</a> to "underline", otherwise <a href="#set-the-selection's-value">set the selection's
-value</a> to null.
+<p><a href=#action>Action</a>: If <code title=queryCommandState()><a href=#querycommandstate()>queryCommandState("underline")</a></code> returns true,
+<a href="#set-the-selection's-value">set the selection's value</a> to null.  Otherwise <a href="#set-the-selection's-value">set the
+selection's value</a> to "underline".
 
 <!--
 TODO: There are a lot of problems with underline color and thickness, because
@@ -6670,6 +6772,8 @@ tests, where the value was always "a", IE9 and Firefox 5.0a2 match the spec
 exactly as far as I can tell; Chrome 14 dev and Opera 11.11 might match it in
 theory, but normalize the selection first, so they don't match it in practice.
 -->
+
+<p class=XXX>Needs to handle overridden state/value.
 
 <p><a href=#action>Action</a>:
 

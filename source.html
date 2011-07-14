@@ -604,6 +604,9 @@ invoked, the user agent must run the following steps:
 
   <li>If <var>command</var> is not <span>enabled</span>, return false.
 
+  <li>If the <span>state override</span> for <var>command</var> is set, return
+  it.
+
   <li>Return true if <var>command</var>'s <span>state</span> is true, otherwise
   false.
 </ol>
@@ -642,12 +645,38 @@ invoked, the user agent must run the following steps:
   seems to return the string "false", and IE9 seems to return boolean false.
   -->
 
+  <li>If the <span>value override</span> for <var>command</var> is set, return
+  it.
+
   <li>Return <var>command</var>'s <span>value</span>.
 </ol>
 
 <p>All of these methods must treat their <var>command</var> argument <span
 data-anolis-spec=domcore title="ASCII case-insensitive">ASCII
 case-insensitively</span>.
+
+<p>The methods in this section have been designed so that the following
+invariants hold after <code>execCommand()</code> is called, assuming it didn't
+throw an exception:
+
+<ul>
+  <li><code>queryCommandIndeterm()</code> will return false (or throw an
+  exception).
+
+  <li><code>queryCommandState()</code> will return the opposite of what it did
+  before <code>execCommand()</code> was called (or throw an exception).
+
+  <li><code>queryCommandValue()</code> will return something equivalent to the
+  value passed to <code>execCommand()</code> (or throw an exception).
+  "Equivalent" here needs to be construed broadly in some cases, such as
+  <span>the <code title>fontSize</code> command</span>.
+</ul>
+
+<p>The first two points do not always hold for <span>the <code
+title>strikethrough</code> command</span> or <span>the <code
+title>underline</code> command</span>, because it can be impossible to unset
+text-decoration in CSS, but all three points otherwise hold in all cases
+barring bugs.
 <!-- @} -->
 
 <h2>Common definitions</h2>
@@ -774,6 +803,17 @@ with it, which must initially be false.  (<span>The <code
 title>styleWithCSS</code> command</span> can be used to modify or query it, by
 means of the <code>execCommand()</code> and <code>queryCommandState()</code>
 methods.)
+
+<p>For some <span title=command>commands</span>, each [[htmldocument]] must
+have a boolean <dfn>state override</dfn> and/or a string <dfn>value
+override</dfn>.  These do not change the <span>command</span>'s
+<span>state</span> or <span>value</span>, but change the way some algorithms
+behave, as specified in those algorithms' definitions.  Initially, both must be
+unset for every <span>command</span>.  Whenever the number of [[ranges]] in the
+[[selection]] changes to something different, and whenever a [[boundarypoint]]
+of the [[range]] at a given index in the [[selection]] changes to something
+different, the <span>state override</span> and <span>value override</span> must
+be unset for every <span>command</span>.
 
 <p>When the user agent is instructed to run a particular method, it must follow
 the steps defined for that method in the appropriate specification, not act as
@@ -1928,6 +1968,10 @@ different value.
 
     <li>If <var>command</var> is "foreColor", and <var>new value</var> is fully
     opaque with red, green, and blue components in the range 0 to 255:
+    <!-- See comment for foreColor for discussion. -->
+
+    <p class=XXX>Check this more carefully for what happens if the components
+    are not integers or are out-of-range.
 
     <ol>
       <li>Let <var>new parent</var> be the result of calling <code
@@ -1935,9 +1979,10 @@ different value.
       title=dom-Document-createElement>createElement("font")</code> on the
       [[ownerdocument]] of <var>node</var>.
 
-      <li>If <var>new value</var> is one of the colors listed in the SVG color
-      keywords section of CSS3 Color, set the [[fontcolor]] attribute of
-      <var>new parent</var> to <var>new value</var>.
+      <li>If <var>new value</var> is an <a
+      href=http://www.w3.org/TR/css3-color/#svg-color>extended color
+      keyword</a>, set the [[fontcolor]] attribute of <var>new parent</var> to
+      <var>new value</var>.
 
       <li>Otherwise, set the [[fontcolor]] attribute of <var>new parent</var>
       to the result of applying the <span data-anolis-spec=html>rules for
@@ -2174,6 +2219,39 @@ as desired.
 <ol>
   <li>Let <var>command</var> be the current <span>command</span>.
 
+  <li>If there is no <span>editable</span> [[text]] node <span>effectively
+  contained</span> in the <span>active range</span>:
+
+  <ol>
+    <li>If <var>command</var> is in the following list, set the <span>state
+    override</span> appropriately:
+
+    <dl class=compact>
+      <dt>bold<dd>True if <var>new value</var> is not null and is greater than or equal
+      to 600, false otherwise.
+
+      <dt>italic<dd>True if <var>new value</var> is "italic" or "oblique", false
+      otherwise.
+
+      <dt>strikethrough<dd>True if <var>new value</var> is "line-through", false otherwise.
+
+      <dt>subscript<dd>True if <var>new value</var> is "sub", false otherwise.
+
+      <dt>superscript<dd>True if <var>new value</var> is "super", false otherwise.
+
+      <dt>underline<dd>True if <var>new value</var> is "underline", false otherwise.
+    </dl>
+
+    <li>If <var>command</var> has a <span>value</span> specified, unset the
+    <span>value override</span> if <var>new value</var> is null, and set the
+    <span>value override</span> to <var>new value</var> if it is not null.
+
+    <p class=XXX>This doesn't work as-is for fontSize, because that uses a
+    different format for the value.
+
+    <li>Abort these steps.
+  </ol>
+
   <li>If the <span>active range</span>'s [[startnode]] is an
   <span>editable</span> [[text]] node, and its [[startoffset]] is neither zero
   nor its [[startnode]]'s [[length]], call [[splittext|]] on the <span>active
@@ -2301,11 +2379,15 @@ nodes that are <span>effectively contained</span> in the <span>active
 range</span>, there are two that have distinct <span title="effective command
 value">effective command values</span>.  Otherwise false.
 
-<p><span>Value</span>: The <span>effective command value</span> of the
-<span>active range</span>'s [[startnode]].
+<p><span>Value</span>: The <span>effective command value</span> of the first
+<span>editable</span> [[text]] node that is <span>effectively contained</span>
+in the <span>active range</span>, or if there is no such node, the
+<span>effective command value</span> of the <span>active range</span>'s
+[[startnode]].
 
-<p class=note>This cannot be null, since the boundary point node of a selection
-must always be either an element or a text node that's the child of an element.
+<p class=note>The effective command value of the active range's start node
+cannot be null, since the boundary point node of a selection must always be
+either an element or a text node that's the child of an element.
 
 <p><span>Relevant CSS property</span>: "background-color"
 
@@ -2318,9 +2400,10 @@ one else does it, so I don't do it.  It's a similar story for similar commands
 (fontName, italic, etc.).  Except not for strikethrough, where it just does
 nothing if the selection is empty.  Why strikethrough?  I don't know. -->
 
-<p><span>Action</span>: If the <span>state</span> is false, <span>set the
-selection's value</span> to "bold", otherwise <span>set the selection's
-value</span> to "normal".
+<p><span>Action</span>: If <code
+title=queryCommandState()>queryCommandState("bold")</code> returns true,
+<span>set the selection's value</span> to "normal".  Otherwise <span>set the
+selection's value</span> to "bold".
 
 <p><span>Indeterminate</span>: True if among <span>editable</span> [[text]]
 nodes that are <span>effectively contained</span> in the <span>active
@@ -2417,15 +2500,7 @@ don't either. -->
   <li><span>Set the selection's value</span> to <var>value</var>.
 </ol>
 
-<!--
-The state is always false in Chrome 14 dev and Opera 11.11.  Firefox 6.0a2
-throws an exception, and IE9 seems to always either return false or throw an
-exception.  Therefore we make the state always false, although this doesn't
-seem very useful.
--->
-
-<!-- I'd have expected the value to be the URL, but guess not: it's always
-false. -->
+<p class=XXX>Define state and value, although browsers don't.
 
 <!-- @} -->
 <h3><dfn>The <code title>fontName</code> command</dfn></h3>
@@ -2459,12 +2534,17 @@ range</span>, there are two that have distinct <span title="effective command
 value">effective command values</span>.  Otherwise false.
 <!-- This follows Firefox 6.0a2.  Chrome 14 dev always returns false. -->
 
-<p><span>Value</span>: The <span>effective command value</span> of the
-<span>active range</span>'s [[startnode]].
+<p><span>Value</span>: The <span>effective command value</span> of the first
+<span>editable</span> [[text]] node that is <span>effectively contained</span>
+in the <span>active range</span>, or if there is no such node, the
+<span>effective command value</span> of the <span>active range</span>'s
+[[startnode]].
 
-<p class=note>This cannot be null, since the boundary point node of a selection
-must always be either an element or a text node that's the child of an element.
-<!-- Complicated.
+<p class=note>The effective command value of the active range's start node
+cannot be null, since the boundary point node of a selection must always be
+either an element or a text node that's the child of an element.
+<!--
+Complicated.
 
 IE 9 RC: Always the empty string.  Not very useful.
 Firefox 4b11: Confusing.  Sometimes it returns generic family names, like
@@ -2479,7 +2559,10 @@ Opera 11: Returns the literal value of font-family, except if it's inherited
 
 I'm just going to punt on this and say it should be the resolved value of
 font-family.  I'll leave CSSOM to decide what that means if there are no
-applicable style rules. -->
+applicable style rules.
+
+For deciding which node should be checked, see comment for hiliteColor.
+-->
 
 <p><span>Relevant CSS property</span>: "font-family"
 
@@ -2621,11 +2704,16 @@ browsers behave differently.  I see no reason to behave differently.
 -->
 <ol>
   <li>Let <var>pixel size</var> be the <span>effective command value</span> of
-  the <span>active range</span>'s [[startnode]], as a number of pixels.
+  the first <span>editable</span> [[text]] node that is <span>effectively
+  contained</span> in the <span>active range</span>, or if there is no such
+  node, the <span>effective command value</span> of the <span>active
+  range</span>'s [[startnode]], in either case interpreted as a number of
+  pixels.
+  <!-- See comment for hiliteColor on how I decided on this choice of node. -->
 
-  <p class=note>The active range's start node cannot be null, since the
-  boundary point node of a selection must always be either an element or a text
-  node that's the child of an element.
+  <p class=note>The effective command value of the active range's start node
+  cannot be null, since the boundary point node of a selection must always be
+  either an element or a text node that's the child of an element.
 
   <li>Let <var>returned size</var> be 1.
 
@@ -2661,29 +2749,29 @@ browsers behave differently.  I see no reason to behave differently.
 
 <!-- Color interpretations (wide screen recommended):
 
-                        IE9           Firefox 4.0              Chrome 12 dev            Opera 11.00
-red                     red           red                      #ff0000                  #ff0000
+                        IE10PP2       Firefox 7.0a2            Chrome 14 dev            Opera 11.50
+blue                    blue          blue                     #0000ff                  #0000ff
 f                       #f            -                        -                        #f00000
 #f                      #f            -                        -                        #f00000
-f00                     #f00          -                        #ff0000                  #0f0000
-#f00                    #f00          rgb(255, 0, 0)           #ff0000                  #0f0000
-ff0000                  #ff0000       -                        #ff0000                  #ff0000
-#ff0000                 #ff0000       rgb(255, 0, 0)           #ff0000                  #ff0000
-fff000000               #ff0000       -                        -                        #fff000
-#fff000000              #ff0000       -                        -                        #fff000
-rgb(255, 0, 0)          rgb(255,0,0)  rgb(255, 0, 0)           #ff0000                  #00b025
-rgb(100%, 0, 0)         rgb(255,0,0)  -                        -                        #00b010
-rgb( 255 ,0 ,0)         rgb(255,0,0)  rgb(255, 0, 0)           #ff0000                  #00b025
-rgba(255, 0, 0, 0.0)    #005000       rgba(255, 0, 0, 0)       rgba(255, 0, 0, 0.0)     #00ba02
-rgb(375, -10, 15)       rgb(255,0,15) rgb(255, 0, 15)          #ff000f                  #00b037
+00f                     #00f          -                        #0000ff                  #00000f
+#00f                    #00f          rgb(0, 0, 255)           #0000ff                  #00000f
+0000ff                  #0000ff       -                        #0000ff                  #0000ff
+#0000ff                 #0000ff       rgb(0, 0, 255)           #0000ff                  #0000ff
+000000fff               #0000ff       -                        -                        -
+#000000fff              #0000ff       -                        -                        -
+rgb(0, 0, 255)          rgb(0,0,255)  rgb(0, 0, 255)           #0000ff                  #00b000
+rgb(0%, 0%, 100%)       rgb(0,0,255)  rgb(0, 0, 255)           #0000ff                  #00b000
+rgb( 0 ,0 ,255)         rgb(0,0,255)  rgb(0, 0, 255)           #0000ff                  #00b000
+rgba(0, 0, 255, 0.0)    #ba0000       rgba(0, 0, 255, 0)       rgba(0, 0, 255, 0)       #00ba00
+rgb(15, -10, 375)       rgb(15,0,255) rgb(15, 0, 255)          #0f00ff                  #00b015
 rgba(0, 0, 0, 1)        #ba0010       rgb(0, 0, 0)             -                        #00ba00
 rgba(255, 255, 255, 1)  #000055       rgb(255, 255, 255)       #ffffff                  #00ba02
-rgba(255, 0, 0, 0.5)    #005000       rgba(255, 255, 255, 0.5) rgba(255, 0, 0, 0.49804) #00ba02
-hsl(0%, 100%, 50%)      #001050       -                        -                        -
+rgba(0, 0, 255, 0.5)    #ba0000       rgba(0, 0, 255, 0.5)     rgba(0, 0, 255, 0.5)     #00ba00
+hsl(240, 100%, 50%)     #000150       rgb(0, 0, 255)           #0000ff                  #000024
 cornsilk                cornsilk      cornsilk                 #fff8dc                  #fff8dc
 potato quiche           #0000c0       -                        -                        #000a00
-transparent             transparent   -                        rgba(0, 0, 0.0)          #00a000
-currentColor            #c0e000       currentcolor             rgba(0, 0, 0.0)          #c000e0
+transparent             transparent   -                        rgba(0, 0, 0, 0)         #00a000
+currentColor            #c0e000       currentcolor             rgba(0, 0, 0, 0)         #c000e0
 
 The interpretations given for Firefox are only in styleWithCSS mode.  In
 non-styleWithCSS mode, it just outputs the string literally as the <font color>
@@ -2698,8 +2786,8 @@ Conclusions:
 * Opera mangles #xxx, but everyone else handles it fine.
 * The leading # is optional in all browsers but Gecko.
 * rgb() is accepted by everyone but Opera.
-* rgba() is accepted by Gecko and WebKit, but rejected by IE and Opera.
-* hsl() isn't accepted by anyone.
+* rgba() and hsl() are accepted by Gecko and WebKit, but rejected by IE and
+  Opera.
 * IE and Opera mangle unrecognized stuff, Gecko and WebKit ignore.
 * Browsers will happily output stuff like "transparent" and "rgba()" into <font
   color> even though it won't be uniformly accepted there.
@@ -2736,18 +2824,25 @@ range</span>, there are two that have distinct <span title="effective command
 value">effective command values</span>.  Otherwise false.
 <!-- This follows Firefox 6.0a2.  Chrome 14 dev always returns false. -->
 
-<p><span>Value</span>: The <span>effective command value</span> of the
-<span>active range</span>'s [[startnode]].
+<p><span>Value</span>: The <span>effective command value</span> of the first
+<span>editable</span> [[text]] node that is <span>effectively contained</span>
+in the <span>active range</span>, or if there is no such node, the
+<span>effective command value</span> of the <span>active range</span>'s
+[[startnode]].
 
-<p class=note>This cannot be null, since the boundary point node of a selection
-must always be either an element or a text node that's the child of an element.
+<p class=note>The effective command value of the active range's start node
+cannot be null, since the boundary point node of a selection must always be
+either an element or a text node that's the child of an element.
 <!--
-The spec essentially matches Firefox 6.0a2 and Chrome 14 dev.  IE9 seems to
-always return the number 0 for some bizarre reason.  There are some cases where
-Firefox returns the empty string for some reason, and it seems to select the
-active node a little differently.  Opera uses #xxxxxx format for
-getComputedStyle() but rgb() here, and also drops the transparent part of the
-color if there is any.
+The spec essentially matches Firefox 6.0a2 and Chrome 14 dev, as far as how to
+decide what color the node has.  IE9 seems to always return the number 0 for
+some bizarre reason.  There are some cases where Firefox returns the empty
+string for some reason, and it seems to select the active node a little
+differently.  Opera uses #xxxxxx format for getComputedStyle() but rgb() here,
+and also drops the transparent part of the color if there is any.
+
+For why I chose this node to key the color off of, see the comment for
+hiliteColor.
 -->
 
 <p><span>Relevant CSS property</span>: "color"
@@ -2794,19 +2889,28 @@ value">effective command values</span>.  Otherwise false.
 <!-- This follows no one.  Firefox 6.0a2 and Chrome 14 dev both always return
 false.  However, it makes sense. -->
 
-<p><span>Value</span>: The <span>effective command value</span> of the
-<span>active range</span>'s [[startnode]].
+<p><span>Value</span>: The <span>effective command value</span> of the first
+<span>editable</span> [[text]] node that is <span>effectively contained</span>
+in the <span>active range</span>, or if there is no such node, the
+<span>effective command value</span> of the <span>active range</span>'s
+[[startnode]].
 
-<p class=note>This cannot be null, since the boundary point node of a selection
-must always be either an element or a text node that's the child of an element.
+<p class=note>The effective command value of the active range's start node
+cannot be null, since the boundary point node of a selection must always be
+either an element or a text node that's the child of an element.
 <!--
-This seems to match Opera 11.11 exactly.  Chrome 14 dev returns boolean false
-consistently, bizarrely enough.  Firefox 6.0a2 seems to follow the same idea as
-the spec, but it likes to return "transparent", including sometimes when the
-answer really clearly should not be "transparent".  IE9 throws exceptions most
-of the time for backColor, so I can't say for sure, but in the few cases where
-it doesn't throw it returns a random-looking number, so I'll assume it's crazy
-like for foreColor.
+Opera 11.11 seems to always return the effective command value of the active
+range's start node.  Chrome 14 dev returns boolean false consistently,
+bizarrely enough.  Firefox 6.0a2 seems to follow the same idea as the spec, but
+it likes to return "transparent", including sometimes when the answer really
+clearly should not be "transparent".  IE9 throws exceptions most of the time
+for backColor, so I can't say for sure, but in the few cases where it doesn't
+throw it returns a random-looking number, so I'll assume it's crazy like for
+foreColor.
+
+I decided on something that would guarantee the following invariant: whenever
+you execute a command with a value provided (assuming value is relevant),
+queryCommandValue() will always return something equivalent to what you set.
 -->
 
 <p><span>Relevant CSS property</span>: "background-color"
@@ -2814,9 +2918,10 @@ like for foreColor.
 <!-- @} -->
 <h3><dfn>The <code title>italic</code> command</dfn></h3>
 <!-- @{ -->
-<p><span>Action</span>: If the <span>state</span> is false, <span>set the
-selection's value</span> to "italic", otherwise <span>set the selection's
-value</span> to "normal".
+<p><span>Action</span>: If <code
+title=queryCommandState()>queryCommandState("italic")</code> returns true,
+<span>set the selection's value</span> to "normal".  Otherwise <span>set the
+selection's value</span> to "italic".
 
 <p><span>Indeterminate</span>: True if among <span>editable</span> [[text]]
 nodes that are <span>effectively contained</span> in the <span>active
@@ -2960,9 +3065,10 @@ IE10PP2, Firefox 7.0a2, and Opera 11.50 do not, so I go with them.
 <!-- @} -->
 <h3><dfn>The <code title>strikethrough</code> command</dfn></h3>
 <!-- @{ -->
-<p><span>Action</span>: If the <span>state</span> is false, <span>set the
-selection's value</span> to "line-through", otherwise <span>set the selection's
-value</span> to null.
+<p><span>Action</span>: If <code
+title=queryCommandState()>queryCommandState("strikethrough")</code> returns
+true, <span>set the selection's value</span> to null.  Otherwise <span>set the
+selection's value</span> to "line-through".
 
 <!-- TODO: See underline TODO. -->
 
@@ -2983,7 +3089,9 @@ such [[text]] node.  Otherwise false.
 <p><span>Action</span>:
 
 <ol>
-  <li>Let <var>state</var> be the <span>state</span>.
+  <li>Call <code
+  title=queryCommandState()>queryCommandState("subscript")</code>, and let
+  <var>state</var> be the result.
 
   <li><span>Set the selection's value</span> to "baseline".
 
@@ -3023,7 +3131,9 @@ other indeterminate situations, so it's fair to consider it indeterminate.
 <p><span>Action</span>:
 
 <ol>
-  <li>Let <var>state</var> be the <span>state</span>.
+  <li>Call <code
+  title=queryCommandState()>queryCommandState("superscript")</code>, and let
+  <var>state</var> be the result.
 
   <li><span>Set the selection's value</span> to "baseline".
 
@@ -3049,9 +3159,10 @@ is <span>effectively contained</span> in the <span>active range</span> has
 <!-- @} -->
 <h3><dfn>The <code title>underline</code> command</dfn></h3>
 <!-- @{ -->
-<p><span>Action</span>: If the <span>state</span> is false, <span>set the
-selection's value</span> to "underline", otherwise <span>set the selection's
-value</span> to null.
+<p><span>Action</span>: If <code
+title=queryCommandState()>queryCommandState("underline")</code> returns true,
+<span>set the selection's value</span> to null.  Otherwise <span>set the
+selection's value</span> to "underline".
 
 <!--
 TODO: There are a lot of problems with underline color and thickness, because
@@ -6665,6 +6776,8 @@ tests, where the value was always "a", IE9 and Firefox 5.0a2 match the spec
 exactly as far as I can tell; Chrome 14 dev and Opera 11.11 might match it in
 theory, but normalize the selection first, so they don't match it in practice.
 -->
+
+<p class=XXX>Needs to handle overridden state/value.
 
 <p><span>Action</span>:
 

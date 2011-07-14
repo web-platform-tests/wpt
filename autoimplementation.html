@@ -156,11 +156,6 @@ function doBrowserCell(tr, test, command, styleWithCss) {
 		test = test[1];
 	}
 
-	if (command == "hilitecolor" && navigator.userAgent.indexOf("MSIE") != -1) {
-		// IE behaves differently, and I want to see how it works.
-		command = "backcolor";
-	}
-
 	if (command == "hilitecolor") {
 		// Firefox refuses to do anything unless styleWithCSS is true.
 		styleWithCss = true;
@@ -187,7 +182,22 @@ function doBrowserCell(tr, test, command, styleWithCss) {
 		try {
 			document.execCommand("styleWithCSS", false, styleWithCss);
 		} catch (e) {}
+
+		try { var beforeIndeterm = document.queryCommandIndeterm(command) }
+		catch(e) { beforeIndeterm = "Exception" }
+		try { var beforeState = document.queryCommandState(command) }
+		catch(e) { beforeState = "Exception" }
+		try { var beforeValue = document.queryCommandValue(command) }
+		catch(e) { beforeValue = "Exception" }
+
 		document.execCommand(command, false, value);
+
+		try { var afterIndeterm = document.queryCommandIndeterm(command) }
+		catch(e) { afterIndeterm = "Exception" }
+		try { var afterState = document.queryCommandState(command) }
+		catch(e) { afterState = "Exception" }
+		try { var afterValue = document.queryCommandValue(command) }
+		catch(e) { afterValue = "Exception" }
 
 		testDiv.contentEditable = "inherit";
 		testDiv.removeAttribute("spellcheck");
@@ -230,7 +240,17 @@ function doBrowserCell(tr, test, command, styleWithCss) {
 				browserCell.innerHTML.replace(/<div><\/div>$/, "");
 		}
 
+		if (document.body.hasAttribute("bgcolor")) {
+			var bgColor = document.body.getAttribute("bgcolor");
+			document.body.removeAttribute("bgcolor");
+			throw 'bgcolor="' + bgColor +'" added to body!';
+		}
+
 		browserCell.lastChild.textContent = browserCell.firstChild.innerHTML;
+		browserCell.lastChild.appendChild(queryOutputHelper(
+			beforeIndeterm, beforeState, beforeValue,
+			afterIndeterm, afterState, afterValue,
+			command, value));
 	} catch (e) {
 		browserCellException(e, testDiv, browserCell);
 	}

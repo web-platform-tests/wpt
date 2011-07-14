@@ -34,28 +34,6 @@ table { margin: 1em 0 }
 /* Overwrite the underline so it's orange instead of blue, thus looks less
  * silly */
 a code { text-decoration: underline }
-/* Make my own compact dl styling because I don't like existing options */
-dl.compact > dt, dl.compact > dd {
-  display: inline;
-  font-weight: normal;
-  margin: 0;
-  padding: 0;
-}
-dl.compact { margin: 0.5em 0 0.5em 1em }
-dl.compact > dt::before {
-  content: '\2022  ';
-}
-dl.compact > dd::before {
-  content: ': ';
-}
-dl.compact > dd + dt::before {
-  white-space: pre;
-  content: '\A\2022  ';
-}
-dl.compact > dt + dt::before,
-dl.compact > dd + dd::before {
-  content: ', ';
-}
 </style>
 <body class=draft>
 <div class=head id=head>
@@ -1258,15 +1236,15 @@ covered what's come up in my tests.
   <!-- We allow children even where some intervening nodes will be inserted,
   like tr as a child of table. -->
 
-  <dl class=compact>
-    <dt>colgroup<dd>col
-    <dt>table<dd>caption<dd>col<dd>colgroup<dd>tbody<dd>td<dd>tfoot<dd>th<dd>thead<dd>tr
-    <dt>tbody<dt>tfoot<dt>thead<dd>td<dd>th<dd>tr
-    <dt>tr<dd>td<dd>th
-    <dt>dl<dd>dt<dd>dd
-    <dt>dir<dt>ol<dt>ul<dd>dir<dd>li<dd>ol<dd>ul
-    <dt>hgroup<dd>h1<dd>h2<dd>h3<dd>h4<dd>h5<dd>h6
-  </dl>
+  <ul>
+    <li>colgroup: col
+    <li>table: caption, col, colgroup, tbody, td, tfoot, th, thead, tr
+    <li>tbody, tfoot, thead: td, th, tr
+    <li>tr: td, th
+    <li>dl: dt, dd
+    <li>dir, ol, ul: dir, li, ol, ul
+    <li>hgroup: h1, h2, h3, h4, h5, h6
+  </ul>
 
   <li>If <var title="">child</var> is "body", "caption", "col", "colgroup", "frame",
   "frameset", "head", "html", "tbody", "td", "tfoot", "th", "thead", or "tr",
@@ -1284,17 +1262,17 @@ covered what's come up in my tests.
   following list and <var title="">child</var> is listed on the right-hand side of that
   entry, return false.
 
-  <dl class=compact>
-    <dt>a<dd>a
-    <dt>dd<dt>dt<dd>dd<dd>dt
-    <dt>h1<dt>h2<dt>h3<dt>h4<dt>h5<dt>h6<dd>h1<dd>h2<dd>h3<dd>h4<dd>h5<dd>h6
-    <dt>li<dd>li
-    <dt>nobr<dd>nobr
-    <dt>All <a href=#name-of-an-element-with-inline-contents title="name of an element with inline contents">names of an
-    element with inline contents</a><dd>all <a href=#prohibited-paragraph-child-name title="prohibited
+  <ul>
+    <li>a: a
+    <li>dd, dt: dd, dt
+    <li>h1, h2, h3, h4, h5, h6: h1, h2, h3, h4, h5, h6
+    <li>li: li
+    <li>nobr: nobr
+    <li>All <a href=#name-of-an-element-with-inline-contents title="name of an element with inline contents">names of an
+    element with inline contents</a>: all <a href=#prohibited-paragraph-child-name title="prohibited
     paragraph child name">prohibited paragraph child names</a>
-    <dt>td<dt>th<dd>caption<dd>col<dd>colgroup<dd>tbody<dd>td<dd>tfoot<dd>th<dd>thead<dd>tr
-  </dl>
+    <li>td, th: caption, col, colgroup, tbody, td, tfoot, th, thead, tr
+  </ul>
 
   <li>Return true.
 </ol>
@@ -1559,11 +1537,11 @@ will return either a string or null:
   equal to the CSS property name listed for it, return the string listed for
   it.
 
-  <dl class=compact>
-    <dt><code class=external data-anolis-spec=html title="the b element"><a href=http://www.whatwg.org/html/#the-b-element>b</a></code><dt><code class=external data-anolis-spec=html title="the strong element"><a href=http://www.whatwg.org/html/#the-strong-element>strong</a></code><dd>font-weight: "bold"
+  <ul>
+    <li><code class=external data-anolis-spec=html title="the b element"><a href=http://www.whatwg.org/html/#the-b-element>b</a></code>, <code class=external data-anolis-spec=html title="the strong element"><a href=http://www.whatwg.org/html/#the-strong-element>strong</a></code>: font-weight: "bold"
 
-    <dt><code class=external data-anolis-spec=html title="the i element"><a href=http://www.whatwg.org/html/#the-i-element>i</a></code><dt><code class=external data-anolis-spec=html title="the em element"><a href=http://www.whatwg.org/html/#the-em-element>em</a></code><dd>font-style: "italic"
-  </dl>
+    <li><code class=external data-anolis-spec=html title="the i element"><a href=http://www.whatwg.org/html/#the-i-element>i</a></code>, <code class=external data-anolis-spec=html title="the em element"><a href=http://www.whatwg.org/html/#the-em-element>em</a></code>: font-style: "italic"
+  </ul>
 
   <li>Return null.
 </ol>
@@ -2074,15 +2052,15 @@ different value.
   <var title="">new parent</var> to the number from the following table based on
   <var title="">new value</var>:
 
-  <dl class=compact>
-    <dt>xx-small<dd>1
-    <dt>small<dd>2
-    <dt>normal<dd>3
-    <dt>large<dd>4
-    <dt>x-large<dd>5
-    <dt>xx-large<dd>6
-    <dt>xxx-large<dd>7
-  </dl>
+  <ul>
+    <li>xx-small: 1
+    <li>small: 2
+    <li>normal: 3
+    <li>large: 4
+    <li>x-large: 5
+    <li>xx-large: 6
+    <li>xxx-large: 7
+  </ul>
 
   <!-- We always use sup/sub elements, even in CSS mode, following Gecko and
   contradicting WebKit.  This is because <span value="vertical-align:
@@ -2253,21 +2231,21 @@ as desired.
     <li>If <var title="">command</var> is in the following list, set the <a href=#state-override>state
     override</a> appropriately:
 
-    <dl class=compact>
-      <dt>bold<dd>True if <var title="">new value</var> is not null and is greater than or equal
+    <ul>
+      <li>bold: True if <var title="">new value</var> is not null and is greater than or equal
       to 600, false otherwise.
 
-      <dt>italic<dd>True if <var title="">new value</var> is "italic" or "oblique", false
+      <li>italic: True if <var title="">new value</var> is "italic" or "oblique", false
       otherwise.
 
-      <dt>strikethrough<dd>True if <var title="">new value</var> is "line-through", false otherwise.
+      <li>strikethrough: True if <var title="">new value</var> is "line-through", false otherwise.
 
-      <dt>subscript<dd>True if <var title="">new value</var> is "sub", false otherwise.
+      <li>subscript: True if <var title="">new value</var> is "sub", false otherwise.
 
-      <dt>superscript<dd>True if <var title="">new value</var> is "super", false otherwise.
+      <li>superscript: True if <var title="">new value</var> is "super", false otherwise.
 
-      <dt>underline<dd>True if <var title="">new value</var> is "underline", false otherwise.
-    </dl>
+      <li>underline: True if <var title="">new value</var> is "underline", false otherwise.
+    </ul>
 
     <li>If <var title="">new value</var> is null, unset the <a href=#value-override>value override</a>
     (if any).
@@ -2665,15 +2643,15 @@ respecifying non-interoperable behavior anyway.
     <li>Set <var title="">value</var> to the string here corresponding to
     <var title="">number</var>:
 
-    <dl class=compact>
-      <dt>1<dd>xx-small
-      <dt>2<dd>small
-      <dt>3<dd>medium
-      <dt>4<dd>large
-      <dt>5<dd>x-large
-      <dt>6<dd>xx-large
-      <dt>7<dd>xxx-large
-    </dl>
+    <ul>
+      <li>1: xx-small
+      <li>2: small
+      <li>3: medium
+      <li>4: large
+      <li>5: x-large
+      <li>6: xx-large
+      <li>7: xxx-large
+    </ul>
 
     <!--
     The entry for 7 here is an issue: there's no CSS value that corresponds to

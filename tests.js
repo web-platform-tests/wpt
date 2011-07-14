@@ -3420,10 +3420,17 @@ function queryOutputHelper(beforeIndeterm, beforeState, beforeValue, afterIndete
 
 	beforeDiv.appendChild(document.createElement("span"));
 	afterDiv.appendChild(document.createElement("span"));
-	if (beforeState !== "Exception" || afterState !== "Exception") {
+	if ((beforeState !== "Exception" || afterState !== "Exception")
+	&& !/insert(un)?orderedlist|justify(center|full|left|right)/.test(command)) {
 		beforeDiv.lastChild.className =
 		afterDiv.lastChild.className =
 			beforeState !== "Exception" && afterState !== "Exception" && beforeState === !afterState
+				? "good-result"
+				: "bad-result";
+	}
+	if (/^justify(center|full|left|right)$/.test(command)) {
+		afterDiv.lastChild.className =
+			beforeState !== "Exception" && afterState !== "Exception" && afterState
 				? "good-result"
 				: "bad-result";
 	}
@@ -3448,6 +3455,14 @@ function queryOutputHelper(beforeIndeterm, beforeState, beforeValue, afterIndete
 			valuesEqual(command, afterValue, value)
 				? "good-result"
 				: "bad-result";
+	}
+	if (/^justify(center|full|left|right)$/.test(command)) {
+		var expectedValue = command == "justifyfull"
+			? "justify"
+			: command.replace("justify", "");
+		afterDiv.lastChild.className = afterValue == expectedValue
+			? "good-result"
+			: "bad-result";
 	}
 	beforeDiv.lastChild.textContent = "value " + beforeValue;
 	afterDiv.lastChild.textContent = "value " + afterValue;

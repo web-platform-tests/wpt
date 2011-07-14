@@ -655,28 +655,34 @@ invoked, the user agent must run the following steps:
 data-anolis-spec=domcore title="ASCII case-insensitive">ASCII
 case-insensitively</span>.
 
-<p>The methods in this section have been designed so that the following
+<div class=note>
+<p>The methods in this section have mostly been designed so that the following
 invariants hold after <code>execCommand()</code> is called, assuming it didn't
 throw an exception:
 
 <ul>
-  <li><code>queryCommandIndeterm()</code> will return false (or throw an
+  <li><code title>queryCommandIndeterm()</code> will return false (or throw an
   exception).
 
-  <li><code>queryCommandState()</code> will return the opposite of what it did
-  before <code>execCommand()</code> was called (or throw an exception).
+  <li><code title>queryCommandState()</code> will return the opposite of what it did
+  before <code title>execCommand()</code> was called (or throw an exception).
 
-  <li><code>queryCommandValue()</code> will return something equivalent to the
-  value passed to <code>execCommand()</code> (or throw an exception).
+  <li><code title>queryCommandValue()</code> will return something equivalent to the
+  value passed to <code title>execCommand()</code> (or throw an exception).
   "Equivalent" here needs to be construed broadly in some cases, such as
-  <span>the <code title>fontSize</code> command</span>.
+  <code title>fontSize</code>.
 </ul>
 
-<p>The first two points do not always hold for <span>the <code
-title>strikethrough</code> command</span> or <span>the <code
-title>underline</code> command</span>, because it can be impossible to unset
-text-decoration in CSS, but all three points otherwise hold in all cases
-barring bugs.
+<p>The first two points do not always hold for <code title>strikethrough</code>
+or <code title>underline</code>, because it can be impossible to unset
+text-decoration in CSS.  Also, by design, the state of <code
+title>insertOrderedList</code> and <code title>insertOrderedList</code> might
+not be the opposite after calling as before calling.  Finally, the state of the
+various <code title>justify</code> commands should always be true after
+calling, and the value should always be the appropriate string ("center",
+"justify", "left", or "right").  Any other deviations from these invariants are
+bugs in the specification.
+</div>
 <!-- @} -->
 
 <h2>Common definitions</h2>
